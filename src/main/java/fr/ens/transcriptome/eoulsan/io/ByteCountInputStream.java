@@ -48,20 +48,23 @@ public class ByteCountInputStream extends FilterInputStream {
 
     this.in.close();
 
-    if (attemptNRead < 0)
+    if (this.attemptNRead < 0) {
       return;
+    }
 
-    if (this.nRead != attemptNRead)
+    if (this.nRead != this.attemptNRead) {
       throw new IOException("Error read "
           + this.nRead + " bytes, attempted: " + this.attemptNRead + " bytes");
+    }
   }
 
   @Override
   public int read() throws IOException {
 
-    final int c = in.read();
-    if (c >= 0)
-      nRead++;
+    final int c = this.in.read();
+    if (c >= 0) {
+      this.nRead++;
+    }
 
     return c;
   }
@@ -72,8 +75,9 @@ public class ByteCountInputStream extends FilterInputStream {
 
     final int nr = this.in.read(b, off, len);
 
-    if (nr > 0)
+    if (nr > 0) {
       this.nRead += nr;
+    }
 
     return nr;
   }
@@ -81,10 +85,11 @@ public class ByteCountInputStream extends FilterInputStream {
   @Override
   public int read(final byte b[]) throws IOException {
 
-    final int nr = in.read(b);
+    final int nr = this.in.read(b);
 
-    if (nr > 0)
+    if (nr > 0) {
       this.nRead += nr;
+    }
 
     return nr;
   }
@@ -93,7 +98,7 @@ public class ByteCountInputStream extends FilterInputStream {
   public synchronized void reset() throws IOException {
 
     this.in.reset();
-    this.nRead = size - this.in.available();
+    this.nRead = this.size - this.in.available();
   }
 
   @Override
@@ -101,8 +106,9 @@ public class ByteCountInputStream extends FilterInputStream {
 
     final long nr = this.in.skip(n);
 
-    if (nr > 0)
+    if (nr > 0) {
       this.nRead += nr;
+    }
 
     return nr;
   }

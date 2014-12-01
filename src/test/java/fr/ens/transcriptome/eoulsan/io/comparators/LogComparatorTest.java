@@ -23,17 +23,14 @@
  */
 package fr.ens.transcriptome.eoulsan.io.comparators;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.junit.Test;
-
-import fr.ens.transcriptome.eoulsan.io.comparators.Comparator;
-import fr.ens.transcriptome.eoulsan.io.comparators.LogComparator;
 
 public class LogComparatorTest {
 
@@ -43,7 +40,7 @@ public class LogComparatorTest {
   // File expression.log
   //
 
-  private String expressionLogText =
+  private final String expressionLogText =
       "Expression computation with htseq-count (2013_090b, filtered_mapper_results_2.sam, rproc1, exon, ID, stranded: NO, removeAmbiguousCases: false)\n"
           + "\tnumber of alignments with no feature=13868127\n"
           + "\treads eliminated=13868127\n"
@@ -52,66 +49,66 @@ public class LogComparatorTest {
   @Test
   public void expressionLogIsSameTest() throws IOException {
     final InputStream isA1 =
-        new ByteArrayInputStream(expressionLogText.getBytes());
+        new ByteArrayInputStream(this.expressionLogText.getBytes());
 
     final InputStream isA2 =
-        new ByteArrayInputStream(expressionLogText.getBytes());
+        new ByteArrayInputStream(this.expressionLogText.getBytes());
 
-    assertTrue("files are same", comparator.compareFiles(isA1, isA2));
-    
-    
+    assertTrue("files are same", this.comparator.compareFiles(isA1, isA2));
+
   }
 
   @Test
   public void expressionLogIsDifferentTest() throws IOException {
     final InputStream isA =
-        new ByteArrayInputStream(expressionLogText.getBytes());
+        new ByteArrayInputStream(this.expressionLogText.getBytes());
 
     String newText = "";
     InputStream isB = null;
 
     // Change sample name
-    newText = filterreadsLogText.replaceFirst("2013_090b", "2013_091b");
+    newText = this.filterreadsLogText.replaceFirst("2013_090b", "2013_091b");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse("filterreadsLog different, change sample name",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
 
     // Change first value
     newText =
-        expressionLogText.replaceFirst(
+        this.expressionLogText.replaceFirst(
             "number of alignments with no feature=13868127",
             "number of alignments with no feature=13865127");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse(
         "expressionLog different change = number of alignments with no feature",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
 
     // Change second value,
     newText =
-        expressionLogText.replaceFirst("reads eliminated=13868127",
+        this.expressionLogText.replaceFirst("reads eliminated=13868127",
             "reads eliminated=13868126");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse("expressionLog different change = reads eliminated",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
 
     // Change third value
     newText =
-        expressionLogText.replaceFirst("total number of alignments=14526150",
+        this.expressionLogText.replaceFirst(
+            "total number of alignments=14526150",
             "total number of alignments=24526150");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse("expressionLog different change = total number of alignments",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
   }
 
   //
   // File filterreads.log
   //
 
-  private String filterreadsLogText =
+  private final String filterreadsLogText =
       "Filter reads (2013_090b, 2013_090_GATCAG_L001_R2_001.fastq.bz2)\n"
           + "\tinput raw reads=31125782\n"
           + "\toutput accepted reads=27723097\n"
@@ -123,91 +120,93 @@ public class LogComparatorTest {
   @Test
   public void filterreadsLogIsSameTest() throws IOException {
     final InputStream isA1 =
-        new ByteArrayInputStream(filterreadsLogText.getBytes());
+        new ByteArrayInputStream(this.filterreadsLogText.getBytes());
 
     final InputStream isA2 =
-        new ByteArrayInputStream(filterreadsLogText.getBytes());
+        new ByteArrayInputStream(this.filterreadsLogText.getBytes());
 
-    assertTrue("files are same", comparator.compareFiles(isA1, isA2));
+    assertTrue("files are same", this.comparator.compareFiles(isA1, isA2));
   }
 
   @Test
   public void filterreadsLogIsDifferentTest() throws IOException {
     final InputStream isA =
-        new ByteArrayInputStream(filterreadsLogText.getBytes());
+        new ByteArrayInputStream(this.filterreadsLogText.getBytes());
 
     String newText = "";
     InputStream isB = null;
 
     // Change sample name
-    newText = filterreadsLogText.replaceFirst("2013_090b", "2013_090a");
+    newText = this.filterreadsLogText.replaceFirst("2013_090b", "2013_090a");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse("filterreadsLog different, change sample name",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
 
     // Change first value
     newText =
-        filterreadsLogText.replaceFirst("input raw reads=31125782",
+        this.filterreadsLogText.replaceFirst("input raw reads=31125782",
             "input raw reads=31125783");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse("filterreadsLog different, change first value",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
 
     // Change second value,
     newText =
-        filterreadsLogText.replaceFirst("output accepted reads=27723097",
+        this.filterreadsLogText.replaceFirst("output accepted reads=27723097",
             "output accepted reads=27723197");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse("filterreadsLog different, change second value",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
 
     // Change third value
     newText =
-        filterreadsLogText.replaceFirst("reads rejected by filters=3402685",
+        this.filterreadsLogText.replaceFirst(
+            "reads rejected by filters=3402685",
             "reads rejected by filters=3401685");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse("filterreadsLog different, change third value",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
 
     // Change 4th value
     newText =
-        filterreadsLogText.replaceFirst(
+        this.filterreadsLogText.replaceFirst(
             "reads rejected by illuminaid filter=1577651",
             "reads rejected by illuminaid filter=2577651");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse("filterreadsLog different, change 4th value",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
 
     // Change 5th value
     newText =
-        filterreadsLogText.replaceFirst(
+        this.filterreadsLogText.replaceFirst(
             "reads rejected by quality filter=1818254",
             "reads rejected by quality filter=1818253");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse("filterreadsLog different, change 5th value",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
 
     // Change 6th value
     newText =
-        filterreadsLogText.replaceFirst("reads rejected by trim filter=6780",
+        this.filterreadsLogText.replaceFirst(
+            "reads rejected by trim filter=6780",
             "reads rejected by trim filter=678");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse("filterreadsLog different, change 6th value",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
   }
 
   //
   // File filtersam.log
   //
 
-  private String filtersamLogText =
+  private final String filtersamLogText =
       "Filter SAM file (2013_090b, /import/geri01/analysis/adaptanthrop_a2012/expression_exon_id/mapper_results_2.sam)\n"
           + "\talignments rejected by filters=18297031\n"
           + "\talignments rejected by removemultimatches filter=10200168\n"
@@ -218,121 +217,121 @@ public class LogComparatorTest {
   @Test
   public void filtersamLogIsSameTest() throws IOException {
     final InputStream isA1 =
-        new ByteArrayInputStream(filtersamLogText.getBytes());
+        new ByteArrayInputStream(this.filtersamLogText.getBytes());
 
     final InputStream isA2 =
-        new ByteArrayInputStream(filtersamLogText.getBytes());
+        new ByteArrayInputStream(this.filtersamLogText.getBytes());
 
-    assertTrue("files are same", comparator.compareFiles(isA1, isA2));
+    assertTrue("files are same", this.comparator.compareFiles(isA1, isA2));
   }
 
   @Test
   public void filtersamLogIsDifferentTest() throws IOException {
     final InputStream isA =
-        new ByteArrayInputStream(filtersamLogText.getBytes());
+        new ByteArrayInputStream(this.filtersamLogText.getBytes());
 
     String newText = "";
     InputStream isB = null;
 
     // Change sample name
-    newText = filterreadsLogText.replaceFirst("2013_090b", "2013_0090b");
+    newText = this.filterreadsLogText.replaceFirst("2013_090b", "2013_0090b");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse("filterreadsLog different, change sample name",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
 
-    
     // Change first value
     newText =
-        filtersamLogText.replaceFirst(
+        this.filtersamLogText.replaceFirst(
             "alignments rejected by filters=18297031",
             "alignments rejected by filters=18297032");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse("filtersamLogText different, change first value",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
 
     // Change second value
     newText =
-        filtersamLogText.replaceFirst(
+        this.filtersamLogText.replaceFirst(
             "alignments rejected by removemultimatches filter=10200168",
             "alignments rejected by removemultimatches filter=10200167");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse("filtersamLogText different, change second value",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
 
     // Change third value
     newText =
-        filtersamLogText.replaceFirst(
+        this.filtersamLogText.replaceFirst(
             "alignments rejected by removeunmapped filter=8096863",
             "alignments rejected by removeunmapped filter=80968631");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse("filtersamLogText different, change third value",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
 
     // Change 4th value
     newText =
-        filtersamLogText.replaceFirst("input alignments=32823181",
+        this.filtersamLogText.replaceFirst("input alignments=32823181",
             "input alignments=32823121");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse("filtersamLogText different, change 4th value",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
 
     // Change 5th value
     newText =
-        filtersamLogText.replaceFirst("output filtered alignments=14526150",
+        this.filtersamLogText.replaceFirst(
+            "output filtered alignments=14526150",
             "output filtered alignments=-4526150");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse("filtersamLogText different, change 5th value",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
   }
 
   //
   // File mapreads.log
   //
 
-  private String mapreadsLogText =
+  private final String mapreadsLogText =
       "Mapping reads in fastq-sanger with Bowtie (2013_090b, filtered_reads_2a.fq)\n"
           + "\toutput mapping alignments=32823181\n";
 
   @Test
   public void mapreadsLogIsSameTest() throws IOException {
     final InputStream isA1 =
-        new ByteArrayInputStream(mapreadsLogText.getBytes());
+        new ByteArrayInputStream(this.mapreadsLogText.getBytes());
 
     final InputStream isA2 =
-        new ByteArrayInputStream(mapreadsLogText.getBytes());
+        new ByteArrayInputStream(this.mapreadsLogText.getBytes());
 
-    assertTrue("files are same", comparator.compareFiles(isA1, isA2));
+    assertTrue("files are same", this.comparator.compareFiles(isA1, isA2));
   }
 
   @Test
   public void mapreadsLogIsDifferentTest() throws IOException {
     final InputStream isA =
-        new ByteArrayInputStream(mapreadsLogText.getBytes());
+        new ByteArrayInputStream(this.mapreadsLogText.getBytes());
 
     String newText = "";
     InputStream isB = null;
 
     // Change sample name
-    newText = filterreadsLogText.replaceFirst("2013_090b", "2014_090b");
+    newText = this.filterreadsLogText.replaceFirst("2013_090b", "2014_090b");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse("filterreadsLog different, change sample name",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
 
     // Change first value
     newText =
-        mapreadsLogText.replaceFirst("output mapping alignments=32823181",
+        this.mapreadsLogText.replaceFirst("output mapping alignments=32823181",
             "output mapping alignments=3283181");
     isB = new ByteArrayInputStream(newText.getBytes());
 
     assertFalse("mapreadsLog different, change first value",
-        comparator.compareFiles(isA, isB));
+        this.comparator.compareFiles(isA, isB));
   }
 
 }

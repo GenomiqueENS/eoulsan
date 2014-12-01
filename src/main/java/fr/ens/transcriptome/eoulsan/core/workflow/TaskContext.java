@@ -341,9 +341,10 @@ public class TaskContext implements StepContext, Serializable {
 
     checkNotNull(port, "port cannot be null");
 
-    if (!this.inputData.containsKey(port.getName()))
+    if (!this.inputData.containsKey(port.getName())) {
       throw new EoulsanRuntimeException("Unknown port: "
           + port.getName() + " for step " + this.step.getId());
+    }
 
     return this.inputData.get(port.getName());
   }
@@ -357,9 +358,10 @@ public class TaskContext implements StepContext, Serializable {
 
     checkNotNull(port, "port cannot be null");
 
-    if (!this.outputData.containsKey(port.getName()))
+    if (!this.outputData.containsKey(port.getName())) {
       throw new EoulsanRuntimeException("Unknown port: "
           + port.getName() + " for step " + this.step.getId());
+    }
 
     return this.outputData.get(port.getName());
   }
@@ -647,8 +649,8 @@ public class TaskContext implements StepContext, Serializable {
    * @param step step related to the context
    */
   TaskContext(final WorkflowContext workflowContext,
-      final AbstractWorkflowStep step, Map<InputPort, Data> inputData,
-      Map<OutputPort, AbstractData> outputData) {
+      final AbstractWorkflowStep step, final Map<InputPort, Data> inputData,
+      final Map<OutputPort, AbstractData> outputData) {
 
     checkNotNull(workflowContext, "workflow context cannot be null");
     checkNotNull(step, "step cannot be null");
@@ -656,7 +658,7 @@ public class TaskContext implements StepContext, Serializable {
     synchronized (TaskContext.class) {
       this.id = (++instanceCounter);
     }
-    this.contextName = "context" + id;
+    this.contextName = "context" + this.id;
 
     this.workflowContext = workflowContext;
     this.step = step;

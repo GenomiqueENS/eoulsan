@@ -46,7 +46,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class FastqReader implements ReadSequenceReader {
 
-  private BufferedReader reader;
+  private final BufferedReader reader;
 
   private ReadSequence result = null;
   private final StringBuilder sb = new StringBuilder();
@@ -72,12 +72,13 @@ public class FastqReader implements ReadSequenceReader {
   @Override
   public boolean hasNext() {
 
-    if (this.end)
+    if (this.end) {
       return false;
+    }
 
     this.nextCallDone = false;
 
-    result = new ReadSequence();
+    this.result = new ReadSequence();
 
     String line = null;
     int entryLine = 0;
@@ -89,32 +90,35 @@ public class FastqReader implements ReadSequenceReader {
         final String trim = line.trim();
 
         // discard empty lines
-        if ("".equals(trim))
+        if ("".equals(trim)) {
           continue;
+        }
 
         entryLine++;
-        sb.append(trim);
+        this.sb.append(trim);
 
-        if (entryLine == 1 && trim.charAt(0) != '@')
+        if (entryLine == 1 && trim.charAt(0) != '@') {
           throw new BadBioEntryException(
               "Invalid Fastq file. First line don't start with '@'", line);
+        }
 
-        if (entryLine == 3 && trim.charAt(0) != '+')
+        if (entryLine == 3 && trim.charAt(0) != '+') {
           throw new BadBioEntryException(
               "Invalid Fastq file. Third line don't start with '+'", line);
+        }
 
         if (entryLine == 4) {
 
           // Fill the ReadSequence object
-          result.parseFastQ(sb.toString());
-          result.setId(this.count++);
-          sb.setLength(0);
+          this.result.parseFastQ(this.sb.toString());
+          this.result.setId(this.count++);
+          this.sb.setLength(0);
           return true;
         }
-        sb.append('\n');
+        this.sb.append('\n');
       }
 
-      sb.setLength(0);
+      this.sb.setLength(0);
       this.end = true;
 
       return false;
@@ -134,8 +138,9 @@ public class FastqReader implements ReadSequenceReader {
   @Override
   public ReadSequence next() {
 
-    if (this.nextCallDone)
+    if (this.nextCallDone) {
       throw new NoSuchElementException();
+    }
 
     this.nextCallDone = true;
 
@@ -151,11 +156,13 @@ public class FastqReader implements ReadSequenceReader {
   @Override
   public void throwException() throws IOException, BadBioEntryException {
 
-    if (this.ioException != null)
+    if (this.ioException != null) {
       throw this.ioException;
+    }
 
-    if (this.bbeException != null)
+    if (this.bbeException != null) {
       throw this.bbeException;
+    }
   }
 
   //
@@ -168,8 +175,9 @@ public class FastqReader implements ReadSequenceReader {
    */
   public FastqReader(final InputStream is) {
 
-    if (is == null)
+    if (is == null) {
       throw new NullPointerException("InputStream is null");
+    }
 
     this.reader = new BufferedReader(new InputStreamReader(is, FASTQ_CHARSET));
   }
@@ -180,8 +188,9 @@ public class FastqReader implements ReadSequenceReader {
    */
   public FastqReader(final File file) throws FileNotFoundException {
 
-    if (file == null)
+    if (file == null) {
       throw new NullPointerException("File is null");
+    }
 
     this.reader = FileUtils.createBufferedReader(file, FASTQ_CHARSET);
   }

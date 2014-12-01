@@ -39,43 +39,44 @@ public class HadoopBZip2InputStream extends InputStream {
   @Override
   public int available() throws IOException {
 
-    return is.available();
+    return this.is.available();
   }
 
   @Override
   public void close() throws IOException {
 
-    is.close();
+    this.is.close();
   }
 
   @Override
-  public synchronized void mark(int readLimit) {
+  public synchronized void mark(final int readLimit) {
     // TODO Auto-generated method stub
-    is.mark(readLimit);
+    this.is.mark(readLimit);
   }
 
   @Override
   public boolean markSupported() {
 
-    return is.markSupported();
+    return this.is.markSupported();
   }
 
   @Override
   public int read() throws IOException {
 
-    return is.read();
+    return this.is.read();
   }
 
   @Override
-  public int read(byte[] b, int off, int len) throws IOException {
+  public int read(final byte[] b, final int off, final int len)
+      throws IOException {
 
-    return is.read(b, off, len);
+    return this.is.read(b, off, len);
   }
 
   @Override
-  public int read(byte[] b) throws IOException {
+  public int read(final byte[] b) throws IOException {
 
-    return is.read(b);
+    return this.is.read(b);
   }
 
   @Override
@@ -85,12 +86,12 @@ public class HadoopBZip2InputStream extends InputStream {
   }
 
   @Override
-  public long skip(long n) throws IOException {
+  public long skip(final long n) throws IOException {
 
-    return is.skip(n);
+    return this.is.skip(n);
   }
 
-  private InputStream is;
+  private final InputStream is;
 
   //
   // Constructor

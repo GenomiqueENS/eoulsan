@@ -55,10 +55,10 @@ public abstract class PseudoMapReduce {
 
   private File tmpDir;
   private File mapOutputFile;
-  private List<File> listMapOutputFile = new ArrayList<>();
+  private final List<File> listMapOutputFile = new ArrayList<>();
 
   private File sortOutputFile;
-  private LocalReporter reporter = new LocalReporter();
+  private final LocalReporter reporter = new LocalReporter();
 
   /**
    * This class avoid storing repeated entries of a list in memory.
@@ -78,7 +78,7 @@ public abstract class PseudoMapReduce {
     @Override
     public int size() {
 
-      return count;
+      return this.count;
     }
 
     @Override
@@ -101,8 +101,8 @@ public abstract class PseudoMapReduce {
 
       return new Iterator<E>() {
 
-        private final Iterator<Map.Entry<E, Integer>> it = map.entrySet()
-            .iterator();
+        private final Iterator<Map.Entry<E, Integer>> it =
+            RepeatedEntriesList.this.map.entrySet().iterator();
         private E currentValue;
         private int currentCount;
 
@@ -117,8 +117,9 @@ public abstract class PseudoMapReduce {
 
           if (this.currentCount == 0) {
 
-            if (!this.it.hasNext())
+            if (!this.it.hasNext()) {
               return null;
+            }
 
             final Map.Entry<E, Integer> e = this.it.next();
             this.currentValue = e.getKey();
@@ -193,8 +194,9 @@ public abstract class PseudoMapReduce {
    */
   public void doMap(final File inputFile) throws IOException {
 
-    if (inputFile == null)
+    if (inputFile == null) {
       throw new NullPointerException("The input file is null.");
+    }
 
     doMap(FileUtils.createInputStream(inputFile));
   }
@@ -202,7 +204,7 @@ public abstract class PseudoMapReduce {
   protected File getMapOutputTempFile() throws IOException {
 
     final File outputFile = File.createTempFile("map-", ".txt", this.tmpDir);
-    listMapOutputFile.add(outputFile);
+    this.listMapOutputFile.add(outputFile);
 
     return outputFile;
   }
@@ -214,8 +216,9 @@ public abstract class PseudoMapReduce {
    */
   public void doMap(final InputStream is) throws IOException {
 
-    if (is == null)
+    if (is == null) {
       throw new NullPointerException("The input stream is null.");
+    }
 
     this.reporter.clear();
 
@@ -253,8 +256,9 @@ public abstract class PseudoMapReduce {
    */
   public void doMap_OLD(final InputStream is) throws IOException {
 
-    if (is == null)
+    if (is == null) {
       throw new NullPointerException("The input stream is null.");
+    }
 
     this.reporter.clear();
 
@@ -320,7 +324,7 @@ public abstract class PseudoMapReduce {
     this.sortOutputFile = File.createTempFile("sort-", ".txt", this.tmpDir);
 
     final StringBuilder listFile = new StringBuilder();
-    for (File mapOutputFile : listMapOutputFile) {
+    for (File mapOutputFile : this.listMapOutputFile) {
       listFile
           .append(StringUtils.bashEscaping(mapOutputFile.getAbsolutePath()));
       listFile.append(" ");
@@ -335,11 +339,12 @@ public abstract class PseudoMapReduce {
             + " " + listFile.toString();
 
     final boolean result = ProcessUtils.system(cmd) == 0;
-    for (File mapOutputFile : listMapOutputFile) {
-      if (!mapOutputFile.delete())
+    for (File mapOutputFile : this.listMapOutputFile) {
+      if (!mapOutputFile.delete()) {
         getLogger().warning(
             "Can not delete map output file: "
                 + mapOutputFile.getAbsolutePath());
+      }
     }
     return result;
   }
@@ -354,8 +359,9 @@ public abstract class PseudoMapReduce {
    */
   public void doReduce(final File outputFile) throws IOException {
 
-    if (outputFile == null)
+    if (outputFile == null) {
       throw new NullPointerException("The output file is null.");
+    }
 
     doReduce(FileUtils.createOutputStream(outputFile));
   }
@@ -366,11 +372,13 @@ public abstract class PseudoMapReduce {
    */
   public void doReduce(final OutputStream os) throws IOException {
 
-    if (os == null)
+    if (os == null) {
       throw new NullPointerException("The output stream is null.");
+    }
 
-    if (!sort())
+    if (!sort()) {
       throw new IOException("Unable to sort/shuffle data.");
+    }
 
     // Create reader
     final BufferedReader br =
@@ -417,15 +425,17 @@ public abstract class PseudoMapReduce {
 
     // Process lasts values
     reduce(currentKey, values.iterator(), results, this.reporter);
-    for (String result : results)
+    for (String result : results) {
       bw.write(result);
+    }
 
     br.close();
     bw.close();
-    if (!this.sortOutputFile.delete())
+    if (!this.sortOutputFile.delete()) {
       getLogger().warning(
           "Can not delete sort output file: "
               + this.sortOutputFile.getAbsolutePath());
+    }
   }
 
 }

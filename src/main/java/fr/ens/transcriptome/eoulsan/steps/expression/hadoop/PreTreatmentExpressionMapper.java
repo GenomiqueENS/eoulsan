@@ -51,8 +51,8 @@ public class PreTreatmentExpressionMapper extends
 
   private static final Pattern ID_PATTERN = Pattern.compile(":");
 
-  private Text outKey = new Text();
-  private Text outValue = new Text();
+  private final Text outKey = new Text();
+  private final Text outValue = new Text();
 
   //
   // Setup
@@ -96,8 +96,9 @@ public class PreTreatmentExpressionMapper extends
     final String line = value.toString();
 
     // Discard SAM headers
-    if (line.length() > 0 && line.charAt(0) == '@')
+    if (line.length() > 0 && line.charAt(0) == '@') {
       return;
+    }
 
     final int indexOfFirstTab = line.indexOf("\t");
     String completeId = line.substring(0, indexOfFirstTab);
@@ -138,7 +139,7 @@ public class PreTreatmentExpressionMapper extends
   }
 
   @Override
-  protected void cleanup(Context context) throws IOException,
+  protected void cleanup(final Context context) throws IOException,
       InterruptedException {
   }
 

@@ -48,8 +48,7 @@ public abstract class ServiceNameLoader<S> {
 
   private final Class<S> service;
   private final ClassLoader loader;
-  private final Map<String, String> classNames =
-      new LinkedHashMap<>();
+  private final Map<String, String> classNames = new LinkedHashMap<>();
   private final Map<String, S> cache = new HashMap<>();
   private final Set<String> classesToNotLoad = new HashSet<>();
   private boolean notYetLoaded = true;
@@ -191,7 +190,7 @@ public abstract class ServiceNameLoader<S> {
       }
 
     } catch (IOException e) {
-      throw new ServiceConfigurationError(service.getName()
+      throw new ServiceConfigurationError(this.service.getName()
           + ": " + e.getMessage());
     }
 
@@ -206,7 +205,7 @@ public abstract class ServiceNameLoader<S> {
 
     // Check if the class name is valid
     if (!checkClassName(className)) {
-      throw new ServiceConfigurationError(service.getName()
+      throw new ServiceConfigurationError(this.service.getName()
           + ": " + url + ":" + lineNumber + ": Invalid Java class name");
     }
 
@@ -217,20 +216,21 @@ public abstract class ServiceNameLoader<S> {
       clazz = Class.forName(className, false, this.loader);
 
     } catch (ClassNotFoundException e) {
-      throw new ServiceConfigurationError(service.getName()
+      throw new ServiceConfigurationError(this.service.getName()
           + ": " + url + ": Class not found: " + className);
     }
 
     // Filter classes
-    if (!accept(clazz))
+    if (!accept(clazz)) {
       return;
+    }
 
     // Check type
     final S obj;
     try {
-      obj = service.cast(clazz.newInstance());
+      obj = this.service.cast(clazz.newInstance());
     } catch (InstantiationException | IllegalAccessException e) {
-      throw new ServiceConfigurationError(service.getName()
+      throw new ServiceConfigurationError(this.service.getName()
           + ": " + url + ": Class cannot be instanced: " + className);
     }
 
@@ -238,7 +238,7 @@ public abstract class ServiceNameLoader<S> {
     try {
       m = obj.getClass().getMethod(getMethodName());
     } catch (SecurityException | NoSuchMethodException e) {
-      throw new ServiceConfigurationError(service.getName()
+      throw new ServiceConfigurationError(this.service.getName()
           + ": " + url + ": Method " + getMethodName()
           + "() cannot be instanced in class: " + className);
     }
@@ -246,22 +246,25 @@ public abstract class ServiceNameLoader<S> {
     final String name;
     try {
       name = (String) m.invoke(obj);
-    } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-      throw new ServiceConfigurationError(service.getName()
+    } catch (IllegalArgumentException | IllegalAccessException
+        | InvocationTargetException e) {
+      throw new ServiceConfigurationError(this.service.getName()
           + ": " + url + ": Method " + getMethodName()
           + "() cannot be invoked in class: " + className);
     }
 
-    if (name == null)
-      throw new ServiceConfigurationError(service.getName()
+    if (name == null) {
+      throw new ServiceConfigurationError(this.service.getName()
           + ": " + url + ": Method " + getMethodName() + "() returns null");
+    }
 
     final String serviceName =
         isServiceNameCaseSensible() ? name : name.toLowerCase();
 
     if (!this.classNames.containsKey(serviceName)
-        && !this.classNames.containsValue(className))
+        && !this.classNames.containsValue(className)) {
       this.classNames.put(serviceName, className);
+    }
   }
 
   /**
@@ -271,22 +274,26 @@ public abstract class ServiceNameLoader<S> {
    */
   private static final boolean checkClassName(final String className) {
 
-    if (className == null)
+    if (className == null) {
       return false;
+    }
 
     final int len = className.length();
-    if (len == 0)
+    if (len == 0) {
       return false;
+    }
 
     int codePoint = className.codePointAt(0);
-    if (!Character.isJavaIdentifierPart(codePoint))
+    if (!Character.isJavaIdentifierPart(codePoint)) {
       return false;
+    }
 
     for (int i = 1; i < len; i++) {
 
       codePoint = className.codePointAt(i);
-      if (!Character.isJavaIdentifierPart(codePoint) && codePoint != '.')
+      if (!Character.isJavaIdentifierPart(codePoint) && codePoint != '.') {
         return false;
+      }
     }
 
     return true;
@@ -299,8 +306,9 @@ public abstract class ServiceNameLoader<S> {
    */
   public S newService(final String serviceName) {
 
-    if (serviceName == null)
+    if (serviceName == null) {
       return null;
+    }
 
     if (this.notYetLoaded) {
       reload();
@@ -311,8 +319,9 @@ public abstract class ServiceNameLoader<S> {
             .toLowerCase().trim();
 
     // Test if service is already in cache
-    if (this.cache.containsKey(serviceNameLower))
+    if (this.cache.containsKey(serviceNameLower)) {
       return this.cache.get(serviceNameLower);
+    }
 
     if (this.classNames.containsKey(serviceNameLower)) {
 
@@ -321,18 +330,19 @@ public abstract class ServiceNameLoader<S> {
             Class.forName(this.classNames.get(serviceNameLower), true,
                 this.loader);
 
-        final S result = service.cast(clazz.newInstance());
+        final S result = this.service.cast(clazz.newInstance());
 
         // Fill cache is needed
-        if (isCache())
+        if (isCache()) {
           this.cache.put(serviceNameLower, result);
+        }
 
         return result;
       } catch (InstantiationException | IllegalAccessException e) {
-        throw new ServiceConfigurationError(service.getName()
+        throw new ServiceConfigurationError(this.service.getName()
             + ": " + serviceNameLower + " cannot be instanced");
       } catch (ClassNotFoundException e) {
-        throw new ServiceConfigurationError(service.getName()
+        throw new ServiceConfigurationError(this.service.getName()
             + ": Class for " + serviceNameLower + " cannot be found");
       }
 
@@ -361,8 +371,9 @@ public abstract class ServiceNameLoader<S> {
    */
   public boolean isService(final String serviceName) {
 
-    if (serviceName == null)
+    if (serviceName == null) {
       return false;
+    }
 
     if (this.notYetLoaded) {
       reload();
@@ -393,8 +404,9 @@ public abstract class ServiceNameLoader<S> {
    */
   public ServiceNameLoader(final Class<S> service, final ClassLoader loader) {
 
-    if (service == null)
+    if (service == null) {
       throw new NullPointerException("The service is null");
+    }
 
     this.service = service;
     this.loader =

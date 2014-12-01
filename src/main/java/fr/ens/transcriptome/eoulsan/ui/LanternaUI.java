@@ -85,7 +85,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
 
     // Get terminal size
     this.terminal.enterPrivateMode();
-    this.terminalSize = terminal.getTerminalSize();
+    this.terminalSize = this.terminal.getTerminalSize();
     this.terminal.exitPrivateMode();
 
     // Add resize listener
@@ -98,11 +98,13 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   @Override
   public void notifyStepState(final WorkflowStep step) {
 
-    if (step == null || step.getWorkflow() != this.workflow)
+    if (step == null || step.getWorkflow() != this.workflow) {
       return;
+    }
 
-    if (step.getState() == StepState.WORKING)
+    if (step.getState() == StepState.WORKING) {
       notifyStepState(step, 0.0);
+    }
   }
 
   @Override
@@ -113,13 +115,14 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step, double progress) {
+  public void notifyStepState(final WorkflowStep step, final double progress) {
 
     if (this.terminal == null
         || step == null || step.getWorkflow() != this.workflow
         || step.getState() != StepState.WORKING
-        || !this.steps.containsKey(step))
+        || !this.steps.containsKey(step)) {
       return;
+    }
 
     final double globalProgress = computeGlobalProgress(step, progress);
 
@@ -328,16 +331,18 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
 
     for (WorkflowStep step : this.workflow.getSteps()) {
 
-      if (step == null)
+      if (step == null) {
         continue;
+      }
 
       switch (step.getType()) {
       case CHECKER_STEP:
       case GENERATOR_STEP:
       case STANDARD_STEP:
 
-        if (!step.isSkip())
+        if (!step.isSkip()) {
           this.steps.put(step, 0.0);
+        }
 
         break;
 
@@ -356,15 +361,17 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   private double computeGlobalProgress(final WorkflowStep step,
       final double progress) {
 
-    if (!this.steps.containsKey(step))
+    if (!this.steps.containsKey(step)) {
       return -1;
+    }
 
     // Update progress
     this.steps.put(step, progress);
 
     double sum = 0;
-    for (double p : this.steps.values())
+    for (double p : this.steps.values()) {
       sum += p;
+    }
 
     return sum / this.steps.size();
   }

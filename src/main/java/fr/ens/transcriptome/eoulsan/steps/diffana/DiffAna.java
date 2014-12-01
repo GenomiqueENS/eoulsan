@@ -92,8 +92,9 @@ public class DiffAna extends Normalization {
      */
     public static DispersionMethod getDispEstMethodFromName(final String name) {
 
-      if (name == null)
+      if (name == null) {
         return null;
+      }
 
       final String lowerName = name.trim().toLowerCase();
 
@@ -111,7 +112,7 @@ public class DiffAna extends Normalization {
      * Constructor
      * @param method dispersion estimation method
      */
-    DispersionMethod(String method) {
+    DispersionMethod(final String method) {
 
       this.name = method;
     }
@@ -145,8 +146,9 @@ public class DiffAna extends Normalization {
     public static DispersionSharingMode getDispEstSharingModeFromName(
         final String name) {
 
-      if (name == null)
+      if (name == null) {
         return null;
+      }
 
       final String lowerName = name.trim().toLowerCase();
 
@@ -164,7 +166,7 @@ public class DiffAna extends Normalization {
      * Constructor
      * @param name dispersion estimation sharingMode name
      */
-    DispersionSharingMode(String name) {
+    DispersionSharingMode(final String name) {
 
       this.name = name;
     }
@@ -197,8 +199,9 @@ public class DiffAna extends Normalization {
      */
     public static DispersionFitType getDispEstFitTypeFromName(final String name) {
 
-      if (name == null)
+      if (name == null) {
         return null;
+      }
 
       final String lowerName = name.trim().toLowerCase();
 
@@ -216,7 +219,7 @@ public class DiffAna extends Normalization {
      * Constructor
      * @param name dispersion estimation fitType name
      */
-    DispersionFitType(String name) {
+    DispersionFitType(final String name) {
 
       this.name = name;
     }
@@ -258,14 +261,16 @@ public class DiffAna extends Normalization {
     // Get samples ids, conditions names/indexes and repTechGoups
     for (Sample s : experimentSamplesList) {
 
-      if (!s.getMetadata().isConditionField())
+      if (!s.getMetadata().isConditionField()) {
         throw new EoulsanException("No condition field found in design file.");
+      }
 
       final String condition = s.getMetadata().getCondition().trim();
 
-      if ("".equals(condition))
+      if ("".equals(condition)) {
         throw new EoulsanException("No value for condition in sample: "
             + s.getName() + " (" + s.getId() + ")");
+      }
 
       final String repTechGroup = s.getMetadata().getRepTechGroup().trim();
 
@@ -342,8 +347,9 @@ public class DiffAna extends Normalization {
     // Add delete unexpressed gene call
     sb.append("target$counts <- deleteUnexpressedGene(target$counts)\n");
 
-    if (isTechnicalReplicates(rRepTechGroup))
+    if (isTechnicalReplicates(rRepTechGroup)) {
       sb.append("target <- poolTechRep(target)\n\n");
+    }
 
     sb.append("target <- sortTarget(target)\n");
     sb.append("countDataSet <- normDESeq(target$counts, target$condition)\n");
@@ -447,8 +453,8 @@ public class DiffAna extends Normalization {
    * @return a boolean
    */
   private boolean isBiologicalReplicates(
-      Map<String, List<Integer>> conditionsMap, List<String> rCondNames,
-      List<String> rRepTechGroup) {
+      final Map<String, List<Integer>> conditionsMap,
+      final List<String> rCondNames, final List<String> rRepTechGroup) {
 
     for (String condition : rCondNames) {
       List<Integer> condPos = conditionsMap.get(condition);
@@ -469,12 +475,13 @@ public class DiffAna extends Normalization {
    * @param experiment
    * @return boolean isRef
    */
-  private boolean isReference(List<Sample> experiment) {
+  private boolean isReference(final List<Sample> experiment) {
 
     if (experiment == null
         || experiment.size() == 0
-        || !experiment.get(0).getMetadata().isReferenceField())
+        || !experiment.get(0).getMetadata().isReferenceField()) {
       return false;
+    }
 
     for (Sample s : experiment) {
       if (s.getMetadata().isReference()) {
@@ -489,8 +496,8 @@ public class DiffAna extends Normalization {
    * @param experimentSamplesList
    * @param sb
    */
-  private void writeReferenceField(List<Sample> experimentSamplesList,
-      StringBuilder sb) {
+  private void writeReferenceField(final List<Sample> experimentSamplesList,
+      final StringBuilder sb) {
 
     if (experimentSamplesList.get(0).getMetadata().isReferenceField()) {
 
@@ -520,11 +527,12 @@ public class DiffAna extends Normalization {
    * @param rServerName
    * @throws EoulsanException
    */
-  public DiffAna(Design design, File expressionFilesDirectory,
-      String expressionFilesPrefix, String expressionFilesSuffix, File outPath,
-      DispersionMethod dispEstMethod, DispersionSharingMode dispEstSharingMode,
-      DispersionFitType dispEstFitType, String rServerName, boolean rServeEnable)
-      throws EoulsanException {
+  public DiffAna(final Design design, final File expressionFilesDirectory,
+      final String expressionFilesPrefix, final String expressionFilesSuffix,
+      final File outPath, final DispersionMethod dispEstMethod,
+      final DispersionSharingMode dispEstSharingMode,
+      final DispersionFitType dispEstFitType, final String rServerName,
+      final boolean rServeEnable) throws EoulsanException {
 
     super(design, expressionFilesDirectory, expressionFilesPrefix,
         expressionFilesSuffix, outPath, rServerName, rServeEnable);

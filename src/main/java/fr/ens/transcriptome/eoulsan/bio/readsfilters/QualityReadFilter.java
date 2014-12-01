@@ -25,7 +25,6 @@
 package fr.ens.transcriptome.eoulsan.bio.readsfilters;
 
 import static fr.ens.transcriptome.eoulsan.util.StatUtils.mean;
-
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
@@ -43,8 +42,9 @@ public class QualityReadFilter extends AbstractReadFilter {
   @Override
   public boolean accept(final ReadSequence read) {
 
-    if (read == null)
+    if (read == null) {
       return false;
+    }
 
     return mean(read.qualityScores()) > this.qualityThreshold;
   }
@@ -64,8 +64,9 @@ public class QualityReadFilter extends AbstractReadFilter {
   public void setParameter(final String key, final String value)
       throws EoulsanException {
 
-    if (key == null || value == null)
+    if (key == null || value == null) {
       return;
+    }
 
     if ("threshold".equals(key.trim())) {
 
@@ -75,22 +76,24 @@ public class QualityReadFilter extends AbstractReadFilter {
         return;
       }
 
-      if (this.qualityThreshold < 0.0)
+      if (this.qualityThreshold < 0.0) {
         throw new EoulsanException("Invalid qualityThreshold: "
-            + qualityThreshold);
-    } else
-
+            + this.qualityThreshold);
+      }
+    } else {
       throw new EoulsanException("Unknown parameter for "
           + getName() + " read filter: " + key);
+    }
 
   }
 
   @Override
   public void init() {
 
-    if (this.qualityThreshold < 0.0)
+    if (this.qualityThreshold < 0.0) {
       throw new IllegalArgumentException("Quality threshold is not set for "
           + getName() + " read filter.");
+    }
   }
 
   @Override

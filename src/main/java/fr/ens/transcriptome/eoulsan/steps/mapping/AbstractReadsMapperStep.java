@@ -147,20 +147,21 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      if ("mapper".equals(p.getName()))
+      if ("mapper".equals(p.getName())) {
         mapperName = p.getStringValue();
-      else if ("mapper.arguments".equals(p.getName())
-          || "mapperarguments".equals(p.getName()))
+      } else if ("mapper.arguments".equals(p.getName())
+          || "mapperarguments".equals(p.getName())) {
         this.mapperArguments = p.getStringValue();
-      else if ("hadoop.threads".equals(p.getName()))
+      } else if ("hadoop.threads".equals(p.getName())) {
         this.hadoopThreads = p.getIntValue();
-      else if ("local.threads".equals(p.getName()))
+      } else if ("local.threads".equals(p.getName())) {
         this.localThreads = p.getIntValue();
-      else if ("max.local.threads".equals(p.getName()))
+      } else if ("max.local.threads".equals(p.getName())) {
         this.maxLocalThreads = p.getIntValue();
-      else
+      } else {
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());
+      }
 
     }
 
@@ -185,7 +186,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
     getLogger().info(
         "In "
             + getName() + ", mapper=" + this.mapper.getMapperName()
-            + " (version: " + mapper.getMapperVersion() + ")");
+            + " (version: " + this.mapper.getMapperVersion() + ")");
     getLogger().info(
         "In " + getName() + ", mapperarguments=" + this.mapperArguments);
 

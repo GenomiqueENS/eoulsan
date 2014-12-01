@@ -43,7 +43,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class GFFWriter implements Closeable {
 
-  private Writer writer;
+  private final Writer writer;
 
   private boolean first = true;
 
@@ -51,8 +51,9 @@ public class GFFWriter implements Closeable {
 
     final StringBuilder sb = new StringBuilder();
 
-    if (!entry.isMetaDataEntry("gff-version"))
+    if (!entry.isMetaDataEntry("gff-version")) {
       sb.append("##gff-version 3\n");
+    }
 
     for (String k : entry.getMetadataKeyNames()) {
       for (String e : entry.getMetadataEntryValues(k)) {
@@ -73,10 +74,11 @@ public class GFFWriter implements Closeable {
    */
   public void write(final GFFEntry entry) throws IOException {
 
-    if (entry == null)
+    if (entry == null) {
       return;
+    }
 
-    if (first) {
+    if (this.first) {
       writeMetadata(entry);
       this.first = false;
     }
@@ -88,6 +90,7 @@ public class GFFWriter implements Closeable {
    * Close the writer.
    * @throws IOException if an error occurs while closing the writer
    */
+  @Override
   public void close() throws IOException {
 
     this.writer.close();
@@ -103,8 +106,9 @@ public class GFFWriter implements Closeable {
    */
   public GFFWriter(final Writer writer) {
 
-    if (writer == null)
+    if (writer == null) {
       throw new NullPointerException("The writer is null.");
+    }
 
     this.writer = writer;
   }

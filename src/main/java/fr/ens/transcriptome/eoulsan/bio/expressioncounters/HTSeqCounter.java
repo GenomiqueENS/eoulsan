@@ -66,8 +66,9 @@ public class HTSeqCounter extends AbstractExpressionCounter {
   @Override
   protected void internalCount(final DataFile alignmentFile,
       final DataFile annotationFile, final DataFile expressionFile,
-      final DataFile genomeDescFile, Reporter reporter, String counterGroup)
-      throws IOException, EoulsanException, BadBioEntryException {
+      final DataFile genomeDescFile, final Reporter reporter,
+      final String counterGroup) throws IOException, EoulsanException,
+      BadBioEntryException {
 
     countReadsInFeatures(alignmentFile, annotationFile, expressionFile,
         getStranded(), getOverlapMode(), isRemoveAmbiguousCases(),
@@ -85,8 +86,9 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
     // Test if input is paired-end data
     if (samIterator.hasNext()) {
-      if (samIterator.next().getReadPairedFlag())
+      if (samIterator.next().getReadPairedFlag()) {
         result = true;
+      }
     }
     input.close();
 
@@ -120,8 +122,8 @@ public class HTSeqCounter extends AbstractExpressionCounter {
       final boolean removeAmbiguousCases, final String featureType,
       final String attributeId, final boolean quiet, final int minAverageQual,
       final DataFile samOutFile, final DataFile genomeDescFile,
-      final Reporter reporter, String counterGroup) throws EoulsanException,
-      IOException, BadBioEntryException {
+      final Reporter reporter, final String counterGroup)
+      throws EoulsanException, IOException, BadBioEntryException {
 
     final GenomicArray<String> features =
         new GenomicArray<>(GenomeDescription.load(genomeDescFile.open()));
@@ -199,13 +201,15 @@ public class HTSeqCounter extends AbstractExpressionCounter {
           ivSeq.clear();
         }
 
-        if (samRecord.getFirstOfPairFlag())
+        if (samRecord.getFirstOfPairFlag()) {
           sam1 = samRecord;
-        else
+        } else {
           sam2 = samRecord;
+        }
 
-        if (sam1 == null || sam2 == null)
+        if (sam1 == null || sam2 == null) {
           continue;
+        }
 
         if (!sam1.getReadName().equals(sam2.getReadName())) {
           sam1 = sam2;
@@ -249,8 +253,9 @@ public class HTSeqCounter extends AbstractExpressionCounter {
       fs =
           HTSeqUtils.featuresOverlapped(ivSeq, features, overlapMode, stranded);
 
-      if (fs == null)
+      if (fs == null) {
         fs = Collections.emptySet();
+      }
 
       switch (fs.size()) {
       case 0:
@@ -267,8 +272,9 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         if (removeAmbiguousCases) {
           ambiguous++;
         } else {
-          for (String id2 : fs)
+          for (String id2 : fs) {
             counts.put(id2, counts.get(id2) + 1);
+          }
         }
         break;
       }

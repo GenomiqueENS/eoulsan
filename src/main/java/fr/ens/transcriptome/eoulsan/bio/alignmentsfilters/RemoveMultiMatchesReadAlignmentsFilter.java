@@ -55,19 +55,22 @@ public class RemoveMultiMatchesReadAlignmentsFilter extends
   @Override
   public void filterReadAlignments(final List<SAMRecord> records) {
 
-    if (records == null || records.isEmpty())
+    if (records == null || records.isEmpty()) {
       return;
+    }
 
     // single-end mode
     if (!records.get(0).getReadPairedFlag()) {
-      if (records.size() > 1)
+      if (records.size() > 1) {
         records.clear();
+      }
     }
 
     // paired-end mode
     else {
-      if (records.size() > 2)
+      if (records.size() > 2) {
         records.clear();
+      }
     }
   }
 

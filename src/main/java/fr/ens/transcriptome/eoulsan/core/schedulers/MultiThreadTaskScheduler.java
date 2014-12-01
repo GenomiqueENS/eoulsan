@@ -87,7 +87,7 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler {
 
     // Submit the context thread the thread executor
     synchronized (this.threads) {
-      this.threads.add(executor.submit(st, st));
+      this.threads.add(this.executor.submit(st, st));
     }
   }
 
@@ -105,7 +105,7 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler {
       this.executor.shutdownNow();
 
       // Wait the termination of current running task
-      executor.awaitTermination(WAIT_SHUTDOWN_MINUTES, TimeUnit.MINUTES);
+      this.executor.awaitTermination(WAIT_SHUTDOWN_MINUTES, TimeUnit.MINUTES);
 
     } catch (InterruptedException e) {
       getLogger().severe(e.getMessage());

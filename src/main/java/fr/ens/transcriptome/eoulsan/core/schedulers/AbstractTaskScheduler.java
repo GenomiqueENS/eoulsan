@@ -301,6 +301,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     return this.status.get(step);
   }
 
+  @Override
   public WorkflowStepResult getResult(final WorkflowStep step) {
 
     return this.results.get(step);

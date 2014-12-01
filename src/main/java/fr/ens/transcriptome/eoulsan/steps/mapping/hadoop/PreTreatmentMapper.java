@@ -61,7 +61,7 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
   private String counterGroup;
 
   private static final Splitter TAB_SPLITTER = Splitter.on('\t').trimResults();
-  private List<String> fields = new ArrayList<>();
+  private final List<String> fields = new ArrayList<>();
 
   private final ReadSequence read = new ReadSequence();
 
@@ -120,17 +120,17 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
         .increment(1);
 
     final String line = value.toString();
-    fields.clear();
+    this.fields.clear();
     for (String e : TAB_SPLITTER.split(line)) {
-      fields.add(e);
+      this.fields.add(e);
     }
 
-    this.read.setName(fields.get(0));
-    this.read.setSequence(fields.get(1));
-    this.read.setQuality(fields.get(2));
+    this.read.setName(this.fields.get(0));
+    this.read.setSequence(this.fields.get(1));
+    this.read.setQuality(this.fields.get(2));
 
     // Illumina technology and Casava 1.8 format for the '@' line
-    if (!fields.get(0).contains("/")) {
+    if (!this.fields.get(0).contains("/")) {
       this.outKey = new Text(this.read.getName().split(" ")[0]);
       this.outValue =
           new Text(this.read.getName().split(" ")[1]
@@ -151,7 +151,7 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
   }
 
   @Override
-  protected void cleanup(Context context) throws IOException,
+  protected void cleanup(final Context context) throws IOException,
       InterruptedException {
   }
 

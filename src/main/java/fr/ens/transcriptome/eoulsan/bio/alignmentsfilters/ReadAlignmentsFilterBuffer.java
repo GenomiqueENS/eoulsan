@@ -42,7 +42,7 @@ public class ReadAlignmentsFilterBuffer {
   private final ReadAlignmentsFilter filter;
   private final List<SAMRecord> list = new ArrayList<>();
   private String currentName;
-  private boolean reuseResultList;
+  private final boolean reuseResultList;
 
   /**
    * Add the provided alignment to a list of SAMRecord objects if this alignment
@@ -94,8 +94,9 @@ public class ReadAlignmentsFilterBuffer {
     this.filter.filterReadAlignments(this.list);
 
     // Return the list of filtered alignment
-    if (this.reuseResultList)
+    if (this.reuseResultList) {
       return this.list;
+    }
 
     List<SAMRecord> results = new ArrayList<>(this.list);
     this.list.clear();
@@ -114,8 +115,9 @@ public class ReadAlignmentsFilterBuffer {
     final String alignmentName = alignment.getReadName();
     final int spaceIndex = alignmentName.indexOf(' ');
 
-    if (spaceIndex == -1)
+    if (spaceIndex == -1) {
       return alignmentName;
+    }
 
     return alignmentName.substring(0, spaceIndex);
   }
@@ -142,8 +144,9 @@ public class ReadAlignmentsFilterBuffer {
   public ReadAlignmentsFilterBuffer(final ReadAlignmentsFilter filter,
       final boolean reuseResultList) {
 
-    if (filter == null)
+    if (filter == null) {
       throw new NullPointerException("The alignment filter is null");
+    }
 
     this.filter = filter;
     this.reuseResultList = reuseResultList;

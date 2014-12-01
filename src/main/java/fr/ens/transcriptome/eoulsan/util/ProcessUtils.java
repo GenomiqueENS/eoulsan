@@ -59,16 +59,16 @@ public final class ProcessUtils {
 
   public static class ProcessResult {
 
-    private int exitValue;
-    private String stdout;
-    private String stderr;
+    private final int exitValue;
+    private final String stdout;
+    private final String stderr;
 
     /**
      * Get the exit value of the process.
      * @return Returns the errorResult
      */
     public int getExitValue() {
-      return exitValue;
+      return this.exitValue;
     }
 
     /**
@@ -76,7 +76,7 @@ public final class ProcessUtils {
      * @return Returns the stdout
      */
     public String getStdout() {
-      return stdout;
+      return this.stdout;
     }
 
     /**
@@ -84,7 +84,7 @@ public final class ProcessUtils {
      * @return Returns the stderr
      */
     public String getStderr() {
-      return stderr;
+      return this.stderr;
     }
 
     //
@@ -156,8 +156,9 @@ public final class ProcessUtils {
     try {
       pb = new ProcessBuilder(cmd);
 
-      if (!(temporaryDirectory == null))
+      if (!(temporaryDirectory == null)) {
         pb.directory(temporaryDirectory);
+      }
 
       getLogger().fine("Execute command: " + cmd.toString());
 
@@ -209,8 +210,9 @@ public final class ProcessUtils {
     String l = null;
 
     while ((l = stdr.readLine()) != null) {
-      if (stdOutput)
+      if (stdOutput) {
         System.out.println(l);
+      }
     }
 
     InputStream err = p.getInputStream();
@@ -219,8 +221,9 @@ public final class ProcessUtils {
 
     String l2 = null;
 
-    while ((l2 = errr.readLine()) != null)
+    while ((l2 = errr.readLine()) != null) {
       System.err.println(l2);
+    }
 
     stdr.close();
     errr.close();
@@ -234,7 +237,7 @@ public final class ProcessUtils {
    * @param outputFile The output file
    * @throws IOException if an error occurs while running the process
    */
-  public static void execWriteOutput(String cmd, File outputFile)
+  public static void execWriteOutput(final String cmd, final File outputFile)
       throws IOException {
 
     getLogger().fine(
@@ -256,8 +259,9 @@ public final class ProcessUtils {
 
     String l2 = null;
 
-    while ((l2 = errr.readLine()) != null)
+    while ((l2 = errr.readLine()) != null) {
       System.err.println(l2);
+    }
 
     fos.close();
     errr.close();
@@ -313,18 +317,21 @@ public final class ProcessUtils {
 
     String l2 = null;
 
-    while ((l2 = errr.readLine()) != null)
+    while ((l2 = errr.readLine()) != null) {
       if (addStdErr) {
         sb.append(l2);
         sb.append('\n');
-      } else
+      } else {
         System.err.println(l2);
+      }
+    }
 
     stdr.close();
     errr.close();
 
-    if (checkExitCode)
+    if (checkExitCode) {
       logEndTime(p, cmd, startTime);
+    }
 
     return sb.toString();
   }
@@ -344,20 +351,25 @@ public final class ProcessUtils {
       final int exitValue = p.waitFor();
       final long endTime = System.currentTimeMillis();
 
-      if (exitValue == 1)
+      if (exitValue == 1) {
         throw new IOException("Error while executing: " + cmd);
+      }
 
-      if (exitValue == 126)
+      if (exitValue == 126) {
         throw new IOException("Command invoked cannot execute: " + cmd);
+      }
 
-      if (exitValue == 127)
+      if (exitValue == 127) {
         throw new IOException("Command not found: " + cmd);
+      }
 
-      if (exitValue == 134)
+      if (exitValue == 134) {
         throw new IOException("Abort: " + cmd);
+      }
 
-      if (exitValue == 139)
+      if (exitValue == 139) {
         throw new IOException("Segmentation fault: " + cmd);
+      }
 
       getLogger().fine(
           "Done (Thread "
@@ -376,8 +388,9 @@ public final class ProcessUtils {
    */
   public static Set<Integer> getExecutablePids(final String executableName) {
 
-    if (executableName == null)
+    if (executableName == null) {
       return null;
+    }
 
     Set<Integer> result = new HashSet<>();
 
@@ -386,12 +399,13 @@ public final class ProcessUtils {
           ProcessUtils.execToString("pgrep " + executableName.trim());
 
       final String[] lines = s.split("\n");
-      for (String line : lines)
+      for (String line : lines) {
         try {
           result.add(Integer.parseInt(line));
         } catch (NumberFormatException e) {
           continue;
         }
+      }
 
     } catch (IOException e) {
       return result;
@@ -406,15 +420,17 @@ public final class ProcessUtils {
    */
   public static void waitUntilExecutableRunning(final String executableName) {
 
-    if (executableName == null)
+    if (executableName == null) {
       return;
+    }
 
     while (true) {
 
       final Set<Integer> pids = getExecutablePids(executableName);
 
-      if (pids.size() == 0)
+      if (pids.size() == 0) {
         return;
+      }
 
       try {
         Thread.sleep(5000);
@@ -430,11 +446,13 @@ public final class ProcessUtils {
    */
   public static void waitRandom(final int maxMilliseconds) {
 
-    if (maxMilliseconds <= 0)
+    if (maxMilliseconds <= 0) {
       return;
+    }
 
-    if (random == null)
+    if (random == null) {
       random = new Random(System.currentTimeMillis());
+    }
 
     try {
       Thread.sleep(random.nextInt(maxMilliseconds));
@@ -454,17 +472,17 @@ public final class ProcessUtils {
     @Override
     public void run() {
       try {
-        while (new BufferedReader(new InputStreamReader(err,
+        while (new BufferedReader(new InputStreamReader(this.err,
             FileCharsets.LATIN1_CHARSET)).readLine() != null) {
         }
 
-        err.close();
+        this.err.close();
       } catch (IOException e) {
-        exceptionMessage = e.getMessage();
+        this.exceptionMessage = e.getMessage();
       }
     }
 
-    public ProcessThreadErrOutput(InputStream err) {
+    public ProcessThreadErrOutput(final InputStream err) {
       this.err = err;
     }
   } // ProcessThreadErrOutput

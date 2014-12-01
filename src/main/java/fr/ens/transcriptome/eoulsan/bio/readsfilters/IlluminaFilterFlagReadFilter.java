@@ -41,15 +41,17 @@ public class IlluminaFilterFlagReadFilter extends AbstractReadFilter {
   @Override
   public boolean accept(final ReadSequence read) {
 
-    if (read == null)
+    if (read == null) {
       return false;
+    }
 
     try {
 
-      if (this.irid == null)
+      if (this.irid == null) {
         this.irid = new IlluminaReadId(read.getName());
-      else
+      } else {
         this.irid.parse(read.getName());
+      }
 
       return !this.irid.isFiltered();
 

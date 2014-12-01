@@ -149,14 +149,16 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
         .count(alignmentFile, annotationFile, expressionFile, genomeDescFile);
   }
 
-  private void initCounterArguments(ExpressionCounter counter,
+  private void initCounterArguments(final ExpressionCounter counter,
       final String tempDirectory) {
 
-    if (getStranded() != null)
+    if (getStranded() != null) {
       counter.setStranded(getStranded());
+    }
 
-    if (getOverlapMode() != null)
+    if (getOverlapMode() != null) {
       counter.setOverlapMode(getOverlapMode());
+    }
 
     counter.setRemoveAmbiguousCases(isRemoveAmbiguousCases());
 

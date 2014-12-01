@@ -83,7 +83,7 @@ public class UnmodifiableData implements Data, Serializable {
   }
 
   @Override
-  public Data addDataToList(String name, int part) {
+  public Data addDataToList(final String name, final int part) {
     throw new UnsupportedOperationException();
   }
 
@@ -103,7 +103,7 @@ public class UnmodifiableData implements Data, Serializable {
   }
 
   @Override
-  public DataFile getDataFile(int fileIndex) {
+  public DataFile getDataFile(final int fileIndex) {
     return this.data.getDataFile(fileIndex);
   }
 
@@ -113,7 +113,7 @@ public class UnmodifiableData implements Data, Serializable {
   }
 
   @Override
-  public int getDataFileCount(boolean existingFiles) {
+  public int getDataFileCount(final boolean existingFiles) {
     return this.data.getDataFileCount(existingFiles);
   }
 

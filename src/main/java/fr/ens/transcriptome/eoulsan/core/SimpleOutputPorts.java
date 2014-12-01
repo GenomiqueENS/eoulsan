@@ -37,7 +37,7 @@ public class SimpleOutputPorts extends AbstractPorts<OutputPort> implements
 
   private static final long serialVersionUID = -1607044916452828888L;
 
-  SimpleOutputPorts(Set<OutputPort> ports) {
+  SimpleOutputPorts(final Set<OutputPort> ports) {
     super(ports);
   }
 

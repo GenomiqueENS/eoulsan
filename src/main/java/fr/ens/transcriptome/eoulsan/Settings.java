@@ -437,14 +437,16 @@ public final class Settings implements Serializable {
    */
   public int getIntSetting(final String settingName) throws EoulsanException {
 
-    if (settingName == null)
+    if (settingName == null) {
       throw new EoulsanException("The setting name is null");
+    }
 
     final String value = getSetting(settingName);
-    if (value == null)
+    if (value == null) {
       throw new EoulsanException(
           "Invalid parameter, an integer parameter is need for "
               + settingName + " parameter: null");
+    }
 
     try {
 
@@ -466,14 +468,16 @@ public final class Settings implements Serializable {
   public double getDoubleSetting(final String settingName)
       throws EoulsanException {
 
-    if (settingName == null)
+    if (settingName == null) {
       throw new EoulsanException("The setting name is null");
+    }
 
     final String value = getSetting(settingName);
-    if (value == null)
+    if (value == null) {
       throw new EoulsanException(
           "Invalid parameter, an integer parameter is need for "
               + settingName + " parameter: null");
+    }
 
     try {
 
@@ -629,8 +633,9 @@ public final class Settings implements Serializable {
    */
   public void setLocalThreadsNumber(final int threadsNumber) {
 
-    if (threadsNumber < 0)
+    if (threadsNumber < 0) {
       return;
+    }
 
     this.properties.setProperty(LOCAL_THREADS_NUMBER,
         Integer.toString(threadsNumber));
@@ -642,8 +647,9 @@ public final class Settings implements Serializable {
    */
   public void setDefaultFastqFormat(final FastqFormat format) {
 
-    if (format == null)
+    if (format == null) {
       throw new NullPointerException("The FastqFormat is null");
+    }
 
     this.properties.setProperty(DEFAULT_FASTQ_FORMAT_KEY, format.getName());
   }
@@ -825,8 +831,9 @@ public final class Settings implements Serializable {
     }
 
     this.properties.setProperty(key, settingValue);
-    if (logChange)
+    if (logChange) {
       logSetting(key);
+    }
   }
 
   //
@@ -936,13 +943,15 @@ public final class Settings implements Serializable {
             + key);
       }
 
-      if ("main.accesskey".equals(key.toLowerCase()))
+      if ("main.accesskey".equals(key.toLowerCase())) {
         throw new EoulsanException("main.accesskey key in now invalid. Use "
             + AWS_ACCESS_KEY + " key instead.");
+      }
 
-      if ("main.awssecretkey".equals(key.toLowerCase()))
+      if ("main.awssecretkey".equals(key.toLowerCase())) {
         throw new EoulsanException("main.awssecretkey key in now invalid. Use "
             + AWS_SECRET_KEY + " key instead.");
+      }
 
     }
 
@@ -975,8 +984,9 @@ public final class Settings implements Serializable {
    */
   public void logSettings() {
 
-    for (Object key : properties.keySet())
+    for (Object key : this.properties.keySet()) {
       logSetting((String) key);
+    }
   }
 
   /**
@@ -985,10 +995,12 @@ public final class Settings implements Serializable {
    */
   private void logSetting(final String key) {
 
-    if (OBFUSCATED_KEYS.contains(key))
+    if (OBFUSCATED_KEYS.contains(key)) {
       getLogger().info("Setting: " + key + "=xxxx value not shown xxxx");
-    else
-      getLogger().info("Setting: " + key + "=" + properties.getProperty(key));
+    } else {
+      getLogger().info(
+          "Setting: " + key + "=" + this.properties.getProperty(key));
+    }
   }
 
   /**

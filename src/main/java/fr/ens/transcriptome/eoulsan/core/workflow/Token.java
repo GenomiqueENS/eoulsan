@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
+
 import fr.ens.transcriptome.eoulsan.data.Data;
 
 /**
@@ -56,7 +57,7 @@ class Token {
    */
   public WorkflowOutputPort getOrigin() {
 
-    return fromPort;
+    return this.fromPort;
   }
 
   /**
@@ -64,7 +65,7 @@ class Token {
    * @return true if the token is an end of step token
    */
   public boolean isEndOfStepToken() {
-    return endOfStepToken;
+    return this.endOfStepToken;
   }
 
   /**
@@ -73,10 +74,11 @@ class Token {
    */
   public Data getData() {
 
-    if (this.data == null)
+    if (this.data == null) {
       throw new IllegalStateException();
+    }
 
-    return data;
+    return this.data;
   }
 
   @Override

@@ -131,9 +131,10 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     getLogger().info("exonsIndexPath: " + exonsIndexPath);
 
-    if (!PathUtils.isFile(exonsIndexPath, jobConf))
+    if (!PathUtils.isFile(exonsIndexPath, jobConf)) {
       createExonsIndex(context, new Path(annotationDataFile.getSource()),
           genomicType, attributeId, exonsIndexPath, jobConf);
+    }
 
     // Debug
     // conf.set("mapred.job.tracker", "local");
@@ -204,17 +205,19 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // Get input DataFile
     DataFile inputDataFile = alignmentsData.getDataFile();
 
-    if (inputDataFile == null)
+    if (inputDataFile == null) {
       throw new IOException("No input file found.");
+    }
 
     final String dataFileSource;
 
-    if (tsamFormat)
+    if (tsamFormat) {
       dataFileSource =
           StringUtils.filenameWithoutExtension(inputDataFile.getSource())
               + TSAM_EXTENSION;
-    else
+    } else {
       dataFileSource = inputDataFile.getSource();
+    }
 
     // Set input path
     final Path inputPath = new Path(dataFileSource);
@@ -251,10 +254,11 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     getLogger().info("featuresIndexPath: " + featuresIndexPath);
 
-    if (!PathUtils.isFile(featuresIndexPath, jobConf))
+    if (!PathUtils.isFile(featuresIndexPath, jobConf)) {
       createFeaturesIndex(context, new Path(annotationDataFile.getSource()),
           genomicType, attributeId, stranded, genomeDescDataFile,
           featuresIndexPath, jobConf);
+    }
 
     // Create the job and its name
     final Job job =
@@ -380,9 +384,10 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     ef.save(exonIndexFile);
 
     PathUtils.copyLocalFileToPath(exonIndexFile, exonsIndexPath, conf);
-    if (!exonIndexFile.delete())
+    if (!exonIndexFile.delete()) {
       getLogger().warning(
           "Can not delete exon index file: " + exonIndexFile.getAbsolutePath());
+    }
 
     return exonsIndexPath;
   }
@@ -448,9 +453,10 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     gffReader.throwException();
     gffReader.close();
 
-    if (counts.size() == 0)
+    if (counts.size() == 0) {
       throw new EoulsanException("Warning: No features of type '"
           + featureType + "' found.\n");
+    }
 
     final File featuresIndexFile =
         context.getRuntime().createFileInTempDir(
@@ -464,10 +470,11 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     PathUtils.copyLocalFileToPath(featuresIndexFile, featuresIndexPath, conf);
 
-    if (!featuresIndexFile.delete())
+    if (!featuresIndexFile.delete()) {
       getLogger().warning(
           "Can not delete features index file: "
               + featuresIndexFile.getAbsolutePath());
+    }
 
     return featuresIndexPath;
   }
@@ -576,7 +583,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   }
 
   @Override
-  public void configure(Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     super.configure(stepParameters);
     this.conf = CommonHadoop.createConfiguration(EoulsanRuntime.getSettings());
@@ -591,12 +599,13 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     final Data outData =
         context.getOutputData(EXPRESSION_RESULTS_TSV, alignmentsData);
 
-    if (getCounter().getCounterName().equals(EoulsanCounter.COUNTER_NAME))
+    if (getCounter().getCounterName().equals(EoulsanCounter.COUNTER_NAME)) {
       return executeJobEoulsanCounter(context, alignmentsData,
           featureAnnotationData, outData, status);
-    else if (getCounter().getCounterName().equals(HTSeqCounter.COUNTER_NAME))
+    } else if (getCounter().getCounterName().equals(HTSeqCounter.COUNTER_NAME)) {
       return executeJobHTSeqCounter(context, alignmentsData,
           featureAnnotationData, genomeDescriptionData, outData, status);
+    }
 
     return status.createStepResult(new EoulsanException("Unknown counter: "
         + getCounter().getCounterName()), "Unknown counter: "
@@ -699,14 +708,16 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       // Get the paired end mode
       boolean pairedEnd = alignmentsData.getMetadata().isPairedEnd();
 
-      if (pairedEnd)
+      if (pairedEnd) {
         jobsPairedEnd.add(createJobPairedEnd(conf, context, alignmentsData,
             featureAnnotationData, genomeDescriptionData));
+      }
 
       // Paired-end pre-processing
-      if (jobsPairedEnd.size() > 0)
+      if (jobsPairedEnd.size() > 0) {
         MapReduceUtils.submitAndWaitForJobs(jobsPairedEnd,
             CommonHadoop.CHECK_COMPLETION_TIME);
+      }
 
       // Create the list of jobs to run
 

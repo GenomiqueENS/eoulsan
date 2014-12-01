@@ -45,7 +45,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class TFQReader implements ReadSequenceReader {
 
-  private BufferedReader reader;
+  private final BufferedReader reader;
 
   private final boolean reuse;
   private ReadSequence result = null;
@@ -71,14 +71,16 @@ public class TFQReader implements ReadSequenceReader {
   @Override
   public boolean hasNext() {
 
-    if (this.end)
+    if (this.end) {
       return false;
+    }
 
     this.nextCallDone = false;
 
     // Reuse result object or not
-    if (!this.reuse)
-      result = new ReadSequence();
+    if (!this.reuse) {
+      this.result = new ReadSequence();
+    }
 
     String line = null;
 
@@ -89,15 +91,16 @@ public class TFQReader implements ReadSequenceReader {
         final String trim = line.trim();
 
         // discard empty lines
-        if ("".equals(trim))
+        if ("".equals(trim)) {
           continue;
+        }
 
-        result.parse(trim);
-        result.setId(++count);
+        this.result.parse(trim);
+        this.result.setId(++this.count);
         return true;
       }
 
-      sb.setLength(0);
+      this.sb.setLength(0);
       this.end = true;
 
       return false;
@@ -112,8 +115,9 @@ public class TFQReader implements ReadSequenceReader {
   @Override
   public ReadSequence next() {
 
-    if (this.nextCallDone)
+    if (this.nextCallDone) {
       throw new NoSuchElementException();
+    }
 
     this.nextCallDone = true;
 
@@ -129,8 +133,9 @@ public class TFQReader implements ReadSequenceReader {
   @Override
   public void throwException() throws IOException, BadBioEntryException {
 
-    if (this.ioException != null)
+    if (this.ioException != null) {
       throw this.ioException;
+    }
   }
 
   //
@@ -154,8 +159,9 @@ public class TFQReader implements ReadSequenceReader {
    */
   public TFQReader(final InputStream is, final boolean reuseResultObject) {
 
-    if (is == null)
+    if (is == null) {
       throw new NullPointerException("InputStream is null");
+    }
 
     this.reader = FileUtils.createBufferedReader(is, FASTQ_CHARSET);
     this.reuse = reuseResultObject;
@@ -181,8 +187,9 @@ public class TFQReader implements ReadSequenceReader {
   public TFQReader(final File file, final boolean reuseResultObject)
       throws FileNotFoundException {
 
-    if (file == null)
+    if (file == null) {
       throw new NullPointerException("File is null");
+    }
 
     this.reader = FileUtils.createBufferedReader(file, FASTQ_CHARSET);
     this.reuse = reuseResultObject;
@@ -208,8 +215,9 @@ public class TFQReader implements ReadSequenceReader {
   public TFQReader(final String filename, final boolean reuseResultObject)
       throws FileNotFoundException {
 
-    if (filename == null)
+    if (filename == null) {
       throw new NullPointerException("File is null");
+    }
 
     this.reader = FileUtils.createBufferedReader(filename, FASTQ_CHARSET);
     this.reuse = reuseResultObject;

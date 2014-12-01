@@ -92,8 +92,9 @@ public class NormalizationLocalStep extends AbstractStep {
 
       String rServeName = null;
       boolean rServeEnable = context.getSettings().isRServeServerEnabled();
-      if (rServeEnable)
+      if (rServeEnable) {
         rServeName = context.getSettings().getRServeServerName();
+      }
 
       final Design design = context.getWorkflow().getDesign();
       final Normalization norm =

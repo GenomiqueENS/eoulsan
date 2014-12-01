@@ -173,8 +173,9 @@ public final class Common {
 
   public static void sendMail(final String subject, final String message) {
 
-    if (!EoulsanRuntime.isRuntime())
+    if (!EoulsanRuntime.isRuntime()) {
       return;
+    }
 
     final Settings settings = EoulsanRuntime.getSettings();
 
@@ -182,8 +183,9 @@ public final class Common {
     final Properties properties = settings.getJavaMailSMTPProperties();
     final String userMail = settings.getResultMail();
 
-    if (!sendMail)
+    if (!sendMail) {
       return;
+    }
 
     if (!properties.containsKey("mail.smtp.host")) {
       getLogger().warning("No SMTP server set");
@@ -203,7 +205,7 @@ public final class Common {
 
       // Set message attributes
       msg.setFrom(new InternetAddress(userMail));
-      InternetAddress[] address = { new InternetAddress(userMail) };
+      InternetAddress[] address = {new InternetAddress(userMail)};
       msg.setRecipients(Message.RecipientType.TO, address);
       msg.setSubject(subject);
       msg.setSentDate(new Date());
@@ -220,8 +222,9 @@ public final class Common {
 
       // Prints all nested (chained) exceptions as well
       if (!EoulsanRuntime.isRuntime()
-          || EoulsanRuntime.getSettings().isPrintStackTrace())
+          || EoulsanRuntime.getSettings().isPrintStackTrace()) {
         mex.printStackTrace();
+      }
     }
 
   }
@@ -237,11 +240,13 @@ public final class Common {
       final int maxLocalThreads) {
     int threads = EoulsanRuntime.getSettings().getLocalThreadsNumber();
 
-    if (localThreads > 0)
+    if (localThreads > 0) {
       threads = localThreads;
+    }
 
-    if (maxLocalThreads > 0)
+    if (maxLocalThreads > 0) {
       threads = Math.min(threads, maxLocalThreads);
+    }
 
     return threads;
   }

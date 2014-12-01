@@ -45,16 +45,17 @@ public class MultiReadFilter implements ReadFilter {
   @Override
   public boolean accept(final ReadSequence read) {
 
-    if (read == null)
+    if (read == null) {
       return false;
+    }
 
     for (ReadFilter rf : this.list) {
 
       if (!rf.accept(read)) {
 
-        if (incrementer != null) {
-          this.incrementer.incrCounter(counterGroup,
-              "reads rejected by " + rf.getName() + " filter", 1);
+        if (this.incrementer != null) {
+          this.incrementer.incrCounter(this.counterGroup, "reads rejected by "
+              + rf.getName() + " filter", 1);
         }
         return false;
       }
@@ -71,9 +72,9 @@ public class MultiReadFilter implements ReadFilter {
 
       if (!rf.accept(read1, read2)) {
 
-        if (incrementer != null) {
-          this.incrementer.incrCounter(counterGroup,
-              "reads rejected by " + rf.getName() + " filter", 1);
+        if (this.incrementer != null) {
+          this.incrementer.incrCounter(this.counterGroup, "reads rejected by "
+              + rf.getName() + " filter", 1);
         }
         return false;
       }
@@ -108,7 +109,7 @@ public class MultiReadFilter implements ReadFilter {
   }
 
   @Override
-  public void setParameter(String key, String value) {
+  public void setParameter(final String key, final String value) {
     // This filter has no parameter
   }
 
@@ -123,8 +124,9 @@ public class MultiReadFilter implements ReadFilter {
   public List<String> getFilterNames() {
 
     final List<String> result = new ArrayList<>();
-    for (ReadFilter f : this.list)
+    for (ReadFilter f : this.list) {
       result.add(f.getName());
+    }
 
     return result;
   }

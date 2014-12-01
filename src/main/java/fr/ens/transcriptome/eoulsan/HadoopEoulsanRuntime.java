@@ -96,7 +96,8 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
   }
 
   @Override
-  public InputStream getRawInputStream(String dataSource) throws IOException {
+  public InputStream getRawInputStream(final String dataSource)
+      throws IOException {
 
     if (dataSource == null) {
       throw new IllegalArgumentException("The datasource is null.");
@@ -109,7 +110,8 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
   }
 
   @Override
-  public OutputStream getOutputStream(String dataSource) throws IOException {
+  public OutputStream getOutputStream(final String dataSource)
+      throws IOException {
 
     if (dataSource == null) {
       throw new IllegalArgumentException("The datasource is null.");

@@ -38,35 +38,43 @@ public class PairCheckReadFilter extends AbstractReadFilter {
   @Override
   public boolean accept(final ReadSequence read1, final ReadSequence read2) {
 
-    if (read1 == null)
+    if (read1 == null) {
       return false;
+    }
 
-    if (read2 == null)
+    if (read2 == null) {
       return false;
+    }
 
     final String id1 = read1.getName();
     final String id2 = read2.getName();
 
-    if (id1 == null)
+    if (id1 == null) {
       return false;
+    }
 
-    if (id2 == null)
+    if (id2 == null) {
       return false;
+    }
 
-    if (id1.equals(id2))
+    if (id1.equals(id2)) {
       return false;
+    }
 
     final int len1 = id1.length();
     final int len2 = id2.length();
 
-    if (len1 != len2)
+    if (len1 != len2) {
       return false;
+    }
 
-    if (!id1.endsWith("/1"))
+    if (!id1.endsWith("/1")) {
       return false;
+    }
 
-    if (!id2.endsWith("/2"))
+    if (!id2.endsWith("/2")) {
       return false;
+    }
 
     final int len = len1 - 2;
     final String prefix1 = id1.substring(0, len);
@@ -76,10 +84,11 @@ public class PairCheckReadFilter extends AbstractReadFilter {
   }
 
   @Override
-  public boolean accept(ReadSequence read) {
+  public boolean accept(final ReadSequence read) {
 
-    if (read == null)
+    if (read == null) {
       return false;
+    }
 
     return true;
   }
@@ -96,7 +105,7 @@ public class PairCheckReadFilter extends AbstractReadFilter {
   }
 
   @Override
-  public void setParameter(String key, String value) {
+  public void setParameter(final String key, final String value) {
     // this filter has no parameter
   }
 

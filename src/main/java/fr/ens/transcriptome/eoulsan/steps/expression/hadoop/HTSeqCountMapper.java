@@ -83,8 +83,8 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
   static final String REMOVE_AMBIGUOUS_CASES = Globals.PARAMETER_PREFIX
       + ".expression.no.ambiguous.cases";
 
-  private GenomicArray<String> features = new GenomicArray<>();
-  private Map<String, Integer> counts = new HashMap<>();
+  private final GenomicArray<String> features = new GenomicArray<>();
+  private final Map<String, Integer> counts = new HashMap<>();
 
   private String counterGroup;
   private StrandUsage stranded;
@@ -93,7 +93,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
 
   private final SAMLineParser parser = new SAMLineParser(new SAMFileHeader());
 
-  private Text outKey = new Text();
+  private final Text outKey = new Text();
 
   @Override
   public void setup(final Context context) throws IOException,
@@ -107,12 +107,14 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
 
       final URI[] localCacheFiles = context.getCacheFiles();
 
-      if (localCacheFiles == null || localCacheFiles.length == 0)
+      if (localCacheFiles == null || localCacheFiles.length == 0) {
         throw new IOException("Unable to retrieve genome index");
+      }
 
-      if (localCacheFiles.length > 1)
+      if (localCacheFiles.length > 1) {
         throw new IOException(
             "Retrieve more than one file in distributed cache");
+      }
 
       getLogger().info(
           "Genome index compressed file (from distributed cache): "
@@ -176,8 +178,9 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
     final String line = value.toString();
 
     // Discard SAM headers
-    if (line.length() > 0 && line.charAt(0) == '@')
+    if (line.length() > 0 && line.charAt(0) == '@') {
       return;
+    }
 
     context.getCounter(this.counterGroup,
         TOTAL_ALIGNMENTS_COUNTER.counterName()).increment(1);
@@ -195,11 +198,11 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
         samRecord2 = this.parser.parseLine(fields[1]);
 
         if (!samRecord1.getReadUnmappedFlag()) {
-          ivSeq.addAll(HTSeqUtils.addIntervals(samRecord1, stranded));
+          ivSeq.addAll(HTSeqUtils.addIntervals(samRecord1, this.stranded));
         }
 
         if (!samRecord2.getReadUnmappedFlag()) {
-          ivSeq.addAll(HTSeqUtils.addIntervals(samRecord2, stranded));
+          ivSeq.addAll(HTSeqUtils.addIntervals(samRecord2, this.stranded));
         }
 
         // unmapped read
@@ -268,7 +271,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
           return;
         }
 
-        ivSeq.addAll(HTSeqUtils.addIntervals(samRecord, stranded));
+        ivSeq.addAll(HTSeqUtils.addIntervals(samRecord, this.stranded));
       }
 
       Set<String> fs = null;
@@ -277,8 +280,9 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
           HTSeqUtils.featuresOverlapped(ivSeq, this.features, this.overlapMode,
               this.stranded);
 
-      if (fs == null)
+      if (fs == null) {
         fs = new HashSet<>();
+      }
 
       switch (fs.size()) {
       case 0:

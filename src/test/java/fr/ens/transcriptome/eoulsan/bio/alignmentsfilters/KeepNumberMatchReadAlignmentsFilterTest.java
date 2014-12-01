@@ -62,17 +62,17 @@ public class KeepNumberMatchReadAlignmentsFilterTest {
 
     // recordSE1, recordSE2 and recordSE3 have the same read name (three matches
     // for the same read)
-    recordSE1 =
+    this.recordSE1 =
         "HWI-EAS285_0001_'':1:1:1259:2442#0/1\t16\tchr9\t59513044\t25\t76M\t*\t0\t0"
             + "\tGGGACTGCCTTCANNNAGANNCAGNANCTCCNNNNNNNNNNNNNNGACACCTTCCTGNAACACATGTGCCGCCTGG"
             + "\t#############################################ABE@?E@>CC@C#BBDEDGGGGFFEGEGGGG"
             + "\tXA:i:1\tMD:Z:13T0T0C3C0C3C1G4A0T0G0C0A0G0C0C0A0T0G0G0C0T12G18\tNM:i:22";
-    recordSE2 =
+    this.recordSE2 =
         "HWI-EAS285_0001_'':1:1:1259:2442#0/1\t0\tchr5\t22231887\t55\t76M\t*\t0\t0"
             + "\tCCAGGCGGCACATGTGTTNCAGGAAGGTGTCNNNNNNNNNNNNNNGGAGNTNCTGNNTCTNNNTGAAGGCAGTCCC"
             + "\tGGGGEGEFFGGGGDEDBB#C@CC>@E?@EBA#############################################\t"
             + "XA:i:1\tMD:Z:18C12A0G0C0C0A0T0G0G0C0T0G0C0A0T4C1G3G0G3G0A0A13\tNM:i:22";
-    recordSE3 =
+    this.recordSE3 =
         "HWI-EAS285_0001_'':1:1:1259:2442#0/1\t0\tchr1\t173235257\t55\t76M\t*\t0\t0"
             + "\tCCAGGCGGCACATGTGTTNCAGGAAGGTGTCNNNNNNNNNNNNNNGGAGNTNCTGNNTCTNNNTGAAGGCAGTCCC"
             + "\tGGGGEGEFFGGGGDEDBB#C@CC>@E?@EBA#############################################\t"
@@ -81,34 +81,34 @@ public class KeepNumberMatchReadAlignmentsFilterTest {
     // recordPE1, recordPE2, recordPE3, recordPE4, recordPE5 and recordPE6 have
     // the same read name (three matches for the same read)
     // recordPE1 and recordPE2 paired
-    recordPE1 =
+    this.recordPE1 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:2584:2222\t99\tchr1\t173235257\t255\t101M\t=\t173235280\t124"
             + "\tCTTGTATCGCTCCTCAAACTTGACCTTGGCCTCCCGCCTGGCCTTGCGCTTCAAAGCTGGGTCCCTGAACACATCCTTGTTGACAACAGTCTTGTCCAAGG"
             + "\tCCCFFFFFHHHHHJJJJJJJJJJJJJJJJJJJJJJJJJHIIJIJJIIIIJJJJJIIJHHHHFFFFFDEEEEDDDDDDDDDDDDDDDDDDDDDEDDDDDDDD"
             + "\tXA:i:0\tMD:Z:101\tNM:i:0";
-    recordPE2 =
+    this.recordPE2 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:2584:2222\t147\tchr1\t173235280\t255\t101M\t=\t173235257\t-124"
             + "\tCCTTGGCCTCCCGCCTGGCCTTGCGCTTCAAAGCTGGGTCCCTGAACACATCCTTGTTGACAACAGTCTTGTCCAAGGGGATATCCACAGAGTACCTTGTG"
             + "\tDDDDDDDDDDDDDDDDDDDDDDDFFHHHHHHJJJJJJJJJHDJJJJJIJIHIJJJJJIIIJJJIJJIJJJJJHJJJJJJJJJJJJJJJHHHHHDFFFFCCC"
             + "\tXA:i:0\tMD:Z:101\tNM:i:0";
     // recordPE3 and recordPE4 paired
-    recordPE3 =
+    this.recordPE3 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:2584:2222\t99\tchr11\t93898574\t255\t101M\t=\t93898597\t124"
             + "\tCTTGTATCGCTCCTCAAACTTGACCTTGGCCTCCCGCCTGGCCTTGCGCTTCAAAGCTGGGTCCCTGAACACATCCTTGTTGACAACAGTCTTGTCCAAGG"
             + "\tCCCFFFFFHHHHHJJJJJJJJJJJJJJJJJJJJJJJJJHIIJIJJIIIIJJJJJIIJHHHHFFFFFDEEEEDDDDDDDDDDDDDDDDDDDDDEDDDDDDDD"
             + "\tXA:i:0\tMD:Z:101\tNM:i:0";
-    recordPE4 =
+    this.recordPE4 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:2584:2222\t147\tchr11\t93898597\t255\t101M\t=\t93898574\t-124"
             + "\tCCTTGGCCTCCCGCCTGGCCTTGCGCTTCAAAGCTGGGTCCCTGAACACATCCTTGTTGACAACAGTCTTGTCCAAGGGGATATCCACAGAGTACCTTGTG"
             + "\tDDDDDDDDDDDDDDDDDDDDDDDFFHHHHHHJJJJJJJJJHDJJJJJIJIHIJJJJJIIIJJJIJJIJJJJJHJJJJJJJJJJJJJJJHHHHHDFFFFCCC"
             + "\tXA:i:0\tMD:Z:101\tNM:i:0";
     // recordPE5 and recordPE6 paired
-    recordPE5 =
+    this.recordPE5 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:2584:2222\t99\tchr9\t93898574\t255\t101M\t=\t93898597\t124"
             + "\tCTTGTATCGCTCCTCAAACTTGACCTTGGCCTCCCGCCTGGCCTTGCGCTTCAAAGCTGGGTCCCTGAACACATCCTTGTTGACAACAGTCTTGTCCAAGG"
             + "\tCCCFFFFFHHHHHJJJJJJJJJJJJJJJJJJJJJJJJJHIIJIJJIIIIJJJJJIIJHHHHFFFFFDEEEEDDDDDDDDDDDDDDDDDDDDDEDDDDDDDD"
             + "\tXA:i:0\tMD:Z:101\tNM:i:0";
-    recordPE6 =
+    this.recordPE6 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:2584:2222\t147\tchr9\t93898597\t255\t101M\t=\t93898574\t-124"
             + "\tCCTTGGCCTCCCGCCTGGCCTTGCGCTTCAAAGCTGGGTCCCTGAACACATCCTTGTTGACAACAGTCTTGTCCAAGGGGATATCCACAGAGTACCTTGTG"
             + "\tDDDDDDDDDDDDDDDDDDDDDDDFFHHHHHHJJJJJJJJJHDJJJJJIJIHIJJJJJIIIJJJIJJIJJJJJHJJJJJJJJJJJJJJJHHHHHDFFFFCCC"
@@ -122,41 +122,41 @@ public class KeepNumberMatchReadAlignmentsFilterTest {
 
     SAMLineParser parser = new SAMLineParser(SAMUtils.newSAMFileHeader(desc));
 
-    samRecordSE1 = parser.parseLine(recordSE1);
-    samRecordSE2 = parser.parseLine(recordSE2);
-    samRecordSE3 = parser.parseLine(recordSE3);
+    this.samRecordSE1 = parser.parseLine(this.recordSE1);
+    this.samRecordSE2 = parser.parseLine(this.recordSE2);
+    this.samRecordSE3 = parser.parseLine(this.recordSE3);
 
-    samRecordPE1 = parser.parseLine(recordPE1);
-    samRecordPE2 = parser.parseLine(recordPE2);
-    samRecordPE3 = parser.parseLine(recordPE3);
-    samRecordPE4 = parser.parseLine(recordPE4);
-    samRecordPE5 = parser.parseLine(recordPE5);
-    samRecordPE6 = parser.parseLine(recordPE6);
+    this.samRecordPE1 = parser.parseLine(this.recordPE1);
+    this.samRecordPE2 = parser.parseLine(this.recordPE2);
+    this.samRecordPE3 = parser.parseLine(this.recordPE3);
+    this.samRecordPE4 = parser.parseLine(this.recordPE4);
+    this.samRecordPE5 = parser.parseLine(this.recordPE5);
+    this.samRecordPE6 = parser.parseLine(this.recordPE6);
 
-    records = new ArrayList<>();
+    this.records = new ArrayList<>();
 
-    filter = new KeepNumberMatchReadAlignmentsFilter();
-    filter.setParameter("threshold", "2");
+    this.filter = new KeepNumberMatchReadAlignmentsFilter();
+    this.filter.setParameter("threshold", "2");
   }
 
   @Test
   public void testSetParameter() {
     try {
-      filter.setParameter("threshold", "40");
+      this.filter.setParameter("threshold", "40");
       assertTrue(true);
     } catch (EoulsanException e) {
       assertTrue(false);
     }
 
     try {
-      filter.setParameter("threshold", "-2");
+      this.filter.setParameter("threshold", "-2");
       assertTrue(false);
     } catch (EoulsanException e) {
       assertTrue(true);
     }
 
     try {
-      filter.setParameter("ko", "2");
+      this.filter.setParameter("ko", "2");
       assertTrue(false);
     } catch (EoulsanException e) {
       assertTrue(true);
@@ -166,7 +166,7 @@ public class KeepNumberMatchReadAlignmentsFilterTest {
   @Test
   public void testInit() {
     try {
-      filter.init();
+      this.filter.init();
       assertTrue(true);
     } catch (Exception e) {
       assertTrue(false);
@@ -175,57 +175,57 @@ public class KeepNumberMatchReadAlignmentsFilterTest {
 
   @Test
   public void testGetName() {
-    assertEquals("keepnumbermatch", filter.getName());
-    assertFalse("ko".equals(filter.getName()));
+    assertEquals("keepnumbermatch", this.filter.getName());
+    assertFalse("ko".equals(this.filter.getName()));
   }
 
   @Test
   public void testGetDescription() {
     assertEquals(
         "This filter allows to keep a given number of alignments of a read.",
-        filter.getDescription());
-    assertFalse("ko".equals(filter.getName()));
+        this.filter.getDescription());
+    assertFalse("ko".equals(this.filter.getName()));
   }
 
   @Test
   public void testFilterReadAlignments() {
 
     // single-end mode
-    records.add(samRecordSE1);
-    assertEquals(1, records.size());
-    filter.filterReadAlignments(records);
-    assertEquals(1, records.size());
+    this.records.add(this.samRecordSE1);
+    assertEquals(1, this.records.size());
+    this.filter.filterReadAlignments(this.records);
+    assertEquals(1, this.records.size());
 
-    records.add(samRecordSE2);
-    assertEquals(2, records.size());
-    filter.filterReadAlignments(records);
-    assertEquals(2, records.size());
+    this.records.add(this.samRecordSE2);
+    assertEquals(2, this.records.size());
+    this.filter.filterReadAlignments(this.records);
+    assertEquals(2, this.records.size());
 
-    records.add(samRecordSE3);
-    assertEquals(3, records.size());
-    filter.filterReadAlignments(records);
-    assertEquals(2, records.size());
+    this.records.add(this.samRecordSE3);
+    assertEquals(3, this.records.size());
+    this.filter.filterReadAlignments(this.records);
+    assertEquals(2, this.records.size());
 
-    records.clear();
+    this.records.clear();
 
     // paired-end mode
-    records.add(samRecordPE1);
-    records.add(samRecordPE2);
-    assertEquals(2, records.size());
-    filter.filterReadAlignments(records);
-    assertEquals(2, records.size());
+    this.records.add(this.samRecordPE1);
+    this.records.add(this.samRecordPE2);
+    assertEquals(2, this.records.size());
+    this.filter.filterReadAlignments(this.records);
+    assertEquals(2, this.records.size());
 
-    records.add(samRecordPE3);
-    records.add(samRecordPE4);
-    assertEquals(4, records.size());
-    filter.filterReadAlignments(records);
-    assertEquals(4, records.size());
+    this.records.add(this.samRecordPE3);
+    this.records.add(this.samRecordPE4);
+    assertEquals(4, this.records.size());
+    this.filter.filterReadAlignments(this.records);
+    assertEquals(4, this.records.size());
 
-    records.add(samRecordPE5);
-    records.add(samRecordPE6);
-    assertEquals(6, records.size());
-    filter.filterReadAlignments(records);
-    assertEquals(4, records.size());
+    this.records.add(this.samRecordPE5);
+    this.records.add(this.samRecordPE6);
+    assertEquals(6, this.records.size());
+    this.filter.filterReadAlignments(this.records);
+    assertEquals(4, this.records.size());
 
   }
 

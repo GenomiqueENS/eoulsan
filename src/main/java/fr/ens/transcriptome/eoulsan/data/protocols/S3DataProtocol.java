@@ -74,8 +74,9 @@ public class S3DataProtocol implements DataProtocol {
 
     final int lastSlashPos = source.lastIndexOf(DataFile.separatorChar);
 
-    if (lastSlashPos == -1)
+    if (lastSlashPos == -1) {
       return source;
+    }
 
     return source.substring(lastSlashPos + 1);
   }
@@ -98,13 +99,13 @@ public class S3DataProtocol implements DataProtocol {
 
   private class S3URL {
 
-    private String source;
-    private String bucket;
-    private String filePath;
+    private final String source;
+    private final String bucket;
+    private final String filePath;
 
     public String getSource() {
 
-      return source;
+      return this.source;
     }
 
     public String getBucket() {
@@ -114,7 +115,7 @@ public class S3DataProtocol implements DataProtocol {
 
     public String getFilePath() {
 
-      return filePath;
+      return this.filePath;
     }
 
     /**
@@ -127,8 +128,9 @@ public class S3DataProtocol implements DataProtocol {
 
       final String protocolPrefix = getProtocolPrefix();
 
-      if (!source.startsWith(protocolPrefix))
+      if (!source.startsWith(protocolPrefix)) {
         throw new IOException("Invalid S3 URL: " + source);
+      }
 
       final int indexPos = source.indexOf('/', protocolPrefix.length());
 
@@ -145,8 +147,9 @@ public class S3DataProtocol implements DataProtocol {
 
       final String protocolPrefix = getProtocolPrefix();
 
-      if (!source.startsWith(protocolPrefix))
+      if (!source.startsWith(protocolPrefix)) {
         throw new IOException("Invalid S3 URL: " + source);
+      }
 
       final int indexPos = source.indexOf('/', protocolPrefix.length());
 
@@ -160,8 +163,9 @@ public class S3DataProtocol implements DataProtocol {
       S3Object s3Obj =
           s3.getObject(new GetObjectRequest(getBucket(), getFilePath()));
 
-      if (s3Obj == null)
+      if (s3Obj == null) {
         throw new FileNotFoundException("No file found: " + this.source);
+      }
 
       return s3Obj.getObjectMetadata();
     }
@@ -200,25 +204,28 @@ public class S3DataProtocol implements DataProtocol {
 
     private final InputStream is;
     private final File file;
-    private S3URL s3url;
-    private DataFileMetadata metadata;
+    private final S3URL s3url;
+    private final DataFileMetadata metadata;
 
     /**
      * Upload the file.
      */
     public void upload() throws IOException {
 
-      getLogger().info("Upload data to " + s3url.getSource());
+      getLogger().info("Upload data to " + this.s3url.getSource());
       final ObjectMetadata md = new ObjectMetadata();
 
-      if (this.metadata.getContentType() != null)
+      if (this.metadata.getContentType() != null) {
         md.setContentType(this.metadata.getContentType());
+      }
 
-      if (this.metadata.getContentEncoding() != null)
+      if (this.metadata.getContentEncoding() != null) {
         md.setContentEncoding(this.metadata.getContentEncoding());
+      }
 
-      if (file == null)
+      if (this.file == null) {
         md.setContentLength(this.metadata.getContentLength());
+      }
 
       final long fileLength =
           this.file == null ? this.metadata.getContentLength() : this.file
@@ -259,8 +266,9 @@ public class S3DataProtocol implements DataProtocol {
 
       } while (!uploadOk && tryCount < 3);
 
-      if (!uploadOk)
+      if (!uploadOk) {
         throw new IOException(ace.getMessage());
+      }
 
       final long end = System.currentTimeMillis();
       final long duration = end - start;
@@ -280,14 +288,15 @@ public class S3DataProtocol implements DataProtocol {
 
       final Transfer myUpload;
 
-      if (file != null)
+      if (this.file != null) {
         myUpload =
-            getTransferManager()
-                .upload(s3url.bucket, s3url.getFilePath(), file);
-      else
+            getTransferManager().upload(this.s3url.bucket,
+                this.s3url.getFilePath(), this.file);
+      } else {
         myUpload =
-            getTransferManager().upload(s3url.bucket, s3url.getFilePath(),
-                this.is, md);
+            getTransferManager().upload(this.s3url.bucket,
+                this.s3url.getFilePath(), this.is, md);
+      }
 
       try {
 
@@ -295,10 +304,11 @@ public class S3DataProtocol implements DataProtocol {
 
           Thread.sleep(500);
         }
-        if (myUpload.getState() != TransferState.Completed)
+        if (myUpload.getState() != TransferState.Completed) {
           throw new AmazonClientException(
               "Transfer not completed correctly. Status: "
                   + myUpload.getState());
+        }
 
       } catch (InterruptedException e) {
         getLogger().warning(e.getMessage());
@@ -306,8 +316,9 @@ public class S3DataProtocol implements DataProtocol {
       } finally {
 
         try {
-          if (this.is != null)
+          if (this.is != null) {
             this.is.close();
+          }
         } catch (IOException e) {
           throw new AmazonClientException(e.getMessage());
         }
@@ -375,15 +386,17 @@ public class S3DataProtocol implements DataProtocol {
         super.close();
 
         final SimpleDataFileMetadata md2 = new SimpleDataFileMetadata(md);
-        if (md2.getContentLength() < 0)
+        if (md2.getContentLength() < 0) {
           md2.setContentLength(f.length());
+        }
 
         getLogger().finest("Upload temporary file: " + f.getAbsolutePath());
         new FileToUpload(dest, FileUtils.createInputStream(f), md2).upload();
 
-        if (!f.delete())
+        if (!f.delete()) {
           getLogger().severe(
               "Can not delete temporary file: " + f.getAbsolutePath());
+        }
       }
 
     };
@@ -393,8 +406,9 @@ public class S3DataProtocol implements DataProtocol {
   @Override
   public DataFileMetadata getMetadata(final DataFile src) throws IOException {
 
-    if (!exists(src))
+    if (!exists(src)) {
       throw new FileNotFoundException("File not found: " + src);
+    }
 
     final ObjectMetadata md = new S3URL(src).getMetaData();
 
@@ -413,12 +427,14 @@ public class S3DataProtocol implements DataProtocol {
   public void putData(final DataFile src, final DataFile dest)
       throws IOException {
 
-    if (src == null)
+    if (src == null) {
       throw new NullPointerException("The source of the data to put is null");
+    }
 
-    if (dest == null)
+    if (dest == null) {
       throw new NullPointerException(
           "The destination of the data to put is null");
+    }
 
     final DataFileMetadata mdSrc = src.getMetaData();
 
@@ -427,10 +443,11 @@ public class S3DataProtocol implements DataProtocol {
     final File file = src.toFile();
     final FileToUpload toUpload;
 
-    if (file != null)
+    if (file != null) {
       toUpload = new FileToUpload(dest, file);
-    else
+    } else {
       toUpload = new FileToUpload(dest, src.rawOpen(), mdSrc);
+    }
 
     // Upload
     toUpload.upload();
@@ -464,8 +481,9 @@ public class S3DataProtocol implements DataProtocol {
   @Override
   public File getSourceAsFile(final DataFile src) {
 
-    if (src == null || src.getSource() == null)
+    if (src == null || src.getSource() == null) {
       throw new NullPointerException("The source is null.");
+    }
 
     return null;
   }

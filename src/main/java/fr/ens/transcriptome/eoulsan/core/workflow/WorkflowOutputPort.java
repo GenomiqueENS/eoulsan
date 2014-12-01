@@ -58,7 +58,7 @@ class WorkflowOutputPort extends SimpleOutputPort {
   private static final long serialVersionUID = -7857426034202971843L;
 
   private final AbstractWorkflowStep step;
-  private Set<WorkflowInputPort> links = new HashSet<>();
+  private final Set<WorkflowInputPort> links = new HashSet<>();
 
   /**
    * Get the step related to the port.
@@ -101,15 +101,17 @@ class WorkflowOutputPort extends SimpleOutputPort {
         + ", output port: " + getName());
 
     // Check if a link already exists
-    if (this.links.contains(inputPort))
+    if (this.links.contains(inputPort)) {
       return;
+    }
 
     // Check if format are compatible
-    if (!getFormat().equals(inputPort.getFormat()))
+    if (!getFormat().equals(inputPort.getFormat())) {
       throw new EoulsanRuntimeException("Incompatible format: "
           + inputPort.getStep().getId() + "." + inputPort.getName() + " -> "
           + inputPort.getFormat().getName() + " and " + getStep().getId() + "."
           + getName() + " <- " + getFormat().getName());
+    }
 
     this.links.add(inputPort);
   }
@@ -178,7 +180,7 @@ class WorkflowOutputPort extends SimpleOutputPort {
     }
 
     // Get the design for metadata of the data
-    final Design design = step.getAbstractWorkflow().getDesign();
+    final Design design = this.step.getAbstractWorkflow().getDesign();
 
     // Fill the result
     for (String key : map.keySet()) {
@@ -236,8 +238,9 @@ class WorkflowOutputPort extends SimpleOutputPort {
 
     super(name, list, format, compression);
 
-    if (step == null)
+    if (step == null) {
       throw new NullPointerException("Step is null");
+    }
 
     this.step = step;
   }

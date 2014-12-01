@@ -37,8 +37,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
  */
 public class MultiColumnTranslator extends BasicTranslator {
 
-  private Map<String, Map<String, String>> annotations =
-      new HashMap<>();
+  private final Map<String, Map<String, String>> annotations = new HashMap<>();
   private String[] fieldNames;
 
   /**
@@ -48,8 +47,9 @@ public class MultiColumnTranslator extends BasicTranslator {
    */
   public void addRow(final String[] rowData) {
 
-    if (rowData == null || rowData.length == 0 || rowData.length == 1)
+    if (rowData == null || rowData.length == 0 || rowData.length == 1) {
       return;
+    }
 
     final String[] dataArray = arrayWithoutFirstElement(rowData);
 
@@ -63,8 +63,9 @@ public class MultiColumnTranslator extends BasicTranslator {
    */
   public void addRow(final String id, final String[] rowData) {
 
-    if (id == null || rowData == null)
+    if (id == null || rowData == null) {
       return;
+    }
 
     Map<String, String> dataMap = new HashMap<>();
 
@@ -73,8 +74,9 @@ public class MultiColumnTranslator extends BasicTranslator {
 
     final int size = Math.min(sizeData, sizeFields);
 
-    for (int i = 0; i < size; i++)
-      dataMap.put(fieldNames[i], rowData[i]);
+    for (int i = 0; i < size; i++) {
+      dataMap.put(this.fieldNames[i], rowData[i]);
+    }
 
     this.annotations.put(id, dataMap);
   }
@@ -87,10 +89,12 @@ public class MultiColumnTranslator extends BasicTranslator {
    * Get an ordered list of the annotations fields
    * @return an ordered list of the annotations fields.
    */
+  @Override
   public String[] getFields() {
 
-    if (this.fieldNames == null)
+    if (this.fieldNames == null) {
       return null;
+    }
 
     final String[] result = this.fieldNames.clone();
 
@@ -103,21 +107,25 @@ public class MultiColumnTranslator extends BasicTranslator {
    * @param fieldName Field to get
    * @return A String with the request annotation of the Feature
    */
+  @Override
   public String translateField(final String id, final String fieldName) {
 
-    if (id == null)
+    if (id == null) {
       return null;
+    }
 
     final String field;
 
-    if (fieldName == null)
+    if (fieldName == null) {
       field = getDefaultField();
-    else
+    } else {
       field = fieldName;
+    }
 
     final Map<String, String> map = this.annotations.get(id);
-    if (map == null)
+    if (map == null) {
       return null;
+    }
 
     return map.get(field);
   }
@@ -132,8 +140,9 @@ public class MultiColumnTranslator extends BasicTranslator {
 
   private String[] arrayWithoutFirstElement(final String[] data) {
 
-    if (data == null)
+    if (data == null) {
       return null;
+    }
 
     final int size = data.length;
 
@@ -148,9 +157,11 @@ public class MultiColumnTranslator extends BasicTranslator {
    * Get the available identifiers by the translator if possible.
    * @return a array of string with the identifiers
    */
+  @Override
   public String[] getIds() {
 
-    return this.annotations.keySet().toArray(new String[this.annotations.size()]);
+    return this.annotations.keySet().toArray(
+        new String[this.annotations.size()]);
   }
 
   //
@@ -175,16 +186,19 @@ public class MultiColumnTranslator extends BasicTranslator {
   public MultiColumnTranslator(final String[] fieldNames,
       final boolean fieldNamesWithId) {
 
-    if (fieldNames == null)
+    if (fieldNames == null) {
       throw new NullPointerException("fieldnames is null");
+    }
 
-    if (fieldNamesWithId && fieldNames.length < 2)
+    if (fieldNamesWithId && fieldNames.length < 2) {
       throw new EoulsanRuntimeException(
           "fieldNames must have at least 2 fields");
+    }
 
-    if (!fieldNamesWithId && fieldNames.length < 1)
+    if (!fieldNamesWithId && fieldNames.length < 1) {
       throw new EoulsanRuntimeException(
           "fieldNames must have at least one fields");
+    }
 
     if (fieldNamesWithId) {
       this.fieldNames = arrayWithoutFirstElement(fieldNames);

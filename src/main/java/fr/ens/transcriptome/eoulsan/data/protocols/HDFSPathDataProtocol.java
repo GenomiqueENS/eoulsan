@@ -64,16 +64,19 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
 
     final Path path = getPath(src);
 
-    if (path == null)
+    if (path == null) {
       throw new NullPointerException("Path to create is null");
-    if (this.conf == null)
+    }
+    if (this.conf == null) {
       throw new NullPointerException("The configuration object is null");
+    }
 
     final FileSystem fs = path.getFileSystem(this.conf);
 
-    if (fs == null)
+    if (fs == null) {
       throw new IOException(
           "Unable to create InputSteam, The FileSystem is null");
+    }
 
     final FileStatus fStatus = fs.getFileStatus(path);
 
@@ -106,7 +109,7 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
     Arrays.sort(files, new Comparator<FileStatus>() {
 
       @Override
-      public int compare(final FileStatus f1, FileStatus f2) {
+      public int compare(final FileStatus f1, final FileStatus f2) {
 
         return f1.getPath().getName().compareTo(f2.getPath().getName());
       }
@@ -132,19 +135,23 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
 
     final Path path = getPath(dir);
 
-    if (path == null)
+    if (path == null) {
       throw new NullPointerException("Path to create is null");
-    if (this.conf == null)
+    }
+    if (this.conf == null) {
       throw new NullPointerException("The configuration object is null");
+    }
 
     final FileSystem fs = path.getFileSystem(this.conf);
 
-    if (fs == null)
+    if (fs == null) {
       throw new IOException(
           "Unable to create the directorty, The FileSystem is null");
+    }
 
-    if (!fs.mkdirs(path))
+    if (!fs.mkdirs(path)) {
       throw new IOException("Unable to create the directory: " + dir);
+    }
   }
 
   @Override
@@ -158,18 +165,22 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
 
     final Path path = getPath(file);
 
-    if (path == null)
+    if (path == null) {
       throw new NullPointerException("Path to delete is null");
-    if (this.conf == null)
+    }
+    if (this.conf == null) {
       throw new NullPointerException("The configuration object is null");
+    }
 
     final FileSystem fs = path.getFileSystem(this.conf);
 
-    if (fs == null)
+    if (fs == null) {
       throw new IOException("Unable to delete the file, The FileSystem is null");
+    }
 
-    if (!fs.delete(path, false))
+    if (!fs.delete(path, false)) {
       throw new IOException("Unable to delete the directory: " + file);
+    }
   }
 
   @Override
@@ -183,31 +194,37 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
 
     final Path path = getPath(file);
 
-    if (path == null)
+    if (path == null) {
       throw new NullPointerException("Path to delete is null");
-    if (this.conf == null)
+    }
+    if (this.conf == null) {
       throw new NullPointerException("The configuration object is null");
+    }
 
     final FileSystem fs = path.getFileSystem(this.conf);
 
-    if (fs == null)
+    if (fs == null) {
       throw new IOException("Unable to delete the file, The FileSystem is null");
+    }
 
     FileStatus fileStatus = fs.getFileStatus(path);
 
-    if (!fs.exists(path))
+    if (!fs.exists(path)) {
       throw new FileNotFoundException("File not found: " + file);
+    }
 
-    if (!fileStatus.isDirectory())
+    if (!fileStatus.isDirectory()) {
       throw new IOException("The file is not a directory: " + file);
+    }
 
     // List directory
     final FileStatus[] files = fs.listStatus(path);
 
     // Convert the File array to a list of DataFile
     final List<DataFile> result = new ArrayList<>(files.length);
-    for (FileStatus f : files)
+    for (FileStatus f : files) {
       result.add(new DataFile(f.getPath().toUri().toString()));
+    }
 
     // Return an unmodifiable list
     return Collections.unmodifiableList(result);

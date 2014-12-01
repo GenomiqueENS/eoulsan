@@ -47,17 +47,20 @@ public abstract class AbstractCasavaDesignTextReader implements
 
   protected void parseLine(final List<String> fields) throws IOException {
 
-    if (design == null)
+    if (this.design == null) {
       this.design = new CasavaDesign();
+    }
 
     trimAndCheckFields(fields);
 
-    if (firstLine) {
+    if (this.firstLine) {
       this.firstLine = false;
 
-      for (int i = 0; i < fields.size(); i++)
-        if (!FIELDNAMES[i].toLowerCase().equals(fields.get(i).toLowerCase()))
+      for (int i = 0; i < fields.size(); i++) {
+        if (!FIELDNAMES[i].toLowerCase().equals(fields.get(i).toLowerCase())) {
           throw new IOException("Invalid field name: " + fields.get(i));
+        }
+      }
 
       return;
     }
@@ -75,20 +78,23 @@ public abstract class AbstractCasavaDesignTextReader implements
     sample.setOperator(fields.get(8));
     sample.setSampleProject(fields.get(9));
 
-    design.addSample(sample);
+    this.design.addSample(sample);
   }
 
   private static final boolean parseControlField(final String value)
       throws IOException {
 
-    if ("".equals(value))
+    if ("".equals(value)) {
       throw new IOException("Empty value in the control field");
+    }
 
-    if ("Y".equals(value) || "y".equals(value))
+    if ("Y".equals(value) || "y".equals(value)) {
       return true;
+    }
 
-    if ("N".equals(value) || "n".equals(value))
+    if ("N".equals(value) || "n".equals(value)) {
       return false;
+    }
 
     throw new IOException("Invalid value for the control field: " + value);
   }
@@ -96,35 +102,42 @@ public abstract class AbstractCasavaDesignTextReader implements
   private static final void trimAndCheckFields(final List<String> fields)
       throws IOException {
 
-    if (fields == null)
+    if (fields == null) {
       throw new IOException("The fields are null");
+    }
 
     // Trim fields
     for (int i = 0; i < fields.size(); i++) {
       final String val = fields.get(i);
-      if (val == null)
+      if (val == null) {
         throw new IOException("Found null field.");
+      }
       fields.set(i, val.trim());
     }
 
-    if (fields.size() == 10)
+    if (fields.size() == 10) {
       return;
+    }
 
-    if (fields.size() < 10)
+    if (fields.size() < 10) {
       throw new IOException("Invalid number of field ("
           + fields.size() + "), 10 excepted.");
+    }
 
-    for (int i = 10; i < fields.size(); i++)
-      if (!"".equals(fields.get(i).trim()))
+    for (int i = 10; i < fields.size(); i++) {
+      if (!"".equals(fields.get(i).trim())) {
         throw new IOException("Invalid number of field ("
             + fields.size() + "), 10 excepted.");
+      }
+    }
 
   }
 
   private static final int parseLane(final String s) throws IOException {
 
-    if (s == null)
+    if (s == null) {
       return 0;
+    }
 
     final double d;
     try {
@@ -136,15 +149,16 @@ public abstract class AbstractCasavaDesignTextReader implements
 
     final int result = (int) d;
 
-    if (d - result > 0)
+    if (d - result > 0) {
       throw new IOException("Invalid lane number: " + s);
+    }
 
     return result;
   }
 
   protected CasavaDesign getDesign() {
 
-    return design;
+    return this.design;
   }
 
 }

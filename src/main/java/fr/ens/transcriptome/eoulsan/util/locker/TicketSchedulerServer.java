@@ -50,41 +50,43 @@ public class TicketSchedulerServer implements TicketScheduler {
   private final Map<Ticket, Ticket> tickets = new HashMap<>();
   private final Set<Ticket> toRemove = new HashSet<>();
 
-  private int maxWorkingTime = 2 * 60 * 1000;
-  private int deadTime = 30 * 1000;
+  private final int maxWorkingTime = 2 * 60 * 1000;
+  private final int deadTime = 30 * 1000;
 
-  private int checkingTime = 10 * 1000;
+  private final int checkingTime = 10 * 1000;
   private long lastCheckingTime = 0;
 
   @Override
   public Set<Ticket> getTickets(final Ticket ticket) {
 
-    if (ticket == null)
-      return new HashSet<>(tickets.values());
+    if (ticket == null) {
+      return new HashSet<>(this.tickets.values());
+    }
 
     synchronized (this.tickets) {
 
-      if (tickets.containsKey(ticket)) {
+      if (this.tickets.containsKey(ticket)) {
 
-        final Ticket t = tickets.get(ticket);
+        final Ticket t = this.tickets.get(ticket);
         t.updateLastActiveTime();
 
       } else {
         ticket.updateLastActiveTime();
-        tickets.put(ticket, ticket);
+        this.tickets.put(ticket, ticket);
       }
 
       check();
 
-      return new HashSet<>(tickets.values());
+      return new HashSet<>(this.tickets.values());
     }
   }
 
   @Override
   public void endWork(final Ticket ticket) {
 
-    if (ticket == null)
+    if (ticket == null) {
       return;
+    }
 
     synchronized (this.tickets) {
 
@@ -101,17 +103,20 @@ public class TicketSchedulerServer implements TicketScheduler {
   private void check() {
 
     final long currentTime = System.currentTimeMillis();
-    if (currentTime > lastCheckingTime + checkingTime) {
+    if (currentTime > this.lastCheckingTime + this.checkingTime) {
 
       // Check for waiting dead ticket
-      for (Ticket t : this.tickets.values())
-        if (!t.isWorking() && currentTime > t.getLastActiveTime() + deadTime)
+      for (Ticket t : this.tickets.values()) {
+        if (!t.isWorking()
+            && currentTime > t.getLastActiveTime() + this.deadTime) {
           this.toRemove.add(t);
+        }
+      }
 
       // Check for active ticket dead
       if (this.currentActive != null
           && currentTime > this.currentActive.getLastActiveTime()
-              + maxWorkingTime) {
+              + this.maxWorkingTime) {
         this.toRemove.add(this.currentActive);
         this.currentActive = null;
       }
@@ -121,19 +126,21 @@ public class TicketSchedulerServer implements TicketScheduler {
       for (Ticket t : this.tickets.values()) {
         if (!pids.contains(t.getPid())) {
 
-          if (t.equals(this.currentActive))
+          if (t.equals(this.currentActive)) {
             this.currentActive = null;
+          }
 
-          toRemove.add(t);
+          this.toRemove.add(t);
         }
       }
 
       // Remove dead
-      for (Ticket t : toRemove)
+      for (Ticket t : this.toRemove) {
         this.tickets.remove(t);
+      }
 
-      toRemove.clear();
-      lastCheckingTime = currentTime;
+      this.toRemove.clear();
+      this.lastCheckingTime = currentTime;
     }
 
     if (this.currentActive == null && this.tickets.size() > 0) {
@@ -160,8 +167,9 @@ public class TicketSchedulerServer implements TicketScheduler {
   private TicketSchedulerServer(final Set<Ticket> tickets) {
 
     if (tickets != null) {
-      for (Ticket t : tickets)
+      for (Ticket t : tickets) {
         this.tickets.put(t, t);
+      }
 
       check();
     }
@@ -175,8 +183,9 @@ public class TicketSchedulerServer implements TicketScheduler {
       final String lockerName, final int port) {
 
     // If the server already exists do nothing
-    if (serverInstance != null)
+    if (serverInstance != null) {
       return;
+    }
 
     try {
 
@@ -189,8 +198,9 @@ public class TicketSchedulerServer implements TicketScheduler {
 
       // Bind the remote object's stub in the registry
       Registry registry = LocateRegistry.getRegistry(port);
-      if (registry == null)
+      if (registry == null) {
         registry = LocateRegistry.createRegistry(port);
+      }
       registry.bind(TicketLocker.RMI_SERVICE_PREFIX + lockerName, stub);
 
     } catch (Exception e) {

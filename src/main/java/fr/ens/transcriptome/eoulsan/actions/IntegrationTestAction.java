@@ -62,7 +62,7 @@ public class IntegrationTestAction extends AbstractAction {
   }
 
   @Override
-  public void action(List<String> arguments) {
+  public void action(final List<String> arguments) {
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
@@ -74,7 +74,8 @@ public class IntegrationTestAction extends AbstractAction {
 
       // parse the command line arguments
       final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[arguments.size()]), true);
+          parser.parse(options,
+              arguments.toArray(new String[arguments.size()]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -127,14 +128,15 @@ public class IntegrationTestAction extends AbstractAction {
 
         // Value equals all, regenerate all expected directories generated
         // automatically
-        if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("all"))
+        if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("all")) {
           System.setProperty(
               ITFactory.IT_GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY, "true");
-
+        }
         // Value equals new, regenerate expected directories doesn't exists
-        else if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("new"))
+        else if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("new")) {
           System.setProperty(
               ITFactory.IT_GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY, "true");
+        }
 
         argsOptions += 2;
       }
@@ -145,15 +147,17 @@ public class IntegrationTestAction extends AbstractAction {
         // List all test to launch
         testNGReportDirectory = new File(line.getOptionValue("o").trim());
 
-        if (!testNGReportDirectory.exists())
+        if (!testNGReportDirectory.exists()) {
           throw new ParseException(
               "Output TestNG report directory doesn't exists: "
                   + testNGReportDirectory.getAbsolutePath());
+        }
 
-        if (!testNGReportDirectory.isDirectory())
+        if (!testNGReportDirectory.isDirectory()) {
           throw new ParseException(
               "Output TestNG report argument is not a directory: "
                   + testNGReportDirectory.getAbsolutePath());
+        }
 
         argsOptions += 2;
       }

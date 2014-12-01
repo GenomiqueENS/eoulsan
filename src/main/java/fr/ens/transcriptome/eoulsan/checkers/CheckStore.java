@@ -36,17 +36,18 @@ import java.util.Map;
 public class CheckStore {
 
   private static CheckStore singleton;
-  private Map<String, Object> info = new HashMap<>();
+  private final Map<String, Object> info = new HashMap<>();
 
   /**
    * Store some data.
    * @param key key of the data
    * @param value the data to store
    */
-  public void add(final String key, Object value) {
+  public void add(final String key, final Object value) {
 
-    if (key == null || value == null)
+    if (key == null || value == null) {
       return;
+    }
 
     this.info.put(key, value);
   }
@@ -89,8 +90,9 @@ public class CheckStore {
    */
   public static CheckStore getCheckStore() {
 
-    if (singleton == null)
+    if (singleton == null) {
       singleton = new CheckStore();
+    }
 
     return singleton;
   }

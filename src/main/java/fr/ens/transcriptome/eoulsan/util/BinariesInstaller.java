@@ -55,10 +55,11 @@ public class BinariesInstaller {
     final File outputDir = new File(outputPath);
 
     if (!outputDir.isDirectory()) {
-      if (!outputDir.mkdirs())
+      if (!outputDir.mkdirs()) {
         throw new IOException(
             "Can't create directory for binaries installation: "
                 + outputDir.getAbsolutePath());
+      }
       FileUtils.setDirectoryWritable(outputDir, true, false);
     }
 
@@ -66,9 +67,10 @@ public class BinariesInstaller {
     final InputStream is =
         BinariesInstaller.class.getResourceAsStream(resourcePath);
 
-    if (is == null)
+    if (is == null) {
       throw new FileNotFoundException("Unable to find the correct resource ("
           + resourcePath + ")");
+    }
 
     final File outputFile = new File(outputDir, file);
     OutputStream fos = FileUtils.createOutputStream(outputFile);
@@ -76,8 +78,9 @@ public class BinariesInstaller {
     byte[] buf = new byte[BUFFER_SIZE];
     int i = 0;
 
-    while ((i = is.read(buf)) != -1)
+    while ((i = is.read(buf)) != -1) {
       fos.write(buf, 0, i);
+    }
 
     is.close();
     fos.close();
@@ -102,16 +105,19 @@ public class BinariesInstaller {
         new File(tempDir == null
             ? System.getProperty("java.io.tmpdir") : tempDir.trim());
 
-    if (!tempDirFile.exists())
+    if (!tempDirFile.exists()) {
       throw new IOException("Temporary directory does not exits: "
           + tempDirFile);
+    }
 
-    if (!tempDirFile.isDirectory())
+    if (!tempDirFile.isDirectory()) {
       throw new IOException("Temporary directory is not a directory: "
           + tempDirFile);
+    }
 
-    if (!SystemUtils.isUnix())
+    if (!SystemUtils.isUnix()) {
       throw new IOException("Can only install binaries on *nix systems.");
+    }
 
     final String os = System.getProperty("os.name").toLowerCase();
     final String arch = System.getProperty("os.arch").toLowerCase();
@@ -127,14 +133,16 @@ public class BinariesInstaller {
     if (!EoulsanRuntime.getSettings().isBypassPlatformChecking()) {
 
       // Check if platform is allowed
-      if (!Globals.AVAILABLE_BINARY_ARCH.contains(osArchKey))
+      if (!Globals.AVAILABLE_BINARY_ARCH.contains(osArchKey)) {
         throw new FileNotFoundException(
             "There is no executable for your platform ("
                 + os + ") included in " + Globals.APP_NAME);
+      }
 
       // Change the os and arch if alias
-      if (Globals.AVAILABLE_BINARY_ARCH_ALIAS.containsKey(osArchKey))
+      if (Globals.AVAILABLE_BINARY_ARCH_ALIAS.containsKey(osArchKey)) {
         osArchKey = Globals.AVAILABLE_BINARY_ARCH_ALIAS.get(osArchKey);
+      }
     }
 
     final String inputPath =

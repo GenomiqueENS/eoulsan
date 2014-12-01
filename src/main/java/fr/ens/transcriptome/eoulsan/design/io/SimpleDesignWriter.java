@@ -53,50 +53,51 @@ public class SimpleDesignWriter extends DesignWriter {
   @Override
   public void write(final Design design) throws EoulsanIOException {
 
-    if (design == null)
+    if (design == null) {
       throw new NullPointerException("Design is null");
+    }
 
     try {
-      bw =
+      this.bw =
           new BufferedWriter(new OutputStreamWriter(getOutputStream(),
               Globals.DEFAULT_CHARSET));
 
       List<String> metadataFields = design.getMetadataFieldsNames();
 
       // Write header
-      bw.append(Design.SAMPLE_NUMBER_FIELD);
-      bw.append(SEPARATOR);
+      this.bw.append(Design.SAMPLE_NUMBER_FIELD);
+      this.bw.append(SEPARATOR);
 
-      bw.append(Design.NAME_FIELD);
+      this.bw.append(Design.NAME_FIELD);
 
       for (String f : metadataFields) {
 
-        bw.append(SEPARATOR);
-        bw.append(f);
+        this.bw.append(SEPARATOR);
+        this.bw.append(f);
       }
 
-      bw.append(NEWLINE);
+      this.bw.append(NEWLINE);
 
       // Write data
       List<Sample> samples = design.getSamples();
 
       for (Sample s : samples) {
 
-        bw.append(Integer.toString(s.getId()));
-        bw.append(SEPARATOR);
+        this.bw.append(Integer.toString(s.getId()));
+        this.bw.append(SEPARATOR);
 
-        bw.append(s.getName());
+        this.bw.append(s.getName());
 
         for (String f : metadataFields) {
 
-          bw.append(SEPARATOR);
-          bw.append(s.getMetadata().getField(f));
+          this.bw.append(SEPARATOR);
+          this.bw.append(s.getMetadata().getField(f));
         }
 
-        bw.append(NEWLINE);
+        this.bw.append(NEWLINE);
       }
 
-      bw.close();
+      this.bw.close();
     } catch (IOException e) {
       throw new EoulsanIOException("Error while writing stream : "
           + e.getMessage());
@@ -109,7 +110,7 @@ public class SimpleDesignWriter extends DesignWriter {
    * @return Returns true if thq scan labels settings must be written
    */
   boolean isWriteScanLabelsSettings() {
-    return writeScanLabelsSettings;
+    return this.writeScanLabelsSettings;
   }
 
   /**

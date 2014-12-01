@@ -52,7 +52,7 @@ abstract class AbstractDataMetadata implements DataMetadata, Serializable {
   }
 
   @Override
-  public void setPairedEnd(boolean pairedEnd) {
+  public void setPairedEnd(final boolean pairedEnd) {
 
     set(PAIRED_END_KEY, Boolean.toString(pairedEnd));
   }
@@ -64,7 +64,7 @@ abstract class AbstractDataMetadata implements DataMetadata, Serializable {
   }
 
   @Override
-  public FastqFormat getFastqFormat(FastqFormat defaultValue) {
+  public FastqFormat getFastqFormat(final FastqFormat defaultValue) {
 
     if (!containsKey(FASTQ_FORMAT_KEY)) {
       return defaultValue;
@@ -77,7 +77,7 @@ abstract class AbstractDataMetadata implements DataMetadata, Serializable {
   }
 
   @Override
-  public void setFastqFormat(FastqFormat fastqFormat) {
+  public void setFastqFormat(final FastqFormat fastqFormat) {
 
     checkNotNull(fastqFormat, "fastqFormat argument cannot be null");
 
@@ -91,7 +91,7 @@ abstract class AbstractDataMetadata implements DataMetadata, Serializable {
   }
 
   @Override
-  public void setSampleName(String sampleName) {
+  public void setSampleName(final String sampleName) {
 
     checkNotNull(sampleName, "sampleName argument cannot be null");
 
@@ -114,7 +114,7 @@ abstract class AbstractDataMetadata implements DataMetadata, Serializable {
   }
 
   @Override
-  public void setSampleId(int sampleId) {
+  public void setSampleId(final int sampleId) {
 
     checkArgument(sampleId > 0, "sampleId argument must be greater than 0: "
         + sampleId);

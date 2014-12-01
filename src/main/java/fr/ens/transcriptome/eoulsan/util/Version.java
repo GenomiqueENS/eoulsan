@@ -49,7 +49,7 @@ public final class Version implements Comparable<Version> {
    * @return The major version
    */
   public int getMajor() {
-    return major;
+    return this.major;
   }
 
   /**
@@ -57,7 +57,7 @@ public final class Version implements Comparable<Version> {
    * @return The minor version
    */
   public int getMinor() {
-    return minor;
+    return this.minor;
   }
 
   /**
@@ -65,7 +65,7 @@ public final class Version implements Comparable<Version> {
    * @return the number of revsion of the version
    */
   public int getRevision() {
-    return revision;
+    return this.revision;
   }
 
   /**
@@ -73,7 +73,7 @@ public final class Version implements Comparable<Version> {
    * @return the type of the version
    */
   public String getType() {
-    return type;
+    return this.type;
   }
 
   //
@@ -85,10 +85,11 @@ public final class Version implements Comparable<Version> {
    * @param major The major version of the version
    */
   public void setMajor(final int major) {
-    if (major >= 0)
+    if (major >= 0) {
       this.major = major;
-    else
+    } else {
       this.major = 0;
+    }
   }
 
   /**
@@ -96,10 +97,11 @@ public final class Version implements Comparable<Version> {
    * @param minor The minor version of the version
    */
   public void setMinor(final int minor) {
-    if (minor >= 0)
+    if (minor >= 0) {
       this.minor = minor;
-    else
+    } else {
       this.minor = 0;
+    }
   }
 
   /**
@@ -107,10 +109,11 @@ public final class Version implements Comparable<Version> {
    * @param revision The number of revision of the version
    */
   public void setRevision(final int revision) {
-    if (revision >= 0)
+    if (revision >= 0) {
       this.revision = revision;
-    else
+    } else {
       this.revision = 0;
+    }
   }
 
   /**
@@ -134,6 +137,7 @@ public final class Version implements Comparable<Version> {
    * Get the version in a string format.
    * @return The version in a string format
    */
+  @Override
   public String toString() {
 
     final StringBuilder sb = new StringBuilder();
@@ -182,8 +186,9 @@ public final class Version implements Comparable<Version> {
    */
   public void setVersion(final String version) {
 
-    if (version == null)
+    if (version == null) {
       return;
+    }
 
     String v = version.trim();
 
@@ -270,23 +275,27 @@ public final class Version implements Comparable<Version> {
   @Override
   public int compareTo(final Version version) {
 
-    if (version == null)
+    if (version == null) {
       return 1;
+    }
 
     final int compMajor =
         Integer.valueOf(getMajor()).compareTo(version.getMajor());
-    if (compMajor != 0)
+    if (compMajor != 0) {
       return compMajor;
+    }
 
     final int compMinor =
         Integer.valueOf(getMinor()).compareTo(version.getMinor());
-    if (compMinor != 0)
+    if (compMinor != 0) {
       return compMinor;
+    }
 
     final int compRevision =
         Integer.valueOf(getRevision()).compareTo(version.getRevision());
-    if (compRevision != 0)
+    if (compRevision != 0) {
       return compRevision;
+    }
 
     return getType().compareTo(version.getType());
   }
@@ -298,14 +307,17 @@ public final class Version implements Comparable<Version> {
    */
   public static Version getMinimalVersion(final List<Version> versions) {
 
-    if (versions == null || versions.size() == 0)
+    if (versions == null || versions.size() == 0) {
       return null;
+    }
 
     Version min = versions.get(0);
 
-    for (Version v : versions)
-      if (min.compareTo(v) > 0)
+    for (Version v : versions) {
+      if (min.compareTo(v) > 0) {
         min = v;
+      }
+    }
 
     return min;
   }
@@ -317,14 +329,17 @@ public final class Version implements Comparable<Version> {
    */
   public static Version getMaximalVersion(final List<Version> versions) {
 
-    if (versions == null || versions.size() == 0)
+    if (versions == null || versions.size() == 0) {
       return null;
+    }
 
     Version max = versions.get(0);
 
-    for (Version v : versions)
-      if (max.compareTo(v) < 0)
+    for (Version v : versions) {
+      if (max.compareTo(v) < 0) {
         max = v;
+      }
+    }
 
     return max;
   }
@@ -336,11 +351,13 @@ public final class Version implements Comparable<Version> {
   @Override
   public boolean equals(final Object o) {
 
-    if (o == this)
+    if (o == this) {
       return true;
+    }
 
-    if (!(o instanceof Version))
+    if (!(o instanceof Version)) {
       return false;
+    }
 
     final Version v = (Version) o;
 
@@ -352,7 +369,7 @@ public final class Version implements Comparable<Version> {
   @Override
   public int hashCode() {
 
-    return Utils.hashCode(major, minor, revision, type);
+    return Utils.hashCode(this.major, this.minor, this.revision, this.type);
   }
 
   //

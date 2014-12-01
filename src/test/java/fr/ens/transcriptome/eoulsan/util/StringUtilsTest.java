@@ -157,18 +157,15 @@ public class StringUtilsTest {
 
     assertEquals("[]",
         StringUtils.serializeStringArray(Arrays.asList(new String[] {})));
-    assertEquals("[]",
-        StringUtils.serializeStringArray(Arrays.asList("")));
+    assertEquals("[]", StringUtils.serializeStringArray(Arrays.asList("")));
     assertEquals("[toto]",
         StringUtils.serializeStringArray(Arrays.asList("toto")));
-    assertEquals(
-        "[toto,titi]",
-        StringUtils.serializeStringArray(Arrays.asList("toto",
-            "titi")));
+    assertEquals("[toto,titi]",
+        StringUtils.serializeStringArray(Arrays.asList("toto", "titi")));
     assertEquals("[to\\,to]",
         StringUtils.serializeStringArray(Arrays.asList("to,to")));
-    assertEquals("[to\\\\to]", StringUtils.serializeStringArray(Arrays
-        .asList("to\\to")));
+    assertEquals("[to\\\\to]",
+        StringUtils.serializeStringArray(Arrays.asList("to\\to")));
   }
 
   @Test
@@ -225,19 +222,22 @@ public class StringUtilsTest {
 
     String s = "12345678901234567890";
 
-    for (String split : StringUtils.splitStringIterator(s, 30))
+    for (String split : StringUtils.splitStringIterator(s, 30)) {
       assertEquals("12345678901234567890", split);
+    }
 
-    for (String split : StringUtils.splitStringIterator(s, 10))
+    for (String split : StringUtils.splitStringIterator(s, 10)) {
       assertEquals("1234567890", split);
+    }
 
     int i = 0;
     for (String split : StringUtils.splitStringIterator(s, 11)) {
 
-      if (i == 0)
+      if (i == 0) {
         assertEquals("12345678901", split);
-      else if (i == 1)
+      } else if (i == 1) {
         assertEquals("234567890", split);
+      }
 
       i++;
     }
@@ -245,10 +245,11 @@ public class StringUtilsTest {
     i = 0;
     for (String split : StringUtils.splitStringIterator(s, 5)) {
 
-      if (i == 0 || i == 2)
+      if (i == 0 || i == 2) {
         assertEquals("12345", split);
-      else if (i == 1 || i == 3)
+      } else if (i == 1 || i == 3) {
         assertEquals("67890", split);
+      }
 
       i++;
     }
@@ -256,22 +257,23 @@ public class StringUtilsTest {
     i = 0;
     for (String split : StringUtils.splitStringIterator(s, 3)) {
 
-      if (i == 0)
+      if (i == 0) {
         assertEquals("123", split);
-      else if (i == 1)
+      } else if (i == 1) {
         assertEquals("456", split);
-      else if (i == 2)
+      } else if (i == 2) {
         assertEquals("789", split);
-      else if (i == 3)
+      } else if (i == 3) {
         assertEquals("012", split);
-      else if (i == 4)
+      } else if (i == 4) {
         assertEquals("345", split);
-      else if (i == 5)
+      } else if (i == 5) {
         assertEquals("678", split);
-      else if (i == 6)
+      } else if (i == 6) {
         assertEquals("90", split);
-      else
+      } else {
         assertTrue(false);
+      }
 
       i++;
     }

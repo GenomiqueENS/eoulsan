@@ -61,10 +61,10 @@ public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
    * '1', the size of this list is the number of reads found on the feature.
    */
   @Override
-  public void reduce(final Text key, Iterable<Text> values,
+  public void reduce(final Text key, final Iterable<Text> values,
       final Context context) throws IOException, InterruptedException {
 
-    geneExpr.clear();
+    this.geneExpr.clear();
 
     context.getCounter(this.counterGroup, PARENTS_COUNTER.counterName())
         .increment(1);
@@ -99,14 +99,15 @@ public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
         continue;
       }
 
-      geneExpr.addAlignment(exonStart, exonEnd, alignmentStart, alignmentEnd,
-        true);
+      this.geneExpr.addAlignment(exonStart, exonEnd, alignmentStart,
+          alignmentEnd, true);
     }
 
-    if (count == 0)
+    if (count == 0) {
       return;
+    }
 
-    final Transcript transcript = tef.getTranscript(parentId);
+    final Transcript transcript = this.tef.getTranscript(parentId);
 
     if (transcript == null) {
       context.getCounter(this.counterGroup,
@@ -116,9 +117,9 @@ public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
     }
 
     final int geneLength = transcript.getLength();
-    final int notCovered = geneExpr.getNotCovered(geneLength);
+    final int notCovered = this.geneExpr.getNotCovered(geneLength);
 
-    final String result = notCovered + "\t" + geneExpr.getAlignmentCount();
+    final String result = notCovered + "\t" + this.geneExpr.getAlignmentCount();
 
     this.outputValue.set(result);
 
@@ -139,19 +140,21 @@ public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
 
       final URI[] localCacheFiles = context.getCacheFiles();
 
-      if (localCacheFiles == null || localCacheFiles.length == 0)
+      if (localCacheFiles == null || localCacheFiles.length == 0) {
         throw new IOException("Unable to retrieve genome index");
+      }
 
-      if (localCacheFiles.length > 1)
+      if (localCacheFiles.length > 1) {
         throw new IOException(
             "Retrieve more than one file in distributed cache");
+      }
 
       getLogger().info(
           "Genome index compressed file (from distributed cache): "
               + localCacheFiles[0]);
 
       final File indexFile = new File(localCacheFiles[0]);
-      tef.load(indexFile);
+      this.tef.load(indexFile);
 
     } catch (IOException e) {
 

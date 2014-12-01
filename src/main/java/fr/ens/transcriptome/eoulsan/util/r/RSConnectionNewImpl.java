@@ -56,7 +56,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class RSConnectionNewImpl implements RSConnection {
 
-  private String serverName;
+  private final String serverName;
   private RConnection rconnection;
 
   private static final int BUFFER_SIZE = 32 * 1024;
@@ -72,10 +72,11 @@ public class RSConnectionNewImpl implements RSConnection {
    */
   public RConnection getRConnection() throws REngineException {
 
-    if (this.rconnection == null)
+    if (this.rconnection == null) {
       connect();
+    }
 
-    return rconnection;
+    return this.rconnection;
   }
 
   public String getServerName() {
@@ -86,11 +87,13 @@ public class RSConnectionNewImpl implements RSConnection {
   // Other methods
   //
 
+  @Override
   public void writeStringAsFile(final String outputFilename, final String value)
       throws REngineException {
 
-    if (outputFilename == null)
+    if (outputFilename == null) {
       return;
+    }
 
     try {
 
@@ -106,6 +109,7 @@ public class RSConnectionNewImpl implements RSConnection {
 
   }
 
+  @Override
   public InputStream getFileInputStream(final String filename)
       throws REngineException {
 
@@ -120,6 +124,7 @@ public class RSConnectionNewImpl implements RSConnection {
 
   }
 
+  @Override
   public OutputStream getFileOutputStream(final String filename)
       throws REngineException {
 
@@ -137,6 +142,7 @@ public class RSConnectionNewImpl implements RSConnection {
   /**
    * Put file on Rserve server
    */
+  @Override
   public void putFile(final File inputFile, final String rServeFilename)
       throws REngineException {
 
@@ -148,25 +154,27 @@ public class RSConnectionNewImpl implements RSConnection {
       byte[] buf = new byte[BUFFER_SIZE];
       int i = 0;
 
-      while ((i = is.read(buf)) != -1)
+      while ((i = is.read(buf)) != -1) {
         os.write(buf, 0, i);
+      }
 
       is.close();
       os.close();
 
     } catch (REngineException e) {
-      throw new REngineException(rconnection, "Unable to put file: "
+      throw new REngineException(this.rconnection, "Unable to put file: "
           + e.getMessage());
     } catch (FileNotFoundException e) {
-      throw new REngineException(rconnection, "file not found: "
+      throw new REngineException(this.rconnection, "file not found: "
           + e.getMessage());
     } catch (IOException e) {
-      throw new REngineException(rconnection, "Unable to create report: "
+      throw new REngineException(this.rconnection, "Unable to create report: "
           + e.getMessage());
     }
 
   }
 
+  @Override
   public void getFile(final String rServeFilename, final File outputFile)
       throws REngineException {
 
@@ -177,21 +185,23 @@ public class RSConnectionNewImpl implements RSConnection {
       byte[] buf = new byte[BUFFER_SIZE];
       int i = 0;
 
-      while ((i = is.read(buf)) != -1)
+      while ((i = is.read(buf)) != -1) {
         os.write(buf, 0, i);
+      }
 
       is.close();
       os.close();
 
     } catch (REngineException e) {
-      throw new REngineException(rconnection, "Unable to get file");
+      throw new REngineException(this.rconnection, "Unable to get file");
     } catch (FileNotFoundException e) {
-      throw new REngineException(rconnection, "file not found");
+      throw new REngineException(this.rconnection, "file not found");
     } catch (IOException e) {
-      throw new REngineException(rconnection, "Unable to create report.");
+      throw new REngineException(this.rconnection, "Unable to create report.");
     }
   }
 
+  @Override
   public void getFilesIntoZip(final List<String> rServeFilenames,
       final File zipFile) throws REngineException {
 
@@ -208,8 +218,9 @@ public class RSConnectionNewImpl implements RSConnection {
 
         int i = 0;
 
-        while ((i = is.read(buf)) != -1)
+        while ((i = is.read(buf)) != -1) {
           out.write(buf, 0, i);
+        }
 
         // Complete the entry
         out.closeEntry();
@@ -220,14 +231,15 @@ public class RSConnectionNewImpl implements RSConnection {
       out.close();
 
     } catch (REngineException e) {
-      throw new REngineException(rconnection, "Unable to get file");
+      throw new REngineException(this.rconnection, "Unable to get file");
     } catch (FileNotFoundException e) {
-      throw new REngineException(rconnection, "File not found");
+      throw new REngineException(this.rconnection, "File not found");
     } catch (IOException e) {
-      throw new REngineException(rconnection, "Unable to get file");
+      throw new REngineException(this.rconnection, "Unable to get file");
     }
   }
 
+  @Override
   public void removeFile(final String filename) throws REngineException {
 
     try {
@@ -235,12 +247,12 @@ public class RSConnectionNewImpl implements RSConnection {
       RConnection c = getRConnection();
 
       REXP exists = c.eval("file.exists(\"" + filename + "\")");
-      if (exists.asInteger() == 1)
-
+      if (exists.asInteger() == 1) {
         c.voidEval("file.remove(\"" + filename + "\")");
+      }
 
     } catch (RserveException | REXPMismatchException e) {
-      throw new REngineException(rconnection, "RServe exception: " + e);
+      throw new REngineException(this.rconnection, "RServe exception: " + e);
     }
   }
 
@@ -254,10 +266,12 @@ public class RSConnectionNewImpl implements RSConnection {
 
   }
 
+  @Override
   public void executeRCode(final String source) throws REngineException {
 
-    if (source == null)
+    if (source == null) {
       return;
+    }
 
     try {
 
@@ -268,14 +282,15 @@ public class RSConnectionNewImpl implements RSConnection {
 
     } catch (RserveException e) {
 
-      throw new REngineException(rconnection, "RServe exception: " + e);
+      throw new REngineException(this.rconnection, "RServe exception: " + e);
     }
   }
 
   public void executeRnwCode(final String source) throws REngineException {
 
-    if (source == null)
+    if (source == null) {
       return;
+    }
 
     try {
       RConnection rc = getRConnection();
@@ -287,13 +302,15 @@ public class RSConnectionNewImpl implements RSConnection {
 
   public Image loadImage(final String filename) throws REngineException {
 
-    if (filename == null)
+    if (filename == null) {
       return null;
+    }
 
     final RConnection connection = getRConnection();
 
-    if (connection == null)
+    if (connection == null) {
       throw new REngineException(null, "Connection is null");
+    }
 
     try {
       RFileInputStream is = connection.openFile(filename);
@@ -308,10 +325,12 @@ public class RSConnectionNewImpl implements RSConnection {
           buffers.add(buf);
           buf = new byte[bufSize];
         }
-        if (n > 0)
+        if (n > 0) {
           imgLength += n;
-        if (n < bufSize)
+        }
+        if (n < bufSize) {
           break;
+        }
       }
       if (imgLength < 10) { // this shouldn't be the case actually,
         // because we did some error checking, but
@@ -331,8 +350,9 @@ public class RSConnectionNewImpl implements RSConnection {
         System.arraycopy(b, 0, imgCode, imgPos, bufSize);
         imgPos += bufSize;
       }
-      if (n > 0)
+      if (n > 0) {
         System.arraycopy(buf, 0, imgCode, imgPos, n);
+      }
 
       // ... and close the file ... and remove it - we have what we need :)
       is.close();
@@ -356,8 +376,9 @@ public class RSConnectionNewImpl implements RSConnection {
 
     final RConnection connection = getRConnection();
 
-    if (connection == null)
+    if (connection == null) {
       throw new REngineException(null, "Connection is null");
+    }
 
     try {
       RFileInputStream is = connection.openFile(filename);
@@ -374,10 +395,12 @@ public class RSConnectionNewImpl implements RSConnection {
           buffers.add(buf);
           buf = new byte[bufSize];
         }
-        if (n > 0)
+        if (n > 0) {
           imgLength += n;
-        if (n < bufSize)
+        }
+        if (n < bufSize) {
           break;
+        }
       }
       if (imgLength < 10) {
         throw new REngineException(connection,
@@ -394,8 +417,9 @@ public class RSConnectionNewImpl implements RSConnection {
         System.arraycopy(b, 0, imgCode, imgPos, bufSize);
         imgPos += bufSize;
       }
-      if (n > 0)
+      if (n > 0) {
         System.arraycopy(buf, 0, imgCode, imgPos, n);
+      }
 
       is.close();
 
@@ -413,7 +437,8 @@ public class RSConnectionNewImpl implements RSConnection {
    * @return file
    * @throws REngineException
    */
-  public RFileInputStream openFile(String filename) throws REngineException {
+  public RFileInputStream openFile(final String filename)
+      throws REngineException {
 
     final RConnection connection = getRConnection();
     RFileInputStream file;
@@ -426,7 +451,7 @@ public class RSConnectionNewImpl implements RSConnection {
     return file;
   }
 
-  public void getAllFiles(String outPath) throws REngineException,
+  public void getAllFiles(final String outPath) throws REngineException,
       REXPMismatchException {
     String[] files = getFileList();
 
@@ -459,6 +484,7 @@ public class RSConnectionNewImpl implements RSConnection {
 
   }
 
+  @Override
   public void disConnect() {
 
     this.rconnection.close();

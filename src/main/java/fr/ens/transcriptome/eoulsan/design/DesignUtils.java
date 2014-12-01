@@ -118,8 +118,9 @@ public final class DesignUtils {
     for (Sample s : design.getSamples()) {
       for (String fileSource : s.getMetadata().getReads()) {
 
-        if (samplesSources.contains(fileSource))
+        if (samplesSources.contains(fileSource)) {
           return false;
+        }
         samplesSources.add(fileSource);
       }
     }
@@ -141,10 +142,11 @@ public final class DesignUtils {
     for (Sample s : design.getSamples()) {
       for (String fileSource : s.getMetadata().getReads()) {
 
-        if (samplesSources.contains(fileSource))
+        if (samplesSources.contains(fileSource)) {
           throw new EoulsanException(
               "Error: The design contains one or more duplicate sample sources: "
                   + fileSource + " (sample " + s.getId() + ")");
+        }
 
         samplesSources.add(fileSource);
       }
@@ -160,8 +162,9 @@ public final class DesignUtils {
    */
   public static boolean checkGenomes(final Design design) {
 
-    if (!design.isMetadataField(SampleMetadata.GENOME_FIELD))
+    if (!design.isMetadataField(SampleMetadata.GENOME_FIELD)) {
       return true;
+    }
 
     final Set<String> genomes = new HashSet<>();
 
@@ -169,11 +172,13 @@ public final class DesignUtils {
 
       String genome = s.getMetadata().getGenome();
 
-      if (genomes.size() == 1 && !genomes.contains(genome))
+      if (genomes.size() == 1 && !genomes.contains(genome)) {
         return false;
+      }
 
-      if (genomes.size() == 0)
+      if (genomes.size() == 0) {
         genomes.add(genome);
+      }
     }
 
     return true;
@@ -186,8 +191,9 @@ public final class DesignUtils {
    */
   public static boolean checkAnnotations(final Design design) {
 
-    if (!design.isMetadataField(SampleMetadata.GENOME_FIELD))
+    if (!design.isMetadataField(SampleMetadata.GENOME_FIELD)) {
       return true;
+    }
 
     final Set<String> annotations = new HashSet<>();
 
@@ -195,11 +201,13 @@ public final class DesignUtils {
 
       String annotation = s.getMetadata().getAnnotation();
 
-      if (annotations.size() == 1 && !annotations.contains(annotation))
+      if (annotations.size() == 1 && !annotations.contains(annotation)) {
         return false;
+      }
 
-      if (annotations.size() == 0)
+      if (annotations.size() == 0) {
         annotations.add(annotation);
+      }
     }
 
     return true;
@@ -219,13 +227,15 @@ public final class DesignUtils {
 
     DesignUtils.checkSamplesWithException(design);
 
-    if (!DesignUtils.checkGenomes(design))
+    if (!DesignUtils.checkGenomes(design)) {
       throw new EoulsanException(
           "Warning: The design contains more than one genome file.");
+    }
 
-    if (!DesignUtils.checkAnnotations(design))
+    if (!DesignUtils.checkAnnotations(design)) {
       throw new EoulsanException(
           "Warning: The design contains more than one annotation file.");
+    }
 
     return design;
   }
@@ -263,8 +273,9 @@ public final class DesignUtils {
     for (Sample s : design.getSamples()) {
 
       final String newSampleName = "s" + s.getId();
-      if (!newSampleName.equals(s.getName()))
+      if (!newSampleName.equals(s.getName())) {
         s.setName(newSampleName);
+      }
 
       // Obfuscate Experiment field
       if (design.isMetadataField(SampleMetadata.EXPERIMENT_FIELD)) {
@@ -326,18 +337,21 @@ public final class DesignUtils {
   public static void replaceLocalPathBySymlinks(final Design design,
       final File symlinksDir) throws EoulsanIOException {
 
-    if (design == null)
+    if (design == null) {
       return;
+    }
 
     final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
     final List<String> fieldsToModify = new ArrayList<>();
 
-    for (String field : design.getMetadataFieldsNames())
-      if (registry.getDataFormatForDesignField(field) != null)
+    for (String field : design.getMetadataFieldsNames()) {
+      if (registry.getDataFormatForDesignField(field) != null) {
         fieldsToModify.add(field);
+      }
+    }
 
-    for (final Sample s : design.getSamples())
+    for (final Sample s : design.getSamples()) {
       for (final String field : fieldsToModify) {
 
         final List<String> values =
@@ -351,15 +365,18 @@ public final class DesignUtils {
             final File inFile = df.toFile();
             final File outFile = new File(symlinksDir, df.getName());
 
-            if (!inFile.exists())
+            if (!inFile.exists()) {
               throw new EoulsanIOException("File not exists: " + df);
+            }
 
-            if (outFile.exists())
+            if (outFile.exists()) {
               throw new EoulsanIOException(
                   "The symlink to create, already exists: " + outFile);
+            }
 
-            if (!FileUtils.createSymbolicLink(df.toFile(), outFile))
+            if (!FileUtils.createSymbolicLink(df.toFile(), outFile)) {
               throw new EoulsanIOException("Cannot create symlink: " + outFile);
+            }
 
             values.set(i, df.getName());
           }
@@ -368,6 +385,7 @@ public final class DesignUtils {
         s.getMetadata().setField(field, values);
 
       }
+    }
 
   }
 

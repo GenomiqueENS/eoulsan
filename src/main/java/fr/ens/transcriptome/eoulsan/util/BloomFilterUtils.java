@@ -30,8 +30,8 @@ public class BloomFilterUtils implements Serializable {
   private final double falsePositiveProbability;
 
   public void put(final String element) {
-    bf.put(element);
-    addedNumberOfElements++;
+    this.bf.put(element);
+    this.addedNumberOfElements++;
   }
 
   public boolean mightContain(final String element) {
@@ -104,17 +104,17 @@ public class BloomFilterUtils implements Serializable {
   //
   /** Return the bloom filter */
   public BloomFilter<String> getBf() {
-    return bf;
+    return this.bf;
   }
 
   /** Return number of elements added in bloom filter */
   public int getAddedNumberOfElements() {
-    return addedNumberOfElements;
+    return this.addedNumberOfElements;
   }
 
   /** Return parameter used to create bloom filter: expected number element */
   public int getExpectedNumberOfElements() {
-    return expectedNumberOfElements;
+    return this.expectedNumberOfElements;
   }
 
   /**
@@ -122,7 +122,7 @@ public class BloomFilterUtils implements Serializable {
    * expected
    */
   public double getFalsePositiveProbability() {
-    return falsePositiveProbability;
+    return this.falsePositiveProbability;
   }
 
   @Override
@@ -182,7 +182,7 @@ public class BloomFilterUtils implements Serializable {
       private static final long serialVersionUID = 1L;
 
       @Override
-      public void funnel(String from, PrimitiveSink into) {
+      public void funnel(final String from, final PrimitiveSink into) {
         into.putString(from, StandardCharsets.UTF_8);
       }
 

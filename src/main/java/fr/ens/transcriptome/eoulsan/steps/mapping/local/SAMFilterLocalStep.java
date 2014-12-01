@@ -167,8 +167,9 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
         // single-end or paired-end mode ?
         if (counterInput == 0) {
-          if (samRecord.getReadPairedFlag())
+          if (samRecord.getReadPairedFlag()) {
             pairedEnd = true;
+          }
         }
 
         counterInput++;

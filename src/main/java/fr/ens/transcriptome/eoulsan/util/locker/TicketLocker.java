@@ -70,7 +70,7 @@ public class TicketLocker implements Locker {
 
           if (stub != null) {
 
-            this.tickets = stub.getTickets(ticket);
+            this.tickets = stub.getTickets(this.ticket);
 
             // Safety: if ticket scheduler return one or zero ticket, the locker
             // ticket is allowed to work
@@ -82,15 +82,18 @@ public class TicketLocker implements Locker {
             }
 
             // Test if locker ticket is allowed to work
-            for (Ticket t : tickets)
-              if (t.equals(ticket)) {
+            for (Ticket t : this.tickets) {
+              if (t.equals(this.ticket)) {
 
-                if (t.isWorking())
+                if (t.isWorking()) {
                   return;
+                }
               }
+            }
 
-          } else
-            startRMIServer(tickets);
+          } else {
+            startRMIServer(this.tickets);
+          }
 
         } catch (RemoteException e) {
           // e.printStackTrace();
@@ -111,13 +114,14 @@ public class TicketLocker implements Locker {
 
       final TicketScheduler stub = getStub();
 
-      if (stub != null)
+      if (stub != null) {
         try {
-          stub.endWork(ticket);
+          stub.endWork(this.ticket);
         } catch (RemoteException e) {
 
-          startRMIServer(tickets);
+          startRMIServer(this.tickets);
         }
+      }
 
     }
 
@@ -139,8 +143,9 @@ public class TicketLocker implements Locker {
   private final TicketScheduler getStub() {
 
     try {
-      Registry registry = LocateRegistry.getRegistry(port);
-      return (TicketScheduler) registry.lookup(RMI_SERVICE_PREFIX + lockerName);
+      Registry registry = LocateRegistry.getRegistry(this.port);
+      return (TicketScheduler) registry.lookup(RMI_SERVICE_PREFIX
+          + this.lockerName);
 
     }
 
@@ -158,19 +163,20 @@ public class TicketLocker implements Locker {
   @Override
   public void lock() throws IOException {
 
-    if (thread == null)
-      thread = new LockerThread(new Ticket(this.description));
+    if (this.thread == null) {
+      this.thread = new LockerThread(new Ticket(this.description));
+    }
 
-    final Thread t = new Thread(thread);
+    final Thread t = new Thread(this.thread);
 
     t.start();
 
-    while (t.isAlive())
-
+    while (t.isAlive()) {
       try {
         Thread.sleep(1000);
       } catch (InterruptedException e) {
       }
+    }
 
   }
 
@@ -196,13 +202,15 @@ public class TicketLocker implements Locker {
       @Override
       public void run() {
         try {
-          LocateRegistry.createRegistry(port);
-          TicketSchedulerServer.newServer(tickets, lockerName, port);
+          LocateRegistry.createRegistry(TicketLocker.this.port);
+          TicketSchedulerServer.newServer(tickets,
+              TicketLocker.this.lockerName, TicketLocker.this.port);
 
           // TODO the server must be halted if no more tickets to process since
           // several minutes
-          while (true)
+          while (true) {
             Thread.sleep(10000);
+          }
 
         } catch (InterruptedException | RemoteException e) {
         }
@@ -250,7 +258,7 @@ public class TicketLocker implements Locker {
    * @throws RemoteException if an error occurs while inspecting tickets
    * @throws MalformedURLException
    */
-  public static final void main(String[] args) throws RemoteException,
+  public static final void main(final String[] args) throws RemoteException,
       MalformedURLException {
 
     if (args.length < 2) {
@@ -267,8 +275,7 @@ public class TicketLocker implements Locker {
     TicketLocker locker =
         new TicketLocker(args[0], Integer.parseInt(args[1]), null);
 
-    List<Ticket> tickets =
-        new ArrayList<>(locker.getStub().getTickets(null));
+    List<Ticket> tickets = new ArrayList<>(locker.getStub().getTickets(null));
     Collections.sort(tickets);
 
     for (Ticket t : tickets) {

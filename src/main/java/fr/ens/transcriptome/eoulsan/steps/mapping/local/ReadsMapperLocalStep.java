@@ -82,7 +82,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort(READS_PORT_NAME, READS_FASTQ, true);
-    builder.addPort(MAPPER_INDEX_PORT_NAME, getMapper().getArchiveFormat(), true);
+    builder.addPort(MAPPER_INDEX_PORT_NAME, getMapper().getArchiveFormat(),
+        true);
     builder.addPort(GENOME_DESCRIPTION_PORT_NAME, GENOME_DESC_TXT, true);
 
     return builder.create();
@@ -96,12 +97,13 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       // Load genome description object
       if (this.firstSample) {
         if (this.genomeDescription == null) {
-          genomeDescription =
+          this.genomeDescription =
               GenomeDescription.load(context
                   .getInputData(DataFormats.GENOME_DESC_TXT).getDataFile()
                   .open());
-        } else
-          genomeDescription = null;
+        } else {
+          this.genomeDescription = null;
+        }
         this.firstSample = false;
       }
 
@@ -132,12 +134,14 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       final SequenceReadsMapper mapper =
           initMapper(context, fastqFormat, archiveIndexFile, indexDir, reporter);
 
-      if (inData.getDataFileCount() < 1)
+      if (inData.getDataFileCount() < 1) {
         throw new IOException("No reads file found.");
+      }
 
-      if (inData.getDataFileCount() > 2)
+      if (inData.getDataFileCount() > 2) {
         throw new IOException(
             "Cannot handle more than 2 reads files at the same time.");
+      }
 
       String logMsg = "";
 
@@ -155,7 +159,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
                 + " threads option");
 
         // Single read mapping
-        parseSAMResults(mapper.mapSE(inFile, genomeDescription), samFile,
+        parseSAMResults(mapper.mapSE(inFile, this.genomeDescription), samFile,
             reporter);
 
         logMsg =
@@ -182,7 +186,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
                 + mapper.getThreadsNumber() + " threads option");
 
         // Single read mapping
-        parseSAMResults(mapper.mapPE(inFile1, inFile2, genomeDescription),
+        parseSAMResults(mapper.mapPE(inFile1, inFile2, this.genomeDescription),
             samFile, reporter);
 
         logMsg =
@@ -221,7 +225,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
    */
   private SequenceReadsMapper initMapper(final StepContext context,
       final FastqFormat format, final File archiveIndexFile,
-      final File indexDir, Reporter reporter) throws IOException {
+      final File indexDir, final Reporter reporter) throws IOException {
 
     final SequenceReadsMapper mapper = getMapper();
 
@@ -279,8 +283,9 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       writer.write('\n');
 
       final String trimmedLine = line.trim();
-      if ("".equals(trimmedLine) || trimmedLine.startsWith("@"))
+      if ("".equals(trimmedLine) || trimmedLine.startsWith("@")) {
         continue;
+      }
 
       final int tabPos = trimmedLine.indexOf('\t');
 

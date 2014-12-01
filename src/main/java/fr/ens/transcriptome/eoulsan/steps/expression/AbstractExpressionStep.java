@@ -142,7 +142,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
    */
   protected ExpressionCounter getCounter() {
 
-    return ExpressionCounterService.getInstance().newService(counterName);
+    return ExpressionCounterService.getInstance().newService(this.counterName);
   }
 
   /**
@@ -150,7 +150,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
    * @return Returns the tmpDir
    */
   protected String getTmpDir() {
-    return tmpDir;
+    return this.tmpDir;
   }
 
   //
@@ -200,47 +200,53 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      if (GENOMIC_TYPE_PARAMETER_NAME.equals(p.getName()))
+      if (GENOMIC_TYPE_PARAMETER_NAME.equals(p.getName())) {
         this.genomicType = p.getStringValue();
-      else if (ATTRIBUTE_ID_PARAMETER_NAME.equals(p.getName()))
+      } else if (ATTRIBUTE_ID_PARAMETER_NAME.equals(p.getName())) {
         this.attributeId = p.getStringValue();
-      else if (COUNTER_PARAMETER_NAME.equals(p.getName()))
+      } else if (COUNTER_PARAMETER_NAME.equals(p.getName())) {
         counterName = p.getStringValue();
-      else if (STRANDED_PARAMETER_NAME.equals(p.getName())) {
+      } else if (STRANDED_PARAMETER_NAME.equals(p.getName())) {
 
         this.stranded = StrandUsage.getStrandUsageFromName(p.getStringValue());
 
-        if (this.stranded == null)
+        if (this.stranded == null) {
           throw new EoulsanException("Unknown strand mode in "
               + getName() + " step: " + p.getStringValue());
+        }
 
       } else if (OVERLAPMODE_PARAMETER_NAME.equals(p.getName())) {
 
         this.overlapmode =
             OverlapMode.getOverlapModeFromName(p.getStringValue());
 
-        if (this.overlapmode == null)
+        if (this.overlapmode == null) {
           throw new EoulsanException("Unknown overlap mode in "
               + getName() + " step: " + p.getStringValue());
+        }
 
-      } else if (REMOVEAMBIGUOUSCASES_PARAMETER_NAME.equals(p.getName()))
+      } else if (REMOVEAMBIGUOUSCASES_PARAMETER_NAME.equals(p.getName())) {
         this.removeAmbiguousCases = p.getBooleanValue();
-      else
+      } else {
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());
+      }
 
     }
 
-    if (this.genomicType == null)
+    if (this.genomicType == null) {
       throw new EoulsanException("Parent type not set for "
           + getName() + " step.");
+    }
 
-    if (this.attributeId == null)
+    if (this.attributeId == null) {
       throw new EoulsanException("Attribute id not set for "
           + getName() + " step.");
+    }
 
-    if (counterName == null)
+    if (counterName == null) {
       counterName = "eoulsanCounter";
+    }
 
     // Test if counter engine exists
     if (ExpressionCounterService.getInstance().newService(counterName) == null) {

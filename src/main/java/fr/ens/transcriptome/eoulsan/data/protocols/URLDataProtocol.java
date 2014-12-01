@@ -44,8 +44,9 @@ public abstract class URLDataProtocol extends AbstractDataProtocol {
 
   private URLConnection createConnection(final DataFile src) throws IOException {
 
-    if (src == null)
+    if (src == null) {
       throw new NullPointerException("The source is null.");
+    }
 
     try {
       return new URL(src.getSource()).openConnection();
@@ -70,8 +71,9 @@ public abstract class URLDataProtocol extends AbstractDataProtocol {
   @Override
   public DataFileMetadata getMetadata(final DataFile src) throws IOException {
 
-    if (!exists(src))
+    if (!exists(src)) {
       throw new FileNotFoundException("File not found: " + src);
+    }
 
     final URLConnection con = createConnection(src);
 

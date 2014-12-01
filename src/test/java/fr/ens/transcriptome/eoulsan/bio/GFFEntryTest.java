@@ -64,7 +64,7 @@ public class GFFEntryTest {
 
     GFFEntry e = new GFFEntry();
 
-    for (String s : TEST_STRINGS) {
+    for (String s : this.TEST_STRINGS) {
 
       try {
         e.parse(s);

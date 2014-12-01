@@ -49,8 +49,8 @@ public interface WorkflowStep extends Serializable {
     GENERATOR_STEP(3, null), FIRST_STEP(4, "first"), STANDARD_STEP(5, null),
     TERMINAL_STEP(6, "terminal");
 
-    private int priority;
-    private String defaultStepId;
+    private final int priority;
+    private final String defaultStepId;
 
     /**
      * Get the priority of the step.
@@ -80,8 +80,9 @@ public interface WorkflowStep extends Serializable {
       for (StepType type : values()) {
 
         final String stepId = type.getDefaultStepId();
-        if (stepId != null)
+        if (stepId != null) {
           result.add(stepId);
+        }
       }
 
       return result;

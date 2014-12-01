@@ -109,6 +109,7 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
     }
   }
 
+  @Override
   protected List<String> createCommonArgs(final String bowtiePath,
       final String index, final boolean inputCrossbowFormat,
       final boolean memoryMappedIndex) {
@@ -119,22 +120,25 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
     result.add(bowtiePath);
 
     // Set the user options
-    if (getListMapperArguments() != null)
+    if (getListMapperArguments() != null) {
       result.addAll(getListMapperArguments());
+    }
 
     // Set the number of threads to use
     result.add("-p");
     result.add(getThreadsNumber() + "");
 
     // Enable memory mapped index
-    if (memoryMappedIndex)
+    if (memoryMappedIndex) {
       result.add("--mm");
+    }
 
     // Input Format in FASTQ or Crossbow format
-    if (inputCrossbowFormat)
+    if (inputCrossbowFormat) {
       result.add(("-r"));
-    else
+    } else {
       result.add(("-q"));
+    }
 
     // Set the quality format
     result.add(bowtieQualityArgument());

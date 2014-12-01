@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.bio;
 
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.trim;
 import static fr.ens.transcriptome.eoulsan.util.Utils.equal;
-
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
@@ -71,8 +70,9 @@ public final class ReadSequence extends Sequence {
    */
   public final void setFastqFormat(final FastqFormat fastqFormat) {
 
-    if (fastqFormat == null)
+    if (fastqFormat == null) {
       throw new NullPointerException("The FastqFormat is null");
+    }
 
     this.fastqFormat = fastqFormat;
   }
@@ -108,32 +108,36 @@ public final class ReadSequence extends Sequence {
 
   public int[] qualityScores() {
 
-    if (this.quality == null)
+    if (this.quality == null) {
       return null;
+    }
 
     final char[] qualities = this.quality.toCharArray();
     final int len = qualities.length;
     final FastqFormat format = this.fastqFormat;
     final int[] result = new int[len];
 
-    for (int i = 0; i < len; i++)
+    for (int i = 0; i < len; i++) {
       result[i] = format.getScore(qualities[i]);
+    }
 
     return result;
   }
 
   public double[] errorProbabilities() {
 
-    if (this.quality == null)
+    if (this.quality == null) {
       return null;
+    }
 
     final char[] qualities = this.quality.toCharArray();
     final int len = qualities.length;
     final FastqFormat format = this.fastqFormat;
     final double[] result = new double[len];
 
-    for (int i = 0; i < len; i++)
+    for (int i = 0; i < len; i++) {
       result[i] = format.getProbability(qualities[i]);
+    }
 
     return result;
   }
@@ -143,26 +147,32 @@ public final class ReadSequence extends Sequence {
   //
 
   /**
-   * Create a sub-sequence from the current sequence. Note that index start at 0.
+   * Create a sub-sequence from the current sequence. Note that index start at
+   * 0.
    * @param beginIndex begin index of the sub-sequence
    * @param endIndex end index of the sub-sequence
    * @return a new sequence object with a sub-sequence of the current object
    */
+  @Override
   public ReadSequence subSequence(final int beginIndex, final int endIndex) {
 
     if (this.sequence == null
         || this.quality == null
-        || this.sequence.length() != this.quality.length())
+        || this.sequence.length() != this.quality.length()) {
       return null;
+    }
 
-    if (beginIndex < 0)
+    if (beginIndex < 0) {
       throw new StringIndexOutOfBoundsException(beginIndex);
+    }
 
-    if (endIndex > length())
+    if (endIndex > length()) {
       throw new StringIndexOutOfBoundsException(endIndex);
+    }
 
-    if (beginIndex > endIndex)
+    if (beginIndex > endIndex) {
       throw new StringIndexOutOfBoundsException(endIndex - beginIndex);
+    }
 
     final ReadSequence result =
         new ReadSequence(-1, this.name == null ? null : this.name + "[part]",
@@ -193,19 +203,21 @@ public final class ReadSequence extends Sequence {
       return result;
     }
 
-    if (this.sequence == null)
+    if (this.sequence == null) {
       result.sequence = sequence.sequence;
-    else if (sequence.sequence == null)
+    } else if (sequence.sequence == null) {
       result.sequence = this.sequence;
-    else
+    } else {
       result.sequence = this.sequence + sequence.sequence;
+    }
 
-    if (this.quality == null)
+    if (this.quality == null) {
       result.quality = sequence.quality;
-    else if (sequence.quality == null)
+    } else if (sequence.quality == null) {
       result.quality = this.quality;
-    else
+    } else {
       result.quality = this.quality + sequence.quality;
+    }
 
     return result;
   }
@@ -360,10 +372,11 @@ public final class ReadSequence extends Sequence {
     this.name = fastQ.substring(1, indexCR1);
     this.sequence = fastQ.substring(indexCR1 + 1, indexCR2);
 
-    if (indexCR4 == -1)
+    if (indexCR4 == -1) {
       this.quality = fastQ.substring(indexCR3 + 1);
-    else
+    } else {
       this.quality = fastQ.substring(indexCR3 + 1, indexCR4);
+    }
   }
 
   /**
@@ -410,18 +423,21 @@ public final class ReadSequence extends Sequence {
 
     final String q = this.quality;
 
-    if (q == null)
+    if (q == null) {
       return false;
+    }
 
     final int len = q.length();
 
-    if (len == 0 || len != length())
+    if (len == 0 || len != length()) {
       return false;
+    }
 
-    for (int i = 0; i < len; i++)
-
-      if (!this.fastqFormat.isCharValid(q.charAt(i)))
+    for (int i = 0; i < len; i++) {
+      if (!this.fastqFormat.isCharValid(q.charAt(i))) {
         return false;
+      }
+    }
 
     return true;
   }
@@ -430,6 +446,7 @@ public final class ReadSequence extends Sequence {
    * Check if the read is valid.
    * @return true if the read is validated
    */
+  @Override
   public boolean validate() {
 
     return validateName() && validateSequence() && validateQuality();
@@ -449,11 +466,13 @@ public final class ReadSequence extends Sequence {
   @Override
   public boolean equals(final Object o) {
 
-    if (o == this)
+    if (o == this) {
       return true;
+    }
 
-    if (!(o instanceof ReadSequence) || !super.equals(o))
+    if (!(o instanceof ReadSequence) || !super.equals(o)) {
       return false;
+    }
 
     final ReadSequence that = (ReadSequence) o;
 
@@ -468,7 +487,7 @@ public final class ReadSequence extends Sequence {
         + "{id=" + this.id + ", name=" + this.name + ", description="
         + this.description + ", alphabet=" + this.alphabet + ", sequence="
         + this.sequence + ", fastqFormat=" + this.fastqFormat + ", quality="
-        + quality + "}";
+        + this.quality + "}";
   }
 
   //

@@ -64,8 +64,9 @@ public class FastaLineParser {
       final String trim = line.trim();
 
       // discard empty lines
-      if ("".equals(trim))
+      if ("".equals(trim)) {
         continue;
+      }
 
       if (!this.fastaSectionFound) {
         if (line.startsWith("##FASTA")) {
@@ -76,12 +77,13 @@ public class FastaLineParser {
 
       if (trim.charAt(0) == '>') {
 
-        seqName = trim.substring(1);
+        this.seqName = trim.substring(1);
         continue;
 
-      } else if (seqName == null)
+      } else if (this.seqName == null) {
         throw new IOException(
             "No fasta header found at the beginning of the fasta file: " + line);
+      }
 
       this.sequence = trim;
       return this.seqName;
@@ -119,12 +121,14 @@ public class FastaLineParser {
    */
   public FastaLineParser(final InputStream is, final boolean gffFile) {
 
-    if (is == null)
+    if (is == null) {
       throw new NullPointerException("InputStream is null");
+    }
 
     this.reader = new BufferedReader(new InputStreamReader(is, FASTA_CHARSET));
-    if (!gffFile)
+    if (!gffFile) {
       this.fastaSectionFound = true;
+    }
   }
 
   /**
@@ -144,13 +148,15 @@ public class FastaLineParser {
   public FastaLineParser(final File file, final boolean gffFile)
       throws FileNotFoundException {
 
-    if (file == null)
+    if (file == null) {
       throw new NullPointerException("File is null");
+    }
 
     this.reader = FileUtils.createBufferedReader(file, FASTA_CHARSET);
 
-    if (!gffFile)
+    if (!gffFile) {
       this.fastaSectionFound = true;
+    }
   }
 
   /**
@@ -172,8 +178,9 @@ public class FastaLineParser {
 
     this.reader = FileUtils.createBufferedReader(filename, FASTA_CHARSET);
 
-    if (!gffFile)
+    if (!gffFile) {
       this.fastaSectionFound = true;
+    }
   }
 
 }

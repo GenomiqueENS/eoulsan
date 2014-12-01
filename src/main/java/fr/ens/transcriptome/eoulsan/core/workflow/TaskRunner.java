@@ -93,7 +93,7 @@ public class TaskRunner {
    * task.
    * @param reuse true if the step instance must be reuse when execute the task
    */
-  public void setForceStepInstanceReuse(boolean reuse) {
+  public void setForceStepInstanceReuse(final boolean reuse) {
 
     this.forceStepInstanceReuse = reuse;
   }
@@ -121,12 +121,13 @@ public class TaskRunner {
 
     // Create Log handler and register it
     final Logger logger =
-        step.isCreateLogFiles() ? createStepLogger(this.context.getStep(),
+        this.step.isCreateLogFiles() ? createStepLogger(this.context.getStep(),
             threadGroupName) : null;
 
     // Register the logger
-    if (logger != null)
+    if (logger != null) {
       EoulsanLogger.registerThreadGroupLogger(threadGroup, logger);
+    }
 
     // We use here a thread to execute the step
     // This allow to save log of step in distinct files
@@ -135,16 +136,21 @@ public class TaskRunner {
       @Override
       public void run() {
 
-        getLogger().info("Start of task #" + context.getId());
+        getLogger().info("Start of task #" + TaskRunner.this.context.getId());
 
         final Step stepInstance;
-        final StepType stepType = context.getWorkflowStep().getType();
+        final StepType stepType =
+            TaskRunner.this.context.getWorkflowStep().getType();
         final boolean reuseAnnot =
-            step.getClass().getAnnotation(ReuseStepInstance.class) != null;
+            TaskRunner.this.step.getClass().getAnnotation(
+                ReuseStepInstance.class) != null;
 
         final String stepDescLog =
-            String.format("step (id:  %s, name: %s) for task #%d", context
-                .getWorkflowStep().getId(), step.getName(), context.getId());
+            String
+                .format("step (id:  %s, name: %s) for task #%d",
+                    TaskRunner.this.context.getWorkflowStep().getId(),
+                    TaskRunner.this.step.getName(),
+                    TaskRunner.this.context.getId());
 
         try {
 
@@ -152,34 +158,39 @@ public class TaskRunner {
           // required by step
           // Create a new instance of the step for the task
           if (stepType == StepType.STANDARD_STEP
-              && !reuseAnnot && !forceStepInstanceReuse) {
+              && !reuseAnnot && !TaskRunner.this.forceStepInstanceReuse) {
 
             // Create the new instance of the step
             getLogger().fine("Create new instance of " + stepDescLog);
-            stepInstance = StepService.getInstance().newService(step.getName());
+            stepInstance =
+                StepService.getInstance().newService(
+                    TaskRunner.this.step.getName());
 
             // Configure the new step instance
             getLogger().fine("Configure step instance");
-            stepInstance.configure(context.getCurrentStep().getParameters());
+            stepInstance.configure(TaskRunner.this.context.getCurrentStep()
+                .getParameters());
 
           } else {
 
             // Use the original step instance for the task
             getLogger().fine("Reuse original instance of " + stepDescLog);
-            stepInstance = step;
+            stepInstance = TaskRunner.this.step;
           }
 
           // Execute task
           getLogger().info("Execute task");
-          result = stepInstance.execute(context, status);
+          TaskRunner.this.result =
+              stepInstance.execute(TaskRunner.this.context,
+                  TaskRunner.this.status);
 
         } catch (Throwable t) {
 
           // Handle exception not catch by step code
-          result = status.createStepResult(t);
+          TaskRunner.this.result = TaskRunner.this.status.createStepResult(t);
         }
 
-        getLogger().info("End of task #" + context.getId());
+        getLogger().info("End of task #" + TaskRunner.this.context.getId());
       }
     };
 
@@ -249,19 +260,19 @@ public class TaskRunner {
     }
 
     // For all output ports
-    for (String portName : context.getCurrentStep().getOutputPorts()
+    for (String portName : this.context.getCurrentStep().getOutputPorts()
         .getPortNames()) {
 
       // Get data required for token creation
       final WorkflowOutputPort port =
-          context.getStep().getWorkflowOutputPorts().getPort(portName);
-      final Data data = context.getOutputData(port);
+          this.context.getStep().getWorkflowOutputPorts().getPort(portName);
+      final Data data = this.context.getOutputData(port);
 
       // Create symbolic links
       createSymlinksInOutputDirectory(data);
 
       // Send the token
-      context.getStep().sendToken(new Token(port, data));
+      this.context.getStep().sendToken(new Token(port, data));
     }
   }
 
@@ -304,8 +315,9 @@ public class TaskRunner {
       return Joiner.on('-').join(namedData);
     } else if (fileNames.size() > 0) {
       return Joiner.on('-').join(fileNames);
-    } else
+    } else {
       return Joiner.on('-').join(otherDataNames);
+    }
   }
 
   /**
@@ -387,8 +399,9 @@ public class TaskRunner {
 
           // TODO Use the Java 7 api to check if existing link is really a link
           // Remove existing file/symlink
-          if (link.exists())
+          if (link.exists()) {
             link.delete();
+          }
 
           // Create symbolic link
           file.symlink(link);
@@ -425,7 +438,7 @@ public class TaskRunner {
    * @return a new TaskResult object
    */
   public static TaskResult createStepResult(final TaskContext taskContext,
-      Throwable exception) {
+      final Throwable exception) {
 
     return createStepResult(taskContext, exception, null);
   }
@@ -438,7 +451,7 @@ public class TaskRunner {
    * @return a new TaskResult object
    */
   public static TaskResult createStepResult(final TaskContext taskContext,
-      Throwable exception, String errorMessage) {
+      final Throwable exception, final String errorMessage) {
 
     final TaskRunner runner = new TaskRunner(taskContext);
 

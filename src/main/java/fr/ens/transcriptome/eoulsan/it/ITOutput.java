@@ -302,7 +302,7 @@ public class ITOutput {
     }
 
     final Set<PathMatcher> patterns =
-        createPathMatchers(checkAbsenceFilePatterns, false);
+        createPathMatchers(this.checkAbsenceFilePatterns, false);
     final List<File> matchedFile = listingFilesFromPatterns(patterns);
 
     for (File f : matchedFile) {
@@ -363,11 +363,11 @@ public class ITOutput {
 
     for (final PathMatcher matcher : patterns) {
 
-      Files.walkFileTree(Paths.get(directory.toURI()),
+      Files.walkFileTree(Paths.get(this.directory.toURI()),
           new SimpleFileVisitor<Path>() {
             @Override
-            public FileVisitResult visitFile(Path file,
-                BasicFileAttributes attrs) throws IOException {
+            public FileVisitResult visitFile(final Path file,
+                final BasicFileAttributes attrs) throws IOException {
 
               if (matcher.matches(file)) {
                 matchedFiles.add(file.toFile());
@@ -376,8 +376,8 @@ public class ITOutput {
             }
 
             @Override
-            public FileVisitResult visitFileFailed(Path file, IOException exc)
-                throws IOException {
+            public FileVisitResult visitFileFailed(final Path file,
+                final IOException exc) throws IOException {
               return FileVisitResult.CONTINUE;
             }
           });
@@ -494,10 +494,11 @@ public class ITOutput {
         createListFiles(this.excludeToComparePatterns, null, false);
 
     this.filesToCompareWithComparator =
-        createListFiles(this.fileToComparePatterns, filesToExclude, true);
+        createListFiles(this.fileToComparePatterns, this.filesToExclude, true);
 
     this.filesToCheckExistence =
-        createListFiles(this.checkExistenceFilePatterns, filesToExclude, true);
+        createListFiles(this.checkExistenceFilePatterns, this.filesToExclude,
+            true);
 
     this.filesToCompare = Lists.newArrayList(getFilesToCompare().keySet());
   }
@@ -517,7 +518,7 @@ public class ITOutput {
     private final List<Comparator> comparators = new ArrayList<>();
     private static final boolean USE_SERIALIZATION_FILE = true;
 
-    private File fileA;
+    private final File fileA;
     private final File fileB;
     private final Comparator comparator;
 
@@ -529,14 +530,14 @@ public class ITOutput {
      * @throws IOException if an error occurs while reading file.
      */
     public boolean compare() throws IOException {
-      final boolean b = comparator.compareFiles(fileA, fileB);
+      final boolean b = this.comparator.compareFiles(this.fileA, this.fileB);
 
       if (!b) {
         this.detailComparison =
             "fail at "
-                + comparator.getNumberElementsCompared()
+                + this.comparator.getNumberElementsCompared()
                 + " comparisons, with this line "
-                + comparator.getCauseFailComparison();
+                + this.comparator.getCauseFailComparison();
       }
       return b;
     }
@@ -585,12 +586,13 @@ public class ITOutput {
       this.fileB = fileB;
 
       // Binary comparator is default comparator, always at first position
-      comparators.add(new BinaryComparator());
+      this.comparators.add(new BinaryComparator());
 
-      comparators.add(new FastqComparator(USE_SERIALIZATION_FILE));
-      comparators.add(new SAMComparator(USE_SERIALIZATION_FILE, "PG", "HD"));
-      comparators.add(new TextComparator(USE_SERIALIZATION_FILE));
-      comparators.add(new LogComparator());
+      this.comparators.add(new FastqComparator(USE_SERIALIZATION_FILE));
+      this.comparators
+          .add(new SAMComparator(USE_SERIALIZATION_FILE, "PG", "HD"));
+      this.comparators.add(new TextComparator(USE_SERIALIZATION_FILE));
+      this.comparators.add(new LogComparator());
 
       this.comparator = findComparator(this.fileA.getName());
 

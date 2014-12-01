@@ -92,7 +92,7 @@ public class ITCommandExecutor {
     // Save command line in file
     if (isApplication) {
       try {
-        com.google.common.io.Files.write(cmdLine + "\n", cmdLineFile,
+        com.google.common.io.Files.write(cmdLine + "\n", this.cmdLineFile,
             Charsets.UTF_8);
       } catch (IOException e) {
         // Nothing to do
@@ -208,10 +208,10 @@ public class ITCommandExecutor {
     public void run() {
 
       try {
-        Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(this.in, this.path, StandardCopyOption.REPLACE_EXISTING);
       } catch (IOException e) {
         getLogger().warning(
-            "Error while copying " + desc + ": " + e.getMessage());
+            "Error while copying " + this.desc + ": " + e.getMessage());
       }
 
     }

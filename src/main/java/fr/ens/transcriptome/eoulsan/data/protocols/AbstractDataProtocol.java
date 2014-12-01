@@ -46,8 +46,9 @@ abstract class AbstractDataProtocol implements DataProtocol {
 
     final int lastSlashPos = source.lastIndexOf(DataFile.separatorChar);
 
-    if (lastSlashPos == -1)
+    if (lastSlashPos == -1) {
       return source;
+    }
 
     return source.substring(lastSlashPos + 1);
   }
@@ -55,8 +56,9 @@ abstract class AbstractDataProtocol implements DataProtocol {
   @Override
   public DataFile getDataFileParent(final DataFile src) {
 
-    if (src == null)
+    if (src == null) {
       return null;
+    }
 
     final String source = src.getSource();
     final int nameLen = src.getName().length();
@@ -72,8 +74,9 @@ abstract class AbstractDataProtocol implements DataProtocol {
   public OutputStream putData(final DataFile src, final DataFileMetadata md)
       throws IOException {
 
-    if (!canWrite())
+    if (!canWrite()) {
       throw new IOException("Writing is not allowed for the source: " + src);
+    }
 
     return putData(src);
   }
@@ -82,12 +85,14 @@ abstract class AbstractDataProtocol implements DataProtocol {
   public void putData(final DataFile src, final DataFile dest)
       throws IOException {
 
-    if (src == null)
+    if (src == null) {
       throw new NullPointerException("The source of the data to put is null");
+    }
 
-    if (dest == null)
+    if (dest == null) {
       throw new NullPointerException(
           "The destination of the data to put is null");
+    }
 
     final DataFileMetadata mdSrc = src.getMetaData();
 
@@ -98,8 +103,9 @@ abstract class AbstractDataProtocol implements DataProtocol {
   @Override
   public File getSourceAsFile(final DataFile src) {
 
-    if (src == null || src.getSource() == null)
+    if (src == null || src.getSource() == null) {
       throw new NullPointerException("The source is null.");
+    }
 
     return null;
   }

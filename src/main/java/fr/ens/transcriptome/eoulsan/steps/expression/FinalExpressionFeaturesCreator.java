@@ -64,7 +64,7 @@ public class FinalExpressionFeaturesCreator {
   private static final class ExpressionFeature implements
       Comparable<ExpressionFeature> {
 
-    private String id;
+    private final String id;
     private int alignmentCount = 0;
 
     public void setExpressionResult(final int alignmentCount) {
@@ -75,13 +75,15 @@ public class FinalExpressionFeaturesCreator {
     @Override
     public int compareTo(final ExpressionFeature o) {
 
-      if (o == null)
+      if (o == null) {
         return 1;
+      }
 
       int diff = this.id.compareTo(o.id);
 
-      if (diff != 0)
+      if (diff != 0) {
         return diff;
+      }
 
       return (o.alignmentCount - this.alignmentCount);
 
@@ -90,17 +92,20 @@ public class FinalExpressionFeaturesCreator {
     @Override
     public boolean equals(final Object o) {
 
-      if (o == this)
+      if (o == this) {
         return true;
+      }
 
-      if (!(o instanceof ExpressionFeature))
+      if (!(o instanceof ExpressionFeature)) {
         return false;
+      }
 
       final ExpressionFeature et = (ExpressionFeature) o;
 
       if (Utils.equal(this.id, et.id)
-          && this.alignmentCount == et.alignmentCount)
+          && this.alignmentCount == et.alignmentCount) {
         return true;
+      }
 
       return false;
     }
@@ -125,10 +130,11 @@ public class FinalExpressionFeaturesCreator {
      * Constructor for ExpressionTranscript.
      * @param id identifier to set
      */
-    public ExpressionFeature(String id) {
+    public ExpressionFeature(final String id) {
 
-      if (id == null)
+      if (id == null) {
         throw new NullPointerException("Identifier to add is null");
+      }
 
       this.id = id;
     }
@@ -141,8 +147,9 @@ public class FinalExpressionFeaturesCreator {
   public void initializeExpressionResults() {
 
     this.expressionResults.clear();
-    for (String id : ga.getFeaturesIds())
+    for (String id : this.ga.getFeaturesIds()) {
       this.expressionResults.put(id, new ExpressionFeature(id));
+    }
   }
 
   /**
@@ -175,8 +182,9 @@ public class FinalExpressionFeaturesCreator {
       final String id = tab[0];
       final int alignmentCount = Integer.parseInt(tab[1]);
 
-      if (this.expressionResults.containsKey(id))
+      if (this.expressionResults.containsKey(id)) {
         this.expressionResults.get(id).setExpressionResult(alignmentCount);
+      }
     }
 
     br.close();
@@ -207,8 +215,9 @@ public class FinalExpressionFeaturesCreator {
     final OutputStreamWriter osw = new OutputStreamWriter(os, CHARSET);
 
     osw.write("Id\tCount\n");
-    for (ExpressionFeature ef : list)
+    for (ExpressionFeature ef : list) {
       osw.write(ef.toString() + "\n");
+    }
 
     osw.close();
 
@@ -245,8 +254,9 @@ public class FinalExpressionFeaturesCreator {
    */
   public FinalExpressionFeaturesCreator(final GenomicArray<String> ga) {
 
-    if (ga == null)
+    if (ga == null) {
       throw new NullPointerException("GenomicArray is null.");
+    }
 
     this.ga = ga;
   }

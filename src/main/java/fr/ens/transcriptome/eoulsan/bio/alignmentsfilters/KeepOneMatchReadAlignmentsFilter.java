@@ -55,13 +55,15 @@ public class KeepOneMatchReadAlignmentsFilter extends
 
     final SAMRecord first, second;
 
-    if (records == null || records.isEmpty())
+    if (records == null || records.isEmpty()) {
       return;
+    }
 
     // single-end mode
     if (!records.get(0).getReadPairedFlag()) {
-      if (records.size() < 2)
+      if (records.size() < 2) {
         return;
+      }
 
       first = records.get(0);
       records.clear();
@@ -70,8 +72,9 @@ public class KeepOneMatchReadAlignmentsFilter extends
 
     // paired-end mode
     else {
-      if (records.size() < 4)
+      if (records.size() < 4) {
         return;
+      }
 
       first = records.get(0);
       second = records.get(1);

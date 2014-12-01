@@ -43,16 +43,17 @@ public class SampleMetadataImpl implements SampleMetadata, Serializable {
   /** Serialization version UID. */
   private static final long serialVersionUID = 2796810098849730445L;
 
-  private DesignImpl design;
-  private int slideId;
+  private final DesignImpl design;
+  private final int slideId;
 
   @Override
   public String getField(final String fieldName) {
 
     final String sampleName = this.design.getSampleName(this.slideId);
 
-    if (sampleName == null)
+    if (sampleName == null) {
       throw new EoulsanRuntimeException("The sample doesn't exists");
+    }
 
     return this.design.getMetadata(sampleName, fieldName);
   }
@@ -153,8 +154,9 @@ public class SampleMetadataImpl implements SampleMetadata, Serializable {
 
     final FastqFormat result = FastqFormat.getFormatFromName(value);
 
-    if (result == null)
+    if (result == null) {
       return EoulsanRuntime.getSettings().getDefaultFastqFormat();
+    }
 
     return result;
   }
@@ -170,8 +172,9 @@ public class SampleMetadataImpl implements SampleMetadata, Serializable {
 
     String value = getField(REFERENCE_FIELD);
 
-    if (value == null)
+    if (value == null) {
       return false;
+    }
 
     value = value.trim().toLowerCase();
 
@@ -188,8 +191,9 @@ public class SampleMetadataImpl implements SampleMetadata, Serializable {
 
     final String sampleName = this.design.getSampleName(this.slideId);
 
-    if (sampleName == null)
+    if (sampleName == null) {
       throw new EoulsanRuntimeException("The sample doesn't exists");
+    }
 
     this.design.setMetadata(sampleName, field, value);
   }
@@ -260,7 +264,7 @@ public class SampleMetadataImpl implements SampleMetadata, Serializable {
   }
 
   @Override
-  public void setExperiment(String experiment) {
+  public void setExperiment(final String experiment) {
 
     setField(EXPERIMENT_FIELD, experiment);
   }
@@ -287,20 +291,21 @@ public class SampleMetadataImpl implements SampleMetadata, Serializable {
   @Override
   public void setFastqFormat(final FastqFormat fastqFormat) {
 
-    if (fastqFormat == null)
+    if (fastqFormat == null) {
       throw new NullPointerException("FastqFormat is null");
+    }
 
     setField(FASTQ_FORMAT_FIELD, fastqFormat.getName());
   }
 
   @Override
-  public void setRepTechGroup(String repTechGroup) {
+  public void setRepTechGroup(final String repTechGroup) {
 
     setField(REP_TECH_GROUP_FIELD, repTechGroup);
   }
 
   @Override
-  public void setReference(boolean reference) {
+  public void setReference(final boolean reference) {
 
     setField(REFERENCE_FIELD, Boolean.toString(reference));
   }
@@ -314,8 +319,9 @@ public class SampleMetadataImpl implements SampleMetadata, Serializable {
 
     final String slideName = this.design.getSampleName(this.slideId);
 
-    if (slideName == null)
+    if (slideName == null) {
       throw new EoulsanRuntimeException("The sample doesn't exists");
+    }
 
     return this.design.isMetadataField(fieldName);
   }

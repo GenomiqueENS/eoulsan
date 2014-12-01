@@ -121,8 +121,9 @@ public class StepInstances {
 
   public static StepInstances getInstance() {
 
-    if (instance == null)
+    if (instance == null) {
       instance = new StepInstances();
+    }
 
     return instance;
   }
@@ -139,15 +140,17 @@ public class StepInstances {
    */
   private static Step loadStep(final String stepName) throws EoulsanException {
 
-    if (stepName == null)
+    if (stepName == null) {
       throw new EoulsanException("Step name is null");
+    }
 
     final String lower = stepName.trim().toLowerCase();
 
     final Step result = StepService.getInstance().newService(lower);
 
-    if (result == null)
+    if (result == null) {
       throw new EoulsanException("Unknown step: " + lower);
+    }
 
     return result;
   }

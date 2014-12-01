@@ -41,8 +41,8 @@ public class OutputPortsBuilder {
   /** Default single output port name. */
   public static final String DEFAULT_SINGLE_OUTPUT_PORT_NAME = "output";
 
-  private Set<OutputPort> result = new HashSet<>();
-  private Set<String> portNames = new HashSet<>();
+  private final Set<OutputPort> result = new HashSet<>();
+  private final Set<String> portNames = new HashSet<>();
 
   /**
    * Add an output port.
@@ -136,12 +136,14 @@ public class OutputPortsBuilder {
    */
   public static final OutputPorts copy(final OutputPorts ports) {
 
-    if (ports == null)
+    if (ports == null) {
       return null;
+    }
 
     final OutputPortsBuilder builder = new OutputPortsBuilder();
-    for (OutputPort port : ports)
+    for (OutputPort port : ports) {
       builder.addPort(port);
+    }
 
     return builder.create();
   }
@@ -152,9 +154,10 @@ public class OutputPortsBuilder {
 
   private OutputPortsBuilder addPort(final OutputPort port) {
 
-    if (this.portNames.contains(port.getName()))
+    if (this.portNames.contains(port.getName())) {
       throw new EoulsanRuntimeException("Two output ports had the same name: "
           + port.getName());
+    }
 
     this.result.add(port);
     this.portNames.add(port.getName());

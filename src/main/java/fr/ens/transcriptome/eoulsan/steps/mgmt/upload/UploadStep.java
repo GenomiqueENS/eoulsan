@@ -65,7 +65,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJarRepackager;
  */
 public abstract class UploadStep extends AbstractStep {
 
-  private DataFile dest;
+  private final DataFile dest;
 
   //
   // Getter
@@ -94,8 +94,9 @@ public abstract class UploadStep extends AbstractStep {
 
     try {
       final Design design = context.getWorkflow().getDesign();
-      for (Sample sample : design.getSamples())
+      for (Sample sample : design.getSamples()) {
         filesToCopy.putAll(findDataFilesInWorkflow(sample, context));
+      }
 
       removeNotExistingDataFile(filesToCopy);
 
@@ -264,7 +265,7 @@ public abstract class UploadStep extends AbstractStep {
    * @return a set of DataFile used by the workflow for the sample
    * @throws IOException
    */
-  private Map<DataFile, DataFile> findDataFilesInWorkflow(Sample sample,
+  private Map<DataFile, DataFile> findDataFilesInWorkflow(final Sample sample,
       final StepContext context) throws IOException {
 
     final Map<DataFile, DataFile> result = new HashMap<>();
@@ -287,16 +288,19 @@ public abstract class UploadStep extends AbstractStep {
    * Remove the DataFiles that not exists in a set of DataFiles.
    * @param files Set of DataFile to filter
    */
-  private void removeNotExistingDataFile(Map<DataFile, DataFile> files) {
+  private void removeNotExistingDataFile(final Map<DataFile, DataFile> files) {
 
     Set<DataFile> filesToRemove = new HashSet<>();
 
-    for (DataFile file : files.keySet())
-      if (!file.exists())
+    for (DataFile file : files.keySet()) {
+      if (!file.exists()) {
         filesToRemove.add(file);
+      }
+    }
 
-    for (DataFile file : filesToRemove)
+    for (DataFile file : filesToRemove) {
       files.remove(file);
+    }
   }
 
   private void reWriteDesign(final StepContext context,
@@ -312,9 +316,11 @@ public abstract class UploadStep extends AbstractStep {
     for (final Sample s : design.getSamples()) {
 
       if (first) {
-        for (String fieldName : s.getMetadata().getFields())
-          if (registry.getDataFormatForDesignField(fieldName) != null)
+        for (String fieldName : s.getMetadata().getFields()) {
+          if (registry.getDataFormatForDesignField(fieldName) != null) {
             fieldWithFiles.add(fieldName);
+          }
+        }
         first = false;
       }
 
@@ -332,19 +338,21 @@ public abstract class UploadStep extends AbstractStep {
           DataFormat format =
               registry.getDataFormatFromExtension(inFile.getExtension());
 
-          if (format == null)
+          if (format == null) {
             format = inFile.getMetaData().getDataFormat();
+          }
 
           final DataFile outFile;
 
-          if (format.getMaxFilesCount() == 1)
+          if (format.getMaxFilesCount() == 1) {
             outFile =
                 getUploadedDataFile(inFile, designStep, s, format.getName(),
                     format);
-          else
+          } else {
             outFile =
                 getUploadedDataFile(inFile, designStep, s, format.getName(),
                     format, 0);
+          }
 
           filesToCopy.put(inFile, outFile);
           newValues.add(outFile.toString());
@@ -400,8 +408,9 @@ public abstract class UploadStep extends AbstractStep {
    */
   public UploadStep(final DataFile destination) {
 
-    if (destination == null)
+    if (destination == null) {
       throw new NullPointerException("The destination file is null.");
+    }
 
     this.dest = destination;
 

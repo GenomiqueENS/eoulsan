@@ -106,8 +106,9 @@ public class GFFFastaGeneratorStep extends AbstractStep {
           new GFFFastaReader(annotationDataFile.open());
       final SequenceWriter writer = new FastaWriter(genomeDataFile.create());
 
-      for (final Sequence sequence : reader)
+      for (final Sequence sequence : reader) {
         writer.write(sequence);
+      }
       reader.throwException();
 
       reader.close();

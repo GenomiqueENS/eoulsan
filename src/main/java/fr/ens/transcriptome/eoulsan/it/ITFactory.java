@@ -266,7 +266,7 @@ public class ITFactory {
 
     if (testsToExecuteDirectories.size() == 0) {
       throw new EoulsanException("None test directory found in "
-          + testsDataDirectory.getAbsolutePath());
+          + this.testsDataDirectory.getAbsolutePath());
     }
 
     // Build map
@@ -297,7 +297,7 @@ public class ITFactory {
     if (tests.size() == 0) {
       throw new EoulsanException(
           "None test define (with test.conf) in directory "
-              + testsDataDirectory.getAbsolutePath());
+              + this.testsDataDirectory.getAbsolutePath());
     }
 
     return Collections.unmodifiableList(tests);
@@ -350,7 +350,7 @@ public class ITFactory {
 
     Handler fh = null;
     try {
-      fh = new FileHandler(loggerPath);
+      fh = new FileHandler(this.loggerPath);
 
     } catch (Exception e) {
       throw new IOException(e.getMessage());
@@ -427,7 +427,7 @@ public class ITFactory {
    * @throws EoulsanException if an error occurs while parsing the string or
    *           executing an expression
    */
-  static String evaluateExpressions(final String s, boolean allowExec)
+  static String evaluateExpressions(final String s, final boolean allowExec)
       throws EoulsanException {
 
     if (s == null) {

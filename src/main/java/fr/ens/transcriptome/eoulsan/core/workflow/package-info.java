@@ -28,3 +28,4 @@
  * @since 2.0
  */
 package fr.ens.transcriptome.eoulsan.core.workflow;
+

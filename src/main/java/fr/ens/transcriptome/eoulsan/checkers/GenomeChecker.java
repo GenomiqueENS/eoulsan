@@ -73,11 +73,13 @@ public class GenomeChecker implements Checker {
   public boolean check(final Data data, final CheckStore checkInfo)
       throws EoulsanException {
 
-    if (data == null)
+    if (data == null) {
       throw new NullPointerException("The data is null");
+    }
 
-    if (checkInfo == null)
+    if (checkInfo == null) {
       throw new NullPointerException("The check info info is null");
+    }
 
     // If genome has already been checked do not launch check another time
     if (checkInfo.contains(GENOME_DESCRIPTION)) {
@@ -89,8 +91,9 @@ public class GenomeChecker implements Checker {
 
     try {
 
-      if (!genomeFile.exists())
+      if (!genomeFile.exists()) {
         return true;
+      }
 
       // Check the genome and add genome description to CheckStore
       new GenomeDescriptionCreator().createGenomeDescription(genomeFile);

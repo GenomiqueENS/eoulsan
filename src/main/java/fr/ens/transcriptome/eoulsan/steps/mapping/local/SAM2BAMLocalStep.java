@@ -83,7 +83,7 @@ public class SAM2BAMLocalStep extends AbstractSAM2BAMStep {
    */
   private static final void convert(final DataFile samDataFile,
       final DataFile bamDataFile, final DataFile bamIndexDataFile,
-      int compressionLevel, final Reporter reporter, final File tmpDir)
+      final int compressionLevel, final Reporter reporter, final File tmpDir)
       throws IOException {
 
     checkArgument(compressionLevel >= 0 && compressionLevel <= 9,

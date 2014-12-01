@@ -63,7 +63,7 @@ public class FinalExpressionTranscriptsCreator {
   private static final class ExpressionTranscript implements
       Comparable<ExpressionTranscript> {
 
-    private Transcript transcript;
+    private final Transcript transcript;
     private int baseNotCovered;
     private int alignmentCount = 0;
     private double ratio;
@@ -79,23 +79,27 @@ public class FinalExpressionTranscriptsCreator {
     @Override
     public int compareTo(final ExpressionTranscript o) {
 
-      if (o == null)
+      if (o == null) {
         return 1;
+      }
 
       int diff = o.alignmentCount - this.alignmentCount;
 
-      if (diff != 0)
+      if (diff != 0) {
         return diff;
+      }
 
-      diff = transcript.getName().compareTo(o.transcript.getName());
+      diff = this.transcript.getName().compareTo(o.transcript.getName());
 
-      if (diff != 0)
+      if (diff != 0) {
         return diff;
+      }
 
       diff = o.baseNotCovered - this.baseNotCovered;
 
-      if (diff != 0)
+      if (diff != 0) {
         return diff;
+      }
 
       return (int) (o.ratio - this.ratio);
 
@@ -104,19 +108,22 @@ public class FinalExpressionTranscriptsCreator {
     @Override
     public boolean equals(final Object o) {
 
-      if (o == this)
+      if (o == this) {
         return true;
+      }
 
-      if (!(o instanceof ExpressionTranscript))
+      if (!(o instanceof ExpressionTranscript)) {
         return false;
+      }
 
       final ExpressionTranscript et = (ExpressionTranscript) o;
 
       if (this.alignmentCount == et.alignmentCount
           && this.transcript.equals(et.transcript)
           && this.baseNotCovered == et.baseNotCovered
-          && Math.abs(this.ratio - et.ratio) < .0000001)
+          && Math.abs(this.ratio - et.ratio) < .0000001) {
         return true;
+      }
 
       return false;
     }
@@ -124,8 +131,8 @@ public class FinalExpressionTranscriptsCreator {
     @Override
     public int hashCode() {
 
-      return Objects.hash(this.transcript, baseNotCovered, alignmentCount,
-          ratio);
+      return Objects.hash(this.transcript, this.baseNotCovered,
+          this.alignmentCount, this.ratio);
     }
 
     @Override
@@ -137,7 +144,7 @@ public class FinalExpressionTranscriptsCreator {
           + "\t" + t.getType() + "\t" + t.getChromosome() + "\t" + t.getStart()
           + "\t" + t.getEnd() + "\t" + t.getStrand() + "\t" + t.getLength()
           + "\t" + (this.baseNotCovered == 0) + "\t" + this.baseNotCovered
-          + "\t" + this.ratio + "\t" + alignmentCount;
+          + "\t" + this.ratio + "\t" + this.alignmentCount;
     }
 
     //
@@ -150,8 +157,9 @@ public class FinalExpressionTranscriptsCreator {
      */
     public ExpressionTranscript(final Transcript transcript) {
 
-      if (transcript == null)
+      if (transcript == null) {
         throw new NullPointerException("Transcript to add is null");
+      }
 
       this.transcript = transcript;
       this.baseNotCovered = this.transcript.getLength();
@@ -165,9 +173,10 @@ public class FinalExpressionTranscriptsCreator {
   public void initializeExpressionResults() {
 
     this.expressionResults.clear();
-    for (String id : tef.getTranscriptsIds())
+    for (String id : this.tef.getTranscriptsIds()) {
       this.expressionResults.put(id,
-          new ExpressionTranscript(tef.getTranscript(id)));
+          new ExpressionTranscript(this.tef.getTranscript(id)));
+    }
   }
 
   /**
@@ -205,9 +214,10 @@ public class FinalExpressionTranscriptsCreator {
       final int baseNotCovered = Integer.parseInt(tab[1]);
       final int alignementCount = Integer.parseInt(tab[2]);
 
-      if (this.expressionResults.containsKey(id))
+      if (this.expressionResults.containsKey(id)) {
         this.expressionResults.get(id).setExpressionResult(baseNotCovered,
             alignementCount, readsUsed);
+      }
     }
 
     br.close();
@@ -238,8 +248,9 @@ public class FinalExpressionTranscriptsCreator {
     final OutputStreamWriter osw = new OutputStreamWriter(os, CHARSET);
 
     osw.write("Id\tType\tChromosome\tStart\tEnd\tStrand\tLength\tFullCovered\tBasesNotCovered\tRatio\tCount\n");
-    for (ExpressionTranscript et : list)
+    for (ExpressionTranscript et : list) {
       osw.write(et.toString() + "\n");
+    }
 
     osw.close();
   }
@@ -266,7 +277,7 @@ public class FinalExpressionTranscriptsCreator {
       throws IOException {
 
     this.tef = new TranscriptAndExonFinder();
-    tef.load(indexIs);
+    this.tef.load(indexIs);
   }
 
   /**
@@ -275,8 +286,9 @@ public class FinalExpressionTranscriptsCreator {
    */
   public FinalExpressionTranscriptsCreator(final TranscriptAndExonFinder tef) {
 
-    if (tef == null)
+    if (tef == null) {
       throw new NullPointerException("TranscriptAndExonFinder is null.");
+    }
 
     this.tef = tef;
   }

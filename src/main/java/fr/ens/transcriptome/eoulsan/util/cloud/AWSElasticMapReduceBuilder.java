@@ -31,7 +31,7 @@ package fr.ens.transcriptome.eoulsan.util.cloud;
  */
 public class AWSElasticMapReduceBuilder {
 
-  private AWSElasticMapReduceJob result = new AWSElasticMapReduceJob();
+  private final AWSElasticMapReduceJob result = new AWSElasticMapReduceJob();
   private boolean created = false;
 
   /**
@@ -40,8 +40,9 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withHadoopVersion(final String hadoopVersion) {
 
-    if (this.created)
+    if (this.created) {
       throw new IllegalStateException();
+    }
 
     this.result.setHadoopVersion(hadoopVersion);
 
@@ -54,8 +55,9 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withInstancesNumber(final int nInstances) {
 
-    if (this.created)
+    if (this.created) {
       throw new IllegalStateException();
+    }
 
     this.result.setInstancesNumber(nInstances);
 
@@ -69,8 +71,9 @@ public class AWSElasticMapReduceBuilder {
   public AWSElasticMapReduceBuilder withSlavesInstanceType(
       final String instanceType) {
 
-    if (this.created)
+    if (this.created) {
       throw new IllegalStateException();
+    }
 
     this.result.setSlavesInstanceType(instanceType);
 
@@ -84,8 +87,9 @@ public class AWSElasticMapReduceBuilder {
   public AWSElasticMapReduceBuilder withMasterInstanceType(
       final String instanceType) {
 
-    if (this.created)
+    if (this.created) {
       throw new IllegalStateException();
+    }
 
     this.result.setMasterInstanceType(instanceType);
 
@@ -98,8 +102,9 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withEndpoint(final String endpoint) {
 
-    if (this.created)
+    if (this.created) {
       throw new IllegalStateException();
+    }
 
     this.result.setEndpoint(endpoint);
 
@@ -112,8 +117,9 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withLogPathname(final String logPathname) {
 
-    if (this.created)
+    if (this.created) {
       throw new IllegalStateException();
+    }
 
     this.result.setLogPathname(logPathname);
 
@@ -126,8 +132,9 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withJarLocation(final String jarLocation) {
 
-    if (this.created)
+    if (this.created) {
       throw new IllegalStateException();
+    }
 
     this.result.setJarLocation(jarLocation);
 
@@ -140,8 +147,9 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withJarArguments(final String[] jarArguments) {
 
-    if (this.created)
+    if (this.created) {
       throw new IllegalStateException();
+    }
 
     this.result.setJarArguments(jarArguments);
 
@@ -154,8 +162,9 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withJobFlowName(final String jobFlowName) {
 
-    if (this.created)
+    if (this.created) {
       throw new IllegalStateException();
+    }
 
     this.result.setJobFlowName(jobFlowName);
 
@@ -168,8 +177,9 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withAWSAccessKey(final String AWSAccessKey) {
 
-    if (this.created)
+    if (this.created) {
       throw new IllegalStateException();
+    }
 
     this.result.setAWSAccessKey(AWSAccessKey);
 
@@ -182,8 +192,9 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withAWSSecretKey(final String AWSSecretKey) {
 
-    if (this.created)
+    if (this.created) {
       throw new IllegalStateException();
+    }
 
     this.result.setAWSSecretKey(AWSSecretKey);
 
@@ -198,8 +209,9 @@ public class AWSElasticMapReduceBuilder {
   public AWSElasticMapReduceBuilder withTaskTrackerMaxMapTasks(
       final int taskTrackerMaxMapTasks) {
 
-    if (this.created)
+    if (this.created) {
       throw new IllegalStateException();
+    }
 
     this.result.setTaskTrackerMaxMapTasks(taskTrackerMaxMapTasks);
 
@@ -212,8 +224,9 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withEC2KeyName(final String ec2KeyName) {
 
-    if (this.created)
+    if (this.created) {
       throw new IllegalStateException();
+    }
 
     this.result.setEC2KeyName(ec2KeyName);
 
@@ -226,8 +239,9 @@ public class AWSElasticMapReduceBuilder {
    */
   public AWSElasticMapReduceBuilder withDebugging(final boolean enableDebugging) {
 
-    if (this.created)
+    if (this.created) {
       throw new IllegalStateException();
+    }
 
     this.result.setDebugging(enableDebugging);
 

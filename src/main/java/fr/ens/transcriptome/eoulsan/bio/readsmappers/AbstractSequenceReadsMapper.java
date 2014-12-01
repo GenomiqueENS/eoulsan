@@ -113,8 +113,9 @@ public abstract class AbstractSequenceReadsMapper implements
   @Override
   public List<String> getListMapperArguments() {
 
-    if (getMapperArguments() == null)
+    if (getMapperArguments() == null) {
       return Collections.emptyList();
+    }
 
     // Split the mapper arguments
     final String[] tabMapperArguments = getMapperArguments().trim().split(" ");
@@ -187,8 +188,9 @@ public abstract class AbstractSequenceReadsMapper implements
   @Override
   public void setFastqFormat(final FastqFormat format) {
 
-    if (format == null)
+    if (format == null) {
       throw new NullPointerException("The FASTQ format is null");
+    }
 
     this.fastqFormat = format;
   }
@@ -203,8 +205,9 @@ public abstract class AbstractSequenceReadsMapper implements
     final CompressionType ct =
         CompressionType.getCompressionTypeByFilename(genomeFile.getName());
 
-    if (ct == CompressionType.NONE)
+    if (ct == CompressionType.NONE) {
       return genomeFile;
+    }
 
     // Define the output filename
     final File uncompressFile =
@@ -258,9 +261,10 @@ public abstract class AbstractSequenceReadsMapper implements
 
     // Create temporary symbolic link for genome
     if (!unCompressGenomeFile.equals(tmpGenomeFile)) {
-      if (!FileUtils.createSymbolicLink(unCompressGenomeFile, tmpGenomeFile))
+      if (!FileUtils.createSymbolicLink(unCompressGenomeFile, tmpGenomeFile)) {
         throw new IOException("Unable to create the symbolic link in "
             + tmpGenomeFile + " directory for " + unCompressGenomeFile);
+      }
     }
 
     // Build the command line and compute the index
@@ -375,16 +379,18 @@ public abstract class AbstractSequenceReadsMapper implements
   private void unzipArchiveIndexFile(final File archiveIndexFile,
       final File archiveIndexDir) throws IOException {
 
-    if (!archiveIndexFile.exists())
+    if (!archiveIndexFile.exists()) {
       throw new IOException("No index for the mapper found: "
           + archiveIndexFile);
+    }
 
     // Uncompress archive if necessary
     if (!archiveIndexDir.exists()) {
 
-      if (!archiveIndexDir.mkdir())
+      if (!archiveIndexDir.mkdir()) {
         throw new IOException("Can't create directory for "
             + getMapperName() + " index: " + archiveIndexDir);
+      }
 
       getLogger().fine(
           "Unzip archiveIndexFile "
@@ -424,10 +430,10 @@ public abstract class AbstractSequenceReadsMapper implements
         "readsFile2 not exits or is not a standard file.");
 
     // Unzip archive index if necessary
-    unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
+    unzipArchiveIndexFile(this.archiveIndexFile, this.archiveIndexDir);
 
     // Process to mapping
-    return internalMapPE(readsFile1, readsFile2, archiveIndexDir, gd);
+    return internalMapPE(readsFile1, readsFile2, this.archiveIndexDir, gd);
   }
 
   @Override
@@ -448,10 +454,10 @@ public abstract class AbstractSequenceReadsMapper implements
         "readsFile1 not exits or is not a standard file.");
 
     // Unzip archive index if necessary
-    unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
+    unzipArchiveIndexFile(this.archiveIndexFile, this.archiveIndexDir);
 
     // Process to mapping
-    return internalMapSE(readsFile, archiveIndexDir, gd);
+    return internalMapSE(readsFile, this.archiveIndexDir, gd);
   }
 
   protected abstract InputStream internalMapPE(final File readsFile1,
@@ -472,10 +478,10 @@ public abstract class AbstractSequenceReadsMapper implements
     getLogger().fine("Mapping with " + getMapperName() + " in single-end mode");
 
     // Unzip archive index if necessary
-    unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
+    unzipArchiveIndexFile(this.archiveIndexFile, this.archiveIndexDir);
 
     // Process to mapping
-    final MapperProcess result = internalMapPE(archiveIndexDir, gd);
+    final MapperProcess result = internalMapPE(this.archiveIndexDir, gd);
 
     // Set counter
     result.setIncrementer(this.incrementer, this.counterGroup);
@@ -490,10 +496,10 @@ public abstract class AbstractSequenceReadsMapper implements
     getLogger().fine("Mapping with " + getMapperName() + " in single-end mode");
 
     // Unzip archive index if necessary
-    unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
+    unzipArchiveIndexFile(this.archiveIndexFile, this.archiveIndexDir);
 
     // Process to mapping
-    final MapperProcess result = internalMapSE(archiveIndexDir, gd);
+    final MapperProcess result = internalMapSE(this.archiveIndexDir, gd);
 
     // Set counter
     result.setIncrementer(this.incrementer, this.counterGroup);
@@ -546,9 +552,11 @@ public abstract class AbstractSequenceReadsMapper implements
 
     String result = null;
 
-    if (binaryFilenames != null)
-      for (String binaryFilename : binaryFilenames)
+    if (binaryFilenames != null) {
+      for (String binaryFilename : binaryFilenames) {
         result = install(binaryFilename);
+      }
+    }
 
     return result;
   }

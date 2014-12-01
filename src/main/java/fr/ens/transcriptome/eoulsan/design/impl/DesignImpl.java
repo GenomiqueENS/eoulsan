@@ -48,14 +48,14 @@ public class DesignImpl implements Design, Serializable {
   /** Serialization version UID. */
   private static final long serialVersionUID = -7616692450023046216L;
 
-  private List<String> samplesOrder = new ArrayList<>();
-  private Map<String, Integer> samples = new HashMap<>();
-  private Map<Integer, String> samplesReverse = new HashMap<>();
-  private Map<Integer, Integer> ids = new HashMap<>();
+  private final List<String> samplesOrder = new ArrayList<>();
+  private final Map<String, Integer> samples = new HashMap<>();
+  private final Map<Integer, String> samplesReverse = new HashMap<>();
+  private final Map<Integer, Integer> ids = new HashMap<>();
 
-  private Map<String, Integer> metadataFields = new HashMap<>();
-  private List<String> metadataOrder = new ArrayList<>();
-  private Map<String, String> metadataData = new HashMap<>();
+  private final Map<String, Integer> metadataFields = new HashMap<>();
+  private final List<String> metadataOrder = new ArrayList<>();
+  private final Map<String, String> metadataData = new HashMap<>();
 
   private int countSamples;
   private int countLabels;
@@ -76,19 +76,22 @@ public class DesignImpl implements Design, Serializable {
    */
   public int getSampleId(final String sampleName) {
 
-    if (sampleName == null)
+    if (sampleName == null) {
       throw new NullPointerException("Sample name is null");
+    }
 
-    if (!isSample(sampleName))
+    if (!isSample(sampleName)) {
       throw new EoulsanRuntimeException("The sample doesn't exists: "
           + sampleName);
+    }
 
     final int sampleId = this.samples.get(sampleName);
 
     final Integer result = this.ids.get(sampleId);
 
-    if (result == null)
+    if (result == null) {
       return -1;
+    }
 
     return result;
   }
@@ -106,13 +109,15 @@ public class DesignImpl implements Design, Serializable {
   @Override
   public void addMetadataField(final String fieldName) {
 
-    if (fieldName == null)
+    if (fieldName == null) {
       throw new EoulsanRuntimeException("The metadata field can't be null");
-    if (isMetadataField(fieldName))
+    }
+    if (isMetadataField(fieldName)) {
       throw new EoulsanRuntimeException(
           "The descriptionLabel name already exists: " + fieldName);
+    }
 
-    this.metadataFields.put(fieldName, countLabels++);
+    this.metadataFields.put(fieldName, this.countLabels++);
     this.metadataOrder.add(fieldName);
 
   }
@@ -120,37 +125,44 @@ public class DesignImpl implements Design, Serializable {
   @Override
   public void addSample(final String sampleName) {
 
-    if (sampleName == null)
+    if (sampleName == null) {
       throw new EoulsanRuntimeException("Sample name name can't be null");
-    if (isSample(sampleName))
+    }
+    if (isSample(sampleName)) {
       throw new EoulsanRuntimeException("Sample name already exists: "
           + sampleName);
+    }
 
-    final int sampleId = countSamples++;
+    final int sampleId = this.countSamples++;
     this.samples.put(sampleName, sampleId);
     this.samplesReverse.put(sampleId, sampleName);
     this.samplesOrder.add(sampleName);
 
     int id = sampleId + 1;
-    while (this.ids.containsValue(id))
+    while (this.ids.containsValue(id)) {
       id++;
+    }
     this.ids.put(sampleId, id);
   }
 
   @Override
   public String getMetadata(final String sampleName, final String fieldName) {
 
-    if (sampleName == null)
+    if (sampleName == null) {
       throw new NullPointerException("Sample name can't be null");
-    if (fieldName == null)
+    }
+    if (fieldName == null) {
       throw new NullPointerException("Metadata field name can't be null");
+    }
 
-    if (!isSample(sampleName))
+    if (!isSample(sampleName)) {
       throw new EoulsanRuntimeException("The sample name doesn't exists: "
           + sampleName);
-    if (!isMetadataField(fieldName))
+    }
+    if (!isMetadataField(fieldName)) {
       throw new EoulsanRuntimeException(
           "The metadata field name doesn't exists: " + fieldName);
+    }
 
     return this.metadataData.get(createkeySampleMetadataField(sampleName,
         fieldName));
@@ -172,9 +184,10 @@ public class DesignImpl implements Design, Serializable {
   public Sample getSample(final int index) {
 
     final String sampleName = this.samplesOrder.get(index);
-    if (sampleName == null)
+    if (sampleName == null) {
       throw new EoulsanRuntimeException("The sample index doesn't exists: "
           + index);
+    }
 
     return getSample(sampleName);
   }
@@ -182,12 +195,14 @@ public class DesignImpl implements Design, Serializable {
   @Override
   public Sample getSample(final String sampleName) {
 
-    if (sampleName == null)
+    if (sampleName == null) {
       throw new EoulsanRuntimeException("The sample name can't be null");
+    }
 
-    if (!isSample(sampleName))
+    if (!isSample(sampleName)) {
       throw new EoulsanRuntimeException("The sample doesn't exists: "
           + sampleName);
+    }
 
     final int sampleId = this.samples.get(sampleName);
 
@@ -203,12 +218,14 @@ public class DesignImpl implements Design, Serializable {
   @Override
   public SampleMetadata getSampleMetadata(final String sampleName) {
 
-    if (sampleName == null)
+    if (sampleName == null) {
       throw new NullPointerException("Sample name is null");
+    }
 
-    if (!isSample(sampleName))
+    if (!isSample(sampleName)) {
       throw new EoulsanRuntimeException("The sample doesn't exists: "
           + sampleName);
+    }
 
     final int id = this.samples.get(sampleName);
 
@@ -223,8 +240,9 @@ public class DesignImpl implements Design, Serializable {
 
     final List<String> names = getSamplesNames();
 
-    for (String n : names)
+    for (String n : names) {
       result.add(getSample(n));
+    }
 
     return Collections.unmodifiableList(result);
   }
@@ -236,7 +254,7 @@ public class DesignImpl implements Design, Serializable {
   }
 
   @Override
-  public boolean isMetadataField(String fieldName) {
+  public boolean isMetadataField(final String fieldName) {
 
     return this.metadataFields.containsKey(fieldName);
   }
@@ -250,20 +268,24 @@ public class DesignImpl implements Design, Serializable {
   @Override
   public void removeMetadataField(final String fieldName) {
 
-    if (fieldName == null)
+    if (fieldName == null) {
       throw new EoulsanRuntimeException(
           "The description field name can't be null");
+    }
 
-    if (!isMetadataField(fieldName))
+    if (!isMetadataField(fieldName)) {
       throw new EoulsanRuntimeException(
           "The description field name doesn't exists");
+    }
 
     // Remove targets
     final String suffix = "-" + this.metadataFields.get(fieldName);
 
-    for (String key : new HashSet<>(this.metadataData.keySet()))
-      if (key.endsWith(suffix))
+    for (String key : new HashSet<>(this.metadataData.keySet())) {
+      if (key.endsWith(suffix)) {
         this.metadataData.remove(key);
+      }
+    }
 
     // Remove entry
     this.metadataFields.remove(fieldName);
@@ -273,19 +295,23 @@ public class DesignImpl implements Design, Serializable {
   @Override
   public void removeSample(final String sampleName) {
 
-    if (sampleName == null)
+    if (sampleName == null) {
       throw new EoulsanRuntimeException("Sample name can't be null");
+    }
 
-    if (!isSample(sampleName))
+    if (!isSample(sampleName)) {
       throw new EoulsanRuntimeException("the sample name doesn't exists: "
           + sampleName);
+    }
 
     // Remove descriptions
     final String prefixDescription = this.samples.get(sampleName) + "-";
 
-    for (String key : new HashSet<>(this.metadataData.keySet()))
-      if (key.startsWith(prefixDescription))
+    for (String key : new HashSet<>(this.metadataData.keySet())) {
+      if (key.startsWith(prefixDescription)) {
         this.metadataData.remove(key);
+      }
+    }
 
     // Remove formats and bioassays
     final int sampleId = this.samples.get(sampleName);
@@ -300,17 +326,21 @@ public class DesignImpl implements Design, Serializable {
   public void renameMetadataField(final String oldMetadataFieldName,
       final String newMetadataFieldName) {
 
-    if (oldMetadataFieldName == null)
+    if (oldMetadataFieldName == null) {
       throw new EoulsanRuntimeException("oldName name can't be null");
-    if (newMetadataFieldName == null)
+    }
+    if (newMetadataFieldName == null) {
       throw new EoulsanRuntimeException("newName name can't be null");
+    }
 
-    if (!isMetadataField(oldMetadataFieldName))
+    if (!isMetadataField(oldMetadataFieldName)) {
       throw new EoulsanRuntimeException("the old label name don't exists: "
           + oldMetadataFieldName);
-    if (isMetadataField(newMetadataFieldName))
+    }
+    if (isMetadataField(newMetadataFieldName)) {
       throw new EoulsanRuntimeException("the new label name already exists: "
           + newMetadataFieldName);
+    }
 
     int id = this.metadataFields.get(oldMetadataFieldName);
     this.metadataFields.remove(oldMetadataFieldName);
@@ -325,15 +355,19 @@ public class DesignImpl implements Design, Serializable {
   public void renameSample(final String oldSampleName,
       final String newSampleName) {
 
-    if (oldSampleName == null)
+    if (oldSampleName == null) {
       throw new EoulsanRuntimeException("oldName name can't be null");
-    if (newSampleName == null)
+    }
+    if (newSampleName == null) {
       throw new EoulsanRuntimeException("newName name can't be null");
+    }
 
-    if (!isSample(oldSampleName))
+    if (!isSample(oldSampleName)) {
       throw new EoulsanRuntimeException("the old sample name don't exists");
-    if (isSample(newSampleName))
+    }
+    if (isSample(newSampleName)) {
       throw new EoulsanRuntimeException("the new sample name already exists");
+    }
 
     int sampleId = this.samples.get(oldSampleName);
     this.samples.remove(oldSampleName);
@@ -342,11 +376,13 @@ public class DesignImpl implements Design, Serializable {
 
     int index = -1;
     int count = 0;
-    for (String s : this.samplesOrder)
-      if (s.equals(oldSampleName))
+    for (String s : this.samplesOrder) {
+      if (s.equals(oldSampleName)) {
         index = count;
-      else
+      } else {
         count++;
+      }
+    }
 
     // final int index = Collections.binarySearch(this.samplesOrder,
     // oldName);
@@ -357,17 +393,22 @@ public class DesignImpl implements Design, Serializable {
   public void setMetadata(final String sampleName, final String fieldName,
       final String value) {
 
-    if (sampleName == null)
+    if (sampleName == null) {
       throw new NullPointerException("Sample name can't be null");
-    if (fieldName == null)
+    }
+    if (fieldName == null) {
       throw new NullPointerException("Description field can't be null");
-    if (value == null)
+    }
+    if (value == null) {
       throw new NullPointerException("value name can't be null");
+    }
 
-    if (!isSample(sampleName))
+    if (!isSample(sampleName)) {
       throw new EoulsanRuntimeException("The sample name doesn't exists");
-    if (!isMetadataField(fieldName))
+    }
+    if (!isMetadataField(fieldName)) {
       addMetadataField(fieldName);
+    }
 
     this.metadataData.put(createkeySampleMetadataField(sampleName, fieldName),
         value);
@@ -380,18 +421,22 @@ public class DesignImpl implements Design, Serializable {
    */
   public void setSampleId(final String sampleName, final int id) {
 
-    if (sampleName == null)
+    if (sampleName == null) {
       throw new NullPointerException("Sample name is null");
+    }
 
-    if (id <= 0)
+    if (id <= 0) {
       throw new NullPointerException("Sample source is lower or equals to 0");
+    }
 
-    if (!isSample(sampleName))
+    if (!isSample(sampleName)) {
       throw new EoulsanRuntimeException("The sample doesn't exists: "
           + sampleName);
+    }
 
-    if (this.ids.containsValue(id))
+    if (this.ids.containsValue(id)) {
       throw new EoulsanRuntimeException("The identifier already exists: " + id);
+    }
 
     final int sampleId = this.samples.get(sampleName);
 
@@ -401,11 +446,12 @@ public class DesignImpl implements Design, Serializable {
   @Override
   public boolean contains(final Sample sample) {
 
-    if (sample == null)
+    if (sample == null) {
       return false;
+    }
 
     return this.samples.containsKey(sample.getName())
-        && this.ids.get(samples.get(sample.getName())) == sample.getId();
+        && this.ids.get(this.samples.get(sample.getName())) == sample.getId();
   }
 
   @Override

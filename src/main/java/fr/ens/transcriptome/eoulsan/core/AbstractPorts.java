@@ -77,8 +77,9 @@ public abstract class AbstractPorts<E extends Port> implements Ports<E>,
   @Override
   public boolean contains(final E port) {
 
-    if (port == null)
+    if (port == null) {
       return false;
+    }
 
     return this.ports.containsKey(port.getName());
   }
@@ -137,12 +138,14 @@ public abstract class AbstractPorts<E extends Port> implements Ports<E>,
 
     for (E port : ports) {
 
-      if (port == null)
+      if (port == null) {
         continue;
+      }
 
-      if (map.containsKey(port.getName()))
+      if (map.containsKey(port.getName())) {
         throw new EoulsanRuntimeException(
             "A port already exists with the same name: " + port.getName());
+      }
 
       map.put(port.getName(), port);
     }
@@ -167,29 +170,35 @@ public abstract class AbstractPorts<E extends Port> implements Ports<E>,
   @Override
   public int countDataFormat(final DataFormat format) {
 
-    if (format == null)
+    if (format == null) {
       return 0;
+    }
 
     int count = 0;
 
-    for (E e : this)
-      if (e.getFormat().equals(format))
+    for (E e : this) {
+      if (e.getFormat().equals(format)) {
         count++;
+      }
+    }
 
     return count;
   }
 
   @Override
-  public List<E> getPortsWithDataFormat(DataFormat format) {
+  public List<E> getPortsWithDataFormat(final DataFormat format) {
 
-    if (format == null)
+    if (format == null) {
       return Collections.emptyList();
+    }
 
     final List<E> result = new ArrayList<>();
 
-    for (E e : this)
-      if (e.getFormat().equals(format))
+    for (E e : this) {
+      if (e.getFormat().equals(format)) {
         result.add(e);
+      }
+    }
 
     return Collections.unmodifiableList(result);
   }

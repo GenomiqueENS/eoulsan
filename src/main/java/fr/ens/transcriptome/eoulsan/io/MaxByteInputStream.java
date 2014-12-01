@@ -51,13 +51,15 @@ public class MaxByteInputStream extends InputStream {
   @Override
   public int read() throws IOException {
 
-    if (this.nRead == this.max)
+    if (this.nRead == this.max) {
       return -1;
+    }
 
-    final int c = in.read();
+    final int c = this.in.read();
 
-    if (c >= 0)
+    if (c >= 0) {
       this.nRead++;
+    }
 
     return c;
   }
@@ -66,16 +68,18 @@ public class MaxByteInputStream extends InputStream {
   public int read(final byte b[], final int off, final int len)
       throws IOException {
 
-    if (this.nRead == this.max)
+    if (this.nRead == this.max) {
       return -1;
+    }
 
     final int l =
         (this.nRead + len) > this.max ? (int) (this.max - this.nRead) : len;
 
     final int nr = this.in.read(b, off, l);
 
-    if (nr > 0)
+    if (nr > 0) {
       this.nRead += nr;
+    }
 
     return nr;
   }
@@ -91,12 +95,14 @@ public class MaxByteInputStream extends InputStream {
    */
   public MaxByteInputStream(final InputStream in, final long max) {
 
-    if (in == null)
+    if (in == null) {
       throw new NullPointerException("InputStream is null");
+    }
 
-    if (max < 1)
+    if (max < 1) {
       throw new IllegalArgumentException("Max length cannot be lower than 1: "
           + max);
+    }
 
     this.in = in;
     this.max = max;

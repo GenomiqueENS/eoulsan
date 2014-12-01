@@ -48,7 +48,7 @@ public class ITCommandResult {
   private String exceptionMessage;
 
   public boolean isEmpty() {
-    return message.toString().isEmpty();
+    return this.message.toString().isEmpty();
   }
 
   /**
@@ -57,23 +57,23 @@ public class ITCommandResult {
    */
   public String getReport() {
 
-    message.append("\nExecute script for ");
-    message.append(this.desc);
-    message.append("\n\tcommand line: ");
-    message.append(this.commandLine);
-    message.append("\n\tin directory: ");
-    message.append(this.directory.getAbsolutePath());
+    this.message.append("\nExecute script for ");
+    this.message.append(this.desc);
+    this.message.append("\n\tcommand line: ");
+    this.message.append(this.commandLine);
+    this.message.append("\n\tin directory: ");
+    this.message.append(this.directory.getAbsolutePath());
 
-    message.append("\n\tduration: ");
-    message
-        .append(duration == -1 ? "none" : toTimeHumanReadable(this.duration));
+    this.message.append("\n\tduration: ");
+    this.message.append(this.duration == -1
+        ? "none" : toTimeHumanReadable(this.duration));
 
-    message.append("\n\texit value: ");
-    message.append(this.exitValue);
+    this.message.append("\n\texit value: ");
+    this.message.append(this.exitValue);
 
-    message.append("\n");
+    this.message.append("\n");
 
-    return message.toString();
+    return this.message.toString();
   }
 
   /**
@@ -81,7 +81,7 @@ public class ITCommandResult {
    * @return true, if is catched exception
    */
   public boolean isCatchedException() {
-    return exception != null;
+    return this.exception != null;
   }
 
   //
@@ -116,7 +116,7 @@ public class ITCommandResult {
    * Set the exception.
    * @param exception the new exception
    */
-  public void setException(Exception exception) {
+  public void setException(final Exception exception) {
     setException(exception, "");
   }
 
@@ -125,7 +125,7 @@ public class ITCommandResult {
    * @param exception the exception
    * @param message the message
    */
-  public void setException(Exception exception, final String message) {
+  public void setException(final Exception exception, final String message) {
     this.exception = exception;
     this.exceptionMessage = message;
   }

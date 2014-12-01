@@ -151,8 +151,8 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected List<String> getIndexerCommand(String indexerPathname,
-      String genomePathname) {
+  protected List<String> getIndexerCommand(final String indexerPathname,
+      final String genomePathname) {
 
     final File genomeFile = new File(genomePathname);
     List<String> cmd = new ArrayList<>();
@@ -170,8 +170,8 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected InputStream internalMapSE(File readsFile, File archiveIndex,
-      GenomeDescription gd) throws IOException {
+  protected InputStream internalMapSE(final File readsFile,
+      final File archiveIndex, final GenomeDescription gd) throws IOException {
 
     final String starPath;
 
@@ -187,8 +187,9 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected InputStream internalMapPE(File readsFile1, File readsFile2,
-      File archiveIndex, GenomeDescription gd) throws IOException {
+  protected InputStream internalMapPE(final File readsFile1,
+      final File readsFile2, final File archiveIndex, final GenomeDescription gd)
+      throws IOException {
 
     final String starPath;
 
@@ -204,8 +205,8 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected MapperProcess internalMapSE(File archiveIndex, GenomeDescription gd)
-      throws IOException {
+  protected MapperProcess internalMapSE(final File archiveIndex,
+      final GenomeDescription gd) throws IOException {
 
     final String gsnapPath;
 
@@ -218,8 +219,8 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected MapperProcess internalMapPE(File archiveIndex, GenomeDescription gd)
-      throws IOException {
+  protected MapperProcess internalMapPE(final File archiveIndex,
+      final GenomeDescription gd) throws IOException {
 
     final String starPath;
 

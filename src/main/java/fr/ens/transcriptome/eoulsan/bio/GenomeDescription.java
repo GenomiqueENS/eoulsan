@@ -64,7 +64,7 @@ public class GenomeDescription {
   private static final String SEQUENCES_COUNT_PREFIX = PREFIX + "sequences";
 
   private String genomeName;
-  private Map<String, Long> sequences = new LinkedHashMap<>();
+  private final Map<String, Long> sequences = new LinkedHashMap<>();
   private String md5Sum;
 
   //
@@ -176,8 +176,9 @@ public class GenomeDescription {
 
     long count = 0;
 
-    for (Map.Entry<String, Long> e : this.sequences.entrySet())
+    for (Map.Entry<String, Long> e : this.sequences.entrySet()) {
       count += e.getValue();
+    }
 
     return count;
   }
@@ -196,11 +197,13 @@ public class GenomeDescription {
 
     final Writer writer = FileUtils.createFastBufferedWriter(os);
 
-    if (this.genomeName != null)
+    if (this.genomeName != null) {
       writer.write(NAME_PREFIX + "=" + getGenomeName() + '\n');
+    }
 
-    if (this.md5Sum != null)
+    if (this.md5Sum != null) {
       writer.write(MD5_PREFIX + "=" + getMD5Sum() + '\n');
+    }
 
     writer.write(SEQUENCES_COUNT_PREFIX + '=' + getSequenceCount() + '\n');
 
@@ -251,18 +254,21 @@ public class GenomeDescription {
 
         final String key = fields.get(0).trim();
 
-        if (key.startsWith(NAME_PREFIX))
+        if (key.startsWith(NAME_PREFIX)) {
           result.setGenomeName(fields.get(1));
-        if (key.startsWith(MD5_PREFIX))
+        }
+        if (key.startsWith(MD5_PREFIX)) {
           result.setMD5Sum(fields.get(1));
-        else
+        } else {
           try {
-            if (key.startsWith(SEQUENCE_PREFIX))
+            if (key.startsWith(SEQUENCE_PREFIX)) {
               result.addSequence(key.substring(SEQUENCE_PREFIX.length()),
                   Integer.parseInt(fields.get(1)));
+            }
           } catch (NumberFormatException e) {
 
           }
+        }
       }
     }
 
@@ -373,31 +379,36 @@ public class GenomeDescription {
       if (!seqName.equals(lastSeqName)) {
 
         // Check if sequence has been found more than one time
-        if (result.getSequenceLength(lastSeqName) != -1)
+        if (result.getSequenceLength(lastSeqName) != -1) {
           throw new BadBioEntryException("Sequence name found twice: "
               + lastSeqName, lastSeqName);
+        }
 
         // Add sequence
-        if (lastSeqName != null)
+        if (lastSeqName != null) {
           result.addSequence(parsedSeqName, chrSize);
+        }
 
         // Parse chromosome name
         parsedSeqName = parseChromosomeName(seqName);
 
-        if (parsedSeqName == null)
+        if (parsedSeqName == null) {
           throw new IOException("No fasta header found.");
+        }
 
         // Update digest with chromosome name
-        if (md5Digest != null)
+        if (md5Digest != null) {
           md5Digest.update(parsedSeqName.getBytes(Globals.DEFAULT_CHARSET));
+        }
 
         lastSeqName = seqName;
         chrSize = 0;
       }
 
       final String sequence = parser.getSequence();
-      if (sequence == null)
+      if (sequence == null) {
         throw new IOException("No fasta sequence found.");
+      }
 
       // Check the sequence and increment the length of the sequence
       chrSize += checkBases(sequence, lastSeqName, alphabet);
@@ -407,12 +418,14 @@ public class GenomeDescription {
     }
 
     // Add the last sequence
-    if (lastSeqName != null)
+    if (lastSeqName != null) {
       result.addSequence(parsedSeqName, chrSize);
+    }
 
     // Compute final MD5 sum
-    if (md5Digest != null)
+    if (md5Digest != null) {
       result.setMD5Sum(digestToString(md5Digest));
+    }
 
     genomeFastaIs.close();
 
@@ -422,24 +435,28 @@ public class GenomeDescription {
   private static String parseChromosomeName(final String fastaHeader)
       throws BadBioEntryException {
 
-    if (fastaHeader == null)
+    if (fastaHeader == null) {
       return null;
+    }
 
-    if ("".equals(fastaHeader.trim()))
+    if ("".equals(fastaHeader.trim())) {
       throw new BadBioEntryException("Sequence header is empty", ">"
           + fastaHeader);
+    }
 
-    if (fastaHeader.startsWith(" "))
+    if (fastaHeader.startsWith(" ")) {
       throw new BadBioEntryException(
           "A whitespace was found at the beginning of the sequence name", ">"
               + fastaHeader);
+    }
 
     final String s = fastaHeader.trim();
     String[] fields = s.split("\\s");
 
-    if (fields == null || fields.length == 0)
+    if (fields == null || fields.length == 0) {
       throw new BadBioEntryException("Invalid sequence header", ">"
           + fastaHeader);
+    }
 
     return fields[0];
   }
@@ -450,18 +467,21 @@ public class GenomeDescription {
 
     final char[] array = sequence.toCharArray();
 
-    for (final char c : array)
-      if (!alphabet.isLetterValid(c))
+    for (final char c : array) {
+      if (!alphabet.isLetterValid(c)) {
         throw new BadBioEntryException("Invalid base in genome: " + c,
             sequenceName);
+      }
+    }
 
     return sequence.length();
   }
 
   private static final String digestToString(final MessageDigest md) {
 
-    if (md == null)
+    if (md == null) {
       return null;
+    }
 
     final BigInteger bigInt = new BigInteger(1, md.digest());
 
@@ -476,7 +496,7 @@ public class GenomeDescription {
   public String toString() {
 
     return this.getClass().getSimpleName()
-        + "{genomeName=" + genomeName + ", sequencesCount="
+        + "{genomeName=" + this.genomeName + ", sequencesCount="
         + this.sequences.size() + ", md5Sum=" + this.md5Sum + ", sequences="
         + this.sequences + "}";
   }

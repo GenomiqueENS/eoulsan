@@ -99,8 +99,9 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
       final FastqFormat fastqFormat = inData.getMetadata().getFastqFormat();
 
       final List<Job> jobsPairedEnd = new ArrayList<>();
-      if (inData.getDataFileCount() == 2)
+      if (inData.getDataFileCount() == 2) {
         jobsPairedEnd.add(createJobConfPairedEnd(conf, inData, fastqFormat));
+      }
 
       // Submit job paired end if needed
       MapReduceUtils.submitAndWaitForJobs(jobsPairedEnd,
@@ -147,8 +148,9 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     // Get input DataFile
     DataFile inputDataFile = inData.getDataFile(0);
 
-    if (inputDataFile == null)
+    if (inputDataFile == null) {
       throw new IOException("No input file found.");
+    }
 
     if (inData.getDataFileCount() == 2) {
 
@@ -185,8 +187,9 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     FileInputFormat.addInputPath(job, inputPath);
 
     // Set the input format
-    if (READS_FASTQ.equals(inputDataFile.getDataFormat()))
+    if (READS_FASTQ.equals(inputDataFile.getDataFormat())) {
       job.setInputFormatClass(FastQFormatNew.class);
+    }
 
     // Set the Mapper class
     job.setMapperClass(ReadsFilterMapper.class);
@@ -221,12 +224,14 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     // get input file count for the sample
     final int inFileCount = inData.getDataFileCount();
 
-    if (inFileCount < 1)
+    if (inFileCount < 1) {
       throw new IOException("No input file found.");
+    }
 
-    if (inFileCount > 2)
+    if (inFileCount > 2) {
       throw new IOException(
           "Cannot handle more than 2 reads files at the same time.");
+    }
 
     // Get the source
     final DataFile inputDataFile1 = inData.getDataFile(0);
@@ -258,8 +263,9 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
     // Set the input format
     if (READS_FASTQ.equals(inputDataFile1.getDataFormat())
-        && READS_FASTQ.equals(inputDataFile2.getDataFormat()))
+        && READS_FASTQ.equals(inputDataFile2.getDataFormat())) {
       job.setInputFormatClass(FastQFormatNew.class);
+    }
 
     // Set the Mapper class
     job.setMapperClass(PreTreatmentMapper.class);

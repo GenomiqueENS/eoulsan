@@ -38,7 +38,7 @@ public class WorkflowStepObserverRegistry {
 
   private static WorkflowStepObserverRegistry singleton;
 
-  private Set<WorkflowStepObserver> observers = new HashSet<>();
+  private final Set<WorkflowStepObserver> observers = new HashSet<>();
 
   /**
    * Add a listener.
@@ -46,8 +46,9 @@ public class WorkflowStepObserverRegistry {
    */
   public void addObserver(final WorkflowStepObserver observer) {
 
-    if (observer == null || this.observers.contains(observer))
+    if (observer == null || this.observers.contains(observer)) {
       return;
+    }
 
     this.observers.add(observer);
   }
@@ -58,8 +59,9 @@ public class WorkflowStepObserverRegistry {
    */
   public void removeObserver(final WorkflowStepObserver observer) {
 
-    if (observer == null)
+    if (observer == null) {
       return;
+    }
 
     this.observers.remove(observer);
   }
@@ -79,8 +81,9 @@ public class WorkflowStepObserverRegistry {
    */
   public static WorkflowStepObserverRegistry getInstance() {
 
-    if (singleton == null)
+    if (singleton == null) {
       singleton = new WorkflowStepObserverRegistry();
+    }
 
     return singleton;
   }

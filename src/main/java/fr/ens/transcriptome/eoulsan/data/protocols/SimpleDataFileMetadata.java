@@ -132,10 +132,10 @@ class SimpleDataFileMetadata implements DataFileMetadata {
 
     return this.getClass().getSimpleName()
         + "{contentLength=" + this.contentLength + ", contentType="
-        + contentType + ", contentEncoding=" + contentEncoding
+        + this.contentType + ", contentEncoding=" + this.contentEncoding
         + ", contentMD5=" + this.contentMD5 + ", lastModified="
-        + this.lastModified + ", dataFormat=" + dataFormat + ", directory="
-        + directory + "}";
+        + this.lastModified + ", dataFormat=" + this.dataFormat
+        + ", directory=" + this.directory + "}";
   }
 
   //
@@ -147,8 +147,9 @@ class SimpleDataFileMetadata implements DataFileMetadata {
 
   public SimpleDataFileMetadata(final DataFileMetadata md) {
 
-    if (md == null)
+    if (md == null) {
       return;
+    }
 
     setContentLength(md.getContentLength());
     setContentType(md.getContentType());

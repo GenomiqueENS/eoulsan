@@ -110,7 +110,7 @@ public final class Globals {
   /** Platforms where the application is available. */
   public static final Set<String> AVAILABLE_BINARY_ARCH = Collections
       .unmodifiableSet(new HashSet<>(Arrays.asList(new String[] {
-          "linux\tamd64", "linux\tx86_64" })));
+          "linux\tamd64", "linux\tx86_64"})));
 
   /** Platforms alias. */
   public static final Map<String, String> AVAILABLE_BINARY_ARCH_ALIAS =
@@ -126,9 +126,10 @@ public final class Globals {
     private final DateFormat df = new SimpleDateFormat("yyyy.MM.dd kk:mm:ss",
         DEFAULT_LOCALE);
 
+    @Override
     public String format(final LogRecord record) {
       return record.getLevel()
-          + "\t" + df.format(new Date(record.getMillis())) + "\t"
+          + "\t" + this.df.format(new Date(record.getMillis())) + "\t"
           + record.getMessage() + "\n";
     }
   };

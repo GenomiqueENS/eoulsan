@@ -168,18 +168,18 @@ public class DistCp implements Tool {
 
     final String cmd, propertyname;
 
-    private Options(String cmd, String propertyname) {
+    private Options(final String cmd, final String propertyname) {
       this.cmd = cmd;
       this.propertyname = propertyname;
     }
 
-    private long parseLong(String[] args, int offset) {
+    private long parseLong(final String[] args, final int offset) {
       if (offset == args.length) {
-        throw new IllegalArgumentException("<n> not specified in " + cmd);
+        throw new IllegalArgumentException("<n> not specified in " + this.cmd);
       }
       long n = StringUtils.TraditionalBinaryPrefix.string2long(args[offset]);
       if (n <= 0) {
-        throw new IllegalArgumentException("n = " + n + " <= 0 in " + cmd);
+        throw new IllegalArgumentException("n = " + n + " <= 0 in " + this.cmd);
       }
       return n;
     }
@@ -191,10 +191,10 @@ public class DistCp implements Tool {
     final char symbol;
 
     private FileAttribute() {
-      symbol = toString().toLowerCase().charAt(0);
+      this.symbol = toString().toLowerCase().charAt(0);
     }
 
-    static EnumSet<FileAttribute> parse(String s) {
+    static EnumSet<FileAttribute> parse(final String s) {
       if (s == null || s.length() == 0) {
         return EnumSet.allOf(FileAttribute.class);
       }
@@ -203,8 +203,9 @@ public class DistCp implements Tool {
       FileAttribute[] attributes = values();
       for (char c : s.toCharArray()) {
         int i = 0;
-        for (; i < attributes.length && c != attributes[i].symbol; i++)
+        for (; i < attributes.length && c != attributes[i].symbol; i++) {
           ;
+        }
         if (i < attributes.length) {
           if (!set.contains(attributes[i])) {
             set.add(attributes[i]);
@@ -235,7 +236,8 @@ public class DistCp implements Tool {
 
   private JobConf conf;
 
-  public void setConf(Configuration conf) {
+  @Override
+  public void setConf(final Configuration conf) {
     if (conf instanceof JobConf) {
       this.conf = (JobConf) conf;
     } else {
@@ -243,11 +245,12 @@ public class DistCp implements Tool {
     }
   }
 
+  @Override
   public Configuration getConf() {
-    return conf;
+    return this.conf;
   }
 
-  public DistCp(Configuration conf) {
+  public DistCp(final Configuration conf) {
     setConf(conf);
   }
 
@@ -261,23 +264,26 @@ public class DistCp implements Tool {
     FilePair() {
     }
 
-    FilePair(FileStatus input, String output) {
+    FilePair(final FileStatus input, final String output) {
       this.input = input;
       this.output = output;
     }
 
-    public void readFields(DataInput in) throws IOException {
-      input.readFields(in);
-      output = Text.readString(in);
+    @Override
+    public void readFields(final DataInput in) throws IOException {
+      this.input.readFields(in);
+      this.output = Text.readString(in);
     }
 
-    public void write(DataOutput out) throws IOException {
-      input.write(out);
-      Text.writeString(out, output);
+    @Override
+    public void write(final DataOutput out) throws IOException {
+      this.input.write(out);
+      Text.writeString(out, this.output);
     }
 
+    @Override
     public String toString() {
-      return input + " : " + output;
+      return this.input + " : " + this.output;
     }
   }
 
@@ -293,7 +299,8 @@ public class DistCp implements Tool {
      * @param job The handle to the JobConf object
      * @param numSplits Number of splits requested
      */
-    public InputSplit[] getSplits(JobConf job, int numSplits)
+    @Override
+    public InputSplit[] getSplits(final JobConf job, final int numSplits)
         throws IOException {
       int cnfiles = job.getInt(SRC_COUNT_LABEL, -1);
       long cbsize = job.getLong(TOTAL_SIZE_LABEL, -1);
@@ -343,8 +350,9 @@ public class DistCp implements Tool {
     /**
      * Returns a reader for this split of the src file list.
      */
-    public RecordReader<Text, Text> getRecordReader(InputSplit split,
-        JobConf job, Reporter reporter) throws IOException {
+    @Override
+    public RecordReader<Text, Text> getRecordReader(final InputSplit split,
+        final JobConf job, final Reporter reporter) throws IOException {
       return new SequenceFileRecordReader<>(job, (FileSplit) split);
     }
   }
@@ -373,10 +381,11 @@ public class DistCp implements Tool {
 
     private String getCountString() {
       return "Copied: "
-          + copycount + " Skipped: " + skipcount + " Failed: " + failcount;
+          + this.copycount + " Skipped: " + this.skipcount + " Failed: "
+          + this.failcount;
     }
 
-    private void updateStatus(Reporter reporter) {
+    private void updateStatus(final Reporter reporter) {
       reporter.setStatus(getCountString());
     }
 
@@ -387,33 +396,33 @@ public class DistCp implements Tool {
      * meaningful in this context.
      * @throws IOException
      */
-    private boolean needsUpdate(FileStatus srcstatus, FileSystem dstfs,
-        Path dstpath) throws IOException {
-      return update
-          && !sameFile(srcstatus.getPath().getFileSystem(job), srcstatus,
+    private boolean needsUpdate(final FileStatus srcstatus,
+        final FileSystem dstfs, final Path dstpath) throws IOException {
+      return this.update
+          && !sameFile(srcstatus.getPath().getFileSystem(this.job), srcstatus,
               dstfs, dstpath);
     }
 
-    private FSDataOutputStream create(Path f, Reporter reporter,
-        FileStatus srcstat) throws IOException {
-      if (destFileSys.exists(f)) {
-        destFileSys.delete(f, false);
+    private FSDataOutputStream create(final Path f, final Reporter reporter,
+        final FileStatus srcstat) throws IOException {
+      if (this.destFileSys.exists(f)) {
+        this.destFileSys.delete(f, false);
       }
-      if (!preserve_status) {
-        return destFileSys.create(f, true, sizeBuf, reporter);
+      if (!this.preserve_status) {
+        return this.destFileSys.create(f, true, this.sizeBuf, reporter);
       }
 
       FsPermission permission =
-          preseved.contains(FileAttribute.PERMISSION)
-              ? srcstat.getPermission() : null;
+          this.preseved.contains(FileAttribute.PERMISSION) ? srcstat
+              .getPermission() : null;
       short replication =
-          preseved.contains(FileAttribute.REPLICATION) ? srcstat
-              .getReplication() : destFileSys.getDefaultReplication();
+          this.preseved.contains(FileAttribute.REPLICATION) ? srcstat
+              .getReplication() : this.destFileSys.getDefaultReplication();
       long blockSize =
-          preseved.contains(FileAttribute.BLOCK_SIZE)
-              ? srcstat.getBlockSize() : destFileSys.getDefaultBlockSize();
-      return destFileSys.create(f, permission, true, sizeBuf, replication,
-          blockSize, reporter);
+          this.preseved.contains(FileAttribute.BLOCK_SIZE) ? srcstat
+              .getBlockSize() : this.destFileSys.getDefaultBlockSize();
+      return this.destFileSys.create(f, permission, true, this.sizeBuf,
+          replication, blockSize, reporter);
     }
 
     /**
@@ -422,20 +431,20 @@ public class DistCp implements Tool {
      * @param dstpath dst path
      * @param reporter
      */
-    private void copy(FileStatus srcstat, Path relativedst,
-        OutputCollector<WritableComparable<?>, Text> outc, Reporter reporter)
-        throws IOException {
-      Path absdst = new Path(destPath, relativedst);
-      int totfiles = job.getInt(SRC_COUNT_LABEL, -1);
+    private void copy(final FileStatus srcstat, final Path relativedst,
+        final OutputCollector<WritableComparable<?>, Text> outc,
+        final Reporter reporter) throws IOException {
+      Path absdst = new Path(this.destPath, relativedst);
+      int totfiles = this.job.getInt(SRC_COUNT_LABEL, -1);
       assert totfiles >= 0 : "Invalid file count " + totfiles;
 
       // if a directory, ensure created even if empty
       if (srcstat.isDir()) {
-        if (destFileSys.exists(absdst)) {
-          if (!destFileSys.getFileStatus(absdst).isDir()) {
+        if (this.destFileSys.exists(absdst)) {
+          if (!this.destFileSys.getFileStatus(absdst).isDir()) {
             throw new IOException("Failed to mkdirs: " + absdst + " is a file.");
           }
-        } else if (!destFileSys.mkdirs(absdst)) {
+        } else if (!this.destFileSys.mkdirs(absdst)) {
           throw new IOException("Failed to mkdirs " + absdst);
         }
         // TODO: when modification times can be set, directories should be
@@ -445,28 +454,28 @@ public class DistCp implements Tool {
         return;
       }
 
-      if (destFileSys.exists(absdst)
-          && !overwrite && !needsUpdate(srcstat, destFileSys, absdst)) {
+      if (this.destFileSys.exists(absdst)
+          && !this.overwrite && !needsUpdate(srcstat, this.destFileSys, absdst)) {
         outc.collect(null, new Text("SKIP: " + srcstat.getPath()));
-        ++skipcount;
+        ++this.skipcount;
         reporter.incrCounter(Counter.SKIP, 1);
         updateStatus(reporter);
         return;
       }
 
-      Path tmpfile = new Path(job.get(TMP_DIR_LABEL), relativedst);
+      Path tmpfile = new Path(this.job.get(TMP_DIR_LABEL), relativedst);
       long cbcopied = 0L;
       FSDataInputStream in = null;
       FSDataOutputStream out = null;
       try {
         // open src file
-        in = srcstat.getPath().getFileSystem(job).open(srcstat.getPath());
+        in = srcstat.getPath().getFileSystem(this.job).open(srcstat.getPath());
         reporter.incrCounter(Counter.BYTESEXPECTED, srcstat.getLen());
         // open tmp file
         out = create(tmpfile, reporter, srcstat);
         // copy file
-        for (int cbread; (cbread = in.read(buffer)) >= 0;) {
-          out.write(buffer, 0, cbread);
+        for (int cbread; (cbread = in.read(this.buffer)) >= 0;) {
+          out.write(this.buffer, 0, cbread);
           cbcopied += cbread;
           reporter.setStatus(String.format("%.2f ",
               cbcopied * 100.0 / srcstat.getLen())
@@ -491,24 +500,24 @@ public class DistCp implements Tool {
           // Copying a single file; use dst path provided by user as destination
           // rather than destination directory, if a file
           Path dstparent = absdst.getParent();
-          if (!(destFileSys.exists(dstparent) && destFileSys.getFileStatus(
-              dstparent).isDir())) {
+          if (!(this.destFileSys.exists(dstparent) && this.destFileSys
+              .getFileStatus(dstparent).isDir())) {
             absdst = dstparent;
           }
         }
-        if (destFileSys.exists(absdst)
-            && destFileSys.getFileStatus(absdst).isDir()) {
+        if (this.destFileSys.exists(absdst)
+            && this.destFileSys.getFileStatus(absdst).isDir()) {
           throw new IOException(absdst + " is a directory");
         }
-        if (!destFileSys.mkdirs(absdst.getParent())) {
+        if (!this.destFileSys.mkdirs(absdst.getParent())) {
           throw new IOException("Failed to create parent dir: "
               + absdst.getParent());
         }
         rename(tmpfile, absdst);
 
-        FileStatus dststat = destFileSys.getFileStatus(absdst);
+        FileStatus dststat = this.destFileSys.getFileStatus(absdst);
         if (dststat.getLen() != srcstat.getLen()) {
-          destFileSys.delete(absdst, false);
+          this.destFileSys.delete(absdst, false);
           throw new IOException("File size not matched: copied "
               + bytesString(dststat.getLen()) + " to dst (=" + absdst
               + ") but expected " + bytesString(srcstat.getLen()) + " from "
@@ -518,19 +527,19 @@ public class DistCp implements Tool {
       }
 
       // report at least once for each file
-      ++copycount;
+      ++this.copycount;
       reporter.incrCounter(Counter.BYTESCOPIED, cbcopied);
       reporter.incrCounter(Counter.COPY, 1);
       updateStatus(reporter);
     }
 
     /** rename tmp to dst, delete dst if already exists */
-    private void rename(Path tmp, Path dst) throws IOException {
+    private void rename(final Path tmp, final Path dst) throws IOException {
       try {
-        if (destFileSys.exists(dst)) {
-          destFileSys.delete(dst, true);
+        if (this.destFileSys.exists(dst)) {
+          this.destFileSys.delete(dst, true);
         }
-        if (!destFileSys.rename(tmp, dst)) {
+        if (!this.destFileSys.rename(tmp, dst)) {
           throw new IOException();
         }
       } catch (IOException cause) {
@@ -539,14 +548,14 @@ public class DistCp implements Tool {
       }
     }
 
-    private void updatePermissions(FileStatus src, FileStatus dst)
+    private void updatePermissions(final FileStatus src, final FileStatus dst)
         throws IOException {
-      if (preserve_status) {
-        DistCp.updatePermissions(src, dst, preseved, destFileSys);
+      if (this.preserve_status) {
+        DistCp.updatePermissions(src, dst, this.preseved, this.destFileSys);
       }
     }
 
-    static String bytesString(long b) {
+    static String bytesString(final long b) {
       return b + " bytes (" + StringUtils.humanReadableInt(b) + ")";
     }
 
@@ -555,25 +564,26 @@ public class DistCp implements Tool {
      * well as top-level paths on source and destination directories. Gets the
      * named file systems, to be used later in map.
      */
-    public void configure(JobConf job) {
-      destPath = new Path(job.get(DST_DIR_LABEL, "/"));
+    @Override
+    public void configure(final JobConf job) {
+      this.destPath = new Path(job.get(DST_DIR_LABEL, "/"));
       try {
-        destFileSys = destPath.getFileSystem(job);
+        this.destFileSys = this.destPath.getFileSystem(job);
       } catch (IOException ex) {
         throw new RuntimeException("Unable to get the named file system.", ex);
       }
-      sizeBuf = job.getInt("copy.buf.size", 128 * 1024);
-      buffer = new byte[sizeBuf];
-      ignoreReadFailures =
+      this.sizeBuf = job.getInt("copy.buf.size", 128 * 1024);
+      this.buffer = new byte[this.sizeBuf];
+      this.ignoreReadFailures =
           job.getBoolean(Options.IGNORE_READ_FAILURES.propertyname, false);
-      preserve_status =
+      this.preserve_status =
           job.getBoolean(Options.PRESERVE_STATUS.propertyname, false);
-      if (preserve_status) {
-        preseved = FileAttribute.parse(job.get(PRESERVE_STATUS_LABEL));
+      if (this.preserve_status) {
+        this.preseved = FileAttribute.parse(job.get(PRESERVE_STATUS_LABEL));
       }
-      update = job.getBoolean(Options.UPDATE.propertyname, false);
-      overwrite =
-          !update && job.getBoolean(Options.OVERWRITE.propertyname, false);
+      this.update = job.getBoolean(Options.UPDATE.propertyname, false);
+      this.overwrite =
+          !this.update && job.getBoolean(Options.OVERWRITE.propertyname, false);
       this.job = job;
     }
 
@@ -584,15 +594,16 @@ public class DistCp implements Tool {
      * @param out Log of failed copies
      * @param reporter
      */
-    public void map(LongWritable key, FilePair value,
-        OutputCollector<WritableComparable<?>, Text> out, Reporter reporter)
-        throws IOException {
+    @Override
+    public void map(final LongWritable key, final FilePair value,
+        final OutputCollector<WritableComparable<?>, Text> out,
+        final Reporter reporter) throws IOException {
       final FileStatus srcstat = value.input;
       final Path relativedst = new Path(value.output);
       try {
         copy(srcstat, relativedst, out, reporter);
       } catch (IOException e) {
-        ++failcount;
+        ++this.failcount;
         reporter.incrCounter(Counter.FAIL, 1);
         updateStatus(reporter);
         final String sfailure =
@@ -602,9 +613,11 @@ public class DistCp implements Tool {
         try {
           for (int i = 0; i < 3; ++i) {
             try {
-              final Path tmp = new Path(job.get(TMP_DIR_LABEL), relativedst);
-              if (destFileSys.delete(tmp, true))
+              final Path tmp =
+                  new Path(this.job.get(TMP_DIR_LABEL), relativedst);
+              if (this.destFileSys.delete(tmp, true)) {
                 break;
+              }
             } catch (Throwable ex) {
               // ignore, we are just cleaning up
               getLogger()
@@ -622,16 +635,17 @@ public class DistCp implements Tool {
       }
     }
 
+    @Override
     public void close() throws IOException {
-      if (0 == failcount || ignoreReadFailures) {
+      if (0 == this.failcount || this.ignoreReadFailures) {
         return;
       }
       throw new IOException(getCountString());
     }
   }
 
-  private static List<Path> fetchFileList(Configuration conf, Path srcList)
-      throws IOException {
+  private static List<Path> fetchFileList(final Configuration conf,
+      final Path srcList) throws IOException {
     List<Path> result = new ArrayList<>();
     FileSystem fs = srcList.getFileSystem(conf);
     BufferedReader input = null;
@@ -650,9 +664,9 @@ public class DistCp implements Tool {
   }
 
   @Deprecated
-  public static void copy(Configuration conf, String srcPath, String destPath,
-      Path logPath, boolean srcAsList, boolean ignoreReadFailures)
-      throws IOException {
+  public static void copy(final Configuration conf, final String srcPath,
+      final String destPath, final Path logPath, final boolean srcAsList,
+      final boolean ignoreReadFailures) throws IOException {
     final Path src = new Path(srcPath);
     List<Path> tmp = new ArrayList<>();
     if (srcAsList) {
@@ -670,8 +684,8 @@ public class DistCp implements Tool {
   }
 
   /** Sanity check for srcPath */
-  private static void checkSrcPath(Configuration conf, List<Path> srcPaths)
-      throws IOException {
+  private static void checkSrcPath(final Configuration conf,
+      final List<Path> srcPaths) throws IOException {
     List<IOException> rslt = new ArrayList<>();
     for (Path p : srcPaths) {
       FileSystem fs = p.getFileSystem(conf);
@@ -715,9 +729,9 @@ public class DistCp implements Tool {
     }
   }
 
-  private static void updatePermissions(FileStatus src, FileStatus dst,
-      EnumSet<FileAttribute> preseved, FileSystem destFileSys)
-      throws IOException {
+  private static void updatePermissions(final FileStatus src,
+      final FileStatus dst, final EnumSet<FileAttribute> preseved,
+      final FileSystem destFileSys) throws IOException {
     String owner = null;
     String group = null;
     if (preseved.contains(FileAttribute.USER)
@@ -737,8 +751,8 @@ public class DistCp implements Tool {
     }
   }
 
-  static private void finalize(Configuration conf, JobConf jobconf,
-      final Path destPath, String presevedAttributes) throws IOException {
+  static private void finalize(final Configuration conf, final JobConf jobconf,
+      final Path destPath, final String presevedAttributes) throws IOException {
     if (presevedAttributes == null) {
       return;
     }
@@ -788,9 +802,9 @@ public class DistCp implements Tool {
      * @param filelimit File limit
      * @param sizelimit Size limit
      */
-    Arguments(List<Path> srcs, Path dst, Path log, EnumSet<Options> flags,
-        String preservedAttributes, long filelimit, long sizelimit,
-        String mapredSslConf) {
+    Arguments(final List<Path> srcs, final Path dst, final Path log,
+        final EnumSet<Options> flags, final String preservedAttributes,
+        final long filelimit, final long sizelimit, final String mapredSslConf) {
       this.srcs = srcs;
       this.dst = dst;
       this.log = log;
@@ -805,7 +819,7 @@ public class DistCp implements Tool {
       // }
     }
 
-    static Arguments valueOf(String[] args, Configuration conf)
+    static Arguments valueOf(final String[] args, final Configuration conf)
         throws IOException {
       List<Path> srcs = new ArrayList<>();
       Path dst = null;
@@ -819,8 +833,9 @@ public class DistCp implements Tool {
       for (int idx = 0; idx < args.length; idx++) {
         Options[] opt = Options.values();
         int i = 0;
-        for (; i < opt.length && !args[idx].startsWith(opt[i].cmd); i++)
+        for (; i < opt.length && !args[idx].startsWith(opt[i].cmd); i++) {
           ;
+        }
 
         if (i < opt.length) {
           flags.add(opt[i]);
@@ -889,13 +904,15 @@ public class DistCp implements Tool {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
       return getClass().getName()
-          + "{" + "\n  srcs = " + srcs + "\n  dst = " + dst + "\n  log = "
-          + log + "\n  flags = " + flags + "\n  preservedAttributes = "
-          + preservedAttributes + "\n  filelimit = " + filelimit
-          + "\n  sizelimit = " + sizelimit + "\n  mapredSslConf = "
-          + mapredSslConf + "\n}";
+          + "{" + "\n  srcs = " + this.srcs + "\n  dst = " + this.dst
+          + "\n  log = " + this.log + "\n  flags = " + this.flags
+          + "\n  preservedAttributes = " + this.preservedAttributes
+          + "\n  filelimit = " + this.filelimit + "\n  sizelimit = "
+          + this.sizelimit + "\n  mapredSslConf = " + this.mapredSslConf
+          + "\n}";
     }
   }
 
@@ -906,9 +923,10 @@ public class DistCp implements Tool {
    * and writes the output in a round-robin manner to all the map input files.
    * The mapper actually copies the files allotted to it. The reduce is empty.
    */
-  public int run(String[] args) {
+  @Override
+  public int run(final String[] args) {
     try {
-      copy(conf, Arguments.valueOf(args, conf));
+      copy(this.conf, Arguments.valueOf(args, this.conf));
       return 0;
     } catch (IllegalArgumentException e) {
       System.err.println(StringUtils.stringifyException(e) + "\n" + usage);
@@ -939,9 +957,9 @@ public class DistCp implements Tool {
    * The mapper actually copies the files allotted to it. The reduce is empty.
    * @throws EoulsanException if an error occurs
    */
-  public void runWithException(String[] args) throws EoulsanException {
+  public void runWithException(final String[] args) throws EoulsanException {
     try {
-      copy(conf, Arguments.valueOf(args, conf));
+      copy(this.conf, Arguments.valueOf(args, this.conf));
 
     } catch (IllegalArgumentException e) {
       throw new EoulsanException(StringUtils.stringifyException(e)
@@ -966,7 +984,7 @@ public class DistCp implements Tool {
    * Make a path relative with respect to a root path. absPath is always assumed
    * to descend from root. Otherwise returned path is null.
    */
-  static String makeRelative(Path root, Path absPath) {
+  static String makeRelative(final Path root, final Path absPath) {
     if (!absPath.isAbsolute()) {
       throw new IllegalArgumentException("!absPath.isAbsolute(), absPath="
           + absPath);
@@ -1000,7 +1018,7 @@ public class DistCp implements Tool {
    * @param job The job to configure
    * @return Count of maps to run.
    */
-  private static void setMapCount(long totalBytes, JobConf job)
+  private static void setMapCount(final long totalBytes, final JobConf job)
       throws IOException {
     int numMaps =
         (int) (totalBytes / job.getLong(BYTES_PER_MAP_LABEL, BYTES_PER_MAP));
@@ -1013,7 +1031,8 @@ public class DistCp implements Tool {
   }
 
   /** Fully delete dir */
-  static void fullyDelete(String dir, Configuration conf) throws IOException {
+  static void fullyDelete(final String dir, final Configuration conf)
+      throws IOException {
     if (dir != null) {
       Path tmp = new Path(dir);
       boolean success = tmp.getFileSystem(conf).delete(tmp, true);
@@ -1024,7 +1043,7 @@ public class DistCp implements Tool {
   }
 
   // Job configuration
-  private static JobConf createJobConf(Configuration conf) {
+  private static JobConf createJobConf(final Configuration conf) {
     JobConf jobconf = new JobConf(conf, DistCp.class);
     jobconf.setJobName(NAME);
 
@@ -1053,7 +1072,7 @@ public class DistCp implements Tool {
    * @param jobConf : The handle to the jobConf object to be initialized.
    * @param args Arguments
    */
-  private static void setup(Configuration conf, JobConf jobConf,
+  private static void setup(final Configuration conf, final JobConf jobConf,
       final Arguments args) throws IOException {
     jobConf.set(DST_DIR_LABEL, args.dst.toUri().toString());
 
@@ -1253,8 +1272,9 @@ public class DistCp implements Tool {
    * file checksum is not supported in any of file systems, two files are
    * considered as the same if they have the same size.
    */
-  static private boolean sameFile(FileSystem srcfs, FileStatus srcstatus,
-      FileSystem dstfs, Path dstpath) throws IOException {
+  static private boolean sameFile(final FileSystem srcfs,
+      final FileStatus srcstatus, final FileSystem dstfs, final Path dstpath)
+      throws IOException {
     FileStatus dststatus;
     try {
       dststatus = dstfs.getFileStatus(dstpath);
@@ -1295,9 +1315,10 @@ public class DistCp implements Tool {
   }
 
   /** Delete the dst files/dirs which do not exist in src */
-  static private void deleteNonexisting(FileSystem dstfs, FileStatus dstroot,
-      Path dstsorted, FileSystem jobfs, Path jobdir, JobConf jobconf,
-      Configuration conf) throws IOException {
+  static private void deleteNonexisting(final FileSystem dstfs,
+      final FileStatus dstroot, final Path dstsorted, final FileSystem jobfs,
+      final Path jobdir, final JobConf jobconf, final Configuration conf)
+      throws IOException {
     if (!dstroot.isDir()) {
       throw new IOException("dst must be a directory when option "
           + Options.DELETE.cmd + " is set, but dst (= " + dstroot.getPath()
@@ -1346,7 +1367,7 @@ public class DistCp implements Tool {
       final Text dstpath = new Text();
       final Text dstfrom = new Text();
       final FsShell shell = new FsShell(conf);
-      final String[] shellargs = { "-rmr", null };
+      final String[] shellargs = {"-rmr", null};
 
       boolean hasnext = dstin.next(dstpath, dstfrom);
       for (; lsrin.next(lsrpath, lsrstatus);) {
@@ -1385,7 +1406,7 @@ public class DistCp implements Tool {
   }
 
   // is x an ancestor path of y?
-  static private boolean isAncestorPath(String x, String y) {
+  static private boolean isAncestorPath(final String x, final String y) {
     if (!y.startsWith(x)) {
       return false;
     }
@@ -1394,8 +1415,8 @@ public class DistCp implements Tool {
   }
 
   /** Check whether the file list have duplication. */
-  static private void checkDuplication(FileSystem fs, Path file, Path sorted,
-      Configuration conf) throws IOException {
+  static private void checkDuplication(final FileSystem fs, final Path file,
+      final Path sorted, final Configuration conf) throws IOException {
     SequenceFile.Reader in = null;
     try {
       SequenceFile.Sorter sorter =
@@ -1422,7 +1443,7 @@ public class DistCp implements Tool {
     }
   }
 
-  static boolean checkAndClose(java.io.Closeable io) {
+  static boolean checkAndClose(final java.io.Closeable io) {
     if (io != null) {
       try {
         io.close();
@@ -1440,7 +1461,7 @@ public class DistCp implements Tool {
     /** Error code for this exception */
     public static final int ERROR_CODE = -2;
 
-    DuplicationException(String message) {
+    DuplicationException(final String message) {
       super(message);
     }
   }

@@ -32,12 +32,13 @@ package fr.ens.transcriptome.eoulsan.translators;
 public class SelectAnnotationFieldsTranslator extends BasicTranslator {
 
   private Translator translator;
-  private String[] fields;
+  private final String[] fields;
 
   /**
    * Get an ordered list of the translator fields
    * @return an ordered list of the translator fields.
    */
+  @Override
   public String[] getFields() {
 
     return this.fields;
@@ -49,6 +50,7 @@ public class SelectAnnotationFieldsTranslator extends BasicTranslator {
    * @param field the field to get
    * @return An array with the annotation of the Feature
    */
+  @Override
   public String translateField(final String id, final String field) {
 
     return this.translator.translateField(id, field);
@@ -59,6 +61,7 @@ public class SelectAnnotationFieldsTranslator extends BasicTranslator {
    * @param field Field to test
    * @return true if link information is available
    */
+  @Override
   public boolean isLinkInfo(final String field) {
 
     return this.translator.isLinkInfo(field);
@@ -70,6 +73,7 @@ public class SelectAnnotationFieldsTranslator extends BasicTranslator {
    * @param field field of the id
    * @return a link for the translated id
    */
+  @Override
   public String getLinkInfo(final String translatedId, final String field) {
 
     return this.translator.getLinkInfo(translatedId, field);
@@ -79,6 +83,7 @@ public class SelectAnnotationFieldsTranslator extends BasicTranslator {
    * Get the available identifiers by the translator if possible.
    * @return a array of string with the identifiers
    */
+  @Override
   public String[] getIds() {
 
     return this.translator.getIds();
@@ -94,8 +99,9 @@ public class SelectAnnotationFieldsTranslator extends BasicTranslator {
    */
   public SelectAnnotationFieldsTranslator(final String[] fields) {
 
-    if (fields == null)
+    if (fields == null) {
       throw new NullPointerException("Fields can't be null");
+    }
 
     this.fields = fields;
   }

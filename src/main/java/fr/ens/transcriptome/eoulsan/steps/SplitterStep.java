@@ -83,16 +83,16 @@ public class SplitterStep extends AbstractStep {
 
     private Data getData(final int index) {
 
-      checkState(index <= list.size(), "invalid index: "
+      checkState(index <= this.list.size(), "invalid index: "
           + index + " (maximum expected index: " + this.list.size() + ")");
 
       checkArgument(index >= 0, "index argument cannot be lower than 0");
 
-      if (index == list.size()) {
-        list.add(data.addDataToList(data.getName(), index));
+      if (index == this.list.size()) {
+        this.list.add(this.data.addDataToList(this.data.getName(), index));
       }
 
-      return list.get(index);
+      return this.list.get(index);
     }
 
     Iterator<DataFile> getIterator() {
@@ -121,7 +121,7 @@ public class SplitterStep extends AbstractStep {
         @Override
         public DataFile next() {
 
-          final Data d = getData(count++);
+          final Data d = getData(this.count++);
 
           if (fileIndex == -1) {
             return d.getDataFile();

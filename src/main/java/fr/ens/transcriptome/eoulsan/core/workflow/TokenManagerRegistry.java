@@ -38,7 +38,7 @@ public class TokenManagerRegistry {
 
   private static TokenManagerRegistry singleton;
 
-  private Map<AbstractWorkflowStep, TokenManager> map = new HashMap<>();
+  private final Map<AbstractWorkflowStep, TokenManager> map = new HashMap<>();
 
   /**
    * Get the requested TokenManager.

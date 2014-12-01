@@ -58,11 +58,11 @@ public class PreTreatmentExpressionReducer extends
     Reducer<Text, Text, Text, Text> {
 
   private String counterGroup;
-  private Text outKey = new Text();
-  private Text outValue = new Text();
+  private final Text outKey = new Text();
+  private final Text outValue = new Text();
 
   private final SAMLineParser parser = new SAMLineParser(new SAMFileHeader());
-  private List<SAMRecord> records = new ArrayList<>();
+  private final List<SAMRecord> records = new ArrayList<>();
 
   @Override
   protected void setup(final Context context) throws IOException,
@@ -110,7 +110,7 @@ public class PreTreatmentExpressionReducer extends
     SAMRecord samRecord;
     String stringRecord;
 
-    records.clear();
+    this.records.clear();
 
     for (Text val : values) {
 
@@ -119,7 +119,7 @@ public class PreTreatmentExpressionReducer extends
 
       try {
         samRecord = this.parser.parseLine(stringRecord);
-        records.add(samRecord);
+        this.records.add(samRecord);
 
       } catch (SAMFormatException e) {
         context.getCounter(this.counterGroup,
@@ -133,17 +133,18 @@ public class PreTreatmentExpressionReducer extends
     }
 
     // sort alignments of the current read
-    Collections.sort(records, new SAMComparator());
+    Collections.sort(this.records, new SAMComparator());
 
     // Writing records
-    int indexOfFirstTab = records.get(0).getSAMString().indexOf("\t");
-    strOutKey = records.get(0).getSAMString().substring(0, indexOfFirstTab);
-    strOutValue.append(records.get(0).getSAMString()
+    int indexOfFirstTab = this.records.get(0).getSAMString().indexOf("\t");
+    strOutKey =
+        this.records.get(0).getSAMString().substring(0, indexOfFirstTab);
+    strOutValue.append(this.records.get(0).getSAMString()
         .substring(indexOfFirstTab + 1).replaceAll("\n", ""));
 
-    records.remove(0);
+    this.records.remove(0);
 
-    for (SAMRecord r : records) {
+    for (SAMRecord r : this.records) {
       if (r.getFirstOfPairFlag()) {
         strOutValue.append('\n');
       } else {

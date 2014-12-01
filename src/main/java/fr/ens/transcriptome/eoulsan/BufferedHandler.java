@@ -40,8 +40,8 @@ import java.util.logging.LogRecord;
  */
 public class BufferedHandler extends Handler {
 
-  private List<Handler> handlers = new ArrayList<>();
-  private Queue<LogRecord> records = new LinkedList<>();
+  private final List<Handler> handlers = new ArrayList<>();
+  private final Queue<LogRecord> records = new LinkedList<>();
   private boolean flushed = false;
 
   /**
@@ -52,11 +52,13 @@ public class BufferedHandler extends Handler {
 
     if (handler != null) {
 
-      if (getLevel() != null)
+      if (getLevel() != null) {
         handler.setLevel(getLevel());
+      }
 
-      if (getFormatter() != null)
+      if (getFormatter() != null) {
         handler.setFormatter(getFormatter());
+      }
 
       this.handlers.add(handler);
     }
@@ -69,35 +71,41 @@ public class BufferedHandler extends Handler {
   @Override
   public void close() throws SecurityException {
 
-    for (Handler h : this.handlers)
+    for (Handler h : this.handlers) {
       h.close();
+    }
   }
 
   @Override
   public void flush() {
 
-    if (!flushed) {
+    if (!this.flushed) {
       LogRecord record = null;
 
-      while ((record = this.records.poll()) != null)
-        for (Handler h : this.handlers)
+      while ((record = this.records.poll()) != null) {
+        for (Handler h : this.handlers) {
           h.publish(record);
+        }
+      }
 
       this.flushed = true;
     }
 
-    for (Handler h : this.handlers)
+    for (Handler h : this.handlers) {
       h.flush();
+    }
   }
 
   @Override
   public void publish(final LogRecord record) {
 
-    if (!this.flushed)
+    if (!this.flushed) {
       this.records.add(record);
-    else
-      for (Handler h : this.handlers)
+    } else {
+      for (Handler h : this.handlers) {
         h.publish(record);
+      }
+    }
   }
 
   @Override
@@ -106,18 +114,20 @@ public class BufferedHandler extends Handler {
 
     super.setLevel(newLevel);
 
-    for (Handler h : this.handlers)
+    for (Handler h : this.handlers) {
       h.setLevel(newLevel);
+    }
   }
 
   @Override
-  public synchronized void setFormatter(Formatter newFormatter)
+  public synchronized void setFormatter(final Formatter newFormatter)
       throws SecurityException {
 
     super.setFormatter(newFormatter);
 
-    for (Handler h : this.handlers)
+    for (Handler h : this.handlers) {
       h.setFormatter(newFormatter);
+    }
   }
 
 }

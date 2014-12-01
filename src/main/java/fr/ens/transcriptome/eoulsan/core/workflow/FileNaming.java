@@ -71,7 +71,7 @@ public class FileNaming {
    * @return the step Id
    */
   public String getStepId() {
-    return stepId;
+    return this.stepId;
   }
 
   /**
@@ -79,7 +79,7 @@ public class FileNaming {
    * @return the port name
    */
   public String getPortName() {
-    return portName;
+    return this.portName;
   }
 
   /**
@@ -87,7 +87,7 @@ public class FileNaming {
    * @return the data name
    */
   public String getDataName() {
-    return dataName;
+    return this.dataName;
   }
 
   /**
@@ -96,7 +96,7 @@ public class FileNaming {
    * @return the id of the sample related to the file or -1 if not known
    */
   public int getSampleId() {
-    return sampleId;
+    return this.sampleId;
   }
 
   /**
@@ -104,7 +104,7 @@ public class FileNaming {
    * @return the format
    */
   public DataFormat getFormat() {
-    return format;
+    return this.format;
   }
 
   /**
@@ -112,7 +112,7 @@ public class FileNaming {
    * @return the file index
    */
   public int getFileIndex() {
-    return fileIndex;
+    return this.fileIndex;
   }
 
   /**
@@ -120,7 +120,7 @@ public class FileNaming {
    * @return the file part
    */
   public int getPart() {
-    return part;
+    return this.part;
   }
 
   /**
@@ -128,7 +128,7 @@ public class FileNaming {
    * @return the compression
    */
   public CompressionType getCompression() {
-    return compression;
+    return this.compression;
   }
 
   //
@@ -365,9 +365,9 @@ public class FileNaming {
     }
 
     // Set the file index if needed
-    if (fileIndex >= 0) {
+    if (this.fileIndex >= 0) {
 
-      sb.append(toLetter(fileIndex));
+      sb.append(toLetter(this.fileIndex));
     }
 
     // Set the extension
@@ -386,7 +386,7 @@ public class FileNaming {
           "Invalid fileIndex argument for format "
               + this.format.getName() + ": " + this.fileIndex);
     } else {
-      checkArgument(fileIndex < format.getMaxFilesCount(),
+      checkArgument(this.fileIndex < this.format.getMaxFilesCount(),
           "Invalid fileIndex argument for format "
               + this.format.getName() + ": " + this.fileIndex);
     }
@@ -791,7 +791,7 @@ public class FileNaming {
    * @param stepId the step id to check
    * @return true if the step id is valid
    */
-  public static final boolean isStepIdValid(String stepId) {
+  public static final boolean isStepIdValid(final String stepId) {
 
     return isNameValid(stepId);
   }

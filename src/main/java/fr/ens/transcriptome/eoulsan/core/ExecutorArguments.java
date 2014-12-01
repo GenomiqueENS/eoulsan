@@ -167,8 +167,9 @@ public class ExecutorArguments {
    */
   public final void setLocalWorkingPathname(final String localWorkingPath) {
 
-    if (localWorkingPath == null)
+    if (localWorkingPath == null) {
       return;
+    }
 
     this.localWorkingPathname = localWorkingPath.trim();
   }
@@ -179,8 +180,9 @@ public class ExecutorArguments {
    */
   public final void setHadoopWorkingPathname(final String hadoopWorkingPath) {
 
-    if (hadoopWorkingPath == null)
+    if (hadoopWorkingPath == null) {
       return;
+    }
 
     this.hadoopWorkingPathname = hadoopWorkingPath.trim();
   }
@@ -191,8 +193,9 @@ public class ExecutorArguments {
    */
   public final void setLogPathname(final String logPath) {
 
-    if (logPath == null)
+    if (logPath == null) {
       return;
+    }
 
     this.logPathname = logPath.trim();
   }
@@ -203,8 +206,9 @@ public class ExecutorArguments {
    */
   public final void setTaskPathname(final String taskPath) {
 
-    if (taskPath == null)
+    if (taskPath == null) {
       return;
+    }
 
     this.taskPathname = taskPath.trim();
   }
@@ -215,8 +219,9 @@ public class ExecutorArguments {
    */
   public final void setOutputPathname(final String outputPath) {
 
-    if (outputPath == null)
+    if (outputPath == null) {
       return;
+    }
 
     this.outputPathname = outputPath.trim();
   }
@@ -227,8 +232,9 @@ public class ExecutorArguments {
    */
   public final void setDesignPathname(final String designPathname) {
 
-    if (designPathname == null)
+    if (designPathname == null) {
       return;
+    }
 
     this.designPathname = designPathname.trim();
   }
@@ -239,8 +245,9 @@ public class ExecutorArguments {
    */
   public final void setWorkflowPathname(final String workflowPathname) {
 
-    if (workflowPathname == null)
+    if (workflowPathname == null) {
       return;
+    }
 
     this.workflowPathname = workflowPathname.trim();
   }
@@ -251,8 +258,9 @@ public class ExecutorArguments {
    */
   public final void setJobDescription(final String jobDescription) {
 
-    if (jobDescription == null)
+    if (jobDescription == null) {
       return;
+    }
 
     this.jobDescription = jobDescription.trim();
   }
@@ -263,8 +271,9 @@ public class ExecutorArguments {
    */
   public final void setJobEnvironment(final String jobEnvironment) {
 
-    if (jobEnvironment == null)
+    if (jobEnvironment == null) {
       return;
+    }
 
     this.jobEnvironment = jobEnvironment.trim();
   }

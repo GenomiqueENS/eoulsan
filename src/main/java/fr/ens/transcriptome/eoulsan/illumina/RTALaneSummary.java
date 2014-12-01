@@ -74,182 +74,182 @@ public class RTALaneSummary {
    * @return Returns the lane
    */
   public int getLane() {
-    return lane;
+    return this.lane;
   }
 
   /**
    * @return Returns the tileCount
    */
   public int getTileCount() {
-    return tileCount;
+    return this.tileCount;
   }
 
   /**
    * @return Returns the clustersRaw
    */
   public int getClustersRaw() {
-    return clustersRaw;
+    return this.clustersRaw;
   }
 
   /**
    * @return Returns the intClustersRawSD
    */
   public double getClustersRawSD() {
-    return clustersRawSD;
+    return this.clustersRawSD;
   }
 
   /**
    * @return Returns the clustersPF
    */
   public int getClustersPF() {
-    return clustersPF;
+    return this.clustersPF;
   }
 
   /**
    * @return Returns the clustersPFSD
    */
   public double getClustersPFSD() {
-    return clustersPFSD;
+    return this.clustersPFSD;
   }
 
   /**
    * @return Returns the prcPFClusters
    */
   public double getPrcPFClusters() {
-    return prcPFClusters;
+    return this.prcPFClusters;
   }
 
   /**
    * @return Returns the prcPFClustersSD
    */
   public double getPrcPFClustersSD() {
-    return prcPFClustersSD;
+    return this.prcPFClustersSD;
   }
 
   /**
    * @return Returns the phasing
    */
   public double getPhasing() {
-    return phasing;
+    return this.phasing;
   }
 
   /**
    * @return Returns the prephasing
    */
   public double getPrephasing() {
-    return prephasing;
+    return this.prephasing;
   }
 
   /**
    * @return Returns the calledCyclesMin
    */
   public int getCalledCyclesMin() {
-    return calledCyclesMin;
+    return this.calledCyclesMin;
   }
 
   /**
    * @return Returns the calledCyclesMax
    */
   public int getCalledCyclesMax() {
-    return calledCyclesMax;
+    return this.calledCyclesMax;
   }
 
   /**
    * @return Returns the prcAlign
    */
   public double getPrcAlign() {
-    return prcAlign;
+    return this.prcAlign;
   }
 
   /**
    * @return Returns the prcAlignSD
    */
   public double getPrcAlignSD() {
-    return prcAlignSD;
+    return this.prcAlignSD;
   }
 
   /**
    * @return Returns the errRatePhiX
    */
   public double getErrRatePhiX() {
-    return errRatePhiX;
+    return this.errRatePhiX;
   }
 
   /**
    * @return Returns the errRatePhiXSD
    */
   public double getErrRatePhiXSD() {
-    return errRatePhiXSD;
+    return this.errRatePhiXSD;
   }
 
   /**
    * @return Returns the errRate35
    */
   public double getErrRate35() {
-    return errRate35;
+    return this.errRate35;
   }
 
   /**
    * @return Returns the errRate35SD
    */
   public double getErrRate35SD() {
-    return errRate35SD;
+    return this.errRate35SD;
   }
 
   /**
    * @return Returns the errRate75
    */
   public double getErrRate75() {
-    return errRate75;
+    return this.errRate75;
   }
 
   /**
    * @return Returns the errRate75SD
    */
   public double getErrRate75SD() {
-    return errRate75SD;
+    return this.errRate75SD;
   }
 
   /**
    * @return Returns the errRate100
    */
   public double getErrRate100() {
-    return errRate100;
+    return this.errRate100;
   }
 
   /**
    * @return Returns the errRate100SD
    */
   public double getErrRate100SD() {
-    return errRate100SD;
+    return this.errRate100SD;
   }
 
   /**
    * @return Returns the firstCycleIntPF
    */
   public int getFirstCycleIntPF() {
-    return firstCycleIntPF;
+    return this.firstCycleIntPF;
   }
 
   /**
    * @return Returns the firstCycleIntPFSD
    */
   public double getFirstCycleIntPFSD() {
-    return firstCycleIntPFSD;
+    return this.firstCycleIntPFSD;
   }
 
   /**
    * @return Returns the prcIntensityAfter20CyclesPF
    */
   public double getPrcIntensityAfter20CyclesPF() {
-    return prcIntensityAfter20CyclesPF;
+    return this.prcIntensityAfter20CyclesPF;
   }
 
   /**
    * @return Returns the prcIntensityAfter20CyclesPFSD
    */
   public double getPrcIntensityAfter20CyclesPFSD() {
-    return prcIntensityAfter20CyclesPFSD;
+    return this.prcIntensityAfter20CyclesPFSD;
   }
 
   //
@@ -263,84 +263,84 @@ public class RTALaneSummary {
       final String value = e.getAttribute(key);
 
       switch (key) {
-        case "key":
-          this.lane = Integer.parseInt(value);
-          break;
-        case "TileCount":
-          this.tileCount = Integer.parseInt(value);
-          break;
-        case "ClustersRaw":
-          this.clustersRaw = Integer.parseInt(value);
-          break;
-        case "ClustersRawSD":
-          this.clustersRawSD = Double.parseDouble(value);
-          break;
-        case "ClustersPF":
-          this.clustersPF = Integer.parseInt(value);
-          break;
-        case "ClustersPFSD":
-          this.clustersPFSD = Double.parseDouble(value);
-          break;
-        case "PrcPFClusters":
-          this.prcPFClusters = Double.parseDouble(value);
-          break;
-        case "PrcPFClustersSD":
-          this.prcPFClustersSD = Double.parseDouble(value);
-          break;
-        case "Phasing":
-          this.phasing = Double.parseDouble(value);
-          break;
-        case "Prephasing":
-          this.prephasing = Double.parseDouble(value);
-          break;
-        case "CalledCyclesMin":
-          this.calledCyclesMin = Integer.parseInt(value);
-          break;
-        case "CalledCyclesMax":
-          this.calledCyclesMax = Integer.parseInt(value);
-          break;
-        case "PrcAlign":
-          this.prcAlign = Double.parseDouble(value);
-          break;
-        case "PrcAlignSD":
-          this.prcAlignSD = Double.parseDouble(value);
-          break;
-        case "ErrRatePhiX":
-          this.errRatePhiX = Double.parseDouble(value);
-          break;
-        case "ErrRatePhiXSD":
-          this.errRatePhiXSD = Double.parseDouble(value);
-          break;
-        case "ErrRate35":
-          this.errRate35 = Double.parseDouble(value);
-          break;
-        case "ErrRate35SD":
-          this.errRate35SD = Double.parseDouble(value);
-          break;
-        case "ErrRate75":
-          this.errRate75 = Double.parseDouble(value);
-          break;
-        case "ErrRate75SD":
-          this.errRate75SD = Double.parseDouble(value);
-          break;
-        case "ErrRate100":
-          this.errRate100 = Double.parseDouble(value);
-          break;
-        case "ErrRate100SD":
-          this.errRate100SD = Double.parseDouble(value);
-          break;
-        case "FirstCycleIntPF":
-          this.firstCycleIntPF = Integer.parseInt(value);
-          break;
-        case "FirstCycleIntPFSD":
-          this.firstCycleIntPFSD = Double.parseDouble(value);
-          break;
-        case "PrcIntensityAfter20CyclesPF":
-          this.prcIntensityAfter20CyclesPF = Double.parseDouble(value);
-          break;
-        case "PrcIntensityAfter20CyclesPFSD":
-          this.prcIntensityAfter20CyclesPFSD = Double.parseDouble(value);
-          break;
+      case "key":
+        this.lane = Integer.parseInt(value);
+        break;
+      case "TileCount":
+        this.tileCount = Integer.parseInt(value);
+        break;
+      case "ClustersRaw":
+        this.clustersRaw = Integer.parseInt(value);
+        break;
+      case "ClustersRawSD":
+        this.clustersRawSD = Double.parseDouble(value);
+        break;
+      case "ClustersPF":
+        this.clustersPF = Integer.parseInt(value);
+        break;
+      case "ClustersPFSD":
+        this.clustersPFSD = Double.parseDouble(value);
+        break;
+      case "PrcPFClusters":
+        this.prcPFClusters = Double.parseDouble(value);
+        break;
+      case "PrcPFClustersSD":
+        this.prcPFClustersSD = Double.parseDouble(value);
+        break;
+      case "Phasing":
+        this.phasing = Double.parseDouble(value);
+        break;
+      case "Prephasing":
+        this.prephasing = Double.parseDouble(value);
+        break;
+      case "CalledCyclesMin":
+        this.calledCyclesMin = Integer.parseInt(value);
+        break;
+      case "CalledCyclesMax":
+        this.calledCyclesMax = Integer.parseInt(value);
+        break;
+      case "PrcAlign":
+        this.prcAlign = Double.parseDouble(value);
+        break;
+      case "PrcAlignSD":
+        this.prcAlignSD = Double.parseDouble(value);
+        break;
+      case "ErrRatePhiX":
+        this.errRatePhiX = Double.parseDouble(value);
+        break;
+      case "ErrRatePhiXSD":
+        this.errRatePhiXSD = Double.parseDouble(value);
+        break;
+      case "ErrRate35":
+        this.errRate35 = Double.parseDouble(value);
+        break;
+      case "ErrRate35SD":
+        this.errRate35SD = Double.parseDouble(value);
+        break;
+      case "ErrRate75":
+        this.errRate75 = Double.parseDouble(value);
+        break;
+      case "ErrRate75SD":
+        this.errRate75SD = Double.parseDouble(value);
+        break;
+      case "ErrRate100":
+        this.errRate100 = Double.parseDouble(value);
+        break;
+      case "ErrRate100SD":
+        this.errRate100SD = Double.parseDouble(value);
+        break;
+      case "FirstCycleIntPF":
+        this.firstCycleIntPF = Integer.parseInt(value);
+        break;
+      case "FirstCycleIntPFSD":
+        this.firstCycleIntPFSD = Double.parseDouble(value);
+        break;
+      case "PrcIntensityAfter20CyclesPF":
+        this.prcIntensityAfter20CyclesPF = Double.parseDouble(value);
+        break;
+      case "PrcIntensityAfter20CyclesPFSD":
+        this.prcIntensityAfter20CyclesPFSD = Double.parseDouble(value);
+        break;
       }
     }
 
@@ -365,6 +365,7 @@ public class RTALaneSummary {
         + "% Intensity Cycle 20\tSD % Intensity Cycle 20";
   }
 
+  @Override
   public String toString() {
 
     return String

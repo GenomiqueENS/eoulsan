@@ -36,8 +36,9 @@ public class ValidReadFilter extends AbstractReadFilter {
   @Override
   public boolean accept(final ReadSequence read) {
 
-    if (read == null)
+    if (read == null) {
       return false;
+    }
 
     return read.validate();
   }

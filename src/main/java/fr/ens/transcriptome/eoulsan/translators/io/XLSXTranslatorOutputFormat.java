@@ -49,66 +49,69 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
 
   private final OutputStream os;
   private final Workbook wb = new XSSFWorkbook();
-  private final Sheet sheet = wb.createSheet("new sheet");
+  private final Sheet sheet = this.wb.createSheet("new sheet");
   private final CellStyle style;
   private int rowCount;
   private int colCount;
-  private Row row = sheet.createRow(this.rowCount++);
+  private Row row = this.sheet.createRow(this.rowCount++);
 
   @Override
   public void addHeaderField(final String fieldName) throws IOException {
 
-    final Cell cell = row.createCell(this.colCount++);
+    final Cell cell = this.row.createCell(this.colCount++);
     cell.setCellValue(new XSSFRichTextString(fieldName));
-    cell.setCellStyle(style);
+    cell.setCellStyle(this.style);
   }
 
   @Override
   public void newLine() throws IOException {
 
     this.colCount = 0;
-    this.row = sheet.createRow(this.rowCount++);
+    this.row = this.sheet.createRow(this.rowCount++);
   }
 
   @Override
   public void writeEmpty() throws IOException {
 
-    row.createCell(this.colCount++);
+    this.row.createCell(this.colCount++);
   }
 
   @Override
-  public void writeLong(long l) throws IOException {
+  public void writeLong(final long l) throws IOException {
 
-    final Cell cell = row.createCell(this.colCount++);
+    final Cell cell = this.row.createCell(this.colCount++);
     cell.setCellValue(l);
   }
 
   @Override
-  public void writeDouble(double d) throws IOException {
+  public void writeDouble(final double d) throws IOException {
 
-    final Cell cell = row.createCell(this.colCount++);
+    final Cell cell = this.row.createCell(this.colCount++);
     cell.setCellValue(d);
   }
 
   @Override
-  public void writeText(String text) throws IOException {
+  public void writeText(final String text) throws IOException {
 
-    final Cell cell = row.createCell(this.colCount++);
-    if (text != null)
+    final Cell cell = this.row.createCell(this.colCount++);
+    if (text != null) {
       cell.setCellValue(new XSSFRichTextString(text));
+    }
   }
 
   @Override
-  public void writeLink(String text, String link) throws IOException {
+  public void writeLink(final String text, final String link)
+      throws IOException {
 
-    final Cell cell = row.createCell(this.colCount++);
+    final Cell cell = this.row.createCell(this.colCount++);
 
     if (text != null) {
 
-      if (link != null)
+      if (link != null) {
         cell.setCellFormula("HYPERLINK(\"" + link + "\",\"" + text + "\")");
-      else
+      } else {
         cell.setCellValue(new XSSFRichTextString(text));
+      }
 
     }
 
@@ -130,18 +133,19 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
    */
   public XLSXTranslatorOutputFormat(final OutputStream os) {
 
-    if (os == null)
+    if (os == null) {
       throw new NullPointerException("The output stream is null");
+    }
 
     this.os = os;
 
     // Create a new font and alter it.
-    Font font = wb.createFont();
+    Font font = this.wb.createFont();
     font.setItalic(true);
     font.setFontHeightInPoints((short) 10);
 
     // Fonts are set into a style so create a new one to use.
-    this.style = wb.createCellStyle();
+    this.style = this.wb.createCellStyle();
     this.style.setFillForegroundColor(HSSFColor.ORANGE.index);
     this.style.setFillPattern(CellStyle.SOLID_FOREGROUND);
     this.style.setFont(font);

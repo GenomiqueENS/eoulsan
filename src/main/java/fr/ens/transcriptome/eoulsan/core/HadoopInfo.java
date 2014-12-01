@@ -52,8 +52,9 @@ public class HadoopInfo {
 
   public static void logHadoopSysInfo() {
 
-    if (!EoulsanRuntime.getRuntime().isAmazonMode())
+    if (!EoulsanRuntime.getRuntime().isAmazonMode()) {
       return;
+    }
 
     logHadoopVersionInfo();
 
@@ -61,8 +62,9 @@ public class HadoopInfo {
     HadoopEoulsanRuntime runtime =
         (HadoopEoulsanRuntime) EoulsanRuntime.getRuntime();
 
-    if (EoulsanRuntime.getSettings().isDebug())
+    if (EoulsanRuntime.getSettings().isDebug()) {
       sysInfo(runtime.getConfiguration());
+    }
   }
 
   //
@@ -82,13 +84,15 @@ public class HadoopInfo {
 
       // Log the usage of the hadoop temporary directory partition
       final String hadoopTmp = conf.get("hadoop.tmp.dir");
-      if (hadoopTmp != null)
+      if (hadoopTmp != null) {
         df(new File(hadoopTmp), conf);
+      }
 
       // Log the usage of the Java temporary directory partition
       final File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-      if (tmpDir != null && tmpDir.exists() && tmpDir.isDirectory())
+      if (tmpDir != null && tmpDir.exists() && tmpDir.isDirectory()) {
         df(tmpDir, conf);
+      }
     } catch (IOException e) {
 
       getLogger().warning(

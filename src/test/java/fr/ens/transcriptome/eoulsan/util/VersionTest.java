@@ -128,14 +128,14 @@ public class VersionTest {
 
   @Test
   public void testSetVersionString() {
-    
+
     Version v = new Version();
 
     assertEquals(0, v.getMajor());
     assertEquals(0, v.getMinor());
     assertEquals(0, v.getRevision());
     assertEquals("", v.getType());
-    
+
     v.setVersion("1.2.3beta");
 
     assertEquals(1, v.getMajor());
@@ -215,8 +215,8 @@ public class VersionTest {
     assertFalse(new Version(0, 0, 1, "").equals(new Version(0, 0, 2, "")));
     assertFalse(new Version(0, 0, 0, "beta").equals(new Version(0, 0, 0,
         "alpha")));
-    assertFalse(new Version(1, 2, 3, "beta")
-        .equals(new Version(3, 0, 1, "alpha")));
+    assertFalse(new Version(1, 2, 3, "beta").equals(new Version(3, 0, 1,
+        "alpha")));
   }
 
   @Test
@@ -240,7 +240,7 @@ public class VersionTest {
 
   @Test
   public void testVersionString() {
-    
+
     assertEquals(new Version(1, 2, 3, ""), new Version("1.2.3"));
     assertEquals(new Version(1, 2, 0, ""), new Version("1.2"));
     assertEquals(new Version(1, 0, 0, ""), new Version("1."));

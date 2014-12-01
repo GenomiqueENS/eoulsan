@@ -55,8 +55,9 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
 
   protected List<String> transform(final String s) {
 
-    if (s == null)
+    if (s == null) {
       return null;
+    }
 
     return Lists.newArrayList(Splitter.on('\t').split(s));
   }
@@ -65,11 +66,13 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
 
     final int finalPos = this.pos + minSize;
 
-    if (finalPos < this.buffer.length)
+    if (finalPos < this.buffer.length) {
       return false;
+    }
 
-    if (this.endStream)
+    if (this.endStream) {
       return true;
+    }
 
     this.sb.setLength(0);
     this.sb.append(new String(this.buffer, this.pos, this.buffer.length
@@ -86,13 +89,14 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
         lines = transform(line);
       }
 
-      if (lines != null)
+      if (lines != null) {
         for (String l : lines) {
           this.sb.append(l);
           this.sb.append('\n');
         }
+      }
 
-    } while (sb.length() < minSize || this.endStream);
+    } while (this.sb.length() < minSize || this.endStream);
 
     this.buffer = this.sb.toString().getBytes(CHARSET);
     this.pos = 0;
@@ -109,24 +113,28 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
   @Override
   public int read() throws IOException {
 
-    if (fillBuffer(1))
+    if (fillBuffer(1)) {
       return -1;
+    }
 
-    return buffer[pos++];
+    return this.buffer[this.pos++];
   }
 
   @Override
-  public int read(byte[] b, int off, int len) throws IOException {
+  public int read(final byte[] b, final int off, final int len)
+      throws IOException {
 
-    if (len < 1)
+    if (len < 1) {
       throw new IllegalArgumentException("len must be > 0");
+    }
 
-    if (fillBuffer(len))
+    if (fillBuffer(len)) {
       return -1;
+    }
 
     final int copyLen = Math.min(len, this.buffer.length - this.pos);
 
-    System.arraycopy(this.buffer, pos, b, off, copyLen);
+    System.arraycopy(this.buffer, this.pos, b, off, copyLen);
     this.pos += copyLen;
 
     return copyLen;

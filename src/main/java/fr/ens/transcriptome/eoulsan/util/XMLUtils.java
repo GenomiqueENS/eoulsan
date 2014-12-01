@@ -51,8 +51,9 @@ public final class XMLUtils {
    */
   public static List<String> getAttributeNames(final Element e) {
 
-    if (e == null)
+    if (e == null) {
       return null;
+    }
 
     final List<String> result = new ArrayList<>();
 
@@ -77,8 +78,9 @@ public final class XMLUtils {
   public static String getAttributeValue(final Element e,
       final String attributeName) {
 
-    if (e == null || attributeName == null)
+    if (e == null || attributeName == null) {
       return null;
+    }
 
     return e.getAttribute(attributeName);
   }
@@ -92,12 +94,14 @@ public final class XMLUtils {
   public static List<Element> getElementsByTagName(final Element parentElement,
       final String elementName) {
 
-    if (elementName == null || parentElement == null)
+    if (elementName == null || parentElement == null) {
       return null;
+    }
 
     final NodeList nStepsList = parentElement.getElementsByTagName(elementName);
-    if (nStepsList == null)
+    if (nStepsList == null) {
       return null;
+    }
 
     final List<Element> result = new ArrayList<>();
 
@@ -105,8 +109,9 @@ public final class XMLUtils {
 
       final Node node = nStepsList.item(i);
 
-      if (node.getNodeType() == Node.ELEMENT_NODE)
+      if (node.getNodeType() == Node.ELEMENT_NODE) {
         result.add((Element) node);
+      }
     }
 
     return result;
@@ -121,12 +126,14 @@ public final class XMLUtils {
   public static List<Element> getElementsByTagName(final Document document,
       final String elementName) {
 
-    if (elementName == null || document == null)
+    if (elementName == null || document == null) {
       return null;
+    }
 
     final NodeList nStepsList = document.getElementsByTagName(elementName);
-    if (nStepsList == null)
+    if (nStepsList == null) {
       return null;
+    }
 
     final List<Element> result = new ArrayList<>();
 
@@ -134,8 +141,9 @@ public final class XMLUtils {
 
       final Node node = nStepsList.item(i);
 
-      if (node.getNodeType() == Node.ELEMENT_NODE)
+      if (node.getNodeType() == Node.ELEMENT_NODE) {
         result.add((Element) node);
+      }
     }
 
     return result;
@@ -150,13 +158,15 @@ public final class XMLUtils {
   public static String getTagValue(final Element parentElement,
       final String elementName) {
 
-    if (parentElement == null || elementName == null)
+    if (parentElement == null || elementName == null) {
       return null;
+    }
 
     String result = null;
 
-    for (Element e : XMLUtils.getElementsByTagName(parentElement, elementName))
+    for (Element e : XMLUtils.getElementsByTagName(parentElement, elementName)) {
       result = e.getTextContent();
+    }
 
     return result;
   }
@@ -170,13 +180,15 @@ public final class XMLUtils {
   public static List<String> getTagValues(final Element parentElement,
       final String elementName) {
 
-    if (parentElement == null || elementName == null)
+    if (parentElement == null || elementName == null) {
       return null;
+    }
 
     List<String> result = new ArrayList<>();
 
-    for (Element e : XMLUtils.getElementsByTagName(parentElement, elementName))
+    for (Element e : XMLUtils.getElementsByTagName(parentElement, elementName)) {
       result.add(e.getTextContent());
+    }
 
     return result;
   }
@@ -192,8 +204,9 @@ public final class XMLUtils {
       final Element parentElement, final String elementName, final String value) {
 
     if (doc == null
-        || parentElement == null || elementName == null || value == null)
+        || parentElement == null || elementName == null || value == null) {
       return;
+    }
 
     Element child = doc.createElement(elementName);
     parentElement.appendChild(child);

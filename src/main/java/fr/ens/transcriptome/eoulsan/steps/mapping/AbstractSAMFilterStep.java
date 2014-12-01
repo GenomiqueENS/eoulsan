@@ -107,13 +107,14 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      if ("local.threads".equals(p.getName()))
+      if ("local.threads".equals(p.getName())) {
         this.localThreads = p.getIntValue();
-      else if ("max.local.threads".equals(p.getName()))
+      } else if ("max.local.threads".equals(p.getName())) {
         this.maxLocalThreads = p.getIntValue();
-      else
+      } else {
         mrafb.addParameter(convertCompatibilityFilterKey(p.getName()),
             p.getStringValue());
+      }
     }
 
     // Force parameter checking
@@ -129,11 +130,13 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
    */
   static String convertCompatibilityFilterKey(final String key) {
 
-    if (key == null)
+    if (key == null) {
       return null;
+    }
 
-    if ("mappingqualitythreshold".equals(key))
+    if ("mappingqualitythreshold".equals(key)) {
       return QualityReadAlignmentsFilter.FILTER_NAME + ".threshold";
+    }
 
     return key;
   }

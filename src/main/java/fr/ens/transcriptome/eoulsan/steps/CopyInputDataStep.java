@@ -101,22 +101,26 @@ public class CopyInputDataStep extends AbstractStep {
   }
 
   @Override
-  public void configure(Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final Set<Parameter> stepParameters)
+      throws EoulsanException {
     for (Parameter p : stepParameters) {
 
-      if (FORMAT_PARAMETER.equals(p.getName()))
+      if (FORMAT_PARAMETER.equals(p.getName())) {
         this.format =
             DataFormatRegistry.getInstance()
                 .getDataFormatFromName(p.getValue());
-      else if (OUTPUT_COMPRESSION_PARAMETER.equals(p.getName()))
+      } else if (OUTPUT_COMPRESSION_PARAMETER.equals(p.getName())) {
         this.outputCompression = CompressionType.valueOf(p.getValue());
+      }
     }
 
-    if (this.format == null)
+    if (this.format == null) {
       throw new EoulsanException("No format set.");
+    }
 
-    if (this.outputCompression == null)
+    if (this.outputCompression == null) {
       throw new EoulsanException("No output compression set.");
+    }
   }
 
   @Override
@@ -157,8 +161,9 @@ public class CopyInputDataStep extends AbstractStep {
       final DataFile in = inData.getDataFile();
       final DataFile out = outData.getDataFile();
 
-      if (!in.exists())
+      if (!in.exists()) {
         throw new FileNotFoundException("input file not found: " + in);
+      }
 
       copyDataFile(in, out);
     } else {
@@ -170,8 +175,9 @@ public class CopyInputDataStep extends AbstractStep {
         final DataFile in = inData.getDataFile(i);
         final DataFile out = outData.getDataFile(i);
 
-        if (!in.exists())
+        if (!in.exists()) {
           throw new FileNotFoundException("input file not found: " + in);
+        }
 
         copyDataFile(in, out);
       }

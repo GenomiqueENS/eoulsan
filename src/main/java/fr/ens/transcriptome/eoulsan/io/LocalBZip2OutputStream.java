@@ -36,7 +36,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream
  */
 public class LocalBZip2OutputStream extends OutputStream {
 
-  private OutputStream os;
+  private final OutputStream os;
 
   @Override
   public void close() throws IOException {
@@ -51,19 +51,20 @@ public class LocalBZip2OutputStream extends OutputStream {
   }
 
   @Override
-  public void write(byte[] b, int off, int len) throws IOException {
+  public void write(final byte[] b, final int off, final int len)
+      throws IOException {
 
     this.os.write(b, off, len);
   }
 
   @Override
-  public void write(byte[] b) throws IOException {
+  public void write(final byte[] b) throws IOException {
 
     this.os.write(b);
   }
 
   @Override
-  public void write(int b) throws IOException {
+  public void write(final int b) throws IOException {
 
     this.os.write(b);
   }

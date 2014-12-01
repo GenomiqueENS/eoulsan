@@ -35,39 +35,35 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStream;
 
-import org.junit.Ignore;
 import org.junit.Test;
-
-import fr.ens.transcriptome.eoulsan.io.comparators.AbstractComparatorWithBloomFilter;
-import fr.ens.transcriptome.eoulsan.io.comparators.FastqComparator;
 
 public class FastqComparatorTest {
 
-  private File dir = new File(new File(".").getAbsolutePath()
+  private final File dir = new File(new File(".").getAbsolutePath()
       + "/src/test/java/files");
 
   private InputStream isA;
   private InputStream isB;
 
-  private File fileA = new File(dir, "illumina_1_8.fastq");
-  private File fileB = new File(dir, "illumina_1_8.fastq");
+  private final File fileA = new File(this.dir, "illumina_1_8.fastq");
+  private final File fileB = new File(this.dir, "illumina_1_8.fastq");
   private File fileC;
 
   private void readFiles() throws Exception {
 
-    isA = new FileInputStream(fileA);
-    isB = new FileInputStream(fileB);
+    this.isA = new FileInputStream(this.fileA);
+    this.isB = new FileInputStream(this.fileB);
   }
 
   private void modifyFile(final int modification) throws Exception {
-    fileC = new File(dir, "modify.fastq");
+    this.fileC = new File(this.dir, "modify.fastq");
 
-    if (fileC.exists()) {
-      fileC.delete();
+    if (this.fileC.exists()) {
+      this.fileC.delete();
     }
 
-    final BufferedReader br = new BufferedReader(new FileReader(fileA));
-    final BufferedWriter bw = new BufferedWriter(new FileWriter(fileC));
+    final BufferedReader br = new BufferedReader(new FileReader(this.fileA));
+    final BufferedWriter bw = new BufferedWriter(new FileWriter(this.fileC));
 
     String line = "";
     // Number line for a header read
@@ -148,7 +144,7 @@ public class FastqComparatorTest {
     AbstractComparatorWithBloomFilter comparator = new FastqComparator(false);
 
     readFiles();
-    assertTrue("files are same", comparator.compareFiles(isA, isB));
+    assertTrue("files are same", comparator.compareFiles(this.isA, this.isB));
   }
 
   @Test
@@ -158,26 +154,27 @@ public class FastqComparatorTest {
 
     modifyFile(0);
     assertFalse("files are different: duplicate read",
-        comparator.compareFiles(fileA, fileC));
+        comparator.compareFiles(this.fileA, this.fileC));
 
     modifyFile(1);
     assertFalse("files are different: remove read",
-        comparator.compareFiles(fileA, fileC));
+        comparator.compareFiles(this.fileA, this.fileC));
 
     modifyFile(2);
     assertFalse("files are different: add read",
-        comparator.compareFiles(fileA, fileC));
+        comparator.compareFiles(this.fileA, this.fileC));
 
     modifyFile(3);
     assertFalse("files are different: remove a char in one line",
-        comparator.compareFiles(fileA, fileC));
+        comparator.compareFiles(this.fileA, this.fileC));
 
     modifyFile(4);
     assertFalse("files are different: add a char in one line",
-        comparator.compareFiles(fileA, fileC));
+        comparator.compareFiles(this.fileA, this.fileC));
 
-    if (fileC.exists())
-      fileC.delete();
+    if (this.fileC.exists()) {
+      this.fileC.delete();
+    }
   }
 
 }

@@ -96,13 +96,15 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       final String s = ProcessUtils.execToString(cmd, true, false);
       final String[] lines = s.split("\n");
 
-      for (String line : lines)
+      for (String line : lines) {
         if (line.startsWith("Version:")) {
 
           final String[] tokens = line.split(":");
-          if (tokens.length > 1)
+          if (tokens.length > 1) {
             return tokens[1].trim();
+          }
         }
+      }
 
       return null;
 
@@ -113,8 +115,8 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected List<String> getIndexerCommand(String indexerPathname,
-      String genomePathname) {
+  protected List<String> getIndexerCommand(final String indexerPathname,
+      final String genomePathname) {
 
     final File genomeFile = new File(genomePathname);
     List<String> cmd = new ArrayList<>();
@@ -201,15 +203,15 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
             + "-output-", SUFFIX_OUTPUT);
 
     // Path to index
-    final String indexPath = getIndexPath(archiveIndex);
+    final String indexPath = getIndexPath(this.archiveIndex);
 
     return createMapperProcessPE(bwaPath, indexPath, readsFile1, readsFile2,
         tmpFile1, tmpFile2, true).getStout();
   }
 
   @Override
-  protected MapperProcess internalMapSE(File archiveIndex, GenomeDescription gd)
-      throws IOException {
+  protected MapperProcess internalMapSE(final File archiveIndex,
+      final GenomeDescription gd) throws IOException {
     this.archiveIndex = archiveIndex;
 
     final String bwaPath;
@@ -231,8 +233,8 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected MapperProcess internalMapPE(File archiveIndex, GenomeDescription gd)
-      throws IOException {
+  protected MapperProcess internalMapPE(final File archiveIndex,
+      final GenomeDescription gd) throws IOException {
 
     this.archiveIndex = archiveIndex;
 
@@ -276,18 +278,20 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         final List<String> cmd1 = new ArrayList<>();
         cmd1.add(bwaPath);
         cmd1.add("aln");
-        if (illuminaFastq)
+        if (illuminaFastq) {
           cmd1.add("-I");
+        }
         cmd1.add(getMapperArguments());
         cmd1.add("-t");
         cmd1.add(getThreadsNumber() + "");
         cmd1.add("-f");
         cmd1.add(tmpFile.getAbsolutePath());
         cmd1.add(indexPath);
-        if (fileMode)
+        if (fileMode) {
           cmd1.add(readsFile.getAbsolutePath());
-        else
+        } else {
           cmd1.add(getTmpInputFile1().getAbsolutePath());
+        }
 
         final List<String> cmd2 = new ArrayList<>();
 
@@ -299,10 +303,11 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
         // TODO fix version Laurent
         // cmd2.add(readsFile.getAbsolutePath());
-        if (fileMode)
+        if (fileMode) {
           cmd2.add(readsFile.getAbsolutePath());
-        else
+        } else {
           cmd2.add(getTmpInputFile1().getAbsolutePath());
+        }
 
         final List<List<String>> result = new ArrayList<>();
         result.add(cmd1);
@@ -340,34 +345,38 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         final List<String> cmd1 = new ArrayList<>();
         cmd1.add(bwaPath);
         cmd1.add("aln");
-        if (illuminaFastq)
+        if (illuminaFastq) {
           cmd1.add("-I");
+        }
         cmd1.add(getMapperArguments());
         cmd1.add("-t");
         cmd1.add(getThreadsNumber() + "");
         cmd1.add("-f");
         cmd1.add(tmpFile1.getAbsolutePath());
         cmd1.add(indexPath);
-        if (fileMode)
+        if (fileMode) {
           cmd1.add(readsFile1.getAbsolutePath());
-        else
+        } else {
           cmd1.add(getTmpInputFile1().getAbsolutePath());
+        }
 
         final List<String> cmd2 = new ArrayList<>();
         cmd2.add(bwaPath);
         cmd2.add("aln");
-        if (illuminaFastq)
+        if (illuminaFastq) {
           cmd2.add("-I");
+        }
         cmd2.add(getMapperArguments());
         cmd2.add("-t");
         cmd2.add(getThreadsNumber() + "");
         cmd2.add("-f");
         cmd2.add(tmpFile2.getAbsolutePath());
         cmd2.add(indexPath);
-        if (fileMode)
+        if (fileMode) {
           cmd2.add(readsFile2.getAbsolutePath());
-        else
+        } else {
           cmd2.add(getTmpInputFile2().getAbsolutePath());
+        }
 
         final List<String> cmd3 = new ArrayList<>();
 

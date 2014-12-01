@@ -115,7 +115,7 @@ public class Normalization {
    * Test if there is Technical replicates into rRepTechGroup field.
    * @param rRepTechGroup list of the technical replicate group
    */
-  protected boolean isTechnicalReplicates(List<String> rRepTechGroup) {
+  protected boolean isTechnicalReplicates(final List<String> rRepTechGroup) {
 
     Map<String, String> rtgMap = new HashMap<>();
 
@@ -162,10 +162,11 @@ public class Normalization {
 
         removeExpressionFiles(experimentSampleList);
 
-        if (!context.getSettings().isSaveRscripts())
+        if (!context.getSettings().isSaveRscripts()) {
           this.rConnection.removeFile(rScript);
+        }
 
-        this.rConnection.getAllFiles(outPath.toString() + "/");
+        this.rConnection.getAllFiles(this.outPath.toString() + "/");
       }
 
     } catch (REngineException e) {
@@ -258,8 +259,8 @@ public class Normalization {
    * @throws EoulsanException if an error occurs while executing the script in
    *           local mode
    */
-  protected void runRnwScript(String rnwScript, boolean isRserveEnable)
-      throws REngineException, EoulsanException {
+  protected void runRnwScript(final String rnwScript,
+      final boolean isRserveEnable) throws REngineException, EoulsanException {
 
     if (isRserveEnable) {
       this.rConnection.executeRnwCode(rnwScript);
@@ -293,7 +294,8 @@ public class Normalization {
    * @return A String with the static part of the script
    * @throws EoulsanException if an error occurs while reading the script
    */
-  protected String readStaticScript(String staticFile) throws EoulsanException {
+  protected String readStaticScript(final String staticFile)
+      throws EoulsanException {
 
     final StringBuilder sb = new StringBuilder();
 
@@ -336,14 +338,16 @@ public class Normalization {
     // Get samples ids, conditions names/indexes and repTechGoups
     for (Sample s : experimentSamplesList) {
 
-      if (!s.getMetadata().isConditionField())
+      if (!s.getMetadata().isConditionField()) {
         throw new EoulsanException("No condition field found in design file.");
+      }
 
       final String condition = s.getMetadata().getCondition().trim();
 
-      if ("".equals(condition))
+      if ("".equals(condition)) {
         throw new EoulsanException("No value for condition in sample: "
             + s.getName() + " (" + s.getId() + ")");
+      }
 
       final String repTechGroup = s.getMetadata().getRepTechGroup().trim();
 
@@ -416,18 +420,21 @@ public class Normalization {
     sb.append("\t\\subsection{Normalization}\n\n");
     sb.append("\\begin{itemize}\n\n");
 
-    if (experimentSamplesList.size() > 2)
+    if (experimentSamplesList.size() > 2) {
       sb.append(readStaticScript(CLUSTERING_PCA_RAW));
+    }
 
     // Add normalization part
-    if (isTechnicalReplicates(rRepTechGroup))
+    if (isTechnicalReplicates(rRepTechGroup)) {
       sb.append(readStaticScript(NORMALISATION_PART1_WHITH_TECHREP));
-    else
+    } else {
       sb.append(readStaticScript(NORMALIZATION_PART1_WHITHOUT_TECHREP));
+    }
 
     // Add normalise data clustering if it's possible
-    if (isEnoughRepTechGroup(rRepTechGroup))
+    if (isEnoughRepTechGroup(rRepTechGroup)) {
       sb.append(readStaticScript(CLUSTERING_PCA_NORM));
+    }
 
     sb.append(readStaticScript(NORMALIZATION_PART2));
 
@@ -462,7 +469,7 @@ public class Normalization {
    * @return a stringbuilder whith Rnw preamble
    */
   protected StringBuilder generateRnwpreamble(
-      List<Sample> experimentSamplesList, String title) {
+      final List<Sample> experimentSamplesList, final String title) {
 
     StringBuilder sb = new StringBuilder();
     // Add packages to the LaTeX stringbuilder
@@ -524,10 +531,11 @@ public class Normalization {
     boolean first = true;
     for (String r : rSampleNames) {
 
-      if (first)
+      if (first) {
         first = false;
-      else
+      } else {
         sb.append(',');
+      }
       sb.append('\"');
       sb.append(r);
       sb.append('\"');
@@ -550,8 +558,9 @@ public class Normalization {
     for (int id : rSampleIds) {
       i++;
       sb.append("" + id);
-      if (i < rSampleIds.size())
+      if (i < rSampleIds.size()) {
         sb.append(",");
+      }
     }
     sb.append(")\n\n");
   }
@@ -560,14 +569,14 @@ public class Normalization {
    * Add expression file name vector to R script.
    * @param sb StringBuilder where write the part of the script
    */
-  protected void generateExpressionFileNamesPart(StringBuilder sb) {
+  protected void generateExpressionFileNamesPart(final StringBuilder sb) {
 
     // Add file names vector
     sb.append("#create file names vector\n");
-    sb.append("fileNames <- paste(\"" + expressionFilesPrefix + '\"' + ',');
+    sb.append("fileNames <- paste(\"" + this.expressionFilesPrefix + '\"' + ',');
     sb.append("sampleIds"
-        + ',' + '\"' + expressionFilesSuffix + '\"' + ',' + "sep=\"\"" + ")"
-        + "\n\n");
+        + ',' + '\"' + this.expressionFilesSuffix + '\"' + ',' + "sep=\"\""
+        + ")" + "\n\n");
   }
 
   /**
@@ -575,8 +584,8 @@ public class Normalization {
    * @param rRepTechGroup list of technical replicate groups
    * @param sb StringBuilder where write the part of the script
    */
-  protected void generateRepTechGroupPart(List<String> rRepTechGroup,
-      StringBuilder sb) {
+  protected void generateRepTechGroupPart(final List<String> rRepTechGroup,
+      final StringBuilder sb) {
 
     if (isTechnicalReplicates(rRepTechGroup)) {
 
@@ -587,10 +596,11 @@ public class Normalization {
 
       for (String r : rRepTechGroup) {
 
-        if (first)
+        if (first) {
           first = false;
-        else
+        } else {
           sb.append(',');
+        }
 
         sb.append('\"');
         sb.append(r);
@@ -613,17 +623,19 @@ public class Normalization {
    * @param rCondNames condition names
    * @param sb StringBuilder where write the part of the script
    */
-  protected void generateConditionPart(List<String> rCondNames, StringBuilder sb) {
+  protected void generateConditionPart(final List<String> rCondNames,
+      final StringBuilder sb) {
 
     sb.append("# create condition vector\n");
     sb.append("condition <- c(");
     boolean first = true;
     for (String r : rCondNames) {
 
-      if (first)
+      if (first) {
         first = false;
-      else
+      } else {
         sb.append(',');
+      }
 
       sb.append('\"');
       sb.append(r);
@@ -639,8 +651,8 @@ public class Normalization {
    * @param rCondNames condition names
    * @throws EoulsanException if an error if found in the design file
    */
-  protected void checkRepTechGroupCoherence(List<String> rRepTechGroup,
-      List<String> rCondNames) throws EoulsanException {
+  protected void checkRepTechGroupCoherence(final List<String> rRepTechGroup,
+      final List<String> rCondNames) throws EoulsanException {
 
     // Check repTechGroup field coherence
     Map<String, String> condRepTGMap = new HashMap<>();
@@ -650,13 +662,14 @@ public class Normalization {
       String condition = rCondNames.get(i);
 
       if (!repTechGroup.toLowerCase().equals("na")) {
-        if (!condRepTGMap.containsKey(repTechGroup))
+        if (!condRepTGMap.containsKey(repTechGroup)) {
           condRepTGMap.put(repTechGroup, condition);
-        else if (!condRepTGMap.get(repTechGroup).equals(condition))
+        } else if (!condRepTGMap.get(repTechGroup).equals(condition)) {
           throw new EoulsanException(
               "There is a mistake in RepTechGroup field of design file : "
                   + "two condition have the same repTechGroup value : "
                   + repTechGroup);
+        }
       }
     }
   }
@@ -678,8 +691,8 @@ public class Normalization {
    * @param rRepTechGroup list of technical replicate groups
    * @param rSampleNames sample names
    */
-  protected void replaceRtgNA(List<String> rRepTechGroup,
-      List<String> rSampleNames) {
+  protected void replaceRtgNA(final List<String> rRepTechGroup,
+      final List<String> rSampleNames) {
 
     for (int j = 0; j < rRepTechGroup.size(); j++) {
 
@@ -699,16 +712,18 @@ public class Normalization {
    * @return true if there is enough distinct repTechGroup (>2) to perform
    *         clustering
    */
-  private boolean isEnoughRepTechGroup(List<String> rRepTechGroup) {
+  private boolean isEnoughRepTechGroup(final List<String> rRepTechGroup) {
 
     List<String> repTechGroupMap = new ArrayList<>();
     for (String r : rRepTechGroup) {
 
-      if (!repTechGroupMap.contains(r))
+      if (!repTechGroupMap.contains(r)) {
         repTechGroupMap.add(r);
+      }
 
-      if (repTechGroupMap.size() > 2)
+      if (repTechGroupMap.size() > 2) {
         return true;
+      }
     }
     return false;
   }
@@ -717,7 +732,7 @@ public class Normalization {
    * Put all expression files needed for the analysis on the R server.
    * @throws REngineException if an error occurs on RServe server
    */
-  private void putExpressionFiles(List<Sample> experiment, Data data)
+  private void putExpressionFiles(final List<Sample> experiment, final Data data)
       throws REngineException {
 
     for (Data d : data.getListElements()) {
@@ -737,8 +752,8 @@ public class Normalization {
    * Put all expression files needed for the analysis on the R server.
    * @throws REngineException if an error occurs on RServe server
    */
-  private void createLinkExpressionFiles(List<Sample> experiment, Data data,
-      File inputDir) throws REngineException {
+  private void createLinkExpressionFiles(final List<Sample> experiment,
+      final Data data, final File inputDir) throws REngineException {
 
     for (Data d : data.getListElements()) {
 
@@ -761,7 +776,7 @@ public class Normalization {
    * @param experiment list of samples
    * @throws REngineException if an error occurs on RServe server
    */
-  private void removeExpressionFiles(List<Sample> experiment)
+  private void removeExpressionFiles(final List<Sample> experiment)
       throws REngineException {
 
     int i;
@@ -770,7 +785,7 @@ public class Normalization {
       i = s.getId();
 
       // Remove file from rserve server
-      this.rConnection.removeFile(expressionFilesDirectory
+      this.rConnection.removeFile(this.expressionFilesDirectory
           + "/" + this.expressionFilesPrefix + i + this.expressionFilesSuffix);
     }
   }
@@ -809,15 +824,17 @@ public class Normalization {
     this.expressionFilesSuffix = expressionFilesSuffix;
 
     if (!(expressionFilesDirectory.isDirectory() && expressionFilesDirectory
-        .exists()))
+        .exists())) {
       throw new NullPointerException(
           "The path of the expression files doesn't exist or is not a directory.");
+    }
 
     this.expressionFilesDirectory = expressionFilesDirectory;
 
-    if (!(outPath.isDirectory() && outPath.exists()))
+    if (!(outPath.isDirectory() && outPath.exists())) {
       throw new NullPointerException(
           "The outpath file doesn't exist or is not a directory.");
+    }
 
     this.outPath = outPath;
 

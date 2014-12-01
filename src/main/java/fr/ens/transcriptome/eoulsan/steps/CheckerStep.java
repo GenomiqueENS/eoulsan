@@ -67,7 +67,7 @@ public class CheckerStep extends AbstractStep {
 
   private static CheckerStep instance;
 
-  private Map<DataFormat, Checker> checkers = new HashMap<>();
+  private final Map<DataFormat, Checker> checkers = new HashMap<>();
   private final Map<DataFormat, Set<Parameter>> checkerConfiguration =
       new HashMap<>();
   private InputPorts inputPorts = InputPortsBuilder.noInputPort();
@@ -111,7 +111,7 @@ public class CheckerStep extends AbstractStep {
    * @param parameters parameter of the checker
    */
   public static final void configureChecker(final DataFormat format,
-      Set<Parameter> parameters) {
+      final Set<Parameter> parameters) {
 
     checkNotNull(format, "format argument cannot be null");
     checkNotNull(parameters, "parameter argument connot be null");
@@ -208,8 +208,9 @@ public class CheckerStep extends AbstractStep {
     // Create the dependencies map
     for (Checker c : list) {
 
-      if (c == null)
+      if (c == null) {
         continue;
+      }
 
       final Set<Checker> deps = new HashSet<>();
       for (DataFormat format : c.getCheckersRequired()) {
@@ -222,8 +223,9 @@ public class CheckerStep extends AbstractStep {
       if (deps.size() == 0) {
         result.add(c);
         added.add(c);
-      } else
+      } else {
         dependencies.put(c, deps);
+      }
     }
 
     // Resolve dependencies
@@ -232,12 +234,14 @@ public class CheckerStep extends AbstractStep {
       final Set<Checker> toRemove = new HashSet<>();
       for (Map.Entry<Checker, Set<Checker>> e : dependencies.entrySet()) {
         e.getValue().removeAll(added);
-        if (e.getValue().size() == 0)
+        if (e.getValue().size() == 0) {
           toRemove.add(e.getKey());
+        }
       }
 
-      if (toRemove.size() == 0)
+      if (toRemove.size() == 0) {
         throw new EoulsanException("Unable to resolve checker dependencies");
+      }
 
       for (Checker c : toRemove) {
         dependencies.remove(c);

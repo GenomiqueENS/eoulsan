@@ -74,8 +74,9 @@ public class SimpleDesignReader extends InputStreamDesignReader {
       while ((line = br.readLine()) != null) {
 
         final String empty = line.trim();
-        if ("".equals(empty) || empty.startsWith("#"))
+        if ("".equals(empty) || empty.startsWith("#")) {
           continue;
+        }
 
         final String[] fields = line.split(separator);
 
@@ -85,9 +86,10 @@ public class SimpleDesignReader extends InputStreamDesignReader {
 
             String field = fields[i].trim();
 
-            if ("".equals(field))
+            if ("".equals(field)) {
               throw new EoulsanIOException(
                   "Found an empty field name in design file header.");
+            }
 
             // Compatibility with old design files
             if (field.equals(FILENAME_FIELD)) {
@@ -95,9 +97,10 @@ public class SimpleDesignReader extends InputStreamDesignReader {
               fields[i] = field;
             }
 
-            if (data.containsKey(field))
+            if (data.containsKey(field)) {
               throw new EoulsanIOException("There is two or more field \""
                   + field + "\" in design file header.");
+            }
 
             data.put(field, new ArrayList<String>());
 
@@ -107,10 +110,11 @@ public class SimpleDesignReader extends InputStreamDesignReader {
           firstLine = false;
         } else {
 
-          if (fields.length != fieldnames.size())
+          if (fields.length != fieldnames.size()) {
             throw new EoulsanIOException("Invalid file format: "
                 + "Found " + fields.length + " fields whereas "
                 + fieldnames.size() + " are required in line: " + line);
+          }
 
           for (int i = 0; i < fields.length; i++) {
 
@@ -121,10 +125,11 @@ public class SimpleDesignReader extends InputStreamDesignReader {
             List<String> l = data.get(fieldName);
 
             if ((Design.SAMPLE_NUMBER_FIELD.equals(fieldName) || Design.NAME_FIELD
-                .equals(fieldName)) && l.contains(value))
+                .equals(fieldName)) && l.contains(value)) {
               throw new EoulsanIOException(
                   "Invalid file format: "
                       + "SlideNumber or Name fields can't contains duplicate values");
+            }
 
             l.add(value);
 
@@ -145,11 +150,13 @@ public class SimpleDesignReader extends InputStreamDesignReader {
           + e.getMessage());
     }
 
-    if (!data.containsKey(Design.SAMPLE_NUMBER_FIELD))
+    if (!data.containsKey(Design.SAMPLE_NUMBER_FIELD)) {
       throw new EoulsanIOException("Invalid file format: No SampleNumber field");
+    }
 
-    if (!fieldnames.contains(SampleMetadata.READS_FIELD))
+    if (!fieldnames.contains(SampleMetadata.READS_FIELD)) {
       throw new EoulsanIOException("Invalid file format: No Reads field");
+    }
 
     Design design = DesignFactory.createEmptyDesign();
 
@@ -166,15 +173,17 @@ public class SimpleDesignReader extends InputStreamDesignReader {
     for (String field : fieldnames) {
 
       if (Design.SAMPLE_NUMBER_FIELD.equals(field)
-          || Design.NAME_FIELD.equals(field))
+          || Design.NAME_FIELD.equals(field)) {
         continue;
+      }
 
       design.addMetadataField(field);
       List<String> fieldValues = data.get(field);
 
       int k = 0;
-      for (String value : fieldValues)
+      for (String value : fieldValues) {
         design.setMetadata(names.get(k++), field, value);
+      }
     }
 
     return design;
@@ -190,16 +199,19 @@ public class SimpleDesignReader extends InputStreamDesignReader {
   public static DataFile createDataFile(final String baseDir,
       final String source) throws IOException {
 
-    if (source == null)
+    if (source == null) {
       throw new IOException("The source is null.");
+    }
 
     final DataFile df = new DataFile(source);
-    if (!df.getProtocol().getName().equals("file"))
+    if (!df.getProtocol().getName().equals("file")) {
       return df;
+    }
 
     final String src = df.getSource();
-    if (src.startsWith("file:/") || src.startsWith("/"))
+    if (src.startsWith("file:/") || src.startsWith("/")) {
       return df;
+    }
 
     return new DataFile(new File(baseDir, source).getPath());
 
@@ -218,8 +230,9 @@ public class SimpleDesignReader extends InputStreamDesignReader {
   public SimpleDesignReader(final File file) throws EoulsanIOException {
 
     super(file);
-    if (file == null)
+    if (file == null) {
       throw new NullPointerException("The design file to read is null.");
+    }
   }
 
   /**

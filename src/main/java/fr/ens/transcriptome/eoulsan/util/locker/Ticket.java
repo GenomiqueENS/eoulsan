@@ -95,11 +95,13 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
   @Override
   public boolean equals(final Object o) {
 
-    if (o == this)
+    if (o == this) {
       return true;
+    }
 
-    if (!(o instanceof Ticket))
+    if (!(o instanceof Ticket)) {
       return false;
+    }
 
     final Ticket t = (Ticket) o;
 
@@ -118,25 +120,29 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
   @Override
   public int compareTo(final Ticket ticket) {
 
-    if (ticket == null)
+    if (ticket == null) {
       return 1;
+    }
 
     // Compare creation time
     final int comp1 =
         Long.valueOf(this.creationTime).compareTo(ticket.creationTime);
-    if (comp1 != 0)
+    if (comp1 != 0) {
       return comp1;
+    }
 
     // Compare Nano creation time
     final int comp2 =
         Long.valueOf(this.nanoCreationTime).compareTo(ticket.nanoCreationTime);
-    if (comp2 != 0)
+    if (comp2 != 0) {
       return comp2;
+    }
 
     // Compare PID
     final int comp3 = Integer.valueOf(this.pid).compareTo(ticket.pid);
-    if (comp3 != 0)
+    if (comp3 != 0) {
       return comp3;
+    }
 
     return Long.valueOf(this.threadId).compareTo(ticket.threadId);
   }
@@ -161,7 +167,7 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
   // Static methods
   //
 
-  public static int hashCode(Object... objects) {
+  public static int hashCode(final Object... objects) {
     return Arrays.hashCode(objects);
   }
 

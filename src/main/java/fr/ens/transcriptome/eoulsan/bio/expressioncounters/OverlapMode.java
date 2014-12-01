@@ -60,15 +60,17 @@ public enum OverlapMode {
    */
   public static OverlapMode getOverlapModeFromName(final String name) {
 
-    if (name == null)
+    if (name == null) {
       return null;
+    }
 
     final String lowerName = name.trim().toLowerCase();
 
     for (OverlapMode om : OverlapMode.values()) {
 
-      if (om.getName().toLowerCase().equals(lowerName))
+      if (om.getName().toLowerCase().equals(lowerName)) {
         return om;
+      }
     }
 
     return null;

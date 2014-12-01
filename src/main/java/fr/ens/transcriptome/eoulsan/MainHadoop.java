@@ -76,8 +76,9 @@ public final class MainHadoop extends Main {
     final FileSystem loggerFs = loggerPath.getFileSystem(this.conf);
 
     // Create parent directory if necessary
-    if (!loggerFs.exists(loggerPath.getParent()))
+    if (!loggerFs.exists(loggerPath.getParent())) {
       loggerFs.mkdirs(loggerPath.getParent());
+    }
 
     return new StreamHandler(loggerFs.create(loggerPath), Globals.LOG_FORMATTER);
   }
@@ -90,19 +91,21 @@ public final class MainHadoop extends Main {
       parseCpuinfo();
       parseMeminfo();
 
-      df(new File(ROOT_PATH), conf);
-      df(new File(TMP_PATH), conf);
-      df(new File(VAR_PATH), conf);
+      df(new File(ROOT_PATH), this.conf);
+      df(new File(TMP_PATH), this.conf);
+      df(new File(VAR_PATH), this.conf);
 
       // Log the usage of the hadoop temporary directory partition
-      final String hadoopTmp = conf.get("hadoop.tmp.dir");
-      if (hadoopTmp != null)
-        df(new File(hadoopTmp), conf);
+      final String hadoopTmp = this.conf.get("hadoop.tmp.dir");
+      if (hadoopTmp != null) {
+        df(new File(hadoopTmp), this.conf);
+      }
 
       // Log the usage of the Java temporary directory partition
       final File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-      if (tmpDir != null && tmpDir.exists() && tmpDir.isDirectory())
-        df(tmpDir, conf);
+      if (tmpDir != null && tmpDir.exists() && tmpDir.isDirectory()) {
+        df(tmpDir, this.conf);
+      }
 
       // Log Hadoop information
       HadoopInfo();

@@ -103,7 +103,7 @@ public class MergerStep extends AbstractStep {
     public Iterator<DataFile> getIterator(final String dataName,
         final int fileIndex) throws EoulsanException {
 
-      final List<Data> list = Lists.newArrayList(map.get(dataName));
+      final List<Data> list = Lists.newArrayList(this.map.get(dataName));
 
       // Sort Data by their part number
       Collections.sort(list, new Comparator<Data>() {

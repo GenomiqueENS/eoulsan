@@ -36,7 +36,7 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 public class PairEndReadFilter implements ReadFilter {
 
   private boolean acceptPairEnd = true;
-  private boolean acceptSingleEnd = true;
+  private final boolean acceptSingleEnd = true;
 
   @Override
   public boolean accept(final ReadSequence read) {
@@ -47,8 +47,9 @@ public class PairEndReadFilter implements ReadFilter {
   @Override
   public boolean accept(final ReadSequence read1, final ReadSequence read2) {
 
-    if (read1 == null || read2 == null)
+    if (read1 == null || read2 == null) {
       return false;
+    }
 
     return this.acceptPairEnd;
   }
@@ -69,16 +70,18 @@ public class PairEndReadFilter implements ReadFilter {
   public void setParameter(final String key, final String value)
       throws EoulsanException {
 
-    if (key == null || value == null)
+    if (key == null || value == null) {
       return;
+    }
 
     if ("accept.pairend".equals(key.trim())) {
       this.acceptPairEnd = Boolean.parseBoolean(value.trim());
     } else if ("accept.singlend".equals(key.trim())) {
       this.acceptPairEnd = Boolean.parseBoolean(value.trim());
-    } else
+    } else {
       throw new EoulsanException("Unknown parameter for "
           + getName() + " read filter: " + key);
+    }
 
   }
 
@@ -91,7 +94,7 @@ public class PairEndReadFilter implements ReadFilter {
 
     return this.getClass().getSimpleName()
         + "{acceptSingleEnd=" + this.acceptSingleEnd + ", acceptPairEnd="
-        + acceptPairEnd + "}";
+        + this.acceptPairEnd + "}";
   }
 
   //

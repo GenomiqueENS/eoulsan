@@ -86,7 +86,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
       ANNOTATED_EXPRESSION_RESULTS_TSV;
 
   private DataFile annotationFile;
-  private Map<String, DataFormat> outputFormats = new HashMap<>();
+  private final Map<String, DataFormat> outputFormats = new HashMap<>();
 
   //
   // Step methods
@@ -323,12 +323,14 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
       @Override
       public String translateField(final String id, final String field) {
 
-        if (id == null || field == null)
+        if (id == null || field == null) {
           return null;
+        }
 
         if ("EnsemblGeneID".equals(field)
-            && id.length() == 18 && id.startsWith("ENS"))
+            && id.length() == 18 && id.startsWith("ENS")) {
           return id;
+        }
 
         return null;
       }
@@ -336,7 +338,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
       @Override
       public String[] getFields() {
 
-        return new String[] { "EnsemblGeneID" };
+        return new String[] {"EnsemblGeneID"};
       }
     };
 

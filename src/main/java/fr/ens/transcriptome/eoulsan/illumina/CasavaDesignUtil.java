@@ -66,24 +66,24 @@ public final class CasavaDesignUtil {
   public static List<String> checkCasavaDesign(final CasavaDesign design,
       final String flowCellId) throws EoulsanException {
 
-    if (design == null)
+    if (design == null) {
       throw new NullPointerException("The design object is null");
+    }
 
-    if (design.size() == 0)
+    if (design.size() == 0) {
       throw new EoulsanException("No samples found in the design.");
+    }
 
     final List<String> warnings = new ArrayList<>();
 
     String fcid = null;
     boolean first = true;
 
-    final Map<Integer, Set<String>> indexes =
-        new HashMap<>();
+    final Map<Integer, Set<String>> indexes = new HashMap<>();
     final Set<String> sampleIds = new HashSet<>();
     final Set<Integer> laneWithIndexes = new HashSet<>();
     final Set<Integer> laneWithoutIndexes = new HashSet<>();
-    final Map<String, Set<Integer>> sampleInLanes =
-        new HashMap<>();
+    final Map<String, Set<Integer>> sampleInLanes = new HashMap<>();
     final Map<String, String> samplesProjects = new HashMap<>();
     final Map<String, String> samplesIndex = new HashMap<>();
 
@@ -112,15 +112,17 @@ public final class CasavaDesignUtil {
         first = false;
       } else {
 
-        if (!fcid.equals(sample.getFlowCellId()))
+        if (!fcid.equals(sample.getFlowCellId())) {
           throw new EoulsanException("Two differents flow cell id found: "
               + fcid + " and " + sample.getFlowCellId() + ".");
+        }
       }
 
       // Check the lane number
-      if (sample.getLane() < 1 || sample.getLane() > 8)
+      if (sample.getLane() < 1 || sample.getLane() > 8) {
         throw new EoulsanException("Invalid lane number found: "
             + sample.getLane() + ".");
+      }
 
       // Check if the sample is null or empty
       checkSampleId(sample.getSampleId(), sampleIds);
@@ -138,16 +140,18 @@ public final class CasavaDesignUtil {
       checkSampleDescription(sample.getSampleId(), sample.getDescription());
 
       // Check recipe
-      if (isNullOrEmpty(sample.getRecipe()))
+      if (isNullOrEmpty(sample.getRecipe())) {
         throw new EoulsanException("Found a null or empty recipe for sample: "
             + sample.getSampleId() + ".");
+      }
       checkCharset(sample.getRecipe());
 
       // Check operator
-      if (isNullOrEmpty(sample.getOperator()))
+      if (isNullOrEmpty(sample.getOperator())) {
         throw new EoulsanException(
             "Found a null or empty operator for sample: "
                 + sample.getSampleId() + ".");
+      }
       checkCharset(sample.getOperator());
 
       // Check sample project
@@ -160,36 +164,41 @@ public final class CasavaDesignUtil {
       // Check if mixing lane with index and lanes without index
       if (index == null || "".equals(index.trim())) {
 
-        if (laneWithoutIndexes.contains(lane))
+        if (laneWithoutIndexes.contains(lane)) {
           throw new EoulsanException(
               "Found two samples without index for the same lane: "
                   + lane + ".");
+        }
 
-        if (laneWithIndexes.contains(lane))
+        if (laneWithIndexes.contains(lane)) {
           throw new EoulsanException(
               "Found a lane with indexed and non indexed samples: "
                   + lane + ".");
+        }
 
         laneWithoutIndexes.add(lane);
       } else {
 
-        if (laneWithoutIndexes.contains(lane))
+        if (laneWithoutIndexes.contains(lane)) {
           throw new EoulsanException(
               "Found a lane with indexed and non indexed samples: "
                   + lane + ".");
+        }
         laneWithIndexes.add(lane);
       }
 
       // check if a lane has not two or more same indexes
       if (indexes.containsKey(lane)) {
 
-        if (indexes.get(lane).contains(index))
+        if (indexes.get(lane).contains(index)) {
           throw new EoulsanException(
               "Found a lane with two time the same index: "
                   + lane + " (" + index + ").");
+        }
 
-      } else
+      } else {
         indexes.put(lane, new HashSet<String>());
+      }
 
       // Check sample and project
       checkSampleAndProject(sample.getSampleId(), sample.getSampleProject(),
@@ -202,32 +211,34 @@ public final class CasavaDesignUtil {
     checkSampleInLanes(sampleInLanes, warnings);
 
     // Return unique warnings
-    final List<String> result =
-        new ArrayList<>(new HashSet<>(warnings));
+    final List<String> result = new ArrayList<>(new HashSet<>(warnings));
     Collections.sort(result);
     return result;
   }
 
   private static void checkCharset(final String s) throws EoulsanException {
 
-    if (s == null)
+    if (s == null) {
       return;
+    }
 
     for (int i = 0; i < s.length(); i++) {
 
       final int c = s.codePointAt(i);
 
-      if (c < ' ' || c >= 127)
+      if (c < ' ' || c >= 127) {
         throw new EoulsanException("Found invalid character '"
             + (char) c + "' in \"" + s + "\".");
+      }
     }
 
   }
 
   private static void checkFCID(final String fcid) throws EoulsanException {
 
-    if (isNullOrEmpty(fcid))
+    if (isNullOrEmpty(fcid)) {
       throw new EoulsanException("Flow cell id is null or empty.");
+    }
 
     // Check charset
     checkCharset(fcid);
@@ -235,10 +246,11 @@ public final class CasavaDesignUtil {
     for (int i = 0; i < fcid.length(); i++) {
 
       final char c = fcid.charAt(i);
-      if (!(Character.isLetterOrDigit(c)))
+      if (!(Character.isLetterOrDigit(c))) {
         throw new EoulsanException(
             "Invalid flow cell id, only letters or digits are allowed : "
                 + fcid + ".");
+      }
     }
 
   }
@@ -247,8 +259,9 @@ public final class CasavaDesignUtil {
       final Set<String> sampleIds) throws EoulsanException {
 
     // Check if null of empty
-    if (isNullOrEmpty(sampleId))
+    if (isNullOrEmpty(sampleId)) {
       throw new EoulsanException("Found a null or empty sample id.");
+    }
 
     // Check charset
     checkCharset(sampleId);
@@ -257,10 +270,11 @@ public final class CasavaDesignUtil {
     for (int i = 0; i < sampleId.length(); i++) {
 
       final char c = sampleId.charAt(i);
-      if (!(Character.isLetterOrDigit(c) || c == '_' || c == '-'))
+      if (!(Character.isLetterOrDigit(c) || c == '_' || c == '-')) {
         throw new EoulsanException(
             "Invalid sample id, only letters, digits, '-' or '_' characters are allowed : "
                 + sampleId + ".");
+      }
     }
 
     sampleIds.add(sampleId);
@@ -270,10 +284,11 @@ public final class CasavaDesignUtil {
       final String sampleRef) throws EoulsanException {
 
     // Check if null of empty
-    if (isNullOrEmpty(sampleRef))
+    if (isNullOrEmpty(sampleRef)) {
       throw new EoulsanException(
           "Found a null or empty sample reference for sample: "
               + sampleId + ".");
+    }
 
     // Check charset
     checkCharset(sampleRef);
@@ -281,19 +296,21 @@ public final class CasavaDesignUtil {
     // Check for forbidden characters
     for (int i = 0; i < sampleRef.length(); i++) {
       final char c = sampleRef.charAt(i);
-      if (!(Character.isLetterOrDigit(c) || c == ' ' || c == '-' || c == '_'))
+      if (!(Character.isLetterOrDigit(c) || c == ' ' || c == '-' || c == '_')) {
         throw new EoulsanException(
             "Invalid sample reference, only letters, digits, ' ', '-' or '_' characters are allowed: "
                 + sampleRef + ".");
+      }
     }
   }
 
   private static void checkIndex(final String index) throws EoulsanException {
 
-    if (index == null)
+    if (index == null) {
       return;
+    }
 
-    for (int i = 0; i < index.length(); i++)
+    for (int i = 0; i < index.length(); i++) {
       switch (index.codePointAt(i)) {
 
       case 'A':
@@ -309,15 +326,17 @@ public final class CasavaDesignUtil {
       default:
         throw new EoulsanException("Invalid index found: " + index + ".");
       }
+    }
   }
 
   private static void checkSampleDescription(final String sampleId,
       final String sampleDescription) throws EoulsanException {
 
     // Check if null of empty
-    if (isNullOrEmpty(sampleDescription))
+    if (isNullOrEmpty(sampleDescription)) {
       throw new EoulsanException(
           "Found a null or empty description for sample: " + sampleId);
+    }
 
     // Check charset
     checkCharset(sampleDescription);
@@ -325,9 +344,10 @@ public final class CasavaDesignUtil {
     // Check for forbidden characters
     for (int i = 0; i < sampleDescription.length(); i++) {
       final char c = sampleDescription.charAt(i);
-      if (c == '\'' || c == '\"')
+      if (c == '\'' || c == '\"') {
         throw new EoulsanException("Invalid sample description, '"
             + c + "' character is not allowed: " + sampleDescription + ".");
+      }
     }
   }
 
@@ -335,16 +355,18 @@ public final class CasavaDesignUtil {
       throws EoulsanException {
 
     // Check if null of empty
-    if (isNullOrEmpty(sampleProject))
+    if (isNullOrEmpty(sampleProject)) {
       throw new EoulsanException("Found a null or sample project.");
+    }
 
     // Check for forbidden characters
     for (int i = 0; i < sampleProject.length(); i++) {
       final char c = sampleProject.charAt(i);
-      if (!(Character.isLetterOrDigit(c) || c == '-' || c == '_'))
+      if (!(Character.isLetterOrDigit(c) || c == '-' || c == '_')) {
         throw new EoulsanException(
             "Invalid sample project, only letters, digits, '-' or '_' characters are allowed: "
                 + sampleProject + ".");
+      }
     }
   }
 
@@ -356,9 +378,10 @@ public final class CasavaDesignUtil {
 
     // Check if two or more project use the same sample
     if (samplesProjects.containsKey(sampleId)
-        && !samplesProjects.get(sampleId).equals(projectName))
+        && !samplesProjects.get(sampleId).equals(projectName)) {
       throw new EoulsanException("The sample \""
           + sampleId + "\" is used by two or more projects.");
+    }
 
     samplesProjects.put(sampleId, projectName);
 
@@ -366,12 +389,14 @@ public final class CasavaDesignUtil {
     if (!sampleInLanes.containsKey(sampleId)) {
       lanes = new HashSet<>();
       sampleInLanes.put(sampleId, lanes);
-    } else
+    } else {
       lanes = sampleInLanes.get(sampleId);
+    }
 
-    if (lanes.contains(lane))
+    if (lanes.contains(lane)) {
       warnings.add("The sample \""
           + sampleId + "\" exists two or more times in the lane " + lane + ".");
+    }
 
     lanes.add(lane);
   }
@@ -395,10 +420,11 @@ public final class CasavaDesignUtil {
         boolean first = true;
         for (int lane : laneSorted) {
 
-          if (first)
+          if (first) {
             first = false;
-          else
+          } else {
             sb.append(", ");
+          }
           sb.append(lane);
         }
         sb.append('.');
@@ -413,10 +439,11 @@ public final class CasavaDesignUtil {
       throws EoulsanException {
 
     if (samplesIndex.containsKey(sampleName)
-        && !samplesIndex.get(sampleName).equals(index))
+        && !samplesIndex.get(sampleName).equals(index)) {
       throw new EoulsanException("The sample \""
           + sampleName
           + "\" is defined in several lanes but without the same index.");
+    }
 
     samplesIndex.put(sampleName, index);
   }
@@ -435,14 +462,16 @@ public final class CasavaDesignUtil {
       final CasavaDesign design, final Map<String, String> sequences)
       throws EoulsanException {
 
-    if (design == null || sequences == null)
+    if (design == null || sequences == null) {
       return;
+    }
 
     for (final CasavaSample sample : design) {
 
-      if (sample.getIndex() == null)
+      if (sample.getIndex() == null) {
         throw new NullPointerException("Sample index is null for sample: "
             + sample);
+      }
 
       final String index = sample.getIndex().trim();
 
@@ -450,9 +479,10 @@ public final class CasavaDesignUtil {
         checkIndex(index);
       } catch (EoulsanException e) {
 
-        if (!sequences.containsKey(index.toLowerCase()))
+        if (!sequences.containsKey(index.toLowerCase())) {
           throw new EoulsanException("Unknown index sequence shortcut ("
               + index + ") for sample: " + sample);
+        }
 
         sample.setIndex(sequences.get(index.toLowerCase()));
       }
@@ -477,8 +507,9 @@ public final class CasavaDesignUtil {
     sb.append("\"FCID\",\"Lane\",\"SampleID\",\"SampleRef\",\"Index\",\"Description\","
         + "\"Control\",\"Recipe\",\"Operator\",\"SampleProject\"\n");
 
-    if (design == null)
+    if (design == null) {
       return sb.toString();
+    }
 
     for (CasavaSample s : design) {
 
@@ -518,8 +549,9 @@ public final class CasavaDesignUtil {
   public static CasavaDesign parseTabulatedDesign(final String s)
       throws IOException {
 
-    if (s == null)
+    if (s == null) {
       return null;
+    }
 
     return new AbstractCasavaDesignTextReader() {
 
@@ -530,8 +562,9 @@ public final class CasavaDesignUtil {
 
         for (final String line : lines) {
 
-          if ("".equals(line.trim()))
+          if ("".equals(line.trim())) {
             continue;
+          }
 
           parseLine(parseTabulatedDesignLine(line));
         }
@@ -549,8 +582,9 @@ public final class CasavaDesignUtil {
    */
   public static CasavaDesign parseCSVDesign(final String s) throws IOException {
 
-    if (s == null)
+    if (s == null) {
       return null;
+    }
 
     return new AbstractCasavaDesignTextReader() {
 
@@ -561,8 +595,9 @@ public final class CasavaDesignUtil {
 
         for (final String line : lines) {
 
-          if ("".equals(line.trim()))
+          if ("".equals(line.trim())) {
             continue;
+          }
 
           parseLine(parseCSVDesignLine(line));
         }
@@ -580,8 +615,9 @@ public final class CasavaDesignUtil {
    */
   public static List<String> parseTabulatedDesignLine(final String line) {
 
-    if (line == null)
+    if (line == null) {
       return null;
+    }
 
     return Arrays.asList(line.split("\t"));
   }
@@ -596,8 +632,9 @@ public final class CasavaDesignUtil {
 
     final List<String> result = new ArrayList<>();
 
-    if (line == null)
+    if (line == null) {
       return null;
+    }
 
     final int len = line.length();
     boolean openQuote = false;
@@ -611,10 +648,11 @@ public final class CasavaDesignUtil {
         result.add(sb.toString());
         sb.setLength(0);
       } else {
-        if (c == '"')
+        if (c == '"') {
           openQuote = !openQuote;
-        else
+        } else {
           sb.append(c);
+        }
       }
 
     }
@@ -639,13 +677,15 @@ public final class CasavaDesignUtil {
 
   private static String quote(final String s) {
 
-    if (s == null)
+    if (s == null) {
       return "";
+    }
 
     final String trimmed = s.trim();
 
-    if (s.indexOf(' ') != -1 || s.indexOf(',') != -1 || s.indexOf('\'') != -1)
+    if (s.indexOf(' ') != -1 || s.indexOf(',') != -1 || s.indexOf('\'') != -1) {
       return '\"' + trimmed + '\"';
+    }
     return trimmed;
   }
 

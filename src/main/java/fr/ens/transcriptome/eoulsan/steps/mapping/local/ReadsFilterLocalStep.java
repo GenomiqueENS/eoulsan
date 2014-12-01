@@ -80,12 +80,14 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
       // get input file count for the sample
       final int inFileCount = inData.getDataFileCount();
 
-      if (inFileCount < 1)
+      if (inFileCount < 1) {
         throw new IOException("No reads file found.");
+      }
 
-      if (inFileCount > 2)
+      if (inFileCount > 2) {
         throw new IOException(
             "Cannot handle more than 2 reads files at the same time.");
+      }
 
       // Get the read filter
       final MultiReadFilter filter = getReadFilter(reporter, COUNTER_GROUP);
@@ -187,7 +189,8 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
     getLogger().info("Filter file: " + inFile);
     getLogger().info("FastqFormat: " + fastqFormat);
 
-    try (FastqReader reader = new FastqReader(inFile.open()); FastqWriter writer = new FastqWriter(outFile.create())) {
+    try (FastqReader reader = new FastqReader(inFile.open());
+        FastqWriter writer = new FastqWriter(outFile.create())) {
       for (final ReadSequence read : reader) {
 
         // Set Fastq format
@@ -236,7 +239,10 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
         "Filter files: "
             + inFile1 + ", " + inFile2 + ", Fastq format: " + fastqFormat);
 
-    try (FastqReader reader2 = new FastqReader(inFile2.open()); FastqWriter writer1 = new FastqWriter(outFile1.create()); FastqWriter writer2 = new FastqWriter(outFile2.create()); FastqReader reader1 = new FastqReader(inFile1.open())) {
+    try (FastqReader reader2 = new FastqReader(inFile2.open());
+        FastqWriter writer1 = new FastqWriter(outFile1.create());
+        FastqWriter writer2 = new FastqWriter(outFile2.create());
+        FastqReader reader1 = new FastqReader(inFile1.open())) {
       for (final ReadSequence read1 : reader1) {
 
         // Test if the second read exists
@@ -269,8 +275,9 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
       reader1.throwException();
       reader2.throwException();
 
-      if (reader2.hasNext())
+      if (reader2.hasNext()) {
         throw new IOException("Excepted end of the first reads file.");
+      }
 
     } catch (BadBioEntryException e) {
 

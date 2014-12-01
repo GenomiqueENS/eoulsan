@@ -109,10 +109,11 @@ public class SimpleOutputPort extends AbstractPort implements OutputPort,
     super(name, list, format);
 
     // Set the compression
-    if (compression == null)
+    if (compression == null) {
       this.compression = CompressionType.NONE;
-    else
+    } else {
       this.compression = compression;
+    }
   }
 
   /**

@@ -47,10 +47,11 @@ public class TSVTranslatorOutputFormat implements TranslatorOutputFormat {
   @Override
   public void addHeaderField(final String fieldName) throws IOException {
 
-    if (this.startOfLine)
+    if (this.startOfLine) {
       this.startOfLine = false;
-    else
+    } else {
       this.writer.write('\t');
+    }
 
     this.writer.write(fieldName);
   }
@@ -65,52 +66,58 @@ public class TSVTranslatorOutputFormat implements TranslatorOutputFormat {
   @Override
   public void writeEmpty() throws IOException {
 
-    if (this.startOfLine)
+    if (this.startOfLine) {
       this.startOfLine = false;
-    else
+    } else {
       this.writer.write('\t');
+    }
 
   }
 
   @Override
-  public void writeLong(long l) throws IOException {
+  public void writeLong(final long l) throws IOException {
 
-    if (this.startOfLine)
+    if (this.startOfLine) {
       this.startOfLine = false;
-    else
+    } else {
       this.writer.write('\t');
+    }
 
     this.writer.write(Long.toString(l));
 
   }
 
   @Override
-  public void writeDouble(double d) throws IOException {
+  public void writeDouble(final double d) throws IOException {
 
-    if (this.startOfLine)
+    if (this.startOfLine) {
       this.startOfLine = false;
-    else
+    } else {
       this.writer.write('\t');
+    }
 
     this.writer.write(Double.toString(d));
 
   }
 
   @Override
-  public void writeText(String text) throws IOException {
+  public void writeText(final String text) throws IOException {
 
-    if (this.startOfLine)
+    if (this.startOfLine) {
       this.startOfLine = false;
-    else
+    } else {
       this.writer.write('\t');
+    }
 
-    if (text != null)
+    if (text != null) {
       this.writer.write(text);
+    }
 
   }
 
   @Override
-  public void writeLink(String text, String link) throws IOException {
+  public void writeLink(final String text, final String link)
+      throws IOException {
 
     writeText(text);
   }

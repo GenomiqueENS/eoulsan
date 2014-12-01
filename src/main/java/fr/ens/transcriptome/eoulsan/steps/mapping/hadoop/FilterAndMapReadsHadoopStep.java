@@ -151,8 +151,9 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     final Data readsData = context.getInputData(READS_PORT_NAME);
     DataFile inputDataFile = readsData.getDataFile();
 
-    if (inputDataFile == null)
+    if (inputDataFile == null) {
       throw new IOException("No input file found.");
+    }
 
     // Set input path
     final Path inputPath = new Path(inputDataFile.getSource());
@@ -186,10 +187,11 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
 
     // Set pair end or single end mode
-    if (readsData.getDataFileCount() == 2)
+    if (readsData.getDataFileCount() == 2) {
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.TRUE.toString());
-    else
+    } else {
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.FALSE.toString());
+    }
 
     // Set the number of threads for the mapper
     if (getMapperHadoopThreads() < 0) {
@@ -242,8 +244,9 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     FileInputFormat.addInputPath(job, inputPath);
 
     // Set the input format
-    if (READS_FASTQ.equals(inputDataFile.getDataFormat()))
+    if (READS_FASTQ.equals(inputDataFile.getDataFormat())) {
       job.setInputFormatClass(FastQFormatNew.class);
+    }
 
     // Set the Mappers classes using a chain mapper
     ChainMapper.addMapper(job, ReadsFilterMapper.class, LongWritable.class,
@@ -286,12 +289,14 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     final Data readsData = context.getInputData(DataFormats.READS_FASTQ);
     final int inFileCount = readsData.getDataFileCount();
 
-    if (inFileCount < 1)
+    if (inFileCount < 1) {
       throw new IOException("No input file found.");
+    }
 
-    if (inFileCount > 2)
+    if (inFileCount > 2) {
       throw new IOException(
           "Cannot handle more than 2 reads files at the same time.");
+    }
 
     // Get the source
     final DataFile inputDataFile1 = readsData.getDataFile(0);
@@ -324,8 +329,9 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set the input format
     if (READS_FASTQ.equals(inputDataFile1.getDataFormat())
-        && READS_FASTQ.equals(inputDataFile2.getDataFormat()))
+        && READS_FASTQ.equals(inputDataFile2.getDataFormat())) {
       job.setInputFormatClass(FastQFormatNew.class);
+    }
 
     // Set the Mapper class
     job.setMapperClass(PreTreatmentMapper.class);

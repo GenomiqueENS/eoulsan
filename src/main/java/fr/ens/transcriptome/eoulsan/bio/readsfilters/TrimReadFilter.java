@@ -52,8 +52,9 @@ public class TrimReadFilter extends AbstractReadFilter {
     if (read == null
         || read.getSequence() == null || read.getQuality() == null
         || read.getSequence().length() != read.getQuality().length()
-        || read.getSequence().length() == 0)
+        || read.getSequence().length() == 0) {
       return;
+    }
 
     final String[] splitResult = PATTERN.split(read.getSequence());
 
@@ -74,8 +75,9 @@ public class TrimReadFilter extends AbstractReadFilter {
   @Override
   public boolean accept(final ReadSequence read) {
 
-    if (read == null)
+    if (read == null) {
       return false;
+    }
 
     trim(read);
 
@@ -98,8 +100,9 @@ public class TrimReadFilter extends AbstractReadFilter {
   public void setParameter(final String key, final String value)
       throws EoulsanException {
 
-    if (key == null || value == null)
+    if (key == null || value == null) {
       return;
+    }
 
     if ("length.threshold".equals(key.trim())) {
 
@@ -109,22 +112,24 @@ public class TrimReadFilter extends AbstractReadFilter {
         return;
       }
 
-      if (this.lengthThreshold < 1)
+      if (this.lengthThreshold < 1) {
         throw new EoulsanException("Invalid length threshold: "
-            + lengthThreshold);
-    } else
-
+            + this.lengthThreshold);
+      }
+    } else {
       throw new EoulsanException("Unknown parameter for "
           + getName() + " read filter: " + key);
+    }
 
   }
 
   @Override
   public void init() {
 
-    if (this.lengthThreshold < 1)
+    if (this.lengthThreshold < 1) {
       throw new IllegalArgumentException("Length threshold is not set for "
           + getName() + " read filter.");
+    }
   }
 
   @Override

@@ -43,8 +43,8 @@ public class SampleImpl implements Sample, Serializable {
   /** Serialization version UID. */
   private static final long serialVersionUID = 3268835969259003788L;
 
-  private DesignImpl design;
-  private int sampleId;
+  private final DesignImpl design;
+  private final int sampleId;
 
   //
   // Getters
@@ -55,8 +55,9 @@ public class SampleImpl implements Sample, Serializable {
 
     final String sampleName = this.design.getSampleName(this.sampleId);
 
-    if (sampleName == null)
+    if (sampleName == null) {
       throw new EoulsanRuntimeException("The sample doesn't exists");
+    }
 
     return this.design.getSampleId(sampleName);
   }
@@ -66,8 +67,9 @@ public class SampleImpl implements Sample, Serializable {
 
     final String sampleName = this.design.getSampleName(this.sampleId);
 
-    if (sampleName == null)
+    if (sampleName == null) {
       throw new EoulsanRuntimeException("The sample doesn't exists");
+    }
 
     return sampleName;
   }
@@ -77,8 +79,9 @@ public class SampleImpl implements Sample, Serializable {
 
     final String sampleName = this.design.getSampleName(this.sampleId);
 
-    if (sampleName == null)
+    if (sampleName == null) {
       throw new EoulsanRuntimeException("The sample doesn't exists");
+    }
 
     return this.design.getSampleMetadata(sampleName);
   }
@@ -91,15 +94,18 @@ public class SampleImpl implements Sample, Serializable {
    * Set the identifier of the sample
    * @param id the identifier to set
    */
+  @Override
   public void setId(final int id) {
 
     final String sampleName = this.design.getSampleName(this.sampleId);
 
-    if (sampleName == null)
+    if (sampleName == null) {
       throw new EoulsanRuntimeException("The sample doesn't exists");
+    }
 
-    if (this.design.getSampleId(sampleName) == id)
+    if (this.design.getSampleId(sampleName) == id) {
       return;
+    }
 
     this.design.setSampleId(sampleName, id);
   }
@@ -109,8 +115,9 @@ public class SampleImpl implements Sample, Serializable {
 
     final String sampleName = this.design.getSampleName(this.sampleId);
 
-    if (sampleName == null)
+    if (sampleName == null) {
       throw new EoulsanRuntimeException("The sample doesn't exists");
+    }
 
     this.design.renameSample(sampleName, newName);
   }
@@ -128,11 +135,13 @@ public class SampleImpl implements Sample, Serializable {
   @Override
   public boolean equals(final Object o) {
 
-    if (o == this)
+    if (o == this) {
       return true;
+    }
 
-    if (!(o instanceof SampleImpl))
+    if (!(o instanceof SampleImpl)) {
       return false;
+    }
 
     final SampleImpl that = (SampleImpl) o;
 

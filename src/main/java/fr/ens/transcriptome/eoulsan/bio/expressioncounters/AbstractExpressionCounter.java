@@ -93,23 +93,25 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   @Override
   public void setStranded(final StrandUsage stranded) {
 
-    if (stranded == null)
+    if (stranded == null) {
       this.stranded = StrandUsage.NO;
-    else
+    } else {
       this.stranded = stranded;
+    }
   }
 
   @Override
   public void setOverlapMode(final OverlapMode mode) {
 
-    if (mode == null)
+    if (mode == null) {
       this.overlapMode = OverlapMode.UNION;
-    else
+    } else {
       this.overlapMode = mode;
+    }
   }
 
   @Override
-  public void setRemoveAmbiguousCases(boolean noAmbigousCases) {
+  public void setRemoveAmbiguousCases(final boolean noAmbigousCases) {
 
     this.noAmbiguousCases = noAmbigousCases;
   }
@@ -176,7 +178,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   //
 
   @Override
-  public void init(final String genomicType, String attributeId,
+  public void init(final String genomicType, final String attributeId,
       final Reporter reporter, final String counterGroup) {
 
     checkNotNull(reporter, "reporter is null");

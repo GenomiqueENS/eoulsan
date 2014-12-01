@@ -74,74 +74,79 @@ public class FastQLineRecordReader extends RecordReader<LongWritable, Text> {
   private LongWritable key = null;
   private Text value = null;
 
-  public void initialize(InputSplit genericSplit, TaskAttemptContext context)
-      throws IOException {
+  @Override
+  public void initialize(final InputSplit genericSplit,
+      final TaskAttemptContext context) throws IOException {
     FileSplit split = (FileSplit) genericSplit;
     Configuration job = context.getConfiguration();
     this.maxLineLength =
         job.getInt("mapred.linerecordreader.maxlength", Integer.MAX_VALUE);
-    start = split.getStart();
-    end = start + split.getLength();
+    this.start = split.getStart();
+    this.end = this.start + split.getLength();
     final Path file = split.getPath();
-    compressionCodecs = new CompressionCodecFactory(job);
-    final CompressionCodec codec = compressionCodecs.getCodec(file);
+    this.compressionCodecs = new CompressionCodecFactory(job);
+    final CompressionCodec codec = this.compressionCodecs.getCodec(file);
 
     // open the file and seek to the start of the split
     FileSystem fs = file.getFileSystem(job);
     FSDataInputStream fileIn = fs.open(split.getPath());
     boolean skipFirstLine = false;
     if (codec != null) {
-      in = new LineReader(codec.createInputStream(fileIn), job);
-      end = Long.MAX_VALUE;
+      this.in = new LineReader(codec.createInputStream(fileIn), job);
+      this.end = Long.MAX_VALUE;
     } else {
-      if (start != 0) {
+      if (this.start != 0) {
         skipFirstLine = true;
-        --start;
-        fileIn.seek(start);
+        --this.start;
+        fileIn.seek(this.start);
       }
-      in = new LineReader(fileIn, job);
+      this.in = new LineReader(fileIn, job);
     }
     if (skipFirstLine) { // skip first line and re-establish "start".
-      start +=
-          in.readLine(new Text(), 0,
-              (int) Math.min((long) Integer.MAX_VALUE, end - start));
+      this.start +=
+          this.in.readLine(new Text(), 0,
+              (int) Math.min(Integer.MAX_VALUE, this.end - this.start));
     }
-    this.pos = start;
+    this.pos = this.start;
   }
 
+  @Override
   public boolean nextKeyValue() throws IOException {
 
     return nextKeyValue(false);
   }
 
   public boolean nextKeyValue(final boolean cont) throws IOException {
-    if (key == null) {
-      key = new LongWritable();
+    if (this.key == null) {
+      this.key = new LongWritable();
     }
-    key.set(pos);
-    if (value == null) {
-      value = new Text();
+    this.key.set(this.pos);
+    if (this.value == null) {
+      this.value = new Text();
     }
     int newSize = 0;
-    while (pos < end || cont) {
+    while (this.pos < this.end || cont) {
       newSize =
-          in.readLine(value, maxLineLength, Math.max(
-              (int) Math.min(Integer.MAX_VALUE, end - pos), maxLineLength));
+          this.in.readLine(this.value, this.maxLineLength, Math.max(
+              (int) Math.min(Integer.MAX_VALUE, this.end - this.pos),
+              this.maxLineLength));
       if (newSize == 0) {
         break;
       }
-      pos += newSize;
-      if (newSize < maxLineLength) {
+      this.pos += newSize;
+      if (newSize < this.maxLineLength) {
         break;
       }
 
       // line too long. try again
-      getLogger().info(
-          "Skipped line of size " + newSize + " at pos " + (pos - newSize));
+      getLogger()
+          .info(
+              "Skipped line of size "
+                  + newSize + " at pos " + (this.pos - newSize));
     }
     if (newSize == 0) {
-      key = null;
-      value = null;
+      this.key = null;
+      this.value = null;
       return false;
     } else {
       return true;
@@ -150,28 +155,31 @@ public class FastQLineRecordReader extends RecordReader<LongWritable, Text> {
 
   @Override
   public LongWritable getCurrentKey() {
-    return key;
+    return this.key;
   }
 
   @Override
   public Text getCurrentValue() {
-    return value;
+    return this.value;
   }
 
   /**
    * Get the progress within the split
    */
+  @Override
   public float getProgress() {
-    if (start == end) {
+    if (this.start == this.end) {
       return 0.0f;
     } else {
-      return Math.min(1.0f, (pos - start) / (float) (end - start));
+      return Math.min(1.0f, (this.pos - this.start)
+          / (float) (this.end - this.start));
     }
   }
 
+  @Override
   public synchronized void close() throws IOException {
-    if (in != null) {
-      in.close();
+    if (this.in != null) {
+      this.in.close();
     }
   }
 }

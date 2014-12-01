@@ -100,13 +100,14 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      if ("local.threads".equals(p.getName()))
+      if ("local.threads".equals(p.getName())) {
         this.localThreads = p.getIntValue();
-      else if ("max.local.threads".equals(p.getName()))
+      } else if ("max.local.threads".equals(p.getName())) {
         this.maxLocalThreads = p.getIntValue();
-      else
+      } else {
         mrfb.addParameter(convertCompatibilityFilterKey(p.getName()),
             p.getStringValue());
+      }
     }
 
     // Force parameter checking
@@ -122,14 +123,17 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
    */
   static String convertCompatibilityFilterKey(final String key) {
 
-    if (key == null)
+    if (key == null) {
       return null;
+    }
 
-    if ("lengththreshold".equals(key))
+    if ("lengththreshold".equals(key)) {
       return TrimReadFilter.FILTER_NAME + ".length.threshold";
+    }
 
-    if ("qualitythreshold".equals(key))
+    if ("qualitythreshold".equals(key)) {
       return QualityReadFilter.FILTER_NAME + ".threshold";
+    }
     return key;
   }
 

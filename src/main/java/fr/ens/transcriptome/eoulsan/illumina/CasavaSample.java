@@ -51,7 +51,7 @@ public class CasavaSample {
    * @return Returns the flowCellId
    */
   public String getFlowCellId() {
-    return flowCellId;
+    return this.flowCellId;
   }
 
   /**
@@ -59,7 +59,7 @@ public class CasavaSample {
    * @return Returns the lane
    */
   public int getLane() {
-    return lane;
+    return this.lane;
   }
 
   /**
@@ -67,7 +67,7 @@ public class CasavaSample {
    * @return Returns the sampleId
    */
   public String getSampleId() {
-    return sampleId;
+    return this.sampleId;
   }
 
   /**
@@ -75,7 +75,7 @@ public class CasavaSample {
    * @return Returns the sampleRef
    */
   public String getSampleRef() {
-    return sampleRef;
+    return this.sampleRef;
   }
 
   /**
@@ -83,7 +83,7 @@ public class CasavaSample {
    * @return Returns the index
    */
   public String getIndex() {
-    return index;
+    return this.index;
   }
 
   /**
@@ -100,7 +100,7 @@ public class CasavaSample {
    * @return Returns the description
    */
   public String getDescription() {
-    return description;
+    return this.description;
   }
 
   /**
@@ -108,7 +108,7 @@ public class CasavaSample {
    * @return Returns the control
    */
   public boolean isControl() {
-    return control;
+    return this.control;
   }
 
   /**
@@ -116,7 +116,7 @@ public class CasavaSample {
    * @return Returns the recipe
    */
   public String getRecipe() {
-    return recipe;
+    return this.recipe;
   }
 
   /**
@@ -124,7 +124,7 @@ public class CasavaSample {
    * @return Returns the operator
    */
   public String getOperator() {
-    return operator;
+    return this.operator;
   }
 
   /**
@@ -132,7 +132,7 @@ public class CasavaSample {
    * @return Returns the sampleProject
    */
   public String getSampleProject() {
-    return sampleProject;
+    return this.sampleProject;
   }
 
   //
@@ -182,7 +182,7 @@ public class CasavaSample {
   /**
    * @param description The description to set
    */
-  public void setDescription(String description) {
+  public void setDescription(final String description) {
     this.description = description;
   }
 

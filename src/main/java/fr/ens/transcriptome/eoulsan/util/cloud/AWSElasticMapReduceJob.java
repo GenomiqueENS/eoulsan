@@ -400,22 +400,26 @@ public class AWSElasticMapReduceJob {
     this.runFlowRequest = new RunJobFlowRequest().withName(this.jobFlowName);
 
     // Enable or not debugging
-    if (this.enableDebugging)
+    if (this.enableDebugging) {
       this.runFlowRequest.withInstances(instances).withSteps(enableDebugging,
           stepConfig);
-    else
+    } else {
       this.runFlowRequest.withInstances(instances).withSteps(stepConfig);
+    }
 
     // Limit the number of task in a task tracker
-    if (this.taskTrackerMaxMapTasks > 0)
-      runFlowRequest.withBootstrapActions(bootstrapActions);
+    if (this.taskTrackerMaxMapTasks > 0) {
+      this.runFlowRequest.withBootstrapActions(bootstrapActions);
+    }
 
-    if (this.logPathname != null && !"".equals(this.logPathname))
+    if (this.logPathname != null && !"".equals(this.logPathname)) {
       this.runFlowRequest.withLogUri(this.logPathname);
+    }
 
     // Set EC2 Key name
-    if (this.ec2KeyName != null)
+    if (this.ec2KeyName != null) {
       this.runFlowRequest.getInstances().setEc2KeyName(this.ec2KeyName);
+    }
   }
 
   /**
@@ -432,9 +436,10 @@ public class AWSElasticMapReduceJob {
     this.elasticMapReduceClient = new AmazonElasticMapReduceClient(credentials);
 
     // Set the end point
-    elasticMapReduceClient.setEndpoint(this.endpoint);
+    this.elasticMapReduceClient.setEndpoint(this.endpoint);
 
-    this.runFlowResult = elasticMapReduceClient.runJobFlow(this.runFlowRequest);
+    this.runFlowResult =
+        this.elasticMapReduceClient.runJobFlow(this.runFlowRequest);
 
     return this.runFlowResult.getJobFlowId();
   }

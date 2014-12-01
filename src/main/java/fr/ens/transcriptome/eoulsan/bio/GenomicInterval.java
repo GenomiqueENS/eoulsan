@@ -39,10 +39,10 @@ public class GenomicInterval implements Serializable,
 
   private static final long serialVersionUID = 1974207984076778441L;
 
-  private String chromosome;
-  private int start;
-  private int end;
-  private char strand;
+  private final String chromosome;
+  private final int start;
+  private final int end;
+  private final char strand;
 
   //
   // Getters
@@ -120,16 +120,19 @@ public class GenomicInterval implements Serializable,
   @Override
   public int compareTo(final GenomicInterval e) {
 
-    if (e == null)
+    if (e == null) {
       return -1;
+    }
 
-    if (!e.getChromosome().equals(e.getChromosome()))
+    if (!e.getChromosome().equals(e.getChromosome())) {
       return getChromosome().compareTo(e.getChromosome());
+    }
 
     final int startComp = ((Integer) this.start).compareTo(e.getStart());
 
-    if (startComp != 0)
+    if (startComp != 0) {
       return startComp;
+    }
 
     final int endComp = ((Integer) this.end).compareTo(e.getEnd());
 
@@ -143,11 +146,13 @@ public class GenomicInterval implements Serializable,
   @Override
   public boolean equals(final Object o) {
 
-    if (o == this)
+    if (o == this) {
       return true;
+    }
 
-    if (!(o instanceof GenomicInterval))
+    if (!(o instanceof GenomicInterval)) {
       return false;
+    }
 
     final GenomicInterval that = (GenomicInterval) o;
 
@@ -160,7 +165,7 @@ public class GenomicInterval implements Serializable,
   @Override
   public int hashCode() {
 
-    return Utils.hashCode(chromosome, start, end, strand);
+    return Utils.hashCode(this.chromosome, this.start, this.end, this.strand);
   }
 
   /**
@@ -171,7 +176,8 @@ public class GenomicInterval implements Serializable,
   public String toString() {
 
     return this.getClass().getSimpleName()
-        + "{" + chromosome + " [" + start + "-" + end + "]" + strand + "}";
+        + "{" + this.chromosome + " [" + this.start + "-" + this.end + "]"
+        + this.strand + "}";
   }
 
   //
@@ -188,19 +194,23 @@ public class GenomicInterval implements Serializable,
   public GenomicInterval(final String chromosome, final int start,
       final int end, final char strand) {
 
-    if (chromosome == null)
+    if (chromosome == null) {
       throw new NullPointerException("The chromosome value is null");
+    }
 
-    if (start < 1)
+    if (start < 1) {
       throw new IllegalArgumentException("Start position is lower than 1: "
           + start);
+    }
 
-    if (end < start)
+    if (end < start) {
       throw new IllegalArgumentException("Start position is greater than end: "
           + end);
+    }
 
-    if (strand != '+' && strand != '-' && strand != '.')
+    if (strand != '+' && strand != '-' && strand != '.') {
       throw new IllegalArgumentException("Invalid strand value: " + strand);
+    }
 
     this.chromosome = chromosome;
     this.start = start;

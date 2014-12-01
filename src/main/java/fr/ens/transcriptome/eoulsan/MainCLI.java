@@ -45,6 +45,7 @@ public final class MainCLI extends Main {
    * Create options for command line
    * @return an Options object
    */
+  @Override
   @SuppressWarnings("static-access")
   protected Options makeOptions() {
 
@@ -88,16 +89,19 @@ public final class MainCLI extends Main {
   @Override
   protected Handler getLogHandler(final String logFile) throws IOException {
 
-    if (logFile == null)
+    if (logFile == null) {
       throw new NullPointerException("The log file is null");
+    }
 
     final File parentFile = new File(logFile).getParentFile();
 
     // Create parent directory if necessary
-    if (parentFile != null && !parentFile.exists())
-      if (!parentFile.mkdirs())
+    if (parentFile != null && !parentFile.exists()) {
+      if (!parentFile.mkdirs()) {
         throw new IOException("Unable to create directory "
             + parentFile + " for log file:" + logFile);
+      }
+    }
 
     return new FileHandler(logFile);
   }

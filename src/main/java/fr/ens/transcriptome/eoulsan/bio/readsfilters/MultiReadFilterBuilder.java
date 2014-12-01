@@ -77,8 +77,9 @@ public class MultiReadFilterBuilder {
   public boolean addParameter(final String key, final String value,
       final boolean noExceptionIfFilterNotExists) throws EoulsanException {
 
-    if (key == null || value == null)
+    if (key == null || value == null) {
       return false;
+    }
 
     // Get first dot position
     final String keyTrimmed = key.trim();
@@ -99,15 +100,16 @@ public class MultiReadFilterBuilder {
     final ReadFilter filter;
 
     // Get the filter object, load it if necessary
-    if (mapFilters.containsKey(filterName))
-      filter = mapFilters.get(filterName);
-    else {
+    if (this.mapFilters.containsKey(filterName)) {
+      filter = this.mapFilters.get(filterName);
+    } else {
       filter = ReadFilterService.getInstance().newService(filterName);
 
       if (filter == null) {
 
-        if (noExceptionIfFilterNotExists)
+        if (noExceptionIfFilterNotExists) {
           return false;
+        }
 
         throw new EoulsanException("Unable to find "
             + filterName + " read filter.");
@@ -144,11 +146,13 @@ public class MultiReadFilterBuilder {
   public void addParameters(final Map<String, String> parameters)
       throws EoulsanException {
 
-    if (parameters == null)
+    if (parameters == null) {
       return;
+    }
 
-    for (Map.Entry<String, String> e : parameters.entrySet())
+    for (Map.Entry<String, String> e : parameters.entrySet()) {
       addParameter(e.getKey(), e.getValue());
+    }
   }
 
   /**
@@ -159,8 +163,9 @@ public class MultiReadFilterBuilder {
    */
   public MultiReadFilter getReadFilter() throws EoulsanException {
 
-    for (ReadFilter f : this.listFilter)
+    for (ReadFilter f : this.listFilter) {
       f.init();
+    }
 
     final MultiReadFilter mrf = new MultiReadFilter(this.listFilter);
 
@@ -178,8 +183,9 @@ public class MultiReadFilterBuilder {
   public MultiReadFilter getReadFilter(final ReporterIncrementer incrementer,
       final String counterGroup) throws EoulsanException {
 
-    for (ReadFilter f : this.listFilter)
+    for (ReadFilter f : this.listFilter) {
       f.init();
+    }
 
     final MultiReadFilter mrf =
         new MultiReadFilter(incrementer, counterGroup, this.listFilter);

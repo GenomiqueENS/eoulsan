@@ -31,12 +31,13 @@ package fr.ens.transcriptome.eoulsan.translators;
  */
 public class CommonLinksInfoTranslator extends BasicTranslator {
 
-  private Translator translator;
+  private final Translator translator;
 
   /**
    * Get an ordered list of the translator fields
    * @return an ordered list of the translator fields.
    */
+  @Override
   public String[] getFields() {
 
     return this.translator.getFields();
@@ -48,6 +49,7 @@ public class CommonLinksInfoTranslator extends BasicTranslator {
    * @param field the field to get
    * @return An array with the annotation of the Feature
    */
+  @Override
   public String translateField(final String id, final String field) {
 
     return this.translator.translateField(id, field);
@@ -58,10 +60,12 @@ public class CommonLinksInfoTranslator extends BasicTranslator {
    * @param field Field to test
    * @return true if link information is available
    */
+  @Override
   public boolean isLinkInfo(final String field) {
 
-    if (field == null)
+    if (field == null) {
       return false;
+    }
 
     return field.equals("EnsemblGeneID")
         || field.equals("EntrezGeneID") || field.equals("MGI ID")
@@ -74,23 +78,28 @@ public class CommonLinksInfoTranslator extends BasicTranslator {
    * @param field field of the id
    * @return a link for the translated id
    */
+  @Override
   public String getLinkInfo(final String translatedId, final String field) {
 
-    if (translatedId == null || field == null)
+    if (translatedId == null || field == null) {
       return null;
+    }
 
-    if (field.equals("GI"))
+    if (field.equals("GI")) {
       return "http://www.ncbi.nlm.nih.gov/nuccore/" + translatedId;
+    }
 
-    if (field.equals("EnsemblGeneID"))
+    if (field.equals("EnsemblGeneID")) {
       // return
       // "http://www.ensembl.org/Homo_sapiens/Search/Summary?species=all;q="
       return "http://www.ensembl.org/Multi/Search/Results?species=all;q="
           + translatedId;
+    }
 
-    if (field.equals("EntrezGeneID"))
+    if (field.equals("EntrezGeneID")) {
       return "http://www.ncbi.nlm.nih.gov/sites/entrez?Db=gene&Cmd=ShowDetailView&TermToSearch="
           + translatedId;
+    }
 
     if (field.equals("MGI ID") && translatedId.startsWith("MGI:")) {
 
@@ -104,12 +113,14 @@ public class CommonLinksInfoTranslator extends BasicTranslator {
     // return "http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?"
     // + "db=gene&cmd=Retrieve&dopt=Graphics&list_uids=" + translatedId;
 
-    if (field.equals("SGDID"))
+    if (field.equals("SGDID")) {
       return "http://db.yeastgenome.org/cgi-bin/locus.pl?dbid=" + translatedId;
+    }
 
-    if (field.equals("Phatr2 Protein HyperLink"))
+    if (field.equals("Phatr2 Protein HyperLink")) {
       return "http://genome.jgi-psf.org/cgi-bin/dispGeneModel?db=Phatr2&tid="
           + translatedId;
+    }
 
     return null;
   }
@@ -118,6 +129,7 @@ public class CommonLinksInfoTranslator extends BasicTranslator {
    * Get the available identifiers by the translator if possible.
    * @return a array of string with the identifiers
    */
+  @Override
   public String[] getIds() {
 
     return this.translator.getIds();
@@ -133,8 +145,9 @@ public class CommonLinksInfoTranslator extends BasicTranslator {
    */
   public CommonLinksInfoTranslator(final Translator translator) {
 
-    if (translator == null)
+    if (translator == null) {
       throw new NullPointerException("Translator can't be null");
+    }
 
     this.translator = translator;
   }

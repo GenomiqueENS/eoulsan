@@ -47,8 +47,8 @@ public class WorkflowStepStatus {
   private double progress = Double.NaN;
   private String note;
 
-  private Set<WorkflowStepObserver> observers = WorkflowStepObserverRegistry
-      .getInstance().getObservers();
+  private final Set<WorkflowStepObserver> observers =
+      WorkflowStepObserverRegistry.getInstance().getObservers();
 
   //
   // Progress Methods
@@ -74,8 +74,9 @@ public class WorkflowStepStatus {
       double sum = 0.0;
 
       synchronized (this) {
-        for (Double p : this.taskProgress.values())
+        for (Double p : this.taskProgress.values()) {
           sum += p;
+        }
       }
 
       return sum
@@ -133,10 +134,11 @@ public class WorkflowStepStatus {
 
     checkProgress(min, max, value);
 
-    if (min == max)
+    if (min == max) {
       setProgress(1.0);
-    else
+    } else {
       setProgress(((double) (value - min)) / (max - min));
+    }
   }
 
   /**
@@ -168,11 +170,12 @@ public class WorkflowStepStatus {
 
     checkProgress(min, max, value);
 
-    if (min == max)
+    if (min == max) {
       setTaskProgress(contextId, contextName, 1.0);
-    else
+    } else {
       setTaskProgress(contextId, contextName, ((double) (value - min))
           / (max - min));
+    }
   }
 
   /**
@@ -219,8 +222,9 @@ public class WorkflowStepStatus {
       final String contextName, final double progress) {
 
     // Inform listeners
-    for (WorkflowStepObserver o : this.observers)
+    for (WorkflowStepObserver o : this.observers) {
       o.notifyStepState(this.step, contextId, contextName, progress);
+    }
   }
 
   /**
@@ -229,8 +233,9 @@ public class WorkflowStepStatus {
   private void progressStatusUpdated() {
 
     // Inform listeners
-    for (WorkflowStepObserver o : this.observers)
+    for (WorkflowStepObserver o : this.observers) {
       o.notifyStepState(this.step, getProgress());
+    }
   }
 
   /**
@@ -239,8 +244,9 @@ public class WorkflowStepStatus {
   private void noteStatusUpdated() {
 
     // Inform listeners
-    for (WorkflowStepObserver o : this.observers)
+    for (WorkflowStepObserver o : this.observers) {
       o.notifyStepState(this.step, this.note);
+    }
   }
 
   //

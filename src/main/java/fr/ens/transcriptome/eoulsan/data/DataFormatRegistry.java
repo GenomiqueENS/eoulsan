@@ -53,9 +53,9 @@ public class DataFormatRegistry {
   private static final String RESOURCE_PREFIX =
       "META-INF/services/xmldataformats/";
 
-  private Set<DataFormat> formats = new HashSet<>();
-  private Map<String, DataFormat> mapFormats = new HashMap<>();
-  private Map<String, DataFormat> mapDesignDataFormat = new HashMap<>();
+  private final Set<DataFormat> formats = new HashSet<>();
+  private final Map<String, DataFormat> mapFormats = new HashMap<>();
+  private final Map<String, DataFormat> mapDesignDataFormat = new HashMap<>();
 
   private static DataFormatRegistry instance;
 
@@ -78,8 +78,9 @@ public class DataFormatRegistry {
   private void register(final DataFormat df, final boolean callFromConstructor)
       throws EoulsanException {
 
-    if (df == null || formats.contains(df))
+    if (df == null || this.formats.contains(df)) {
       return;
+    }
 
     check(df, callFromConstructor);
 
@@ -88,7 +89,7 @@ public class DataFormatRegistry {
       final String prefix = df.getPrefix();
       final String key = prefix + "\t" + suffix;
 
-      formats.add(df);
+      this.formats.add(df);
       this.mapFormats.put(key, df);
     }
   }
@@ -100,19 +101,22 @@ public class DataFormatRegistry {
    */
   public void register(final DataFormat[] array) throws EoulsanException {
 
-    if (array == null)
+    if (array == null) {
       return;
+    }
 
-    for (DataFormat df : array)
+    for (DataFormat df : array) {
       register(df);
+    }
   }
 
   private void check(final DataFormat df, final boolean callFromConstructor)
       throws EoulsanException {
 
-    if (df.getName() == null)
+    if (df.getName() == null) {
       throw new EoulsanException("The DataFormat "
           + df.getClass().getName() + " as no name.");
+    }
 
     if (!df.getName().toLowerCase().trim().equals(df.getName())) {
       throw new EoulsanException(
@@ -121,47 +125,55 @@ public class DataFormatRegistry {
     }
 
     for (DataFormat format : this.formats) {
-      if (format.getName().equals(df.getName()))
+      if (format.getName().equals(df.getName())) {
         throw new EoulsanException("A DataFormat named "
             + df.getName() + " is already registered.");
+      }
     }
 
     final String prefix = df.getPrefix();
 
-    if (prefix == null || "".equals(prefix))
+    if (prefix == null || "".equals(prefix)) {
       throw new EoulsanException(
           "The prefix of a DataFormat can't be null or empty ("
               + df.getName() + ")");
+    }
 
-    if (prefix.indexOf('\t') != -1)
+    if (prefix.indexOf('\t') != -1) {
       throw new EoulsanException(
           "The prefix of a DataFormat can't contains tab character: " + prefix);
+    }
 
     final List<String> extensions = df.getExtensions();
 
-    if (extensions == null || extensions.size() == 0)
+    if (extensions == null || extensions.size() == 0) {
       throw new EoulsanException(
           "The extensions of a DataFormat can't be null or empty.");
+    }
 
-    if (df.getDefaultExtension() == null)
+    if (df.getDefaultExtension() == null) {
       throw new EoulsanException(
           "The no default extension is provided for DataFormat: "
               + df.getName());
+    }
 
     boolean defaultExtensionFound = false;
 
     for (String suffix : df.getExtensions()) {
 
-      if (suffix == null)
+      if (suffix == null) {
         throw new EoulsanException(
             "The extension of a DataFormat can't be null");
-      if (suffix.indexOf('\t') != -1)
+      }
+      if (suffix.indexOf('\t') != -1) {
         throw new EoulsanException(
             "The extension of a DataFormat can't contains tab character: "
                 + suffix);
+      }
 
-      if (suffix.equals(df.getDefaultExtension()))
+      if (suffix.equals(df.getDefaultExtension())) {
         defaultExtensionFound = true;
+      }
 
       final String key = prefix + "\t" + suffix;
 
@@ -171,23 +183,26 @@ public class DataFormatRegistry {
                 + prefix + "\" and extension \"" + suffix + "\"");
       }
 
-      if (!callFromConstructor)
+      if (!callFromConstructor) {
         throw new EoulsanException("This DataFormat "
             + df.getName()
             + " is not registered as a spi service. Cannot register it.");
+      }
 
       // Register DataFormat for design fields is necessary
-      if (df.getDesignFieldName() != null)
+      if (df.getDesignFieldName() != null) {
         this.mapDesignDataFormat.put(df.getDesignFieldName(), df);
+      }
 
-      formats.add(df);
+      this.formats.add(df);
       this.mapFormats.put(key, df);
 
     }
 
-    if (!defaultExtensionFound)
+    if (!defaultExtensionFound) {
       throw new EoulsanException("The default extension of DataFormat \""
           + df.getName() + "\" is not in the list of extensions.");
+    }
 
   }
 
@@ -200,11 +215,13 @@ public class DataFormatRegistry {
   public DataFormat getDataFormatFromFilename(final String prefix,
       final String extension) {
 
-    if (prefix == null)
+    if (prefix == null) {
       throw new NullPointerException("The prefix is null");
+    }
 
-    if (extension == null)
+    if (extension == null) {
       throw new NullPointerException("The extension is null");
+    }
 
     final String key = prefix + "\t" + extension;
 
@@ -218,16 +235,18 @@ public class DataFormatRegistry {
    */
   public DataFormat getDataFormatFromFilename(final String filename) {
 
-    if (filename == null)
+    if (filename == null) {
       throw new NullPointerException("The filename is null");
+    }
 
     final String f =
         StringUtils.filenameWithoutCompressionExtension(filename.trim());
 
     final int dotPos = f.lastIndexOf('.');
 
-    if (dotPos == -1)
+    if (dotPos == -1) {
       return null;
+    }
 
     final String ext = f.substring(dotPos);
 
@@ -238,15 +257,20 @@ public class DataFormatRegistry {
       final String prefix = f.substring(0, underscorePos + 1);
       final DataFormat df = getDataFormatFromFilename(prefix, ext);
 
-      if (df != null)
+      if (df != null) {
         return df;
+      }
     }
 
-    for (DataFormat df : this.formats)
-      if (df.isDataFormatFromDesignFile())
-        for (String dfExt : df.getExtensions())
-          if (dfExt.equals(ext))
+    for (DataFormat df : this.formats) {
+      if (df.isDataFormatFromDesignFile()) {
+        for (String dfExt : df.getExtensions()) {
+          if (dfExt.equals(ext)) {
             return df;
+          }
+        }
+      }
+    }
 
     return null;
   }
@@ -310,8 +334,9 @@ public class DataFormatRegistry {
    */
   public DataFormat getDataFormatForDesignField(final String fieldName) {
 
-    if (fieldName == null)
+    if (fieldName == null) {
       return null;
+    }
 
     return this.mapDesignDataFormat.get(fieldName);
   }
@@ -325,15 +350,17 @@ public class DataFormatRegistry {
   public String getDesignFieldnameForDataFormat(final Design design,
       final DataFormat dataformat) {
 
-    if (design == null || dataformat == null)
+    if (design == null || dataformat == null) {
       return null;
+    }
 
     final List<String> fieldnames = design.getMetadataFieldsNames();
     for (String fieldname : fieldnames) {
 
       final DataFormat df = getDataFormatForDesignField(fieldname);
-      if (dataformat.equals(df))
+      if (dataformat.equals(df)) {
         return fieldname;
+      }
     }
 
     return null;
@@ -408,8 +435,9 @@ public class DataFormatRegistry {
    */
   public static DataFormatRegistry getInstance() {
 
-    if (instance == null)
+    if (instance == null) {
       instance = new DataFormatRegistry();
+    }
 
     return instance;
   }

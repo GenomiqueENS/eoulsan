@@ -76,7 +76,7 @@ public abstract class AbstractComparatorWithBloomFilter extends
   }
 
   @Override
-  public boolean compareFiles(InputStream isA, InputStream isB)
+  public boolean compareFiles(final InputStream isA, final InputStream isB)
       throws IOException {
     return compareFiles(buildBloomFilter(isA), isB);
   }
@@ -140,7 +140,7 @@ public abstract class AbstractComparatorWithBloomFilter extends
    * @return BloomFilter corresponding to the input stream
    * @throws IOException
    */
-  protected BloomFilterUtils buildBloomFilter(InputStream is)
+  protected BloomFilterUtils buildBloomFilter(final InputStream is)
       throws IOException {
     final BloomFilterUtils filter =
         initBloomFilter(getExpectedNumberOfElements());
@@ -201,27 +201,27 @@ public abstract class AbstractComparatorWithBloomFilter extends
   //
 
   public boolean isUseSerializeFile() {
-    return useSerializeFile;
+    return this.useSerializeFile;
   }
 
-  public void setUseSerializeFile(boolean useSerializeFile) {
+  public void setUseSerializeFile(final boolean useSerializeFile) {
     this.useSerializeFile = useSerializeFile;
   }
 
   protected int getExpectedNumberOfElements() {
-    return expectedNumberOfElements;
+    return this.expectedNumberOfElements;
   }
 
-  protected void setExpectedNumberOfElements(int expectedNumberOfElements) {
+  protected void setExpectedNumberOfElements(final int expectedNumberOfElements) {
     this.expectedNumberOfElements = expectedNumberOfElements;
   }
 
-  protected void setFalsePositiveProbability(double falsePositiveProba) {
+  protected void setFalsePositiveProbability(final double falsePositiveProba) {
     this.falsePositiveProbability = falsePositiveProba;
   }
 
   protected double getFalsePositiveProbability() {
-    return falsePositiveProbability;
+    return this.falsePositiveProbability;
   }
 
   //

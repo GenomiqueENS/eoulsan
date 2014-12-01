@@ -51,7 +51,7 @@ abstract class AbstractData implements Data, Serializable {
   @Override
   public String getName() {
 
-    return name;
+    return this.name;
   }
 
   @Override

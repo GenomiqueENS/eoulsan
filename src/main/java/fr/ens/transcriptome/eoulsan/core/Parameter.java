@@ -128,16 +128,19 @@ public class Parameter implements Serializable {
    */
   public Parameter(final String name, final String value) {
 
-    if (name == null)
+    if (name == null) {
       throw new NullPointerException("Parameter name can't be null");
+    }
 
     final String nameLower = name.toLowerCase().trim();
 
-    if (value == null)
+    if (value == null) {
       throw new NullPointerException("Parameter value can't be null");
+    }
 
-    if ("".equals(nameLower))
+    if ("".equals(nameLower)) {
       throw new IllegalArgumentException("Parameter name can't be empty");
+    }
 
     this.name = nameLower;
     this.value = value;

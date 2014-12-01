@@ -134,8 +134,9 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
     final String genomeDescStoragePath =
         EoulsanRuntime.getSettings().getGenomeDescStoragePath();
 
-    if (genomeDescStoragePath == null)
+    if (genomeDescStoragePath == null) {
       return null;
+    }
 
     return SimpleGenomeDescStorage.getInstance(new DataFile(
         genomeDescStoragePath));

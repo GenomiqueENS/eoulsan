@@ -33,19 +33,16 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import fr.ens.transcriptome.eoulsan.io.comparators.AbstractComparator;
-import fr.ens.transcriptome.eoulsan.io.comparators.BinaryComparator;
-
 public class BinaryComparatorTest {
-  private File dir = new File(new File(".").getAbsolutePath()
+  private final File dir = new File(new File(".").getAbsolutePath()
       + "/src/test/java/files");
 
   private InputStream isA;
   private InputStream isB;
 
-  private File fileA = new File(dir, "mapper_results_1.bam");
-  private File fileB = new File(dir, "mapper_results_2.bam");
-  private File fileC = new File(dir, "mapper_results_1_modif.bam");
+  private final File fileA = new File(this.dir, "mapper_results_1.bam");
+  private final File fileB = new File(this.dir, "mapper_results_2.bam");
+  private final File fileC = new File(this.dir, "mapper_results_1_modif.bam");
 
   private final AbstractComparator comparator = new BinaryComparator();
 
@@ -53,28 +50,29 @@ public class BinaryComparatorTest {
   public void testSameBinaryFiles() throws Exception {
 
     final InputStream isA1 =
-        getCompressionTypeByFilename(fileA.getAbsolutePath())
-            .createInputStream(new FileInputStream(fileA));
+        getCompressionTypeByFilename(this.fileA.getAbsolutePath())
+            .createInputStream(new FileInputStream(this.fileA));
 
     final InputStream isA2 =
-        getCompressionTypeByFilename(fileA.getAbsolutePath())
-            .createInputStream(new FileInputStream(fileA));
+        getCompressionTypeByFilename(this.fileA.getAbsolutePath())
+            .createInputStream(new FileInputStream(this.fileA));
 
-    assertTrue("files are same", comparator.compareFiles(isA1, isA2));
+    assertTrue("files are same", this.comparator.compareFiles(isA1, isA2));
   }
 
   @Test
   public void testDifferentBinaryFiles() throws Exception {
 
-    isA =
-        getCompressionTypeByFilename(fileA.getAbsolutePath())
-            .createInputStream(new FileInputStream(fileA));
+    this.isA =
+        getCompressionTypeByFilename(this.fileA.getAbsolutePath())
+            .createInputStream(new FileInputStream(this.fileA));
 
-    isB =
-        getCompressionTypeByFilename(fileB.getAbsolutePath())
-            .createInputStream(new FileInputStream(fileB));
+    this.isB =
+        getCompressionTypeByFilename(this.fileB.getAbsolutePath())
+            .createInputStream(new FileInputStream(this.fileB));
 
-    assertFalse("files are different", comparator.compareFiles(isA, isB));
+    assertFalse("files are different",
+        this.comparator.compareFiles(this.isA, this.isB));
 
   }
 
@@ -84,7 +82,7 @@ public class BinaryComparatorTest {
     // File mapper_results_SE.bam change few character in one read then generate
     // bam
     assertFalse("files are different: characters change",
-        comparator.compareFiles(fileA, fileC));
+        this.comparator.compareFiles(this.fileA, this.fileC));
   }
 
 }

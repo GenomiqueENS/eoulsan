@@ -62,20 +62,24 @@ public final class GenomeMapperIndexer {
 
     final DataFile precomputedIndexDataFile;
 
-    if (storage == null)
+    if (this.storage == null) {
       precomputedIndexDataFile = null;
-    else
-      precomputedIndexDataFile = storage.get(this.mapper, genomeDescription);
+    } else {
+      precomputedIndexDataFile =
+          this.storage.get(this.mapper, genomeDescription);
+    }
 
     // If no index storage or if the index does not already exists compute it
     if (precomputedIndexDataFile == null) {
       getLogger().info("Genome index not found, must compute it.");
       computeIndex(genomeDataFile, mapperIndexDataFile);
-      if (storage != null)
-        storage.put(this.mapper, genomeDescription, mapperIndexDataFile);
-    } else
+      if (this.storage != null) {
+        this.storage.put(this.mapper, genomeDescription, mapperIndexDataFile);
+      }
+    } else {
       // Else download it
       downloadPrecomputedIndex(precomputedIndexDataFile, mapperIndexDataFile);
+    }
 
   }
 
@@ -92,7 +96,7 @@ public final class GenomeMapperIndexer {
     if (outputFile == null) {
       outputFile =
           EoulsanRuntime.getRuntime().createTempFile(
-              mapper.getMapperName() + "-index-archive-", ".zip");
+              this.mapper.getMapperName() + "-index-archive-", ".zip");
     }
 
     if (genome.toFile() != null) {
@@ -127,8 +131,9 @@ public final class GenomeMapperIndexer {
 
     if (precomputedIndex.isLocalFile() && output.isLocalFile()) {
       FileUtils.createSymbolicLink(precomputedIndex.toFile(), output.toFile());
-    } else
+    } else {
       FileUtils.copy(precomputedIndex.rawOpen(), output.create());
+    }
   }
 
   /**
@@ -141,8 +146,9 @@ public final class GenomeMapperIndexer {
     final String genomeIndexStoragePath =
         EoulsanRuntime.getSettings().getGenomeMapperIndexStoragePath();
 
-    if (genomeIndexStoragePath == null)
+    if (genomeIndexStoragePath == null) {
       return null;
+    }
 
     return SimpleGenomeIndexStorage.getInstance(new DataFile(
         genomeIndexStoragePath));

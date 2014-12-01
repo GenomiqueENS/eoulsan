@@ -152,8 +152,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    */
   public Step getStep() {
 
-    if (this.stepName == null)
+    if (this.stepName == null) {
       return null;
+    }
 
     return StepInstances.getInstance().getStep(this);
   }
@@ -280,13 +281,16 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     // Get output ports
     this.outputPortsParameter = step.getOutputPorts();
-    if (outputPorts != null)
-      this.outputPorts = new WorkflowOutputPorts(this, outputPortsParameter);
+    if (this.outputPorts != null) {
+      this.outputPorts =
+          new WorkflowOutputPorts(this, this.outputPortsParameter);
+    }
 
     // Get input ports
     this.inputPortsParameter = step.getInputPorts();
-    if (inputPorts != null)
-      this.inputPorts = new WorkflowInputPorts(this, inputPortsParameter);
+    if (this.inputPorts != null) {
+      this.inputPorts = new WorkflowInputPorts(this, this.inputPortsParameter);
+    }
   }
 
   /**
@@ -324,14 +328,16 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     checkNotNull(step, "step argument cannot be null");
 
     // Check if try to link a step to itself
-    if (step == this)
+    if (step == this) {
       throw new EoulsanRuntimeException("a step cannot depends on itself: "
           + step.getId());
+    }
 
     // Check if the step are in the same workflow
-    if (this.getWorkflow() != step.getWorkflow())
+    if (this.getWorkflow() != step.getWorkflow()) {
       throw new EoulsanRuntimeException(
           "step dependency is not in the same workflow");
+    }
 
     // Add step dependency
     this.observer.addDependency(step);
@@ -354,8 +360,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     if (!hadoopMode) {
 
-      if (copyResultsToOutput)
+      if (copyResultsToOutput) {
         return workflow.getOutputDir();
+      }
 
       return workflow.getLocalWorkingDir();
     }
@@ -363,8 +370,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     switch (EoulsanMode.getEoulsanMode(step.getClass())) {
 
     case HADOOP_COMPATIBLE:
-      if (copyResultsToOutput)
+      if (copyResultsToOutput) {
         return workflow.getOutputDir();
+      }
 
       return workflow.getHadoopWorkingDir();
 
@@ -387,9 +395,10 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    */
   protected void configure() throws EoulsanException {
 
-    if (getState() != StepState.CREATED)
+    if (getState() != StepState.CREATED) {
       throw new IllegalStateException("Illegal step state for configuration: "
           + getState());
+    }
 
     // Configure only standard steps and generator steps
     if (getType() == StepType.STANDARD_STEP
@@ -599,7 +608,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     // Define working directory
     this.workingDir =
-        defineWorkingDirectory(workflow, generator, copyResultsToOutput);
+        defineWorkingDirectory(workflow, generator, this.copyResultsToOutput);
 
     // Set state observer
     this.observer = new WorkflowStepStateObserver(this);

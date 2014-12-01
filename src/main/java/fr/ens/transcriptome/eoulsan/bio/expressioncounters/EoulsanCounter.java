@@ -71,8 +71,9 @@ public class EoulsanCounter extends AbstractExpressionCounter {
         new ExpressionPseudoMapReduce(annotationFile.open(), getGenomicType(),
             getAttributeId(), genomeDescFile.open(), counterGroup);
 
-    if (getTempDirectory() != null)
+    if (getTempDirectory() != null) {
       epmr.setMapReduceTemporaryDirectory(new File(getTempDirectory()));
+    }
     epmr.doMap(alignmentFile.open());
     epmr.doReduce(expressionTmpFile);
 
@@ -85,10 +86,11 @@ public class EoulsanCounter extends AbstractExpressionCounter {
     fetc.saveFinalResults(expressionFile.toFile());
 
     // Remove expression Temp file
-    if (!expressionTmpFile.delete())
+    if (!expressionTmpFile.delete()) {
       getLogger().warning(
           "Can not delete expression temporary file: "
               + expressionTmpFile.getAbsolutePath());
+    }
 
     // } catch (BadBioEntryException e) {
     // exit("Invalid annotation entry: " + e.getEntry());

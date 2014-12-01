@@ -119,8 +119,9 @@ public class DiffAnaLocalStep extends AbstractStep {
       String rServeName = null;
       final boolean rServeEnable =
           context.getSettings().isRServeServerEnabled();
-      if (rServeEnable)
+      if (rServeEnable) {
         rServeName = context.getSettings().getRServeServerName();
+      }
 
       final Design design = context.getWorkflow().getDesign();
       final DiffAna ad =

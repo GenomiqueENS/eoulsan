@@ -120,8 +120,9 @@ public class CopyDesignAndWorkflowFilesToOutputStep extends AbstractStep {
 
     // Copy workflow file
     try {
-      if (!PathUtils.exists(outputWorkflowPath, conf))
+      if (!PathUtils.exists(outputWorkflowPath, conf)) {
         PathUtils.copy(designPath, outputWorkflowPath, conf);
+      }
     } catch (IOException e) {
       getLogger().severe("Unable to copy design file to output path.");
     }

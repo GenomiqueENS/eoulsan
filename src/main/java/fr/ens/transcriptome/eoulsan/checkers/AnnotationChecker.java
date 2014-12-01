@@ -83,7 +83,8 @@ public class AnnotationChecker implements Checker {
   }
 
   @Override
-  public void configure(Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     // TODO the parsing of the parameter must be shared with
     // AbstractExpressionStep
@@ -111,20 +112,24 @@ public class AnnotationChecker implements Checker {
   public boolean check(final Data data, final CheckStore checkInfo)
       throws EoulsanException {
 
-    if (data == null)
+    if (data == null) {
       throw new NullPointerException("The data is null");
+    }
 
-    if (checkInfo == null)
+    if (checkInfo == null) {
       throw new NullPointerException("The check info info is null");
+    }
 
     try {
       final DataFile annotationFile = data.getDataFile();
 
-      if (!annotationFile.exists())
+      if (!annotationFile.exists()) {
         return true;
+      }
 
-      if (this.genomicType == null)
+      if (this.genomicType == null) {
         return true;
+      }
 
       final GenomeDescription desc =
           getGenomeDescription(annotationFile, checkInfo);
@@ -168,8 +173,9 @@ public class AnnotationChecker implements Checker {
         first = false;
       }
 
-      if (!featureType.equals(e.getType()))
+      if (!featureType.equals(e.getType())) {
         continue;
+      }
 
       final String sequenceName = e.getSeqId();
       final int start = e.getStart();
@@ -254,23 +260,26 @@ public class AnnotationChecker implements Checker {
     gffReader.throwException();
     gffReader.close();
 
-    if (featureType != null && !featuresFound)
+    if (featureType != null && !featuresFound) {
       throw new EoulsanException("No feature \""
           + featureType + "\" with attribute \"" + attributeId
           + "\" in annotation.");
+    }
 
   }
 
   private static Map<String, Long> getSequencesLengths(
       final GenomeDescription desc) {
 
-    if (desc == null)
+    if (desc == null) {
       return null;
+    }
 
     final Map<String, Long> result = new HashMap<>();
 
-    for (String sequenceName : desc.getSequencesNames())
+    for (String sequenceName : desc.getSequencesNames()) {
       result.put(sequenceName, desc.getSequenceLength(sequenceName));
+    }
 
     return result;
   }
@@ -278,27 +287,31 @@ public class AnnotationChecker implements Checker {
   private static Map<String, long[]> checkSequenceRegions(final GFFEntry entry,
       final GenomeDescription desc) throws BadBioEntryException {
 
-    if (entry == null || desc == null)
+    if (entry == null || desc == null) {
       return null;
+    }
 
     final Map<String, long[]> result = new HashMap<>();
 
     final List<String> sequenceRegions =
         entry.getMetadataEntryValues("sequence-region");
 
-    if (sequenceRegions == null)
+    if (sequenceRegions == null) {
       return null;
+    }
 
     for (String sequenceRegion : sequenceRegions) {
 
-      if (sequenceRegion == null)
+      if (sequenceRegion == null) {
         continue;
+      }
 
       final String[] fields = sequenceRegion.trim().split(" ");
 
-      if (fields.length != 3)
+      if (fields.length != 3) {
         throw new BadBioEntryException("Invalid GFF metadata",
             "##sequence-region " + sequenceRegion);
+      }
 
       try {
         final String sequenceName = fields[0].trim();
@@ -308,20 +321,22 @@ public class AnnotationChecker implements Checker {
         result.put(sequenceName, new long[] {start, end});
         final long len = desc.getSequenceLength(sequenceName);
 
-        if (len == -1)
+        if (len == -1) {
           throw new BadBioEntryException(
               "Unknown sequence found in GFF metadata", "##sequence-region "
                   + sequenceRegion);
+        }
 
         // Don't check the start position because it can
         // be < 1
 
         // TODO Why len+2 for dmel annotation ?
-        if (end > len + 2)
+        if (end > len + 2) {
           throw new BadBioEntryException(
               "Invalid GFF metadata, the end position ("
                   + end + ") is greater than the length of the sequence ("
                   + (len + 2) + ")", "##sequence-region " + sequenceRegion);
+        }
 
       } catch (NumberFormatException e) {
         throw new BadBioEntryException("Invalid GFF metadata",
@@ -339,8 +354,9 @@ public class AnnotationChecker implements Checker {
     GenomeDescription result =
         (GenomeDescription) checkInfo.get(GenomeChecker.GENOME_DESCRIPTION);
 
-    if (result != null)
+    if (result != null) {
       return result;
+    }
 
     result =
         new GenomeDescriptionCreator()

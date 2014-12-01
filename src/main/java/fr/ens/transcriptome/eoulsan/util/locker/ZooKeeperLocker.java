@@ -84,7 +84,7 @@ public class ZooKeeperLocker implements Locker, Watcher {
               this.zk.getChildren(this.lockBasePath, new Watcher() {
 
                 @Override
-                public void process(WatchedEvent event) {
+                public void process(final WatchedEvent event) {
 
                   synchronized (lock) {
                     lock.notifyAll();

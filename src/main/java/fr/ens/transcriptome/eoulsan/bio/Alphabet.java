@@ -66,7 +66,7 @@ public abstract class Alphabet {
    * @param letter the letter to test
    * @return true if the letter is valid
    */
-  public boolean isLetterValid(char letter) {
+  public boolean isLetterValid(final char letter) {
 
     final char l = isLowerCaseValid() ? Character.toUpperCase(letter) : letter;
 
@@ -87,11 +87,13 @@ public abstract class Alphabet {
   @Override
   public boolean equals(final Object o) {
 
-    if (o == this)
+    if (o == this) {
       return true;
+    }
 
-    if (!(o instanceof Alphabet))
+    if (!(o instanceof Alphabet)) {
       return false;
+    }
 
     final Alphabet that = (Alphabet) o;
 

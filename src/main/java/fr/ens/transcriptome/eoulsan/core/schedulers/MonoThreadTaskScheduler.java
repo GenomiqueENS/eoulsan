@@ -42,7 +42,7 @@ public class MonoThreadTaskScheduler extends AbstractTaskScheduler implements
     Runnable {
 
   private static final int SLEEP_TIME_IN_MS = 100;
-  private Queue<TaskContext> queue = Queues.newLinkedBlockingQueue();
+  private final Queue<TaskContext> queue = Queues.newLinkedBlockingQueue();
 
   //
   // TaskExcutor methods
@@ -53,7 +53,7 @@ public class MonoThreadTaskScheduler extends AbstractTaskScheduler implements
 
     super.submit(step, context);
 
-    queue.add(context);
+    this.queue.add(context);
   }
 
   @Override

@@ -41,11 +41,13 @@ public class SAMComparator implements Comparator<SAMRecord>, Serializable {
   @Override
   public int compare(final SAMRecord r0, final SAMRecord r1) {
 
-    if (r0 == null)
+    if (r0 == null) {
       throw new NullPointerException("r0 argument is null in SAMComparator");
+    }
 
-    if (r1 == null)
+    if (r1 == null) {
       throw new NullPointerException("r1 argument is null in SAMComparator");
+    }
 
     int comp;
 

@@ -96,7 +96,8 @@ public class UploadS3Action extends AbstractAction {
 
       // parse the command line arguments
       final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[arguments.size()]), true);
+          parser.parse(options,
+              arguments.toArray(new String[arguments.size()]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -181,12 +182,14 @@ public class UploadS3Action extends AbstractAction {
     try {
 
       // Test if param file exists
-      if (!workflowFile.exists())
+      if (!workflowFile.exists()) {
         throw new FileNotFoundException(workflowFile.toString());
+      }
 
       // Test if design file exists
-      if (!designFile.exists())
+      if (!designFile.exists()) {
         throw new FileNotFoundException(designFile.toString());
+      }
 
       // Create ExecutionArgument object
       final ExecutorArguments arguments =

@@ -36,12 +36,13 @@ public class AddIdentifierTranslator extends BasicTranslator {
   private String[] fields;
   private String newFieldName = DEFAULT_FIELD;
 
-  private Translator translator;
+  private final Translator translator;
 
   /**
    * Get an ordered list of the translator fields
    * @return an ordered list of the translator fields.
    */
+  @Override
   public String[] getFields() {
 
     return this.fields;
@@ -53,10 +54,12 @@ public class AddIdentifierTranslator extends BasicTranslator {
    * @param field the field to get
    * @return An array with the annotation of the Feature
    */
+  @Override
   public String translateField(final String id, final String field) {
 
-    if (newFieldName.equals(field))
+    if (this.newFieldName.equals(field)) {
       return id;
+    }
 
     return this.translator.translateField(id, field);
   }
@@ -66,6 +69,7 @@ public class AddIdentifierTranslator extends BasicTranslator {
    * @param field Field to test
    * @return true if link information is available
    */
+  @Override
   public boolean isLinkInfo(final String field) {
 
     return this.translator.isLinkInfo(field);
@@ -77,6 +81,7 @@ public class AddIdentifierTranslator extends BasicTranslator {
    * @param field field of the id
    * @return a link for the translated id
    */
+  @Override
   public String getLinkInfo(final String translatedId, final String field) {
 
     return this.translator.getLinkInfo(translatedId, field);
@@ -93,12 +98,12 @@ public class AddIdentifierTranslator extends BasicTranslator {
 
     String[] tFields = this.translator.getFields();
 
-    if (tFields == null)
-      this.fields = new String[] {newFieldName};
-    else {
+    if (tFields == null) {
+      this.fields = new String[] {this.newFieldName};
+    } else {
 
       this.fields = new String[tFields.length + 1];
-      this.fields[0] = newFieldName;
+      this.fields[0] = this.newFieldName;
       System.arraycopy(tFields, 0, this.fields, 1, tFields.length);
     }
 
@@ -110,17 +115,18 @@ public class AddIdentifierTranslator extends BasicTranslator {
    */
   public void setNewFieldName(final String newFieldName) {
 
-    if (newFieldName == null)
+    if (newFieldName == null) {
       this.newFieldName = DEFAULT_FIELD;
-
-    else
+    } else {
       this.newFieldName = newFieldName;
+    }
   }
 
   /**
    * Get the available identfiers by the translator if possible.
    * @return a array of string with the identifiers
    */
+  @Override
   public String[] getIds() {
 
     return this.translator.getIds();
@@ -147,8 +153,9 @@ public class AddIdentifierTranslator extends BasicTranslator {
   public AddIdentifierTranslator(final Translator translator,
       final String newFieldName) {
 
-    if (translator == null)
+    if (translator == null) {
       throw new NullPointerException("Translator can't be null");
+    }
 
     this.translator = translator;
 

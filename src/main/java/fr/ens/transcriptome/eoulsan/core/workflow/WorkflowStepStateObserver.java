@@ -53,8 +53,8 @@ public class WorkflowStepStateObserver implements Serializable {
   private final AbstractWorkflowStep step;
   private StepState stepState;
 
-  private Set<AbstractWorkflowStep> requiredSteps = new HashSet<>();
-  private Set<AbstractWorkflowStep> stepsToInform = new HashSet<>();
+  private final Set<AbstractWorkflowStep> requiredSteps = new HashSet<>();
+  private final Set<AbstractWorkflowStep> stepsToInform = new HashSet<>();
 
   /**
    * Add a dependency.
@@ -81,8 +81,9 @@ public class WorkflowStepStateObserver implements Serializable {
    */
   public void setState(final StepState state) {
 
-    if (state == null)
+    if (state == null) {
       return;
+    }
 
     // If is the root step, there is nothing to wait
     synchronized (this) {
@@ -123,7 +124,7 @@ public class WorkflowStepStateObserver implements Serializable {
     }
 
     // Inform workflow object
-    step.getAbstractWorkflow().updateStepState(this.step);
+    this.step.getAbstractWorkflow().updateStepState(this.step);
 
     // Inform listeners
     for (WorkflowStepObserver o : WorkflowStepObserverRegistry.getInstance()
@@ -160,7 +161,7 @@ public class WorkflowStepStateObserver implements Serializable {
 
     String msg =
         "Step #"
-            + step.getNumber() + " " + step.getId()
+            + this.step.getNumber() + " " + this.step.getId()
             + " has the following dependencies: ";
 
     List<String> list = new ArrayList<>();

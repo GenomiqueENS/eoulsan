@@ -38,8 +38,7 @@ public class EoulsanLogger {
 
   private static String loggerName = Globals.APP_NAME;
 
-  private static Map<String, Logger> threadGroupLoggers =
-      new HashMap<>();
+  private static Map<String, Logger> threadGroupLoggers = new HashMap<>();
 
   private static Logger logger;
 
@@ -55,8 +54,9 @@ public class EoulsanLogger {
       ThreadGroup tg = Thread.currentThread().getThreadGroup();
       do {
 
-        if (threadGroupLoggers.containsKey(tg.getName()))
+        if (threadGroupLoggers.containsKey(tg.getName())) {
           return threadGroupLoggers.get(tg.getName());
+        }
 
         tg = tg.getParent();
       } while (tg != null);
@@ -77,8 +77,9 @@ public class EoulsanLogger {
    */
   public static void setLoggerName(final String newLoggerName) {
 
-    if (newLoggerName == null)
+    if (newLoggerName == null) {
       throw new NullPointerException("New logger name is null");
+    }
 
     loggerName = newLoggerName;
     logger = null;
@@ -101,8 +102,9 @@ public class EoulsanLogger {
   public static void registerThreadGroupLogger(final ThreadGroup threadGroup,
       final Logger logger) {
 
-    if (threadGroup == null || logger == null)
+    if (threadGroup == null || logger == null) {
       return;
+    }
 
     threadGroupLoggers.put(threadGroup.getName(), logger);
   }
@@ -113,8 +115,9 @@ public class EoulsanLogger {
    */
   public static void removeThreadGroupLogger(final ThreadGroup threadGroup) {
 
-    if (threadGroup == null)
+    if (threadGroup == null) {
       return;
+    }
 
     threadGroupLoggers.remove(threadGroup.getName());
   }

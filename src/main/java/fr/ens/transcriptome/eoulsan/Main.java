@@ -68,7 +68,7 @@ public abstract class Main {
 
   private final String launchModeName;
 
-  private List<String> args;
+  private final List<String> args;
   private Action action;
   private List<String> actionArgs;
 
@@ -291,7 +291,7 @@ public abstract class Main {
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
-    final String[] argsArray = this.args.toArray(new String[args.size()]);
+    final String[] argsArray = this.args.toArray(new String[this.args.size()]);
 
     int argsOptions = 0;
 
@@ -368,7 +368,7 @@ public abstract class Main {
     }
 
     // No arguments found
-    if (args == null || args.size() == argsOptions) {
+    if (this.args == null || this.args.size() == argsOptions) {
 
       Common.showErrorMessageAndExit("This program needs one argument."
           + " Use the -h option to get more information.\n");
@@ -428,11 +428,13 @@ public abstract class Main {
 
     // Command line arguments
     final List<String> args = new ArrayList<>();
-    for (String a : getArgs())
-      if (a.indexOf(' ') != -1)
+    for (String a : getArgs()) {
+      if (a.indexOf(' ') != -1) {
         args.add("\"" + a + "\"");
-      else
+      } else {
         args.add(a);
+      }
+    }
 
     getLogger().info(
         Globals.APP_NAME
@@ -539,8 +541,9 @@ public abstract class Main {
                 + this.logLevel
                 + "). Accepted values are [SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST].");
       }
-    } else
+    } else {
       this.handler.setLevel(Globals.LOG_LEVEL);
+    }
 
     // Set the log file in arguments
     if (this.logFile != null) {
@@ -591,8 +594,8 @@ public abstract class Main {
   private void parseAction(final int optionsCount) {
 
     // Set action name and arguments
-    final String actionName = args.get(optionsCount).trim().toLowerCase();
-    this.actionArgs = args.subList(optionsCount + 1, args.size());
+    final String actionName = this.args.get(optionsCount).trim().toLowerCase();
+    this.actionArgs = this.args.subList(optionsCount + 1, this.args.size());
 
     // Test if is in hadoop mode
     final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
@@ -601,7 +604,7 @@ public abstract class Main {
     this.action = ActionService.getInstance().newService(actionName);
 
     // Action not found ?
-    if (this.action == null || hadoopMode != action.isHadoopJarMode()) {
+    if (this.action == null || hadoopMode != this.action.isHadoopJarMode()) {
       Common.showErrorMessageAndExit("Unknown action: "
           + actionName + ".\n" + "type: " + Globals.APP_NAME_LOWER_CASE
           + " -help for more help.\n");
@@ -692,8 +695,9 @@ public abstract class Main {
    */
   public static void main(final String[] args) {
 
-    if (main != null)
+    if (main != null) {
       throw new IllegalAccessError("Main method cannot be run twice.");
+    }
 
     // Set the default local for all the application
     Globals.setDefaultLocale();

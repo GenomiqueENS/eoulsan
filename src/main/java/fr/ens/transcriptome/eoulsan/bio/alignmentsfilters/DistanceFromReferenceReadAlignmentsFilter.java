@@ -58,8 +58,9 @@ public class DistanceFromReferenceReadAlignmentsFilter extends
   public void setParameter(final String key, final String value)
       throws EoulsanException {
 
-    if (key == null || value == null)
+    if (key == null || value == null) {
       return;
+    }
 
     if ("threshold".equals(key.trim())) {
 
@@ -69,28 +70,31 @@ public class DistanceFromReferenceReadAlignmentsFilter extends
         return;
       }
 
-      if (this.distance < 0)
+      if (this.distance < 0) {
         throw new EoulsanException("Invalid distance: " + this.distance);
-    } else
-
+      }
+    } else {
       throw new EoulsanException("Unknown parameter for "
           + getName() + " alignments filter: " + key);
+    }
   }
 
   @Override
   public void init() {
 
-    if (this.distance < 0)
+    if (this.distance < 0) {
       throw new IllegalArgumentException(
           "The distance from the reference is not set for "
               + getName() + " alignments alignments filter.");
+    }
   }
 
   @Override
-  public void filterReadAlignments(List<SAMRecord> records) {
+  public void filterReadAlignments(final List<SAMRecord> records) {
 
-    if (records == null)
+    if (records == null) {
       return;
+    }
 
     List<SAMRecord> recordsToKeep = new ArrayList<>();
 

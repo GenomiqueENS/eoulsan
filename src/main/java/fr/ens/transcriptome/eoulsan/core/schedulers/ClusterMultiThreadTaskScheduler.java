@@ -62,7 +62,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
 
-  private Queue<TaskThread> queue = Queues.newLinkedBlockingQueue();
+  private final Queue<TaskThread> queue = Queues.newLinkedBlockingQueue();
 
   /**
    * This class allow to fetch standard output or standard error.
@@ -76,7 +76,7 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
     public void run() {
 
       try {
-        FileUtils.copy(in, out);
+        FileUtils.copy(this.in, this.out);
       } catch (IOException e) {
         getLogger().severe(e.getMessage());
       }
@@ -116,7 +116,7 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
           new File(this.taskDir, this.taskPrefix + TASK_CONTEXT_EXTENSION);
 
       // Serialize the context object
-      context.serialize(taskContextFile);
+      this.context.serialize(taskContextFile);
 
       final List<String> command = new ArrayList<>();
 
@@ -148,18 +148,19 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
 
       // Define the file for the task done
       final File taskDoneFile =
-          new File(taskDir, taskPrefix + TASK_DONE_EXTENSION);
+          new File(this.taskDir, this.taskPrefix + TASK_DONE_EXTENSION);
 
       if (!taskDoneFile.exists()) {
         throw new EoulsanException("No done file found for task #"
-            + context.getId() + " in step " + getStep(context).getId());
+            + this.context.getId() + " in step "
+            + getStep(this.context).getId());
       }
 
       // Define the file for the task result
       final File taskResultFile =
-          new File(taskDir, taskPrefix + TASK_RESULT_EXTENSION);
+          new File(this.taskDir, this.taskPrefix + TASK_RESULT_EXTENSION);
       // Load output data objects
-      context.deserializeOutputData(new File(taskDir, taskPrefix
+      this.context.deserializeOutputData(new File(this.taskDir, this.taskPrefix
           + TASK_DATA_EXTENSION));
 
       return TaskResult.deserialize(taskResultFile);
@@ -175,7 +176,7 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
 
       // Define stdout file
       final File taskStdoutFile =
-          new File(taskDir, taskPrefix + TASK_STDOUT_EXTENSION);
+          new File(this.taskDir, this.taskPrefix + TASK_STDOUT_EXTENSION);
 
       // Start stdout thread
       new ProcessThreadOutput(this.process.getInputStream(),
@@ -183,7 +184,7 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
 
       // Define stderr file
       final File taskStderrFile =
-          new File(taskDir, taskPrefix + TASK_STDERR_EXTENSION);
+          new File(this.taskDir, this.taskPrefix + TASK_STDERR_EXTENSION);
 
       // Start stderr thread
       new ProcessThreadOutput(this.process.getErrorStream(),
@@ -212,8 +213,8 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
         // Set exception if exit code is not 0
         if (exitCode != 0) {
           throw new EoulsanException("Invalid task exit code: "
-              + exitCode + " for task #" + context.getId() + " in step "
-              + getStep(context).getId());
+              + exitCode + " for task #" + this.context.getId() + " in step "
+              + getStep(this.context).getId());
         }
 
         // Load result
@@ -231,10 +232,11 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
         afterExecuteTask(this.context, result);
 
         // Remove the thread from the queue
-        queue.remove(this);
+        ClusterMultiThreadTaskScheduler.this.queue.remove(this);
       }
     }
 
+    @Override
     @SuppressWarnings("deprecation")
     public void destroy() {
 
