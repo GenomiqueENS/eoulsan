@@ -107,17 +107,9 @@ public class ToolInterpreter {
     this.interpreter = extractInterpreter(this.doc);
     final String cmdTagContent = extractCommand(this.doc);
 
-    if (cmdTagContent.isEmpty())
+    if (cmdTagContent.isEmpty()) {
       throw new EoulsanException("Parsing tool XML file: no command found.");
-
-    // // Associate parameter input tool with parameters Eoulsan
-    // for (ToolElement ptg : inputs) {
-    // final String name = ptg.getName();
-    //
-    // if (parametersEoulsan.containsKey(name))
-    // // TODO Check validity
-    // ptg.setParameterEoulsan(parametersEoulsan.get(name));
-    // }
+    }
 
     this.command = this.pythonInterperter.parseCommandString(cmdTagContent);
     this.variableNamesFromCommandTag =
@@ -149,8 +141,9 @@ public class ToolInterpreter {
    */
   public String createCommandLine() throws EoulsanException {
 
-    if (!isSettingsPorts())
+    if (!isSettingsPorts()) {
       throw new EoulsanException("Interpreter tool galaxy: no setting ports.");
+    }
 
     // List variable name define
     Map<String, String> parameters = extractParameters();
@@ -186,9 +179,10 @@ public class ToolInterpreter {
       for (Map.Entry<String, String> e : ports.entrySet()) {
 
         // Compare name between parameterToolGalaxy and name port
-        if (ptg.getName().equals(e.getKey()))
+        if (ptg.getName().equals(e.getKey())) {
           // Set value
           ptg.setParameterEoulsan(e.getValue());
+        }
       }
     }
   }
@@ -207,8 +201,9 @@ public class ToolInterpreter {
     final Map<String, String> missingVariables =
         comparisonParametersXMLVariablesCommand(results);
 
-    if (!missingVariables.isEmpty())
+    if (!missingVariables.isEmpty()) {
       results.putAll(missingVariables);
+    }
 
     return results;
   }
@@ -220,17 +215,17 @@ public class ToolInterpreter {
     final Map<String, String> results =
         Maps.newHashMapWithExpectedSize(variablesCount);
 
-    // TODO
-    System.out.println("inputs param " + Joiner.on("\n").join(inputs));
-    // TODO
-    System.out.println("outputs param " + Joiner.on("\n").join(outputs));
+    // // TODO
+    // System.out.println("inputs param " + Joiner.on("\n").join(inputs));
+    // // TODO
+    // System.out.println("outputs param " + Joiner.on("\n").join(outputs));
 
     // Parse input
     for (ToolElement ptg : inputs) {
       // TODO
       // if (ptg.isSetting())
-      System.out.println("extract name="
-          + ptg.getName() + "\tval=" + ptg.getValue());
+      // System.out.println("extract name="
+      // + ptg.getName() + "\tval=" + ptg.getValue());
       results.put(ptg.getName(), ptg.getValue());
     }
 
@@ -238,13 +233,14 @@ public class ToolInterpreter {
     for (ToolElement ptg : outputs) {
       // TODO
       // Add in map
-      System.out.println("extract name="
-          + ptg.getName() + "\tval=" + ptg.getValue());
+      // System.out.println("extract name="
+      // + ptg.getName() + "\tval=" + ptg.getValue());
       results.put(ptg.getName(), ptg.getValue());
     }
 
-    if (results.isEmpty())
+    if (results.isEmpty()) {
       throw new EoulsanException("No parameter settings.");
+    }
 
     return results;
   }
@@ -296,9 +292,10 @@ public class ToolInterpreter {
     for (String tag : TAG_FORBIDDEN) {
 
       // Check tag exists in tool file
-      if (!XMLUtils.getElementsByTagName(this.doc, tag).isEmpty())
+      if (!XMLUtils.getElementsByTagName(this.doc, tag).isEmpty()) {
         // Throw exception
         throw new EoulsanException("Parsing tool xml: unsupported tag " + tag);
+      }
     }
   }
 
@@ -349,7 +346,7 @@ public class ToolInterpreter {
       results.addAll(tce.getToolParametersResult());
 
       // TODO
-      System.out.println("cond " + tce);
+      // System.out.println("cond " + tce);
     }
 
     return results;
@@ -381,14 +378,16 @@ public class ToolInterpreter {
 
     // Expected count available
     if (expectedCount > 0) {
-      if (result.isEmpty())
+      if (result.isEmpty()) {
         throw new EoulsanException("Parsing tool XML file: no "
             + tagName + " tag found.");
+      }
 
-      if (result.size() != expectedCount)
+      if (result.size() != expectedCount) {
         throw new EoulsanException("Parsing tool XML file: tag "
             + tagName + " invalid entry coutn found (expected " + expectedCount
             + " founded " + result.size() + ".");
+      }
 
     }
 
@@ -422,14 +421,16 @@ public class ToolInterpreter {
 
     // Expected count available
     if (expectedCount > 0) {
-      if (result.isEmpty())
+      if (result.isEmpty()) {
         throw new EoulsanException("Parsing tool XML file: no "
             + tagName + " tag found.");
+      }
 
-      if (result.size() != expectedCount)
+      if (result.size() != expectedCount) {
         throw new EoulsanException("Parsing tool XML file: tag "
             + tagName + " invalid entry coutn found (expected " + expectedCount
             + " founded " + result.size() + ".");
+      }
 
     }
 
@@ -440,12 +441,14 @@ public class ToolInterpreter {
   public static List<Element> extractChildElementsByTagName(
       final Element parentElement, final String elementName) {
 
-    if (elementName == null || parentElement == null)
+    if (elementName == null || parentElement == null) {
       return null;
+    }
 
     final NodeList nStepsList = parentElement.getChildNodes();
-    if (nStepsList == null)
+    if (nStepsList == null) {
       return null;
+    }
 
     final List<Element> result = Lists.newArrayList();
 
@@ -456,8 +459,9 @@ public class ToolInterpreter {
       if (node.getNodeType() == Node.ELEMENT_NODE) {
         Element e = (Element) node;
 
-        if (e.getTagName().equals(elementName))
+        if (e.getTagName().equals(elementName)) {
           result.add(e);
+        }
       }
     }
 
@@ -483,38 +487,6 @@ public class ToolInterpreter {
     results.addAll(extractConditionalParamElement(outputElement));
 
     return results;
-    //
-    // final Set<ToolElement> results = Sets.newHashSet();
-    //
-    // Element outputsElement = extractElementsByTagName(doc, "outputs",
-    // 1).get(0);
-    //
-    // // Extract all param tag
-    // List<Element> simpleParams =
-    // XMLUtils.getElementsByTagName(outputsElement, "data");
-    //
-    // for (Element param : simpleParams) {
-    // final ToolElement ptg = getInstanceToolParameter(param);
-    // results.add(ptg);
-    // }
-    //
-    // // Extract all param tag
-    // List<Element> condParams =
-    // XMLUtils.getElementsByTagName(outputsElement, "conditional");
-    //
-    // for (Element param : condParams) {
-    // final ToolElement ptg = new ToolConditionalElement(param);
-    // results.add(ptg);
-    // }
-    //
-    // if (results.isEmpty()) {
-    // System.out.println("no outputs parameter found");
-    // return Collections.emptySet();
-    // }
-    //
-    // // TODO
-    // // System.out.println("outputs : " + Joiner.on("\n").join(results));
-    // return results;
   }
 
   /**
@@ -604,16 +576,19 @@ public class ToolInterpreter {
     // List element
     List<Element> e = XMLUtils.getElementsByTagName(doc, elementName);
 
-    if (e.isEmpty())
+    if (e.isEmpty()) {
       return null;
+    }
 
     // Check size
-    if (index >= e.size())
+    if (index >= e.size()) {
       return null;
+    }
 
     // Return content text
-    if (attributeName == null)
+    if (attributeName == null) {
       return e.get(index).getTextContent();
+    }
 
     // Return value of attribute
     return e.get(index).getAttribute(attributeName);

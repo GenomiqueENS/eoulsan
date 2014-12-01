@@ -171,8 +171,9 @@ public class ToolInterpreterSimpleTest {
     // Configure
     itg.configure(mock.getParameters());
 
-    if (VERBOSE)
+    if (VERBOSE) {
       System.out.println(itg.toString());
+    }
 
     assertEquals("Tool name equals ? ", itg.getToolName(), mock.getName());
     assertEquals("Tool version equals ? ", itg.getToolVersion(),
@@ -189,12 +190,14 @@ public class ToolInterpreterSimpleTest {
     // Create command line
     final List<String> cmdExpected = TOKEN.splitToList(itg.createCommandLine());
 
-    if (VERBOSE)
+    if (VERBOSE) {
       System.out.println("\n\ncommand create\n\t " + cmdExpected);
+    }
 
     int n = 0;
-    for (String token : mock.getCommand())
+    for (String token : mock.getCommand()) {
       assertEquals("Token in command line equals ", token, cmdExpected.get(n++));
+    }
   }
 
   //
@@ -273,8 +276,9 @@ public class ToolInterpreterSimpleTest {
         }
       }
 
-      if (this.inputs.isEmpty())
+      if (this.inputs.isEmpty()) {
         throw new EoulsanException("MockEoulsan: no input settings.");
+      }
     }
 
     public void setCommand(final List<String> cmd, final String paramTabular)

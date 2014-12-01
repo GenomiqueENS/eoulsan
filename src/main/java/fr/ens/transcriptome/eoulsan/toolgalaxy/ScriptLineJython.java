@@ -162,7 +162,7 @@ public class ScriptLineJython {
             isCurrentTextCode = false;
 
             // TODO
-            System.out.println("add txt " + txt);
+            // System.out.println("add txt " + txt);
 
             modifiedLine.add(addToken(txt, isPreviousTextCode,
                 isCurrentTextCode, firstToken, lastToken));
@@ -197,8 +197,9 @@ public class ScriptLineJython {
 
       int n = 0;
       // Check presence accolade
-      if (variableName.contains("{"))
+      if (variableName.contains("{")) {
         n = 1;
+      }
 
       String variableNameTrimmed =
           variableName.substring(1 + n, variableName.length() - n);
@@ -321,7 +322,7 @@ public class ScriptLineJython {
       }
 
       // TODO
-      System.out.println("CLEAN ------------ " + new String(newLine));
+      // System.out.println("CLEAN ------------ " + new String(newLine));
 
       return new String(newLine);
     }
@@ -400,9 +401,10 @@ public class ScriptLineJython {
     public InstructionLineJython(final String line) {
       super(line);
 
-      if (startsWith(START_PREFIX))
+      if (startsWith(START_PREFIX)) {
         // Remove #
         setModifiedString(getModifiedString().replaceAll("#", ""));
+      }
     }
 
   }
@@ -415,9 +417,10 @@ public class ScriptLineJython {
       String txt = "";
 
       if (!isCurrentTextCode) {
-        if (!getModifiedString().endsWith("\""))
+        if (!getModifiedString().endsWith("\"")) {
           // Close string
           txt += "\"";
+        }
       } else {
         // Add space
         // txt += " ";
@@ -430,12 +433,14 @@ public class ScriptLineJython {
       // Extract last token from string
       String lastToken = getModifiedString().substring(currentPos).trim();
 
-      if (lastToken.isEmpty())
+      if (lastToken.isEmpty()) {
         return txt;
+      }
 
       // Skip token equals single or double quote
-      if (lastToken.equals("\"") || lastToken.equals("\'"))
+      if (lastToken.equals("\"") || lastToken.equals("\'")) {
         return txt;
+      }
 
       lastToken += txt;
       return addToken(lastToken, isCurrentTextCode, false, firstToken, true);
@@ -474,8 +479,9 @@ public class ScriptLineJython {
       // newToken = newToken.replaceAll("\"", "'");
       txt.add(newToken);
 
-      if (txt.isEmpty())
+      if (txt.isEmpty()) {
         return "";
+      }
 
       // // TODO
       // System.out.println("before \t"
@@ -489,7 +495,7 @@ public class ScriptLineJython {
           + Joiner.on(" ").join(txt).trim());
 
       // Return string with default separator escape
-      return Joiner.on(" ").join(txt);
+      return Joiner.on(" ").join(txt).trim();
 
     }
 

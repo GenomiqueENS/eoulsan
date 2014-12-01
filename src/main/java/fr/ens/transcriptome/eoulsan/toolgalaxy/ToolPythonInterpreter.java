@@ -30,8 +30,8 @@ public class ToolPythonInterpreter {
 
     // TODO
     System.out.println("script: " + script);
-    System.out.println("variables "
-        + Joiner.on("\n\t").withKeyValueSeparator("=").join(registry));
+//    System.out.println("variables "
+//        + Joiner.on("\n\t").withKeyValueSeparator("=").join(registry));
 
     final PythonInterpreter interp = new PythonInterpreter();
 

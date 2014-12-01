@@ -1,6 +1,7 @@
 package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
 
 import java.util.List;
+import java.util.Map;
 
 import org.python.google.common.collect.Lists;
 import org.w3c.dom.Element;
@@ -29,26 +30,40 @@ public class ToolParameterBoolean extends AbstractToolElement {
     return true;
   }
 
+  @Override
   public String getValue() {
     return this.value;
   }
 
+  @Override
   public boolean setParameterEoulsan() {
     // Set value to the default value
-    if (this.value.isEmpty())
+    if (this.value.isEmpty()) {
       this.value = trueValue;
+    }
 
     isSetting = true;
     return isValueParameterValid();
   }
 
   @Override
+  public void setParameterEoulsan(Map<String, String> parametersEoulsan) {
+
+    final String value = parametersEoulsan.get(getName());
+    // TODO
+    System.out.println("In PBool val in abstract to set paramE " + value);
+
+    setParameterEoulsan(parametersEoulsan.get(getName()));
+  }
+
+  @Override
   public boolean setParameterEoulsan(final String paramValue) {
 
-    if (CHECKED_VALUES.contains(paramValue.toLowerCase(Globals.DEFAULT_LOCALE)))
+    if (CHECKED_VALUES.contains(paramValue.toLowerCase(Globals.DEFAULT_LOCALE))) {
       this.value = trueValue;
-    else
+    } else {
       this.value = falseValue;
+    }
 
     isSetting = true;
 
