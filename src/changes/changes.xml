@@ -628,6 +628,10 @@ of reads that reject each filter like in local mode.
                 Eoulsan now use Maven 3 for building binaries and website.
             </action>
 
+            <action dev="jourdren" type="update">
+                Many clean up of Eoulsan code. Eoulsan now use the new features of Java 7.
+            </action>
+
          </release>
 
 	</body>
