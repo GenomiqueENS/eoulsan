@@ -48,8 +48,6 @@ import java.util.logging.Level;
 import org.apache.commons.compress.utils.Charsets;
 import org.testng.annotations.Factory;
 
-import com.google.common.collect.Lists;
-
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -256,9 +254,9 @@ public class ITFactory {
     }
 
     // If no test was defined by user use all the existing tests
-    if (testsToExecuteDirectories.isEmpty()) {
-      testsToExecuteDirectories.addAll(Arrays.asList(this.testsDataDirectory
-          .listFiles()));
+    final File[] files = this.testsDataDirectory.listFiles();
+    if (files != null && testsToExecuteDirectories.isEmpty()) {
+      testsToExecuteDirectories.addAll(Arrays.asList(files));
     }
 
     if (testsToExecuteDirectories.size() == 0)
@@ -531,7 +529,7 @@ public class ITFactory {
    */
   private static Boolean getBooleanFromSystemProperty(final String property) {
 
-    return (property == null) ? false : Boolean.getBoolean(property);
+    return (property != null) && Boolean.getBoolean(property);
   }
 
   /**
@@ -566,17 +564,20 @@ public class ITFactory {
     int dirCount = 0;
     int fileCount = 0;
 
-    for (File f : distDir.listFiles()) {
+    final File[] files = distDir.listFiles();
+    if (files != null) {
+      for (File f : files) {
 
-      if (f.getName().startsWith(".")) {
-        continue;
-      }
+        if (f.getName().startsWith(".")) {
+          continue;
+        }
 
-      if (f.isDirectory()) {
-        dirCount++;
-        subDir = f;
-      } else if (f.isFile()) {
-        fileCount++;
+        if (f.isDirectory()) {
+          dirCount++;
+          subDir = f;
+        } else if (f.isFile()) {
+          fileCount++;
+        }
       }
     }
 
