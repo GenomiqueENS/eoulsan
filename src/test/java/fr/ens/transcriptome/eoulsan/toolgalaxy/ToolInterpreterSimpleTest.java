@@ -51,46 +51,89 @@ public class ToolInterpreterSimpleTest {
   private static boolean VERBOSE = false;
 
   @Test
+  public void parseFastxTrimmer() throws FileNotFoundException,
+      EoulsanException {
+    final File toolFile =
+        new File(dir, "fastx_trimmer/1.0.0/fastx_trimmer.xml");
+    String id = "cshl_fastx_trimmer";
+    String name = "Trim sequences";
+    String version = "1.0.0";
+    String desc = "";
+    String interpreter = "";
+
+    String paramTabular = "";
+    paramTabular += "input\tinput\tinput_value\n";
+    paramTabular += "input\tfirst\t2\n"; // type integer
+    paramTabular += "input\tlast\t12\n"; // type integer
+    paramTabular += "output\toutput\toutput_value\n";
+
+    List<String> cmd_SR =
+        TOKEN
+            .splitToList("zcat -f input_value | fastx_trimmer -v -f 2 -l 12 -o output_value");
+
+    final MockEoulsan mock =
+        new MockEoulsan(id, name, version, desc, interpreter, cmd_SR,
+            paramTabular);
+
+    checkInterperter(toolFile, mock);
+
+    String paramTabularDefault = "";
+    paramTabularDefault += "input\tinput\tinput_value\n";
+    paramTabularDefault += "output\toutput\toutput_value\n";
+
+    List<String> cmdDefaultValues =
+        TOKEN
+            .splitToList("zcat -f input_value | fastx_trimmer -v -f 1 -l 21 -o output_value");
+
+    final MockEoulsan mock2 =
+        new MockEoulsan(id, name, version, desc, interpreter, cmdDefaultValues,
+            paramTabularDefault);
+
+    checkInterperter(toolFile, mock2);
+
+  }
+
+  @Test
   public void parseSam2Bam() throws FileNotFoundException, EoulsanException {
     final File toolFile = new File(dir, "sam2bam/1.1.4/sam_to_bam.xml");
+    String id = "sam_to_bam";
     String name = "SAM-to-BAM";
     String version = "1.1.4";
     String desc = "converts SAM format to BAM format";
     String interpreter = "python";
 
     // type \t name \t value
-    String paramTabular_SR = "";
-    paramTabular_SR += "input\tsource.input1\tinput_value\n";
-    paramTabular_SR += "input\tsource.index_source\tno_selected\n";
-    paramTabular_SR += "input\tsource.ref_file\tref_file_value\n";
+    String paramTabularSR = "";
+    paramTabularSR += "input\tsource.input1\tinput_value\n";
+    paramTabularSR += "input\tsource.index_source\tno_selected\n";
+    paramTabularSR += "input\tsource.ref_file\tref_file_value\n";
     // paramTabular_SR +=
     // "input\tsource.index.fields.path\t index_fields_value\n";
-    paramTabular_SR += "output\toutput1\toutput_value\n";
+    paramTabularSR += "output\toutput1\toutput_value\n";
 
-    List<String> cmd_SR =
+    List<String> cmdSR =
         TOKEN
             .splitToList("sam_to_bam.py --input1= input_value --index= no_authorized --output1= output_value");
 
     final MockEoulsan mock =
-        new MockEoulsan(name, version, desc, interpreter, cmd_SR,
-            paramTabular_SR);
+        new MockEoulsan(name, version, desc, interpreter, cmdSR, paramTabularSR);
 
     checkInterperter(toolFile, mock);
 
     // type \t name \t value
     // type \t name \t value
-    String paramTabular_withHistory = "";
-    paramTabular_withHistory += "input\tsource.input1\tinput_value\n";
-    paramTabular_withHistory += "input\tsource.index_source\thistory\n";
-    paramTabular_withHistory += "input\tsource.ref_file\tref_file_value\n";
+    String paramTabularWithHistory = "";
+    paramTabularWithHistory += "input\tsource.input1\tinput_value\n";
+    paramTabularWithHistory += "input\tsource.index_source\thistory\n";
+    paramTabularWithHistory += "input\tsource.ref_file\tref_file_value\n";
     // paramTabular_withHistory +=
     // "input\tsource.index.fields.path\t index_fields_value\n";
-    paramTabular_withHistory += "output\toutput1\toutput_value\n";
+    paramTabularWithHistory += "output\toutput1\toutput_value\n";
 
-    List<String> cmd_withHistory =
+    List<String> cmdWithHistory =
         TOKEN
             .splitToList("sam_to_bam.py --input1= input_value --ref_file= ref_file_value --output1= output_value");
-    mock.setCommand(cmd_withHistory, paramTabular_withHistory);
+    mock.setCommand(cmdWithHistory, paramTabularWithHistory);
 
     checkInterperter(toolFile, mock);
   }
@@ -100,19 +143,20 @@ public class ToolInterpreterSimpleTest {
       EoulsanException {
     final File toolFile =
         new File(dir, "samtools_rmdup/1.0.1/samtools_rmdup.xml");
+    String id = "samtools_rmdup";
     String name = "rmdup";
     String version = "1.0.1";
     String desc = "remove PCR duplicates";
     String interpreter = "";
 
     // type \t name \t value
-    String paramTabular_SR = "";
-    paramTabular_SR += "input\tinput1\tinput_value\n";
-    paramTabular_SR += "output\toutput1\toutput_value\n";
-    paramTabular_SR +=
+    String paramTabularSR = "";
+    paramTabularSR += "input\tinput1\tinput_value\n";
+    paramTabularSR += "output\toutput1\toutput_value\n";
+    paramTabularSR +=
         "param\tbam_paired_end_type.bam_paired_end_type_selector\tSE\n";
 
-    List<String> cmd_SR =
+    List<String> cmdSR =
         TOKEN.splitToList("samtools rmdup -s input_value output_value "
             + "2>&1 || echo 'Error running samtools rmdup.' >&2");
 
@@ -120,22 +164,21 @@ public class ToolInterpreterSimpleTest {
     // + "2&gt;&amp;1 || echo 'Error running samtools rmdup.' &gt;&amp;2";
 
     final MockEoulsan mock =
-        new MockEoulsan(name, version, desc, interpreter, cmd_SR,
-            paramTabular_SR);
+        new MockEoulsan(id, name, version, desc, interpreter, cmdSR, paramTabularSR);
 
     checkInterperter(toolFile, mock);
 
     // type \t name \t value
-    String paramTabular_PE = "";
-    paramTabular_PE += "input\tinput1\tinput_value\n";
-    paramTabular_PE += "output\toutput1\toutput_value\n";
-    paramTabular_PE +=
+    String paramTabularPE = "";
+    paramTabularPE += "input\tinput1\tinput_value\n";
+    paramTabularPE += "output\toutput1\toutput_value\n";
+    paramTabularPE +=
         "param\tbam_paired_end_type.bam_paired_end_type_selector\tPE\n";
 
-    List<String> cmd_PE =
+    List<String> cmdPE =
         TOKEN.splitToList("samtools rmdup -S input_value output_value "
             + "2>&1 || echo 'Error running samtools rmdup.' >&2");
-    mock.setCommand(cmd_PE, paramTabular_PE);
+    mock.setCommand(cmdPE, paramTabularPE);
 
     checkInterperter(toolFile, mock);
   }
@@ -175,6 +218,7 @@ public class ToolInterpreterSimpleTest {
       System.out.println(itg.toString());
     }
 
+    assertEquals("Tool id equals ? ", itg.getToolID(), mock.getID());
     assertEquals("Tool name equals ? ", itg.getToolName(), mock.getName());
     assertEquals("Tool version equals ? ", itg.getToolVersion(),
         mock.getVersion());
@@ -209,6 +253,8 @@ public class ToolInterpreterSimpleTest {
   //
 
   final class MockEoulsan {
+
+    private String id;
     private String name;
     private String version;
     private String description;
@@ -225,6 +271,10 @@ public class ToolInterpreterSimpleTest {
 
     public String getInterpreter() {
       return interpreter;
+    }
+
+    public String getID() {
+      return this.id;
     }
 
     public String getName() {
@@ -293,10 +343,11 @@ public class ToolInterpreterSimpleTest {
       initMapPortsAndParameters(paramTabular);
     }
 
-    public MockEoulsan(final String name, final String version,
-        final String description, final String interpreter,
-        final List<String> command, final String paramTabular)
-        throws EoulsanException {
+    public MockEoulsan(final String id, final String name,
+        final String version, final String description,
+        final String interpreter, final List<String> command,
+        final String paramTabular) throws EoulsanException {
+      this.id = id;
       this.name = name;
       this.version = version;
       this.description = description;
@@ -308,6 +359,13 @@ public class ToolInterpreterSimpleTest {
       this.outputs = Maps.newHashMap();
 
       initMapPortsAndParameters(paramTabular);
+    }
+
+    public MockEoulsan(final String name, final String version,
+        final String description, final String interpreter,
+        final List<String> command, final String paramTabular)
+        throws EoulsanException {
+      this(null, name, version, description, interpreter, command, paramTabular);
     }
   }
 }
