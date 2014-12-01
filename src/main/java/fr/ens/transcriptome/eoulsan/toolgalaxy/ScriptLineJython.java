@@ -168,8 +168,10 @@ public class ScriptLineJython {
                 isCurrentTextCode, firstToken, lastToken));
             firstToken = false;
           }
+          
         }
-
+        isPreviousTextCode = isCurrentTextCode;
+        
         // Add motif matched
         modifiedLine.add(addCodeJava(variableName, isPreviousTextCode,
             firstToken, lastToken));
