@@ -35,7 +35,7 @@ public class DataMetadataStorage {
   private final Map<String, Map<String, String>> metadata = new HashMap<>();
 
   /**
-   * Set the metdata of a data from the metadata storage.
+   * Set the metadata of a data from the metadata storage.
    * @param data the date which metadata must be set
    * @return true if the metadata for the data has been found in the metadata
    *         storage

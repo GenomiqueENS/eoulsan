@@ -148,7 +148,7 @@ public class CheckerStep extends AbstractStep {
   @Override
   public StepResult execute(final StepContext context, final StepStatus status) {
 
-    // Get the checkstore
+    // Get the CheckStore
     final CheckStore checkStore = CheckStore.getCheckStore();
 
     int count = 0;
@@ -212,7 +212,7 @@ public class CheckerStep extends AbstractStep {
         continue;
 
       final Set<Checker> deps = new HashSet<>();
-      for (DataFormat format : c.getCheckersRequiered()) {
+      for (DataFormat format : c.getCheckersRequired()) {
 
         if (this.checkers.containsKey(format)) {
           deps.add(this.checkers.get(format));

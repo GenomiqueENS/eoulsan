@@ -341,7 +341,7 @@ public abstract class AbstractSequenceReadsMapper implements
     checkNotNull(is, "Input steam is null");
     checkNotNull(archiveOutputFile, "Archive output file is null");
 
-    getLogger().fine("Copy genome to local disk before computating index");
+    getLogger().fine("Copy genome to local disk before computing index");
 
     final File genomeTmpFile =
         File.createTempFile(Globals.APP_NAME_LOWER_CASE + "-genome", ".fasta",

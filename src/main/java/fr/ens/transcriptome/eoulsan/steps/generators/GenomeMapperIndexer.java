@@ -109,7 +109,7 @@ public final class GenomeMapperIndexer {
 
       if (!outputFile.delete()) {
         getLogger().severe(
-            "Unbable to delete temporary "
+            "Unable to delete temporary "
                 + this.mapper.getMapperName() + " archive index.");
       }
 

@@ -217,7 +217,7 @@ public class MergerStep extends AbstractStep {
 
         // Check if the format exists
         if (format == null) {
-          throw new EoulsanException("Uknown format: " + p.getValue());
+          throw new EoulsanException("Unknown format: " + p.getValue());
         }
 
         // Check if a merger exists for the format

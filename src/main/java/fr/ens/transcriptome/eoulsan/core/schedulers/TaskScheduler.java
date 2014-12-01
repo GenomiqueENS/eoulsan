@@ -71,7 +71,7 @@ public interface TaskScheduler {
    * @param step a workflow step
    * @return the count of submitted task contexts
    */
-  int getTaskSubmitedCount(WorkflowStep step);
+  int getTaskSubmittedCount(WorkflowStep step);
 
   /**
    * Get the count of running task contexts of a step.
@@ -97,7 +97,7 @@ public interface TaskScheduler {
    * Get the count of submitted task contexts for the workflow.
    * @return the count of submitted task contexts
    */
-  int getTotalTaskSubmitedCount();
+  int getTotalTaskSubmittedCount();
 
   /**
    * Get the count of running task contexts for the workflow.

@@ -25,7 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.OWN_PARALELIZATION;
+import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.OWN_PARALLELIZATION;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
@@ -74,7 +74,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
   @Override
   public ParallelizationMode getParallelizationMode() {
 
-    return OWN_PARALELIZATION;
+    return OWN_PARALLELIZATION;
   }
 
   @Override
@@ -215,7 +215,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
    * @param context Eoulsan context
    * @param format FASTQ format
    * @param archiveIndexFile genome index for the mapper as a ZIP file
-   * @param archiveIndexDir uncompressed directory for the genome index
+   * @param indexDir uncompressed directory for the genome index
    * @param reporter reporter
    * @throws IOException
    */

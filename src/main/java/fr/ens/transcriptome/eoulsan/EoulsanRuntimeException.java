@@ -40,8 +40,8 @@ public class EoulsanRuntimeException extends RuntimeException {
   // Serialization version UID
   private static final long serialVersionUID = 4568739390687951448L;
 
-  /** Unknow runtime exception type. */
-  public static final int UNKNOW = 0;
+  /** Unknown runtime exception type. */
+  public static final int UNKNOWN = 0;
   /** Null pointer exception type . */
   public static final int NULL_POINTER = 1;
   /** Invalid argument exception type. */

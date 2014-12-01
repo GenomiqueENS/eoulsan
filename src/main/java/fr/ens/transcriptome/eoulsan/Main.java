@@ -364,7 +364,7 @@ public abstract class Main {
 
     } catch (ParseException e) {
       Common.errorExit(e,
-          "Error while parsing command line atguments: " + e.getMessage());
+          "Error while parsing command line arguments: " + e.getMessage());
     }
 
     // No arguments found

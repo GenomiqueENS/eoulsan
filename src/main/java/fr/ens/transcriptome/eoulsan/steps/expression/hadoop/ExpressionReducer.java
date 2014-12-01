@@ -84,23 +84,23 @@ public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
       final int exonStart = Integer.parseInt(this.fields[1]);
       final int exonEnd = Integer.parseInt(this.fields[2]);
 
-      final String alignementChr = this.fields[6];
+      final String alignmentChr = this.fields[6];
       final int alignmentStart = Integer.parseInt(this.fields[7]);
-      final int alignementEnd = Integer.parseInt(this.fields[8]);
+      final int alignmentEnd = Integer.parseInt(this.fields[8]);
 
       if (first) {
         chr = exonChr;
         first = false;
       }
 
-      if (!exonChr.equals(alignementChr) || !chr.equals(alignementChr)) {
+      if (!exonChr.equals(alignmentChr) || !chr.equals(alignmentChr)) {
         context.getCounter(this.counterGroup,
             INVALID_CHROMOSOME_COUNTER.counterName()).increment(1);
         continue;
       }
 
-      geneExpr.addAlignement(exonStart, exonEnd, alignmentStart, alignementEnd,
-          true);
+      geneExpr.addAlignment(exonStart, exonEnd, alignmentStart, alignmentEnd,
+        true);
     }
 
     if (count == 0)
@@ -118,7 +118,7 @@ public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
     final int geneLength = transcript.getLength();
     final int notCovered = geneExpr.getNotCovered(geneLength);
 
-    final String result = notCovered + "\t" + geneExpr.getAlignementCount();
+    final String result = notCovered + "\t" + geneExpr.getAlignmentCount();
 
     this.outputValue.set(result);
 

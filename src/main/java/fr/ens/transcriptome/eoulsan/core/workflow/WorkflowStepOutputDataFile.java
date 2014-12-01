@@ -358,7 +358,7 @@ public final class WorkflowStepOutputDataFile implements
       sb.append(toLetter(fileIndex));
 
     // Set the extension
-    sb.append(format.getDefaultExtention());
+    sb.append(format.getDefaultExtension());
 
     // Set the compression extension
     sb.append(compression.getExtension());

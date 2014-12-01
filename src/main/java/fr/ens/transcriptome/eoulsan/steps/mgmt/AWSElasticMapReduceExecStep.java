@@ -156,7 +156,7 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
   @Override
   public StepResult execute(final StepContext context, final StepStatus status) {
 
-    // Envrionment argument
+    // Environment argument
     final StringBuilder sb = new StringBuilder();
     sb.append("hadoopVersion=");
     sb.append(this.hadoopVersion);

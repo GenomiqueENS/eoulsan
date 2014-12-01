@@ -43,7 +43,7 @@ public class MultiColumnTranslator extends BasicTranslator {
 
   /**
    * Add data to the translator. The first value of the array data is the unique
-   * id for the traslator.
+   * id for the translator.
    * @param rowData data to add
    */
   public void addRow(final String[] rowData) {
@@ -58,7 +58,7 @@ public class MultiColumnTranslator extends BasicTranslator {
 
   /**
    * Add data to the translator.
-   * @param id id for the traslator.
+   * @param id id for the translator.
    * @param rowData data to add
    */
   public void addRow(final String id, final String[] rowData) {
@@ -145,7 +145,7 @@ public class MultiColumnTranslator extends BasicTranslator {
   }
 
   /**
-   * Get the available identfiers by the translator if possible.
+   * Get the available identifiers by the translator if possible.
    * @return a array of string with the identifiers
    */
   public String[] getIds() {

@@ -400,7 +400,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    *           file
    * @throws BadBioEntryException if an entry of the annotation file is invalid
    * @throws EoulsanException if an error occurs with feature types and feature
-   *           identifiants
+   *           identifiers
    */
   private static final Path createFeaturesIndex(final StepContext context,
       final Path gffPath, final String featureType, final String attributeId,
@@ -703,7 +703,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
         jobsPairedEnd.add(createJobPairedEnd(conf, context, alignmentsData,
             featureAnnotationData, genomeDescriptionData));
 
-      // Paired-end preprocessing
+      // Paired-end pre-processing
       if (jobsPairedEnd.size() > 0)
         MapReduceUtils.submitAndWaitForJobs(jobsPairedEnd,
             CommonHadoop.CHECK_COMPLETION_TIME);

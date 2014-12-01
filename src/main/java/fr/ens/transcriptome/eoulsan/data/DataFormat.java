@@ -84,7 +84,7 @@ public interface DataFormat {
    * Get the default extension of the DataType.
    * @return the default extension
    */
-  String getDefaultExtention();
+  String getDefaultExtension();
 
   /**
    * Get the extensions for the DataType

@@ -213,7 +213,7 @@ public final class Settings implements Serializable {
    * Get the RServe server name.
    * @return The name of the RServe to use
    */
-  public String getRServeServername() {
+  public String getRServeServerName() {
 
     return this.properties.getProperty(RSERVE_SERVER_NAME_KEY);
   }
@@ -587,7 +587,7 @@ public final class Settings implements Serializable {
    * Set the RServe server name.
    * @param serverName The name of the RServe to use
    */
-  public void setRServeServername(final String serverName) {
+  public void setRServeServerName(final String serverName) {
 
     this.properties.setProperty(RSERVE_SERVER_NAME_KEY, serverName);
   }

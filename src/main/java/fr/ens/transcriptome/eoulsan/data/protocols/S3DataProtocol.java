@@ -297,7 +297,7 @@ public class S3DataProtocol implements DataProtocol {
         }
         if (myUpload.getState() != TransferState.Completed)
           throw new AmazonClientException(
-              "Transfer not completed corrently. Status: "
+              "Transfer not completed correctly. Status: "
                   + myUpload.getState());
 
       } catch (InterruptedException e) {
@@ -383,7 +383,7 @@ public class S3DataProtocol implements DataProtocol {
 
         if (!f.delete())
           getLogger().severe(
-              "Can not delete temporarry file: " + f.getAbsolutePath());
+              "Can not delete temporary file: " + f.getAbsolutePath());
       }
 
     };

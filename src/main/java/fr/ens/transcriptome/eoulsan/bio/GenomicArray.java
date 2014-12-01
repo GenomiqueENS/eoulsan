@@ -224,7 +224,7 @@ public class GenomicArray<T> {
     /**
      * Constructor that create a zone
      * @param start start position of the zone
-     * @param end end postion of the zone
+     * @param end end position of the zone
      * @param strand strand of the zone
      * @param exons of the zone
      */
@@ -275,7 +275,7 @@ public class GenomicArray<T> {
     }
 
     /**
-     * Find the zone index for a position
+     * Find the zone index for a position.
      * @param pos the position on the chromosome
      * @return the index of the zone or -1 if the position if lower than 1 or
      *         greater than the length of the chromosome

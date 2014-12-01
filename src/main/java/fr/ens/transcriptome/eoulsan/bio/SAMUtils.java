@@ -104,7 +104,7 @@ public class SAMUtils {
   /**
    * Create a GenomeDescription object from a SAM header.
    * @param file SAM file witch header must be read
-   * @return a new GenomeDescription object with the name and chromsomomes
+   * @return a new GenomeDescription object with the name and chromosomes
    *         length defined in the SAM header
    * @throws FileNotFoundException if the file cannot be found
    */
@@ -120,7 +120,7 @@ public class SAMUtils {
   /**
    * Create a GenomeDescription object from a SAM header.
    * @param dataFile SAM file witch header must be read
-   * @return a new GenomeDescription object with the name and chromsomomes
+   * @return a new GenomeDescription object with the name and chromosomes
    *         length defined in the SAM header
    * @throws IOException if an error occurs while reading the file
    */
@@ -136,7 +136,7 @@ public class SAMUtils {
   /**
    * Create a GenomeDescription object from a SAM header.
    * @param is InputStream of the SAM file witch header must be read
-   * @return a new GenomeDescription object with the name and chromsomomes
+   * @return a new GenomeDescription object with the name and chromosomes
    *         length defined in the SAM header
    */
   public static GenomeDescription createGenomeDescriptionFromSAM(
@@ -148,7 +148,7 @@ public class SAMUtils {
   /**
    * Create a GenomeDescription object from a SAM header.
    * @param header SAM header in a String
-   * @return a new GenomeDescription object with the name and chromsomomes
+   * @return a new GenomeDescription object with the name and chromosomes
    *         length defined in the SAM header
    */
   public static GenomeDescription createGenomeDescriptionFromSAM(
@@ -179,7 +179,7 @@ public class SAMUtils {
   /**
    * Create a GenomeDescription object from a SAMFileHeader object.
    * @param header SAM header object
-   * @return a new GenomeDescription object with the name and chromsomomes
+   * @return a new GenomeDescription object with the name and chromosomes
    *         length defined in the SAM header
    */
   public static GenomeDescription createGenomeDescriptionFromSAM(
@@ -202,7 +202,7 @@ public class SAMUtils {
   /**
    * Create a GenomeDescription object from a SAMFileHeader object.
    * @param samRecord header SAM header object
-   * @return a new GenomeDescription object with the name and chromsomomes
+   * @return a new GenomeDescription object with the name and chromosomes
    *         length defined in the SAM header
    */
   public static GenomeDescription createGenomeDescriptionFromSAM(
@@ -215,7 +215,7 @@ public class SAMUtils {
   }
 
   /**
-   * Convert a GenomeDesciption object to a SAMSequenceDictionary object.
+   * Convert a GenomeDescription object to a SAMSequenceDictionary object.
    * @param genomeDescription genomeDescription object to convert
    * @return a new SAMSequenceDictionary object with chromosomes name and size
    *         from the GenomeDescription object
@@ -241,7 +241,7 @@ public class SAMUtils {
   }
 
   /**
-   * Convert a GenomeDesciption object to a SAMFileHeader object.
+   * Convert a GenomeDescription object to a SAMFileHeader object.
    * @param genomeDescription genomeDescription object to convert
    * @return a new SAMFileHeader object with chromosomes name and size from the
    *         GenomeDescription object

@@ -431,7 +431,7 @@ public class GenomeDescription {
 
     if (fastaHeader.startsWith(" "))
       throw new BadBioEntryException(
-          "A whitespace was found at the begining of the sequence name", ">"
+          "A whitespace was found at the beginning of the sequence name", ">"
               + fastaHeader);
 
     final String s = fastaHeader.trim();

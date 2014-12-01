@@ -231,7 +231,7 @@ public abstract class ServiceNameLoader<S> {
       obj = service.cast(clazz.newInstance());
     } catch (InstantiationException | IllegalAccessException e) {
       throw new ServiceConfigurationError(service.getName()
-          + ": " + url + ": Class cannot be instancied: " + className);
+          + ": " + url + ": Class cannot be instanced: " + className);
     }
 
     final Method m;
@@ -240,7 +240,7 @@ public abstract class ServiceNameLoader<S> {
     } catch (SecurityException | NoSuchMethodException e) {
       throw new ServiceConfigurationError(service.getName()
           + ": " + url + ": Method " + getMethodName()
-          + "() cannot be instancied in class: " + className);
+          + "() cannot be instanced in class: " + className);
     }
 
     final String name;
@@ -330,7 +330,7 @@ public abstract class ServiceNameLoader<S> {
         return result;
       } catch (InstantiationException | IllegalAccessException e) {
         throw new ServiceConfigurationError(service.getName()
-            + ": " + serviceNameLower + " cannot be instancied");
+            + ": " + serviceNameLower + " cannot be instanced");
       } catch (ClassNotFoundException e) {
         throw new ServiceConfigurationError(service.getName()
             + ": Class for " + serviceNameLower + " cannot be found");
@@ -343,7 +343,7 @@ public abstract class ServiceNameLoader<S> {
 
   /**
    * Return the list of the available services.
-   * @return a Map with the availables services
+   * @return a Map with the available services
    */
   public Map<String, String> getServiceClasses() {
 

@@ -103,7 +103,7 @@ public class PreTreatmentExpressionMapper extends
     String completeId = line.substring(0, indexOfFirstTab);
     int endReadId;
 
-    // Read identifiant format : before Casava 1.8 or other technologies that
+    // Read identifier format : before Casava 1.8 or other technologies that
     // Illumina
     if (ID_PATTERN.split(completeId).length < 7) {
       endReadId = completeId.indexOf('/');
@@ -119,7 +119,7 @@ public class PreTreatmentExpressionMapper extends
       }
     }
 
-    // Read identifiant format : Illumina - Casava 1.8
+    // Read identifier format : Illumina - Casava 1.8
     else {
       endReadId = completeId.indexOf(' ');
       // mapped read

@@ -67,7 +67,7 @@ public class IntegrationTestAction extends AbstractAction {
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
 
-    File testngReportDirectory = null;
+    File testNGReportDirectory = null;
     int argsOptions = 0;
 
     try {
@@ -143,17 +143,17 @@ public class IntegrationTestAction extends AbstractAction {
       if (line.hasOption("o")) {
 
         // List all test to launch
-        testngReportDirectory = new File(line.getOptionValue("o").trim());
+        testNGReportDirectory = new File(line.getOptionValue("o").trim());
 
-        if (!testngReportDirectory.exists())
+        if (!testNGReportDirectory.exists())
           throw new ParseException(
-              "Output testng report directory doesn't exists: "
-                  + testngReportDirectory.getAbsolutePath());
+              "Output TestNG report directory doesn't exists: "
+                  + testNGReportDirectory.getAbsolutePath());
 
-        if (!testngReportDirectory.isDirectory())
+        if (!testNGReportDirectory.isDirectory())
           throw new ParseException(
-              "Output testng report argument is not a directory: "
-                  + testngReportDirectory.getAbsolutePath());
+              "Output TestNG report argument is not a directory: "
+                  + testNGReportDirectory.getAbsolutePath());
 
         argsOptions += 2;
       }
@@ -168,7 +168,7 @@ public class IntegrationTestAction extends AbstractAction {
     }
 
     // Execute program in local mode
-    runIT(testngReportDirectory);
+    runIT(testNGReportDirectory);
   }
 
   /**
@@ -211,9 +211,9 @@ public class IntegrationTestAction extends AbstractAction {
                 "optional: mode for generate data expected: all (remove existing) or mode to generate no exists directory new")
             .create("expected"));
 
-    // Optional, path to testng report directory
+    // Optional, path to TestNG report directory
     options.addOption(OptionBuilder.withArgName("file").hasArg(true)
-        .withDescription("testng report directory").create('o'));
+        .withDescription("TestNG report directory").create('o'));
 
     return options;
   }
@@ -239,10 +239,10 @@ public class IntegrationTestAction extends AbstractAction {
 
   /**
    * Run all integrated test
-   * @param testngReportDirectory testng report directory, if it is null use the
+   * @param testNGReportDirectory TestNG report directory, if it is null use the
    *          default directory
    */
-  private void runIT(final File testngReportDirectory) {
+  private void runIT(final File testNGReportDirectory) {
 
     // Define a listener that print information about the results of the
     // integration tests
@@ -270,26 +270,26 @@ public class IntegrationTestAction extends AbstractAction {
     testng.setTestClasses(new Class[] {ITFactory.class});
     testng.addListener(tla);
 
-    if (testngReportDirectory != null) {
+    if (testNGReportDirectory != null) {
       // Replace default output directory
-      testng.setOutputDirectory(testngReportDirectory.getAbsolutePath());
+      testng.setOutputDirectory(testNGReportDirectory.getAbsolutePath());
     }
 
     // Launch integration tests using TestNG
     testng.run();
 
-    // Make a copy testngReport in output test directory
+    // Make a copy testNGReport in output test directory
     final File reportDirectory = new File(testng.getOutputDirectory());
 
     final File outputTestDirectory =
         new File(ITFactory.getOutputTestDirectoryPath());
 
     if (reportDirectory.exists() && outputTestDirectory.exists()) {
-      // Build destination directory to copy testng report
+      // Build destination directory to copy TestNG report
       final File destinationDirectory =
           new File(outputTestDirectory, reportDirectory.getName());
 
-      // Copy testng directory
+      // Copy TestNG directory
       try {
         FileUtils.copyDirectory(reportDirectory, destinationDirectory);
       } catch (IOException e) {

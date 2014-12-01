@@ -110,7 +110,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   }
 
   @Override
-  public String getDefaultExtention() {
+  public String getDefaultExtension() {
 
     return this.extensions.get(0);
   }
@@ -198,15 +198,15 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   // Other methods
   //
 
-  private final Object loadClass(final String classname, Class<?> interf) {
+  private final Object loadClass(final String className, Class<?> interf) {
 
-    if (classname == null)
+    if (className == null)
       return null;
 
     try {
 
       final Class<?> result =
-          this.getClass().getClassLoader().loadClass(classname);
+          this.getClass().getClassLoader().loadClass(className);
 
       if (result == null)
         return null;
@@ -414,9 +414,6 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   /**
    * Public constructor.
    * @param is input stream that contains the value of the data format
-   * @throws ParserConfigurationException
-   * @throws SAXException
-   * @throws IOException
    * @throws EoulsanException
    */
   public XMLDataFormat(final InputStream is) throws EoulsanException {

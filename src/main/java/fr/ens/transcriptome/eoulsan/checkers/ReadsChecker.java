@@ -63,7 +63,7 @@ public class ReadsChecker implements Checker {
   }
 
   @Override
-  public Set<DataFormat> getCheckersRequiered() {
+  public Set<DataFormat> getCheckersRequired() {
     return Collections.emptySet();
   }
 
@@ -145,7 +145,7 @@ public class ReadsChecker implements Checker {
   }
 
   private boolean checkReadsFile(final InputStream is,
-      final int maxReadTocheck, final FastqFormat format,
+      final int maxReadToCheck, final FastqFormat format,
       final boolean checkPairMember, final int pairMember) throws IOException,
       BadBioEntryException {
 
@@ -155,7 +155,7 @@ public class ReadsChecker implements Checker {
 
     for (final ReadSequence read : reader) {
 
-      if (count > maxReadTocheck)
+      if (count > maxReadToCheck)
         break;
 
       // For the first read check the id

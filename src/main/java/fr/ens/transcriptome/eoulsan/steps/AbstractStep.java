@@ -52,7 +52,7 @@ public abstract class AbstractStep implements Step {
   }
 
   @Override
-  public Version getRequiedEoulsanVersion() {
+  public Version getRequiredEoulsanVersion() {
 
     return Globals.APP_VERSION;
   }

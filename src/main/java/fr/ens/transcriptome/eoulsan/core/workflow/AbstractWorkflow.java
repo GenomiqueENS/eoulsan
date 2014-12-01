@@ -653,9 +653,8 @@ public abstract class AbstractWorkflow implements Workflow {
   }
 
   /**
-   * Log the state and the time of the analysis
+   * Log the state and the time of the analysis.
    * @param success true if analysis was successful
-   * @param stopwatch stopwatch of the workflow epoch
    */
   private void logEndAnalysis(final boolean success) {
 

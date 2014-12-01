@@ -61,7 +61,6 @@ public class Executor {
 
   /**
    * Check design.
-   * @param design design to check
    * @throws EoulsanException if there is an issue with the design
    */
   private void checkDesign() throws EoulsanException {

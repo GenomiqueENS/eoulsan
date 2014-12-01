@@ -110,7 +110,7 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
     final String basePath = getBasePath();
 
     if (basePath == null)
-      throw new IOException(getName() + " storage is not configurated");
+      throw new IOException(getName() + " storage is not configured");
 
     final DataFile baseDir = new DataFile(basePath);
 

@@ -165,7 +165,7 @@ public class DataList extends AbstractData implements Serializable {
   /**
    * Constructor.
    * @param port output port
-   * @param design
+   * @param design the design object
    */
   DataList(final WorkflowOutputPort port, final Design design) {
 

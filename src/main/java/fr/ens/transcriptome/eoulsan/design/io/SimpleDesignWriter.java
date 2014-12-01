@@ -61,9 +61,6 @@ public class SimpleDesignWriter extends DesignWriter {
           new BufferedWriter(new OutputStreamWriter(getOutputStream(),
               Globals.DEFAULT_CHARSET));
 
-      if (this.bw == null)
-        throw new EoulsanIOException("No stream to write");
-
       List<String> metadataFields = design.getMetadataFieldsNames();
 
       // Write header

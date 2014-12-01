@@ -167,19 +167,19 @@ class DataElement extends AbstractData implements Serializable {
    * Set the DataFiles.
    * @param dataFiles files to set
    */
-  void setDataFiles(final List<DataFile> dataFile) {
+  void setDataFiles(final List<DataFile> dataFiles) {
 
-    checkNotNull(dataFile, "dataFiles to set cannot be null");
+    checkNotNull(dataFiles, "dataFiles to set cannot be null");
 
-    for (DataFile file : dataFile) {
+    for (DataFile file : dataFiles) {
 
       checkArgument(file != null, "dataFiles cannot contains null value");
-      checkArgument(Collections.frequency(dataFile, file) == 1,
-          "dataFile cannot contains the same file: " + file);
+      checkArgument(Collections.frequency(dataFiles, file) == 1,
+          "dataFiles cannot contains the same file: " + file);
     }
 
     this.files.clear();
-    this.files.addAll(dataFile);
+    this.files.addAll(dataFiles);
   }
 
   /**

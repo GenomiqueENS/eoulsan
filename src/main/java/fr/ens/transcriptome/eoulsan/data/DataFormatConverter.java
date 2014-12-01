@@ -129,7 +129,7 @@ public class DataFormatConverter {
     }
 
     destOs.close();
-    throw new IOException("This copy case is not implementated");
+    throw new IOException("This copy case is not implemented");
   }
 
   //

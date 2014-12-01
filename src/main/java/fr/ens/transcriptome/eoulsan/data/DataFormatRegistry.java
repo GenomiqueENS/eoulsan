@@ -143,7 +143,7 @@ public class DataFormatRegistry {
       throw new EoulsanException(
           "The extensions of a DataFormat can't be null or empty.");
 
-    if (df.getDefaultExtention() == null)
+    if (df.getDefaultExtension() == null)
       throw new EoulsanException(
           "The no default extension is provided for DataFormat: "
               + df.getName());
@@ -160,7 +160,7 @@ public class DataFormatRegistry {
             "The extension of a DataFormat can't contains tab character: "
                 + suffix);
 
-      if (suffix.equals(df.getDefaultExtention()))
+      if (suffix.equals(df.getDefaultExtension()))
         defaultExtensionFound = true;
 
       final String key = prefix + "\t" + suffix;
@@ -317,22 +317,22 @@ public class DataFormatRegistry {
   }
 
   /**
-   * Get the field name in a Design object that correspond to a datatype.
+   * Get the field name in a Design object that correspond to a dataformat.
    * @param design design object
-   * @param datatype datatype to search
+   * @param dataformat dataformat to search
    * @return the field name if found or null
    */
   public String getDesignFieldnameForDataFormat(final Design design,
-      final DataFormat datatype) {
+      final DataFormat dataformat) {
 
-    if (design == null || datatype == null)
+    if (design == null || dataformat == null)
       return null;
 
     final List<String> fieldnames = design.getMetadataFieldsNames();
     for (String fieldname : fieldnames) {
 
       final DataFormat df = getDataFormatForDesignField(fieldname);
-      if (datatype.equals(df))
+      if (dataformat.equals(df))
         return fieldname;
     }
 
@@ -356,7 +356,7 @@ public class DataFormatRegistry {
 
       } catch (EoulsanException e) {
         getLogger().warning(
-            "Connot register " + df.getName() + ": " + e.getMessage());
+            "Cannot register " + df.getName() + ": " + e.getMessage());
       }
     }
   }

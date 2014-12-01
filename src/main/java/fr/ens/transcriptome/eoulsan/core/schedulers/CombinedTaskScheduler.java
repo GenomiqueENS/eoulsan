@@ -97,11 +97,11 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
   }
 
   @Override
-  public int getTaskSubmitedCount(final WorkflowStep step) {
+  public int getTaskSubmittedCount(final WorkflowStep step) {
 
     checkNotNull(step, "step argument cannot be null");
 
-    return getTaskScheduler(step).getTaskSubmitedCount(step);
+    return getTaskScheduler(step).getTaskSubmittedCount(step);
   }
 
   @Override
@@ -132,11 +132,11 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
   }
 
   @Override
-  public int getTotalTaskSubmitedCount() {
+  public int getTotalTaskSubmittedCount() {
 
-    return this.noTaskScheduler.getTotalTaskSubmitedCount()
-        + this.stdTaskScheduler.getTotalTaskSubmitedCount()
-        + this.ownTaskScheduler.getTotalTaskSubmitedCount();
+    return this.noTaskScheduler.getTotalTaskSubmittedCount()
+        + this.stdTaskScheduler.getTotalTaskSubmittedCount()
+        + this.ownTaskScheduler.getTotalTaskSubmittedCount();
   }
 
   @Override
@@ -244,7 +244,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
     case STANDARD:
       return this.stdTaskScheduler;
 
-    case OWN_PARALELIZATION:
+    case OWN_PARALLELIZATION:
       return this.ownTaskScheduler;
 
     default:

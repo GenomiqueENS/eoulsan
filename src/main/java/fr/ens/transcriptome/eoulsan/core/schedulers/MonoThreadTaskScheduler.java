@@ -60,7 +60,7 @@ public class MonoThreadTaskScheduler extends AbstractTaskScheduler implements
   public void start() {
 
     super.start();
-    new Thread(this, "TaskScheduler_monothread").start();
+    new Thread(this, "TaskScheduler_mono_thread").start();
   }
 
   //

@@ -59,7 +59,7 @@ public class ClusterExecAction extends ExecAction {
 
     System.err.println("WARNING: the action \""
         + getName()
-        + "\" is currently under developpement for the next version of "
+        + "\" is currently under development for the next version of "
         + Globals.APP_NAME + " and may actually not work.");
 
     // Get Eoulsan runtime

@@ -332,7 +332,7 @@ public final class PathUtils {
       final Path destPath, final Configuration conf) throws IOException {
 
     if (is == null)
-      throw new NullPointerException("The insput stream is null");
+      throw new NullPointerException("The input stream is null");
     if (destPath == null)
       throw new NullPointerException("The destination path is null");
     if (conf == null)
@@ -393,7 +393,7 @@ public final class PathUtils {
       final Path destPath, final Configuration conf) throws IOException {
 
     if (is == null)
-      throw new NullPointerException("The insput stream is null");
+      throw new NullPointerException("The input stream is null");
     if (destPath == null)
       throw new NullPointerException("The destination path is null");
     if (conf == null)

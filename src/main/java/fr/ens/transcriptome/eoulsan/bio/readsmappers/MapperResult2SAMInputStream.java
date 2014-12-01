@@ -139,7 +139,7 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
   }
 
   @Override
-  public synchronized void mark(final int readlimit) {
+  public synchronized void mark(final int readLimit) {
   }
 
   @Override

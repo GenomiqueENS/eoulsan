@@ -229,7 +229,7 @@ public class FileNaming {
 
   /**
    * Set several field of the object from a Data object.
-   * @param port the data object
+   * @param data the data object
    */
   private void set(final Data data) {
 
@@ -265,7 +265,7 @@ public class FileNaming {
     checkNotNull(this.format, "format has not been set");
     checkNotNull(this.compression, "compression has not been set");
 
-    return fileSuffix(this.format.getDefaultExtention(),
+    return fileSuffix(this.format.getDefaultExtension(),
         this.compression.getExtension());
   }
 
@@ -371,7 +371,7 @@ public class FileNaming {
     }
 
     // Set the extension
-    sb.append(this.format.getDefaultExtention());
+    sb.append(this.format.getDefaultExtension());
 
     return sb.toString();
   }
