@@ -88,7 +88,7 @@ public class SampleImpl implements Sample, Serializable {
   //
 
   /**
-   * Set the identfier of the sample
+   * Set the identifier of the sample
    * @param id the identifier to set
    */
   public void setId(final int id) {

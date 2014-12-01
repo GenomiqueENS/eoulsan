@@ -96,7 +96,7 @@ public class TranslatorUtils {
 
         of.newLine();
 
-        // Write orignal file data
+        // Write original file data
         for (String field1 : fields)
           try {
             of.writeDouble(Double.parseDouble(field1));

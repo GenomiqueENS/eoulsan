@@ -226,9 +226,9 @@ public abstract class MapperProcess {
     }
 
     @Override
-    public synchronized void mark(int readlimit) {
+    public synchronized void mark(int readLimit) {
 
-      this.is.mark(readlimit);
+      this.is.mark(readLimit);
     }
 
     @Override

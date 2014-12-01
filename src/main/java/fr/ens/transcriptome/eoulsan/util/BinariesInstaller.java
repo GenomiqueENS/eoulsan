@@ -129,7 +129,7 @@ public class BinariesInstaller {
       // Check if platform is allowed
       if (!Globals.AVAILABLE_BINARY_ARCH.contains(osArchKey))
         throw new FileNotFoundException(
-            "There is no executable for your plateform ("
+            "There is no executable for your platform ("
                 + os + ") included in " + Globals.APP_NAME);
 
       // Change the os and arch if alias
@@ -150,7 +150,7 @@ public class BinariesInstaller {
 
     // Test if the file is allready installed
     if (new File(outputPath, binaryFilename).isFile()) {
-      getLogger().info(binaryFilename + " is allready installed.");
+      getLogger().info(binaryFilename + " is already installed.");
       return outputPath + "/" + binaryFilename;
     }
 

@@ -78,7 +78,7 @@ public class AnnotationChecker implements Checker {
   }
 
   @Override
-  public Set<DataFormat> getCheckersRequiered() {
+  public Set<DataFormat> getCheckersRequired() {
     return Sets.newHashSet(DataFormats.GENOME_FASTA);
   }
 

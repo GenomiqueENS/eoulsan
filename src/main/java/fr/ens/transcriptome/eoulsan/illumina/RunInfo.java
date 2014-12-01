@@ -227,10 +227,14 @@ public class RunInfo {
 
           final String value = e1.getAttribute(name);
 
-          if ("Id".equals(name))
-            this.id = value;
-          else if ("Number".equals(name))
-            this.number = Integer.parseInt(value);
+          switch (name) {
+            case "Id":
+              this.id = value;
+              break;
+            case "Number":
+              this.number = Integer.parseInt(value);
+              break;
+          }
         }
 
         this.flowCell = getTagValue(e1, "Flowcell");
@@ -249,12 +253,18 @@ public class RunInfo {
 
               final String value = e3.getAttribute(name);
 
-              if ("Number".equals(name))
-                read.number = Integer.parseInt(value);
-              else if ("NumCycles".equals(name))
-                read.numberCycles = Integer.parseInt(value);
-              else if ("IsIndexedRead".equals(name))
-                read.indexedRead = "Y".equals(value.toUpperCase().trim());
+              switch (name) {
+                case "Number":
+                  read.number = Integer.parseInt(value);
+                  break;
+                case "NumCycles":
+                  read.numberCycles = Integer.parseInt(value);
+                  break;
+                case "IsIndexedRead":
+                  read.indexedRead = "Y".equals(value.toUpperCase().trim());
+                  break;
+              }
+
               if (read.getNumber() == 0)
                 read.number = readCount;
             }
@@ -269,14 +279,20 @@ public class RunInfo {
 
             final int value = Integer.parseInt(e2.getAttribute(name));
 
-            if ("LaneCount".equals(name))
-              this.flowCellLaneCount = value;
-            else if ("SurfaceCount".equals(name))
-              this.flowCellSurfaceCount = value;
-            else if ("SwathCount".equals(name))
-              this.flowCellSwathCount = value;
-            else if ("TileCount".equals(name))
-              this.flowCellTileCount = value;
+            switch (name) {
+              case "LaneCount":
+                this.flowCellLaneCount = value;
+                break;
+              case "SurfaceCount":
+                this.flowCellSurfaceCount = value;
+                break;
+              case "SwathCount":
+                this.flowCellSwathCount = value;
+                break;
+              case "TileCount":
+                this.flowCellTileCount = value;
+                break;
+            }
           }
 
         }

@@ -178,7 +178,7 @@ public class ExecAction extends AbstractAction {
       desc = jobDescription.trim();
     }
 
-    getLogger().info("Worflow file: " + workflowFile);
+    getLogger().info("Workflow file: " + workflowFile);
     getLogger().info("Design file: " + designFile);
 
     try {

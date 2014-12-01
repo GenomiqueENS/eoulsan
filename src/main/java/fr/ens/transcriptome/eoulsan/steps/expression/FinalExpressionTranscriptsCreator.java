@@ -65,15 +65,15 @@ public class FinalExpressionTranscriptsCreator {
 
     private Transcript transcript;
     private int baseNotCovered;
-    private int alignementCount = 0;
+    private int alignmentCount = 0;
     private double ratio;
 
     public void setExpressionResult(final int baseNotCovered,
-        final int alignementCount, final long readsUsed) {
+        final int alignmentCount, final long readsUsed) {
 
       this.baseNotCovered = baseNotCovered;
-      this.alignementCount = alignementCount;
-      this.ratio = (double) alignementCount / (double) readsUsed;
+      this.alignmentCount = alignmentCount;
+      this.ratio = (double) alignmentCount / (double) readsUsed;
     }
 
     @Override
@@ -82,7 +82,7 @@ public class FinalExpressionTranscriptsCreator {
       if (o == null)
         return 1;
 
-      int diff = o.alignementCount - this.alignementCount;
+      int diff = o.alignmentCount - this.alignmentCount;
 
       if (diff != 0)
         return diff;
@@ -112,7 +112,7 @@ public class FinalExpressionTranscriptsCreator {
 
       final ExpressionTranscript et = (ExpressionTranscript) o;
 
-      if (this.alignementCount == et.alignementCount
+      if (this.alignmentCount == et.alignmentCount
           && this.transcript.equals(et.transcript)
           && this.baseNotCovered == et.baseNotCovered
           && Math.abs(this.ratio - et.ratio) < .0000001)
@@ -124,7 +124,7 @@ public class FinalExpressionTranscriptsCreator {
     @Override
     public int hashCode() {
 
-      return Objects.hash(this.transcript, baseNotCovered, alignementCount,
+      return Objects.hash(this.transcript, baseNotCovered, alignmentCount,
           ratio);
     }
 
@@ -137,7 +137,7 @@ public class FinalExpressionTranscriptsCreator {
           + "\t" + t.getType() + "\t" + t.getChromosome() + "\t" + t.getStart()
           + "\t" + t.getEnd() + "\t" + t.getStrand() + "\t" + t.getLength()
           + "\t" + (this.baseNotCovered == 0) + "\t" + this.baseNotCovered
-          + "\t" + this.ratio + "\t" + alignementCount;
+          + "\t" + this.ratio + "\t" + alignmentCount;
     }
 
     //

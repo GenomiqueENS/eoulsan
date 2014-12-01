@@ -46,7 +46,7 @@ public class CommonHadoop {
 
   public static final String AWS_S3_SECRET_ACCESS_KEY_PARAM_NAME =
       "fs.s3n.awsSecretAccessKey";
-  public static final String AWS_S3_ACCESSKEY_ID_PARAM_KEY =
+  public static final String AWS_S3_ACCESS_KEY_ID_PARAM_KEY =
       "fs.s3n.awsAccessKeyId";
 
   public static final int CHECK_COMPLETION_TIME = 5000;

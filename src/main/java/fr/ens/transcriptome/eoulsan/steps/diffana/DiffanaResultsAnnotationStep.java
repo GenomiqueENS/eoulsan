@@ -25,7 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.diffana;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.OWN_PARALELIZATION;
+import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.OWN_PARALLELIZATION;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ADDITIONAL_ANNOTATION_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_ODS;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_TSV;
@@ -140,7 +140,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
     // disable to avoid out of memory
     if (formats.contains(ANNOTATED_EXPRESSION_RESULTS_ODS)
         || formats.contains(ANNOTATED_EXPRESSION_RESULTS_XLSX)) {
-      return OWN_PARALELIZATION;
+      return OWN_PARALLELIZATION;
     }
 
     // TSV creation can be multithreaded
@@ -196,7 +196,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
 
     // Set the default format
     if (this.outputFormats.isEmpty()) {
-      this.outputFormats.put(DEFAULT_FORMAT.getDefaultExtention().substring(1),
+      this.outputFormats.put(DEFAULT_FORMAT.getDefaultExtension().substring(1),
           DEFAULT_FORMAT);
     }
   }
@@ -261,7 +261,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
             // XLSX output
             outFile =
                 new DataFile(outputDir, prefix
-                    + ANNOTATED_EXPRESSION_RESULTS_XLSX.getDefaultExtention());
+                    + ANNOTATED_EXPRESSION_RESULTS_XLSX.getDefaultExtension());
             of = new XLSXTranslatorOutputFormat(outFile.create());
 
           } else if (format == ANNOTATED_EXPRESSION_RESULTS_ODS) {
@@ -269,7 +269,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
             // ODS output
             outFile =
                 new DataFile(outputDir, prefix
-                    + ANNOTATED_EXPRESSION_RESULTS_ODS.getDefaultExtention());
+                    + ANNOTATED_EXPRESSION_RESULTS_ODS.getDefaultExtension());
             of = new ODSTranslatorOutputFormat(outFile.create());
 
           } else {
@@ -277,7 +277,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
             // TSV output
             outFile =
                 new DataFile(outputDir, prefix
-                    + ANNOTATED_EXPRESSION_RESULTS_TSV.getDefaultExtention());
+                    + ANNOTATED_EXPRESSION_RESULTS_TSV.getDefaultExtension());
             of = new TSVTranslatorOutputFormat(outFile.create());
           }
 

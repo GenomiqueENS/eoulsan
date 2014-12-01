@@ -297,7 +297,7 @@ public class ExecJarHadoopAction extends AbstractAction {
     }
 
     if (jobEnvironment == null) {
-      env = "no enviromnent description";
+      env = "no environment description";
     } else {
       env = jobEnvironment;
     }

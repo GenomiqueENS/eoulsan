@@ -167,12 +167,12 @@ public class RSConnectionNewImpl implements RSConnection {
 
   }
 
-  public void getFile(final String rServeFilename, final File outputfile)
+  public void getFile(final String rServeFilename, final File outputFile)
       throws REngineException {
 
     try {
       InputStream is = getFileInputStream(rServeFilename);
-      OutputStream os = new FileOutputStream(outputfile);
+      OutputStream os = new FileOutputStream(outputFile);
 
       byte[] buf = new byte[BUFFER_SIZE];
       int i = 0;

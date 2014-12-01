@@ -61,7 +61,7 @@ public class ServiceListLoader {
 
     /**
      * Get line number of the entry.
-     * @return the line number o fthe entry
+     * @return the line number of the entry
      */
     public int getLineNumber() {
 

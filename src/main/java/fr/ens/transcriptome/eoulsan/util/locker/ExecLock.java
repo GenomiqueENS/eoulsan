@@ -146,7 +146,7 @@ public class ExecLock implements Locker {
     if (files == null)
       return true;
 
-    Set<Integer> jvmPids = getJVMsPids();
+    Set<Integer> jvmPids = getJVMsPIDs();
 
     int oldestPid = -1;
     long oldestPidFileDate = Long.MAX_VALUE;
@@ -183,7 +183,7 @@ public class ExecLock implements Locker {
    * Return a set withs pid of existing JVMs.
    * @return a set of integers with pid of existing JVMs
    */
-  private Set<Integer> getJVMsPids() {
+  private Set<Integer> getJVMsPIDs() {
 
     return ProcessUtils.getExecutablePids("java");
   }
@@ -224,7 +224,7 @@ public class ExecLock implements Locker {
       return;
     }
 
-    final Set<Integer> jvmsPids = getJVMsPids();
+    final Set<Integer> jvmsPIDs = getJVMsPIDs();
     int count = 0;
 
     for (File f : files) {
@@ -240,7 +240,7 @@ public class ExecLock implements Locker {
         continue;
       }
 
-      if (jvmsPids.contains(fPid))
+      if (jvmsPIDs.contains(fPid))
         count++;
       else if (!f.delete())
         getLogger().warning("Can not delete pid file: " + f.getAbsolutePath());

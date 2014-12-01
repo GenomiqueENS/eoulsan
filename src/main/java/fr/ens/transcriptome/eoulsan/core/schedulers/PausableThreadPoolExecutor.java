@@ -39,7 +39,7 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 
   private boolean isPaused;
   private ReentrantLock pauseLock = new ReentrantLock();
-  private Condition unpaused = pauseLock.newCondition();
+  private Condition unPaused = pauseLock.newCondition();
 
   @Override
   protected void beforeExecute(Thread t, Runnable r) {
@@ -50,7 +50,7 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 
     try {
       while (isPaused) {
-        unpaused.await();
+        unPaused.await();
       }
     } catch (InterruptedException ie) {
       t.interrupt();
@@ -82,7 +82,7 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 
     try {
       isPaused = false;
-      unpaused.signalAll();
+      unPaused.signalAll();
     } finally {
       pauseLock.unlock();
     }

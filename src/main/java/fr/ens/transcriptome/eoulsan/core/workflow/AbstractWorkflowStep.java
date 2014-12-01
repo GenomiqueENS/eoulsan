@@ -52,7 +52,7 @@ import fr.ens.transcriptome.eoulsan.steps.FakeStep;
 
 /**
  * This class define a step of the workflow. This class must be extended by a
- * class to be able to work with a specific worklow file format.
+ * class to be able to work with a specific workflow file format.
  * @author Laurent Jourdren
  * @since 2.0
  */

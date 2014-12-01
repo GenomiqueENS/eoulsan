@@ -47,7 +47,7 @@ public class KeepOneMatchReadAlignmentsFilter extends
 
   @Override
   public String getDescription() {
-    return "After this filter only one alignment is keeped by read";
+    return "After this filter only one alignment is kept by read";
   }
 
   @Override

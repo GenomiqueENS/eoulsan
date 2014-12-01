@@ -51,7 +51,7 @@ public class DistanceFromReferenceReadAlignmentsFilter extends
   @Override
   public String getDescription() {
     return "After this filter, only the alignments which the distance from "
-        + "the reference is lower than the given distance are keeped.";
+        + "the reference is lower than the given distance are kept.";
   }
 
   @Override

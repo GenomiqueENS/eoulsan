@@ -254,7 +254,7 @@ public class CommandWorkflowModel implements Serializable {
         throw new EoulsanException("The step name that generate \""
             + toPortName + "\" for step \"" + stepId + "\" is null");
       if (fromPortName == null)
-        throw new EoulsanException("The outport name is null for input "
+        throw new EoulsanException("The output port name is null for input "
             + toPortName + " for step \"" + stepId);
 
       toPortName = toPortName.trim().toLowerCase();

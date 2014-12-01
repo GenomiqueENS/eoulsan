@@ -49,9 +49,9 @@ public class HadoopBZip2InputStream extends InputStream {
   }
 
   @Override
-  public synchronized void mark(int readlimit) {
+  public synchronized void mark(int readLimit) {
     // TODO Auto-generated method stub
-    is.mark(readlimit);
+    is.mark(readLimit);
   }
 
   @Override

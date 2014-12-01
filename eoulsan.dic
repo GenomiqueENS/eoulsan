@@ -74,3 +74,11 @@ unsynchronized
 wallon
 zip
 école
+pausable
+stdin
+stdout
+stderr
+fieldname
+fieldnames
+concat
+quantile

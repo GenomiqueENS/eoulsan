@@ -69,6 +69,6 @@ public interface Checker {
    * Get the list of Checker required to run before this checker.
    * @return a list of DataFormat that are checked by the required checkers
    */
-  public Set<DataFormat> getCheckersRequiered();
+  public Set<DataFormat> getCheckersRequired();
 
 }

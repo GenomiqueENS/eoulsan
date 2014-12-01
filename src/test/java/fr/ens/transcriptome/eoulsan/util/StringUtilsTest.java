@@ -126,15 +126,15 @@ public class StringUtilsTest {
   @Test
   public void testDeprotectGFF() {
 
-    assertEquals("toto\t", StringUtils.deprotectGFF("toto%09"));
-    assertEquals("toto ", StringUtils.deprotectGFF("toto%20"));
-    assertEquals("toto titi", StringUtils.deprotectGFF("toto%20titi"));
-    assertEquals("t\\oto titi", StringUtils.deprotectGFF("t\\\\oto%20titi"));
-    assertEquals("toto;titi", StringUtils.deprotectGFF("toto\\;titi"));
-    assertEquals("toto=titi", StringUtils.deprotectGFF("toto\\=titi"));
-    assertEquals("toto%titi", StringUtils.deprotectGFF("toto\\%titi"));
-    assertEquals("toto&titi", StringUtils.deprotectGFF("toto\\&titi"));
-    assertEquals("toto,titi", StringUtils.deprotectGFF("toto\\,titi"));
+    assertEquals("toto\t", StringUtils.deProtectGFF("toto%09"));
+    assertEquals("toto ", StringUtils.deProtectGFF("toto%20"));
+    assertEquals("toto titi", StringUtils.deProtectGFF("toto%20titi"));
+    assertEquals("t\\oto titi", StringUtils.deProtectGFF("t\\\\oto%20titi"));
+    assertEquals("toto;titi", StringUtils.deProtectGFF("toto\\;titi"));
+    assertEquals("toto=titi", StringUtils.deProtectGFF("toto\\=titi"));
+    assertEquals("toto%titi", StringUtils.deProtectGFF("toto\\%titi"));
+    assertEquals("toto&titi", StringUtils.deProtectGFF("toto\\&titi"));
+    assertEquals("toto,titi", StringUtils.deProtectGFF("toto\\,titi"));
   }
 
   @Test

@@ -124,7 +124,7 @@ class WorkflowInputPort extends SimpleInputPort implements Serializable {
     return Objects.toStringHelper(this).add("name", getName())
         .add("format", getFormat().getName())
         .add("compressionsAccepted", getCompressionsAccepted())
-        .add("requieredInWorkingDirectory", isRequiredInWorkingDirectory())
+        .add("requiredInWorkingDirectory", isRequiredInWorkingDirectory())
         .add("step", getStep().getId()).add("link", getLink()).toString();
   }
 

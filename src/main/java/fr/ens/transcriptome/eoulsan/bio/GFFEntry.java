@@ -627,7 +627,7 @@ public class GFFEntry {
     } catch (ArrayIndexOutOfBoundsException e) {
 
       throw new BadBioEntryException("Error in GFF parsing line ("
-          + s.split("\t").length + " fields, 9 attemped)", s);
+          + s.split("\t").length + " fields, 9 attempted)", s);
     }
 
     setSeqId(fields[0]);

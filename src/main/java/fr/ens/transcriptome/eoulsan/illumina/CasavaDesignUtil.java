@@ -312,22 +312,22 @@ public final class CasavaDesignUtil {
   }
 
   private static void checkSampleDescription(final String sampleId,
-      final String sampleDescritpion) throws EoulsanException {
+      final String sampleDescription) throws EoulsanException {
 
     // Check if null of empty
-    if (isNullOrEmpty(sampleDescritpion))
+    if (isNullOrEmpty(sampleDescription))
       throw new EoulsanException(
           "Found a null or empty description for sample: " + sampleId);
 
     // Check charset
-    checkCharset(sampleDescritpion);
+    checkCharset(sampleDescription);
 
     // Check for forbidden characters
-    for (int i = 0; i < sampleDescritpion.length(); i++) {
-      final char c = sampleDescritpion.charAt(i);
+    for (int i = 0; i < sampleDescription.length(); i++) {
+      final char c = sampleDescription.charAt(i);
       if (c == '\'' || c == '\"')
         throw new EoulsanException("Invalid sample description, '"
-            + c + "' character is not allowed: " + sampleDescritpion + ".");
+            + c + "' character is not allowed: " + sampleDescription + ".");
     }
   }
 

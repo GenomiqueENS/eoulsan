@@ -143,10 +143,10 @@ public final class ReadSequence extends Sequence {
   //
 
   /**
-   * Create a subsequence from the current sequence. Note that index start at 0.
-   * @param beginIndex begin index of the subsequence
-   * @param endIndex end index of the subsequence
-   * @return a new sequence object with a subsequence of the current object
+   * Create a sub-sequence from the current sequence. Note that index start at 0.
+   * @param beginIndex begin index of the sub-sequence
+   * @param endIndex end index of the sub-sequence
+   * @return a new sequence object with a sub-sequence of the current object
    */
   public ReadSequence subSequence(final int beginIndex, final int endIndex) {
 

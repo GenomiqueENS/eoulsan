@@ -82,7 +82,7 @@ public class CreateDesignAction extends AbstractAction {
     boolean pairEndMode = false;
     String sampleSheetPath = null;
     String samplesProjectName = null;
-    boolean symnlinks = false;
+    boolean symlinks = false;
 
     try {
 
@@ -125,7 +125,7 @@ public class CreateDesignAction extends AbstractAction {
       // Symbolic links option
       if (line.hasOption("symlinks")) {
 
-        symnlinks = true;
+        symlinks = true;
         argsOptions++;
       }
 
@@ -156,7 +156,7 @@ public class CreateDesignAction extends AbstractAction {
 
       design = db.getDesign(pairEndMode);
 
-      if (symnlinks)
+      if (symlinks)
         DesignUtils.replaceLocalPathBySymlinks(design,
             designFile.getParentFile());
 

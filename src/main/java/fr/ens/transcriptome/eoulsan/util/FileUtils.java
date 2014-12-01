@@ -1229,7 +1229,7 @@ public class FileUtils {
   }
 
   /**
-   * Delete a directory and its content. It is not a recurse method.
+   * Delete a directory and its content. It is not a recursive method.
    * @param directory Directory to remove
    * @return false if one of the files can't be removed
    */

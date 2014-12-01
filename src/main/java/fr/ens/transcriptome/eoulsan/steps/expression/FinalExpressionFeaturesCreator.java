@@ -65,11 +65,11 @@ public class FinalExpressionFeaturesCreator {
       Comparable<ExpressionFeature> {
 
     private String id;
-    private int alignementCount = 0;
+    private int alignmentCount = 0;
 
-    public void setExpressionResult(final int alignementCount) {
+    public void setExpressionResult(final int alignmentCount) {
 
-      this.alignementCount = alignementCount;
+      this.alignmentCount = alignmentCount;
     }
 
     @Override
@@ -83,7 +83,7 @@ public class FinalExpressionFeaturesCreator {
       if (diff != 0)
         return diff;
 
-      return (o.alignementCount - this.alignementCount);
+      return (o.alignmentCount - this.alignmentCount);
 
     }
 
@@ -99,7 +99,7 @@ public class FinalExpressionFeaturesCreator {
       final ExpressionFeature et = (ExpressionFeature) o;
 
       if (Utils.equal(this.id, et.id)
-          && this.alignementCount == et.alignementCount)
+          && this.alignmentCount == et.alignmentCount)
         return true;
 
       return false;
@@ -108,13 +108,13 @@ public class FinalExpressionFeaturesCreator {
     @Override
     public int hashCode() {
 
-      return Objects.hash(this.id, this.alignementCount);
+      return Objects.hash(this.id, this.alignmentCount);
     }
 
     @Override
     public String toString() {
 
-      return this.id + "\t" + this.alignementCount;
+      return this.id + "\t" + this.alignmentCount;
     }
 
     //
@@ -173,10 +173,10 @@ public class FinalExpressionFeaturesCreator {
       StringUtils.fastSplit(line, tab);
 
       final String id = tab[0];
-      final int alignementCount = Integer.parseInt(tab[1]);
+      final int alignmentCount = Integer.parseInt(tab[1]);
 
       if (this.expressionResults.containsKey(id))
-        this.expressionResults.get(id).setExpressionResult(alignementCount);
+        this.expressionResults.get(id).setExpressionResult(alignmentCount);
     }
 
     br.close();

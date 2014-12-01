@@ -39,7 +39,7 @@ public final class LockerUtils {
    * Return a set withs pid of existing JVMs.
    * @return a set of integers with pid of existing JVMs
    */
-  public static Set<Integer> getJVMsPids() {
+  public static Set<Integer> getJVMsPIDs() {
 
     return ProcessUtils.getExecutablePids("java");
   }

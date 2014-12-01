@@ -31,7 +31,7 @@ package fr.ens.transcriptome.eoulsan.translators;
  */
 public class AddIdentifierTranslator extends BasicTranslator {
 
-  private static final String DEFAULT_FIELD = "OrignalId";
+  private static final String DEFAULT_FIELD = "OriginalId";
 
   private String[] fields;
   private String newFieldName = DEFAULT_FIELD;

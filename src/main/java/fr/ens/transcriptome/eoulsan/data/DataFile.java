@@ -183,7 +183,7 @@ public class DataFile implements Comparable<DataFile>, Serializable {
   public DataProtocol getProtocol() throws IOException {
 
     if (this.protocol == null)
-      throw new IOException("Unknow protocol: " + unknownProtocolName);
+      throw new IOException("Unknown protocol: " + unknownProtocolName);
 
     return this.protocol;
   }
@@ -456,12 +456,12 @@ public class DataFile implements Comparable<DataFile>, Serializable {
 
     // Looking for the protocol
     this.protocolPrefixInSource = findProtocol(source);
-    final DataProtocolService registery = DataProtocolService.getInstance();
+    final DataProtocolService registry = DataProtocolService.getInstance();
 
     if (protocolPrefixInSource == null)
-      this.protocol = registery.getDefaultProtocol();
+      this.protocol = registry.getDefaultProtocol();
     else
-      this.protocol = registery.newService(protocolPrefixInSource);
+      this.protocol = registry.newService(protocolPrefixInSource);
 
     if (this.protocol == null) {
       getLogger()
@@ -554,8 +554,6 @@ public class DataFile implements Comparable<DataFile>, Serializable {
   /**
    * Public constructor.
    * @param source the source of the DataFile
-   * @throws EoulsanException if an error occurs when searching the protocol of
-   *           the source
    */
   public DataFile(final String source) {
 
@@ -569,8 +567,6 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    * Public constructor.
    * @param parentFile the parent file of the DataFile
    * @param filename the filename of the DataFile
-   * @throws EoulsanException if an error occurs when searching the protocol of
-   *           the source
    */
   public DataFile(final DataFile parentFile, final String filename) {
 
@@ -586,8 +582,6 @@ public class DataFile implements Comparable<DataFile>, Serializable {
   /**
    * Public constructor.
    * @param file the source file of the DataFile
-   * @throws EoulsanException if an error occurs when searching the protocol of
-   *           the source
    */
   public DataFile(final File file) {
 

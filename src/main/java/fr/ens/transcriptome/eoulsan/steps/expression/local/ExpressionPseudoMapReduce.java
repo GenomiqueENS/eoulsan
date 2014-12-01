@@ -203,8 +203,8 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
         continue;
       }
 
-      geneExpr.addAlignement(exonStart, exonEnd, alignmentStart, alignementEnd,
-          true);
+      geneExpr.addAlignment(exonStart, exonEnd, alignmentStart, alignementEnd,
+        true);
     }
 
     if (count == 0)
@@ -222,7 +222,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
     final int notCovered = geneExpr.getNotCovered(geneLength);
 
     final String result =
-        key + "\t" + notCovered + "\t" + geneExpr.getAlignementCount();
+        key + "\t" + notCovered + "\t" + geneExpr.getAlignmentCount();
 
     output.add(result);
   }
@@ -263,7 +263,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
 
   /**
    * Load annotation information.
-   * @param annotationFile annotation file to load
+   * @param annotationIs annotation stream to load
    * @param expressionType expression type to use
    * @param attributeId GFF attribute ID to be used as feature ID
    * @throws IOException if an error occurs while reading annotation file

@@ -279,13 +279,13 @@ public final class DesignUtils {
 
       // Obfuscate Condition field
       if (design.isMetadataField(SampleMetadata.CONDITION_FIELD)) {
-        final String cond = s.getMetadata().getCondition();
+        final String condition = s.getMetadata().getCondition();
 
-        if (!mapCondition.containsKey(cond)) {
-          mapCondition.put(cond, ++countCondition);
+        if (!mapCondition.containsKey(condition)) {
+          mapCondition.put(condition, ++countCondition);
         }
 
-        s.getMetadata().setCondition("c" + mapCondition.get(cond));
+        s.getMetadata().setCondition("c" + mapCondition.get(condition));
       }
 
       // Obfuscate RepTechGroup field

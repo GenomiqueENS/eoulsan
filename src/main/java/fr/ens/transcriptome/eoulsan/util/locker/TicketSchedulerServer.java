@@ -117,7 +117,7 @@ public class TicketSchedulerServer implements TicketScheduler {
       }
 
       // Check JVM PIDs
-      final Set<Integer> pids = LockerUtils.getJVMsPids();
+      final Set<Integer> pids = LockerUtils.getJVMsPIDs();
       for (Ticket t : this.tickets.values()) {
         if (!pids.contains(t.getPid())) {
 

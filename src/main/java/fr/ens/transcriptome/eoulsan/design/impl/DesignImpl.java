@@ -281,10 +281,10 @@ public class DesignImpl implements Design, Serializable {
           + sampleName);
 
     // Remove descriptions
-    final String prefixDescritpion = this.samples.get(sampleName) + "-";
+    final String prefixDescription = this.samples.get(sampleName) + "-";
 
     for (String key : new HashSet<>(this.metadataData.keySet()))
-      if (key.startsWith(prefixDescritpion))
+      if (key.startsWith(prefixDescription))
         this.metadataData.remove(key);
 
     // Remove formats and bioassays

@@ -126,7 +126,7 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
 
   /**
    * Check if a genome description storage has been defined.
-   * @return a GenomedescStorage object if genome storage has been defined or
+   * @return a GenomeDescStorage object if genome storage has been defined or
    *         null if not
    */
   static GenomeDescStorage checkForGenomeDescStore() {

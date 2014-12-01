@@ -118,13 +118,18 @@ public class RTAReadSummary implements Iterable<RTALaneSummary> {
       // Parse Summary tag attributes
       for (String attributeName : getAttributeNames(e)) {
 
-        if ("Read".equals(attributeName))
-          this.id = Integer.parseInt(getAttributeValue(e, attributeName));
-        else if ("ReadType".equals(attributeName))
-          this.type = getAttributeValue(e, attributeName);
-        else if ("densityRatio".equals(attributeName))
-          this.densityRatio =
+        switch (attributeName) {
+          case "Read":
+            this.id = Integer.parseInt(getAttributeValue(e, attributeName));
+            break;
+          case "ReadType":
+            this.type = getAttributeValue(e, attributeName);
+            break;
+          case "densityRatio":
+            this.densityRatio =
               Double.parseDouble(getAttributeValue(e, attributeName));
+            break;
+        }
       }
 
       // Parse Lane tag

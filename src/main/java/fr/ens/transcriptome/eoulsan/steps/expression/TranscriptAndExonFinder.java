@@ -451,7 +451,7 @@ public class TranscriptAndExonFinder {
      * @param strand the strand of the ORF
      * @param parentId id of the parent
      */
-    public Exon(final String chromosone, final int start, final int end,
+    public Exon(final String chromosome, final int start, final int end,
         final char strand, final String parentId) {
 
       if (start < 1)
@@ -462,7 +462,7 @@ public class TranscriptAndExonFinder {
         throw new IllegalArgumentException("End position is greater that end: "
             + end);
 
-      this.chromosome = chromosone;
+      this.chromosome = chromosome;
       this.start = start;
       this.end = end;
       this.strand = strand;
@@ -579,7 +579,7 @@ public class TranscriptAndExonFinder {
     /**
      * Constructor that create a zone
      * @param start start position of the zone
-     * @param end end postion of the zone
+     * @param end end position of the zone
      */
     public Zone(final int start, final int end) {
 
@@ -591,7 +591,7 @@ public class TranscriptAndExonFinder {
     /**
      * Constructor that create a zone
      * @param start start position of the zone
-     * @param end end postion of the zone
+     * @param end end position of the zone
      * @param exons of the zone
      */
     public Zone(final int start, final int end, final Set<Exon> exons) {
@@ -816,7 +816,7 @@ public class TranscriptAndExonFinder {
         final Exon exon = new Exon(chr, start, stop, strand, parentId);
 
         //
-        // Populate exonModeleRangeMap
+        // Populate map
         //
 
         final Transcript epr;
@@ -855,7 +855,7 @@ public class TranscriptAndExonFinder {
 
     getLogger().fine("Entries read: " + count);
     getLogger().fine("ChrZoneMap: " + this.chrZoneMap.size());
-    getLogger().fine("Trancripts: " + this.transcripts.size());
+    getLogger().fine("Transcripts: " + this.transcripts.size());
   }
 
   /**

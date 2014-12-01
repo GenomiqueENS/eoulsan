@@ -357,7 +357,7 @@ public final class StringUtils {
 
   /**
    * Get the current date in an easy sorted format (e.g. 20100225151635)
-   * @return the current date formated in a string
+   * @return the current date formatted in a string
    */
   public static final String currentDateTimeToEasySortedDateTime() {
 
@@ -367,7 +367,7 @@ public final class StringUtils {
   /**
    * Get the date in an easy sorted format (e.g. 20100225151635)
    * @param date date to format
-   * @return a formated date in a string
+   * @return a formatted date in a string
    */
   public static final String toEasySortedDateTime(final Date date) {
 
@@ -432,7 +432,7 @@ public final class StringUtils {
     return r;
   }
 
-  public static final String deprotectGFF(final String s) {
+  public static final String deProtectGFF(final String s) {
 
     if (s == null)
       return null;

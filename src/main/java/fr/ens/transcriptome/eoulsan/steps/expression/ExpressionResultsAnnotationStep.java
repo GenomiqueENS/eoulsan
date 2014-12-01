@@ -25,7 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.expression;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.OWN_PARALELIZATION;
+import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.OWN_PARALLELIZATION;
 import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.STANDARD;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ADDITIONAL_ANNOTATION_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_ODS;
@@ -151,7 +151,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
     // disable to avoid out of memory
     if (formats.contains(ANNOTATED_EXPRESSION_RESULTS_ODS)
         || formats.contains(ANNOTATED_EXPRESSION_RESULTS_XLSX)) {
-      return OWN_PARALELIZATION;
+      return OWN_PARALLELIZATION;
     }
 
     // TSV creation can be multithreaded
@@ -207,7 +207,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
 
     // Set the default format
     if (this.outputFormats.isEmpty()) {
-      this.outputFormats.put(DEFAULT_FORMAT.getDefaultExtention().substring(1),
+      this.outputFormats.put(DEFAULT_FORMAT.getDefaultExtension().substring(1),
           DEFAULT_FORMAT);
     }
   }
@@ -291,9 +291,9 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
    * Load translator annotation.
    * @param annotationFile the annotation file to use
    * @return a Translator object with the additional annotation
-   * @throws EoulsanIOException if an error occurs while reading additionnal
+   * @throws EoulsanIOException if an error occurs while reading additional
    *           annotation
-   * @throws IOException if an error occurs while reading additionnal annotation
+   * @throws IOException if an error occurs while reading additional annotation
    */
   private Translator loadTranslator(final DataFile annotationFile)
       throws EoulsanIOException, IOException {

@@ -58,7 +58,7 @@ public interface Step {
    * Get the required Version of the application to run the Step.
    * @return a Version object with the required version of the Step
    */
-  Version getRequiedEoulsanVersion();
+  Version getRequiredEoulsanVersion();
 
   /**
    * Get the input data format.

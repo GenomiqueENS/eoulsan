@@ -60,7 +60,7 @@ public class GenomeChecker implements Checker {
   }
 
   @Override
-  public Set<DataFormat> getCheckersRequiered() {
+  public Set<DataFormat> getCheckersRequired() {
     return Collections.emptySet();
   }
 

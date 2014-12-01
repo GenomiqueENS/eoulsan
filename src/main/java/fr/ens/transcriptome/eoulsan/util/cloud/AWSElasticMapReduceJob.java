@@ -279,7 +279,7 @@ public class AWSElasticMapReduceJob {
 
   /**
    * Set the jar location.
-   * @param jarLocation The jar location to set
+   * @param jarArguments The jar arguments
    */
   void setJarArguments(final String[] jarArguments) {
     this.jarArguments = jarArguments;
@@ -295,7 +295,7 @@ public class AWSElasticMapReduceJob {
 
   /**
    * Set the AWS access key.
-   * @param jobFlowName set AWS access key
+   * @param AWSAccessKey set AWS access key
    */
   void setAWSAccessKey(final String AWSAccessKey) {
     this.AWSAccessKey = AWSAccessKey;
