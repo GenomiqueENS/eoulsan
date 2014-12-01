@@ -82,6 +82,7 @@ public class TextComparator extends AbstractComparatorWithBloomFilter {
   //
   // Getter
   //
+  @Override
   public Collection<String> getExtensions() {
     return EXTENSIONS;
   }

@@ -48,8 +48,6 @@ import java.util.logging.Level;
 import org.apache.commons.compress.utils.Charsets;
 import org.testng.annotations.Factory;
 
-import com.google.common.collect.Lists;
-
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -141,8 +139,9 @@ public class ITFactory {
   public final Object[] createInstances() {
 
     // If no test configuration path defined, do nothing
-    if (this.applicationPath == null)
+    if (this.applicationPath == null) {
       return new Object[0];
+    }
 
     // Set the default local for all the application
     Globals.setDefaultLocale();
@@ -155,8 +154,9 @@ public class ITFactory {
 
       getLogger().config("Count tests found " + testsCount);
 
-      if (testsCount == 0)
+      if (testsCount == 0) {
         return new Object[0];
+      }
 
       // Initialize ITSuite
       ITSuite.getInstance(testsCount).setDebugEnabled(
@@ -190,12 +190,14 @@ public class ITFactory {
     final Properties constants = new Properties();
 
     // Add java properties
-    for (Map.Entry<Object, Object> e : System.getProperties().entrySet())
+    for (Map.Entry<Object, Object> e : System.getProperties().entrySet()) {
       constants.put(e.getKey(), e.getValue());
+    }
 
     // Add environment properties
-    for (Map.Entry<String, String> e : System.getenv().entrySet())
+    for (Map.Entry<String, String> e : System.getenv().entrySet()) {
       constants.put(e.getKey(), e.getValue());
+    }
 
     return constants;
   }
@@ -225,9 +227,10 @@ public class ITFactory {
             + this.outputTestsDirectory.getAbsolutePath());
 
     // Create output test directory
-    if (!this.outputTestsDirectory.mkdir())
+    if (!this.outputTestsDirectory.mkdir()) {
       throw new IOException("Cannot create output tests directory "
           + this.outputTestsDirectory.getAbsolutePath());
+    }
 
   }
 
@@ -256,26 +259,29 @@ public class ITFactory {
     }
 
     // If no test was defined by user use all the existing tests
-    if (testsToExecuteDirectories.isEmpty()) {
-      testsToExecuteDirectories.addAll(Arrays.asList(this.testsDataDirectory
-          .listFiles()));
+    final File[] files = this.testsDataDirectory.listFiles();
+    if (files != null && testsToExecuteDirectories.isEmpty()) {
+      testsToExecuteDirectories.addAll(Arrays.asList(files));
     }
 
-    if (testsToExecuteDirectories.size() == 0)
+    if (testsToExecuteDirectories.size() == 0) {
       throw new EoulsanException("None test directory found in "
           + testsDataDirectory.getAbsolutePath());
+    }
 
     // Build map
     for (File testDirectory : testsToExecuteDirectories) {
 
       // Ignore file
-      if (testDirectory.isFile())
+      if (testDirectory.isFile()) {
         continue;
+      }
 
       checkExistingDirectoryFile(testDirectory, "test directory");
 
-      if (!new File(testDirectory, TEST_CONFIGURATION_FILENAME).exists())
+      if (!new File(testDirectory, TEST_CONFIGURATION_FILENAME).exists()) {
         continue;
+      }
 
       // Create instance
       final IT processIT =
@@ -288,10 +294,11 @@ public class ITFactory {
     }
 
     // Check tests founded
-    if (tests.size() == 0)
+    if (tests.size() == 0) {
       throw new EoulsanException(
           "None test define (with test.conf) in directory "
               + testsDataDirectory.getAbsolutePath());
+    }
 
     return Collections.unmodifiableList(tests);
   }
@@ -318,8 +325,9 @@ public class ITFactory {
     String nameTest;
     while ((nameTest = br.readLine()) != null) {
       // Skip commentary
-      if (nameTest.startsWith("#") || nameTest.trim().length() == 0)
+      if (nameTest.startsWith("#") || nameTest.trim().length() == 0) {
         continue;
+      }
 
       result.add(new File(this.testsDataDirectory, nameTest.trim()));
     }
@@ -422,8 +430,9 @@ public class ITFactory {
   static String evaluateExpressions(final String s, boolean allowExec)
       throws EoulsanException {
 
-    if (s == null)
+    if (s == null) {
       return null;
+    }
 
     final StringBuilder result = new StringBuilder();
 
@@ -442,8 +451,9 @@ public class ITFactory {
           final String expr = subStr(s, i + 2, '}');
 
           final String trimmedExpr = expr.trim();
-          if (CONSTANTS.containsKey(trimmedExpr))
+          if (CONSTANTS.containsKey(trimmedExpr)) {
             result.append(CONSTANTS.get(trimmedExpr));
+          }
 
           i += expr.length() + 2;
           continue;
@@ -458,10 +468,11 @@ public class ITFactory {
               ProcessUtils.execToString(evaluateExpressions(expr, false));
 
           // remove last '\n' in the result
-          if (r.charAt(r.length() - 1) == '\n')
+          if (r.charAt(r.length() - 1) == '\n') {
             result.append(r.substring(0, r.length() - 1));
-          else
+          } else {
             result.append(r);
+          }
 
         } catch (IOException e) {
           throw new EoulsanException("Error while evaluating expression \""
@@ -482,9 +493,10 @@ public class ITFactory {
 
     final int endIndex = s.indexOf(charPoint, beginIndex);
 
-    if (endIndex == -1)
+    if (endIndex == -1) {
       throw new EoulsanException("Unexpected end of expression in \""
           + s + "\"");
+    }
 
     return s.substring(beginIndex, endIndex);
   }
@@ -531,7 +543,7 @@ public class ITFactory {
    */
   private static Boolean getBooleanFromSystemProperty(final String property) {
 
-    return (property == null) ? false : Boolean.getBoolean(property);
+    return (property != null) && Boolean.getBoolean(property);
   }
 
   /**
@@ -566,17 +578,20 @@ public class ITFactory {
     int dirCount = 0;
     int fileCount = 0;
 
-    for (File f : distDir.listFiles()) {
+    final File[] files = distDir.listFiles();
+    if (files != null) {
+      for (File f : files) {
 
-      if (f.getName().startsWith(".")) {
-        continue;
-      }
+        if (f.getName().startsWith(".")) {
+          continue;
+        }
 
-      if (f.isDirectory()) {
-        dirCount++;
-        subDir = f;
-      } else if (f.isFile()) {
-        fileCount++;
+        if (f.isDirectory()) {
+          dirCount++;
+          subDir = f;
+        } else if (f.isFile()) {
+          fileCount++;
+        }
       }
     }
 

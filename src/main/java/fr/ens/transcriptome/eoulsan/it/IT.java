@@ -56,7 +56,6 @@ import org.testng.annotations.Test;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -173,8 +172,9 @@ public class IT {
         itResult.addComparisonsResults(results);
 
         // Check if at least on comparison fail, must throw an exception
-        if (!itResult.isSuccess())
+        if (!itResult.isSuccess()) {
           throw itResult.getException();
+        }
       }
 
     } catch (Throwable e) {
@@ -251,9 +251,9 @@ public class IT {
    * @param itResult ItResult object
    * @param keyConf key configuration to retrieve command line
    * @param suffixFilename suffix filename for output standard and error file on
-   *          execution processus
+   *          execution process
    * @param desc description on command line
-   * @throws Throwable if an error occurs during execution processus
+   * @throws Throwable if an error occurs during execution process
    */
   private void executeCommand(final ITCommandExecutor cmdExecutor,
       final ITResult itResult, final String keyConf,
@@ -268,11 +268,11 @@ public class IT {
    * @param itResult ItResult object
    * @param keyConf key configuration to retrieve command line
    * @param suffixFilename suffix filename for output standard and error file on
-   *          execution processus
+   *          execution process
    * @param desc description on command line
    * @param isApplication true if application to run, otherwise false
    *          corresponding to annexes script
-   * @throws Throwable if an error occurs during execution processus
+   * @throws Throwable if an error occurs during execution process
    */
   private void executeCommand(final ITCommandExecutor cmdExecutor,
       final ITResult itResult, final String keyConf,
@@ -284,13 +284,15 @@ public class IT {
         cmdExecutor
             .executeCommand(keyConf, suffixFilename, desc, isApplication);
 
-    if (cmdResult == null)
+    if (cmdResult == null) {
       return;
+    }
 
     itResult.addCommandResult(cmdResult);
 
-    if (cmdResult.isCatchedException())
+    if (cmdResult.isCatchedException()) {
       throw cmdResult.getException();
+    }
   }
 
   /**
@@ -322,9 +324,10 @@ public class IT {
     List<String> envp = new ArrayList<>();
 
     // Add environment properties
-    for (Map.Entry<String, String> e : System.getenv().entrySet())
+    for (Map.Entry<String, String> e : System.getenv().entrySet()) {
       envp.add(e.getKey() + "=" + e.getValue());
-
+    }
+    
     // Add setting environment variables from configuration test
     for (Object o : this.testConf.keySet()) {
       String keyProperty = (String) o;
@@ -338,8 +341,9 @@ public class IT {
     }
 
     // No variable found, return null
-    if (envp.isEmpty())
+    if (envp.isEmpty()) {
       return null;
+    }
 
     // Convert to array
     return Collections.unmodifiableList(envp);
@@ -367,9 +371,10 @@ public class IT {
       // Execute command
       final String output = ProcessUtils.execToString(commandLine);
 
-      if (output != null && output.trim().length() > 0)
+      if (output != null && output.trim().length() > 0) {
         // Retrieve version
         version = output.trim();
+      }
 
     } catch (IOException e) {
     }
@@ -384,18 +389,21 @@ public class IT {
    */
   private boolean isDataNeededToBeGenerated() throws IOException {
 
-    if (!this.generateExpectedData)
+    if (!this.generateExpectedData) {
       // Command for generate data to test, in all case it is true
       return true;
+    }
 
     // Command for generate expected data test
-    if (this.manualGenerationExpectedData)
+    if (this.manualGenerationExpectedData) {
       // non regenerated expected directory if already exists
       return !this.expectedTestDirectory.exists();
+    }
 
     // Regenerate all expected data directory, remove if always exists
-    if (this.generateAllTests)
+    if (this.generateAllTests) {
       return true;
+    }
 
     // Generate only missing expected data directory
     return this.generateNewTests && !this.expectedTestDirectory.exists();
@@ -411,14 +419,16 @@ public class IT {
   private void createExpectedDirectory() throws IOException {
 
     // Skip if data to test to generate
-    if (!this.generateExpectedData)
+    if (!this.generateExpectedData) {
       return;
+    }
 
     // Check already exists
     if ((this.manualGenerationExpectedData || this.generateNewTests)
-        && this.expectedTestDirectory.exists())
+        && this.expectedTestDirectory.exists()) {
       // Nothing to do
       return;
+    }
 
     // Regenerate existing expected data directory
     if (this.generateAllTests && this.expectedTestDirectory.exists()) {
@@ -429,10 +439,11 @@ public class IT {
     // New check existing directory
     if (!this.expectedTestDirectory.exists()) {
       // Create new expected data directory
-      if (!this.expectedTestDirectory.mkdir())
+      if (!this.expectedTestDirectory.mkdir()) {
         throw new IOException(testName
             + ": error while create expected data directory: "
             + this.expectedTestDirectory.getAbsolutePath());
+      }
     }
   }
 
@@ -442,14 +453,16 @@ public class IT {
    */
   private void buildOutputDirectory() throws IOException {
 
-    if (this.outputTestDirectory.exists())
+    if (this.outputTestDirectory.exists()) {
       throw new IOException("Test output directory already exists "
           + this.outputTestDirectory.getAbsolutePath());
+    }
 
     // Create analysis directory and temporary directory
-    if (!new File(this.outputTestDirectory + "/tmp").mkdirs())
+    if (!new File(this.outputTestDirectory + "/tmp").mkdirs()) {
       throw new IOException("Cannot create analysis directory "
           + this.outputTestDirectory.getAbsolutePath());
+    }
 
     // Check input test directory
     checkExistingDirectoryFile(this.inputTestDirectory, "input test directory");
@@ -491,10 +504,11 @@ public class IT {
         });
 
     // Execute test, expected must be existing
-    if (expectedDirectories.length == 0 && !this.generateExpectedData)
+    if (expectedDirectories.length == 0 && !this.generateExpectedData) {
       throw new EoulsanException(testName
           + ": no expected directory found to launch test in "
           + inputTestDirectory.getAbsolutePath());
+    }
 
     // No test directory found
     if (expectedDirectories.length == 0) {
@@ -517,15 +531,17 @@ public class IT {
     }
 
     // One test directory found
-    if (expectedDirectories.length > 1)
+    if (expectedDirectories.length > 1) {
       throw new EoulsanException(testName
           + ": more one expected directory found in "
           + inputTestDirectory.getAbsolutePath());
+    }
 
-    if (!expectedDirectories[0].isDirectory())
+    if (!expectedDirectories[0].isDirectory()) {
       throw new EoulsanException(testName
           + ": no expected directory found in "
           + inputTestDirectory.getAbsolutePath());
+    }
 
     // Return expected data directory
     return expectedDirectories[0];
@@ -535,15 +551,16 @@ public class IT {
   /**
    * Group exclude file patterns with default, global configuration and
    * configuration test.
-   * @param valueConfigTests
+   * @param valueConfigTests patterns from configuration file
    * @return exclude files patterns for tests
    */
   private String buildExcludePatterns(final String valueConfigTests) {
-    if (valueConfigTests == null || valueConfigTests.trim().length() == 0)
+    if (valueConfigTests == null || valueConfigTests.trim().length() == 0) {
       // Syntax **/filename
       return "**/"
           + IT.TEST_SOURCE_LINK_NAME + SEPARATOR + "**/"
           + ITFactory.TEST_CONFIGURATION_FILENAME;
+    }
 
     return IT.TEST_SOURCE_LINK_NAME
         + SEPARATOR + ITFactory.TEST_CONFIGURATION_FILENAME + SEPARATOR
@@ -576,12 +593,14 @@ public class IT {
 
     while ((line = br.readLine()) != null) {
       // Skip commentary
-      if (line.startsWith("#"))
+      if (line.startsWith("#")) {
         continue;
+      }
 
       final int pos = line.indexOf('=');
-      if (pos == -1)
+      if (pos == -1) {
         continue;
+      }
 
       final String key = line.substring(0, pos).trim();
 
@@ -608,14 +627,26 @@ public class IT {
   // Getter
   //
 
+  /**
+   * Gets the test name.
+   * @return the test name
+   */
   public String getTestName() {
     return this.testName;
   }
 
+  /**
+   * Gets the expected test directory.
+   * @return the expected test directory
+   */
   public File getExpectedTestDirectory() {
     return this.expectedTestDirectory;
   }
 
+  /**
+   * Gets the output test directory.
+   * @return the output test directory
+   */
   public File getOutputTestDirectory() {
     return this.outputTestDirectory;
   }
@@ -627,17 +658,29 @@ public class IT {
         + ", files from pattern(s) " + this.fileToComparePatterns;
   }
 
+  /**
+   * Gets the file to compare patterns.
+   * @return the file to compare patterns
+   */
   public String getFileToComparePatterns() {
     return (fileToComparePatterns == null || fileToComparePatterns.isEmpty()
         ? "none" : this.fileToComparePatterns);
   }
 
+  /**
+   * Gets the exclude to compare patterns.
+   * @return the exclude to compare patterns
+   */
   public String getExcludeToComparePatterns() {
     return (excludeToComparePatterns == null
         || excludeToComparePatterns.isEmpty()
         ? "none" : excludeToComparePatterns);
   }
 
+  /**
+   * Gets the check existence file patterns.
+   * @return the check existence file patterns
+   */
   public String getCheckExistenceFilePatterns() {
     return (checkExistenceFilePatterns == null
         || checkExistenceFilePatterns.isEmpty()

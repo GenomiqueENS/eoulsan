@@ -44,8 +44,9 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
- * This internal class allow to build report execution test.
+ * This class compute result on integration test execution.
  * @author Sandrine Perrin
+ * @since 2.0
  */
 public class ITResult {
 
@@ -89,12 +90,13 @@ public class ITResult {
       e.printStackTrace();
     }
 
-    if (isGeneratedData())
+    if (isGeneratedData()) {
       try {
         Files.copy(reportFile.toPath(), new File(it.getExpectedTestDirectory(),
             filename).toPath(), StandardCopyOption.REPLACE_EXISTING);
       } catch (IOException e) {
       }
+    }
   }
 
   /**
@@ -103,8 +105,9 @@ public class ITResult {
    */
   public String createReportTestngMessage() {
 
-    if (isSuccess())
+    if (isSuccess()) {
       return "";
+    }
 
     // Text without stack message when an exception occurs
     String txt = "Fail test: " + it.getTestName();
@@ -120,8 +123,9 @@ public class ITResult {
    * @return report text
    */
   private String getLoggerTest(final String duration) {
-    if (nothingToDo)
+    if (nothingToDo) {
       return "Nothing_to_do: for " + it.getTestName();
+    }
 
     String txt =
         (isSuccess() ? "SUCCESS" : "FAIL")
@@ -132,8 +136,9 @@ public class ITResult {
             + " in " + duration;
     txt += "\n\tdirectory: " + it.getOutputTestDirectory();
 
-    if (!isSuccess())
+    if (!isSuccess()) {
       txt += createExceptionText(this.exception, false);
+    }
 
     return txt;
   }
@@ -150,7 +155,7 @@ public class ITResult {
     report.append(": for ");
     report.append(it.getTestName());
     report.append(isGeneratedData()
-            ? ": generate expected data" : ": launch test and comparison");
+        ? ": generate expected data" : ": launch test and comparison");
 
     report.append("\n\nPatterns:");
     report.append("\n\t compare file ");
@@ -162,10 +167,11 @@ public class ITResult {
     report.append('\n');
 
     // Add synthesis on execution script
-    if (!this.commandsResults.isEmpty())
+    if (!this.commandsResults.isEmpty()) {
       for (ITCommandResult icr : this.commandsResults) {
         report.append(icr.getReport());
       }
+    }
 
     if (isGeneratedData()) {
       report.append("\nSUCCESS: copy files to ");
@@ -196,14 +202,16 @@ public class ITResult {
    */
   public void checkNeededThrowException() {
 
-    if (this.comparisonsResults.isEmpty())
+    if (this.comparisonsResults.isEmpty()) {
       return;
+    }
 
     // Check comparison output it result
     for (ITOutputComparisonResult ocr : this.comparisonsResults) {
-      if (!ocr.getStatutComparison().isSuccess())
+      if (!ocr.getStatutComparison().isSuccess()) {
         setException(new EoulsanException(ocr.getStatutComparison()
             .getExceptionMessage() + "\n\tfile: " + ocr.getFilename()));
+      }
     }
   }
 
@@ -215,8 +223,9 @@ public class ITResult {
   static String createExceptionText(final Throwable exception,
       final boolean withStackTrace) {
 
-    if (exception == null)
+    if (exception == null) {
       return "";
+    }
 
     final StringBuilder msgException = new StringBuilder();
 
@@ -253,8 +262,9 @@ public class ITResult {
   public void addComparisonsResults(
       final Set<ITOutputComparisonResult> comparisonsResults) {
 
-    if (comparisonsResults != null)
+    if (comparisonsResults != null) {
       this.comparisonsResults = comparisonsResults;
+    }
 
     // Check if exception has been throw.
     checkNeededThrowException();
@@ -264,30 +274,56 @@ public class ITResult {
   // Getter and Setter
   //
 
+  /**
+   * As generated data.
+   */
   public void asGeneratedData() {
     this.generatedData = true;
   }
 
+  /**
+   * Checks if is generated data.
+   * @return true, if is generated data
+   */
   public boolean isGeneratedData() {
     return this.generatedData;
   }
 
+  /**
+   * Checks if is success.
+   * @return true, if is success
+   */
   public boolean isSuccess() {
     return this.exception == null;
   }
 
+  /**
+   * Gets the exception.
+   * @return the exception
+   */
   public Throwable getException() {
     return this.exception;
   }
 
+  /**
+   * Sets the exception.
+   * @param e the new exception
+   */
   public void setException(final Throwable e) {
     this.exception = e;
   }
 
+  /**
+   * As nothing to do.
+   */
   public void asNothingToDo() {
     this.nothingToDo = true;
   }
 
+  /**
+   * Checks if is nothing to do.
+   * @return true, if is nothing to do
+   */
   public boolean isNothingToDo() {
     return this.nothingToDo;
   }
@@ -298,7 +334,7 @@ public class ITResult {
 
   /**
    * Public constructor.
-   * @param it it object
+   * @param it integration test object
    */
   public ITResult(final IT it) {
     this.it = it;

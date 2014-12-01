@@ -107,13 +107,15 @@ public class SAMComparator extends AbstractComparatorWithBloomFilter {
 
   private static String getTag(final String samHeaderLine) {
 
-    if (samHeaderLine.length() == 0)
+    if (samHeaderLine.length() == 0) {
       return "";
+    }
 
     final int pos = samHeaderLine.indexOf('\t');
 
-    if (pos == -1)
+    if (pos == -1) {
       return samHeaderLine.substring(1);
+    }
 
     return samHeaderLine.substring(1, pos);
   }
@@ -159,8 +161,9 @@ public class SAMComparator extends AbstractComparatorWithBloomFilter {
   public SAMComparator(boolean useSerializeFile, String... headersTags) {
     super(useSerializeFile);
 
-    if (headersTags == null)
+    if (headersTags == null) {
       throw new NullPointerException("headersTags is null");
+    }
 
     this.tagsToNotCompare = Sets.newHashSet(headersTags);
   }

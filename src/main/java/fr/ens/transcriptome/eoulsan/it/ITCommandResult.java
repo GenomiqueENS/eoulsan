@@ -29,7 +29,8 @@ import java.io.File;
 
 /**
  * This internal class allow to save Process outputs.
- * @author Laurent Jourdren
+ * @author Sandrine Perrin
+ * @since 2.0
  */
 public class ITCommandResult {
 
@@ -40,14 +41,20 @@ public class ITCommandResult {
   private final StringBuilder message;
 
   private Throwable exception;
-  private String exceptionMessage;
   private int exitValue = -1;
   private long duration = -1;
+
+  @SuppressWarnings("unused")
+  private String exceptionMessage;
 
   public boolean isEmpty() {
     return message.toString().isEmpty();
   }
 
+  /**
+   * Gets the report on execution command line.
+   * @return the report
+   */
   public String getReport() {
 
     message.append("\nExecute script for ");
@@ -58,7 +65,8 @@ public class ITCommandResult {
     message.append(this.directory.getAbsolutePath());
 
     message.append("\n\tduration: ");
-    message.append(duration == -1 ? "none" : toTimeHumanReadable(this.duration));
+    message
+        .append(duration == -1 ? "none" : toTimeHumanReadable(this.duration));
 
     message.append("\n\texit value: ");
     message.append(this.exitValue);
@@ -68,6 +76,10 @@ public class ITCommandResult {
     return message.toString();
   }
 
+  /**
+   * Checks if is catched exception.
+   * @return true, if is catched exception
+   */
   public boolean isCatchedException() {
     return exception != null;
   }
@@ -76,22 +88,43 @@ public class ITCommandResult {
   // Getter & setter
   //
 
+  /**
+   * Set the exit value.
+   * @param exitValue the new exit value
+   */
   public void setExitValue(final int exitValue) {
     this.exitValue = exitValue;
   }
 
+  /**
+   * Set the duration.
+   * @param duration the new duration
+   */
   public void setDuration(final long duration) {
     this.duration = duration;
   }
 
+  /**
+   * Get the exception.
+   * @return the exception
+   */
   public Throwable getException() {
     return this.exception;
   }
 
+  /**
+   * Set the exception.
+   * @param exception the new exception
+   */
   public void setException(Exception exception) {
     setException(exception, "");
   }
 
+  /**
+   * Set the exception.
+   * @param exception the exception
+   * @param message the message
+   */
   public void setException(Exception exception, final String message) {
     this.exception = exception;
     this.exceptionMessage = message;
@@ -100,6 +133,12 @@ public class ITCommandResult {
   //
   // Constructor
   //
+  /**
+   * Constructor.
+   * @param commandLine the command line
+   * @param directory the directory
+   * @param desc the description on command line
+   */
   ITCommandResult(final String commandLine, final File directory,
       final String desc) {
 

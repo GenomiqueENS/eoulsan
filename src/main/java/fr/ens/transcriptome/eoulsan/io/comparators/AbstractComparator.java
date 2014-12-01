@@ -41,9 +41,6 @@ import java.util.Collection;
  */
 public abstract class AbstractComparator implements Comparator {
 
-  private String pathFileA;
-  private String pathFileB;
-
   // Line from tested file which fail comparison
   private String causeFailComparison = null;
 
@@ -59,12 +56,14 @@ public abstract class AbstractComparator implements Comparator {
       throws FileNotFoundException, IOException {
 
     // Check input files
-    if (!checkFiles(fileA, fileB) && checkFileSize())
+    if (!checkFiles(fileA, fileB) && checkFileSize()) {
       return false;
+    }
 
     // The files are not equals
-    if (fileA.equals(fileB.length()))
+    if (fileA.equals(fileB)) {
       return false;
+    }
 
     // Check path file (abstract and symbolic) is the same
     if (fileA.getCanonicalFile().equals(fileB.getCanonicalFile())) {
@@ -110,8 +109,9 @@ public abstract class AbstractComparator implements Comparator {
     checkExistingStandardFile(fileB, fileB.getAbsolutePath());
 
     // Check if try to compare the same file
-    if (fileA.equals(fileB))
+    if (fileA.equals(fileB)) {
       throw new IOException("Try to compare the same file: " + fileA);
+    }
 
     return true;
   }
@@ -130,22 +130,6 @@ public abstract class AbstractComparator implements Comparator {
   //
   // Getter
   //
-
-  public String getPathFileA() {
-    return pathFileA;
-  }
-
-  public String getPathFileB() {
-    return pathFileB;
-  }
-
-  public String getPathDirectoryFileA() {
-    return new File(pathFileA).getParent();
-  }
-
-  public String getPathDirectoryFileB() {
-    return new File(pathFileB).getParent();
-  }
 
   @Override
   public String getCauseFailComparison() {
