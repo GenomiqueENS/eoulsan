@@ -67,11 +67,12 @@ public abstract class AbstractComparatorWithBloomFilter extends
       return true;
     }
 
-    final InputStream isB =
-        getCompressionTypeByFilename(fileB.getAbsolutePath())
-            .createInputStream(new FileInputStream(fileB));
+    try (InputStream isB = new FileInputStream(fileB)) {
 
-    return compareFiles(getBloomFilter(fileA), isB);
+      return compareFiles(getBloomFilter(fileA),
+          getCompressionTypeByFilename(fileB.getAbsolutePath())
+              .createInputStream(isB));
+    }
   }
 
   @Override
@@ -110,28 +111,27 @@ public abstract class AbstractComparatorWithBloomFilter extends
   public BloomFilterUtils getBloomFilter(final File file) throws IOException {
 
     final File bloomFilterSer = new File(file.getAbsolutePath() + ".ser");
-    final BloomFilterUtils bloomFilter;
 
     if (this.useSerializeFile && bloomFilterSer.exists()) {
       // Retrieve marshalling bloom filter
-      bloomFilter = BloomFilterUtils.deserializationBloomFilter(bloomFilterSer);
-
-      return bloomFilter;
+      return BloomFilterUtils.deserializationBloomFilter(bloomFilterSer);
     }
 
     final CompressionType zType =
         getCompressionTypeByFilename(file.getAbsolutePath());
 
     // Create new filter
-    bloomFilter =
-        buildBloomFilter(zType.createInputStream(new FileInputStream(file)));
+    try (InputStream is = new FileInputStream(file);) {
+      final BloomFilterUtils bloomFilter =
+          buildBloomFilter(zType.createInputStream(is));
 
-    // If need serialize bloomFilter in file only for file
-    if (isCreateSerializeFile(file, zType)) {
-      BloomFilterUtils.serializationBloomFilter(bloomFilterSer, bloomFilter);
+      // If need serialize bloomFilter in file only for file
+      if (isCreateSerializeFile(file, zType)) {
+        BloomFilterUtils.serializationBloomFilter(bloomFilterSer, bloomFilter);
+      }
+
+      return bloomFilter;
     }
-
-    return bloomFilter;
   }
 
   /**

@@ -70,15 +70,14 @@ public abstract class AbstractComparator implements Comparator {
       return true;
     }
 
-    final InputStream isA =
-        getCompressionTypeByFilename(fileA.getAbsolutePath())
-            .createInputStream(new FileInputStream(fileA));
+    try (InputStream isA = new FileInputStream(fileA);
+        InputStream isB = new FileInputStream(fileB);) {
 
-    final InputStream isB =
-        getCompressionTypeByFilename(fileB.getAbsolutePath())
-            .createInputStream(new FileInputStream(fileB));
-
-    return compareFiles(isA, isB);
+      return compareFiles(getCompressionTypeByFilename(fileA.getAbsolutePath())
+          .createInputStream(isA),
+          getCompressionTypeByFilename(fileB.getAbsolutePath())
+              .createInputStream(isB));
+    }
   }
 
   /**
