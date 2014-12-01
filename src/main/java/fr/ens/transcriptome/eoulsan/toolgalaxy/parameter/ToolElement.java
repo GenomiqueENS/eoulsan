@@ -24,18 +24,23 @@
 
 package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
 
+import java.util.Map;
+
 public interface ToolElement {
 
   public final static String SEP = ".";
 
   String getName();
 
-  boolean setParameterEoulsan(final String value);
 
   boolean isSetting();
 
   String getValue();
 
   boolean setParameterEoulsan();
+
+  boolean setParameterEoulsan(final String value);
+
+  void setParameterEoulsan(Map<String, String> parametersEoulsan);
 
 }

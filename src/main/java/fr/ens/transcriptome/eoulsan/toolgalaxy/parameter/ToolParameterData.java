@@ -2,7 +2,7 @@ package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
 
 import org.w3c.dom.Element;
 
-public class ToolParameter extends AbstractToolParameter {
+public class ToolParameterData extends AbstractToolElement {
 
   private String value = "";
 
@@ -18,6 +18,11 @@ public class ToolParameter extends AbstractToolParameter {
   }
 
   @Override
+  public boolean setParameterEoulsan() {
+    return true;
+  }
+
+  @Override
   public String getValue() {
     return this.value;
   }
@@ -25,19 +30,13 @@ public class ToolParameter extends AbstractToolParameter {
   //
   // Constructor
   //
-  public ToolParameter(final Element param) {
+  public ToolParameterData(final Element param) {
     this(param, null);
   }
 
-  public ToolParameter(Element param, String prefixName) {
-    super(param, prefixName);
+  public ToolParameterData(Element param, String nameSpace) {
+    super(param, nameSpace);
     isSetting = true;
-  }
-
-  @Override
-  public boolean setParameterEoulsan() {
-    // TODO Auto-generated method stub
-    return true;
   }
 
 }

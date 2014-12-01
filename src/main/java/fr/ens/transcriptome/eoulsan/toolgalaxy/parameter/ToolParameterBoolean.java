@@ -7,7 +7,7 @@ import org.w3c.dom.Element;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 
-public class ToolParameterBoolean extends AbstractToolParameter {
+public class ToolParameterBoolean extends AbstractToolElement {
 
   public final static String TYPE = "boolean";
 
@@ -69,8 +69,8 @@ public class ToolParameterBoolean extends AbstractToolParameter {
     this(param, null);
   }
 
-  public ToolParameterBoolean(Element param, String prefixName) {
-    super(param, prefixName);
+  public ToolParameterBoolean(Element param, String nameSpace) {
+    super(param, nameSpace);
 
     this.checked =
         param.getAttribute(ATT_CHECKED_KEY).toLowerCase(Globals.DEFAULT_LOCALE);

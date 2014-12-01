@@ -4,7 +4,7 @@ import org.w3c.dom.Element;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 
-public class ToolParameterInteger extends AbstractToolParameter {
+public class ToolParameterInteger extends AbstractToolElement {
 
   public final static String TYPE = "integer";
 
@@ -48,9 +48,9 @@ public class ToolParameterInteger extends AbstractToolParameter {
     this(param, null);
   }
 
-  public ToolParameterInteger(Element param, String prefixName)
+  public ToolParameterInteger(Element param, String nameSpace)
       throws EoulsanException {
-    super(param, prefixName);
+    super(param, nameSpace);
 
     try {
       int defaultValue = Integer.parseInt(param.getAttribute(ATT_DEFAULT_KEY));

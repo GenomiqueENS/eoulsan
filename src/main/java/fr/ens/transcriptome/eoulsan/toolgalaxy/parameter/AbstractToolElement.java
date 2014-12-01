@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
 
 import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Element;
 
@@ -33,7 +34,7 @@ import com.google.common.base.Splitter;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 
-public abstract class AbstractToolParameter implements ToolElement {
+public abstract class AbstractToolElement implements ToolElement {
 
   /** SPLITTER */
   final static Splitter COMMA = Splitter.on(',').trimResults()
@@ -41,6 +42,7 @@ public abstract class AbstractToolParameter implements ToolElement {
 
   /** Data from attribute param tag */
   private final String shortName;
+  private final String nameSpace;
   private final String name;
 
   private final String type;
@@ -63,6 +65,13 @@ public abstract class AbstractToolParameter implements ToolElement {
   }
 
   abstract boolean isValueParameterValid();
+
+  public void setParameterEoulsan(Map<String, String> parametersEoulsan) {
+    // TODO
+    System.out.println("val in abstract to set paramE "
+        + parametersEoulsan.get(getName()));
+    setParameterEoulsan(parametersEoulsan.get(getName()));
+  }
 
   //
   // Getter and setter
@@ -131,7 +140,7 @@ public abstract class AbstractToolParameter implements ToolElement {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    AbstractToolParameter other = (AbstractToolParameter) obj;
+    AbstractToolElement other = (AbstractToolElement) obj;
     if (help == null) {
       if (other.help != null)
         return false;
@@ -161,13 +170,13 @@ public abstract class AbstractToolParameter implements ToolElement {
   }
 
   //
-  public static ToolElement getInstanceToolParameter(final Element param)
+  public static ToolElement getInstanceToolElement(final Element param)
       throws EoulsanException {
-    return getInstanceToolParameter(param, null);
+    return getInstanceToolElement(param, null);
   }
 
-  public static ToolElement getInstanceToolParameter(final Element param,
-      final String prefixName) throws EoulsanException {
+  public static ToolElement getInstanceToolElement(final Element param,
+      final String nameSpace) throws EoulsanException {
 
     if (param == null)
       throw new EoulsanException(
@@ -177,27 +186,30 @@ public abstract class AbstractToolParameter implements ToolElement {
     final String type =
         param.getAttribute("type").toLowerCase(Globals.DEFAULT_LOCALE);
 
+    final String paramName = param.getTagName();
+    if (paramName.equals(ToolOutputsData.TAG_NAME))
+      return new ToolOutputsData(param, nameSpace);
+
     ToolElement toolElement = null;
 
     switch (type) {
 
     case ToolParameterBoolean.TYPE:
-      toolElement = new ToolParameterBoolean(param, prefixName);
+      toolElement = new ToolParameterBoolean(param, nameSpace);
       break;
     case ToolParameterInteger.TYPE:
-      toolElement = new ToolParameterInteger(param, prefixName);
+      toolElement = new ToolParameterInteger(param, nameSpace);
       break;
     case ToolParameterFloat.TYPE:
-      toolElement = new ToolParameterFloat(param, prefixName);
+      toolElement = new ToolParameterFloat(param, nameSpace);
       break;
     case ToolParameterSelect.TYPE:
-      toolElement = new ToolParameterSelect(param, prefixName);
+      toolElement = new ToolParameterSelect(param, nameSpace);
       break;
 
     default:
-      toolElement = new ToolParameter(param, prefixName);
+      toolElement = new ToolParameterData(param, nameSpace);
       break;
-
     }
 
     return toolElement;
@@ -206,19 +218,20 @@ public abstract class AbstractToolParameter implements ToolElement {
   //
   // Constructor
   //
-  public AbstractToolParameter(final Element param) {
+  public AbstractToolElement(final Element param) {
     this(param, null);
   }
 
-  public AbstractToolParameter(final Element param, final String prefixName) {
+  public AbstractToolElement(final Element param, final String nameSpace) {
 
     this.shortName = param.getAttribute("name");
+    this.nameSpace = nameSpace;
 
     // If exists add prefix from parent element
-    if (prefixName == null || prefixName.isEmpty()) {
+    if (nameSpace == null || nameSpace.isEmpty()) {
       this.name = this.shortName;
     } else {
-      this.name = prefixName + SEP + param.getAttribute("name");
+      this.name = nameSpace + SEP + this.shortName;
 
     }
 

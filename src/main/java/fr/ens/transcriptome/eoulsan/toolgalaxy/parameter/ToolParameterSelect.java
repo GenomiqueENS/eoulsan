@@ -11,7 +11,7 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 
-public class ToolParameterSelect extends AbstractToolParameter {
+public class ToolParameterSelect extends AbstractToolElement {
 
   public final static String TYPE = "select";
 
@@ -22,7 +22,7 @@ public class ToolParameterSelect extends AbstractToolParameter {
   private final List<String> optionsValue;
   private final List<Element> optionsElement;
 
-  private String value;
+  private String value = "";
 
   @Override
   boolean isValueParameterValid() {
@@ -59,9 +59,12 @@ public class ToolParameterSelect extends AbstractToolParameter {
       }
     }
 
-    if (options.isEmpty())
-      throw new EoulsanException(
-          "Parsing tool xml: no option found in conditional element.");
+    if (options.isEmpty()) {
+      // throw new EoulsanException(
+      // "Parsing tool xml: no option found in conditional element: "
+      // + getName());
+      return Collections.emptyList();
+    }
 
     return Collections.unmodifiableList(options);
   }
@@ -78,9 +81,9 @@ public class ToolParameterSelect extends AbstractToolParameter {
     this(param, null);
   }
 
-  public ToolParameterSelect(final Element param, final String prefixName)
+  public ToolParameterSelect(final Element param, final String nameSpace)
       throws EoulsanException {
-    super(param, prefixName);
+    super(param, nameSpace);
 
     this.optionsElement = extractChildElementsByTagName(param, "option");
     this.optionsValue = extractAllOptions();

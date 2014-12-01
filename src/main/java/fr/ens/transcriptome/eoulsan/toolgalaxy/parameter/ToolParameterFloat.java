@@ -4,7 +4,7 @@ import org.w3c.dom.Element;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 
-public class ToolParameterFloat extends AbstractToolParameter {
+public class ToolParameterFloat extends AbstractToolElement {
 
   public final static String TYPE = "float";
 
@@ -48,9 +48,9 @@ public class ToolParameterFloat extends AbstractToolParameter {
     this(param, null);
   }
 
-  public ToolParameterFloat(Element param, String prefixName)
+  public ToolParameterFloat(Element param, String nameSpace)
       throws EoulsanException {
-    super(param, prefixName);
+    super(param, nameSpace);
 
     try {
       double defaultValue =
