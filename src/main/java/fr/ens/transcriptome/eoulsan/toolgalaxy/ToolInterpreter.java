@@ -74,6 +74,7 @@ public class ToolInterpreter {
   private Set<ToolElement> inputs;
   private Set<ToolElement> outputs;
 
+  private String toolID;
   private String toolName;
   private String toolVersion;
   private String description;
@@ -96,6 +97,7 @@ public class ToolInterpreter {
       throws EoulsanException {
 
     // Set tool name
+    this.toolID = extractToolID(this.doc);
     this.toolName = extractToolName(this.doc);
     this.toolVersion = extractToolVersion(this.doc);
     this.description = extractDescription(this.doc);
@@ -560,6 +562,16 @@ public class ToolInterpreter {
   }
 
   /**
+   * Extract tool id tag in string.
+   * @param doc document represented tool xml
+   * @return tool id string
+   */
+  static String extractToolID(final Document doc) {
+
+    return extractValueFromElement(doc, "tool", 0, "id");
+  }
+
+  /**
    * Extract text from DOM from tag name, at the index place. If attribute name
    * defined return value attribute, otherwise return content text of element.
    * @param doc document represented tool xml
@@ -597,6 +609,14 @@ public class ToolInterpreter {
   //
   // Getter
   //
+
+  /**
+   * Gets the tool id.
+   * @return the tool id
+   */
+  public Object getToolID() {
+    return this.toolID;
+  }
 
   /** Get tool name */
   public String getToolName() {
@@ -640,4 +660,5 @@ public class ToolInterpreter {
     this.pythonInterperter = new ToolPythonInterpreter();
     checkDomValidity();
   }
+
 }
