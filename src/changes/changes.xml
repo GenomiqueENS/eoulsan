@@ -634,5 +634,13 @@ of reads that reject each filter like in local mode.
 
          </release>
 
+         <release version="2.0-alpha3" description="Eoulsan 2.0-alpha3 release" date="2014-12-05">
+
+            <action dev="jourdren" type="fix">
+                Fix Dockerfile URL to download Eoulsan.
+            </action>
+
+	</release>
+
 	</body>
 </document>
