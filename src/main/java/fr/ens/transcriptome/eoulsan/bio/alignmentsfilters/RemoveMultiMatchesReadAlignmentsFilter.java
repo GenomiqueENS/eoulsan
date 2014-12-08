@@ -68,9 +68,37 @@ public class RemoveMultiMatchesReadAlignmentsFilter extends
 
     // paired-end mode
     else {
-      if (records.size() > 2) {
+
+      switch (records.size()) {
+
+      case 1:
+        return;
+
+      case 2:
+
+        int countFirstInPair = 0;
+        int countsecondInPair = 0;
+
+        for (SAMRecord record : records) {
+
+          if (record.getFirstOfPairFlag()) {
+            countFirstInPair++;
+          } else if (record.getSecondOfPairFlag()) {
+            countsecondInPair++;
+          }
+        }
+
+        if (countFirstInPair > 1 || countsecondInPair > 1) {
+          records.clear();
+        }
+
+        break;
+
+      default:
         records.clear();
+        break;
       }
+
     }
   }
 

@@ -49,7 +49,6 @@ public class RemoveMultiMatchesReadAlignmentsFilterTest {
   private String recordPE1, recordPE2, recordPE3, recordPE4;
   private SAMRecord samRecordSE1, samRecordSE2;
   private SAMRecord samRecordPE1, samRecordPE2, samRecordPE3, samRecordPE4;
-  private List<SAMRecord> records;
   private RemoveMultiMatchesReadAlignmentsFilter filter;
 
   /**
@@ -112,8 +111,6 @@ public class RemoveMultiMatchesReadAlignmentsFilterTest {
     this.samRecordPE3 = parser.parseLine(this.recordPE3);
     this.samRecordPE4 = parser.parseLine(this.recordPE4);
 
-    this.records = new ArrayList<>();
-
     this.filter = new RemoveMultiMatchesReadAlignmentsFilter();
   }
 
@@ -144,34 +141,81 @@ public class RemoveMultiMatchesReadAlignmentsFilterTest {
   @Test
   public void testFilterReadAlignments() {
 
-    List<SAMRecord> recordsVerif = new ArrayList<>();
+    final List<SAMRecord> records = new ArrayList<>();
+    final List<SAMRecord> recordsVerif = new ArrayList<>();
 
     // single-end mode
-    this.records.add(this.samRecordSE1);
+    records.add(this.samRecordSE1);
     recordsVerif.add(this.samRecordSE1);
-    this.filter.filterReadAlignments(this.records);
-    assertEquals(this.records, recordsVerif);
+    this.filter.filterReadAlignments(records);
+    assertEquals(records, recordsVerif);
 
-    this.records.add(this.samRecordSE2);
+    records.add(this.samRecordSE2);
     recordsVerif.clear();
-    this.filter.filterReadAlignments(this.records);
-    assertEquals(this.records, recordsVerif);
+    this.filter.filterReadAlignments(records);
+    assertEquals(records, recordsVerif);
 
-    this.records.clear();
+    records.clear();
     recordsVerif.clear();
 
     // paired-end mode
-    this.records.add(this.samRecordPE1);
-    this.records.add(this.samRecordPE2);
+    records.add(this.samRecordPE1);
+    records.add(this.samRecordPE2);
     recordsVerif.add(this.samRecordPE1);
     recordsVerif.add(this.samRecordPE2);
-    this.filter.filterReadAlignments(this.records);
-    assertEquals(this.records, recordsVerif);
+    this.filter.filterReadAlignments(records);
+    assertEquals(records, recordsVerif);
 
-    this.records.add(this.samRecordPE3);
-    this.records.add(this.samRecordPE4);
+    records.add(this.samRecordPE3);
+    records.add(this.samRecordPE4);
     recordsVerif.clear();
-    this.filter.filterReadAlignments(this.records);
-    assertEquals(this.records, recordsVerif);
+    this.filter.filterReadAlignments(records);
+    assertEquals(records, recordsVerif);
+
+    records.clear();
+    records.add(this.samRecordPE1);
+    assertEquals(1, records.size());
+
+    records.clear();
+    records.add(this.samRecordPE1);
+    records.add(this.samRecordPE1);
+    this.filter.filterReadAlignments(records);
+    assertEquals(0, records.size());
+
+    records.clear();
+    records.add(this.samRecordPE2);
+    assertEquals(1, records.size());
+
+    records.clear();
+    records.add(this.samRecordPE2);
+    records.add(this.samRecordPE2);
+    this.filter.filterReadAlignments(records);
+    assertEquals(0, records.size());
+
+    records.clear();
+    records.add(this.samRecordPE1);
+    records.add(this.samRecordPE2);
+    records.add(this.samRecordPE2);
+    this.filter.filterReadAlignments(records);
+    assertEquals(0, records.size());
+
+    records.clear();
+    records.add(this.samRecordPE1);
+    records.add(this.samRecordPE1);
+    records.add(this.samRecordPE2);
+    records.add(this.samRecordPE2);
+    this.filter.filterReadAlignments(records);
+    assertEquals(0, records.size());
+
+    records.clear();
+    records.add(this.samRecordPE1);
+    records.add(this.samRecordPE2);
+    this.filter.filterReadAlignments(records);
+    assertEquals(2, records.size());
+
+    records.clear();
+    this.filter.filterReadAlignments(records);
+    assertEquals(0, records.size());
+
   }
 }
