@@ -23,8 +23,6 @@
  */
 package fr.ens.transcriptome.eoulsan.galaxytool.element;
 
-import static fr.ens.transcriptome.eoulsan.galaxytool.ToolInterpreter.extractChildElementsByTagName;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +32,7 @@ import org.w3c.dom.Element;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -72,8 +71,7 @@ public class ToolElementSelect extends AbstractToolElement {
   }
 
   @Override
-  public void setValue(final Parameter stepParameter)
-      throws EoulsanException {
+  public void setValue(final Parameter stepParameter) throws EoulsanException {
 
     this.value = stepParameter.getStringValue();
     this.isSetting = true;
@@ -129,7 +127,7 @@ public class ToolElementSelect extends AbstractToolElement {
   //
   // Constructors
   //
-  
+
   /**
    * Instantiates a new tool parameter select.
    * @param param the param
@@ -149,7 +147,8 @@ public class ToolElementSelect extends AbstractToolElement {
       throws EoulsanException {
     super(param, nameSpace);
 
-    this.optionsElement = extractChildElementsByTagName(param, "option");
+    this.optionsElement =
+        GalaxyToolXMLParser.extractChildElementsByTagName(param, "option");
     this.optionsValue = this.extractAllOptions();
 
   }

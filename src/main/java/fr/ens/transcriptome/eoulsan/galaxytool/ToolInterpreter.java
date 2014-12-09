@@ -24,13 +24,10 @@
 
 package fr.ens.transcriptome.eoulsan.galaxytool;
 
-import static fr.ens.transcriptome.eoulsan.galaxytool.element.AbstractToolElement.getInstanceToolElement;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,21 +36,17 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.galaxytool.element.ToolConditionalElement;
 import fr.ens.transcriptome.eoulsan.galaxytool.element.ToolElement;
+import fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 
 // TODO: Auto-generated Javadoc
@@ -127,20 +120,21 @@ public class ToolInterpreter {
     this.initStepParameters(setStepParameters);
 
     // Set tool name
-    this.toolID = extractToolID(this.doc);
-    this.toolName = extractToolName(this.doc);
-    this.toolVersion = extractToolVersion(this.doc);
-    this.description = extractDescription(this.doc);
+    this.toolID = GalaxyToolXMLParser.extractToolID(this.doc);
+    this.toolName = GalaxyToolXMLParser.extractToolName(this.doc);
+    this.toolVersion = GalaxyToolXMLParser.extractToolVersion(this.doc);
+    this.description = GalaxyToolXMLParser.extractDescription(this.doc);
 
-    this.inputs = extractInputs(this.doc, this.stepParameters);
-    this.outputs = extractOutputs(this.doc);
+    this.inputs =
+        GalaxyToolXMLParser.extractInputs(this.doc, this.stepParameters);
+    this.outputs = GalaxyToolXMLParser.extractOutputs(this.doc);
 
     this.inDataFormatExpected = this.extractDataFormat(this.inputs);
     this.outDataFormatExpected = this.extractDataFormat(this.outputs);
 
     //
-    this.interpreter = extractInterpreter(this.doc);
-    final String cmdTagContent = extractCommand(this.doc);
+    this.interpreter = GalaxyToolXMLParser.extractInterpreter(this.doc);
+    final String cmdTagContent = GalaxyToolXMLParser.extractCommand(this.doc);
 
     if (cmdTagContent.isEmpty()) {
       throw new EoulsanException("Parsing tool XML file: no command found.");
@@ -224,9 +218,8 @@ public class ToolInterpreter {
    * @param ports map on ports
    * @throws EoulsanException the eoulsan exception
    */
-  private void setToolElementWithPort(
-      final Map<String, ToolElement> paramTool, final Map<String, String> ports)
-      throws EoulsanException {
+  private void setToolElementWithPort(final Map<String, ToolElement> paramTool,
+      final Map<String, String> ports) throws EoulsanException {
 
     for (final Map.Entry<String, String> e : ports.entrySet()) {
 
@@ -383,8 +376,7 @@ public class ToolInterpreter {
    * @return the map
    * @throws EoulsanException the eoulsan exception
    */
-  private Map<String, String> extractVariablesFromXML()
-      throws EoulsanException {
+  private Map<String, String> extractVariablesFromXML() throws EoulsanException {
 
     final int variablesCount = this.inputs.size() + this.outputs.size();
     final Map<String, String> results = new HashMap<>(variablesCount);
@@ -484,337 +476,6 @@ public class ToolInterpreter {
   }
 
   //
-  // Static methods parsing xml
-  //
-
-  /**
-   * Extract param element.
-   * @param parent the parent
-   * @param elementName the element name
-   * @return the map
-   * @throws EoulsanException the Eoulsan exception
-   */
-  static Map<String, ToolElement> extractParamElement(final Element parent,
-      final String elementName) throws EoulsanException {
-
-    final Map<String, ToolElement> results = new HashMap<>();
-
-    // Extract all param tag
-    final List<Element> simpleParams =
-        extractChildElementsByTagName(parent, elementName);
-
-    for (final Element param : simpleParams) {
-      final ToolElement ptg = getInstanceToolElement(param);
-
-      results.put(ptg.getName(), ptg);
-    }
-
-    return results;
-  }
-
-  /**
-   * Extract conditional param element.
-   * @param parent the parent
-   * @return the map
-   * @throws EoulsanException the Eoulsan exception
-   */
-  static Map<String, ToolElement> extractConditionalParamElement(
-      final Element parent) throws EoulsanException {
-    final Map<String, Parameter> stepParameters = Collections.emptyMap();
-    return extractConditionalParamElement(parent, stepParameters);
-  }
-
-  /**
-   * Extract conditional param element.
-   * @param parent the parent
-   * @param stepParameters the step parameters
-   * @return the map
-   * @throws EoulsanException the Eoulsan exception
-   */
-  static Map<String, ToolElement> extractConditionalParamElement(
-      final Element parent, final Map<String, Parameter> stepParameters)
-      throws EoulsanException {
-
-    final Map<String, ToolElement> results = new HashMap<>();
-
-    // Extract conditional element, can be empty
-    final List<Element> condParams =
-        extractChildElementsByTagName(parent, "conditional");
-
-    for (final Element param : condParams) {
-      final ToolConditionalElement tce = new ToolConditionalElement(param);
-
-      final ToolElement parameterSelect = tce.getToolElementSelect();
-      results.put(parameterSelect.getName(), parameterSelect);
-
-      // Set parameter
-      tce.setValues(stepParameters);
-
-      results.putAll(tce.getToolElementsResult());
-
-      // TODO
-      // System.out.println("cond " + tce);
-    }
-
-    return results;
-  }
-
-  /**
-   * Extract elements by tag name.
-   * @param doc the doc
-   * @param tagName the tag name
-   * @return the list
-   * @throws EoulsanException the Eoulsan exception
-   */
-  static List<Element> extractElementsByTagName(final Document doc,
-      final String tagName) throws EoulsanException {
-    return extractElementsByTagName(doc, tagName, -1);
-  }
-
-  /**
-   * Extract elements by tag name.
-   * @param doc the doc
-   * @param tagName the tag name
-   * @param expectedCount the expected count
-   * @return the list
-   * @throws EoulsanException the Eoulsan exception
-   */
-  static List<Element> extractElementsByTagName(final Document doc,
-      final String tagName, final int expectedCount) throws EoulsanException {
-
-    final List<Element> result = XMLUtils.getElementsByTagName(doc, tagName);
-
-    // Expected count available
-    if (expectedCount > 0) {
-      if (result.isEmpty()) {
-        throw new EoulsanException("Parsing tool XML file: no "
-            + tagName + " tag found.");
-      }
-
-      if (result.size() != expectedCount) {
-        throw new EoulsanException("Parsing tool XML file: tag "
-            + tagName + " invalid entry coutn found (expected " + expectedCount
-            + " founded " + result.size() + ".");
-      }
-    }
-    return result;
-  }
-
-  /**
-   * Extract elements by tag name.
-   * @param parent the parent
-   * @param tagName the tag name
-   * @return the list
-   * @throws EoulsanException the Eoulsan exception
-   */
-  static List<Element> extractElementsByTagName(final Element parent,
-      final String tagName) throws EoulsanException {
-    return extractElementsByTagName(parent, tagName, -1);
-  }
-
-  /**
-   * Extract elements by tag name.
-   * @param parent the parent
-   * @param tagName the tag name
-   * @param expectedCount the expected count
-   * @return the list
-   * @throws EoulsanException the Eoulsan exception
-   */
-  static List<Element> extractElementsByTagName(final Element parent,
-      final String tagName, final int expectedCount) throws EoulsanException {
-
-    final List<Element> result = extractChildElementsByTagName(parent, tagName);
-
-    // Expected count available
-    if (expectedCount > 0) {
-      if (result.isEmpty()) {
-        throw new EoulsanException("Parsing tool XML file: no "
-            + tagName + " tag found.");
-      }
-
-      if (result.size() != expectedCount) {
-        throw new EoulsanException("Parsing tool XML file: tag "
-            + tagName + " invalid entry coutn found (expected " + expectedCount
-            + " founded " + result.size() + ".");
-      }
-    }
-    return result;
-  }
-
-  /**
-   * Extract child elements by tag name.
-   * @param parentElement the parent element
-   * @param elementName the element name
-   * @return the list
-   */
-  public static List<Element> extractChildElementsByTagName(
-      final Element parentElement, final String elementName) {
-
-    if (elementName == null || parentElement == null) {
-      return null;
-    }
-
-    final NodeList nStepsList = parentElement.getChildNodes();
-    if (nStepsList == null) {
-      return null;
-    }
-
-    final List<Element> result = Lists.newArrayList();
-
-    for (int i = 0; i < nStepsList.getLength(); i++) {
-
-      final Node node = nStepsList.item(i);
-
-      if (node.getNodeType() == Node.ELEMENT_NODE) {
-        final Element e = (Element) node;
-
-        if (e.getTagName().equals(elementName)) {
-          result.add(e);
-        }
-      }
-    }
-
-    return result;
-  }
-
-  /**
-   * Extract all output parameters define in document.
-   * @param doc document represented tool xml
-   * @return all output parameters
-   * @throws EoulsanException if none output parameter found
-   */
-  static Map<String, ToolElement> extractOutputs(final Document doc)
-      throws EoulsanException {
-
-    final Map<String, ToolElement> results = new HashMap<>();
-
-    final Element outputElement =
-        extractElementsByTagName(doc, "outputs", 1).get(0);
-
-    results.putAll(extractParamElement(outputElement, "data"));
-
-    results.putAll(extractConditionalParamElement(outputElement));
-
-    return results;
-  }
-
-  /**
-   * Extract all input parameters define in document.
-   * @param doc document represented tool xml
-   * @param stepParameters parameters for analysis
-   * @return all input parameters
-   * @throws EoulsanException if none input parameter found
-   */
-  static Map<String, ToolElement> extractInputs(final Document doc,
-      final Map<String, Parameter> stepParameters) throws EoulsanException {
-
-    final Map<String, ToolElement> results = new HashMap<>();
-
-    final Element inputElement =
-        extractElementsByTagName(doc, "inputs", 1).get(0);
-
-    results.putAll(extractParamElement(inputElement, "param"));
-
-    results
-        .putAll(extractConditionalParamElement(inputElement, stepParameters));
-
-    // Extract input
-    return results;
-  }
-
-  /**
-   * Extract command tag in string.
-   * @param doc document represented tool xml
-   * @return command string
-   */
-  static String extractCommand(final Document doc) {
-    return extractValueFromElement(doc, "command", 0, null);
-  }
-
-  /**
-   * Extract interpreter attribute in string.
-   * @param doc document represented tool xml
-   * @return interpreter name
-   */
-  static String extractInterpreter(final Document doc) {
-    return extractValueFromElement(doc, "command", 0, "interpreter");
-  }
-
-  /**
-   * Extract description tag in string.
-   * @param doc document represented tool xml
-   * @return description
-   */
-  static String extractDescription(final Document doc) {
-    return extractValueFromElement(doc, "description", 0, null);
-  }
-
-  /**
-   * Extract tool version attribute in string.
-   * @param doc document represented tool xml
-   * @return tool version string
-   */
-  static String extractToolVersion(final Document doc) {
-
-    return extractValueFromElement(doc, "tool", 0, "version");
-  }
-
-  /**
-   * Extract tool name tag in string.
-   * @param doc document represented tool xml
-   * @return tool name string
-   */
-  static String extractToolName(final Document doc) {
-
-    return extractValueFromElement(doc, "tool", 0, "name");
-  }
-
-  /**
-   * Extract tool id tag in string.
-   * @param doc document represented tool xml
-   * @return tool id string
-   */
-  static String extractToolID(final Document doc) {
-
-    return extractValueFromElement(doc, "tool", 0, "id");
-  }
-
-  /**
-   * Extract text from DOM from tag name, at the index place. If attribute name
-   * defined return value attribute, otherwise return content text of element.
-   * @param doc document represented tool xml
-   * @param elementName element name to extract
-   * @param index index of element name to extract
-   * @param attributeName attribute name from element name to extract
-   * @return value corresponding to element name content or attribute of element
-   *         name. Return null, if none corresponding element or attribute
-   *         found.
-   */
-  static String extractValueFromElement(final Document doc,
-      final String elementName, final int index, final String attributeName) {
-
-    // List element
-    final List<Element> e = XMLUtils.getElementsByTagName(doc, elementName);
-
-    if (e.isEmpty()) {
-      return null;
-    }
-
-    // Check size
-    if (index >= e.size()) {
-      return null;
-    }
-
-    // Return content text
-    if (attributeName == null) {
-      return e.get(index).getTextContent();
-    }
-
-    // Return value of attribute
-    return e.get(index).getAttribute(attributeName);
-  }
-
-  //
   // Getter
   //
 
@@ -858,7 +519,8 @@ public class ToolInterpreter {
     return this.interpreter;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
    * @see java.lang.Object#toString()
    */
   @Override
@@ -868,8 +530,8 @@ public class ToolInterpreter {
         + ", \noutputs="
         + Joiner.on("\n").withKeyValueSeparator("=").join(this.outputs)
         + ", \ntoolName=" + this.toolName + ", toolVersion=" + this.toolVersion
-        + ", description=" + this.description + ", interpreter=" + this.interpreter
-        + ", command=\n" + this.command + "]";
+        + ", description=" + this.description + ", interpreter="
+        + this.interpreter + ", command=\n" + this.command + "]";
   }
 
   //

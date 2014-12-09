@@ -24,7 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.galaxytool.element;
 
-import static fr.ens.transcriptome.eoulsan.galaxytool.ToolInterpreter.extractChildElementsByTagName;
 import static fr.ens.transcriptome.eoulsan.galaxytool.element.AbstractToolElement.getInstanceToolElement;
 import static fr.ens.transcriptome.eoulsan.util.XMLUtils.getElementsByTagName;
 
@@ -42,6 +41,7 @@ import com.google.common.collect.Multimap;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -235,7 +235,7 @@ public class ToolConditionalElement implements ToolElement {
     return "ToolConditionalElement [name="
         + this.nameSpace + ", toolParameterSelect=" + this.toolElementSelect
         + ", options=" + this.actionsRelatedOptions + ", parameterEoulsan="
-        + getValue() + "]";
+        + this.getValue() + "]";
   }
 
   //
@@ -251,7 +251,7 @@ public class ToolConditionalElement implements ToolElement {
 
     this.nameSpace = element.getAttribute("name");
 
-    final List<Element> param = extractChildElementsByTagName(element, "param");
+    final List<Element> param = GalaxyToolXMLParser.extractChildElementsByTagName(element, "param");
 
     if (param.isEmpty() || param.size() != 1) {
       throw new EoulsanException(
@@ -275,7 +275,7 @@ public class ToolConditionalElement implements ToolElement {
     }
 
     // Extract all case available
-    this.actionsRelatedOptions = parseActionsRelatedOptions(element);
+    this.actionsRelatedOptions = this.parseActionsRelatedOptions(element);
     this.toolElementSelected = new HashMap<>();
 
   }
