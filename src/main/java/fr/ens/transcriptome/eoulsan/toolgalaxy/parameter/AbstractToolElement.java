@@ -35,23 +35,40 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class AbstractToolElement.
+ * @author Sandrine Perrin
+ * @since 2.4
+ */
 public abstract class AbstractToolElement implements ToolElement {
 
-  /** SPLITTER */
+  /** SPLITTER. */
   final static Splitter COMMA = Splitter.on(',').trimResults()
       .omitEmptyStrings();
 
-  /** Data from attribute param tag */
+  /** Data from attribute param tag. */
   private final String shortName;
+
+  /** The name space. */
   private final String nameSpace;
+
+  /** The name. */
   private final String name;
 
+  /** The type. */
   private final String type;
 
+  /** The is optional. */
   private Boolean isOptional = null;
+
+  /** The label. */
   private String label = "";
+
+  /** The help. */
   private String help = "";
 
+  /** The is setting. */
   protected boolean isSetting = false;
 
   // private String parameterEoulsan;
@@ -60,6 +77,10 @@ public abstract class AbstractToolElement implements ToolElement {
   // return true;
   // }
 
+  /**
+   * Checks if is value parameter valid.
+   * @return true, if is value parameter valid
+   */
   abstract boolean isValueParameterValid();
 
   @Override
@@ -67,7 +88,7 @@ public abstract class AbstractToolElement implements ToolElement {
       throws EoulsanException {
 
     // Extract parameter
-    final Parameter parameter = stepParameters.get(this.getName());
+    final Parameter parameter = stepParameters.get(getName());
 
     // No parameter found
     if (parameter == null) {
@@ -77,10 +98,10 @@ public abstract class AbstractToolElement implements ToolElement {
     } else {
 
       // TODO
-      System.out.println(this.getName()
+      System.out.println(getName()
           + " -> val in abstract to set paramE, name: "
-          + stepParameters.get(this.getName()).getName() + ", value: "
-          + stepParameters.get(this.getName()).getValue());
+          + stepParameters.get(getName()).getName() + ", value: "
+          + stepParameters.get(getName()).getValue());
 
       setParameterEoulsan(parameter);
     }
@@ -102,7 +123,7 @@ public abstract class AbstractToolElement implements ToolElement {
 
   @Override
   public boolean isSetting() {
-    return isSetting;
+    return this.isSetting;
   }
 
   @Override
@@ -112,20 +133,36 @@ public abstract class AbstractToolElement implements ToolElement {
   abstract public void setParameterEoulsan(final Parameter stepParameter)
       throws EoulsanException;
 
+  /**
+   * Checks if is optional.
+   * @return the boolean
+   */
   public Boolean isOptional() {
-    return isOptional;
+    return this.isOptional;
   }
 
+  /**
+   * Gets the label.
+   * @return the label
+   */
   public String getLabel() {
-    return label;
+    return this.label;
   }
 
+  /**
+   * Gets the help.
+   * @return the help
+   */
   public String getHelp() {
-    return help;
+    return this.help;
   }
 
+  /**
+   * Gets the short name.
+   * @return the short name
+   */
   public String getShortName() {
-    return shortName;
+    return this.shortName;
   }
 
   @Override
@@ -133,33 +170,43 @@ public abstract class AbstractToolElement implements ToolElement {
     return this.name;
   }
 
+  /**
+   * Gets the type.
+   * @return the type
+   */
   public String getType() {
-    return type;
+    return this.type;
   }
 
   @Override
   public String toString() {
     return "ParameterToolGalaxy [name="
-        + shortName + ", type=" + type + ", isOptional=" + isOptional
-        + ", label=" + label + ", help=" + help + ", parameterEoulsan="
-        + getValue() + "]";
+        + this.shortName + ", type=" + this.type + ", isOptional="
+        + this.isOptional + ", label=" + this.label + ", help=" + this.help
+        + ", parameterEoulsan=" + getValue() + "]";
   }
 
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((help == null) ? 0 : help.hashCode());
+    result = prime * result + ((this.help == null) ? 0 : this.help.hashCode());
     result =
-        prime * result + ((isOptional == null) ? 0 : isOptional.hashCode());
-    result = prime * result + ((label == null) ? 0 : label.hashCode());
-    result = prime * result + ((shortName == null) ? 0 : shortName.hashCode());
-    result = prime * result + ((type == null) ? 0 : type.hashCode());
+        prime
+            * result
+            + ((this.isOptional == null) ? 0 : this.isOptional.hashCode());
+    result =
+        prime * result + ((this.label == null) ? 0 : this.label.hashCode());
+    result =
+        prime
+            * result
+            + ((this.shortName == null) ? 0 : this.shortName.hashCode());
+    result = prime * result + ((this.type == null) ? 0 : this.type.hashCode());
     return result;
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(final Object obj) {
     if (this == obj) {
       return true;
     }
@@ -169,51 +216,64 @@ public abstract class AbstractToolElement implements ToolElement {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    AbstractToolElement other = (AbstractToolElement) obj;
-    if (help == null) {
+    final AbstractToolElement other = (AbstractToolElement) obj;
+    if (this.help == null) {
       if (other.help != null) {
         return false;
       }
-    } else if (!help.equals(other.help)) {
+    } else if (!this.help.equals(other.help)) {
       return false;
     }
-    if (isOptional == null) {
+    if (this.isOptional == null) {
       if (other.isOptional != null) {
         return false;
       }
-    } else if (!isOptional.equals(other.isOptional)) {
+    } else if (!this.isOptional.equals(other.isOptional)) {
       return false;
     }
-    if (label == null) {
+    if (this.label == null) {
       if (other.label != null) {
         return false;
       }
-    } else if (!label.equals(other.label)) {
+    } else if (!this.label.equals(other.label)) {
       return false;
     }
-    if (shortName == null) {
+    if (this.shortName == null) {
       if (other.shortName != null) {
         return false;
       }
-    } else if (!shortName.equals(other.shortName)) {
+    } else if (!this.shortName.equals(other.shortName)) {
       return false;
     }
-    if (type == null) {
+    if (this.type == null) {
       if (other.type != null) {
         return false;
       }
-    } else if (!type.equals(other.type)) {
+    } else if (!this.type.equals(other.type)) {
       return false;
     }
     return true;
   }
 
   //
+  /**
+   * Gets the instance tool element.
+   * @param param the param
+   * @return the instance tool element
+   * @throws EoulsanException the eoulsan exception
+   */
   public static ToolElement getInstanceToolElement(final Element param)
       throws EoulsanException {
     return getInstanceToolElement(param, null);
   }
 
+  /**
+   * Gets the instance tool element.
+   * @param param the param
+   * @param nameSpace the name space
+   * @return the instance tool element
+   * @throws EoulsanException the eoulsan exception
+   */
   public static ToolElement getInstanceToolElement(final Element param,
       final String nameSpace) throws EoulsanException {
 
@@ -259,10 +319,19 @@ public abstract class AbstractToolElement implements ToolElement {
   //
   // Constructor
   //
+  /**
+   * Instantiates a new abstract tool element.
+   * @param param the param
+   */
   public AbstractToolElement(final Element param) {
     this(param, null);
   }
 
+  /**
+   * Instantiates a new abstract tool element.
+   * @param param the param
+   * @param nameSpace the name space
+   */
   public AbstractToolElement(final Element param, final String nameSpace) {
 
     this.shortName = param.getAttribute("name");
@@ -278,7 +347,7 @@ public abstract class AbstractToolElement implements ToolElement {
 
     this.type = param.getAttribute("type");
 
-    String optional = param.getAttribute("optional");
+    final String optional = param.getAttribute("optional");
     this.isOptional = optional.isEmpty() ? null : Boolean.getBoolean(optional);
 
     this.label = param.getAttribute("label");

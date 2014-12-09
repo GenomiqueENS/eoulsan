@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.toolgalaxy;
 import static fr.ens.transcriptome.eoulsan.toolgalaxy.ToolPythonInterpreter.CALL_METHOD;
 import static fr.ens.transcriptome.eoulsan.toolgalaxy.ToolPythonInterpreter.VAR_CMD_NAME;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -86,7 +87,7 @@ public class ScriptLineJython {
 
     if (this.rawLine.startsWith(PREFIX_INSTRUCTION)) {
       // Init counter tabulation in script
-      updateCounterTabulation();
+      this.updateCounterTabulation();
 
       return new InstructionLineJython(this.rawLine);
     }
@@ -126,7 +127,7 @@ public class ScriptLineJython {
     if (this.variableNames.isEmpty()) {
       return Collections.emptySet();
     }
-    return Collections.unmodifiableSet(variableNames);
+    return Collections.unmodifiableSet(this.variableNames);
   }
 
   //
@@ -152,7 +153,7 @@ public class ScriptLineJython {
     this.rawLine = line.trim();
     this.variableNames = new HashSet<>();
 
-    this.lineJython = initLineJython();
+    this.lineJython = this.initLineJython();
 
     this.lineScript = this.lineJython.rewriteLine();
 
@@ -228,13 +229,13 @@ public class ScriptLineJython {
      * @param lastToken the last token
      * @return the string
      */
-    private String addCodeJava(String variableName,
+    private String addCodeJava(final String variableName,
         final boolean isPreviousTextCode, final boolean firstToken,
         final boolean lastToken) {
 
-      final String codeJava = replaceVariableNameByCodeJava(variableName);
+      final String codeJava = this.replaceVariableNameByCodeJava(variableName);
 
-      return addToken(codeJava, isPreviousTextCode, true, firstToken, lastToken);
+      return this.addToken(codeJava, isPreviousTextCode, true, firstToken, lastToken);
     }
 
     /**
@@ -243,15 +244,15 @@ public class ScriptLineJython {
      */
     private String rewriteLine() {
 
-      final Matcher matcher = VARIABLES_PATTERN.matcher(modifiedLine);
+      final Matcher matcher = this.VARIABLES_PATTERN.matcher(this.modifiedLine);
 
       boolean isPreviousTextCode = false;
       boolean isCurrentTextCode = false;
       boolean firstToken = true;
-      boolean lastToken = false;
+      final boolean lastToken = false;
       int currentPos = 0;
 
-      List<String> modifiedLine = Lists.newArrayList();
+      final List<String> modifiedLine = new ArrayList<>();
 
       String variableName = "";
 
@@ -261,12 +262,13 @@ public class ScriptLineJython {
         // + matcher.end() + "\tcurrent pos: " + currentPos + "\tend txt: "
         // + (rawLine.length() - 1));
         variableName = matcher.group();
-        int start = matcher.start();
-        int end = matcher.end();
+        final int start = matcher.start();
+        final int end = matcher.end();
 
         if (currentPos < start) {
           // Extract text before variable
-          String txt = this.modifiedLine.substring(currentPos, start).trim();
+          final String txt =
+              this.modifiedLine.substring(currentPos, start).trim();
 
           // Remove double quote
           // txt = txt.replaceAll("\"", "'");
@@ -278,7 +280,7 @@ public class ScriptLineJython {
             // TODO
             // System.out.println("add txt " + txt);
 
-            modifiedLine.add(addToken(txt, isPreviousTextCode,
+            modifiedLine.add(this.addToken(txt, isPreviousTextCode,
                 isCurrentTextCode, firstToken, lastToken));
             firstToken = false;
           }
@@ -287,7 +289,7 @@ public class ScriptLineJython {
         isPreviousTextCode = isCurrentTextCode;
 
         // Add motif matched
-        modifiedLine.add(addCodeJava(variableName, isPreviousTextCode,
+        modifiedLine.add(this.addCodeJava(variableName, isPreviousTextCode,
             firstToken, lastToken));
         isCurrentTextCode = true;
 
@@ -299,14 +301,14 @@ public class ScriptLineJython {
 
       // No variable name found
       if (modifiedLine.isEmpty()) {
-        String s = endLine(isCurrentTextCode, firstToken, currentPos);
-        return buildLineScript(s);
+        final String s = this.endLine(isCurrentTextCode, firstToken, currentPos);
+        return this.buildLineScript(s);
       }
 
       // End line
-      modifiedLine.add(endLine(isCurrentTextCode, firstToken, currentPos));
+      modifiedLine.add(this.endLine(isCurrentTextCode, firstToken, currentPos));
 
-      return buildLineScript(Joiner.on(" ").join(modifiedLine));
+      return this.buildLineScript(Joiner.on(" ").join(modifiedLine));
     }
 
     /**
@@ -322,7 +324,7 @@ public class ScriptLineJython {
         n = 1;
       }
 
-      String variableNameTrimmed =
+      final String variableNameTrimmed =
           variableName.substring(1 + n, variableName.length() - n);
 
       // TODO
@@ -331,7 +333,7 @@ public class ScriptLineJython {
       // + variableNameTrimmed + "\")");
 
       // Update list variable name
-      variableNames.add(variableNameTrimmed);
+      ScriptLineJython.this.variableNames.add(variableNameTrimmed);
 
       return CALL_METHOD + "(\"" + variableNameTrimmed + "\")";
     }
@@ -341,7 +343,7 @@ public class ScriptLineJython {
      * @param n the n
      * @return the string
      */
-    protected String tab(int n) {
+    protected String tab(final int n) {
 
       String str = "";
 
@@ -376,8 +378,8 @@ public class ScriptLineJython {
      */
     boolean startsWith(final List<String> prefixes) {
 
-      for (String prefix : prefixes) {
-        if (startsWith(prefix)) {
+      for (final String prefix : prefixes) {
+        if (this.startsWith(prefix)) {
           return true;
         }
       }
@@ -401,8 +403,8 @@ public class ScriptLineJython {
      */
     boolean endsWith(final List<String> suffixes) {
 
-      for (String suffix : suffixes) {
-        if (endsWith(suffix)) {
+      for (final String suffix : suffixes) {
+        if (this.endsWith(suffix)) {
           return true;
         }
       }
@@ -428,12 +430,12 @@ public class ScriptLineJython {
 
       boolean foundQuote = false;
       boolean start = false;
-      char[] newLine = new char[line.length()];
+      final char[] newLine = new char[line.length()];
       char previous = '\0';
       int i = 0;
 
       for (int n = 0; n < line.length(); n++) {
-        char c = line.charAt(n);
+        final char c = line.charAt(n);
         if (c == '$') {
           if (foundQuote) {
             // Start variable name
@@ -516,7 +518,7 @@ public class ScriptLineJython {
      */
     public AbstractLineJython(final String line) {
       // this.rawLine = line;
-      this.modifiedLine = cleanVariableNameSyntax(line);
+      this.modifiedLine = this.cleanVariableNameSyntax(line);
     }
 
   }
@@ -533,29 +535,30 @@ public class ScriptLineJython {
         PREFIX_ELSE);
 
     @Override
-    String endLine(boolean isCurrentTextCode, boolean firstToken, int currentPos) {
+    String endLine(final boolean isCurrentTextCode, final boolean firstToken,
+        final int currentPos) {
 
       String endString = "";
 
       // Check ':' final exist
-      if (!getModifiedString().endsWith(":")) {
+      if (!this.getModifiedString().endsWith(":")) {
         endString = ":";
       }
 
-      if (currentPos >= getModifiedString().length()) {
+      if (currentPos >= this.getModifiedString().length()) {
         return endString;
       }
 
       // Extract last token from string
       final String lastToken =
-          getModifiedString().substring(currentPos).trim() + endString;
+          this.getModifiedString().substring(currentPos).trim() + endString;
 
-      return addToken(lastToken, isCurrentTextCode, true, firstToken, true);
+      return this.addToken(lastToken, isCurrentTextCode, true, firstToken, true);
 
     }
 
     @Override
-    String addToken(String newToken, final boolean isPreviousCode,
+    String addToken(final String newToken, final boolean isPreviousCode,
         final boolean isCurrentCode, final boolean firstToken,
         final boolean lastToken) {
 
@@ -566,7 +569,7 @@ public class ScriptLineJython {
     String buildLineScript(final String line) {
 
       final StringBuilder txt = new StringBuilder();
-      txt.append(tab(currentTabCount));
+      txt.append(this.tab(currentTabCount));
 
       txt.append(line);
 
@@ -584,9 +587,9 @@ public class ScriptLineJython {
     public InstructionLineJython(final String line) {
       super(line);
 
-      if (startsWith(START_PREFIX)) {
+      if (this.startsWith(this.START_PREFIX)) {
         // Remove #
-        setModifiedString(getModifiedString().replaceAll("#", ""));
+        this.setModifiedString(this.getModifiedString().replaceAll("#", ""));
       }
     }
 
@@ -600,12 +603,13 @@ public class ScriptLineJython {
   class AffectationLineJython extends AbstractLineJython {
 
     @Override
-    String endLine(boolean isCurrentTextCode, boolean firstToken, int currentPos) {
+    String endLine(final boolean isCurrentTextCode, final boolean firstToken,
+        final int currentPos) {
 
       String txt = "";
 
       if (!isCurrentTextCode) {
-        if (!getModifiedString().endsWith("\"")) {
+        if (!this.getModifiedString().endsWith("\"")) {
           // Close string
           txt += "\"";
         }
@@ -614,12 +618,12 @@ public class ScriptLineJython {
         // txt += " ";
       }
 
-      if (currentPos >= getModifiedString().length()) {
+      if (currentPos >= this.getModifiedString().length()) {
         return txt;
       }
 
       // Extract last token from string
-      String lastToken = getModifiedString().substring(currentPos).trim();
+      String lastToken = this.getModifiedString().substring(currentPos).trim();
 
       if (lastToken.isEmpty()) {
         return txt;
@@ -631,17 +635,11 @@ public class ScriptLineJython {
       }
 
       lastToken += txt;
-      return addToken(lastToken, isCurrentTextCode, false, firstToken, true);
+      return this.addToken(lastToken, isCurrentTextCode, false, firstToken, true);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * fr.ens.transcriptome.eoulsan.toolgalaxy.ScriptLineJython.AbstractLineJython
-     * #addToken(java.lang.String, boolean, boolean, boolean, boolean)
-     */
     @Override
-    String addToken(String newToken, final boolean isPreviousCode,
+    String addToken(final String newToken, final boolean isPreviousCode,
         final boolean isCurrentCode, final boolean firstToken,
         final boolean lastToken) {
 
@@ -693,17 +691,11 @@ public class ScriptLineJython {
 
     }
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * fr.ens.transcriptome.eoulsan.toolgalaxy.ScriptLineJython.AbstractLineJython
-     * #buildLineScript(java.lang.String)
-     */
     @Override
     String buildLineScript(final String line) {
 
       final StringBuilder txt = new StringBuilder();
-      txt.append(tab(currentTabCount));
+      txt.append(this.tab(currentTabCount));
 
       txt.append(VAR_CMD_NAME + " +=  \" \" + ");
       txt.append(line);

@@ -43,21 +43,35 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ToolConditionalElement.
+ * @author Sandrine Perrin
+ * @since 2.4
+ */
 public class ToolConditionalElement implements ToolElement {
 
+  /** The Constant TYPE. */
   public final static String TYPE = "boolean";
 
+  /** The name space. */
   private final String nameSpace;
 
   // Parameter represent choice in option list
+  /** The tool parameter select. */
   private final ToolElement toolParameterSelect;
 
   // Variable name in command tag and tool parameter related
+  /** The actions related options. */
   private final Multimap<String, ToolElement> actionsRelatedOptions;
-  private Map<String, ToolElement> toolParametersSelected;
 
+  /** The tool parameters selected. */
+  private final Map<String, ToolElement> toolParametersSelected;
+
+  /** The value. */
   private String value;
 
+  /** The is settings. */
   private boolean isSettings = false;
 
   @Override
@@ -118,8 +132,10 @@ public class ToolConditionalElement implements ToolElement {
   // Private methods
   //
   /**
-   * @param element
-   * @return
+   * Parses the actions related options.
+   * @param element the element
+   * @return the multimap
+   * @throws EoulsanException the eoulsan exception
    */
   private Multimap<String, ToolElement> parseActionsRelatedOptions(
       final Element element) throws EoulsanException {
@@ -131,7 +147,7 @@ public class ToolConditionalElement implements ToolElement {
     for (final Element e : whenElement) {
       final String whenName = e.getAttribute("value");
 
-      List<Element> paramElement = getElementsByTagName(e, "param");
+      final List<Element> paramElement = getElementsByTagName(e, "param");
 
       // Can be empty, nothing to do
       if (paramElement == null || paramElement.isEmpty()) {
@@ -163,13 +179,21 @@ public class ToolConditionalElement implements ToolElement {
     return this.nameSpace;
   }
 
+  /**
+   * Gets the tool parameter select.
+   * @return the tool parameter select
+   */
   public ToolElement getToolParameterSelect() {
-    return toolParameterSelect;
+    return this.toolParameterSelect;
   }
 
+  /**
+   * Gets the tool parameters result.
+   * @return the tool parameters result
+   */
   public Map<String, ToolElement> getToolParametersResult() {
 
-    if (toolParametersSelected.isEmpty()) {
+    if (this.toolParametersSelected.isEmpty()) {
       return Collections.emptyMap();
     }
 
@@ -186,7 +210,7 @@ public class ToolConditionalElement implements ToolElement {
 
   @Override
   public boolean isSetting() {
-    return isSettings;
+    return this.isSettings;
   }
 
   @Override
@@ -209,14 +233,20 @@ public class ToolConditionalElement implements ToolElement {
   @Override
   public String toString() {
     return "ToolConditionalElement [name="
-        + nameSpace + ", toolParameterSelect=" + toolParameterSelect
-        + ", options=" + actionsRelatedOptions + ", parameterEoulsan="
+        + this.nameSpace + ", toolParameterSelect=" + this.toolParameterSelect
+        + ", options=" + this.actionsRelatedOptions + ", parameterEoulsan="
         + getValue() + "]";
   }
 
   //
   // Constructor
   //
+  
+  /**
+   * Instantiates a new tool conditional element.
+   * @param element the element
+   * @throws EoulsanException the eoulsan exception
+   */
   public ToolConditionalElement(final Element element) throws EoulsanException {
 
     this.nameSpace = element.getAttribute("name");
@@ -236,7 +266,8 @@ public class ToolConditionalElement implements ToolElement {
     }
 
     // Init parameter select
-    this.toolParameterSelect = new ToolParameterSelect(param.get(0), nameSpace);
+    this.toolParameterSelect =
+        new ToolParameterSelect(param.get(0), this.nameSpace);
 
     // Init default value
     if (this.toolParameterSelect.isSetting()) {

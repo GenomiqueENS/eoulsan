@@ -107,7 +107,7 @@ public class ToolInterpreter {
   private Set<String> variableNamesFromCommandTag;
 
   /** The step parameters. */
-  private Map<String, Parameter> stepParameters;
+  private final Map<String, Parameter> stepParameters;
 
   /** The in data format expected. */
   private Map<DataFormat, ToolElement> inDataFormatExpected;
@@ -131,7 +131,7 @@ public class ToolInterpreter {
     this.toolVersion = extractToolVersion(this.doc);
     this.description = extractDescription(this.doc);
 
-    this.inputs = extractInputs(this.doc, stepParameters);
+    this.inputs = extractInputs(this.doc, this.stepParameters);
     this.outputs = extractOutputs(this.doc);
 
     this.inDataFormatExpected = extractDataFormat(this.inputs);
@@ -167,8 +167,8 @@ public class ToolInterpreter {
     // Add port with file path
     setPortOutput(parametersCommand, outData);
 
-    String new_command =
-        this.pythonInterperter.executeScript(command, parametersCommand);
+    final String new_command =
+        this.pythonInterperter.executeScript(this.command, parametersCommand);
 
     return new_command;
   }
@@ -185,10 +185,10 @@ public class ToolInterpreter {
   public String createCommandLine() throws EoulsanException {
 
     // List variable name define
-    Map<String, String> parameters = extractParameters();
+    final Map<String, String> parameters = extractParameters();
 
-    String new_command =
-        this.pythonInterperter.executeScript(command, parameters);
+    final String new_command =
+        this.pythonInterperter.executeScript(this.command, parameters);
 
     return new_command;
   }
@@ -225,7 +225,7 @@ public class ToolInterpreter {
       final Map<String, ToolElement> paramTool, final Map<String, String> ports)
       throws EoulsanException {
 
-    for (Map.Entry<String, String> e : ports.entrySet()) {
+    for (final Map.Entry<String, String> e : ports.entrySet()) {
 
       final ToolElement parameter = paramTool.get(e.getKey());
 
@@ -250,12 +250,12 @@ public class ToolInterpreter {
    * @return the map
    */
   private Map<DataFormat, ToolElement> extractDataFormat(
-      Map<String, ToolElement> parameters) {
+      final Map<String, ToolElement> parameters) {
 
     final Map<DataFormat, ToolElement> results = new HashMap<>();
 
     // Parse parameters
-    for (Map.Entry<String, ToolElement> entry : parameters.entrySet()) {
+    for (final Map.Entry<String, ToolElement> entry : parameters.entrySet()) {
       final ToolElement parameter = entry.getValue();
 
       if (parameter.isFile()) {
@@ -319,7 +319,7 @@ public class ToolInterpreter {
       throws EoulsanException {
 
     // Parse ports
-    for (Map.Entry<String, DataFile> entry : ports.entrySet()) {
+    for (final Map.Entry<String, DataFile> entry : ports.entrySet()) {
       // Extract data format related
       final DataFile port = entry.getValue();
       final DataFormat dataFormatPort = port.getDataFormat();
@@ -391,7 +391,7 @@ public class ToolInterpreter {
     // System.out.println("outputs param " + Joiner.on("\n").join(outputs));
 
     // Parse input
-    for (ToolElement ptg : inputs.values()) {
+    for (final ToolElement ptg : this.inputs.values()) {
       // TODO
       // if (ptg.isSetting())
       // System.out.println("extract name="
@@ -400,7 +400,7 @@ public class ToolInterpreter {
     }
 
     // Parse output
-    for (ToolElement ptg : outputs.values()) {
+    for (final ToolElement ptg : this.outputs.values()) {
       // TODO
       // Add in map
       // System.out.println("extract name="
@@ -427,7 +427,7 @@ public class ToolInterpreter {
     final Map<String, String> results = new HashMap<>();
 
     // Parsing variable name found in command tag
-    for (String variableName : variableNamesFromCommandTag) {
+    for (final String variableName : this.variableNamesFromCommandTag) {
       // Check exist
       if (parametersXML.get(variableName) == null) {
         results.put(variableName, DEFAULT_VALUE_NULL);
@@ -451,11 +451,11 @@ public class ToolInterpreter {
       doc.getDocumentElement().normalize();
       return doc;
 
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new EoulsanException(e.getMessage());
-    } catch (SAXException e) {
+    } catch (final SAXException e) {
       throw new EoulsanException(e.getMessage());
-    } catch (ParserConfigurationException e) {
+    } catch (final ParserConfigurationException e) {
       throw new EoulsanException(e.getMessage());
     }
     // TODO
@@ -469,7 +469,7 @@ public class ToolInterpreter {
    */
   private void checkDomValidity() throws EoulsanException {
 
-    for (String tag : TAG_FORBIDDEN) {
+    for (final String tag : TAG_FORBIDDEN) {
 
       // Check tag exists in tool file
       if (!XMLUtils.getElementsByTagName(this.doc, tag).isEmpty()) {
@@ -496,10 +496,10 @@ public class ToolInterpreter {
     final Map<String, ToolElement> results = new HashMap<>();
 
     // Extract all param tag
-    List<Element> simpleParams =
+    final List<Element> simpleParams =
         extractChildElementsByTagName(parent, elementName);
 
-    for (Element param : simpleParams) {
+    for (final Element param : simpleParams) {
       final ToolElement ptg = getInstanceToolElement(param);
 
       results.put(ptg.getName(), ptg);
@@ -516,7 +516,7 @@ public class ToolInterpreter {
    */
   static Map<String, ToolElement> extractConditionalParamElement(
       final Element parent) throws EoulsanException {
-    Map<String, Parameter> stepParameters = Collections.emptyMap();
+    final Map<String, Parameter> stepParameters = Collections.emptyMap();
     return extractConditionalParamElement(parent, stepParameters);
   }
 
@@ -534,10 +534,10 @@ public class ToolInterpreter {
     final Map<String, ToolElement> results = new HashMap<>();
 
     // Extract conditional element, can be empty
-    List<Element> condParams =
+    final List<Element> condParams =
         extractChildElementsByTagName(parent, "conditional");
 
-    for (Element param : condParams) {
+    for (final Element param : condParams) {
       final ToolConditionalElement tce = new ToolConditionalElement(param);
 
       final ToolElement parameterSelect = tce.getToolParameterSelect();
@@ -662,7 +662,7 @@ public class ToolInterpreter {
       final Node node = nStepsList.item(i);
 
       if (node.getNodeType() == Node.ELEMENT_NODE) {
-        Element e = (Element) node;
+        final Element e = (Element) node;
 
         if (e.getTagName().equals(elementName)) {
           result.add(e);
@@ -790,7 +790,7 @@ public class ToolInterpreter {
       final String elementName, final int index, final String attributeName) {
 
     // List element
-    List<Element> e = XMLUtils.getElementsByTagName(doc, elementName);
+    final List<Element> e = XMLUtils.getElementsByTagName(doc, elementName);
 
     if (e.isEmpty()) {
       return null;
@@ -824,33 +824,33 @@ public class ToolInterpreter {
 
   /** Get tool name */
   public String getToolName() {
-    return toolName;
+    return this.toolName;
   }
 
   /** Get tool version */
   public String getToolVersion() {
-    return toolVersion;
+    return this.toolVersion;
   }
 
   /** Get tool description */
   public String getDescription() {
-    return description;
+    return this.description;
   }
 
   /** Get interpreter name */
   public String getInterpreter() {
-    return interpreter;
+    return this.interpreter;
   }
 
   @Override
   public String toString() {
     return "InterpreterToolGalaxy \n[inputs="
-        + Joiner.on("\n").withKeyValueSeparator("=").join(inputs)
+        + Joiner.on("\n").withKeyValueSeparator("=").join(this.inputs)
         + ", \noutputs="
-        + Joiner.on("\n").withKeyValueSeparator("=").join(outputs)
-        + ", \ntoolName=" + toolName + ", toolVersion=" + toolVersion
-        + ", description=" + description + ", interpreter=" + interpreter
-        + ", command=\n" + command + "]";
+        + Joiner.on("\n").withKeyValueSeparator("=").join(this.outputs)
+        + ", \ntoolName=" + this.toolName + ", toolVersion=" + this.toolVersion
+        + ", description=" + this.description + ", interpreter=" + this.interpreter
+        + ", command=\n" + this.command + "]";
   }
 
   //

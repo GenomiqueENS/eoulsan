@@ -47,17 +47,17 @@ public class ToolPythonInterpreter {
   /** The Constant LINE_SEPARATOR. */
   private static final String LINE_SEPARATOR = System.getProperties()
       .getProperty("line.separator");
-  
+
   /** The Constant NEW_LINE. */
   public final static Splitter NEW_LINE = Splitter.onPattern("[\r\n]")
       .trimResults().omitEmptyStrings();
-  
+
   /** The Constant VAR_CMD_NAME. */
   public static final String VAR_CMD_NAME = "cmd";
 
   /** The Constant INSTANCE_NAME. */
   public static final String INSTANCE_NAME = "registry";
-  
+
   /** The Constant CALL_METHOD. */
   public static final String CALL_METHOD = INSTANCE_NAME + ".get";
 
@@ -88,7 +88,7 @@ public class ToolPythonInterpreter {
     interp.exec(script);
 
     // Retrieve standard output
-    PyObject cmd = interp.get(VAR_CMD_NAME);
+    final PyObject cmd = interp.get(VAR_CMD_NAME);
 
     // TODO
     System.out.println("cmd: " + cmd.asString());
@@ -101,7 +101,7 @@ public class ToolPythonInterpreter {
    * @param cmdTag the cmd tag
    * @return the string
    */
-  public String parseCommandString(String cmdTag) {
+  public String parseCommandString(final String cmdTag) {
     // Split on line
     final List<String> rawCommandInList = NEW_LINE.splitToList(cmdTag);
 
@@ -109,8 +109,7 @@ public class ToolPythonInterpreter {
 
     // Build line script python
     for (final String line : rawCommandInList) {
-      // TODO
-      // final LineScriptJython newLine = new LineScriptJython(line);
+
       final ScriptLineJython newLine = new ScriptLineJython(line);
       commandInList.add(newLine.asString());
 
@@ -129,6 +128,6 @@ public class ToolPythonInterpreter {
     if (this.variableNames.isEmpty()) {
       return Collections.emptySet();
     }
-    return Collections.unmodifiableSet(variableNames);
+    return Collections.unmodifiableSet(this.variableNames);
   }
 }

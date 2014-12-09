@@ -30,25 +30,65 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Interface ToolElement.
+ * @author Sandrine Perrin
+ * @since 2.4
+ */
 public interface ToolElement {
 
+  /** The Constant SEP. */
   public final static String SEP = ".";
 
+  /**
+   * Gets the name.
+   * @return the name
+   */
   String getName();
 
+  /**
+   * Checks if is setting.
+   * @return true, if is setting
+   */
   boolean isSetting();
 
+  /**
+   * Gets the value.
+   * @return the value
+   */
   String getValue();
 
+  /**
+   * Sets the parameter eoulsan.
+   */
   void setParameterEoulsan();
 
+  /**
+   * Sets the parameter eoulsan.
+   * @param stepParameter the new parameter eoulsan
+   * @throws EoulsanException the eoulsan exception
+   */
   void setParameterEoulsan(final Parameter stepParameter)
       throws EoulsanException;
 
+  /**
+   * Sets the parameter eoulsan.
+   * @param stepParameters the step parameters
+   * @throws EoulsanException the eoulsan exception
+   */
   void setParameterEoulsan(final Map<String, Parameter> stepParameters)
       throws EoulsanException;
 
+  /**
+   * Checks if is file.
+   * @return true, if is file
+   */
   boolean isFile();
 
+  /**
+   * Gets the data format.
+   * @return the data format
+   */
   DataFormat getDataFormat();
 }

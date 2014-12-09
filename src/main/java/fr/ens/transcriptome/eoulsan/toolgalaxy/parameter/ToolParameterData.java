@@ -1,3 +1,26 @@
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
 package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
 
 import java.util.List;
@@ -8,11 +31,21 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ToolParameterData.
+ * @author Sandrine Perrin
+ * @since 2.4
+ */
 public class ToolParameterData extends AbstractToolElement {
 
+  /** The formats. */
   private final List<String> formats;
+
+  /** The data format. */
   private final DataFormat dataFormat;
 
+  /** The value. */
   private String value = "";
 
   @Override
@@ -36,7 +69,7 @@ public class ToolParameterData extends AbstractToolElement {
 
   @Override
   public boolean isFile() {
-    return dataFormat != null;
+    return this.dataFormat != null;
   }
 
   @Override
@@ -51,14 +84,25 @@ public class ToolParameterData extends AbstractToolElement {
   //
   // Constructor
   //
+  /**
+   * Instantiates a new tool parameter data.
+   * @param param the param
+   * @throws EoulsanException the eoulsan exception
+   */
   public ToolParameterData(final Element param) throws EoulsanException {
     this(param, null);
   }
 
-  public ToolParameterData(Element param, String nameSpace)
+  /**
+   * Instantiates a new tool parameter data.
+   * @param param the param
+   * @param nameSpace the name space
+   * @throws EoulsanException the eoulsan exception
+   */
+  public ToolParameterData(final Element param, final String nameSpace)
       throws EoulsanException {
     super(param, nameSpace);
-    isSetting = true;
+    this.isSetting = true;
 
     this.formats = COMMA.splitToList(param.getAttribute("format"));
 
@@ -74,7 +118,7 @@ public class ToolParameterData extends AbstractToolElement {
       this.dataFormat = null;
     } else {
       // Convert format in DataFormat
-      this.dataFormat = ConvertorToDataFormat.convert(formats.get(0));
+      this.dataFormat = ConvertorToDataFormat.convert(this.formats.get(0));
     }
   }
 }

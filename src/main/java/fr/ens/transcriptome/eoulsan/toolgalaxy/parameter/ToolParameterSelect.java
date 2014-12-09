@@ -1,3 +1,26 @@
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
 package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
 
 import static fr.ens.transcriptome.eoulsan.toolgalaxy.ToolInterpreter.extractChildElementsByTagName;
@@ -12,28 +35,40 @@ import org.w3c.dom.Element;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ToolParameterSelect.
+ * @author Sandrine Perrin
+ * @since 2.4
+ */
 public class ToolParameterSelect extends AbstractToolElement {
 
+  /** The Constant TYPE. */
   public final static String TYPE = "select";
 
+  /** The Constant ATT_SELECTED_KEY. */
   private static final String ATT_SELECTED_KEY = "selected";
 
+  /** The Constant ATT_VALUE_KEY. */
   private static final String ATT_VALUE_KEY = "value";
 
+  /** The options value. */
   private final List<String> optionsValue;
+
+  /** The options element. */
   private final List<Element> optionsElement;
 
+  /** The value. */
   private String value = "";
 
   @Override
   boolean isValueParameterValid() {
     // Check value contains in options values
-    return optionsValue.contains(this.value);
+    return this.optionsValue.contains(this.value);
   }
 
   @Override
   public void setParameterEoulsan() {
-    // TODO Auto-generated method stub
   }
 
   @Override
@@ -41,28 +76,33 @@ public class ToolParameterSelect extends AbstractToolElement {
       throws EoulsanException {
 
     this.value = stepParameter.getStringValue();
-    isSetting = true;
+    this.isSetting = true;
 
     if (!isValueParameterValid()) {
       throw new EoulsanException("ToolGalaxy step: parameter "
-          + this.getName() + " value setting : " + value
+          + getName() + " value setting : " + this.value
           + " is invalid. \n\tAvailable values: "
-          + Joiner.on(",").join(optionsValue));
+          + Joiner.on(",").join(this.optionsValue));
     }
   }
 
+  /**
+   * Extract all options.
+   * @return the list
+   * @throws EoulsanException the eoulsan exception
+   */
   private List<String> extractAllOptions() throws EoulsanException {
 
     final List<String> options = new ArrayList<>();
 
-    for (Element e : optionsElement) {
+    for (final Element e : this.optionsElement) {
       options.add(e.getAttribute(ATT_VALUE_KEY));
 
       // Check default settings
       final String attributeSelected = e.getAttribute(ATT_SELECTED_KEY);
       if (!attributeSelected.isEmpty()) {
         this.value = e.getAttribute(ATT_VALUE_KEY);
-        isSetting = true;
+        this.isSetting = true;
       }
     }
 
@@ -89,10 +129,21 @@ public class ToolParameterSelect extends AbstractToolElement {
   //
   // Constructor
   //
+  /**
+   * Instantiates a new tool parameter select.
+   * @param param the param
+   * @throws EoulsanException the eoulsan exception
+   */
   public ToolParameterSelect(final Element param) throws EoulsanException {
     this(param, null);
   }
 
+  /**
+   * Instantiates a new tool parameter select.
+   * @param param the param
+   * @param nameSpace the name space
+   * @throws EoulsanException the eoulsan exception
+   */
   public ToolParameterSelect(final Element param, final String nameSpace)
       throws EoulsanException {
     super(param, nameSpace);
