@@ -53,7 +53,7 @@ public class ToolOutputsData extends AbstractToolElement {
   private String value = "";
 
   @Override
-  public void setParameterEoulsan() {
+  public void setValue() {
   }
 
   @Override
@@ -67,7 +67,7 @@ public class ToolOutputsData extends AbstractToolElement {
   }
 
   @Override
-  public void setParameterEoulsan(final Parameter stepParameter) {
+  public void setValue(final Parameter stepParameter) {
     this.value = stepParameter.getValue();
   }
 
@@ -78,7 +78,7 @@ public class ToolOutputsData extends AbstractToolElement {
 
   @Override
   public DataFormat getDataFormat() {
-    if (isFile()) {
+    if (this.isFile()) {
       return this.dataFormat;
     }
 
@@ -86,7 +86,7 @@ public class ToolOutputsData extends AbstractToolElement {
   }
 
   //
-  // Constructor
+  // Constructors
   //
 
   /**

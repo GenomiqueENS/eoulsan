@@ -59,14 +59,14 @@ public class ToolConditionalElement implements ToolElement {
 
   // Parameter represent choice in option list
   /** The tool parameter select. */
-  private final ToolElement toolParameterSelect;
+  private final ToolElement toolElementSelect;
 
   // Variable name in command tag and tool parameter related
   /** The actions related options. */
   private final Multimap<String, ToolElement> actionsRelatedOptions;
 
   /** The tool parameters selected. */
-  private final Map<String, ToolElement> toolParametersSelected;
+  private final Map<String, ToolElement> toolElementSelected;
 
   /** The value. */
   private String value;
@@ -75,7 +75,7 @@ public class ToolConditionalElement implements ToolElement {
   private boolean isSettings = false;
 
   @Override
-  public void setParameterEoulsan() {
+  public void setValue() {
     // TODO Auto-generated method stub
   }
 
@@ -90,15 +90,15 @@ public class ToolConditionalElement implements ToolElement {
   }
 
   @Override
-  public void setParameterEoulsan(final Map<String, Parameter> stepParameters)
+  public void setValues(final Map<String, Parameter> stepParameters)
       throws EoulsanException {
 
     // Retrieve choice select from analysis
-    this.toolParameterSelect.setParameterEoulsan(stepParameters);
+    this.toolElementSelect.setValues(stepParameters);
 
     // Parameter corresponding to choice
     final Collection<ToolElement> toolParameters =
-        this.actionsRelatedOptions.get(this.toolParameterSelect.getValue());
+        this.actionsRelatedOptions.get(this.toolElementSelect.getValue());
 
     // Check value parameter corresponding to a key
     for (final ToolElement toolParameter : toolParameters) {
@@ -109,7 +109,7 @@ public class ToolConditionalElement implements ToolElement {
 
       if (parameter == null) {
         // No parameters found, call default settings
-        toolParameter.setParameterEoulsan();
+        toolParameter.setValue();
 
       } else {
         // TODO
@@ -117,11 +117,11 @@ public class ToolConditionalElement implements ToolElement {
             + parameter.getName() + " vs " + toolParameter.getName());
 
         // Set param
-        toolParameter.setParameterEoulsan(parameter);
+        toolParameter.setValue(parameter);
       }
 
       // Save map result
-      this.toolParametersSelected.put(toolParameter.getName(), toolParameter);
+      this.toolElementSelected.put(toolParameter.getName(), toolParameter);
     }
 
     // Save setting parameter
@@ -183,21 +183,21 @@ public class ToolConditionalElement implements ToolElement {
    * Gets the tool parameter select.
    * @return the tool parameter select
    */
-  public ToolElement getToolParameterSelect() {
-    return this.toolParameterSelect;
+  public ToolElement getToolElementSelect() {
+    return this.toolElementSelect;
   }
 
   /**
    * Gets the tool parameters result.
    * @return the tool parameters result
    */
-  public Map<String, ToolElement> getToolParametersResult() {
+  public Map<String, ToolElement> getToolElementsResult() {
 
-    if (this.toolParametersSelected.isEmpty()) {
+    if (this.toolElementSelected.isEmpty()) {
       return Collections.emptyMap();
     }
 
-    return this.toolParametersSelected;
+    return this.toolElementSelected;
   }
 
   // public Map<String, ToolElement> getOptions() {
@@ -219,7 +219,7 @@ public class ToolConditionalElement implements ToolElement {
   }
 
   @Override
-  public void setParameterEoulsan(final Parameter stepParameter) {
+  public void setValue(final Parameter stepParameter) {
 
     // // Set tool parameter related
     // if (actionsRelatedOptions.containsKey(paramValue)) {
@@ -233,7 +233,7 @@ public class ToolConditionalElement implements ToolElement {
   @Override
   public String toString() {
     return "ToolConditionalElement [name="
-        + this.nameSpace + ", toolParameterSelect=" + this.toolParameterSelect
+        + this.nameSpace + ", toolParameterSelect=" + this.toolElementSelect
         + ", options=" + this.actionsRelatedOptions + ", parameterEoulsan="
         + getValue() + "]";
   }
@@ -266,17 +266,17 @@ public class ToolConditionalElement implements ToolElement {
     }
 
     // Init parameter select
-    this.toolParameterSelect =
+    this.toolElementSelect =
         new ToolElementSelect(param.get(0), this.nameSpace);
 
     // Init default value
-    if (this.toolParameterSelect.isSetting()) {
-      this.value = this.toolParameterSelect.getValue();
+    if (this.toolElementSelect.isSetting()) {
+      this.value = this.toolElementSelect.getValue();
     }
 
     // Extract all case available
     this.actionsRelatedOptions = parseActionsRelatedOptions(element);
-    this.toolParametersSelected = new HashMap<>();
+    this.toolElementSelected = new HashMap<>();
 
   }
 

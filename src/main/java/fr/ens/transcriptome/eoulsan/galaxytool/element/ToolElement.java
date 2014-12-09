@@ -62,14 +62,14 @@ public interface ToolElement {
   /**
    * Sets the parameter eoulsan.
    */
-  void setParameterEoulsan();
+  void setValue();
 
   /**
    * Sets the parameter eoulsan.
    * @param stepParameter the new parameter eoulsan
    * @throws EoulsanException the eoulsan exception
    */
-  void setParameterEoulsan(final Parameter stepParameter)
+  void setValue(final Parameter stepParameter)
       throws EoulsanException;
 
   /**
@@ -77,7 +77,7 @@ public interface ToolElement {
    * @param stepParameters the step parameters
    * @throws EoulsanException the eoulsan exception
    */
-  void setParameterEoulsan(final Map<String, Parameter> stepParameters)
+  void setValues(final Map<String, Parameter> stepParameters)
       throws EoulsanException;
 
   /**

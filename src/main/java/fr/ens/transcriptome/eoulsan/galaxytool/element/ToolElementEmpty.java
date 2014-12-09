@@ -58,15 +58,15 @@ public class ToolElementEmpty implements ToolElement {
   }
 
   @Override
-  public void setParameterEoulsan() {
+  public void setValue() {
   }
 
   @Override
-  public void setParameterEoulsan(final Parameter stepParameter) {
+  public void setValue(final Parameter stepParameter) {
   }
 
   @Override
-  public void setParameterEoulsan(final Map<String, Parameter> stepParameters) {
+  public void setValues(final Map<String, Parameter> stepParameters) {
 
   }
 

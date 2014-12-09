@@ -78,7 +78,7 @@ public class ToolElementBoolean extends AbstractToolElement {
   }
 
   @Override
-  public void setParameterEoulsan() {
+  public void setValue() {
     // Set value to the default value
     if (this.value.isEmpty()) {
       this.value = this.trueValue;
@@ -88,7 +88,7 @@ public class ToolElementBoolean extends AbstractToolElement {
   }
 
   @Override
-  public void setParameterEoulsan(final Parameter stepParameter) {
+  public void setValue(final Parameter stepParameter) {
 
     final boolean valueParameter = stepParameter.getBooleanValue();
     this.value = valueParameter ? this.trueValue : this.falseValue;
@@ -105,8 +105,9 @@ public class ToolElementBoolean extends AbstractToolElement {
   }
 
   //
-  // Constructor
+  // Constructors
   //
+  
   /**
    * Instantiates a new tool parameter boolean.
    * @param param the param

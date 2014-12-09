@@ -54,12 +54,12 @@ public class ToolElementData extends AbstractToolElement {
   }
 
   @Override
-  public void setParameterEoulsan(final Parameter stepParameter) {
+  public void setValue(final Parameter stepParameter) {
     this.value = stepParameter.getValue();
   }
 
   @Override
-  public void setParameterEoulsan() {
+  public void setValue() {
   }
 
   @Override
@@ -74,7 +74,7 @@ public class ToolElementData extends AbstractToolElement {
 
   @Override
   public DataFormat getDataFormat() {
-    if (isFile()) {
+    if (this.isFile()) {
       return this.dataFormat;
     }
 
@@ -82,8 +82,9 @@ public class ToolElementData extends AbstractToolElement {
   }
 
   //
-  // Constructor
+  // Constructors
   //
+  
   /**
    * Instantiates a new tool parameter data.
    * @param param the param

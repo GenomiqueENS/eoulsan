@@ -84,7 +84,7 @@ public abstract class AbstractToolElement implements ToolElement {
   abstract boolean isValueParameterValid();
 
   @Override
-  public void setParameterEoulsan(final Map<String, Parameter> stepParameters)
+  public void setValues(final Map<String, Parameter> stepParameters)
       throws EoulsanException {
 
     // Extract parameter
@@ -93,7 +93,7 @@ public abstract class AbstractToolElement implements ToolElement {
     // No parameter found
     if (parameter == null) {
       // Default init
-      setParameterEoulsan();
+      setValue();
 
     } else {
 
@@ -103,7 +103,7 @@ public abstract class AbstractToolElement implements ToolElement {
           + stepParameters.get(getName()).getName() + ", value: "
           + stepParameters.get(getName()).getValue());
 
-      setParameterEoulsan(parameter);
+      setValue(parameter);
     }
   }
 
@@ -130,7 +130,7 @@ public abstract class AbstractToolElement implements ToolElement {
   abstract public String getValue();
 
   @Override
-  abstract public void setParameterEoulsan(final Parameter stepParameter)
+  abstract public void setValue(final Parameter stepParameter)
       throws EoulsanException;
 
   /**

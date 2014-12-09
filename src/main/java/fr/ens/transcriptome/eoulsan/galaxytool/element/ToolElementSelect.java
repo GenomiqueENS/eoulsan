@@ -68,19 +68,19 @@ public class ToolElementSelect extends AbstractToolElement {
   }
 
   @Override
-  public void setParameterEoulsan() {
+  public void setValue() {
   }
 
   @Override
-  public void setParameterEoulsan(final Parameter stepParameter)
+  public void setValue(final Parameter stepParameter)
       throws EoulsanException {
 
     this.value = stepParameter.getStringValue();
     this.isSetting = true;
 
-    if (!isValueParameterValid()) {
+    if (!this.isValueParameterValid()) {
       throw new EoulsanException("ToolGalaxy step: parameter "
-          + getName() + " value setting : " + this.value
+          + this.getName() + " value setting : " + this.value
           + " is invalid. \n\tAvailable values: "
           + Joiner.on(",").join(this.optionsValue));
     }
@@ -127,8 +127,9 @@ public class ToolElementSelect extends AbstractToolElement {
   }
 
   //
-  // Constructor
+  // Constructors
   //
+  
   /**
    * Instantiates a new tool parameter select.
    * @param param the param
@@ -149,7 +150,7 @@ public class ToolElementSelect extends AbstractToolElement {
     super(param, nameSpace);
 
     this.optionsElement = extractChildElementsByTagName(param, "option");
-    this.optionsValue = extractAllOptions();
+    this.optionsValue = this.extractAllOptions();
 
   }
 

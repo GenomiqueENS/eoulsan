@@ -58,7 +58,7 @@ public class ToolElementFloat extends AbstractToolElement {
   private double value;
 
   @Override
-  public void setParameterEoulsan() {
+  public void setValue() {
   }
 
   @Override
@@ -67,15 +67,15 @@ public class ToolElementFloat extends AbstractToolElement {
   }
 
   @Override
-  public void setParameterEoulsan(final Parameter stepParameter)
+  public void setValue(final Parameter stepParameter)
       throws EoulsanException {
 
     this.value = stepParameter.getDoubleValue();
     this.isSetting = true;
 
-    if (!isValueParameterValid()) {
+    if (!this.isValueParameterValid()) {
       throw new EoulsanException("ToolGalaxy step: parameter "
-          + getName() + " value setting for step: " + this.value
+          + this.getName() + " value setting for step: " + this.value
           + ". Invalid to interval [" + this.min + "," + this.max + "]");
     }
   }
@@ -92,8 +92,9 @@ public class ToolElementFloat extends AbstractToolElement {
   }
 
   //
-  // Constructor
+  // Constructors
   //
+  
   /**
    * Instantiates a new tool parameter float.
    * @param param the param
@@ -121,7 +122,7 @@ public class ToolElementFloat extends AbstractToolElement {
 
     } catch (final NumberFormatException e) {
       throw new EoulsanException("No found default value for parameter "
-          + getName());
+          + this.getName());
     }
 
     try {

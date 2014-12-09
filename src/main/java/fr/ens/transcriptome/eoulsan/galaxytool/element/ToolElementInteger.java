@@ -63,20 +63,20 @@ public class ToolElementInteger extends AbstractToolElement {
   }
 
   @Override
-  public void setParameterEoulsan() {
+  public void setValue() {
   }
 
   @Override
-  public void setParameterEoulsan(final Parameter stepParameter)
+  public void setValue(final Parameter stepParameter)
       throws EoulsanException {
 
     this.value = stepParameter.getIntValue();
 
     this.isSetting = true;
 
-    if (!isValueParameterValid()) {
+    if (!this.isValueParameterValid()) {
       throw new EoulsanException("ToolGalaxy step: parameter "
-          + getName() + " value setting for step: " + this.value
+          + this.getName() + " value setting for step: " + this.value
           + ". Invalid to interval [" + this.min + "," + this.max + "]");
     }
   }
@@ -93,8 +93,9 @@ public class ToolElementInteger extends AbstractToolElement {
   }
 
   //
-  // Constructor
+  // Constructors
   //
+  
   /**
    * Instantiates a new tool parameter integer.
    * @param param the param
@@ -123,7 +124,7 @@ public class ToolElementInteger extends AbstractToolElement {
 
     } catch (final NumberFormatException e) {
       throw new EoulsanException("No found default value for parameter "
-          + getName());
+          + this.getName());
     }
 
     try {
