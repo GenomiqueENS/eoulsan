@@ -72,8 +72,8 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
     countReadsInFeatures(alignmentFile, annotationFile, expressionFile,
         getStranded(), getOverlapMode(), isRemoveAmbiguousCases(),
-        getGenomicType(), getAttributeId(), false, 0, null, genomeDescFile,
-        reporter, counterGroup);
+        getGenomicType(), getAttributeId(), isSplitAttributeValues(), false, 0,
+        null, genomeDescFile, reporter, counterGroup);
 
   }
 
@@ -97,16 +97,17 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
   /**
    * Count the number of alignments for all the features of the annotation file.
-   * @param samFile SAM file that contains alignments.
-   * @param gffFile annotation file.
-   * @param outFile output file.
-   * @param stranded strand to consider.
-   * @param overlapMode overlap mode to consider.
-   * @param removeAmbiguousCases if true : ambiguous cases will be removed.
-   * @param featureType annotation feature type to consider.
-   * @param attributeId annotation attribute id to consider.
-   * @param quiet if true : suppress progress report and warnings.
-   * @param minAverageQual minimum value for alignment quality.
+   * @param samFile SAM file that contains alignments
+   * @param gffFile annotation file
+   * @param outFile output file
+   * @param stranded strand to consider
+   * @param overlapMode overlap mode to consider
+   * @param removeAmbiguousCases if true : ambiguous cases will be removed
+   * @param featureType annotation feature type to consider
+   * @param attributeId annotation attribute id to consider
+   * @param splitAttributeValues split attribute values
+   * @param quiet if true : suppress progress report and warnings
+   * @param minAverageQual minimum value for alignment quality
    * @param samOutFile output SAM file annotating each line with its assignment
    *          to a feature or a special counter (as an optional field with tag
    *          'XF').
@@ -120,10 +121,11 @@ public class HTSeqCounter extends AbstractExpressionCounter {
       final DataFile gffFile, final DataFile outFile,
       final StrandUsage stranded, final OverlapMode overlapMode,
       final boolean removeAmbiguousCases, final String featureType,
-      final String attributeId, final boolean quiet, final int minAverageQual,
-      final DataFile samOutFile, final DataFile genomeDescFile,
-      final Reporter reporter, final String counterGroup)
-      throws EoulsanException, IOException, BadBioEntryException {
+      final String attributeId, final boolean splitAttributeValues,
+      final boolean quiet, final int minAverageQual, final DataFile samOutFile,
+      final DataFile genomeDescFile, final Reporter reporter,
+      final String counterGroup) throws EoulsanException, IOException,
+      BadBioEntryException {
 
     final GenomicArray<String> features =
         new GenomicArray<>(GenomeDescription.load(genomeDescFile.open()));
@@ -136,7 +138,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
     // read and store in 'features' the annotation file
     HTSeqUtils.storeAnnotation(features, gffFile.open(), featureType, stranded,
-        attributeId, counts);
+        attributeId, splitAttributeValues, counts);
 
     if (counts.size() == 0) {
       writer.close();

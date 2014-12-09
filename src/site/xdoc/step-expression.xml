@@ -76,7 +76,8 @@
 If "yes" or "no", the read has to be mapped to the same strand as the feature or it is considered overlapping with a feature
 regardless of whether it is mapped to the same or the opposite strand as the feature.</td><td>no</td></tr>
 		<tr><td>overlapmode</td><td>string</td><td>Name of the overlap mode to use (union, intersection-nonempty or intersection-strict).</td><td>union</td></tr>
-		<tr><td>removeambiguouscases</td><td>string</td><td>Keep or remove ambiguous cases in the count.</td><td>true</td></tr>
+		<tr><td>removeambiguouscases</td><td>boolean</td><td>Keep or remove ambiguous cases in the count.</td><td>true</td></tr>
+		<tr><td>splitattributevalues</td><td>boolean</td><td>Split values of the attribute field</td><td>false</td></tr>
 	 </table>
 
        </ul>

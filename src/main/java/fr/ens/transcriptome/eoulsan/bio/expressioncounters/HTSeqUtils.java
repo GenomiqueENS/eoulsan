@@ -30,7 +30,6 @@ import static fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode.UN
 import static fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage.REVERSE;
 import static fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage.YES;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -44,6 +43,9 @@ import net.sf.samtools.Cigar;
 import net.sf.samtools.CigarElement;
 import net.sf.samtools.CigarOperator;
 import net.sf.samtools.SAMRecord;
+
+import com.google.common.base.Splitter;
+
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
@@ -62,86 +64,57 @@ public class HTSeqUtils {
   public static void storeAnnotation(final GenomicArray<String> features,
       final InputStream gffIs, final String featureType,
       final StrandUsage stranded, final String attributeId,
-      final Map<String, Integer> counts) throws IOException, EoulsanException,
-      BadBioEntryException {
-
-    final GFFReader gffReader = new GFFReader(gffIs);
-
-    // Read the annotation file
-    for (final GFFEntry gff : gffReader) {
-
-      if (featureType.equals(gff.getType())) {
-
-        final String featureId = gff.getAttributeValue(attributeId);
-        if (featureId == null) {
-          gffReader.close();
-
-          throw new EoulsanException("Feature "
-              + featureType + " does not contain a " + attributeId
-              + " attribute");
-        }
-
-        if ((stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE)
-            && '.' == gff.getStrand()) {
-          gffReader.close();
-
-          throw new EoulsanException("Feature "
-              + featureType
-              + " does not have strand information but you are running "
-              + "htseq-count in stranded mode.");
-        }
-
-        // Addition to the list of features of a GenomicInterval object
-        // corresponding to the current annotation line
-        features.addEntry(
-            new GenomicInterval(gff, stranded.isSaveStrandInfo()), featureId);
-        counts.put(featureId, 0);
-      }
-    }
-    gffReader.throwException();
-    gffReader.close();
-  }
-
-  public static void storeAnnotation(final GenomicArray<String> features,
-      final File gffFile, final String featureType, final StrandUsage stranded,
-      final String attributeId, final Map<String, Integer> counts)
+      final boolean splitAttributeValues, final Map<String, Integer> counts)
       throws IOException, EoulsanException, BadBioEntryException {
 
-    final GFFReader gffReader = new GFFReader(gffFile);
+    final Splitter splitter = Splitter.on(',').omitEmptyStrings().trimResults();
 
-    // Read the annotation file
-    for (final GFFEntry gff : gffReader) {
+    // Splitter for parents string
+    try (final GFFReader gffReader = new GFFReader(gffIs)) {
 
-      if (featureType.equals(gff.getType())) {
+      // Read the annotation file
+      for (final GFFEntry gff : gffReader) {
 
-        final String featureId = gff.getAttributeValue(attributeId);
-        if (featureId == null) {
-          gffReader.close();
+        if (featureType.equals(gff.getType())) {
 
-          throw new EoulsanException("Feature "
-              + featureType + " does not contain a " + attributeId
-              + " attribute");
+          final String featureId = gff.getAttributeValue(attributeId);
+          if (featureId == null) {
+
+            throw new EoulsanException("Feature "
+                + featureType + " does not contain a " + attributeId
+                + " attribute");
+          }
+
+          if ((stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE)
+              && '.' == gff.getStrand()) {
+
+            throw new EoulsanException("Feature "
+                + featureType
+                + " does not have strand information but you are running "
+                + "htseq-count in stranded mode.");
+          }
+
+          // Addition to the list of features of a GenomicInterval object
+          // corresponding to the current annotation line
+
+          final List<String> featureIds;
+
+          if (splitAttributeValues) {
+            featureIds = splitter.splitToList(featureId);
+          } else {
+            featureIds = Collections.singletonList(featureId);
+          }
+
+          // Split parent if needed
+          for (String f : featureIds) {
+            features.addEntry(
+                new GenomicInterval(gff, stranded.isSaveStrandInfo()), f);
+            counts.put(f, 0);
+          }
         }
-
-        if ((stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE)
-            && '.' == gff.getStrand()) {
-          gffReader.close();
-
-          throw new EoulsanException("Feature "
-              + featureType
-              + " does not have strand information but you are running "
-              + "htseq-count in stranded mode.");
-        }
-
-        // Addition to the list of features of a GenomicInterval object
-        // corresponding to the current annotation line
-        features.addEntry(
-            new GenomicInterval(gff, stranded.isSaveStrandInfo()), featureId);
-        counts.put(featureId, 0);
       }
+      gffReader.throwException();
     }
-    gffReader.throwException();
-    gffReader.close();
   }
 
   /**

@@ -51,15 +51,13 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
-import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
-import fr.ens.transcriptome.eoulsan.bio.GenomicInterval;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.EoulsanCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.HTSeqCounter;
+import fr.ens.transcriptome.eoulsan.bio.expressioncounters.HTSeqUtils;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
-import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
@@ -184,6 +182,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * Create JobConf object for HTSeq-count.
    * @param genomicType genomic type
    * @param attributeId attributeId
+   * @param splitAttributeValues split attribute values
    * @param stranded stranded mode
    * @param overlapMode overlap mode
    * @param removeAmbiguousCases true to remove ambiguous cases
@@ -196,9 +195,10 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       final Data alignmentsData, final Data featureAnnotationData,
       final Data genomeDescriptionData, final Data outData,
       final String genomicType, final String attributeId,
-      final StrandUsage stranded, final OverlapMode overlapMode,
-      final boolean removeAmbiguousCases, final boolean tsamFormat)
-      throws IOException, BadBioEntryException, EoulsanException {
+      final boolean splitAttributeValues, final StrandUsage stranded,
+      final OverlapMode overlapMode, final boolean removeAmbiguousCases,
+      final boolean tsamFormat) throws IOException, BadBioEntryException,
+      EoulsanException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -256,8 +256,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     if (!PathUtils.isFile(featuresIndexPath, jobConf)) {
       createFeaturesIndex(context, new Path(annotationDataFile.getSource()),
-          genomicType, attributeId, stranded, genomeDescDataFile,
-          featuresIndexPath, jobConf);
+          genomicType, attributeId, splitAttributeValues, stranded,
+          genomeDescDataFile, featuresIndexPath, jobConf);
     }
 
     // Create the job and its name
@@ -396,6 +396,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @param context Eoulsan context
    * @param gffPath GFF annotation file path
    * @param featureType feature type to use
+   * @param attributeId attribute id
+   * @param splitAttributeValues split attribute values
    * @param stranded strand mode
    * @param genomeDescDataFile genome description DataFile
    * @param featuresIndexPath feature index output path
@@ -409,9 +411,10 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    */
   private static final Path createFeaturesIndex(final StepContext context,
       final Path gffPath, final String featureType, final String attributeId,
-      final StrandUsage stranded, final DataFile genomeDescDataFile,
-      final Path featuresIndexPath, final Configuration conf)
-      throws IOException, BadBioEntryException, EoulsanException {
+      final boolean splitAttributeValues, final StrandUsage stranded,
+      final DataFile genomeDescDataFile, final Path featuresIndexPath,
+      final Configuration conf) throws IOException, BadBioEntryException,
+      EoulsanException {
 
     final GenomicArray<String> features = new GenomicArray<>();
     final GenomeDescription genomeDescription =
@@ -420,38 +423,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     final FileSystem fs = gffPath.getFileSystem(conf);
     final FSDataInputStream is = fs.open(gffPath);
-    final GFFReader gffReader = new GFFReader(is);
 
-    // Read the annotation file
-    for (final GFFEntry gff : gffReader) {
-
-      if (featureType.equals(gff.getType())) {
-
-        final String featureId = gff.getAttributeValue(attributeId);
-        if (featureId == null) {
-          gffReader.close();
-          throw new EoulsanException("Feature "
-              + featureType + " does not contain a " + attributeId
-              + " attribute");
-        }
-
-        if ((stranded == StrandUsage.YES || stranded == StrandUsage.REVERSE)
-            && '.' == gff.getStrand()) {
-          gffReader.close();
-          throw new EoulsanException("Feature "
-              + featureType
-              + " does not have strand information but you are running "
-              + "htseq-count in stranded mode.");
-        }
-        // Addition to the list of features of a GenomicInterval object
-        // corresponding to the current annotation line
-        features.addEntry(
-            new GenomicInterval(gff, stranded.isSaveStrandInfo()), featureId);
-        counts.put(featureId, 0);
-      }
-    }
-    gffReader.throwException();
-    gffReader.close();
+    HTSeqUtils.storeAnnotation(features, is, featureType, stranded,
+        attributeId, splitAttributeValues, counts);
 
     if (counts.size() == 0) {
       throw new EoulsanException("Warning: No features of type '"
@@ -726,8 +700,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       final Job job =
           createJobHTSeqCounter(conf, context, alignmentsData,
               featureAnnotationData, genomeDescriptionData, outData,
-              getGenomicType(), getAttributeId(), getStranded(),
-              getOverlapMode(), isRemoveAmbiguousCases(), tsamFormat);
+              getGenomicType(), getAttributeId(), isSplitAttributeValues(),
+              getStranded(), getOverlapMode(), isRemoveAmbiguousCases(),
+              tsamFormat);
 
       job.submit();
       jobsRunning.put(job, alignmentsData.getName());

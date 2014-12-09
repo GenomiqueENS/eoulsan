@@ -79,6 +79,12 @@ public interface ExpressionCounter {
   String getAttributeId();
 
   /**
+   * Test if parent attribute values must be split.
+   * @return true if parent attribute values must be split
+   */
+  boolean isSplitAttributeValues();
+
+  /**
    * Get the temporary directory.
    * @return a string with the absolute path of the temporary directory
    */
@@ -117,6 +123,12 @@ public interface ExpressionCounter {
    * @param attributeId string with the attribute ID
    */
   void setAttributeId(String attributeId);
+
+  /**
+   * Set if attribute values must be split.
+   * @param splitAttributesValues true if attribute values must be split
+   */
+  void setSplitAttributeValues(boolean splitAttributesValues);
 
   /**
    * Set the temporary directory.

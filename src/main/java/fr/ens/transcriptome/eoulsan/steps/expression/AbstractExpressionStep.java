@@ -68,6 +68,8 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
   public static final String GENOMIC_TYPE_PARAMETER_NAME = "genomictype";
   public static final String ATTRIBUTE_ID_PARAMETER_NAME = "attributeid";
+  public static final String SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME =
+      "splitattributevalues";
 
   protected static final String COUNTER_GROUP = "expression";
 
@@ -83,6 +85,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   private StrandUsage stranded = StrandUsage.NO;
   private OverlapMode overlapmode = OverlapMode.UNION;
   private boolean removeAmbiguousCases = true;
+  private boolean splitAttributeValues = false;
 
   //
   // Getters
@@ -113,7 +116,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   }
 
   /**
-   * Get the stranded mode
+   * Get the stranded mode.
    * @return the stranded mode as a String
    */
   protected StrandUsage getStranded() {
@@ -121,7 +124,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   }
 
   /**
-   * Get the overlap mode
+   * Get the overlap mode.
    * @return the overlap mode as a String
    */
   protected OverlapMode getOverlapMode() {
@@ -129,11 +132,20 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   }
 
   /**
-   * Get the ambiguous case mode
+   * Get the ambiguous case mode.
    * @return the ambiguous case mode
    */
   protected boolean isRemoveAmbiguousCases() {
     return this.removeAmbiguousCases;
+  }
+
+  /**
+   * Get the split attribute values mode.
+   * @return the split attribute values mode
+   */
+  protected boolean isSplitAttributeValues() {
+
+    return this.splitAttributeValues;
   }
 
   /**
@@ -200,13 +212,21 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      if (GENOMIC_TYPE_PARAMETER_NAME.equals(p.getName())) {
+      switch (p.getName()) {
+
+      case GENOMIC_TYPE_PARAMETER_NAME:
         this.genomicType = p.getStringValue();
-      } else if (ATTRIBUTE_ID_PARAMETER_NAME.equals(p.getName())) {
+        break;
+
+      case ATTRIBUTE_ID_PARAMETER_NAME:
         this.attributeId = p.getStringValue();
-      } else if (COUNTER_PARAMETER_NAME.equals(p.getName())) {
+        break;
+
+      case COUNTER_PARAMETER_NAME:
         counterName = p.getStringValue();
-      } else if (STRANDED_PARAMETER_NAME.equals(p.getName())) {
+        break;
+
+      case STRANDED_PARAMETER_NAME:
 
         this.stranded = StrandUsage.getStrandUsageFromName(p.getStringValue());
 
@@ -214,8 +234,9 @@ public abstract class AbstractExpressionStep extends AbstractStep {
           throw new EoulsanException("Unknown strand mode in "
               + getName() + " step: " + p.getStringValue());
         }
+        break;
 
-      } else if (OVERLAPMODE_PARAMETER_NAME.equals(p.getName())) {
+      case OVERLAPMODE_PARAMETER_NAME:
 
         this.overlapmode =
             OverlapMode.getOverlapModeFromName(p.getStringValue());
@@ -224,10 +245,17 @@ public abstract class AbstractExpressionStep extends AbstractStep {
           throw new EoulsanException("Unknown overlap mode in "
               + getName() + " step: " + p.getStringValue());
         }
+        break;
 
-      } else if (REMOVEAMBIGUOUSCASES_PARAMETER_NAME.equals(p.getName())) {
+      case REMOVEAMBIGUOUSCASES_PARAMETER_NAME:
         this.removeAmbiguousCases = p.getBooleanValue();
-      } else {
+        break;
+
+      case SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME:
+        this.splitAttributeValues = p.getBooleanValue();
+        break;
+
+      default:
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());
       }

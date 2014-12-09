@@ -30,10 +30,10 @@ import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionSt
 import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.GENOMIC_TYPE_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.OVERLAPMODE_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.REMOVEAMBIGUOUSCASES_PARAMETER_NAME;
+import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.STRANDED_PARAMETER_NAME;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,19 +91,33 @@ public class AnnotationChecker implements Checker {
 
     for (Parameter p : stepParameters) {
 
-      if (GENOMIC_TYPE_PARAMETER_NAME.equals(p.getName())) {
+      switch (p.getName()) {
+
+      case GENOMIC_TYPE_PARAMETER_NAME:
         this.genomicType = p.getStringValue();
-      } else if (ATTRIBUTE_ID_PARAMETER_NAME.equals(p.getName())) {
+        break;
+
+      case ATTRIBUTE_ID_PARAMETER_NAME:
         this.attributeId = p.getStringValue();
-      } else if (STRANDED_PARAMETER_NAME.equals(p.getName())) {
+        break;
+
+      case STRANDED_PARAMETER_NAME:
         this.stranded =
             "yes".equals(p.getStringValue())
                 || "reverse".equals(p.getStringValue());
-      } else if (!COUNTER_PARAMETER_NAME.equals(p.getName())
-          && !OVERLAPMODE_PARAMETER_NAME.equals(p.getName())
-          && !REMOVEAMBIGUOUSCASES_PARAMETER_NAME.equals(p.getName())) {
-        throw new EoulsanException("Unknown parameter for "
-            + getName() + " step: " + p.getName());
+        break;
+
+      default:
+
+        if (!COUNTER_PARAMETER_NAME.equals(p.getName())
+            && !OVERLAPMODE_PARAMETER_NAME.equals(p.getName())
+            && !REMOVEAMBIGUOUSCASES_PARAMETER_NAME.equals(p.getName())
+            && !SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME.equals(p.getName())) {
+          throw new EoulsanException("Unknown parameter for "
+              + getName() + " step: " + p.getName());
+
+        }
+
       }
     }
   }
@@ -153,9 +167,6 @@ public class AnnotationChecker implements Checker {
       final String attributeId, final boolean stranded) throws IOException,
       BadBioEntryException, EoulsanException {
 
-    InputStream is = file.open();
-    final GFFReader gffReader = new GFFReader(is);
-
     final GenomicArray<String> features = new GenomicArray<>();
     Map<String, long[]> sequenceRegions = null;
     final Map<String, Long> sequenceLengths = getSequencesLengths(desc);
@@ -166,106 +177,103 @@ public class AnnotationChecker implements Checker {
     long sequenceLength = -1;
     String lastSequenceName = null;
 
-    for (final GFFEntry e : gffReader) {
+    try (final GFFReader gffReader = new GFFReader(file.open())) {
 
-      if (first) {
-        sequenceRegions = checkSequenceRegions(e, desc);
-        first = false;
-      }
+      for (final GFFEntry e : gffReader) {
 
-      if (!featureType.equals(e.getType())) {
-        continue;
-      }
+        if (first) {
+          sequenceRegions = checkSequenceRegions(e, desc);
+          first = false;
+        }
 
-      final String sequenceName = e.getSeqId();
-      final int start = e.getStart();
-      final int end = e.getEnd();
+        if (!featureType.equals(e.getType())) {
+          continue;
+        }
 
-      if (sequenceRegions != null) {
+        final String sequenceName = e.getSeqId();
+        final int start = e.getStart();
+        final int end = e.getEnd();
 
-        if (!sequenceName.equals(lastSequenceName)) {
-          interval = sequenceRegions.get(sequenceName);
+        if (sequenceRegions != null) {
 
-          if (interval == null) {
-            gffReader.close();
-            throw new BadBioEntryException("GFF entry with id ("
-                + sequenceName + ") not found in sequence region", e.toString());
+          if (!sequenceName.equals(lastSequenceName)) {
+            interval = sequenceRegions.get(sequenceName);
+
+            if (interval == null) {
+              throw new BadBioEntryException("GFF entry with id ("
+                  + sequenceName + ") not found in sequence region",
+                  e.toString());
+            }
+          }
+
+          if (Math.min(start, end) < interval[0]) {
+            throw new BadBioEntryException("GFF entry with start position ("
+                + Math.min(start, end)
+                + ") lower than the start of sequence region" + sequenceName
+                + " (" + interval[0] + ")", e.toString());
+          }
+
+          if (Math.max(start, end) > interval[1]) {
+            throw new BadBioEntryException("GFF entry with end position ("
+                + Math.max(start, end)
+                + ") greater than the end of sequence region " + sequenceName
+                + " (" + interval[1] + ")", e.toString());
           }
         }
 
-        if (Math.min(start, end) < interval[0]) {
-          gffReader.close();
-          throw new BadBioEntryException("GFF entry with start position ("
-              + Math.min(start, end)
-              + ") lower than the start of sequence region" + sequenceName
-              + " (" + interval[0] + ")", e.toString());
-        }
+        if (sequenceLengths != null) {
 
-        if (Math.max(start, end) > interval[1]) {
-          gffReader.close();
-          throw new BadBioEntryException("GFF entry with end position ("
-              + Math.max(start, end)
-              + ") greater than the end of sequence region " + sequenceName
-              + " (" + interval[1] + ")", e.toString());
-        }
-      }
+          if (!sequenceName.equals(lastSequenceName)) {
 
-      if (sequenceLengths != null) {
+            if (!sequenceLengths.containsKey(sequenceName)) {
+              throw new BadBioEntryException("GFF entry with id ("
+                  + sequenceName + ") not found in genome", e.toString());
+            }
 
-        if (!sequenceName.equals(lastSequenceName)) {
-
-          if (!sequenceLengths.containsKey(sequenceName)) {
-            gffReader.close();
-            throw new BadBioEntryException("GFF entry with id ("
-                + sequenceName + ") not found in genome", e.toString());
+            sequenceLength = sequenceLengths.get(sequenceName);
           }
 
-          sequenceLength = sequenceLengths.get(sequenceName);
+          if (Math.min(start, end) < 1) {
+            throw new BadBioEntryException("GFF entry with start position ("
+                + Math.min(start, end) + ") lower than 1 in sequence "
+                + sequenceName, e.toString());
+          }
+
+          if (Math.max(start, end) - 1 > sequenceLength) {
+            gffReader.close();
+            throw new BadBioEntryException("GFF entry with end position ("
+                + Math.max(start, end)
+                + ") greater than the the length of sequence " + sequenceName
+                + " (" + sequenceLength + ")", e.toString());
+          }
         }
 
-        if (Math.min(start, end) < 1) {
-          gffReader.close();
-          throw new BadBioEntryException("GFF entry with start position ("
-              + Math.min(start, end) + ") lower than 1 in sequence "
-              + sequenceName, e.toString());
+        final String featureId = e.getAttributeValue(attributeId);
+
+        if (attributeId != null && featureId == null) {
+          throw new BadBioEntryException("Feature "
+              + featureType + " does not contain a " + attributeId
+              + " attribute", e.toString());
         }
 
-        if (Math.max(start, end) - 1 > sequenceLength) {
-          gffReader.close();
-          throw new BadBioEntryException("GFF entry with end position ("
-              + Math.max(start, end)
-              + ") greater than the the length of sequence " + sequenceName
-              + " (" + sequenceLength + ")", e.toString());
+        if (featureId != null) {
+
+          features.addEntry(new GenomicInterval(e, stranded), featureId);
+          featuresFound = true;
         }
+
+        lastSequenceName = sequenceName;
       }
 
-      final String featureId = e.getAttributeValue(attributeId);
+      gffReader.throwException();
 
-      if (attributeId != null && featureId == null) {
-        throw new BadBioEntryException(
-            "Feature "
-                + featureType + " does not contain a " + attributeId
-                + " attribute", e.toString());
+      if (featureType != null && !featuresFound) {
+        throw new EoulsanException("No feature \""
+            + featureType + "\" with attribute \"" + attributeId
+            + "\" in annotation.");
       }
 
-      if (featureId != null) {
-
-        features.addEntry(new GenomicInterval(e, stranded), featureId);
-        featuresFound = true;
-      }
-
-      lastSequenceName = sequenceName;
     }
-
-    gffReader.throwException();
-    gffReader.close();
-
-    if (featureType != null && !featuresFound) {
-      throw new EoulsanException("No feature \""
-          + featureType + "\" with attribute \"" + attributeId
-          + "\" in annotation.");
-    }
-
   }
 
   private static Map<String, Long> getSequencesLengths(

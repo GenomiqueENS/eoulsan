@@ -161,6 +161,7 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
     }
 
     counter.setRemoveAmbiguousCases(isRemoveAmbiguousCases());
+    counter.setSplitAttributeValues(isSplitAttributeValues());
 
     // Set counter temporary directory
     counter.setTempDirectory(tempDirectory);
