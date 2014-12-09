@@ -3,6 +3,7 @@ package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
 import org.w3c.dom.Element;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 
 public class ToolParameterInteger extends AbstractToolElement {
 
@@ -23,14 +24,26 @@ public class ToolParameterInteger extends AbstractToolElement {
   }
 
   @Override
-  public boolean setParameterEoulsan(final String paramValue) {
-
-    this.value = Integer.parseInt(paramValue);
-
-    isSetting = true;
-    return isValueParameterValid();
+  public void setParameterEoulsan() {
+    // TODO Auto-generated method stub
   }
 
+  @Override
+  public void setParameterEoulsan(final Parameter stepParameter)
+      throws EoulsanException {
+
+    this.value = stepParameter.getIntValue();
+
+    isSetting = true;
+
+    if (!isValueParameterValid()) {
+      throw new EoulsanException("ToolGalaxy step: parameter "
+          + this.getName() + " value setting for step: "
+          + value + ". Invalid to interval [" + min + "," + max + "]");
+    }
+  }
+
+  @Override
   public String getValue() {
     return "" + this.value;
   }
@@ -73,12 +86,6 @@ public class ToolParameterInteger extends AbstractToolElement {
     } catch (NumberFormatException e) {
       throw new EoulsanException("Fail extract value " + e.getMessage());
     }
-  }
-
-  @Override
-  public boolean setParameterEoulsan() {
-    // TODO Auto-generated method stub
-    return false;
   }
 
 }

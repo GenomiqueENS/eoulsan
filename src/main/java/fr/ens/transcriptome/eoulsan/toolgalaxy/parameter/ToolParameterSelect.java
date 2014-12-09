@@ -2,14 +2,15 @@ package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
 
 import static fr.ens.transcriptome.eoulsan.toolgalaxy.ToolInterpreter.extractChildElementsByTagName;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.python.google.common.base.Joiner;
 import org.w3c.dom.Element;
 
-import com.google.common.collect.Lists;
-
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 
 public class ToolParameterSelect extends AbstractToolElement {
 
@@ -31,22 +32,28 @@ public class ToolParameterSelect extends AbstractToolElement {
   }
 
   @Override
-  public String getValue() {
-    return this.value;
+  public void setParameterEoulsan() {
+    // TODO Auto-generated method stub
   }
 
   @Override
-  public boolean setParameterEoulsan(String paramValue) {
+  public void setParameterEoulsan(final Parameter stepParameter)
+      throws EoulsanException {
 
-    this.value = paramValue;
+    this.value = stepParameter.getStringValue();
     isSetting = true;
 
-    return isValueParameterValid();
+    if (!isValueParameterValid()) {
+      throw new EoulsanException("ToolGalaxy step: parameter "
+          + this.getName() + " value setting : " + value
+          + " is invalid. \n\tAvailable values: "
+          + Joiner.on(",").join(optionsValue));
+    }
   }
 
   private List<String> extractAllOptions() throws EoulsanException {
 
-    final List<String> options = Lists.newArrayList();
+    final List<String> options = new ArrayList<>();
 
     for (Element e : optionsElement) {
       options.add(e.getAttribute(ATT_VALUE_KEY));
@@ -74,6 +81,11 @@ public class ToolParameterSelect extends AbstractToolElement {
     return "ToolParameterSelect [" + super.toString() + "]";
   }
 
+  @Override
+  public String getValue() {
+    return this.value;
+  }
+
   //
   // Constructor
   //
@@ -88,12 +100,6 @@ public class ToolParameterSelect extends AbstractToolElement {
     this.optionsElement = extractChildElementsByTagName(param, "option");
     this.optionsValue = extractAllOptions();
 
-  }
-
-  @Override
-  public boolean setParameterEoulsan() {
-    // TODO Auto-generated method stub
-    return false;
   }
 
 }

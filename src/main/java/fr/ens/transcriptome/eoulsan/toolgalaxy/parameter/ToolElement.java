@@ -26,21 +26,29 @@ package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
 
 import java.util.Map;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
+
 public interface ToolElement {
 
   public final static String SEP = ".";
 
   String getName();
 
-
   boolean isSetting();
 
   String getValue();
 
-  boolean setParameterEoulsan();
+  void setParameterEoulsan();
 
-  boolean setParameterEoulsan(final String value);
+  void setParameterEoulsan(final Parameter stepParameter)
+      throws EoulsanException;
 
-  void setParameterEoulsan(Map<String, String> parametersEoulsan);
+  void setParameterEoulsan(final Map<String, Parameter> stepParameters)
+      throws EoulsanException;
 
+  boolean isFile();
+
+  DataFormat getDataFormat();
 }

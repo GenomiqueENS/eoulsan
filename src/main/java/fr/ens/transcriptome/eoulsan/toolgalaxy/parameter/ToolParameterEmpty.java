@@ -2,6 +2,9 @@ package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
 
 import java.util.Map;
 
+import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
+
 public class ToolParameterEmpty implements ToolElement {
 
   public ToolParameterEmpty() {
@@ -26,21 +29,28 @@ public class ToolParameterEmpty implements ToolElement {
   }
 
   @Override
-  public boolean setParameterEoulsan() {
+  public void setParameterEoulsan() {
     // TODO Auto-generated method stub
-    return true;
   }
 
   @Override
-  public boolean setParameterEoulsan(String value) {
+  public void setParameterEoulsan(final Parameter stepParameter) {
     // TODO Auto-generated method stub
-    return true;
   }
 
   @Override
-  public void setParameterEoulsan(Map<String, String> parametersEoulsan) {
+  public void setParameterEoulsan(final Map<String, Parameter> stepParameters) {
     // TODO Auto-generated method stub
 
   }
 
+  @Override
+  public boolean isFile() {
+    return false;
+  }
+
+  @Override
+  public DataFormat getDataFormat() {
+    throw new UnsupportedOperationException();
+  }
 }

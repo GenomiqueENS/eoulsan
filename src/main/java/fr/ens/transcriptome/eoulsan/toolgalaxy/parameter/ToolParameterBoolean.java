@@ -1,12 +1,12 @@
 package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
 
 import java.util.List;
-import java.util.Map;
 
 import org.python.google.common.collect.Lists;
 import org.w3c.dom.Element;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 
 public class ToolParameterBoolean extends AbstractToolElement {
 
@@ -19,7 +19,7 @@ public class ToolParameterBoolean extends AbstractToolElement {
   private final static List<String> CHECKED_VALUES = Lists.newArrayList("yes",
       "on", "true");
 
-  private final String checked;
+  private final String checked_lowered;
   private final String trueValue;
   private final String falseValue;
 
@@ -36,45 +36,30 @@ public class ToolParameterBoolean extends AbstractToolElement {
   }
 
   @Override
-  public boolean setParameterEoulsan() {
+  public void setParameterEoulsan() {
     // Set value to the default value
     if (this.value.isEmpty()) {
       this.value = trueValue;
     }
 
     isSetting = true;
-    return isValueParameterValid();
   }
 
   @Override
-  public void setParameterEoulsan(Map<String, String> parametersEoulsan) {
+  public void setParameterEoulsan(final Parameter stepParameter) {
 
-    final String value = parametersEoulsan.get(getName());
-    // TODO
-    System.out.println("In PBool val in abstract to set paramE " + value);
+    final boolean valueParameter = stepParameter.getBooleanValue();
+    this.value = valueParameter ? trueValue : falseValue;
 
-    setParameterEoulsan(parametersEoulsan.get(getName()));
-  }
+    this.isSetting = true;
 
-  @Override
-  public boolean setParameterEoulsan(final String paramValue) {
-
-    if (CHECKED_VALUES.contains(paramValue.toLowerCase(Globals.DEFAULT_LOCALE))) {
-      this.value = trueValue;
-    } else {
-      this.value = falseValue;
-    }
-
-    isSetting = true;
-
-    return isValueParameterValid();
   }
 
   @Override
   public String toString() {
     return "ToolParameterBoolean [checked="
-        + checked + ", trueValue=" + trueValue + ", falseValue=" + falseValue
-        + ", value=" + value + "]";
+        + checked_lowered + ", trueValue=" + trueValue + ", falseValue="
+        + falseValue + ", value=" + value + "]";
   }
 
   //
@@ -87,7 +72,7 @@ public class ToolParameterBoolean extends AbstractToolElement {
   public ToolParameterBoolean(Element param, String nameSpace) {
     super(param, nameSpace);
 
-    this.checked =
+    this.checked_lowered =
         param.getAttribute(ATT_CHECKED_KEY).toLowerCase(Globals.DEFAULT_LOCALE);
 
     this.trueValue = param.getAttribute(ATT_TRUEVALUE_KEY);
@@ -95,7 +80,7 @@ public class ToolParameterBoolean extends AbstractToolElement {
     this.falseValue = param.getAttribute(ATT_FALSEVALUE_KEY);
 
     // Set default if define
-    if (CHECKED_VALUES.contains(checked)) {
+    if (CHECKED_VALUES.contains(checked_lowered)) {
       this.value = trueValue;
     }
 

@@ -30,6 +30,7 @@ import static fr.ens.transcriptome.eoulsan.util.XMLUtils.getElementsByTagName;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +40,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 public class ToolConditionalElement implements ToolElement {
 
@@ -51,23 +54,33 @@ public class ToolConditionalElement implements ToolElement {
 
   // Variable name in command tag and tool parameter related
   private final Multimap<String, ToolElement> actionsRelatedOptions;
+  private Map<String, ToolElement> toolParametersSelected;
 
   private String value;
 
   private boolean isSettings = false;
 
   @Override
-  public boolean setParameterEoulsan() {
+  public void setParameterEoulsan() {
     // TODO Auto-generated method stub
-    return true;
   }
 
-  // TODO replace by Set<Parameter>
   @Override
-  public void setParameterEoulsan(final Map<String, String> parametersEoulsan) {
+  public boolean isFile() {
+    return false;
+  }
+
+  @Override
+  public DataFormat getDataFormat() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setParameterEoulsan(final Map<String, Parameter> stepParameters)
+      throws EoulsanException {
 
     // Retrieve choice select from analysis
-    this.toolParameterSelect.setParameterEoulsan(parametersEoulsan);
+    this.toolParameterSelect.setParameterEoulsan(stepParameters);
 
     // Parameter corresponding to choice
     final Collection<ToolElement> toolParameters =
@@ -75,14 +88,26 @@ public class ToolConditionalElement implements ToolElement {
 
     // Check value parameter corresponding to a key
     for (final ToolElement toolParameter : toolParameters) {
-      final String value = parametersEoulsan.get(toolParameter.getName());
+      // Parse parameter
 
-      if (value == null) {
+      // Extract parameter related tool element
+      final Parameter parameter = stepParameters.get(toolParameter.getName());
+
+      if (parameter == null) {
+        // No parameters found, call default settings
         toolParameter.setParameterEoulsan();
+
       } else {
-        toolParameter.setParameterEoulsan(value);
+        // TODO
+        System.out.println("Set param "
+            + parameter.getName() + " vs " + toolParameter.getName());
+
+        // Set param
+        toolParameter.setParameterEoulsan(parameter);
       }
 
+      // Save map result
+      this.toolParametersSelected.put(toolParameter.getName(), toolParameter);
     }
 
     // Save setting parameter
@@ -142,13 +167,13 @@ public class ToolConditionalElement implements ToolElement {
     return toolParameterSelect;
   }
 
-  public Collection<ToolElement> getToolParametersResult() {
+  public Map<String, ToolElement> getToolParametersResult() {
 
-    if (actionsRelatedOptions.isEmpty()) {
-      return Collections.emptyList();
+    if (toolParametersSelected.isEmpty()) {
+      return Collections.emptyMap();
     }
 
-    return actionsRelatedOptions.values();
+    return this.toolParametersSelected;
   }
 
   // public Map<String, ToolElement> getOptions() {
@@ -170,7 +195,7 @@ public class ToolConditionalElement implements ToolElement {
   }
 
   @Override
-  public boolean setParameterEoulsan(final String paramValue) {
+  public void setParameterEoulsan(final Parameter stepParameter) {
 
     // // Set tool parameter related
     // if (actionsRelatedOptions.containsKey(paramValue)) {
@@ -179,7 +204,6 @@ public class ToolConditionalElement implements ToolElement {
     // this.value = actionsRelatedOptions.get(paramValue).getValue();
     // }
 
-    return true;
   }
 
   @Override
@@ -221,6 +245,8 @@ public class ToolConditionalElement implements ToolElement {
 
     // Extract all case available
     this.actionsRelatedOptions = parseActionsRelatedOptions(element);
+    this.toolParametersSelected = new HashMap<>();
 
   }
+
 }
