@@ -56,8 +56,9 @@ import fr.ens.transcriptome.eoulsan.galaxytool.element.ToolConditionalElement;
 import fr.ens.transcriptome.eoulsan.galaxytool.element.ToolElement;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 
+// TODO: Auto-generated Javadoc
 /**
- * This class create an interpreter to tool xml file from Galaxy
+ * This class create an interpreter to tool xml file from Galaxy.
  * @author Sandrine Perrin
  */
 public class ToolInterpreter {
@@ -79,7 +80,7 @@ public class ToolInterpreter {
   /** The python interperter. */
   private final ToolPythonInterpreter pythonInterperter;
 
-  /** Data from tool XML */
+  /** Data from tool XML. */
   private Map<String, ToolElement> inputs;
 
   /** The outputs. */
@@ -116,14 +117,14 @@ public class ToolInterpreter {
   private Map<DataFormat, ToolElement> outDataFormatExpected;
 
   /**
-   * Parse tool xml to extract useful data to run tool
-   * @param stepParameters parameters for analysis
+   * Parse tool xml to extract useful data to run tool.
+   * @param setStepParameters the set step parameters
    * @throws EoulsanException if an data missing
    */
   public void configure(final Set<Parameter> setStepParameters)
       throws EoulsanException {
 
-    initStepParameters(setStepParameters);
+    this.initStepParameters(setStepParameters);
 
     // Set tool name
     this.toolID = extractToolID(this.doc);
@@ -134,8 +135,8 @@ public class ToolInterpreter {
     this.inputs = extractInputs(this.doc, this.stepParameters);
     this.outputs = extractOutputs(this.doc);
 
-    this.inDataFormatExpected = extractDataFormat(this.inputs);
-    this.outDataFormatExpected = extractDataFormat(this.outputs);
+    this.inDataFormatExpected = this.extractDataFormat(this.inputs);
+    this.outDataFormatExpected = this.extractDataFormat(this.outputs);
 
     //
     this.interpreter = extractInterpreter(this.doc);
@@ -152,25 +153,27 @@ public class ToolInterpreter {
 
   /**
    * Convert command tag from tool xml in string, variable are replace by value.
-   * @return
-   * @throws EoulsanException
+   * @param inData the in data
+   * @param outData the out data
+   * @return the string
+   * @throws EoulsanException the eoulsan exception
    */
   public String execute(final Map<String, DataFile> inData,
       final Map<String, DataFile> outData) throws EoulsanException {
 
     // Copy step tool element
-    final Map<String, String> parametersCommand = extractParameters();
+    final Map<String, String> variablesCommand = this.extractVariables();
 
     // Add port with file path
-    setPortInput(parametersCommand, inData);
+    this.setPortInput(variablesCommand, inData);
 
     // Add port with file path
-    setPortOutput(parametersCommand, outData);
+    this.setPortOutput(variablesCommand, outData);
 
-    final String new_command =
-        this.pythonInterperter.executeScript(this.command, parametersCommand);
+    final String newCommand =
+        this.pythonInterperter.executeScript(this.command, variablesCommand);
 
-    return new_command;
+    return newCommand;
   }
 
   //
@@ -185,43 +188,43 @@ public class ToolInterpreter {
   public String createCommandLine() throws EoulsanException {
 
     // List variable name define
-    final Map<String, String> parameters = extractParameters();
+    final Map<String, String> variables = this.extractVariables();
 
-    final String new_command =
-        this.pythonInterperter.executeScript(this.command, parameters);
+    final String newCommand =
+        this.pythonInterperter.executeScript(this.command, variables);
 
-    return new_command;
+    return newCommand;
   }
 
   /**
    * Set input ports with name and value.
-   * @param inputsPort
-   * @throws EoulsanException
+   * @param inputsPort the inputs port
+   * @throws EoulsanException the eoulsan exception
    */
   public void setPortInput(final Map<String, String> inputsPort)
       throws EoulsanException {
 
-    setParameterToolWithPort(this.inputs, inputsPort);
+    this.setToolElementWithPort(this.inputs, inputsPort);
   }
 
   /**
    * Set output ports with name and value.
-   * @param outputsPort
-   * @throws EoulsanException
+   * @param outputsPort the outputs port
+   * @throws EoulsanException the eoulsan exception
    */
   public void setPortOutput(final Map<String, String> outputsPort)
       throws EoulsanException {
 
-    setParameterToolWithPort(this.outputs, outputsPort);
+    this.setToolElementWithPort(this.outputs, outputsPort);
   }
 
   /**
    * Associate port value on parameter tools corresponding.
    * @param paramTool set of parameter for tool galaxy
    * @param ports map on ports
-   * @throws EoulsanException
+   * @throws EoulsanException the eoulsan exception
    */
-  private void setParameterToolWithPort(
+  private void setToolElementWithPort(
       final Map<String, ToolElement> paramTool, final Map<String, String> ports)
       throws EoulsanException {
 
@@ -236,7 +239,7 @@ public class ToolInterpreter {
       }
 
       // Set value
-      parameter.setParameterEoulsan(new Parameter(e.getKey(), e.getValue()));
+      parameter.setValue(new Parameter(e.getKey(), e.getValue()));
     }
   }
 
@@ -269,7 +272,7 @@ public class ToolInterpreter {
   }
 
   /**
-   * Convert set parameters in map with name parameter related parameter
+   * Convert set parameters in map with name parameter related parameter.
    * @param setStepParameters the set step parameters
    */
   private void initStepParameters(final Set<Parameter> setStepParameters) {
@@ -282,38 +285,39 @@ public class ToolInterpreter {
 
   /**
    * Set input ports with name and value.
-   * @param inputsPort
-   * @param inData
-   * @throws EoulsanException
+   * @param variablesCommand the variables command
+   * @param inData the in data
+   * @throws EoulsanException the eoulsan exception
    */
-  private void setPortInput(final Map<String, String> parametersCommand,
+  private void setPortInput(final Map<String, String> variablesCommand,
       final Map<String, DataFile> inData) throws EoulsanException {
 
-    setParameterToolWithPort(parametersCommand, inData,
+    this.setToolElementWithPort(variablesCommand, inData,
         this.inDataFormatExpected);
   }
 
   /**
    * Set output ports with name and value.
-   * @param outputsPort
-   * @param outData
-   * @throws EoulsanException
+   * @param variablesCommand the variables command
+   * @param outData the out data
+   * @throws EoulsanException the eoulsan exception
    */
-  private void setPortOutput(final Map<String, String> parametersCommand,
+  private void setPortOutput(final Map<String, String> variablesCommand,
       final Map<String, DataFile> outData) throws EoulsanException {
 
-    setParameterToolWithPort(parametersCommand, outData,
+    this.setToolElementWithPort(variablesCommand, outData,
         this.outDataFormatExpected);
   }
 
   /**
    * Associate port value on parameter tools corresponding.
-   * @param paramTool set of parameter for tool galaxy
+   * @param variablesCommand the variables command
    * @param ports map on ports
-   * @param outDataFormatExpected2
+   * @param dataFormatExpected the data format expected
+   * @throws EoulsanException the eoulsan exception
    */
-  private void setParameterToolWithPort(
-      final Map<String, String> parametersCommand,
+  private void setToolElementWithPort(
+      final Map<String, String> variablesCommand,
       final Map<String, DataFile> ports,
       final Map<DataFormat, ToolElement> dataFormatExpected)
       throws EoulsanException {
@@ -341,25 +345,25 @@ public class ToolInterpreter {
       }
 
       // Add value in parameters command
-      parametersCommand.put(parameter.getName(), entry.getKey());
+      variablesCommand.put(parameter.getName(), entry.getKey());
     }
 
   }
 
   /**
-   * Extract all setting parameters tools with values.
+   * Extract all setting variables tools with values.
    * @return setting parameters tools with values
    * @throws EoulsanException no parameter setting found
    */
-  private Map<String, String> extractParameters() throws EoulsanException {
+  private Map<String, String> extractVariables() throws EoulsanException {
 
-    final Map<String, String> results = extractParametersFromXML();
+    final Map<String, String> results = this.extractVariablesFromXML();
 
     // Compare with variable from command tag
     // Add variable not found in xml tag, corresponding to dataset value from
     // external file
     final Map<String, String> missingVariables =
-        comparisonParametersXMLVariablesCommand(results);
+        this.comparisonVariablesFromXMLToCommand(results);
 
     // TODO
     System.out.println("variable init with stepParameters: \n"
@@ -379,7 +383,7 @@ public class ToolInterpreter {
    * @return the map
    * @throws EoulsanException the eoulsan exception
    */
-  private Map<String, String> extractParametersFromXML()
+  private Map<String, String> extractVariablesFromXML()
       throws EoulsanException {
 
     final int variablesCount = this.inputs.size() + this.outputs.size();
@@ -421,7 +425,7 @@ public class ToolInterpreter {
    * @return the map
    * @throws EoulsanException the eoulsan exception
    */
-  private Map<String, String> comparisonParametersXMLVariablesCommand(
+  private Map<String, String> comparisonVariablesFromXMLToCommand(
       final Map<String, String> parametersXML) throws EoulsanException {
 
     final Map<String, String> results = new HashMap<>();
@@ -540,13 +544,13 @@ public class ToolInterpreter {
     for (final Element param : condParams) {
       final ToolConditionalElement tce = new ToolConditionalElement(param);
 
-      final ToolElement parameterSelect = tce.getToolParameterSelect();
+      final ToolElement parameterSelect = tce.getToolElementSelect();
       results.put(parameterSelect.getName(), parameterSelect);
 
       // Set parameter
-      tce.setParameterEoulsan(stepParameters);
+      tce.setValues(stepParameters);
 
-      results.putAll(tce.getToolParametersResult());
+      results.putAll(tce.getToolElementsResult());
 
       // TODO
       // System.out.println("cond " + tce);
@@ -822,26 +826,41 @@ public class ToolInterpreter {
     return this.toolID;
   }
 
-  /** Get tool name */
+  /**
+   * Get tool name.
+   * @return the tool name
+   */
   public String getToolName() {
     return this.toolName;
   }
 
-  /** Get tool version */
+  /**
+   * Get tool version.
+   * @return the tool version
+   */
   public String getToolVersion() {
     return this.toolVersion;
   }
 
-  /** Get tool description */
+  /**
+   * Get tool description.
+   * @return the description
+   */
   public String getDescription() {
     return this.description;
   }
 
-  /** Get interpreter name */
+  /**
+   * Get interpreter name.
+   * @return the interpreter
+   */
   public String getInterpreter() {
     return this.interpreter;
   }
 
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
   @Override
   public String toString() {
     return "InterpreterToolGalaxy \n[inputs="
@@ -858,19 +877,19 @@ public class ToolInterpreter {
   //
 
   /**
-   * Public constructor
+   * Public constructor.
    * @param is the is
    * @throws EoulsanException the Eoulsan exception
    */
   public ToolInterpreter(final InputStream is) throws EoulsanException {
 
     this.toolXMLis = is;
-    this.doc = buildDOM();
+    this.doc = this.buildDOM();
     this.stepParameters = new HashMap<>();
 
     this.pythonInterperter = new ToolPythonInterpreter();
 
-    checkDomValidity();
+    this.checkDomValidity();
   }
 
 }
