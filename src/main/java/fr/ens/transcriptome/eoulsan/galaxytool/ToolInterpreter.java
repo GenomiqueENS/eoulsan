@@ -22,9 +22,9 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.toolgalaxy;
+package fr.ens.transcriptome.eoulsan.galaxytool;
 
-import static fr.ens.transcriptome.eoulsan.toolgalaxy.parameter.AbstractToolElement.getInstanceToolElement;
+import static fr.ens.transcriptome.eoulsan.galaxytool.element.AbstractToolElement.getInstanceToolElement;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,8 +52,8 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.toolgalaxy.parameter.ToolConditionalElement;
-import fr.ens.transcriptome.eoulsan.toolgalaxy.parameter.ToolElement;
+import fr.ens.transcriptome.eoulsan.galaxytool.element.ToolConditionalElement;
+import fr.ens.transcriptome.eoulsan.galaxytool.element.ToolElement;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 
 /**

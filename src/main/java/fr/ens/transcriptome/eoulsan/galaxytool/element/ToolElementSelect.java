@@ -21,9 +21,9 @@
  *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
-package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
+package fr.ens.transcriptome.eoulsan.galaxytool.element;
 
-import static fr.ens.transcriptome.eoulsan.toolgalaxy.ToolInterpreter.extractChildElementsByTagName;
+import static fr.ens.transcriptome.eoulsan.galaxytool.ToolInterpreter.extractChildElementsByTagName;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +41,7 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
  * @author Sandrine Perrin
  * @since 2.4
  */
-public class ToolParameterSelect extends AbstractToolElement {
+public class ToolElementSelect extends AbstractToolElement {
 
   /** The Constant TYPE. */
   public final static String TYPE = "select";
@@ -134,7 +134,7 @@ public class ToolParameterSelect extends AbstractToolElement {
    * @param param the param
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolParameterSelect(final Element param) throws EoulsanException {
+  public ToolElementSelect(final Element param) throws EoulsanException {
     this(param, null);
   }
 
@@ -144,7 +144,7 @@ public class ToolParameterSelect extends AbstractToolElement {
    * @param nameSpace the name space
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolParameterSelect(final Element param, final String nameSpace)
+  public ToolElementSelect(final Element param, final String nameSpace)
       throws EoulsanException {
     super(param, nameSpace);
 

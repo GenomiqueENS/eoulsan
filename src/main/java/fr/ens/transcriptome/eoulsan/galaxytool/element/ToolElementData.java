@@ -21,7 +21,7 @@
  *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
-package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
+package fr.ens.transcriptome.eoulsan.galaxytool.element;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
  * @author Sandrine Perrin
  * @since 2.4
  */
-public class ToolParameterData extends AbstractToolElement {
+public class ToolElementData extends AbstractToolElement {
 
   /** The formats. */
   private final List<String> formats;
@@ -89,7 +89,7 @@ public class ToolParameterData extends AbstractToolElement {
    * @param param the param
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolParameterData(final Element param) throws EoulsanException {
+  public ToolElementData(final Element param) throws EoulsanException {
     this(param, null);
   }
 
@@ -99,7 +99,7 @@ public class ToolParameterData extends AbstractToolElement {
    * @param nameSpace the name space
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolParameterData(final Element param, final String nameSpace)
+  public ToolElementData(final Element param, final String nameSpace)
       throws EoulsanException {
     super(param, nameSpace);
     this.isSetting = true;

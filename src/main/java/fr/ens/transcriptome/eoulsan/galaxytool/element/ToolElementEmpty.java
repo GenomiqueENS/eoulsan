@@ -21,7 +21,7 @@
  *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
-package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
+package fr.ens.transcriptome.eoulsan.galaxytool.element;
 
 import java.util.Map;
 
@@ -34,12 +34,12 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
  * @author Sandrine Perrin
  * @since 2.4
  */
-public class ToolParameterEmpty implements ToolElement {
+public class ToolElementEmpty implements ToolElement {
 
   /**
    * Instantiates a new tool parameter empty.
    */
-  public ToolParameterEmpty() {
+  public ToolElementEmpty() {
   }
 
   @Override

@@ -23,7 +23,9 @@
  */
 
 /**
- * This package contain classes related to parameter extract from tool xml file from galaxy.
+ * This package contain classes related to read tool xml file from galaxy.
  * @since 2.0
  */
-package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
+
+package fr.ens.transcriptome.eoulsan.galaxytool;
+

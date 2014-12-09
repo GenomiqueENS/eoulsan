@@ -21,10 +21,10 @@
  *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
-package fr.ens.transcriptome.eoulsan.toolgalaxy;
+package fr.ens.transcriptome.eoulsan.galaxytool;
 
-import static fr.ens.transcriptome.eoulsan.toolgalaxy.ToolPythonInterpreter.CALL_METHOD;
-import static fr.ens.transcriptome.eoulsan.toolgalaxy.ToolPythonInterpreter.VAR_CMD_NAME;
+import static fr.ens.transcriptome.eoulsan.galaxytool.ToolPythonInterpreter.CALL_METHOD;
+import static fr.ens.transcriptome.eoulsan.galaxytool.ToolPythonInterpreter.VAR_CMD_NAME;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -21,7 +21,7 @@
  *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
-package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
+package fr.ens.transcriptome.eoulsan.galaxytool.element;
 
 import org.w3c.dom.Element;
 
@@ -34,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
  * @author Sandrine Perrin
  * @since 2.4
  */
-public class ToolParameterFloat extends AbstractToolElement {
+public class ToolElementFloat extends AbstractToolElement {
 
   /** The Constant TYPE. */
   public final static String TYPE = "float";
@@ -99,7 +99,7 @@ public class ToolParameterFloat extends AbstractToolElement {
    * @param param the param
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolParameterFloat(final Element param) throws EoulsanException {
+  public ToolElementFloat(final Element param) throws EoulsanException {
     this(param, null);
   }
 
@@ -109,7 +109,7 @@ public class ToolParameterFloat extends AbstractToolElement {
    * @param nameSpace the name space
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolParameterFloat(final Element param, final String nameSpace)
+  public ToolElementFloat(final Element param, final String nameSpace)
       throws EoulsanException {
     super(param, nameSpace);
 

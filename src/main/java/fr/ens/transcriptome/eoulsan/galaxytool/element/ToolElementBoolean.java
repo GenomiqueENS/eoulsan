@@ -21,7 +21,7 @@
  *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
-package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
+package fr.ens.transcriptome.eoulsan.galaxytool.element;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
  * @author Sandrine Perrin
  * @since 2.4
  */
-public class ToolParameterBoolean extends AbstractToolElement {
+public class ToolElementBoolean extends AbstractToolElement {
 
   /** The Constant TYPE. */
   public final static String TYPE = "boolean";
@@ -111,7 +111,7 @@ public class ToolParameterBoolean extends AbstractToolElement {
    * Instantiates a new tool parameter boolean.
    * @param param the param
    */
-  public ToolParameterBoolean(final Element param) {
+  public ToolElementBoolean(final Element param) {
     this(param, null);
   }
 
@@ -120,7 +120,7 @@ public class ToolParameterBoolean extends AbstractToolElement {
    * @param param the param
    * @param nameSpace the name space
    */
-  public ToolParameterBoolean(final Element param, final String nameSpace) {
+  public ToolElementBoolean(final Element param, final String nameSpace) {
     super(param, nameSpace);
 
     this.checked_lowered =

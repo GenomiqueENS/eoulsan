@@ -22,10 +22,10 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
+package fr.ens.transcriptome.eoulsan.galaxytool.element;
 
-import static fr.ens.transcriptome.eoulsan.toolgalaxy.ToolInterpreter.extractChildElementsByTagName;
-import static fr.ens.transcriptome.eoulsan.toolgalaxy.parameter.AbstractToolElement.getInstanceToolElement;
+import static fr.ens.transcriptome.eoulsan.galaxytool.ToolInterpreter.extractChildElementsByTagName;
+import static fr.ens.transcriptome.eoulsan.galaxytool.element.AbstractToolElement.getInstanceToolElement;
 import static fr.ens.transcriptome.eoulsan.util.XMLUtils.getElementsByTagName;
 
 import java.util.Collection;
@@ -151,7 +151,7 @@ public class ToolConditionalElement implements ToolElement {
 
       // Can be empty, nothing to do
       if (paramElement == null || paramElement.isEmpty()) {
-        result.put(whenName, new ToolParameterEmpty());
+        result.put(whenName, new ToolElementEmpty());
         continue;
       }
 
@@ -267,7 +267,7 @@ public class ToolConditionalElement implements ToolElement {
 
     // Init parameter select
     this.toolParameterSelect =
-        new ToolParameterSelect(param.get(0), this.nameSpace);
+        new ToolElementSelect(param.get(0), this.nameSpace);
 
     // Init default value
     if (this.toolParameterSelect.isSetting()) {

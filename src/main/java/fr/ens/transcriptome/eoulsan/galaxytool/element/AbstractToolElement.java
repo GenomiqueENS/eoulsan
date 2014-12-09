@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.toolgalaxy.parameter;
+package fr.ens.transcriptome.eoulsan.galaxytool.element;
 
 import java.util.Map;
 
@@ -295,21 +295,21 @@ public abstract class AbstractToolElement implements ToolElement {
 
     switch (type) {
 
-    case ToolParameterBoolean.TYPE:
-      toolElement = new ToolParameterBoolean(param, nameSpace);
+    case ToolElementBoolean.TYPE:
+      toolElement = new ToolElementBoolean(param, nameSpace);
       break;
-    case ToolParameterInteger.TYPE:
-      toolElement = new ToolParameterInteger(param, nameSpace);
+    case ToolElementInteger.TYPE:
+      toolElement = new ToolElementInteger(param, nameSpace);
       break;
-    case ToolParameterFloat.TYPE:
-      toolElement = new ToolParameterFloat(param, nameSpace);
+    case ToolElementFloat.TYPE:
+      toolElement = new ToolElementFloat(param, nameSpace);
       break;
-    case ToolParameterSelect.TYPE:
-      toolElement = new ToolParameterSelect(param, nameSpace);
+    case ToolElementSelect.TYPE:
+      toolElement = new ToolElementSelect(param, nameSpace);
       break;
 
     default:
-      toolElement = new ToolParameterData(param, nameSpace);
+      toolElement = new ToolElementData(param, nameSpace);
       break;
     }
 
