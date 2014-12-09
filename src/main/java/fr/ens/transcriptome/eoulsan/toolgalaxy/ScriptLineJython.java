@@ -1,38 +1,87 @@
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
 package fr.ens.transcriptome.eoulsan.toolgalaxy;
 
+import static fr.ens.transcriptome.eoulsan.toolgalaxy.ToolPythonInterpreter.CALL_METHOD;
 import static fr.ens.transcriptome.eoulsan.toolgalaxy.ToolPythonInterpreter.VAR_CMD_NAME;
-import static fr.ens.transcriptome.eoulsan.toolgalaxy.VariableRegistry.CALL_METHOD;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.testng.collections.Sets;
-
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class ScriptLineJython.
+ * @author Sandrine Perrin
+ * @since 2.4
+ */
 public class ScriptLineJython {
 
+  /** The Constant PREFIX_IF. */
   private static final String PREFIX_IF = "#if";
+
+  /** The Constant PREFIX_ELSE. */
   private static final String PREFIX_ELSE = "#else";
+
+  /** The Constant PREFIX_END. */
   private static final String PREFIX_END = "#end";
 
+  /** The Constant PREFIX_INSTRUCTION. */
   private static final String PREFIX_INSTRUCTION = "#";
 
+  /** The tabulations. */
   private static int tabulations = 0;
+
+  /** The current tab count. */
   private static int currentTabCount = 0;
+
+  /** The next tab count. */
   private static int nextTabCount = 0;
 
+  /** The line jython. */
   private final AbstractLineJython lineJython;
+
+  /** The raw line. */
   private final String rawLine;
 
+  /** The line script. */
   private final String lineScript;
+
+  /** The variable names. */
   private final Set<String> variableNames;
 
+  /**
+   * Inits the line jython.
+   * @return the abstract line jython
+   */
   private AbstractLineJython initLineJython() {
 
     if (this.rawLine.startsWith(PREFIX_INSTRUCTION)) {
@@ -45,6 +94,9 @@ public class ScriptLineJython {
     return new AffectationLineJython(this.rawLine);
   }
 
+  /**
+   * Update counter tabulation.
+   */
   private void updateCounterTabulation() {
     // Compute tabulation needed for next line
     // System.out.println("Structure line " + line);
@@ -65,9 +117,25 @@ public class ScriptLineJython {
     }
   }
 
+  /**
+   * Gets the variable names.
+   * @return the variable names
+   */
+  public Collection<String> getVariableNames() {
+
+    if (this.variableNames.isEmpty()) {
+      return Collections.emptySet();
+    }
+    return Collections.unmodifiableSet(variableNames);
+  }
+
   //
   // Getter
   //
+  /**
+   * As string.
+   * @return the string
+   */
   String asString() {
     return this.lineScript;
   }
@@ -75,10 +143,14 @@ public class ScriptLineJython {
   //
   // Constructor
   //
+  /**
+   * Instantiates a new script line jython.
+   * @param line the line
+   */
   ScriptLineJython(final String line) {
 
     this.rawLine = line.trim();
-    this.variableNames = Sets.newHashSet();
+    this.variableNames = new HashSet<>();
 
     this.lineJython = initLineJython();
 
@@ -92,24 +164,54 @@ public class ScriptLineJython {
   //
   // Internal Class
   //
+  /**
+   * The Class AbstractLineJython.
+   * @author Sandrine Perrin
+   * @since 2.4
+   */
   abstract class AbstractLineJython {
 
+    /** The variables pattern. */
     private final Pattern VARIABLES_PATTERN = Pattern
         .compile("\\$\\{?[\\w.-_]+\\}?");
+
+    /** The Constant TAB. */
     private static final String TAB = "\t";
 
     // private final String rawLine;
+    /** The modified line. */
     private String modifiedLine;
 
     //
     // Abstract methods
     //
 
+    /**
+     * End line.
+     * @param isCurrentTextCode the is current text code
+     * @param firstToken the first token
+     * @param currentPos the current pos
+     * @return the string
+     */
     abstract String endLine(boolean isCurrentTextCode, boolean firstToken,
         int currentPos);
 
+    /**
+     * Builds the line script.
+     * @param line the line
+     * @return the string
+     */
     abstract String buildLineScript(final String line);
 
+    /**
+     * Adds the token.
+     * @param newToken the new token
+     * @param isPreviousCode the is previous code
+     * @param isCurrentCode the is current code
+     * @param firstToken the first token
+     * @param lastToken the last token
+     * @return the string
+     */
     abstract String addToken(String newToken, final boolean isPreviousCode,
         final boolean isCurrentCode, final boolean firstToken,
         final boolean lastToken);
@@ -118,6 +220,14 @@ public class ScriptLineJython {
     // Private methods
     //
 
+    /**
+     * Adds the code java.
+     * @param variableName the variable name
+     * @param isPreviousTextCode the is previous text code
+     * @param firstToken the first token
+     * @param lastToken the last token
+     * @return the string
+     */
     private String addCodeJava(String variableName,
         final boolean isPreviousTextCode, final boolean firstToken,
         final boolean lastToken) {
@@ -127,6 +237,10 @@ public class ScriptLineJython {
       return addToken(codeJava, isPreviousTextCode, true, firstToken, lastToken);
     }
 
+    /**
+     * Rewrite line.
+     * @return the string
+     */
     private String rewriteLine() {
 
       final Matcher matcher = VARIABLES_PATTERN.matcher(modifiedLine);
@@ -168,10 +282,10 @@ public class ScriptLineJython {
                 isCurrentTextCode, firstToken, lastToken));
             firstToken = false;
           }
-          
+
         }
         isPreviousTextCode = isCurrentTextCode;
-        
+
         // Add motif matched
         modifiedLine.add(addCodeJava(variableName, isPreviousTextCode,
             firstToken, lastToken));
@@ -195,6 +309,11 @@ public class ScriptLineJython {
       return buildLineScript(Joiner.on(" ").join(modifiedLine));
     }
 
+    /**
+     * Replace variable name by code java.
+     * @param variableName the variable name
+     * @return the string
+     */
     private String replaceVariableNameByCodeJava(final String variableName) {
 
       int n = 0;
@@ -217,6 +336,11 @@ public class ScriptLineJython {
       return CALL_METHOD + "(\"" + variableNameTrimmed + "\")";
     }
 
+    /**
+     * Tab.
+     * @param n the n
+     * @return the string
+     */
     protected String tab(int n) {
 
       String str = "";
@@ -229,14 +353,27 @@ public class ScriptLineJython {
       return str;
     }
 
+    /**
+     * Adds the prefix.
+     * @param prefix the prefix
+     */
     void addPrefix(final String prefix) {
       this.modifiedLine = prefix + this.modifiedLine;
     }
 
+    /**
+     * Adds the suffix.
+     * @param suffix the suffix
+     */
     void addSuffix(final String suffix) {
       this.modifiedLine = this.modifiedLine + suffix;
     }
 
+    /**
+     * Starts with.
+     * @param prefixes the prefixes
+     * @return true, if successful
+     */
     boolean startsWith(final List<String> prefixes) {
 
       for (String prefix : prefixes) {
@@ -248,10 +385,20 @@ public class ScriptLineJython {
       return false;
     }
 
+    /**
+     * Starts with.
+     * @param prefix the prefix
+     * @return true, if successful
+     */
     boolean startsWith(final String prefix) {
       return this.modifiedLine.startsWith(prefix);
     }
 
+    /**
+     * Ends with.
+     * @param suffixes the suffixes
+     * @return true, if successful
+     */
     boolean endsWith(final List<String> suffixes) {
 
       for (String suffix : suffixes) {
@@ -263,10 +410,20 @@ public class ScriptLineJython {
       return false;
     }
 
+    /**
+     * Ends with.
+     * @param suffix the suffix
+     * @return true, if successful
+     */
     boolean endsWith(final String suffix) {
       return this.modifiedLine.endsWith(suffix);
     }
 
+    /**
+     * Clean variable name syntax.
+     * @param line the line
+     * @return the string
+     */
     private String cleanVariableNameSyntax(final String line) {
 
       boolean foundQuote = false;
@@ -333,10 +490,18 @@ public class ScriptLineJython {
     // Getter
     //
 
+    /**
+     * Gets the modified string.
+     * @return the modified string
+     */
     public String getModifiedString() {
       return this.modifiedLine;
     }
 
+    /**
+     * Sets the modified string.
+     * @param newLine the new modified string
+     */
     public void setModifiedString(final String newLine) {
       this.modifiedLine = newLine;
     }
@@ -344,6 +509,11 @@ public class ScriptLineJython {
     //
     // Constructor
     //
+
+    /**
+     * Instantiates a new abstract line jython.
+     * @param line the line
+     */
     public AbstractLineJython(final String line) {
       // this.rawLine = line;
       this.modifiedLine = cleanVariableNameSyntax(line);
@@ -351,8 +521,14 @@ public class ScriptLineJython {
 
   }
 
+  /**
+   * The Class InstructionLineJython.
+   * @author Sandrine Perrin
+   * @since 2.4
+   */
   class InstructionLineJython extends AbstractLineJython {
 
+    /** The start prefix. */
     private final List<String> START_PREFIX = Lists.newArrayList(PREFIX_IF,
         PREFIX_ELSE);
 
@@ -400,6 +576,11 @@ public class ScriptLineJython {
     //
     // Constructor
     //
+
+    /**
+     * Instantiates a new instruction line jython.
+     * @param line the line
+     */
     public InstructionLineJython(final String line) {
       super(line);
 
@@ -411,6 +592,11 @@ public class ScriptLineJython {
 
   }
 
+  /**
+   * The Class AffectationLineJython.
+   * @author Sandrine Perrin
+   * @since 2.4
+   */
   class AffectationLineJython extends AbstractLineJython {
 
     @Override
@@ -448,6 +634,12 @@ public class ScriptLineJython {
       return addToken(lastToken, isCurrentTextCode, false, firstToken, true);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see
+     * fr.ens.transcriptome.eoulsan.toolgalaxy.ScriptLineJython.AbstractLineJython
+     * #addToken(java.lang.String, boolean, boolean, boolean, boolean)
+     */
     @Override
     String addToken(String newToken, final boolean isPreviousCode,
         final boolean isCurrentCode, final boolean firstToken,
@@ -490,17 +682,23 @@ public class ScriptLineJython {
       // + newToken + "\tafter\t" + Joiner.on(" ").join(txt));
 
       // TODO
-      System.out.println("newtoken \t"
-          + newToken + "\t isPrevCode: " + isPreviousCode
-          + "\t isCurrentCode: " + isCurrentCode + "\tfirst: " + firstToken
-          + "\tlast: " + lastToken + "\n\t----------" + newToken + " ====> "
-          + Joiner.on(" ").join(txt).trim());
+      // System.out.println("newtoken \t"
+      // + newToken + "\t isPrevCode: " + isPreviousCode
+      // + "\t isCurrentCode: " + isCurrentCode + "\tfirst: " + firstToken
+      // + "\tlast: " + lastToken + "\n\t----------" + newToken + " ====> "
+      // + Joiner.on(" ").join(txt).trim());
 
       // Return string with default separator escape
       return Joiner.on(" ").join(txt).trim();
 
     }
 
+    /*
+     * (non-Javadoc)
+     * @see
+     * fr.ens.transcriptome.eoulsan.toolgalaxy.ScriptLineJython.AbstractLineJython
+     * #buildLineScript(java.lang.String)
+     */
     @Override
     String buildLineScript(final String line) {
 
@@ -519,17 +717,15 @@ public class ScriptLineJython {
     //
     // Constructor
     //
+
+    /**
+     * Instantiates a new affectation line jython.
+     * @param line the line
+     */
     public AffectationLineJython(final String line) {
       super(line);
     }
 
   }
 
-  public Collection<String> getVariableNames() {
-
-    if (this.variableNames.isEmpty()) {
-      return Collections.emptySet();
-    }
-    return Collections.unmodifiableSet(variableNames);
-  }
 }
