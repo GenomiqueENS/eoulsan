@@ -147,22 +147,34 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      if ("mapper".equals(p.getName())) {
+      switch (p.getName()) {
+
+      case "mapper":
         mapperName = p.getStringValue();
-      } else if ("mapper.arguments".equals(p.getName())
-          || "mapperarguments".equals(p.getName())) {
+        break;
+
+      case "mapper.arguments":
+      case "mapperarguments":
         this.mapperArguments = p.getStringValue();
-      } else if ("hadoop.threads".equals(p.getName())) {
+        break;
+
+      case "hadoop.threads":
         this.hadoopThreads = p.getIntValue();
-      } else if ("local.threads".equals(p.getName())) {
+        break;
+
+      case "local.threads":
         this.localThreads = p.getIntValue();
-      } else if ("max.local.threads".equals(p.getName())) {
+        break;
+
+      case "max.local.threads":
         this.maxLocalThreads = p.getIntValue();
-      } else {
+        break;
+
+      default:
+
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());
       }
-
     }
 
     if (mapperName == null) {
