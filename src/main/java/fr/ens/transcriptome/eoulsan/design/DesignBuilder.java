@@ -25,6 +25,9 @@
 package fr.ens.transcriptome.eoulsan.design;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.ADDITIONAL_ANNOTATION_TSV;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -70,6 +73,7 @@ public class DesignBuilder {
   private final Map<String, String> prefixMap = new HashMap<>();
   private DataFile genomeFile;
   private DataFile gffFile;
+  private DataFile additionalAnnotationFile;
 
   /**
    * This class define a exception thrown when a fastq file is empty.
@@ -331,10 +335,12 @@ public class DesignBuilder {
         sampleEntries.add(entry);
       }
 
-    } else if (isDataFormatExtension(DataFormats.GENOME_FASTA, extension, md)) {
+    } else if (isDataFormatExtension(GENOME_FASTA, extension, md)) {
       this.genomeFile = file;
-    } else if (isDataFormatExtension(DataFormats.ANNOTATION_GFF, extension, md)) {
+    } else if (isDataFormatExtension(ANNOTATION_GFF, extension, md)) {
       this.gffFile = file;
+    } else if (isDataFormatExtension(ADDITIONAL_ANNOTATION_TSV, extension, md)) {
+      this.additionalAnnotationFile = file;
     } else {
       throw new EoulsanException("Unknown file type: " + file);
     }
@@ -660,6 +666,11 @@ public class DesignBuilder {
       smd.setAnnotation(this.gffFile.toString());
     }
 
+    // Set additionnal annotation file
+    if (this.additionalAnnotationFile != null) {
+      smd.setAdditionalAnnotation(this.additionalAnnotationFile.toString());
+    }
+
     // Identify Fastq format
     FastqFormat format = null;
 
@@ -688,7 +699,14 @@ public class DesignBuilder {
       return dataFormat.equals(md.getDataFormat());
     }
 
-    return this.dfr.getDataFormatFromExtension(extension) == dataFormat;
+    for (DataFormat df : this.dfr.getDataFormatsFromExtension(extension)) {
+
+      if (df == dataFormat) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**

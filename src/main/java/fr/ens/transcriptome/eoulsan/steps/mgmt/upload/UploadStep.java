@@ -335,10 +335,15 @@ public abstract class UploadStep extends AbstractStep {
           final DataFile inFile = new DataFile(oldValues.get(0));
           // final DataFormat format = inFile.getDataFormat();
 
-          DataFormat format =
-              registry.getDataFormatFromExtension(inFile.getExtension());
+          Set<DataFormat> formats =
+              registry.getDataFormatsFromExtension(inFile.getExtension());
 
-          if (format == null) {
+          final DataFormat format;
+
+          // Not very pretty
+          if (formats.size() == 1) {
+            format = formats.iterator().next();
+          } else {
             format = inFile.getMetaData().getDataFormat();
           }
 

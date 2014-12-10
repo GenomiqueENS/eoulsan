@@ -275,10 +275,16 @@ public final class WorkflowStepOutputDataFile implements
     }
 
     final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
-    final DataFormat sourceDf =
-        dfr.getDataFormatFromExtension(file.getExtension());
 
-    return sourceDf != null && sourceDf.equals(df);
+    for (DataFormat sourceDf : dfr.getDataFormatsFromExtension(file
+        .getExtension())) {
+
+      if (sourceDf.equals(df)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   //

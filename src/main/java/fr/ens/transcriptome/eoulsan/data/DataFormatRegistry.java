@@ -296,26 +296,28 @@ public class DataFormatRegistry {
   }
 
   /**
-   * Get a DataFormat from its DataType and an extension.
+   * Get DataFormats from an extension.
    * @param extension the extension of the file without compression extension
-   * @return a DataFormat if found or null
+   * @return a set of DataFormat
    */
-  public DataFormat getDataFormatFromExtension(final String extension) {
+  public Set<DataFormat> getDataFormatsFromExtension(final String extension) {
 
     if (extension == null) {
-      return null;
+      return Collections.emptySet();
     }
+
+    final Set<DataFormat> result = new HashSet<>();
 
     // Search with DataType
     for (DataFormat df : this.formats) {
       for (String ext : df.getExtensions()) {
         if (extension.equals(ext)) {
-          return df;
+          result.add(df);
         }
       }
     }
 
-    return null;
+    return Collections.unmodifiableSet(result);
   }
 
   /**
