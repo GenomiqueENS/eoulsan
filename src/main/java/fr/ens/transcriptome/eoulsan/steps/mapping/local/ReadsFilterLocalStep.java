@@ -106,7 +106,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
       return status.createStepResult(e, "File not found: " + e.getMessage());
     } catch (IOException e) {
       return status.createStepResult(e,
-          "Error while filtering: " + e.getMessage());
+          "Error while filtering reads: " + e.getMessage());
     } catch (EoulsanException e) {
       return status.createStepResult(e,
           "Error while initializing filter: " + e.getMessage());

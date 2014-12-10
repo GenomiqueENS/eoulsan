@@ -208,7 +208,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
     } catch (IOException e) {
 
       return status.createStepResult(e,
-          "Error while filtering: " + e.getMessage());
+          "Error while mapping reads: " + e.getMessage());
     }
 
     return status.createStepResult();

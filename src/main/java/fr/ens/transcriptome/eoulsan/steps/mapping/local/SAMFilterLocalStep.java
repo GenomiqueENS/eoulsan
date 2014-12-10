@@ -86,7 +86,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
       filterSample(context, reporter, status, filter);
 
     } catch (IOException e) {
-      status.createStepResult(e, "Error while filtering: " + e.getMessage());
+      status.createStepResult(e, "Error while filtering alignments: " + e.getMessage());
     } catch (EoulsanException e) {
       status.createStepResult(e,
           "Error while initializing filter: " + e.getMessage());
