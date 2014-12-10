@@ -40,8 +40,10 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
 public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
 
   private static final String DEFAULT_PACKAGE_VERSION = "0.12.9";
-  private static final String MAPPER_EXECUTABLE = "bowtie";
-  private static final String INDEXER_EXECUTABLE = "bowtie-build";
+  private static final String MAPPER_V0_EXECUTABLE = "bowtie";
+  private static final String INDEXER_V0_EXECUTABLE = "bowtie-build";
+  private static final String MAPPER_V1_EXECUTABLE = "bowtie-align-s";
+  private static final String INDEXER_V1_EXECUTABLE = "bowtie-build-s";
 
   private static final String EXTENSION_INDEX_FILE = ".rev.1.ebwt";
 
@@ -55,7 +57,7 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
   }
 
   @Override
-  protected String getPackageVersion() {
+  protected String getDefaultPackageVersion() {
 
     return DEFAULT_PACKAGE_VERSION;
   }
@@ -74,12 +76,21 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
   @Override
   protected String getIndexerExecutable() {
 
-    return INDEXER_EXECUTABLE;
+    if (getMapperVersionToUse().startsWith("0.")) {
+      return INDEXER_V0_EXECUTABLE;
+    }
+
+    return INDEXER_V1_EXECUTABLE;
   }
 
   @Override
   protected String[] getMapperExecutables() {
-    return new String[] {MAPPER_EXECUTABLE};
+
+    if (getMapperVersionToUse().startsWith("0.")) {
+      return new String[] {MAPPER_V0_EXECUTABLE};
+    }
+
+    return new String[] {MAPPER_V1_EXECUTABLE};
   }
 
   protected static final String getBowtieQualityArgument(

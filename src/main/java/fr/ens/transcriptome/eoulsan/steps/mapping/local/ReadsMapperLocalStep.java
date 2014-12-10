@@ -229,19 +229,16 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
     final SequenceReadsMapper mapper = getMapper();
 
-    // Init mapper
-    mapper.init(archiveIndexFile, indexDir, reporter, COUNTER_GROUP);
-
     // Set FASTQ format
     mapper.setFastqFormat(format);
 
+    // Set mapper argument if needed
     if (getMapperArguments() != null) {
       mapper.setMapperArguments(getMapperArguments());
     }
 
     // Get the number of threads to use
     int mapperThreads = getMapperLocalThreads();
-
     if (mapperThreads > Runtime.getRuntime().availableProcessors()
         || mapperThreads < 1) {
       mapperThreads = Runtime.getRuntime().availableProcessors();
@@ -252,6 +249,9 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
     // Set mapper temporary directory
     mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());
+
+    // Init mapper
+    mapper.init(archiveIndexFile, indexDir, reporter, COUNTER_GROUP);
 
     return mapper;
   }

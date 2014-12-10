@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
+import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardFile;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
@@ -61,38 +62,77 @@ public abstract class AbstractSequenceReadsMapper implements
   private static final String SYNC = AbstractSequenceReadsMapper.class
       .getName();
 
-  @Override
-  public boolean isIndexGeneratorOnly() {
-    return false;
-  }
-
-  protected String getSoftwarePackage() {
-
-    return getMapperName();
-  }
-
-  protected abstract String getPackageVersion();
-
-  protected abstract String getIndexerExecutable();
-
-  protected String[] getIndexerExecutables() {
-    return new String[] {getIndexerExecutable()};
-  }
-
-  protected abstract List<String> getIndexerCommand(
-      final String indexerPathname, final String genomePathname);
-
   private File archiveIndexFile;
   private File archiveIndexDir;
 
   private FastqFormat fastqFormat = FastqFormat.FASTQ_SANGER;
 
+  private String mapperVersionToUse = getDefaultPackageVersion();
   private int threadsNumber;
   private String mapperArguments = null;
   private File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
 
   private ReporterIncrementer incrementer;
   private String counterGroup;
+
+  private boolean binariesReady;
+  private boolean initialized;
+
+  //
+  // Binaries management
+  //
+
+  @Override
+  public boolean isIndexGeneratorOnly() {
+    return false;
+  }
+
+  /**
+   * Get the software package of the mapper.
+   * @return the software package of the mapper
+   */
+  protected String getSoftwarePackage() {
+
+    return getMapperName();
+  }
+
+  /**
+   * Get the default version of the mapper.
+   * @return the default version of the mapper
+   */
+  protected abstract String getDefaultPackageVersion();
+
+  /**
+   * Get the indexer executable.
+   * @return the indexer executable
+   */
+  protected abstract String getIndexerExecutable();
+
+  /**
+   * Get the indexer executables.
+   * @return the indexer executables
+   */
+  protected String[] getIndexerExecutables() {
+    return new String[] {getIndexerExecutable()};
+  }
+
+  /**
+   * Get the indexer command.
+   * @param indexerPathname the path to the indexer
+   * @param genomePathname the path to the genome
+   * @return a list that is the command to execute
+   */
+  protected abstract List<String> getIndexerCommand(
+      final String indexerPathname, final String genomePathname);
+
+  /**
+   * Get the version of the mapper to execute
+   * @return the version of the mapper to execute
+   */
+  protected String getMapperVersionToUse() {
+
+    return this.mapperVersionToUse;
+  }
 
   //
   // Getters
@@ -163,13 +203,26 @@ public abstract class AbstractSequenceReadsMapper implements
   //
 
   @Override
+  public void setMapperVersionToUse(final String version) {
+
+    checkState(!this.binariesReady, "Mapper has been initialized");
+
+    this.mapperVersionToUse =
+        version == null ? getDefaultPackageVersion() : version;
+  }
+
+  @Override
   public void setThreadsNumber(final int threadsNumber) {
+
+    checkState(!this.initialized, "Mapper has been initialized");
 
     this.threadsNumber = threadsNumber;
   }
 
   @Override
   public void setMapperArguments(final String arguments) {
+
+    checkState(!this.initialized, "Mapper has been initialized");
 
     if (arguments == null) {
       this.mapperArguments = "";
@@ -182,11 +235,15 @@ public abstract class AbstractSequenceReadsMapper implements
   @Override
   public void setTempDirectory(final File tempDirectory) {
 
+    checkState(!this.initialized, "Mapper has been initialized");
+
     this.tempDir = tempDirectory;
   }
 
   @Override
   public void setFastqFormat(final FastqFormat format) {
+
+    checkState(!this.initialized, "Mapper has been initialized");
 
     if (format == null) {
       throw new NullPointerException("The FASTQ format is null");
@@ -518,9 +575,27 @@ public abstract class AbstractSequenceReadsMapper implements
   //
 
   @Override
+  public void prepareBinaries() throws IOException {
+
+    // Do nothing if binaries has already been prepared
+    if (this.binariesReady) {
+      return;
+    }
+
+    if (!checkIfBinaryExists(getIndexerExecutables())) {
+      throw new IOException("Unable to find mapper "
+          + getMapperName() + " version " + this.mapperVersionToUse);
+    }
+
+    this.binariesReady = true;
+  }
+
+  @Override
   public void init(final File archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
+
+    checkState(!this.initialized, "Mapper has already been initialized");
 
     checkNotNull(incrementer, "incrementer is null");
     checkNotNull(counterGroup, "counterGroup is null");
@@ -534,6 +609,11 @@ public abstract class AbstractSequenceReadsMapper implements
     this.archiveIndexDir = archiveIndexDir;
     this.incrementer = incrementer;
     this.counterGroup = counterGroup;
+
+    this.initialized = true;
+
+    // Prepare binaries
+    prepareBinaries();
   }
 
   //
@@ -571,8 +651,41 @@ public abstract class AbstractSequenceReadsMapper implements
    */
   protected String install(final String binaryFilename) throws IOException {
 
-    return BinariesInstaller.install(getSoftwarePackage(), getPackageVersion(),
-        binaryFilename, getTempDirectoryPath());
+    return BinariesInstaller.install(getSoftwarePackage(),
+        this.mapperVersionToUse, binaryFilename, getTempDirectoryPath());
+  }
+
+  /**
+   * Check if binaries bundled in the jar exists.
+   * @param binaryFilenames program to check
+   * @return true if the binary exists
+   * @throws IOException if an error occurs while installing binary
+   */
+  protected boolean checkIfBinaryExists(final String... binaryFilenames) {
+
+    if (binaryFilenames == null || binaryFilenames.length == 0) {
+      return false;
+    }
+
+    for (String binaryFilename : binaryFilenames) {
+      if (!checkIfBinaryExists(binaryFilename)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Check if a binary bundled in the jar exists.
+   * @param binaryFilename program to check
+   * @return true if the binary exists
+   * @throws IOException if an error occurs while installing binary
+   */
+  protected boolean checkIfBinaryExists(final String binaryFilename) {
+
+    return BinariesInstaller.check(getSoftwarePackage(),
+        this.mapperVersionToUse, binaryFilename);
   }
 
 }

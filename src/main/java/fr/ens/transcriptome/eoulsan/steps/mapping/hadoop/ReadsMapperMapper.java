@@ -78,6 +78,8 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
   // Parameter keys
   static final String MAPPER_NAME_KEY = Globals.PARAMETER_PREFIX
       + ".mapper.name";
+  static final String MAPPER_VERSION_KEY = Globals.PARAMETER_PREFIX
+      + ".mapper.version";
   static final String PAIR_END_KEY = Globals.PARAMETER_PREFIX
       + ".mapper.pairend";
   static final String MAPPER_ARGS_KEY = Globals.PARAMETER_PREFIX
@@ -161,6 +163,9 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     this.mapper =
         SequenceReadsMapperService.getInstance().newService(mapperName);
 
+    // Set the mapper version
+    this.mapper.setMapperVersionToUse(conf.get(MAPPER_VERSION_KEY));
+
     // Get counter group
     final String counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);
     if (counterGroup != null) {
@@ -199,10 +204,6 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     getLogger().info(
         "Genome index directory where decompressed: " + archiveIndexDir);
-
-    // Init mapper
-    this.mapper.init(archiveIndexFile, archiveIndexDir, new HadoopReporter(
-        context), this.counterGroup);
 
     // Set FASTQ format
     this.mapper.setFastqFormat(fastqFormat);
@@ -257,6 +258,10 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     // Set mapper temporary directory
     this.mapper.setTempDirectory(tempDir);
+
+    // Init mapper
+    this.mapper.init(archiveIndexFile, archiveIndexDir, new HadoopReporter(
+        context), this.counterGroup);
 
     getLogger().info("End of setup()");
   }

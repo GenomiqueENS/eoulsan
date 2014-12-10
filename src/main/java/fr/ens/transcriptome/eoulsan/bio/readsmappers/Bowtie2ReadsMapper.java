@@ -57,7 +57,7 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
   }
 
   @Override
-  protected String getPackageVersion() {
+  protected String getDefaultPackageVersion() {
 
     return DEFAULT_PACKAGE_VERSION;
   }

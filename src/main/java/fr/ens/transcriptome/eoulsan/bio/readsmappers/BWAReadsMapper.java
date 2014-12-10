@@ -70,7 +70,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected String getPackageVersion() {
+  protected String getDefaultPackageVersion() {
 
     return DEFAULT_PACKAGE_VERSION;
   }
@@ -426,8 +426,8 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
 
-    super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
     setMapperArguments(DEFAULT_ARGUMENTS);
+    super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }
 
 }

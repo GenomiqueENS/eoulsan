@@ -115,8 +115,16 @@ public class BinariesInstaller {
           + tempDirFile);
     }
 
-    if (!SystemUtils.isUnix()) {
-      throw new IOException("Can only install binaries on *nix systems.");
+    final String outputPath =
+        tempDirFile.getAbsolutePath()
+            + "/" + Globals.APP_NAME_LOWER_CASE + "/"
+            + Globals.APP_VERSION_STRING + "/" + softwarePackage + "/"
+            + packageVersion;
+
+    // Test if the file is allready installed
+    if (new File(outputPath, binaryFilename).isFile()) {
+      getLogger().info(binaryFilename + " is already installed.");
+      return outputPath + "/" + binaryFilename;
     }
 
     final String os = System.getProperty("os.name").toLowerCase();
@@ -126,6 +134,66 @@ public class BinariesInstaller {
         "Try to install \""
             + binaryFilename + "\" of " + softwarePackage + " package for "
             + os + " (" + arch + ")");
+
+    // Get inputPath
+    final String inputPath = getInputPath(softwarePackage, packageVersion);
+
+    // install the file
+    install(inputPath, binaryFilename, outputPath);
+
+    getLogger().fine(
+        "Successful installation of " + binaryFilename + " in " + outputPath);
+    return outputPath + "/" + binaryFilename;
+  }
+
+  /**
+   * Check if a software is available.
+   * @param softwarePackage software name
+   * @param packageVersion software version
+   * @param binaryFilename software binary
+   * @return true if the software is available
+   */
+  public static boolean check(final String softwarePackage,
+      final String packageVersion, final String binaryFilename) {
+
+    try {
+
+      final String inputPath = getInputPath(softwarePackage, packageVersion);
+      final String resourcePath =
+          inputPath.toLowerCase() + "/" + binaryFilename;
+
+      final InputStream is =
+          BinariesInstaller.class.getResourceAsStream(resourcePath);
+
+      if (is == null) {
+        return false;
+      }
+
+      is.close();
+
+    } catch (IOException e) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Get the directory path of a binary.
+   * @param softwarePackage the software package
+   * @param packageVersion the package version
+   * @return the directory path as a String
+   * @throws IOException if the software is not available
+   */
+  private static String getInputPath(final String softwarePackage,
+      final String packageVersion) throws IOException {
+
+    if (!SystemUtils.isUnix()) {
+      throw new IOException("Can only install binaries on *nix systems.");
+    }
+
+    final String os = System.getProperty("os.name").toLowerCase();
+    final String arch = System.getProperty("os.arch").toLowerCase();
 
     String osArchKey = os + "\t" + arch;
 
@@ -145,28 +213,10 @@ public class BinariesInstaller {
       }
     }
 
-    final String inputPath =
-        '/'
-            + osArchKey.replace(" ", "").replace('\t', '/')
-            + (softwarePackage == null ? "" : '/' + softwarePackage.trim())
-            + (packageVersion == null ? "" : '/' + packageVersion);
-
-    final String outputPath =
-        tempDirFile.getAbsolutePath()
-            + "/" + Globals.APP_NAME_LOWER_CASE + "/"
-            + Globals.APP_VERSION_STRING;
-
-    // Test if the file is allready installed
-    if (new File(outputPath, binaryFilename).isFile()) {
-      getLogger().info(binaryFilename + " is already installed.");
-      return outputPath + "/" + binaryFilename;
-    }
-
-    // install the file
-    install(inputPath, binaryFilename, outputPath);
-
-    getLogger().fine(
-        "Successful installation of " + binaryFilename + " in " + outputPath);
-    return outputPath + "/" + binaryFilename;
+    return '/'
+        + osArchKey.replace(" ", "").replace('\t', '/')
+        + (softwarePackage == null ? "" : '/' + softwarePackage.trim())
+        + (packageVersion == null ? "" : '/' + packageVersion);
   }
+
 }

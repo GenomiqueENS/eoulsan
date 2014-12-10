@@ -28,6 +28,7 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
+import java.io.IOException;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.Common;
@@ -59,6 +60,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   public static final int HADOOP_TIMEOUT = 60 * 60 * 1000;
 
   private SequenceReadsMapper mapper;
+  private String mapperVersion;
   private String mapperArguments;
 
   private int hadoopThreads;
@@ -75,6 +77,14 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
    */
   protected String getMapperName() {
     return this.mapper.getMapperName();
+  }
+
+  /**
+   * Get the version of the mapper to use.
+   * @return the version of the mapper to use
+   */
+  protected String getMapperVersion() {
+    return this.mapperVersion;
   }
 
   /**
@@ -153,6 +163,10 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
         mapperName = p.getStringValue();
         break;
 
+      case "mapper.version":
+        this.mapperVersion = p.getStringValue();
+        break;
+
       case "mapper.arguments":
       case "mapperarguments":
         this.mapperArguments = p.getStringValue();
@@ -184,14 +198,24 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
     this.mapper =
         SequenceReadsMapperService.getInstance().newService(mapperName);
 
+    // Check if the mapper wrapper has been found
     if (this.mapper == null) {
       throw new EoulsanException("Unknown mapper: " + mapperName);
     }
 
+    // Check if the mapper is not only a generator
     if (this.mapper.isIndexGeneratorOnly()) {
       throw new EoulsanException(
           "The selected mapper can only be used for index generation: "
               + mapperName);
+    }
+
+    // Check if the binary for the mapper is available
+    try {
+      this.mapper.setMapperVersionToUse(this.mapperVersion);
+      this.mapper.prepareBinaries();
+    } catch (IOException e) {
+      throw new EoulsanException(e.getMessage());
     }
 
     // Log Step parameters
@@ -203,5 +227,4 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
         "In " + getName() + ", mapperarguments=" + this.mapperArguments);
 
   }
-
 }

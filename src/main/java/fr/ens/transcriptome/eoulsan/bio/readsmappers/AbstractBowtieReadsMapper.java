@@ -359,8 +359,8 @@ public abstract class AbstractBowtieReadsMapper extends
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
 
-    super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
     setMapperArguments(getDefaultArguments());
+    super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }
 
 }
