@@ -113,6 +113,12 @@ public class SampleMetadataImpl implements SampleMetadata, Serializable {
   }
 
   @Override
+  public String getAdditionalAnnotation() {
+
+    return getField(ADDITIONAL_ANNOTATION_FIELD);
+  }
+
+  @Override
   public String getGenome() {
 
     return getField(GENOME_FIELD);
@@ -258,6 +264,12 @@ public class SampleMetadataImpl implements SampleMetadata, Serializable {
   }
 
   @Override
+  public void setAdditionalAnnotation(final String additionalAnnotation) {
+
+    setField(ADDITIONAL_ANNOTATION_FIELD, additionalAnnotation);
+  }
+
+  @Override
   public void setGenome(final String genome) {
 
     setField(GENOME_FIELD, genome);
@@ -354,6 +366,12 @@ public class SampleMetadataImpl implements SampleMetadata, Serializable {
   public boolean isAnnotationField() {
 
     return isField(ANNOTATION_FIELD);
+  }
+
+  @Override
+  public boolean isAdditionalAnnotationField() {
+
+    return isField(ADDITIONAL_ANNOTATION_FIELD);
   }
 
   @Override

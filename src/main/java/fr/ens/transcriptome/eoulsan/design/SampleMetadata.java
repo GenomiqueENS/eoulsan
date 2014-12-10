@@ -43,6 +43,8 @@ public interface SampleMetadata {
   String GENOME_FIELD = "Genome";
   /** Annotation field. */
   String ANNOTATION_FIELD = "Annotation";
+  /** Additional annotation field. */
+  String ADDITIONAL_ANNOTATION_FIELD = "AdditionalAnnotation";
   /** Comment field. */
   String COMMENT_FIELD = "Comment";
   /** Date field. */
@@ -117,6 +119,12 @@ public interface SampleMetadata {
    * @return Returns the annotation
    */
   String getAnnotation();
+
+  /**
+   * Get the additional annotation relative to the sample.
+   * @return Returns the additional annotation
+   */
+  String getAdditionalAnnotation();
 
   /**
    * Get the date of the sample.
@@ -227,6 +235,12 @@ public interface SampleMetadata {
   void setAnnotation(String annotation);
 
   /**
+   * Set the additional annotation file relative to the sample.
+   * @param additionalAnnotation file to set
+   */
+  void setAdditionalAnnotation(String additionalAnnotation);
+
+  /**
    * Set the hybridation date
    * @param date The date to set
    */
@@ -314,6 +328,12 @@ public interface SampleMetadata {
    * @return true if the field exists
    */
   boolean isAnnotationField();
+
+  /**
+   * Test if the additional annotation field exists.
+   * @return true if the field exists
+   */
+  boolean isAdditionalAnnotationField();
 
   /**
    * Test if the description field exists.
