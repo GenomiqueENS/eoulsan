@@ -30,6 +30,7 @@ import java.util.List;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This class define a wrapper on the Bowtie mapper. Includes only specific
@@ -39,16 +40,17 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
  */
 public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
 
+  private static final String MAPPER_NAME = "Bowtie";
   private static final String DEFAULT_PACKAGE_VERSION = "0.12.9";
-  private static final String MAPPER_V0_EXECUTABLE = "bowtie";
-  private static final String INDEXER_V0_EXECUTABLE = "bowtie-build";
-  private static final String MAPPER_V1_EXECUTABLE = "bowtie-align-s";
-  private static final String INDEXER_V1_EXECUTABLE = "bowtie-build-s";
+  public static final String DEFAULT_ARGUMENTS = "--best -k 2";
+
+  private static final Version NEW_BINARIES_NAME_VERSION = new Version(1, 1, 0);
+  private static final String MAPPER_V10_EXECUTABLE = "bowtie";
+  private static final String INDEXER_V10_EXECUTABLE = "bowtie-build";
+  private static final String MAPPER_V11_EXECUTABLE = "bowtie-align-s";
+  private static final String INDEXER_V11_EXECUTABLE = "bowtie-build-s";
 
   private static final String EXTENSION_INDEX_FILE = ".rev.1.ebwt";
-
-  public static final String DEFAULT_ARGUMENTS = "--best -k 2";
-  private static final String MAPPER_NAME = "Bowtie";
 
   @Override
   public String getMapperName() {
@@ -76,21 +78,25 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
   @Override
   protected String getIndexerExecutable() {
 
-    if (getMapperVersionToUse().startsWith("0.")) {
-      return INDEXER_V0_EXECUTABLE;
+    final Version currentVersion = new Version(getMapperVersionToUse());
+
+    if (currentVersion.greaterThanOrEqualTo(NEW_BINARIES_NAME_VERSION)) {
+      return INDEXER_V11_EXECUTABLE;
     }
 
-    return INDEXER_V1_EXECUTABLE;
+    return INDEXER_V10_EXECUTABLE;
   }
 
   @Override
   protected String[] getMapperExecutables() {
 
-    if (getMapperVersionToUse().startsWith("0.")) {
-      return new String[] {MAPPER_V0_EXECUTABLE};
+    final Version currentVersion = new Version(getMapperVersionToUse());
+
+    if (currentVersion.greaterThanOrEqualTo(NEW_BINARIES_NAME_VERSION)) {
+      return new String[] {MAPPER_V11_EXECUTABLE};
     }
 
-    return new String[] {MAPPER_V1_EXECUTABLE};
+    return new String[] {MAPPER_V10_EXECUTABLE};
   }
 
   protected static final String getBowtieQualityArgument(
