@@ -36,6 +36,7 @@ import java.util.List;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This class define a wrapper on the Bowtie mapper.
@@ -47,6 +48,9 @@ public abstract class AbstractBowtieReadsMapper extends
 
   protected static final String SYNC = AbstractBowtieReadsMapper.class
       .getName();
+
+  private static final String LARGE_INDEX_FLAVOR = "large-index";
+  private static final String STANDARD_INDEX_FLAVOR = "standard";
 
   abstract protected String getExtensionIndexFile();
 
@@ -60,6 +64,52 @@ public abstract class AbstractBowtieReadsMapper extends
   @Override
   public boolean isSplitsAllowed() {
     return true;
+  }
+
+  @Override
+  protected boolean checkIfFlavorExists() {
+
+    final String flavor = getMapperFlavorToUse();
+
+    if (flavor == null) {
+      return true;
+    }
+
+    switch (flavor.trim().toLowerCase()) {
+    case "":
+    case STANDARD_INDEX_FLAVOR:
+    case LARGE_INDEX_FLAVOR:
+      return true;
+
+    default:
+      return false;
+    }
+  }
+
+  /**
+   * Get the name of a bowtie flavored binary.
+   * @param binary the binary
+   * @param firstFlavoredVersion first version of Bowtie to be flavored
+   * @return the flavored binary name
+   */
+  protected String flavoredBinary(final String binary,
+      final Version firstFlavoredVersion) {
+
+    final Version currentVersion = new Version(getMapperVersionToUse());
+
+    if (currentVersion.greaterThanOrEqualTo(firstFlavoredVersion)) {
+
+      final String flavor = getMapperFlavorToUse();
+
+      if (flavor != null
+          && LARGE_INDEX_FLAVOR.equals(flavor.trim().toLowerCase())) {
+        return binary + "-l";
+      } else {
+        return binary + "-s";
+      }
+    }
+
+    return binary;
   }
 
   @Override

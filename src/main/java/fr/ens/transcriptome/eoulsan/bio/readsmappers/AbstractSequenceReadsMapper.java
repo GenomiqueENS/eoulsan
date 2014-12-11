@@ -68,6 +68,7 @@ public abstract class AbstractSequenceReadsMapper implements
   private FastqFormat fastqFormat = FastqFormat.FASTQ_SANGER;
 
   private String mapperVersionToUse = getDefaultPackageVersion();
+  private String flavor;
   private int threadsNumber;
   private String mapperArguments = null;
   private File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
@@ -125,11 +126,13 @@ public abstract class AbstractSequenceReadsMapper implements
   protected abstract List<String> getIndexerCommand(
       final String indexerPathname, final String genomePathname);
 
-  /**
-   * Get the version of the mapper to execute
-   * @return the version of the mapper to execute
-   */
-  protected String getMapperVersionToUse() {
+  @Override
+  public String getMapperFlavorToUse() {
+    return this.flavor;
+  }
+
+  @Override
+  public String getMapperVersionToUse() {
 
     return this.mapperVersionToUse;
   }
@@ -201,6 +204,14 @@ public abstract class AbstractSequenceReadsMapper implements
   //
   // Setters
   //
+
+  @Override
+  public void setMapperFlavorToUse(final String flavor) {
+
+    checkState(!this.binariesReady, "Mapper has been initialized");
+
+    this.flavor = flavor;
+  }
 
   @Override
   public void setMapperVersionToUse(final String version) {
@@ -574,6 +585,13 @@ public abstract class AbstractSequenceReadsMapper implements
   // Init
   //
 
+  /**
+   * Check if the mapper flavor exists.
+   */
+  protected boolean checkIfFlavorExists() {
+    return true;
+  }
+
   @Override
   public void prepareBinaries() throws IOException {
 
@@ -584,7 +602,14 @@ public abstract class AbstractSequenceReadsMapper implements
 
     if (!checkIfBinaryExists(getIndexerExecutables())) {
       throw new IOException("Unable to find mapper "
-          + getMapperName() + " version " + this.mapperVersionToUse);
+          + getMapperName() + " version " + this.mapperVersionToUse
+          + " (flavor: " + this.flavor == null ? "" : this.flavor + ")");
+    }
+
+    if (!checkIfFlavorExists()) {
+      throw new IOException("Unable to find mapper "
+          + getMapperName() + " flavor " + this.flavor + " for version "
+          + this.mapperVersionToUse);
     }
 
     this.binariesReady = true;

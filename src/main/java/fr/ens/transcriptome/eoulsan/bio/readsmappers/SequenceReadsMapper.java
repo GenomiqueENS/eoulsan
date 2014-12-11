@@ -54,6 +54,18 @@ public interface SequenceReadsMapper {
   String getMapperVersion();
 
   /**
+   * Get the mapper version to use.
+   * @return a string with the mapper version to use
+   */
+  String getMapperVersionToUse();
+
+  /**
+   * Get the flavor of the mapper to use.
+   * @return a string the flavor of the mapper to use
+   */
+  String getMapperFlavorToUse();
+
+  /**
    * Test if the mapper can only be use for generate the mapper index.
    * @return true if the mapper is a fake mapper
    */
@@ -92,6 +104,12 @@ public interface SequenceReadsMapper {
   //
   // Configuration methods
   //
+
+  /**
+   * Set the flavor of the mapper to use.
+   * @param flavor the flavor to use. If null, the default flavor will be used
+   */
+  void setMapperFlavorToUse(String flavor);
 
   /**
    * Set the version of the mapper to use.

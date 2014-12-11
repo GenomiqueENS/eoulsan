@@ -44,11 +44,9 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
   private static final String DEFAULT_PACKAGE_VERSION = "2.0.6";
   public static final String DEFAULT_ARGUMENTS = "";
 
-  private static final Version NEW_BINARIES_NAME_VERSION = new Version(2, 2, 0);
-  private static final String MAPPER_V20_EXECUTABLE = "bowtie2-align";
-  private static final String INDEXER_V20_EXECUTABLE = "bowtie2-build";
-  private static final String MAPPER_V22_EXECUTABLE = "bowtie2-align-s";
-  private static final String INDEXER_V22_EXECUTABLE = "bowtie2-build-s";
+  private static final Version FIRST_FLAVORED_VERSION = new Version(2, 2, 0);
+  private static final String MAPPER_EXECUTABLE = "bowtie2-align";
+  private static final String INDEXER_EXECUTABLE = "bowtie2-build";
 
   private static final String EXTENSION_INDEX_FILE = ".rev.1.bt2";
 
@@ -78,25 +76,14 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
   @Override
   protected String getIndexerExecutable() {
 
-    final Version currentVersion = new Version(getMapperVersionToUse());
-
-    if (currentVersion.greaterThanOrEqualTo(NEW_BINARIES_NAME_VERSION)) {
-      return INDEXER_V22_EXECUTABLE;
-    }
-
-    return INDEXER_V20_EXECUTABLE;
+    return flavoredBinary(INDEXER_EXECUTABLE, FIRST_FLAVORED_VERSION);
   }
 
   @Override
   protected String[] getMapperExecutables() {
 
-    final Version currentVersion = new Version(getMapperVersionToUse());
-
-    if (currentVersion.greaterThanOrEqualTo(NEW_BINARIES_NAME_VERSION)) {
-      return new String[] {MAPPER_V22_EXECUTABLE};
-    }
-
-    return new String[] {MAPPER_V20_EXECUTABLE};
+    return new String[] {flavoredBinary(MAPPER_EXECUTABLE,
+        FIRST_FLAVORED_VERSION)};
   }
 
   @Override
