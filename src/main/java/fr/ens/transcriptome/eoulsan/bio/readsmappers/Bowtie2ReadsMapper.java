@@ -64,7 +64,9 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
 
   @Override
   protected String getExtensionIndexFile() {
-    return EXTENSION_INDEX_FILE;
+
+    return EXTENSION_INDEX_FILE
+        + (isLongIndexFlavor(FIRST_FLAVORED_VERSION) ? "l" : "");
   }
 
   @Override

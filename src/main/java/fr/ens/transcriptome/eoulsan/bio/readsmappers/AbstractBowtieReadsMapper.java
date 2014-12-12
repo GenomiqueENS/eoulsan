@@ -86,6 +86,21 @@ public abstract class AbstractBowtieReadsMapper extends
     }
   }
 
+  protected boolean isLongIndexFlavor(final Version firstFlavoredVersion) {
+
+    final Version currentVersion = new Version(getMapperVersionToUse());
+
+    if (currentVersion.greaterThanOrEqualTo(firstFlavoredVersion)) {
+
+      final String flavor = getMapperFlavorToUse();
+
+      return flavor != null
+          && LARGE_INDEX_FLAVOR.equals(flavor.trim().toLowerCase());
+    }
+
+    return false;
+  }
+
   /**
    * Get the name of a bowtie flavored binary.
    * @param binary the binary
@@ -93,6 +108,19 @@ public abstract class AbstractBowtieReadsMapper extends
    * @return the flavored binary name
    */
   protected String flavoredBinary(final String binary,
+      final Version firstFlavoredVersion) {
+
+    return flavoredBinary(binary, binary, firstFlavoredVersion);
+  }
+
+  /**
+   * Get the name of a bowtie flavored binary.
+   * @param binary the binary
+   * @param newbinary the binary name for the new versions
+   * @param firstFlavoredVersion first version of Bowtie to be flavored
+   * @return the flavored binary name
+   */
+  protected String flavoredBinary(final String binary, final String newBinary,
       final Version firstFlavoredVersion) {
 
     final Version currentVersion = new Version(getMapperVersionToUse());
@@ -103,9 +131,9 @@ public abstract class AbstractBowtieReadsMapper extends
 
       if (flavor != null
           && LARGE_INDEX_FLAVOR.equals(flavor.trim().toLowerCase())) {
-        return binary + "-l";
+        return newBinary + "-l";
       } else {
-        return binary + "-s";
+        return newBinary + "-s";
       }
     }
 

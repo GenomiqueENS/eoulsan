@@ -46,6 +46,7 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
 
   private static final Version FIRST_FLAVORED_VERSION = new Version(1, 1, 0);
   private static final String MAPPER_EXECUTABLE = "bowtie";
+  private static final String MAPPER_NEW_EXECUTABLE = "bowtie-align";
   private static final String INDEXER_EXECUTABLE = "bowtie-build";
 
   private static final String EXTENSION_INDEX_FILE = ".rev.1.ebwt";
@@ -64,7 +65,9 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
 
   @Override
   protected String getExtensionIndexFile() {
-    return EXTENSION_INDEX_FILE;
+
+    return EXTENSION_INDEX_FILE
+        + (isLongIndexFlavor(FIRST_FLAVORED_VERSION) ? "l" : "");
   }
 
   @Override
@@ -83,7 +86,7 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
   protected String[] getMapperExecutables() {
 
     return new String[] {flavoredBinary(MAPPER_EXECUTABLE,
-        FIRST_FLAVORED_VERSION)};
+        MAPPER_NEW_EXECUTABLE, FIRST_FLAVORED_VERSION)};
   }
 
   protected static final String getBowtieQualityArgument(
