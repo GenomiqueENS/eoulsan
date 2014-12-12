@@ -26,6 +26,8 @@ package fr.ens.transcriptome.eoulsan.steps.generators;
 
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.MAPPER_VERSION_PARAMETER_NAME;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.MAPPER_FLAVOR_PARAMETER_NAME;
 
 import java.io.IOException;
 import java.util.Set;
@@ -43,9 +45,12 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractFilterAndMapReadsStep;
+import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -117,6 +122,54 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
 
   }
 
+  /**
+   * Set the version and the flavor of the mapper.
+   * @param context the context of the task
+   * @throws EoulsanException if more than one mapping step require this
+   *           generator
+   */
+  private void searchMapperVersionAndFlavor(final StepContext context)
+      throws EoulsanException {
+
+    int count = 0;
+    String version = null;
+    String flavor = null;
+
+    for (WorkflowStep step : context.getWorkflow().getSteps()) {
+
+      if (AbstractReadsMapperStep.STEP_NAME.equals(step.getStepName())
+          || AbstractFilterAndMapReadsStep.STEP_NAME.equals(step.getStepName())) {
+
+        for (Parameter p : step.getParameters()) {
+
+          switch (p.getName()) {
+
+          case MAPPER_VERSION_PARAMETER_NAME:
+            version = p.getStringValue();
+            break;
+
+          case MAPPER_FLAVOR_PARAMETER_NAME:
+            flavor = p.getStringValue();
+            break;
+
+          default:
+            break;
+          }
+        }
+        count++;
+      }
+    }
+
+    if (count > 1) {
+      throw new EoulsanException(
+          "Found more than one mapping step in the workflow");
+    }
+
+    // Set the version and the flavor to use
+    this.mapper.setMapperVersionToUse(version);
+    this.mapper.setMapperFlavorToUse(flavor);
+  }
+
   @Override
   public StepResult execute(final StepContext context, final StepStatus status) {
 
@@ -139,6 +192,9 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
       // Get the output DataFile
       final DataFile mapperIndexDataFile = outData.getDataFile();
 
+      // Set the version and flavor
+      searchMapperVersionAndFlavor(context);
+
       // Set mapper temporary directory
       this.mapper
           .setTempDirectory(context.getSettings().getTempDirectoryFile());
@@ -153,7 +209,7 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
       // Create index
       indexer.createIndex(genomeDataFile, desc, mapperIndexDataFile);
 
-    } catch (IOException e) {
+    } catch (IOException | EoulsanException e) {
 
       return status.createStepResult(e);
     }
@@ -161,5 +217,4 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
     status.setMessage(this.mapper.getMapperName() + " index creation");
     return status.createStepResult();
   }
-
 }
