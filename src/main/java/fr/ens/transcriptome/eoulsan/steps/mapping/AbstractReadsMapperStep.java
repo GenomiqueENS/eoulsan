@@ -48,7 +48,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  */
 public abstract class AbstractReadsMapperStep extends AbstractStep {
 
-  protected static final String STEP_NAME = "mapreads";
+  public static final String STEP_NAME = "mapreads";
 
   protected static final String COUNTER_GROUP = "reads_mapping";
 
@@ -149,6 +149,15 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
     return singleOutputPort(MAPPER_RESULTS_SAM);
   }
 
+  public static final String MAPPER_NAME_PARAMETER_NAME = "mapper";
+  public static final String MAPPER_VERSION_PARAMETER_NAME = "mapper.version";
+  public static final String MAPPER_ARGUMENTS_PARAMETER_NAME =
+      "mapper.arguments";
+  public static final String HADOOP_THREADS_PARAMETER_NAME = "hadoop.threads";
+  public static final String LOCAL_THREADS_PARAMETER_NAME = "local.threads";
+  public static final String MAX_LOCAL_THREADS_PARAMETER_NAME =
+      "max.local.threads";
+
   @Override
   public void configure(final Set<Parameter> stepParameters)
       throws EoulsanException {
@@ -159,28 +168,27 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
       switch (p.getName()) {
 
-      case "mapper":
+      case MAPPER_NAME_PARAMETER_NAME:
         mapperName = p.getStringValue();
         break;
 
-      case "mapper.version":
+      case MAPPER_VERSION_PARAMETER_NAME:
         this.mapperVersion = p.getStringValue();
         break;
 
-      case "mapper.arguments":
-      case "mapperarguments":
+      case MAPPER_ARGUMENTS_PARAMETER_NAME:
         this.mapperArguments = p.getStringValue();
         break;
 
-      case "hadoop.threads":
+      case HADOOP_THREADS_PARAMETER_NAME:
         this.hadoopThreads = p.getIntValue();
         break;
 
-      case "local.threads":
+      case LOCAL_THREADS_PARAMETER_NAME:
         this.localThreads = p.getIntValue();
         break;
 
-      case "max.local.threads":
+      case MAX_LOCAL_THREADS_PARAMETER_NAME:
         this.maxLocalThreads = p.getIntValue();
         break;
 

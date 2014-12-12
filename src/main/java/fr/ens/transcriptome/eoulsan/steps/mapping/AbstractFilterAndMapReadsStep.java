@@ -29,6 +29,9 @@ import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputP
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.HADOOP_THREADS_PARAMETER_NAME;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.MAPPER_ARGUMENTS_PARAMETER_NAME;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.MAPPER_NAME_PARAMETER_NAME;
 
 import java.util.Map;
 import java.util.Set;
@@ -54,7 +57,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  */
 public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
 
-  private static final String STEP_NAME = "filterandmap";
+  public static final String STEP_NAME = "filterandmap";
   private static final String COUNTER_GROUP = "filter_map_reads";
 
   protected static final String READS_PORT_NAME = "reads";
@@ -186,14 +189,21 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      if ("mapper".equals(p.getName())) {
+      switch (p.getName()) {
+
+      case MAPPER_NAME_PARAMETER_NAME:
         mapperName = p.getStringValue();
-      } else if ("mapperarguments".equals(p.getName())
-          || "mapper.arguments".equals(p.getName())) {
+        break;
+
+      case MAPPER_ARGUMENTS_PARAMETER_NAME:
         this.mapperArguments = p.getStringValue();
-      } else if ("hadoop.threads".equals(p.getName())) {
+        break;
+
+      case HADOOP_THREADS_PARAMETER_NAME:
         this.hadoopThreads = p.getIntValue();
-      } else {
+        break;
+
+      default:
 
         // Add read filters parameters
         if (!(mrfb.addParameter(
@@ -207,7 +217,6 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
           throw new EoulsanException("Unknown parameter: " + p.getName());
         }
       }
-
     }
 
     // Force parameter checking
