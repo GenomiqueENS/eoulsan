@@ -69,6 +69,7 @@
 			
 			<item name="Built-in steps" href="/steps.html" collapse="true">
 				<item name="Create mapper index" href="/step-createmapperindex.html" />
+				<item name="Create STAR mapper index" href="/step-createstarmapperindex.html" />
 				<item name="Filter reads" href="/step-filterreads.html" />
 				<item name="Map reads" href="/step-mapreads.html" />
 				<item name="Filter alignments" href="/step-filteralignments.html" />
