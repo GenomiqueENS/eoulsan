@@ -93,19 +93,23 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
 
   @Override
   public DataFile get(final SequenceReadsMapper mapper,
-      final GenomeDescription genome) {
+      final GenomeDescription genome,
+      final LinkedHashMap<String, String> additionalDescription) {
 
     checkNotNull(mapper, "Mapper is null");
     checkNotNull(mapper, "Genome description is null");
 
-    final IndexEntry entry = this.entries.get(createKey(mapper, genome));
+    final IndexEntry entry =
+        this.entries.get(createKey(mapper, genome, additionalDescription));
 
     return entry == null ? null : entry.file;
   }
 
   @Override
   public void put(final SequenceReadsMapper mapper,
-      final GenomeDescription genome, final DataFile indexArchive) {
+      final GenomeDescription genome,
+      final LinkedHashMap<String, String> additionalDescription,
+      final DataFile indexArchive) {
 
     checkNotNull(mapper, "Mapper is null");
     checkNotNull(genome, "Genome description is null");
@@ -115,13 +119,14 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
       return;
     }
 
-    final String key = createKey(mapper, genome);
+    final String key = createKey(mapper, genome, additionalDescription);
 
     if (this.entries.containsKey(key)) {
       return;
     }
 
-    final IndexEntry entry = createIndexEntry(mapper, genome);
+    final IndexEntry entry =
+        createIndexEntry(mapper, genome, additionalDescription);
     if (entry == null) {
       return;
     }
@@ -147,7 +152,8 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
   //
 
   private IndexEntry createIndexEntry(final SequenceReadsMapper mapper,
-      final GenomeDescription genome) {
+      final GenomeDescription genome,
+      final LinkedHashMap<String, String> additionalDescription) {
 
     final IndexEntry entry = new IndexEntry();
     entry.genomeName = genome.getGenomeName().trim();
@@ -155,7 +161,8 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     entry.length = genome.getGenomeLength();
     entry.mapperName = mapper.getMapperName().toLowerCase().trim();
 
-    final Map<String, String> md5Map = createMD5SumMap(mapper, genome);
+    final Map<String, String> md5Map =
+        createMD5SumMap(mapper, genome, additionalDescription);
     final String md5Sum = createMD5Sum(md5Map);
     if (md5Sum == null) {
       return null;
@@ -171,7 +178,8 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
   }
 
   private static Map<String, String> createMD5SumMap(
-      final SequenceReadsMapper mapper, final GenomeDescription genome) {
+      final SequenceReadsMapper mapper, final GenomeDescription genome,
+      final LinkedHashMap<String, String> additionalDescription) {
 
     final LinkedHashMap<String, String> map = new LinkedHashMap<>();
 
@@ -180,6 +188,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
         .trim());
     map.put("mapper.flavor", nullToEmpty(mapper.getMapperFlavorToUse()).trim());
     map.put("genome.md5sum", nullToEmpty(genome.getMD5Sum()).trim());
+    map.putAll(additionalDescription);
 
     return map;
   }
@@ -321,10 +330,11 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
   //
 
   private static final String createKey(final SequenceReadsMapper mapper,
-      final GenomeDescription genome) {
+      final GenomeDescription genome,
+      final LinkedHashMap<String, String> additionalDescription) {
 
     return createKey(mapper.getMapperName(),
-        createMD5Sum(createMD5SumMap(mapper, genome)));
+        createMD5Sum(createMD5SumMap(mapper, genome, additionalDescription)));
   }
 
   private static final String createKey(final String mapperName,

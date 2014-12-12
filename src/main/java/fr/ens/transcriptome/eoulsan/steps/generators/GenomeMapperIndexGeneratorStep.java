@@ -30,6 +30,7 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep
 import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.MAPPER_FLAVOR_PARAMETER_NAME;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -123,13 +124,14 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
   }
 
   /**
-   * Set the version and the flavor of the mapper.
+   * Set the version and the flavor of a mapper.
+   * @param mapper mapper to configure
    * @param context the context of the task
    * @throws EoulsanException if more than one mapping step require this
    *           generator
    */
-  private void searchMapperVersionAndFlavor(final StepContext context)
-      throws EoulsanException {
+  static void searchMapperVersionAndFlavor(final SequenceReadsMapper mapper,
+      final StepContext context) throws EoulsanException {
 
     int count = 0;
     String version = null;
@@ -166,8 +168,54 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
     }
 
     // Set the version and the flavor to use
-    this.mapper.setMapperVersionToUse(version);
-    this.mapper.setMapperFlavorToUse(flavor);
+    mapper.setMapperVersionToUse(version);
+    mapper.setMapperFlavorToUse(flavor);
+  }
+
+  /**
+   * Execute the indexer.
+   * @param mapper Mapper to use for the index generator
+   * @param context
+   * @param additionnalArguments additional indexer arguments
+   * @param additionalDescription additional indexer arguments description
+   */
+  static void execute(final SequenceReadsMapper mapper,
+      final StepContext context, final String additionnalArguments,
+      final LinkedHashMap<String, String> additionalDescription)
+      throws IOException, EoulsanException {
+
+    // Get input and output data
+    final Data genomeData = context.getInputData(GENOME_FASTA);
+    final Data genomeDescData = context.getInputData(GENOME_DESC_TXT);
+    final Data outData =
+        context.getOutputData(mapper.getArchiveFormat(), genomeData);
+
+    // Get the genome DataFile
+    final DataFile genomeDataFile = genomeData.getDataFile();
+
+    // Get the genome description DataFile
+    final DataFile descDataFile = genomeDescData.getDataFile();
+    final GenomeDescription desc = GenomeDescription.load(descDataFile.open());
+
+    // Get the output DataFile
+    final DataFile mapperIndexDataFile = outData.getDataFile();
+
+    // Set the version and flavor
+    searchMapperVersionAndFlavor(mapper, context);
+
+    // Set mapper temporary directory
+    mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());
+
+    // Set the number of thread to use
+    mapper.setThreadsNumber(Runtime.getRuntime().availableProcessors());
+
+    // Create indexer
+    final GenomeMapperIndexer indexer =
+        new GenomeMapperIndexer(mapper, additionnalArguments,
+            additionalDescription);
+
+    // Create index
+    indexer.createIndex(genomeDataFile, desc, mapperIndexDataFile);
   }
 
   @Override
@@ -175,39 +223,8 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
 
     try {
 
-      // Get input and output data
-      final Data genomeData = context.getInputData(GENOME_FASTA);
-      final Data genomeDescData = context.getInputData(GENOME_DESC_TXT);
-      final Data outData =
-          context.getOutputData(this.mapper.getArchiveFormat(), genomeData);
-
-      // Get the genome DataFile
-      final DataFile genomeDataFile = genomeData.getDataFile();
-
-      // Get the genome description DataFile
-      final DataFile descDataFile = genomeDescData.getDataFile();
-      final GenomeDescription desc =
-          GenomeDescription.load(descDataFile.open());
-
-      // Get the output DataFile
-      final DataFile mapperIndexDataFile = outData.getDataFile();
-
-      // Set the version and flavor
-      searchMapperVersionAndFlavor(context);
-
-      // Set mapper temporary directory
-      this.mapper
-          .setTempDirectory(context.getSettings().getTempDirectoryFile());
-
-      // Set the number of thread to use
-      // TODO the number of thread must be defined by user
-      this.mapper.setThreadsNumber(1);
-
-      // Create indexer
-      final GenomeMapperIndexer indexer = new GenomeMapperIndexer(this.mapper);
-
-      // Create index
-      indexer.createIndex(genomeDataFile, desc, mapperIndexDataFile);
+      // Create the index
+      execute(this.mapper, context, null, null);
 
     } catch (IOException | EoulsanException e) {
 
