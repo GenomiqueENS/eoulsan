@@ -123,6 +123,14 @@ public class STARIndexGenerator extends AbstractStep {
         this.gtfTagExonParentTranscript = p.getStringValue();
         break;
 
+      case "genome.sa.index.nbases":
+        this.genomeSAindexNbases = p.getIntValue();
+        break;
+
+      case "genome.chr.bin.nbits":
+        this.genomeChrBinNbits = p.getIntValue();
+        break;
+
       default:
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());
