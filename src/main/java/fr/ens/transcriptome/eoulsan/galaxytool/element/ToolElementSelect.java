@@ -73,8 +73,14 @@ public class ToolElementSelect extends AbstractToolElement {
   @Override
   public void setValue(final Parameter stepParameter) throws EoulsanException {
 
-    this.value = stepParameter.getStringValue();
+    this.setValue(stepParameter.getStringValue());
+  }
+
+  @Override
+  public void setValue(final String value) throws EoulsanException {
     this.isSetting = true;
+
+    this.value = value;
 
     if (!this.isValueParameterValid()) {
       throw new EoulsanException("ToolGalaxy step: parameter "

@@ -28,6 +28,7 @@ import java.util.List;
 import org.python.google.common.collect.Lists;
 import org.w3c.dom.Element;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 
@@ -98,6 +99,18 @@ public class ToolElementBoolean extends AbstractToolElement {
   }
 
   @Override
+  public void setValue(final String value) throws EoulsanException {
+
+    if (CHECKED_VALUES.contains(value)) {
+      this.value = this.trueValue;
+    } else {
+      this.value = this.falseValue;
+    }
+
+    this.isSetting = true;
+  }
+
+  @Override
   public String toString() {
     return "ToolParameterBoolean [checked="
         + this.checked_lowered + ", trueValue=" + this.trueValue
@@ -107,7 +120,7 @@ public class ToolElementBoolean extends AbstractToolElement {
   //
   // Constructors
   //
-  
+
   /**
    * Instantiates a new tool parameter boolean.
    * @param param the param
@@ -137,4 +150,5 @@ public class ToolElementBoolean extends AbstractToolElement {
     }
 
   }
+
 }

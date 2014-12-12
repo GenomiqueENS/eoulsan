@@ -69,8 +69,7 @@ public interface ToolElement {
    * @param stepParameter the new parameter eoulsan
    * @throws EoulsanException the eoulsan exception
    */
-  void setValue(final Parameter stepParameter)
-      throws EoulsanException;
+  void setValue(final Parameter stepParameter) throws EoulsanException;
 
   /**
    * Sets the parameter eoulsan.
@@ -91,4 +90,11 @@ public interface ToolElement {
    * @return the data format
    */
   DataFormat getDataFormat();
+
+  /**
+   * Sets the value.
+   * @param value the new value
+   * @throws EoulsanException
+   */
+  void setValue(final String value) throws EoulsanException;
 }

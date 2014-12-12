@@ -68,7 +68,12 @@ public class ToolOutputsData extends AbstractToolElement {
 
   @Override
   public void setValue(final Parameter stepParameter) {
-    this.value = stepParameter.getValue();
+    this.setValue(stepParameter.getValue());
+  }
+
+  @Override
+  public void setValue(final String value) {
+    this.value = value;
   }
 
   @Override

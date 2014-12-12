@@ -25,6 +25,7 @@ package fr.ens.transcriptome.eoulsan.galaxytool.element;
 
 import java.util.Map;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
@@ -71,6 +72,11 @@ public class ToolElementEmpty implements ToolElement {
   }
 
   @Override
+  public void setValue(final String value) throws EoulsanException {
+
+  }
+
+  @Override
   public boolean isFile() {
     return false;
   }
@@ -79,4 +85,5 @@ public class ToolElementEmpty implements ToolElement {
   public DataFormat getDataFormat() {
     throw new UnsupportedOperationException();
   }
+
 }

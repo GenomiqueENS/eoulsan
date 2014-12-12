@@ -67,10 +67,15 @@ public class ToolElementInteger extends AbstractToolElement {
   }
 
   @Override
-  public void setValue(final Parameter stepParameter)
-      throws EoulsanException {
+  public void setValue(final Parameter stepParameter) throws EoulsanException {
 
-    this.value = stepParameter.getIntValue();
+    this.setValue(stepParameter.getStringValue());
+
+  }
+
+  @Override
+  public void setValue(final String value) throws EoulsanException {
+    this.value = Integer.parseInt(value);
 
     this.isSetting = true;
 
@@ -95,7 +100,7 @@ public class ToolElementInteger extends AbstractToolElement {
   //
   // Constructors
   //
-  
+
   /**
    * Instantiates a new tool parameter integer.
    * @param param the param

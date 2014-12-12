@@ -41,16 +41,16 @@ public class ToolElementFloat extends AbstractToolElement {
 
   /** The Constant ATT_DEFAULT_KEY. */
   private final static String ATT_DEFAULT_KEY = "value";
-  
+
   /** The Constant ATT_MIN_KEY. */
   private final static String ATT_MIN_KEY = "min";
-  
+
   /** The Constant ATT_MAX_KEY. */
   private final static String ATT_MAX_KEY = "max";
 
   /** The min. */
   private final double min;
-  
+
   /** The max. */
   private final double max;
 
@@ -67,10 +67,17 @@ public class ToolElementFloat extends AbstractToolElement {
   }
 
   @Override
-  public void setValue(final Parameter stepParameter)
-      throws EoulsanException {
+  public void setValue(final Parameter stepParameter) throws EoulsanException {
 
-    this.value = stepParameter.getDoubleValue();
+    this.setValue(stepParameter.getStringValue());
+
+  }
+
+  @Override
+  public void setValue(final String value) throws EoulsanException {
+    
+    this.value = Double.parseDouble(value);
+
     this.isSetting = true;
 
     if (!this.isValueParameterValid()) {
@@ -94,7 +101,7 @@ public class ToolElementFloat extends AbstractToolElement {
   //
   // Constructors
   //
-  
+
   /**
    * Instantiates a new tool parameter float.
    * @param param the param

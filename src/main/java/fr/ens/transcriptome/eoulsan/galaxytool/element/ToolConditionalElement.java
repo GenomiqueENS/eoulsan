@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.galaxytool.element;
 
 import static fr.ens.transcriptome.eoulsan.galaxytool.element.AbstractToolElement.getInstanceToolElement;
+import static fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser.extractChildElementsByTagName;
 import static fr.ens.transcriptome.eoulsan.util.XMLUtils.getElementsByTagName;
 
 import java.util.Collection;
@@ -86,6 +87,11 @@ public class ToolConditionalElement implements ToolElement {
 
   @Override
   public DataFormat getDataFormat() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setValue(final String value) {
     throw new UnsupportedOperationException();
   }
 
@@ -241,7 +247,7 @@ public class ToolConditionalElement implements ToolElement {
   //
   // Constructor
   //
-  
+
   /**
    * Instantiates a new tool conditional element.
    * @param element the element
@@ -251,7 +257,8 @@ public class ToolConditionalElement implements ToolElement {
 
     this.nameSpace = element.getAttribute("name");
 
-    final List<Element> param = GalaxyToolXMLParser.extractChildElementsByTagName(element, "param");
+    final List<Element> param =
+        extractChildElementsByTagName(element, "param");
 
     if (param.isEmpty() || param.size() != 1) {
       throw new EoulsanException(
