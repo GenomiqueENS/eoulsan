@@ -166,6 +166,8 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
     cmd.add("--genomeFastaFiles");
     cmd.add(genomePathname);
 
+    cmd.addAll(getListIndexerArguments());
+
     return cmd;
   }
 

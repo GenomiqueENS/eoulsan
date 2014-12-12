@@ -137,16 +137,34 @@ public interface SequenceReadsMapper {
   String getMapperArguments();
 
   /**
+   * Get the user options for the indexer.
+   * @return the user options as a String
+   */
+  String getIndexerArguments();
+
+  /**
    * Get the user options for the mapper.
    * @return the user options as a list
    */
   List<String> getListMapperArguments();
 
   /**
+   * Get the user options for the mapper.
+   * @return the user options as a list
+   */
+  List<String> getListIndexerArguments();
+
+  /**
    * Set the mapper additional arguments.
    * @param arguments the additional mapper arguments
    */
   void setMapperArguments(String arguments);
+
+  /**
+   * Set the indexer additional arguments.
+   * @param arguments the additional indexer arguments
+   */
+  void setIndexerArguments(String arguments);
 
   /**
    * Get the temporary directory to use by the mapper.

@@ -71,6 +71,7 @@ public abstract class AbstractSequenceReadsMapper implements
   private String flavor;
   private int threadsNumber;
   private String mapperArguments = null;
+  private String indexerArguments = null;
   private File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
 
   private ReporterIncrementer incrementer;
@@ -154,25 +155,21 @@ public abstract class AbstractSequenceReadsMapper implements
   }
 
   @Override
+  public String getIndexerArguments() {
+
+    return this.indexerArguments;
+  }
+
+  @Override
   public List<String> getListMapperArguments() {
 
-    if (getMapperArguments() == null) {
-      return Collections.emptyList();
-    }
+    return getListArguments(getMapperArguments());
+  }
 
-    // Split the mapper arguments
-    final String[] tabMapperArguments = getMapperArguments().trim().split(" ");
+  @Override
+  public List<String> getListIndexerArguments() {
 
-    final List<String> result = new ArrayList<>();
-
-    // Keep only non empty arguments
-    for (String arg : tabMapperArguments) {
-      if (!arg.isEmpty()) {
-        result.add(arg);
-      }
-    }
-
-    return result;
+    return getListArguments(getIndexerArguments());
   }
 
   /**
@@ -240,6 +237,17 @@ public abstract class AbstractSequenceReadsMapper implements
     } else {
 
       this.mapperArguments = arguments;
+    }
+  }
+
+  @Override
+  public void setIndexerArguments(final String arguments) {
+
+    if (arguments == null) {
+      this.indexerArguments = "";
+    } else {
+
+      this.indexerArguments = arguments;
     }
   }
 
@@ -711,6 +719,32 @@ public abstract class AbstractSequenceReadsMapper implements
 
     return BinariesInstaller.check(getSoftwarePackage(),
         this.mapperVersionToUse, binaryFilename);
+  }
+
+  /**
+   * Convert a string that contains a list of arguments to a list of strings.
+   * @param s the string to convert
+   * @return a list of string
+   */
+  private static final List<String> getListArguments(final String s) {
+
+    if (s == null) {
+      return Collections.emptyList();
+    }
+
+    // Split the mapper arguments
+    final String[] tabMapperArguments = s.trim().split(" ");
+
+    final List<String> result = new ArrayList<>();
+
+    // Keep only non empty arguments
+    for (String arg : tabMapperArguments) {
+      if (!arg.isEmpty()) {
+        result.add(arg);
+      }
+    }
+
+    return result;
   }
 
 }
