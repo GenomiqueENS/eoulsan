@@ -24,6 +24,16 @@
 
 package fr.ens.transcriptome.eoulsan.galaxytool;
 
+import static fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser.extractCommand;
+import static fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser.extractDescription;
+import static fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser.extractInputs;
+import static fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser.extractInterpreter;
+import static fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser.extractOutputs;
+import static fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser.extractToolID;
+import static fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser.extractToolName;
+import static fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser.extractToolVersion;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -46,13 +56,12 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.galaxytool.element.ToolElement;
-import fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class create an interpreter to tool xml file from Galaxy.
  * @author Sandrine Perrin
+ * @since 2.1
  */
 public class ToolInterpreter {
 
@@ -120,21 +129,20 @@ public class ToolInterpreter {
     this.initStepParameters(setStepParameters);
 
     // Set tool name
-    this.toolID = GalaxyToolXMLParser.extractToolID(this.doc);
-    this.toolName = GalaxyToolXMLParser.extractToolName(this.doc);
-    this.toolVersion = GalaxyToolXMLParser.extractToolVersion(this.doc);
-    this.description = GalaxyToolXMLParser.extractDescription(this.doc);
+    this.toolID = extractToolID(this.doc);
+    this.toolName = extractToolName(this.doc);
+    this.toolVersion = extractToolVersion(this.doc);
+    this.description = extractDescription(this.doc);
 
-    this.inputs =
-        GalaxyToolXMLParser.extractInputs(this.doc, this.stepParameters);
-    this.outputs = GalaxyToolXMLParser.extractOutputs(this.doc);
+    this.inputs = extractInputs(this.doc, this.stepParameters);
+    this.outputs = extractOutputs(this.doc);
 
     this.inDataFormatExpected = this.extractDataFormat(this.inputs);
     this.outDataFormatExpected = this.extractDataFormat(this.outputs);
 
     //
-    this.interpreter = GalaxyToolXMLParser.extractInterpreter(this.doc);
-    final String cmdTagContent = GalaxyToolXMLParser.extractCommand(this.doc);
+    this.interpreter = extractInterpreter(this.doc);
+    final String cmdTagContent = extractCommand(this.doc);
 
     if (cmdTagContent.isEmpty()) {
       throw new EoulsanException("Parsing tool XML file: no command found.");
@@ -147,25 +155,30 @@ public class ToolInterpreter {
 
   /**
    * Convert command tag from tool xml in string, variable are replace by value.
-   * @param inData the in data
-   * @param outData the out data
+   * @param inputData the input data
+   * @param outputData the output data
    * @return the string
    * @throws EoulsanException the eoulsan exception
    */
-  public String execute(final Map<String, DataFile> inData,
-      final Map<String, DataFile> outData) throws EoulsanException {
+  public String execute(final Map<DataFormat, DataFile> inputData,
+      final Map<DataFormat, DataFile> outputData) throws EoulsanException {
 
     // Copy step tool element
     final Map<String, String> variablesCommand = this.extractVariables();
 
     // Add port with file path
-    this.setPortInput(variablesCommand, inData);
+    this.setPortInput(variablesCommand, inputData);
 
     // Add port with file path
-    this.setPortOutput(variablesCommand, outData);
+    this.setPortOutput(variablesCommand, outputData);
 
-    final String newCommand =
+    String newCommand =
         this.pythonInterperter.executeScript(this.command, variablesCommand);
+
+    // Add interpreter if exists
+    if (!(getInterpreter() == null || getInterpreter().isEmpty())) {
+      newCommand = this.getInterpreter() + " " + newCommand;
+    }
 
     return newCommand;
   }
@@ -280,65 +293,47 @@ public class ToolInterpreter {
    * Set input ports with name and value.
    * @param variablesCommand the variables command
    * @param inData the in data
-   * @throws EoulsanException the eoulsan exception
+   * @throws EoulsanException the Eoulsan exception
    */
   private void setPortInput(final Map<String, String> variablesCommand,
-      final Map<String, DataFile> inData) throws EoulsanException {
+      final Map<DataFormat, DataFile> inData) throws EoulsanException {
 
-    this.setToolElementWithPort(variablesCommand, inData,
-        this.inDataFormatExpected);
+    // Parse format expected
+    for (final Map.Entry<DataFormat, ToolElement> entry : this.inDataFormatExpected
+        .entrySet()) {
+
+      // TODO add case pair-end
+
+      // Get the source
+      final File inFile = inData.get(entry.getKey()).toFile();
+
+      final String inVariableName = entry.getValue().getName();
+
+      // Initialize variable with path
+      variablesCommand.put(inVariableName, inFile.getAbsolutePath());
+    }
   }
 
   /**
    * Set output ports with name and value.
    * @param variablesCommand the variables command
    * @param outData the out data
-   * @throws EoulsanException the eoulsan exception
+   * @throws EoulsanException the Eoulsan exception
    */
   private void setPortOutput(final Map<String, String> variablesCommand,
-      final Map<String, DataFile> outData) throws EoulsanException {
+      final Map<DataFormat, DataFile> outData) throws EoulsanException {
 
-    this.setToolElementWithPort(variablesCommand, outData,
-        this.outDataFormatExpected);
-  }
+    // Parse format expected
+    for (final Map.Entry<DataFormat, ToolElement> entry : this.outDataFormatExpected
+        .entrySet()) {
 
-  /**
-   * Associate port value on parameter tools corresponding.
-   * @param variablesCommand the variables command
-   * @param ports map on ports
-   * @param dataFormatExpected the data format expected
-   * @throws EoulsanException the eoulsan exception
-   */
-  private void setToolElementWithPort(
-      final Map<String, String> variablesCommand,
-      final Map<String, DataFile> ports,
-      final Map<DataFormat, ToolElement> dataFormatExpected)
-      throws EoulsanException {
+      // Get the source
+      final File outFile = outData.get(entry.getKey()).toFile();
 
-    // Parse ports
-    for (final Map.Entry<String, DataFile> entry : ports.entrySet()) {
-      // Extract data format related
-      final DataFile port = entry.getValue();
-      final DataFormat dataFormatPort = port.getDataFormat();
+      final String inVariableName = entry.getValue().getName();
 
-      if (dataFormatPort == null) {
-        throw new EoulsanException(
-            "Parsing tool xml: data format not found for port: "
-                + entry.getKey() + "(" + port.getName() + ")");
-      }
-
-      // Check exist in expected list
-      final ToolElement parameter = dataFormatExpected.get(dataFormatPort);
-
-      if (parameter == null) {
-        throw new EoulsanException(
-            "Parsing tool xml: data format invalid: found "
-                + dataFormatPort.getName() + " is expected "
-                + Joiner.on(",").join(dataFormatExpected.keySet()));
-      }
-
-      // Add value in parameters command
-      variablesCommand.put(parameter.getName(), entry.getKey());
+      // Initialize variable with path
+      variablesCommand.put(inVariableName, outFile.getAbsolutePath());
     }
 
   }
@@ -350,19 +345,13 @@ public class ToolInterpreter {
    */
   private Map<String, String> extractVariables() throws EoulsanException {
 
-    final Map<String, String> results = this.extractVariablesFromXML();
+    final Map<String, String> results = extractVariablesFromXML();
 
     // Compare with variable from command tag
     // Add variable not found in xml tag, corresponding to dataset value from
     // external file
     final Map<String, String> missingVariables =
         this.comparisonVariablesFromXMLToCommand(results);
-
-    // TODO
-    System.out.println("variable init with stepParameters: \n"
-        + Joiner.on("\n").withKeyValueSeparator("=").join(results));
-    System.out.println("variable init with stepParameters: \n"
-        + Joiner.on("\n").withKeyValueSeparator("=").join(missingVariables));
 
     if (!missingVariables.isEmpty()) {
       results.putAll(missingVariables);
@@ -386,21 +375,13 @@ public class ToolInterpreter {
     // // TODO
     // System.out.println("outputs param " + Joiner.on("\n").join(outputs));
 
-    // Parse input
+    // Extract from inputs variable command
     for (final ToolElement ptg : this.inputs.values()) {
-      // TODO
-      // if (ptg.isSetting())
-      // System.out.println("extract name="
-      // + ptg.getName() + "\tval=" + ptg.getValue());
       results.put(ptg.getName(), ptg.getValue());
     }
 
-    // Parse output
+    // Extract from outputs variable command
     for (final ToolElement ptg : this.outputs.values()) {
-      // TODO
-      // Add in map
-      // System.out.println("extract name="
-      // + ptg.getName() + "\tval=" + ptg.getValue());
       results.put(ptg.getName(), ptg.getValue());
     }
 
@@ -519,10 +500,24 @@ public class ToolInterpreter {
     return this.interpreter;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see java.lang.Object#toString()
+  /**
+   * Gets the in data format expected associated with variable found in command
+   * line.
+   * @return the in data format expected
    */
+  public Map<DataFormat, ToolElement> getInDataFormatExpected() {
+    return this.inDataFormatExpected;
+  }
+
+  /**
+   * Gets the out data format expected associated with variable found in command
+   * line.
+   * @return the out data format expected
+   */
+  public Map<DataFormat, ToolElement> getOutDataFormatExpected() {
+    return this.outDataFormatExpected;
+  }
+
   @Override
   public String toString() {
     return "InterpreterToolGalaxy \n[inputs="
