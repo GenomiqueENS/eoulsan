@@ -57,10 +57,22 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   protected static final String GENOME_DESCRIPTION_PORT_NAME =
       "genomedescription";
 
+  public static final String MAPPER_NAME_PARAMETER_NAME = "mapper";
+  public static final String MAPPER_VERSION_PARAMETER_NAME = "mapper.version";
+  public static final String MAPPER_FLAVOR_PARAMETER_NAME = "mapper.flavor";
+
+  public static final String MAPPER_ARGUMENTS_PARAMETER_NAME =
+      "mapper.arguments";
+  public static final String HADOOP_THREADS_PARAMETER_NAME = "hadoop.threads";
+  public static final String LOCAL_THREADS_PARAMETER_NAME = "local.threads";
+  public static final String MAX_LOCAL_THREADS_PARAMETER_NAME =
+      "max.local.threads";
+
   public static final int HADOOP_TIMEOUT = 60 * 60 * 1000;
 
   private SequenceReadsMapper mapper;
   private String mapperVersion;
+  private String mapperFlavor;
   private String mapperArguments;
 
   private int hadoopThreads;
@@ -84,6 +96,14 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
    * @return the version of the mapper to use
    */
   protected String getMapperVersion() {
+    return this.mapperVersion;
+  }
+
+  /**
+   * Get the flavor of the mapper to use.
+   * @return the flavor of the mapper to use
+   */
+  protected String getMapperFlavor() {
     return this.mapperVersion;
   }
 
@@ -149,15 +169,6 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
     return singleOutputPort(MAPPER_RESULTS_SAM);
   }
 
-  public static final String MAPPER_NAME_PARAMETER_NAME = "mapper";
-  public static final String MAPPER_VERSION_PARAMETER_NAME = "mapper.version";
-  public static final String MAPPER_ARGUMENTS_PARAMETER_NAME =
-      "mapper.arguments";
-  public static final String HADOOP_THREADS_PARAMETER_NAME = "hadoop.threads";
-  public static final String LOCAL_THREADS_PARAMETER_NAME = "local.threads";
-  public static final String MAX_LOCAL_THREADS_PARAMETER_NAME =
-      "max.local.threads";
-
   @Override
   public void configure(final Set<Parameter> stepParameters)
       throws EoulsanException {
@@ -174,6 +185,10 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
       case MAPPER_VERSION_PARAMETER_NAME:
         this.mapperVersion = p.getStringValue();
+        break;
+
+      case MAPPER_FLAVOR_PARAMETER_NAME:
+        this.mapperFlavor = p.getStringValue();
         break;
 
       case MAPPER_ARGUMENTS_PARAMETER_NAME:
@@ -221,6 +236,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
     // Check if the binary for the mapper is available
     try {
       this.mapper.setMapperVersionToUse(this.mapperVersion);
+      this.mapper.setMapperFlavorToUse(this.mapperFlavor);
       this.mapper.prepareBinaries();
     } catch (IOException e) {
       throw new EoulsanException(e.getMessage());

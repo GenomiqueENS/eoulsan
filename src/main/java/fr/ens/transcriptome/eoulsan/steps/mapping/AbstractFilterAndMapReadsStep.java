@@ -31,8 +31,11 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.HADOOP_THREADS_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.MAPPER_ARGUMENTS_PARAMETER_NAME;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.MAPPER_FLAVOR_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.MAPPER_NAME_PARAMETER_NAME;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.MAPPER_VERSION_PARAMETER_NAME;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
@@ -73,6 +76,8 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   private Map<String, String> readsFiltersParameters;
   private Map<String, String> alignmentsFiltersParameters;
   private SequenceReadsMapper mapper;
+  private String mapperVersion;
+  private String mapperFlavor;
   private String mapperArguments;
   private int hadoopThreads = -1;
 
@@ -104,6 +109,22 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
    */
   protected String getMapperName() {
     return this.mapper.getMapperName();
+  }
+
+  /**
+   * Get the version of the mapper to use.
+   * @return the version of the mapper to use
+   */
+  protected String getMapperVersion() {
+    return this.mapperVersion;
+  }
+
+  /**
+   * Get the flavor of the mapper to use.
+   * @return the flavor of the mapper to use
+   */
+  protected String getMapperFlavor() {
+    return this.mapperVersion;
   }
 
   /**
@@ -195,6 +216,14 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
         mapperName = p.getStringValue();
         break;
 
+      case MAPPER_VERSION_PARAMETER_NAME:
+        mapperVersion = p.getStringValue();
+        break;
+
+      case MAPPER_FLAVOR_PARAMETER_NAME:
+        mapperFlavor = p.getStringValue();
+        break;
+
       case MAPPER_ARGUMENTS_PARAMETER_NAME:
         this.mapperArguments = p.getStringValue();
         break;
@@ -241,6 +270,15 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
       throw new EoulsanException(
           "The selected mapper can only be used for index generation: "
               + mapperName);
+    }
+
+    // Check if the binary for the mapper is available
+    try {
+      this.mapper.setMapperVersionToUse(this.mapperVersion);
+      this.mapper.setMapperFlavorToUse(this.mapperFlavor);
+      this.mapper.prepareBinaries();
+    } catch (IOException e) {
+      throw new EoulsanException(e.getMessage());
     }
 
     // Log Step parameters

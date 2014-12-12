@@ -80,6 +80,8 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
       + ".mapper.name";
   static final String MAPPER_VERSION_KEY = Globals.PARAMETER_PREFIX
       + ".mapper.version";
+  static final String MAPPER_FLAVOR_KEY = Globals.PARAMETER_PREFIX
+      + ".mapper.flavor";
   static final String PAIR_END_KEY = Globals.PARAMETER_PREFIX
       + ".mapper.pairend";
   static final String MAPPER_ARGS_KEY = Globals.PARAMETER_PREFIX
@@ -165,6 +167,9 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     // Set the mapper version
     this.mapper.setMapperVersionToUse(conf.get(MAPPER_VERSION_KEY));
+
+    // Set the mapper flavor
+    this.mapper.setMapperFlavorToUse(conf.get(MAPPER_FLAVOR_KEY));
 
     // Get counter group
     final String counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);
