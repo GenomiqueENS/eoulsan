@@ -51,8 +51,8 @@ public class PreTreatmentExpressionMapper extends
 
   private static final Pattern ID_PATTERN = Pattern.compile(":");
 
-  private Text outKey = new Text();
-  private Text outValue = new Text();
+  private final Text outKey = new Text();
+  private final Text outValue = new Text();
 
   //
   // Setup
@@ -96,14 +96,15 @@ public class PreTreatmentExpressionMapper extends
     final String line = value.toString();
 
     // Discard SAM headers
-    if (line.length() > 0 && line.charAt(0) == '@')
+    if (line.length() > 0 && line.charAt(0) == '@') {
       return;
+    }
 
     final int indexOfFirstTab = line.indexOf("\t");
     String completeId = line.substring(0, indexOfFirstTab);
     int endReadId;
 
-    // Read identifiant format : before Casava 1.8 or other technologies that
+    // Read identifier format : before Casava 1.8 or other technologies that
     // Illumina
     if (ID_PATTERN.split(completeId).length < 7) {
       endReadId = completeId.indexOf('/');
@@ -119,7 +120,7 @@ public class PreTreatmentExpressionMapper extends
       }
     }
 
-    // Read identifiant format : Illumina - Casava 1.8
+    // Read identifier format : Illumina - Casava 1.8
     else {
       endReadId = completeId.indexOf(' ');
       // mapped read
@@ -138,7 +139,7 @@ public class PreTreatmentExpressionMapper extends
   }
 
   @Override
-  protected void cleanup(Context context) throws IOException,
+  protected void cleanup(final Context context) throws IOException,
       InterruptedException {
   }
 

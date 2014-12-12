@@ -32,7 +32,8 @@ package fr.ens.transcriptome.eoulsan.util;
 public class FakeReporter implements ReporterIncrementer {
 
   @Override
-  public void incrCounter(String counterGroup, String counterName, long amount) {
+  public void incrCounter(final String counterGroup, final String counterName,
+      final long amount) {
 
     // Do nothing.
   }

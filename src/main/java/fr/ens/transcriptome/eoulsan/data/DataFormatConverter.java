@@ -48,8 +48,8 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class DataFormatConverter {
 
-  private DataFormat inFormat;
-  private DataFormat outFormat;
+  private final DataFormat inFormat;
+  private final DataFormat outFormat;
   final DataFile inFile;
   final DataFile outFile;
   final OutputStream os;
@@ -58,34 +58,36 @@ public class DataFormatConverter {
 
     if (this.outFormat == null) {
 
-      final OutputStream destOs = this.os == null ? outFile.create() : this.os;
-      FileUtils.copy(inFile.rawOpen(), destOs);
+      final OutputStream destOs =
+          this.os == null ? this.outFile.create() : this.os;
+      FileUtils.copy(this.inFile.rawOpen(), destOs);
 
       return;
     }
 
     final CompressionType srcCT =
-        CompressionType.getCompressionTypeByContentEncoding(inFile
+        CompressionType.getCompressionTypeByContentEncoding(this.inFile
             .getMetaData().getContentEncoding());
     final CompressionType destCT =
-        CompressionType.getCompressionTypeByFilename(outFile.getName());
+        CompressionType.getCompressionTypeByFilename(this.outFile.getName());
 
     getLogger().fine(
         "Convert "
-            + inFile + " (" + inFormat + "/" + srcCT + ") to " + outFile + " ("
-            + outFormat + "/" + destCT + ").");
+            + this.inFile + " (" + this.inFormat + "/" + srcCT + ") to "
+            + this.outFile + " (" + this.outFormat + "/" + destCT + ").");
 
     if (this.inFormat.equals(this.outFormat) && srcCT.equals(destCT)) {
 
-      inFile.copyTo(outFile);
+      this.inFile.copyTo(this.outFile);
       return;
     }
 
-    final OutputStream destOs = this.os == null ? outFile.create() : this.os;
+    final OutputStream destOs =
+        this.os == null ? this.outFile.create() : this.os;
 
     if (this.inFormat.equals(this.outFormat)) {
 
-      final InputStream is = inFile.open();
+      final InputStream is = this.inFile.open();
       final OutputStream os = destCT.createOutputStream(destOs);
 
       FileUtils.copy(is, os);
@@ -97,23 +99,26 @@ public class DataFormatConverter {
 
       final ReadSequenceReader reader;
 
-      if (this.inFormat == DataFormats.READS_FASTQ)
+      if (this.inFormat == DataFormats.READS_FASTQ) {
         reader = new FastqReader(this.inFile.open());
-      else
+      } else {
         reader = new TFQReader(this.inFile.open(), true);
+      }
 
       final OutputStream os = destCT.createOutputStream(destOs);
 
       final ReadSequenceWriter writer;
 
-      if (this.outFormat == DataFormats.READS_FASTQ)
+      if (this.outFormat == DataFormats.READS_FASTQ) {
         writer = new FastqWriter(os);
-      else
+      } else {
         writer = new TFQWriter(os);
+      }
 
       try {
-        for (final ReadSequence read : reader)
+        for (final ReadSequence read : reader) {
           writer.write(read);
+        }
 
         reader.throwException();
 
@@ -129,7 +134,7 @@ public class DataFormatConverter {
     }
 
     destOs.close();
-    throw new IOException("This copy case is not implementated");
+    throw new IOException("This copy case is not implemented");
   }
 
   //
@@ -169,17 +174,20 @@ public class DataFormatConverter {
   public DataFormatConverter(final DataFile inFile, final DataFile outFile,
       final DataFormat outFormat, final OutputStream os) throws IOException {
 
-    if (inFile == null)
+    if (inFile == null) {
       throw new NullPointerException("The input file is null");
+    }
 
     this.inFile = inFile;
     this.inFormat = inFile.getMetaData().getDataFormat();
 
-    if (inFormat == null && outFormat != null)
+    if (this.inFormat == null && outFormat != null) {
       throw new NullPointerException("The input file format is null");
+    }
 
-    if (outFile == null)
+    if (outFile == null) {
       throw new NullPointerException("The output file format is null");
+    }
 
     this.outFile = outFile;
     this.outFormat = outFormat;

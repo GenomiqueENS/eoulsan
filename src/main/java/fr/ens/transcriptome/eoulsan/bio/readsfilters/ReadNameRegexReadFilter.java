@@ -57,8 +57,9 @@ public class ReadNameRegexReadFilter extends AbstractReadFilter {
   public void setParameter(final String key, final String value)
       throws EoulsanException {
 
-    if (key == null || value == null)
+    if (key == null || value == null) {
       return;
+    }
 
     if ("forbidden.regex".equals(key.trim())) {
 
@@ -78,29 +79,33 @@ public class ReadNameRegexReadFilter extends AbstractReadFilter {
             + getName() + " read filter: " + value);
       }
 
-    } else
-
+    } else {
       throw new EoulsanException("Unknown parameter for "
           + getName() + " read filter: " + key);
+    }
   }
 
   @Override
   public boolean accept(final ReadSequence read) {
 
-    if (read == null)
+    if (read == null) {
       return false;
+    }
 
     final String name = read.getName();
-    if (name == null)
+    if (name == null) {
       return false;
+    }
 
     if (this.allowedPattern != null
-        && !this.allowedPattern.matcher(name).find())
+        && !this.allowedPattern.matcher(name).find()) {
       return false;
+    }
 
     if (this.forbiddenPattern != null
-        && this.forbiddenPattern.matcher(name).find())
+        && this.forbiddenPattern.matcher(name).find()) {
       return false;
+    }
 
     return true;
   }

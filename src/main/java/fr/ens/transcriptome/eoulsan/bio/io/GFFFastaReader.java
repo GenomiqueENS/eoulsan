@@ -41,8 +41,9 @@ public class GFFFastaReader extends FastaReader {
   @Override
   public boolean hasNext() {
 
-    if (this.fastaSectionFound)
+    if (this.fastaSectionFound) {
       return super.hasNext();
+    }
 
     String line = null;
 

@@ -41,7 +41,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class CasavaDesignCSVWriter implements CasavaDesignWriter {
 
-  private Writer writer;
+  private final Writer writer;
 
   @Override
   public void writer(final CasavaDesign design) throws IOException {
@@ -61,8 +61,9 @@ public class CasavaDesignCSVWriter implements CasavaDesignWriter {
    */
   public CasavaDesignCSVWriter(final Writer writer) {
 
-    if (writer == null)
+    if (writer == null) {
       throw new NullPointerException("The writer is null.");
+    }
 
     this.writer = writer;
   }

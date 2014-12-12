@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.bio;
 
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.trim;
 import static fr.ens.transcriptome.eoulsan.util.Utils.equal;
-
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
 /**
@@ -132,8 +131,9 @@ public class Sequence {
    */
   public final void setAlphabet(final Alphabet alphabet) {
 
-    if (alphabet == null)
+    if (alphabet == null) {
       throw new NullPointerException("The alphabet is null");
+    }
 
     this.alphabet = alphabet;
   }
@@ -165,8 +165,9 @@ public class Sequence {
    */
   public void set(final Sequence sequence) {
 
-    if (sequence == null)
+    if (sequence == null) {
       throw new NullPointerException("Sequence is null");
+    }
 
     this.id = sequence.id;
     this.name = sequence.name;
@@ -193,24 +194,29 @@ public class Sequence {
   }
 
   /**
-   * Create a subsequence from the current sequence. Note that index start at 0.
-   * @param beginIndex begin index of the subsequence
-   * @param endIndex end index of the subsequence
-   * @return a new sequence object with a subsequence of the current object
+   * Create a sub-sequence from the current sequence. Note that index start at
+   * 0.
+   * @param beginIndex begin index of the sub-sequence
+   * @param endIndex end index of the sub-sequence
+   * @return a new sequence object with a sub-sequence of the current object
    */
   public Sequence subSequence(final int beginIndex, final int endIndex) {
 
-    if (this.sequence == null)
+    if (this.sequence == null) {
       return null;
+    }
 
-    if (beginIndex < 0)
+    if (beginIndex < 0) {
       throw new StringIndexOutOfBoundsException(beginIndex);
+    }
 
-    if (endIndex > length())
+    if (endIndex > length()) {
       throw new StringIndexOutOfBoundsException(endIndex);
+    }
 
-    if (beginIndex > endIndex)
+    if (beginIndex > endIndex) {
       throw new StringIndexOutOfBoundsException(endIndex - beginIndex);
+    }
 
     return new Sequence(-1, this.name == null ? null : this.name + "[part]",
         getSequence().substring(beginIndex, endIndex));
@@ -224,17 +230,19 @@ public class Sequence {
    */
   public Sequence concat(final Sequence sequence) {
 
-    if (sequence == null || sequence.getSequence() == null)
+    if (sequence == null || sequence.getSequence() == null) {
       return new Sequence(this);
+    }
 
     final Sequence result = new Sequence();
     result.name = this.name + "[merged]";
     result.alphabet = this.alphabet;
 
-    if (this.sequence == null)
+    if (this.sequence == null) {
       result.sequence = sequence.sequence;
-    else
+    } else {
       result.sequence = this.sequence + sequence.sequence;
+    }
 
     return result;
   }
@@ -247,8 +255,9 @@ public class Sequence {
    */
   public int countSequence(final Sequence sequence) {
 
-    if (sequence == null)
+    if (sequence == null) {
       return 0;
+    }
 
     return countSequence(sequence.getSequence());
   }
@@ -261,8 +270,9 @@ public class Sequence {
    */
   public int countSequence(final String s) {
 
-    if (s == null || this.sequence == null || s.length() == 0)
+    if (s == null || this.sequence == null || s.length() == 0) {
       return 0;
+    }
 
     int count = 0;
     int index = 0;
@@ -350,8 +360,9 @@ public class Sequence {
 
     final StringBuilder sb = new StringBuilder(len);
 
-    for (int i = len - 1; i >= 0; i--)
+    for (int i = len - 1; i >= 0; i--) {
       sb.append(alphabet.getComplement(array[i]));
+    }
 
     return sb.toString();
   }
@@ -378,8 +389,9 @@ public class Sequence {
    */
   public String toFasta(final int width) {
 
-    if (width < 1)
+    if (width < 1) {
       return toFasta();
+    }
 
     final StringBuilder sb = new StringBuilder();
     sb.append('>');
@@ -431,14 +443,16 @@ public class Sequence {
       if (first) {
         first = false;
 
-        if (!trimmed.startsWith(">"))
+        if (!trimmed.startsWith(">")) {
           break;
+        }
 
         name = trimmed.substring(1).trim();
       } else {
 
-        if (trimmed.startsWith(">"))
+        if (trimmed.startsWith(">")) {
           break;
+        }
 
         seq.append(trimmed);
       }
@@ -478,15 +492,18 @@ public class Sequence {
     final String seq = this.sequence;
     final int len = seq == null ? 0 : seq.length();
 
-    if (len == 0)
+    if (len == 0) {
       return false;
+    }
 
     final Alphabet alphabet = this.alphabet;
-    final char[] array = sequence.toCharArray();
+    final char[] array = this.sequence.toCharArray();
 
-    for (int i = 0; i < len; i++)
-      if (!alphabet.isLetterValid(array[i]))
+    for (int i = 0; i < len; i++) {
+      if (!alphabet.isLetterValid(array[i])) {
         return false;
+      }
+    }
 
     return true;
   }
@@ -515,11 +532,13 @@ public class Sequence {
   @Override
   public boolean equals(final Object o) {
 
-    if (o == this)
+    if (o == this) {
       return true;
+    }
 
-    if (!(o instanceof Sequence))
+    if (!(o instanceof Sequence)) {
       return false;
+    }
 
     final Sequence that = (Sequence) o;
 
@@ -585,8 +604,9 @@ public class Sequence {
    */
   public Sequence(final Sequence sequence) {
 
-    if (sequence == null)
+    if (sequence == null) {
       throw new NullPointerException("Sequence is null");
+    }
 
     this.id = sequence.id;
     this.name = sequence.name;

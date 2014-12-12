@@ -39,28 +39,30 @@ import com.google.common.collect.Lists;
  */
 public class LocalReporter implements Reporter {
 
-  private Map<String, Map<String, Long>> map =
-      new HashMap<>();
+  private final Map<String, Map<String, Long>> map = new HashMap<>();
 
   @Override
   public void incrCounter(final String counterGroup, final String counter,
       final long amount) {
 
-    if (counterGroup == null || counter == null || amount <= 0)
+    if (counterGroup == null || counter == null || amount <= 0) {
       return;
+    }
 
     final Map<String, Long> group;
 
     if (!this.map.containsKey(counterGroup)) {
       group = new HashMap<>();
       this.map.put(counterGroup, group);
-    } else
+    } else {
       group = this.map.get(counterGroup);
+    }
 
     long value = 0;
 
-    if (group.containsKey(counter))
+    if (group.containsKey(counter)) {
       value = group.get(counter);
+    }
 
     value += amount;
     group.put(counter, value);
@@ -75,16 +77,18 @@ public class LocalReporter implements Reporter {
   public void setCounter(final String counterGroup, final String counter,
       final long value) {
 
-    if (counterGroup == null || counter == null || value <= 0)
+    if (counterGroup == null || counter == null || value <= 0) {
       return;
+    }
 
     final Map<String, Long> group;
 
     if (!this.map.containsKey(counterGroup)) {
       group = new HashMap<>();
       this.map.put(counterGroup, group);
-    } else
+    } else {
       group = this.map.get(counterGroup);
+    }
 
     group.put(counter, value);
   }
@@ -92,16 +96,19 @@ public class LocalReporter implements Reporter {
   @Override
   public long getCounterValue(final String counterGroup, final String counter) {
 
-    if (counterGroup == null || counter == null)
+    if (counterGroup == null || counter == null) {
       return -1;
+    }
 
     final Map<String, Long> group = this.map.get(counterGroup);
-    if (group == null)
+    if (group == null) {
       return -1;
+    }
 
     Long value = group.get(counter);
-    if (value == null)
+    if (value == null) {
       return -1;
+    }
 
     return value;
   }
@@ -115,8 +122,9 @@ public class LocalReporter implements Reporter {
   @Override
   public Set<String> getCounterNames(final String group) {
 
-    if (group == null || !this.map.containsKey(group))
+    if (group == null || !this.map.containsKey(group)) {
       return Collections.emptySet();
+    }
 
     return Collections.unmodifiableSet(this.map.get(group).keySet());
   }

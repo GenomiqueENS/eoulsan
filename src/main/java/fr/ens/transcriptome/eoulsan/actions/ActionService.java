@@ -83,8 +83,9 @@ public class ActionService extends ServiceNameLoader<Action> {
 
     final List<Action> result = new ArrayList<>();
 
-    for (String actionName : service.getServiceClasses().keySet())
+    for (String actionName : service.getServiceClasses().keySet()) {
       result.add(newService(actionName));
+    }
 
     return result;
   }

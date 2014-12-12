@@ -63,23 +63,26 @@ public final class StringUtils {
   public static String basename(final String filename,
       final boolean withoutCompressedExtension) {
 
-    if (filename == null)
+    if (filename == null) {
       return null;
+    }
 
     final String myFilename;
 
-    if (withoutCompressedExtension)
+    if (withoutCompressedExtension) {
       myFilename = removeCompressedExtensionFromFilename(filename);
-    else
+    } else {
       myFilename = filename;
+    }
 
     final File f = new File(myFilename);
     final String shortName = f.getName();
 
     final int pos = shortName.indexOf('.');
 
-    if (pos == -1)
+    if (pos == -1) {
       return myFilename;
+    }
 
     return myFilename.substring(0, myFilename.length()
         - (shortName.length() - pos));
@@ -92,16 +95,18 @@ public final class StringUtils {
    */
   public static String extension(final String filename) {
 
-    if (filename == null)
+    if (filename == null) {
       return null;
+    }
 
     final File f = new File(filename);
     final String shortName = f.getName();
 
     final int pos = shortName.lastIndexOf('.');
 
-    if (pos == -1)
+    if (pos == -1) {
       return "";
+    }
 
     return filename.substring(filename.length() - (shortName.length() - pos),
         filename.length());
@@ -125,16 +130,18 @@ public final class StringUtils {
    */
   public static String filenameWithoutExtension(final String filename) {
 
-    if (filename == null)
+    if (filename == null) {
       return null;
+    }
 
     final File f = new File(filename);
     final String shortName = f.getName();
 
     final int pos = shortName.lastIndexOf('.');
 
-    if (pos == -1)
+    if (pos == -1) {
       return filename;
+    }
 
     return filename.substring(0, filename.length() - shortName.length())
         + shortName.subSequence(0, pos);
@@ -148,25 +155,31 @@ public final class StringUtils {
    */
   public static String compressionExtension(final String filename) {
 
-    if (filename == null)
+    if (filename == null) {
       return null;
+    }
 
     final String ext = extension(filename);
 
-    if (".gz".equals(ext))
+    if (".gz".equals(ext)) {
       return ext;
+    }
 
-    if (".bz2".equals(ext))
+    if (".bz2".equals(ext)) {
       return ext;
+    }
 
-    if (".zip".equals(ext))
+    if (".zip".equals(ext)) {
       return ext;
+    }
 
-    if (".deflate".equals(ext))
+    if (".deflate".equals(ext)) {
       return ext;
+    }
 
-    if (".lzo".equals(ext))
+    if (".lzo".equals(ext)) {
       return ext;
+    }
 
     return "";
   }
@@ -178,23 +191,28 @@ public final class StringUtils {
    */
   public static String filenameWithoutCompressionExtension(final String filename) {
 
-    if (filename == null)
+    if (filename == null) {
       return null;
+    }
 
-    if (filename.endsWith(".gz"))
+    if (filename.endsWith(".gz")) {
       return filename.substring(0, filename.length() - 3);
+    }
 
-    if (filename.endsWith(".bz2"))
+    if (filename.endsWith(".bz2")) {
       return filename.substring(0, filename.length() - 4);
+    }
 
     // if (filename.endsWith(".zip"))
     // return filename.substring(0, filename.length() - 4);
 
-    if (filename.endsWith(".deflate"))
+    if (filename.endsWith(".deflate")) {
       return filename.substring(0, filename.length() - 8);
+    }
 
-    if (filename.endsWith(".lzo"))
+    if (filename.endsWith(".lzo")) {
       return filename.substring(0, filename.length() - 4);
+    }
 
     return filename;
   }
@@ -206,16 +224,19 @@ public final class StringUtils {
    */
   public static final String removeNonAlphaAtEndOfString(final String s) {
 
-    if (s == null)
+    if (s == null) {
       return null;
+    }
 
     int len = s.length();
-    if (len == 0)
+    if (len == 0) {
       return s;
+    }
 
     char c = s.charAt(len - 1);
-    if (!Character.isLetter(c))
+    if (!Character.isLetter(c)) {
       return s.substring(0, len - 1);
+    }
 
     return s;
   }
@@ -245,15 +266,17 @@ public final class StringUtils {
   public static final List<String> fastSplit(final String s,
       final List<String> list) {
 
-    if (s == null)
+    if (s == null) {
       return null;
+    }
 
     List<String> result;
 
-    if (list == null)
+    if (list == null) {
       result = new ArrayList<>();
-    else
+    } else {
       result = list;
+    }
 
     result.clear();
     int lastPos = 0;
@@ -291,8 +314,9 @@ public final class StringUtils {
   public static final String[] fastSplit(final String s, final String[] array,
       final boolean allowEmptyFields) {
 
-    if (array == null || s == null)
+    if (array == null || s == null) {
       return null;
+    }
 
     int lastPos = 0;
     final int len = array.length - 1;
@@ -303,8 +327,9 @@ public final class StringUtils {
 
       if (pos == -1) {
         if (allowEmptyFields) {
-          while (i <= len)
+          while (i <= len) {
             array[i++] = "";
+          }
           return array;
         }
         throw new ArrayIndexOutOfBoundsException();
@@ -326,13 +351,15 @@ public final class StringUtils {
    */
   public static final String subStringAfterFirstTab(final String s) {
 
-    if (s == null)
+    if (s == null) {
       return null;
+    }
 
     final int indexFirstTab = s.indexOf('\t');
 
-    if (indexFirstTab == -1)
+    if (indexFirstTab == -1) {
       return s;
+    }
 
     return s.substring(indexFirstTab + 1);
   }
@@ -344,20 +371,22 @@ public final class StringUtils {
    */
   public static final String subStringBeforeFirstTab(final String s) {
 
-    if (s == null)
+    if (s == null) {
       return null;
+    }
 
     final int indexFirstTab = s.indexOf('\t');
 
-    if (indexFirstTab == -1)
+    if (indexFirstTab == -1) {
       return s;
+    }
 
     return s.substring(0, indexFirstTab);
   }
 
   /**
    * Get the current date in an easy sorted format (e.g. 20100225151635)
-   * @return the current date formated in a string
+   * @return the current date formatted in a string
    */
   public static final String currentDateTimeToEasySortedDateTime() {
 
@@ -367,12 +396,13 @@ public final class StringUtils {
   /**
    * Get the date in an easy sorted format (e.g. 20100225151635)
    * @param date date to format
-   * @return a formated date in a string
+   * @return a formatted date in a string
    */
   public static final String toEasySortedDateTime(final Date date) {
 
-    if (date == null)
+    if (date == null) {
       return null;
+    }
 
     final Calendar cal = Calendar.getInstance(Locale.ENGLISH);
 
@@ -390,23 +420,28 @@ public final class StringUtils {
   public static final String removeCompressedExtensionFromFilename(
       final String filename) {
 
-    if (filename == null)
+    if (filename == null) {
       return null;
+    }
 
-    if (filename.endsWith(".gz"))
+    if (filename.endsWith(".gz")) {
       return filename.substring(0, filename.length() - 3);
-    if (filename.endsWith(".bz2"))
+    }
+    if (filename.endsWith(".bz2")) {
       return filename.substring(0, filename.length() - 4);
-    if (filename.endsWith(".zip"))
+    }
+    if (filename.endsWith(".zip")) {
       return filename.substring(0, filename.length() - 4);
+    }
 
     return filename;
   }
 
   public static final String protectGFF(final String s) {
 
-    if (s == null)
+    if (s == null) {
       return null;
+    }
 
     final String rTmp =
         s.replace("\\", "\\\\").replace(";", "\\;").replace("=", "\\=")
@@ -422,8 +457,9 @@ public final class StringUtils {
       if (c <= 32) {
         sb.append('%');
         sb.append(String.format("%02X", (int) c));
-      } else
+      } else {
         sb.append(c);
+      }
     }
 
     final String r = sb.toString();
@@ -432,10 +468,11 @@ public final class StringUtils {
     return r;
   }
 
-  public static final String deprotectGFF(final String s) {
+  public static final String deProtectGFF(final String s) {
 
-    if (s == null)
+    if (s == null) {
       return null;
+    }
 
     final StringBuilder sb = new StringBuilder();
 
@@ -447,8 +484,9 @@ public final class StringUtils {
 
       if (c == '%') {
 
-        if (i + 2 >= len)
+        if (i + 2 >= len) {
           break;
+        }
 
         final char d1 = s.charAt(i + 1);
         final char d2 = s.charAt(i + 2);
@@ -488,14 +526,17 @@ public final class StringUtils {
   public static final String[] arrayWithoutFirstsElement(final String[] array,
       final int elementsToRemove) {
 
-    if (array == null)
+    if (array == null) {
       return null;
+    }
 
-    if (elementsToRemove < 1)
+    if (elementsToRemove < 1) {
       return array;
+    }
 
-    if (elementsToRemove > array.length)
+    if (elementsToRemove > array.length) {
       return new String[0];
+    }
 
     final int newLen = array.length - elementsToRemove;
     final String[] result = new String[newLen];
@@ -511,8 +552,9 @@ public final class StringUtils {
    */
   public static final String bashEscaping(final String s) {
 
-    if (s == null)
+    if (s == null) {
       return null;
+    }
 
     return s.replace("\\", "\\\\").replace(" ", "\\ ").replace("'", "\\'")
         .replace("\"", "\\\"").replace("&", "\\&").replace("!", "\\!")
@@ -526,8 +568,9 @@ public final class StringUtils {
    */
   public static final String getURIFilename(final String s) {
 
-    if (s == null)
+    if (s == null) {
       return null;
+    }
 
     try {
       final URI uri = new URI(s);
@@ -552,17 +595,21 @@ public final class StringUtils {
     final double gi = mi * 1024;
     final double ti = gi * 1024;
 
-    if (bytes < ki)
+    if (bytes < ki) {
       return String.format("%d B", bytes);
+    }
 
-    if (bytes < mi)
+    if (bytes < mi) {
       return String.format("%.2f KiB", bytes / ki);
+    }
 
-    if (bytes < gi)
+    if (bytes < gi) {
       return String.format("%.2f MiB", bytes / mi);
+    }
 
-    if (bytes < ti)
+    if (bytes < ti) {
       return String.format("%.2f GiB", bytes / gi);
+    }
 
     return String.format("%.2f TiB", bytes / ti);
   }
@@ -576,12 +623,15 @@ public final class StringUtils {
    */
   public static final boolean startsWith(final String s, final String[] prefixes) {
 
-    if (s == null || prefixes == null)
+    if (s == null || prefixes == null) {
       return false;
+    }
 
-    for (String p : prefixes)
-      if (s.startsWith(p))
+    for (String p : prefixes) {
+      if (s.startsWith(p)) {
         return true;
+      }
+    }
 
     return false;
   }
@@ -595,36 +645,45 @@ public final class StringUtils {
   public static final String getCommonContentTypeFromExtension(
       final String extension) {
 
-    if (extension == null)
+    if (extension == null) {
       return null;
+    }
 
     final String lower = extension.toLowerCase();
 
-    if (".htm".equals(lower) || ".html".equals(lower))
+    if (".htm".equals(lower) || ".html".equals(lower)) {
       return "text/html";
+    }
 
-    if (".xml".equals(lower))
+    if (".xml".equals(lower)) {
       return "text/xml";
+    }
 
     if (".txt".equals(lower)
         || ".pl".equals(lower) || ".pm".equals(lower) || ".py".equals(lower)
-        || ".r".equals(lower) || ".rb".equals(lower) || ".java".equals(lower))
+        || ".r".equals(lower) || ".rb".equals(lower) || ".java".equals(lower)) {
       return "text/plain";
+    }
 
-    if (".jpeg".equals(lower) || ".jpg".equals(lower) || ".jpe".equals(lower))
+    if (".jpeg".equals(lower) || ".jpg".equals(lower) || ".jpe".equals(lower)) {
       return "image/jpeg";
+    }
 
-    if (".jpeg".equals(lower) || ".jpg".equals(lower) || ".jpe".equals(lower))
+    if (".jpeg".equals(lower) || ".jpg".equals(lower) || ".jpe".equals(lower)) {
       return "image/jpeg";
+    }
 
-    if (".tif".equals(lower) || ".tiff".equals(lower))
+    if (".tif".equals(lower) || ".tiff".equals(lower)) {
       return "image/tiff";
+    }
 
-    if (".png".equals(lower))
+    if (".png".equals(lower)) {
       return "image/png";
+    }
 
-    if (".pdf".equals(lower))
+    if (".pdf".equals(lower)) {
       return "application/pdf";
+    }
 
     return "";
   }
@@ -639,14 +698,17 @@ public final class StringUtils {
   public static String replacePrefix(final String s, final String oldPrefix,
       final String newPrefix) {
 
-    if (s == null)
+    if (s == null) {
       return null;
+    }
 
-    if (oldPrefix == null || newPrefix == null)
+    if (oldPrefix == null || newPrefix == null) {
       return s;
+    }
 
-    if (!s.startsWith(oldPrefix))
+    if (!s.startsWith(oldPrefix)) {
       return s;
+    }
 
     final int prefixLen = oldPrefix.length();
 
@@ -660,8 +722,9 @@ public final class StringUtils {
    */
   public static String serializeStringArray(final Collection<String> strings) {
 
-    if (strings == null)
+    if (strings == null) {
       return null;
+    }
 
     final StringBuilder sb = new StringBuilder();
     sb.append('[');
@@ -669,13 +732,15 @@ public final class StringUtils {
     boolean first = true;
 
     for (String s : strings) {
-      if (first)
+      if (first) {
         first = false;
-      else
+      } else {
         sb.append(',');
+      }
 
-      if (s != null)
+      if (s != null) {
         sb.append(s.replace("\\", "\\\\").replace(",", "\\,"));
+      }
     }
 
     sb.append(']');
@@ -691,13 +756,15 @@ public final class StringUtils {
   public static List<String> deserializeStringArray(
       final String serializedString) {
 
-    if (serializedString == null)
+    if (serializedString == null) {
       return null;
+    }
 
     String s = serializedString.trim();
 
-    if (s.charAt(0) != '[' || s.charAt(s.length() - 1) != ']')
+    if (s.charAt(0) != '[' || s.charAt(s.length() - 1) != ']') {
       return Collections.singletonList(serializedString);
+    }
 
     s = s.substring(1, s.length() - 1);
 
@@ -736,11 +803,13 @@ public final class StringUtils {
    */
   public static char toLetter(final int i) {
 
-    if (i < 0)
+    if (i < 0) {
       return '-';
+    }
 
-    if (i > 25)
+    if (i > 25) {
       return '-';
+    }
 
     return (char) (i + 97);
   }
@@ -762,15 +831,17 @@ public final class StringUtils {
    */
   public static String join(final String[] array, final String separator) {
 
-    if (array == null)
+    if (array == null) {
       return null;
+    }
 
     final StringBuilder sb = new StringBuilder();
 
     for (int i = 0; i < array.length; i++) {
 
-      if (i > 0 && separator != null)
+      if (i > 0 && separator != null) {
         sb.append(separator);
+      }
       sb.append(array[i]);
     }
 
@@ -784,15 +855,17 @@ public final class StringUtils {
    */
   public static String join(final Object[] array, final String separator) {
 
-    if (array == null)
+    if (array == null) {
       return null;
+    }
 
     final StringBuilder sb = new StringBuilder();
 
     for (int i = 0; i < array.length; i++) {
 
-      if (i > 0 && separator != null)
+      if (i > 0 && separator != null) {
         sb.append(separator);
+      }
       sb.append(array[i]);
     }
 
@@ -808,8 +881,9 @@ public final class StringUtils {
   public static Iterable<String> splitStringIterator(final String s,
       final int length) {
 
-    if (s == null || length < 1)
+    if (s == null || length < 1) {
       return null;
+    }
 
     return new IterableString() {
 
@@ -819,15 +893,16 @@ public final class StringUtils {
       @Override
       public boolean hasNext() {
 
-        return pos < len;
+        return this.pos < this.len;
       }
 
       @Override
       public String next() {
 
-        final int endPos = (pos + length) > len ? len : pos + length;
+        final int endPos =
+            (this.pos + length) > this.len ? this.len : this.pos + length;
 
-        final String result = s.substring(pos, endPos);
+        final String result = s.substring(this.pos, endPos);
 
         this.pos += length;
 

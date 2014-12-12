@@ -16,10 +16,9 @@ RUN apt-get update
 RUN apt-get install --yes openjdk-7-jre-headless
 
 # Download and install Eoulsan
-ADD http://www.transcriptome.ens.fr/eoulsan/eoulsan-1.2.2.tar.gz /tmp/
+ADD https://github.com/GenomicParisCentre/eoulsan/releases/download/v2.0-alpha3/eoulsan-2.0-alpha3.tar.gz /tmp/
 
 # Install Eoulsan
-RUN ls /tmp/eoulsan-*.tar.gz
 RUN tar --directory /usr/local -xf /tmp/eoulsan-*.tar.gz
 
 # Create links for eoulsan.sh to get eoulsan.sh in PATH

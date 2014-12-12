@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.base.Preconditions;
+
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
@@ -45,13 +46,13 @@ public class FileConcatInputStream extends AbstractConcatInputStream {
   @Override
   protected boolean hasNextInputStream() {
 
-    return it.hasNext();
+    return this.it.hasNext();
   }
 
   @Override
   protected InputStream nextInputStream() throws IOException {
 
-    return FileUtils.createInputStream(it.next());
+    return FileUtils.createInputStream(this.it.next());
   }
 
   //

@@ -37,7 +37,7 @@ public class SimpleInputPorts extends AbstractPorts<InputPort> implements
 
   private static final long serialVersionUID = -6661589274392547355L;
 
-  SimpleInputPorts(Set<InputPort> ports) {
+  SimpleInputPorts(final Set<InputPort> ports) {
     super(ports);
   }
 

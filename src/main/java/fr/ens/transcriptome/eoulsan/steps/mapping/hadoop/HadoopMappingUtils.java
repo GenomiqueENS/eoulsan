@@ -50,8 +50,9 @@ public class HadoopMappingUtils {
   static void addParametersToJobConf(final Map<String, String> parameters,
       final String prefix, final Configuration jobConf) {
 
-    if (parameters == null || jobConf == null || prefix == null)
+    if (parameters == null || jobConf == null || prefix == null) {
       return;
+    }
 
     // Add the parameter to the job configuration
     for (Map.Entry<String, String> e : parameters.entrySet()) {
@@ -78,13 +79,15 @@ public class HadoopMappingUtils {
 
     final Map<String, String> result = new LinkedHashMap<>();
 
-    if (jobConf == null || prefix == null)
+    if (jobConf == null || prefix == null) {
       return result;
+    }
 
     // Get the list of parameters
     final String keys = jobConf.get(prefix + PARAM_KEYS_LIST_SUFFIX);
-    if (keys == null)
+    if (keys == null) {
       return result;
+    }
 
     // Fill the result map with the parameters keys and values
     for (String key : Splitter.on(',').omitEmptyStrings().trimResults()

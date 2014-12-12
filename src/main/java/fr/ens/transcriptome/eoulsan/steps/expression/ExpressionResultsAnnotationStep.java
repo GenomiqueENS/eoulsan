@@ -25,7 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.expression;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.OWN_PARALELIZATION;
+import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.OWN_PARALLELIZATION;
 import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.STANDARD;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ADDITIONAL_ANNOTATION_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_ODS;
@@ -87,7 +87,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
       ANNOTATED_EXPRESSION_RESULTS_TSV;
 
   private DataFile annotationFile;
-  private Map<String, DataFormat> outputFormats = new HashMap<>();
+  private final Map<String, DataFormat> outputFormats = new HashMap<>();
 
   //
   // Step methods
@@ -151,7 +151,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
     // disable to avoid out of memory
     if (formats.contains(ANNOTATED_EXPRESSION_RESULTS_ODS)
         || formats.contains(ANNOTATED_EXPRESSION_RESULTS_XLSX)) {
-      return OWN_PARALELIZATION;
+      return OWN_PARALLELIZATION;
     }
 
     // TSV creation can be multithreaded
@@ -207,7 +207,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
 
     // Set the default format
     if (this.outputFormats.isEmpty()) {
-      this.outputFormats.put(DEFAULT_FORMAT.getDefaultExtention().substring(1),
+      this.outputFormats.put(DEFAULT_FORMAT.getDefaultExtension().substring(1),
           DEFAULT_FORMAT);
     }
   }
@@ -257,12 +257,13 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
 
         final TranslatorOutputFormat of;
 
-        if (format == ANNOTATED_EXPRESSION_RESULTS_XLSX)
+        if (format == ANNOTATED_EXPRESSION_RESULTS_XLSX) {
           of = new XLSXTranslatorOutputFormat(outFile.create());
-        else if (format == ANNOTATED_EXPRESSION_RESULTS_ODS)
+        } else if (format == ANNOTATED_EXPRESSION_RESULTS_ODS) {
           of = new ODSTranslatorOutputFormat(outFile.create());
-        else
+        } else {
           of = new TSVTranslatorOutputFormat(outFile.create());
+        }
 
         TranslatorUtils.addTranslatorFields(inFile.open(), 0, translator, of);
         resultString.append("Convert ");
@@ -291,9 +292,9 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
    * Load translator annotation.
    * @param annotationFile the annotation file to use
    * @return a Translator object with the additional annotation
-   * @throws EoulsanIOException if an error occurs while reading additionnal
+   * @throws EoulsanIOException if an error occurs while reading additional
    *           annotation
-   * @throws IOException if an error occurs while reading additionnal annotation
+   * @throws IOException if an error occurs while reading additional annotation
    */
   private Translator loadTranslator(final DataFile annotationFile)
       throws EoulsanIOException, IOException {
@@ -305,12 +306,14 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
       @Override
       public String translateField(final String id, final String field) {
 
-        if (id == null || field == null)
+        if (id == null || field == null) {
           return null;
+        }
 
         if ("EnsemblGeneID".equals(field)
-            && id.length() == 18 && id.startsWith("ENS"))
+            && id.length() == 18 && id.startsWith("ENS")) {
           return id;
+        }
 
         return null;
       }
@@ -318,7 +321,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
       @Override
       public String[] getFields() {
 
-        return new String[] { "EnsemblGeneID" };
+        return new String[] {"EnsemblGeneID"};
       }
     };
 

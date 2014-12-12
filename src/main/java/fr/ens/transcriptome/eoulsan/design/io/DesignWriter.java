@@ -51,7 +51,7 @@ public abstract class DesignWriter {
    * @return Returns the outputStream
    */
   public OutputStream getOutputStream() {
-    return outputStream;
+    return this.outputStream;
   }
 
   /**
@@ -96,8 +96,9 @@ public abstract class DesignWriter {
    *           the file is null.
    */
   public DesignWriter(final File file) throws EoulsanIOException {
-    if (file == null)
+    if (file == null) {
       throw new EoulsanIOException("No file to load");
+    }
 
     try {
       setOutputStream(FileUtils.createOutputStream(file));

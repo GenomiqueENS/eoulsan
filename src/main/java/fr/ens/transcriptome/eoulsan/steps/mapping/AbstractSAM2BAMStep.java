@@ -85,9 +85,10 @@ public abstract class AbstractSAM2BAMStep extends AbstractStep {
       if ("compression.level".equals(p.getName())) {
 
         final int level = p.getIntValue();
-        if (level < 0 || level > 9)
+        if (level < 0 || level > 9) {
           throw new EoulsanException("Invalid compression level [0-9]: "
               + level + " step: " + p.getName());
+        }
 
         this.compressionLevel = level;
       } else if ("input.format".equals(p.getName())) {

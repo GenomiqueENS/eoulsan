@@ -31,5 +31,5 @@ package fr.ens.transcriptome.eoulsan.core;
  */
 public enum ParallelizationMode {
 
-  NOT_NEEDED, STANDARD, OWN_PARALELIZATION
+  NOT_NEEDED, STANDARD, OWN_PARALLELIZATION
 }

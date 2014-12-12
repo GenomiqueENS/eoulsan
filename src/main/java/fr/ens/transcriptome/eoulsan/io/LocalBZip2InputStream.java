@@ -36,48 +36,49 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
  */
 public class LocalBZip2InputStream extends InputStream {
 
-  private InputStream is;
+  private final InputStream is;
 
   @Override
   public int available() throws IOException {
 
-    return is.available();
+    return this.is.available();
   }
 
   @Override
   public void close() throws IOException {
 
-    is.close();
+    this.is.close();
   }
 
   @Override
-  public synchronized void mark(int readlimit) {
+  public synchronized void mark(final int readlimit) {
 
-    is.mark(readlimit);
+    this.is.mark(readlimit);
   }
 
   @Override
   public boolean markSupported() {
 
-    return is.markSupported();
+    return this.is.markSupported();
   }
 
   @Override
   public int read() throws IOException {
 
-    return is.read();
+    return this.is.read();
   }
 
   @Override
-  public int read(byte[] b, int off, int len) throws IOException {
+  public int read(final byte[] b, final int off, final int len)
+      throws IOException {
 
-    return is.read(b, off, len);
+    return this.is.read(b, off, len);
   }
 
   @Override
-  public int read(byte[] b) throws IOException {
+  public int read(final byte[] b) throws IOException {
 
-    return is.read(b);
+    return this.is.read(b);
   }
 
   @Override
@@ -87,9 +88,9 @@ public class LocalBZip2InputStream extends InputStream {
   }
 
   @Override
-  public long skip(long n) throws IOException {
+  public long skip(final long n) throws IOException {
 
-    return is.skip(n);
+    return this.is.skip(n);
   }
 
   //

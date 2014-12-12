@@ -48,7 +48,7 @@ public class BinaryComparator extends AbstractComparator {
   private int numberElementsCompared;
 
   @Override
-  public boolean compareFiles(InputStream isA, InputStream isB)
+  public boolean compareFiles(final InputStream isA, final InputStream isB)
       throws IOException {
 
     if (isA == null || isB == null) {
@@ -57,7 +57,7 @@ public class BinaryComparator extends AbstractComparator {
 
     // Set cause, can not identified the position who fail comparison
     setCauseFailComparison("Binary comparison.");
-    
+
     return FileUtils.compareFile(isA, isB);
   }
 

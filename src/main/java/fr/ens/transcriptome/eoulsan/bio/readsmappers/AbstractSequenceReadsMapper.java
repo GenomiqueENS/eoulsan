@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
+import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardFile;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
@@ -61,38 +62,77 @@ public abstract class AbstractSequenceReadsMapper implements
   private static final String SYNC = AbstractSequenceReadsMapper.class
       .getName();
 
-  @Override
-  public boolean isIndexGeneratorOnly() {
-    return false;
-  }
-
-  protected String getSoftwarePackage() {
-
-    return getMapperName();
-  }
-
-  protected abstract String getPackageVersion();
-
-  protected abstract String getIndexerExecutable();
-
-  protected String[] getIndexerExecutables() {
-    return new String[] {getIndexerExecutable()};
-  }
-
-  protected abstract List<String> getIndexerCommand(
-      final String indexerPathname, final String genomePathname);
-
   private File archiveIndexFile;
   private File archiveIndexDir;
 
   private FastqFormat fastqFormat = FastqFormat.FASTQ_SANGER;
 
+  private String mapperVersionToUse = getDefaultPackageVersion();
   private int threadsNumber;
   private String mapperArguments = null;
   private File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
 
   private ReporterIncrementer incrementer;
   private String counterGroup;
+
+  private boolean binariesReady;
+  private boolean initialized;
+
+  //
+  // Binaries management
+  //
+
+  @Override
+  public boolean isIndexGeneratorOnly() {
+    return false;
+  }
+
+  /**
+   * Get the software package of the mapper.
+   * @return the software package of the mapper
+   */
+  protected String getSoftwarePackage() {
+
+    return getMapperName();
+  }
+
+  /**
+   * Get the default version of the mapper.
+   * @return the default version of the mapper
+   */
+  protected abstract String getDefaultPackageVersion();
+
+  /**
+   * Get the indexer executable.
+   * @return the indexer executable
+   */
+  protected abstract String getIndexerExecutable();
+
+  /**
+   * Get the indexer executables.
+   * @return the indexer executables
+   */
+  protected String[] getIndexerExecutables() {
+    return new String[] {getIndexerExecutable()};
+  }
+
+  /**
+   * Get the indexer command.
+   * @param indexerPathname the path to the indexer
+   * @param genomePathname the path to the genome
+   * @return a list that is the command to execute
+   */
+  protected abstract List<String> getIndexerCommand(
+      final String indexerPathname, final String genomePathname);
+
+  /**
+   * Get the version of the mapper to execute
+   * @return the version of the mapper to execute
+   */
+  protected String getMapperVersionToUse() {
+
+    return this.mapperVersionToUse;
+  }
 
   //
   // Getters
@@ -113,8 +153,9 @@ public abstract class AbstractSequenceReadsMapper implements
   @Override
   public List<String> getListMapperArguments() {
 
-    if (getMapperArguments() == null)
+    if (getMapperArguments() == null) {
       return Collections.emptyList();
+    }
 
     // Split the mapper arguments
     final String[] tabMapperArguments = getMapperArguments().trim().split(" ");
@@ -162,13 +203,26 @@ public abstract class AbstractSequenceReadsMapper implements
   //
 
   @Override
+  public void setMapperVersionToUse(final String version) {
+
+    checkState(!this.binariesReady, "Mapper has been initialized");
+
+    this.mapperVersionToUse =
+        version == null ? getDefaultPackageVersion() : version;
+  }
+
+  @Override
   public void setThreadsNumber(final int threadsNumber) {
+
+    checkState(!this.initialized, "Mapper has been initialized");
 
     this.threadsNumber = threadsNumber;
   }
 
   @Override
   public void setMapperArguments(final String arguments) {
+
+    checkState(!this.initialized, "Mapper has been initialized");
 
     if (arguments == null) {
       this.mapperArguments = "";
@@ -181,14 +235,19 @@ public abstract class AbstractSequenceReadsMapper implements
   @Override
   public void setTempDirectory(final File tempDirectory) {
 
+    checkState(!this.initialized, "Mapper has been initialized");
+
     this.tempDir = tempDirectory;
   }
 
   @Override
   public void setFastqFormat(final FastqFormat format) {
 
-    if (format == null)
+    checkState(!this.initialized, "Mapper has been initialized");
+
+    if (format == null) {
       throw new NullPointerException("The FASTQ format is null");
+    }
 
     this.fastqFormat = format;
   }
@@ -203,8 +262,9 @@ public abstract class AbstractSequenceReadsMapper implements
     final CompressionType ct =
         CompressionType.getCompressionTypeByFilename(genomeFile.getName());
 
-    if (ct == CompressionType.NONE)
+    if (ct == CompressionType.NONE) {
       return genomeFile;
+    }
 
     // Define the output filename
     final File uncompressFile =
@@ -258,9 +318,10 @@ public abstract class AbstractSequenceReadsMapper implements
 
     // Create temporary symbolic link for genome
     if (!unCompressGenomeFile.equals(tmpGenomeFile)) {
-      if (!FileUtils.createSymbolicLink(unCompressGenomeFile, tmpGenomeFile))
+      if (!FileUtils.createSymbolicLink(unCompressGenomeFile, tmpGenomeFile)) {
         throw new IOException("Unable to create the symbolic link in "
             + tmpGenomeFile + " directory for " + unCompressGenomeFile);
+      }
     }
 
     // Build the command line and compute the index
@@ -341,7 +402,7 @@ public abstract class AbstractSequenceReadsMapper implements
     checkNotNull(is, "Input steam is null");
     checkNotNull(archiveOutputFile, "Archive output file is null");
 
-    getLogger().fine("Copy genome to local disk before computating index");
+    getLogger().fine("Copy genome to local disk before computing index");
 
     final File genomeTmpFile =
         File.createTempFile(Globals.APP_NAME_LOWER_CASE + "-genome", ".fasta",
@@ -375,16 +436,18 @@ public abstract class AbstractSequenceReadsMapper implements
   private void unzipArchiveIndexFile(final File archiveIndexFile,
       final File archiveIndexDir) throws IOException {
 
-    if (!archiveIndexFile.exists())
+    if (!archiveIndexFile.exists()) {
       throw new IOException("No index for the mapper found: "
           + archiveIndexFile);
+    }
 
     // Uncompress archive if necessary
     if (!archiveIndexDir.exists()) {
 
-      if (!archiveIndexDir.mkdir())
+      if (!archiveIndexDir.mkdir()) {
         throw new IOException("Can't create directory for "
             + getMapperName() + " index: " + archiveIndexDir);
+      }
 
       getLogger().fine(
           "Unzip archiveIndexFile "
@@ -424,10 +487,10 @@ public abstract class AbstractSequenceReadsMapper implements
         "readsFile2 not exits or is not a standard file.");
 
     // Unzip archive index if necessary
-    unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
+    unzipArchiveIndexFile(this.archiveIndexFile, this.archiveIndexDir);
 
     // Process to mapping
-    return internalMapPE(readsFile1, readsFile2, archiveIndexDir, gd);
+    return internalMapPE(readsFile1, readsFile2, this.archiveIndexDir, gd);
   }
 
   @Override
@@ -448,10 +511,10 @@ public abstract class AbstractSequenceReadsMapper implements
         "readsFile1 not exits or is not a standard file.");
 
     // Unzip archive index if necessary
-    unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
+    unzipArchiveIndexFile(this.archiveIndexFile, this.archiveIndexDir);
 
     // Process to mapping
-    return internalMapSE(readsFile, archiveIndexDir, gd);
+    return internalMapSE(readsFile, this.archiveIndexDir, gd);
   }
 
   protected abstract InputStream internalMapPE(final File readsFile1,
@@ -472,10 +535,10 @@ public abstract class AbstractSequenceReadsMapper implements
     getLogger().fine("Mapping with " + getMapperName() + " in single-end mode");
 
     // Unzip archive index if necessary
-    unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
+    unzipArchiveIndexFile(this.archiveIndexFile, this.archiveIndexDir);
 
     // Process to mapping
-    final MapperProcess result = internalMapPE(archiveIndexDir, gd);
+    final MapperProcess result = internalMapPE(this.archiveIndexDir, gd);
 
     // Set counter
     result.setIncrementer(this.incrementer, this.counterGroup);
@@ -490,10 +553,10 @@ public abstract class AbstractSequenceReadsMapper implements
     getLogger().fine("Mapping with " + getMapperName() + " in single-end mode");
 
     // Unzip archive index if necessary
-    unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
+    unzipArchiveIndexFile(this.archiveIndexFile, this.archiveIndexDir);
 
     // Process to mapping
-    final MapperProcess result = internalMapSE(archiveIndexDir, gd);
+    final MapperProcess result = internalMapSE(this.archiveIndexDir, gd);
 
     // Set counter
     result.setIncrementer(this.incrementer, this.counterGroup);
@@ -512,9 +575,27 @@ public abstract class AbstractSequenceReadsMapper implements
   //
 
   @Override
+  public void prepareBinaries() throws IOException {
+
+    // Do nothing if binaries has already been prepared
+    if (this.binariesReady) {
+      return;
+    }
+
+    if (!checkIfBinaryExists(getIndexerExecutables())) {
+      throw new IOException("Unable to find mapper "
+          + getMapperName() + " version " + this.mapperVersionToUse);
+    }
+
+    this.binariesReady = true;
+  }
+
+  @Override
   public void init(final File archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
+
+    checkState(!this.initialized, "Mapper has already been initialized");
 
     checkNotNull(incrementer, "incrementer is null");
     checkNotNull(counterGroup, "counterGroup is null");
@@ -528,6 +609,11 @@ public abstract class AbstractSequenceReadsMapper implements
     this.archiveIndexDir = archiveIndexDir;
     this.incrementer = incrementer;
     this.counterGroup = counterGroup;
+
+    this.initialized = true;
+
+    // Prepare binaries
+    prepareBinaries();
   }
 
   //
@@ -546,9 +632,11 @@ public abstract class AbstractSequenceReadsMapper implements
 
     String result = null;
 
-    if (binaryFilenames != null)
-      for (String binaryFilename : binaryFilenames)
+    if (binaryFilenames != null) {
+      for (String binaryFilename : binaryFilenames) {
         result = install(binaryFilename);
+      }
+    }
 
     return result;
   }
@@ -563,8 +651,41 @@ public abstract class AbstractSequenceReadsMapper implements
    */
   protected String install(final String binaryFilename) throws IOException {
 
-    return BinariesInstaller.install(getSoftwarePackage(), getPackageVersion(),
-        binaryFilename, getTempDirectoryPath());
+    return BinariesInstaller.install(getSoftwarePackage(),
+        this.mapperVersionToUse, binaryFilename, getTempDirectoryPath());
+  }
+
+  /**
+   * Check if binaries bundled in the jar exists.
+   * @param binaryFilenames program to check
+   * @return true if the binary exists
+   * @throws IOException if an error occurs while installing binary
+   */
+  protected boolean checkIfBinaryExists(final String... binaryFilenames) {
+
+    if (binaryFilenames == null || binaryFilenames.length == 0) {
+      return false;
+    }
+
+    for (String binaryFilename : binaryFilenames) {
+      if (!checkIfBinaryExists(binaryFilename)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Check if a binary bundled in the jar exists.
+   * @param binaryFilename program to check
+   * @return true if the binary exists
+   * @throws IOException if an error occurs while installing binary
+   */
+  protected boolean checkIfBinaryExists(final String binaryFilename) {
+
+    return BinariesInstaller.check(getSoftwarePackage(),
+        this.mapperVersionToUse, binaryFilename);
   }
 
 }

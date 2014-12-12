@@ -50,7 +50,7 @@ public class MultiColumnTranslatorReader {
   private BufferedReader bufferedReader;
   private static final String SEPARATOR = "\t";
   private boolean removeQuotes = true;
-  private boolean noHeader;
+  private final boolean noHeader;
 
   //
   // Getters
@@ -61,7 +61,7 @@ public class MultiColumnTranslatorReader {
    * @return Returns the input stream
    */
   protected InputStream getInputStream() {
-    return is;
+    return this.is;
   }
 
   /**
@@ -69,7 +69,7 @@ public class MultiColumnTranslatorReader {
    * @return Returns the bufferedReader
    */
   protected BufferedReader getBufferedReader() {
-    return bufferedReader;
+    return this.bufferedReader;
   }
 
   /**
@@ -85,7 +85,7 @@ public class MultiColumnTranslatorReader {
    * @return Returns the removeQuotes
    */
   public boolean isRemoveQuotes() {
-    return removeQuotes;
+    return this.removeQuotes;
   }
 
   //
@@ -107,8 +107,9 @@ public class MultiColumnTranslatorReader {
    */
   protected void setInputStream(final InputStream is) throws EoulsanIOException {
 
-    if (is == null)
+    if (is == null) {
       throw new EoulsanIOException("No stream to read");
+    }
     this.is = is;
   }
 
@@ -146,26 +147,31 @@ public class MultiColumnTranslatorReader {
 
       while ((line = br.readLine()) != null) {
 
-        if ("".equals(line))
+        if ("".equals(line)) {
           continue;
+        }
 
         String[] cols = line.split(separator);
 
-        if (removeQuotes)
-          for (int i = 0; i < cols.length; i++)
+        if (removeQuotes) {
+          for (int i = 0; i < cols.length; i++) {
             cols[i] = removeDoubleQuotesAndTrim(cols[i]);
+          }
+        }
 
         if (result == null && this.noHeader) {
           final String[] header = new String[cols.length];
-          for (int i = 0; i < header.length; i++)
+          for (int i = 0; i < header.length; i++) {
             header[i] = "#" + i;
+          }
           result = new MultiColumnTranslator(header);
         }
 
-        if (result == null)
+        if (result == null) {
           result = new MultiColumnTranslator(cols);
-        else
+        } else {
           result.addRow(cols);
+        }
 
       }
 
@@ -188,15 +194,18 @@ public class MultiColumnTranslatorReader {
    */
   private static String removeDoubleQuotes(final String s) {
 
-    if (s == null)
+    if (s == null) {
       return null;
+    }
 
     String result = s;
 
-    if (result.startsWith("\""))
+    if (result.startsWith("\"")) {
       result = result.substring(1);
-    if (result.endsWith("\""))
+    }
+    if (result.endsWith("\"")) {
       result = result.substring(0, result.length() - 1);
+    }
 
     return result;
   }
@@ -208,8 +217,9 @@ public class MultiColumnTranslatorReader {
    */
   private static String removeDoubleQuotesAndTrim(final String s) {
 
-    if (s == null)
+    if (s == null) {
       return null;
+    }
 
     return removeDoubleQuotes(s.trim());
   }
@@ -264,8 +274,9 @@ public class MultiColumnTranslatorReader {
   public MultiColumnTranslatorReader(final File file, final boolean noHeader)
       throws EoulsanIOException {
 
-    if (file == null)
+    if (file == null) {
       throw new EoulsanIOException("No file to load");
+    }
 
     this.noHeader = noHeader;
 

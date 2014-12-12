@@ -41,7 +41,7 @@ public class InputPortsBuilder {
   /** Default single input port name. */
   public static final String DEFAULT_SINGLE_INPUT_PORT_NAME = "input";
 
-  private Set<InputPort> result = new HashSet<>();
+  private final Set<InputPort> result = new HashSet<>();
 
   /**
    * Add an input port.
@@ -98,7 +98,7 @@ public class InputPortsBuilder {
    * @param requiredInWorkingDirectory if data is required in working directory
    */
   public InputPortsBuilder addPort(final String name, final DataFormat format,
-      boolean requiredInWorkingDirectory) {
+      final boolean requiredInWorkingDirectory) {
 
     return addPort(new SimpleInputPort(name, format, requiredInWorkingDirectory));
   }
@@ -111,7 +111,7 @@ public class InputPortsBuilder {
    * @param requiredInWorkingDirectory if data is required in working directory
    */
   public InputPortsBuilder addPort(final String name, final boolean list,
-      final DataFormat format, boolean requiredInWorkingDirectory) {
+      final DataFormat format, final boolean requiredInWorkingDirectory) {
 
     return addPort(new SimpleInputPort(name, list, format,
         requiredInWorkingDirectory));
@@ -126,7 +126,7 @@ public class InputPortsBuilder {
    */
   public InputPortsBuilder addPort(final String name, final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted,
-      boolean requiredInWorkingDirectory) {
+      final boolean requiredInWorkingDirectory) {
 
     return addPort(new SimpleInputPort(name, format, compressionsAccepted,
         requiredInWorkingDirectory));
@@ -142,7 +142,7 @@ public class InputPortsBuilder {
    */
   public InputPortsBuilder addPort(final String name, final DataFormat format,
       final boolean list, final EnumSet<CompressionType> compressionsAccepted,
-      boolean requiredInWorkingDirectory) {
+      final boolean requiredInWorkingDirectory) {
 
     return addPort(new SimpleInputPort(name, list, format,
         compressionsAccepted, requiredInWorkingDirectory));
@@ -211,13 +211,15 @@ public class InputPortsBuilder {
   public static final InputPorts allPortsRequiredInWorkingDirectory(
       final InputPorts inputPorts) {
 
-    if (inputPorts == null)
+    if (inputPorts == null) {
       return null;
+    }
 
     final InputPortsBuilder builder = new InputPortsBuilder();
 
-    for (InputPort port : inputPorts)
+    for (InputPort port : inputPorts) {
       builder.addPort(port.getName(), port.getFormat(), true);
+    }
 
     return builder.create();
   }
@@ -229,12 +231,14 @@ public class InputPortsBuilder {
    */
   public static final InputPorts copy(final InputPorts ports) {
 
-    if (ports == null)
+    if (ports == null) {
       return null;
+    }
 
     final InputPortsBuilder builder = new InputPortsBuilder();
-    for (InputPort port : ports)
+    for (InputPort port : ports) {
       builder.addPort(port);
+    }
 
     return builder.create();
   }

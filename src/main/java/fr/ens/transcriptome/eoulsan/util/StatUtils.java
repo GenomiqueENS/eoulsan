@@ -46,8 +46,9 @@ public final class StatUtils {
 
     final int len = values.length;
     int sum = 0;
-    for (int i = 0; i < len; i++)
+    for (int i = 0; i < len; i++) {
       sum += values[i];
+    }
 
     return (double) sum / len;
   }
@@ -65,8 +66,9 @@ public final class StatUtils {
 
     final int len = values.length;
     double sum = 0;
-    for (int i = 0; i < len; i++)
+    for (int i = 0; i < len; i++) {
       sum += values[i];
+    }
 
     return sum / len;
   }
@@ -99,8 +101,9 @@ public final class StatUtils {
    */
   public static double percentile(final int[] values, final double p) {
 
-    if (values == null)
+    if (values == null) {
       throw new IllegalArgumentException("values is null");
+    }
 
     return percentile(values, 0, values.length, p);
   }
@@ -113,8 +116,9 @@ public final class StatUtils {
    */
   public static double percentile(final double[] values, final double p) {
 
-    if (values == null)
+    if (values == null) {
       throw new IllegalArgumentException("values is null");
+    }
 
     return percentile(values, 0, values.length, p);
   }

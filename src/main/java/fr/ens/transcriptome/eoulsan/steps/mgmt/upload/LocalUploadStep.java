@@ -49,7 +49,6 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
 @LocalOnly
 public class LocalUploadStep extends UploadStep {
 
-
   @Override
   protected DataFile getUploadedDataFile(final DataFile file)
       throws IOException {
@@ -58,12 +57,13 @@ public class LocalUploadStep extends UploadStep {
 
     if (file.getName().endsWith(".zip")
         || file.getName().endsWith(".jar") || file.getName().endsWith(".xml")
-        || file.getName().endsWith(".txt"))
+        || file.getName().endsWith(".txt")) {
       filename = file.getName();
-    else
+    } else {
       filename =
           CompressionType.removeCompressionExtension(file.getName())
               + CompressionType.BZIP2.getExtension();
+    }
 
     return new DataFile(getDest(), filename);
   }
@@ -77,8 +77,9 @@ public class LocalUploadStep extends UploadStep {
 
     if (sample == null || format == null) {
 
-      if (file == null)
+      if (file == null) {
         throw new IOException("Input file is null.");
+      }
 
       filename = file.getName();
     } else {
@@ -89,8 +90,9 @@ public class LocalUploadStep extends UploadStep {
     }
 
     // Don't compress ZIP files
-    if (".zip".equals(compressionExtension(filename)))
+    if (".zip".equals(compressionExtension(filename))) {
       return new DataFile(getDest(), filename);
+    }
 
     return new DataFile(getDest(), removeCompressionExtension(filename)
         + BZIP2.getExtension());
@@ -99,8 +101,9 @@ public class LocalUploadStep extends UploadStep {
   @Override
   protected void copy(final Map<DataFile, DataFile> files) throws IOException {
 
-    if (files == null)
+    if (files == null) {
       throw new NullPointerException("The files argument is null.");
+    }
 
     for (Map.Entry<DataFile, DataFile> e : files.entrySet()) {
 

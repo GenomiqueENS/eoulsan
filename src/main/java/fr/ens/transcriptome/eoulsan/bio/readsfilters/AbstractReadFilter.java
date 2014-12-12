@@ -36,7 +36,7 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 public abstract class AbstractReadFilter implements ReadFilter {
 
   @Override
-  public boolean accept(ReadSequence read1, ReadSequence read2) {
+  public boolean accept(final ReadSequence read1, final ReadSequence read2) {
 
     return accept(read1) && accept(read2);
   }

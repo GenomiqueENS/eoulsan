@@ -52,14 +52,13 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
     Closeable {
 
-  private BufferedReader reader;
+  private final BufferedReader reader;
   private GFFEntry result = null;
   private int count;
   private boolean end;
   private boolean fastaSectionFound;
 
-  private Map<String, List<String>> metadata =
-      new LinkedHashMap<>();
+  private final Map<String, List<String>> metadata = new LinkedHashMap<>();
   private boolean nextCallDone = true;
   protected IOException ioException;
   protected BadBioEntryException bbeException;
@@ -82,18 +81,20 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
   @Override
   public boolean hasNext() {
 
-    if (this.end)
+    if (this.end) {
       return false;
+    }
 
     String line = null;
 
-    result = new GFFEntry();
+    this.result = new GFFEntry();
 
     try {
       while ((line = this.reader.readLine()) != null) {
 
-        if (line.startsWith("###"))
+        if (line.startsWith("###")) {
           continue;
+        }
 
         if (line.startsWith("##FASTA")) {
           this.fastaSectionFound = true;
@@ -104,8 +105,9 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
         if (line.startsWith("##")) {
 
           final int posTab = line.indexOf(' ');
-          if (posTab == -1)
+          if (posTab == -1) {
             continue;
+          }
 
           final String mdKey = line.substring(2, posTab).trim();
           final String mdValue = line.substring(posTab + 1).trim();
@@ -114,20 +116,21 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
           if (!this.metadata.containsKey(mdKey)) {
             list = new ArrayList<>();
             this.metadata.put(mdKey, list);
-          } else
+          } else {
             list = this.metadata.get(mdKey);
+          }
 
           list.add(mdValue);
 
-        } else if (line.startsWith("#"))
+        } else if (line.startsWith("#")) {
           continue;
-        else {
+        } else {
 
-          result.parse(line.trim());
-          result.setId(count++);
+          this.result.parse(line.trim());
+          this.result.setId(this.count++);
 
           // Add metadata if not reuse result object
-          result.addMetaDataEntries(this.metadata);
+          this.result.addMetaDataEntries(this.metadata);
 
           this.nextCallDone = false;
           return true;
@@ -147,8 +150,9 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
   @Override
   public GFFEntry next() {
 
-    if (this.nextCallDone)
+    if (this.nextCallDone) {
       throw new NoSuchElementException();
+    }
 
     this.nextCallDone = true;
 
@@ -165,6 +169,7 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
    * Close the stream.
    * @throws IOException
    */
+  @Override
   public void close() throws IOException {
 
     this.reader.close();
@@ -179,11 +184,13 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
    */
   public void throwException() throws IOException, BadBioEntryException {
 
-    if (this.ioException != null)
+    if (this.ioException != null) {
       throw this.ioException;
+    }
 
-    if (this.bbeException != null)
+    if (this.bbeException != null) {
       throw this.bbeException;
+    }
   }
 
   //
@@ -196,8 +203,9 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
    */
   public GFFReader(final InputStream is) {
 
-    if (is == null)
+    if (is == null) {
       throw new NullPointerException("InputStream is null");
+    }
 
     this.reader = new BufferedReader(new InputStreamReader(is, GFF_CHARSET));
   }
@@ -208,8 +216,9 @@ public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
    */
   public GFFReader(final File file) throws FileNotFoundException {
 
-    if (file == null)
+    if (file == null) {
       throw new NullPointerException("File is null");
+    }
 
     this.reader = FileUtils.createBufferedReader(file, GFF_CHARSET);
   }

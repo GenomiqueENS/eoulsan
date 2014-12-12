@@ -66,7 +66,7 @@ public final class ProgressCounterInputStream extends FilterInputStream {
   public final void close() throws IOException {
 
     super.close();
-    counter.increment(this.sum);
+    this.counter.increment(this.sum);
   }
 
   //
@@ -78,7 +78,7 @@ public final class ProgressCounterInputStream extends FilterInputStream {
     this.sum += bytes;
 
     if (this.sum > MAX) {
-      counter.increment(this.sum);
+      this.counter.increment(this.sum);
       this.sum = 0;
     }
 
@@ -93,8 +93,9 @@ public final class ProgressCounterInputStream extends FilterInputStream {
 
     super(is);
 
-    if (counter == null)
+    if (counter == null) {
       throw new NullPointerException("The counter to use is null.");
+    }
 
     this.counter = counter;
 

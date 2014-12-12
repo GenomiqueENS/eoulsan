@@ -70,26 +70,26 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
 
   private final static class DomNodeList extends AbstractList<Node> {
 
-    private NodeList m_nodeList;
+    private final NodeList m_nodeList;
 
     /** Creates a new instance of NodeList */
-    public DomNodeList(NodeList list) {
-      m_nodeList = list;
+    public DomNodeList(final NodeList list) {
+      this.m_nodeList = list;
     }
 
     @Override
     public int size() {
-      return m_nodeList.getLength();
+      return this.m_nodeList.getLength();
     }
 
     @Override
-    public Node get(int index) {
-      return m_nodeList.item(index);
+    public Node get(final int index) {
+      return this.m_nodeList.item(index);
     }
   }
 
   @Override
-  public void addHeaderField(String fieldName) throws IOException {
+  public void addHeaderField(final String fieldName) throws IOException {
 
     this.headers.add(fieldName);
   }
@@ -99,10 +99,10 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
 
     if (this.first) {
 
-      this.table.appendColumns(headers.size());
-      final Row row = table.getRowByIndex(0);
+      this.table.appendColumns(this.headers.size());
+      final Row row = this.table.getRowByIndex(0);
       int i = 0;
-      for (String h : headers) {
+      for (String h : this.headers) {
         final Cell c = row.getCellByIndex(i++);
         c.setCellBackgroundColor(Color.ORANGE);
         Font f = c.getFont();
@@ -112,20 +112,23 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
         c.setStringValue(h);
       }
 
-      DomNodeList l = new DomNodeList(table.getOdfElement().getChildNodes());
+      DomNodeList l =
+          new DomNodeList(this.table.getOdfElement().getChildNodes());
 
-      for (Node n : l)
-        if (n instanceof TableTableRowElement)
+      for (Node n : l) {
+        if (n instanceof TableTableRowElement) {
           this.rowElement = (TableTableRowElement) n;
+        }
+      }
 
       this.first = false;
     }
 
     final TableTableRowElement aRow =
-        (TableTableRowElement) OdfXMLFactory.newOdfElement(dom,
+        (TableTableRowElement) OdfXMLFactory.newOdfElement(this.dom,
             OdfName.newName(OdfDocumentNamespace.TABLE, "table-row"));
 
-    tableElement.appendChild(aRow);
+    this.tableElement.appendChild(aRow);
     this.rowElement = aRow;
 
   }
@@ -133,7 +136,7 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
   private final TableTableCellElement getCell() {
 
     final TableTableCellElement aCell =
-        (TableTableCellElement) OdfXMLFactory.newOdfElement(dom,
+        (TableTableCellElement) OdfXMLFactory.newOdfElement(this.dom,
             OdfName.newName(OdfDocumentNamespace.TABLE, "table-cell"));
 
     this.rowElement.appendChild(aCell);
@@ -150,7 +153,7 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
   }
 
   @Override
-  public void writeLong(long l) throws IOException {
+  public void writeLong(final long l) throws IOException {
 
     final TableTableCellElement cell = getCell();
     cell.setOfficeValueTypeAttribute(OfficeValueTypeAttribute.Value.FLOAT
@@ -159,7 +162,7 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
   }
 
   @Override
-  public void writeDouble(double d) throws IOException {
+  public void writeDouble(final double d) throws IOException {
 
     final TableTableCellElement cell = getCell();
     cell.setOfficeValueTypeAttribute(OfficeValueTypeAttribute.Value.FLOAT
@@ -168,7 +171,7 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
   }
 
   @Override
-  public void writeText(String text) throws IOException {
+  public void writeText(final String text) throws IOException {
 
     final TableTableCellElement cell = getCell();
     cell.setOfficeValueTypeAttribute(OfficeValueTypeAttribute.Value.STRING
@@ -178,10 +181,12 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
   }
 
   @Override
-  public void writeLink(String text, String link) throws IOException {
+  public void writeLink(final String text, final String link)
+      throws IOException {
 
-    if (text == null || link == null)
+    if (text == null || link == null) {
       writeText(text);
+    }
 
     final TableTableCellElement cell = getCell();
     cell.setTableFormulaAttribute("=HYPERLINK(\""
@@ -192,7 +197,7 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
   public void close() throws IOException {
 
     try {
-      document.save(this.os);
+      this.document.save(this.os);
     } catch (Exception e) {
       throw new IOException(e.getMessage());
     }
@@ -210,17 +215,18 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
    */
   public ODSTranslatorOutputFormat(final OutputStream os) throws IOException {
 
-    if (os == null)
+    if (os == null) {
       throw new NullPointerException("The output stream is null");
+    }
 
     try {
       this.os = os;
       this.document = SpreadsheetDocument.newSpreadsheetDocument();
 
-      this.table = document.getSheetByIndex(0);
-      this.tableElement = table.getOdfElement();
-      this.dom = (OdfFileDom) table.getOdfElement().getOwnerDocument();
-      Table.newTable(document);
+      this.table = this.document.getSheetByIndex(0);
+      this.tableElement = this.table.getOdfElement();
+      this.dom = (OdfFileDom) this.table.getOdfElement().getOwnerDocument();
+      Table.newTable(this.document);
     } catch (Exception e) {
       throw new IOException(e.getMessage());
     }

@@ -25,7 +25,6 @@ package fr.ens.transcriptome.eoulsan.data;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -74,7 +73,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   private String contentType = "text/plain";
   private final List<String> extensions = new ArrayList<>();
   private String generatorClassName;
-  private Set<Parameter> generatorParameters = new LinkedHashSet<>();
+  private final Set<Parameter> generatorParameters = new LinkedHashSet<>();
   private String checkerClassName;
   private String splitterClassName;
   private String mergerClassName;
@@ -86,6 +85,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
     return this.name;
   }
 
+  @Override
   public String getPrefix() {
 
     return this.prefix;
@@ -110,7 +110,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   }
 
   @Override
-  public String getDefaultExtention() {
+  public String getDefaultExtension() {
 
     return this.extensions.get(0);
   }
@@ -151,8 +151,9 @@ public final class XMLDataFormat extends AbstractDataFormat implements
     final Step generator =
         (Step) loadClass(this.generatorClassName, Step.class);
 
-    if (generator == null)
+    if (generator == null) {
       return null;
+    }
 
     try {
       generator.configure(this.generatorParameters);
@@ -198,23 +199,26 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   // Other methods
   //
 
-  private final Object loadClass(final String classname, Class<?> interf) {
+  private final Object loadClass(final String className, final Class<?> interf) {
 
-    if (classname == null)
+    if (className == null) {
       return null;
+    }
 
     try {
 
       final Class<?> result =
-          this.getClass().getClassLoader().loadClass(classname);
+          this.getClass().getClassLoader().loadClass(className);
 
-      if (result == null)
+      if (result == null) {
         return null;
+      }
 
       final Object o = result.newInstance();
 
-      if (interf.isInstance(o))
+      if (interf.isInstance(o)) {
         return result.newInstance();
+      }
 
       return null;
     } catch (ClassNotFoundException e) {
@@ -262,8 +266,9 @@ public final class XMLDataFormat extends AbstractDataFormat implements
       this.splitterClassName = XMLUtils.getTagValue(e, "splitter");
       this.mergerClassName = XMLUtils.getTagValue(e, "merger");
 
-      if (this.designFieldName != null)
+      if (this.designFieldName != null) {
         this.dataFormatFromDesignFile = true;
+      }
 
       // Get the parameters of the generator step
       for (Element generatorElement : XMLUtils.getElementsByTagName(e,
@@ -271,19 +276,21 @@ public final class XMLDataFormat extends AbstractDataFormat implements
         final List<String> attributeNames =
             XMLUtils.getAttributeNames(generatorElement);
 
-        for (String attributeName : attributeNames)
+        for (String attributeName : attributeNames) {
           this.generatorParameters.add(new Parameter(attributeName,
               generatorElement.getAttribute(attributeName)));
+        }
       }
 
       // Parse max files count
       final String maxFiles = XMLUtils.getTagValue(e, "maxfilescount");
 
       try {
-        if (maxFiles == null)
+        if (maxFiles == null) {
           this.maxFilesCount = DEFAULT_MAX_FILES_COUNT;
-        else
+        } else {
           this.maxFilesCount = Integer.parseInt(maxFiles);
+        }
       } catch (NumberFormatException exp) {
         throw new EoulsanException(
             "Invalid maximal files count for data format "
@@ -291,59 +298,71 @@ public final class XMLDataFormat extends AbstractDataFormat implements
       }
 
       // Parse extensions
-      for (Element e2 : XMLUtils.getElementsByTagName(document, "extensions"))
+      for (Element e2 : XMLUtils.getElementsByTagName(document, "extensions")) {
         for (Element e3 : XMLUtils.getElementsByTagName(e2, "extension")) {
 
           final String defaultAttribute = e3.getAttribute("default");
 
           if (defaultAttribute != null
-              && "true".equals(defaultAttribute.trim().toLowerCase()))
+              && "true".equals(defaultAttribute.trim().toLowerCase())) {
             this.extensions.add(0, e3.getTextContent().trim());
-          else
+          } else {
             this.extensions.add(e3.getTextContent().trim());
+          }
         }
+      }
 
     }
 
     // Check object values
-    if (this.name == null)
+    if (this.name == null) {
       throw new EoulsanException("The name of the dataformat is null");
+    }
 
     this.name = this.name.trim().toLowerCase();
 
-    if (!FileNaming.isFormatPrefixValid(this.prefix))
+    if (!FileNaming.isFormatPrefixValid(this.prefix)) {
       throw new EoulsanException(
           "The prefix of the dataformat is invalid (only ascii letters and digits are allowed): "
               + this.prefix);
+    }
 
-    if (this.description != null)
+    if (this.description != null) {
       this.description = this.description.trim();
+    }
 
-    if (this.contentType == null || "".equals(this.contentType.trim()))
+    if (this.contentType == null || "".equals(this.contentType.trim())) {
       this.contentType = DEFAULT_CONTENT_TYPE;
+    }
 
     if (this.generatorClassName != null
-        && "".equals(this.generatorClassName.trim()))
+        && "".equals(this.generatorClassName.trim())) {
       this.generatorClassName = null;
+    }
 
     if (this.checkerClassName != null
-        && "".equals(this.checkerClassName.trim()))
+        && "".equals(this.checkerClassName.trim())) {
       this.checkerClassName = null;
+    }
 
     if (this.splitterClassName != null
-        && "".equals(this.splitterClassName.trim()))
+        && "".equals(this.splitterClassName.trim())) {
       this.splitterClassName = null;
+    }
 
-    if (this.mergerClassName != null && "".equals(this.mergerClassName.trim()))
+    if (this.mergerClassName != null && "".equals(this.mergerClassName.trim())) {
       this.mergerClassName = null;
+    }
 
-    if (this.maxFilesCount < 1 || this.maxFilesCount > 2)
+    if (this.maxFilesCount < 1 || this.maxFilesCount > 2) {
       throw new EoulsanException("Invalid maximal files count for data format "
           + this.name + ": " + this.maxFilesCount);
+    }
 
-    if (this.extensions.size() == 0)
+    if (this.extensions.size() == 0) {
       throw new EoulsanException("No extension define for the data format "
           + this.name);
+    }
   }
 
   //
@@ -353,15 +372,17 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   @Override
   public boolean equals(final Object o) {
 
-    if (o == this)
+    if (o == this) {
       return true;
+    }
 
     if (!(o instanceof DataFormat)) {
       return false;
     }
 
-    if (!(o instanceof XMLDataFormat))
+    if (!(o instanceof XMLDataFormat)) {
       return super.equals(o);
+    }
 
     final XMLDataFormat that = (XMLDataFormat) o;
 
@@ -396,7 +417,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
 
     return com.google.common.base.Objects.toStringHelper(this)
         .add("name", this.name).add("description", this.description)
-        .add("prefix", prefix).add("contentType", this.contentType)
+        .add("prefix", this.prefix).add("contentType", this.contentType)
         .add("defaultExtension", this.extensions.get(0))
         .add("extensions", this.extensions)
         .add("generatorClassName", this.generatorClassName)
@@ -414,15 +435,13 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   /**
    * Public constructor.
    * @param is input stream that contains the value of the data format
-   * @throws ParserConfigurationException
-   * @throws SAXException
-   * @throws IOException
    * @throws EoulsanException
    */
   public XMLDataFormat(final InputStream is) throws EoulsanException {
 
-    if (is == null)
+    if (is == null) {
       throw new NullPointerException("The input stream is null");
+    }
 
     try {
       parse(is);

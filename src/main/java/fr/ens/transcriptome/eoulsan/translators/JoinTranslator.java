@@ -37,18 +37,18 @@ import java.util.Map;
  */
 public class JoinTranslator extends BasicTranslator {
 
-  private Translator translator1;
-  private Translator translator2;
+  private final Translator translator1;
+  private final Translator translator2;
   private String joinField;
-  private String[] fields;
-  private Map<String, Translator> mapTranslator =
-      new HashMap<>();
-  private boolean returnTranslation1IfNoTranslation;
+  private final String[] fields;
+  private final Map<String, Translator> mapTranslator = new HashMap<>();
+  private final boolean returnTranslation1IfNoTranslation;
 
   /**
    * Get an ordered list of the translator fields
    * @return an ordered list of the translator fields.
    */
+  @Override
   public String[] getFields() {
 
     return this.fields;
@@ -60,21 +60,25 @@ public class JoinTranslator extends BasicTranslator {
    * @param field the field to get
    * @return An array with the annotation of the Feature
    */
+  @Override
   public String translateField(final String id, final String field) {
 
     final Translator t = this.mapTranslator.get(field);
 
-    if (t == null)
+    if (t == null) {
       return null;
-    if (t == translator1)
+    }
+    if (t == this.translator1) {
       return this.translator1.translateField(id, field);
+    }
 
     final String result1 = this.translator1.translateField(id, this.joinField);
 
     final String result = this.translator2.translateField(result1, field);
 
-    if (result == null && this.returnTranslation1IfNoTranslation)
+    if (result == null && this.returnTranslation1IfNoTranslation) {
       return result1;
+    }
 
     return result;
   }
@@ -84,14 +88,17 @@ public class JoinTranslator extends BasicTranslator {
    * @param field Field to test
    * @return true if link information is available
    */
+  @Override
   public boolean isLinkInfo(final String field) {
 
     final Translator t = this.mapTranslator.get(field);
 
-    if (t == null)
+    if (t == null) {
       return false;
-    if (t == translator1)
+    }
+    if (t == this.translator1) {
       return this.translator1.isLinkInfo(field);
+    }
 
     return this.translator2.isLinkInfo(field);
   }
@@ -102,6 +109,7 @@ public class JoinTranslator extends BasicTranslator {
    * @param field field of the id
    * @return a link for the translated id
    */
+  @Override
   public String getLinkInfo(final String translatedId, final String field) {
 
     System.out.println(this.getClass().getName()
@@ -109,11 +117,13 @@ public class JoinTranslator extends BasicTranslator {
 
     final Translator t = this.mapTranslator.get(field);
 
-    if (t == null)
+    if (t == null) {
       return null;
+    }
 
-    if (t == translator1)
+    if (t == this.translator1) {
       return this.translator1.getLinkInfo(translatedId, field);
+    }
 
     return this.translator2.getLinkInfo(translatedId, field);
   }
@@ -146,14 +156,18 @@ public class JoinTranslator extends BasicTranslator {
       final Translator translator2,
       final boolean returnTranslation1IfNoTranslation) {
 
-    if (translator1 == null)
+    if (translator1 == null) {
       throw new NullPointerException("Translator1  can't be null");
-    if (translator2 == null)
+    }
+    if (translator2 == null) {
       throw new NullPointerException("Translator1  can't be null");
-    if (joinField == null)
+    }
+    if (joinField == null) {
       throw new NullPointerException("Join field  can't be null");
-    if (!translator1.isField(joinField))
+    }
+    if (!translator1.isField(joinField)) {
       throw new NullPointerException("The join field isn't in translator 1");
+    }
 
     this.translator1 = translator1;
     this.translator2 = translator2;
@@ -166,11 +180,12 @@ public class JoinTranslator extends BasicTranslator {
       fieldList.add(f);
     }
 
-    for (final String f : translator2.getFields())
+    for (final String f : translator2.getFields()) {
       if (!this.mapTranslator.containsKey(f)) {
         this.mapTranslator.put(f, translator2);
         fieldList.add(f);
       }
+    }
 
     this.fields = fieldList.toArray(new String[fieldList.size()]);
 

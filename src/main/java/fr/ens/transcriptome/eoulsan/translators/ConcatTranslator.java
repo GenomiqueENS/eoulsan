@@ -34,16 +34,17 @@ import java.util.Map;
  */
 public class ConcatTranslator extends BasicTranslator {
 
-  private Map<String, Translator> translators =
-      new LinkedHashMap<>();
+  private final Map<String, Translator> translators = new LinkedHashMap<>();
 
   /**
    * Get an ordered list of the translator fields
    * @return an ordered list of the translator fields.
    */
+  @Override
   public String[] getFields() {
 
-    return translators.keySet().toArray(new String[translators.size()]);
+    return this.translators.keySet().toArray(
+        new String[this.translators.size()]);
   }
 
   /**
@@ -52,12 +53,14 @@ public class ConcatTranslator extends BasicTranslator {
    * @param field the field to get
    * @return An array with the annotation of the Feature
    */
+  @Override
   public String translateField(final String id, final String field) {
 
     Translator t = this.translators.get(field);
 
-    if (t == null)
+    if (t == null) {
       return null;
+    }
 
     return t.translateField(id, field);
   }
@@ -67,12 +70,14 @@ public class ConcatTranslator extends BasicTranslator {
    * @param field Field to test
    * @return true if link information is available
    */
+  @Override
   public boolean isLinkInfo(final String field) {
 
     Translator t = this.translators.get(field);
 
-    if (t == null)
+    if (t == null) {
       return false;
+    }
 
     return t.isLinkInfo(field);
   }
@@ -83,12 +88,14 @@ public class ConcatTranslator extends BasicTranslator {
    * @param field field of the id
    * @return a link for the translated id
    */
+  @Override
   public String getLinkInfo(final String translatedId, final String field) {
 
     Translator t = this.translators.get(field);
 
-    if (t == null)
+    if (t == null) {
       return null;
+    }
 
     return t.getLinkInfo(translatedId, field);
   }
@@ -99,18 +106,21 @@ public class ConcatTranslator extends BasicTranslator {
    */
   public void addTranslator(final Translator translator) {
 
-    if (translator == null)
+    if (translator == null) {
       return;
+    }
 
     final String[] fields = translator.getFields();
 
-    if (fields == null)
+    if (fields == null) {
       return;
+    }
 
     for (final String key : fields) {
 
-      if (!this.translators.containsKey(key))
+      if (!this.translators.containsKey(key)) {
         this.translators.put(key, translator);
+      }
     }
   }
 

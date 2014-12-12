@@ -118,9 +118,9 @@ public class CommandWorkflowParser {
   static final String FORMATVERSION_TAG_NAME = "formatversion";
   static final String ROOT_TAG_NAME = "analysis";
 
-  private InputStream is;
+  private final InputStream is;
 
-  private Map<String, String> constants = initConstants();
+  private final Map<String, String> constants = initConstants();
 
   public static final class StepOutputPort {
 
@@ -181,9 +181,10 @@ public class CommandWorkflowParser {
 
         final String formatVersion =
             getTagValue(FORMATVERSION_TAG_NAME, eElement);
-        if (formatVersion == null || !FORMAT_VERSION.equals(formatVersion))
+        if (formatVersion == null || !FORMAT_VERSION.equals(formatVersion)) {
           throw new EoulsanException(
               "Invalid version of the format of the workflow file.");
+        }
 
         final String name = getTagValue(WORKFLOWNAME_TAG_NAME, eElement);
         result.setName(name);
@@ -238,11 +239,13 @@ public class CommandWorkflowParser {
                         .toLowerCase());
 
                 String stepName = getTagValue(STEPNAME_TAG_NAME, eStepElement);
-                if (stepName == null)
+                if (stepName == null) {
                   stepName = getTagValue(NAME_TAG_NAME, eStepElement);
-                if (stepName == null)
+                }
+                if (stepName == null) {
                   throw new EoulsanException(
                       "Step name not found in workflow file.");
+                }
 
                 final Map<String, StepOutputPort> inputs =
                     parseInputs(eStepElement, "".equals(stepId)
@@ -289,8 +292,7 @@ public class CommandWorkflowParser {
   private Map<String, StepOutputPort> parseInputs(final Element root,
       final String stepId) throws EoulsanException {
 
-    final Map<String, StepOutputPort> result =
-        new HashMap<>();
+    final Map<String, StepOutputPort> result = new HashMap<>();
 
     final NodeList nList = root.getElementsByTagName(INPUTS_TAG_NAMES);
 
@@ -313,20 +315,23 @@ public class CommandWorkflowParser {
 
             // Get and check the toInput attribute
             final String portName = getTagValue(PORT_TAG_NAME, eStepElement);
-            if (portName == null)
+            if (portName == null) {
               throw new EoulsanException(
                   "the \"toInput\" attribute not exists in an input section of step \""
                       + stepId + "\" in workflow file.");
-            if (portName.isEmpty())
+            }
+            if (portName.isEmpty()) {
               throw new EoulsanException(
                   "the \"toInput\" attribute is empty in an input section of step \""
                       + stepId + "\" in workflow file.");
-            if (result.containsKey(portName))
+            }
+            if (result.containsKey(portName)) {
               throw new EoulsanException(
                   "an input for "
                       + portName
                       + " port has been already defined in the inputs section of step \""
                       + stepId + "\" in workflow file.");
+            }
 
             final StepOutputPort input =
                 new StepOutputPort(
@@ -334,28 +339,32 @@ public class CommandWorkflowParser {
                         FROMPORT_TAG_NAME, eStepElement));
 
             // Check step ID
-            if (input.stepId == null)
+            if (input.stepId == null) {
               throw new EoulsanException(
                   "the \"fromStep\" attribute has not been defined for "
                       + portName + " input in section of step \"" + stepId
                       + "\" in workflow file.");
-            if (input.stepId.isEmpty())
+            }
+            if (input.stepId.isEmpty()) {
               throw new EoulsanException(
                   "the \"fromStep\" attribute is empty for "
                       + portName + " input in section of step \"" + stepId
                       + "\" in workflow file.");
+            }
 
             // Check port ID
-            if (input.outputPortName == null)
+            if (input.outputPortName == null) {
               throw new EoulsanException(
                   "the \"fromPort\" attribute has not been defined for "
                       + portName + " input in section of step \"" + stepId
                       + "\" in workflow file.");
-            if (input.outputPortName.isEmpty())
+            }
+            if (input.outputPortName.isEmpty()) {
               throw new EoulsanException(
                   "the \"fromPort\" attribute is empty for "
                       + portName + " input in section of step \"" + stepId
                       + "\" in workflow file.");
+            }
 
             result.put(portName, input);
           }
@@ -375,8 +384,8 @@ public class CommandWorkflowParser {
    * @throws EoulsanException if the tags of the parameter are not found
    */
   private Set<Parameter> parseParameters(final Element root,
-      String elementName, final String stepName, final boolean evaluateValues)
-      throws EoulsanException {
+      final String elementName, final String stepName,
+      final boolean evaluateValues) throws EoulsanException {
 
     final Set<Parameter> result = new LinkedHashSet<>();
 
@@ -404,16 +413,18 @@ public class CommandWorkflowParser {
             final String paramValue =
                 getTagValue(PARAMETERVALUE_TAG_NAME, eStepElement);
 
-            if (paramName == null)
+            if (paramName == null) {
               throw new EoulsanException(
                   "<name> Tag not found in parameter section of "
                       + (stepName == null ? "global parameters" : stepName
                           + " step") + " in workflow file.");
-            if (paramValue == null)
+            }
+            if (paramValue == null) {
               throw new EoulsanException(
                   "<value> Tag not found in parameter section of "
                       + (stepName == null ? "global parameters" : stepName
                           + " step") + " in workflow file.");
+            }
 
             result.add(new Parameter(paramName, evaluateValues
                 ? evaluateExpressions(paramValue, true) : paramValue));
@@ -438,8 +449,9 @@ public class CommandWorkflowParser {
     for (int i = 0; i < nl.getLength(); i++) {
 
       final Node n = nl.item(i);
-      if (n.getNodeType() == Node.ELEMENT_NODE && tag.equals(n.getNodeName()))
+      if (n.getNodeType() == Node.ELEMENT_NODE && tag.equals(n.getNodeName())) {
         return n.getTextContent();
+      }
     }
 
     return null;
@@ -457,12 +469,15 @@ public class CommandWorkflowParser {
   private void addConstants(final Set<Parameter> parameters)
       throws EoulsanException {
 
-    if (parameters == null)
+    if (parameters == null) {
       return;
+    }
 
-    for (Parameter p : parameters)
-      if (!"".equals(p.getName()))
+    for (Parameter p : parameters) {
+      if (!"".equals(p.getName())) {
         addConstant(p.getName(), p.getValue(), true);
+      }
+    }
   }
 
   /**
@@ -473,8 +488,9 @@ public class CommandWorkflowParser {
   public void addConstants(final ExecutorArguments arguments)
       throws EoulsanException {
 
-    if (arguments == null)
+    if (arguments == null) {
       return;
+    }
 
     addConstant(DESIGN_FILE_PATH_CONSTANT_NAME, arguments.getDesignPathname());
     addConstant(WORKFLOW_FILE_PATH_CONSTANT_NAME,
@@ -509,14 +525,16 @@ public class CommandWorkflowParser {
       final String constantValue, final boolean evaluateValue)
       throws EoulsanException {
 
-    if (constantName == null || constantValue == null)
+    if (constantName == null || constantValue == null) {
       return;
+    }
 
-    if (evaluateValue)
+    if (evaluateValue) {
       this.constants.put(constantName.trim(),
           evaluateExpressions(constantValue, true));
-    else
+    } else {
       this.constants.put(constantName.trim(), constantValue);
+    }
   }
 
   /**
@@ -535,12 +553,14 @@ public class CommandWorkflowParser {
         + Runtime.getRuntime().availableProcessors());
 
     // Add java properties
-    for (Map.Entry<Object, Object> e : System.getProperties().entrySet())
+    for (Map.Entry<Object, Object> e : System.getProperties().entrySet()) {
       constants.put((String) e.getKey(), (String) e.getValue());
+    }
 
     // Add environment properties
-    for (Map.Entry<String, String> e : System.getenv().entrySet())
+    for (Map.Entry<String, String> e : System.getenv().entrySet()) {
       constants.put(e.getKey(), e.getValue());
+    }
 
     return constants;
   }
@@ -553,11 +573,12 @@ public class CommandWorkflowParser {
    * @throws EoulsanException if an error occurs while parsing the string or
    *           executing an expression
    */
-  private String evaluateExpressions(final String s, boolean allowExec)
+  private String evaluateExpressions(final String s, final boolean allowExec)
       throws EoulsanException {
 
-    if (s == null)
+    if (s == null) {
       return null;
+    }
 
     final StringBuilder result = new StringBuilder();
 
@@ -576,8 +597,9 @@ public class CommandWorkflowParser {
           final String expr = subStr(s, i + 2, '}');
 
           final String trimmedExpr = expr.trim();
-          if (this.constants.containsKey(trimmedExpr))
+          if (this.constants.containsKey(trimmedExpr)) {
             result.append(this.constants.get(trimmedExpr));
+          }
 
           i += expr.length() + 2;
           continue;
@@ -592,10 +614,11 @@ public class CommandWorkflowParser {
               ProcessUtils.execToString(evaluateExpressions(expr, false));
 
           // remove last '\n' in the result
-          if (r.charAt(r.length() - 1) == '\n')
+          if (r.charAt(r.length() - 1) == '\n') {
             result.append(r.substring(0, r.length() - 1));
-          else
+          } else {
             result.append(r);
+          }
 
         } catch (IOException e) {
           throw new EoulsanException("Error while evaluating expression \""
@@ -616,9 +639,10 @@ public class CommandWorkflowParser {
 
     final int endIndex = s.indexOf(charPoint, beginIndex);
 
-    if (endIndex == -1)
+    if (endIndex == -1) {
       throw new EoulsanException("Unexpected end of expression in \""
           + s + "\"");
+    }
 
     return s.substring(beginIndex, endIndex);
   }

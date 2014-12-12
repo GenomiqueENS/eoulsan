@@ -47,13 +47,13 @@ import fr.ens.transcriptome.eoulsan.Globals;
  */
 public class FastaRecordReader implements RecordReader<LongWritable, Text> {
 
-  private long end;
+  private final long end;
   private boolean stillInChunk = true;
 
-  private FSDataInputStream fsin;
-  private DataOutputBuffer buffer = new DataOutputBuffer();
+  private final FSDataInputStream fsin;
+  private final DataOutputBuffer buffer = new DataOutputBuffer();
 
-  private byte[] endTag = "\n>".getBytes(Globals.DEFAULT_CHARSET);
+  private final byte[] endTag = "\n>".getBytes(Globals.DEFAULT_CHARSET);
   private static final Pattern PATTERN = Pattern.compile("\n");
   private static final StringBuilder sb = new StringBuilder();
 
@@ -63,13 +63,13 @@ public class FastaRecordReader implements RecordReader<LongWritable, Text> {
     Path path = split.getPath();
     FileSystem fs = path.getFileSystem(job);
 
-    fsin = fs.open(path);
+    this.fsin = fs.open(path);
     long start = split.getStart();
-    end = split.getStart() + split.getLength();
-    fsin.seek(start);
+    this.end = split.getStart() + split.getLength();
+    this.fsin.seek(start);
 
     if (start != 0) {
-      readUntilMatch(endTag, false);
+      readUntilMatch(this.endTag, false);
     }
   }
 
@@ -78,27 +78,29 @@ public class FastaRecordReader implements RecordReader<LongWritable, Text> {
   public boolean next(final LongWritable key, final Text value)
       throws IOException {
 
-    if (!stillInChunk)
+    if (!this.stillInChunk) {
       return false;
+    }
 
-    final long startPos = fsin.getPos();
+    final long startPos = this.fsin.getPos();
 
     // if (true)
     // throw new IOException("startPos=" + startPos);
 
-    boolean status = readUntilMatch(endTag, true);
+    boolean status = readUntilMatch(this.endTag, true);
 
     final String data;
 
     // If start of the file, ignore first '>'
-    if (startPos == 0)
+    if (startPos == 0) {
       data =
-          new String(buffer.getData(), 1, buffer.getLength(),
+          new String(this.buffer.getData(), 1, this.buffer.getLength(),
               Globals.DEFAULT_CHARSET);
-    else
+    } else {
       data =
-          new String(buffer.getData(), 0, buffer.getLength(),
+          new String(this.buffer.getData(), 0, this.buffer.getLength(),
               Globals.DEFAULT_CHARSET);
+    }
 
     final String[] lines = PATTERN.split(data);
 
@@ -106,26 +108,29 @@ public class FastaRecordReader implements RecordReader<LongWritable, Text> {
 
       final String line = lines[i].trim();
 
-      if ("".equals(line))
+      if ("".equals(line)) {
         continue;
+      }
 
       sb.append(line);
-      if (i == 0)
+      if (i == 0) {
         sb.append("\t");
+      }
 
     }
 
-    if (sb.charAt(sb.length() - 1) == '>')
+    if (sb.charAt(sb.length() - 1) == '>') {
       sb.setLength(sb.length() - 1);
+    }
 
-    key.set(fsin.getPos());
+    key.set(this.fsin.getPos());
     value.set(sb.toString());
 
     sb.setLength(0);
-    buffer.reset();
+    this.buffer.reset();
 
     if (!status) {
-      stillInChunk = false;
+      this.stillInChunk = false;
     }
 
     return true;
@@ -134,7 +139,7 @@ public class FastaRecordReader implements RecordReader<LongWritable, Text> {
   @Override
   public long getPos() throws IOException {
 
-    return fsin.getPos();
+    return this.fsin.getPos();
   }
 
   @Override
@@ -156,25 +161,28 @@ public class FastaRecordReader implements RecordReader<LongWritable, Text> {
 
   @Override
   public void close() throws IOException {
-    fsin.close();
+    this.fsin.close();
   }
 
-  private boolean readUntilMatch(byte[] match, boolean withinBlock)
+  private boolean readUntilMatch(final byte[] match, final boolean withinBlock)
       throws IOException {
     int i = 0;
     while (true) {
-      int b = fsin.read();
-      if (b == -1)
+      int b = this.fsin.read();
+      if (b == -1) {
         return false;
-      if (withinBlock)
-        buffer.write(b);
+      }
+      if (withinBlock) {
+        this.buffer.write(b);
+      }
       if (b == match[i]) {
         i++;
         if (i >= match.length) {
-          return fsin.getPos() < end;
+          return this.fsin.getPos() < this.end;
         }
-      } else
+      } else {
         i = 0;
+      }
     }
   }
 

@@ -43,7 +43,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class FastaWriter implements SequenceWriter {
 
-  private Writer writer;
+  private final Writer writer;
 
   /**
    * Write the current entry.
@@ -52,8 +52,9 @@ public class FastaWriter implements SequenceWriter {
   @Override
   public void write(final Sequence sequence) throws IOException {
 
-    if (sequence == null)
+    if (sequence == null) {
       return;
+    }
 
     this.writer.write(sequence.toFasta(Globals.FASTA_FILE_WIDTH));
   }
@@ -78,8 +79,9 @@ public class FastaWriter implements SequenceWriter {
    */
   public FastaWriter(final Writer writer) {
 
-    if (writer == null)
+    if (writer == null) {
       throw new NullPointerException("The writer is null.");
+    }
 
     this.writer = writer;
   }

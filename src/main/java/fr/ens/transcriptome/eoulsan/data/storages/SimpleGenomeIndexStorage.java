@@ -54,7 +54,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
   private static final String INDEX_FILENAME = "genomes_index_storage.txt";
 
   private final DataFile dir;
-  private Map<String, IndexEntry> entries = new LinkedHashMap<>();
+  private final Map<String, IndexEntry> entries = new LinkedHashMap<>();
 
   /**
    * This inner class define an entry of the index file.
@@ -76,9 +76,9 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     @Override
     public String toString() {
       return this.getClass().getSimpleName()
-          + "{genomeName=" + genomeName + ", sequences=" + sequences
-          + ", length=" + length + ", genomeMD5=" + genomeMD5
-          + ", mapperName= " + mapperName + ", file=" + file + "}";
+          + "{genomeName=" + this.genomeName + ", sequences=" + this.sequences
+          + ", length=" + this.length + ", genomeMD5=" + this.genomeMD5
+          + ", mapperName= " + this.mapperName + ", file=" + this.file + "}";
     }
   }
 
@@ -100,19 +100,21 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
 
   @Override
   public void put(final SequenceReadsMapper mapper,
-      final GenomeDescription genome, DataFile indexArchive) {
+      final GenomeDescription genome, final DataFile indexArchive) {
 
     checkNotNull(mapper, "Mapper is null");
     checkNotNull(genome, "Genome description is null");
     checkNotNull(indexArchive, "IndexArchive is null");
 
-    if (!indexArchive.exists())
+    if (!indexArchive.exists()) {
       return;
+    }
 
     final String key = createKey(mapper, genome);
 
-    if (entries.containsKey(key))
+    if (this.entries.containsKey(key)) {
       return;
+    }
 
     final IndexEntry entry = new IndexEntry();
     entry.genomeName = genome.getGenomeName().trim();
@@ -121,7 +123,8 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     entry.genomeMD5 = genome.getMD5Sum().trim();
     entry.mapperName = mapper.getMapperName().toLowerCase().trim();
     entry.file =
-        new DataFile(dir, entry.mapperName + "-" + entry.genomeMD5 + ".zip");
+        new DataFile(this.dir, entry.mapperName
+            + "-" + entry.genomeMD5 + ".zip");
 
     try {
       FileUtils.copy(indexArchive.rawOpen(), entry.file.create());
@@ -145,11 +148,12 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
    */
   private void load() throws IOException {
 
-    if (!this.dir.exists())
+    if (!this.dir.exists()) {
       throw new IOException("Genome index storage directory not found: "
           + this.dir.getSource());
+    }
 
-    final DataFile indexFile = new DataFile(dir, INDEX_FILENAME);
+    final DataFile indexFile = new DataFile(this.dir, INDEX_FILENAME);
 
     // Create an empty index file if no index exists
     if (!indexFile.exists()) {
@@ -168,22 +172,25 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     while ((line = br.readLine()) != null) {
 
       final String trimmedLine = line.trim();
-      if ("".equals(trimmedLine) || trimmedLine.startsWith("#"))
+      if ("".equals(trimmedLine) || trimmedLine.startsWith("#")) {
         continue;
+      }
 
       final List<String> fields = Arrays.asList(pattern.split(trimmedLine));
 
-      if (fields.size() != 6)
+      if (fields.size() != 6) {
         continue;
+      }
 
       final IndexEntry e = new IndexEntry();
       e.genomeName = fields.get(0);
       e.genomeMD5 = fields.get(1);
       e.mapperName = fields.get(4);
-      e.file = new DataFile(dir, fields.get(5));
+      e.file = new DataFile(this.dir, fields.get(5));
 
-      if (e.file.exists())
+      if (e.file.exists()) {
         this.entries.put(e.getKey(), e);
+      }
     }
 
     br.close();
@@ -195,11 +202,12 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
    */
   private void save() throws IOException {
 
-    if (!this.dir.exists())
+    if (!this.dir.exists()) {
       throw new IOException("Genome index storage directory not found: "
           + this.dir.getSource());
+    }
 
-    final DataFile indexFile = new DataFile(dir, INDEX_FILENAME);
+    final DataFile indexFile = new DataFile(this.dir, INDEX_FILENAME);
 
     // Create an empty index file
     final BufferedWriter writer =

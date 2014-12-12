@@ -114,8 +114,9 @@ public final class SystemUtils {
    */
   public static boolean isClass(final String className) {
 
-    if (className == null)
+    if (className == null) {
       return false;
+    }
 
     try {
       SystemUtils.class.getClassLoader().loadClass(className);

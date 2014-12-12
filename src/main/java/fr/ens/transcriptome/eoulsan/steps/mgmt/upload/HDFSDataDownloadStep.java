@@ -128,11 +128,13 @@ public class HDFSDataDownloadStep extends AbstractStep {
 
     final Configuration conf = this.conf;
 
-    if (context.getHadoopWorkingPathname() == null)
+    if (context.getHadoopWorkingPathname() == null) {
       throw new NullPointerException("The input path is null");
+    }
 
-    if (context.getOutputPathname() == null)
+    if (context.getOutputPathname() == null) {
       throw new NullPointerException("The output path is null");
+    }
 
     // Set the output directory
     final DataFile outputDir = new DataFile(context.getOutputPathname());
@@ -141,9 +143,10 @@ public class HDFSDataDownloadStep extends AbstractStep {
 
       final Path inPath = new Path(context.getHadoopWorkingPathname());
 
-      if (!PathUtils.isExistingDirectoryFile(inPath, conf))
+      if (!PathUtils.isExistingDirectoryFile(inPath, conf)) {
         throw new EoulsanException("The base directory is not a directory: "
             + inPath);
+      }
 
       // Map with files to download
       final Map<DataFile, DataFile> files = new HashMap<>();
@@ -265,8 +268,9 @@ public class HDFSDataDownloadStep extends AbstractStep {
         throw new EoulsanException(exp.getMessage());
       }
 
-      if (destDir == null)
+      if (destDir == null) {
         throw new EoulsanException("Destination directory is null.");
+      }
 
       final Set<DataFile> inputFiles;
 
@@ -286,8 +290,9 @@ public class HDFSDataDownloadStep extends AbstractStep {
       final List<String> argsList = new ArrayList<>();
 
       // Add input files
-      for (DataFile f : e.getValue())
+      for (DataFile f : e.getValue()) {
         argsList.add(f.toString());
+      }
 
       // Add destination
       argsList.add(e.getKey().toString());

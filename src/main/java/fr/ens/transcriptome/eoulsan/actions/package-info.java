@@ -28,3 +28,4 @@
  * @see <a href="http://code.google.com/p/eoulsan/wiki/WritingAction" target="_blank">Developer wiki on how writing an Action class</a> 
  */
 package fr.ens.transcriptome.eoulsan.actions;
+

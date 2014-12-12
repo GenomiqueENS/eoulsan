@@ -52,6 +52,7 @@ public abstract class AbstractBowtieReadsMapper extends
 
   abstract protected String[] getMapperExecutables();
 
+  @Override
   abstract protected String getIndexerExecutable();
 
   abstract protected String getDefaultArguments();
@@ -75,12 +76,14 @@ public abstract class AbstractBowtieReadsMapper extends
 
       final String s = ProcessUtils.execToString(cmd);
       final String[] lines = s.split("\n");
-      if (lines.length == 0)
+      if (lines.length == 0) {
         return null;
+      }
 
       final String[] tokens = lines[0].split(" version ");
-      if (tokens.length > 1)
+      if (tokens.length > 1) {
         return tokens[1].trim();
+      }
 
       return null;
 
@@ -91,8 +94,8 @@ public abstract class AbstractBowtieReadsMapper extends
   }
 
   @Override
-  protected List<String> getIndexerCommand(String indexerPathname,
-      String genomePathname) {
+  protected List<String> getIndexerCommand(final String indexerPathname,
+      final String genomePathname) {
 
     List<String> cmd = new ArrayList<>();
 
@@ -356,8 +359,8 @@ public abstract class AbstractBowtieReadsMapper extends
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
 
-    super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
     setMapperArguments(getDefaultArguments());
+    super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }
 
 }

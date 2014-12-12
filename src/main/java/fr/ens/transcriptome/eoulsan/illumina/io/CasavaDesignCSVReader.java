@@ -48,7 +48,7 @@ public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
   private static final Charset CHARSET = Charset
       .forName(Globals.DEFAULT_FILE_ENCODING);
 
-  private BufferedReader reader;
+  private final BufferedReader reader;
 
   @Override
   public CasavaDesign read() throws IOException {
@@ -58,8 +58,9 @@ public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
     while ((line = this.reader.readLine()) != null) {
 
       line = line.trim();
-      if ("".equals(line))
+      if ("".equals(line)) {
         continue;
+      }
 
       try {
 
@@ -73,7 +74,7 @@ public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
       }
     }
 
-    reader.close();
+    this.reader.close();
 
     return getDesign();
   }
@@ -88,8 +89,9 @@ public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
    */
   public CasavaDesignCSVReader(final InputStream is) {
 
-    if (is == null)
+    if (is == null) {
       throw new NullPointerException("InputStream is null");
+    }
 
     this.reader = new BufferedReader(new InputStreamReader(is, CHARSET));
   }
@@ -100,12 +102,14 @@ public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
    */
   public CasavaDesignCSVReader(final File file) throws FileNotFoundException {
 
-    if (file == null)
+    if (file == null) {
       throw new NullPointerException("File is null");
+    }
 
-    if (!file.isFile())
+    if (!file.isFile()) {
       throw new FileNotFoundException("File not found: "
           + file.getAbsolutePath());
+    }
 
     this.reader = FileUtils.createBufferedReader(file);
   }
@@ -117,14 +121,16 @@ public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
   public CasavaDesignCSVReader(final String filename)
       throws FileNotFoundException {
 
-    if (filename == null)
+    if (filename == null) {
       throw new NullPointerException("Filename is null");
+    }
 
     final File file = new File(filename);
 
-    if (!file.isFile())
+    if (!file.isFile()) {
       throw new FileNotFoundException("File not found: "
           + file.getAbsolutePath());
+    }
 
     this.reader = FileUtils.createBufferedReader(file);
   }

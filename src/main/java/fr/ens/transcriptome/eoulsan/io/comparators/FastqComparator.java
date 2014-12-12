@@ -49,11 +49,11 @@ public class FastqComparator extends AbstractComparatorWithBloomFilter {
   private int numberElementsCompared;
 
   @Override
-  public boolean compareFiles(BloomFilterUtils filter, InputStream is)
-      throws IOException {
+  public boolean compareFiles(final BloomFilterUtils filter,
+      final InputStream is) throws IOException {
 
     final FastqReader fastqReader = new FastqReader(is);
-    numberElementsCompared = 0;
+    this.numberElementsCompared = 0;
 
     // Search each ReadSequence in BFilter source
     for (ReadSequence read : fastqReader) {
@@ -69,7 +69,7 @@ public class FastqComparator extends AbstractComparatorWithBloomFilter {
     fastqReader.close();
 
     // Check count element is the same between two files
-    if (this.numberElementsCompared != filter.getAddedNumberOfElements()){
+    if (this.numberElementsCompared != filter.getAddedNumberOfElements()) {
       setCauseFailComparison("Different count elements "
           + this.numberElementsCompared + " was "
           + filter.getAddedNumberOfElements() + " expected.");

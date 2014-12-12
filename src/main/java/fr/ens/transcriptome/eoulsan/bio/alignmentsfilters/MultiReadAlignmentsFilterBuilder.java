@@ -76,8 +76,9 @@ public class MultiReadAlignmentsFilterBuilder {
   public boolean addParameter(final String key, final String value,
       final boolean noExceptionIfFilterNotExists) throws EoulsanException {
 
-    if (key == null || value == null)
+    if (key == null || value == null) {
       return false;
+    }
 
     // Get first dot position
     final String keyTrimmed = key.trim();
@@ -98,15 +99,16 @@ public class MultiReadAlignmentsFilterBuilder {
     final ReadAlignmentsFilter filter;
 
     // Get the filter object, load it if necessary
-    if (mapFilters.containsKey(filterName))
-      filter = mapFilters.get(filterName);
-    else {
+    if (this.mapFilters.containsKey(filterName)) {
+      filter = this.mapFilters.get(filterName);
+    } else {
       filter = ReadAlignmentsFilterService.getInstance().newService(filterName);
 
       if (filter == null) {
 
-        if (noExceptionIfFilterNotExists)
+        if (noExceptionIfFilterNotExists) {
           return false;
+        }
 
         throw new EoulsanException("Unable to find "
             + filterName + " alignments filter.");
@@ -144,11 +146,13 @@ public class MultiReadAlignmentsFilterBuilder {
   public void addParameters(final Map<String, String> parameters)
       throws EoulsanException {
 
-    if (parameters == null)
+    if (parameters == null) {
       return;
+    }
 
-    for (Map.Entry<String, String> e : parameters.entrySet())
+    for (Map.Entry<String, String> e : parameters.entrySet()) {
       addParameter(e.getKey(), e.getValue());
+    }
   }
 
   /**
@@ -160,8 +164,9 @@ public class MultiReadAlignmentsFilterBuilder {
   public MultiReadAlignmentsFilter getAlignmentsFilter()
       throws EoulsanException {
 
-    for (ReadAlignmentsFilter f : this.listFilter)
+    for (ReadAlignmentsFilter f : this.listFilter) {
       f.init();
+    }
 
     final MultiReadAlignmentsFilter mrf =
         new MultiReadAlignmentsFilter(this.listFilter);
@@ -181,8 +186,9 @@ public class MultiReadAlignmentsFilterBuilder {
       final ReporterIncrementer incrementer, final String counterGroup)
       throws EoulsanException {
 
-    for (ReadAlignmentsFilter f : this.listFilter)
+    for (ReadAlignmentsFilter f : this.listFilter) {
       f.init();
+    }
 
     final MultiReadAlignmentsFilter maf =
         new MultiReadAlignmentsFilter(incrementer, counterGroup,

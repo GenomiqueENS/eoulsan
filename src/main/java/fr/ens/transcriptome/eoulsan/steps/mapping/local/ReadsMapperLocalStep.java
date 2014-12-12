@@ -25,7 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.OWN_PARALELIZATION;
+import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.OWN_PARALLELIZATION;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
@@ -74,7 +74,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
   @Override
   public ParallelizationMode getParallelizationMode() {
 
-    return OWN_PARALELIZATION;
+    return OWN_PARALLELIZATION;
   }
 
   @Override
@@ -82,7 +82,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort(READS_PORT_NAME, READS_FASTQ, true);
-    builder.addPort(MAPPER_INDEX_PORT_NAME, getMapper().getArchiveFormat(), true);
+    builder.addPort(MAPPER_INDEX_PORT_NAME, getMapper().getArchiveFormat(),
+        true);
     builder.addPort(GENOME_DESCRIPTION_PORT_NAME, GENOME_DESC_TXT, true);
 
     return builder.create();
@@ -96,12 +97,13 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       // Load genome description object
       if (this.firstSample) {
         if (this.genomeDescription == null) {
-          genomeDescription =
+          this.genomeDescription =
               GenomeDescription.load(context
                   .getInputData(DataFormats.GENOME_DESC_TXT).getDataFile()
                   .open());
-        } else
-          genomeDescription = null;
+        } else {
+          this.genomeDescription = null;
+        }
         this.firstSample = false;
       }
 
@@ -132,12 +134,14 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       final SequenceReadsMapper mapper =
           initMapper(context, fastqFormat, archiveIndexFile, indexDir, reporter);
 
-      if (inData.getDataFileCount() < 1)
+      if (inData.getDataFileCount() < 1) {
         throw new IOException("No reads file found.");
+      }
 
-      if (inData.getDataFileCount() > 2)
+      if (inData.getDataFileCount() > 2) {
         throw new IOException(
             "Cannot handle more than 2 reads files at the same time.");
+      }
 
       String logMsg = "";
 
@@ -155,7 +159,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
                 + " threads option");
 
         // Single read mapping
-        parseSAMResults(mapper.mapSE(inFile, genomeDescription), samFile,
+        parseSAMResults(mapper.mapSE(inFile, this.genomeDescription), samFile,
             reporter);
 
         logMsg =
@@ -182,7 +186,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
                 + mapper.getThreadsNumber() + " threads option");
 
         // Single read mapping
-        parseSAMResults(mapper.mapPE(inFile1, inFile2, genomeDescription),
+        parseSAMResults(mapper.mapPE(inFile1, inFile2, this.genomeDescription),
             samFile, reporter);
 
         logMsg =
@@ -204,7 +208,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
     } catch (IOException e) {
 
       return status.createStepResult(e,
-          "Error while filtering: " + e.getMessage());
+          "Error while mapping reads: " + e.getMessage());
     }
 
     return status.createStepResult();
@@ -215,29 +219,26 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
    * @param context Eoulsan context
    * @param format FASTQ format
    * @param archiveIndexFile genome index for the mapper as a ZIP file
-   * @param archiveIndexDir uncompressed directory for the genome index
+   * @param indexDir uncompressed directory for the genome index
    * @param reporter reporter
    * @throws IOException
    */
   private SequenceReadsMapper initMapper(final StepContext context,
       final FastqFormat format, final File archiveIndexFile,
-      final File indexDir, Reporter reporter) throws IOException {
+      final File indexDir, final Reporter reporter) throws IOException {
 
     final SequenceReadsMapper mapper = getMapper();
-
-    // Init mapper
-    mapper.init(archiveIndexFile, indexDir, reporter, COUNTER_GROUP);
 
     // Set FASTQ format
     mapper.setFastqFormat(format);
 
+    // Set mapper argument if needed
     if (getMapperArguments() != null) {
       mapper.setMapperArguments(getMapperArguments());
     }
 
     // Get the number of threads to use
     int mapperThreads = getMapperLocalThreads();
-
     if (mapperThreads > Runtime.getRuntime().availableProcessors()
         || mapperThreads < 1) {
       mapperThreads = Runtime.getRuntime().availableProcessors();
@@ -248,6 +249,9 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
     // Set mapper temporary directory
     mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());
+
+    // Init mapper
+    mapper.init(archiveIndexFile, indexDir, reporter, COUNTER_GROUP);
 
     return mapper;
   }
@@ -279,8 +283,9 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       writer.write('\n');
 
       final String trimmedLine = line.trim();
-      if ("".equals(trimmedLine) || trimmedLine.startsWith("@"))
+      if ("".equals(trimmedLine) || trimmedLine.startsWith("@")) {
         continue;
+      }
 
       final int tabPos = trimmedLine.indexOf('\t');
 

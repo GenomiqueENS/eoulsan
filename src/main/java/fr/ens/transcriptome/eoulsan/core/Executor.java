@@ -61,18 +61,19 @@ public class Executor {
 
   /**
    * Check design.
-   * @param design design to check
    * @throws EoulsanException if there is an issue with the design
    */
   private void checkDesign() throws EoulsanException {
 
-    if (this.design == null)
+    if (this.design == null) {
       throw new EoulsanException("The design is null");
+    }
 
     // Check samples count
-    if (this.design.getSampleCount() == 0)
+    if (this.design.getSampleCount() == 0) {
       throw new EoulsanException(
           "Nothing to do, no samples found in design file");
+    }
 
     getLogger().info(
         "Found " + this.design.getSampleCount() + " sample(s) in design file");
@@ -106,12 +107,14 @@ public class Executor {
     logInfo(this.arguments, this.command);
 
     // Add Hadoop info in Hadoop mode
-    if (EoulsanRuntime.getRuntime().isHadoopMode())
+    if (EoulsanRuntime.getRuntime().isHadoopMode()) {
       HadoopInfo.logHadoopSysInfo();
+    }
 
     // Check base path
-    if (this.arguments.getLocalWorkingPathname() == null)
+    if (this.arguments.getLocalWorkingPathname() == null) {
       throw new EoulsanException("The base path is null");
+    }
 
     // Check design
     checkDesign();
@@ -178,7 +181,7 @@ public class Executor {
    * @param execArgs execution information
    * @param command workflow file content
    */
-  private static void logInfo(ExecutorArguments execArgs,
+  private static void logInfo(final ExecutorArguments execArgs,
       final CommandWorkflowModel command) {
 
     getLogger().info("Design file path: " + execArgs.getDesignPathname());

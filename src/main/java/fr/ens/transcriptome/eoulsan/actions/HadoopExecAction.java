@@ -71,7 +71,7 @@ public class HadoopExecAction extends AbstractAction {
 
     System.err.println("WARNING: the action \""
         + getName()
-        + "\" is currently under developpement for the next version of "
+        + "\" is currently under development for the next version of "
         + Globals.APP_NAME + " and may actually not work.");
 
     final Options options = makeOptions();
@@ -86,7 +86,8 @@ public class HadoopExecAction extends AbstractAction {
 
       // parse the command line arguments
       final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[arguments.size()]), true);
+          parser.parse(options,
+              arguments.toArray(new String[arguments.size()]), true);
 
       // Help option
       if (line.hasOption("help")) {

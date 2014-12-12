@@ -55,8 +55,9 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
   @Override
   public void filterReadAlignments(final List<SAMRecord> records) {
 
-    if (records == null)
+    if (records == null) {
       return;
+    }
 
     // single-end mode
     if (!records.get(0).getReadPairedFlag()) {
@@ -86,16 +87,17 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
     }
 
     // all records that do not pass the quality filter are removed
-    records.removeAll(result);
-    result.clear();
+    records.removeAll(this.result);
+    this.result.clear();
   }
 
   @Override
   public void setParameter(final String key, final String value)
       throws EoulsanException {
 
-    if (key == null || value == null)
+    if (key == null || value == null) {
       return;
+    }
 
     if ("threshold".equals(key.trim())) {
 
@@ -105,21 +107,23 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
         return;
       }
 
-      if (this.qualityThreshold < 0.0)
+      if (this.qualityThreshold < 0.0) {
         throw new EoulsanException("Invalid qualityThreshold: "
-            + qualityThreshold);
-    } else
-
+            + this.qualityThreshold);
+      }
+    } else {
       throw new EoulsanException("Unknown parameter for "
           + getName() + " alignments filter: " + key);
+    }
   }
 
   @Override
   public void init() {
 
-    if (this.qualityThreshold < 0.0)
+    if (this.qualityThreshold < 0.0) {
       throw new IllegalArgumentException("Quality threshold is not set for "
           + getName() + " alignments filter.");
+    }
   }
 
   @Override

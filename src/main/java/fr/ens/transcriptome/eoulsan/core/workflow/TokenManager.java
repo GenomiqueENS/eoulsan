@@ -82,8 +82,10 @@ public class TokenManager implements Runnable {
   private final WorkflowOutputPorts outputPorts;
 
   private final Set<Integer> receivedTokens = new HashSet<>();
-  private final Multimap<InputPort, Data> inputTokens = ArrayListMultimap.create();
-  private final Multimap<OutputPort, Data> outputTokens = ArrayListMultimap.create();
+  private final Multimap<InputPort, Data> inputTokens = ArrayListMultimap
+      .create();
+  private final Multimap<OutputPort, Data> outputTokens = ArrayListMultimap
+      .create();
   private final Set<InputPort> closedPorts = new HashSet<>();
   private final Set<ImmutableMap<InputPort, Data>> cartesianProductsUsed =
       new HashSet<>();
@@ -334,8 +336,8 @@ public class TokenManager implements Runnable {
 
     if (!inputPort.isList()) {
 
-      synchronized (inputTokens) {
-        inputTokens.put(inputPort, data);
+      synchronized (this.inputTokens) {
+        this.inputTokens.put(inputPort, data);
       }
 
     } else {
@@ -439,8 +441,9 @@ public class TokenManager implements Runnable {
   private Set<ImmutableMap<InputPort, Data>> dataCartesianProduct() {
 
     if (!checkIfAllPortsHasReceivedSomeData()
-        || !checkIfAllListPortsAreClosed())
+        || !checkIfAllListPortsAreClosed()) {
       return Collections.emptySet();
+    }
 
     final Set<ImmutableMap<InputPort, Data>> result = new HashSet<>();
     final List<WorkflowInputPort> portsList =
@@ -560,13 +563,14 @@ public class TokenManager implements Runnable {
    */
   private void writeStepResult(final WorkflowStepResult result) {
 
-    if (result == null)
+    if (result == null) {
       return;
+    }
 
     // Step result file
     DataFile logFile =
-        new DataFile(this.step.getAbstractWorkflow().getLogDir(), step.getId()
-            + STEP_RESULT_EXTENSION);
+        new DataFile(this.step.getAbstractWorkflow().getLogDir(),
+            this.step.getId() + STEP_RESULT_EXTENSION);
 
     try {
 
@@ -575,7 +579,7 @@ public class TokenManager implements Runnable {
     } catch (IOException e) {
 
       Common.showAndLogErrorMessage("Unable to create log file for "
-          + step.getId() + " step.");
+          + this.step.getId() + " step.");
     }
 
     // Write the result file in old format
@@ -584,7 +588,7 @@ public class TokenManager implements Runnable {
       // Step result file
       logFile =
           new DataFile(this.step.getAbstractWorkflow().getLogDir(),
-              step.getId() + Globals.STEP_RESULT_OLD_FORMAT_EXTENSION);
+              this.step.getId() + Globals.STEP_RESULT_OLD_FORMAT_EXTENSION);
 
       try {
 
@@ -593,7 +597,7 @@ public class TokenManager implements Runnable {
       } catch (IOException e) {
 
         Common.showAndLogErrorMessage("Unable to create log file for "
-            + step.getId() + " step.");
+            + this.step.getId() + " step.");
       }
 
     }

@@ -99,7 +99,7 @@ public class ShellStep extends AbstractStep {
 
       // If exit code is not 0 throw an exception
       if (exitCode != 0) {
-        throw new IOException("Finish processus with exit code: " + exitCode);
+        throw new IOException("Finish process with exit code: " + exitCode);
       }
 
       // Write log file

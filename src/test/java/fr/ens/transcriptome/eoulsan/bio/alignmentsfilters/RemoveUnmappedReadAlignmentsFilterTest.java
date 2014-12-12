@@ -61,58 +61,58 @@ public class RemoveUnmappedReadAlignmentsFilterTest {
   public void setUp() throws Exception {
 
     // recordSE1 mapped
-    recordSE1 =
+    this.recordSE1 =
         "HWI-EAS285_0001_'':1:1:1260:18686#0/1\t16\tchr4\t129576419\t72\t76M\t*\t0\t0"
             + "\tGACGGATCCGAGANANTGANNTGANAAGAGGNNNNNNNNNNNNNNAATTTGAGGACCNAAGGGATGCAGATGATGC"
             + "\tGEGEGE:@=BB><#7#AA:##@CC#CA9A8;##############=GGGGGDCDCDD#DDCGFGDGGGGBGGGGGG"
             + "\tXA:i:1\tMD:Z:13T1T3C0T3A2C3T0T0T0T0G0G0T0T0T0T0G0T0G0G12C18\tNM:i:21";
     // recordSE2 unmapped
-    recordSE2 =
+    this.recordSE2 =
         "HWI-EAS285_0001_'':1:1:1259:6203#0/1\t4\t*\t0\t0\t*\t*\t0\t0"
             + "\tCGGCCGGACCGACCCCGTNGGGGTCCGACAANNNNNNNNNNNNNNCACANGNACGNNGCANANCCAACCCGAGCGT"
             + "\tGGGFGBGGGEGGGGGDD?#A=>B3BA=BD###############################################"
             + "\tXM:i:0";
 
     // recordPE1 and recordPE2 paired and mapped
-    recordPE1 =
+    this.recordPE1 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:2584:2222\t99\tchr1\t173235257\t255\t101M\t=\t173235280\t124"
             + "\tCTTGTATCGCTCCTCAAACTTGACCTTGGCCTCCCGCCTGGCCTTGCGCTTCAAAGCTGGGTCCCTGAACACATCCTTGTTGACAACAGTCTTGTCCAAGG"
             + "\tCCCFFFFFHHHHHJJJJJJJJJJJJJJJJJJJJJJJJJHIIJIJJIIIIJJJJJIIJHHHHFFFFFDEEEEDDDDDDDDDDDDDDDDDDDDDEDDDDDDDD"
             + "\tXA:i:0\tMD:Z:101\tNM:i:0";
-    recordPE2 =
+    this.recordPE2 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:2584:2222\t147\tchr1\t173235280\t255\t101M\t=\t173235257\t-124"
             + "\tCCTTGGCCTCCCGCCTGGCCTTGCGCTTCAAAGCTGGGTCCCTGAACACATCCTTGTTGACAACAGTCTTGTCCAAGGGGATATCCACAGAGTACCTTGTG"
             + "\tDDDDDDDDDDDDDDDDDDDDDDDFFHHHHHHJJJJJJJJJHDJJJJJIJIHIJJJJJIIIJJJIJJIJJJJJHJJJJJJJJJJJJJJJHHHHHDFFFFCCC"
             + "\tXA:i:0\tMD:Z:101\tNM:i:0";
     // recordPE3 and recordPE4 paired and unmapped
-    recordPE3 =
+    this.recordPE3 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:2740:2239 1:N:0:GCCAAT\t77\t*\t0\t0\t*\t*\t0\t0"
             + "\tGGTCGATGATCTTCTCTTTGACCTGAGAGATGGTGTCACAGTTGAGGACCTTAACCGGGATGGCATCGATCCCTTCATCCTGAACAATCACGCTCACGGTC"
             + "\tCCBFFFFFHHHHHJJJJJJJJJJJJJJJJEHIIGHHIJJJJIIIJJJIJJJJIHHHIJJJJJHHHHHFFFFDEEEEDEEDDDDDDDDDDDDDDDDDDDDDB"
             + "\tXM:i:0";
-    recordPE4 =
+    this.recordPE4 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:2740:2239 2:N:0:GCCAAT\t141\t*\t0\t0\t*\t*\t0\t0"
             + "\tAGAAGGCCAAGTACACCCTCAATGACACAGGCCTGCTCGGGGACGATGTTGAGTATGCGCCTCTGACCGTGAGCGTGATTGTTCAGGATGAAGGGATCGAT"
             + "\tCCCFFFFFHHHHHJIJJJJJJJJJJJJJJJJIJJJJIIJJJJGGIIIIHHHHHHHFFFFDDDDDDDDDDDDBDDDBDDDEDDDDEDDDDDDDDDDDDDDDB"
             + "\tXM:i:0";
     // recordPE5 and recordPE6 paired, recordPE5 mapped and recordPE6 unmapped
-    recordPE5 =
+    this.recordPE5 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:1617:2229\t99\tchr4\t129192614\t74\t101M\t=\t129192649\t136"
             + "\tCTTTTTGCCCTCCTGTGGATTCTCCCATCAGCCATTTGGTCTTACTCTTAAGGCCAGTTGAAGATGGTCCCTTACGGTTTCCCAAGTTAGGTTAGTGATGT"
             + "\tCCCFFFFFHHHHHJJHJIJJJIJJJJJJJJJIJJJJJJIIHIJJJJIJJJJJJJJJJIJJJJJIJJJHIJJJJHHEHDFFFEEEEDDDEDDCCDDCDEEDC"
             + "\tXA:i:1\tMD:Z:5C95\tNM:i:1";
-    recordPE6 =
+    this.recordPE6 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:1617:2229\t141\t*\t0\t0\t*\t*\t0\t0"
             + "\tTTGGTCTTACTCTTAAGGCCAGTTGAAGATGGTCCCTTACGGTTTCCCAAGTTAGGTTAGTGATGTGAGATGCCCTGTCCCTACCTCCTTCCCGAGCCCCG"
             + "\tDDDDDCDCADDDDDDDDDDDDDDEEDDDDDDDDDDDDDBDEEFFFFHHHHEHIEJJJIGJIIGGIIJIJJIIJJJJIHJHGD?JIHJJHFHHGFFFFFCCC"
             + "\tXA:i:2\tMD:Z:87T12A0\tNM:i:2";
     // recordPE7 and recordPE8 paired, recordPE7 unmapped and recordPE8 mapped
-    recordPE7 =
+    this.recordPE7 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:1802:2241\t77\t*\t0\t0\t*\t*\t0\t0"
             + "\tCCAGCCTTAGCGCCTGGTGCCTCCATCATGGCTAAAGCATGGGCCGTGGGGACACTGACGACTAGAAGGGAAGGGGCAAGGGAAATTCCAAGCAGTACATT"
             + "\tCCCFFFFFHHHHHJJJJFHHJJJJJJJJJJJJJJJJHIJJJJIJJJFHJJJHHHFFFFFDDDDDDDDDDDDDDDB>BDDDDDDDDDDDDEDDDDDCCCDED"
             + "\tXA:i:0\tMD:Z:101\tNM:i:0";
-    recordPE8 =
+    this.recordPE8 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:1802:2241\t147\tchr15\t74592729\t212\t101M\t=\t74592687\t-143"
             + "\tGCCGTGGGGACACTGACGACTAGAAGGGAAGGGGCAAGGGAAATTCCAAGCAGTACATTACAGGCAGAGAGCCATAACAGTGAGCAGGCTGAGGCTCGTTG"
             + "\tDDDDDDDDEDDDDDDDDEEEEFFFFFHHHHHJJJJJJJJJJJJJJJJJJHHJIIFIGIIHIJJJJJIHIJJJJJJJIJJJJJJJJJJJHHHHHFFFFFCCC"
@@ -127,21 +127,21 @@ public class RemoveUnmappedReadAlignmentsFilterTest {
 
     SAMLineParser parser = new SAMLineParser(SAMUtils.newSAMFileHeader(desc));
 
-    samRecordSE1 = parser.parseLine(recordSE1);
-    samRecordSE2 = parser.parseLine(recordSE2);
+    this.samRecordSE1 = parser.parseLine(this.recordSE1);
+    this.samRecordSE2 = parser.parseLine(this.recordSE2);
 
-    samRecordPE1 = parser.parseLine(recordPE1);
-    samRecordPE2 = parser.parseLine(recordPE2);
-    samRecordPE3 = parser.parseLine(recordPE3);
-    samRecordPE4 = parser.parseLine(recordPE4);
-    samRecordPE5 = parser.parseLine(recordPE5);
-    samRecordPE6 = parser.parseLine(recordPE6);
-    samRecordPE7 = parser.parseLine(recordPE7);
-    samRecordPE8 = parser.parseLine(recordPE8);
+    this.samRecordPE1 = parser.parseLine(this.recordPE1);
+    this.samRecordPE2 = parser.parseLine(this.recordPE2);
+    this.samRecordPE3 = parser.parseLine(this.recordPE3);
+    this.samRecordPE4 = parser.parseLine(this.recordPE4);
+    this.samRecordPE5 = parser.parseLine(this.recordPE5);
+    this.samRecordPE6 = parser.parseLine(this.recordPE6);
+    this.samRecordPE7 = parser.parseLine(this.recordPE7);
+    this.samRecordPE8 = parser.parseLine(this.recordPE8);
 
-    records = new ArrayList<>();
+    this.records = new ArrayList<>();
 
-    filter = new RemoveUnmappedReadAlignmentsFilter();
+    this.filter = new RemoveUnmappedReadAlignmentsFilter();
   }
 
   /**
@@ -150,7 +150,7 @@ public class RemoveUnmappedReadAlignmentsFilterTest {
    */
   @Test
   public void testGetName() {
-    assertEquals("removeunmapped", filter.getName());
+    assertEquals("removeunmapped", this.filter.getName());
   }
 
   /**
@@ -159,7 +159,8 @@ public class RemoveUnmappedReadAlignmentsFilterTest {
    */
   @Test
   public void testGetDescription() {
-    assertEquals("Remove all the unmapped alignments", filter.getDescription());
+    assertEquals("Remove all the unmapped alignments",
+        this.filter.getDescription());
   }
 
   /**
@@ -173,28 +174,28 @@ public class RemoveUnmappedReadAlignmentsFilterTest {
     List<SAMRecord> recordsVerif = new ArrayList<>();
 
     // single-end mode
-    records.add(samRecordSE1);
-    records.add(samRecordSE2);
-    recordsVerif.add(samRecordSE1);
-    filter.filterReadAlignments(records);
-    assertEquals(records, recordsVerif);
+    this.records.add(this.samRecordSE1);
+    this.records.add(this.samRecordSE2);
+    recordsVerif.add(this.samRecordSE1);
+    this.filter.filterReadAlignments(this.records);
+    assertEquals(this.records, recordsVerif);
 
-    records.clear();
+    this.records.clear();
     recordsVerif.clear();
 
     // paired-end mode
-    records.add(samRecordPE1);
-    records.add(samRecordPE2);
-    records.add(samRecordPE3);
-    records.add(samRecordPE4);
-    records.add(samRecordPE5);
-    records.add(samRecordPE6);
-    records.add(samRecordPE7);
-    records.add(samRecordPE8);
-    recordsVerif.add(samRecordPE1);
-    recordsVerif.add(samRecordPE2);
-    filter.filterReadAlignments(records);
-    assertEquals(records, recordsVerif);
+    this.records.add(this.samRecordPE1);
+    this.records.add(this.samRecordPE2);
+    this.records.add(this.samRecordPE3);
+    this.records.add(this.samRecordPE4);
+    this.records.add(this.samRecordPE5);
+    this.records.add(this.samRecordPE6);
+    this.records.add(this.samRecordPE7);
+    this.records.add(this.samRecordPE8);
+    recordsVerif.add(this.samRecordPE1);
+    recordsVerif.add(this.samRecordPE2);
+    this.filter.filterReadAlignments(this.records);
+    assertEquals(this.records, recordsVerif);
 
   }
 }

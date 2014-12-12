@@ -37,7 +37,7 @@ import java.nio.channels.FileLock;
  */
 public class ExecFileLock implements Locker {
 
-  private File lockFile;
+  private final File lockFile;
   private FileLock lock;
   private FileChannel lockChannel;
   private boolean released;
@@ -45,8 +45,8 @@ public class ExecFileLock implements Locker {
   @Override
   public void lock() throws IOException {
 
-    lockChannel = new RandomAccessFile(lockFile, "rw").getChannel();
-    lock = lockChannel.lock();
+    this.lockChannel = new RandomAccessFile(this.lockFile, "rw").getChannel();
+    this.lock = this.lockChannel.lock();
 
     // lockFile.deleteOnExit();
   }
@@ -54,15 +54,17 @@ public class ExecFileLock implements Locker {
   @Override
   public void unlock() throws IOException {
 
-    if (released)
+    if (this.released) {
       return;
+    }
 
-    if (lock.isValid()) {
-      lock.release();
-      released = true;
+    if (this.lock.isValid()) {
+      this.lock.release();
+      this.released = true;
 
-      if (lockChannel.isOpen())
-        lockChannel.close();
+      if (this.lockChannel.isOpen()) {
+        this.lockChannel.close();
+      }
     }
 
     // lockFile.delete();

@@ -61,25 +61,28 @@ public final class PathUtils {
    */
   public static final class SuffixPathFilter implements PathFilter {
 
-    private String suffix;
-    private boolean allowCompressedFile;
+    private final String suffix;
+    private final boolean allowCompressedFile;
 
     @Override
     public boolean accept(final Path path) {
 
-      if (path == null)
+      if (path == null) {
         return false;
+      }
 
       final String myName;
 
-      if (this.allowCompressedFile)
+      if (this.allowCompressedFile) {
         myName =
             StringUtils.removeCompressedExtensionFromFilename(path.getName());
-      else
+      } else {
         myName = path.getName();
+      }
 
-      if (myName.endsWith(this.suffix))
+      if (myName.endsWith(this.suffix)) {
         return true;
+      }
 
       return false;
     }
@@ -105,8 +108,9 @@ public final class PathUtils {
     public SuffixPathFilter(final String suffix,
         final boolean allowCompressedFile) {
 
-      if (suffix == null)
+      if (suffix == null) {
         throw new NullPointerException("The suffix is null");
+      }
 
       this.suffix = suffix;
       this.allowCompressedFile = allowCompressedFile;
@@ -120,25 +124,28 @@ public final class PathUtils {
    */
   public static final class PrefixPathFilter implements PathFilter {
 
-    private String prefix;
-    private boolean allowCompressedFile;
+    private final String prefix;
+    private final boolean allowCompressedFile;
 
     @Override
     public boolean accept(final Path path) {
 
-      if (path == null)
+      if (path == null) {
         return false;
+      }
 
       final String myName;
 
-      if (this.allowCompressedFile)
+      if (this.allowCompressedFile) {
         myName =
             StringUtils.removeCompressedExtensionFromFilename(path.getName());
-      else
+      } else {
         myName = path.getName();
+      }
 
-      if (myName.startsWith(this.prefix))
+      if (myName.startsWith(this.prefix)) {
         return true;
+      }
 
       return false;
     }
@@ -164,8 +171,9 @@ public final class PathUtils {
     public PrefixPathFilter(final String prefix,
         final boolean allowCompressedFile) {
 
-      if (prefix == null)
+      if (prefix == null) {
         throw new NullPointerException("The prefix is null");
+      }
 
       this.prefix = prefix;
       this.allowCompressedFile = allowCompressedFile;
@@ -183,16 +191,19 @@ public final class PathUtils {
   public static final InputStream createInputStream(final Path path,
       final Configuration conf) throws IOException {
 
-    if (path == null)
+    if (path == null) {
       throw new NullPointerException("Path to create is null");
-    if (conf == null)
+    }
+    if (conf == null) {
       throw new NullPointerException("The configuration object is null");
+    }
 
     final FileSystem fs = path.getFileSystem(conf);
 
-    if (fs == null)
+    if (fs == null) {
       throw new IOException(
           "Unable to create InputSteam, The FileSystem is null");
+    }
 
     return fs.open(path);
   }
@@ -207,16 +218,19 @@ public final class PathUtils {
   public static final OutputStream createOutputStream(final Path path,
       final Configuration conf) throws IOException {
 
-    if (path == null)
+    if (path == null) {
       throw new NullPointerException("Path to create is null");
-    if (conf == null)
+    }
+    if (conf == null) {
       throw new NullPointerException("The configuration object is null");
+    }
 
     final FileSystem fs = path.getFileSystem(conf);
 
-    if (fs == null)
+    if (fs == null) {
       throw new IOException(
           "Unable to create InputSteam, The FileSystem is null");
+    }
 
     return fs.create(path);
   }
@@ -231,16 +245,19 @@ public final class PathUtils {
   public static final long getSize(final Path path, final Configuration conf)
       throws IOException {
 
-    if (path == null)
+    if (path == null) {
       throw new NullPointerException("Path to create is null");
-    if (conf == null)
+    }
+    if (conf == null) {
       throw new NullPointerException("The configuration object is null");
+    }
 
     final FileSystem fs = path.getFileSystem(conf);
 
-    if (fs == null)
+    if (fs == null) {
       throw new IOException(
           "Unable to create InputSteam, The FileSystem is null");
+    }
 
     return fs.getFileStatus(path).getLen();
   }
@@ -271,12 +288,15 @@ public final class PathUtils {
       final File destFile, final boolean removeOriginalFile,
       final Configuration conf) throws IOException {
 
-    if (srcPath == null)
+    if (srcPath == null) {
       throw new NullPointerException("The source path is null");
-    if (destFile == null)
+    }
+    if (destFile == null) {
       throw new NullPointerException("The destination file is null");
-    if (conf == null)
+    }
+    if (conf == null) {
       throw new NullPointerException("The configuration object is null");
+    }
 
     final FileSystem fs = FileSystem.get(srcPath.toUri(), conf);
     return FileUtil.copy(fs, srcPath, destFile, removeOriginalFile, conf);
@@ -309,12 +329,15 @@ public final class PathUtils {
       final Path destPath, final boolean removeSrcFile, final Configuration conf)
       throws IOException {
 
-    if (srcFile == null)
+    if (srcFile == null) {
       throw new NullPointerException("The source file is null");
-    if (destPath == null)
+    }
+    if (destPath == null) {
       throw new NullPointerException("The destination path is null");
-    if (conf == null)
+    }
+    if (conf == null) {
       throw new NullPointerException("The configuration object is null");
+    }
 
     return FileUtil.copy(srcFile, FileSystem.get(destPath.toUri(), conf),
         destPath, removeSrcFile, conf);
@@ -331,12 +354,15 @@ public final class PathUtils {
   public static long copyInputStreamToPath(final InputStream is,
       final Path destPath, final Configuration conf) throws IOException {
 
-    if (is == null)
-      throw new NullPointerException("The insput stream is null");
-    if (destPath == null)
+    if (is == null) {
+      throw new NullPointerException("The input stream is null");
+    }
+    if (destPath == null) {
       throw new NullPointerException("The destination path is null");
-    if (conf == null)
+    }
+    if (conf == null) {
       throw new NullPointerException("The configuration object is null");
+    }
 
     final FileSystem fs = FileSystem.get(destPath.toUri(), conf);
     final OutputStream os = fs.create(destPath);
@@ -370,12 +396,15 @@ public final class PathUtils {
       final Path destPath, final boolean removeSrcFile, final Configuration conf)
       throws IOException {
 
-    if (srcFile == null)
+    if (srcFile == null) {
       throw new NullPointerException("The source file is null");
-    if (destPath == null)
+    }
+    if (destPath == null) {
       throw new NullPointerException("The destination path is null");
-    if (conf == null)
+    }
+    if (conf == null) {
       throw new NullPointerException("The configuration object is null");
+    }
 
     return copyAndCompressInputStreamToPath(
         FileUtils.createInputStream(srcFile), destPath, conf);
@@ -392,20 +421,24 @@ public final class PathUtils {
   public static boolean copyAndCompressInputStreamToPath(final InputStream is,
       final Path destPath, final Configuration conf) throws IOException {
 
-    if (is == null)
-      throw new NullPointerException("The insput stream is null");
-    if (destPath == null)
+    if (is == null) {
+      throw new NullPointerException("The input stream is null");
+    }
+    if (destPath == null) {
       throw new NullPointerException("The destination path is null");
-    if (conf == null)
+    }
+    if (conf == null) {
       throw new NullPointerException("The configuration object is null");
+    }
 
     final FileSystem fs = FileSystem.get(destPath.toUri(), conf);
 
     final CompressionCodecFactory factory = new CompressionCodecFactory(conf);
     final CompressionCodec codec = factory.getCodec(destPath);
 
-    if (codec == null)
+    if (codec == null) {
       throw new IOException("No codec found for: " + destPath);
+    }
 
     final OutputStream os = codec.createOutputStream(fs.create(destPath));
     FileUtils.copy(is, os);
@@ -438,12 +471,15 @@ public final class PathUtils {
       final File outputDir, final boolean removeOriginalZipFile,
       final Configuration conf) throws IOException {
 
-    if (srcPath == null)
+    if (srcPath == null) {
       throw new NullPointerException("The source path is null");
-    if (outputDir == null)
+    }
+    if (outputDir == null) {
       throw new NullPointerException("The destination directory file is null");
-    if (conf == null)
+    }
+    if (conf == null) {
       throw new NullPointerException("The configuration object is null");
+    }
 
     final File tmpZipFile = FileUtils.createTempFile("", ".zip");
 
@@ -451,9 +487,10 @@ public final class PathUtils {
 
     FileUtils.unzip(tmpZipFile, outputDir);
 
-    if (!tmpZipFile.delete())
+    if (!tmpZipFile.delete()) {
       throw new IOException("Can't remove temporary zip file: "
           + tmpZipFile.getAbsolutePath());
+    }
   }
 
   /**
@@ -481,15 +518,18 @@ public final class PathUtils {
   public static boolean fullyDelete(final Path path, final Configuration conf)
       throws IOException {
 
-    if (path == null)
+    if (path == null) {
       throw new NullPointerException("Path to delete is null");
-    if (conf == null)
+    }
+    if (conf == null) {
       throw new NullPointerException("The configuration object is null");
+    }
 
     final FileSystem fs = path.getFileSystem(conf);
 
-    if (fs == null)
+    if (fs == null) {
       throw new IOException("Unable to delete path, The FileSystem is null");
+    }
 
     return fs.delete(path, true);
   }
@@ -534,14 +574,17 @@ public final class PathUtils {
       final boolean deleteSource, final Configuration conf,
       final String addString) throws IOException {
 
-    if (srcPath == null)
+    if (srcPath == null) {
       throw new NullPointerException("The source path is null.");
+    }
 
-    if (destPath == null)
+    if (destPath == null) {
       throw new NullPointerException("The destination path is null");
+    }
 
-    if (conf == null)
+    if (conf == null) {
       throw new NullPointerException("The configuration is null");
+    }
 
     final FileSystem srcFs = srcPath.getFileSystem(conf);
     final FileSystem destFs = destPath.getFileSystem(conf);
@@ -561,11 +604,13 @@ public final class PathUtils {
   public static Path newPathWithOtherExtension(final Path path,
       final String extension) {
 
-    if (path == null)
+    if (path == null) {
       throw new NullPointerException("Path is null");
+    }
 
-    if (extension == null)
+    if (extension == null) {
       throw new NullPointerException("Extension is null");
+    }
 
     return new Path(path.getParent(), StringUtils.basename(path.getName())
         + extension);
@@ -598,30 +643,36 @@ public final class PathUtils {
       final String prefix, final boolean allowCompressedExtension,
       final Configuration conf) throws IOException {
 
-    if (dir == null)
+    if (dir == null) {
       throw new NullPointerException("Directory path is null");
+    }
 
-    if (prefix == null)
+    if (prefix == null) {
       throw new NullPointerException("Prefix is null");
+    }
 
-    if (conf == null)
+    if (conf == null) {
       throw new NullPointerException("Configuration is null");
+    }
 
     final FileSystem fs = dir.getFileSystem(conf);
-    if (!fs.getFileStatus(dir).isDirectory())
+    if (!fs.getFileStatus(dir).isDirectory()) {
       throw new IOException("Directory path is not a directory: " + dir);
+    }
 
     final FileStatus[] filesStatus =
         fs.listStatus(dir, new PrefixPathFilter(prefix,
             allowCompressedExtension));
 
-    if (filesStatus == null)
+    if (filesStatus == null) {
       return Collections.emptyList();
+    }
 
     final List<Path> result = new ArrayList<>(filesStatus.length);
 
-    for (FileStatus fst : filesStatus)
+    for (FileStatus fst : filesStatus) {
       result.add(fst.getPath());
+    }
 
     return result;
   }
@@ -653,30 +704,36 @@ public final class PathUtils {
       final String suffix, final boolean allowCompressedExtension,
       final Configuration conf) throws IOException {
 
-    if (dir == null)
+    if (dir == null) {
       throw new NullPointerException("Directory path is null");
+    }
 
-    if (suffix == null)
+    if (suffix == null) {
       throw new NullPointerException("Suffix is null");
+    }
 
-    if (conf == null)
+    if (conf == null) {
       throw new NullPointerException("Configuration is null");
+    }
 
     final FileSystem fs = dir.getFileSystem(conf);
-    if (!fs.getFileStatus(dir).isDirectory())
+    if (!fs.getFileStatus(dir).isDirectory()) {
       throw new IOException("Directory path is not a directory: " + dir);
+    }
 
     final FileStatus[] filesStatus =
         fs.listStatus(dir, new SuffixPathFilter(suffix,
             allowCompressedExtension));
 
-    if (filesStatus == null)
+    if (filesStatus == null) {
       return Collections.emptyList();
+    }
 
     final List<Path> result = new ArrayList<>(filesStatus.length);
 
-    for (FileStatus fst : filesStatus)
+    for (FileStatus fst : filesStatus) {
       result.add(fst.getPath());
+    }
 
     return result;
   }
@@ -696,23 +753,27 @@ public final class PathUtils {
     final String myPrefix;
     final String mySuffix;
 
-    if (directory == null)
+    if (directory == null) {
       throw new NullPointerException("Directory is null");
+    }
 
-    if (conf == null)
+    if (conf == null) {
       throw new NullPointerException("Configuration is null");
+    }
 
     myDir = directory;
 
-    if (prefix == null)
+    if (prefix == null) {
       myPrefix = "";
-    else
+    } else {
       myPrefix = prefix;
+    }
 
-    if (suffix == null)
+    if (suffix == null) {
       mySuffix = "";
-    else
+    } else {
       mySuffix = suffix;
+    }
 
     final FileSystem fs = directory.getFileSystem(conf);
     Path tempFile;
@@ -721,11 +782,11 @@ public final class PathUtils {
     int attemptCount = 0;
     do {
       attemptCount++;
-      if (attemptCount > maxAttempts)
-
+      if (attemptCount > maxAttempts) {
         throw new IOException("The highly improbable has occurred! Failed to "
             + "create a unique temporary directory after " + maxAttempts
             + " attempts.");
+      }
 
       final String filename =
           myPrefix + UUID.randomUUID().toString() + mySuffix;
@@ -775,43 +836,53 @@ public final class PathUtils {
       final boolean deleteSource, final boolean overwrite,
       final Configuration conf, final String addString) throws IOException {
 
-    if (paths == null)
+    if (paths == null) {
       throw new NullPointerException("The list of path to concat is null");
+    }
 
-    if (paths.size() == 0)
+    if (paths.size() == 0) {
       return false;
+    }
 
-    if (dstPath == null)
+    if (dstPath == null) {
       throw new NullPointerException("The destination path is null");
+    }
 
-    if (conf == null)
+    if (conf == null) {
       throw new NullPointerException("The configuration is null.");
+    }
 
     final FileSystem srcFs = paths.get(0).getFileSystem(conf);
     final FileSystem dstFs = dstPath.getFileSystem(conf);
 
-    if (!overwrite && dstFs.exists(dstPath))
+    if (!overwrite && dstFs.exists(dstPath)) {
       throw new IOException("The output file already exists: " + dstPath);
+    }
 
     try (OutputStream out = dstFs.create(dstPath)) {
       // FileStatus contents[] = srcFS.listStatus(srcDir);
       // for (int i = 0; i < contents.length; i++) {
-      for (Path p : paths)
+      for (Path p : paths) {
         if (!srcFs.getFileStatus(p).isDirectory()) {
           try (InputStream in = srcFs.open(p)) {
             IOUtils.copyBytes(in, out, conf, false);
-            if (addString != null)
+            if (addString != null) {
               out.write(addString.getBytes(FileCharsets.UTF8_CHARSET));
+            }
 
           }
         }
+      }
 
     }
 
-    if (deleteSource)
-      for (Path p : paths)
-        if (!srcFs.delete(p, false))
+    if (deleteSource) {
+      for (Path p : paths) {
+        if (!srcFs.delete(p, false)) {
           return false;
+        }
+      }
+    }
 
     return true;
   }
@@ -826,19 +897,23 @@ public final class PathUtils {
   public static final void checkExistingFile(final Path file,
       final Configuration conf, final String msgFileType) throws IOException {
 
-    if (msgFileType == null)
+    if (msgFileType == null) {
       throw new NullPointerException("Message file type for check is null");
+    }
 
-    if (file == null)
+    if (file == null) {
       throw new NullPointerException("The " + msgFileType + " is null");
+    }
 
-    if (conf == null)
+    if (conf == null) {
       throw new NullPointerException("The configuration is null");
+    }
 
     final FileSystem fs = file.getFileSystem(conf);
 
-    if (!fs.exists(file))
+    if (!fs.exists(file)) {
       throw new IOException("The " + msgFileType + " does not exists: " + file);
+    }
   }
 
   /**
@@ -855,9 +930,10 @@ public final class PathUtils {
 
     final FileSystem fs = directory.getFileSystem(conf);
 
-    if (!fs.getFileStatus(directory).isDirectory())
+    if (!fs.getFileStatus(directory).isDirectory()) {
       throw new IOException("The "
           + msgFileType + " is not a directory: " + directory);
+    }
   }
 
   /**
@@ -869,11 +945,13 @@ public final class PathUtils {
   public static final boolean isExistingDirectoryFile(final Path directory,
       final Configuration conf) throws IOException {
 
-    if (directory == null)
+    if (directory == null) {
       throw new NullPointerException("The directory is null");
+    }
 
-    if (conf == null)
+    if (conf == null) {
       throw new NullPointerException("The configuration is null");
+    }
 
     final FileSystem fs = directory.getFileSystem(conf);
 
@@ -893,11 +971,13 @@ public final class PathUtils {
   public static final boolean isFile(final Path file, final Configuration conf)
       throws IOException {
 
-    if (file == null)
+    if (file == null) {
       throw new NullPointerException("The path is null");
+    }
 
-    if (conf == null)
+    if (conf == null) {
       throw new NullPointerException("The configuration is null");
+    }
 
     final FileSystem fs = file.getFileSystem(conf);
 
@@ -917,9 +997,10 @@ public final class PathUtils {
 
     final FileSystem fs = file.getFileSystem(conf);
 
-    if (!fs.isFile(file))
+    if (!fs.isFile(file)) {
       throw new IOException("The "
           + msgFileType + " is  not a standard file: " + file);
+    }
   }
 
   /**
@@ -936,9 +1017,10 @@ public final class PathUtils {
 
     final FileSystem fs = file.getFileSystem(conf);
 
-    if (!fs.isFile(file) && !fs.getFileStatus(file).isDirectory())
+    if (!fs.isFile(file) && !fs.getFileStatus(file).isDirectory()) {
       throw new IOException("The "
           + msgFileType + " is  not a standard file or a directory: " + file);
+    }
   }
 
   /**
@@ -950,7 +1032,7 @@ public final class PathUtils {
    * @throws IOException if an error occurs while copying
    */
   public static final boolean copy(final Path srcPath, final Path destPath,
-      Configuration conf) throws IOException {
+      final Configuration conf) throws IOException {
 
     return copy(srcPath, destPath, true, conf);
   }
@@ -965,16 +1047,19 @@ public final class PathUtils {
    * @throws IOException if an error occurs while copying
    */
   public static final boolean copy(final Path srcPath, final Path destPath,
-      final boolean overwrite, Configuration conf) throws IOException {
+      final boolean overwrite, final Configuration conf) throws IOException {
 
-    if (srcPath == null)
+    if (srcPath == null) {
       throw new NullPointerException("The source path is null.");
+    }
 
-    if (destPath == null)
+    if (destPath == null) {
       throw new NullPointerException("The destination path is null");
+    }
 
-    if (conf == null)
+    if (conf == null) {
       throw new NullPointerException("The configuration is null");
+    }
 
     final FileSystem srcFs = srcPath.getFileSystem(conf);
     final FileSystem destFs = destPath.getFileSystem(conf);
@@ -992,7 +1077,7 @@ public final class PathUtils {
    * @throws IOException if an error occurs while copying
    */
   public static final boolean move(final Path srcPath, final Path destPath,
-      Configuration conf) throws IOException {
+      final Configuration conf) throws IOException {
 
     return move(srcPath, destPath, true, conf);
   }
@@ -1007,16 +1092,19 @@ public final class PathUtils {
    * @throws IOException if an error occurs while copying
    */
   public static final boolean move(final Path srcPath, final Path destPath,
-      final boolean overwrite, Configuration conf) throws IOException {
+      final boolean overwrite, final Configuration conf) throws IOException {
 
-    if (srcPath == null)
+    if (srcPath == null) {
       throw new NullPointerException("The source path is null.");
+    }
 
-    if (destPath == null)
+    if (destPath == null) {
       throw new NullPointerException("The destination path is null");
+    }
 
-    if (conf == null)
+    if (conf == null) {
       throw new NullPointerException("The configuration is null");
+    }
 
     final FileSystem srcFs = srcPath.getFileSystem(conf);
     final FileSystem destFs = destPath.getFileSystem(conf);
@@ -1035,12 +1123,14 @@ public final class PathUtils {
   public static final boolean mkdirs(final Path path, final Configuration conf)
       throws IOException {
 
-    if (path == null)
+    if (path == null) {
       throw new NullPointerException(
           "The path of the directory to create is null.");
+    }
 
-    if (conf == null)
+    if (conf == null) {
       throw new NullPointerException("The configuration is null");
+    }
 
     final FileSystem fs = path.getFileSystem(conf);
     return fs.mkdirs(path);

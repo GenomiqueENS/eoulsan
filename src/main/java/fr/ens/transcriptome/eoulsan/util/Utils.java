@@ -51,8 +51,9 @@ public class Utils {
    */
   public static <K, V> Map<V, Set<K>> reverseMap(final Map<K, V> map) {
 
-    if (map == null)
+    if (map == null) {
       return null;
+    }
 
     final Map<V, Set<K>> result = new HashMap<>();
 
@@ -65,8 +66,9 @@ public class Utils {
       if (!result.containsKey(value)) {
         set = new HashSet<>();
         result.put(value, set);
-      } else
+      } else {
         set = result.get(value);
+      }
 
       set.add(e.getKey());
     }
@@ -82,8 +84,9 @@ public class Utils {
    */
   public static <E> Set<E> unmodifiableSet(final E[] array) {
 
-    if (array == null)
+    if (array == null) {
       return null;
+    }
 
     final List<E> list = Arrays.asList(array);
 
@@ -97,14 +100,17 @@ public class Utils {
    */
   public static <E> List<E> listWithoutNull(final List<E> list) {
 
-    if (list == null)
+    if (list == null) {
       return null;
+    }
 
     final List<E> result = new ArrayList<>();
 
-    for (E e : list)
-      if (e != null)
+    for (E e : list) {
+      if (e != null) {
         result.add(e);
+      }
+    }
 
     return result;
   }
@@ -136,8 +142,9 @@ public class Utils {
    */
   public static void checkNotNull(final Object object, final String msg) {
 
-    if (object == null)
+    if (object == null) {
       throw new NullPointerException(msg);
+    }
   }
 
   /**
@@ -147,8 +154,9 @@ public class Utils {
    */
   public static void checkState(final boolean expression, final String msg) {
 
-    if (!expression)
+    if (!expression) {
       throw new IllegalStateException(msg);
+    }
   }
 
   /**
@@ -184,8 +192,9 @@ public class Utils {
    */
   public static <T> Iterable<T> newIterable(final Enumeration<T> e) {
 
-    if (e == null)
+    if (e == null) {
       return null;
+    }
 
     return new Iterable<T>() {
 
@@ -220,8 +229,9 @@ public class Utils {
    */
   public static <T> Iterable<T> newIterable(final Iterator<T> it) {
 
-    if (it == null)
+    if (it == null) {
       return null;
+    }
 
     return new Iterable<T>() {
 

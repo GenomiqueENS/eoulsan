@@ -80,8 +80,9 @@ public enum CompressionType {
    */
   public InputStream createInputStream(final InputStream is) throws IOException {
 
-    if (is == null)
+    if (is == null) {
       return null;
+    }
 
     switch (this) {
 
@@ -110,8 +111,9 @@ public enum CompressionType {
   public OutputStream createOutputStream(final OutputStream os)
       throws IOException {
 
-    if (os == null)
+    if (os == null) {
       return null;
+    }
 
     switch (this) {
 
@@ -143,12 +145,15 @@ public enum CompressionType {
   public static CompressionType getCompressionTypeByContentEncoding(
       final String contentType) {
 
-    if (contentType == null)
+    if (contentType == null) {
       return null;
+    }
 
-    for (CompressionType ct : CompressionType.values())
-      if (contentType.equals(ct.contentEncoding))
+    for (CompressionType ct : CompressionType.values()) {
+      if (contentType.equals(ct.contentEncoding)) {
         return ct;
+      }
+    }
 
     return NONE;
   }
@@ -161,12 +166,15 @@ public enum CompressionType {
   public static CompressionType getCompressionTypeByExtension(
       final String extension) {
 
-    if (extension == null)
+    if (extension == null) {
       return null;
+    }
 
-    for (CompressionType ct : CompressionType.values())
-      if (extension.equals(ct.extension))
+    for (CompressionType ct : CompressionType.values()) {
+      if (extension.equals(ct.extension)) {
         return ct;
+      }
+    }
 
     return NONE;
   }
@@ -179,8 +187,9 @@ public enum CompressionType {
   public static CompressionType getCompressionTypeByFilename(
       final String filename) {
 
-    if (filename == null)
+    if (filename == null) {
       return null;
+    }
 
     return getCompressionTypeByExtension(StringUtils.extension(filename));
   }
@@ -207,11 +216,13 @@ public enum CompressionType {
       throws IOException {
 
     if (SystemUtils
-        .isClass("org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream"))
+        .isClass("org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream")) {
       return new LocalBZip2InputStream(is);
+    }
 
-    if (SystemUtils.isClass("org.apache.hadoop.io.compress.BZip2Codec"))
+    if (SystemUtils.isClass("org.apache.hadoop.io.compress.BZip2Codec")) {
       return new HadoopBZip2InputStream(is);
+    }
 
     throw new IOException(
         "Unable to find a class to create a BZip2InputStream.");
@@ -243,11 +254,13 @@ public enum CompressionType {
       throws IOException {
 
     if (SystemUtils
-        .isClass("org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream"))
+        .isClass("org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream")) {
       return new LocalBZip2OutputStream(os);
+    }
 
-    if (SystemUtils.isClass("org.apache.hadoop.io.compress.BZip2Codec"))
+    if (SystemUtils.isClass("org.apache.hadoop.io.compress.BZip2Codec")) {
       return new HadoopBZip2OutputStream(os);
+    }
 
     throw new IOException(
         "Unable to find a class to create a BZip2InputStream.");
@@ -265,13 +278,15 @@ public enum CompressionType {
    */
   public static String removeCompressionExtension(final String s) {
 
-    if (s == null)
+    if (s == null) {
       return null;
+    }
 
     for (CompressionType ct : CompressionType.values()) {
 
-      if (ct == NONE)
+      if (ct == NONE) {
         continue;
+      }
 
       if (s.endsWith(ct.getExtension())) {
 

@@ -39,6 +39,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.google.common.base.Strings;
+
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 public class FileConcatInputStreamTest {
@@ -81,11 +82,12 @@ public class FileConcatInputStreamTest {
 
     br.close();
 
-    for (File f : files)
+    for (File f : files) {
       f.delete();
+    }
   }
 
-  private File writeFile(int lines, int mod) throws IOException {
+  private File writeFile(final int lines, final int mod) throws IOException {
 
     File f = File.createTempFile("junit-", ".txt");
 

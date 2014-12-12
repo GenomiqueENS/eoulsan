@@ -94,6 +94,13 @@ public interface SequenceReadsMapper {
   //
 
   /**
+   * Set the version of the mapper to use.
+   * @param version the version to use. If null, the default version will be
+   *          used
+   */
+  void setMapperVersionToUse(String version);
+
+  /**
    * Get the number of thread to use by the mapper.
    * @return the number of thread to use by the mapper
    */
@@ -209,6 +216,12 @@ public interface SequenceReadsMapper {
   //
   // Other methods
   //
+
+  /**
+   * Prepare binaries.
+   * @throws IOException if binaries cannot be prepared
+   */
+  void prepareBinaries() throws IOException;
 
   /**
    * Initialize the mapper before the mapping.

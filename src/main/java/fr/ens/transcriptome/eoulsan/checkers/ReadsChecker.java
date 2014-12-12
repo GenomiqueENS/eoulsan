@@ -63,7 +63,7 @@ public class ReadsChecker implements Checker {
   }
 
   @Override
-  public Set<DataFormat> getCheckersRequiered() {
+  public Set<DataFormat> getCheckersRequired() {
     return Collections.emptySet();
   }
 
@@ -76,20 +76,24 @@ public class ReadsChecker implements Checker {
   public boolean check(final Data data, final CheckStore checkInfo)
       throws EoulsanException {
 
-    if (data == null)
+    if (data == null) {
       throw new NullPointerException("The sample is null");
+    }
 
-    if (checkInfo == null)
+    if (checkInfo == null) {
       throw new NullPointerException("The check info info is null");
+    }
 
     final int inFileCount = data.getDataFileCount();
 
-    if (inFileCount < 1)
+    if (inFileCount < 1) {
       throw new EoulsanException("No reads file found.");
+    }
 
-    if (inFileCount > 2)
+    if (inFileCount > 2) {
       throw new EoulsanException(
           "Cannot handle more than 2 reads files at the same time.");
+    }
 
     // Get FASTQ format
     final FastqFormat format = data.getMetadata().getFastqFormat();
@@ -116,7 +120,7 @@ public class ReadsChecker implements Checker {
     checkReadFile(file, format, false, -1);
   }
 
-  private void checkReadFile(final DataFile file, FastqFormat format,
+  private void checkReadFile(final DataFile file, final FastqFormat format,
       final boolean checkPairMember, final int pairMember)
       throws EoulsanException {
 
@@ -145,7 +149,7 @@ public class ReadsChecker implements Checker {
   }
 
   private boolean checkReadsFile(final InputStream is,
-      final int maxReadTocheck, final FastqFormat format,
+      final int maxReadToCheck, final FastqFormat format,
       final boolean checkPairMember, final int pairMember) throws IOException,
       BadBioEntryException {
 
@@ -155,8 +159,9 @@ public class ReadsChecker implements Checker {
 
     for (final ReadSequence read : reader) {
 
-      if (count > maxReadTocheck)
+      if (count > maxReadToCheck) {
         break;
+      }
 
       // For the first read check the id
       if (checkPairMember && count == 0) {
@@ -168,20 +173,22 @@ public class ReadsChecker implements Checker {
           final IlluminaReadId irid = new IlluminaReadId(readId);
 
           readPairMember = irid.getPairMember();
-          if (readPairMember != pairMember)
+          if (readPairMember != pairMember) {
             throw new BadBioEntryException("Invalid pair member number, "
                 + pairMember + " was excepted", read.getName());
+          }
 
           // check the quality string
           if (format != null) {
 
             final int invalidChar = format.findInvalidChar(read.getQuality());
 
-            if (invalidChar != -1)
+            if (invalidChar != -1) {
               throw new BadBioEntryException(
                   "Invalid quality character found for "
                       + format.getName() + " format: " + (char) invalidChar,
                   read.getQuality());
+            }
           }
 
           readPairMember = irid.getPairMember();
@@ -189,10 +196,11 @@ public class ReadsChecker implements Checker {
         } catch (EoulsanException e) {
 
           // Not an Illumina id
-          if (readId.endsWith("/1"))
+          if (readId.endsWith("/1")) {
             readPairMember = 1;
-          else if (readId.endsWith("/2"))
+          } else if (readId.endsWith("/2")) {
             readPairMember = 2;
+          }
         }
 
         if (readPairMember > 0 && readPairMember != pairMember) {

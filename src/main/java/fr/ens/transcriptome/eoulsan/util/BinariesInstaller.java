@@ -55,10 +55,11 @@ public class BinariesInstaller {
     final File outputDir = new File(outputPath);
 
     if (!outputDir.isDirectory()) {
-      if (!outputDir.mkdirs())
+      if (!outputDir.mkdirs()) {
         throw new IOException(
             "Can't create directory for binaries installation: "
                 + outputDir.getAbsolutePath());
+      }
       FileUtils.setDirectoryWritable(outputDir, true, false);
     }
 
@@ -66,9 +67,10 @@ public class BinariesInstaller {
     final InputStream is =
         BinariesInstaller.class.getResourceAsStream(resourcePath);
 
-    if (is == null)
+    if (is == null) {
       throw new FileNotFoundException("Unable to find the correct resource ("
           + resourcePath + ")");
+    }
 
     final File outputFile = new File(outputDir, file);
     OutputStream fos = FileUtils.createOutputStream(outputFile);
@@ -76,8 +78,9 @@ public class BinariesInstaller {
     byte[] buf = new byte[BUFFER_SIZE];
     int i = 0;
 
-    while ((i = is.read(buf)) != -1)
+    while ((i = is.read(buf)) != -1) {
       fos.write(buf, 0, i);
+    }
 
     is.close();
     fos.close();
@@ -102,16 +105,27 @@ public class BinariesInstaller {
         new File(tempDir == null
             ? System.getProperty("java.io.tmpdir") : tempDir.trim());
 
-    if (!tempDirFile.exists())
+    if (!tempDirFile.exists()) {
       throw new IOException("Temporary directory does not exits: "
           + tempDirFile);
+    }
 
-    if (!tempDirFile.isDirectory())
+    if (!tempDirFile.isDirectory()) {
       throw new IOException("Temporary directory is not a directory: "
           + tempDirFile);
+    }
 
-    if (!SystemUtils.isUnix())
-      throw new IOException("Can only install binaries on *nix systems.");
+    final String outputPath =
+        tempDirFile.getAbsolutePath()
+            + "/" + Globals.APP_NAME_LOWER_CASE + "/"
+            + Globals.APP_VERSION_STRING + "/" + softwarePackage + "/"
+            + packageVersion;
+
+    // Test if the file is allready installed
+    if (new File(outputPath, binaryFilename).isFile()) {
+      getLogger().info(binaryFilename + " is already installed.");
+      return outputPath + "/" + binaryFilename;
+    }
 
     final String os = System.getProperty("os.name").toLowerCase();
     final String arch = System.getProperty("os.arch").toLowerCase();
@@ -121,38 +135,8 @@ public class BinariesInstaller {
             + binaryFilename + "\" of " + softwarePackage + " package for "
             + os + " (" + arch + ")");
 
-    String osArchKey = os + "\t" + arch;
-
-    // Bypass platform checking if necessary
-    if (!EoulsanRuntime.getSettings().isBypassPlatformChecking()) {
-
-      // Check if platform is allowed
-      if (!Globals.AVAILABLE_BINARY_ARCH.contains(osArchKey))
-        throw new FileNotFoundException(
-            "There is no executable for your plateform ("
-                + os + ") included in " + Globals.APP_NAME);
-
-      // Change the os and arch if alias
-      if (Globals.AVAILABLE_BINARY_ARCH_ALIAS.containsKey(osArchKey))
-        osArchKey = Globals.AVAILABLE_BINARY_ARCH_ALIAS.get(osArchKey);
-    }
-
-    final String inputPath =
-        '/'
-            + osArchKey.replace(" ", "").replace('\t', '/')
-            + (softwarePackage == null ? "" : '/' + softwarePackage.trim())
-            + (packageVersion == null ? "" : '/' + packageVersion);
-
-    final String outputPath =
-        tempDirFile.getAbsolutePath()
-            + "/" + Globals.APP_NAME_LOWER_CASE + "/"
-            + Globals.APP_VERSION_STRING;
-
-    // Test if the file is allready installed
-    if (new File(outputPath, binaryFilename).isFile()) {
-      getLogger().info(binaryFilename + " is allready installed.");
-      return outputPath + "/" + binaryFilename;
-    }
+    // Get inputPath
+    final String inputPath = getInputPath(softwarePackage, packageVersion);
 
     // install the file
     install(inputPath, binaryFilename, outputPath);
@@ -161,4 +145,78 @@ public class BinariesInstaller {
         "Successful installation of " + binaryFilename + " in " + outputPath);
     return outputPath + "/" + binaryFilename;
   }
+
+  /**
+   * Check if a software is available.
+   * @param softwarePackage software name
+   * @param packageVersion software version
+   * @param binaryFilename software binary
+   * @return true if the software is available
+   */
+  public static boolean check(final String softwarePackage,
+      final String packageVersion, final String binaryFilename) {
+
+    try {
+
+      final String inputPath = getInputPath(softwarePackage, packageVersion);
+      final String resourcePath =
+          inputPath.toLowerCase() + "/" + binaryFilename;
+
+      final InputStream is =
+          BinariesInstaller.class.getResourceAsStream(resourcePath);
+
+      if (is == null) {
+        return false;
+      }
+
+      is.close();
+
+    } catch (IOException e) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Get the directory path of a binary.
+   * @param softwarePackage the software package
+   * @param packageVersion the package version
+   * @return the directory path as a String
+   * @throws IOException if the software is not available
+   */
+  private static String getInputPath(final String softwarePackage,
+      final String packageVersion) throws IOException {
+
+    if (!SystemUtils.isUnix()) {
+      throw new IOException("Can only install binaries on *nix systems.");
+    }
+
+    final String os = System.getProperty("os.name").toLowerCase();
+    final String arch = System.getProperty("os.arch").toLowerCase();
+
+    String osArchKey = os + "\t" + arch;
+
+    // Bypass platform checking if necessary
+    if (!EoulsanRuntime.getSettings().isBypassPlatformChecking()) {
+
+      // Check if platform is allowed
+      if (!Globals.AVAILABLE_BINARY_ARCH.contains(osArchKey)) {
+        throw new FileNotFoundException(
+            "There is no executable for your platform ("
+                + os + ") included in " + Globals.APP_NAME);
+      }
+
+      // Change the os and arch if alias
+      if (Globals.AVAILABLE_BINARY_ARCH_ALIAS.containsKey(osArchKey)) {
+        osArchKey = Globals.AVAILABLE_BINARY_ARCH_ALIAS.get(osArchKey);
+      }
+    }
+
+    return '/'
+        + osArchKey.replace(" ", "").replace('\t', '/')
+        + (softwarePackage == null ? "" : '/' + softwarePackage.trim())
+        + (packageVersion == null ? "" : '/' + packageVersion);
+  }
+
 }

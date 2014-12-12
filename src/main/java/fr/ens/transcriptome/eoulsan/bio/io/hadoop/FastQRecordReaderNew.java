@@ -59,13 +59,13 @@ public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
   @Override
   public LongWritable getCurrentKey() throws IOException, InterruptedException {
 
-    return key;
+    return this.key;
   }
 
   @Override
   public Text getCurrentValue() throws IOException, InterruptedException {
 
-    return value;
+    return this.value;
   }
 
   @Override
@@ -92,27 +92,29 @@ public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
 
     while (!found) {
 
-      if (!this.lrr.nextKeyValue(count != 0))
+      if (!this.lrr.nextKeyValue(count != 0)) {
         return false;
-      // if (!this.lrr.nextKeyValue())
-      // return false;
+        // if (!this.lrr.nextKeyValue())
+        // return false;
+      }
 
       final String s = this.lrr.getCurrentValue().toString().trim();
 
       // Prevent empty lines
-      if (s.length() == 0)
+      if (s.length() == 0) {
         continue;
+      }
 
       this.lines[count] = s;
       this.pos[count] = this.lrr.getCurrentKey().get();
 
-      if (count < 3)
+      if (count < 3) {
         count++;
-      else {
+      } else {
 
-        if (this.lines[0].charAt(0) == '@' && this.lines[2].charAt(0) == '+')
+        if (this.lines[0].charAt(0) == '@' && this.lines[2].charAt(0) == '+') {
           found = true;
-        else {
+        } else {
 
           // Shift lines
           this.lines[0] = this.lines[1];

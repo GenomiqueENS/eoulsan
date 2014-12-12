@@ -66,8 +66,9 @@ public class DataList extends AbstractData implements Serializable {
 
     Preconditions.checkNotNull(name, "name argument cannot be null");
 
-    if (this.port == null)
+    if (this.port == null) {
       throw new UnsupportedOperationException();
+    }
 
     final AbstractData result = new DataElement(this.port, this.design);
     result.setName(name);
@@ -111,7 +112,7 @@ public class DataList extends AbstractData implements Serializable {
   }
 
   @Override
-  public String getDataFilename(int fileIndex) {
+  public String getDataFilename(final int fileIndex) {
     throw new UnsupportedOperationException();
   }
 
@@ -121,7 +122,7 @@ public class DataList extends AbstractData implements Serializable {
   }
 
   @Override
-  public DataFile getDataFile(int fileIndex) {
+  public DataFile getDataFile(final int fileIndex) {
     throw new UnsupportedOperationException();
   }
 
@@ -131,7 +132,7 @@ public class DataList extends AbstractData implements Serializable {
   }
 
   @Override
-  public int getDataFileCount(boolean existingFiles) {
+  public int getDataFileCount(final boolean existingFiles) {
     throw new UnsupportedOperationException();
   }
 
@@ -165,7 +166,7 @@ public class DataList extends AbstractData implements Serializable {
   /**
    * Constructor.
    * @param port output port
-   * @param design
+   * @param design the design object
    */
   DataList(final WorkflowOutputPort port, final Design design) {
 

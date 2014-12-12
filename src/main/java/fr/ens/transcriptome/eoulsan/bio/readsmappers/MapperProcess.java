@@ -91,7 +91,7 @@ public abstract class MapperProcess {
     public void run() {
       try {
 
-        FileUtils.copy(is, os);
+        FileUtils.copy(this.is, this.os);
 
       } catch (IOException e) {
         catchException(e);
@@ -131,11 +131,13 @@ public abstract class MapperProcess {
      */
     public ProcessThreadStdOut(final Process process, final OutputStream os) {
 
-      if (process == null)
+      if (process == null) {
         throw new NullPointerException("The Process parameter is null");
+      }
 
-      if (os == null)
+      if (os == null) {
         throw new NullPointerException("The OutputStream parameter is null");
+      }
 
       this.is = process.getInputStream();
       this.os = os;
@@ -170,19 +172,20 @@ public abstract class MapperProcess {
     }
 
     @Override
-    public void write(byte[] arg0, int arg1, int arg2) throws IOException {
+    public void write(final byte[] arg0, final int arg1, final int arg2)
+        throws IOException {
 
       this.os.write(arg0, arg1, arg2);
     }
 
     @Override
-    public void write(byte[] b) throws IOException {
+    public void write(final byte[] b) throws IOException {
 
       this.os.write(b);
     }
 
     @Override
-    public void write(int arg0) throws IOException {
+    public void write(final int arg0) throws IOException {
       this.os.write(arg0);
     }
 
@@ -212,13 +215,14 @@ public abstract class MapperProcess {
 
       this.is.close();
       try {
-        final int exitValue = process.waitFor();
+        final int exitValue = MapperProcess.this.process.waitFor();
 
         getLogger().fine("End of process with " + exitValue + " exit value");
 
-        if (exitValue != 0)
+        if (exitValue != 0) {
           throw new IOException("Bad error result for "
-              + mapperName + " execution: " + exitValue);
+              + MapperProcess.this.mapperName + " execution: " + exitValue);
+        }
 
       } catch (InterruptedException e) {
         throw new IOException(e.getMessage());
@@ -226,9 +230,9 @@ public abstract class MapperProcess {
     }
 
     @Override
-    public synchronized void mark(int readlimit) {
+    public synchronized void mark(final int readLimit) {
 
-      this.is.mark(readlimit);
+      this.is.mark(readLimit);
     }
 
     @Override
@@ -244,13 +248,14 @@ public abstract class MapperProcess {
     }
 
     @Override
-    public int read(byte[] arg0, int arg1, int arg2) throws IOException {
+    public int read(final byte[] arg0, final int arg1, final int arg2)
+        throws IOException {
 
       return this.is.read(arg0, arg1, arg2);
     }
 
     @Override
-    public int read(byte[] b) throws IOException {
+    public int read(final byte[] b) throws IOException {
 
       return this.is.read(b);
     }
@@ -262,7 +267,7 @@ public abstract class MapperProcess {
     }
 
     @Override
-    public long skip(long arg0) throws IOException {
+    public long skip(final long arg0) throws IOException {
 
       return this.is.skip(arg0);
     }
@@ -379,8 +384,9 @@ public abstract class MapperProcess {
    */
   protected void inputReadsIncr() {
 
-    if (this.incrementer != null)
+    if (this.incrementer != null) {
       this.incrementer.incrCounter(this.counterGroup, "mapper input reads", 1);
+    }
   }
 
   //
@@ -395,8 +401,9 @@ public abstract class MapperProcess {
   public void setIncrementer(final ReporterIncrementer incrementer,
       final String counterGroup) {
 
-    if (counterGroup == null)
+    if (counterGroup == null) {
       throw new NullPointerException("The counterGroup is null");
+    }
 
     this.incrementer = incrementer;
     this.counterGroup = counterGroup;
@@ -412,9 +419,10 @@ public abstract class MapperProcess {
    */
   public OutputStream getStdin() {
 
-    if (this.stdin == null)
+    if (this.stdin == null) {
       throw new IllegalStateException(
           "Cannot use getStdin when mapper input is a file");
+    }
 
     return this.stdin;
   }
@@ -461,9 +469,10 @@ public abstract class MapperProcess {
           new OutputStreamWriter(getStdin(), StandardCharsets.ISO_8859_1);
     }
 
-    if (this.isPairedEnd())
+    if (this.isPairedEnd()) {
       throw new IllegalStateException(
           "Cannot use this writeEntry method in paired-end mode");
+    }
 
     this.writer1.write(ReadSequence.toFastQ(name, sequence, quality));
     inputReadsIncr();
@@ -500,9 +509,10 @@ public abstract class MapperProcess {
               StandardCharsets.ISO_8859_1);
     }
 
-    if (!this.isPairedEnd())
+    if (!this.isPairedEnd()) {
       throw new IllegalStateException(
           "Cannot use this writeEntry method in single-end mode");
+    }
 
     this.writer1.write(ReadSequence.toFastQ(name1, sequence1, quality1));
     this.writer2.write(ReadSequence.toFastQ(name2, sequence2, quality2));
@@ -516,11 +526,13 @@ public abstract class MapperProcess {
    */
   public void closeEntriesWriter() throws IOException {
 
-    if (this.writer1 != null)
+    if (this.writer1 != null) {
       this.writer1.close();
+    }
 
-    if (this.writer2 != null)
+    if (this.writer2 != null) {
       this.writer2.close();
+    }
   }
 
   //
@@ -541,8 +553,9 @@ public abstract class MapperProcess {
     for (int i = 0; i < cmds.size(); i++) {
       final ProcessBuilder builder = new ProcessBuilder(cmds.get(i));
 
-      if (executionDirectory() != null)
+      if (executionDirectory() != null) {
         builder.directory(executionDirectory());
+      }
 
       getLogger().info(
           "Process command: " + Joiner.on(' ').join(builder.command()));
@@ -555,13 +568,15 @@ public abstract class MapperProcess {
         final int exitValue = this.process.waitFor();
         getLogger().fine("End of process with " + exitValue + " exit value");
 
-        if (exitValue != 0)
+        if (exitValue != 0) {
           throw new IOException("Bad error result for "
               + this.mapperName + " execution: " + exitValue);
-      } else
+        }
+      } else {
         this.stdout =
             new InputStreamWrapper(
                 createCustomInputStream(this.process.getInputStream()));
+      }
     }
 
   }
@@ -574,12 +589,13 @@ public abstract class MapperProcess {
    */
   public void waitFor() throws InterruptedException, IOException {
 
-    final int exitValue = process.waitFor();
+    final int exitValue = this.process.waitFor();
     getLogger().fine("End of process with " + exitValue + " exit value");
 
-    if (exitValue != 0)
+    if (exitValue != 0) {
       throw new IOException("Bad error result for "
-          + mapperName + " execution: " + exitValue);
+          + this.mapperName + " execution: " + exitValue);
+    }
 
     clean();
   }
@@ -600,8 +616,9 @@ public abstract class MapperProcess {
       final boolean fileMode, final boolean stdinMode, final boolean pairedEnd)
       throws IOException {
 
-    if (mapper == null)
+    if (mapper == null) {
       throw new NullPointerException("The mapper is null");
+    }
 
     try {
       this.mapperName = mapper.getMapperName();

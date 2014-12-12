@@ -37,8 +37,9 @@ public class EoulsanRuntimeDebug {
 
     Logger.getLogger(Globals.APP_NAME).getParent().setLevel(Level.OFF);
 
-    if (!EoulsanRuntime.isRuntime())
+    if (!EoulsanRuntime.isRuntime()) {
       newEoulsanRuntime(new Settings(true));
+    }
 
     Logger.getLogger(Globals.APP_NAME).setLevel(Level.OFF);
   }

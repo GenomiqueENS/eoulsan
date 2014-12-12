@@ -65,8 +65,8 @@ public class CopyOutputDataStep extends AbstractStep {
   public static final String PORTS_PARAMETER = "ports";
   public static final String FORMATS_PARAMETER = "formats";
 
-  private List<String> portNames = new ArrayList<>();
-  private List<DataFormat> formats = new ArrayList<>();
+  private final List<String> portNames = new ArrayList<>();
+  private final List<DataFormat> formats = new ArrayList<>();
 
   @Override
   public String getName() {
@@ -91,8 +91,9 @@ public class CopyOutputDataStep extends AbstractStep {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
 
-    for (int i = 0; i < this.portNames.size(); i++)
+    for (int i = 0; i < this.portNames.size(); i++) {
       builder.addPort(this.portNames.get(i), this.formats.get(i));
+    }
 
     return builder.create();
   }
@@ -102,14 +103,16 @@ public class CopyOutputDataStep extends AbstractStep {
 
     final OutputPortsBuilder builder = new OutputPortsBuilder();
 
-    for (int i = 0; i < this.portNames.size(); i++)
+    for (int i = 0; i < this.portNames.size(); i++) {
       builder.addPort(this.portNames.get(i), this.formats.get(i));
+    }
 
     return builder.create();
   }
 
   @Override
-  public void configure(Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final Set<Parameter> stepParameters)
+      throws EoulsanException {
     for (Parameter p : stepParameters) {
 
       if (FORMATS_PARAMETER.equals(p.getName())) {
@@ -120,25 +123,29 @@ public class CopyOutputDataStep extends AbstractStep {
 
           final DataFormat format = registry.getDataFormatFromName(formatName);
 
-          if (format == null)
+          if (format == null) {
             throw new EoulsanException("Unknown format: " + formatName);
+          }
           this.formats.add(format);
         }
       } else if (PORTS_PARAMETER.equals(p.getName())) {
 
-        for (String portName : Splitter.on(',').split(p.getValue()))
+        for (String portName : Splitter.on(',').split(p.getValue())) {
           this.portNames.add(portName);
+        }
       }
 
     }
 
-    if (this.formats.isEmpty())
+    if (this.formats.isEmpty()) {
       throw new EoulsanException("No format set.");
+    }
 
-    if (this.formats.size() != this.portNames.size())
+    if (this.formats.size() != this.portNames.size()) {
       throw new EoulsanException("The number of formats ("
           + this.formats.size() + ") is not the same of the number of ports ("
           + this.portNames.size() + ")");
+    }
 
   }
 
@@ -187,8 +194,9 @@ public class CopyOutputDataStep extends AbstractStep {
       final DataFile in = inData.getDataFile();
       final DataFile out = new DataFile(outputDir, in.getName());
 
-      if (!in.exists())
+      if (!in.exists()) {
         throw new FileNotFoundException("input file not found: " + in);
+      }
 
       // Copy file
       FileUtils.copy(in.rawOpen(), out.rawCreate());
@@ -208,8 +216,9 @@ public class CopyOutputDataStep extends AbstractStep {
         final DataFile out = new DataFile(outputDir, in.getName());
         outFiles.add(out);
 
-        if (!in.exists())
+        if (!in.exists()) {
           throw new FileNotFoundException("input file not found: " + in);
+        }
 
         // Copy file
         FileUtils.copy(in.rawOpen(), out.rawCreate());

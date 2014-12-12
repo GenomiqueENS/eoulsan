@@ -51,7 +51,7 @@ public class TranslatorUtils {
    * @throws IOException if an error occurs while creating the output file
    */
   public static void addTranslatorFields(final File inputFile,
-      int fieldToTranslate, final Translator translator,
+      final int fieldToTranslate, final Translator translator,
       final TranslatorOutputFormat of) throws FileNotFoundException,
       IOException {
 
@@ -60,15 +60,18 @@ public class TranslatorUtils {
   }
 
   public static void addTranslatorFields(final InputStream is,
-      int fieldToTranslate, final Translator translator,
+      final int fieldToTranslate, final Translator translator,
       final TranslatorOutputFormat of) throws IOException {
 
-    if (is == null)
+    if (is == null) {
       throw new NullPointerException("InputStream is null");
-    if (translator == null)
+    }
+    if (translator == null) {
       throw new NullPointerException("Translator is null");
-    if (of == null)
+    }
+    if (of == null) {
       throw new NullPointerException("OutputFormat is null");
+    }
 
     String[] translatorFieldnames = translator.getFields();
 
@@ -84,26 +87,29 @@ public class TranslatorUtils {
       if (first) {
 
         // Write original file header
-        for (String field : fields)
+        for (String field : fields) {
           of.addHeaderField(field);
+        }
 
         // Write original file header
-        for (String translatorFieldname : translatorFieldnames)
+        for (String translatorFieldname : translatorFieldnames) {
           of.addHeaderField(translatorFieldname);
+        }
 
         first = false;
       } else {
 
         of.newLine();
 
-        // Write orignal file data
-        for (String field1 : fields)
+        // Write original file data
+        for (String field1 : fields) {
           try {
             of.writeDouble(Double.parseDouble(field1));
           } catch (NumberFormatException e) {
 
             of.writeText(field1);
           }
+        }
 
         // Write annotation
         for (final String field : translatorFieldnames) {
@@ -111,26 +117,29 @@ public class TranslatorUtils {
           final String valueToTranslate = fields[fieldToTranslate];
           final String value;
 
-          if (field == null)
+          if (field == null) {
             value = null;
-          else
+          } else {
             value = translator.translateField(valueToTranslate, field);
+          }
 
           String link;
 
-          if (value == null || !translator.isLinkInfo(field))
+          if (value == null || !translator.isLinkInfo(field)) {
             link = null;
-          else
+          } else {
             link = translator.getLinkInfo(value, field);
+          }
 
-          if (value == null)
+          if (value == null) {
             of.writeEmpty();
-          else {
+          } else {
 
-            if (link == null)
+            if (link == null) {
               of.writeText(value);
-            else
+            } else {
               of.writeLink(value, link);
+            }
 
           }
         }

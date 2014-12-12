@@ -56,8 +56,9 @@ public class KeepNumberMatchReadAlignmentsFilter extends
   public void setParameter(final String key, final String value)
       throws EoulsanException {
 
-    if (key == null || value == null)
+    if (key == null || value == null) {
       return;
+    }
 
     if ("threshold".equals(key.trim())) {
 
@@ -67,29 +68,32 @@ public class KeepNumberMatchReadAlignmentsFilter extends
         return;
       }
 
-      if (this.numberMatch < 0)
+      if (this.numberMatch < 0) {
         throw new EoulsanException("Invalid number of match to keep: "
-            + numberMatch);
-    } else
-
+            + this.numberMatch);
+      }
+    } else {
       throw new EoulsanException("Unknown parameter for "
           + getName() + " alignments filter: " + key);
+    }
   }
 
   @Override
   public void init() {
 
-    if (this.numberMatch < 0)
+    if (this.numberMatch < 0) {
       throw new IllegalArgumentException(
           "The number of match to keep is not set for "
               + getName() + " alignments alignments filter.");
+    }
   }
 
   @Override
-  public void filterReadAlignments(List<SAMRecord> records) {
+  public void filterReadAlignments(final List<SAMRecord> records) {
 
-    if (records == null || records.isEmpty())
+    if (records == null || records.isEmpty()) {
       return;
+    }
 
     List<SAMRecord> recordsToKeep = new ArrayList<>();
     int cptRecords = 0;

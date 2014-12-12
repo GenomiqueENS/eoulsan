@@ -47,7 +47,7 @@ public class LogComparator extends AbstractComparator {
   private int numberElementsCompared;
 
   @Override
-  public boolean compareFiles(InputStream isA, InputStream isB)
+  public boolean compareFiles(final InputStream isA, final InputStream isB)
       throws IOException {
 
     Reporter logExpected = new LogReader(isA).read();
@@ -64,7 +64,7 @@ public class LogComparator extends AbstractComparator {
 
       // Parse counter
       for (String counter : logExpected.getCounterNames(counterGroup)) {
-        numberElementsCompared++;
+        this.numberElementsCompared++;
 
         // Compute difference between two reporter
         diffExpectedTested =
@@ -82,7 +82,7 @@ public class LogComparator extends AbstractComparator {
     }
 
     // Check all elements present in first log are compare from second log
-    if (numberElements != numberElementsCompared) {
+    if (numberElements != this.numberElementsCompared) {
       setCauseFailComparison("Different count elements "
           + this.numberElementsCompared + " was " + numberElements
           + " expected.");

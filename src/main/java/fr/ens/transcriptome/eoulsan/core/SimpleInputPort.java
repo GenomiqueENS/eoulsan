@@ -125,7 +125,7 @@ public class SimpleInputPort extends AbstractPort implements InputPort,
    * @param requiredInWorkingDirectory if data is required in working directory
    */
   SimpleInputPort(final String name, final DataFormat format,
-      boolean requiredInWorkingDirectory) {
+      final boolean requiredInWorkingDirectory) {
 
     this(name, false, format, null, requiredInWorkingDirectory);
   }
@@ -138,7 +138,7 @@ public class SimpleInputPort extends AbstractPort implements InputPort,
    * @param requiredInWorkingDirectory if data is required in working directory
    */
   SimpleInputPort(final String name, final boolean list,
-      final DataFormat format, boolean requiredInWorkingDirectory) {
+      final DataFormat format, final boolean requiredInWorkingDirectory) {
 
     this(name, list, format, null, requiredInWorkingDirectory);
   }
@@ -152,7 +152,7 @@ public class SimpleInputPort extends AbstractPort implements InputPort,
    */
   protected SimpleInputPort(final String name, final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted,
-      boolean requiredInWorkingDirectory) {
+      final boolean requiredInWorkingDirectory) {
 
     this(name, false, format, compressionsAccepted, requiredInWorkingDirectory);
   }
@@ -168,16 +168,17 @@ public class SimpleInputPort extends AbstractPort implements InputPort,
   protected SimpleInputPort(final String name, final boolean list,
       final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted,
-      boolean requiredInWorkingDirectory) {
+      final boolean requiredInWorkingDirectory) {
 
     // Set the name, the format and if the value is a list
     super(name, list, format);
 
     // Set the compressions accepted
-    if (compressionsAccepted == null)
+    if (compressionsAccepted == null) {
       this.compressionsAccepted = EnumSet.allOf(CompressionType.class);
-    else
+    } else {
       this.compressionsAccepted = compressionsAccepted;
+    }
 
     // Set if input data is required in working directory
     this.requiredInWorkingDirectory = requiredInWorkingDirectory;

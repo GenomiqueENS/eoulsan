@@ -63,13 +63,15 @@ public final class Alphabets {
    */
   private static final Set<Character> toUnmodifiableSet(final char[] array) {
 
-    if (array == null)
+    if (array == null) {
       return null;
+    }
 
     final Set<Character> result = new HashSet<>();
 
-    for (char c : array)
+    for (char c : array) {
       result.add(c);
+    }
 
     return Collections.unmodifiableSet(result);
   }
@@ -418,7 +420,7 @@ public final class Alphabets {
     }
 
     @Override
-    public final boolean isLetterValid(char letter) {
+    public final boolean isLetterValid(final char letter) {
 
       // This method is fastest than the default implementation
 

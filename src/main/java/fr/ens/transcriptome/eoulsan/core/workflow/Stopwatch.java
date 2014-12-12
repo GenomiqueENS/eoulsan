@@ -26,12 +26,12 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+import java.util.concurrent.TimeUnit;
+
 import com.google.common.annotations.Beta;
 import com.google.common.annotations.GwtCompatible;
 import com.google.common.annotations.GwtIncompatible;
 import com.google.common.base.Ticker;
-
-import java.util.concurrent.TimeUnit;
 
 /*
  * This class is included in Eoulsan to avoid Guava version conflict with Guava version bundled in Hadoop. 
@@ -97,7 +97,7 @@ final class Stopwatch {
    * source.
    * @since 15.0
    */
-  public static Stopwatch createUnstarted(Ticker ticker) {
+  public static Stopwatch createUnstarted(final Ticker ticker) {
     return new Stopwatch(ticker);
   }
 
@@ -114,7 +114,7 @@ final class Stopwatch {
    * Creates (and starts) a new stopwatch, using the specified time source.
    * @since 15.0
    */
-  public static Stopwatch createStarted(Ticker ticker) {
+  public static Stopwatch createStarted(final Ticker ticker) {
     return new Stopwatch(ticker).start();
   }
 
@@ -134,7 +134,7 @@ final class Stopwatch {
    * @deprecated Use {@link Stopwatch#createUnstarted(Ticker)} instead.
    */
   @Deprecated
-  Stopwatch(Ticker ticker) {
+  Stopwatch(final Ticker ticker) {
     this.ticker = checkNotNull(ticker, "ticker");
   }
 
@@ -144,7 +144,7 @@ final class Stopwatch {
    * {@code start()}.
    */
   public boolean isRunning() {
-    return isRunning;
+    return this.isRunning;
   }
 
   /**
@@ -153,9 +153,9 @@ final class Stopwatch {
    * @throws IllegalStateException if the stopwatch is already running.
    */
   public Stopwatch start() {
-    checkState(!isRunning, "This stopwatch is already running.");
-    isRunning = true;
-    startTick = ticker.read();
+    checkState(!this.isRunning, "This stopwatch is already running.");
+    this.isRunning = true;
+    this.startTick = this.ticker.read();
     return this;
   }
 
@@ -166,10 +166,10 @@ final class Stopwatch {
    * @throws IllegalStateException if the stopwatch is already stopped.
    */
   public Stopwatch stop() {
-    long tick = ticker.read();
-    checkState(isRunning, "This stopwatch is already stopped.");
-    isRunning = false;
-    elapsedNanos += tick - startTick;
+    long tick = this.ticker.read();
+    checkState(this.isRunning, "This stopwatch is already stopped.");
+    this.isRunning = false;
+    this.elapsedNanos += tick - this.startTick;
     return this;
   }
 
@@ -179,13 +179,14 @@ final class Stopwatch {
    * @return this {@code Stopwatch} instance
    */
   public Stopwatch reset() {
-    elapsedNanos = 0;
-    isRunning = false;
+    this.elapsedNanos = 0;
+    this.isRunning = false;
     return this;
   }
 
   private long elapsedNanos() {
-    return isRunning ? ticker.read() - startTick + elapsedNanos : elapsedNanos;
+    return this.isRunning ? this.ticker.read()
+        - this.startTick + this.elapsedNanos : this.elapsedNanos;
   }
 
   /**
@@ -197,7 +198,7 @@ final class Stopwatch {
    * here.
    * @since 14.0 (since 10.0 as {@code elapsedTime()})
    */
-  public long elapsed(TimeUnit desiredUnit) {
+  public long elapsed(final TimeUnit desiredUnit) {
     return desiredUnit.convert(elapsedNanos(), NANOSECONDS);
   }
 
@@ -216,7 +217,7 @@ final class Stopwatch {
     return String.format("%.4g %s", value, abbreviate(unit));
   }
 
-  private static TimeUnit chooseUnit(long nanos) {
+  private static TimeUnit chooseUnit(final long nanos) {
     if (DAYS.convert(nanos, NANOSECONDS) > 0) {
       return DAYS;
     }
@@ -238,7 +239,7 @@ final class Stopwatch {
     return NANOSECONDS;
   }
 
-  private static String abbreviate(TimeUnit unit) {
+  private static String abbreviate(final TimeUnit unit) {
     switch (unit) {
     case NANOSECONDS:
       return "ns";

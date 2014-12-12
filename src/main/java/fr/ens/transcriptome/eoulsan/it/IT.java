@@ -134,7 +134,7 @@ public class IT {
     try {
       // Check data to generate
       if (!isDataNeededToBeGenerated()) {
-        itResult.asNothingToDo();
+        this.itResult.asNothingToDo();
         // Nothing to do
         return;
       }
@@ -143,7 +143,7 @@ public class IT {
       buildOutputDirectory();
 
       // Launch scripts
-      launchScriptsTest(itResult);
+      launchScriptsTest(this.itResult);
 
       // Treat result application directory
       itOutput =
@@ -152,7 +152,7 @@ public class IT {
               this.checkAbsenceFilePatterns);
 
       if (this.generateExpectedData) {
-        itResult.asGeneratedData();
+        this.itResult.asGeneratedData();
 
         // Build expected directory if necessary
         createExpectedDirectory();
@@ -169,26 +169,26 @@ public class IT {
                 this.excludeToComparePatterns, this.checkExistenceFilePatterns,
                 this.checkAbsenceFilePatterns));
 
-        itResult.addComparisonsResults(results);
+        this.itResult.addComparisonsResults(results);
 
         // Check if at least on comparison fail, must throw an exception
-        if (!itResult.isSuccess()) {
-          throw itResult.getException();
+        if (!this.itResult.isSuccess()) {
+          throw this.itResult.getException();
         }
       }
 
     } catch (Throwable e) {
-      itResult.setException(e);
-      throw new Exception(itResult.createReportTestngMessage());
+      this.itResult.setException(e);
+      throw new Exception(this.itResult.createReportTestngMessage());
 
     } finally {
 
       timer.stop();
 
-      if (!itResult.isNothingToDo()) {
+      if (!this.itResult.isNothingToDo()) {
 
         // Set success on generate data in expected directory
-        itResult.createReportFile(timer.elapsed(TimeUnit.MILLISECONDS));
+        this.itResult.createReportFile(timer.elapsed(TimeUnit.MILLISECONDS));
       }
 
       // Notify the suite of the end of the current test
@@ -327,7 +327,7 @@ public class IT {
     for (Map.Entry<String, String> e : System.getenv().entrySet()) {
       envp.add(e.getKey() + "=" + e.getValue());
     }
-    
+
     // Add setting environment variables from configuration test
     for (Object o : this.testConf.keySet()) {
       String keyProperty = (String) o;
@@ -440,7 +440,7 @@ public class IT {
     if (!this.expectedTestDirectory.exists()) {
       // Create new expected data directory
       if (!this.expectedTestDirectory.mkdir()) {
-        throw new IOException(testName
+        throw new IOException(this.testName
             + ": error while create expected data directory: "
             + this.expectedTestDirectory.getAbsolutePath());
       }
@@ -498,14 +498,14 @@ public class IT {
         inputTestDirectory.listFiles(new FileFilter() {
 
           @Override
-          public boolean accept(File pathname) {
+          public boolean accept(final File pathname) {
             return pathname.getName().startsWith("expected");
           }
         });
 
     // Execute test, expected must be existing
     if (expectedDirectories.length == 0 && !this.generateExpectedData) {
-      throw new EoulsanException(testName
+      throw new EoulsanException(this.testName
           + ": no expected directory found to launch test in "
           + inputTestDirectory.getAbsolutePath());
     }
@@ -532,13 +532,13 @@ public class IT {
 
     // One test directory found
     if (expectedDirectories.length > 1) {
-      throw new EoulsanException(testName
+      throw new EoulsanException(this.testName
           + ": more one expected directory found in "
           + inputTestDirectory.getAbsolutePath());
     }
 
     if (!expectedDirectories[0].isDirectory()) {
-      throw new EoulsanException(testName
+      throw new EoulsanException(this.testName
           + ": no expected directory found in "
           + inputTestDirectory.getAbsolutePath());
     }
@@ -663,7 +663,8 @@ public class IT {
    * @return the file to compare patterns
    */
   public String getFileToComparePatterns() {
-    return (fileToComparePatterns == null || fileToComparePatterns.isEmpty()
+    return (this.fileToComparePatterns == null
+        || this.fileToComparePatterns.isEmpty()
         ? "none" : this.fileToComparePatterns);
   }
 
@@ -672,9 +673,9 @@ public class IT {
    * @return the exclude to compare patterns
    */
   public String getExcludeToComparePatterns() {
-    return (excludeToComparePatterns == null
-        || excludeToComparePatterns.isEmpty()
-        ? "none" : excludeToComparePatterns);
+    return (this.excludeToComparePatterns == null
+        || this.excludeToComparePatterns.isEmpty()
+        ? "none" : this.excludeToComparePatterns);
   }
 
   /**
@@ -682,9 +683,9 @@ public class IT {
    * @return the check existence file patterns
    */
   public String getCheckExistenceFilePatterns() {
-    return (checkExistenceFilePatterns == null
-        || checkExistenceFilePatterns.isEmpty()
-        ? "none" : checkExistenceFilePatterns);
+    return (this.checkExistenceFilePatterns == null
+        || this.checkExistenceFilePatterns.isEmpty()
+        ? "none" : this.checkExistenceFilePatterns);
   }
 
   //
@@ -728,7 +729,7 @@ public class IT {
         Boolean.parseBoolean(this.testConf
             .getProperty(ITFactory.MANUAL_GENERATION_EXPECTED_DATA_CONF_KEY));
 
-    this.generateExpectedData = generateAllTests || generateNewTests;
+    this.generateExpectedData = this.generateAllTests || this.generateNewTests;
     this.expectedTestDirectory =
         retrieveExpectedDirectory(this.inputTestDirectory);
 

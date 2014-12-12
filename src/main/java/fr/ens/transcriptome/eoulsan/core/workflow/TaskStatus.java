@@ -94,7 +94,7 @@ public class TaskStatus implements StepStatus {
   //
 
   @Override
-  public void setMessage(String message) {
+  public void setMessage(final String message) {
 
     synchronized (this) {
       this.message = message;
@@ -131,10 +131,11 @@ public class TaskStatus implements StepStatus {
 
     checkProgress(min, max, value);
 
-    if (min == max)
+    if (min == max) {
       setProgress(1.0);
-    else
+    } else {
       setProgress(((double) (value - min)) / (max - min));
+    }
   }
 
   @Override
@@ -154,7 +155,7 @@ public class TaskStatus implements StepStatus {
       // If a status for the step exist, inform the step status
       if (this.status != null) {
         this.status.setTaskProgress(this.context.getId(),
-            context.getContextName(), progress);
+            this.context.getContextName(), progress);
       }
     }
   }
@@ -209,9 +210,9 @@ public class TaskStatus implements StepStatus {
 
     // Create the context result
     this.result =
-        new TaskResult(context, startDate, endDate, duration, this.message,
-            this.taskDescription == null ? "" : this.taskDescription,
-            this.counters, success);
+        new TaskResult(this.context, this.startDate, this.endDate, duration,
+            this.message, this.taskDescription == null
+                ? "" : this.taskDescription, this.counters, success);
 
     return this.result;
   }
@@ -228,8 +229,8 @@ public class TaskStatus implements StepStatus {
 
     // Create the context result
     this.result =
-        new TaskResult(context, startDate, endDate, duration, exception,
-            exceptionMessage);
+        new TaskResult(this.context, this.startDate, this.endDate, duration,
+            exception, exceptionMessage);
 
     return this.result;
   }

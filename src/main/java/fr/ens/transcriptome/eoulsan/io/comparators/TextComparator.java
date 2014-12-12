@@ -48,16 +48,16 @@ public class TextComparator extends AbstractComparatorWithBloomFilter {
   private int numberElementsCompared;
 
   @Override
-  public boolean compareFiles(BloomFilterUtils filter, InputStream is)
-      throws IOException {
+  public boolean compareFiles(final BloomFilterUtils filter,
+      final InputStream is) throws IOException {
 
     final BufferedReader reader =
         new BufferedReader(new InputStreamReader(is, Globals.DEFAULT_CHARSET));
     String line = null;
-    numberElementsCompared = 0;
+    this.numberElementsCompared = 0;
 
     while ((line = reader.readLine()) != null) {
-      numberElementsCompared++;
+      this.numberElementsCompared++;
 
       if (!filter.mightContain(line)) {
         // Save line occurs fail comparison
@@ -70,7 +70,7 @@ public class TextComparator extends AbstractComparatorWithBloomFilter {
     reader.close();
 
     // Check count element is the same between two files
-    if (numberElementsCompared != filter.getAddedNumberOfElements()) {
+    if (this.numberElementsCompared != filter.getAddedNumberOfElements()) {
       setCauseFailComparison("Different count elements "
           + this.numberElementsCompared + " was "
           + filter.getAddedNumberOfElements() + " expected.");

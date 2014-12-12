@@ -55,7 +55,7 @@ public class RTAReadSummary implements Iterable<RTALaneSummary> {
   private int id;
   private String type;
   private double densityRatio;
-  private List<RTALaneSummary> lanes = new ArrayList<>();
+  private final List<RTALaneSummary> lanes = new ArrayList<>();
 
   //
   // Getters
@@ -66,7 +66,7 @@ public class RTAReadSummary implements Iterable<RTALaneSummary> {
    * @return Returns the id
    */
   public int getId() {
-    return id;
+    return this.id;
   }
 
   /**
@@ -74,7 +74,7 @@ public class RTAReadSummary implements Iterable<RTALaneSummary> {
    * @return Returns the type
    */
   public String getType() {
-    return type;
+    return this.type;
   }
 
   /**
@@ -82,7 +82,7 @@ public class RTAReadSummary implements Iterable<RTALaneSummary> {
    * @return Returns the densityRatio
    */
   public double getDensityRatio() {
-    return densityRatio;
+    return this.densityRatio;
   }
 
   //
@@ -118,13 +118,18 @@ public class RTAReadSummary implements Iterable<RTALaneSummary> {
       // Parse Summary tag attributes
       for (String attributeName : getAttributeNames(e)) {
 
-        if ("Read".equals(attributeName))
+        switch (attributeName) {
+        case "Read":
           this.id = Integer.parseInt(getAttributeValue(e, attributeName));
-        else if ("ReadType".equals(attributeName))
+          break;
+        case "ReadType":
           this.type = getAttributeValue(e, attributeName);
-        else if ("densityRatio".equals(attributeName))
+          break;
+        case "densityRatio":
           this.densityRatio =
               Double.parseDouble(getAttributeValue(e, attributeName));
+          break;
+        }
       }
 
       // Parse Lane tag

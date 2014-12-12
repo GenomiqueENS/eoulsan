@@ -163,8 +163,9 @@ public class FastqFormatTest {
     assertEquals(0.00000001, FASTQ_SANGER.convertScoreToProbability(80), 0.01);
     assertEquals(0.000000001, FASTQ_SANGER.convertScoreToProbability(90), 0.01);
 
-    for (int i = 0; i <= 90; i += 10)
+    for (int i = 0; i <= 90; i += 10) {
       assertEquals(i, convertToProbaToScore(FASTQ_SANGER, i), 0.01);
+    }
 
   }
 
@@ -183,15 +184,17 @@ public class FastqFormatTest {
     assertEquals(80, FASTQ_SANGER.convertProbabilitytoScore(0.00000001), 0.01);
     assertEquals(90, FASTQ_SANGER.convertProbabilitytoScore(0.000000001), 0.01);
 
-    for (int i = 0; i <= 90; i += 10)
+    for (int i = 0; i <= 90; i += 10) {
       assertEquals(i, convertToProbaToScore(FASTQ_SANGER, i), 0.01);
+    }
 
-    for (int i = 0; i <= 90; i += 10)
+    for (int i = 0; i <= 90; i += 10) {
       assertEquals(i, convertToProbaToScore(FASTQ_ILLUMINA, i), 0.01);
+    }
 
   }
 
-  private double convertToProbaToScore(FastqFormat f, int q) {
+  private double convertToProbaToScore(final FastqFormat f, final int q) {
 
     final double proba = f.convertScoreToProbability(q);
 
@@ -318,8 +321,9 @@ public class FastqFormatTest {
     assertEquals(8, FASTQ_SANGER.convertScoreTo(9, FASTQ_SOLEXA));
     assertEquals(10, FASTQ_SANGER.convertScoreTo(10, FASTQ_SOLEXA));
 
-    for (int i = 11; i <= 40; i++)
+    for (int i = 11; i <= 40; i++) {
       assertEquals(i, FASTQ_SANGER.convertScoreTo(i, FASTQ_SOLEXA));
+    }
 
     assertEquals(1, FASTQ_SOLEXA.convertScoreTo(-5, FASTQ_SANGER));
     assertEquals(1, FASTQ_SOLEXA.convertScoreTo(-4, FASTQ_SANGER));
@@ -338,16 +342,18 @@ public class FastqFormatTest {
     assertEquals(10, FASTQ_SOLEXA.convertScoreTo(9, FASTQ_SANGER));
     assertEquals(10, FASTQ_SOLEXA.convertScoreTo(10, FASTQ_SANGER));
 
-    for (int i = 11; i <= 40; i++)
+    for (int i = 11; i <= 40; i++) {
       assertEquals(i, FASTQ_SOLEXA.convertScoreTo(i, FASTQ_SANGER));
+    }
   }
 
   private String rangeCharacters(final int min, final int max) {
 
     final StringBuilder sb = new StringBuilder();
 
-    for (int i = min; i <= max; i++)
+    for (int i = min; i <= max; i++) {
       sb.append((char) i);
+    }
 
     return sb.toString();
   }
@@ -367,13 +373,15 @@ public class FastqFormatTest {
     assertEquals(FASTQ_ILLUMINA, identifyFormat(rangeCharacters(64, 126)));
     assertEquals(FASTQ_ILLUMINA_1_5, identifyFormat(rangeCharacters(66, 126)));
 
-    for (FastqFormat f : FastqFormat.values())
+    for (FastqFormat f : FastqFormat.values()) {
       assertEquals(f,
           identifyFormat(rangeCharacters(f.getCharMin(), f.getCharMax())));
+    }
 
-    for (FastqFormat f : FastqFormat.values())
+    for (FastqFormat f : FastqFormat.values()) {
       assertEquals(f,
           identifyFormat(rangeCharacters(f.getCharMin() + 1, f.getCharMax())));
+    }
 
     assertNull(identifyFormat(rangeCharacters(32, 104)));
     assertNull(identifyFormat(rangeCharacters(33, 127)));

@@ -90,9 +90,10 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
   public void configure(final Set<Parameter> stepParameters)
       throws EoulsanException {
 
-    if (stepParameters == null)
+    if (stepParameters == null) {
       throw new EoulsanException("No parameters set in "
           + getName() + " generator");
+    }
 
     for (Parameter p : stepParameters) {
 
@@ -102,13 +103,15 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
         this.mapper =
             SequenceReadsMapperService.getInstance().newService(mapperName);
 
-        if (this.mapper == null)
+        if (this.mapper == null) {
           throw new EoulsanException(
               "Mapper with the following name not found: " + mapperName);
+        }
 
-      } else
+      } else {
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());
+      }
 
     }
 
@@ -137,11 +140,12 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
       final DataFile mapperIndexDataFile = outData.getDataFile();
 
       // Set mapper temporary directory
-      mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());
+      this.mapper
+          .setTempDirectory(context.getSettings().getTempDirectoryFile());
 
       // Set the number of thread to use
       // TODO the number of thread must be defined by user
-      mapper.setThreadsNumber(1);
+      this.mapper.setThreadsNumber(1);
 
       // Create indexer
       final GenomeMapperIndexer indexer = new GenomeMapperIndexer(this.mapper);

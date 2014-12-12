@@ -36,16 +36,20 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepObserver;
 public interface UI extends WorkflowStepObserver {
 
   String getName();
-  
+
   void init(Workflow workflow);
 
+  @Override
   void notifyStepState(WorkflowStep step);
 
+  @Override
   void notifyStepState(WorkflowStep step, int contextId, String contextName,
       double progress);
 
+  @Override
   void notifyStepState(WorkflowStep step, double progress);
 
+  @Override
   void notifyStepState(WorkflowStep step, String note);
 
 }

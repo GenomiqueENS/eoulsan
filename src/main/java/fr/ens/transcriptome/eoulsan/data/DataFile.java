@@ -35,7 +35,6 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.List;
 
-import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocolService;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
@@ -182,8 +181,9 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    */
   public DataProtocol getProtocol() throws IOException {
 
-    if (this.protocol == null)
-      throw new IOException("Unknow protocol: " + unknownProtocolName);
+    if (this.protocol == null) {
+      throw new IOException("Unknown protocol: " + this.unknownProtocolName);
+    }
 
     return this.protocol;
   }
@@ -197,8 +197,9 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    */
   public DataFileMetadata getMetaData() throws IOException {
 
-    if (this.md == null)
+    if (this.md == null) {
       this.md = getProtocol().getMetadata(this);
+    }
 
     return this.md;
   }
@@ -233,10 +234,11 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    */
   public File toFile() {
 
-    if (this.protocol == null)
+    if (this.protocol == null) {
       return null;
+    }
 
-    return protocol.getSourceAsFile(this);
+    return this.protocol.getSourceAsFile(this);
   }
 
   //
@@ -257,15 +259,17 @@ public class DataFile implements Comparable<DataFile>, Serializable {
     final CompressionType ct;
 
     final String contentEncoding =
-        this.md == null ? null : md.getContentEncoding();
+        this.md == null ? null : this.md.getContentEncoding();
 
-    if (contentEncoding != null)
+    if (contentEncoding != null) {
       ct = CompressionType.getCompressionTypeByContentEncoding(contentEncoding);
-    else
+    } else {
       ct = CompressionType.getCompressionTypeByFilename(getName());
+    }
 
-    if (ct == null)
+    if (ct == null) {
       return os;
+    }
 
     return ct.createOutputStream(os);
   }
@@ -278,7 +282,7 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    */
   public OutputStream rawCreate() throws IOException {
 
-    return getProtocol().putData(this, md == null ? null : md);
+    return getProtocol().putData(this, this.md == null ? null : this.md);
   }
 
   /**
@@ -296,8 +300,9 @@ public class DataFile implements Comparable<DataFile>, Serializable {
         CompressionType.getCompressionTypeByContentEncoding(md
             .getContentEncoding());
 
-    if (ct == null)
+    if (ct == null) {
       return is;
+    }
 
     return ct.createInputStream(is);
   }
@@ -320,8 +325,9 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    */
   public void copyTo(final DataFile dest) throws IOException {
 
-    if (dest == null)
+    if (dest == null) {
       throw new NullPointerException("The destination DataFile is null.");
+    }
 
     dest.getProtocol().putData(this, dest);
   }
@@ -346,9 +352,10 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    */
   public void mkdir() throws IOException {
 
-    if (!getProtocol().canMkdir())
+    if (!getProtocol().canMkdir()) {
       throw new IOException(
           "The underlying protocol does not allow creating directories");
+    }
 
     getProtocol().mkdir(this);
   }
@@ -360,9 +367,10 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    */
   public void mkdirs() throws IOException {
 
-    if (!getProtocol().canMkdir())
+    if (!getProtocol().canMkdir()) {
       throw new IOException(
           "The underlying protocol does not allow creating directories");
+    }
 
     getProtocol().mkdirs(this);
   }
@@ -374,12 +382,14 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    */
   public void symlink(final DataFile link) throws IOException {
 
-    if (link == null)
+    if (link == null) {
       throw new NullPointerException("The link can not be null.");
+    }
 
-    if (!getProtocol().canSymlink())
+    if (!getProtocol().canSymlink()) {
       throw new IOException(
           "The underlying protocol does not allow creating symbolic links");
+    }
 
     getProtocol().symlink(this, link);
   }
@@ -390,9 +400,10 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    */
   public void delete() throws IOException {
 
-    if (!getProtocol().canDelete())
+    if (!getProtocol().canDelete()) {
       throw new IOException(
           "The underlying protocol does not allow deleting files");
+    }
 
     getProtocol().delete(this);
   }
@@ -404,9 +415,10 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    */
   public List<DataFile> list() throws IOException {
 
-    if (!getProtocol().canList())
+    if (!getProtocol().canList()) {
       throw new IOException(
           "The underlying protocol does not allow to list a directory");
+    }
 
     return getProtocol().list(this);
   }
@@ -436,14 +448,17 @@ public class DataFile implements Comparable<DataFile>, Serializable {
       }
     }
 
-    if (pos == -1)
+    if (pos == -1) {
       return null;
+    }
 
-    if (len <= pos + 1)
+    if (len <= pos + 1) {
       return null;
+    }
 
-    if (src.charAt(pos) == ':' && src.charAt(pos + 1) == '/')
+    if (src.charAt(pos) == ':' && src.charAt(pos + 1) == '/') {
       return src.substring(0, pos);
+    }
 
     return null;
   }
@@ -456,20 +471,20 @@ public class DataFile implements Comparable<DataFile>, Serializable {
 
     // Looking for the protocol
     this.protocolPrefixInSource = findProtocol(source);
-    final DataProtocolService registery = DataProtocolService.getInstance();
+    final DataProtocolService registry = DataProtocolService.getInstance();
 
-    if (protocolPrefixInSource == null)
-      this.protocol = registery.getDefaultProtocol();
-    else
-      this.protocol = registery.newService(protocolPrefixInSource);
+    if (this.protocolPrefixInSource == null) {
+      this.protocol = registry.getDefaultProtocol();
+    } else {
+      this.protocol = registry.newService(this.protocolPrefixInSource);
+    }
 
     if (this.protocol == null) {
-      getLogger()
-          .severe(
-              "Unknown protocol: \""
-                  + protocolPrefixInSource
-                  + "\", can't set protocol for DataFile.");
-      this.unknownProtocolName = protocolPrefixInSource;
+      getLogger().severe(
+          "Unknown protocol: \""
+              + this.protocolPrefixInSource
+              + "\", can't set protocol for DataFile.");
+      this.unknownProtocolName = this.protocolPrefixInSource;
     }
 
     // Set the source name
@@ -477,10 +492,11 @@ public class DataFile implements Comparable<DataFile>, Serializable {
 
     final int lastSlashPos = source.lastIndexOf(separatorChar);
 
-    if (lastSlashPos == -1)
+    if (lastSlashPos == -1) {
       this.name = source;
-    else
+    } else {
       this.name = source.substring(lastSlashPos + 1);
+    }
 
   }
 
@@ -497,11 +513,13 @@ public class DataFile implements Comparable<DataFile>, Serializable {
   @Override
   public boolean equals(final Object o) {
 
-    if (o == this)
+    if (o == this) {
       return true;
+    }
 
-    if (!(o instanceof DataFile))
+    if (!(o instanceof DataFile)) {
       return false;
+    }
 
     final DataFile df = (DataFile) o;
 
@@ -554,13 +572,12 @@ public class DataFile implements Comparable<DataFile>, Serializable {
   /**
    * Public constructor.
    * @param source the source of the DataFile
-   * @throws EoulsanException if an error occurs when searching the protocol of
-   *           the source
    */
   public DataFile(final String source) {
 
-    if (source == null)
+    if (source == null) {
       throw new NullPointerException("The source can not be null.");
+    }
 
     parseSource(source);
   }
@@ -569,16 +586,16 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    * Public constructor.
    * @param parentFile the parent file of the DataFile
    * @param filename the filename of the DataFile
-   * @throws EoulsanException if an error occurs when searching the protocol of
-   *           the source
    */
   public DataFile(final DataFile parentFile, final String filename) {
 
-    if (parentFile == null)
+    if (parentFile == null) {
       throw new NullPointerException("The parent file can not be null.");
+    }
 
-    if (filename == null)
+    if (filename == null) {
       throw new NullPointerException("The name can not be null.");
+    }
 
     parseSource(parentFile.getSource() + separator + filename);
   }
@@ -586,13 +603,12 @@ public class DataFile implements Comparable<DataFile>, Serializable {
   /**
    * Public constructor.
    * @param file the source file of the DataFile
-   * @throws EoulsanException if an error occurs when searching the protocol of
-   *           the source
    */
   public DataFile(final File file) {
 
-    if (file == null)
+    if (file == null) {
       throw new NullPointerException("The source file can not be null.");
+    }
 
     parseSource(file.getPath());
   }

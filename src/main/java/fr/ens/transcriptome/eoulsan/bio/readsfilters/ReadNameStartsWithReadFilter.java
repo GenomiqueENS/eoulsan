@@ -57,57 +57,71 @@ public class ReadNameStartsWithReadFilter extends AbstractReadFilter {
   public void setParameter(final String key, final String value)
       throws EoulsanException {
 
-    if (key == null || value == null)
+    if (key == null || value == null) {
       return;
+    }
 
     if ("forbidden.prefixes".equals(key.trim())) {
 
-      if (this.forbiddenPrefixes == null)
+      if (this.forbiddenPrefixes == null) {
         this.forbiddenPrefixes = new HashSet<>();
+      }
 
       final String[] prefixes = value.split(",");
 
-      if (prefixes != null)
-        for (String s : prefixes)
-          forbiddenPrefixes.add(s.trim());
+      if (prefixes != null) {
+        for (String s : prefixes) {
+          this.forbiddenPrefixes.add(s.trim());
+        }
+      }
 
     } else if ("allowed.prefixes".equals(key.trim())) {
 
-      if (this.allowedPrefixes == null)
+      if (this.allowedPrefixes == null) {
         this.allowedPrefixes = new HashSet<>();
+      }
 
       final String[] prefixes = value.split(",");
 
-      if (prefixes != null)
-        for (String s : prefixes)
-          allowedPrefixes.add(s.trim());
+      if (prefixes != null) {
+        for (String s : prefixes) {
+          this.allowedPrefixes.add(s.trim());
+        }
+      }
 
-    } else
-
+    } else {
       throw new EoulsanException("Unknown parameter for "
           + getName() + " read filter: " + key);
+    }
   }
 
   @Override
   public boolean accept(final ReadSequence read) {
 
-    if (read == null)
+    if (read == null) {
       return false;
+    }
 
     final String name = read.getName();
-    if (name == null)
+    if (name == null) {
       return false;
+    }
 
-    if (this.forbiddenPrefixes != null)
-      for (final String prefix : this.forbiddenPrefixes)
-        if (name.startsWith(prefix))
+    if (this.forbiddenPrefixes != null) {
+      for (final String prefix : this.forbiddenPrefixes) {
+        if (name.startsWith(prefix)) {
           return false;
+        }
+      }
+    }
 
     if (this.allowedPrefixes != null) {
 
-      for (final String prefix : this.allowedPrefixes)
-        if (name.startsWith(prefix))
+      for (final String prefix : this.allowedPrefixes) {
+        if (name.startsWith(prefix)) {
           return true;
+        }
+      }
 
       return false;
     }

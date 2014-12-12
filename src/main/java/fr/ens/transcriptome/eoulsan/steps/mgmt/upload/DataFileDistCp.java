@@ -105,15 +105,16 @@ public class DataFileDistCp {
     }
 
     @Override
-    protected void map(final LongWritable key, final Text value, Context context)
-        throws IOException, InterruptedException {
+    protected void map(final LongWritable key, final Text value,
+        final Context context) throws IOException, InterruptedException {
 
       final String val = value.toString();
 
       final int tabPos = val.indexOf('\t');
 
-      if (tabPos == -1)
+      if (tabPos == -1) {
         return;
+      }
 
       final Configuration conf = context.getConfiguration();
 
@@ -221,14 +222,15 @@ public class DataFileDistCp {
 
   public void copy(final Map<DataFile, DataFile> entries) throws IOException {
 
-    if (entries == null || entries.size() == 0)
+    if (entries == null || entries.size() == 0) {
       return;
+    }
 
     final Configuration conf = this.conf;
     final Path tmpInputDir =
-        PathUtils.createTempPath(jobPath, "distcp-in-", "", conf);
+        PathUtils.createTempPath(this.jobPath, "distcp-in-", "", conf);
     final Path tmpOutputDir =
-        PathUtils.createTempPath(jobPath, "distcp-out-", "", conf);
+        PathUtils.createTempPath(this.jobPath, "distcp-out-", "", conf);
 
     //
     // Create entries for distcp
@@ -277,8 +279,9 @@ public class DataFileDistCp {
     PathUtils.fullyDelete(tmpInputDir, conf);
     PathUtils.fullyDelete(tmpOutputDir, conf);
 
-    if (!job.isSuccessful())
+    if (!job.isSuccessful()) {
       throw new IOException("Unable to copy files using DataFileDistCp.");
+    }
 
   }
 
@@ -291,7 +294,7 @@ public class DataFileDistCp {
     Collections.sort(inFiles, new Comparator<DataFile>() {
 
       @Override
-      public int compare(final DataFile f1, DataFile f2) {
+      public int compare(final DataFile f1, final DataFile f2) {
 
         long size1;
 
@@ -367,11 +370,13 @@ public class DataFileDistCp {
    */
   public DataFileDistCp(final Configuration conf, final Path jobPath) {
 
-    if (conf == null)
+    if (conf == null) {
       throw new NullPointerException("The configuration is null");
+    }
 
-    if (jobPath == null)
+    if (jobPath == null) {
       throw new NullPointerException("The job Path is null");
+    }
 
     this.conf = conf;
     this.jobPath = jobPath;

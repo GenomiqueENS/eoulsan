@@ -180,11 +180,12 @@ public final class WorkflowStepOutputDataFile implements
     final String designFieldName =
         registry.getDesignFieldnameForDataFormat(design, format);
 
-    if (designFieldName == null)
+    if (designFieldName == null) {
       throw new EoulsanRuntimeException("The "
           + format.getName()
           + " format was not found in the design file for sample "
           + sample.getId() + " (" + sample.getName() + ")");
+    }
 
     return sample.getMetadata().getFieldAsList(designFieldName);
   }
@@ -200,17 +201,19 @@ public final class WorkflowStepOutputDataFile implements
   private static DataFile newDesignDataFile(final List<String> fieldValues,
       final DataFormat format, final Sample sample, final int fileIndex) {
 
-    if (fileIndex >= 0 && fileIndex > fieldValues.size())
+    if (fileIndex >= 0 && fileIndex > fieldValues.size()) {
       return null;
+    }
 
     final DataFile file =
         new DataFile(fieldValues.get(fileIndex == -1 ? 0 : fileIndex));
 
-    if (!isDesignDataFileValidFormat(file, format))
+    if (!isDesignDataFileValidFormat(file, format)) {
       throw new EoulsanRuntimeException("The file "
           + file + " in design file is not a " + format.getName()
           + format.getName() + " format for " + sample.getId() + " ("
           + sample.getName() + ")");
+    }
 
     return file;
   }
@@ -252,8 +255,9 @@ public final class WorkflowStepOutputDataFile implements
   private static boolean isDesignDataFileValidFormat(final DataFile file,
       final DataFormat df) {
 
-    if (file == null || df == null)
+    if (file == null || df == null) {
       return false;
+    }
 
     DataFileMetadata md;
 
@@ -266,14 +270,21 @@ public final class WorkflowStepOutputDataFile implements
       md = null;
     }
 
-    if (md != null && df.equals(md.getDataFormat()))
+    if (md != null && df.equals(md.getDataFormat())) {
       return true;
+    }
 
     final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
-    final DataFormat sourceDf =
-        dfr.getDataFormatFromExtension(file.getExtension());
 
-    return sourceDf != null && sourceDf.equals(df);
+    for (DataFormat sourceDf : dfr.getDataFormatsFromExtension(file
+        .getExtension())) {
+
+      if (sourceDf.equals(df)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   //
@@ -291,11 +302,13 @@ public final class WorkflowStepOutputDataFile implements
   @Override
   public boolean equals(final Object o) {
 
-    if (o == this)
+    if (o == this) {
       return true;
+    }
 
-    if (o == null || !(o instanceof WorkflowStepOutputDataFile))
+    if (o == null || !(o instanceof WorkflowStepOutputDataFile)) {
       return false;
+    }
 
     final WorkflowStepOutputDataFile that = (WorkflowStepOutputDataFile) o;
 
@@ -348,17 +361,19 @@ public final class WorkflowStepOutputDataFile implements
     sb.append('_');
 
     // Set the id of the sample
-    if (format.isOneFilePerAnalysis())
+    if (format.isOneFilePerAnalysis()) {
       sb.append('0');
-    else
+    } else {
       sb.append(sample.getId());
+    }
 
     // Set the file index if needed
-    if (fileIndex >= 0)
+    if (fileIndex >= 0) {
       sb.append(toLetter(fileIndex));
+    }
 
     // Set the extension
-    sb.append(format.getDefaultExtention());
+    sb.append(format.getDefaultExtension());
 
     // Set the compression extension
     sb.append(compression.getExtension());
@@ -385,16 +400,18 @@ public final class WorkflowStepOutputDataFile implements
     final DataFormat format = outputPort.getFormat();
     final CompressionType compression = outputPort.getCompression();
 
-    if (format.getMaxFilesCount() < 2)
+    if (format.getMaxFilesCount() < 2) {
       throw new EoulsanRuntimeException(
           "Only multifiles DataFormat are handled by this method.");
+    }
 
     switch (step.getType()) {
 
     case STANDARD_STEP:
 
-      if (!existingFiles)
+      if (!existingFiles) {
         return format.getMaxFilesCount();
+      }
 
       int count = 0;
       boolean found;
@@ -406,8 +423,9 @@ public final class WorkflowStepOutputDataFile implements
                 count, compression);
 
         found = file.exists();
-        if (found)
+        if (found) {
           count++;
+        }
       } while (found);
 
       return count;
@@ -452,21 +470,24 @@ public final class WorkflowStepOutputDataFile implements
 
     final DataFormat format = outputPort.getFormat();
 
-    if (format.getMaxFilesCount() == 1 && fileIndex != -1)
+    if (format.getMaxFilesCount() == 1 && fileIndex != -1) {
       throw new IllegalArgumentException(
           "file index must be used for multi files formats");
+    }
 
-    if (format.getMaxFilesCount() > 1 && fileIndex < 0)
+    if (format.getMaxFilesCount() > 1 && fileIndex < 0) {
       throw new IllegalArgumentException("file index ("
           + fileIndex
           + ") must be greater or equals to 0 for multi files formats ("
           + format.getName() + ")");
+    }
 
     this.step = outputPort.getStep();
     this.portName = outputPort.getName();
     this.format = format;
     this.sample = format.isOneFilePerAnalysis() ? null : sample;
-    this.file = newDataFile(step, portName, format, sample, fileIndex);
+    this.file =
+        newDataFile(this.step, this.portName, format, sample, fileIndex);
     this.fileIndex = fileIndex;
     this.mayNotExist = fileIndex > 0;
   }

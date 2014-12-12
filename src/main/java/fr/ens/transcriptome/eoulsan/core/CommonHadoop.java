@@ -46,7 +46,7 @@ public class CommonHadoop {
 
   public static final String AWS_S3_SECRET_ACCESS_KEY_PARAM_NAME =
       "fs.s3n.awsSecretAccessKey";
-  public static final String AWS_S3_ACCESSKEY_ID_PARAM_KEY =
+  public static final String AWS_S3_ACCESS_KEY_ID_PARAM_KEY =
       "fs.s3n.awsAccessKeyId";
 
   public static final int CHECK_COMPLETION_TIME = 5000;
@@ -104,14 +104,16 @@ public class CommonHadoop {
 
     final Configuration conf = new Configuration();
 
-    if (PathUtils.isExistingDirectoryFile(path, conf))
+    if (PathUtils.isExistingDirectoryFile(path, conf)) {
       return path;
+    }
 
     final Path filePath =
         new Path(path.getParent(), path.getName() + extension);
 
-    if (PathUtils.isFile(filePath, conf))
+    if (PathUtils.isFile(filePath, conf)) {
       return filePath;
+    }
 
     return null;
   }
@@ -133,8 +135,9 @@ public class CommonHadoop {
   public static void printConfiguration(final Configuration conf,
       final String prefix) {
 
-    if (conf == null)
+    if (conf == null) {
       return;
+    }
 
     final Iterator<Map.Entry<String, String>> it = conf.iterator();
 
@@ -144,8 +147,9 @@ public class CommonHadoop {
 
       final Map.Entry<String, String> e = it.next();
 
-      if (prefix == null || e.getKey().startsWith(prefix))
+      if (prefix == null || e.getKey().startsWith(prefix)) {
         System.out.println(e.getKey() + "\t" + e.getValue());
+      }
 
     }
     System.out.println("=== End print configuration ===");
@@ -159,8 +163,9 @@ public class CommonHadoop {
    */
   public static final Configuration createConfiguration(final Settings settings) {
 
-    if (settings == null)
+    if (settings == null) {
       return null;
+    }
 
     final Configuration conf = new Configuration();
 

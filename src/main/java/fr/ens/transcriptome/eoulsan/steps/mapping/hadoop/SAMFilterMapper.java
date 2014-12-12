@@ -55,7 +55,6 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
  */
 public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
- 
   // Parameters keys
   static final String MAPPING_QUALITY_THRESOLD_KEY = Globals.PARAMETER_PREFIX
       + ".samfilter.mapping.quality.threshold";
@@ -65,7 +64,7 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   static final String SAM_HEADER_FILE_PREFIX = "_samheader_";
 
   private static final Splitter ID_SPLITTER = Splitter.on(':').trimResults();
-  private List<String> idFields = new ArrayList<>();
+  private final List<String> idFields = new ArrayList<>();
 
   private String counterGroup;
 
@@ -107,8 +106,9 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
     final String line = value.toString();
 
     // Avoid empty and header lines
-    if (!isValidLineAndSaveSAMHeader(line, context))
+    if (!isValidLineAndSaveSAMHeader(line, context)) {
       return;
+    }
 
     context.getCounter(this.counterGroup,
         INPUT_ALIGNMENTS_COUNTER.counterName()).increment(1);
@@ -117,14 +117,14 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
     String completeId = line.substring(0, indexOfFirstTab);
     int endReadId;
 
-    idFields.clear();
+    this.idFields.clear();
     for (String e : ID_SPLITTER.split(completeId)) {
-      idFields.add(e);
+      this.idFields.add(e);
     }
 
     // Read identifiant format : before Casava 1.8 or other technologies that
     // Illumina
-    if (idFields.size() < 7) {
+    if (this.idFields.size() < 7) {
       endReadId = completeId.indexOf('/');
       // single-end mode
       if (endReadId == -1) {
@@ -157,7 +157,7 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   }
 
   @Override
-  protected void cleanup(Context context) throws IOException,
+  protected void cleanup(final Context context) throws IOException,
       InterruptedException {
   }
 
@@ -167,8 +167,9 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
       final Context context) throws IOException {
 
     // Test empty line
-    if (line.length() == 0)
+    if (line.length() == 0) {
       return false;
+    }
 
     if (line.charAt(0) != '@') {
 
@@ -188,8 +189,9 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
             new OutputStreamWriter(PathUtils.createOutputStream(headerPath,
                 context.getConfiguration()), SAM_CHARSET);
 
-        for (String l : this.headers)
+        for (String l : this.headers) {
           writer.write(l + "\n");
+        }
 
         writer.close();
 
@@ -200,8 +202,9 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
       return true;
     }
 
-    if (this.headers == null)
+    if (this.headers == null) {
       this.headers = new ArrayList<>();
+    }
 
     this.headers.add(line);
 

@@ -199,16 +199,18 @@ public enum FastqFormat {
    */
   public int findInvalidChar(final String s) {
 
-    if (s == null)
+    if (s == null) {
       throw new NullPointerException();
+    }
 
     final int len = s.length();
 
     for (int i = 0; i < len; i++) {
 
       final char c = s.charAt(i);
-      if (!isCharValid(c))
+      if (!isCharValid(c)) {
         return c;
+      }
     }
 
     return -1;
@@ -243,8 +245,9 @@ public enum FastqFormat {
 
     final double s = score;
 
-    if (this.phredScore)
+    if (this.phredScore) {
       return pow(10.0, s / -10.0);
+    }
 
     return 1.0 / ((1.0 / pow(10.0, -score / 10.0)) + 1.0);
   }
@@ -256,8 +259,9 @@ public enum FastqFormat {
    */
   public double convertProbabilitytoScore(final double p) {
 
-    if (this.phredScore)
+    if (this.phredScore) {
       return -10.0 * log10(p);
+    }
 
     return -10.0 * log10(p / (1 - p));
   }
@@ -268,11 +272,12 @@ public enum FastqFormat {
    * @param solexaScore the input quality score
    * @return the quality converted to Phred quality score
    */
-  public static double convertSolexaScoreToPhredScore(int solexaScore) {
+  public static double convertSolexaScoreToPhredScore(final int solexaScore) {
 
-    if (solexaScore < -5)
+    if (solexaScore < -5) {
       throw new IllegalArgumentException("Invalid Solexa quality: "
           + solexaScore);
+    }
 
     return 10.0 * log10(pow(10, solexaScore / 10.0) + 1);
   }
@@ -283,13 +288,15 @@ public enum FastqFormat {
    * @param phredScore the input quality score
    * @return the quality converted to Solexa
    */
-  public static double convertPhredSCoreToSolexaScore(int phredScore) {
+  public static double convertPhredSCoreToSolexaScore(final int phredScore) {
 
-    if (phredScore == 0)
+    if (phredScore == 0) {
       return -5.0;
+    }
 
-    if (phredScore > 0)
+    if (phredScore > 0) {
       return max(-5.0, 10.0 * log10(pow(10, phredScore / 10.0) - 1));
+    }
 
     throw new IllegalArgumentException("Invalid PHRED quality: " + phredScore);
   }
@@ -302,13 +309,15 @@ public enum FastqFormat {
    */
   public String convertTo(final String quality, final FastqFormat format) {
 
-    if (quality == null)
+    if (quality == null) {
       return null;
+    }
 
     final StringBuilder sb = new StringBuilder(quality.length());
 
-    for (char c : quality.toCharArray())
+    for (char c : quality.toCharArray()) {
       sb.append(convertTo(c, format));
+    }
 
     return sb.toString();
   }
@@ -335,8 +344,9 @@ public enum FastqFormat {
 
     if (this.isPhredScore() != format.isPhredScore()) {
 
-      if (isPhredScore())
+      if (isPhredScore()) {
         return (int) round(convertPhredSCoreToSolexaScore(score));
+      }
 
       return (int) round(convertSolexaScoreToPhredScore(score));
     }
@@ -351,18 +361,21 @@ public enum FastqFormat {
    */
   public static FastqFormat getFormatFromName(final String name) {
 
-    if (name == null)
+    if (name == null) {
       return null;
+    }
 
     final String lowerName = name.toLowerCase().trim();
 
     for (FastqFormat format : FastqFormat.values()) {
 
-      if (format.getName().toLowerCase().equals(lowerName))
+      if (format.getName().toLowerCase().equals(lowerName)) {
         return format;
+      }
 
-      if (format.alias != null && format.alias.contains(lowerName))
+      if (format.alias != null && format.alias.contains(lowerName)) {
         return format;
+      }
 
     }
 
@@ -394,8 +407,9 @@ public enum FastqFormat {
   public static FastqFormat identifyFormat(final InputStream is,
       final int maxEntriesToRead) throws IOException, BadBioEntryException {
 
-    if (is == null)
+    if (is == null) {
       throw new NullPointerException("The input format is null");
+    }
 
     final FastqReader reader = new FastqReader(is);
     final Set<FastqFormat> formats =
@@ -407,8 +421,9 @@ public enum FastqFormat {
 
     for (final ReadSequence read : reader) {
 
-      if (maxEntriesToRead > 0 && count > maxEntriesToRead)
+      if (maxEntriesToRead > 0 && count > maxEntriesToRead) {
         break;
+      }
 
       removeBadFormats(formats, read.getQuality(), range);
       count++;
@@ -427,8 +442,9 @@ public enum FastqFormat {
    */
   public static FastqFormat identifyFormat(final String qualityString) {
 
-    if (qualityString == null)
+    if (qualityString == null) {
       return null;
+    }
 
     final Set<FastqFormat> formats =
         newHashSet(Arrays.asList(FastqFormat.values()));
@@ -439,7 +455,7 @@ public enum FastqFormat {
     return identifyFormatByHeristic(formats, range[0], range[1]);
   }
 
-  private static void removeBadFormats(Set<FastqFormat> formats,
+  private static void removeBadFormats(final Set<FastqFormat> formats,
       final String qualityString, final int[] range) {
 
     Set<FastqFormat> toRemove = null;
@@ -450,40 +466,46 @@ public enum FastqFormat {
         final int c = qualityString.codePointAt(i);
 
         // Check if the character is the lowest value
-        if (c < range[0])
+        if (c < range[0]) {
           range[0] = c;
+        }
 
         // Check if the character is highest value
-        if (c > range[1])
+        if (c > range[1]) {
           range[1] = c;
+        }
 
         if (c < format.getCharMin() || c > format.getCharMax()) {
 
-          if (toRemove == null)
+          if (toRemove == null) {
             toRemove = new HashSet<>();
+          }
           toRemove.add(format);
         }
       }
     }
 
-    if (toRemove != null)
+    if (toRemove != null) {
       formats.removeAll(toRemove);
+    }
   }
 
   private static FastqFormat identifyFormatByHeristic(
       final Set<FastqFormat> formats, final int lowerChar, final int higherChar) {
 
-    if (formats == null)
+    if (formats == null) {
       return null;
+    }
 
-    if (formats.isEmpty())
+    if (formats.isEmpty()) {
       return null;
+    }
 
     // Sort formats with increasing minimal char
     final List<FastqFormat> sortedFormats = newArrayList(formats);
     Collections.sort(sortedFormats, new Comparator<FastqFormat>() {
       @Override
-      public int compare(FastqFormat o1, FastqFormat o2) {
+      public int compare(final FastqFormat o1, final FastqFormat o2) {
 
         return Integer.valueOf(o1.getCharMin())
             .compareTo((int) o2.getCharMin());
@@ -496,15 +518,17 @@ public enum FastqFormat {
     for (FastqFormat f : sortedFormats) {
 
       if (last != null
-          && last.getCharMin() <= lowerChar && lowerChar < f.getCharMin())
+          && last.getCharMin() <= lowerChar && lowerChar < f.getCharMin()) {
         return f;
+      }
 
       last = f;
     }
 
     // Check if the higher value is valid for the selected format
-    if (higherChar <= last.getCharMax())
+    if (higherChar <= last.getCharMax()) {
       return last;
+    }
 
     return null;
   }

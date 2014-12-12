@@ -62,13 +62,15 @@ public class FileDataProtocol extends AbstractDataProtocol {
   @Override
   public File getSourceAsFile(final DataFile dataFile) {
 
-    if (dataFile == null || dataFile.getSource() == null)
+    if (dataFile == null || dataFile.getSource() == null) {
       throw new NullPointerException("The source is null.");
+    }
 
     final String protocolName = dataFile.getProtocolPrefixInSource();
 
-    if (protocolName == null)
+    if (protocolName == null) {
       return new File(dataFile.getSource()).getAbsoluteFile();
+    }
 
     return new File(dataFile.getSource().substring(protocolName.length() + 1));
   }
@@ -88,8 +90,9 @@ public class FileDataProtocol extends AbstractDataProtocol {
   @Override
   public DataFileMetadata getMetadata(final DataFile src) throws IOException {
 
-    if (!exists(src))
+    if (!exists(src)) {
       throw new FileNotFoundException("File not found: " + src);
+    }
 
     final File f = getSourceAsFile(src);
 
@@ -103,21 +106,24 @@ public class FileDataProtocol extends AbstractDataProtocol {
 
     result.setDataFormat(format);
 
-    if (format != null)
+    if (format != null) {
       result.setContentType(format.getContentType());
-    else
+    } else {
       result.setContentType(StringUtils
           .getCommonContentTypeFromExtension(StringUtils
               .extensionWithoutCompressionExtension(src.getName())));
+    }
 
     final CompressionType ct =
         CompressionType.getCompressionTypeByFilename(src.getSource());
 
-    if (ct != null)
+    if (ct != null) {
       result.setContentEncoding(ct.getContentEncoding());
+    }
 
-    if (f.isDirectory())
+    if (f.isDirectory()) {
       result.setDirectory(true);
+    }
 
     return result;
   }
@@ -145,8 +151,9 @@ public class FileDataProtocol extends AbstractDataProtocol {
 
     final File file = getSourceAsFile(dir);
 
-    if (!file.mkdir())
+    if (!file.mkdir()) {
       throw new IOException("Unable to create the directory: " + dir);
+    }
 
   }
 
@@ -155,8 +162,9 @@ public class FileDataProtocol extends AbstractDataProtocol {
 
     final File file = getSourceAsFile(dir);
 
-    if (!file.mkdirs())
+    if (!file.mkdirs()) {
       throw new IOException("Unable to create the directory: " + dir);
+    }
   }
 
   @Override
@@ -169,22 +177,27 @@ public class FileDataProtocol extends AbstractDataProtocol {
   public void symlink(final DataFile target, final DataFile link)
       throws IOException {
 
-    if (target == null)
+    if (target == null) {
       throw new NullPointerException("target is null");
+    }
 
-    if (link == null)
+    if (link == null) {
       throw new NullPointerException("link is null");
+    }
 
-    if (link.exists())
+    if (link.exists()) {
       throw new IOException("the symlink already exists");
+    }
 
-    if (target.getProtocol() != this)
+    if (target.getProtocol() != this) {
       throw new IOException("the protocol of the target is not "
           + getName() + " protocol: " + target);
+    }
 
-    if (link.getProtocol() != this)
+    if (link.getProtocol() != this) {
       throw new IOException("the protocol of the link is not "
           + getName() + " protocol: " + link);
+    }
 
     final File targetFile = target.toFile();
     final File linkFile = link.toFile();
@@ -203,8 +216,9 @@ public class FileDataProtocol extends AbstractDataProtocol {
 
     final File f = getSourceAsFile(file);
 
-    if (!f.delete())
+    if (!f.delete()) {
       throw new IOException("Unable to create the directory: " + f);
+    }
   }
 
   @Override
@@ -218,19 +232,22 @@ public class FileDataProtocol extends AbstractDataProtocol {
 
     final File directoryFile = getSourceAsFile(file);
 
-    if (!directoryFile.exists())
+    if (!directoryFile.exists()) {
       throw new FileNotFoundException("File not found: " + file);
+    }
 
-    if (!directoryFile.isDirectory())
+    if (!directoryFile.isDirectory()) {
       throw new IOException("The file is not a directory: " + file);
+    }
 
     // List directory
     final File[] files = directoryFile.listFiles();
 
     // Convert the File array to a list of DataFile
     final List<DataFile> result = new ArrayList<>(files.length);
-    for (File f : files)
+    for (File f : files) {
       result.add(new DataFile(f));
+    }
 
     // Return an unmodifiable list
     return Collections.unmodifiableList(result);

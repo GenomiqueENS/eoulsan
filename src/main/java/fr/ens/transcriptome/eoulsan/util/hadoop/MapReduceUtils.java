@@ -62,11 +62,13 @@ public final class MapReduceUtils {
     final List<Path> paths =
         PathUtils.listPathsByPrefix(srcDirPath, "part-", conf);
 
-    if (paths == null)
+    if (paths == null) {
       throw new NullPointerException("The list of output path is null");
+    }
 
-    if (paths.size() == 0)
+    if (paths.size() == 0) {
       return false;
+    }
 
     if (paths.size() == 1) {
 
@@ -74,11 +76,13 @@ public final class MapReduceUtils {
       final FileSystem srcFs = p.getFileSystem(conf);
       final FileSystem destFs = destPath.getFileSystem(conf);
 
-      if (destFs.exists(destPath))
-        if (overwrite)
+      if (destFs.exists(destPath)) {
+        if (overwrite) {
           destFs.delete(destPath, false);
-        else
+        } else {
           return false;
+        }
+      }
 
       return srcFs.rename(p, destPath)
           && PathUtils.fullyDelete(srcDirPath, conf);
@@ -103,11 +107,13 @@ public final class MapReduceUtils {
       final int waitTimeInMillis) throws IOException, InterruptedException,
       ClassNotFoundException {
 
-    if (jobs == null)
+    if (jobs == null) {
       throw new NullPointerException("The list of jobs is null");
+    }
 
-    for (Job j : jobs)
+    for (Job j : jobs) {
       j.submit();
+    }
 
     waitForJobs(jobs, waitTimeInMillis);
   }
@@ -125,8 +131,9 @@ public final class MapReduceUtils {
   public static void waitForJobs(final Collection<Job> jobs,
       final int waitTimeInMillis) throws InterruptedException, IOException {
 
-    if (jobs == null)
+    if (jobs == null) {
       throw new NullPointerException("The list of jobs is null");
+    }
 
     final int totalJobs = jobs.size();
     int completedJobs = 0;
@@ -135,9 +142,11 @@ public final class MapReduceUtils {
 
       Thread.sleep(waitTimeInMillis);
       completedJobs = 0;
-      for (Job j : jobs)
-        if (j.isComplete())
+      for (Job j : jobs) {
+        if (j.isComplete()) {
           completedJobs++;
+        }
+      }
     }
   }
 
@@ -157,8 +166,9 @@ public final class MapReduceUtils {
       final int waitTimeInMillis, final StepStatus status,
       final String counterGroup) throws InterruptedException, IOException {
 
-    if (jobs == null)
+    if (jobs == null) {
       throw new NullPointerException("The list of jobs is null");
+    }
 
     final int totalJobs = jobs.size();
     int completedJobs = 0;

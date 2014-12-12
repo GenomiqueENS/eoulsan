@@ -93,11 +93,11 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   }
 
   @Override
-  public int getTaskSubmitedCount(final WorkflowStep step) {
+  public int getTaskSubmittedCount(final WorkflowStep step) {
 
     checkNotNull(step, "step argument cannot be null");
 
-    return getTaskScheduler(step).getTaskSubmitedCount(step);
+    return getTaskScheduler(step).getTaskSubmittedCount(step);
   }
 
   @Override
@@ -128,11 +128,11 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   }
 
   @Override
-  public int getTotalTaskSubmitedCount() {
+  public int getTotalTaskSubmittedCount() {
 
-    return this.noTaskScheduler.getTotalTaskSubmitedCount()
-        + this.stdTaskScheduler.getTotalTaskSubmitedCount()
-        + this.clusterTaskScheduler.getTotalTaskSubmitedCount();
+    return this.noTaskScheduler.getTotalTaskSubmittedCount()
+        + this.stdTaskScheduler.getTotalTaskSubmittedCount()
+        + this.clusterTaskScheduler.getTotalTaskSubmittedCount();
   }
 
   @Override
@@ -227,7 +227,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
       return this.noTaskScheduler;
 
     case STANDARD:
-    case OWN_PARALELIZATION:
+    case OWN_PARALLELIZATION:
       return this.clusterTaskScheduler;
 
     default:

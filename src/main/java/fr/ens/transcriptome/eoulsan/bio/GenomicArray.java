@@ -80,16 +80,17 @@ public class GenomicArray<T> {
         throw new NullPointerException("value argument cannot be null");
       }
 
-      if (valueCount == 0) {
+      if (this.valueCount == 0) {
         this._value = value;
         this.valueCount = 1;
       } else {
 
-        if (valueCount == 1) {
+        if (this.valueCount == 1) {
 
           if (value == this._value
-              || this._value.hashCode() == value.hashCode())
+              || this._value.hashCode() == value.hashCode()) {
             return;
+          }
 
           this._values = new HashSet<>();
           this._values.add(this._value);
@@ -107,13 +108,15 @@ public class GenomicArray<T> {
      */
     private void addExons(final Set<T> values) {
 
-      if (values == null)
+      if (values == null) {
         return;
+      }
 
       final int len = values.size();
 
-      if (len == 0)
+      if (len == 0) {
         return;
+      }
 
       if (len == 1) {
         this._value = values.iterator().next();
@@ -131,11 +134,13 @@ public class GenomicArray<T> {
      */
     public Set<T> getValues() {
 
-      if (this.valueCount == 0)
+      if (this.valueCount == 0) {
         return null;
+      }
 
-      if (this.valueCount == 1)
+      if (this.valueCount == 1) {
         return Collections.singleton(this._value);
+      }
 
       return this._values;
     }
@@ -148,8 +153,9 @@ public class GenomicArray<T> {
      */
     public int compareTo(final int position) {
 
-      if (position >= this.start && position <= this.end)
+      if (position >= this.start && position <= this.end) {
         return 0;
+      }
 
       return position < this.start ? -1 : 1;
     }
@@ -158,9 +164,11 @@ public class GenomicArray<T> {
     public String toString() {
 
       Set<String> r = new HashSet<>();
-      if (getValues() != null)
-        for (T e : getValues())
+      if (getValues() != null) {
+        for (T e : getValues()) {
           r.add(e.toString());
+        }
+      }
 
       return this.getClass().getSimpleName()
           + "{" + this.start + "," + this.end + "," + r + "}";
@@ -169,19 +177,22 @@ public class GenomicArray<T> {
     @Override
     public boolean equals(final Object o) {
 
-      if (o == this)
+      if (o == this) {
         return true;
+      }
 
-      if (!(o instanceof Zone<?>))
+      if (!(o instanceof Zone<?>)) {
         return false;
+      }
 
       final Zone<?> that = (Zone<?>) o;
 
       if (!(Utils.equal(this.valueCount, that.valueCount)
           && Utils.equal(this.start, that.start)
           && Utils.equal(this.end, that.end) && Utils.equal(this.strand,
-          that.strand)))
+          that.strand))) {
         return false;
+      }
 
       switch (this.valueCount) {
 
@@ -224,7 +235,7 @@ public class GenomicArray<T> {
     /**
      * Constructor that create a zone
      * @param start start position of the zone
-     * @param end end postion of the zone
+     * @param end end position of the zone
      * @param strand strand of the zone
      * @param exons of the zone
      */
@@ -275,18 +286,19 @@ public class GenomicArray<T> {
     }
 
     /**
-     * Find the zone index for a position
+     * Find the zone index for a position.
      * @param pos the position on the chromosome
      * @return the index of the zone or -1 if the position if lower than 1 or
      *         greater than the length of the chromosome
      */
     private int findIndexPos(final int pos) {
 
-      if (pos < 1 || pos > this.length)
+      if (pos < 1 || pos > this.length) {
         return -1;
+      }
 
       int minIndex = 0;
-      int maxIndex = zones.size() - 1;
+      int maxIndex = this.zones.size() - 1;
       int index = 0;
 
       while (true) {
@@ -296,10 +308,12 @@ public class GenomicArray<T> {
 
         if (diff == 1) {
 
-          if (get(minIndex).compareTo(pos) == 0)
+          if (get(minIndex).compareTo(pos) == 0) {
             return minIndex;
-          if (get(maxIndex).compareTo(pos) == 0)
+          }
+          if (get(maxIndex).compareTo(pos) == 0) {
             return maxIndex;
+          }
 
           assert (false);
         }
@@ -307,13 +321,15 @@ public class GenomicArray<T> {
         final Zone<T> z = get(index);
 
         final int comp = z.compareTo(pos);
-        if (comp == 0)
+        if (comp == 0) {
           return index;
+        }
 
-        if (comp < 0)
+        if (comp < 0) {
           maxIndex = index;
-        else
+        } else {
           minIndex = index;
+        }
       }
     }
 
@@ -389,8 +405,9 @@ public class GenomicArray<T> {
           z1b.addExon(value);
           add(indexStart + 1, z1b);
 
-        } else
+        } else {
           z1.addExon(value);
+        }
 
       } else {
 
@@ -399,15 +416,17 @@ public class GenomicArray<T> {
 
         if (z2.end != intervalEnd) {
           z2b = splitZone(z2, intervalEnd + 1);
-        } else
+        } else {
           z2b = z2;
+        }
 
         if (z1 != z1b) {
           add(indexStart + 1, z1b);
         }
 
-        if (z2 != z2b)
+        if (z2 != z2b) {
           add(indexEnd + 1 + count1b, z2b);
+        }
 
         for (int i = indexStart + count1b; i <= indexEnd + count1b; i++) {
           get(i).addExon(value);
@@ -427,8 +446,9 @@ public class GenomicArray<T> {
       final int indexStart = findIndexPos(start);
       final int indexEnd = findIndexPos(stop);
 
-      if (indexStart == -1)
+      if (indexStart == -1) {
         return null;
+      }
 
       final int from = indexStart;
       final int to = indexEnd == -1 ? this.zones.size() - 1 : indexEnd;
@@ -448,22 +468,25 @@ public class GenomicArray<T> {
 
           final Set<T> r = zone.getValues();
 
-          if (result == null)
+          if (result == null) {
             result = new HashMap<>();
+          }
 
           if (r != null) {
             result.put(iv, Collections.unmodifiableSet(r));
-          } else
+          } else {
             result.put(iv, new HashSet<T>());
+          }
         }
       }
 
       if (stop > get(to).end && start > get(to).start) {
         result.put(new GenomicInterval(this.chromosomeName, start, stop,
             get(to).strand), new HashSet<T>());
-      } else if (stop > get(to).end)
+      } else if (stop > get(to).end) {
         result.put(new GenomicInterval(this.chromosomeName, get(to).end + 1,
             stop, get(to).strand), new HashSet<T>());
+      }
 
       return result;
     }
@@ -487,11 +510,13 @@ public class GenomicArray<T> {
     @Override
     public boolean equals(final Object o) {
 
-      if (o == this)
+      if (o == this) {
         return true;
+      }
 
-      if (!(o instanceof ChromosomeStrandedZones<?>))
+      if (!(o instanceof ChromosomeStrandedZones<?>)) {
         return false;
+      }
 
       final ChromosomeStrandedZones<?> that = (ChromosomeStrandedZones<?>) o;
 
@@ -541,8 +566,8 @@ public class GenomicArray<T> {
 
     private static final long serialVersionUID = -6312870823086177216L;
 
-    private ChromosomeStrandedZones<T> plus;
-    private ChromosomeStrandedZones<T> minus;
+    private final ChromosomeStrandedZones<T> plus;
+    private final ChromosomeStrandedZones<T> minus;
 
     /**
      * Add a stranded entry.
@@ -559,10 +584,11 @@ public class GenomicArray<T> {
         throw new NullPointerException("value argument cannot be null");
       }
 
-      if (interval.getStrand() == '+' || interval.getStrand() == '.')
+      if (interval.getStrand() == '+' || interval.getStrand() == '.') {
         this.plus.addEntry(interval, value);
-      else if (interval.getStrand() == '-')
+      } else if (interval.getStrand() == '-') {
         this.minus.addEntry(interval, value);
+      }
     }
 
     /**
@@ -579,14 +605,16 @@ public class GenomicArray<T> {
       final Map<GenomicInterval, Set<T>> interPlus =
           this.plus.getEntries(start, stop);
 
-      if (interPlus != null)
+      if (interPlus != null) {
         result.putAll(interPlus);
+      }
 
       final Map<GenomicInterval, Set<T>> interMinus =
           this.minus.getEntries(start, stop);
 
-      if (interMinus != null)
+      if (interMinus != null) {
         result.putAll(interMinus);
+      }
 
       return result;
     }
@@ -594,11 +622,13 @@ public class GenomicArray<T> {
     @Override
     public boolean equals(final Object o) {
 
-      if (o == this)
+      if (o == this) {
         return true;
+      }
 
-      if (!(o instanceof ChromosomeZones<?>))
+      if (!(o instanceof ChromosomeZones<?>)) {
         return false;
+      }
 
       final ChromosomeZones<?> that = (ChromosomeZones<?>) o;
 
@@ -656,8 +686,9 @@ public class GenomicArray<T> {
     final String chromosomeName = interval.getChromosome();
 
     // Create a ChromosomeZones if it does not exist yet
-    if (!this.chromosomes.containsKey(chromosomeName))
+    if (!this.chromosomes.containsKey(chromosomeName)) {
       addChromosome(chromosomeName);
+    }
 
     // Add the GenomicInterval to the ChromosomeZones
     this.chromosomes.get(chromosomeName).addEntry(interval, value);
@@ -673,8 +704,9 @@ public class GenomicArray<T> {
       throw new NullPointerException("chromosomeName argument cannot be null");
     }
 
-    if (containsChromosome(chromosomeName))
+    if (containsChromosome(chromosomeName)) {
       return;
+    }
 
     this.chromosomes
         .put(chromosomeName, new ChromosomeZones<T>(chromosomeName));
@@ -690,8 +722,9 @@ public class GenomicArray<T> {
       throw new NullPointerException("gd argument cannot be null");
     }
 
-    for (String chromosomeName : gd.getSequencesNames())
+    for (String chromosomeName : gd.getSequencesNames()) {
       addChromosome(chromosomeName);
+    }
   }
 
   /**
@@ -725,8 +758,9 @@ public class GenomicArray<T> {
 
     final ChromosomeZones<T> chr = this.chromosomes.get(chromosome);
 
-    if (chr == null)
+    if (chr == null) {
       return null;
+    }
 
     return chr.getEntries(start, end);
   }
@@ -738,8 +772,9 @@ public class GenomicArray<T> {
    */
   public boolean containsChromosome(final String chromosomeName) {
 
-    if (chromosomeName == null)
+    if (chromosomeName == null) {
       return false;
+    }
 
     return this.chromosomes.containsKey(chromosomeName);
   }
@@ -864,11 +899,13 @@ public class GenomicArray<T> {
   @Override
   public boolean equals(final Object o) {
 
-    if (o == this)
+    if (o == this) {
       return true;
+    }
 
-    if (!(o instanceof GenomicArray))
+    if (!(o instanceof GenomicArray)) {
       return false;
+    }
 
     final GenomicArray<?> that = (GenomicArray<?>) o;
 

@@ -566,7 +566,7 @@ of reads that reject each filter like in local mode.
 
          </release>
 
-         <release version="2.0-alpha2" description="Eoulsan 2.0-alpha2 release" date="TBD">
+         <release version="2.0-alpha2" description="Eoulsan 2.0-alpha2 release" date="2014-12-02">
 
             <action dev="jourdren" type="fix">
                 Various fixes in  the workflow engine when use skipped steps.
@@ -628,7 +628,19 @@ of reads that reject each filter like in local mode.
                 Eoulsan now use Maven 3 for building binaries and website.
             </action>
 
+            <action dev="jourdren" type="update">
+                Many clean up of Eoulsan code. Eoulsan now use the new features of Java 7.
+            </action>
+
          </release>
+
+         <release version="2.0-alpha3" description="Eoulsan 2.0-alpha3 release" date="2014-12-05">
+
+            <action dev="jourdren" type="fix">
+                Fix Dockerfile URL to download Eoulsan.
+            </action>
+
+	</release>
 
 	</body>
 </document>

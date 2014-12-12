@@ -96,12 +96,14 @@ public class GenomeDescriptionCreator {
 
     // Check if the genome description has been already put in the CheckStore
     GenomeDescription desc =
-        (GenomeDescription) checkStore.get(CHECK_STORE_KEY);
-    if (desc != null)
+        (GenomeDescription) this.checkStore.get(CHECK_STORE_KEY);
+    if (desc != null) {
       return desc;
+    }
 
-    if (storage != null)
-      desc = storage.get(genomeDataFile);
+    if (this.storage != null) {
+      desc = this.storage.get(genomeDataFile);
+    }
 
     if (desc == null) {
 
@@ -111,12 +113,13 @@ public class GenomeDescriptionCreator {
               genomeDataFile.getName());
 
       // Store it if storage exists
-      if (storage != null)
-        storage.put(genomeDataFile, desc);
+      if (this.storage != null) {
+        this.storage.put(genomeDataFile, desc);
+      }
     }
 
     // Add the genome description in the CheckStore
-    checkStore.add(CHECK_STORE_KEY, desc);
+    this.checkStore.add(CHECK_STORE_KEY, desc);
 
     return desc;
   }

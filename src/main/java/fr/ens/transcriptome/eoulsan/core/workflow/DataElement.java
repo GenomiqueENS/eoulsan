@@ -61,9 +61,10 @@ class DataElement extends AbstractData implements Serializable {
   @Override
   public void setName(final String name) {
 
-    if (!this.canRename)
+    if (!this.canRename) {
       throw new EoulsanRuntimeException(
           "Data cannot be renamed once it has been used");
+    }
 
     super.setName(name);
 
@@ -72,11 +73,12 @@ class DataElement extends AbstractData implements Serializable {
   }
 
   @Override
-  void setPart(int part) {
+  void setPart(final int part) {
 
-    if (!this.canRename)
+    if (!this.canRename) {
       throw new EoulsanRuntimeException(
           "Data cannot be renamed once it has been used");
+    }
 
     super.setPart(part);
 
@@ -117,9 +119,10 @@ class DataElement extends AbstractData implements Serializable {
   @Override
   public String getDataFilename(final int fileIndex) {
 
-    if (getFormat().getMaxFilesCount() < 2)
+    if (getFormat().getMaxFilesCount() < 2) {
       throw new EoulsanRuntimeException(
           "Only multifiles DataFormat are handled by this method.");
+    }
 
     return this.files.get(fileIndex).getName();
   }
@@ -139,9 +142,10 @@ class DataElement extends AbstractData implements Serializable {
 
     checkNotNull(dataFile, "DataFile to set cannot be null");
 
-    if (this.files.size() == 0)
+    if (this.files.size() == 0) {
       throw new IllegalStateException(
           "Cannot set a DataFile if not already exists");
+    }
 
     this.files.set(0, dataFile);
   }
@@ -156,9 +160,10 @@ class DataElement extends AbstractData implements Serializable {
     checkArgument(fileIndex >= 0, "fileIndex argument must be >=0");
     checkNotNull(dataFile, "DataFile to set cannot be null");
 
-    if (fileIndex >= this.files.size())
+    if (fileIndex >= this.files.size()) {
       throw new IllegalStateException(
           "Cannot set a DataFile if not already exists");
+    }
 
     this.files.set(fileIndex, dataFile);
   }
@@ -167,19 +172,19 @@ class DataElement extends AbstractData implements Serializable {
    * Set the DataFiles.
    * @param dataFiles files to set
    */
-  void setDataFiles(final List<DataFile> dataFile) {
+  void setDataFiles(final List<DataFile> dataFiles) {
 
-    checkNotNull(dataFile, "dataFiles to set cannot be null");
+    checkNotNull(dataFiles, "dataFiles to set cannot be null");
 
-    for (DataFile file : dataFile) {
+    for (DataFile file : dataFiles) {
 
       checkArgument(file != null, "dataFiles cannot contains null value");
-      checkArgument(Collections.frequency(dataFile, file) == 1,
-          "dataFile cannot contains the same file: " + file);
+      checkArgument(Collections.frequency(dataFiles, file) == 1,
+          "dataFiles cannot contains the same file: " + file);
     }
 
     this.files.clear();
-    this.files.addAll(dataFile);
+    this.files.addAll(dataFiles);
   }
 
   /**
@@ -192,25 +197,29 @@ class DataElement extends AbstractData implements Serializable {
   }
 
   @Override
-  public DataFile getDataFile(int fileIndex) {
+  public DataFile getDataFile(final int fileIndex) {
 
-    if (getFormat().getMaxFilesCount() < 2)
+    if (getFormat().getMaxFilesCount() < 2) {
       throw new EoulsanRuntimeException(
           "Only multi-files DataFormat are handled by this method.");
+    }
 
-    if (fileIndex < 0)
+    if (fileIndex < 0) {
       throw new EoulsanRuntimeException(
           "File index parameter cannot be lower than 0");
+    }
 
-    if (fileIndex > this.files.size())
+    if (fileIndex > this.files.size()) {
       throw new EoulsanRuntimeException("Cannot create file index "
           + fileIndex + " as file index " + this.files.size()
           + " is not created");
+    }
 
-    if (fileIndex >= getFormat().getMaxFilesCount())
+    if (fileIndex >= getFormat().getMaxFilesCount()) {
       throw new EoulsanRuntimeException("The format "
           + getFormat().getName() + " does not support more than "
           + getFormat().getMaxFilesCount() + " multi-files");
+    }
 
     // Create DataFile is required
     if (fileIndex == this.files.size()) {
@@ -226,13 +235,13 @@ class DataElement extends AbstractData implements Serializable {
   }
 
   @Override
-  public int getDataFileCount(boolean existingFiles) {
+  public int getDataFileCount(final boolean existingFiles) {
     return this.files.size();
   }
 
   private DataFile createDataFile(final int fileIndex) {
 
-    return FileNaming.file(port, this, fileIndex);
+    return FileNaming.file(this.port, this, fileIndex);
   }
 
   private void updateDataFiles() {
@@ -277,10 +286,12 @@ class DataElement extends AbstractData implements Serializable {
     checkNotNull(files, "files argument cannot be null");
     checkNotNull(design, "design argument cannot be null");
 
-    for (DataFile f : files)
-      if (f == null)
+    for (DataFile f : files) {
+      if (f == null) {
         throw new IllegalArgumentException(
             "The files list argument cannot contains null elements");
+      }
+    }
 
     this.files = Lists.newArrayList(files);
 

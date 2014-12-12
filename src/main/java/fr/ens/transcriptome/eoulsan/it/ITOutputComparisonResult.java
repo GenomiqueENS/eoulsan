@@ -18,7 +18,7 @@ final class ITOutputComparisonResult implements
    * @return report on comparison
    */
   public String getReport() {
-    return getStatutComparison() + " : " + filename + " " + getMessage();
+    return getStatutComparison() + " : " + this.filename + " " + getMessage();
   }
 
   /**
@@ -35,19 +35,68 @@ final class ITOutputComparisonResult implements
   @Override
   public int compareTo(final ITOutputComparisonResult that) {
 
-    return this.getFilename().compareTo(that.getFilename());
+    return this.filename.compareTo(that.filename);
   }
 
   //
   // Getters & setters
   //
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result =
+        prime
+            * result + ((this.filename == null) ? 0 : this.filename.hashCode());
+    result =
+        prime * result + ((this.message == null) ? 0 : this.message.hashCode());
+    result =
+        prime
+            * result
+            + ((this.statusComparison == null) ? 0 : this.statusComparison
+                .hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    ITOutputComparisonResult other = (ITOutputComparisonResult) obj;
+    if (this.filename == null) {
+      if (other.filename != null) {
+        return false;
+      }
+    } else if (!this.filename.equals(other.filename)) {
+      return false;
+    }
+    if (this.message == null) {
+      if (other.message != null) {
+        return false;
+      }
+    } else if (!this.message.equals(other.message)) {
+      return false;
+    }
+    if (this.statusComparison != other.statusComparison) {
+      return false;
+    }
+    return true;
+  }
+
   /**
    * Gets the filename.
    * @return the filename
    */
   public String getFilename() {
-    return filename;
+    return this.filename;
   }
 
   /**
@@ -55,7 +104,7 @@ final class ITOutputComparisonResult implements
    * @return the statut comparison
    */
   public StatusComparison getStatutComparison() {
-    return statusComparison;
+    return this.statusComparison;
   }
 
   /**
@@ -63,7 +112,7 @@ final class ITOutputComparisonResult implements
    * @return the message
    */
   public String getMessage() {
-    return message;
+    return this.message;
   }
 
   /**
@@ -86,7 +135,7 @@ final class ITOutputComparisonResult implements
    * Sets the message.
    * @param message the new message
    */
-  public void setMessage(String message) {
+  public void setMessage(final String message) {
     this.message = message;
   }
 
@@ -137,11 +186,11 @@ final class ITOutputComparisonResult implements
     private final boolean isSuccess;
 
     public String getName() {
-      return name;
+      return this.name;
     }
 
     public boolean isSuccess() {
-      return isSuccess;
+      return this.isSuccess;
     }
 
     public String getExceptionMessage() {

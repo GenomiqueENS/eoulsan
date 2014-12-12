@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.util.hadoop;
 import org.apache.hadoop.mapreduce.TaskInputOutputContext;
 
 import com.google.common.base.Preconditions;
+
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**
@@ -40,9 +41,10 @@ public class HadoopReporterIncrementer implements ReporterIncrementer {
   private final TaskInputOutputContext context;
 
   @Override
-  public void incrCounter(String counterGroup, String counterName, long amount) {
+  public void incrCounter(final String counterGroup, final String counterName,
+      final long amount) {
 
-    context.getCounter(counterGroup, counterName).increment(amount);
+    this.context.getCounter(counterGroup, counterName).increment(amount);
   }
 
   //

@@ -73,7 +73,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   private String mapperArguments;
   private int hadoopThreads = -1;
 
-  private int mappingQualityThreshold = -1;
+  private final int mappingQualityThreshold = -1;
 
   //
   // Getters
@@ -186,16 +186,14 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      if ("mapper".equals(p.getName()))
+      if ("mapper".equals(p.getName())) {
         mapperName = p.getStringValue();
-
-      else if ("mapperarguments".equals(p.getName())
-          || "mapper.arguments".equals(p.getName()))
+      } else if ("mapperarguments".equals(p.getName())
+          || "mapper.arguments".equals(p.getName())) {
         this.mapperArguments = p.getStringValue();
-      else if ("hadoop.threads".equals(p.getName()))
+      } else if ("hadoop.threads".equals(p.getName())) {
         this.hadoopThreads = p.getIntValue();
-
-      else {
+      } else {
 
         // Add read filters parameters
         if (!(mrfb.addParameter(
@@ -219,25 +217,28 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
     this.readsFiltersParameters = mrfb.getParameters();
     this.alignmentsFiltersParameters = mrafb.getParameters();
 
-    if (mapperName == null)
+    if (mapperName == null) {
       throw new EoulsanException("No mapper set.");
+    }
 
     this.mapper =
         SequenceReadsMapperService.getInstance().newService(mapperName);
 
-    if (this.mapper == null)
+    if (this.mapper == null) {
       throw new EoulsanException("Unknown mapper: " + mapperName);
+    }
 
-    if (this.mapper.isIndexGeneratorOnly())
+    if (this.mapper.isIndexGeneratorOnly()) {
       throw new EoulsanException(
           "The selected mapper can only be used for index generation: "
               + mapperName);
+    }
 
     // Log Step parameters
     getLogger().info(
         "In "
             + getName() + ", mapper=" + this.mapper.getMapperName()
-            + " (version: " + mapper.getMapperVersion() + ")");
+            + " (version: " + this.mapper.getMapperVersion() + ")");
     getLogger().info(
         "In " + getName() + ", mapperarguments=" + this.mapperArguments);
   }

@@ -39,7 +39,7 @@ import java.util.Map;
  */
 public abstract class LinuxInfo {
 
-  private Map<String, String> map = new HashMap<>();
+  private final Map<String, String> map = new HashMap<>();
 
   /**
    * Get the file to parse.

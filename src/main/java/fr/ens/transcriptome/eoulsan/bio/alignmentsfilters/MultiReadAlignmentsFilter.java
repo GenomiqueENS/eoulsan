@@ -48,11 +48,13 @@ public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
 
     boolean pairedEnd = false;
 
-    if (records == null || records.isEmpty())
+    if (records == null || records.isEmpty()) {
       return;
+    }
 
-    if (records.get(0).getReadPairedFlag())
+    if (records.get(0).getReadPairedFlag()) {
       pairedEnd = true;
+    }
 
     for (ReadAlignmentsFilter af : this.list) {
 
@@ -62,20 +64,22 @@ public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
       final int sizeAfter = records.size();
       final int diff = sizeBefore - sizeAfter;
 
-      if (diff > 0 && this.incrementer != null)
-
+      if (diff > 0 && this.incrementer != null) {
         // paired-end mode
-        if (pairedEnd)
-          this.incrementer.incrCounter(counterGroup, "alignments rejected by "
-              + af.getName() + " filter", diff / 2);
-
+        if (pairedEnd) {
+          this.incrementer.incrCounter(this.counterGroup,
+              "alignments rejected by " + af.getName() + " filter", diff / 2);
+        }
         // single-end mode
-        else
-          this.incrementer.incrCounter(counterGroup, "alignments rejected by "
-              + af.getName() + " filter", diff);
+        else {
+          this.incrementer.incrCounter(this.counterGroup,
+              "alignments rejected by " + af.getName() + " filter", diff);
+        }
+      }
 
-      if (sizeAfter == 0)
+      if (sizeAfter == 0) {
         return;
+      }
     }
 
     return;
@@ -106,7 +110,7 @@ public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
   }
 
   @Override
-  public void setParameter(String key, String value) {
+  public void setParameter(final String key, final String value) {
     // This filter has no parameter
   }
 
@@ -121,8 +125,9 @@ public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
   public List<String> getFilterNames() {
 
     final List<String> result = new ArrayList<>();
-    for (ReadAlignmentsFilter f : this.list)
+    for (ReadAlignmentsFilter f : this.list) {
       result.add(f.getName());
+    }
 
     return result;
   }

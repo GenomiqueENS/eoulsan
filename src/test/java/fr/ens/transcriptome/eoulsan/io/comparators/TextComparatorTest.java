@@ -37,26 +37,22 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import fr.ens.transcriptome.eoulsan.io.comparators.AbstractComparatorWithBloomFilter;
-import fr.ens.transcriptome.eoulsan.io.comparators.SAMComparator;
-import fr.ens.transcriptome.eoulsan.io.comparators.TextComparator;
-
 public class TextComparatorTest {
-  private File dir = new File(new File(".").getAbsolutePath()
+  private final File dir = new File(new File(".").getAbsolutePath()
       + "/src/test/java/files");
 
   private InputStream isA;
   private InputStream isB;
 
-  private File fileA = new File(dir, "testdataformat.xml");
-  private File fileB = new File(dir, "phix.fasta");
+  private final File fileA = new File(this.dir, "testdataformat.xml");
+  private final File fileB = new File(this.dir, "phix.fasta");
   private File fileC;
 
   @Test
   public void testSameTextFiles() throws Exception {
 
-    final InputStream isA1 = new FileInputStream(fileA);
-    final InputStream isA2 = new FileInputStream(fileA);
+    final InputStream isA1 = new FileInputStream(this.fileA);
+    final InputStream isA2 = new FileInputStream(this.fileA);
 
     AbstractComparatorWithBloomFilter comparator =
         new SAMComparator(false, "@PG");
@@ -66,12 +62,13 @@ public class TextComparatorTest {
   @Test
   public void testDifferentTextFiles() throws Exception {
 
-    isA = new FileInputStream(fileA);
-    isB = new FileInputStream(fileB);
+    this.isA = new FileInputStream(this.fileA);
+    this.isB = new FileInputStream(this.fileB);
 
     AbstractComparatorWithBloomFilter comparator =
         new SAMComparator(false, "@PG");
-    assertFalse("files are different", comparator.compareFiles(isA, isB));
+    assertFalse("files are different",
+        comparator.compareFiles(this.isA, this.isB));
   }
 
   @Test
@@ -81,37 +78,38 @@ public class TextComparatorTest {
 
     modifyFile(0);
     assertFalse("files are different: duplicate line",
-        comparator.compareFiles(fileA, fileC));
+        comparator.compareFiles(this.fileA, this.fileC));
 
     modifyFile(1);
     assertFalse("files are different: remove line",
-        comparator.compareFiles(fileA, fileC));
+        comparator.compareFiles(this.fileA, this.fileC));
 
     modifyFile(2);
     assertFalse("files are different: add line",
-        comparator.compareFiles(fileA, fileC));
+        comparator.compareFiles(this.fileA, this.fileC));
 
     modifyFile(3);
     assertFalse("files are different: remove a char in one line",
-        comparator.compareFiles(fileA, fileC));
+        comparator.compareFiles(this.fileA, this.fileC));
 
     modifyFile(4);
     assertFalse("files are different: add a char in one line",
-        comparator.compareFiles(fileA, fileC));
+        comparator.compareFiles(this.fileA, this.fileC));
 
-    if (fileC.exists())
-      fileC.delete();
+    if (this.fileC.exists()) {
+      this.fileC.delete();
+    }
   }
 
   private void modifyFile(final int typeModification) throws IOException {
-    fileC = new File(dir, "modify.txt");
+    this.fileC = new File(this.dir, "modify.txt");
 
-    if (fileC.exists()) {
-      fileC.delete();
+    if (this.fileC.exists()) {
+      this.fileC.delete();
     }
 
-    final BufferedReader br = new BufferedReader(new FileReader(fileA));
-    final BufferedWriter bw = new BufferedWriter(new FileWriter(fileC));
+    final BufferedReader br = new BufferedReader(new FileReader(this.fileA));
+    final BufferedWriter bw = new BufferedWriter(new FileWriter(this.fileC));
 
     String line = "";
     // Chose multi 4 corresponding to header fastq line

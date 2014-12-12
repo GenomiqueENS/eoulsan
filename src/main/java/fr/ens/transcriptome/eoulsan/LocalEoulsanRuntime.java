@@ -151,14 +151,17 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
   public static void initEoulsanRuntimeForExternalApp() throws IOException,
       EoulsanException {
 
-    if (!EoulsanRuntime.isRuntime())
+    if (!EoulsanRuntime.isRuntime()) {
       newEoulsanRuntime(new Settings(true));
+    }
 
     // Disable logging
     final Handler[] handlers = EoulsanLogger.getLogger().getHandlers();
-    if (handlers != null)
-      for (Handler handler : handlers)
+    if (handlers != null) {
+      for (Handler handler : handlers) {
         handler.setLevel(Level.OFF);
+      }
+    }
   }
 
 }

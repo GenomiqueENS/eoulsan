@@ -35,73 +35,84 @@ import java.io.Writer;
 public class UnSynchronizedBufferedWriter extends Writer {
   private final static int CAPACITY = 8192;
 
-  private char[] buffer = new char[CAPACITY];
+  private final char[] buffer = new char[CAPACITY];
   private int position = 0;
-  private Writer out;
+  private final Writer out;
   private boolean closed = false;
 
-  public UnSynchronizedBufferedWriter(Writer out) {
+  public UnSynchronizedBufferedWriter(final Writer out) {
     this.out = out;
   }
 
-  public void write(char[] text, int offset, int length) throws IOException {
+  @Override
+  public void write(final char[] text, int offset, int length)
+      throws IOException {
     checkClosed();
     while (length > 0) {
-      int n = Math.min(CAPACITY - position, length);
-      System.arraycopy(text, offset, buffer, position, n);
-      position += n;
+      int n = Math.min(CAPACITY - this.position, length);
+      System.arraycopy(text, offset, this.buffer, this.position, n);
+      this.position += n;
       offset += n;
       length -= n;
-      if (position >= CAPACITY)
+      if (this.position >= CAPACITY) {
         flushInternal();
+      }
     }
   }
 
-  public void write(String s) throws IOException {
+  @Override
+  public void write(final String s) throws IOException {
     write(s, 0, s.length());
   }
 
-  public void write(String s, int offset, int length) throws IOException {
+  @Override
+  public void write(final String s, int offset, int length) throws IOException {
     checkClosed();
     while (length > 0) {
-      int n = Math.min(CAPACITY - position, length);
-      s.getChars(offset, offset + n, buffer, position);
-      position += n;
+      int n = Math.min(CAPACITY - this.position, length);
+      s.getChars(offset, offset + n, this.buffer, this.position);
+      this.position += n;
       offset += n;
       length -= n;
-      if (position >= CAPACITY)
+      if (this.position >= CAPACITY) {
         flushInternal();
+      }
     }
   }
 
-  public void write(int c) throws IOException {
+  @Override
+  public void write(final int c) throws IOException {
     checkClosed();
-    if (position >= CAPACITY)
+    if (this.position >= CAPACITY) {
       flushInternal();
-    buffer[position] = (char) c;
-    position++;
+    }
+    this.buffer[this.position] = (char) c;
+    this.position++;
   }
 
+  @Override
   public void flush() throws IOException {
     flushInternal();
-    out.flush();
+    this.out.flush();
   }
 
   private void flushInternal() throws IOException {
-    if (position != 0) {
-      out.write(buffer, 0, position);
-      position = 0;
+    if (this.position != 0) {
+      this.out.write(this.buffer, 0, this.position);
+      this.position = 0;
     }
   }
 
+  @Override
   public void close() throws IOException {
-    closed = true;
+    this.closed = true;
     this.flush();
-    out.close();
+    this.out.close();
   }
 
   private void checkClosed() throws IOException {
-    if (closed)
+    if (this.closed) {
       throw new IOException("Writer is closed");
+    }
   }
 }

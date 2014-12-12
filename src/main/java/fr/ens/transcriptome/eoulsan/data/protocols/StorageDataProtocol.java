@@ -89,7 +89,7 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
   }
 
   @Override
-  public File getSourceAsFile(DataFile src) {
+  public File getSourceAsFile(final DataFile src) {
 
     try {
       return getUnderLyingData(src).toFile();
@@ -109,14 +109,16 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
 
     final String basePath = getBasePath();
 
-    if (basePath == null)
-      throw new IOException(getName() + " storage is not configurated");
+    if (basePath == null) {
+      throw new IOException(getName() + " storage is not configured");
+    }
 
     final DataFile baseDir = new DataFile(basePath);
 
-    if (!baseDir.exists())
+    if (!baseDir.exists()) {
       throw new IOException(getName()
           + " storage base path does not exists: " + baseDir);
+    }
 
     final String filename = src.getName().toLowerCase().trim() + getExtension();
 
@@ -124,8 +126,9 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
 
       final DataFile f = new DataFile(baseDir, filename + c.getExtension());
 
-      if (f.exists())
+      if (f.exists()) {
         return f;
+      }
     }
 
     throw new IOException("No " + getName() + " found for: " + src.getName());

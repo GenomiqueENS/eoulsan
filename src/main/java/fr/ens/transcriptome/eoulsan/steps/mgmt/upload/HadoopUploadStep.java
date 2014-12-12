@@ -50,7 +50,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 @HadoopOnly
 public class HadoopUploadStep extends UploadStep {
 
-  private Configuration conf;
+  private final Configuration conf;
 
   @Override
   protected DataFile getUploadedDataFile(final DataFile file)
@@ -68,8 +68,9 @@ public class HadoopUploadStep extends UploadStep {
 
     if (sample == null || portName == null) {
 
-      if (file == null)
+      if (file == null) {
         throw new IOException("Input file is null.");
+      }
 
       filename = file.getName();
     } else {
@@ -85,8 +86,9 @@ public class HadoopUploadStep extends UploadStep {
   @Override
   protected void copy(final Map<DataFile, DataFile> files) throws IOException {
 
-    if (files == null)
+    if (files == null) {
       throw new NullPointerException("The files argument is null.");
+    }
 
     // Process to local copies
     for (Map.Entry<DataFile, DataFile> e : new HashMap<>(files).entrySet()) {
@@ -99,8 +101,9 @@ public class HadoopUploadStep extends UploadStep {
       }
 
       // Test if the file exists
-      if (!src.exists())
+      if (!src.exists()) {
         throw new IOException("The file does not exists: " + src);
+      }
 
       // If the file is local file to a local copy/conversion
       if (src.toFile() != null) {
@@ -149,8 +152,9 @@ public class HadoopUploadStep extends UploadStep {
 
     super(dest);
 
-    if (conf == null)
+    if (conf == null) {
       throw new NullPointerException("The configuration object is null");
+    }
 
     this.conf = conf;
   }

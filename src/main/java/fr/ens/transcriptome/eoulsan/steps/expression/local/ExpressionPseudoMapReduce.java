@@ -73,15 +73,13 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
 
-
   private TranscriptAndExonFinder tef;
   private final String counterGroup;
   private final SAMLineParser parser;
   private final ExonsCoverage geneExpr = new ExonsCoverage();
   private final String[] fields = new String[9];
 
-  private final Map<String, Exon> oneExonByParentId =
-      new HashMap<>();
+  private final Map<String, Exon> oneExonByParentId = new HashMap<>();
 
   //
   // Mapper and reducer
@@ -94,24 +92,27 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
    * @param reporter reporter
    * @throws IOException if an error occurs while executing the mapper
    */
+  @Override
   public void map(final String value, final List<String> output,
       final Reporter reporter) throws IOException {
 
     // Don't read SAM headers
-    if (value == null || value.length() == 0 || value.charAt(0) == '@')
+    if (value == null || value.length() == 0 || value.charAt(0) == '@') {
       return;
+    }
 
     final SAMRecord samRecord;
 
     try {
 
-      samRecord = parser.parseLine(value);
+      samRecord = this.parser.parseLine(value);
     } catch (SAMException e) {
 
       reporter.incrCounter(this.counterGroup,
           INVALID_SAM_ENTRIES_COUNTER.counterName(), 1);
-      getLogger().info("Invalid SAM output entry: "
-          + e.getMessage() + " line='" + value + "'");
+      getLogger().info(
+          "Invalid SAM output entry: "
+              + e.getMessage() + " line='" + value + "'");
       return;
     }
 
@@ -119,7 +120,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
     final int start = samRecord.getAlignmentStart();
     final int end = samRecord.getAlignmentEnd();
 
-    final Set<Exon> exons = tef.findExons(chr, start, end);
+    final Set<Exon> exons = this.tef.findExons(chr, start, end);
 
     reporter.incrCounter(this.counterGroup, TOTAL_READS_COUNTER.counterName(),
         1);
@@ -140,15 +141,16 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
     final List<Exon> exonSorted = Lists.newArrayList(exons);
     Collections.sort(exonSorted);
 
-    for (Exon e : exonSorted)
-      oneExonByParentId.put(e.getParentId(), e);
+    for (Exon e : exonSorted) {
+      this.oneExonByParentId.put(e.getParentId(), e);
+    }
 
-    List<String> keysSorted = new ArrayList<>(oneExonByParentId.keySet());
+    List<String> keysSorted = new ArrayList<>(this.oneExonByParentId.keySet());
     Collections.sort(keysSorted);
 
     for (String key : keysSorted) {
 
-      final Exon e = oneExonByParentId.get(key);
+      final Exon e = this.oneExonByParentId.get(key);
 
       output.add(e.getParentId()
           + "\t" + e.getChromosome() + "\t" + e.getStart() + "\t" + e.getEnd()
@@ -165,10 +167,11 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
    * @param reporter reporter
    * @throws IOException if an error occurs while executing the reducer
    */
-  public void reduce(final String key, Iterator<String> values,
+  @Override
+  public void reduce(final String key, final Iterator<String> values,
       final List<String> output, final Reporter reporter) throws IOException {
 
-    geneExpr.clear();
+    this.geneExpr.clear();
 
     reporter.incrCounter(this.counterGroup, PARENTS_COUNTER.counterName(), 1);
 
@@ -203,14 +206,15 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
         continue;
       }
 
-      geneExpr.addAlignement(exonStart, exonEnd, alignmentStart, alignementEnd,
-          true);
+      this.geneExpr.addAlignment(exonStart, exonEnd, alignmentStart,
+          alignementEnd, true);
     }
 
-    if (count == 0)
+    if (count == 0) {
       return;
+    }
 
-    final Transcript transcript = tef.getTranscript(parentId);
+    final Transcript transcript = this.tef.getTranscript(parentId);
 
     if (transcript == null) {
       reporter.incrCounter(this.counterGroup,
@@ -219,10 +223,10 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
     }
 
     final int geneLength = transcript.getLength();
-    final int notCovered = geneExpr.getNotCovered(geneLength);
+    final int notCovered = this.geneExpr.getNotCovered(geneLength);
 
     final String result =
-        key + "\t" + notCovered + "\t" + geneExpr.getAlignementCount();
+        key + "\t" + notCovered + "\t" + this.geneExpr.getAlignmentCount();
 
     output.add(result);
   }
@@ -263,7 +267,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
 
   /**
    * Load annotation information.
-   * @param annotationFile annotation file to load
+   * @param annotationIs annotation stream to load
    * @param expressionType expression type to use
    * @param attributeId GFF attribute ID to be used as feature ID
    * @throws IOException if an error occurs while reading annotation file

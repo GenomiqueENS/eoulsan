@@ -48,7 +48,7 @@ public class LogReader {
   private static final Charset CHARSET = Charset
       .forName(Globals.DEFAULT_FILE_ENCODING);
 
-  private BufferedReader reader;
+  private final BufferedReader reader;
 
   /**
    * Read a log file.
@@ -62,23 +62,26 @@ public class LogReader {
     String line = null;
     String counterGroup = null;
 
-    while ((line = reader.readLine()) != null) {
+    while ((line = this.reader.readLine()) != null) {
 
       final String tLine = line.trim();
 
       if ("".equals(tLine)
           || tLine.startsWith("Start time:") || tLine.startsWith("End time:")
-          || tLine.startsWith("Duration:"))
+          || tLine.startsWith("Duration:")) {
         continue;
+      }
 
       if (line.startsWith("\t")) {
 
-        if (counterGroup == null)
+        if (counterGroup == null) {
           continue;
+        }
 
         final int separatorIndex = tLine.indexOf('=');
-        if (separatorIndex == -1)
+        if (separatorIndex == -1) {
           continue;
+        }
         final String counter = tLine.substring(0, separatorIndex);
 
         try {
@@ -89,8 +92,9 @@ public class LogReader {
         } catch (NumberFormatException e) {
           continue;
         }
-      } else
+      } else {
         counterGroup = line;
+      }
 
     }
 
@@ -109,8 +113,9 @@ public class LogReader {
    */
   public LogReader(final InputStream is) {
 
-    if (is == null)
+    if (is == null) {
       throw new NullPointerException("InputStream is null");
+    }
 
     this.reader = new BufferedReader(new InputStreamReader(is, CHARSET));
   }
@@ -121,12 +126,14 @@ public class LogReader {
    */
   public LogReader(final File file) throws FileNotFoundException {
 
-    if (file == null)
+    if (file == null) {
       throw new NullPointerException("File is null");
+    }
 
-    if (!file.isFile())
+    if (!file.isFile()) {
       throw new FileNotFoundException("File not found: "
           + file.getAbsolutePath());
+    }
 
     this.reader = FileUtils.createBufferedReader(file);
   }

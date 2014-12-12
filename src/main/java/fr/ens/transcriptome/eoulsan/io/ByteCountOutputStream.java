@@ -56,16 +56,17 @@ public class ByteCountOutputStream extends FilterOutputStream {
     }
 
     boolean add = false;
-    if (!currentWrite)
+    if (!this.currentWrite) {
       add = true;
+    }
 
-    currentWrite = true;
+    this.currentWrite = true;
 
     super.write(b, off, len);
 
     if (add) {
-      nWritten += len;
-      currentWrite = false;
+      this.nWritten += len;
+      this.currentWrite = false;
     }
   }
 
@@ -78,14 +79,15 @@ public class ByteCountOutputStream extends FilterOutputStream {
     }
 
     boolean add = false;
-    if (!currentWrite)
+    if (!this.currentWrite) {
       add = true;
-    currentWrite = true;
+    }
+    this.currentWrite = true;
 
     super.write(b);
     if (add) {
-      nWritten += b.length;
-      currentWrite = false;
+      this.nWritten += b.length;
+      this.currentWrite = false;
     }
   }
 
@@ -93,15 +95,16 @@ public class ByteCountOutputStream extends FilterOutputStream {
   public void write(final int b) throws IOException {
 
     boolean add = false;
-    if (!currentWrite)
+    if (!this.currentWrite) {
       add = true;
+    }
 
-    currentWrite = true;
+    this.currentWrite = true;
 
     super.write(b);
-    if (add && currentWrite) {
-      nWritten++;
-      currentWrite = false;
+    if (add && this.currentWrite) {
+      this.nWritten++;
+      this.currentWrite = false;
     }
   }
 
@@ -110,13 +113,15 @@ public class ByteCountOutputStream extends FilterOutputStream {
 
     super.close();
 
-    if (attemptedNWritten < 0)
+    if (this.attemptedNWritten < 0) {
       return;
+    }
 
-    if (this.nWritten != attemptedNWritten)
+    if (this.nWritten != this.attemptedNWritten) {
       throw new IOException("Error wrote "
           + this.nWritten + " bytes, attempted: " + this.attemptedNWritten
           + " bytes.");
+    }
 
   }
 

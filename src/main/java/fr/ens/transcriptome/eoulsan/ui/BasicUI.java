@@ -74,11 +74,13 @@ public class BasicUI extends AbstractUI {
     // Check if the UI has been initialized
     checkState(this.workflow != null, "The UI has not been initialized");
 
-    if (step == null || step.getWorkflow() != this.workflow)
+    if (step == null || step.getWorkflow() != this.workflow) {
       return;
+    }
 
-    if (step.getState() == StepState.WORKING)
+    if (step.getState() == StepState.WORKING) {
       notifyStepState(step, 0.0);
+    }
   }
 
   @Override
@@ -92,7 +94,7 @@ public class BasicUI extends AbstractUI {
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step, double progress) {
+  public void notifyStepState(final WorkflowStep step, final double progress) {
 
     // Check if the UI has been initialized
     checkState(this.workflow != null, "The UI has not been initialized");
@@ -100,13 +102,15 @@ public class BasicUI extends AbstractUI {
     if (!isInteractiveMode()
         || step == null || step.getWorkflow() != this.workflow
         || step.getState() != StepState.WORKING
-        || !this.steps.containsKey(step))
+        || !this.steps.containsKey(step)) {
       return;
+    }
 
     final double globalProgress = computeGlobalProgress(step, progress);
 
-    if (globalProgress == 0 && this.lastMessageLength == 0)
+    if (globalProgress == 0 && this.lastMessageLength == 0) {
       System.out.println(Globals.WELCOME_MSG);
+    }
 
     final String msg =
         String
@@ -124,8 +128,9 @@ public class BasicUI extends AbstractUI {
     System.out.print(msg);
 
     // At the end of the workflow print \n
-    if (globalProgress == 1.0)
+    if (globalProgress == 1.0) {
       System.out.println();
+    }
 
     System.out.flush();
 
@@ -137,8 +142,9 @@ public class BasicUI extends AbstractUI {
     // Check if the UI has been initialized
     checkState(this.workflow != null, "The UI has not been initialized");
 
-    if (step == null || step.getWorkflow() != this.workflow)
+    if (step == null || step.getWorkflow() != this.workflow) {
       return;
+    }
 
     System.out.printf("Step "
         + step.getId() + " " + step.getState().toString() + " note: " + note);
@@ -155,16 +161,18 @@ public class BasicUI extends AbstractUI {
 
     for (WorkflowStep step : this.workflow.getSteps()) {
 
-      if (step == null)
+      if (step == null) {
         continue;
+      }
 
       switch (step.getType()) {
       case CHECKER_STEP:
       case GENERATOR_STEP:
       case STANDARD_STEP:
 
-        if (!step.isSkip())
+        if (!step.isSkip()) {
           this.steps.put(step, 0.0);
+        }
 
         break;
 
@@ -183,15 +191,17 @@ public class BasicUI extends AbstractUI {
   private double computeGlobalProgress(final WorkflowStep step,
       final double progress) {
 
-    if (!this.steps.containsKey(step))
+    if (!this.steps.containsKey(step)) {
       return -1;
+    }
 
     // Update progress
     this.steps.put(step, progress);
 
     double sum = 0;
-    for (double p : this.steps.values())
+    for (double p : this.steps.values()) {
       sum += p;
+    }
 
     return sum / this.steps.size();
   }

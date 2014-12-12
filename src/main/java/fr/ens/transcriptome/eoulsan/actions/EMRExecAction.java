@@ -86,7 +86,7 @@ public class EMRExecAction extends AbstractAction {
 
     System.err.println("WARNING: the action \""
         + getName()
-        + "\" is currently under developpement for the next version of "
+        + "\" is currently under development for the next version of "
         + Globals.APP_NAME + " and may actually not work.");
 
     final Options options = makeOptions();
@@ -100,7 +100,8 @@ public class EMRExecAction extends AbstractAction {
 
       // parse the command line arguments
       final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[arguments.size()]), true);
+          parser.parse(options,
+              arguments.toArray(new String[arguments.size()]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -203,12 +204,14 @@ public class EMRExecAction extends AbstractAction {
     try {
 
       // Test if param file exists
-      if (!workflowFile.exists())
+      if (!workflowFile.exists()) {
         throw new FileNotFoundException(workflowFile.toString());
+      }
 
       // Test if design file exists
-      if (!designFile.exists())
+      if (!designFile.exists()) {
         throw new FileNotFoundException(designFile.toString());
+      }
 
       // Create ExecutionArgument object
       final ExecutorArguments arguments =
@@ -224,8 +227,7 @@ public class EMRExecAction extends AbstractAction {
 
       // Launch executor
       e.execute(Lists.newArrayList((Step) new LocalUploadStep(s3Path),
-              new AWSElasticMapReduceExecStep(), new TerminalStep()),
-          null);
+          new AWSElasticMapReduceExecStep(), new TerminalStep()), null);
 
     } catch (FileNotFoundException e) {
       Common.errorExit(e, "File not found: " + e.getMessage());

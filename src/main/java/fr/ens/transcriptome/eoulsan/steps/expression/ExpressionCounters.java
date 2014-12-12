@@ -53,12 +53,12 @@ public enum ExpressionCounters {
    */
   public String counterName() {
 
-    return counterName;
+    return this.counterName;
   }
 
   @Override
   public String toString() {
-    return counterName;
+    return this.counterName;
   }
 
   //

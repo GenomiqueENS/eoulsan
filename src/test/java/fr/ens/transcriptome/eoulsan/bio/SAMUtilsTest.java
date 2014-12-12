@@ -154,8 +154,7 @@ public class SAMUtilsTest {
 
     assertEquals(0, desc.getSequenceCount());
 
-    final List<SAMSequenceRecord> sequences =
-        new ArrayList<>();
+    final List<SAMSequenceRecord> sequences = new ArrayList<>();
 
     sequences.add(new SAMSequenceRecord("chr1", 197195432));
     sequences.add(new SAMSequenceRecord("chr2", 181748087));

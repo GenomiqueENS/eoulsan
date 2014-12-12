@@ -66,7 +66,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected String getPackageVersion() {
+  protected String getDefaultPackageVersion() {
 
     return DEFAULT_PACKAGE_VERSION;
   }
@@ -92,13 +92,15 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       final String s = ProcessUtils.execToString(cmd, true, false);
       final String[] lines = s.split("\n");
 
-      for (String line : lines)
+      for (String line : lines) {
         if (line.startsWith("Version:")) {
 
           final String[] tokens = line.split(":");
-          if (tokens.length > 1)
+          if (tokens.length > 1) {
             return tokens[1].trim();
+          }
         }
+      }
 
       return null;
 
@@ -120,8 +122,8 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected List<String> getIndexerCommand(String indexerPathname,
-      String genomePathname) {
+  protected List<String> getIndexerCommand(final String indexerPathname,
+      final String genomePathname) {
     List<String> cmd = new ArrayList<>();
     cmd.add(indexerPathname);
     cmd.add(genomePathname);
@@ -179,8 +181,8 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected MapperProcess internalMapSE(File archiveIndex,
-      GenomeDescription genomeDescription) throws IOException {
+  protected MapperProcess internalMapSE(final File archiveIndex,
+      final GenomeDescription genomeDescription) throws IOException {
     final String soapPath;
 
     synchronized (SYNC) {
@@ -201,8 +203,8 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected MapperProcess internalMapPE(File archiveIndex,
-      GenomeDescription genomeDescription) throws IOException {
+  protected MapperProcess internalMapPE(final File archiveIndex,
+      final GenomeDescription genomeDescription) throws IOException {
     final String soapPath;
 
     synchronized (SYNC) {
@@ -238,15 +240,17 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
         final List<String> cmd = new ArrayList<>();
 
         cmd.add(soapPath);
-        if (getListMapperArguments() != null)
+        if (getListMapperArguments() != null) {
           cmd.addAll(getListMapperArguments());
+        }
         cmd.add("-p");
         cmd.add(getThreadsNumber() + "");
         cmd.add("-a");
-        if (fileMode)
+        if (fileMode) {
           cmd.add(readsFile.getAbsolutePath());
-        else
+        } else {
           cmd.add(getTmpInputFile1().getAbsolutePath());
+        }
         cmd.add("-D");
         cmd.add(archivePath);
         cmd.add("-o");
@@ -258,7 +262,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       }
 
       @Override
-      protected InputStream createCustomInputStream(InputStream stdout)
+      protected InputStream createCustomInputStream(final InputStream stdout)
           throws FileNotFoundException {
 
         return new SequenceInputStream(convertSOAP2SAM(stdout,
@@ -299,8 +303,9 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
         final List<String> cmd = new ArrayList<>();
 
         cmd.add(soapPath);
-        if (getListMapperArguments() != null)
+        if (getListMapperArguments() != null) {
           cmd.addAll(getListMapperArguments());
+        }
         cmd.add("-p");
         cmd.add(getThreadsNumber() + "");
         cmd.add("-a");
@@ -320,7 +325,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       }
 
       @Override
-      protected InputStream createCustomInputStream(InputStream stdout)
+      protected InputStream createCustomInputStream(final InputStream stdout)
           throws FileNotFoundException {
 
         return new SequenceInputStream(convertSOAP2SAM(stdout,
@@ -354,10 +359,11 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
     return new MapperResult2SAMInputStream(in) {
 
       @Override
-      protected List<String> transform(String s) {
+      protected List<String> transform(final String s) {
 
-        if (s == null)
+        if (s == null) {
           return s2s.last();
+        }
         return s2s.c(s, pairedEnd);
       }
 
@@ -371,18 +377,19 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       private String id;
 
       @Override
-      protected List<String> transform(String s) {
+      protected List<String> transform(final String s) {
 
-        if (s == null || s.trim().length() == 0)
+        if (s == null || s.trim().length() == 0) {
           return null;
+        }
 
-        if (id == null) {
-          id = s.substring(1).trim();
+        if (this.id == null) {
+          this.id = s.substring(1).trim();
           return null;
         }
 
         final List<String> result =
-            Collections.singletonList(id
+            Collections.singletonList(this.id
                 + "\t4\t*\t0\t0\t*\t*\t0\t0\t" + s + "\t*\t\n");
         this.id = null;
 
@@ -401,8 +408,8 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
 
-    super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
     setMapperArguments(DEFAULT_ARGUMENTS);
+    super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }
 
 }

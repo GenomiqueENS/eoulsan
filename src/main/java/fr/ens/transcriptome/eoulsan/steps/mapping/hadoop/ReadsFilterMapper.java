@@ -69,7 +69,7 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
       Globals.PARAMETER_PREFIX + ".filter.reads.parameter.";
 
   private static final Splitter TAB_SPLITTER = Splitter.on('\t').trimResults();
-  private List<String> fields = new ArrayList<>();
+  private final List<String> fields = new ArrayList<>();
   private MultiReadFilter filter;
   private String counterGroup;
 
@@ -153,18 +153,18 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     final String line = value.toString();
 
-    fields.clear();
+    this.fields.clear();
     for (String e : TAB_SPLITTER.split(line)) {
-      fields.add(e);
+      this.fields.add(e);
     }
 
-    final int fieldsSize = fields.size();
+    final int fieldsSize = this.fields.size();
 
     if (fieldsSize == 3) {
       // Single end
-      this.read1.setName(fields.get(0));
-      this.read1.setSequence(fields.get(1));
-      this.read1.setQuality(fields.get(2));
+      this.read1.setName(this.fields.get(0));
+      this.read1.setSequence(this.fields.get(1));
+      this.read1.setQuality(this.fields.get(2));
 
       if (this.filter.accept(this.read1)) {
 
@@ -184,13 +184,13 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     } else if (fieldsSize == 6) {
       // Paired-end
-      this.read1.setName(fields.get(0));
-      this.read1.setSequence(fields.get(1));
-      this.read1.setQuality(fields.get(2));
+      this.read1.setName(this.fields.get(0));
+      this.read1.setSequence(this.fields.get(1));
+      this.read1.setQuality(this.fields.get(2));
 
-      this.read2.setName(fields.get(3));
-      this.read2.setSequence(fields.get(4));
-      this.read2.setQuality(fields.get(5));
+      this.read2.setName(this.fields.get(3));
+      this.read2.setSequence(this.fields.get(4));
+      this.read2.setQuality(this.fields.get(5));
 
       if (this.filter.accept(this.read1, this.read2)) {
 
@@ -211,7 +211,7 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   }
 
   @Override
-  protected void cleanup(Context context) throws IOException,
+  protected void cleanup(final Context context) throws IOException,
       InterruptedException {
   }
 

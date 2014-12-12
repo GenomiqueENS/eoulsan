@@ -92,13 +92,14 @@ public class NormalizationLocalStep extends AbstractStep {
 
       String rServeName = null;
       boolean rServeEnable = context.getSettings().isRServeServerEnabled();
-      if (rServeEnable)
-        rServeName = context.getSettings().getRServeServername();
+      if (rServeEnable) {
+        rServeName = context.getSettings().getRServeServerName();
+      }
 
       final Design design = context.getWorkflow().getDesign();
       final Normalization norm =
           new Normalization(design, new File("."), eDF.getPrefix(),
-              eDF.getDefaultExtention(), new File("."), rServeName,
+              eDF.getDefaultExtension(), new File("."), rServeName,
               rServeEnable);
 
       norm.run(context, context.getInputData(eDF));

@@ -205,47 +205,53 @@ public abstract class AbstractWorkflow implements Workflow {
 
     Preconditions.checkNotNull(step, "step cannot be null");
 
-    if (step.getWorkflow() != this)
+    if (step.getWorkflow() != this) {
       throw new IllegalStateException(
           "step cannot be part of more than one workflow");
+    }
 
-    if (this.stepIds.contains(step.getId()))
+    if (this.stepIds.contains(step.getId())) {
       throw new IllegalStateException("2 step cannot had the same id: "
           + step.getId());
+    }
 
     // Register root step
     if (step.getType() == StepType.ROOT_STEP) {
 
-      if (this.rootStep != null && step != this.rootStep)
+      if (this.rootStep != null && step != this.rootStep) {
         throw new IllegalStateException(
             "Cannot add 2 root steps to the workflow");
+      }
       this.rootStep = step;
     }
 
     // Register design step
     if (step.getType() == StepType.DESIGN_STEP) {
 
-      if (this.designStep != null && step != this.designStep)
+      if (this.designStep != null && step != this.designStep) {
         throw new IllegalStateException(
             "Cannot add 2 design steps to the workflow");
+      }
       this.designStep = step;
     }
 
     // Register checker step
     if (step.getType() == StepType.CHECKER_STEP) {
 
-      if (this.checkerStep != null && step != this.checkerStep)
+      if (this.checkerStep != null && step != this.checkerStep) {
         throw new IllegalStateException(
             "Cannot add 2 checkers steps to the workflow");
+      }
       this.checkerStep = step;
     }
 
     // Register first step
     if (step.getType() == StepType.FIRST_STEP) {
 
-      if (this.firstStep != null && step != this.firstStep)
+      if (this.firstStep != null && step != this.firstStep) {
         throw new IllegalStateException(
             "Cannot add 2 first steps to the workflow");
+      }
       this.firstStep = step;
     }
 
@@ -264,8 +270,9 @@ public abstract class AbstractWorkflow implements Workflow {
 
     Preconditions.checkNotNull(step, "step argument is null");
 
-    if (step.getWorkflow() != this)
+    if (step.getWorkflow() != this) {
       throw new IllegalStateException("step is not part of the workflow");
+    }
 
     synchronized (this) {
 
@@ -514,8 +521,9 @@ public abstract class AbstractWorkflow implements Workflow {
 
     final List<AbstractWorkflowStep> result = new ArrayList<>();
 
-    for (StepState state : states)
+    for (StepState state : states) {
       result.addAll(getSortedStepsByState(state));
+    }
 
     // Sort steps
     sortListSteps(result);
@@ -551,18 +559,21 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   private static void sortListSteps(final List<AbstractWorkflowStep> list) {
 
-    if (list == null)
+    if (list == null) {
       return;
+    }
 
     Collections.sort(list, new Comparator<AbstractWorkflowStep>() {
 
       @Override
-      public int compare(AbstractWorkflowStep a, AbstractWorkflowStep b) {
+      public int compare(final AbstractWorkflowStep a,
+          final AbstractWorkflowStep b) {
 
         int result = a.getType().getPriority() - b.getType().getPriority();
 
-        if (result != 0)
+        if (result != 0) {
           return result;
+        }
 
         return a.getNumber() - b.getNumber();
       }
@@ -578,8 +589,9 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   private static DataFile newDataFile(final String path) {
 
-    if (path == null)
+    if (path == null) {
       return null;
+    }
 
     return new DataFile(path);
   }
@@ -596,17 +608,20 @@ public abstract class AbstractWorkflow implements Workflow {
     checkNotNull(this.localWorkingDir, "the local working directory is null");
 
     try {
-      for (DataFile dir : new DataFile[] { this.logDir, this.outputDir,
-          this.localWorkingDir, this.hadoopWorkingDir, this.taskDir }) {
+      for (DataFile dir : new DataFile[] {this.logDir, this.outputDir,
+          this.localWorkingDir, this.hadoopWorkingDir, this.taskDir}) {
 
-        if (dir == null)
+        if (dir == null) {
           continue;
+        }
 
-        if (dir.exists() && !dir.getMetaData().isDir())
+        if (dir.exists() && !dir.getMetaData().isDir()) {
           throw new EoulsanException("the directory is not a directory: " + dir);
+        }
 
-        if (!dir.exists())
+        if (!dir.exists()) {
           dir.mkdirs();
+        }
 
       }
     } catch (IOException e) {
@@ -625,37 +640,43 @@ public abstract class AbstractWorkflow implements Workflow {
 
     final File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
 
-    if (tempDir == null)
+    if (tempDir == null) {
       throw new EoulsanException("Temporary directory is null");
+    }
 
-    if ("".equals(tempDir.getAbsolutePath()))
+    if ("".equals(tempDir.getAbsolutePath())) {
       throw new EoulsanException("Temporary directory is null");
+    }
 
-    if (!tempDir.exists())
+    if (!tempDir.exists()) {
       throw new EoulsanException("Temporary directory does not exists: "
           + tempDir);
+    }
 
-    if (!tempDir.isDirectory())
+    if (!tempDir.isDirectory()) {
       throw new EoulsanException("Temporary directory is not a directory: "
           + tempDir);
+    }
 
-    if (!tempDir.canRead())
+    if (!tempDir.canRead()) {
       throw new EoulsanException("Temporary directory cannot be read: "
           + tempDir);
+    }
 
-    if (!tempDir.canWrite())
+    if (!tempDir.canWrite()) {
       throw new EoulsanException("Temporary directory cannot be written: "
           + tempDir);
+    }
 
-    if (!tempDir.canExecute())
+    if (!tempDir.canExecute()) {
       throw new EoulsanException("Temporary directory is not executable: "
           + tempDir);
+    }
   }
 
   /**
-   * Log the state and the time of the analysis
+   * Log the state and the time of the analysis.
    * @param success true if analysis was successful
-   * @param stopwatch stopwatch of the workflow epoch
    */
   private void logEndAnalysis(final boolean success) {
 
@@ -667,30 +688,31 @@ public abstract class AbstractWorkflow implements Workflow {
     getLogger().info(
         successString
             + " end of the analysis in "
-            + StringUtils.toTimeHumanReadable(stopwatch.elapsed(MILLISECONDS))
-            + " s.");
+            + StringUtils.toTimeHumanReadable(this.stopwatch
+                .elapsed(MILLISECONDS)) + " s.");
 
     // Send a mail
 
     final String mailSubject =
         "["
             + Globals.APP_NAME + "] " + successString + " end of your job "
-            + workflowContext.getJobId() + " on "
-            + workflowContext.getJobHost();
+            + this.workflowContext.getJobId() + " on "
+            + this.workflowContext.getJobHost();
 
     final String mailMessage =
         "THIS IS AN AUTOMATED MESSAGE.\n\n"
             + successString
             + " end of your job "
-            + workflowContext.getJobId()
+            + this.workflowContext.getJobId()
             + " on "
-            + workflowContext.getJobHost()
+            + this.workflowContext.getJobHost()
             + ".\nJob finished at "
             + new Date(System.currentTimeMillis())
             + " in "
-            + StringUtils.toTimeHumanReadable(stopwatch.elapsed(MILLISECONDS))
+            + StringUtils.toTimeHumanReadable(this.stopwatch
+                .elapsed(MILLISECONDS))
             + " s.\n\nOutput files and logs can be found in the following location:\n"
-            + workflowContext.getOutputPathname() + "\n\nThe "
+            + this.workflowContext.getOutputPathname() + "\n\nThe "
             + Globals.APP_NAME + "team.";
 
     // Send mail

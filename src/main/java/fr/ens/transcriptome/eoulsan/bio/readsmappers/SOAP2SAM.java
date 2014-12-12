@@ -72,65 +72,65 @@ public class SOAP2SAM {
   private String[] sLast;
   private final List<String> results = new ArrayList<>();
 
-  public List<String> c(String line, boolean isPaired) {
+  public List<String> c(final String line, final boolean isPaired) {
 
     this.results.clear();
 
-    if (first) {
+    if (this.first) {
       if (this.gd != null) {
 
-        results.add("@HD\tVN:1.0\tSO:unsorted");
+        this.results.add("@HD\tVN:1.0\tSO:unsorted");
 
         for (String sequenceName : this.gd.getSequencesNames()) {
-          results.add("@SQ\tSN:"
+          this.results.add("@SQ\tSN:"
               + sequenceName + "\tLN:"
               + this.gd.getSequenceLength(sequenceName));
         }
-        first = false;
+        this.first = false;
       }
 
       final String[] sCurr = convert(line, isPaired);
 
       if (sCurr == null) {
-        return results;
+        return this.results;
       }
 
-      if (sLast != null && sLast[0].equals(sCurr[0])) {
+      if (this.sLast != null && this.sLast[0].equals(sCurr[0])) {
 
         if (isPaired) { // Fix single end mode, added by Laurent Jourdren
-          mating(sLast, sCurr);
+          mating(this.sLast, sCurr);
         }
-        results.add(join(sLast, "\t"));
-        results.add(join(sCurr, "\t"));
+        this.results.add(join(this.sLast, "\t"));
+        this.results.add(join(sCurr, "\t"));
 
-        sLast = null;
+        this.sLast = null;
 
       } else {
 
-        if (sLast != null) {
-          results.add(join(sLast, "\t"));
+        if (this.sLast != null) {
+          this.results.add(join(this.sLast, "\t"));
         }
-        sLast = sCurr;
+        this.sLast = sCurr;
       }
 
       // bw.write(convert(line, false));
     }
 
-    return results;
+    return this.results;
   }
 
   public List<String> last() {
 
-    results.clear();
+    this.results.clear();
 
-    if (sLast != null) {
-      results.add(join(sLast, "\t"));
+    if (this.sLast != null) {
+      this.results.add(join(this.sLast, "\t"));
     }
 
-    return results;
+    return this.results;
   }
 
-  public void convert(boolean isPaired) throws IOException {
+  public void convert(final boolean isPaired) throws IOException {
 
     final BufferedReader br = FileUtils.createBufferedReader(this.fin);
     final UnSynchronizedBufferedWriter bw = createWriter();
@@ -155,9 +155,10 @@ public class SOAP2SAM {
 
     try (SequenceReader reader = new FastaReader(this.funmap)) {
 
-      for (Sequence sequence : reader)
+      for (Sequence sequence : reader) {
         bw.write(sequence.getName()
             + "\t4\t*\t0\t0\t*\t*\t0\t0\t" + sequence.getSequence() + "\t*\t\n");
+      }
 
       // throw IOException of reader if needed
       reader.throwException();
@@ -243,18 +244,18 @@ public class SOAP2SAM {
 
       Collections.sort(x);
 
-      sb.setLength(0);
+      this.sb.setLength(0);
       int a = 0;
 
       for (String xs : x) {
         final String[] tab2 = xs.split(",");
         final int y = Integer.parseInt(tab2[0].trim());
-        sb.append(y - a);
-        sb.append(tab2[1]);
+        this.sb.append(y - a);
+        this.sb.append(tab2[1]);
         a += y - a + 1;
       }
-      sb.append(tab[1].length() - a);
-      result[12] = "MD:Z:" + sb.toString();
+      this.sb.append(tab[1].length() - a);
+      result[12] = "MD:Z:" + this.sb.toString();
     } else {
       result[12] = "MD:Z:";
     }
@@ -268,18 +269,18 @@ public class SOAP2SAM {
       return null;
     }
 
-    sb.setLength(0);
+    this.sb.setLength(0);
 
     for (int i = 0; i < line.length(); i++) {
 
       final int c = line.charAt(i);
 
       if (c == '\t' || (c > 32 && c < 127)) {
-        sb.append((char) c);
+        this.sb.append((char) c);
       }
 
     }
-    return sb.toString();
+    return this.sb.toString();
   }
 
   private final static void mating(final String[] s1, final String[] s2) {

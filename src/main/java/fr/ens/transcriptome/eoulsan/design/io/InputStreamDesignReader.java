@@ -55,7 +55,7 @@ public abstract class InputStreamDesignReader implements DesignReader {
    * @return Returns the input stream
    */
   protected InputStream getInputStream() {
-    return is;
+    return this.is;
   }
 
   /**
@@ -63,7 +63,7 @@ public abstract class InputStreamDesignReader implements DesignReader {
    * @return Returns the bufferedReader
    */
   protected BufferedReader getBufferedReader() {
-    return bufferedReader;
+    return this.bufferedReader;
   }
 
   /**
@@ -101,8 +101,9 @@ public abstract class InputStreamDesignReader implements DesignReader {
    */
   protected void setInputStream(final InputStream is) throws EoulsanIOException {
 
-    if (is == null)
+    if (is == null) {
       throw new EoulsanIOException("No stream to read");
+    }
     this.is = is;
   }
 
@@ -115,6 +116,7 @@ public abstract class InputStreamDesignReader implements DesignReader {
    * @return a new Design object
    * @throws EoulsanIOException if an error occurs while reading the design
    */
+  @Override
   public abstract Design read() throws EoulsanIOException;
 
   //
@@ -129,8 +131,9 @@ public abstract class InputStreamDesignReader implements DesignReader {
    */
   public InputStreamDesignReader(final File file) throws EoulsanIOException {
 
-    if (file == null)
+    if (file == null) {
       throw new EoulsanIOException("No file to load");
+    }
 
     try {
       setInputStream(FileUtils.createInputStream(file));

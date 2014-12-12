@@ -58,6 +58,10 @@
         </li>
       </ul>
       <p>
+        Older versions of Eoulsan are available on
+        <a href="https://github.com/GenomicParisCentre/eoulsan/releases">Eoulsan GitHub release page</a>.
+      </p>
+      <p>
         Eoulsan is distributed under the
         <a href="license.html">GNU Lesser General Public License</a> and <a href="license.html">CeCill-C</a>.
       </p>

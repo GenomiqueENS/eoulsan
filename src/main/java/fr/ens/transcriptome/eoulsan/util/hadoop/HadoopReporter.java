@@ -50,9 +50,9 @@ public class HadoopReporter implements Reporter {
 
   @Override
   public void incrCounter(final String counterGroup, final String counterName,
-      long amount) {
+      final long amount) {
 
-    if (context != null) {
+    if (this.context != null) {
       // Use in mappers and reducers
       this.context.getCounter(counterGroup, counterName).increment(amount);
     } else {
@@ -67,7 +67,7 @@ public class HadoopReporter implements Reporter {
       final String counterName) {
 
     // This method does not works in Hadoop mappers and reducers
-    if (context != null) {
+    if (this.context != null) {
       throw new UnsupportedOperationException();
     }
 
@@ -78,25 +78,26 @@ public class HadoopReporter implements Reporter {
   public Set<String> getCounterGroups() {
 
     // This method does not works in Hadoop mappers and reducers
-    if (context != null) {
+    if (this.context != null) {
       throw new UnsupportedOperationException();
     }
 
-    return Sets.newHashSet(counters.getGroupNames());
+    return Sets.newHashSet(this.counters.getGroupNames());
   }
 
   @Override
   public Set<String> getCounterNames(final String group) {
 
     // This method does not works in Hadoop mappers and reducers
-    if (context != null) {
+    if (this.context != null) {
       throw new UnsupportedOperationException();
     }
 
     final Set<String> result = new HashSet<>();
 
-    for (Counter c : counters.getGroup(group))
+    for (Counter c : this.counters.getGroup(group)) {
       result.add(c.getName());
+    }
 
     return result;
   }

@@ -31,22 +31,26 @@ package fr.ens.transcriptome.eoulsan.translators;
  */
 public class DummyTranslator extends BasicTranslator {
 
-  private int fieldCount;
+  private final int fieldCount;
 
+  @Override
   public String[] getFields() {
 
     final String array[] = new String[this.fieldCount];
 
-    for (int i = 0; i < array.length; i++)
+    for (int i = 0; i < array.length; i++) {
       array[i] = "field#" + i;
+    }
 
     return array;
   }
 
-  public String translateField(String id, String field) {
+  @Override
+  public String translateField(final String id, final String field) {
 
-    if (id == null || field == null)
+    if (id == null || field == null) {
       return null;
+    }
 
     return id + "_" + field;
   }

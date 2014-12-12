@@ -108,55 +108,68 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
   private boolean waitJob = false;
 
   @Override
-  public void configure(Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     final Settings settings = EoulsanRuntime.getSettings();
 
     this.awsAccessKey = settings.getAWSAccessKey();
-    if (this.awsAccessKey == null)
+    if (this.awsAccessKey == null) {
       throw new EoulsanException("The AWS access key is not set.");
+    }
 
     this.awsSecretKey = settings.getAWSSecretKey();
-    if (this.awsSecretKey == null)
+    if (this.awsSecretKey == null) {
       throw new EoulsanException("The AWS secret key is not set.");
+    }
 
-    if (settings.isSetting(HADOOP_VERSION_KEY))
+    if (settings.isSetting(HADOOP_VERSION_KEY)) {
       this.hadoopVersion = settings.getSetting(HADOOP_VERSION_KEY).trim();
+    }
 
-    if (settings.isSetting(INSTANCES_NUMBER_KEY))
+    if (settings.isSetting(INSTANCES_NUMBER_KEY)) {
       this.nInstances = settings.getIntSetting(INSTANCES_NUMBER_KEY);
+    }
 
-    if (settings.isSetting(INSTANCE_TYPE_KEY))
+    if (settings.isSetting(INSTANCE_TYPE_KEY)) {
       this.instanceType = settings.getSetting(INSTANCE_TYPE_KEY);
+    }
 
-    if (settings.isSetting(MAPREDUCE_ENDPOINT_KEY))
+    if (settings.isSetting(MAPREDUCE_ENDPOINT_KEY)) {
       this.endpoint = settings.getSetting(MAPREDUCE_ENDPOINT_KEY);
+    }
 
-    if (settings.isSetting(LOG_PATH_KEY))
+    if (settings.isSetting(LOG_PATH_KEY)) {
       this.logPathname = settings.getSetting(LOG_PATH_KEY);
+    }
 
-    if (settings.isSetting(WAIT_JOB_KEY))
+    if (settings.isSetting(WAIT_JOB_KEY)) {
       this.waitJob = settings.getBooleanSetting(WAIT_JOB_KEY);
+    }
 
-    if (this.nInstances == -1)
+    if (this.nInstances == -1) {
       throw new EoulsanException("The number of instance is not set.");
+    }
 
-    if (settings.isSetting(TASK_TRACKER_MAPPER_MAX_TASKS_KEY))
+    if (settings.isSetting(TASK_TRACKER_MAPPER_MAX_TASKS_KEY)) {
       this.taskTrackerMaxMapTasks =
           settings.getIntSetting(TASK_TRACKER_MAPPER_MAX_TASKS_KEY);
+    }
 
-    if (settings.isSetting(EC2_KEY_NAME_KEY))
+    if (settings.isSetting(EC2_KEY_NAME_KEY)) {
       this.ec2KeyName = settings.getSetting(EC2_KEY_NAME_KEY);
+    }
 
-    if (settings.isSetting(ENABLE_DEBUGGING_KEY))
+    if (settings.isSetting(ENABLE_DEBUGGING_KEY)) {
       this.enableDebugging = settings.getBooleanSetting(ENABLE_DEBUGGING_KEY);
+    }
 
   }
 
   @Override
   public StepResult execute(final StepContext context, final StepStatus status) {
 
-    // Envrionment argument
+    // Environment argument
     final StringBuilder sb = new StringBuilder();
     sb.append("hadoopVersion=");
     sb.append(this.hadoopVersion);
@@ -219,15 +232,17 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
     builder.withHadoopVersion(this.hadoopVersion);
 
     // Set log path
-    if (this.logPathname != null)
+    if (this.logPathname != null) {
       builder.withLogPathname(this.logPathname);
+    }
 
     // Set the maximal number of map task in a tasktracker
     builder.withTaskTrackerMaxMapTasks(this.taskTrackerMaxMapTasks);
 
     // Set the EC2 key pair key name
-    if (this.ec2KeyName != null)
+    if (this.ec2KeyName != null) {
       builder.withEC2KeyName(this.ec2KeyName);
+    }
 
     // Enable debugging
     builder.withDebugging(this.enableDebugging);

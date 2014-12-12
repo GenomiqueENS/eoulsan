@@ -83,11 +83,12 @@ public class DefineDataFormatToDownload extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      if ("formats".equals(p.getName()))
+      if ("formats".equals(p.getName())) {
         formatNames = p.getStringValue();
-      else
+      } else {
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());
+      }
     }
 
     if (formatNames == null) {

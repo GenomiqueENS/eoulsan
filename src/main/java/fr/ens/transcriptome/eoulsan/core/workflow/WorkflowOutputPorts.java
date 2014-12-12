@@ -66,15 +66,17 @@ class WorkflowOutputPorts extends AbstractPorts<WorkflowOutputPort> implements
   private static Set<WorkflowOutputPort> convert(
       final AbstractWorkflowStep step, final OutputPorts ports) {
 
-    if (ports == null)
+    if (ports == null) {
       throw new NullPointerException("Ports is null");
+    }
 
     final Set<WorkflowOutputPort> result = new HashSet<>();
 
     for (OutputPort port : ports) {
-      if (port != null)
+      if (port != null) {
         result.add(new WorkflowOutputPort(step, port.getName(), port.isList(),
             port.getFormat(), port.getCompression()));
+      }
 
     }
 

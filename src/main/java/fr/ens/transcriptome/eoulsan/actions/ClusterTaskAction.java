@@ -91,7 +91,8 @@ public class ClusterTaskAction extends AbstractAction {
 
       // parse the command line arguments
       final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[arguments.size()]), true);
+          parser.parse(options,
+              arguments.toArray(new String[arguments.size()]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -162,8 +163,9 @@ public class ClusterTaskAction extends AbstractAction {
     try {
 
       // Test if param file exists
-      if (!contextFile.exists())
+      if (!contextFile.exists()) {
         throw new FileNotFoundException(contextFile.toString());
+      }
 
       // Load context file
       final TaskContext context = TaskContext.deserialize(contextFile);
@@ -178,7 +180,8 @@ public class ClusterTaskAction extends AbstractAction {
       // Configure step
       step.configure(context.getCurrentStep().getParameters());
 
-      // Force TaksRunner to resuse the step instance that just has been created
+      // Force TaskRunner to res-use the step instance that just has been
+      // created
       runner.setForceStepInstanceReuse(true);
 
       // Get the result

@@ -42,8 +42,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public class GFFEntry {
 
-  private Map<String, List<String>> metaData =
-      new LinkedHashMap<>();
+  private final Map<String, List<String>> metaData = new LinkedHashMap<>();
   private int id;
   private String seqId;
   private String source;
@@ -66,7 +65,7 @@ public class GFFEntry {
    * @return the id
    */
   public final int getId() {
-    return id;
+    return this.id;
   }
 
   /**
@@ -74,7 +73,7 @@ public class GFFEntry {
    * @return the seqId
    */
   public final String getSeqId() {
-    return seqId;
+    return this.seqId;
   }
 
   /**
@@ -82,7 +81,7 @@ public class GFFEntry {
    * @return The source
    */
   public final String getSource() {
-    return source;
+    return this.source;
   }
 
   /**
@@ -90,7 +89,7 @@ public class GFFEntry {
    * @return the type
    */
   public final String getType() {
-    return type;
+    return this.type;
   }
 
   /**
@@ -98,7 +97,7 @@ public class GFFEntry {
    * @return the start position
    */
   public final int getStart() {
-    return start;
+    return this.start;
   }
 
   /**
@@ -106,7 +105,7 @@ public class GFFEntry {
    * @return the end position
    */
   public final int getEnd() {
-    return end;
+    return this.end;
   }
 
   /**
@@ -114,7 +113,7 @@ public class GFFEntry {
    * @return the score
    */
   public final double getScore() {
-    return score;
+    return this.score;
   }
 
   /**
@@ -122,7 +121,7 @@ public class GFFEntry {
    * @return the strand
    */
   public final char getStrand() {
-    return strand;
+    return this.strand;
   }
 
   /**
@@ -130,7 +129,7 @@ public class GFFEntry {
    * @return the phase
    */
   public final int getPhase() {
-    return phase;
+    return this.phase;
   }
 
   /**
@@ -201,8 +200,9 @@ public class GFFEntry {
 
     final List<String> list = this.metaData.get(key);
 
-    if (list == null)
+    if (list == null) {
       return null;
+    }
 
     return Collections.unmodifiableList(list);
   }
@@ -280,10 +280,11 @@ public class GFFEntry {
    */
   public final void setStart(final int start) {
 
-    if (start < 1)
+    if (start < 1) {
       this.start = -1;
-    else
+    } else {
       this.start = start;
+    }
   }
 
   /**
@@ -292,10 +293,11 @@ public class GFFEntry {
    */
   public final void setEnd(final int end) {
 
-    if (end < 1)
+    if (end < 1) {
       this.end = -1;
-    else
+    } else {
       this.end = end;
+    }
   }
 
   /**
@@ -356,8 +358,9 @@ public class GFFEntry {
     if (!this.metaData.containsKey(key)) {
       list = new ArrayList<>();
       this.metaData.put(key, list);
-    } else
+    } else {
       list = this.metaData.get(key);
+    }
 
     list.add(value);
 
@@ -372,16 +375,19 @@ public class GFFEntry {
   public final boolean addMetaDataEntries(
       final Map<String, List<String>> entries) {
 
-    if (entries == null)
+    if (entries == null) {
       return false;
+    }
 
-    for (Map.Entry<String, List<String>> e : entries.entrySet())
+    for (Map.Entry<String, List<String>> e : entries.entrySet()) {
       for (String v : e.getValue()) {
 
-        if (!addMetaDataEntry(e.getKey(), v))
+        if (!addMetaDataEntry(e.getKey(), v)) {
           return false;
+        }
 
       }
+    }
 
     return true;
   }
@@ -477,8 +483,8 @@ public class GFFEntry {
    */
   public final boolean isValidEntry() {
 
-    return seqId != null
-        && source != null && type != null && isValidStartAndEnd()
+    return this.seqId != null
+        && this.source != null && this.type != null && isValidStartAndEnd()
         && isValidStrand();
   }
 
@@ -627,7 +633,7 @@ public class GFFEntry {
     } catch (ArrayIndexOutOfBoundsException e) {
 
       throw new BadBioEntryException("Error in GFF parsing line ("
-          + s.split("\t").length + " fields, 9 attemped)", s);
+          + s.split("\t").length + " fields, 9 attempted)", s);
     }
 
     setSeqId(fields[0]);
@@ -674,6 +680,7 @@ public class GFFEntry {
    * Override toString().
    * @return the GFF entry in GFF3 format
    */
+  @Override
   public String toString() {
 
     final String seqId = getSeqId();

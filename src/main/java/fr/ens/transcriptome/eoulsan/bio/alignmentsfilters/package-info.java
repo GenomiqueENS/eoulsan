@@ -28,3 +28,4 @@
  * @see <a href="http://code.google.com/p/eoulsan/wiki/FilteringAlignments" target="_blank">Developer wiki about alignments filtering</a> 
  */
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
+

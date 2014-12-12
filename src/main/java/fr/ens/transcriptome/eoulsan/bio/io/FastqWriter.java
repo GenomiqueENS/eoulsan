@@ -40,13 +40,14 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class FastqWriter implements ReadSequenceWriter {
 
-  private Writer writer;
+  private final Writer writer;
 
   @Override
   public void write(final ReadSequence readSequence) throws IOException {
 
-    if (readSequence != null)
+    if (readSequence != null) {
       this.writer.write(readSequence.toFastQ());
+    }
   }
 
   @Override
@@ -65,8 +66,9 @@ public class FastqWriter implements ReadSequenceWriter {
    */
   public FastqWriter(final Writer writer) {
 
-    if (writer == null)
+    if (writer == null) {
       throw new NullPointerException("The writer is null.");
+    }
 
     this.writer = writer;
   }

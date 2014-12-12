@@ -52,16 +52,16 @@ public class SAMComparator extends AbstractComparatorWithBloomFilter {
   private int numberElementsCompared;
 
   @Override
-  public boolean compareFiles(BloomFilterUtils filter, InputStream is)
-      throws IOException {
+  public boolean compareFiles(final BloomFilterUtils filter,
+      final InputStream is) throws IOException {
 
     final BufferedReader reader =
         new BufferedReader(new InputStreamReader(is, Globals.DEFAULT_CHARSET));
     String line = null;
-    numberElementsCompared = 0;
+    this.numberElementsCompared = 0;
 
     while ((line = reader.readLine()) != null) {
-      numberElementsCompared++;
+      this.numberElementsCompared++;
 
       // Header
       if (line.charAt(0) == '@') {
@@ -158,7 +158,8 @@ public class SAMComparator extends AbstractComparatorWithBloomFilter {
    *          extension '.ser'
    * @param headersTags all headers tags
    */
-  public SAMComparator(boolean useSerializeFile, String... headersTags) {
+  public SAMComparator(final boolean useSerializeFile,
+      final String... headersTags) {
     super(useSerializeFile);
 
     if (headersTags == null) {

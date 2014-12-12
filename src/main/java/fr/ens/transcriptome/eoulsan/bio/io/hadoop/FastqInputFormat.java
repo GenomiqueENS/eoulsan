@@ -43,8 +43,10 @@ import org.apache.hadoop.mapred.Reporter;
  */
 public class FastqInputFormat extends FileInputFormat<LongWritable, Text> {
 
-  public RecordReader<LongWritable, Text> getRecordReader(InputSplit input,
-      JobConf job, Reporter reporter) throws IOException {
+  @Override
+  public RecordReader<LongWritable, Text> getRecordReader(
+      final InputSplit input, final JobConf job, final Reporter reporter)
+      throws IOException {
 
     reporter.setStatus(input.toString());
     return new FastqRecordReader(job, (FileSplit) input);

@@ -151,7 +151,7 @@ public class ITSuite {
 
     if (this.isFirstTest) {
       createSymbolicLinkToTest(directory);
-      isFirstTest = false;
+      this.isFirstTest = false;
     }
 
     // Count test running
@@ -189,13 +189,13 @@ public class ITSuite {
     // Add summary of tests execution
     getLogger().info(
         "Summary tests execution: "
-            + successCount + " succeeded tests and " + failCount
+            + this.successCount + " succeeded tests and " + this.failCount
             + " failed tests.");
 
     // Add suffix to log global filename
     getLogger().fine(
         "End of configuration of "
-            + testsCount
+            + this.testsCount
             + " integration tests in "
             + toTimeHumanReadable(this.globalTimer
                 .elapsed(TimeUnit.MILLISECONDS)));
@@ -212,14 +212,14 @@ public class ITSuite {
    * @return true if debug mode settings otherwise false.
    */
   public boolean isDebugEnabled() {
-    return debugEnabled;
+    return this.debugEnabled;
   }
 
   /**
    * Set the debug mode, true if it is demand otherwise false.
    * @param debugEnabled true if it is demand otherwise false.
    */
-  public void setDebugEnabled(boolean debugEnabled) {
+  public void setDebugEnabled(final boolean debugEnabled) {
     this.debugEnabled = debugEnabled;
   }
 

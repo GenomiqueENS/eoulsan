@@ -148,7 +148,8 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // parse the command line arguments
       final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[arguments.size()]), true);
+          parser.parse(options,
+              arguments.toArray(new String[arguments.size()]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -297,7 +298,7 @@ public class ExecJarHadoopAction extends AbstractAction {
     }
 
     if (jobEnvironment == null) {
-      env = "no enviromnent description";
+      env = "no environment description";
     } else {
       env = jobEnvironment;
     }
@@ -311,17 +312,19 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // Define parameter URI
       final URI paramURI;
-      if (workflowPathname.contains("://"))
+      if (workflowPathname.contains("://")) {
         paramURI = new URI(workflowPathname);
-      else
+      } else {
         paramURI = new File(workflowPathname).getAbsoluteFile().toURI();
+      }
 
       // Define design URI
       final URI designURI;
-      if (designPathname.contains("://"))
+      if (designPathname.contains("://")) {
         designURI = new URI(designPathname);
-      else
+      } else {
         designURI = new File(designPathname).getAbsoluteFile().toURI();
+      }
 
       // Define destination URI
       final URI destURI = new URI(destPathname);
@@ -332,13 +335,15 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // Test if param file exists
       FileSystem paramFs = paramPath.getFileSystem(conf);
-      if (!paramFs.exists(paramPath))
+      if (!paramFs.exists(paramPath)) {
         throw new FileNotFoundException(paramPath.toString());
+      }
 
       // Test if design file exists
       FileSystem designFs = designPath.getFileSystem(conf);
-      if (!designFs.exists(designPath))
+      if (!designFs.exists(designPath)) {
         throw new FileNotFoundException(designPath.toString());
+      }
 
       // Create ExecutionArgument object
       final ExecutorArguments arguments =

@@ -71,10 +71,11 @@ public class FastaReader implements SequenceReader {
   @Override
   public boolean hasNext() {
 
-    if (this.end)
+    if (this.end) {
       return false;
+    }
 
-    result = new Sequence();
+    this.result = new Sequence();
 
     String line = null;
 
@@ -85,17 +86,18 @@ public class FastaReader implements SequenceReader {
         final String trim = line.trim();
 
         // discard empty lines
-        if ("".equals(trim))
+        if ("".equals(trim)) {
           continue;
+        }
 
         if (trim.charAt(0) == '>') {
 
           if (this.nextSequenceName != null) {
 
-            result.setName(this.nextSequenceName);
-            result.setSequence(sb.toString());
-            result.setId(this.count++);
-            sb.setLength(0);
+            this.result.setName(this.nextSequenceName);
+            this.result.setSequence(this.sb.toString());
+            this.result.setId(this.count++);
+            this.sb.setLength(0);
             this.nextSequenceName = trim.substring(1);
             this.nextCallDone = false;
 
@@ -106,19 +108,20 @@ public class FastaReader implements SequenceReader {
 
         } else {
 
-          if (this.nextSequenceName == null)
+          if (this.nextSequenceName == null) {
             throw new IOException(
                 "No fasta header found at the beginning of the fasta file: "
                     + line);
+          }
 
-          sb.append(trim);
+          this.sb.append(trim);
         }
       }
 
-      result.setName(this.nextSequenceName);
-      result.setSequence(sb.toString());
-      result.setId(this.count++);
-      sb.setLength(0);
+      this.result.setName(this.nextSequenceName);
+      this.result.setSequence(this.sb.toString());
+      this.result.setId(this.count++);
+      this.sb.setLength(0);
 
       this.nextCallDone = false;
       this.end = true;
@@ -135,8 +138,9 @@ public class FastaReader implements SequenceReader {
   @Override
   public Sequence next() {
 
-    if (this.nextCallDone)
+    if (this.nextCallDone) {
       throw new NoSuchElementException();
+    }
 
     this.nextCallDone = true;
 
@@ -152,8 +156,9 @@ public class FastaReader implements SequenceReader {
   @Override
   public void throwException() throws IOException {
 
-    if (this.exception != null)
+    if (this.exception != null) {
       throw this.exception;
+    }
   }
 
   //
@@ -166,8 +171,9 @@ public class FastaReader implements SequenceReader {
    */
   public FastaReader(final InputStream is) {
 
-    if (is == null)
+    if (is == null) {
       throw new NullPointerException("InputStream is null");
+    }
 
     this.reader = new BufferedReader(new InputStreamReader(is, FASTA_CHARSET));
   }
@@ -178,8 +184,9 @@ public class FastaReader implements SequenceReader {
    */
   public FastaReader(final File file) throws FileNotFoundException {
 
-    if (file == null)
+    if (file == null) {
       throw new NullPointerException("File is null");
+    }
 
     this.reader = FileUtils.createBufferedReader(file, FASTA_CHARSET);
   }

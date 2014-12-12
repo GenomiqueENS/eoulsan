@@ -82,13 +82,14 @@ public class CreateDesignAction extends AbstractAction {
     boolean pairEndMode = false;
     String sampleSheetPath = null;
     String samplesProjectName = null;
-    boolean symnlinks = false;
+    boolean symlinks = false;
 
     try {
 
       // parse the command line arguments
       final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[arguments.size()]), true);
+          parser.parse(options,
+              arguments.toArray(new String[arguments.size()]), true);
 
       // Pair-end option
       if (line.hasOption("paired-end")) {
@@ -125,7 +126,7 @@ public class CreateDesignAction extends AbstractAction {
       // Symbolic links option
       if (line.hasOption("symlinks")) {
 
-        symnlinks = true;
+        symlinks = true;
         argsOptions++;
       }
 
@@ -148,17 +149,19 @@ public class CreateDesignAction extends AbstractAction {
       final DesignBuilder db = new DesignBuilder();
 
       // Add all the files of a Casava design if Casava design path is defined
-      if (sampleSheetPath != null)
+      if (sampleSheetPath != null) {
         db.addCasavaDesignProject(new File(sampleSheetPath), samplesProjectName);
+      }
 
       // Add files in the command line
       db.addFiles(newArgs);
 
       design = db.getDesign(pairEndMode);
 
-      if (symnlinks)
+      if (symlinks) {
         DesignUtils.replaceLocalPathBySymlinks(design,
             designFile.getParentFile());
+      }
 
     } catch (EoulsanException e) {
       Common.errorExit(e, "Error: " + e.getMessage());
@@ -174,9 +177,10 @@ public class CreateDesignAction extends AbstractAction {
 
     try {
 
-      if (designFile.exists())
+      if (designFile.exists()) {
         throw new EoulsanIOException("Output design file "
             + designFile + " already exists");
+      }
 
       DesignWriter dw = new SimpleDesignWriter(designFile);
 

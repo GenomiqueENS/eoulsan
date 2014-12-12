@@ -41,28 +41,28 @@ public class NoUI extends AbstractUI {
   }
 
   @Override
-  public void init(Workflow workflow) {
+  public void init(final Workflow workflow) {
     // Do nothing
   }
 
   @Override
-  public void notifyStepState(WorkflowStep step) {
+  public void notifyStepState(final WorkflowStep step) {
     // Do nothing
   }
 
   @Override
-  public void notifyStepState(WorkflowStep step, int contextId,
-      String contextName, double progress) {
+  public void notifyStepState(final WorkflowStep step, final int contextId,
+      final String contextName, final double progress) {
     // Do nothing
   }
 
   @Override
-  public void notifyStepState(WorkflowStep step, double progress) {
+  public void notifyStepState(final WorkflowStep step, final double progress) {
     // Do nothing
   }
 
   @Override
-  public void notifyStepState(WorkflowStep step, String note) {
+  public void notifyStepState(final WorkflowStep step, final String note) {
     // Do nothing
   }
 

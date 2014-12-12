@@ -46,8 +46,6 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 @ReuseStepInstance
 public class FakeStep extends AbstractStep {
 
-  
-
   @Override
   public String getName() {
 
@@ -66,10 +64,11 @@ public class FakeStep extends AbstractStep {
   }
 
   @Override
-  public void configure(Set<Parameter> stepParameters) {
+  public void configure(final Set<Parameter> stepParameters) {
 
-    for (Parameter p : stepParameters)
+    for (Parameter p : stepParameters) {
       getLogger().info("s: " + p.getName() + "\t" + p.getStringValue());
+    }
 
   }
 

@@ -260,12 +260,14 @@ public class WorkflowStepResult {
   // JSON
   //
 
-  private static String toJSON(final int level, final String key, Object value) {
+  private static String toJSON(final int level, final String key,
+      final Object value) {
 
     final StringBuilder sb = new StringBuilder();
 
-    if (value == null)
+    if (value == null) {
       return sb.toString();
+    }
 
     sb.append(Strings.repeat(TAB, level));
     sb.append('\"');
@@ -293,12 +295,13 @@ public class WorkflowStepResult {
     sb.append('\"');
     sb.append(key);
     sb.append("\" : {");
-    if (counters == null || counters.isEmpty())
+    if (counters == null || counters.isEmpty()) {
       sb.append("}\n");
-    else {
+    } else {
       sb.append('\n');
-      for (Map.Entry<String, ?> e : counters.entrySet())
+      for (Map.Entry<String, ?> e : counters.entrySet()) {
         sb.append(toJSON(level + 2, e.getKey(), e.getValue()));
+      }
       sb.append(Strings.repeat(TAB, level));
       sb.append("}\n");
     }
@@ -344,8 +347,9 @@ public class WorkflowStepResult {
 
       // Do not log non processed samples
       if (!this.taskCounters.containsKey(contextId)
-          && !this.taskMessages.containsKey(contextId))
+          && !this.taskMessages.containsKey(contextId)) {
         continue;
+      }
 
       if (!sampleProcessed) {
         sampleProcessed = true;
@@ -396,7 +400,7 @@ public class WorkflowStepResult {
     sb.append("\nStep: ");
     sb.append(this.stepId);
     sb.append(" [");
-    sb.append(stepClass);
+    sb.append(this.stepClass);
     sb.append("]");
     sb.append("\nParameters:\n");
 
@@ -424,7 +428,7 @@ public class WorkflowStepResult {
     sb.append("\nEnd time: ");
     sb.append(this.endTime);
     sb.append("\nDuration: ");
-    sb.append(StringUtils.toTimeHumanReadable(duration));
+    sb.append(StringUtils.toTimeHumanReadable(this.duration));
     sb.append('\n');
 
     for (int contextId : this.taskNames.keySet()) {
@@ -447,12 +451,14 @@ public class WorkflowStepResult {
 
   private static Map<String, String> convert(final Set<Parameter> parameters) {
 
-    if (parameters == null)
+    if (parameters == null) {
       return Collections.emptyMap();
+    }
 
     final Map<String, String> result = new LinkedHashMap<>();
-    for (Parameter p : parameters)
+    for (Parameter p : parameters) {
       result.put(p.getName(), p.getStringValue());
+    }
 
     return result;
   }
@@ -468,7 +474,7 @@ public class WorkflowStepResult {
     read(file.open());
   }
 
-  public void read(InputStream in) {
+  public void read(final InputStream in) {
 
     checkNotNull(in);
     checkImmutableState();

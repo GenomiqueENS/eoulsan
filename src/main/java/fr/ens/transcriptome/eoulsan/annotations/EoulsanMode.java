@@ -109,10 +109,11 @@ public enum EoulsanMode {
    * @return true if the annotation of the class is compatible with the Eoulsan
    *         mode
    */
-  public static boolean accept(Class<?> clazz, final boolean hadoopMode) {
+  public static boolean accept(final Class<?> clazz, final boolean hadoopMode) {
 
-    if (clazz == null)
+    if (clazz == null) {
       return false;
+    }
 
     final EoulsanMode mode = getEoulsanMode(clazz);
 
@@ -141,8 +142,9 @@ public enum EoulsanMode {
    */
   public static EoulsanMode getEoulsanMode(final Class<?> clazz) {
 
-    if (clazz == null)
+    if (clazz == null) {
       return null;
+    }
 
     EoulsanMode result = null;
 
@@ -151,17 +153,19 @@ public enum EoulsanMode {
       final Class<? extends Annotation> annotation = mode.getAnnotationClass();
       if (annotation != null && clazz.getAnnotation(annotation) != null) {
 
-        if (result != null)
+        if (result != null) {
           throw new IllegalStateException(
               "A class can not have more than one Eoulsan mode: "
                   + clazz.getName());
+        }
 
         result = mode;
       }
     }
 
-    if (result == null)
+    if (result == null) {
       return NONE;
+    }
 
     return result;
   }

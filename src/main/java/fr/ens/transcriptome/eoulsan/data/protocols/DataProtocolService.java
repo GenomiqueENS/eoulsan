@@ -42,7 +42,7 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
   private static DataProtocolService service;
 
   private final FileDataProtocol defaultProtocol = new FileDataProtocol();
-  private final String defaultProtocolName = defaultProtocol.getName();
+  private final String defaultProtocolName = this.defaultProtocol.getName();
 
   //
   // Static method
@@ -77,19 +77,21 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
    */
   public FileDataProtocol getDefaultProtocol() {
 
-    return defaultProtocol;
+    return this.defaultProtocol;
   }
 
   @Override
-  public DataProtocol newService(String serviceName) {
+  public DataProtocol newService(final String serviceName) {
 
-    if (serviceName == null)
+    if (serviceName == null) {
       return null;
+    }
 
     final String lower = serviceName.trim().toLowerCase();
 
-    if (lower.equals(this.defaultProtocolName))
+    if (lower.equals(this.defaultProtocolName)) {
       return this.defaultProtocol;
+    }
 
     return super.newService(serviceName);
   }
@@ -97,8 +99,7 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
   @Override
   public Map<String, String> getServiceClasses() {
 
-    final Map<String, String> result =
-        new HashMap<>(super.getServiceClasses());
+    final Map<String, String> result = new HashMap<>(super.getServiceClasses());
 
     result.put(this.defaultProtocolName, this.defaultProtocol.getClass()
         .getName());
@@ -107,15 +108,17 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
   }
 
   @Override
-  public boolean isService(String serviceName) {
+  public boolean isService(final String serviceName) {
 
-    if (serviceName == null)
+    if (serviceName == null) {
       return false;
+    }
 
     final String lower = serviceName.trim().toLowerCase();
 
-    if (lower.equals(this.defaultProtocolName))
+    if (lower.equals(this.defaultProtocolName)) {
       return true;
+    }
 
     return super.isService(serviceName);
   }

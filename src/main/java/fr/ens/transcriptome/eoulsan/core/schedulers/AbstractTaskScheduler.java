@@ -301,13 +301,14 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     return this.status.get(step);
   }
 
+  @Override
   public WorkflowStepResult getResult(final WorkflowStep step) {
 
     return this.results.get(step);
   }
 
   @Override
-  public int getTaskSubmitedCount(final WorkflowStep step) {
+  public int getTaskSubmittedCount(final WorkflowStep step) {
 
     checkNotNull(step, "step argument cannot be null");
 
@@ -346,7 +347,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
   }
 
   @Override
-  public int getTotalTaskSubmitedCount() {
+  public int getTotalTaskSubmittedCount() {
 
     return this.submittedContexts.size();
   }
@@ -365,7 +366,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
 
   int getTotalWaitingCount() {
 
-    return getTotalTaskSubmitedCount()
+    return getTotalTaskSubmittedCount()
         - getTotalTaskRunningCount() - getTotalTaskDoneCount();
   }
 
@@ -376,7 +377,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     checkExecutionState();
 
     while (!isStopped()
-        && (getTaskRunningCount(step) > 0 || getTaskSubmitedCount(step) > getTaskDoneCount(step))) {
+        && (getTaskRunningCount(step) > 0 || getTaskSubmittedCount(step) > getTaskDoneCount(step))) {
 
       try {
         Thread.sleep(SLEEP_TIME_IN_MS);

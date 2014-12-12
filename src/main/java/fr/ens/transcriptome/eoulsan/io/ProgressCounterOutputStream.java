@@ -53,35 +53,35 @@ public final class ProgressCounterOutputStream extends OutputStream {
   public final void write(final byte[] b, final int off, final int len)
       throws IOException {
 
-    out.write(b, off, len);
+    this.out.write(b, off, len);
     incrementCounter(len);
   }
 
   @Override
   public final void write(final byte[] b) throws IOException {
 
-    out.write(b);
+    this.out.write(b);
     incrementCounter(b.length);
   }
 
   @Override
   public final void write(final int b) throws IOException {
 
-    out.write(b);
+    this.out.write(b);
     incrementCounter(1);
   }
 
   @Override
   public void flush() throws IOException {
-    out.flush();
+    this.out.flush();
   }
 
   @Override
   public final void close() throws IOException {
 
-    out.flush();
-    out.close();
-    counter.increment(this.sum);
+    this.out.flush();
+    this.out.close();
+    this.counter.increment(this.sum);
   }
 
   //
@@ -93,7 +93,7 @@ public final class ProgressCounterOutputStream extends OutputStream {
     this.sum += bytes;
 
     if (this.sum > MAX) {
-      counter.increment(this.sum);
+      this.counter.increment(this.sum);
       this.sum = 0;
     }
 

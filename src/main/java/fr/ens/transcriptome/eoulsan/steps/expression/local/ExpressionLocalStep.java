@@ -117,7 +117,7 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
       return status.createStepResult(e, "File not found: " + e.getMessage());
     } catch (IOException e) {
       return status.createStepResult(e,
-          "Error while filtering: " + e.getMessage());
+          "Error while computing expression: " + e.getMessage());
     } catch (EoulsanException e) {
       return status.createStepResult(e,
           "Error while reading the annotation file: " + e.getMessage());
@@ -149,16 +149,19 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
         .count(alignmentFile, annotationFile, expressionFile, genomeDescFile);
   }
 
-  private void initCounterArguments(ExpressionCounter counter,
+  private void initCounterArguments(final ExpressionCounter counter,
       final String tempDirectory) {
 
-    if (getStranded() != null)
+    if (getStranded() != null) {
       counter.setStranded(getStranded());
+    }
 
-    if (getOverlapMode() != null)
+    if (getOverlapMode() != null) {
       counter.setOverlapMode(getOverlapMode());
+    }
 
     counter.setRemoveAmbiguousCases(isRemoveAmbiguousCases());
+    counter.setSplitAttributeValues(isSplitAttributeValues());
 
     // Set counter temporary directory
     counter.setTempDirectory(tempDirectory);

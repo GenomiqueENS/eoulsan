@@ -54,7 +54,7 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
   private static final String INDEX_FILENAME = "genomes_desc_storage.txt";
 
   private final DataFile dir;
-  private Map<String, IndexEntry> entries = new LinkedHashMap<>();
+  private final Map<String, IndexEntry> entries = new LinkedHashMap<>();
   private String lastMD5Computed;
   private DataFile lastGenomeFile;
   private long lastGenomeFileModified;
@@ -77,9 +77,9 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
     @Override
     public String toString() {
       return this.getClass().getSimpleName()
-          + "{genomeName=" + genomeName + ", genomeFileLength="
-          + genomeFileLength + ", genomeFileMD5Sum=" + genomeFileMD5Sum
-          + ", file=" + file + "}";
+          + "{genomeName=" + this.genomeName + ", genomeFileLength="
+          + this.genomeFileLength + ", genomeFileMD5Sum="
+          + this.genomeFileMD5Sum + ", file=" + this.file + "}";
     }
   }
 
@@ -93,11 +93,12 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
    */
   private void load() throws IOException {
 
-    if (!this.dir.exists())
+    if (!this.dir.exists()) {
       throw new IOException("Genome description storage directory not found: "
           + this.dir.getSource());
+    }
 
-    final DataFile indexFile = new DataFile(dir, INDEX_FILENAME);
+    final DataFile indexFile = new DataFile(this.dir, INDEX_FILENAME);
 
     // Create an empty index file if no index exists
     if (!indexFile.exists()) {
@@ -116,22 +117,25 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
     while ((line = br.readLine()) != null) {
 
       final String trimmedLine = line.trim();
-      if ("".equals(trimmedLine) || trimmedLine.startsWith("#"))
+      if ("".equals(trimmedLine) || trimmedLine.startsWith("#")) {
         continue;
+      }
 
       final List<String> fields = Arrays.asList(pattern.split(trimmedLine));
 
-      if (fields.size() != 4)
+      if (fields.size() != 4) {
         continue;
+      }
 
       final IndexEntry e = new IndexEntry();
       e.genomeName = fields.get(0);
       e.genomeFileMD5Sum = fields.get(1);
       e.genomeFileLength = Long.parseLong(fields.get(2));
-      e.file = new DataFile(dir, fields.get(3));
+      e.file = new DataFile(this.dir, fields.get(3));
 
-      if (e.file.exists())
+      if (e.file.exists()) {
         this.entries.put(e.getKey(), e);
+      }
     }
 
     br.close();
@@ -143,11 +147,12 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
    */
   private void save() throws IOException {
 
-    if (!this.dir.exists())
+    if (!this.dir.exists()) {
       throw new IOException("Genome description storage directory not found: "
           + this.dir.getSource());
+    }
 
-    final DataFile indexFile = new DataFile(dir, INDEX_FILENAME);
+    final DataFile indexFile = new DataFile(this.dir, INDEX_FILENAME);
 
     // Create an empty index file
     final BufferedWriter writer =
@@ -207,8 +212,9 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
     if (md != null
         && genomeFile.equals(this.lastGenomeFile)
         && this.lastGenomeFileModified == md.getLastModified()
-        && this.lastMD5Computed != null)
+        && this.lastMD5Computed != null) {
       return this.lastMD5Computed;
+    }
 
     final String md5Sum = FileUtils.computeMD5Sum(genomeFile.rawOpen());
 
@@ -232,8 +238,9 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
 
     final IndexEntry entry = this.entries.get(createKey(genomeFile));
 
-    if (entry == null || entry.file == null)
+    if (entry == null || entry.file == null) {
       return null;
+    }
 
     try {
       return GenomeDescription.load(entry.file.open());
@@ -252,8 +259,9 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
 
     final String key = createKey(genomeFile);
 
-    if (entries.containsKey(key))
+    if (this.entries.containsKey(key)) {
       return;
+    }
 
     try {
       final DataFileMetadata md = genomeFile.getMetaData();
@@ -264,7 +272,7 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
       entry.genomeFileMD5Sum = computeMD5Sum(genomeFile);
 
       entry.file =
-          new DataFile(dir, entry.genomeFileMD5Sum
+          new DataFile(this.dir, entry.genomeFileMD5Sum
               + "_" + entry.genomeFileLength + ".gdesc");
 
       genomeDesc.save(entry.file.create());

@@ -80,8 +80,7 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   private final Text resultKey = new Text();
   private final Text resultValue = new Text();
-  private final Map<String, Exon> oneExonByParentId =
-      new HashMap<>();
+  private final Map<String, Exon> oneExonByParentId = new HashMap<>();
 
   /**
    * 'key': offset of the beginning of the line from the beginning of the
@@ -94,8 +93,9 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
     final String line = value.toString();
 
     // Discard SAM headers
-    if (line.length() > 0 && line.charAt(0) == '@')
+    if (line.length() > 0 && line.charAt(0) == '@') {
       return;
+    }
 
     final SAMRecord samRecord;
 
@@ -116,7 +116,7 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
     final int start = samRecord.getAlignmentStart();
     final int stop = samRecord.getAlignmentEnd();
 
-    final Set<Exon> exons = tef.findExons(chr, start, stop);
+    final Set<Exon> exons = this.tef.findExons(chr, start, stop);
 
     context.getCounter(this.counterGroup, TOTAL_READS_COUNTER.counterName())
         .increment(1);
@@ -137,10 +137,11 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
     final List<Exon> exonSorted = Lists.newArrayList(exons);
     Collections.sort(exonSorted);
 
-    for (Exon e : exonSorted)
-      oneExonByParentId.put(e.getParentId(), e);
+    for (Exon e : exonSorted) {
+      this.oneExonByParentId.put(e.getParentId(), e);
+    }
 
-    for (Map.Entry<String, Exon> entry : oneExonByParentId.entrySet()) {
+    for (Map.Entry<String, Exon> entry : this.oneExonByParentId.entrySet()) {
 
       final Exon e = entry.getValue();
 
@@ -163,19 +164,21 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
 
       final URI[] localCacheFiles = context.getCacheFiles();
 
-      if (localCacheFiles == null || localCacheFiles.length == 0)
+      if (localCacheFiles == null || localCacheFiles.length == 0) {
         throw new IOException("Unable to retrieve genome index");
+      }
 
-      if (localCacheFiles.length > 1)
+      if (localCacheFiles.length > 1) {
         throw new IOException(
             "Retrieve more than one file in distributed cache");
+      }
 
       getLogger().info(
           "Genome index compressed file (from distributed cache): "
               + localCacheFiles[0]);
 
       final File indexFile = new File(localCacheFiles[0]);
-      tef.load(indexFile);
+      this.tef.load(indexFile);
 
       // Counter group
       this.counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);

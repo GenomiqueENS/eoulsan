@@ -40,8 +40,10 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
 public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
 
   private static final String DEFAULT_PACKAGE_VERSION = "0.12.9";
-  private static final String MAPPER_EXECUTABLE = "bowtie";
-  private static final String INDEXER_EXECUTABLE = "bowtie-build";
+  private static final String MAPPER_V0_EXECUTABLE = "bowtie";
+  private static final String INDEXER_V0_EXECUTABLE = "bowtie-build";
+  private static final String MAPPER_V1_EXECUTABLE = "bowtie-align-s";
+  private static final String INDEXER_V1_EXECUTABLE = "bowtie-build-s";
 
   private static final String EXTENSION_INDEX_FILE = ".rev.1.ebwt";
 
@@ -55,7 +57,7 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
   }
 
   @Override
-  protected String getPackageVersion() {
+  protected String getDefaultPackageVersion() {
 
     return DEFAULT_PACKAGE_VERSION;
   }
@@ -74,12 +76,21 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
   @Override
   protected String getIndexerExecutable() {
 
-    return INDEXER_EXECUTABLE;
+    if (getMapperVersionToUse().startsWith("0.")) {
+      return INDEXER_V0_EXECUTABLE;
+    }
+
+    return INDEXER_V1_EXECUTABLE;
   }
 
   @Override
   protected String[] getMapperExecutables() {
-    return new String[] {MAPPER_EXECUTABLE};
+
+    if (getMapperVersionToUse().startsWith("0.")) {
+      return new String[] {MAPPER_V0_EXECUTABLE};
+    }
+
+    return new String[] {MAPPER_V1_EXECUTABLE};
   }
 
   protected static final String getBowtieQualityArgument(
@@ -105,6 +116,7 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
     return DEFAULT_ARGUMENTS;
   }
 
+  @Override
   protected List<String> createCommonArgs(final String bowtiePath,
       final String index, final boolean inputCrossbowFormat,
       final boolean memoryMappedIndex) {
@@ -115,22 +127,25 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
     result.add(bowtiePath);
 
     // Set the user options
-    if (getListMapperArguments() != null)
+    if (getListMapperArguments() != null) {
       result.addAll(getListMapperArguments());
+    }
 
     // Set the number of threads to use
     result.add("-p");
     result.add(getThreadsNumber() + "");
 
     // Enable memory mapped index
-    if (memoryMappedIndex)
+    if (memoryMappedIndex) {
       result.add("--mm");
+    }
 
     // Input Format in FASTQ or Crossbow format
-    if (inputCrossbowFormat)
+    if (inputCrossbowFormat) {
       result.add(("-r"));
-    else
+    } else {
       result.add(("-q"));
+    }
 
     // Set the quality format
     result.add(bowtieQualityArgument());

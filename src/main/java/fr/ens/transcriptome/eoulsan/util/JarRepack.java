@@ -42,7 +42,7 @@ public class JarRepack {
   /** The default size of the buffer. */
   private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
-  private ZipOutputStream zos;
+  private final ZipOutputStream zos;
 
   private void copy(final File file) throws IOException {
 

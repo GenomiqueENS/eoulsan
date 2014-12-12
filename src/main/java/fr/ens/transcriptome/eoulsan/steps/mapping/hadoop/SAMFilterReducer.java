@@ -80,9 +80,9 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
   private String counterGroup;
   private MultiReadAlignmentsFilter filter;
 
-  private Text outKey = new Text();
-  private Text outValue = new Text();
-  private List<SAMRecord> records = new ArrayList<>();
+  private final Text outKey = new Text();
+  private final Text outValue = new Text();
+  private final List<SAMRecord> records = new ArrayList<>();
 
   @Override
   protected void setup(final Context context) throws IOException,
@@ -197,7 +197,7 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
     int cptRecords = 0;
     String strRecord = null;
-    records.clear();
+    this.records.clear();
 
     for (Text val : values) {
 
@@ -207,16 +207,16 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
     }
 
-    records.addAll(rafb.getFilteredAlignments());
+    this.records.addAll(rafb.getFilteredAlignments());
     context.getCounter(this.counterGroup,
         ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName()).increment(
-        cptRecords - records.size());
+        cptRecords - this.records.size());
 
     // sort alignments of the current read
-    Collections.sort(records, new SAMComparator());
+    Collections.sort(this.records, new SAMComparator());
 
     // Writing records
-    for (SAMRecord r : records) {
+    for (SAMRecord r : this.records) {
       strRecord = r.getSAMString().replaceAll("\n", "");
 
       final int indexOfFirstTab = strRecord.indexOf("\t");

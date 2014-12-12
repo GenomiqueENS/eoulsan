@@ -48,7 +48,7 @@ public class BadBioEntryException extends Exception {
    */
   public final String getEntry() {
 
-    return entry;
+    return this.entry;
   }
 
   //

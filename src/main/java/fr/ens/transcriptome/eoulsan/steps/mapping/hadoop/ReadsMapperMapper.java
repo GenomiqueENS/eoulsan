@@ -78,6 +78,8 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
   // Parameter keys
   static final String MAPPER_NAME_KEY = Globals.PARAMETER_PREFIX
       + ".mapper.name";
+  static final String MAPPER_VERSION_KEY = Globals.PARAMETER_PREFIX
+      + ".mapper.version";
   static final String PAIR_END_KEY = Globals.PARAMETER_PREFIX
       + ".mapper.pairend";
   static final String MAPPER_ARGS_KEY = Globals.PARAMETER_PREFIX
@@ -101,7 +103,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   private SequenceReadsMapper mapper;
   private MapperProcess process;
-  private List<String> fields = new ArrayList<>();
+  private final List<String> fields = new ArrayList<>();
 
   /**
    * 'key': offset of the beginning of the line from the beginning of the TFQ
@@ -115,23 +117,25 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     context.getCounter(this.counterGroup,
         INPUT_MAPPING_READS_COUNTER.counterName()).increment(1);
 
-    fields.clear();
+    this.fields.clear();
     for (String e : TAB_SPLITTER.split(value.toString())) {
-      fields.add(e);
+      this.fields.add(e);
     }
 
-    final int fieldsSize = fields.size();
+    final int fieldsSize = this.fields.size();
 
     if (fieldsSize == 3) {
 
       // Single end
-      process.writeEntry(fields.get(0), fields.get(1), fields.get(2));
+      this.process.writeEntry(this.fields.get(0), this.fields.get(1),
+          this.fields.get(2));
 
     } else if (fieldsSize == 6) {
 
       // Pair end
-      process.writeEntry(fields.get(0), fields.get(1), fields.get(2),
-          fields.get(3), fields.get(4), fields.get(5));
+      this.process.writeEntry(this.fields.get(0), this.fields.get(1),
+          this.fields.get(2), this.fields.get(3), this.fields.get(4),
+          this.fields.get(5));
     }
 
   }
@@ -159,6 +163,9 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     this.mapper =
         SequenceReadsMapperService.getInstance().newService(mapperName);
 
+    // Set the mapper version
+    this.mapper.setMapperVersionToUse(conf.get(MAPPER_VERSION_KEY));
+
     // Get counter group
     final String counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);
     if (counterGroup != null) {
@@ -175,11 +182,13 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     // Download genome reference
     final URI[] localCacheFiles = context.getCacheFiles();
 
-    if (localCacheFiles == null || localCacheFiles.length == 0)
+    if (localCacheFiles == null || localCacheFiles.length == 0) {
       throw new IOException("Unable to retrieve genome index");
+    }
 
-    if (localCacheFiles.length > 1)
+    if (localCacheFiles.length > 1) {
       throw new IOException("Retrieve more than one file in distributed cache");
+    }
 
     // Get the local genome index zip file
     File archiveIndexFile = new File(localCacheFiles[0]);
@@ -196,18 +205,15 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     getLogger().info(
         "Genome index directory where decompressed: " + archiveIndexDir);
 
-    // Init mapper
-    mapper.init(archiveIndexFile, archiveIndexDir, new HadoopReporter(context),
-        this.counterGroup);
-
     // Set FASTQ format
-    mapper.setFastqFormat(fastqFormat);
+    this.mapper.setFastqFormat(fastqFormat);
 
     // TODO Handle genome description
-    if (pairEnd)
+    if (pairEnd) {
       this.process = this.mapper.mapPE(null);
-    else
+    } else {
       this.process = this.mapper.mapSE(null);
+    }
 
     getLogger().info("Fastq format: " + fastqFormat);
 
@@ -220,7 +226,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     // Get Mapper arguments
     final String mapperArguments = conf.get(MAPPER_ARGS_KEY);
     if (mapperArguments != null) {
-      mapper.setMapperArguments(mapperArguments);
+      this.mapper.setMapperArguments(mapperArguments);
     }
 
     // Get the number of threads to use
@@ -233,7 +239,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
       mapperThreads = Runtime.getRuntime().availableProcessors();
     }
 
-    mapper.setThreadsNumber(mapperThreads);
+    this.mapper.setThreadsNumber(mapperThreads);
     getLogger().info(
         "Use "
             + this.mapper.getMapperName() + " with " + mapperThreads
@@ -244,13 +250,18 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     if (!tempDir.exists()) {
       getLogger().fine(
           "Create temporary directory: " + tempDir.getAbsolutePath());
-      if (!tempDir.mkdirs())
+      if (!tempDir.mkdirs()) {
         throw new IOException(
             "Unable to create local Hadoop temporary directory: " + tempDir);
+      }
     }
 
     // Set mapper temporary directory
-    mapper.setTempDirectory(tempDir);
+    this.mapper.setTempDirectory(tempDir);
+
+    // Init mapper
+    this.mapper.init(archiveIndexFile, archiveIndexDir, new HadoopReporter(
+        context), this.counterGroup);
 
     getLogger().info("End of setup()");
   }
@@ -292,10 +303,10 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     final long waitStartTime = System.currentTimeMillis();
 
     ProcessUtils.waitRandom(5000);
-    lock.lock();
+    this.lock.lock();
 
     try {
-      ProcessUtils.waitUntilExecutableRunning(mapper.getMapperName()
+      ProcessUtils.waitUntilExecutableRunning(this.mapper.getMapperName()
           .toLowerCase());
 
       getLogger().info(
@@ -321,7 +332,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
       throw e;
 
     } finally {
-      lock.unlock();
+      this.lock.unlock();
     }
 
     getLogger().info("End of close() of the mapper.");
@@ -346,15 +357,17 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     while ((line = readerResults.readLine()) != null) {
 
       final String trimmedLine = line.trim();
-      if ("".equals(trimmedLine))
+      if ("".equals(trimmedLine)) {
         continue;
+      }
 
       // Test if line is an header line
       final boolean headerLine = trimmedLine.charAt(0) == '@';
 
       // Only write header lines once (on the first output file)
-      if (headerLine && taskId > 0)
+      if (headerLine && taskId > 0) {
         continue;
+      }
 
       final int tabPos = line.indexOf('\t');
 

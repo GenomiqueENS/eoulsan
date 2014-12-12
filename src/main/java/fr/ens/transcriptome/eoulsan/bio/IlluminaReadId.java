@@ -70,7 +70,7 @@ public final class IlluminaReadId {
    * @return a String with the instrument id
    */
   public final String getInstrumentId() {
-    return instrumentId;
+    return this.instrumentId;
   }
 
   /**
@@ -78,7 +78,7 @@ public final class IlluminaReadId {
    * @return the run id or -1 if there is no run id
    */
   public final int getRunId() {
-    return runId;
+    return this.runId;
   }
 
   /**
@@ -86,7 +86,7 @@ public final class IlluminaReadId {
    * @return the flow cell id as a string or null if there is no flow cell id
    */
   public final String getFlowCellId() {
-    return flowCellId;
+    return this.flowCellId;
   }
 
   /**
@@ -94,7 +94,7 @@ public final class IlluminaReadId {
    * @return the flowcell lane
    */
   public final int getFlowCellLane() {
-    return flowCellLane;
+    return this.flowCellLane;
   }
 
   /**
@@ -102,7 +102,7 @@ public final class IlluminaReadId {
    * @return the tile number within the flowcell lane
    */
   public final int getTileNumberInFlowCellLane() {
-    return tileNumberInFlowCellLane;
+    return this.tileNumberInFlowCellLane;
   }
 
   /**
@@ -110,7 +110,7 @@ public final class IlluminaReadId {
    * @return the 'x'-coordinate of the cluster within the tile
    */
   public final int getXClusterCoordinateInTile() {
-    return xClusterCoordinateInTile;
+    return this.xClusterCoordinateInTile;
   }
 
   /**
@@ -118,7 +118,7 @@ public final class IlluminaReadId {
    * @return the 'y'-coordinate of the cluster within the tile
    */
   public final int getYClusterCoordinateInTile() {
-    return yClusterCoordinateInTile;
+    return this.yClusterCoordinateInTile;
   }
 
   /**
@@ -126,7 +126,7 @@ public final class IlluminaReadId {
    * @return the sequence index for a multiplexed sample, "0" for no indexing
    */
   public final String getSequenceIndex() {
-    return sequenceIndex;
+    return this.sequenceIndex;
   }
 
   /**
@@ -135,7 +135,7 @@ public final class IlluminaReadId {
    *         only)
    */
   public final int getPairMember() {
-    return pairMember;
+    return this.pairMember;
   }
 
   /**
@@ -143,7 +143,7 @@ public final class IlluminaReadId {
    * @return true if the read is filtered
    */
   public final boolean isFiltered() {
-    return filtered;
+    return this.filtered;
   }
 
   /**
@@ -151,7 +151,7 @@ public final class IlluminaReadId {
    * @return the control number or -1 if there is no control number
    */
   public final int getControlNumber() {
-    return controlNumber;
+    return this.controlNumber;
   }
 
   //
@@ -161,17 +161,21 @@ public final class IlluminaReadId {
   private static Pattern findPattern(final String readId)
       throws EoulsanException {
 
-    if (PATTERN_1_8.matcher(readId).lookingAt())
+    if (PATTERN_1_8.matcher(readId).lookingAt()) {
       return PATTERN_1_8;
+    }
 
-    if (PATTERN_1_4.matcher(readId).lookingAt())
+    if (PATTERN_1_4.matcher(readId).lookingAt()) {
       return PATTERN_1_4;
+    }
 
-    if (PATTERN_2.matcher(readId).lookingAt())
+    if (PATTERN_2.matcher(readId).lookingAt()) {
       return PATTERN_2;
+    }
 
-    if (PATTERN_1.matcher(readId).lookingAt())
+    if (PATTERN_1.matcher(readId).lookingAt()) {
       return PATTERN_1;
+    }
 
     throw new EoulsanException("Invalid illumina id: " + readId);
   }
@@ -202,8 +206,9 @@ public final class IlluminaReadId {
     }
 
     final Matcher matcher = this.pattern.matcher(readId.trim());
-    if (!matcher.lookingAt())
+    if (!matcher.lookingAt()) {
       throw new EoulsanException("Invalid illumina id: " + readId);
+    }
 
     if (this.pattern == PATTERN_1_8) {
 

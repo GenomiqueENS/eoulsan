@@ -59,8 +59,9 @@ public abstract class PathDataProtocol extends AbstractDataProtocol {
    */
   public Path getPath(final DataFile dataFile) {
 
-    if (dataFile == null)
+    if (dataFile == null) {
       throw new NullPointerException("The source is null.");
+    }
 
     return new Path(dataFile.getSource());
   }
@@ -80,8 +81,9 @@ public abstract class PathDataProtocol extends AbstractDataProtocol {
   @Override
   public DataFileMetadata getMetadata(final DataFile src) throws IOException {
 
-    if (!exists(src))
+    if (!exists(src)) {
       throw new FileNotFoundException("File not found: " + src);
+    }
 
     final Path path = getPath(src);
     final FileStatus status = path.getFileSystem(this.conf).getFileStatus(path);
@@ -95,11 +97,13 @@ public abstract class PathDataProtocol extends AbstractDataProtocol {
     final CompressionType ct =
         CompressionType.getCompressionTypeByFilename(src.getSource());
 
-    if (ct != null)
+    if (ct != null) {
       result.setContentEncoding(ct.getContentEncoding());
+    }
 
-    if (status.isDirectory())
+    if (status.isDirectory()) {
       result.setDirectory(true);
+    }
 
     return result;
   }
@@ -139,16 +143,18 @@ public abstract class PathDataProtocol extends AbstractDataProtocol {
 
     final AbstractEoulsanRuntime runtime = EoulsanRuntime.getRuntime();
 
-    if (!runtime.isHadoopMode() || !(runtime instanceof HadoopEoulsanRuntime))
+    if (!runtime.isHadoopMode() || !(runtime instanceof HadoopEoulsanRuntime)) {
       throw new IllegalStateException(
           "Can only create PathDataProtocol in hadoop mode.");
+    }
 
     final HadoopEoulsanRuntime hadoopRuntime = (HadoopEoulsanRuntime) runtime;
 
     this.conf = hadoopRuntime.getConfiguration();
 
-    if (conf == null)
+    if (this.conf == null) {
       throw new NullPointerException("The Hadoop configuration object is null");
+    }
   }
 
 }

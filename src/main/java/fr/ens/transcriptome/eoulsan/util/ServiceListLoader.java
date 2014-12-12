@@ -56,16 +56,16 @@ public class ServiceListLoader {
      */
     public URL getUrl() {
 
-      return url;
+      return this.url;
     }
 
     /**
      * Get line number of the entry.
-     * @return the line number o fthe entry
+     * @return the line number of the entry
      */
     public int getLineNumber() {
 
-      return lineNumber;
+      return this.lineNumber;
     }
 
     /**
@@ -74,7 +74,7 @@ public class ServiceListLoader {
      */
     public String getValue() {
 
-      return value;
+      return this.value;
     }
 
     @Override
@@ -111,15 +111,17 @@ public class ServiceListLoader {
     final Enumeration<URL> urls;
 
     // Get the list of urls to the resources files
-    if (this.loader == null)
+    if (this.loader == null) {
       urls = ClassLoader.getSystemResources(fullName);
-    else
+    } else {
       urls = this.loader.getResources(fullName);
+    }
 
     // Parse the URLs files
     final List<Entry> result = new ArrayList<>();
-    for (URL url : Utils.newIterable(urls))
+    for (URL url : Utils.newIterable(urls)) {
       parse(url, result);
+    }
 
     return result;
   }
@@ -143,8 +145,9 @@ public class ServiceListLoader {
       lineNumber++;
 
       final String trimLine = line.trim();
-      if ("".equals(trimLine) || trimLine.startsWith("#"))
+      if ("".equals(trimLine) || trimLine.startsWith("#")) {
         continue;
+      }
 
       result.add(new Entry(url, lineNumber, trimLine));
     }
@@ -178,8 +181,9 @@ public class ServiceListLoader {
     final List<Entry> entries = loadEntries(serviceName, loader);
     final List<String> result = new ArrayList<>(entries.size());
 
-    for (Entry e : entries)
+    for (Entry e : entries) {
       result.add(e.getValue());
+    }
 
     return result;
   }
@@ -217,8 +221,9 @@ public class ServiceListLoader {
    */
   private ServiceListLoader(final String serviceName, final ClassLoader loader) {
 
-    if (serviceName == null)
+    if (serviceName == null) {
       throw new NullPointerException("The service name is null");
+    }
 
     this.loader = loader == null ? this.getClass().getClassLoader() : loader;
 

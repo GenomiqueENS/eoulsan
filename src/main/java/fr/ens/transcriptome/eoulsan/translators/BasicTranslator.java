@@ -39,15 +39,17 @@ public abstract class BasicTranslator implements Translator {
    * Get the default field.
    * @return default field
    */
+  @Override
   public String getDefaultField() {
 
-    if (this.defaultField == null && !originalDefaultFieldSearchDone) {
+    if (this.defaultField == null && !this.originalDefaultFieldSearchDone) {
 
       final String[] fields = getFields();
 
-      if (fields != null && fields.length > 0)
+      if (fields != null && fields.length > 0) {
         this.defaultField = fields[0];
-      originalDefaultFieldSearchDone = true;
+      }
+      this.originalDefaultFieldSearchDone = true;
     }
 
     return this.defaultField;
@@ -57,10 +59,12 @@ public abstract class BasicTranslator implements Translator {
    * Set the default field.
    * @param field The field to set
    */
+  @Override
   public void setDefaultField(final String field) {
 
-    if (!isField(field))
+    if (!isField(field)) {
       throw new RuntimeException("The field doesn't exists");
+    }
 
     this.defaultField = field;
   }
@@ -70,17 +74,20 @@ public abstract class BasicTranslator implements Translator {
    * @param id Identifier of the feature
    * @return An array with the annotation of the Feature
    */
+  @Override
   public String[] translate(final String id) {
 
     String[] fields = getFields();
 
-    if (fields == null)
+    if (fields == null) {
       return null;
+    }
 
     String[] result = new String[fields.length];
 
-    for (int i = 0; i < fields.length; i++)
+    for (int i = 0; i < fields.length; i++) {
       result[i] = translateField(id, fields[i]);
+    }
 
     return result;
   }
@@ -90,10 +97,12 @@ public abstract class BasicTranslator implements Translator {
    * @param ids Identifiers of the features
    * @return An array with the annotation of the Feature
    */
+  @Override
   public String[][] translate(final String[] ids) {
 
-    if (ids == null)
+    if (ids == null) {
       return null;
+    }
 
     String[][] result = new String[ids.length][];
 
@@ -109,6 +118,7 @@ public abstract class BasicTranslator implements Translator {
    * @param ids Identifiers of the features
    * @return An array with the annotation of the Feature
    */
+  @Override
   public String[] translateField(final String[] ids) {
 
     return translateField(ids, getDefaultField());
@@ -120,19 +130,23 @@ public abstract class BasicTranslator implements Translator {
    * @param field the field to get
    * @return An array with the annotation of the Feature
    */
+  @Override
   public String[] translateField(final String[] ids, final String field) {
 
-    if (ids == null)
+    if (ids == null) {
       return null;
+    }
 
     final String lField;
-    if (field == null)
+    if (field == null) {
       lField = getDefaultField();
-    else
+    } else {
       lField = field;
+    }
 
-    if (lField == null || !isField(lField))
+    if (lField == null || !isField(lField)) {
       return null;
+    }
 
     String[] result = new String[ids.length];
 
@@ -148,6 +162,7 @@ public abstract class BasicTranslator implements Translator {
    * @param id Identifier of the feature
    * @return An array with the annotation of the Feature
    */
+  @Override
   public String translateField(final String id) {
 
     return translateField(id, getDefaultField());
@@ -158,19 +173,24 @@ public abstract class BasicTranslator implements Translator {
    * @param field Field to test
    * @return true if the field exists
    */
+  @Override
   public boolean isField(final String field) {
 
-    if (field == null)
+    if (field == null) {
       return false;
+    }
 
     String[] fields = getFields();
 
-    if (fields == null)
+    if (fields == null) {
       return false;
+    }
 
-    for (String field1 : fields)
-      if (field.equals(field1))
+    for (String field1 : fields) {
+      if (field.equals(field1)) {
         return true;
+      }
+    }
 
     return false;
   }
@@ -180,6 +200,7 @@ public abstract class BasicTranslator implements Translator {
    * @param field Field to test
    * @return true if link information is available
    */
+  @Override
   public boolean isLinkInfo(final String field) {
 
     return false;
@@ -191,6 +212,7 @@ public abstract class BasicTranslator implements Translator {
    * @param field field of the id
    * @return a link for the translated id
    */
+  @Override
   public String getLinkInfo(final String translatedId, final String field) {
 
     return null;
@@ -202,15 +224,18 @@ public abstract class BasicTranslator implements Translator {
    * @param field field of the id
    * @return a array of links for the translated ids
    */
+  @Override
   public String[] getLinkInfo(final String[] translatedIds, final String field) {
 
-    if (translatedIds == null || field == null)
+    if (translatedIds == null || field == null) {
       return null;
+    }
 
     final String[] result = new String[translatedIds.length];
 
-    for (int i = 0; i < translatedIds.length; i++)
+    for (int i = 0; i < translatedIds.length; i++) {
       result[i] = getLinkInfo(translatedIds[i], field);
+    }
 
     return result;
   }
@@ -219,6 +244,7 @@ public abstract class BasicTranslator implements Translator {
    * Get the reverse translator for this translator.
    * @return a reverse translator
    */
+  @Override
   public Translator getReverseTranslator() {
 
     return null;
@@ -228,6 +254,7 @@ public abstract class BasicTranslator implements Translator {
    * Get the available identifiers by the translator if possible.
    * @return a array of string with the identifiers
    */
+  @Override
   public String[] getIds() {
 
     return null;

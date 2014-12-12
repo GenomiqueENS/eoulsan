@@ -40,7 +40,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class TFQWriter implements ReadSequenceWriter {
 
-  private Writer writer;
+  private final Writer writer;
 
   @Override
   public void close() throws IOException {
@@ -51,8 +51,9 @@ public class TFQWriter implements ReadSequenceWriter {
   @Override
   public void write(final ReadSequence readSequence) throws IOException {
 
-    if (readSequence != null)
+    if (readSequence != null) {
       this.writer.write(readSequence.toTFQ());
+    }
   }
 
   //
@@ -65,8 +66,9 @@ public class TFQWriter implements ReadSequenceWriter {
    */
   public TFQWriter(final Writer writer) {
 
-    if (writer == null)
+    if (writer == null) {
       throw new NullPointerException("The writer is null.");
+    }
 
     this.writer = writer;
   }

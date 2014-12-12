@@ -57,8 +57,9 @@ public class SAMUtils {
   public static String readSAMHeader(final File file)
       throws FileNotFoundException {
 
-    if (file == null)
+    if (file == null) {
       throw new NullPointerException("The file is null");
+    }
 
     return readSAMHeader(new FileInputStream(file));
   }
@@ -72,8 +73,9 @@ public class SAMUtils {
   public static String readSAMHeader(final DataFile dataFile)
       throws IOException {
 
-    if (dataFile == null)
+    if (dataFile == null) {
       throw new NullPointerException("The data file is null");
+    }
 
     return readSAMHeader(dataFile.open());
   }
@@ -85,8 +87,9 @@ public class SAMUtils {
    */
   public static String readSAMHeader(final InputStream is) {
 
-    if (is == null)
+    if (is == null) {
       throw new NullPointerException("The input stream is null.");
+    }
 
     // Read SAM file header
     final SAMFileReader reader = new SAMFileReader(is);
@@ -104,15 +107,16 @@ public class SAMUtils {
   /**
    * Create a GenomeDescription object from a SAM header.
    * @param file SAM file witch header must be read
-   * @return a new GenomeDescription object with the name and chromsomomes
-   *         length defined in the SAM header
+   * @return a new GenomeDescription object with the name and chromosomes length
+   *         defined in the SAM header
    * @throws FileNotFoundException if the file cannot be found
    */
   public static GenomeDescription createGenomeDescriptionFromSAM(final File file)
       throws FileNotFoundException {
 
-    if (file == null)
+    if (file == null) {
       throw new NullPointerException("The file is null");
+    }
 
     return createGenomeDescriptionFromSAM(new FileInputStream(file));
   }
@@ -120,15 +124,16 @@ public class SAMUtils {
   /**
    * Create a GenomeDescription object from a SAM header.
    * @param dataFile SAM file witch header must be read
-   * @return a new GenomeDescription object with the name and chromsomomes
-   *         length defined in the SAM header
+   * @return a new GenomeDescription object with the name and chromosomes length
+   *         defined in the SAM header
    * @throws IOException if an error occurs while reading the file
    */
   public static GenomeDescription createGenomeDescriptionFromSAM(
       final DataFile dataFile) throws IOException {
 
-    if (dataFile == null)
+    if (dataFile == null) {
       throw new NullPointerException("The data file is null");
+    }
 
     return createGenomeDescriptionFromSAM(dataFile.open());
   }
@@ -136,8 +141,8 @@ public class SAMUtils {
   /**
    * Create a GenomeDescription object from a SAM header.
    * @param is InputStream of the SAM file witch header must be read
-   * @return a new GenomeDescription object with the name and chromsomomes
-   *         length defined in the SAM header
+   * @return a new GenomeDescription object with the name and chromosomes length
+   *         defined in the SAM header
    */
   public static GenomeDescription createGenomeDescriptionFromSAM(
       final InputStream is) {
@@ -148,14 +153,15 @@ public class SAMUtils {
   /**
    * Create a GenomeDescription object from a SAM header.
    * @param header SAM header in a String
-   * @return a new GenomeDescription object with the name and chromsomomes
-   *         length defined in the SAM header
+   * @return a new GenomeDescription object with the name and chromosomes length
+   *         defined in the SAM header
    */
   public static GenomeDescription createGenomeDescriptionFromSAM(
       final String header) {
 
-    if (header == null)
+    if (header == null) {
       return null;
+    }
 
     final GenomeDescription desc = new GenomeDescription();
 
@@ -163,13 +169,15 @@ public class SAMUtils {
 
     for (String line : header.split("\n")) {
 
-      if (!line.startsWith(prefix))
+      if (!line.startsWith(prefix)) {
         continue;
+      }
 
       final String[] fields = line.substring(prefix.length()).split("\tLN:");
 
-      if (fields.length == 2)
+      if (fields.length == 2) {
         desc.addSequence(fields[0], Integer.parseInt(fields[1]));
+      }
 
     }
 
@@ -179,22 +187,25 @@ public class SAMUtils {
   /**
    * Create a GenomeDescription object from a SAMFileHeader object.
    * @param header SAM header object
-   * @return a new GenomeDescription object with the name and chromsomomes
-   *         length defined in the SAM header
+   * @return a new GenomeDescription object with the name and chromosomes length
+   *         defined in the SAM header
    */
   public static GenomeDescription createGenomeDescriptionFromSAM(
       final SAMFileHeader header) {
 
-    if (header == null)
+    if (header == null) {
       return null;
+    }
 
     final GenomeDescription desc = new GenomeDescription();
 
-    if (header.getSequenceDictionary() == null)
+    if (header.getSequenceDictionary() == null) {
       return desc;
+    }
 
-    for (SAMSequenceRecord seq : header.getSequenceDictionary().getSequences())
+    for (SAMSequenceRecord seq : header.getSequenceDictionary().getSequences()) {
       desc.addSequence(seq.getSequenceName(), seq.getSequenceLength());
+    }
 
     return desc;
   }
@@ -202,20 +213,21 @@ public class SAMUtils {
   /**
    * Create a GenomeDescription object from a SAMFileHeader object.
    * @param samRecord header SAM header object
-   * @return a new GenomeDescription object with the name and chromsomomes
-   *         length defined in the SAM header
+   * @return a new GenomeDescription object with the name and chromosomes length
+   *         defined in the SAM header
    */
   public static GenomeDescription createGenomeDescriptionFromSAM(
       final SAMRecord samRecord) {
 
-    if (samRecord == null)
+    if (samRecord == null) {
       return null;
+    }
 
     return createGenomeDescriptionFromSAM(samRecord.getHeader());
   }
 
   /**
-   * Convert a GenomeDesciption object to a SAMSequenceDictionary object.
+   * Convert a GenomeDescription object to a SAMSequenceDictionary object.
    * @param genomeDescription genomeDescription object to convert
    * @return a new SAMSequenceDictionary object with chromosomes name and size
    *         from the GenomeDescription object
@@ -223,11 +235,11 @@ public class SAMUtils {
   public static SAMSequenceDictionary newSAMSequenceDictionary(
       final GenomeDescription genomeDescription) {
 
-    if (genomeDescription == null)
+    if (genomeDescription == null) {
       throw new NullPointerException("The genome description is null.");
+    }
 
-    final List<SAMSequenceRecord> sequences =
-        new ArrayList<>();
+    final List<SAMSequenceRecord> sequences = new ArrayList<>();
 
     for (String sequenceName : genomeDescription.getSequencesNames()) {
 
@@ -241,7 +253,7 @@ public class SAMUtils {
   }
 
   /**
-   * Convert a GenomeDesciption object to a SAMFileHeader object.
+   * Convert a GenomeDescription object to a SAMFileHeader object.
    * @param genomeDescription genomeDescription object to convert
    * @return a new SAMFileHeader object with chromosomes name and size from the
    *         GenomeDescription object

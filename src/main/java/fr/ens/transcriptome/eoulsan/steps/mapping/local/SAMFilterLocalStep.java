@@ -86,7 +86,7 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
       filterSample(context, reporter, status, filter);
 
     } catch (IOException e) {
-      status.createStepResult(e, "Error while filtering: " + e.getMessage());
+      status.createStepResult(e, "Error while filtering alignments: " + e.getMessage());
     } catch (EoulsanException e) {
       status.createStepResult(e,
           "Error while initializing filter: " + e.getMessage());
@@ -167,8 +167,9 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
         // single-end or paired-end mode ?
         if (counterInput == 0) {
-          if (samRecord.getReadPairedFlag())
+          if (samRecord.getReadPairedFlag()) {
             pairedEnd = true;
+          }
         }
 
         counterInput++;

@@ -67,21 +67,21 @@ public class RunInfo {
      * @return Returns the number
      */
     public int getNumber() {
-      return number;
+      return this.number;
     }
 
     /**
      * @return Returns the numberCycles
      */
     public int getNumberCycles() {
-      return numberCycles;
+      return this.numberCycles;
     }
 
     /**
      * @return Returns the indexedRead
      */
     public boolean isIndexedRead() {
-      return indexedRead;
+      return this.indexedRead;
     }
 
     @Override
@@ -98,7 +98,7 @@ public class RunInfo {
   private String flowCell;
   private String instrument;
   private String date;
-  private List<Read> reads = new ArrayList<>();
+  private final List<Read> reads = new ArrayList<>();
 
   // FlowcellLayout
 
@@ -107,7 +107,7 @@ public class RunInfo {
   private int flowCellSwathCount;
   private int flowCellTileCount;
 
-  private List<Integer> alignToPhix = new ArrayList<>();
+  private final List<Integer> alignToPhix = new ArrayList<>();
 
   //
   // Getters
@@ -117,35 +117,35 @@ public class RunInfo {
    * @return Returns the id
    */
   public String getId() {
-    return id;
+    return this.id;
   }
 
   /**
    * @return Returns the number
    */
   public int getNumber() {
-    return number;
+    return this.number;
   }
 
   /**
    * @return Returns the flowCell
    */
   public String getFlowCell() {
-    return flowCell;
+    return this.flowCell;
   }
 
   /**
    * @return Returns the instrument
    */
   public String getInstrument() {
-    return instrument;
+    return this.instrument;
   }
 
   /**
    * @return Returns the date
    */
   public String getDate() {
-    return date;
+    return this.date;
   }
 
   /**
@@ -159,35 +159,35 @@ public class RunInfo {
    * @return Returns the flowCellLaneCount
    */
   public int getFlowCellLaneCount() {
-    return flowCellLaneCount;
+    return this.flowCellLaneCount;
   }
 
   /**
    * @return Returns the flowCellSurfaceCount
    */
   public int getFlowCellSurfaceCount() {
-    return flowCellSurfaceCount;
+    return this.flowCellSurfaceCount;
   }
 
   /**
    * @return Returns the flowCellSwathCount
    */
   public int getFlowCellSwathCount() {
-    return flowCellSwathCount;
+    return this.flowCellSwathCount;
   }
 
   /**
    * @return Returns the flowCellTileCount
    */
   public int getFlowCellTileCount() {
-    return flowCellTileCount;
+    return this.flowCellTileCount;
   }
 
   /**
    * @return Returns the alignToPhix
    */
   public List<Integer> getAlignToPhix() {
-    return Collections.unmodifiableList(alignToPhix);
+    return Collections.unmodifiableList(this.alignToPhix);
   }
 
   //
@@ -227,10 +227,14 @@ public class RunInfo {
 
           final String value = e1.getAttribute(name);
 
-          if ("Id".equals(name))
+          switch (name) {
+          case "Id":
             this.id = value;
-          else if ("Number".equals(name))
+            break;
+          case "Number":
             this.number = Integer.parseInt(value);
+            break;
+          }
         }
 
         this.flowCell = getTagValue(e1, "Flowcell");
@@ -239,7 +243,7 @@ public class RunInfo {
 
         int readCount = 0;
         // Parse Reads tag
-        for (Element e2 : XMLUtils.getElementsByTagName(e1, "Reads"))
+        for (Element e2 : XMLUtils.getElementsByTagName(e1, "Reads")) {
           for (Element e3 : XMLUtils.getElementsByTagName(e2, "Read")) {
 
             final Read read = new Read();
@@ -249,18 +253,26 @@ public class RunInfo {
 
               final String value = e3.getAttribute(name);
 
-              if ("Number".equals(name))
+              switch (name) {
+              case "Number":
                 read.number = Integer.parseInt(value);
-              else if ("NumCycles".equals(name))
+                break;
+              case "NumCycles":
                 read.numberCycles = Integer.parseInt(value);
-              else if ("IsIndexedRead".equals(name))
+                break;
+              case "IsIndexedRead":
                 read.indexedRead = "Y".equals(value.toUpperCase().trim());
-              if (read.getNumber() == 0)
+                break;
+              }
+
+              if (read.getNumber() == 0) {
                 read.number = readCount;
+              }
             }
 
             this.reads.add(read);
           }
+        }
 
         // Parse FlowcellLayout tag
         for (Element e2 : getElementsByTagName(e1, "FlowcellLayout")) {
@@ -269,22 +281,29 @@ public class RunInfo {
 
             final int value = Integer.parseInt(e2.getAttribute(name));
 
-            if ("LaneCount".equals(name))
+            switch (name) {
+            case "LaneCount":
               this.flowCellLaneCount = value;
-            else if ("SurfaceCount".equals(name))
+              break;
+            case "SurfaceCount":
               this.flowCellSurfaceCount = value;
-            else if ("SwathCount".equals(name))
+              break;
+            case "SwathCount":
               this.flowCellSwathCount = value;
-            else if ("TileCount".equals(name))
+              break;
+            case "TileCount":
               this.flowCellTileCount = value;
+              break;
+            }
           }
 
         }
 
-        for (Element e2 : getElementsByTagName(e1, "AlignToPhiX"))
+        for (Element e2 : getElementsByTagName(e1, "AlignToPhiX")) {
           for (Element e3 : getElementsByTagName(e2, "Lane")) {
             this.alignToPhix.add(Integer.parseInt(e3.getTextContent()));
           }
+        }
 
       }
 
@@ -300,12 +319,13 @@ public class RunInfo {
   public String toString() {
 
     return this.getClass().getSimpleName()
-        + "{id=" + id + ", number=" + this.number + ", flowCell="
+        + "{id=" + this.id + ", number=" + this.number + ", flowCell="
         + this.flowCell + ", instrument=" + this.instrument + ", date="
         + this.date + ", reads=" + this.reads + ", flowCellLaneCount="
-        + flowCellLaneCount + ", flowCellSurfaceCount=" + flowCellSurfaceCount
-        + ", flowCellSwathCount=" + flowCellSwathCount + ", flowCellTileCount="
-        + flowCellTileCount + ", alignToPhix=" + this.alignToPhix + "}";
+        + this.flowCellLaneCount + ", flowCellSurfaceCount="
+        + this.flowCellSurfaceCount + ", flowCellSwathCount="
+        + this.flowCellSwathCount + ", flowCellTileCount="
+        + this.flowCellTileCount + ", alignToPhix=" + this.alignToPhix + "}";
 
   }
 

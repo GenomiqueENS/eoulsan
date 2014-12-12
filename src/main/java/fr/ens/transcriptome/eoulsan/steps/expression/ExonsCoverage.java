@@ -34,40 +34,44 @@ import java.util.Map;
  */
 public class ExonsCoverage {
 
-  private Map<String, Exoncoverage> exons = new HashMap<>();
+  private final Map<String, ExonCoverage> exons = new HashMap<>();
 
   private int alignmentCount;
 
-  private final static class Exoncoverage {
+  private final static class ExonCoverage {
 
-    private int exonStart;
-    private int exonEnd;
-    private byte[] coverage;
+    private final int exonStart;
+    private final int exonEnd;
+    private final byte[] coverage;
 
     /**
      * Add an alignment
      * @param alignmentStart start of the alignment
      * @param alignmentEnd end of the alignment
      */
-    public void addAlignement(final int alignmentStart, final int alignmentEnd) {
+    public void addAlignment(final int alignmentStart, final int alignmentEnd) {
 
-      if (alignmentStart < 1)
+      if (alignmentStart < 1) {
         throw new IllegalArgumentException(
             "Start position can't be lower than 1.");
-      if (alignmentEnd < alignmentStart)
+      }
+      if (alignmentEnd < alignmentStart) {
         throw new IllegalArgumentException(
             "End position can't be lower than start position.");
+      }
 
       // Test if alignment is outside the exon
-      if (alignmentStart > exonEnd | alignmentEnd < exonStart)
+      if (alignmentStart > this.exonEnd | alignmentEnd < this.exonStart) {
         return;
+      }
 
       final int start =
           alignmentStart < this.exonStart ? this.exonStart : alignmentStart;
       final int end = alignmentEnd > this.exonEnd ? this.exonEnd : alignmentEnd;
 
-      for (int i = start; i <= end; i++)
+      for (int i = start; i <= end; i++) {
         this.coverage[i - this.exonStart] = 1;
+      }
 
     }
 
@@ -78,10 +82,12 @@ public class ExonsCoverage {
     public int getCovered() {
 
       int count = 0;
-      final int len = coverage.length;
-      for (int i = 0; i < len; i++)
-        if (coverage[i] > 0)
+      final int len = this.coverage.length;
+      for (int i = 0; i < len; i++) {
+        if (this.coverage[i] > 0) {
           count++;
+        }
+      }
 
       return count;
     }
@@ -113,14 +119,16 @@ public class ExonsCoverage {
      * @param start start of the exon
      * @param end end of the exon
      */
-    public Exoncoverage(final int start, final int end) {
+    public ExonCoverage(final int start, final int end) {
 
-      if (start < 1)
+      if (start < 1) {
         throw new IllegalArgumentException(
             "Start position can't be lower than 1.");
-      if (end < start)
+      }
+      if (end < start) {
         throw new IllegalArgumentException(
             "End position can't be lower than start position.");
+      }
 
       this.exonStart = start;
       this.exonEnd = end;
@@ -134,31 +142,32 @@ public class ExonsCoverage {
    * @param exonStart start of the exon
    * @param exonEnd end of the exon
    * @param alignmentStart start of the alignment
-   * @param alignementEnd end of the alignment
-   * @param incrementalignmentCount true if the alignment count must be
+   * @param alignmentEnd end of the alignment
+   * @param incrementAlignmentCount true if the alignment count must be
    *          incremented
    */
-  public void addAlignement(final int exonStart, final int exonEnd,
-      final int alignmentStart, final int alignementEnd,
-      final boolean incrementalignmentCount) {
+  public void addAlignment(final int exonStart, final int exonEnd,
+      final int alignmentStart, final int alignmentEnd,
+      final boolean incrementAlignmentCount) {
 
     final String key = exonStart + "_" + exonEnd;
 
-    final Exoncoverage exon;
+    final ExonCoverage exon;
 
-    if (this.exons.containsKey(key))
+    if (this.exons.containsKey(key)) {
       exon = this.exons.get(key);
-    else {
-      exon = new Exoncoverage(exonStart, exonEnd);
+    } else {
+      exon = new ExonCoverage(exonStart, exonEnd);
       this.exons.put(key, exon);
     }
 
-    exon.addAlignement(alignmentStart, alignementEnd);
-    if (incrementalignmentCount)
+    exon.addAlignment(alignmentStart, alignmentEnd);
+    if (incrementAlignmentCount) {
       this.alignmentCount++;
+    }
   }
 
-  public int getAlignementCount() {
+  public int getAlignmentCount() {
 
     return this.alignmentCount;
   }
@@ -172,8 +181,9 @@ public class ExonsCoverage {
 
     int count = 0;
 
-    for (Map.Entry<String, Exoncoverage> e : this.exons.entrySet())
+    for (Map.Entry<String, ExonCoverage> e : this.exons.entrySet()) {
       count += e.getValue().getCovered();
+    }
 
     return count;
   }
@@ -187,9 +197,9 @@ public class ExonsCoverage {
 
     int count = 0;
 
-    for (Map.Entry<String, Exoncoverage> e : this.exons.entrySet()) {
+    for (Map.Entry<String, ExonCoverage> e : this.exons.entrySet()) {
 
-      Exoncoverage ge = e.getValue();
+      ExonCoverage ge = e.getValue();
       count += ge.exonEnd - ge.exonStart + 1;
     }
 

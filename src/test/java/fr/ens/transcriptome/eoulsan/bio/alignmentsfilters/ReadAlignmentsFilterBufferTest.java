@@ -71,51 +71,51 @@ public class ReadAlignmentsFilterBufferTest {
     // all records (single-end and paired-end modes) have a good mapping
     // quality score (above the threshold)
 
-    recordSE1 =
+    this.recordSE1 =
         "HWI-EAS285_0001_'':1:1:1260:18686#0/1\t16\tchr4\t129576419\t72\t76M\t*\t0\t0"
             + "\tGACGGATCCGAGANANTGANNTGANAAGAGGNNNNNNNNNNNNNNAATTTGAGGACCNAAGGGATGCAGATGATGC"
             + "\tGEGEGE:@=BB><#7#AA:##@CC#CA9A8;##############=GGGGGDCDCDD#DDCGFGDGGGGBGGGGGG"
             + "\tXA:i:1\tMD:Z:13T1T3C0T3A2C3T0T0T0T0G0G0T0T0T0T0G0T0G0G12C18\tNM:i:21";
-    recordSE2 =
+    this.recordSE2 =
         "HWI-EAS285_0001_'':1:1:1260:13682#0/1\t0\tchr16\t23360177\t55\t76M\t*\t0\t0\t"
             + "ATTTGCGACAGGTAGTTTNAAATCTGTGACTNNNNNNNNNNNNNNAGTGNCNTTCNNCGTNGNCACTGACGTCACT"
             + "\tGGGGFGGGGFCECEEBCB#ACCCCCGGFGGA##############AA=A#A#A?A##A=?#9#8?CCB>CGEGGGA\tXA:i:1\tMD:Z:18A12G0A0G0T0G0C0T0A0T0A0G0G0A0A4T1T3T0A3G1G13\tNM:i:21";
     // recordSE3, recordSE4 and recordSE5 are various matches of the same read
-    recordSE3 =
+    this.recordSE3 =
         "HWI-EAS285_0001_'':1:1:1259:2442#0/1\t16\tchr9\t59513044\t50\t76M\t*\t0\t0"
             + "\tGGGACTGCCTTCANNNAGANNCAGNANCTCCNNNNNNNNNNNNNNGACACCTTCCTGNAACACATGTGCCGCCTGG"
             + "\t#############################################ABE@?E@>CC@C#BBDEDGGGGFFEGEGGGG"
             + "\tXA:i:1\tMD:Z:13T0T0C3C0C3C1G4A0T0G0C0A0G0C0C0A0T0G0G0C0T12G18\tNM:i:22";
-    recordSE4 =
+    this.recordSE4 =
         "HWI-EAS285_0001_'':1:1:1259:2442#0/1\t0\tchr5\t22231887\t55\t76M\t*\t0\t0"
             + "\tCCAGGCGGCACATGTGTTNCAGGAAGGTGTCNNNNNNNNNNNNNNGGAGNTNCTGNNTCTNNNTGAAGGCAGTCCC"
             + "\tGGGGEGEFFGGGGDEDBB#C@CC>@E?@EBA#############################################"
             + "\tXA:i:1\tMD:Z:18C12A0G0C0C0A0T0G0G0C0T0G0C0A0T4C1G3G0G3G0A0A13"
             + "\tNM:i:22";
-    recordSE5 =
+    this.recordSE5 =
         "HWI-EAS285_0001_'':1:1:1259:2442#0/1\t0\tchr13\t14002582\t72\t76M\t*\t0\t0"
             + "\tCCAGGCGGCACATGTGTTNCAGGAAGGTGTCNNNNNNNNNNNNNNGGAGNTNCTGNNTCTNNNTGAAGGCAGTCCC"
             + "\tGGGGEGEFFGGGGDEDBB#C@CC>@E?@EBA#############################################"
             + "\tXA:i:2\tMD:Z:18C3A8A0G0C0C0A0T0T0G0C0T0C0C0A0T4C1G2A0G0G3G0A0A5A6A0\tNM:i:26";
     // recordSE6 and recordSE7 are various matches of the same read
-    recordSE6 =
+    this.recordSE6 =
         "HWI-EAS285_0001_'':1:1:1259:1873#0/1\t16\tchr2\t28011331\t255\t76M\t*\t0\t0"
             + "\tGTCTGGCTCCGACNCNCAGGNACCNCNGCCCNNNNNNNNNNNNNNAAGAGCCAGTTCNGGGGTCCCTGGGCCACAC"
             + "\t##############################################EEE:E=<?5=?#BAAF=AFFEFFFDE?EEE"
             + "\tXA:i:1\tMD:Z:0C2A3A0G0T3T1T4C3A1A1A2G0C0T0G0G0G0T0A0C0T0G0A0A0G12T18\tNM:i:26";
-    recordSE7 =
+    this.recordSE7 =
         "HWI-EAS285_0001_'':1:1:1259:1873#0/1\t16\tchr12\t56412446\t255\t76M\t*\t0\t0"
             + "\tGTCTGGCTCCGACNCNCAGGNACCNCNGCCCNNNNNNNNNNNNNNAAGAGCCAGTTCNGGGGTCCCTGGGCCACAC"
             + "\t##############################################EEE:E=<?5=?#BAAF=AFFEFFFDE?EEE"
             + "\tXA:i:1\tMD:Z:13T1T4T3A1A1A2A0C0T0G0G0G0T0A0C0C0A0C0A0G12T18\tNM:i:21";
 
     // recordPE1 and recordPE2 paired
-    recordPE1 =
+    this.recordPE1 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:2462:2222\t99\tchr13\t34124505\t75\t101M\t=\t34124588\t184"
             + "\tCTGANAGAGAAAGTTTACCAAATGCTTCAGAAGTGGCTGATGCGGGAAGGCACCAAAGGGGCCACAGTGGGAAAGTTGGCCCAGGCACTTCACCAATGTTG"
             + "\tCCCF#2ADHHGHHIIJJJJJJJJJJJJJJIJJIGIIJJJGGIDHIJGIIIIIJJIJH?CHFFDDDEDCDDDBDDBDCDDDDDD?BDDDDDDDDDDDDDDED"
             + "\tXA:i:1\tMD:Z:4A96\tNM:i:1";
-    recordPE2 =
+    this.recordPE2 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:2462:2222\t147\tchr13\t34124588\t145\t101M\t=\t34124505\t-184"
             + "\tGGCACTTCACCAATGTTGCAGGATAGACCTGCTGAACCACTTGATTCGTGCCAGCCAGAGCTAAGCCTGGGCAGGCTCTGGCAGTGGGAAGCAAACTATTT"
             + "\tDDDCDDDDDDDDDDDDDDDEEDEEDEBFFFFHGHHHHJIJJJJJJJJJJIGJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJHHHHHFFFFFCCC"
@@ -123,41 +123,41 @@ public class ReadAlignmentsFilterBufferTest {
     // recordPE3, recordPE4, recordPE5 and recordPE6 are various matches of
     // the same read
     // recordPE3 and recordPE4 paired
-    recordPE3 =
+    this.recordPE3 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:1668:2230\t99\tchr12\t76732159\t128\t101M\t=\t76732246\t188"
             + "\tCTTTCCATTCAGCTCACTGATGACCTTGTTGAGCCGATCATCGACCGCTTCGATGCCCACGCTGTCTAGTATTTTCTTGATGTCTTTGGCGCTAGGAGAGG"
             + "\tCCCFFFFFHHHHHJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ@GIIIJJJJJJJHHHHHFFDDDDDEDDDFFFEDDDDDDDEDEDDDDDDDDDDDDDBDD\tXA:i:0\tMD:Z:43T20C36\tNM:i:2";
-    recordPE4 =
+    this.recordPE4 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:1668:2230\t147\tchr12\t76732246\t60\t101M\t=\t76732159\t-188"
             + "\tGGCGCTAGGAGAGGAGTTGCCCCCGAGGGCGGCCAGCAGGTAAGAGGCGACGTAGCGCATGTCGGCTGCGGGGGACAGACCTCACGCGTGCGACCTCGGCG"
             + "\tBDBDDDCDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDBDDDDBDDDDDDDFFFHHJJJJJJJJJHFJJIHGJJJJHHHHHFFFFFCCC\tXA:i:1\tMD:Z:100A0\tNM:i:1";
     // recordPE5 and recordPE6 paired
-    recordPE5 =
+    this.recordPE5 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:1668:2230\t99\tchr4\t129192614\t74\t101M\t=\t129192649\t136"
             + "\tCTTTTTGCCCTCCTGTGGATTCTCCCATCAGCCATTTGGTCTTACTCTTAAGGCCAGTTGAAGATGGTCCCTTACGGTTTCCCAAGTTAGGTTAGTGATGT"
             + "\tCCCFFFFFHHHHHJJHJIJJJIJJJJJJJJJIJJJJJJIIHIJJJJIJJJJJJJJJJIJJJJJIJJJHIJJJJHHEHDFFFEEEEDDDEDDCCDDCDEEDC\tXA:i:1\tMD:Z:5C95\tNM:i:1";
-    recordPE6 =
+    this.recordPE6 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:1668:2230\t147\tchr4\t129192649\t230\t101M\t=\t129192614\t-136"
             + "\tTTGGTCTTACTCTTAAGGCCAGTTGAAGATGGTCCCTTACGGTTTCCCAAGTTAGGTTAGTGATGTGAGATGCCCTGTCCCTACCTCCTTCCCGAGCCCCG"
             + "\tDDDDDCDCADDDDDDDDDDDDDDEEDDDDDDDDDDDDDBDEEFFFFHHHHEHIEJJJIGJIIGGIIJIJJIIJJJJIHJHGD?JIHJJHFHHGFFFFFCCC\tXA:i:2\tMD:Z:87T12A0\tNM:i:2";
 
     // recordPE7 and recordPE8 paired
-    recordPE7 =
+    this.recordPE7 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:2584:2222\t99\tchr1\t173235257\t255\t101M\t=\t173235280\t124"
             + "\tCTTGTATCGCTCCTCAAACTTGACCTTGGCCTCCCGCCTGGCCTTGCGCTTCAAAGCTGGGTCCCTGAACACATCCTTGTTGACAACAGTCTTGTCCAAGG"
             + "\tCCCFFFFFHHHHHJJJJJJJJJJJJJJJJJJJJJJJJJHIIJIJJIIIIJJJJJIIJHHHHFFFFFDEEEEDDDDDDDDDDDDDDDDDDDDDEDDDDDDDD"
             + "\tXA:i:0\tMD:Z:101\tNM:i:0";
-    recordPE8 =
+    this.recordPE8 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:2584:2222\t147\tchr1\t173235280\t255\t101M\t=\t173235257\t-124"
             + "\tCCTTGGCCTCCCGCCTGGCCTTGCGCTTCAAAGCTGGGTCCCTGAACACATCCTTGTTGACAACAGTCTTGTCCAAGGGGATATCCACAGAGTACCTTGTG"
             + "\tDDDDDDDDDDDDDDDDDDDDDDDFFHHHHHHJJJJJJJJJHDJJJJJIJIHIJJJJJIIIJJJIJJIJJJJJHJJJJJJJJJJJJJJJHHHHHDFFFFCCC"
             + "\tXA:i:0\tMD:Z:101\tNM:i:0";
-    recordPE9 =
+    this.recordPE9 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:2584:2222\t99\tchr11\t93898574\t255\t101M\t=\t93898597\t124"
             + "\tCTTGTATCGCTCCTCAAACTTGACCTTGGCCTCCCGCCTGGCCTTGCGCTTCAAAGCTGGGTCCCTGAACACATCCTTGTTGACAACAGTCTTGTCCAAGG"
             + "\tCCCFFFFFHHHHHJJJJJJJJJJJJJJJJJJJJJJJJJHIIJIJJIIIIJJJJJIIJHHHHFFFFFDEEEEDDDDDDDDDDDDDDDDDDDDDEDDDDDDDD"
             + "\tXA:i:0\tMD:Z:101\tNM:i:0";
-    recordPE10 =
+    this.recordPE10 =
         "HWI-1KL110:37:C0BE6ACXX:7:1101:2584:2222\t147\tchr11\t93898597\t255\t101M\t=\t93898574\t-124"
             + "\tCCTTGGCCTCCCGCCTGGCCTTGCGCTTCAAAGCTGGGTCCCTGAACACATCCTTGTTGACAACAGTCTTGTCCAAGGGGATATCCACAGAGTACCTTGTG"
             + "\tDDDDDDDDDDDDDDDDDDDDDDDFFHHHHHHJJJJJJJJJHDJJJJJIJIHIJJJJJIIIJJJIJJIJJJJJHJJJJJJJJJJJJJJJHHHHHDFFFFCCC"
@@ -177,30 +177,30 @@ public class ReadAlignmentsFilterBufferTest {
 
     SAMLineParser parser = new SAMLineParser(SAMUtils.newSAMFileHeader(desc));
 
-    samRecordSE1 = parser.parseLine(recordSE1);
-    samRecordSE2 = parser.parseLine(recordSE2);
-    samRecordSE3 = parser.parseLine(recordSE3);
-    samRecordSE4 = parser.parseLine(recordSE4);
-    samRecordSE5 = parser.parseLine(recordSE5);
-    samRecordSE6 = parser.parseLine(recordSE6);
-    samRecordSE7 = parser.parseLine(recordSE7);
+    this.samRecordSE1 = parser.parseLine(this.recordSE1);
+    this.samRecordSE2 = parser.parseLine(this.recordSE2);
+    this.samRecordSE3 = parser.parseLine(this.recordSE3);
+    this.samRecordSE4 = parser.parseLine(this.recordSE4);
+    this.samRecordSE5 = parser.parseLine(this.recordSE5);
+    this.samRecordSE6 = parser.parseLine(this.recordSE6);
+    this.samRecordSE7 = parser.parseLine(this.recordSE7);
 
-    samRecordPE1 = parser.parseLine(recordPE1);
-    samRecordPE2 = parser.parseLine(recordPE2);
-    samRecordPE3 = parser.parseLine(recordPE3);
-    samRecordPE4 = parser.parseLine(recordPE4);
-    samRecordPE5 = parser.parseLine(recordPE5);
-    samRecordPE6 = parser.parseLine(recordPE6);
-    samRecordPE7 = parser.parseLine(recordPE7);
-    samRecordPE8 = parser.parseLine(recordPE8);
-    samRecordPE9 = parser.parseLine(recordPE9);
-    samRecordPE10 = parser.parseLine(recordPE10);
+    this.samRecordPE1 = parser.parseLine(this.recordPE1);
+    this.samRecordPE2 = parser.parseLine(this.recordPE2);
+    this.samRecordPE3 = parser.parseLine(this.recordPE3);
+    this.samRecordPE4 = parser.parseLine(this.recordPE4);
+    this.samRecordPE5 = parser.parseLine(this.recordPE5);
+    this.samRecordPE6 = parser.parseLine(this.recordPE6);
+    this.samRecordPE7 = parser.parseLine(this.recordPE7);
+    this.samRecordPE8 = parser.parseLine(this.recordPE8);
+    this.samRecordPE9 = parser.parseLine(this.recordPE9);
+    this.samRecordPE10 = parser.parseLine(this.recordPE10);
 
-    recordsVerif = new ArrayList<>();
+    this.recordsVerif = new ArrayList<>();
 
-    filter = new QualityReadAlignmentsFilter();
-    filter.setParameter("threshold", "50");
-    rafb = new ReadAlignmentsFilterBuffer(filter);
+    this.filter = new QualityReadAlignmentsFilter();
+    this.filter.setParameter("threshold", "50");
+    this.rafb = new ReadAlignmentsFilterBuffer(this.filter);
   }
 
   /**
@@ -215,180 +215,180 @@ public class ReadAlignmentsFilterBufferTest {
     // single-end mode
 
     // first case
-    assertTrue(rafb.addAlignment(samRecordSE1));
-    assertFalse(rafb.addAlignment(samRecordSE3));
-    recordsVerif.add(samRecordSE1);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
-    assertTrue(rafb.addAlignment(samRecordSE3));
-    assertTrue(rafb.addAlignment(samRecordSE4));
-    assertTrue(rafb.addAlignment(samRecordSE5));
-    assertFalse(rafb.addAlignment(samRecordSE2));
-    recordsVerif.clear();
-    recordsVerif.add(samRecordSE3);
-    recordsVerif.add(samRecordSE4);
-    recordsVerif.add(samRecordSE5);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
-    assertTrue(rafb.addAlignment(samRecordSE2));
+    assertTrue(this.rafb.addAlignment(this.samRecordSE1));
+    assertFalse(this.rafb.addAlignment(this.samRecordSE3));
+    this.recordsVerif.add(this.samRecordSE1);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
+    assertTrue(this.rafb.addAlignment(this.samRecordSE3));
+    assertTrue(this.rafb.addAlignment(this.samRecordSE4));
+    assertTrue(this.rafb.addAlignment(this.samRecordSE5));
+    assertFalse(this.rafb.addAlignment(this.samRecordSE2));
+    this.recordsVerif.clear();
+    this.recordsVerif.add(this.samRecordSE3);
+    this.recordsVerif.add(this.samRecordSE4);
+    this.recordsVerif.add(this.samRecordSE5);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
+    assertTrue(this.rafb.addAlignment(this.samRecordSE2));
     // rafb.checkBuffer();
-    recordsVerif.clear();
-    recordsVerif.add(samRecordSE2);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    this.recordsVerif.clear();
+    this.recordsVerif.add(this.samRecordSE2);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
 
-    recordsVerif.clear();
+    this.recordsVerif.clear();
 
     // second case
-    assertTrue(rafb.addAlignment(samRecordSE3));
-    assertTrue(rafb.addAlignment(samRecordSE4));
-    assertFalse(rafb.addAlignment(samRecordSE1));
-    recordsVerif.add(samRecordSE3);
-    recordsVerif.add(samRecordSE4);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
-    assertTrue(rafb.addAlignment(samRecordSE1));
-    assertFalse(rafb.addAlignment(samRecordSE5));
-    recordsVerif.clear();
-    recordsVerif.add(samRecordSE1);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
-    assertTrue(rafb.addAlignment(samRecordSE5));
-    assertTrue(rafb.addAlignment(samRecordSE3));
+    assertTrue(this.rafb.addAlignment(this.samRecordSE3));
+    assertTrue(this.rafb.addAlignment(this.samRecordSE4));
+    assertFalse(this.rafb.addAlignment(this.samRecordSE1));
+    this.recordsVerif.add(this.samRecordSE3);
+    this.recordsVerif.add(this.samRecordSE4);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
+    assertTrue(this.rafb.addAlignment(this.samRecordSE1));
+    assertFalse(this.rafb.addAlignment(this.samRecordSE5));
+    this.recordsVerif.clear();
+    this.recordsVerif.add(this.samRecordSE1);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
+    assertTrue(this.rafb.addAlignment(this.samRecordSE5));
+    assertTrue(this.rafb.addAlignment(this.samRecordSE3));
     // rafb.checkBuffer();
-    recordsVerif.clear();
-    recordsVerif.add(samRecordSE5);
-    recordsVerif.add(samRecordSE3);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    this.recordsVerif.clear();
+    this.recordsVerif.add(this.samRecordSE5);
+    this.recordsVerif.add(this.samRecordSE3);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
 
-    recordsVerif.clear();
+    this.recordsVerif.clear();
 
     // third case
-    assertTrue(rafb.addAlignment(samRecordSE1));
-    assertFalse(rafb.addAlignment(samRecordSE2));
-    recordsVerif.add(samRecordSE1);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
-    assertTrue(rafb.addAlignment(samRecordSE2));
+    assertTrue(this.rafb.addAlignment(this.samRecordSE1));
+    assertFalse(this.rafb.addAlignment(this.samRecordSE2));
+    this.recordsVerif.add(this.samRecordSE1);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
+    assertTrue(this.rafb.addAlignment(this.samRecordSE2));
     // rafb.checkBuffer();
-    recordsVerif.clear();
-    recordsVerif.add(samRecordSE2);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    this.recordsVerif.clear();
+    this.recordsVerif.add(this.samRecordSE2);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
 
-    recordsVerif.clear();
+    this.recordsVerif.clear();
 
     // fourth case
-    assertTrue(rafb.addAlignment(samRecordSE3));
-    assertTrue(rafb.addAlignment(samRecordSE4));
-    assertFalse(rafb.addAlignment(samRecordSE6));
-    recordsVerif.add(samRecordSE3);
-    recordsVerif.add(samRecordSE4);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
-    assertTrue(rafb.addAlignment(samRecordSE6));
-    assertTrue(rafb.addAlignment(samRecordSE7));
+    assertTrue(this.rafb.addAlignment(this.samRecordSE3));
+    assertTrue(this.rafb.addAlignment(this.samRecordSE4));
+    assertFalse(this.rafb.addAlignment(this.samRecordSE6));
+    this.recordsVerif.add(this.samRecordSE3);
+    this.recordsVerif.add(this.samRecordSE4);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
+    assertTrue(this.rafb.addAlignment(this.samRecordSE6));
+    assertTrue(this.rafb.addAlignment(this.samRecordSE7));
     // rafb.checkBuffer();
-    recordsVerif.clear();
-    recordsVerif.add(samRecordSE6);
-    recordsVerif.add(samRecordSE7);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    this.recordsVerif.clear();
+    this.recordsVerif.add(this.samRecordSE6);
+    this.recordsVerif.add(this.samRecordSE7);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
 
-    recordsVerif.clear();
+    this.recordsVerif.clear();
 
     // paired-end mode
 
     // first case
-    assertTrue(rafb.addAlignment(samRecordPE1));
-    assertTrue(rafb.addAlignment(samRecordPE2));
-    assertFalse(rafb.addAlignment(samRecordPE3));
-    recordsVerif.add(samRecordPE1);
-    recordsVerif.add(samRecordPE2);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
-    assertTrue(rafb.addAlignment(samRecordPE3));
-    assertTrue(rafb.addAlignment(samRecordPE4));
-    assertTrue(rafb.addAlignment(samRecordPE5));
-    assertTrue(rafb.addAlignment(samRecordPE6));
-    assertFalse(rafb.addAlignment(samRecordPE1));
-    recordsVerif.clear();
-    recordsVerif.add(samRecordPE3);
-    recordsVerif.add(samRecordPE4);
-    recordsVerif.add(samRecordPE5);
-    recordsVerif.add(samRecordPE6);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
-    assertTrue(rafb.addAlignment(samRecordPE1));
-    assertTrue(rafb.addAlignment(samRecordPE2));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE1));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE2));
+    assertFalse(this.rafb.addAlignment(this.samRecordPE3));
+    this.recordsVerif.add(this.samRecordPE1);
+    this.recordsVerif.add(this.samRecordPE2);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
+    assertTrue(this.rafb.addAlignment(this.samRecordPE3));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE4));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE5));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE6));
+    assertFalse(this.rafb.addAlignment(this.samRecordPE1));
+    this.recordsVerif.clear();
+    this.recordsVerif.add(this.samRecordPE3);
+    this.recordsVerif.add(this.samRecordPE4);
+    this.recordsVerif.add(this.samRecordPE5);
+    this.recordsVerif.add(this.samRecordPE6);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
+    assertTrue(this.rafb.addAlignment(this.samRecordPE1));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE2));
     // rafb.checkBuffer();
-    recordsVerif.clear();
-    recordsVerif.add(samRecordPE1);
-    recordsVerif.add(samRecordPE2);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    this.recordsVerif.clear();
+    this.recordsVerif.add(this.samRecordPE1);
+    this.recordsVerif.add(this.samRecordPE2);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
 
-    recordsVerif.clear();
+    this.recordsVerif.clear();
 
     // second case
-    assertTrue(rafb.addAlignment(samRecordPE3));
-    assertTrue(rafb.addAlignment(samRecordPE4));
-    assertTrue(rafb.addAlignment(samRecordPE5));
-    assertTrue(rafb.addAlignment(samRecordPE6));
-    assertFalse(rafb.addAlignment(samRecordPE1));
-    recordsVerif.add(samRecordPE3);
-    recordsVerif.add(samRecordPE4);
-    recordsVerif.add(samRecordPE5);
-    recordsVerif.add(samRecordPE6);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
-    assertTrue(rafb.addAlignment(samRecordPE1));
-    assertTrue(rafb.addAlignment(samRecordPE2));
-    assertFalse(rafb.addAlignment(samRecordPE3));
-    recordsVerif.clear();
-    recordsVerif.add(samRecordPE1);
-    recordsVerif.add(samRecordPE2);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
-    assertTrue(rafb.addAlignment(samRecordPE3));
-    assertTrue(rafb.addAlignment(samRecordPE4));
-    assertTrue(rafb.addAlignment(samRecordPE5));
-    assertTrue(rafb.addAlignment(samRecordPE6));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE3));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE4));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE5));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE6));
+    assertFalse(this.rafb.addAlignment(this.samRecordPE1));
+    this.recordsVerif.add(this.samRecordPE3);
+    this.recordsVerif.add(this.samRecordPE4);
+    this.recordsVerif.add(this.samRecordPE5);
+    this.recordsVerif.add(this.samRecordPE6);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
+    assertTrue(this.rafb.addAlignment(this.samRecordPE1));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE2));
+    assertFalse(this.rafb.addAlignment(this.samRecordPE3));
+    this.recordsVerif.clear();
+    this.recordsVerif.add(this.samRecordPE1);
+    this.recordsVerif.add(this.samRecordPE2);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
+    assertTrue(this.rafb.addAlignment(this.samRecordPE3));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE4));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE5));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE6));
     // rafb.checkBuffer();
-    recordsVerif.clear();
-    recordsVerif.add(samRecordPE3);
-    recordsVerif.add(samRecordPE4);
-    recordsVerif.add(samRecordPE5);
-    recordsVerif.add(samRecordPE6);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    this.recordsVerif.clear();
+    this.recordsVerif.add(this.samRecordPE3);
+    this.recordsVerif.add(this.samRecordPE4);
+    this.recordsVerif.add(this.samRecordPE5);
+    this.recordsVerif.add(this.samRecordPE6);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
 
-    recordsVerif.clear();
+    this.recordsVerif.clear();
 
     // third case
-    assertTrue(rafb.addAlignment(samRecordPE1));
-    assertTrue(rafb.addAlignment(samRecordPE2));
-    assertFalse(rafb.addAlignment(samRecordPE3));
-    recordsVerif.add(samRecordPE1);
-    recordsVerif.add(samRecordPE2);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
-    assertTrue(rafb.addAlignment(samRecordPE3));
-    assertTrue(rafb.addAlignment(samRecordPE4));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE1));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE2));
+    assertFalse(this.rafb.addAlignment(this.samRecordPE3));
+    this.recordsVerif.add(this.samRecordPE1);
+    this.recordsVerif.add(this.samRecordPE2);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
+    assertTrue(this.rafb.addAlignment(this.samRecordPE3));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE4));
     // rafb.checkBuffer();
-    recordsVerif.clear();
-    recordsVerif.add(samRecordPE3);
-    recordsVerif.add(samRecordPE4);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    this.recordsVerif.clear();
+    this.recordsVerif.add(this.samRecordPE3);
+    this.recordsVerif.add(this.samRecordPE4);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
 
-    recordsVerif.clear();
+    this.recordsVerif.clear();
 
     // fourth case
-    assertTrue(rafb.addAlignment(samRecordPE3));
-    assertTrue(rafb.addAlignment(samRecordPE4));
-    assertTrue(rafb.addAlignment(samRecordPE5));
-    assertTrue(rafb.addAlignment(samRecordPE6));
-    assertFalse(rafb.addAlignment(samRecordPE7));
-    recordsVerif.add(samRecordPE3);
-    recordsVerif.add(samRecordPE4);
-    recordsVerif.add(samRecordPE5);
-    recordsVerif.add(samRecordPE6);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
-    assertTrue(rafb.addAlignment(samRecordPE7));
-    assertTrue(rafb.addAlignment(samRecordPE8));
-    assertTrue(rafb.addAlignment(samRecordPE9));
-    assertTrue(rafb.addAlignment(samRecordPE10));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE3));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE4));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE5));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE6));
+    assertFalse(this.rafb.addAlignment(this.samRecordPE7));
+    this.recordsVerif.add(this.samRecordPE3);
+    this.recordsVerif.add(this.samRecordPE4);
+    this.recordsVerif.add(this.samRecordPE5);
+    this.recordsVerif.add(this.samRecordPE6);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
+    assertTrue(this.rafb.addAlignment(this.samRecordPE7));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE8));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE9));
+    assertTrue(this.rafb.addAlignment(this.samRecordPE10));
     // rafb.checkBuffer();
-    recordsVerif.clear();
-    recordsVerif.add(samRecordPE7);
-    recordsVerif.add(samRecordPE8);
-    recordsVerif.add(samRecordPE9);
-    recordsVerif.add(samRecordPE10);
-    assertEquals(recordsVerif, rafb.getFilteredAlignments());
+    this.recordsVerif.clear();
+    this.recordsVerif.add(this.samRecordPE7);
+    this.recordsVerif.add(this.samRecordPE8);
+    this.recordsVerif.add(this.samRecordPE9);
+    this.recordsVerif.add(this.samRecordPE10);
+    assertEquals(this.recordsVerif, this.rafb.getFilteredAlignments());
   }
 
   /**

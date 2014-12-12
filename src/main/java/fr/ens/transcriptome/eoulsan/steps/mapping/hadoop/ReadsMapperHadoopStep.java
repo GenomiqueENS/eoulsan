@@ -148,14 +148,18 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     final Path inputPath = new Path(readsData.getDataFilename());
 
-    // Set Mapper name
+    // Set mapper name
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
 
+    // Set mapper version
+    jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperVersion());
+
     // Set pair end or single end mode
-    if (readsData.getDataFileCount() == 2)
+    if (readsData.getDataFileCount() == 2) {
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.TRUE.toString());
-    else
+    } else {
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.FALSE.toString());
+    }
 
     // Set the number of threads for the mapper
     if (getMapperLocalThreads() < 0) {

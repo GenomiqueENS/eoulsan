@@ -48,16 +48,17 @@ public class PathConcatInputStream extends AbstractConcatInputStream {
   @Override
   protected boolean hasNextInputStream() {
 
-    return it.hasNext();
+    return this.it.hasNext();
   }
 
   @Override
   protected InputStream nextInputStream() throws IOException {
 
-    final Path path = it.next();
+    final Path path = this.it.next();
 
-    if (path == null)
+    if (path == null) {
       throw new IOException("path is null");
+    }
 
     final FileSystem fs = path.getFileSystem(this.conf);
 

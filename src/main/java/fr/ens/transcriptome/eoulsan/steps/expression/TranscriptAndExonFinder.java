@@ -63,7 +63,7 @@ public class TranscriptAndExonFinder {
 
     private static final long serialVersionUID = 2038535926105490728L;
 
-    private String name;
+    private final String name;
     private String type;
     private String chromosome;
     private int count;
@@ -184,20 +184,24 @@ public class TranscriptAndExonFinder {
       this.count++;
       this.length += exon.getLength();
 
-      if (strand == 0)
+      if (this.strand == 0) {
         this.strand = exon.getStrand();
+      }
 
-      if (this.strand != exon.getStrand())
+      if (this.strand != exon.getStrand()) {
         throw new IllegalArgumentException(
             "The strand is not the same that the gene (Transcript: "
                 + getName() + ", Exon: " + exon);
+      }
 
-      if (this.chromosome == null)
+      if (this.chromosome == null) {
         this.chromosome = exon.getChromosome();
+      }
 
-      if (!this.chromosome.equals(exon.getChromosome()))
+      if (!this.chromosome.equals(exon.getChromosome())) {
         throw new IllegalArgumentException(
             "The chromosome is not the same that the gene");
+      }
 
     }
 
@@ -207,11 +211,13 @@ public class TranscriptAndExonFinder {
 
     private static final boolean stringEquals(final String s1, final String s2) {
 
-      if (s1 == null && s2 == null)
+      if (s1 == null && s2 == null) {
         return true;
+      }
 
-      if (s1 == null || s2 == null)
+      if (s1 == null || s2 == null) {
         return false;
+      }
 
       return s1.equals(s2);
     }
@@ -223,11 +229,13 @@ public class TranscriptAndExonFinder {
     @Override
     public boolean equals(final Object o) {
 
-      if (o == this)
+      if (o == this) {
         return true;
+      }
 
-      if (!(o instanceof Transcript))
+      if (!(o instanceof Transcript)) {
         return false;
+      }
 
       final Transcript t = (Transcript) o;
 
@@ -249,7 +257,7 @@ public class TranscriptAndExonFinder {
     @Override
     public String toString() {
 
-      return "[c=" + count + " s=" + start + " e=" + end + "]";
+      return "[c=" + this.count + " s=" + this.start + " e=" + this.end + "]";
     }
 
     //
@@ -262,8 +270,9 @@ public class TranscriptAndExonFinder {
      */
     public Transcript(final String name) {
 
-      if (name == null)
+      if (name == null) {
         throw new NullPointerException("The name of the gene is null.");
+      }
       this.name = name;
     }
 
@@ -277,11 +286,11 @@ public class TranscriptAndExonFinder {
 
     private static final long serialVersionUID = -7430959183439062516L;
 
-    private String chromosome;
-    private int start;
-    private int end;
-    private char strand;
-    private String parentId;
+    private final String chromosome;
+    private final int start;
+    private final int end;
+    private final char strand;
+    private final String parentId;
 
     //
     // Getters
@@ -381,21 +390,25 @@ public class TranscriptAndExonFinder {
     @Override
     public int compareTo(final Exon e) {
 
-      if (e == null)
+      if (e == null) {
         return -1;
+      }
 
-      if (!e.getChromosome().equals(e.getChromosome()))
+      if (!e.getChromosome().equals(e.getChromosome())) {
         return getChromosome().compareTo(e.getChromosome());
+      }
 
       final int startComp = ((Integer) this.start).compareTo(e.getStart());
 
-      if (startComp != 0)
+      if (startComp != 0) {
         return startComp;
+      }
 
       final int endComp = ((Integer) this.end).compareTo(e.getEnd());
 
-      if (endComp != 0)
+      if (endComp != 0) {
         return endComp;
+      }
 
       return this.parentId.compareTo(e.getParentId());
     }
@@ -409,11 +422,13 @@ public class TranscriptAndExonFinder {
     @Override
     public boolean equals(final Object o) {
 
-      if (o == this)
+      if (o == this) {
         return true;
+      }
 
-      if (!(o instanceof Exon))
+      if (!(o instanceof Exon)) {
         return false;
+      }
 
       final Exon that = (Exon) o;
 
@@ -426,7 +441,8 @@ public class TranscriptAndExonFinder {
     @Override
     public int hashCode() {
 
-      return Utils.hashCode(chromosome, start, end, strand, parentId);
+      return Utils.hashCode(this.chromosome, this.start, this.end, this.strand,
+          this.parentId);
     }
 
     /**
@@ -436,8 +452,9 @@ public class TranscriptAndExonFinder {
     @Override
     public String toString() {
 
-      return chromosome
-          + " [" + start + "-" + end + "]" + strand + " " + parentId;
+      return this.chromosome
+          + " [" + this.start + "-" + this.end + "]" + this.strand + " "
+          + this.parentId;
     }
 
     //
@@ -451,18 +468,20 @@ public class TranscriptAndExonFinder {
      * @param strand the strand of the ORF
      * @param parentId id of the parent
      */
-    public Exon(final String chromosone, final int start, final int end,
+    public Exon(final String chromosome, final int start, final int end,
         final char strand, final String parentId) {
 
-      if (start < 1)
+      if (start < 1) {
         throw new IllegalArgumentException("Start position is lower that 1: "
             + start);
+      }
 
-      if (end < start)
+      if (end < start) {
         throw new IllegalArgumentException("End position is greater that end: "
             + end);
+      }
 
-      this.chromosome = chromosone;
+      this.chromosome = chromosome;
       this.start = start;
       this.end = end;
       this.strand = strand;
@@ -479,7 +498,7 @@ public class TranscriptAndExonFinder {
 
     private static final long serialVersionUID = -5852998623482759805L;
 
-    private int start;
+    private final int start;
     private int end;
 
     private Set<Exon> _exons;
@@ -492,18 +511,20 @@ public class TranscriptAndExonFinder {
      */
     public void addExon(final Exon exon) {
 
-      if (exon == null)
+      if (exon == null) {
         return;
+      }
 
-      if (exonCount == 0) {
+      if (this.exonCount == 0) {
         this._exon = exon;
         this.exonCount = 1;
       } else {
 
-        if (exonCount == 1) {
+        if (this.exonCount == 1) {
 
-          if (exon == this._exon || this._exon.hashCode() == exon.hashCode())
+          if (exon == this._exon || this._exon.hashCode() == exon.hashCode()) {
             return;
+          }
 
           this._exons = new HashSet<>();
           this._exons.add(this._exon);
@@ -521,13 +542,15 @@ public class TranscriptAndExonFinder {
      */
     private void addExons(final Set<Exon> exons) {
 
-      if (exons == null)
+      if (exons == null) {
         return;
+      }
 
       final int len = exons.size();
 
-      if (len == 0)
+      if (len == 0) {
         return;
+      }
 
       if (len == 1) {
         this._exon = exons.iterator().next();
@@ -545,29 +568,35 @@ public class TranscriptAndExonFinder {
      */
     public Set<Exon> getExons() {
 
-      if (this.exonCount == 0)
+      if (this.exonCount == 0) {
         return null;
+      }
 
-      if (this.exonCount == 1)
+      if (this.exonCount == 1) {
         return Collections.singleton(this._exon);
+      }
 
       return this._exons;
     }
 
     public int compareTo(final int position) {
 
-      if (position >= this.start && position <= this.end)
+      if (position >= this.start && position <= this.end) {
         return 0;
+      }
 
       return position < this.start ? -1 : 1;
     }
 
+    @Override
     public String toString() {
 
       Set<String> r = new HashSet<>();
-      if (getExons() != null)
-        for (Exon e : getExons())
+      if (getExons() != null) {
+        for (Exon e : getExons()) {
           r.add(e.parentId);
+        }
+      }
 
       return "[" + this.start + "," + this.end + "," + r + "]";
     }
@@ -579,7 +608,7 @@ public class TranscriptAndExonFinder {
     /**
      * Constructor that create a zone
      * @param start start position of the zone
-     * @param end end postion of the zone
+     * @param end end position of the zone
      */
     public Zone(final int start, final int end) {
 
@@ -591,7 +620,7 @@ public class TranscriptAndExonFinder {
     /**
      * Constructor that create a zone
      * @param start start position of the zone
-     * @param end end postion of the zone
+     * @param end end position of the zone
      * @param exons of the zone
      */
     public Zone(final int start, final int end, final Set<Exon> exons) {
@@ -609,7 +638,7 @@ public class TranscriptAndExonFinder {
     private int length = 0;
     private final List<Zone> zones = new ArrayList<>();
 
-    private final Zone get(int pos) {
+    private final Zone get(final int pos) {
 
       return this.zones.get(pos);
     }
@@ -626,11 +655,12 @@ public class TranscriptAndExonFinder {
 
     private int findIndexPos(final int pos) {
 
-      if (pos < 1 || pos > this.length)
+      if (pos < 1 || pos > this.length) {
         return -1;
+      }
 
       int minIndex = 0;
-      int maxIndex = zones.size() - 1;
+      int maxIndex = this.zones.size() - 1;
       int index = 0;
 
       while (true) {
@@ -640,10 +670,12 @@ public class TranscriptAndExonFinder {
 
         if (diff == 1) {
 
-          if (get(minIndex).compareTo(pos) == 0)
+          if (get(minIndex).compareTo(pos) == 0) {
             return minIndex;
-          if (get(maxIndex).compareTo(pos) == 0)
+          }
+          if (get(maxIndex).compareTo(pos) == 0) {
             return maxIndex;
+          }
 
           assert (false);
         }
@@ -651,13 +683,15 @@ public class TranscriptAndExonFinder {
         final Zone z = get(index);
 
         final int comp = z.compareTo(pos);
-        if (comp == 0)
+        if (comp == 0) {
           return index;
+        }
 
-        if (comp < 0)
+        if (comp < 0) {
           maxIndex = index;
-        else
+        } else {
           minIndex = index;
+        }
       }
     }
 
@@ -707,26 +741,31 @@ public class TranscriptAndExonFinder {
           z1b.addExon(exon);
           add(indexStart + 1, z1b);
 
-        } else
+        } else {
           z1.addExon(exon);
+        }
 
       } else {
 
         final Zone z2 = get(indexEnd);
         final Zone z2b;
 
-        if (z2.end != exon.end)
+        if (z2.end != exon.end) {
           z2b = splitZone(z2, exon.end + 1);
-        else
+        } else {
           z2b = z2;
+        }
 
-        if (z1 != z1b)
+        if (z1 != z1b) {
           add(indexStart + 1, z1b);
-        if (z2 != z2b)
+        }
+        if (z2 != z2b) {
           add(indexEnd + 1 + count1b, z2b);
+        }
 
-        for (int i = indexStart + count1b; i <= indexEnd + count1b; i++)
+        for (int i = indexStart + count1b; i <= indexEnd + count1b; i++) {
           get(i).addExon(exon);
+        }
 
       }
 
@@ -737,8 +776,9 @@ public class TranscriptAndExonFinder {
       final int indexStart = findIndexPos(start);
       final int indexEnd = findIndexPos(stop);
 
-      if (indexStart == -1)
+      if (indexStart == -1) {
         return null;
+      }
 
       final int from = indexStart;
       final int to = indexEnd == -1 ? this.zones.size() - 1 : indexEnd;
@@ -750,14 +790,16 @@ public class TranscriptAndExonFinder {
         final Set<Exon> r = get(i).getExons();
         if (r != null) {
 
-          for (Exon e : r)
+          for (Exon e : r) {
             if (e.intersect(start, stop)) {
 
-              if (result == null)
+              if (result == null) {
                 result = new HashSet<>();
+              }
 
               result.add(e);
             }
+          }
 
         }
       }
@@ -794,8 +836,9 @@ public class TranscriptAndExonFinder {
 
       final String type = e.getType();
 
-      if (e.isAttribute("ID"))
+      if (e.isAttribute("ID")) {
         idType.put(e.getAttributeValue("ID"), type);
+      }
 
       if (expressionType.equals(type)) {
 
@@ -806,24 +849,26 @@ public class TranscriptAndExonFinder {
 
         String parentId = null;
 
-        if (e.isAttribute(attributeId))
+        if (e.isAttribute(attributeId)) {
           parentId = e.getAttributeValue(attributeId);
+        }
 
-        if (chr == null || parentId == null)
+        if (chr == null || parentId == null) {
           continue;
+        }
 
         // Create Exon
         final Exon exon = new Exon(chr, start, stop, strand, parentId);
 
         //
-        // Populate exonModeleRangeMap
+        // Populate map
         //
 
         final Transcript epr;
 
-        if (this.transcripts.containsKey(parentId))
+        if (this.transcripts.containsKey(parentId)) {
           epr = this.transcripts.get(parentId);
-        else {
+        } else {
           epr = new Transcript(parentId);
           this.transcripts.put(parentId, epr);
         }
@@ -834,9 +879,9 @@ public class TranscriptAndExonFinder {
         // Populate parentExon
         //
 
-        if (this.chrZoneMap.containsKey(chr))
+        if (this.chrZoneMap.containsKey(chr)) {
           this.chrZoneMap.get(chr).addExon(exon);
-        else {
+        } else {
           final ChromosomeZone cz = new ChromosomeZone();
           cz.addExon(exon);
           this.chrZoneMap.put(chr, cz);
@@ -850,12 +895,13 @@ public class TranscriptAndExonFinder {
     reader.close();
 
     // Set the types of genes
-    for (Map.Entry<String, Transcript> e : this.transcripts.entrySet())
+    for (Map.Entry<String, Transcript> e : this.transcripts.entrySet()) {
       e.getValue().setType(idType.get(e.getKey()));
+    }
 
     getLogger().fine("Entries read: " + count);
     getLogger().fine("ChrZoneMap: " + this.chrZoneMap.size());
-    getLogger().fine("Trancripts: " + this.transcripts.size());
+    getLogger().fine("Transcripts: " + this.transcripts.size());
   }
 
   /**
@@ -867,13 +913,15 @@ public class TranscriptAndExonFinder {
    */
   public Set<Exon> findExons(final String chr, final int start, final int end) {
 
-    if (chr == null || start < 1 || start > end)
+    if (chr == null || start < 1 || start > end) {
       return null;
+    }
 
     final ChromosomeZone cz = this.chrZoneMap.get(chr);
 
-    if (cz == null)
+    if (cz == null) {
       return null;
+    }
 
     return cz.findExons(start, end);
   }

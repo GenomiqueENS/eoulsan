@@ -35,11 +35,11 @@ import java.util.Map;
  */
 public class ChangeIndexTranslator extends BasicTranslator {
 
-  private Translator translator;
-  private String field;
+  private final Translator translator;
+  private final String field;
   private String[] fields;
 
-  private Map<String, String> index = new HashMap<>();
+  private final Map<String, String> index = new HashMap<>();
 
   /**
    * Get link information.
@@ -47,6 +47,7 @@ public class ChangeIndexTranslator extends BasicTranslator {
    * @param field field of the id
    * @return a link for the translated id
    */
+  @Override
   public String getLinkInfo(final String translatedId, final String field) {
 
     return this.translator.getLinkInfo(translatedId, field);
@@ -57,6 +58,7 @@ public class ChangeIndexTranslator extends BasicTranslator {
    * @param field Field to test
    * @return true if link information is available
    */
+  @Override
   public boolean isLinkInfo(final String field) {
 
     return this.translator.isLinkInfo(field);
@@ -66,9 +68,10 @@ public class ChangeIndexTranslator extends BasicTranslator {
    * Get an ordered list of the translator fields
    * @return an ordered list of the translator fields.
    */
+  @Override
   public String[] getFields() {
 
-    return fields;
+    return this.fields;
   }
 
   /**
@@ -77,6 +80,7 @@ public class ChangeIndexTranslator extends BasicTranslator {
    * @param field the field to get
    * @return An array with the annotation of the Feature
    */
+  @Override
   public String translateField(final String id, final String field) {
 
     return this.translator.translateField(this.index.get(id), field);
@@ -86,15 +90,17 @@ public class ChangeIndexTranslator extends BasicTranslator {
 
     final String[] ids = this.translator.getIds();
 
-    if (ids == null)
+    if (ids == null) {
       return;
+    }
 
     for (String id : ids) {
 
       String t = this.translator.translateField(id);
 
-      if (t != null && !this.index.containsKey(t))
+      if (t != null && !this.index.containsKey(t)) {
         this.index.put(t, id);
+      }
     }
 
     String[] fs = this.translator.getFields();
@@ -103,9 +109,11 @@ public class ChangeIndexTranslator extends BasicTranslator {
 
     int count = 0;
 
-    for (String f : fs)
-      if (!this.field.equals(f))
+    for (String f : fs) {
+      if (!this.field.equals(f)) {
         this.fields[count++] = f;
+      }
+    }
 
   }
 
@@ -120,15 +128,18 @@ public class ChangeIndexTranslator extends BasicTranslator {
    */
   public ChangeIndexTranslator(final Translator translator, final String field) {
 
-    if (translator == null)
+    if (translator == null) {
       throw new NullPointerException("Translator is null");
+    }
 
-    if (field == null)
+    if (field == null) {
       throw new NullPointerException("The field is null");
+    }
 
-    if (!translator.isField(field))
+    if (!translator.isField(field)) {
       throw new NullPointerException("The field "
           + field + " doesn't exist in the translator");
+    }
 
     this.translator = translator;
     this.field = field;

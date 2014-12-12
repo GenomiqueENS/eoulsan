@@ -53,7 +53,7 @@ public class ITResult {
   private final IT it;
 
   private Throwable exception;
-  private List<ITCommandResult> commandsResults;
+  private final List<ITCommandResult> commandsResults;
   private Set<ITOutputComparisonResult> comparisonsResults;
 
   private boolean generatedData = false;
@@ -75,7 +75,8 @@ public class ITResult {
 
     final String filename = isSuccess() ? "SUCCESS" : "FAIL";
 
-    final File reportFile = new File(it.getOutputTestDirectory(), filename);
+    final File reportFile =
+        new File(this.it.getOutputTestDirectory(), filename);
     Writer fw;
     try {
       fw =
@@ -92,8 +93,9 @@ public class ITResult {
 
     if (isGeneratedData()) {
       try {
-        Files.copy(reportFile.toPath(), new File(it.getExpectedTestDirectory(),
-            filename).toPath(), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(reportFile.toPath(),
+            new File(this.it.getExpectedTestDirectory(), filename).toPath(),
+            StandardCopyOption.REPLACE_EXISTING);
       } catch (IOException e) {
       }
     }
@@ -110,8 +112,8 @@ public class ITResult {
     }
 
     // Text without stack message when an exception occurs
-    String txt = "Fail test: " + it.getTestName();
-    txt += "\n\tdirectory: " + it.getOutputTestDirectory();
+    String txt = "Fail test: " + this.it.getTestName();
+    txt += "\n\tdirectory: " + this.it.getOutputTestDirectory();
 
     txt += createExceptionText(this.exception, false);
     return txt;
@@ -123,18 +125,18 @@ public class ITResult {
    * @return report text
    */
   private String getLoggerTest(final String duration) {
-    if (nothingToDo) {
-      return "Nothing_to_do: for " + it.getTestName();
+    if (this.nothingToDo) {
+      return "Nothing_to_do: for " + this.it.getTestName();
     }
 
     String txt =
         (isSuccess() ? "SUCCESS" : "FAIL")
             + ": for "
-            + it.getTestName()
+            + this.it.getTestName()
             + ((isGeneratedData())
                 ? ": generate expected data" : ": launch test and comparison")
             + " in " + duration;
-    txt += "\n\tdirectory: " + it.getOutputTestDirectory();
+    txt += "\n\tdirectory: " + this.it.getOutputTestDirectory();
 
     if (!isSuccess()) {
       txt += createExceptionText(this.exception, false);
@@ -153,17 +155,17 @@ public class ITResult {
     final StringBuilder report = new StringBuilder();
     report.append(isSuccess() ? "SUCCESS" : "FAIL");
     report.append(": for ");
-    report.append(it.getTestName());
+    report.append(this.it.getTestName());
     report.append(isGeneratedData()
         ? ": generate expected data" : ": launch test and comparison");
 
     report.append("\n\nPatterns:");
     report.append("\n\t compare file ");
-    report.append(it.getFileToComparePatterns());
+    report.append(this.it.getFileToComparePatterns());
     report.append("\n\t check size file ");
-    report.append(it.getCheckExistenceFilePatterns());
+    report.append(this.it.getCheckExistenceFilePatterns());
     report.append("\n\t exclude file ");
-    report.append(it.getExcludeToComparePatterns());
+    report.append(this.it.getExcludeToComparePatterns());
     report.append('\n');
 
     // Add synthesis on execution script
@@ -175,7 +177,7 @@ public class ITResult {
 
     if (isGeneratedData()) {
       report.append("\nSUCCESS: copy files to ");
-      report.append(it.getExpectedTestDirectory().getAbsolutePath());
+      report.append(this.it.getExpectedTestDirectory().getAbsolutePath());
     }
 
     // Add report text on comparison execution

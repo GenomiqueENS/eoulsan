@@ -89,12 +89,12 @@ public class CommandWorkflowModel implements Serializable {
   private String description = "";
   private String author = "";
 
-  private List<String> stepIdList = new ArrayList<>();
-  private Map<String, String> stepIdNames = new HashMap<>();
+  private final List<String> stepIdList = new ArrayList<>();
+  private final Map<String, String> stepIdNames = new HashMap<>();
   private final Map<String, Map<String, StepPort>> stepInputs = new HashMap<>();
   private final Map<String, Set<Parameter>> stepParameters = new HashMap<>();
-  private Map<String, Boolean> stepSkiped = new HashMap<>();
-  private Map<String, Boolean> stepDiscardOutput = new HashMap<>();
+  private final Map<String, Boolean> stepSkiped = new HashMap<>();
+  private final Map<String, Boolean> stepDiscardOutput = new HashMap<>();
   private final Set<Parameter> globalParameters = new HashSet<>();
 
   static final class StepPort implements Serializable {
@@ -121,7 +121,7 @@ public class CommandWorkflowModel implements Serializable {
    * @return Returns the name
    */
   public String getName() {
-    return name;
+    return this.name;
   }
 
   /**
@@ -129,7 +129,7 @@ public class CommandWorkflowModel implements Serializable {
    * @return Returns the description
    */
   public String getDescription() {
-    return description;
+    return this.description;
   }
 
   /**
@@ -137,7 +137,7 @@ public class CommandWorkflowModel implements Serializable {
    * @return Returns the author
    */
   public String getAuthor() {
-    return author;
+    return this.author;
   }
 
   //
@@ -150,8 +150,9 @@ public class CommandWorkflowModel implements Serializable {
    */
   void setName(final String name) {
 
-    if (name != null)
+    if (name != null) {
       this.name = name;
+    }
   }
 
   /**
@@ -160,8 +161,9 @@ public class CommandWorkflowModel implements Serializable {
    */
   void setDescription(final String description) {
 
-    if (description != null)
+    if (description != null) {
       this.description = description;
+    }
   }
 
   /**
@@ -170,8 +172,9 @@ public class CommandWorkflowModel implements Serializable {
    */
   void setAuthor(final String author) {
 
-    if (author != null)
+    if (author != null) {
       this.author = author;
+    }
   }
 
   /**
@@ -207,37 +210,45 @@ public class CommandWorkflowModel implements Serializable {
       final Set<Parameter> parameters, final boolean skipStep,
       final boolean discardOutput) throws EoulsanException {
 
-    if (stepName == null)
+    if (stepName == null) {
       throw new EoulsanException("The name of the step is null.");
+    }
 
     final String stepNameLower = stepName.toLowerCase().trim();
 
-    if ("".equals(stepNameLower))
+    if ("".equals(stepNameLower)) {
       throw new EoulsanException("The name of the step is empty.");
+    }
 
     final String stepIdLower;
-    if (stepId == null || "".equals(stepId.trim()))
+    if (stepId == null || "".equals(stepId.trim())) {
       stepIdLower = stepNameLower;
-    else
+    } else {
       stepIdLower = stepId.toLowerCase().trim();
+    }
 
-    if ("".equals(stepIdLower))
+    if ("".equals(stepIdLower)) {
       throw new EoulsanException("The id of the step is empty.");
+    }
 
-    if (!FileNaming.isStepIdValid(stepIdLower))
+    if (!FileNaming.isStepIdValid(stepIdLower)) {
       throw new EoulsanException(
           "The id of the step is not valid (only ascii letters and digits are allowed): "
               + stepIdLower);
+    }
 
     if (this.stepParameters.containsKey(stepIdLower)
-        || StepType.getAllDefaultStepId().contains(stepIdLower))
+        || StepType.getAllDefaultStepId().contains(stepIdLower)) {
       throw new EoulsanException("The step id already exists: " + stepIdLower);
+    }
 
-    if (parameters == null)
+    if (parameters == null) {
       throw new EoulsanException("The parameters are null.");
+    }
 
-    if (inputs == null)
+    if (inputs == null) {
       throw new EoulsanException("The inputs are null.");
+    }
 
     // Check input data formats
     Map<String, StepPort> inputsMap = new HashMap<>();
@@ -247,25 +258,29 @@ public class CommandWorkflowModel implements Serializable {
       String fromStep = e.getValue().stepId;
       String fromPortName = e.getValue().outputPortName;
 
-      if (toPortName == null)
+      if (toPortName == null) {
         throw new EoulsanException(
             "The input port name is null for input for step \"" + stepId);
-      if (fromStep == null)
+      }
+      if (fromStep == null) {
         throw new EoulsanException("The step name that generate \""
             + toPortName + "\" for step \"" + stepId + "\" is null");
-      if (fromPortName == null)
-        throw new EoulsanException("The outport name is null for input "
+      }
+      if (fromPortName == null) {
+        throw new EoulsanException("The output port name is null for input "
             + toPortName + " for step \"" + stepId);
+      }
 
       toPortName = toPortName.trim().toLowerCase();
       fromStep = fromStep.trim().toLowerCase();
       fromPortName = fromPortName.trim().toLowerCase();
 
       if (!StepType.DESIGN_STEP.getDefaultStepId().equals(fromStep)
-          && !this.stepIdNames.containsKey(fromStep))
+          && !this.stepIdNames.containsKey(fromStep)) {
         throw new EoulsanException("The step that generate \""
             + toPortName + "\" for step \"" + stepId
             + "\" has not been yet declared");
+      }
 
       inputsMap.put(toPortName, new StepPort(fromStep, fromPortName));
     }
@@ -306,8 +321,9 @@ public class CommandWorkflowModel implements Serializable {
 
     Map<String, StepPort> result = this.stepInputs.get(stepId);
 
-    if (result == null)
+    if (result == null) {
       result = Collections.emptyMap();
+    }
 
     return result;
   }
@@ -321,8 +337,9 @@ public class CommandWorkflowModel implements Serializable {
 
     Set<Parameter> result = this.stepParameters.get(stepId);
 
-    if (result == null)
+    if (result == null) {
       result = Collections.emptySet();
+    }
 
     return result;
   }
@@ -354,14 +371,16 @@ public class CommandWorkflowModel implements Serializable {
    */
   private void addGlobalParameter(final String key, final String value) {
 
-    if (key == null || value == null)
+    if (key == null || value == null) {
       return;
+    }
 
     final String keyTrimmed = key.trim();
     final String valueTrimmed = value.trim();
 
-    if ("".equals(keyTrimmed))
+    if ("".equals(keyTrimmed)) {
       return;
+    }
 
     final Parameter p = new Parameter(keyTrimmed, valueTrimmed);
     this.globalParameters.add(p);
@@ -428,7 +447,7 @@ public class CommandWorkflowModel implements Serializable {
    * @param tagName tag name
    * @param tagValue tag value
    */
-  private void addElement(Document document, Element root,
+  private void addElement(final Document document, final Element root,
       final String tagName, final String tagValue) {
 
     if (document == null
@@ -450,8 +469,9 @@ public class CommandWorkflowModel implements Serializable {
    * @param elementName name of the parameters element
    * @param parameters the parameters to set
    */
-  private void addParametersElement(Document document, Element root,
-      final String elementName, Set<Parameter> parameters) {
+  private void addParametersElement(final Document document,
+      final Element root, final String elementName,
+      final Set<Parameter> parameters) {
 
     if (document == null
         || root == null || parameters == null || elementName == null
@@ -481,7 +501,7 @@ public class CommandWorkflowModel implements Serializable {
    * @param root root element
    * @param stepId step id
    */
-  private void addStepElement(Document document, Element root,
+  private void addStepElement(final Document document, final Element root,
       final String stepId) {
 
     if (document == null
@@ -554,8 +574,9 @@ public class CommandWorkflowModel implements Serializable {
 
       final Settings settings = EoulsanRuntime.getRuntime().getSettings();
 
-      for (String settingName : settings.getSettingsNames())
+      for (String settingName : settings.getSettingsNames()) {
         addGlobalParameter(settingName, settings.getSetting(settingName));
+      }
     }
   }
 

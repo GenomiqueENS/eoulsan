@@ -45,6 +45,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
 
   private String genomicType;
   private String attributeId;
+  private boolean splitAttritubeValues;
   private StrandUsage stranded;
   private OverlapMode overlapMode;
   private boolean noAmbiguousCases;
@@ -86,6 +87,11 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
     return this.noAmbiguousCases;
   }
 
+  @Override
+  public boolean isSplitAttributeValues() {
+    return this.splitAttritubeValues;
+  }
+
   //
   // Setters
   //
@@ -93,23 +99,25 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   @Override
   public void setStranded(final StrandUsage stranded) {
 
-    if (stranded == null)
+    if (stranded == null) {
       this.stranded = StrandUsage.NO;
-    else
+    } else {
       this.stranded = stranded;
+    }
   }
 
   @Override
   public void setOverlapMode(final OverlapMode mode) {
 
-    if (mode == null)
+    if (mode == null) {
       this.overlapMode = OverlapMode.UNION;
-    else
+    } else {
       this.overlapMode = mode;
+    }
   }
 
   @Override
-  public void setRemoveAmbiguousCases(boolean noAmbigousCases) {
+  public void setRemoveAmbiguousCases(final boolean noAmbigousCases) {
 
     this.noAmbiguousCases = noAmbigousCases;
   }
@@ -130,6 +138,12 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   public void setAttributeId(final String attributeId) {
 
     this.attributeId = attributeId;
+  }
+
+  @Override
+  public void setSplitAttributeValues(final boolean splitAttributeValues) {
+
+    this.splitAttritubeValues = splitAttributeValues;
   }
 
   //
@@ -176,7 +190,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   //
 
   @Override
-  public void init(final String genomicType, String attributeId,
+  public void init(final String genomicType, final String attributeId,
       final Reporter reporter, final String counterGroup) {
 
     checkNotNull(reporter, "reporter is null");

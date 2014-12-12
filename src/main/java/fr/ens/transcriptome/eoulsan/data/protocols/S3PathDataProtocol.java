@@ -60,19 +60,23 @@ public class S3PathDataProtocol extends PathDataProtocol {
 
     final Path path = getPath(dir);
 
-    if (path == null)
+    if (path == null) {
       throw new NullPointerException("Path to create is null");
-    if (this.conf == null)
+    }
+    if (this.conf == null) {
       throw new NullPointerException("The configuration object is null");
+    }
 
     final FileSystem fs = path.getFileSystem(this.conf);
 
-    if (fs == null)
+    if (fs == null) {
       throw new IOException(
-          "Unable to create the directorty, The FileSystem is null");
+          "Unable to create the directory, The FileSystem is null");
+    }
 
-    if (!fs.mkdirs(path))
+    if (!fs.mkdirs(path)) {
       throw new IOException("Unable to create the directory: " + dir);
+    }
   }
 
   @Override

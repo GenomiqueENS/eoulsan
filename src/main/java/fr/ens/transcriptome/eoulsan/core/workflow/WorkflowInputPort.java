@@ -48,7 +48,7 @@ class WorkflowInputPort extends SimpleInputPort implements Serializable {
 
   private static final long serialVersionUID = -3858660424325558424L;
 
-  private AbstractWorkflowStep step;
+  private final AbstractWorkflowStep step;
   private WorkflowOutputPort link;
 
   /**
@@ -92,28 +92,31 @@ class WorkflowInputPort extends SimpleInputPort implements Serializable {
         + ", output port: " + outputPort.getName());
 
     // Check if a link already exists
-    if (this.link != null)
+    if (this.link != null) {
       throw new EoulsanRuntimeException("A link already exists for "
           + getStep().getId() + "." + getName() + " ("
           + this.link.getStep().getId() + "." + this.link.getName() + ")");
+    }
 
     // Check if format are compatible
-    if (!getFormat().equals(outputPort.getFormat()))
+    if (!getFormat().equals(outputPort.getFormat())) {
       throw new EoulsanRuntimeException("Incompatible format: "
           + getStep().getId() + "." + getName() + " -> "
           + getFormat().getName() + " and " + outputPort.getStep().getId()
           + "." + outputPort.getName() + " <- "
           + outputPort.getFormat().getName());
+    }
 
     final AbstractWorkflowStep step = outputPort.getStep();
 
     // Check if step can be linked
     if (step.getType() != StepType.DESIGN_STEP
         && step.getType() != StepType.GENERATOR_STEP
-        && step.getType() != StepType.STANDARD_STEP)
+        && step.getType() != StepType.STANDARD_STEP) {
       throw new EoulsanRuntimeException("The dependency ("
           + step.getId() + ") do not provide port (" + outputPort.getName()
           + ")");
+    }
 
     this.link = outputPort;
   }
@@ -124,7 +127,7 @@ class WorkflowInputPort extends SimpleInputPort implements Serializable {
     return Objects.toStringHelper(this).add("name", getName())
         .add("format", getFormat().getName())
         .add("compressionsAccepted", getCompressionsAccepted())
-        .add("requieredInWorkingDirectory", isRequiredInWorkingDirectory())
+        .add("requiredInWorkingDirectory", isRequiredInWorkingDirectory())
         .add("step", getStep().getId()).add("link", getLink()).toString();
   }
 
@@ -142,12 +145,13 @@ class WorkflowInputPort extends SimpleInputPort implements Serializable {
   public WorkflowInputPort(final AbstractWorkflowStep step, final String name,
       final boolean list, final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted,
-      boolean requiredInWorkingDirectory) {
+      final boolean requiredInWorkingDirectory) {
 
     super(name, list, format, compressionsAccepted, requiredInWorkingDirectory);
 
-    if (step == null)
+    if (step == null) {
       throw new NullPointerException("Step is null");
+    }
 
     this.step = step;
   }

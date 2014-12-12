@@ -47,8 +47,9 @@ public class HTSeqCountReducer extends Reducer<Text, Long, Text, Long> {
     final Iterator<Long> it = values.iterator();
     long result = 0L;
 
-    while (it.hasNext())
+    while (it.hasNext()) {
       result += it.next();
+    }
 
     return result;
   }

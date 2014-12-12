@@ -50,8 +50,9 @@ public class ByteCountInputStreamTest {
 
         sb.setLength(0);
         final int count = rand.nextInt(100000);
-        for (int y = 0; y < count; y++)
+        for (int y = 0; y < count; y++) {
           sb.append('1');
+        }
 
         final String s = sb.toString();
         testString1(s);

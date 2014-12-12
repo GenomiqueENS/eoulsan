@@ -38,57 +38,55 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import fr.ens.transcriptome.eoulsan.io.comparators.AbstractComparatorWithBloomFilter;
-import fr.ens.transcriptome.eoulsan.io.comparators.SAMComparator;
-
 public class SamComparatorTest {
 
-  private File dir = new File(new File(".").getAbsolutePath()
+  private final File dir = new File(new File(".").getAbsolutePath()
       + "/src/test/java/files");
 
   private InputStream isA;
   private InputStream isB;
 
-  private File fileA = new File(dir, "mapper_results_1_a.sam");
+  private final File fileA = new File(this.dir, "mapper_results_1_a.sam");
   // Difference tag @PG
-  private File fileB = new File(dir, "mapper_results_1_b.sam");
+  private final File fileB = new File(this.dir, "mapper_results_1_b.sam");
   private File fileC;
 
   @Test
   public void testSameSAMFiles() throws Exception {
 
-    isA = new FileInputStream(fileA);
-    isB = new FileInputStream(fileB);
+    this.isA = new FileInputStream(this.fileA);
+    this.isB = new FileInputStream(this.fileB);
 
     AbstractComparatorWithBloomFilter comparator =
         new SAMComparator(false, "PG");
     assertTrue("files are same without tag header @PG",
-        comparator.compareFiles(isA, isB));
+        comparator.compareFiles(this.isA, this.isB));
 
-    isA = new FileInputStream(fileA);
-    isB = new FileInputStream(fileB);
+    this.isA = new FileInputStream(this.fileA);
+    this.isB = new FileInputStream(this.fileB);
 
     AbstractComparatorWithBloomFilter comparator2 = new SAMComparator(false);
     assertFalse("files are different with all tag header",
-        comparator2.compareFiles(isA, isB));
+        comparator2.compareFiles(this.isA, this.isB));
 
-    isA = new FileInputStream(fileA);
-    isB = new FileInputStream(fileB);
+    this.isA = new FileInputStream(this.fileA);
+    this.isB = new FileInputStream(this.fileB);
 
     AbstractComparatorWithBloomFilter comparator3 =
         new SAMComparator(false, "PG", "SQ");
     assertTrue("files are same without all tags",
-        comparator3.compareFiles(isA, isB));
+        comparator3.compareFiles(this.isA, this.isB));
   }
 
   @Test
   public void testDifferentSAMFilesWithTag() throws Exception {
     AbstractComparatorWithBloomFilter comparator = new SAMComparator(false);
 
-    isA = new FileInputStream(fileA);
-    isB = new FileInputStream(fileB);
+    this.isA = new FileInputStream(this.fileA);
+    this.isB = new FileInputStream(this.fileB);
 
-    assertFalse("files are different", comparator.compareFiles(isA, isB));
+    assertFalse("files are different",
+        comparator.compareFiles(this.isA, this.isB));
   }
 
   @Test
@@ -98,37 +96,38 @@ public class SamComparatorTest {
 
     modifyFile(0);
     assertFalse("files are different: duplicate SAM line",
-        comparator.compareFiles(fileA, fileC));
+        comparator.compareFiles(this.fileA, this.fileC));
 
     modifyFile(1);
     assertFalse("files are different: remove SAM line",
-        comparator.compareFiles(fileA, fileC));
+        comparator.compareFiles(this.fileA, this.fileC));
 
     modifyFile(2);
     assertFalse("files are different: add SAM line",
-        comparator.compareFiles(fileA, fileC));
+        comparator.compareFiles(this.fileA, this.fileC));
 
     modifyFile(3);
     assertFalse("files are different: remove a char in one line",
-        comparator.compareFiles(fileA, fileC));
+        comparator.compareFiles(this.fileA, this.fileC));
 
     modifyFile(4);
     assertFalse("files are different: add a char in one line",
-        comparator.compareFiles(fileA, fileC));
+        comparator.compareFiles(this.fileA, this.fileC));
 
-    if (fileC.exists())
-      fileC.delete();
+    if (this.fileC.exists()) {
+      this.fileC.delete();
+    }
   }
 
   private void modifyFile(final int typeModification) throws IOException {
-    fileC = new File(dir, "modify.sam");
+    this.fileC = new File(this.dir, "modify.sam");
 
-    if (fileC.exists()) {
-      fileC.delete();
+    if (this.fileC.exists()) {
+      this.fileC.delete();
     }
 
-    final BufferedReader br = new BufferedReader(new FileReader(fileA));
-    final BufferedWriter bw = new BufferedWriter(new FileWriter(fileC));
+    final BufferedReader br = new BufferedReader(new FileReader(this.fileA));
+    final BufferedWriter bw = new BufferedWriter(new FileWriter(this.fileC));
 
     String line = "";
     // Chose no header line

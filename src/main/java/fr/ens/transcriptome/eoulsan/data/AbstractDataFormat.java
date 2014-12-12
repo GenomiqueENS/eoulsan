@@ -47,7 +47,7 @@ abstract class AbstractDataFormat implements DataFormat {
   @Override
   public List<String> getExtensions() {
 
-    return Collections.singletonList(getDefaultExtention());
+    return Collections.singletonList(getDefaultExtension());
   }
 
   @Override
@@ -88,8 +88,9 @@ abstract class AbstractDataFormat implements DataFormat {
   @Override
   public boolean equals(final Object o) {
 
-    if (o == this)
+    if (o == this) {
       return true;
+    }
 
     if (!(o instanceof DataFormat)) {
       return false;
@@ -100,18 +101,19 @@ abstract class AbstractDataFormat implements DataFormat {
     return Objects.equals(this.getName(), that.getName())
         && Objects.equals(this.getDescription(), that.getDescription())
         && Objects.equals(this.getContentType(), that.getContentType())
-        && Objects.equals(this.getDefaultExtention(), that.getDefaultExtention())
+        && Objects.equals(this.getDefaultExtension(),
+            that.getDefaultExtension())
         && Objects.equals(this.getExtensions(), that.getExtensions())
         && Objects.equals(this.isGenerator(), that.isGenerator())
         && Objects.equals(this.isChecker(), that.isChecker())
         && ((this.getGenerator() == null && that.getGenerator() == null) || (this
-            .getGenerator() != null && that.getGenerator() != null && Objects.equals(
-              this.getGenerator().getClass().getName(), that.getGenerator()
-                  .getClass().getName())))
+            .getGenerator() != null && that.getGenerator() != null && Objects
+              .equals(this.getGenerator().getClass().getName(), that
+                  .getGenerator().getClass().getName())))
         && ((this.getChecker() == null && that.getChecker() == null) || (this
-            .getChecker() != null && that.getChecker() != null && Objects.equals(this
-            .getChecker().getClass().getName(), that.getChecker().getClass()
-            .getName())))
+            .getChecker() != null && that.getChecker() != null && Objects
+              .equals(this.getChecker().getClass().getName(), that.getChecker()
+                  .getClass().getName())))
         && Objects.equals(this.getMaxFilesCount(), that.getMaxFilesCount());
   }
 
@@ -126,7 +128,7 @@ abstract class AbstractDataFormat implements DataFormat {
         isChecker() ? getChecker().getClass().hashCode() : null;
 
     return Objects.hash(getName(), getDescription(), getContentType(),
-        getDefaultExtention(), extensionsHashCode, isGenerator(), isChecker(),
+        getDefaultExtension(), extensionsHashCode, isGenerator(), isChecker(),
         generatorHashCode, checkerHashCode, getMaxFilesCount());
   }
 
@@ -141,7 +143,7 @@ abstract class AbstractDataFormat implements DataFormat {
         .add("name", getName())
         .add("description", getDescription())
         .add("contentType", getContentType())
-        .add("defaultExtension", getDefaultExtention())
+        .add("defaultExtension", getDefaultExtension())
         .add("extensions", getExtensions())
         .add("generatorClassName",
             generator != null ? generator.getClass().getCanonicalName() : null)

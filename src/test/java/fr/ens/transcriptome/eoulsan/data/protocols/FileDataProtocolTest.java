@@ -52,7 +52,7 @@ public class FileDataProtocolTest {
 
   private static final String fileContent = "Hello, World!";
 
-  private void writeFile(File f, String s) throws IOException {
+  private void writeFile(final File f, final String s) throws IOException {
 
     Writer writer = new FileWriter(f);
 
@@ -79,8 +79,9 @@ public class FileDataProtocolTest {
 
     int i = 0;
 
-    while ((i = is.read()) != -1)
+    while ((i = is.read()) != -1) {
       bb.put((byte) i);
+    }
 
     is.close();
     f.delete();

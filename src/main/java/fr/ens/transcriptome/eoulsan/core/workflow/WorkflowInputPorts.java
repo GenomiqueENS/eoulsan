@@ -62,16 +62,18 @@ class WorkflowInputPorts extends AbstractPorts<WorkflowInputPort> implements
   private static Set<WorkflowInputPort> convert(
       final AbstractWorkflowStep step, final InputPorts ports) {
 
-    if (ports == null)
+    if (ports == null) {
       throw new NullPointerException("Ports is null");
+    }
 
     final Set<WorkflowInputPort> result = new HashSet<>();
 
     for (InputPort port : ports) {
-      if (port != null)
+      if (port != null) {
         result.add(new WorkflowInputPort(step, port.getName(), port.isList(),
             port.getFormat(), port.getCompressionsAccepted(), port
                 .isRequiredInWorkingDirectory()));
+      }
 
     }
 
