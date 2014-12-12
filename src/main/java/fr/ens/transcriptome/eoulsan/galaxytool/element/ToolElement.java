@@ -34,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 /**
  * The Interface ToolElement.
  * @author Sandrine Perrin
- * @since 2.4
+ * @since 2.1
  */
 public interface ToolElement {
 

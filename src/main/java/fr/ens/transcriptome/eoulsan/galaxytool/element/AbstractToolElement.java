@@ -39,7 +39,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 /**
  * The Class AbstractToolElement.
  * @author Sandrine Perrin
- * @since 2.4
+ * @since 2.1
  */
 public abstract class AbstractToolElement implements ToolElement {
 

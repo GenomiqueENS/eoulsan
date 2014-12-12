@@ -42,13 +42,12 @@ import com.google.common.collect.Multimap;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class ToolConditionalElement.
  * @author Sandrine Perrin
- * @since 2.4
+ * @since 2.1
  */
 public class ToolConditionalElement implements ToolElement {
 
@@ -118,10 +117,6 @@ public class ToolConditionalElement implements ToolElement {
         toolParameter.setValue();
 
       } else {
-        // TODO
-        System.out.println("Set param "
-            + parameter.getName() + " vs " + toolParameter.getName());
-
         // Set param
         toolParameter.setValue(parameter);
       }
@@ -206,14 +201,6 @@ public class ToolConditionalElement implements ToolElement {
     return this.toolElementSelected;
   }
 
-  // public Map<String, ToolElement> getOptions() {
-  // return actionsRelatedOptions;
-  // }
-  //
-  // public Map<String, ToolElement> getCheckedOptions() {
-  // return actionsRelatedOptions;
-  // }
-
   @Override
   public boolean isSetting() {
     return this.isSettings;
@@ -226,13 +213,6 @@ public class ToolConditionalElement implements ToolElement {
 
   @Override
   public void setValue(final Parameter stepParameter) {
-
-    // // Set tool parameter related
-    // if (actionsRelatedOptions.containsKey(paramValue)) {
-    // actionsRelatedOptions.get(paramValue).setParameterEoulsan("true");
-    //
-    // this.value = actionsRelatedOptions.get(paramValue).getValue();
-    // }
 
   }
 
@@ -257,8 +237,7 @@ public class ToolConditionalElement implements ToolElement {
 
     this.nameSpace = element.getAttribute("name");
 
-    final List<Element> param =
-        extractChildElementsByTagName(element, "param");
+    final List<Element> param = extractChildElementsByTagName(element, "param");
 
     if (param.isEmpty() || param.size() != 1) {
       throw new EoulsanException(
@@ -267,6 +246,7 @@ public class ToolConditionalElement implements ToolElement {
               + ". Must be 1 in conditional element, for type select");
     }
 
+    // Check element select exist
     if (!param.get(0).getAttribute("type").equals("select")) {
       throw new EoulsanException(
           "Parsing tool xml: no parameter type select found, in conditional element.");

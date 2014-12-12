@@ -38,7 +38,7 @@ import fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser;
 /**
  * The Class ToolParameterSelect.
  * @author Sandrine Perrin
- * @since 2.4
+ * @since 2.1
  */
 public class ToolElementSelect extends AbstractToolElement {
 

@@ -32,7 +32,7 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 /**
  * The Class ToolParameterInteger.
  * @author Sandrine Perrin
- * @since 2.4
+ * @since 2.1
  */
 public class ToolElementInteger extends AbstractToolElement {
 

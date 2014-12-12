@@ -36,11 +36,11 @@ import org.testng.collections.Sets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class ToolPythonInterpreter.
+ * This class create a python interpreter which can build a command line tool from
+ * command tag from Galaxy tool XML file.
  * @author Sandrine Perrin
- * @since 2.4
+ * @since 2.1
  */
 public class ToolPythonInterpreter {
 
@@ -74,9 +74,9 @@ public class ToolPythonInterpreter {
       final Map<String, String> registry) {
 
     // TODO
-    System.out.println("script: " + script);
-    System.out.println("variables "
-        + Joiner.on("\n\t").withKeyValueSeparator("=").join(registry));
+    // System.out.println("script: " + script);
+    // System.out.println("variables "
+    // + Joiner.on("\n\t").withKeyValueSeparator("=").join(registry));
 
     final PythonInterpreter interp = new PythonInterpreter();
 
@@ -91,7 +91,7 @@ public class ToolPythonInterpreter {
     final PyObject cmd = interp.get(VAR_CMD_NAME);
 
     // TODO
-    System.out.println("cmd: " + cmd.asString());
+    // System.out.println("cmd: " + cmd.asString());
 
     return cmd.asString();
   }

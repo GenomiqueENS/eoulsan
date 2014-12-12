@@ -38,11 +38,10 @@ import java.util.regex.Pattern;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ScriptLineJython.
  * @author Sandrine Perrin
- * @since 2.4
+ * @since 2.1
  */
 public class ScriptLineJython {
 
@@ -133,6 +132,7 @@ public class ScriptLineJython {
   //
   // Getter
   //
+  
   /**
    * As string.
    * @return the string
@@ -144,6 +144,7 @@ public class ScriptLineJython {
   //
   // Constructor
   //
+  
   /**
    * Instantiates a new script line jython.
    * @param line the line
@@ -165,10 +166,10 @@ public class ScriptLineJython {
   //
   // Internal Class
   //
+  
   /**
    * The Class AbstractLineJython.
    * @author Sandrine Perrin
-   * @since 2.4
    */
   abstract class AbstractLineJython {
 
@@ -179,7 +180,6 @@ public class ScriptLineJython {
     /** The Constant TAB. */
     private static final String TAB = "\t";
 
-    // private final String rawLine;
     /** The modified line. */
     private String modifiedLine;
 
@@ -235,7 +235,8 @@ public class ScriptLineJython {
 
       final String codeJava = this.replaceVariableNameByCodeJava(variableName);
 
-      return this.addToken(codeJava, isPreviousTextCode, true, firstToken, lastToken);
+      return this.addToken(codeJava, isPreviousTextCode, true, firstToken,
+          lastToken);
     }
 
     /**
@@ -301,7 +302,8 @@ public class ScriptLineJython {
 
       // No variable name found
       if (modifiedLine.isEmpty()) {
-        final String s = this.endLine(isCurrentTextCode, firstToken, currentPos);
+        final String s =
+            this.endLine(isCurrentTextCode, firstToken, currentPos);
         return this.buildLineScript(s);
       }
 
@@ -482,9 +484,6 @@ public class ScriptLineJython {
         newLine[i] = previous;
       }
 
-      // TODO
-      // System.out.println("CLEAN ------------ " + new String(newLine));
-
       return new String(newLine);
     }
 
@@ -553,7 +552,8 @@ public class ScriptLineJython {
       final String lastToken =
           this.getModifiedString().substring(currentPos).trim() + endString;
 
-      return this.addToken(lastToken, isCurrentTextCode, true, firstToken, true);
+      return this
+          .addToken(lastToken, isCurrentTextCode, true, firstToken, true);
 
     }
 
@@ -598,7 +598,6 @@ public class ScriptLineJython {
   /**
    * The Class AffectationLineJython.
    * @author Sandrine Perrin
-   * @since 2.4
    */
   class AffectationLineJython extends AbstractLineJython {
 
@@ -635,7 +634,8 @@ public class ScriptLineJython {
       }
 
       lastToken += txt;
-      return this.addToken(lastToken, isCurrentTextCode, false, firstToken, true);
+      return this.addToken(lastToken, isCurrentTextCode, false, firstToken,
+          true);
     }
 
     @Override

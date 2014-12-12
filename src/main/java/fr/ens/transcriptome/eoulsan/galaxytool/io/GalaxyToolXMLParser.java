@@ -44,45 +44,46 @@ import fr.ens.transcriptome.eoulsan.galaxytool.element.ToolElement;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 
 /**
- * The Class GalaxyToolXMLUtils.
+ * This class define static utils methods to extract data in Galaxy tool XML
+ * file.
  * @author Sandrine Perrin
- * @since 2.4
+ * @since 2.X
  */
 public final class GalaxyToolXMLParser {
 
   /** The Constant ID_TAG. */
   private static final String ID_TAG = "id";
-  
+
   /** The Constant NAME_TAG. */
   private static final String NAME_TAG = "name";
-  
+
   /** The Constant VERSION_TAG. */
   private static final String VERSION_TAG = "version";
-  
+
   /** The Constant TOOL_TAG. */
   private static final String TOOL_TAG = "tool";
-  
+
   /** The Constant DESCRIPTION_TAG. */
   private static final String DESCRIPTION_TAG = "description";
-  
+
   /** The Constant INTERPRETER_TAG. */
   private static final String INTERPRETER_TAG = "interpreter";
-  
+
   /** The Constant COMMAND_TAG. */
   private static final String COMMAND_TAG = "command";
-  
+
   /** The Constant PARAM_TAG. */
   private static final String PARAM_TAG = "param";
-  
+
   /** The Constant INPUTS_TAG. */
   private static final String INPUTS_TAG = "inputs";
-  
+
   /** The Constant DATA_TAG. */
   private static final String DATA_TAG = "data";
-  
+
   /** The Constant OUTPUTS_TAG. */
   private static final String OUTPUTS_TAG = "outputs";
-  
+
   /** The Constant CONDITIONAL. */
   private static final String CONDITIONAL = "conditional";
 
@@ -120,8 +121,7 @@ public final class GalaxyToolXMLParser {
   public static Map<String, ToolElement> extractConditionalParamElement(
       final Element parent) throws EoulsanException {
     final Map<String, Parameter> stepParameters = Collections.emptyMap();
-    return extractConditionalParamElement(parent,
-        stepParameters);
+    return extractConditionalParamElement(parent, stepParameters);
   }
 
   /**
@@ -139,8 +139,7 @@ public final class GalaxyToolXMLParser {
 
     // Extract conditional element, can be empty
     final List<Element> condParams =
-        GalaxyToolXMLParser
-            .extractChildElementsByTagName(parent, CONDITIONAL);
+        GalaxyToolXMLParser.extractChildElementsByTagName(parent, CONDITIONAL);
 
     for (final Element param : condParams) {
       final ToolConditionalElement tce = new ToolConditionalElement(param);
@@ -152,9 +151,6 @@ public final class GalaxyToolXMLParser {
       tce.setValues(stepParameters);
 
       results.putAll(tce.getToolElementsResult());
-
-      // TODO
-      // System.out.println("cond " + tce);
     }
 
     return results;
@@ -339,8 +335,7 @@ public final class GalaxyToolXMLParser {
    * @return interpreter name
    */
   public static String extractInterpreter(final Document doc) {
-    return extractValueFromElement(doc, COMMAND_TAG, 0,
-        INTERPRETER_TAG);
+    return extractValueFromElement(doc, COMMAND_TAG, 0, INTERPRETER_TAG);
   }
 
   /**
@@ -349,8 +344,7 @@ public final class GalaxyToolXMLParser {
    * @return description
    */
   public static String extractDescription(final Document doc) {
-    return extractValueFromElement(doc, DESCRIPTION_TAG, 0,
-        null);
+    return extractValueFromElement(doc, DESCRIPTION_TAG, 0, null);
   }
 
   /**
@@ -360,8 +354,7 @@ public final class GalaxyToolXMLParser {
    */
   public static String extractToolVersion(final Document doc) {
 
-    return extractValueFromElement(doc, TOOL_TAG, 0,
-        VERSION_TAG);
+    return extractValueFromElement(doc, TOOL_TAG, 0, VERSION_TAG);
   }
 
   /**

@@ -36,7 +36,7 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 /**
  * The Class ToolParameterBoolean.
  * @author Sandrine Perrin
- * @since 2.4
+ * @since 2.1
  */
 public class ToolElementBoolean extends AbstractToolElement {
 

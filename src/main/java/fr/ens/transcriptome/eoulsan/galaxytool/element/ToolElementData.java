@@ -35,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 /**
  * The Class ToolParameterData.
  * @author Sandrine Perrin
- * @since 2.4
+ * @since 2.1
  */
 public class ToolElementData extends AbstractToolElement {
 

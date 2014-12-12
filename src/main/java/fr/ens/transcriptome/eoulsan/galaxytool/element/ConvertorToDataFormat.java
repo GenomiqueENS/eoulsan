@@ -30,7 +30,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
 /**
  * The Class ConvertorToDataFormat.
  * @author Sandrine Perrin
- * @since 2.4
+ * @since 2.1
  */
 final class ConvertorToDataFormat {
 
