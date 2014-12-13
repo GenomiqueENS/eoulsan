@@ -364,6 +364,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
         if (s == null) {
           return s2s.last();
         }
+
         return s2s.c(s, pairedEnd);
       }
 
@@ -390,7 +391,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
 
         final List<String> result =
             Collections.singletonList(this.id
-                + "\t4\t*\t0\t0\t*\t*\t0\t0\t" + s + "\t*\t\n");
+                + "\t4\t*\t0\t0\t*\t*\t0\t0\t" + s + "\t*\t");
         this.id = null;
 
         return result;
