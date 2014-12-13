@@ -28,6 +28,7 @@ import static fr.ens.transcriptome.eoulsan.util.StringUtils.join;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,7 +55,7 @@ public class SOAP2SAM {
   private final File funmap;
   private final File fout;
   private final GenomeDescription gd;
-  private boolean first;
+  private boolean first = true;
 
   private static final Pattern PATTERN = Pattern
       .compile("^([AaCcGgTt])->(\\d+)");
@@ -72,7 +73,8 @@ public class SOAP2SAM {
   private String[] sLast;
   private final List<String> results = new ArrayList<>();
 
-  public List<String> c(final String line, final boolean isPaired) {
+  public List<String> convertWithHeader(final String line,
+      final boolean isPaired) {
 
     this.results.clear();
 
@@ -88,32 +90,37 @@ public class SOAP2SAM {
         }
         this.first = false;
       }
+    }
 
-      final String[] sCurr = convert(line, isPaired);
+    final String[] sCurr = convert(line, isPaired);
 
-      if (sCurr == null) {
-        return this.results;
+    if (sCurr == null && !this.results.isEmpty()) {
+
+      return this.results;
+    }
+
+    if (this.sLast != null && this.sLast[0].equals(sCurr[0])) {
+
+      if (isPaired) { // Fix single end mode, added by Laurent Jourdren
+        mating(this.sLast, sCurr);
       }
+      this.results.add(join(this.sLast, "\t"));
+      this.results.add(join(sCurr, "\t"));
 
-      if (this.sLast != null && this.sLast[0].equals(sCurr[0])) {
+      this.sLast = null;
 
-        if (isPaired) { // Fix single end mode, added by Laurent Jourdren
-          mating(this.sLast, sCurr);
-        }
+    } else {
+
+      if (this.sLast != null) {
         this.results.add(join(this.sLast, "\t"));
-        this.results.add(join(sCurr, "\t"));
-
-        this.sLast = null;
-
-      } else {
-
-        if (this.sLast != null) {
-          this.results.add(join(this.sLast, "\t"));
-        }
-        this.sLast = sCurr;
       }
+      this.sLast = sCurr;
+    }
 
-      // bw.write(convert(line, false));
+    // bw.write(convert(line, false));
+
+    if (this.results.isEmpty()) {
+      return convertWithHeader(line, isPaired);
     }
 
     return this.results;
@@ -139,7 +146,7 @@ public class SOAP2SAM {
 
     while ((line = br.readLine()) != null) {
 
-      for (String l : c(line, isPaired)) {
+      for (String l : convertWithHeader(line, isPaired)) {
         bw.write(l);
         bw.write('\n');
       }

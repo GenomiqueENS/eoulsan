@@ -254,7 +254,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
         cmd.add("-D");
         cmd.add(archivePath);
         cmd.add("-o");
-        cmd.add(outputFile.getAbsolutePath());
+        cmd.add("/dev/stdout");
         cmd.add("-u");
         cmd.add(unmapFile.getAbsolutePath());
 
@@ -315,7 +315,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
         cmd.add("-D");
         cmd.add(archivePath);
         cmd.add("-o");
-        cmd.add(outputFile.getAbsolutePath());
+        cmd.add("/dev/output");
         cmd.add("-u");
         cmd.add(unmapFile.getAbsolutePath());
         cmd.add("-2");
@@ -365,7 +365,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
           return s2s.last();
         }
 
-        return s2s.c(s, pairedEnd);
+        return s2s.convertWithHeader(s, pairedEnd);
       }
 
     };
