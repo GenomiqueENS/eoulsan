@@ -165,7 +165,7 @@ public class ITFactory {
       // Return all tests
       return tests.toArray(new Object[testsCount]);
 
-    } catch (Throwable e) {
+    } catch (final Throwable e) {
       System.err.println(e.getMessage());
 
     } finally {
@@ -190,12 +190,12 @@ public class ITFactory {
     final Properties constants = new Properties();
 
     // Add java properties
-    for (Map.Entry<Object, Object> e : System.getProperties().entrySet()) {
+    for (final Map.Entry<Object, Object> e : System.getProperties().entrySet()) {
       constants.put(e.getKey(), e.getValue());
     }
 
     // Add environment properties
-    for (Map.Entry<String, String> e : System.getenv().entrySet()) {
+    for (final Map.Entry<String, String> e : System.getenv().entrySet()) {
       constants.put(e.getKey(), e.getValue());
     }
 
@@ -270,7 +270,7 @@ public class ITFactory {
     }
 
     // Build map
-    for (File testDirectory : testsToExecuteDirectories) {
+    for (final File testDirectory : testsToExecuteDirectories) {
 
       // Ignore file
       if (testDirectory.isFile()) {
@@ -352,7 +352,7 @@ public class ITFactory {
     try {
       fh = new FileHandler(this.loggerPath);
 
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new IOException(e.getMessage());
     }
 
@@ -413,7 +413,17 @@ public class ITFactory {
           "configuration file doesn't exist");
 
       // Load configuration in global configuration
-      props.putAll(loadProperties(otherConfigurationFile));
+      final Properties newProps = new Properties();
+      newProps.load(newReader(otherConfigurationFile,
+          Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
+
+      for (final String propertyName : newProps.stringPropertyNames()) {
+
+        final String propertyValue =
+            evaluateExpressions(newProps.getProperty(propertyName), true);
+        props.setProperty(propertyName, propertyValue);
+
+      }
     }
 
     return props;
@@ -474,7 +484,7 @@ public class ITFactory {
             result.append(r);
           }
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
           throw new EoulsanException("Error while evaluating expression \""
               + expr + "\"");
         }
@@ -554,14 +564,14 @@ public class ITFactory {
    */
   private static File getApplicationPath() {
 
-    File dir = getFileFromSystemProperty(IT_APPLICATION_PATH_KEY_SYSTEM_KEY);
+    final File dir = getFileFromSystemProperty(IT_APPLICATION_PATH_KEY_SYSTEM_KEY);
 
     if (dir != null) {
       return dir;
     }
 
     // Get user dir
-    File distDir =
+    final File distDir =
         new File(System.getProperty("user.dir")
             + File.separator + "target" + File.separator + "dist");
 
@@ -580,7 +590,7 @@ public class ITFactory {
 
     final File[] files = distDir.listFiles();
     if (files != null) {
-      for (File f : files) {
+      for (final File f : files) {
 
         if (f.getName().startsWith(".")) {
           continue;
@@ -617,7 +627,7 @@ public class ITFactory {
   public ITFactory() throws EoulsanException, IOException {
 
     // Get configuration file path
-    File configurationFile = getFileFromSystemProperty(IT_CONF_PATH_SYSTEM_KEY);
+    final File configurationFile = getFileFromSystemProperty(IT_CONF_PATH_SYSTEM_KEY);
 
     if (configurationFile != null) {
 
