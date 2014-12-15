@@ -6,6 +6,7 @@ fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterHadoopStep
 fr.ens.transcriptome.eoulsan.steps.mapping.local.ReadsMapperLocalStep
 fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsMapperHadoopStep
 fr.ens.transcriptome.eoulsan.steps.mapping.local.SAM2BAMLocalStep
+fr.ens.transcriptome.eoulsan.steps.mapping.local.FastQCLocalStep
 
 # Filter and mapping steps
 fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.FilterAndMapReadsHadoopStep
