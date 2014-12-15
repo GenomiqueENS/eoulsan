@@ -411,6 +411,21 @@
 			<type>jar</type>
 			<scope>runtime</scope>
 		</dependency>
+		
+	    <dependency>
+       		<groupId>uk.ac.babraham</groupId>
+       		<artifactId>fastqc</artifactId>
+       		<version>0.11.2</version>
+       		<scope>compile</scope>
+     	</dependency>
+		
+     	<dependency>
+       		<groupId>itadaki</groupId>
+       		<artifactId>jbzip2</artifactId>
+       		<version>0.9</version>
+       		<scope>runtime</scope>
+     	</dependency>
+     	
 	</dependencies>
 
 	<build>
