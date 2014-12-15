@@ -533,31 +533,73 @@ public class CommandWorkflow extends AbstractWorkflow {
   private void searchDependencies() throws EoulsanException {
 
     final Map<DataFormat, CommandWorkflowStep> generatorAdded = new HashMap<>();
-    searchDependencies(generatorAdded);
+    searchDependencies(generatorAdded, null);
   }
 
   /**
    * Search dependency between steps.
+   * @param generatorAdded generator added
+   * @param lastStepWithoutOutput last step without output
    * @throws EoulsanException if an error occurs while search dependencies
    */
   private void searchDependencies(
-      final Map<DataFormat, CommandWorkflowStep> generatorAdded)
-      throws EoulsanException {
+      final Map<DataFormat, CommandWorkflowStep> generatorAdded,
+      final CommandWorkflowStep lastStepWithoutOutput) throws EoulsanException {
 
     final List<CommandWorkflowStep> steps = this.steps;
+    CommandWorkflowStep currentLastStepWithoutOutput = lastStepWithoutOutput;
 
     for (int i = steps.size() - 1; i >= 0; i--) {
 
       final CommandWorkflowStep step = steps.get(i);
+
+      // If step is a generator, move the step just after the checker
+      if (step.getType() == StepType.GENERATOR_STEP
+          && !generatorAdded.containsValue(step)) {
+
+        // Move step just after the checker step
+        final int generatorIndex = indexOfStep(step);
+        this.steps.remove(generatorIndex);
+        this.steps.add(indexOfStep(getCheckerStep()) + 1, step);
+
+        if (step.getOutputPorts().isEmpty()) {
+          throw new EoulsanException("Step \""
+              + step.getId() + "\" is a generator but not generate anything.");
+        }
+
+        if (step.getOutputPorts().size() > 1) {
+          throw new EoulsanException("Step \""
+              + step.getId()
+              + "\" is a generator but generate more than one format.");
+        }
+
+        generatorAdded.put(step.getOutputPorts().getFirstPort().getFormat(),
+            step);
+
+        searchDependencies(generatorAdded, currentLastStepWithoutOutput);
+        return;
+      }
 
       // If step need no data, the step depends from the previous step
       if (step.getWorkflowInputPorts().isEmpty() && i > 0) {
         step.addDependency(steps.get(i - 1));
       }
 
-      // If previous step has no output, the current step depend on it
-      if (i > 0 && steps.get(i - 1).getWorkflowOutputPorts().isEmpty()) {
-        step.addDependency(steps.get(i - 1));
+      // If step has no output, all the next step(s) depend on it
+      if (step.getWorkflowOutputPorts().isEmpty()) {
+
+        for (int j = i + 1; j < steps.size(); j++) {
+
+          final CommandWorkflowStep s = steps.get(j);
+
+          s.addDependency(step);
+
+          // If s has no output, there is no need to go further
+          if (s == currentLastStepWithoutOutput) {
+            break;
+          }
+        }
+        currentLastStepWithoutOutput = step;
       }
 
       for (WorkflowInputPort inputPort : step.getWorkflowInputPorts()) {
@@ -638,7 +680,7 @@ public class CommandWorkflow extends AbstractWorkflow {
               generatorAdded.put(format, generatorStep);
 
               // Rerun search dependencies
-              searchDependencies(generatorAdded);
+              searchDependencies(generatorAdded, currentLastStepWithoutOutput);
               return;
             }
 
@@ -647,7 +689,7 @@ public class CommandWorkflow extends AbstractWorkflow {
               // Swap generators order
               Collections.swap(this.steps, indexOfStep(step),
                   indexOfStep(generatorAdded.get(format)));
-              searchDependencies(generatorAdded);
+              searchDependencies(generatorAdded, currentLastStepWithoutOutput);
               return;
             }
 
