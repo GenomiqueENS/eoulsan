@@ -30,9 +30,11 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -53,6 +55,7 @@ public class STARIndexGenerator extends AbstractStep {
   private String gtfTagExonParentTranscript;
   private Integer genomeSAindexNbases;
   private Integer genomeChrBinNbits;
+  private boolean useExpressionStepParameters;
 
   @Override
   public String getName() {
@@ -133,10 +136,55 @@ public class STARIndexGenerator extends AbstractStep {
         this.genomeChrBinNbits = p.getIntValue();
         break;
 
+      case "use.expression.step.parameters":
+        this.useExpressionStepParameters = p.getBooleanValue();
+        break;
+
       default:
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());
       }
+    }
+  }
+
+  /**
+   * Set the "gtf.feature.exon" and "gtf.tag.exon.parent.transcript" parameter
+   * from the expression step parameters.
+   * @param context the context of the task
+   * @throws EoulsanException if more than one expression step exists
+   */
+  private void searchExpressionStepParameters(final StepContext context)
+      throws EoulsanException {
+
+    int count = 0;
+
+    for (WorkflowStep step : context.getWorkflow().getSteps()) {
+
+      if (AbstractExpressionStep.STEP_NAME.equals(step.getStepName())) {
+
+        for (Parameter p : step.getParameters()) {
+
+          switch (p.getName()) {
+
+          case AbstractExpressionStep.GENOMIC_TYPE_PARAMETER_NAME:
+            gtfFeatureExon = p.getStringValue();
+            break;
+
+          case AbstractExpressionStep.ATTRIBUTE_ID_PARAMETER_NAME:
+            gtfTagExonParentTranscript = p.getStringValue();
+            break;
+
+          default:
+            break;
+          }
+        }
+        count++;
+      }
+    }
+
+    if (count > 1) {
+      throw new EoulsanException(
+          "Found more than one expression step in the workflow");
     }
   }
 
@@ -148,6 +196,11 @@ public class STARIndexGenerator extends AbstractStep {
       final StringBuilder additionalArguments = new StringBuilder();
       final LinkedHashMap<String, String> additionalDescription =
           new LinkedHashMap<String, String>();
+
+      // Search expression parameter is needed
+      if (this.useExpressionStepParameters) {
+        searchExpressionStepParameters(context);
+      }
 
       if (this.gtfFile) {
 
