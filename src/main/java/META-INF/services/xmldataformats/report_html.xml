@@ -1,0 +1,8 @@
+<dataformat>
+	<name>report_html</name>
+	<description>report on html page</description>
+	<prefix>report</prefix>
+	<extensions>
+		<extension default="true">.html</extension>
+	</extensions>
+</dataformat>

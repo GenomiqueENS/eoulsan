@@ -118,4 +118,7 @@ public class DataFormats {
   public static final DataFormat ADDITIONAL_ANNOTATION_TSV = registry
       .getDataFormatFromName("additional_annotation_tsv");
 
+  /** Report html. */
+  public static final DataFormat REPORT_HTML = registry
+      .getDataFormatFromName("report_html");
 }
