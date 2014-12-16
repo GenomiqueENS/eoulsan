@@ -24,13 +24,15 @@
 
 package fr.ens.transcriptome.eoulsan.steps.generators;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
-import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.MAPPER_VERSION_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.MAPPER_FLAVOR_PARAMETER_NAME;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.MAPPER_VERSION_PARAMETER_NAME;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -181,8 +183,23 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
    */
   static void execute(final SequenceReadsMapper mapper,
       final StepContext context, final String additionnalArguments,
-      final LinkedHashMap<String, String> additionalDescription)
-      throws IOException, EoulsanException {
+      final Map<String, String> additionalDescription) throws IOException,
+      EoulsanException {
+
+    checkNotNull(mapper, "mapper argument cannot be null");
+    checkNotNull(context, "context argument cannot be null");
+
+    // Set default value for arguments if needed
+    final String args =
+        additionnalArguments != null ? additionnalArguments : "";
+
+    // Set default value for descriptions if needed
+    final Map<String, String> descriptions;
+    if (additionalDescription != null) {
+      descriptions = additionalDescription;
+    } else {
+      descriptions = Collections.emptyMap();
+    }
 
     // Get input and output data
     final Data genomeData = context.getInputData(GENOME_FASTA);
@@ -211,8 +228,7 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
 
     // Create indexer
     final GenomeMapperIndexer indexer =
-        new GenomeMapperIndexer(mapper, additionnalArguments,
-            additionalDescription);
+        new GenomeMapperIndexer(mapper, args, descriptions);
 
     // Create index
     indexer.createIndex(genomeDataFile, desc, mapperIndexDataFile);

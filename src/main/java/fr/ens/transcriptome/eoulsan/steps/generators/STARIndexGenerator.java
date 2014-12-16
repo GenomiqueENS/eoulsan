@@ -13,7 +13,8 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.EnumSet;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -194,8 +195,7 @@ public class STARIndexGenerator extends AbstractStep {
     try {
 
       final StringBuilder additionalArguments = new StringBuilder();
-      final LinkedHashMap<String, String> additionalDescription =
-          new LinkedHashMap<String, String>();
+      final Map<String, String> additionalDescription = new HashMap<>();
 
       // Search expression parameter is needed
       if (this.useExpressionStepParameters) {
