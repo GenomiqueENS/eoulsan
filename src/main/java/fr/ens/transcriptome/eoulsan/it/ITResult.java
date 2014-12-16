@@ -40,7 +40,6 @@ import java.util.Set;
 
 import com.google.common.base.Joiner;
 
-import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
@@ -53,6 +52,7 @@ public class ITResult {
   private final IT it;
 
   private Throwable exception;
+  private static final StringBuilder exceptionMessage = new StringBuilder();
   private final List<ITCommandResult> commandsResults;
   private Set<ITOutputComparisonResult> comparisonsResults;
 
@@ -87,7 +87,7 @@ public class ITResult {
       fw.flush();
       fw.close();
 
-    } catch (Exception e) {
+    } catch (final Exception e) {
       e.printStackTrace();
     }
 
@@ -96,7 +96,7 @@ public class ITResult {
         Files.copy(reportFile.toPath(),
             new File(this.it.getExpectedTestDirectory(), filename).toPath(),
             StandardCopyOption.REPLACE_EXISTING);
-      } catch (IOException e) {
+      } catch (final IOException e) {
       }
     }
   }
@@ -170,7 +170,7 @@ public class ITResult {
 
     // Add synthesis on execution script
     if (!this.commandsResults.isEmpty()) {
-      for (ITCommandResult icr : this.commandsResults) {
+      for (final ITCommandResult icr : this.commandsResults) {
         report.append(icr.getReport());
       }
     }
@@ -182,7 +182,7 @@ public class ITResult {
 
     // Add report text on comparison execution
     if (!this.comparisonsResults.isEmpty()) {
-      for (ITOutputComparisonResult ocr : this.comparisonsResults) {
+      for (final ITOutputComparisonResult ocr : this.comparisonsResults) {
         report.append('\n');
         report.append(ocr.getReport());
       }
@@ -209,12 +209,27 @@ public class ITResult {
     }
 
     // Check comparison output it result
-    for (ITOutputComparisonResult ocr : this.comparisonsResults) {
+    for (final ITOutputComparisonResult ocr : this.comparisonsResults) {
       if (!ocr.getStatutComparison().isSuccess()) {
-        setException(new EoulsanException(ocr.getStatutComparison()
-            .getExceptionMessage() + "\n\tfile: " + ocr.getFilename()));
+        setExceptionMessage(ocr.getStatutComparison().getExceptionMessage()
+            + "\tfile: " + ocr.getFilename());
       }
     }
+  }
+
+  private static void setExceptionMessage(final String msg) {
+
+    if (msg != null && !msg.isEmpty()) {
+      ITResult.exceptionMessage.append("\n");
+      ITResult.exceptionMessage.append(msg);
+    }
+  }
+
+  private static String getExceptionMessage() {
+
+    return "\nException message: \n\t"
+        + ITResult.exceptionMessage.toString() + "\n";
+
   }
 
   /**
@@ -234,8 +249,8 @@ public class ITResult {
     msgException.append("\n=== Execution Test Error ===");
     msgException.append("\nFrom class: \n\t"
         + exception.getClass().getName() + "");
-    msgException.append("\nException message: \n\t"
-        + exception.getMessage() + "\n");
+
+    msgException.append(getExceptionMessage());
 
     if (ITSuite.getInstance().isDebugEnabled() && withStackTrace) {
       // Add the stack trace
