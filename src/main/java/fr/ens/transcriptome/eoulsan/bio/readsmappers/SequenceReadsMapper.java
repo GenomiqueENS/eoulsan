@@ -54,6 +54,18 @@ public interface SequenceReadsMapper {
   String getMapperVersion();
 
   /**
+   * Get the mapper version to use.
+   * @return a string with the mapper version to use
+   */
+  String getMapperVersionToUse();
+
+  /**
+   * Get the flavor of the mapper to use.
+   * @return a string the flavor of the mapper to use
+   */
+  String getMapperFlavorToUse();
+
+  /**
    * Test if the mapper can only be use for generate the mapper index.
    * @return true if the mapper is a fake mapper
    */
@@ -94,6 +106,12 @@ public interface SequenceReadsMapper {
   //
 
   /**
+   * Set the flavor of the mapper to use.
+   * @param flavor the flavor to use. If null, the default flavor will be used
+   */
+  void setMapperFlavorToUse(String flavor);
+
+  /**
    * Set the version of the mapper to use.
    * @param version the version to use. If null, the default version will be
    *          used
@@ -119,16 +137,34 @@ public interface SequenceReadsMapper {
   String getMapperArguments();
 
   /**
+   * Get the user options for the indexer.
+   * @return the user options as a String
+   */
+  String getIndexerArguments();
+
+  /**
    * Get the user options for the mapper.
    * @return the user options as a list
    */
   List<String> getListMapperArguments();
 
   /**
+   * Get the user options for the mapper.
+   * @return the user options as a list
+   */
+  List<String> getListIndexerArguments();
+
+  /**
    * Set the mapper additional arguments.
    * @param arguments the additional mapper arguments
    */
   void setMapperArguments(String arguments);
+
+  /**
+   * Set the indexer additional arguments.
+   * @param arguments the additional indexer arguments
+   */
+  void setIndexerArguments(String arguments);
 
   /**
    * Get the temporary directory to use by the mapper.

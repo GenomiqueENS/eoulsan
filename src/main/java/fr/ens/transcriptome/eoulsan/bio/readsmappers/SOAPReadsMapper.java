@@ -254,7 +254,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
         cmd.add("-D");
         cmd.add(archivePath);
         cmd.add("-o");
-        cmd.add(outputFile.getAbsolutePath());
+        cmd.add("/dev/stdout");
         cmd.add("-u");
         cmd.add(unmapFile.getAbsolutePath());
 
@@ -315,7 +315,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
         cmd.add("-D");
         cmd.add(archivePath);
         cmd.add("-o");
-        cmd.add(outputFile.getAbsolutePath());
+        cmd.add("/dev/output");
         cmd.add("-u");
         cmd.add(unmapFile.getAbsolutePath());
         cmd.add("-2");
@@ -364,7 +364,8 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
         if (s == null) {
           return s2s.last();
         }
-        return s2s.c(s, pairedEnd);
+
+        return s2s.convertWithHeader(s, pairedEnd);
       }
 
     };
@@ -390,7 +391,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
 
         final List<String> result =
             Collections.singletonList(this.id
-                + "\t4\t*\t0\t0\t*\t*\t0\t0\t" + s + "\t*\t\n");
+                + "\t4\t*\t0\t0\t*\t*\t0\t0\t" + s + "\t*\t");
         this.id = null;
 
         return result;

@@ -301,6 +301,46 @@ public final class Version implements Comparable<Version> {
   }
 
   /**
+   * Test if a version is less than the current version.
+   * @param version version to test
+   * @return true if a version is less than the current version
+   */
+  public boolean lessThan(final Version version) {
+
+    return compareTo(version) < 0;
+  }
+
+  /**
+   * Test if a version is less than or equals to the current version.
+   * @param version version to test
+   * @return true if a version is less than or equals to the current version
+   */
+  public boolean lessThanOrEqualTo(final Version version) {
+
+    return compareTo(version) <= 0;
+  }
+
+  /**
+   * Test if a version is greater than the current version.
+   * @param version version to test
+   * @return true if a version is greater than the current version
+   */
+  public boolean greaterThan(final Version version) {
+
+    return compareTo(version) > 0;
+  }
+
+  /**
+   * Test if a version if greater than or equals to the current version.
+   * @param version version to test
+   * @return true if a version is greater than or equals to the current version
+   */
+  public boolean greaterThanOrEqualTo(final Version version) {
+
+    return compareTo(version) >= 0;
+  }
+
+  /**
    * Get the minimal version from an array of versions.
    * @param versions The array of versions
    * @return The minimal version

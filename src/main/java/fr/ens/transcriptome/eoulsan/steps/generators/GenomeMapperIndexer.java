@@ -28,6 +28,7 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedHashMap;
 
 import com.google.common.base.Preconditions;
 
@@ -48,6 +49,8 @@ public final class GenomeMapperIndexer {
 
   private final SequenceReadsMapper mapper;
   private final GenomeIndexStorage storage;
+  private final String additionnalArguments;
+  private final LinkedHashMap<String, String> additionalDescription;
 
   /**
    * Create an archived genome index.
@@ -62,11 +65,15 @@ public final class GenomeMapperIndexer {
 
     final DataFile precomputedIndexDataFile;
 
+    // Set indexer additional arguments
+    this.mapper.setIndexerArguments(this.additionnalArguments);
+
     if (this.storage == null) {
       precomputedIndexDataFile = null;
     } else {
       precomputedIndexDataFile =
-          this.storage.get(this.mapper, genomeDescription);
+          this.storage.get(this.mapper, genomeDescription,
+              this.additionalDescription);
     }
 
     // If no index storage or if the index does not already exists compute it
@@ -74,7 +81,8 @@ public final class GenomeMapperIndexer {
       getLogger().info("Genome index not found, must compute it.");
       computeIndex(genomeDataFile, mapperIndexDataFile);
       if (this.storage != null) {
-        this.storage.put(this.mapper, genomeDescription, mapperIndexDataFile);
+        this.storage.put(this.mapper, genomeDescription,
+            this.additionalDescription, mapperIndexDataFile);
       }
     } else {
       // Else download it
@@ -161,8 +169,12 @@ public final class GenomeMapperIndexer {
   /**
    * Public constructor.
    * @param mapper Mapper to use for the index generator
+   * @param additionnalArguments additional indexer arguments
+   * @param additionalDescription additional indexer arguments description
    */
-  public GenomeMapperIndexer(final SequenceReadsMapper mapper) {
+  public GenomeMapperIndexer(final SequenceReadsMapper mapper,
+      final String additionnalArguments,
+      final LinkedHashMap<String, String> additionalDescription) {
 
     Preconditions.checkNotNull(mapper, "Mapper is null");
 
@@ -171,6 +183,12 @@ public final class GenomeMapperIndexer {
 
     // Get genome Index storage path
     this.storage = checkForGenomeIndexStore();
+
+    // Get the additional arguments
+    this.additionnalArguments = additionnalArguments;
+
+    // Get the add additional description
+    this.additionalDescription = additionalDescription;
   }
 
 }

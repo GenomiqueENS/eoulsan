@@ -39,6 +39,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
+import fr.ens.transcriptome.eoulsan.annotations.Generator;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.ParallelizationMode;
@@ -412,7 +413,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
       final Step step = getStep();
       if (getType() == StepType.STANDARD_STEP
-          || getType() == StepType.DESIGN_STEP) {
+          || getType() == StepType.DESIGN_STEP
+          || step.getClass().getAnnotation(Generator.class) != null) {
 
         // Configure step
         step.configure(getParameters());
@@ -640,12 +642,14 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.number = instanceCounter++;
     this.id = id;
     this.skip = skip;
-    this.type = StepType.STANDARD_STEP;
     this.stepName = stepName;
     this.copyResultsToOutput = copyResultsToOutput;
 
     // Load Step instance
     final Step step = StepInstances.getInstance().getStep(this, stepName);
+    this.type =
+        step.getClass().getAnnotation(Generator.class) != null
+            ? StepType.GENERATOR_STEP : StepType.STANDARD_STEP;
     this.mode = EoulsanMode.getEoulsanMode(step.getClass());
     this.parameters = Sets.newLinkedHashSet(parameters);
     this.terminalStep = step.isTerminalStep();

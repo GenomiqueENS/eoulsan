@@ -104,7 +104,7 @@ public class ITOutput {
     }
 
     // Copy output files
-    for (File f : this.filesToCompare) {
+    for (final File f : this.filesToCompare) {
 
       final String filename = f.getName();
 
@@ -123,7 +123,7 @@ public class ITOutput {
     }
 
     if (noFileFoundToCopy) {
-      String msg =
+      final String msg =
           "Fail: none file to copy in destination "
               + destinationDirectory.getAbsolutePath();
       throw new EoulsanException(msg);
@@ -152,16 +152,16 @@ public class ITOutput {
     final List<File> allFilesFromTest = new ArrayList<>(this.filesToCompare);
 
     // Build map filename with files path
-    Map<String, File> filesTestedMap =
+    final Map<String, File> filesTestedMap =
         new HashMap<>(this.filesToCompare.size());
 
-    for (File f : this.filesToCompare) {
+    for (final File f : this.filesToCompare) {
       filesTestedMap.put(f.getName(), f);
     }
 
     // Parse expected files
-    for (Map.Entry<File, Boolean> entry : expectedOutput.getFilesToCompare()
-        .entrySet()) {
+    for (final Map.Entry<File, Boolean> entry : expectedOutput
+        .getFilesToCompare().entrySet()) {
 
       final File fileExpected = entry.getKey();
       final boolean usedComparator = entry.getValue();
@@ -193,7 +193,7 @@ public class ITOutput {
 
     // Check file from test are not compare
     if (!allFilesFromTest.isEmpty()) {
-      for (File f : allFilesFromTest) {
+      for (final File f : allFilesFromTest) {
         final ITOutputComparisonResult ocr =
             new ITOutputComparisonResult(f.getName(),
                 StatusComparison.UNEXPECTED,
@@ -235,7 +235,7 @@ public class ITOutput {
     // Comparison two files with same filename
     final FilesComparator fc = new FilesComparator(fileExpected, fileTested);
     // Compare files with comparator
-    boolean res = fc.compare();
+    final boolean res = fc.compare();
 
     if (!res) {
       comparisonResult.setResult(
@@ -244,11 +244,12 @@ public class ITOutput {
               + fileExpected.getAbsolutePath() + " vs "
               + fileTested.getAbsolutePath() + "\n\tdetail: "
               + fc.getDetailComparison());
-    }
+    } else {
 
-    // Add comparison in the report text
-    comparisonResult.setResult(StatusComparison.EQUALS,
-        "Success file comparison.");
+      // Add comparison in the report text
+      comparisonResult.setResult(StatusComparison.EQUALS,
+          "Success file comparison.");
+    }
   }
 
   /**
@@ -262,11 +263,11 @@ public class ITOutput {
       final ITOutputComparisonResult comparisonResult, final File fileExpected,
       final File fileTested) {
     // Compare size file
-    long fileExpectedSize = fileExpected.length();
-    long fileTestedSize = fileTested.length();
+    final long fileExpectedSize = fileExpected.length();
+    final long fileTestedSize = fileTested.length();
 
-    long diffSize = fileExpectedSize - fileTestedSize;
-    boolean isEqualsSize = diffSize < 10L;
+    final long diffSize = fileExpectedSize - fileTestedSize;
+    final boolean isEqualsSize = diffSize < 10L;
 
     String msg = "";
 
@@ -278,11 +279,12 @@ public class ITOutput {
               fileTested.getAbsolutePath(), fileTestedSize);
 
       comparisonResult.setResult(StatusComparison.NOT_EQUALS, msg);
-    }
+    } else {
 
-    // Add comparison in the report text
-    comparisonResult.setResult(StatusComparison.EQUALS,
-        "Success file comparison size file.");
+      // Add comparison in the report text
+      comparisonResult.setResult(StatusComparison.EQUALS,
+          "Success file comparison size file.");
+    }
   }
 
   /**
@@ -305,7 +307,7 @@ public class ITOutput {
         createPathMatchers(this.checkAbsenceFilePatterns, false);
     final List<File> matchedFile = listingFilesFromPatterns(patterns);
 
-    for (File f : matchedFile) {
+    for (final File f : matchedFile) {
       final ITOutputComparisonResult ocr =
           new ITOutputComparisonResult(f.getName(),
               StatusComparison.UNEXPECTED,
@@ -418,7 +420,7 @@ public class ITOutput {
     final Set<PathMatcher> result = new HashSet<>();
 
     // Parse patterns
-    for (String globSyntax : COMMA_SPLITTER.split(patterns)) {
+    for (final String globSyntax : COMMA_SPLITTER.split(patterns)) {
 
       // Convert in syntax reading by Java
       final PathMatcher matcher =
@@ -443,7 +445,7 @@ public class ITOutput {
    *         to check size file
    */
   public final Map<File, Boolean> getFilesToCompare() {
-    int size =
+    final int size =
         this.filesToCompareWithComparator.size()
             + this.filesToCheckExistence.size();
 
@@ -451,12 +453,12 @@ public class ITOutput {
     final Map<File, Boolean> files = new HashMap<>(size);
 
     // Add all files to compare with an comparator object
-    for (File f : this.filesToCompareWithComparator) {
+    for (final File f : this.filesToCompareWithComparator) {
       files.put(f, true);
     }
 
     // Add all files to compare only with check size file
-    for (File f : this.filesToCheckExistence) {
+    for (final File f : this.filesToCheckExistence) {
       files.put(f, false);
     }
     return files;
@@ -552,7 +554,7 @@ public class ITOutput {
       final String extension =
           StringUtils.extensionWithoutCompressionExtension(filename);
 
-      for (Comparator comp : this.comparators) {
+      for (final Comparator comp : this.comparators) {
 
         // Check extension file in list extensions define by comparator
         if (comp.getExtensions().contains(extension)) {

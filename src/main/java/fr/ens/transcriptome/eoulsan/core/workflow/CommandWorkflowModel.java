@@ -288,7 +288,7 @@ public class CommandWorkflowModel implements Serializable {
     this.stepIdList.add(stepIdLower);
     this.stepIdNames.put(stepIdLower, stepNameLower);
     this.stepInputs.put(stepIdLower, inputsMap);
-    this.stepParameters.put(stepNameLower, parameters);
+    this.stepParameters.put(stepIdLower, parameters);
     this.stepSkiped.put(stepIdLower, skipStep);
     this.stepDiscardOutput.put(stepIdLower, discardOutput);
   }

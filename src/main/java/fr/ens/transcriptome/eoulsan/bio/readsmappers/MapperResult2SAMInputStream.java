@@ -62,16 +62,12 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
     return Lists.newArrayList(Splitter.on('\t').split(s));
   }
 
-  private boolean fillBuffer(final int minSize) throws IOException {
+  private void fillBuffer(final int minSize) throws IOException {
 
     final int finalPos = this.pos + minSize;
 
-    if (finalPos < this.buffer.length) {
-      return false;
-    }
-
-    if (this.endStream) {
-      return true;
+    if (finalPos < this.buffer.length || this.endStream) {
+      return;
     }
 
     this.sb.setLength(0);
@@ -80,6 +76,7 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
 
     do {
       String line = this.reader.readLine();
+
       final List<String> lines;
 
       if (line == null) {
@@ -96,12 +93,14 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
         }
       }
 
-    } while (this.sb.length() < minSize || this.endStream);
+      if (this.endStream) {
+        break;
+      }
+
+    } while (this.sb.length() < minSize);
 
     this.buffer = this.sb.toString().getBytes(CHARSET);
     this.pos = 0;
-
-    return false;
   }
 
   @Override
@@ -113,11 +112,15 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
   @Override
   public int read() throws IOException {
 
-    if (fillBuffer(1)) {
-      return -1;
+    if (!this.endStream) {
+      fillBuffer(1);
     }
 
-    return this.buffer[this.pos++];
+    if (this.pos < this.buffer.length) {
+      return this.buffer[this.pos++];
+    } else {
+      return -1;
+    }
   }
 
   @Override
@@ -128,11 +131,15 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
       throw new IllegalArgumentException("len must be > 0");
     }
 
-    if (fillBuffer(len)) {
-      return -1;
+    if (!this.endStream) {
+      fillBuffer(len);
     }
 
     final int copyLen = Math.min(len, this.buffer.length - this.pos);
+
+    if (copyLen == 0 && this.endStream) {
+      return -1;
+    }
 
     System.arraycopy(this.buffer, this.pos, b, off, copyLen);
     this.pos += copyLen;
@@ -163,7 +170,6 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
 
   @Override
   public long skip(final long n) throws IOException {
-    // TODO Auto-generated method stub
     return super.skip(n);
   }
 

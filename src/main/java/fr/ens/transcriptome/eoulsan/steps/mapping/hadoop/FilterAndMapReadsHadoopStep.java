@@ -186,6 +186,12 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // Set Mapper name
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
 
+    // Set mapper version
+    jobConf.set(ReadsMapperMapper.MAPPER_VERSION_KEY, getMapperVersion());
+
+    // Set mapper flavor
+    jobConf.set(ReadsMapperMapper.MAPPER_FLAVOR_KEY, getMapperFlavor());
+
     // Set pair end or single end mode
     if (readsData.getDataFileCount() == 2) {
       jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.TRUE.toString());

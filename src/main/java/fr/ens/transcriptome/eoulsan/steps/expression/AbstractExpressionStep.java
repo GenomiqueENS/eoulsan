@@ -57,6 +57,8 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  */
 public abstract class AbstractExpressionStep extends AbstractStep {
 
+  public static final String STEP_NAME = "expression";
+
   public static final String REMOVEAMBIGUOUSCASES_PARAMETER_NAME =
       "removeambiguouscases";
 
@@ -73,7 +75,6 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
   protected static final String COUNTER_GROUP = "expression";
 
-  private static final String STEP_NAME = "expression";
   private static final String DEFAULT_GENOMIC_TYPE = "exon";
   private static final String DEFAULT_ATTRIBUTE_ID = "PARENT";
 

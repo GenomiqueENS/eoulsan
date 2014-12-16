@@ -181,6 +181,58 @@ public class VersionTest {
   }
 
   @Test
+  public void testLessThan() {
+
+    Version v1 = new Version(1, 0, 0, "");
+    Version v2 = new Version(2, 0, 0, "");
+    Version v1bis = new Version(1, 0, 0, "");
+
+    assertTrue(v1.lessThan(v2));
+    assertFalse(v2.lessThan(v1));
+    assertFalse(v1.lessThan(v1bis));
+    assertFalse(v1.lessThan(null));
+  }
+
+  @Test
+  public void testLessThanOrEqualTo() {
+
+    Version v1 = new Version(1, 0, 0, "");
+    Version v2 = new Version(2, 0, 0, "");
+    Version v1bis = new Version(1, 0, 0, "");
+
+    assertTrue(v1.lessThanOrEqualTo(v2));
+    assertFalse(v2.lessThanOrEqualTo(v1));
+    assertTrue(v1.lessThanOrEqualTo(v1bis));
+    assertFalse(v1.lessThanOrEqualTo(null));
+  }
+
+  @Test
+  public void testGreaterThan() {
+
+    Version v1 = new Version(1, 0, 0, "");
+    Version v2 = new Version(2, 0, 0, "");
+    Version v1bis = new Version(1, 0, 0, "");
+
+    assertTrue(v2.greaterThan(v1));
+    assertFalse(v1.greaterThan(v2));
+    assertFalse(v1.greaterThan(v1bis));
+    assertTrue(v1.greaterThan(null));
+  }
+
+  @Test
+  public void testGreaterThanOrEqualTo() {
+
+    Version v1 = new Version(1, 0, 0, "");
+    Version v2 = new Version(2, 0, 0, "");
+    Version v1bis = new Version(1, 0, 0, "");
+
+    assertTrue(v2.greaterThanOrEqualTo(v1));
+    assertFalse(v1.greaterThanOrEqualTo(v2));
+    assertTrue(v1.greaterThanOrEqualTo(v1bis));
+    assertTrue(v1.greaterThanOrEqualTo(null));
+  }
+
+  @Test
   public void testGetMinimalVersion() {
 
     assertEquals(new Version(0, 0, 0, ""), Version.getMinimalVersion(Lists
