@@ -24,13 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.steps.generators;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedHashMap;
-
-import com.google.common.base.Preconditions;
+import java.util.Map;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
@@ -49,7 +49,6 @@ public final class GenomeMapperIndexer {
 
   private final SequenceReadsMapper mapper;
   private final GenomeIndexStorage storage;
-  private final String additionnalArguments;
   private final LinkedHashMap<String, String> additionalDescription;
 
   /**
@@ -64,9 +63,6 @@ public final class GenomeMapperIndexer {
       final DataFile mapperIndexDataFile) throws IOException {
 
     final DataFile precomputedIndexDataFile;
-
-    // Set indexer additional arguments
-    this.mapper.setIndexerArguments(this.additionnalArguments);
 
     if (this.storage == null) {
       precomputedIndexDataFile = null;
@@ -174,9 +170,10 @@ public final class GenomeMapperIndexer {
    */
   public GenomeMapperIndexer(final SequenceReadsMapper mapper,
       final String additionnalArguments,
-      final LinkedHashMap<String, String> additionalDescription) {
+      final Map<String, String> additionalDescription) {
 
-    Preconditions.checkNotNull(mapper, "Mapper is null");
+    checkNotNull(mapper, "Mapper is null");
+    checkNotNull(additionalDescription, "additionalDescription is null");
 
     // Set the mapper
     this.mapper = mapper;
@@ -184,11 +181,11 @@ public final class GenomeMapperIndexer {
     // Get genome Index storage path
     this.storage = checkForGenomeIndexStore();
 
-    // Get the additional arguments
-    this.additionnalArguments = additionnalArguments;
+    // Set indexer additional arguments of the indexer
+    this.mapper.setIndexerArguments(additionnalArguments);
 
-    // Get the add additional description
-    this.additionalDescription = additionalDescription;
+    // Get the additional description
+    this.additionalDescription = new LinkedHashMap<>(additionalDescription);
   }
 
 }

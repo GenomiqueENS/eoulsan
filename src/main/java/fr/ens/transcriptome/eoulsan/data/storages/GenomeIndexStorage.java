@@ -24,7 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.data.storages;
 
-import java.util.LinkedHashMap;
+import java.util.Map;
 
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
@@ -46,7 +46,7 @@ public interface GenomeIndexStorage {
    *         has not yet been computed
    */
   DataFile get(SequenceReadsMapper mapper, GenomeDescription genome,
-      LinkedHashMap<String, String> additionalDescription);
+      Map<String, String> additionalDescription);
 
   /**
    * Put the index archive in the storage.
@@ -56,6 +56,6 @@ public interface GenomeIndexStorage {
    * @param indexArchive the DataFile that contains the index
    */
   void put(SequenceReadsMapper mapper, GenomeDescription genome,
-      LinkedHashMap<String, String> additionalDescription, DataFile indexArchive);
+      Map<String, String> additionalDescription, DataFile indexArchive);
 
 }

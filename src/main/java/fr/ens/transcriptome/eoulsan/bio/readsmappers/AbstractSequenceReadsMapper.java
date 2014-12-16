@@ -160,6 +160,12 @@ public abstract class AbstractSequenceReadsMapper implements
     return this.indexerArguments;
   }
 
+  /**
+   * Get the default mapper arguments.
+   * @return the default mapper arguments
+   */
+  protected abstract String getDefaultMapperArguments();
+
   @Override
   public List<String> getListMapperArguments() {
 
@@ -745,6 +751,18 @@ public abstract class AbstractSequenceReadsMapper implements
     }
 
     return result;
+  }
+
+  //
+  // Constructor
+  //
+
+  /**
+   * Protected constructor.
+   */
+  protected AbstractSequenceReadsMapper() {
+
+    setMapperArguments(getDefaultMapperArguments());
   }
 
 }

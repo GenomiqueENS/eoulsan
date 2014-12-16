@@ -151,6 +151,12 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
+  protected String getDefaultMapperArguments() {
+
+    return DEFAULT_ARGUMENTS;
+  }
+
+  @Override
   protected List<String> getIndexerCommand(final String indexerPathname,
       final String genomePathname) {
 
@@ -313,7 +319,6 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
 
-    setMapperArguments(DEFAULT_ARGUMENTS);
     super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }
 

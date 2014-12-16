@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,6 +49,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepService;
@@ -166,6 +168,9 @@ public class TaskRunner {
                 StepService.getInstance().newService(
                     TaskRunner.this.step.getName());
 
+            // Log step parameters
+            logStepParameters();
+
             // Configure the new step instance
             getLogger().fine("Configure step instance");
             stepInstance.configure(TaskRunner.this.context.getCurrentStep()
@@ -176,6 +181,9 @@ public class TaskRunner {
             // Use the original step instance for the task
             getLogger().fine("Reuse original instance of " + stepDescLog);
             stepInstance = TaskRunner.this.step;
+
+            // Log step parameters
+            logStepParameters();
           }
 
           // Execute task
@@ -192,6 +200,25 @@ public class TaskRunner {
 
         getLogger().info("End of task #" + TaskRunner.this.context.getId());
       }
+
+      /**
+       * Log step parameters.
+       */
+      private void logStepParameters() {
+
+        final Set<Parameter> parameters =
+            context.getCurrentStep().getParameters();
+
+        if (parameters.isEmpty()) {
+          getLogger().fine("Step has no parameter");
+        } else {
+          for (Parameter p : parameters) {
+            getLogger().fine(
+                "Step parameter: " + p.getName() + "=" + p.getValue());
+          }
+        }
+      }
+
     };
 
     // Start the time watch
