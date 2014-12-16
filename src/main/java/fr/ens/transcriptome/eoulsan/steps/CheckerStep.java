@@ -52,6 +52,7 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
+import fr.ens.transcriptome.eoulsan.core.workflow.DataUtils;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.util.Version;
@@ -170,8 +171,18 @@ public class CheckerStep extends AbstractStep {
 
         for (Data data : context.getInputData(format).getListElements()) {
 
+          context.getLogger().info(
+              "Start checker "
+                  + checker.getName() + " to check: "
+                  + DataUtils.getDataFiles(data));
+
           // Check the data
           checker.check(data, checkStore);
+
+          context.getLogger().info(
+              "End of checker "
+                  + checker.getName() + " to check: "
+                  + DataUtils.getDataFiles(data));
         }
 
         count++;
