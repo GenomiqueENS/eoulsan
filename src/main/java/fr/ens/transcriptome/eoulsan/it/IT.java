@@ -42,7 +42,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -177,7 +176,7 @@ public class IT {
         }
       }
 
-    } catch (Throwable e) {
+    } catch (final Throwable e) {
       this.itResult.setException(e);
       throw new Exception(this.itResult.createReportTestngMessage());
 
@@ -280,7 +279,7 @@ public class IT {
       final boolean isApplication) throws Throwable {
 
     // Execute command line and save standard and error output in file
-    ITCommandResult cmdResult =
+    final ITCommandResult cmdResult =
         cmdExecutor
             .executeCommand(keyConf, suffixFilename, desc, isApplication);
 
@@ -304,12 +303,12 @@ public class IT {
     // Write in file
     if (!(this.environmentVariables == null || this.environmentVariables.size() == 0)) {
       // Convert to string
-      String envToString =
-          Joiner.on("\n").join(Arrays.asList(this.environmentVariables));
+      final String envToString =
+          Joiner.on("\n").join(this.environmentVariables);
 
       try {
         com.google.common.io.Files.write(envToString, envFile, Charsets.UTF_8);
-      } catch (IOException e) {
+      } catch (final IOException e) {
         // Nothing to do
       }
     }
@@ -321,21 +320,21 @@ public class IT {
    */
   private List<String> extractEnvironmentVariables() {
 
-    List<String> envp = new ArrayList<>();
+    final List<String> envp = new ArrayList<>();
 
     // Add environment properties
-    for (Map.Entry<String, String> e : System.getenv().entrySet()) {
+    for (final Map.Entry<String, String> e : System.getenv().entrySet()) {
       envp.add(e.getKey() + "=" + e.getValue());
     }
 
     // Add setting environment variables from configuration test
-    for (Object o : this.testConf.keySet()) {
-      String keyProperty = (String) o;
+    for (final Object o : this.testConf.keySet()) {
+      final String keyProperty = (String) o;
 
       // Add property if key start with prefix setenv.
       if (keyProperty.startsWith(PREFIX_ENV_VAR)) {
-        String keyEnvp = keyProperty.substring(PREFIX_ENV_VAR.length());
-        String valEnvp = this.testConf.getProperty(keyProperty);
+        final String keyEnvp = keyProperty.substring(PREFIX_ENV_VAR.length());
+        final String valEnvp = this.testConf.getProperty(keyProperty);
         envp.add(keyEnvp + "=" + valEnvp);
       }
     }
@@ -376,7 +375,7 @@ public class IT {
         version = output.trim();
       }
 
-    } catch (IOException e) {
+    } catch (final IOException e) {
     }
 
     return version;
@@ -468,7 +467,7 @@ public class IT {
     checkExistingDirectoryFile(this.inputTestDirectory, "input test directory");
 
     // Create a symbolic link for each file from input data test directory
-    for (File file : this.inputTestDirectory.listFiles()) {
+    for (final File file : this.inputTestDirectory.listFiles()) {
       // TODO validate if it should limited only file, not directory
       if (file.isFile()) {
         createSymbolicLink(file, this.outputTestDirectory);
