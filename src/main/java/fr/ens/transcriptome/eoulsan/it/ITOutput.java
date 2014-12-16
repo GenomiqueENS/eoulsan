@@ -70,6 +70,12 @@ public class ITOutput {
   private static PathMatcher ALL_PATH_MATCHER = FileSystems.getDefault()
       .getPathMatcher("glob:*");
 
+  /**
+   * Percent difference length between expected and tested file, when need to
+   * check existing.
+   */
+  private static final double PART_DIFFERENCE_LENGTH_FILE = 0.01;
+
   private final String fileToComparePatterns;
   private final String excludeToComparePatterns;
   /** Patterns to check file and compare size */
@@ -263,20 +269,23 @@ public class ITOutput {
       final ITOutputComparisonResult comparisonResult, final File fileExpected,
       final File fileTested) {
     // Compare size file
-    final long fileExpectedSize = fileExpected.length();
-    final long fileTestedSize = fileTested.length();
+    final long fileExpectedLength = fileExpected.length();
+    final long fileTestedLength = fileTested.length();
 
-    final long diffSize = fileExpectedSize - fileTestedSize;
-    final boolean isEqualsSize = diffSize < 10L;
+    final long diffLengthMax =
+        (long) (fileExpectedLength * PART_DIFFERENCE_LENGTH_FILE);
+    
+    final long diffLength = fileExpectedLength - fileTestedLength;
+    final boolean isEqualsLength = diffLength < diffLengthMax;
 
     String msg = "";
 
-    if (!isEqualsSize) {
+    if (!isEqualsLength) {
       msg =
           String.format(
-              "Fail comparison size expected: %s (%d) vs tested %s (%d)%n",
-              fileExpected.getAbsolutePath(), fileExpectedSize,
-              fileTested.getAbsolutePath(), fileTestedSize);
+              "Fail comparison length expected: %s (%d) vs tested %s (%d)%n",
+              fileExpected.getAbsolutePath(), fileExpectedLength,
+              fileTested.getAbsolutePath(), fileTestedLength);
 
       comparisonResult.setResult(StatusComparison.NOT_EQUALS, msg);
     } else {
