@@ -150,6 +150,12 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
+  protected String getDefaultMapperArguments() {
+
+    return DEFAULT_ARGUMENTS;
+  }
+
+  @Override
   protected InputStream internalMapSE(final File readsFile,
       final File archiveIndex, final GenomeDescription genomedescription)
       throws IOException {
@@ -426,7 +432,6 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
 
-    setMapperArguments(DEFAULT_ARGUMENTS);
     super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }
 

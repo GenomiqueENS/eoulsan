@@ -59,8 +59,6 @@ public abstract class AbstractBowtieReadsMapper extends
   @Override
   abstract protected String getIndexerExecutable();
 
-  abstract protected String getDefaultArguments();
-
   @Override
   public boolean isSplitsAllowed() {
     return true;
@@ -437,7 +435,6 @@ public abstract class AbstractBowtieReadsMapper extends
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
 
-    setMapperArguments(getDefaultArguments());
     super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }
 

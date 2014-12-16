@@ -89,7 +89,7 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
   }
 
   @Override
-  public String getDefaultArguments() {
+  public String getDefaultMapperArguments() {
     return DEFAULT_ARGUMENTS;
   }
 

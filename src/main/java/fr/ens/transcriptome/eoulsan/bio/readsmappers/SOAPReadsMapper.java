@@ -131,6 +131,12 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
+  protected String getDefaultMapperArguments() {
+
+    return DEFAULT_ARGUMENTS;
+  }
+
+  @Override
   protected InputStream internalMapSE(final File readsFile,
       final File archiveIndexDir, final GenomeDescription genomeDescription)
       throws IOException {
@@ -409,7 +415,6 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
 
-    setMapperArguments(DEFAULT_ARGUMENTS);
     super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }
 
