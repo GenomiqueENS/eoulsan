@@ -40,3 +40,7 @@ fr.ens.transcriptome.eoulsan.steps.MergerStep
 
 # Common step
 fr.ens.transcriptome.eoulsan.steps.ShellStep
+
+# Ohter step
+fr.ens.transcriptome.eoulsan.steps.fastqc.FastQCStep
+
