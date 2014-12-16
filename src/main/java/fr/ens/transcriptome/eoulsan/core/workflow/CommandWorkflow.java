@@ -302,7 +302,7 @@ public class CommandWorkflow extends AbstractWorkflow {
       CommandWorkflowStep newStep = null;
 
       // Check if copy is needed in the working directory
-      if (step.getType() == StepType.STANDARD_STEP
+      if ((step.getType() == StepType.STANDARD_STEP || step.getType() == StepType.GENERATOR_STEP)
           && stepProtocol != depProtocol
           && inputPort.isRequiredInWorkingDirectory()) {
         newStep =
@@ -312,7 +312,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
       // Check if (un)compression is needed
       if (newStep == null
-          && step.getType() == StepType.STANDARD_STEP
+          && (step.getType() == StepType.STANDARD_STEP || step.getType() == StepType.GENERATOR_STEP)
           && !inputPort.getCompressionsAccepted()
               .contains(depOutputCompression)) {
         newStep =
@@ -323,7 +323,7 @@ public class CommandWorkflow extends AbstractWorkflow {
       // If the dependency if design step and step does not allow all the
       // compression types as input, (un)compress data
       if (newStep == null
-          && step.getType() == StepType.STANDARD_STEP
+          && (step.getType() == StepType.STANDARD_STEP || step.getType() == StepType.GENERATOR_STEP)
           && dependencyStep == this.getDesignStep()
           && !EnumSet.allOf(CompressionType.class).containsAll(
               stepCompressionsAllowed)) {
