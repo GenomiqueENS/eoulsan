@@ -94,10 +94,12 @@ public abstract class AbstractFastQCStep extends AbstractStep {
         this.inputFormatParameter = p.getValue();
 
         if (this.inputFormatParameter.trim()
-            .toUpperCase(Globals.DEFAULT_LOCALE).equals("sam")) {
+            .toLowerCase(Globals.DEFAULT_LOCALE).equals("sam")) {
 
           this.inputFormat = DataFormats.MAPPER_RESULTS_SAM;
+
         }
+
         break;
 
       case FASTQC_KMER_SIZE_KEY:
@@ -121,19 +123,19 @@ public abstract class AbstractFastQCStep extends AbstractStep {
         break;
 
       case FASTQC_EXPGROUP_KEY:
-        
+
         // Set fastQC expgroup, default FastQC value false
         System.setProperty("fastqc.expgroup", p.getBooleanValue() + "");
         break;
 
       case FASTQC_CASAVA_KEY:
-        
+
         // Set fastQC format fastq, default FastQC value false
         System.setProperty("fastqc.casava", p.getBooleanValue() + "");
         break;
 
       case FASTQC_NOFILTER_KEY:
-        
+
         // Default FastQC value true
         // Set fastQC nofilter default false, if casava=true, filter fastq file
         System.setProperty("fastqc.nofilter", p.getBooleanValue() + "");
