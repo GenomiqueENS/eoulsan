@@ -20,6 +20,17 @@ public abstract class AbstractFastQCStep extends AbstractStep {
   private static final String STEP_NAME = "fastqc";
   private static final String INPUT_FORMAT_KEY = "input.format";
 
+  /** Collector FastQC kmer size */
+  public static final String FASTQC_KMER_SIZE_KEY = "fastqc.kmer.size";
+  /** Collector FastQC nogroup */
+  public static final String FASTQC_NOGROUP_KEY = "fastqc.nogroup";
+  /** Use exponential base groups in graph */
+  public static final String FASTQC_EXPGROUP_KEY = "fastqc.expgroup";
+  /** Format fastq type casava/Illumina */
+  public static final String FASTQC_CASAVA_KEY = "fastqc.casava";
+  /** Option for filter fastq file if casava=true for all modules */
+  public static final String FASTQC_NOFILTER_KEY = "fastqc.nofilter";
+
   // Default value
   private String inputFormatParameter = "fastq";
   private DataFormat inputFormat = DataFormats.READS_FASTQ;
@@ -50,8 +61,6 @@ public abstract class AbstractFastQCStep extends AbstractStep {
   @Override
   public InputPorts getInputPorts() {
 
-    // TODO
-    System.out.println("define input ports");
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort("fastq", DataFormats.READS_FASTQ);
 
@@ -64,8 +73,7 @@ public abstract class AbstractFastQCStep extends AbstractStep {
 
   @Override
   public OutputPorts getOutputPorts() {
-    // TODO
-    System.out.println("define input ports");
+
     return singleOutputPort(DataFormats.REPORT_HTML);
   }
 
@@ -77,12 +85,7 @@ public abstract class AbstractFastQCStep extends AbstractStep {
     System.setProperty("java.awt.headless", "true");
     System.setProperty("fastqc.unzip", "true");
 
-    // TODO
-    System.out.println("start configure with "
-        + stepParameters.size() + " parameters define.");
     for (final Parameter p : stepParameters) {
-
-      System.out.println("parameter " + p.getName() + "-" + p.getValue());
 
       switch (p.getName()) {
 
@@ -94,19 +97,51 @@ public abstract class AbstractFastQCStep extends AbstractStep {
             .toUpperCase(Globals.DEFAULT_LOCALE).equals("sam")) {
 
           this.inputFormat = DataFormats.MAPPER_RESULTS_SAM;
+        }
+        break;
 
+      case FASTQC_KMER_SIZE_KEY:
+
+        // Convert in int
+        if (p.getIntValue() < 1) {
+          throw new EoulsanException(
+              "Configuration FastQC step: invalid value for parameter kmer size "
+                  + p.getValue());
         }
 
+        // Kmer Size, default FastQC value 7
+        System.setProperty("fastqc.kmer_size", p.getValue());
+
+        break;
+
+      case FASTQC_NOGROUP_KEY:
+
+        // Set fastQC nogroup, default FastQC value false
+        System.setProperty("fastqc.nogroup", p.getBooleanValue() + "");
+        break;
+
+      case FASTQC_EXPGROUP_KEY:
+        
+        // Set fastQC expgroup, default FastQC value false
+        System.setProperty("fastqc.expgroup", p.getBooleanValue() + "");
+        break;
+
+      case FASTQC_CASAVA_KEY:
+        
+        // Set fastQC format fastq, default FastQC value false
+        System.setProperty("fastqc.casava", p.getBooleanValue() + "");
+        break;
+
+      case FASTQC_NOFILTER_KEY:
+        
+        // Default FastQC value true
+        // Set fastQC nofilter default false, if casava=true, filter fastq file
+        System.setProperty("fastqc.nofilter", p.getBooleanValue() + "");
         break;
 
       default:
       }
     }
-
-    // TODO
-    System.out.println("End configure, input param "
-        + this.inputFormatParameter + " input format "
-        + getInputFormat().getDescription());
 
   }
 

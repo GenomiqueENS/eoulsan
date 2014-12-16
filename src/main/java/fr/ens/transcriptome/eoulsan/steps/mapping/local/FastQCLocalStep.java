@@ -225,15 +225,11 @@ public class FastQCLocalStep extends AbstractFastQCStep {
 
     // Remove zip file
     if (!new File(outputDir, basefilename + ".zip").delete()) {
-      // TODO
-      System.out.println("FAIL to delete "
-          + new File(outputDir, basefilename + ".zip").getAbsolutePath());
     }
 
+    // Remove directory file
     final File zipDir = new File(outputDir, basefilename);
     if (!FileUtils.recursiveDelete(zipDir)) {
-      // TODO
-      System.out.println("FAIL to delete " + zipDir.getAbsolutePath());
     }
   }
 
