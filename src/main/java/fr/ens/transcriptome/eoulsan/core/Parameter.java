@@ -67,6 +67,24 @@ public class Parameter implements Serializable {
   }
 
   /**
+   * Get the value of the parameter as a lower case String value
+   * @return the value as a String
+   */
+  public String getLowerStringValue() {
+
+    return this.value.toLowerCase();
+  }
+
+  /**
+   * Get the value of the parameter as a upper case String value
+   * @return the value as a String
+   */
+  public String getUpperStringValue() {
+
+    return this.value.toUpperCase();
+  }
+
+  /**
    * Get the value of the parameter as a integer value
    * @return the value as an integer
    */
