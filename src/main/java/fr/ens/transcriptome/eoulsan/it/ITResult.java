@@ -40,6 +40,7 @@ import java.util.Set;
 
 import com.google.common.base.Joiner;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
@@ -52,7 +53,6 @@ public class ITResult {
   private final IT it;
 
   private Throwable exception;
-  private static final StringBuilder exceptionMessage = new StringBuilder();
   private final List<ITCommandResult> commandsResults;
   private Set<ITOutputComparisonResult> comparisonsResults;
 
@@ -211,25 +211,21 @@ public class ITResult {
     // Check comparison output it result
     for (final ITOutputComparisonResult ocr : this.comparisonsResults) {
       if (!ocr.getStatutComparison().isSuccess()) {
-        setExceptionMessage(ocr.getStatutComparison().getExceptionMessage()
-            + "\tfile: " + ocr.getFilename());
+        final StringBuilder msg = new StringBuilder();
+
+        if (getException() != null) {
+          msg.append(getException().getMessage());
+          msg.append("\n");
+        }
+        
+        // Compile exception message
+        msg.append("\t");
+        msg.append(ocr.getStatutComparison().getExceptionMessage());
+        msg.append("\tfile: " + ocr.getFilename());
+        
+        setException(new EoulsanException(msg.toString()));
       }
     }
-  }
-
-  private static void setExceptionMessage(final String msg) {
-
-    if (msg != null && !msg.isEmpty()) {
-      ITResult.exceptionMessage.append("\n");
-      ITResult.exceptionMessage.append(msg);
-    }
-  }
-
-  private static String getExceptionMessage() {
-
-    return "\nException message: \n\t"
-        + ITResult.exceptionMessage.toString() + "\n";
-
   }
 
   /**
@@ -249,8 +245,8 @@ public class ITResult {
     msgException.append("\n=== Execution Test Error ===");
     msgException.append("\nFrom class: \n\t"
         + exception.getClass().getName() + "");
-
-    msgException.append(getExceptionMessage());
+    msgException.append("\nException message: \n\t"
+        + exception.getMessage() + "\n");
 
     if (ITSuite.getInstance().isDebugEnabled() && withStackTrace) {
       // Add the stack trace
