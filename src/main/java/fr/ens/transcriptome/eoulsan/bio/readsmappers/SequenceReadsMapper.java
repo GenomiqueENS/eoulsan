@@ -54,6 +54,12 @@ public interface SequenceReadsMapper {
   String getMapperVersion();
 
   /**
+   * Get mapper flavor.
+   * @return a string with the flavor of the mapper
+   */
+  String getMapperFlavor();
+
+  /**
    * Get the mapper version to use.
    * @return a string with the mapper version to use
    */

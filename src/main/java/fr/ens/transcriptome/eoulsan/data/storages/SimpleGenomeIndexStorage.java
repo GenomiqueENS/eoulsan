@@ -189,7 +189,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     map.put("mapper.name", nullToEmpty(mapper.getMapperName()));
     map.put("mapper.version", nullToEmpty(mapper.getMapperVersionToUse())
         .trim());
-    map.put("mapper.flavor", nullToEmpty(mapper.getMapperFlavorToUse()).trim());
+    map.put("mapper.flavor", nullToEmpty(mapper.getMapperFlavor()).trim());
     map.put("genome.md5sum", nullToEmpty(genome.getMD5Sum()).trim());
 
     // Add sorted additional description

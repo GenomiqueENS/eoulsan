@@ -49,9 +49,6 @@ public abstract class AbstractBowtieReadsMapper extends
   protected static final String SYNC = AbstractBowtieReadsMapper.class
       .getName();
 
-  private static final String LARGE_INDEX_FLAVOR = "large-index";
-  private static final String STANDARD_INDEX_FLAVOR = "standard";
-
   abstract protected String getExtensionIndexFile();
 
   abstract protected String[] getMapperExecutables();
@@ -75,8 +72,12 @@ public abstract class AbstractBowtieReadsMapper extends
 
     switch (flavor.trim().toLowerCase()) {
     case "":
-    case STANDARD_INDEX_FLAVOR:
+    case SHORT_INDEX_FLAVOR:
+      setFlavor(SHORT_INDEX_FLAVOR);
+      return true;
+
     case LARGE_INDEX_FLAVOR:
+      setFlavor(LARGE_INDEX_FLAVOR);
       return true;
 
     default:
