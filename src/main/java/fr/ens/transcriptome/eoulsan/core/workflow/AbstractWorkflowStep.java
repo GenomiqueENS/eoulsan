@@ -33,6 +33,7 @@ import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.noOutputPort;
 import java.util.Collections;
 import java.util.Set;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -77,7 +78,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
   private final String stepName;
   private final EoulsanMode mode;
-  private final boolean skip;
+  private boolean skip;
   private final boolean terminalStep;
   private final boolean copyResultsToOutput;
   private final boolean createLogFiles;
@@ -274,6 +275,18 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   public void setState(final StepState state) {
 
     this.observer.setState(state);
+  }
+
+  /**
+   * Set the skip state of the step.
+   * @param skipped the skipped state
+   */
+  void setSkipped(final boolean skipped) {
+
+    checkArgument(this.type == StepType.GENERATOR_STEP,
+        "The step is not a generator and cannot be skipped: " + getId());
+
+    this.skip = skipped;
   }
 
   protected void registerInputAndOutputPorts(final Step step) {
