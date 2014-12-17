@@ -83,18 +83,18 @@ public class FastQCStep extends AbstractStep {
   private static final String STEP_NAME = "fastqc";
 
   /** Input format key in step parameters. */
-  private static final String INPUT_FORMAT_KEY = "input.format";
+  private static final String INPUT_FORMAT_PARAMETER_NAME = "input.format";
 
   /** Collector FastQC kmer size */
-  public static final String FASTQC_KMER_SIZE_KEY = "fastqc.kmer.size";
+  public static final String FASTQC_KMER_SIZE_PARAMETER_NAME = "fastqc.kmer.size";
   /** Collector FastQC nogroup */
-  public static final String FASTQC_NOGROUP_KEY = "fastqc.nogroup";
+  public static final String FASTQC_NOGROUP_PARAMETER_NAME = "fastqc.nogroup";
   /** Use exponential base groups in graph */
-  public static final String FASTQC_EXPGROUP_KEY = "fastqc.expgroup";
+  public static final String FASTQC_EXPGROUP_PARAMETER_NAME = "fastqc.expgroup";
   /** Format fastq type casava/Illumina */
-  public static final String FASTQC_CASAVA_KEY = "fastqc.casava";
+  public static final String FASTQC_CASAVA_PARAMETER_NAME = "fastqc.casava";
   /** Option for filter fastq file if casava=true for all modules */
-  public static final String FASTQC_NOFILTER_KEY = "fastqc.nofilter";
+  public static final String FASTQC_NOFILTER_PARAMETER_NAME = "fastqc.nofilter";
 
   /** The input format parameter. */
   private String inputFormatParameter = "fastq";
@@ -157,7 +157,7 @@ public class FastQCStep extends AbstractStep {
 
       switch (p.getName()) {
 
-      case INPUT_FORMAT_KEY:
+      case INPUT_FORMAT_PARAMETER_NAME:
         // Set inputPort fastq/sam from parameters
         this.inputFormatParameter = p.getValue();
 
@@ -170,7 +170,7 @@ public class FastQCStep extends AbstractStep {
 
         break;
 
-      case FASTQC_KMER_SIZE_KEY:
+      case FASTQC_KMER_SIZE_PARAMETER_NAME:
 
         // Convert in int
         if (p.getIntValue() < 1) {
@@ -184,25 +184,25 @@ public class FastQCStep extends AbstractStep {
 
         break;
 
-      case FASTQC_NOGROUP_KEY:
+      case FASTQC_NOGROUP_PARAMETER_NAME:
 
         // Set fastQC nogroup, default FastQC value false
         System.setProperty("fastqc.nogroup", p.getBooleanValue() + "");
         break;
 
-      case FASTQC_EXPGROUP_KEY:
+      case FASTQC_EXPGROUP_PARAMETER_NAME:
 
         // Set fastQC expgroup, default FastQC value false
         System.setProperty("fastqc.expgroup", p.getBooleanValue() + "");
         break;
 
-      case FASTQC_CASAVA_KEY:
+      case FASTQC_CASAVA_PARAMETER_NAME:
 
         // Set fastQC format fastq, default FastQC value false
         System.setProperty("fastqc.casava", p.getBooleanValue() + "");
         break;
 
-      case FASTQC_NOFILTER_KEY:
+      case FASTQC_NOFILTER_PARAMETER_NAME:
 
         // Default FastQC value true
         // Set fastQC nofilter default false, if casava=true, filter fastq file
