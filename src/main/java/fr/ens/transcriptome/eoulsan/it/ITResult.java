@@ -245,7 +245,7 @@ public class ITResult {
     msgException.append("\n=== Execution Test Error ===");
     msgException.append("\nFrom class: \n\t"
         + exception.getClass().getName() + "");
-    msgException.append("\nException message: \n\t"
+    msgException.append("\nException message: \n"
         + exception.getMessage() + "\n");
 
     if (ITSuite.getInstance().isDebugEnabled() && withStackTrace) {
