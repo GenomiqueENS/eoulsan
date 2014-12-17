@@ -239,6 +239,8 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
 
     try {
 
+      status.setMessage(this.mapper.getMapperName() + " index creation");
+
       // Create the index
       execute(this.mapper, context, null, null);
 
@@ -247,7 +249,6 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
       return status.createStepResult(e);
     }
 
-    status.setMessage(this.mapper.getMapperName() + " index creation");
     return status.createStepResult();
   }
 }

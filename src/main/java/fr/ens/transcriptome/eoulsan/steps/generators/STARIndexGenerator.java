@@ -281,6 +281,8 @@ public class STARIndexGenerator extends AbstractStep {
             this.genomeChrBinNbits.toString());
       }
 
+      status.setMessage(this.mapper.getMapperName() + " index creation");
+
       // Create the index
       GenomeMapperIndexGeneratorStep.execute(this.mapper, context,
           additionalArguments.toString(), additionalDescription);
@@ -290,7 +292,6 @@ public class STARIndexGenerator extends AbstractStep {
       return status.createStepResult(e);
     }
 
-    status.setMessage(this.mapper.getMapperName() + " index creation");
     return status.createStepResult();
   }
 
