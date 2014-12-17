@@ -64,6 +64,11 @@ public final class GenomeMapperIndexer {
 
     final DataFile precomputedIndexDataFile;
 
+    getLogger().info("Mapper name: " + this.mapper.getMapperName());
+    getLogger().info("Mapper version: " + this.mapper.getMapperVersion());
+    getLogger().info("Mapper flavor: " + this.mapper.getMapperFlavor());
+    getLogger().info("Indexer arguments: " + this.mapper.getIndexerArguments());
+
     if (this.storage == null) {
       precomputedIndexDataFile = null;
     } else {
