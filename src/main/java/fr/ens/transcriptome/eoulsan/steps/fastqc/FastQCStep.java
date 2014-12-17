@@ -72,7 +72,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
- * This class define a instance of FastQCStep.
+ * This class define a step that compute QC report using FastQC.
  * @author Sandrine Perrin
  * @since 2.0
  */
@@ -96,9 +96,6 @@ public class FastQCStep extends AbstractStep {
   /** Option for filter fastq file if casava=true for all modules */
   public static final String FASTQC_NOFILTER_KEY = "fastqc.nofilter";
 
-  /** The input format parameter. */
-  private String inputFormatParameter = "fastq";
-
   /** The input format per default */
   private DataFormat inputFormat = DataFormats.READS_FASTQ;
 
@@ -114,7 +111,7 @@ public class FastQCStep extends AbstractStep {
   @Override
   public String getDescription() {
 
-    return "This step fastqc launch FastQC on FASTQ or SAM files, generate a html report.";
+    return "This step launch FastQC on FASTQ or SAM files and generate an html report";
   }
 
   @Override
@@ -128,11 +125,10 @@ public class FastQCStep extends AbstractStep {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
 
-    if (this.inputFormatParameter.equals("sam")) {
-      builder.addPort("sam", DataFormats.MAPPER_RESULTS_SAM);
-
-    } else {
+    if (this.inputFormat == DataFormats.READS_FASTQ) {
       builder.addPort("fastq", DataFormats.READS_FASTQ);
+    } else {
+      builder.addPort("sam", DataFormats.MAPPER_RESULTS_SAM);
     }
 
     return builder.create();
@@ -158,16 +154,11 @@ public class FastQCStep extends AbstractStep {
       switch (p.getName()) {
 
       case INPUT_FORMAT_KEY:
+
         // Set inputPort fastq/sam from parameters
-        this.inputFormatParameter = p.getValue();
-
-        if (this.inputFormatParameter.trim()
-            .toLowerCase(Globals.DEFAULT_LOCALE).equals("sam")) {
-
+        if ("sam".equals(p.getLowerStringValue())) {
           this.inputFormat = DataFormats.MAPPER_RESULTS_SAM;
-
         }
-
         break;
 
       case FASTQC_KMER_SIZE_KEY:
@@ -175,13 +166,12 @@ public class FastQCStep extends AbstractStep {
         // Convert in int
         if (p.getIntValue() < 1) {
           throw new EoulsanException(
-              "Configuration FastQC step: invalid value for parameter kmer size "
+              "Invalid value for kmer size parameter in FastQC step: "
                   + p.getValue());
         }
 
         // Kmer Size, default FastQC value 7
         System.setProperty("fastqc.kmer_size", p.getValue());
-
         break;
 
       case FASTQC_NOGROUP_KEY:
