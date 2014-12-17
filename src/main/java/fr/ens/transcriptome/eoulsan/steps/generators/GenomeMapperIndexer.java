@@ -79,13 +79,23 @@ public final class GenomeMapperIndexer {
 
     // If no index storage or if the index does not already exists compute it
     if (precomputedIndexDataFile == null) {
-      getLogger().info("Genome index not found, must compute it.");
+
+      getLogger().info("Mapper index not found, must compute it");
+
+      // Compute mapper index
       computeIndex(genomeDataFile, mapperIndexDataFile);
+
+      // Save mapper index in storage
       if (this.storage != null) {
         this.storage.put(this.mapper, genomeDescription,
             this.additionalDescription, mapperIndexDataFile);
       }
     } else {
+
+      getLogger().info(
+          "Mapper index found, no need to recompute it (mapper index file: "
+              + precomputedIndexDataFile + ")");
+
       // Else download it
       downloadPrecomputedIndex(precomputedIndexDataFile, mapperIndexDataFile);
     }

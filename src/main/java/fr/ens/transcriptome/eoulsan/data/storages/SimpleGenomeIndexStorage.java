@@ -118,6 +118,14 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     checkNotNull(additionalDescription, "additionalDescription is null");
     checkNotNull(indexArchive, "IndexArchive is null");
 
+    // Update the index to avoid to lost entries when several instances of
+    // Eoulsan are running
+    try {
+      load();
+    } catch (IOException e1) {
+      getLogger().warning("Unable to reload the index mapper storage");
+    }
+
     if (!indexArchive.exists()) {
       return;
     }
@@ -243,6 +251,9 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
       save();
       return;
     }
+
+    // Clear the entries (useful when reloading the index)
+    this.entries.clear();
 
     final BufferedReader br =
         new BufferedReader(new InputStreamReader(indexFile.open(),
