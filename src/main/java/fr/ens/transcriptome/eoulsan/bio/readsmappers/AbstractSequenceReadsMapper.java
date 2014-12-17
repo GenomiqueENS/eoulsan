@@ -62,13 +62,18 @@ public abstract class AbstractSequenceReadsMapper implements
   private static final String SYNC = AbstractSequenceReadsMapper.class
       .getName();
 
+  static final String SHORT_INDEX_FLAVOR = "standard";
+  static final String LARGE_INDEX_FLAVOR = "large-index";
+  static final String DEFAULT_FLAVOR = SHORT_INDEX_FLAVOR;
+
   private File archiveIndexFile;
   private File archiveIndexDir;
 
   private FastqFormat fastqFormat = FastqFormat.FASTQ_SANGER;
 
   private String mapperVersionToUse = getDefaultPackageVersion();
-  private String flavor;
+  private String flavorToUse = DEFAULT_FLAVOR;
+  private String flavor = DEFAULT_FLAVOR;
   private int threadsNumber;
   private String mapperArguments = null;
   private String indexerArguments = null;
@@ -129,13 +134,20 @@ public abstract class AbstractSequenceReadsMapper implements
 
   @Override
   public String getMapperFlavorToUse() {
-    return this.flavor;
+    return this.flavorToUse;
   }
 
   @Override
   public String getMapperVersionToUse() {
 
     return this.mapperVersionToUse;
+  }
+
+  @Override
+  public String getMapperFlavor() {
+
+    checkIfFlavorExists();
+    return this.flavor;
   }
 
   //
@@ -213,7 +225,7 @@ public abstract class AbstractSequenceReadsMapper implements
 
     checkState(!this.binariesReady, "Mapper has been initialized");
 
-    this.flavor = flavor;
+    this.flavorToUse = flavor;
   }
 
   @Override
@@ -275,6 +287,17 @@ public abstract class AbstractSequenceReadsMapper implements
     }
 
     this.fastqFormat = format;
+  }
+
+  /**
+   * Set the "real" flavor of the mapper.
+   * @param flavor the flavor to set
+   */
+  protected void setFlavor(final String flavor) {
+
+    if (flavor != null) {
+      this.flavor = flavor;
+    }
   }
 
   //
@@ -617,12 +640,13 @@ public abstract class AbstractSequenceReadsMapper implements
     if (!checkIfBinaryExists(getIndexerExecutables())) {
       throw new IOException("Unable to find mapper "
           + getMapperName() + " version " + this.mapperVersionToUse
-          + " (flavor: " + this.flavor == null ? "" : this.flavor + ")");
+          + " (flavor: " + this.flavorToUse == null ? "" : this.flavorToUse
+          + ")");
     }
 
     if (!checkIfFlavorExists()) {
       throw new IOException("Unable to find mapper "
-          + getMapperName() + " flavor " + this.flavor + " for version "
+          + getMapperName() + " flavor " + this.flavorToUse + " for version "
           + this.mapperVersionToUse);
     }
 

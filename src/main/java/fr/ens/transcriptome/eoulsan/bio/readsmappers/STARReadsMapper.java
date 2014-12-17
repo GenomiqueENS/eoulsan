@@ -54,9 +54,6 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   private static final String MAPPER_STANDARD_EXECUTABLE = "STARstatic";
   private static final String MAPPER_LARGE_INDEX_EXECUTABLE = "STARlong";
 
-  private static final String LARGE_INDEX_FLAVOR = "large-index";
-  private static final String STANDARD_INDEX_FLAVOR = "standard";
-
   public static final String DEFAULT_ARGUMENTS = "";
 
   private static final String SYNC = STARReadsMapper.class.getName();
@@ -171,8 +168,12 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
 
     switch (flavor.trim().toLowerCase()) {
     case "":
-    case STANDARD_INDEX_FLAVOR:
+    case SHORT_INDEX_FLAVOR:
+      setFlavor(SHORT_INDEX_FLAVOR);
+      return true;
+
     case LARGE_INDEX_FLAVOR:
+      setFlavor(LARGE_INDEX_FLAVOR);
       return true;
 
     default:
