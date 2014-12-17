@@ -255,43 +255,42 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     // Clear the entries (useful when reloading the index)
     this.entries.clear();
 
-    final BufferedReader br =
+    try (final BufferedReader br =
         new BufferedReader(new InputStreamReader(indexFile.open(),
-            Globals.DEFAULT_CHARSET));
+            Globals.DEFAULT_CHARSET))) {
 
-    final Pattern pattern = Pattern.compile("\t");
-    String line = null;
+      final Pattern pattern = Pattern.compile("\t");
+      String line = null;
 
-    while ((line = br.readLine()) != null) {
+      while ((line = br.readLine()) != null) {
 
-      final String trimmedLine = line.trim();
-      if ("".equals(trimmedLine) || trimmedLine.startsWith("#")) {
-        continue;
+        final String trimmedLine = line.trim();
+        if ("".equals(trimmedLine) || trimmedLine.startsWith("#")) {
+          continue;
+        }
+
+        final List<String> fields = Arrays.asList(pattern.split(trimmedLine));
+
+        if (fields.size() < 6 || fields.size() > 7) {
+          continue;
+        }
+
+        final IndexEntry e = new IndexEntry();
+        e.genomeName = fields.get(0);
+        e.genomeMD5 = fields.get(1);
+        e.mapperName = fields.get(4);
+        e.file = new DataFile(this.dir, fields.get(5));
+
+        if (e.file.exists()) {
+          this.entries.put(e.getKey(), e);
+        }
+
+        if (fields.size() == 7) {
+          e.description = fields.get(6);
+        }
+
       }
-
-      final List<String> fields = Arrays.asList(pattern.split(trimmedLine));
-
-      if (fields.size() < 6 || fields.size() > 7) {
-        continue;
-      }
-
-      final IndexEntry e = new IndexEntry();
-      e.genomeName = fields.get(0);
-      e.genomeMD5 = fields.get(1);
-      e.mapperName = fields.get(4);
-      e.file = new DataFile(this.dir, fields.get(5));
-
-      if (e.file.exists()) {
-        this.entries.put(e.getKey(), e);
-      }
-
-      if (fields.size() == 7) {
-        e.description = fields.get(6);
-      }
-
     }
-
-    br.close();
   }
 
   /**
@@ -308,37 +307,36 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     final DataFile indexFile = new DataFile(this.dir, INDEX_FILENAME);
 
     // Create an empty index file
-    final BufferedWriter writer =
+    try (final BufferedWriter writer =
         new BufferedWriter(new OutputStreamWriter(indexFile.create(),
-            Globals.DEFAULT_CHARSET));
-    writer
-        .write("#Genome\tChecksum\tGenomeSequences\tGenomeLength\tMapper\tIndexFile\tDescription\n");
+            Globals.DEFAULT_CHARSET))) {
+      writer
+          .write("#Genome\tChecksum\tGenomeSequences\tGenomeLength\tMapper\tIndexFile\tDescription\n");
 
-    for (Map.Entry<String, IndexEntry> e : this.entries.entrySet()) {
+      for (Map.Entry<String, IndexEntry> e : this.entries.entrySet()) {
 
-      IndexEntry ie = e.getValue();
+        IndexEntry ie = e.getValue();
 
-      writer.append(ie.genomeName == null ? "???" : ie.genomeName);
-      writer.append("\t");
-      writer.append(ie.genomeMD5);
-      writer.append("\t");
-      writer.append(Integer.toString(ie.sequences));
-      writer.append("\t");
-      writer.append(Long.toString(ie.length));
-      writer.append("\t");
-      writer.append(ie.mapperName);
-      writer.append("\t");
-      writer.append(ie.file.getName());
-
-      if (ie.description != null) {
+        writer.append(ie.genomeName == null ? "???" : ie.genomeName);
         writer.append("\t");
-        writer.append(ie.description);
+        writer.append(ie.genomeMD5);
+        writer.append("\t");
+        writer.append(Integer.toString(ie.sequences));
+        writer.append("\t");
+        writer.append(Long.toString(ie.length));
+        writer.append("\t");
+        writer.append(ie.mapperName);
+        writer.append("\t");
+        writer.append(ie.file.getName());
+
+        if (ie.description != null) {
+          writer.append("\t");
+          writer.append(ie.description);
+        }
+
+        writer.append("\n");
       }
-
-      writer.append("\n");
     }
-
-    writer.close();
   }
 
   //
