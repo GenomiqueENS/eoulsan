@@ -377,13 +377,50 @@ public class ITFactory {
       throws IOException, EoulsanException {
 
     final Properties rawProps = new Properties();
-    final Properties props = new Properties();
+    final Properties props;
 
     checkExistingStandardFile(configurationFile, "test configuration file");
 
     // Load configuration file
     rawProps.load(newReader(configurationFile,
         Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
+
+    props = evaluateProperties(rawProps);
+
+    // Check include
+    final String includeOption = props.getProperty(INCLUDE_CONF_KEY);
+
+    if (includeOption != null) {
+      // Check configuration file
+      final File otherConfigurationFile = new File(includeOption);
+
+      checkExistingStandardFile(otherConfigurationFile,
+          "configuration file doesn't exist");
+
+      // Load configuration in global configuration
+      final Properties rawNewProps = new Properties();
+      rawNewProps.load(newReader(otherConfigurationFile,
+          Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
+
+      final Properties newProps = evaluateProperties(rawNewProps);
+
+      for (final String propertyName : newProps.stringPropertyNames()) {
+        props.put(propertyName, newProps.getProperty(propertyName));
+      }
+    }
+
+    return props;
+  }
+
+  /**
+   * Evaluate properties.
+   * @param rawProps the raw props
+   * @return the properties
+   * @throws EoulsanException the Eoulsan exception
+   */
+  private static Properties evaluateProperties(final Properties rawProps)
+      throws EoulsanException {
+    final Properties props = new Properties();
 
     // Extract environment variable
     for (final String propertyName : rawProps.stringPropertyNames()) {
@@ -400,30 +437,6 @@ public class ITFactory {
 
       props.setProperty(propertyName, propertyValue);
 
-    }
-
-    // Check include
-    final String includeOption = props.getProperty(INCLUDE_CONF_KEY);
-
-    if (includeOption != null) {
-      // Check configuration file
-      final File otherConfigurationFile = new File(includeOption);
-
-      checkExistingStandardFile(otherConfigurationFile,
-          "configuration file doesn't exist");
-
-      // Load configuration in global configuration
-      final Properties newProps = new Properties();
-      newProps.load(newReader(otherConfigurationFile,
-          Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
-
-      for (final String propertyName : newProps.stringPropertyNames()) {
-
-        final String propertyValue =
-            evaluateExpressions(newProps.getProperty(propertyName), true);
-        props.setProperty(propertyName, propertyValue);
-
-      }
     }
 
     return props;
@@ -564,7 +577,8 @@ public class ITFactory {
    */
   private static File getApplicationPath() {
 
-    final File dir = getFileFromSystemProperty(IT_APPLICATION_PATH_KEY_SYSTEM_KEY);
+    final File dir =
+        getFileFromSystemProperty(IT_APPLICATION_PATH_KEY_SYSTEM_KEY);
 
     if (dir != null) {
       return dir;
@@ -627,7 +641,8 @@ public class ITFactory {
   public ITFactory() throws EoulsanException, IOException {
 
     // Get configuration file path
-    final File configurationFile = getFileFromSystemProperty(IT_CONF_PATH_SYSTEM_KEY);
+    final File configurationFile =
+        getFileFromSystemProperty(IT_CONF_PATH_SYSTEM_KEY);
 
     if (configurationFile != null) {
 
