@@ -46,6 +46,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.io.comparators.BAMComparator;
 import fr.ens.transcriptome.eoulsan.io.comparators.BinaryComparator;
 import fr.ens.transcriptome.eoulsan.io.comparators.Comparator;
 import fr.ens.transcriptome.eoulsan.io.comparators.FastqComparator;
@@ -274,7 +275,7 @@ public class ITOutput {
 
     final long diffLengthMax =
         (long) (fileExpectedLength * PART_DIFFERENCE_LENGTH_FILE);
-    
+
     final long diffLength = fileExpectedLength - fileTestedLength;
     final boolean isEqualsLength = diffLength < diffLengthMax;
 
@@ -602,6 +603,8 @@ public class ITOutput {
       this.comparators.add(new FastqComparator(USE_SERIALIZATION_FILE));
       this.comparators
           .add(new SAMComparator(USE_SERIALIZATION_FILE, "PG", "HD"));
+      this.comparators
+          .add(new BAMComparator(USE_SERIALIZATION_FILE, "PG", "HD"));
       this.comparators.add(new TextComparator(USE_SERIALIZATION_FILE));
       this.comparators.add(new LogComparator());
 
