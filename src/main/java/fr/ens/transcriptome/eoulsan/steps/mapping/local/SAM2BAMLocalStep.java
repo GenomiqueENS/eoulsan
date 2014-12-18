@@ -65,7 +65,7 @@ public class SAM2BAMLocalStep extends AbstractSAM2BAMStep {
 
       return status.createStepResult();
 
-    } catch (IOException e) {
+    } catch (final IOException e) {
 
       return status.createStepResult(e);
     }
@@ -106,10 +106,7 @@ public class SAM2BAMLocalStep extends AbstractSAM2BAMStep {
             .makeBAMWriter(samReader.getFileHeader(), false, bamFile,
                 compressionLevel);
 
-    for (SAMRecord samRecord : samReader) {
-      samRecord.setReadName("");
-      samRecord.setReadString("");
-      samRecord.setBaseQualityString("");
+    for (final SAMRecord samRecord : samReader) {
       samWriter.addAlignment(samRecord);
       reporter.incrCounter(COUNTER_GROUP, "sorted records", 1);
     }
