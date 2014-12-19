@@ -1,0 +1,8 @@
+<dataformat>
+	<name>fastqc_report_html</name>
+	<description>FastQC report in html format</description>
+	<prefix>fastqcreport</prefix>
+	<extensions>
+		<extension default="true">.html</extension>
+	</extensions>
+</dataformat>

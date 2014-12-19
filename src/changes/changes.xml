@@ -654,7 +654,7 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="fix">
-                Fix small issues in the workflow engine (step execution order and when adding of uncompression steps were required).
+                Fix small issues in the workflow engine (step execution order, add an uncompression step when required, skip generators steps when required by only skipped steps).
             </action>
 
            <action dev="jourdren" type="fix">

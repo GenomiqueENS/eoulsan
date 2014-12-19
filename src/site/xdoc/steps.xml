@@ -43,6 +43,7 @@
 		<tr><th>Phase/Module</th><th>Local Mode</th><th>Distributed mode</th><th>Comment</th></tr>
 		<tr><td><a href="step-createmapperindex.html">Create mapper index</a></td><td>Yes</td><td>Yes</td><td>This step is automatically called when need</td></tr>
 		<tr><td><a href="step-createstarmapperindex.html">Create STAR mapper index</a></td><td>Yes</td><td>Yes</td><td></td></tr>
+		<tr><td><a href="step-fastqc.html">FastQC</a></td><td>Yes</td><td>Yes</td><td></td></tr>
 		<tr><td><a href="step-filterreads.html">Filter reads</a></td><td>Yes</td><td>Yes</td><td></td></tr>
 		<tr><td><a href="step-mapreads.html">Map reads</a></td><td>Yes</td><td>Yes</td><td></td></tr>
 		<tr><td><a href="step-filteralignments.html">Filter alignments</a></td><td>Yes</td><td>Yes</td><td></td></tr>
