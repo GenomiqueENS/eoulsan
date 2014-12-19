@@ -321,7 +321,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
         cmd.add("-D");
         cmd.add(archivePath);
         cmd.add("-o");
-        cmd.add("/dev/output");
+        cmd.add("/dev/stdout");
         cmd.add("-u");
         cmd.add(unmapFile.getAbsolutePath());
         cmd.add("-2");
