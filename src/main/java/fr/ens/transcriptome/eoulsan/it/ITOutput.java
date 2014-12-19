@@ -602,9 +602,9 @@ public class ITOutput {
 
       this.comparators.add(new FastqComparator(USE_SERIALIZATION_FILE));
       this.comparators
-          .add(new SAMComparator(USE_SERIALIZATION_FILE, "PG", "HD"));
+          .add(new SAMComparator(USE_SERIALIZATION_FILE, "PG", "HD", "CO"));
       this.comparators
-          .add(new BAMComparator(USE_SERIALIZATION_FILE, "PG", "HD"));
+          .add(new BAMComparator(USE_SERIALIZATION_FILE, "PG", "HD", "CO"));
       this.comparators.add(new TextComparator(USE_SERIALIZATION_FILE));
       this.comparators.add(new LogComparator());
 
