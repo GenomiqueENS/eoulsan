@@ -119,6 +119,6 @@ public class DataFormats {
       .getDataFormatFromName("additional_annotation_tsv");
 
   /** Report html. */
-  public static final DataFormat REPORT_HTML = registry
-      .getDataFormatFromName("report_html");
+  public static final DataFormat FASTQC_REPORT_HTML = registry
+      .getDataFormatFromName("fastqc_report_html");
 }

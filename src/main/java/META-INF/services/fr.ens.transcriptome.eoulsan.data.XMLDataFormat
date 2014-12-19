@@ -19,4 +19,4 @@ annotated_expression_results_tsv.xml
 annotated_expression_results_ods.xml
 annotated_expression_results_xlsx.xml
 additional_annotation_tsv.xml
-report_html.xml
+fastqc_report_html.xml
