@@ -39,7 +39,7 @@ import com.google.common.collect.Sets;
 import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 
 /**
- * This class allow compare two SAM file with use BloomFilter.
+ * This class allow compare two BAM file with use BloomFilter.
  * @since 2.0
  * @author Sandrine Perrin
  */
@@ -59,12 +59,17 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
     String line = null;
     this.numberElementsCompared = 0;
 
+    // Create Bam reader
     final SAMFileReader bamfr = new SAMFileReader(isBAM);
 
+    // Get iterator on file
     final Iterator<SAMRecord> it = bamfr.iterator();
 
+    // Parse file
     while (it.hasNext()) {
       final SAMRecord r = it.next();
+
+      // Convert in SAM
       line = r.getSAMString();
       this.numberElementsCompared++;
 
@@ -75,12 +80,11 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
         if (!this.tagsToNotCompare.contains(getTag(line))) {
 
           if (!filter.mightContain(line)) {
-            // TODO
-            System.out.println("FAIL at "
-                + this.numberElementsCompared + " with line " + line);
-
             // Save line occurs fail comparison
             setCauseFailComparison(line);
+
+            // Close reader
+            bamfr.close();
 
             return false;
           }
@@ -88,18 +92,20 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
       } else {
         // Line
         if (!filter.mightContain(line)) {
-          // TODO
-          System.out.println("FAIL at "
-              + this.numberElementsCompared + " with line " + line);
-
           // Save line occurs fail comparison
           setCauseFailComparison(line);
+
+          // Close reader
+          bamfr.close();
 
           return false;
         }
       }
 
     }
+
+    // Close reader
+    bamfr.close();
 
     // Check count element is the same between two files
     if (this.numberElementsCompared != filter.getAddedNumberOfElements()) {
@@ -116,15 +122,17 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
   protected BloomFilterUtils buildBloomFilter(final InputStream is)
       throws IOException {
 
+    // Create filter
     final BloomFilterUtils filter =
         initBloomFilter(getExpectedNumberOfElements());
 
-    final SAMFileReader bamfr = new SAMFileReader(is);
+    // Parse BAM file
+    try (final SAMFileReader bamfr = new SAMFileReader(is)) {
 
-    final Iterator<SAMRecord> it = bamfr.iterator();
+      final Iterator<SAMRecord> it = bamfr.iterator();
 
-    try {
       while (it.hasNext()) {
+        // Convert in line in SAM and save in filter
         filter.put(it.next().getSAMString());
       }
 
@@ -134,49 +142,6 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
 
     return filter;
   }
-
-  //
-  //
-  // while ((line = reader.readLine()) != null) {
-  // this.numberElementsCompared++;
-  //
-  // // Header
-  // if (line.charAt(0) == '@') {
-  //
-  // // Skip specified tag in header sam file
-  // if (!this.tagsToNotCompare.contains(getTag(line))) {
-  //
-  // if (!filter.mightContain(line)) {
-  // // Save line occurs fail comparison
-  // setCauseFailComparison(line);
-  //
-  // reader.close();
-  // return false;
-  // }
-  // }
-  // } else {
-  // // Line
-  // if (!filter.mightContain(line)) {
-  // // Save line occurs fail comparison
-  // setCauseFailComparison(line);
-  //
-  // reader.close();
-  // return false;
-  // }
-  // }
-  // }
-  // reader.close();
-  //
-  // // Check count element is the same between two files
-  // if (this.numberElementsCompared != filter.getAddedNumberOfElements()) {
-  // setCauseFailComparison("Different count elements "
-  // + this.numberElementsCompared + " was "
-  // + filter.getAddedNumberOfElements() + " expected.");
-  // return false;
-  // }
-  //
-  // return true;
-  // }
 
   //
   // Other methods
@@ -218,8 +183,7 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
   //
 
   /**
-   * Public constructor public FastqComparator(final boolean useSerializeFile) {
-   * super(useSerializeFile); } /** Public constructor
+   * Public constructor
    * @param useSerializeFile true if it needed to save BloomFilter in file with
    *          extension '.ser'
    */
