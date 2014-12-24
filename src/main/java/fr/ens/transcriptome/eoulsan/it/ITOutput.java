@@ -65,7 +65,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public class ITOutput {
 
-  private static final Splitter COMMA_SPLITTER = Splitter.on(' ').trimResults()
+  private static final Splitter SPACE_SPLITTER = Splitter.on(' ').trimResults()
       .omitEmptyStrings();
 
   private static PathMatcher ALL_PATH_MATCHER = FileSystems.getDefault()
@@ -430,7 +430,7 @@ public class ITOutput {
     final Set<PathMatcher> result = new HashSet<>();
 
     // Parse patterns
-    for (final String globSyntax : COMMA_SPLITTER.split(patterns)) {
+    for (final String globSyntax : SPACE_SPLITTER.split(patterns)) {
 
       // Convert in syntax reading by Java
       final PathMatcher matcher =
