@@ -30,6 +30,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.toLetter;
 
 import java.io.File;
+import java.util.Objects;
 
 import com.google.common.base.CharMatcher;
 
@@ -875,6 +876,63 @@ public class FileNaming {
     }
 
     return true;
+  }
+
+  /**
+   * Test if two files are related to the same data.
+   * @param file1 the first file
+   * @param file2 the second file
+   * @return true if the two files are related to the same data
+   */
+  public static boolean dataEquals(final File file1, final File file2) {
+
+    checkNotNull(file1, "file1 argument cannot be null");
+    checkNotNull(file2, "file2 argument cannot be null");
+
+    return dataEquals(file1.getName(), file2.getName());
+  }
+
+  /**
+   * Test if two files are related to the same data.
+   * @param file1 the first file
+   * @param file2 the second file
+   * @return true if the two files are related to the same data
+   */
+  public static boolean dataEquals(final DataFile file1, final DataFile file2) {
+
+    checkNotNull(file1, "file1 argument cannot be null");
+    checkNotNull(file2, "file2 argument cannot be null");
+
+    return dataEquals(file1.getName(), file2.getName());
+  }
+
+  /**
+   * Test if two filenames are related to the same data.
+   * @param filename1 the first filename
+   * @param filename2 the second filename
+   * @return true if the two files are related to the same data
+   */
+  public static boolean dataEquals(final String filename1,
+      final String filename2) {
+
+    checkNotNull(filename1, "filename1 argument cannot be null");
+    checkNotNull(filename2, "filename2 argument cannot be null");
+
+    final FileNaming fn1;
+    final FileNaming fn2;
+
+    try {
+      fn1 = parse(filename1);
+      fn2 = parse(filename2);
+    } catch (FileNamingParsingRuntimeException e) {
+      return false;
+    }
+
+    return Objects.equals(fn1.stepId, fn2.stepId)
+        && Objects.equals(fn1.portName, fn2.portName)
+        && Objects.equals(fn1.format, fn2.format)
+        && Objects.equals(fn1.dataName, fn2.dataName)
+        && Objects.equals(fn1.part, fn2.part);
   }
 
   /**
