@@ -31,8 +31,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Set;
 
-import com.google.common.base.Preconditions;
-
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
@@ -46,10 +44,10 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFiles;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -131,7 +129,7 @@ public class CopyInputDataStep extends AbstractStep {
       final Data inData = context.getInputData(DEFAULT_SINGLE_INPUT_PORT_NAME);
       final Data outData = context.getOutputData("output", inData);
 
-      copyFormat(inData, outData);
+      copyData(inData, outData);
       status.setProgress(1.0);
 
     } catch (IOException e) {
@@ -150,7 +148,7 @@ public class CopyInputDataStep extends AbstractStep {
    * @param outData output data
    * @throws IOException if an error occurs while copying
    */
-  private void copyFormat(final Data inData, final Data outData)
+  private void copyData(final Data inData, final Data outData)
       throws IOException {
 
     final int count = inData.getDataFileCount();
@@ -165,7 +163,7 @@ public class CopyInputDataStep extends AbstractStep {
         throw new FileNotFoundException("input file not found: " + in);
       }
 
-      copyDataFile(in, out);
+      DataFiles.symlinkOrCopy(in, out);
     } else {
 
       // Handle multi file format like fastq
@@ -179,35 +177,9 @@ public class CopyInputDataStep extends AbstractStep {
           throw new FileNotFoundException("input file not found: " + in);
         }
 
-        copyDataFile(in, out);
+        DataFiles.symlinkOrCopy(in, out);
       }
     }
-  }
-
-  /**
-   * Copy a file.
-   * @param in input file
-   * @param out ouput file
-   * @throws IOException if an error occurs while copying
-   */
-  private static void copyDataFile(final DataFile in, final DataFile out)
-      throws IOException {
-
-    Preconditions.checkNotNull(in, "input file is null");
-    Preconditions.checkNotNull(out, "output file is null");
-
-    final CompressionType inType =
-        CompressionType.getCompressionTypeByFilename(in.getName());
-    final CompressionType outType =
-        CompressionType.getCompressionTypeByFilename(out.getName());
-
-    if (inType == outType) {
-
-      FileUtils.copy(in.rawOpen(), out.rawCreate());
-      return;
-    }
-
-    FileUtils.copy(in.open(), out.create());
   }
 
 }
