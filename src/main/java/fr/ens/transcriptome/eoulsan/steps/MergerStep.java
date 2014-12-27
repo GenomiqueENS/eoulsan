@@ -61,7 +61,7 @@ import fr.ens.transcriptome.eoulsan.splitermergers.Merger;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
- * This class define a generic merger step
+ * This class define a generic merger step.
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -80,7 +80,7 @@ public class MergerStep extends AbstractStep {
    * This inner class allow to create iterator needed by SplitterMerger.merge()
    * method.
    */
-  private static final class MergerIterator {
+  private final class MergerIterator {
 
     private final ListMultimap<String, Data> map = ArrayListMultimap.create();
     private int maxFileIndex = 1;
@@ -121,14 +121,16 @@ public class MergerStep extends AbstractStep {
       });
 
       // Check if two data has the same part number
-      final Set<Integer> partNumbers = new HashSet<>();
-      for (Data data : list) {
+      if (checkForPartDuplicates()) {
+        final Set<Integer> partNumbers = new HashSet<>();
+        for (Data data : list) {
 
-        if (partNumbers.contains(data.getPart())) {
-          throw new EoulsanException(
-              "Found two or more data with the same part: " + data.getName());
+          if (partNumbers.contains(data.getPart())) {
+            throw new EoulsanException(
+                "Found two or more data with the same part: " + data.getName());
+          }
+          partNumbers.add(data.getPart());
         }
-        partNumbers.add(data.getPart());
       }
 
       final Iterator<Data> it = list.iterator();
@@ -166,14 +168,39 @@ public class MergerStep extends AbstractStep {
     public MergerIterator(final Data data) {
 
       for (Data d : data.getListElements()) {
-        this.map.put(d.getName(), d);
 
-        if (d.getDataFileCount() > this.maxFileIndex) {
-          this.maxFileIndex = d.getDataFileCount();
+        final String key = getMapKey(d);
+
+        if (key != null) {
+
+          this.map.put(key, d);
+
+          if (d.getDataFileCount() > this.maxFileIndex) {
+            this.maxFileIndex = d.getDataFileCount();
+          }
         }
       }
     }
 
+  }
+
+  //
+  // Protected methods
+  //
+
+  /**
+   * Define the key to use for replicate merging.
+   * @param data data to merge
+   * @return the merging key
+   */
+  protected String getMapKey(final Data data) {
+
+    return data.getName();
+  }
+
+  protected boolean checkForPartDuplicates() {
+
+    return true;
   }
 
   //
@@ -214,8 +241,9 @@ public class MergerStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      if ("format".equals(p.getName())) {
+      switch (p.getName()) {
 
+      case "format":
         // Get format
         final DataFormat format =
             DataFormatRegistry.getInstance()
@@ -235,17 +263,21 @@ public class MergerStep extends AbstractStep {
         // Set the merger
         this.merger = format.getMerger();
 
-      } else if ("compression".equals(p.getName())) {
+        break;
 
+      case "compression":
         this.compression = getCompressionTypeByContentEncoding(p.getValue());
-      } else {
+        break;
+
+      default:
         mergerParameters.add(p);
+        break;
       }
     }
 
     // Check if a format has been set
     if (this.merger == null) {
-      throw new EoulsanException("No format set for splitter");
+      throw new EoulsanException("No format set for merge");
     }
 
     // Configure the merger
@@ -279,7 +311,7 @@ public class MergerStep extends AbstractStep {
           final DataFile outFile = outData.getDataFile();
 
           // Launch merger
-          this.merger.merge(it.getIterator(dataName), outFile);
+          merger.merge(it.getIterator(dataName), outFile);
         } else {
 
           // For each file of the multi-file format
@@ -289,7 +321,7 @@ public class MergerStep extends AbstractStep {
             final DataFile outFile = outData.getDataFile(fileIndex);
 
             // Launch splitting
-            this.merger.merge(it.getIterator(dataName, fileIndex), outFile);
+            merger.merge(it.getIterator(dataName, fileIndex), outFile);
           }
         }
       }

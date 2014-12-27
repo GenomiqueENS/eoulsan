@@ -37,6 +37,7 @@ fr.ens.transcriptome.eoulsan.steps.CopyOutputDataStep
 # Splitter and Merger steps
 fr.ens.transcriptome.eoulsan.steps.SplitterStep
 fr.ens.transcriptome.eoulsan.steps.MergerStep
+fr.ens.transcriptome.eoulsan.steps.TechnicalReplicateMerger
 
 # Common step
 fr.ens.transcriptome.eoulsan.steps.ShellStep
