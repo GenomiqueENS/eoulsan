@@ -99,6 +99,15 @@ public class DataMetadataStorage {
 
     checkNotNull(data, "data argument cannot be null");
 
+    // If data is a list process of data elements by recursion
+    if (data.isList()) {
+
+      for (Data d : data.getListElements()) {
+        saveMetaData(d);
+      }
+      return;
+    }
+
     final SimpleDataMetadata metadata =
         DataUtils.getSimpleMetadata(data.getMetadata());
 
