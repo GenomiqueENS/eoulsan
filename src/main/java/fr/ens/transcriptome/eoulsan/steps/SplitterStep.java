@@ -186,8 +186,9 @@ public class SplitterStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      if ("format".equals(p.getName())) {
+      switch (p.getName()) {
 
+      case "format":
         // Get format
         final DataFormat format =
             DataFormatRegistry.getInstance()
@@ -206,12 +207,15 @@ public class SplitterStep extends AbstractStep {
 
         // Set the splitter
         this.splitter = format.getSplitter();
+        break;
 
-      } else if ("compression".equals(p.getName())) {
-
+      case "compression":
         this.compression = getCompressionTypeByContentEncoding(p.getValue());
-      } else {
+        break;
+
+      default:
         splitterParameters.add(p);
+        break;
       }
     }
 
