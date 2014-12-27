@@ -51,6 +51,7 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
+import fr.ens.transcriptome.eoulsan.core.workflow.DataUtils;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -87,6 +88,11 @@ public class MergerStep extends AbstractStep {
     public Set<String> getDataNames() {
 
       return this.map.keySet();
+    }
+
+    public List<Data> getListData(final String dataName) {
+
+      return this.map.get(dataName);
     }
 
     public int getMaxFileIndex() {
@@ -252,21 +258,25 @@ public class MergerStep extends AbstractStep {
     final DataFormat format = this.merger.getFormat();
 
     // Get input and output data
-    final Data inData = context.getInputData(format);
-    final Data outData = context.getOutputData(format, inData);
+    final Data inListData = context.getInputData(format);
+    final Data outListData = context.getOutputData(format, inListData);
 
     try {
 
-      final MergerIterator it = new MergerIterator(inData);
+      final MergerIterator it = new MergerIterator(inListData);
 
       for (String dataName : it.getDataNames()) {
+
+        final Data outData = outListData.addDataToList(dataName);
+
+        // Set metadata for output data
+        DataUtils.setDataMetadata(outData, it.getListData(dataName));
 
         // If Mono-file format
         if (format.getMaxFilesCount() == 1) {
 
           // Get output file
-          final DataFile outFile =
-              outData.addDataToList(dataName).getDataFile();
+          final DataFile outFile = outData.getDataFile();
 
           // Launch merger
           this.merger.merge(it.getIterator(dataName), outFile);
@@ -276,8 +286,7 @@ public class MergerStep extends AbstractStep {
           for (int fileIndex = 0; fileIndex < it.getMaxFileIndex(); fileIndex++) {
 
             // Get output file
-            final DataFile outFile =
-                outData.addDataToList(dataName).getDataFile(fileIndex);
+            final DataFile outFile = outData.getDataFile(fileIndex);
 
             // Launch splitting
             this.merger.merge(it.getIterator(dataName, fileIndex), outFile);
