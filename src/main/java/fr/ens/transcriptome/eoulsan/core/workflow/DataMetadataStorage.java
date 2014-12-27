@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -44,6 +45,21 @@ public class DataMetadataStorage {
 
     checkNotNull(data, "data argument cannot be null");
 
+    return loadMetadata(data, DataUtils.getDataFiles(data));
+  }
+
+  /**
+   * Set the metadata of a data from the metadata storage.
+   * @param data the date which metadata must be set
+   * @param files files to search in the storage to get metadata
+   * @return true if the metadata for the data has been found in the metadata
+   *         storage
+   */
+  public boolean loadMetadata(final Data data, final List<DataFile> files) {
+
+    checkNotNull(data, "data argument cannot be null");
+    checkNotNull(files, "files argument cannot be null");
+
     final SimpleDataMetadata metadata =
         DataUtils.getSimpleMetadata(data.getMetadata());
 
@@ -53,7 +69,6 @@ public class DataMetadataStorage {
     }
 
     boolean result = false;
-    final List<DataFile> files = DataUtils.getDataFiles(data);
 
     // For each file of the data
     for (DataFile file : files) {
@@ -196,6 +211,21 @@ public class DataMetadataStorage {
   //
   // Static method
   //
+
+  /**
+   * Get the singleton.
+   * @return the DataMetadataStorage object
+   */
+  public static DataMetadataStorage getInstance() {
+
+    if (singleton == null) {
+
+      throw new EoulsanRuntimeException(
+          "No metadata storage has been previously instancied");
+    }
+
+    return singleton;
+  }
 
   /**
    * Get the singleton.
