@@ -140,8 +140,9 @@ public class InputPortsBuilder {
    * @param compressionsAccepted compression accepted
    * @param requiredInWorkingDirectory if data is required in working directory
    */
-  public InputPortsBuilder addPort(final String name, final DataFormat format,
-      final boolean list, final EnumSet<CompressionType> compressionsAccepted,
+  public InputPortsBuilder addPort(final String name, final boolean list,
+      final DataFormat format,
+      final EnumSet<CompressionType> compressionsAccepted,
       final boolean requiredInWorkingDirectory) {
 
     return addPort(new SimpleInputPort(name, list, format,
