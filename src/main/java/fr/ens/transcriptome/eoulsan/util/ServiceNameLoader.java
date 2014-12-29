@@ -27,14 +27,17 @@ package fr.ens.transcriptome.eoulsan.util;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.ServiceConfigurationError;
 import java.util.Set;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimaps;
 
 /**
  * This class is a service loader that allow to filter class to retrieve and get
@@ -48,8 +51,9 @@ public abstract class ServiceNameLoader<S> {
 
   private final Class<S> service;
   private final ClassLoader loader;
-  private final Map<String, String> classNames = new LinkedHashMap<>();
-  private final Map<String, S> cache = new HashMap<>();
+  private final ListMultimap<String, String> classNames = ArrayListMultimap
+      .create();
+  private final ListMultimap<String, S> cache = ArrayListMultimap.create();
   private final Set<String> classesToNotLoad = new HashSet<>();
   private boolean notYetLoaded = true;
 
@@ -306,8 +310,24 @@ public abstract class ServiceNameLoader<S> {
    */
   public S newService(final String serviceName) {
 
-    if (serviceName == null) {
+    final List<S> newServices = newServices(serviceName);
+
+    if (newServices.isEmpty()) {
       return null;
+    }
+
+    return newServices.get(0);
+  }
+
+  /**
+   * Create a list of new services from its name.
+   * @param serviceName name of the service
+   * @return a list with the new objects
+   */
+  public List<S> newServices(final String serviceName) {
+
+    if (serviceName == null) {
+      return Collections.emptyList();
     }
 
     if (this.notYetLoaded) {
@@ -320,48 +340,51 @@ public abstract class ServiceNameLoader<S> {
 
     // Test if service is already in cache
     if (this.cache.containsKey(serviceNameLower)) {
+
       return this.cache.get(serviceNameLower);
     }
 
+    final List<S> result = new ArrayList<>();
+
     if (this.classNames.containsKey(serviceNameLower)) {
 
-      try {
-        final Class<?> clazz =
-            Class.forName(this.classNames.get(serviceNameLower), true,
-                this.loader);
+      for (String className : this.classNames.get(serviceNameLower)) {
 
-        final S result = this.service.cast(clazz.newInstance());
+        try {
+          final Class<?> clazz = Class.forName(className, true, this.loader);
 
-        // Fill cache is needed
-        if (isCache()) {
-          this.cache.put(serviceNameLower, result);
+          final S newInstance = this.service.cast(clazz.newInstance());
+
+          // Fill cache is needed
+          if (isCache()) {
+            this.cache.put(serviceNameLower, newInstance);
+          }
+
+          result.add(newInstance);
+        } catch (InstantiationException | IllegalAccessException e) {
+          throw new ServiceConfigurationError(this.service.getName()
+              + ": " + serviceNameLower + " cannot be instanced");
+        } catch (ClassNotFoundException e) {
+          throw new ServiceConfigurationError(this.service.getName()
+              + ": Class for " + serviceNameLower + " cannot be found");
         }
-
-        return result;
-      } catch (InstantiationException | IllegalAccessException e) {
-        throw new ServiceConfigurationError(this.service.getName()
-            + ": " + serviceNameLower + " cannot be instanced");
-      } catch (ClassNotFoundException e) {
-        throw new ServiceConfigurationError(this.service.getName()
-            + ": Class for " + serviceNameLower + " cannot be found");
       }
-
     }
 
-    return null;
+    return Collections.unmodifiableList(result);
   }
 
   /**
    * Return the list of the available services.
-   * @return a Map with the available services
+   * @return a MultiMap with the available services
    */
-  public Map<String, String> getServiceClasses() {
+  public ListMultimap<String, String> getServiceClasses() {
 
     if (this.notYetLoaded) {
       reload();
     }
 
-    return Collections.unmodifiableMap(this.classNames);
+    return Multimaps.unmodifiableListMultimap(this.classNames);
   }
 
   /**
