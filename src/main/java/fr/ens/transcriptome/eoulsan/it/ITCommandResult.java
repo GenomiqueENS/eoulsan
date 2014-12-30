@@ -57,19 +57,16 @@ public class ITCommandResult {
    */
   public String getReport() {
 
-    this.message.append("\nExecute script for ");
-    this.message.append(this.desc);
-    this.message.append("\n\tcommand line: ");
-    this.message.append(this.commandLine);
-    this.message.append("\n\tin directory: ");
-    this.message.append(this.directory.getAbsolutePath());
+    this.message.append("\nExecute " + this.desc);
 
-    this.message.append("\n\tduration: ");
-    this.message.append(this.duration == -1
-        ? "none" : toTimeHumanReadable(this.duration));
+    this.message.append("\n\tCommand line: " + this.commandLine);
+    
+    this.message.append("\n\tDirectory: " + this.directory.getAbsolutePath());
 
-    this.message.append("\n\texit value: ");
-    this.message.append(this.exitValue);
+    this.message.append("\n\tDuration: "
+        + (this.duration == -1 ? "none" : toTimeHumanReadable(this.duration)));
+
+    this.message.append("\n\tExit value: " + this.exitValue);
 
     this.message.append("\n");
 
