@@ -1,4 +1,31 @@
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
 package fr.ens.transcriptome.eoulsan.it;
+
+import java.io.File;
+
+import fr.ens.transcriptome.eoulsan.Globals;
 
 /**
  * The class represents output result of file comparison.
@@ -8,17 +35,35 @@ package fr.ens.transcriptome.eoulsan.it;
 final class ITOutputComparisonResult implements
     Comparable<ITOutputComparisonResult> {
 
+  private static final String TYPE_FAIL = "FAIL";
+  private static final String TYPE_OK = "OK";
+
   private String filename;
   // Init status comparison at to compare
   private StatusComparison statusComparison = StatusComparison.TO_COMPARE;
   private String message = "none";
+  private File fileTested;
+  private File fileExpected;
 
   /**
    * Get report on comparison.
    * @return report on comparison
    */
   public String getReport() {
-    return getStatutComparison() + " : " + this.filename + " " + getMessage();
+
+    final StringBuilder txt = new StringBuilder();
+
+    txt.append("\t" + this.statusComparison.getType() + " : " + this.filename);
+
+    if (this.statusComparison.getType().equals(TYPE_FAIL)) {
+
+      txt.append(" " + this.statusComparison.getName());
+      txt.append("\n\t\tOuput: " + this.fileTested.getAbsolutePath());
+      txt.append("\n\t\tExpected: " + this.fileExpected.getAbsolutePath());
+      txt.append("\n\t\tMessage: " + this.message);
+    }
+
+    return txt.toString();
   }
 
   /**
@@ -28,8 +73,21 @@ final class ITOutputComparisonResult implements
    */
   public void setResult(final StatusComparison statusComparison,
       final String message) {
-    setStatutComparison(statusComparison);
-    setMessage(message);
+    setResult(statusComparison, null, null, message);
+  }
+
+  public void setResult(final StatusComparison statusComparison) {
+    setResult(statusComparison, null, null, "");
+  }
+
+  public void setResult(final StatusComparison status, final File fileExpected,
+      final File fileTested, final String msg) {
+    setStatutComparison(status);
+    setMessage(msg);
+
+    this.fileExpected = fileExpected;
+    this.fileTested = fileTested;
+
   }
 
   @Override
@@ -70,7 +128,7 @@ final class ITOutputComparisonResult implements
     if (getClass() != obj.getClass()) {
       return false;
     }
-    ITOutputComparisonResult other = (ITOutputComparisonResult) obj;
+    final ITOutputComparisonResult other = (ITOutputComparisonResult) obj;
     if (this.filename == null) {
       if (other.filename != null) {
         return false;
@@ -100,8 +158,8 @@ final class ITOutputComparisonResult implements
   }
 
   /**
-   * Gets the statut comparison.
-   * @return the statut comparison
+   * Gets the status comparison.
+   * @return the status comparison
    */
   public StatusComparison getStatutComparison() {
     return this.statusComparison;
@@ -124,8 +182,8 @@ final class ITOutputComparisonResult implements
   }
 
   /**
-   * Sets the statut comparison.
-   * @param statutComparison the new statut comparison
+   * Sets the status comparison.
+   * @param statutComparison the new status comparison
    */
   public void setStatutComparison(final StatusComparison statutComparison) {
     this.statusComparison = statutComparison;
@@ -144,12 +202,14 @@ final class ITOutputComparisonResult implements
   //
   /**
    * Public constructor.
+   * @param itOuput the it output instance
    * @param filename filename to compare
    * @param statusComparison status comparison object
    * @param message detail of comparison
    */
   public ITOutputComparisonResult(final String filename,
       final StatusComparison statusComparison, final String message) {
+
     this.filename = filename;
     this.message = message;
     this.statusComparison = statusComparison;
@@ -186,7 +246,11 @@ final class ITOutputComparisonResult implements
     private final boolean isSuccess;
 
     public String getName() {
-      return this.name;
+      return this.name.toUpperCase(Globals.DEFAULT_LOCALE);
+    }
+
+    public String getType() {
+      return isSuccess() ? TYPE_OK : TYPE_FAIL;
     }
 
     public boolean isSuccess() {
@@ -204,4 +268,5 @@ final class ITOutputComparisonResult implements
       this.exceptionMessage = exceptionMessage;
     }
   }
+
 }

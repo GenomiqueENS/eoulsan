@@ -180,8 +180,10 @@ public class ITOutput {
           new ITOutputComparisonResult(filename);
 
       if (fileTested == null) {
-        comparisonResult.setResult(StatusComparison.MISSING,
-            "\n\tin directory: " + this.directory.getAbsolutePath());
+        comparisonResult.setResult(
+            StatusComparison.MISSING,
+            "missing file in output test directory "
+                + this.directory.getAbsolutePath());
       } else {
 
         // Comparison file
@@ -200,11 +202,15 @@ public class ITOutput {
 
     // Check file from test are not compare
     if (!allFilesFromTest.isEmpty()) {
+
       for (final File f : allFilesFromTest) {
+
         final ITOutputComparisonResult ocr =
             new ITOutputComparisonResult(f.getName(),
                 StatusComparison.UNEXPECTED,
-                "Unexpected file in data to test directory");
+                "unexpected file in test data directory "
+                    + expectedOutput.getDirectory().getAbsolutePath());
+
         results.add(ocr);
       }
     }
@@ -245,17 +251,12 @@ public class ITOutput {
     final boolean res = fc.compare();
 
     if (!res) {
-      comparisonResult.setResult(
-          StatusComparison.NOT_EQUALS,
-          "Fail comparison with file: "
-              + fileExpected.getAbsolutePath() + " vs "
-              + fileTested.getAbsolutePath() + "\n\tdetail: "
-              + fc.getDetailComparison());
+      comparisonResult.setResult(StatusComparison.NOT_EQUALS, fileExpected,
+          fileTested, fc.getDetailComparison());
     } else {
 
       // Add comparison in the report text
-      comparisonResult.setResult(StatusComparison.EQUALS,
-          "Success file comparison.");
+      comparisonResult.setResult(StatusComparison.EQUALS);
     }
   }
 
@@ -283,17 +284,16 @@ public class ITOutput {
 
     if (!isEqualsLength) {
       msg =
-          String.format(
-              "Fail comparison length expected: %s (%d) vs tested %s (%d)%n",
+          String.format("length expected: %s (%d) vs tested %s (%d)%n",
               fileExpected.getAbsolutePath(), fileExpectedLength,
               fileTested.getAbsolutePath(), fileTestedLength);
 
-      comparisonResult.setResult(StatusComparison.NOT_EQUALS, msg);
+      comparisonResult.setResult(StatusComparison.NOT_EQUALS, fileExpected,
+          fileTested, msg);
     } else {
 
       // Add comparison in the report text
-      comparisonResult.setResult(StatusComparison.EQUALS,
-          "Success file comparison size file.");
+      comparisonResult.setResult(StatusComparison.EQUALS);
     }
   }
 
@@ -308,21 +308,27 @@ public class ITOutput {
 
     final Set<ITOutputComparisonResult> results = new HashSet<>();
 
+    // No pattern setting
     if (this.checkAbsenceFilePatterns == null
         || this.checkAbsenceFilePatterns.length() == 0) {
       return Collections.emptySet();
     }
 
+    //
     final Set<PathMatcher> patterns =
         createPathMatchers(this.checkAbsenceFilePatterns, false);
+
     final List<File> matchedFile = listingFilesFromPatterns(patterns);
 
     for (final File f : matchedFile) {
+
       final ITOutputComparisonResult ocr =
           new ITOutputComparisonResult(f.getName(),
               StatusComparison.UNEXPECTED,
               "Unexpected file in output test directory matched to patterns "
                   + this.checkAbsenceFilePatterns);
+
+      // Compile result comparison
       results.add(ocr);
     }
 
@@ -447,6 +453,14 @@ public class ITOutput {
   //
   // Getter & setter
   //
+
+  /**
+   * Gets the directory.
+   * @return the directory
+   */
+  private File getDirectory() {
+    return this.directory;
+  }
 
   /**
    * Return a map all to treat for comparison, boolean set if should use an
@@ -601,10 +615,10 @@ public class ITOutput {
       this.comparators.add(new BinaryComparator());
 
       this.comparators.add(new FastqComparator(USE_SERIALIZATION_FILE));
-      this.comparators
-          .add(new SAMComparator(USE_SERIALIZATION_FILE, "PG", "HD", "CO"));
-      this.comparators
-          .add(new BAMComparator(USE_SERIALIZATION_FILE, "PG", "HD", "CO"));
+      this.comparators.add(new SAMComparator(USE_SERIALIZATION_FILE, "PG",
+          "HD", "CO"));
+      this.comparators.add(new BAMComparator(USE_SERIALIZATION_FILE, "PG",
+          "HD", "CO"));
       this.comparators.add(new TextComparator(USE_SERIALIZATION_FILE));
       this.comparators.add(new LogComparator());
 
