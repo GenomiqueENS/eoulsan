@@ -71,7 +71,11 @@ public class ITResult {
   public void createReportFile(final long duration) {
 
     // End test
-    getLogger().info(getLoggerTest(toTimeHumanReadable(duration)));
+    updateLogger(duration);
+
+    if (isNothingToDo()) {
+      return;
+    }
 
     final String filename = isSuccess() ? "SUCCESS" : "FAIL";
 
@@ -115,7 +119,7 @@ public class ITResult {
     String txt = "Fail test: " + this.it.getTestName();
     txt += "\n\tdirectory: " + this.it.getOutputTestDirectory();
 
-    txt += createExceptionText(this.exception, false);
+    txt += createExceptionText(false);
     return txt;
   }
 
@@ -124,25 +128,28 @@ public class ITResult {
    * @param duration duration of execution
    * @return report text
    */
-  private String getLoggerTest(final String duration) {
+  private void updateLogger(final long duration) {
+
+    String txt = "";
+
     if (this.nothingToDo) {
-      return "Nothing_to_do: for " + this.it.getTestName();
+      txt += "NOTHING TO DO of the " + this.it.getTestName();
+    } else {
+
+      txt +=
+          (isSuccess() ? "SUCCESS" : "FAIL")
+              + " of the test "
+              + this.it.getTestName()
+              + ((isGeneratedData())
+                  ? ": generate expected data" : ": launch test and comparison")
+              + " in " + toTimeHumanReadable(duration);
+
+      if (!isSuccess()) {
+        txt += createExceptionText(false);
+      }
     }
 
-    String txt =
-        (isSuccess() ? "SUCCESS" : "FAIL")
-            + ": for "
-            + this.it.getTestName()
-            + ((isGeneratedData())
-                ? ": generate expected data" : ": launch test and comparison")
-            + " in " + duration;
-    txt += "\n\tdirectory: " + this.it.getOutputTestDirectory();
-
-    if (!isSuccess()) {
-      txt += createExceptionText(this.exception, false);
-    }
-
-    return txt;
+    getLogger().info(txt);
   }
 
   /**
@@ -153,22 +160,28 @@ public class ITResult {
   private String createReportText(final boolean withStackTrace) {
 
     final StringBuilder report = new StringBuilder();
-    report.append(isSuccess() ? "SUCCESS" : "FAIL");
-    report.append(": for ");
-    report.append(this.it.getTestName());
+    report.append((isSuccess() ? "SUCCESS" : "FAIL")
+        + ": " + this.it.getTestName());
     report.append(isGeneratedData()
-        ? ": generate expected data" : ": launch test and comparison");
+        ? ": generate expected data"
+        : ": test execution and output files comparison.");
+
+    report.append("\n\nDirectories:");
+    report.append("\n\tExpected:"
+        + this.it.getExpectedTestDirectory().getAbsolutePath());
+    report.append("\n\tOuput:"
+        + this.it.getOutputTestDirectory().getAbsolutePath());
 
     report.append("\n\nPatterns:");
-    report.append("\n\t compare file ");
-    report.append(this.it.getFileToComparePatterns());
-    report.append("\n\t check size file ");
-    report.append(this.it.getCheckExistenceFilePatterns());
-    report.append("\n\t exclude file ");
-    report.append(this.it.getExcludeToComparePatterns());
+    report.append("\n\tFiles to compare:\t"
+        + this.it.getFileToComparePatterns());
+    report.append("\n\tFiles to check size:\t"
+        + this.it.getCheckExistenceFilePatterns());
+    report.append("\n\tFiles to exclude:\t"
+        + this.it.getExcludeToComparePatterns());
     report.append('\n');
 
-    // Add synthesis on execution script
+    // Add synthesis on executions scripts
     if (!this.commandsResults.isEmpty()) {
       for (final ITCommandResult icr : this.commandsResults) {
         report.append(icr.getReport());
@@ -180,18 +193,27 @@ public class ITResult {
       report.append(this.it.getExpectedTestDirectory().getAbsolutePath());
     }
 
-    // Add report text on comparison execution
-    if (!this.comparisonsResults.isEmpty()) {
+
+    // Check comparison execute
+    if (this.comparisonsResults.isEmpty()) {
+
+      // Add message on exception
+      if (this.exception != null) {
+        report.append('\n');
+        report.append(createExceptionText(withStackTrace));
+        report.append('\n');
+      }
+
+    } else {
+      
+      // Add report text on comparison execution
+      report.append("\n\nComparisons:");
+
       for (final ITOutputComparisonResult ocr : this.comparisonsResults) {
         report.append('\n');
         report.append(ocr.getReport());
       }
-    }
-
-    // Add message on exception
-    if (this.exception != null) {
       report.append('\n');
-      report.append(createExceptionText(this.exception, withStackTrace));
     }
 
     // Return text
@@ -217,12 +239,12 @@ public class ITResult {
           msg.append(getException().getMessage());
           msg.append("\n");
         }
-        
+
         // Compile exception message
         msg.append("\t");
         msg.append(ocr.getStatutComparison().getExceptionMessage());
         msg.append("\tfile: " + ocr.getFilename());
-        
+
         setException(new EoulsanException(msg.toString()));
       }
     }
@@ -233,10 +255,9 @@ public class ITResult {
    * @param withStackTrace if true contains the stack trace if exist
    * @return message
    */
-  static String createExceptionText(final Throwable exception,
-      final boolean withStackTrace) {
+  public String createExceptionText(final boolean withStackTrace) {
 
-    if (exception == null) {
+    if (this.exception == null) {
       return "";
     }
 
@@ -244,14 +265,15 @@ public class ITResult {
 
     msgException.append("\n=== Execution Test Error ===");
     msgException.append("\nFrom class: \n\t"
-        + exception.getClass().getName() + "");
+        + this.exception.getClass().getName() + "");
     msgException.append("\nException message: \n"
-        + exception.getMessage() + "\n");
+        + this.exception.getMessage() + "\n");
 
-    if (ITSuite.getInstance().isDebugEnabled() && withStackTrace) {
+    if (ITSuite.getInstance().isDebugModeEnabled() && withStackTrace) {
       // Add the stack trace
       msgException.append("\n=== Execution Test Debug Stack Trace ===\n");
-      msgException.append(Joiner.on("\n\t").join(exception.getStackTrace()));
+      msgException.append(Joiner.on("\n\t")
+          .join(this.exception.getStackTrace()));
     }
 
     // Return text
