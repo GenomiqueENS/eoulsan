@@ -24,15 +24,33 @@
 package fr.ens.transcriptome.eoulsan.it;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
 
 import com.google.common.base.Stopwatch;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
+import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 
 /**
  * This singleton class survey the execution of a test suite (count the number
@@ -47,18 +65,33 @@ public class ITSuite {
   private static final String FAILED_LINKNAME = "failed";
   private static final String LATEST_LINKNAME = "latest";
 
+  private static final Formatter DATE_FORMATTER = new Formatter().format(
+      Globals.DEFAULT_LOCALE, "%1$tY%1$tm%1$td_%1$tH%1$tM%1$tS", new Date());
+
   // Singleton
   private static ITSuite itSuite;
 
   private final Stopwatch globalTimer = Stopwatch.createStarted();
 
+  private final Properties globalsConf;
+  private final File applicationPath;
+  private final File outputTestsDirectory;
+  private final int testsCount;
+  private final Map<String, File> testsToExecute;
+  private final List<IT> testsInstance;
+
   private boolean debugEnabled = false;
   private int failCount = 0;
   private int successCount = 0;
   private int testRunningCount = 0;
+  private int testSkippingCount = 0;
   private boolean isFirstTest = true;
-
-  private final int testsCount;
+  private final String loggerPath;
+  private final File testsDataDirectory;
+  private final String versionApplication;
+  private final boolean generateAllExpectedDirectoryTest;
+  private final boolean generateNewExpectedDirectoryTests;
+  private final String actionType;
 
   //
   // Singleton methods
@@ -66,13 +99,22 @@ public class ITSuite {
 
   /**
    * Initialize an instance of ITSuite.
-   * @param testsCount tests count for the execution
+   * @param tests tests count for the execution
+   * @param globalsConf the globals configuration
+   * @param applicationPath the application path
    * @return the instance of ITSuite object
+   * @throws EoulsanException if an error occurs when initialize integration
+   *           test
+   * @throws IOException if an error occurs with an test's directories or
+   *           configuration file
    */
-  public static ITSuite getInstance(final int testsCount) {
+  public static ITSuite getInstance(final Map<String, File> tests,
+      final Properties globalsConf, final File applicationPath)
+      throws IOException, EoulsanException {
 
     if (itSuite == null) {
-      itSuite = new ITSuite(testsCount);
+
+      itSuite = new ITSuite(tests, globalsConf, applicationPath);
 
       return itSuite;
     }
@@ -96,61 +138,13 @@ public class ITSuite {
   }
 
   /**
-   * Create useful symbolic test to the latest and running test in output test
-   * directory.
-   * @param directory the source path directory
-   */
-  private void createSymbolicLinkToTest(final File directory) {
-
-    // Path to the running link
-    File runningDirLink = new File(directory.getParentFile(), RUNNING_LINKNAME);
-
-    // Path to the latest link
-    File latestDirLink = new File(directory.getParentFile(), LATEST_LINKNAME);
-
-    // Path to the last succeeded test link
-    File succeededDirLink =
-        new File(directory.getParentFile(), SUCCEEDED_LINKNAME);
-
-    // Path to the last failed test link
-    File failedDirLink = new File(directory.getParentFile(), FAILED_LINKNAME);
-
-    // Remove old running test link
-    runningDirLink.delete();
-
-    // Create running test link
-    if (this.testRunningCount == 0) {
-      createSymbolicLink(directory, runningDirLink);
-
-    } else {
-      // Replace latest by running test link
-
-      // Remove old link
-      latestDirLink.delete();
-
-      // Recreate the latest link
-      createSymbolicLink(directory, latestDirLink);
-
-      if (this.failCount == 0) {
-        // Update succeed link
-        succeededDirLink.delete();
-        createSymbolicLink(directory, succeededDirLink);
-      } else {
-        // Update failed link
-        failedDirLink.delete();
-        createSymbolicLink(directory, failedDirLink);
-      }
-    }
-  }
-
-  /**
    * Update counter of tests running. If it is the first, create symbolics link.
    * @param directory directory where create symbolic link.
    */
-  public void startTest(final File directory) {
+  public void notifyStartTest() {
 
     if (this.isFirstTest) {
-      createSymbolicLinkToTest(directory);
+      createSymbolicLinkToTest();
       this.isFirstTest = false;
     }
 
@@ -163,7 +157,12 @@ public class ITSuite {
    * and close logger.
    * @param directory directory where update symbolic link.
    */
-  public void endTest(final File directory, final ITResult itResult) {
+  public void notifyEndTest(final ITResult itResult) {
+
+    if (itResult.isNothingToDo()) {
+      this.testSkippingCount++;
+      return;
+    }
 
     // Update counter
     if (itResult.isSuccess()) {
@@ -174,9 +173,218 @@ public class ITSuite {
 
     // For latest
     if (this.testRunningCount == this.testsCount) {
-      createSymbolicLinkToTest(directory);
-      closeLogger();
+      createSymbolicLinkToTest();
+      endLogger();
     }
+
+  }
+
+  /**
+   * Execute command line shell to obtain the version name of application to
+   * test. If fail, it return UNKOWN.
+   * @param commandLine command line shell
+   * @param applicationPath application path to test
+   * @return version name of application to test
+   */
+  public String retrieveVersionApplication(final String commandLine,
+      final File applicationPath) {
+
+    String version = "UNKNOWN";
+
+    if (commandLine == null || commandLine.trim().length() == 0) {
+      // None command line to retrieve version application set in configuration
+      // file
+      return version;
+    }
+
+    try {
+      // Execute command
+      final String output = ProcessUtils.execToString(commandLine);
+
+      if (output != null && output.trim().length() > 0) {
+        // Retrieve version
+        version = output.trim();
+      }
+
+    } catch (final IOException e) {
+    }
+
+    return version;
+  }
+
+  /**
+   * Create useful symbolic test to the latest and running test in output test
+   * directory.
+   */
+  private void createSymbolicLinkToTest() {
+
+    // Path to the running link
+    final File runningDirLink =
+        new File(this.outputTestsDirectory.getParentFile(), RUNNING_LINKNAME);
+
+    // Path to the latest link
+    final File latestDirLink =
+        new File(this.outputTestsDirectory.getParentFile(), LATEST_LINKNAME);
+
+    // Path to the last succeeded test link
+    final File succeededDirLink =
+        new File(this.outputTestsDirectory.getParentFile(), SUCCEEDED_LINKNAME);
+
+    // Path to the last failed test link
+    final File failedDirLink =
+        new File(this.outputTestsDirectory.getParentFile(), FAILED_LINKNAME);
+
+    // Remove old running test link
+    runningDirLink.delete();
+
+    // Create running test link
+    if (this.testRunningCount == 0) {
+      createSymbolicLink(this.outputTestsDirectory, runningDirLink);
+
+    } else {
+      // Replace latest by running test link
+
+      // Remove old link
+      latestDirLink.delete();
+
+      // Recreate the latest link
+      createSymbolicLink(this.outputTestsDirectory, latestDirLink);
+
+      if (this.failCount == 0) {
+        // Update succeed link
+        succeededDirLink.delete();
+        createSymbolicLink(this.outputTestsDirectory, succeededDirLink);
+      } else {
+        // Update failed link
+        failedDirLink.delete();
+        createSymbolicLink(this.outputTestsDirectory, failedDirLink);
+      }
+    }
+  }
+
+  /**
+   * Check validate test, exit configuration file at the root.
+   * @param tests the tests
+   * @return all tests can be run
+   * @throws EoulsanException if none tests valid found
+   */
+  private Map<String, File> checkValidateTest(final Map<String, File> tests)
+      throws EoulsanException {
+
+    // Keep test with test.conf file exit at the root directory
+    final Map<String, File> valideTests = new HashMap<>();
+
+    for (final Map.Entry<String, File> entry : tests.entrySet()) {
+
+      // Check test.conf file exit
+      if (new File(entry.getValue(), ITFactory.TEST_CONFIGURATION_FILENAME)
+          .exists()) {
+
+        // Keep test
+        valideTests.put(entry.getKey(), entry.getValue());
+      }
+    }
+
+    // Check tests found not empty
+    if (valideTests.isEmpty()) {
+      throw new EoulsanException("None test valide in directory "
+          + this.testsDataDirectory.getAbsolutePath());
+    }
+
+    return Collections.unmodifiableMap(valideTests);
+  }
+
+  /**
+   * Initialize the integration test instances.
+   * @return the list of integration test instances.
+   * @throws IOException Signals that an I/O exception has occurred, when create
+   *           integration test instances.
+   * @throws EoulsanException the Eoulsan exception if an error occurs when
+   *           create integration test instances, or none instance has been
+   *           created.
+   */
+  private List<IT> initIT() throws IOException, EoulsanException {
+
+    final List<IT> tests = new ArrayList<>();
+
+    // Extract sorted tests name
+    final Set<String> testsName =
+        new TreeSet<String>(this.testsToExecute.keySet());
+
+    // Parse selected tests
+    for (final String testName : testsName) {
+
+      // Create instance
+      final IT processIT =
+          new IT(this, this.globalsConf, this.applicationPath,
+              this.testsDataDirectory, this.outputTestsDirectory, testName);
+
+      // Add tests
+      tests.add(processIT);
+    }
+
+    if (tests.isEmpty()) {
+      throw new EoulsanException("None integration test instance create.");
+    }
+
+    return Collections.unmodifiableList(tests);
+  }
+
+  /**
+   * Initialization factory with principal needed directories.
+   * @throws IOException if a source file doesn't exist
+   */
+  private void init() throws IOException {
+
+    // Init logger
+    initLogger();
+
+    // Set source directory for tests to execute
+    checkExistingDirectoryFile(this.testsDataDirectory, "tests data directory");
+
+    getLogger().config(
+        "Tests data directory: " + this.testsDataDirectory.getAbsolutePath());
+
+    // Set output directory
+    checkExistingDirectoryFile(this.outputTestsDirectory.getParentFile(),
+        "output data parent directory");
+
+    // Set directory contain all tests to execute
+    getLogger().config(
+        "Output tests directory: "
+            + this.outputTestsDirectory.getAbsolutePath());
+
+    // Create output test directory
+    if (!this.outputTestsDirectory.mkdir()) {
+      throw new IOException("Cannot create output tests directory "
+          + this.outputTestsDirectory.getAbsolutePath());
+    }
+
+    getLogger().config("Action " + this.actionType);
+
+  }
+
+  /**
+   * Initialize logger.
+   * @throws IOException if an error occurs while create logger
+   */
+  private void initLogger() throws IOException {
+
+    Handler fh = null;
+    try {
+      fh = new FileHandler(this.loggerPath);
+
+    } catch (final Exception e) {
+      throw new IOException(e.getMessage());
+    }
+
+    fh.setFormatter(Globals.LOG_FORMATTER);
+
+    getLogger().setLevel(Level.ALL);
+    // Remove output console
+    getLogger().setUseParentHandlers(false);
+    getLogger().addHandler(fh);
+    getLogger().info(Globals.WELCOME_MSG);
 
   }
 
@@ -184,21 +392,28 @@ public class ITSuite {
    * Close log file, add a summary on tests execution and update symbolic link
    * in output test directory.
    */
-  private void closeLogger() {
+  private void endLogger() {
 
-    // Add summary of tests execution
-    getLogger().info(
-        "Summary tests execution: "
-            + this.successCount + " succeeded tests and " + this.failCount
-            + " failed tests.");
-
-    // Add suffix to log global filename
     getLogger().fine(
-        "End of configuration of "
-            + this.testsCount
+        "End of execution for "
+            + this.testRunningCount
             + " integration tests in "
             + toTimeHumanReadable(this.globalTimer
                 .elapsed(TimeUnit.MILLISECONDS)));
+
+    // Add summary of tests execution
+    getLogger().info(
+        "RUN : "
+            + this.successCount + " succeeded, " + this.failCount + " failed, "
+            + this.testSkippingCount + " skipped. "
+            + (this.failCount == 0 ? ". All tests are OK." : ""));
+
+    final File loggerFile = new File(this.loggerPath);
+
+    if (loggerFile.exists()) {
+      // Create a symbolic link in output test directory
+      createSymbolicLink(loggerFile, this.outputTestsDirectory);
+    }
 
     this.globalTimer.stop();
   }
@@ -211,7 +426,7 @@ public class ITSuite {
    * Get the true if debug mode settings otherwise false.
    * @return true if debug mode settings otherwise false.
    */
-  public boolean isDebugEnabled() {
+  public boolean isDebugModeEnabled() {
     return this.debugEnabled;
   }
 
@@ -219,8 +434,76 @@ public class ITSuite {
    * Set the debug mode, true if it is demand otherwise false.
    * @param debugEnabled true if it is demand otherwise false.
    */
-  public void setDebugEnabled(final boolean debugEnabled) {
+  public void setDebugModeEnabled(final boolean debugEnabled) {
     this.debugEnabled = debugEnabled;
+  }
+
+  /**
+   * Checks if is generate all expected directory test.
+   * @return true, if is generate all expected directory test
+   */
+  public boolean isGenerateAllExpectedDirectoryTest() {
+    return this.generateAllExpectedDirectoryTest;
+  }
+
+  /**
+   * Checks if is generate new expected directory tests.
+   * @return true, if is generate new expected directory tests
+   */
+  public boolean isGenerateNewExpectedDirectoryTests() {
+    return this.generateNewExpectedDirectoryTests;
+  }
+
+  public String getActionType() {
+    return this.actionType;
+  }
+
+  /**
+   * Gets the tests data directory.
+   * @return the tests data directory
+   */
+  public File getTestsDataDirectory() {
+    return this.testsDataDirectory;
+  }
+
+  /**
+   * Gets the tests to execute.
+   * @return the tests to execute
+   */
+  public Map<String, File> getTestsToExecute() {
+    return this.testsToExecute;
+  }
+
+  /**
+   * Gets the tests instance.
+   * @return the tests instance
+   */
+  public List<IT> getTestsInstance() {
+    return this.testsInstance;
+  }
+
+  /**
+   * Gets the tests instance to array.
+   * @return the tests instance to array
+   */
+  public Object[] getTestsInstanceToArray() {
+    return this.testsInstance.toArray(new Object[this.testsCount]);
+  }
+
+  /**
+   * Gets the count test.
+   * @return the count test
+   */
+  public int getCountTest() {
+    return this.testsCount;
+  }
+
+  /**
+   * Gets the output test directory path.
+   * @return the output test directory path
+   */
+  public String getOutputTestDirectoryPath() {
+    return this.outputTestsDirectory.getAbsolutePath();
   }
 
   //
@@ -229,10 +512,80 @@ public class ITSuite {
 
   /**
    * Private constructor.
-   * @param testsCount tests count to run
+   * @param tests tests count to run
+   * @param globalsConf the globals conf
+   * @param applicationPath the application path
+   * @throws IOException if an error occurs with an test's directories or
+   *           configuration file
+   * @throws EoulsanException if an error occurs when initialize integration
+   *           test
    */
-  private ITSuite(final int testsCount) {
-    this.testsCount = testsCount;
+  private ITSuite(final Map<String, File> tests, final Properties globalsConf,
+      final File applicationPath) throws IOException, EoulsanException {
+
+    checkExistingDirectoryFile(applicationPath, "application path");
+
+    this.globalsConf = globalsConf;
+    this.applicationPath = applicationPath;
+
+    // Set test data source directory
+    this.testsDataDirectory =
+        new File(
+            this.globalsConf.getProperty(ITFactory.TESTS_DIRECTORY_CONF_KEY));
+
+    // Retrieve application version test
+    this.versionApplication =
+        retrieveVersionApplication(
+            this.globalsConf
+                .getProperty(ITFactory.COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY),
+            this.applicationPath);
+
+    // Set logger path
+    this.loggerPath =
+        this.globalsConf.getProperty(ITFactory.LOG_DIRECTORY_CONF_KEY)
+            + "/" + this.versionApplication + "_" + DATE_FORMATTER.toString()
+            + ".log";
+
+    // Set test data output directory
+    this.outputTestsDirectory =
+        new File(
+            this.globalsConf
+                .getProperty(ITFactory.OUTPUT_ANALYSIS_DIRECTORY_CONF_KEY),
+            this.versionApplication + "_" + DATE_FORMATTER.toString());
+
+    this.generateAllExpectedDirectoryTest =
+        Boolean.parseBoolean(globalsConf
+            .getProperty(ITFactory.GENERATE_ALL_EXPECTED_DATA_CONF_KEY));
+
+    this.generateNewExpectedDirectoryTests =
+        Boolean.parseBoolean(globalsConf
+            .getProperty(ITFactory.GENERATE_NEW_EXPECTED_DATA_CONF_KEY));
+
+    // Set action required
+    this.actionType =
+        (this.generateAllExpectedDirectoryTest
+            || this.generateNewExpectedDirectoryTests
+            ? (this.generateAllExpectedDirectoryTest
+                ? "regenerate all data expected directories if is is not generate manually "
+                : "generate all missing data expected directories ")
+            : "launch tests integration ");
+
+    // Initialize itsuite before create integration test instance
+    init();
+
+    // Select tests to execute
+    this.testsToExecute = checkValidateTest(tests);
+
+    // Init all IT instances
+    this.testsInstance = initIT();
+    this.testsCount = this.testsInstance.size();
+
+    getLogger().config("Found " + this.testsCount + " tests to execute.");
+
+    // Initialize debug mode
+    setDebugModeEnabled(Boolean
+        .getBoolean(ITFactory.IT_DEBUG_ENABLE_SYSTEM_KEY));
+
   }
 
 }

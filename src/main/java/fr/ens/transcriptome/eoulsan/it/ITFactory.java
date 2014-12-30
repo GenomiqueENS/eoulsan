@@ -24,11 +24,8 @@
 package fr.ens.transcriptome.eoulsan.it;
 
 import static com.google.common.io.Files.newReader;
-import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.transcriptome.eoulsan.it.IT.retrieveVersionApplication;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardFile;
-import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,21 +33,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
-import java.util.Formatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
 
 import org.apache.commons.compress.utils.Charsets;
 import org.testng.annotations.Factory;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 
 /**
@@ -113,23 +105,25 @@ public class ITFactory {
 
   static final String TEST_CONFIGURATION_FILENAME = "test.conf";
 
-  private static Formatter DATE_FORMATTER = new Formatter().format(
-      Globals.DEFAULT_LOCALE, "%1$tY%1$tm%1$td_%1$tH%1$tM%1$tS", new Date());
+  // private static String outputTestsDirectoryPath;
 
-  private static String outputTestsDirectoryPath;
+  private static final Properties CONSTANTS = initConstants();
 
   private final Properties globalsConf;
-  private static final Properties CONSTANTS = initConstants();
   private final File applicationPath;
 
   // File with tests name to execute
   private final File selectedTestsFile;
   private final String selectedTest;
-
   private final File testsDataDirectory;
-  private final String versionApplication;
-  private final File outputTestsDirectory;
-  private final String loggerPath;
+  private final Map<String, File> testsDirectoryFoundToExecute;
+
+  // private final String versionApplication;
+  // private final File outputTestsDirectory;
+  //
+  // private final String loggerPath;
+  // private final boolean generateAllExpectedDirectoryTest;
+  // private final boolean generateNewExpectedDirectoryTest;
 
   /**
    * Create all instance for integrated tests.
@@ -145,94 +139,29 @@ public class ITFactory {
 
     // Set the default local for all the application
     Globals.setDefaultLocale();
-    List<IT> tests = null;
     try {
-      init();
 
-      tests = collectTests();
-      final int testsCount = tests.size();
-
-      getLogger().config("Count tests found " + testsCount);
+      final int testsCount = ITSuite.getInstance().getCountTest();
 
       if (testsCount == 0) {
         return new Object[0];
       }
 
-      // Initialize ITSuite
-      ITSuite.getInstance(testsCount).setDebugEnabled(
-          Boolean.getBoolean(IT_DEBUG_ENABLE_SYSTEM_KEY));
-
       // Return all tests
-      return tests.toArray(new Object[testsCount]);
+      return ITSuite.getInstance().getTestsInstanceToArray();
 
     } catch (final Throwable e) {
       System.err.println(e.getMessage());
 
-    } finally {
-      final File loggerFile = new File(this.loggerPath);
-
-      if (loggerFile.exists()) {
-        // Create a symbolic link in output test directory
-        createSymbolicLink(loggerFile, this.outputTestsDirectory);
-      }
     }
 
     // Return none test
     return new Object[0];
   }
 
-  /**
-   * Initialize the constants values.
-   * @return a map with the constants
-   */
-  private static Properties initConstants() {
-
-    final Properties constants = new Properties();
-
-    // Add java properties
-    for (final Map.Entry<Object, Object> e : System.getProperties().entrySet()) {
-      constants.put(e.getKey(), e.getValue());
-    }
-
-    // Add environment properties
-    for (final Map.Entry<String, String> e : System.getenv().entrySet()) {
-      constants.put(e.getKey(), e.getValue());
-    }
-
-    return constants;
-  }
-
-  /**
-   * Initialization factory with principal needed directories.
-   * @throws IOException if a source file doesn't exist
-   */
-  private void init() throws IOException {
-
-    // Init logger
-    initLogger();
-
-    // Set source directory for tests to execute
-
-    checkExistingDirectoryFile(this.testsDataDirectory, "tests data directory");
-    getLogger().config(
-        "Tests data directory: " + this.testsDataDirectory.getAbsolutePath());
-
-    // Set output directory
-    checkExistingDirectoryFile(this.outputTestsDirectory.getParentFile(),
-        "output data parent directory");
-
-    // Set directory contain all tests to execute
-    getLogger().config(
-        "Output tests directory: "
-            + this.outputTestsDirectory.getAbsolutePath());
-
-    // Create output test directory
-    if (!this.outputTestsDirectory.mkdir()) {
-      throw new IOException("Cannot create output tests directory "
-          + this.outputTestsDirectory.getAbsolutePath());
-    }
-
-  }
+  //
+  // Methods to collect tests
+  //
 
   /**
    * Collect all tests to launch from parameter command : in one case all tests
@@ -243,9 +172,10 @@ public class ITFactory {
    *           test.
    * @throws IOException if the source file doesn't exist
    */
-  private List<IT> collectTests() throws EoulsanException, IOException {
+  private Map<String, File> collectTestsDirectoryToExecute() throws EoulsanException, IOException {
 
-    final List<IT> tests = new ArrayList<>();
+    // final List<IT> tests = new ArrayList<>();
+    final Map<String, File> result = new HashMap<>();
     final List<File> testsToExecuteDirectories = new ArrayList<>();
 
     // Collect tests from a file with names tests
@@ -283,25 +213,31 @@ public class ITFactory {
         continue;
       }
 
-      // Create instance
-      final IT processIT =
-          new IT(this.globalsConf, this.applicationPath, new File(
-              testDirectory, TEST_CONFIGURATION_FILENAME),
-              this.outputTestsDirectory, testDirectory.getName());
-
-      // Add tests
-      tests.add(processIT);
+      result.put(testDirectory.getName(), testDirectory);
     }
 
-    // Check tests founded
-    if (tests.size() == 0) {
-      throw new EoulsanException(
-          "None test define (with test.conf) in directory "
-              + this.testsDataDirectory.getAbsolutePath());
-    }
-
-    return Collections.unmodifiableList(tests);
+    return Collections.unmodifiableMap(result);
   }
+
+  // // Create instance
+  // final IT processIT =
+  // new IT(this.globalsConf, this.applicationPath, new File(
+  // testDirectory, TEST_CONFIGURATION_FILENAME),
+  // this.outputTestsDirectory, testDirectory.getName());
+  //
+  // // Add tests
+  // tests.add(processIT);
+  // }
+  //
+  // // Check tests founded
+  // if (tests.size() == 0) {
+  // throw new EoulsanException(
+  // "None test define (with test.conf) in directory "
+  // + this.testsDataDirectory.getAbsolutePath());
+  // }
+  //
+  // return Collections.unmodifiableList(tests);
+  // }
 
   /**
    * Collect tests to launch from text files with name tests.
@@ -325,7 +261,7 @@ public class ITFactory {
     String nameTest;
     while ((nameTest = br.readLine()) != null) {
       // Skip commentary
-      if (nameTest.startsWith("#") || nameTest.trim().length() == 0) {
+      if (nameTest.startsWith("#") || nameTest.isEmpty()) {
         continue;
       }
 
@@ -339,31 +275,28 @@ public class ITFactory {
   }
 
   //
-  // Methods for logger
+  // Methods to load and read configuration and properties
   //
 
   /**
-   * Initialize logger.
-   * @throws IOException if an error occurs while create logger
+   * Initialize the constants values.
+   * @return a map with the constants
    */
-  private void initLogger() throws IOException {
+  private static Properties initConstants() {
 
-    Handler fh = null;
-    try {
-      fh = new FileHandler(this.loggerPath);
+    final Properties constants = new Properties();
 
-    } catch (final Exception e) {
-      throw new IOException(e.getMessage());
+    // Add java properties
+    for (final Map.Entry<Object, Object> e : System.getProperties().entrySet()) {
+      constants.put(e.getKey(), e.getValue());
     }
 
-    fh.setFormatter(Globals.LOG_FORMATTER);
+    // Add environment properties
+    for (final Map.Entry<String, String> e : System.getenv().entrySet()) {
+      constants.put(e.getKey(), e.getValue());
+    }
 
-    getLogger().setLevel(Level.ALL);
-    // Remove output console
-    getLogger().setUseParentHandlers(false);
-    getLogger().addHandler(fh);
-    getLogger().info(Globals.WELCOME_MSG);
-
+    return constants;
   }
 
   /**
@@ -525,18 +458,6 @@ public class ITFactory {
   }
 
   //
-  // Getter
-  //
-
-  /**
-   * Gets the output test directory path.
-   * @return the output test directory path
-   */
-  public static String getOutputTestDirectoryPath() {
-    return outputTestsDirectoryPath;
-  }
-
-  //
   // Other methods
   //
 
@@ -651,7 +572,7 @@ public class ITFactory {
       CONSTANTS.setProperty(APPLICATION_PATH_VARIABLE,
           this.applicationPath.getAbsolutePath());
 
-      FileUtils.checkExistingDirectoryFile(this.applicationPath,
+      checkExistingDirectoryFile(this.applicationPath,
           "The application path doest not exists.");
 
       // Get the file with the list of tests to run
@@ -679,45 +600,48 @@ public class ITFactory {
               getBooleanFromSystemProperty(
                   IT_GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY).toString());
 
-      // Retrieve application version test
-      this.versionApplication =
-          retrieveVersionApplication(
-              this.globalsConf
-                  .getProperty(ITFactory.COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY),
-              this.applicationPath);
-
-      // Set logger path
-      this.loggerPath =
-          this.globalsConf.getProperty(LOG_DIRECTORY_CONF_KEY)
-              + "/" + this.versionApplication + "_" + DATE_FORMATTER.toString()
-              + ".log";
-
       // Set test data source directory
       this.testsDataDirectory =
           new File(this.globalsConf.getProperty(TESTS_DIRECTORY_CONF_KEY));
 
-      // Set test data output directory
-      this.outputTestsDirectory =
-          new File(
-              this.globalsConf.getProperty(OUTPUT_ANALYSIS_DIRECTORY_CONF_KEY),
-              this.versionApplication + "_" + DATE_FORMATTER.toString());
+      this.testsDirectoryFoundToExecute = collectTestsDirectoryToExecute();
 
-      // Set output tests directory path to call by Testng instance in Action
-      // class
-      // TODO: May be a Java system property will be better
-      outputTestsDirectoryPath = this.outputTestsDirectory.getAbsolutePath();
+      // Init it suite with all potential tests found in test data direction
+      ITSuite.getInstance(this.testsDirectoryFoundToExecute, this.globalsConf,
+          this.applicationPath);
+
+      // // Retrieve application version test
+      // this.versionApplication =
+      // retrieveVersionApplication(
+      // this.globalsConf
+      // .getProperty(ITFactory.COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY),
+      // this.applicationPath);
+      //
+      //
+      // // Set test data output directory
+      // this.outputTestsDirectory =
+      // new File(
+      // this.globalsConf.getProperty(OUTPUT_ANALYSIS_DIRECTORY_CONF_KEY),
+      // this.versionApplication + "_" + DATE_FORMATTER.toString());
+      //
+      // // Set output tests directory path to call by Testng instance in Action
+      // // class
+      // // TODO: May be a Java system property will be better
+      // // outputTestsDirectoryPath =
+      // this.outputTestsDirectory.getAbsolutePath();
 
     } else {
       // Case no testng must be create when compile project with maven
-      this.versionApplication = null;
+      // this.versionApplication = null;
       this.applicationPath = null;
       this.testsDataDirectory = null;
-      this.outputTestsDirectory = null;
-      this.loggerPath = null;
+      // this.outputTestsDirectory = null;
+      // this.loggerPath = null;
       this.selectedTestsFile = null;
       this.selectedTest = null;
       this.globalsConf = null;
+      this.testsDirectoryFoundToExecute = null;
+
     }
   }
-
 }
