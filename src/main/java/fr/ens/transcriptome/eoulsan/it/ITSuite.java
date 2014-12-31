@@ -24,6 +24,7 @@
 package fr.ens.transcriptome.eoulsan.it;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.LocalEoulsanRuntime.initEoulsanRuntimeForExternalApp;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
@@ -161,14 +162,14 @@ public class ITSuite {
 
     if (itResult.isNothingToDo()) {
       this.testSkippingCount++;
-      return;
-    }
-
-    // Update counter
-    if (itResult.isSuccess()) {
-      this.successCount++;
     } else {
-      this.failCount++;
+
+      // Update counter
+      if (itResult.isSuccess()) {
+        this.successCount++;
+      } else {
+        this.failCount++;
+      }
     }
 
     // For latest
@@ -370,6 +371,18 @@ public class ITSuite {
    */
   private void initLogger() throws IOException {
 
+    // Remove default logger
+    getLogger().setLevel(Level.OFF);
+
+    // Remove default Handler
+    getLogger().removeHandler(getLogger().getParent().getHandlers()[0]);
+
+    try {
+      initEoulsanRuntimeForExternalApp();
+    } catch (final EoulsanException ee) {
+      ee.printStackTrace();
+    }
+
     Handler fh = null;
     try {
       fh = new FileHandler(this.loggerPath);
@@ -394,7 +407,7 @@ public class ITSuite {
    */
   private void endLogger() {
 
-    getLogger().fine(
+    getLogger().info(
         "End of execution for "
             + this.testRunningCount
             + " integration tests in "
@@ -406,7 +419,7 @@ public class ITSuite {
         "RUN : "
             + this.successCount + " succeeded, " + this.failCount + " failed, "
             + this.testSkippingCount + " skipped. "
-            + (this.failCount == 0 ? ". All tests are OK." : ""));
+            + (this.failCount == 0 ? "All tests are OK." : ""));
 
     final File loggerFile = new File(this.loggerPath);
 
