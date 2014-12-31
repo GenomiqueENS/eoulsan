@@ -91,14 +91,14 @@ public class ITCommandExecutor {
 
     // Save command line in file
     if (isApplicationCmdLine) {
-      
+
       try {
-      
+
         com.google.common.io.Files.write(cmdLine + "\n", this.cmdLineFile,
             Charsets.UTF_8);
-      
+
       } catch (final IOException e) {
-        
+
         getLogger().warning(
             "Error while writing the application command line in file: "
                 + e.getMessage());
@@ -136,9 +136,9 @@ public class ITCommandExecutor {
 
       // Execution script fail, create an exception
       if (exitValue != 0) {
-        cmdResult.setException(new EoulsanException("Bad exit value: "
-            + exitValue + "\n\tcommand line: " + cmdLine + "\n\tdirectory: "
-            + this.outputTestDirectory));
+        cmdResult.setException(new EoulsanException("\tCommand line: "
+            + cmdLine + "\n\tDirectory: " + this.outputTestDirectory
+            + "\n\tBad exit value: " + exitValue));
       }
 
       if (exitValue == 0 && !isApplicationCmdLine) {
@@ -148,8 +148,9 @@ public class ITCommandExecutor {
       }
 
     } catch (IOException | InterruptedException e) {
-      cmdResult.setException(e, "Error during execution.\n\tcommand line: "
-          + cmdLine + "\n\tdirectory: " + this.outputTestDirectory);
+      cmdResult.setException(e, "\tError before execution.\n\tCommand line: "
+          + cmdLine + "\n\tDirectory: " + this.outputTestDirectory
+          + "\n\tMessage: " + e.getMessage());
 
     } finally {
       cmdResult.setDuration(timer.elapsed(TimeUnit.MILLISECONDS));
