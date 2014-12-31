@@ -90,6 +90,8 @@ public class ITFactory {
       "file.to.compare.patterns";
   static final String EXCLUDE_TO_COMPARE_PATTERNS_CONF_KEY =
       "exclude.to.compare.patterns";
+  static final String CHECK_LENGTH_FILE_PATTERNS_CONF_KEY =
+      "file.to.check.length.patterns";
   static final String CHECK_EXISTENCE_FILE_PATTERNS_CONF_KEY =
       "file.to.check.existence.patterns";
   static final String CHECK_ABSENCE_FILE_PATTERNS_CONF_KEY =
@@ -105,8 +107,6 @@ public class ITFactory {
 
   static final String TEST_CONFIGURATION_FILENAME = "test.conf";
 
-  // private static String outputTestsDirectoryPath;
-
   private static final Properties CONSTANTS = initConstants();
 
   private final Properties globalsConf;
@@ -117,13 +117,6 @@ public class ITFactory {
   private final String selectedTest;
   private final File testsDataDirectory;
   private final Map<String, File> testsDirectoryFoundToExecute;
-
-  // private final String versionApplication;
-  // private final File outputTestsDirectory;
-  //
-  // private final String loggerPath;
-  // private final boolean generateAllExpectedDirectoryTest;
-  // private final boolean generateNewExpectedDirectoryTest;
 
   /**
    * Create all instance for integrated tests.
@@ -172,7 +165,8 @@ public class ITFactory {
    *           test.
    * @throws IOException if the source file doesn't exist
    */
-  private Map<String, File> collectTestsDirectoryToExecute() throws EoulsanException, IOException {
+  private Map<String, File> collectTestsDirectoryToExecute()
+      throws EoulsanException, IOException {
 
     // final List<IT> tests = new ArrayList<>();
     final Map<String, File> result = new HashMap<>();
@@ -218,26 +212,6 @@ public class ITFactory {
 
     return Collections.unmodifiableMap(result);
   }
-
-  // // Create instance
-  // final IT processIT =
-  // new IT(this.globalsConf, this.applicationPath, new File(
-  // testDirectory, TEST_CONFIGURATION_FILENAME),
-  // this.outputTestsDirectory, testDirectory.getName());
-  //
-  // // Add tests
-  // tests.add(processIT);
-  // }
-  //
-  // // Check tests founded
-  // if (tests.size() == 0) {
-  // throw new EoulsanException(
-  // "None test define (with test.conf) in directory "
-  // + this.testsDataDirectory.getAbsolutePath());
-  // }
-  //
-  // return Collections.unmodifiableList(tests);
-  // }
 
   /**
    * Collect tests to launch from text files with name tests.
@@ -610,38 +584,14 @@ public class ITFactory {
       ITSuite.getInstance(this.testsDirectoryFoundToExecute, this.globalsConf,
           this.applicationPath);
 
-      // // Retrieve application version test
-      // this.versionApplication =
-      // retrieveVersionApplication(
-      // this.globalsConf
-      // .getProperty(ITFactory.COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY),
-      // this.applicationPath);
-      //
-      //
-      // // Set test data output directory
-      // this.outputTestsDirectory =
-      // new File(
-      // this.globalsConf.getProperty(OUTPUT_ANALYSIS_DIRECTORY_CONF_KEY),
-      // this.versionApplication + "_" + DATE_FORMATTER.toString());
-      //
-      // // Set output tests directory path to call by Testng instance in Action
-      // // class
-      // // TODO: May be a Java system property will be better
-      // // outputTestsDirectoryPath =
-      // this.outputTestsDirectory.getAbsolutePath();
-
     } else {
       // Case no testng must be create when compile project with maven
-      // this.versionApplication = null;
       this.applicationPath = null;
       this.testsDataDirectory = null;
-      // this.outputTestsDirectory = null;
-      // this.loggerPath = null;
       this.selectedTestsFile = null;
       this.selectedTest = null;
       this.globalsConf = null;
       this.testsDirectoryFoundToExecute = null;
-
     }
   }
 }
