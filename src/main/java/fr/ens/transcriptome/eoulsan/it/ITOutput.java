@@ -68,8 +68,10 @@ public class ITOutput {
   private static final Splitter COMMA_SPLITTER = Splitter.on(' ').trimResults()
       .omitEmptyStrings();
 
-  private static PathMatcher ALL_PATH_MATCHER = FileSystems.getDefault()
+  private static final PathMatcher ALL_PATH_MATCHER = FileSystems.getDefault()
       .getPathMatcher("glob:*");
+
+  private static final boolean USE_DEFAULT_PATTERN = true;
 
   /**
    * Percent difference length between expected and tested file, when need to
@@ -79,16 +81,19 @@ public class ITOutput {
 
   private final String fileToComparePatterns;
   private final String excludeToComparePatterns;
-  /** Patterns to check file and compare size */
+  /** Patterns to check file and is not empty */
   private final String checkExistenceFilePatterns;
   /** Patterns to check file not exist in test directory */
   private final String checkAbsenceFilePatterns;
+  /** Patterns to check file and compare size */
+  private final String checkLengthFilePatterns;
 
   private final List<File> filesToCompare;
-
   private final List<File> filesToExclude;
-  private final List<File> filesToCompareWithComparator;
   private final List<File> filesToCheckExistence;
+  private final List<File> filesToCheckLength;
+  private final List<File> filesToCheckAbsence;
+  private final List<File> filesToCheckContent;
 
   private final File directory;
 
@@ -156,22 +161,18 @@ public class ITOutput {
     final Set<ITOutputComparisonResult> results = new TreeSet<>();
 
     // Copy list files
-    final List<File> allFilesFromTest = new ArrayList<>(this.filesToCompare);
+    final List<File> allFilesFromTest = Lists.newArrayList(this.filesToCompare);
 
     // Build map filename with files path
     final Map<String, File> filesTestedMap =
         new HashMap<>(this.filesToCompare.size());
 
-    for (final File f : this.filesToCompare) {
+    for (final File f : allFilesFromTest) {
       filesTestedMap.put(f.getName(), f);
     }
 
     // Parse expected files
-    for (final Map.Entry<File, Boolean> entry : expectedOutput
-        .getFilesToCompare().entrySet()) {
-
-      final File fileExpected = entry.getKey();
-      final boolean usedComparator = entry.getValue();
+    for (final File fileExpected : expectedOutput.getFilesToCompare()) {
 
       final String filename = fileExpected.getName();
       final File fileTested = filesTestedMap.get(filename);
@@ -186,12 +187,7 @@ public class ITOutput {
                 + this.directory.getAbsolutePath());
       } else {
 
-        // Comparison file
-        if (usedComparator) {
-          compareFilesContent(comparisonResult, fileExpected, fileTested);
-        } else {
-          compareFilesLength(comparisonResult, fileExpected, fileTested);
-        }
+        compareFiles(comparisonResult, fileExpected, fileTested);
       }
       // Remove file from list
       allFilesFromTest.remove(fileTested);
@@ -233,6 +229,21 @@ public class ITOutput {
   // Private methods
   //
 
+  private void compareFiles(final ITOutputComparisonResult comparisonResult,
+      final File fileExpected, final File fileTested) throws IOException {
+
+    if (this.filesToCheckContent.contains(fileTested)) {
+      compareFilesContent(comparisonResult, fileExpected, fileTested);
+
+    } else if (this.filesToCheckLength.contains(fileTested)) {
+      compareFilesLength(comparisonResult, fileExpected, fileTested);
+
+    } else if (this.filesToCheckExistence.contains(fileTested)) {
+      compareFilesExistence(comparisonResult, fileExpected, fileTested);
+    }
+
+  }
+
   /**
    * Compare content on expected file from tested file with same filename, save
    * result in outputExecution instance.
@@ -270,6 +281,7 @@ public class ITOutput {
   private void compareFilesLength(
       final ITOutputComparisonResult comparisonResult, final File fileExpected,
       final File fileTested) {
+
     // Compare size file
     final long fileExpectedLength = fileExpected.length();
     final long fileTestedLength = fileTested.length();
@@ -282,7 +294,12 @@ public class ITOutput {
 
     String msg = "";
 
-    if (!isEqualsLength) {
+    if (isEqualsLength) {
+
+      // Add comparison in the report text
+      comparisonResult.setResult(StatusComparison.EQUALS);
+
+    } else {
       msg =
           String.format("length expected: %s (%d) vs tested %s (%d)%n",
               fileExpected.getAbsolutePath(), fileExpectedLength,
@@ -290,11 +307,33 @@ public class ITOutput {
 
       comparisonResult.setResult(StatusComparison.NOT_EQUALS, fileExpected,
           fileTested, msg);
-    } else {
 
+    }
+  }
+
+  /**
+   * Compare files existence, fail if the file tested can not be empty.
+   * @param comparisonResult outputExecution object
+   * @param fileExpected file from expected directory
+   * @param fileTested file from tested directory
+   */
+  private void compareFilesExistence(
+      final ITOutputComparisonResult comparisonResult, final File fileExpected,
+      final File fileTested) {
+
+    final long fileExpectedLength = fileExpected.length();
+    final long fileTestedLength = fileTested.length();
+
+    // Check if file tested not empty or file expected is empty
+    if (fileTestedLength > 0 || fileExpectedLength == 0) {
       // Add comparison in the report text
       comparisonResult.setResult(StatusComparison.EQUALS);
+    } else {
+
+      comparisonResult.setResult(StatusComparison.NOT_EQUALS, fileExpected,
+          fileTested, "file tested can not be empty.");
     }
+
   }
 
   /**
@@ -308,19 +347,7 @@ public class ITOutput {
 
     final Set<ITOutputComparisonResult> results = new HashSet<>();
 
-    // No pattern setting
-    if (this.checkAbsenceFilePatterns == null
-        || this.checkAbsenceFilePatterns.length() == 0) {
-      return Collections.emptySet();
-    }
-
-    //
-    final Set<PathMatcher> patterns =
-        createPathMatchers(this.checkAbsenceFilePatterns, false);
-
-    final List<File> matchedFile = listingFilesFromPatterns(patterns);
-
-    for (final File f : matchedFile) {
+    for (final File f : this.filesToCheckAbsence) {
 
       final ITOutputComparisonResult ocr =
           new ITOutputComparisonResult(f.getName(),
@@ -339,15 +366,13 @@ public class ITOutput {
    * Listing recursively all files in the source directory which match with
    * patterns files
    * @param patternKey the pattern key
-   * @param excludedFiles the excluded files
+   * @param filesToExclude the excluded files
    * @param defaultAllPath the default all path
    * @return the list with all files which match with pattern
    * @throws IOException if an error occurs while parsing input directory
-   * @throws EoulsanException if no file to compare found
    */
-  private List<File> createListFiles(final String patternKey,
-      final List<File> excludedFiles, final boolean defaultAllPath)
-      throws IOException, EoulsanException {
+  private List<File> collectFilesFromPattern(final String patternKey,
+      final boolean defaultAllPath) throws IOException {
 
     final Set<PathMatcher> fileMatcher =
         createPathMatchers(patternKey, defaultAllPath);
@@ -355,17 +380,27 @@ public class ITOutput {
     final List<File> files = listingFilesFromPatterns(fileMatcher);
 
     // Remove exclude files if exists
-    if (!(excludedFiles == null || excludedFiles.isEmpty())) {
-      files.removeAll(excludedFiles);
+    if (!(this.filesToExclude == null || this.filesToExclude.isEmpty())) {
+      files.removeAll(this.filesToExclude);
     }
 
     if (files.isEmpty()) {
       return Collections.emptyList();
     }
-
     // Return unmodifiable list
     return Collections.unmodifiableList(files);
+  }
 
+  /**
+   * Select files from pattern.
+   * @param patternKey the pattern key
+   * @return the list
+   * @throws IOException if an error occurs while parsing input directory
+   */
+  private List<File> collectFilesFromPattern(final String patternKey)
+      throws IOException {
+
+    return collectFilesFromPattern(patternKey, false);
   }
 
   /**
@@ -463,29 +498,39 @@ public class ITOutput {
   }
 
   /**
-   * Return a map all to treat for comparison, boolean set if should use an
-   * comparator instance or only check size file.
-   * @return map with file and boolean , true if should use an comparator, false
-   *         to check size file
+   * Gets the files to check length.
+   * @return the files to check length
    */
-  public final Map<File, Boolean> getFilesToCompare() {
-    final int size =
-        this.filesToCompareWithComparator.size()
-            + this.filesToCheckExistence.size();
+  public List<File> getFilesToCheckLength() {
+    return this.filesToCheckLength;
+  }
 
-    //
-    final Map<File, Boolean> files = new HashMap<>(size);
+  public List<File> getFilesToCheckContent() {
+    return this.filesToCheckContent;
+  }
 
-    // Add all files to compare with an comparator object
-    for (final File f : this.filesToCompareWithComparator) {
-      files.put(f, true);
-    }
+  /**
+   * Gets the files to check absence.
+   * @return the files to check absence
+   */
+  public List<File> getFilesToCheckAbsence() {
+    return this.filesToCheckAbsence;
+  }
 
-    // Add all files to compare only with check size file
-    for (final File f : this.filesToCheckExistence) {
-      files.put(f, false);
-    }
-    return files;
+  /**
+   * Gets the files to check existence.
+   * @return the files to check existence
+   */
+  public List<File> getFilesToCheckExistence() {
+    return this.filesToCheckExistence;
+  }
+
+  /**
+   * Gets the files to compare.
+   * @return the files to compare
+   */
+  private List<File> getFilesToCompare() {
+    return this.filesToCompare;
   }
 
   //
@@ -498,14 +543,17 @@ public class ITOutput {
    * @param outputTestDirectory source directory
    * @param fileToComparePatterns sequences of patterns, separated by a space
    * @param excludeToComparePatterns sequences of patterns, separated by a space
-   * @param checkAbsenceFilePatterns sequences of patterns, separated by a space
+   * @param checkLengthFilePatterns the check length file patterns
    * @param checkExistenceFilePatterns sequences of patterns, separated by a
    *          space
+   * @param checkAbsenceFilePatterns sequences of patterns, separated by a space
    * @throws IOException if an error occurs while parsing input directory
+   * @throws EoulsanException the Eoulsan exception
    */
   public ITOutput(final File outputTestDirectory,
       final String fileToComparePatterns,
       final String excludeToComparePatterns,
+      final String checkLengthFilePatterns,
       final String checkExistenceFilePatterns,
       final String checkAbsenceFilePatterns) throws IOException,
       EoulsanException {
@@ -513,20 +561,36 @@ public class ITOutput {
     this.directory = outputTestDirectory;
     this.fileToComparePatterns = fileToComparePatterns;
     this.excludeToComparePatterns = excludeToComparePatterns;
+    this.checkLengthFilePatterns = checkLengthFilePatterns;
     this.checkExistenceFilePatterns = checkExistenceFilePatterns;
     this.checkAbsenceFilePatterns = checkAbsenceFilePatterns;
 
+    // Compile all files must be compare from patterns
+    this.filesToCompare = new ArrayList<>();
+
+    // Set specific list, file not use to compare
     this.filesToExclude =
-        createListFiles(this.excludeToComparePatterns, null, false);
+        collectFilesFromPattern(this.excludeToComparePatterns);
 
-    this.filesToCompareWithComparator =
-        createListFiles(this.fileToComparePatterns, this.filesToExclude, true);
+    // Set specific list, file compare content, compile in fileToCompare
+    this.filesToCheckContent =
+        collectFilesFromPattern(this.fileToComparePatterns, USE_DEFAULT_PATTERN);
 
+    // Set specific list, file exist and is not empty, compile in fileToCompare
     this.filesToCheckExistence =
-        createListFiles(this.checkExistenceFilePatterns, this.filesToExclude,
-            true);
+        collectFilesFromPattern(this.checkExistenceFilePatterns);
 
-    this.filesToCompare = Lists.newArrayList(getFilesToCompare().keySet());
+    // Set specific list, file compare length, compile in fileToCompare
+    this.filesToCheckLength =
+        collectFilesFromPattern(this.checkLengthFilePatterns);
+
+    this.filesToCheckAbsence =
+        collectFilesFromPattern(this.checkAbsenceFilePatterns);
+
+    // Compile all file to compare pair to pair
+    this.filesToCompare.addAll(this.filesToCheckContent);
+    this.filesToCompare.addAll(this.filesToCheckLength);
+    this.filesToCompare.addAll(this.filesToCheckExistence);
   }
 
   //
