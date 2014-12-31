@@ -97,10 +97,16 @@ public class ITResult {
 
     if (isGeneratedData()) {
       try {
+        // Copy result file in expected test directory
         Files.copy(reportFile.toPath(),
             new File(this.it.getExpectedTestDirectory(), filename).toPath(),
             StandardCopyOption.REPLACE_EXISTING);
+
       } catch (final IOException e) {
+
+        getLogger().warning(
+            "Error while copying the result execution integration "
+                + "test in expected directory: " + e.getMessage());
       }
     }
   }
@@ -173,9 +179,11 @@ public class ITResult {
         + this.it.getOutputTestDirectory().getAbsolutePath());
 
     report.append("\n\nPatterns:");
-    report.append("\n\tFiles to compare:\t"
+    report.append("\n\tFiles to compare content:\t"
         + this.it.getFileToComparePatterns());
-    report.append("\n\tFiles to check size:\t"
+    report.append("\n\tFiles to check lenth:\t"
+        + this.it.getCheckLengthFilePatterns());
+    report.append("\n\tFiles to check existence:\t"
         + this.it.getCheckExistenceFilePatterns());
     report.append("\n\tFiles to exclude:\t"
         + this.it.getExcludeToComparePatterns());
@@ -193,7 +201,6 @@ public class ITResult {
       report.append(this.it.getExpectedTestDirectory().getAbsolutePath());
     }
 
-
     // Check comparison execute
     if (this.comparisonsResults.isEmpty()) {
 
@@ -205,7 +212,7 @@ public class ITResult {
       }
 
     } else {
-      
+
       // Add report text on comparison execution
       report.append("\n\nComparisons:");
 
@@ -243,7 +250,7 @@ public class ITResult {
         // Compile exception message
         msg.append("\t");
         msg.append(ocr.getStatutComparison().getExceptionMessage());
-        msg.append("\tfile: " + ocr.getFilename());
+        msg.append("\t" + ocr.getFilename());
 
         setException(new EoulsanException(msg.toString()));
       }
