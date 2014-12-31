@@ -42,8 +42,8 @@ final class ITOutputComparisonResult implements
   // Init status comparison at to compare
   private StatusComparison statusComparison = StatusComparison.TO_COMPARE;
   private String message = "none";
-  private File fileTested;
-  private File fileExpected;
+  private String fileTestedPath;
+  private String fileExpectedPath;
 
   /**
    * Get report on comparison.
@@ -58,8 +58,8 @@ final class ITOutputComparisonResult implements
     if (this.statusComparison.getType().equals(TYPE_FAIL)) {
 
       txt.append(" " + this.statusComparison.getName());
-      txt.append("\n\t\tOuput: " + this.fileTested.getAbsolutePath());
-      txt.append("\n\t\tExpected: " + this.fileExpected.getAbsolutePath());
+      txt.append("\n\t\tOuput: " + this.fileTestedPath);
+      txt.append("\n\t\tExpected: " + this.fileExpectedPath);
       txt.append("\n\t\tMessage: " + this.message);
     }
 
@@ -85,8 +85,10 @@ final class ITOutputComparisonResult implements
     setStatutComparison(status);
     setMessage(msg);
 
-    this.fileExpected = fileExpected;
-    this.fileTested = fileTested;
+    this.fileExpectedPath =
+        fileExpected == null ? "none" : fileExpected.getAbsolutePath();
+    this.fileTestedPath =
+        fileTested == null ? "none" : fileTested.getAbsolutePath();
 
   }
 
@@ -234,12 +236,11 @@ final class ITOutputComparisonResult implements
   enum StatusComparison {
 
     NOT_EQUALS("not equals", false,
-        "Comparison(s) failed for output result file(s): "), EQUALS("equals",
-        true, ""), UNEXPECTED("unexpected", false,
-        "Found unexpected file(s) in result test directory: "),
-    MISSING("missing", false,
-        "Missing expected file(s) in result test directory: "), TO_COMPARE(
-        "to compare", false, "Not comparison to start.");
+        "Comparison failed for output result file: "), EQUALS("equals", true,
+        ""), UNEXPECTED("unexpected", false,
+        "Found unexpected file in result test directory: "), MISSING("missing",
+        false, "Missing expected file in result test directory: "), TO_COMPARE(
+        "to compare", false, "Not comparison start.");
 
     private final String name;
     private final String exceptionMessage;
