@@ -178,8 +178,9 @@ public class TaskRunner {
 
             // Configure the new step instance
             getLogger().fine("Configure step instance");
-            stepInstance.configure(TaskRunner.this.context.getCurrentStep()
-                .getParameters());
+            stepInstance.configure(new WorkflowStepConfigurationContext(
+                TaskRunner.this.context.getStep()), TaskRunner.this.context
+                .getCurrentStep().getParameters());
 
           } else {
 

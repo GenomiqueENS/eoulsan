@@ -436,7 +436,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
           || step.getClass().getAnnotation(Generator.class) != null) {
 
         // Configure step
-        step.configure(getParameters());
+        step.configure(new WorkflowStepConfigurationContext(this),
+            getParameters());
 
         // Update parallelization mode if step configuration requires it
         this.parallelizationMode = getParallelizationMode(step);

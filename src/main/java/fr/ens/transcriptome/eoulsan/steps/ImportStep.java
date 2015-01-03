@@ -45,6 +45,7 @@ import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -98,8 +99,8 @@ public class ImportStep extends AbstractStep {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
+  public void configure(final StepConfigurationContext context,
+      final Set<Parameter> stepParameters) throws EoulsanException {
 
     DataFile baseDir = new DataFile(new File("."));
     String pattern = "";

@@ -60,6 +60,7 @@ import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -142,8 +143,8 @@ public class FastQCStep extends AbstractStep {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
+  public void configure(final StepConfigurationContext context,
+      final Set<Parameter> stepParameters) throws EoulsanException {
 
     // Define parameters of FastQC
     System.setProperty("java.awt.headless", "true");
@@ -212,7 +213,8 @@ public class FastQCStep extends AbstractStep {
     final Data inData = context.getInputData(this.inputFormat);
 
     // Get output BAM data
-    final Data outData = context.getOutputData(DataFormats.FASTQC_REPORT_HTML, inData);
+    final Data outData =
+        context.getOutputData(DataFormats.FASTQC_REPORT_HTML, inData);
 
     // Extract data file
     final DataFile inFile = inData.getDataFile();

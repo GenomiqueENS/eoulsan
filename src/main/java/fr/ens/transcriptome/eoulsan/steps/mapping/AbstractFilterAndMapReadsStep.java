@@ -49,6 +49,7 @@ import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
@@ -200,8 +201,8 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
+  public void configure(final StepConfigurationContext context,
+      final Set<Parameter> stepParameters) throws EoulsanException {
 
     String mapperName = null;
     final MultiReadFilterBuilder mrfb = new MultiReadFilterBuilder();

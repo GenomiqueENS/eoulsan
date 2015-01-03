@@ -52,6 +52,7 @@ import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -77,10 +78,10 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
+  public void configure(final StepConfigurationContext context,
+      final Set<Parameter> stepParameters) throws EoulsanException {
 
-    super.configure(stepParameters);
+    super.configure(context, stepParameters);
 
     // Check if the mapper can be used with Hadoop
     if (!getMapper().isSplitsAllowed()) {
