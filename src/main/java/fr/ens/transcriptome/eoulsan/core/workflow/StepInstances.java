@@ -32,7 +32,7 @@ import java.util.Map;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.Step;
-import fr.ens.transcriptome.eoulsan.core.StepService;
+import fr.ens.transcriptome.eoulsan.core.StepRegistry;
 
 /**
  * This class store step instances and avoid storing this instance in
@@ -56,9 +56,10 @@ public class StepInstances {
 
     checkNotNull(step, "Step is null");
     final String stepName = step.getStepName();
+    final String stepVersion = step.getStepVersion();
 
     try {
-      return getStep(step, stepName);
+      return getStep(step, stepName, stepVersion);
     } catch (EoulsanException e) {
       throw new EoulsanRuntimeException(e.getMessage());
     }
@@ -67,18 +68,19 @@ public class StepInstances {
   /**
    * Get a step instance.
    * @param workflowStep workflow step
+   * @param stepVersion step version
    * @return a step instance
    * @throws EoulsanException if an error occurs while loading the step
    */
-  public Step getStep(final WorkflowStep workflowStep, final String stepName)
-      throws EoulsanException {
+  public Step getStep(final WorkflowStep workflowStep, final String stepName,
+      final String stepVersion) throws EoulsanException {
 
     checkNotNull(stepName, "Step name is null");
 
     if (!this.steps.containsKey(workflowStep)) {
 
       // Load step
-      final Step stepInstance = loadStep(stepName);
+      final Step stepInstance = loadStep(stepName, stepVersion);
 
       // Register step instance
       registerStep(workflowStep, stepInstance);
@@ -135,10 +137,12 @@ public class StepInstances {
   /**
    * Get a Step object from its name.
    * @param stepName name of the step
+   * @param stepVersion version of the step
    * @return a Step object
    * @throws EoulsanException if the step does not exits
    */
-  private static Step loadStep(final String stepName) throws EoulsanException {
+  private static Step loadStep(final String stepName, final String stepVersion)
+      throws EoulsanException {
 
     if (stepName == null) {
       throw new EoulsanException("Step name is null");
@@ -146,10 +150,11 @@ public class StepInstances {
 
     final String lower = stepName.trim().toLowerCase();
 
-    final Step result = StepService.getInstance().newService(lower);
+    final Step result = StepRegistry.getInstance().loadStep(lower, stepVersion);
 
     if (result == null) {
-      throw new EoulsanException("Unknown step: " + lower);
+      throw new EoulsanException("Unknown step: "
+          + lower + ("".equals(stepVersion) ? "" : " version " + stepVersion));
     }
 
     return result;

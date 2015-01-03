@@ -109,6 +109,7 @@ public class CommandWorkflowParser {
   static final String DISCARDOUTPUT_ATTR_NAME_STEP_TAG = "discardoutput";
   static final String SKIP_ATTR_NAME_STEP_TAG = "skip";
   static final String ID_ATTR_NAME_STEP_TAG = "id";
+  static final String VERSION_TAG = "version";
   static final String STEP_TAG_NAME = "step";
   static final String STEPS_TAG_NAME = "steps";
   static final String CONSTANTS_TAG_NAME = "constants";
@@ -247,6 +248,8 @@ public class CommandWorkflowParser {
                       "Step name not found in workflow file.");
                 }
 
+                final String version = getTagValue(VERSION_TAG, eStepElement);
+
                 final Map<String, StepOutputPort> inputs =
                     parseInputs(eStepElement, "".equals(stepId)
                         ? stepName : stepId);
@@ -258,8 +261,8 @@ public class CommandWorkflowParser {
                 getLogger().info(
                     "In workflow file found "
                         + stepName + " step (parameters: " + parameters + ").");
-                result.addStep(stepId, stepName, inputs, parameters, skip,
-                    discardOutput);
+                result.addStep(stepId, stepName, version, inputs, parameters,
+                    skip, discardOutput);
 
               }
             }

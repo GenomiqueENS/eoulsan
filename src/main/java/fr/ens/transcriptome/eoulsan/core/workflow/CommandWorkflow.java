@@ -178,6 +178,8 @@ public class CommandWorkflow extends AbstractWorkflow {
     for (String stepId : stepIds) {
 
       final String stepName = c.getStepName(stepId);
+      final String stepVersion = c.getStepVersion(stepId);
+
       final Set<Parameter> stepParameters = c.getStepParameters(stepId);
       final boolean skip = c.isStepSkipped(stepId);
       final boolean copyResultsToOutput = !c.isStepDiscardOutput(stepId);
@@ -186,8 +188,9 @@ public class CommandWorkflow extends AbstractWorkflow {
           "Create "
               + (skip ? "skipped step" : "step ") + stepId + " (" + stepName
               + ") step.");
-      addStep(new CommandWorkflowStep(this, stepId, stepName, stepParameters,
-          skip, copyResultsToOutput));
+
+      addStep(new CommandWorkflowStep(this, stepId, stepName, stepVersion,
+          stepParameters, skip, copyResultsToOutput));
     }
 
     // Check if there one or more step to execute
@@ -208,8 +211,8 @@ public class CommandWorkflow extends AbstractWorkflow {
       for (Step step : Utils.listWithoutNull(firstSteps)) {
 
         final String stepId = step.getName();
-        addStep(0, new CommandWorkflowStep(this, stepId, step.getName(),
-            EMPTY_PARAMETERS, false, false));
+        addStep(0, new CommandWorkflowStep(this, stepId, step.getName(), step
+            .getVersion().toString(), EMPTY_PARAMETERS, false, false));
       }
     }
 
@@ -241,8 +244,8 @@ public class CommandWorkflow extends AbstractWorkflow {
 
       final String stepId = step.getName();
 
-      addStep(new CommandWorkflowStep(this, stepId, step.getName(),
-          EMPTY_PARAMETERS, false, false));
+      addStep(new CommandWorkflowStep(this, stepId, step.getName(), step
+          .getVersion().toString(), EMPTY_PARAMETERS, false, false));
     }
   }
 
@@ -412,8 +415,8 @@ public class CommandWorkflow extends AbstractWorkflow {
 
     // Create step
     CommandWorkflowStep step =
-        new CommandWorkflowStep(workflow, stepId, stepName, parameters, false,
-            false);
+        new CommandWorkflowStep(workflow, stepId, stepName, null, parameters,
+            false, false);
 
     // Configure step
     step.configure();
@@ -465,8 +468,8 @@ public class CommandWorkflow extends AbstractWorkflow {
 
     // Create step
     CommandWorkflowStep step =
-        new CommandWorkflowStep(workflow, stepId, stepName, parameters, false,
-            false);
+        new CommandWorkflowStep(workflow, stepId, stepName, null, parameters,
+            false, false);
 
     // Configure step
     step.configure();

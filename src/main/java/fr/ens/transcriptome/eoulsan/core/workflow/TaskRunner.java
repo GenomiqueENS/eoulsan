@@ -51,11 +51,12 @@ import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
+import fr.ens.transcriptome.eoulsan.core.StepRegistry;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
-import fr.ens.transcriptome.eoulsan.core.StepService;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This class allow to run a task context.
@@ -164,9 +165,13 @@ public class TaskRunner {
 
             // Create the new instance of the step
             getLogger().fine("Create new instance of " + stepDescLog);
+
+            final String stepName = TaskRunner.this.step.getName();
+            final Version stepVersion = TaskRunner.this.step.getVersion();
+
             stepInstance =
-                StepService.getInstance().newService(
-                    TaskRunner.this.step.getName());
+                StepRegistry.getInstance().loadStep(stepName,
+                    stepVersion.toString());
 
             // Log step parameters
             logStepParameters();
