@@ -140,7 +140,6 @@ public class ITSuite {
 
   /**
    * Update counter of tests running. If it is the first, create symbolics link.
-   * @param directory directory where create symbolic link.
    */
   public void notifyStartTest() {
 
@@ -156,7 +155,7 @@ public class ITSuite {
   /**
    * Update counter of tests running. If it is the last, update symbolics link
    * and close logger.
-   * @param directory directory where update symbolic link.
+   * @param itResult the it result
    */
   public void notifyEndTest(final ITResult itResult) {
 
