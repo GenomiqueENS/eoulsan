@@ -502,11 +502,11 @@ public class ITOutput {
    * @return the files to check length
    */
   public List<File> getFilesToCheckLength() {
-    return this.filesToCheckLength;
+    return Collections.unmodifiableList(this.filesToCheckLength);
   }
 
   public List<File> getFilesToCheckContent() {
-    return this.filesToCheckContent;
+    return Collections.unmodifiableList(this.filesToCheckContent);
   }
 
   /**
@@ -514,7 +514,7 @@ public class ITOutput {
    * @return the files to check absence
    */
   public List<File> getFilesToCheckAbsence() {
-    return this.filesToCheckAbsence;
+    return Collections.unmodifiableList(this.filesToCheckAbsence);
   }
 
   /**
@@ -522,15 +522,55 @@ public class ITOutput {
    * @return the files to check existence
    */
   public List<File> getFilesToCheckExistence() {
-    return this.filesToCheckExistence;
+    return Collections.unmodifiableList(this.filesToCheckExistence);
   }
 
   /**
    * Gets the files to compare.
    * @return the files to compare
    */
-  private List<File> getFilesToCompare() {
-    return this.filesToCompare;
+  public List<File> getFilesToCompare() {
+    return Collections.unmodifiableList(this.filesToCompare);
+  }
+
+  /**
+   * Gets the count files to check content.
+   * @return the count files to check content
+   */
+  public int getCountFilesToCheckContent() {
+    return this.filesToCheckContent.size();
+  }
+
+  /**
+   * Gets the count files to check length.
+   * @return the count files to check length
+   */
+  public int getCountFilesToCheckLength() {
+    return this.filesToCheckLength.size();
+  }
+
+  /**
+   * Gets the count files to check existence.
+   * @return the count files to check existence
+   */
+  public int getCountFilesToCheckExistence() {
+    return this.filesToCheckExistence.size();
+  }
+
+  /**
+   * Gets the count files to check absence.
+   * @return the count files to check absence
+   */
+  public int getCountFilesToCheckAbsence() {
+    return this.filesToCheckAbsence.size();
+  }
+
+  /**
+   * Gets the count files to compare.
+   * @return the count files to compare
+   */
+  public int getCountFilesToCompare() {
+    return this.filesToCompare.size();
   }
 
   //
