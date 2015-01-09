@@ -165,6 +165,8 @@ public class ITResult {
    */
   private String createReportText(final boolean withStackTrace) {
 
+    final ITOutput itOutput = this.it.getITOutput();
+
     final StringBuilder report = new StringBuilder();
     report.append((isSuccess() ? "SUCCESS" : "FAIL")
         + ": " + this.it.getTestName());
@@ -180,13 +182,20 @@ public class ITResult {
 
     report.append("\n\nPatterns:");
     report.append("\n\tFiles to compare content:\t"
+        + itOutput.getCountFilesToCheckContent() + "\twith: "
         + this.it.getFileToComparePatterns());
-    report.append("\n\tFiles to check lenth:\t"
+
+    report.append("\n\tFiles to check length:\t"
+        + itOutput.getCountFilesToCheckLength() + "\twith: "
         + this.it.getCheckLengthFilePatterns());
+
     report.append("\n\tFiles to check existence:\t"
+        + itOutput.getCountFilesToCheckExistence() + "\twith: "
         + this.it.getCheckExistenceFilePatterns());
+
     report.append("\n\tFiles to exclude:\t"
         + this.it.getExcludeToComparePatterns());
+
     report.append('\n');
 
     // Add synthesis on executions scripts
@@ -197,7 +206,8 @@ public class ITResult {
     }
 
     if (isGeneratedData()) {
-      report.append("\nSUCCESS: copy files to ");
+      report.append("\nSUCCESS: copy files "
+          + itOutput.getCountFilesToCompare() + " to ");
       report.append(this.it.getExpectedTestDirectory().getAbsolutePath());
     }
 
@@ -382,6 +392,7 @@ public class ITResult {
     this.it = it;
     this.commandsResults = new ArrayList<>();
     this.comparisonsResults = Collections.emptySet();
+
   }
 
 }
