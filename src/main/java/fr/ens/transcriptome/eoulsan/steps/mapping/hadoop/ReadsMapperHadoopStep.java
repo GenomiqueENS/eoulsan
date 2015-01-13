@@ -119,11 +119,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
       return status.createStepResult();
 
-    } catch (IOException e) {
-
-      return status.createStepResult(e,
-          "Error while running job: " + e.getMessage());
-    } catch (InterruptedException e) {
+    } catch (IOException | InterruptedException | ClassNotFoundException e) {
 
       return status.createStepResult(e,
           "Error while running job: " + e.getMessage());

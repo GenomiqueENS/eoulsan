@@ -164,10 +164,16 @@ public final class MapReduceUtils {
    */
   public static void submitAndWaitForJobs(final Map<Job, String> jobs,
       final int waitTimeInMillis, final StepStatus status,
-      final String counterGroup) throws InterruptedException, IOException {
+      final String counterGroup) throws InterruptedException, IOException,
+      ClassNotFoundException {
 
     if (jobs == null) {
       throw new NullPointerException("The list of jobs is null");
+    }
+
+    // Submit jobs
+    for (Job job : jobs.keySet()) {
+      job.submit();
     }
 
     final int totalJobs = jobs.size();
@@ -184,7 +190,6 @@ public final class MapReduceUtils {
       for (Map.Entry<Job, String> e : jobs.entrySet()) {
 
         final Job job = e.getKey();
-        final String sample = e.getValue();
 
         if (job.isComplete()) {
           completedJobs++;
