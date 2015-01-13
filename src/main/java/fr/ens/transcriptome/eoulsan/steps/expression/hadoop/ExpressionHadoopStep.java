@@ -456,38 +456,32 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
   private static final void createFinalExpressionTranscriptsFile(
       final StepContext context, final Data alignmentsData,
-      final Data featureAnnotationData, final Data outData,
-      final Map<Job, String> jobconfs, final Configuration conf)
-      throws IOException, InterruptedException {
+      final Data featureAnnotationData, final Data outData, final Job job,
+      final Configuration conf) throws IOException, InterruptedException {
 
     FinalExpressionTranscriptsCreator fetc = null;
 
-    for (Map.Entry<Job, String> e : jobconfs.entrySet()) {
+    final long readsUsed =
+        job.getCounters().findCounter(COUNTER_GROUP, "reads used").getValue();
 
-      final Job rj = e.getKey();
+    // Load the annotation index
+    final Path exonsIndexPath =
+        getAnnotationIndexSerializedPath(context, featureAnnotationData);
 
-      final long readsUsed =
-          rj.getCounters().findCounter(COUNTER_GROUP, "reads used").getValue();
+    final FileSystem fs = exonsIndexPath.getFileSystem(conf);
 
-      // Load the annotation index
-      final Path exonsIndexPath =
-          getAnnotationIndexSerializedPath(context, featureAnnotationData);
+    fetc = new FinalExpressionTranscriptsCreator(fs.open(exonsIndexPath));
 
-      final FileSystem fs = exonsIndexPath.getFileSystem(conf);
+    // Set the result path
+    final Path resultPath = new Path(outData.getDataFilename());
 
-      fetc = new FinalExpressionTranscriptsCreator(fs.open(exonsIndexPath));
+    fetc.initializeExpressionResults();
 
-      // Set the result path
-      final Path resultPath = new Path(outData.getDataFilename());
+    // Load map-reduce results
+    fetc.loadPreResults(new DataFile(outData.getDataFile()
+        .getSourceWithoutExtension() + ".tmp").open(), readsUsed);
 
-      fetc.initializeExpressionResults();
-
-      // Load map-reduce results
-      fetc.loadPreResults(new DataFile(outData.getDataFile()
-          .getSourceWithoutExtension() + ".tmp").open(), readsUsed);
-
-      fetc.saveFinalResults(fs.create(resultPath));
-    }
+    fetc.saveFinalResults(fs.create(resultPath));
 
   }
 
@@ -600,9 +594,6 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // Create configuration object
     final Configuration conf = new Configuration(false);
 
-    // Create the list of jobs to run
-    final Map<Job, String> jobsRunning = new HashMap<>();
-
     try {
       final long startTime = System.currentTimeMillis();
 
@@ -615,11 +606,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
               featureAnnotationData, outData, getGenomicType(),
               getAttributeId());
 
-      job.submit();
-      jobsRunning.put(job, alignmentsData.getName());
-
       // Compute map-reduce part of the expression computation
-      MapReduceUtils.submitAndWaitForJobs(jobsRunning,
+      MapReduceUtils.submitAndWaitForJob(job, alignmentsData.getName(),
           CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
 
       final long mapReduceEndTime = System.currentTimeMillis();
@@ -629,7 +617,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       // Create the final expression files
       createFinalExpressionTranscriptsFile(context, alignmentsData,
-          featureAnnotationData, outData, jobsRunning, this.conf);
+          featureAnnotationData, outData, job, this.conf);
 
       getLogger().info(
           "Finish the create of the final expression files in "
@@ -705,11 +693,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
               getStranded(), getOverlapMode(), isRemoveAmbiguousCases(),
               tsamFormat);
 
-      job.submit();
-      jobsRunning.put(job, alignmentsData.getName());
-
       // Compute map-reduce part of the expression computation
-      MapReduceUtils.submitAndWaitForJobs(jobsRunning,
+      MapReduceUtils.submitAndWaitForJob(job, alignmentsData.getName(),
           CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
 
       final long mapReduceEndTime = System.currentTimeMillis();

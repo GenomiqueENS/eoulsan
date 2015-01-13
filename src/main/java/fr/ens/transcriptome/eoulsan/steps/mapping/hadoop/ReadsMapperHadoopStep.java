@@ -29,8 +29,6 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
@@ -107,14 +105,13 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
       // Get FASTQ format
       final FastqFormat fastqFormat = readsData.getMetadata().getFastqFormat();
 
-      // Create the list of jobs to run
-      final Map<Job, String> jobs = new HashMap<>();
-      jobs.put(
+      // Create the job to run
+      final Job job =
           createJobConf(conf, context, readsData, fastqFormat, mapperIndexData,
-              outData), readsData.getName());
+              outData);
 
       // Launch jobs
-      MapReduceUtils.submitAndWaitForJobs(jobs,
+      MapReduceUtils.submitAndWaitForJob(job, readsData.getName(),
           CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
 
       return status.createStepResult();
