@@ -69,14 +69,14 @@ public class ITCommandExecutor {
    * @param suffixNameOutputFile suffix for standard and error output file on
    *          process
    * @param desc description on command line
-   * @param isApplication true if application to run, otherwise false
+   * @param isApplicationCmdLine true if application to run, otherwise false
    *          corresponding to annexes script
    * @return result of execution command line, if command line not found in
    *         configuration return null
    */
   public ITCommandResult executeCommand(final String scriptConfKey,
       final String suffixNameOutputFile, final String desc,
-      final boolean isApplication) {
+      final boolean isApplicationCmdLine) {
 
     if (this.testConf.getProperty(scriptConfKey) == null) {
       return null;
@@ -90,12 +90,18 @@ public class ITCommandExecutor {
     }
 
     // Save command line in file
-    if (isApplication) {
+    if (isApplicationCmdLine) {
+
       try {
+
         com.google.common.io.Files.write(cmdLine + "\n", this.cmdLineFile,
             Charsets.UTF_8);
-      } catch (IOException e) {
-        // Nothing to do
+
+      } catch (final IOException e) {
+
+        getLogger().warning(
+            "Error while writing the application command line in file: "
+                + e.getMessage());
       }
     }
 
@@ -130,20 +136,21 @@ public class ITCommandExecutor {
 
       // Execution script fail, create an exception
       if (exitValue != 0) {
-        cmdResult.setException(new EoulsanException("Bad exit value: "
-            + exitValue + "\n\tcommand line: " + cmdLine + "\n\tdirectory: "
-            + this.outputTestDirectory));
+        cmdResult.setException(new EoulsanException("\tCommand line: "
+            + cmdLine + "\n\tDirectory: " + this.outputTestDirectory
+            + "\n\tBad exit value: " + exitValue));
       }
 
-      if (exitValue == 0 && !isApplication) {
+      if (exitValue == 0 && !isApplicationCmdLine) {
         // Success execution, remove standard and error output file
         stdoutFile.delete();
         stderrFile.delete();
       }
 
     } catch (IOException | InterruptedException e) {
-      cmdResult.setException(e, "Error during execution.\n\tcommand line: "
-          + cmdLine + "\n\tdirectory: " + this.outputTestDirectory);
+      cmdResult.setException(e, "\tError before execution.\n\tCommand line: "
+          + cmdLine + "\n\tDirectory: " + this.outputTestDirectory
+          + "\n\tMessage: " + e.getMessage());
 
     } finally {
       cmdResult.setDuration(timer.elapsed(TimeUnit.MILLISECONDS));
@@ -209,7 +216,7 @@ public class ITCommandExecutor {
 
       try {
         Files.copy(this.in, this.path, StandardCopyOption.REPLACE_EXISTING);
-      } catch (IOException e) {
+      } catch (final IOException e) {
         getLogger().warning(
             "Error while copying " + this.desc + ": " + e.getMessage());
       }
