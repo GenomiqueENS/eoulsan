@@ -53,6 +53,7 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.schedulers.TaskSchedulerFactory;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
@@ -83,6 +84,7 @@ public abstract class AbstractWorkflow implements Workflow {
   private final DataFile outputDir;
   private final DataFile logDir;
   private final DataFile taskDir;
+  private final DataFile tmpDir;
 
   private final Design design;
   private final WorkflowContext workflowContext;
@@ -639,9 +641,25 @@ public abstract class AbstractWorkflow implements Workflow {
     checkNotNull(this.outputDir, "the output directory is null");
     checkNotNull(this.localWorkingDir, "the local working directory is null");
 
+    // Get Eoulsan settings
+    final Settings settings = EoulsanRuntime.getSettings();
+
+    // Define the list of directories to create
+    final List<DataFile> dirsToCheck =
+        Lists.newArrayList(this.logDir, this.outputDir, this.localWorkingDir,
+            this.hadoopWorkingDir, this.taskDir);
+
+    // If the temporary directory has not been defined by user
+    if (!settings.isUserDefinedTempDirectory()) {
+
+      // Set the temporary directory
+      checkNotNull(this.tmpDir, "the temporary directory is null");
+      settings.setTempDirectory(this.tmpDir.getSource());
+      dirsToCheck.add(this.tmpDir);
+    }
+
     try {
-      for (DataFile dir : new DataFile[] {this.logDir, this.outputDir,
-          this.localWorkingDir, this.hadoopWorkingDir, this.taskDir}) {
+      for (DataFile dir : dirsToCheck) {
 
         if (dir == null) {
           continue;
@@ -772,6 +790,8 @@ public abstract class AbstractWorkflow implements Workflow {
     this.logDir = newDataFile(executionArguments.getLogPathname());
 
     this.taskDir = newDataFile(executionArguments.getTaskPathname());
+
+    this.tmpDir = newDataFile(executionArguments.getTemporaryPathname());
 
     this.localWorkingDir =
         newDataFile(executionArguments.getLocalWorkingPathname());

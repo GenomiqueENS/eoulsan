@@ -238,6 +238,15 @@ public final class Settings implements Serializable {
   }
 
   /**
+   * Test if the temporary directory File has been defined by user.
+   * @return true id the temporary directory has defined by user
+   */
+  public boolean isUserDefinedTempDirectory() {
+
+    return this.properties.containsKey(TMP_DIR_KEY);
+  }
+
+  /**
    * Test if design must be obfuscated
    * @return true if design must be obfuscated
    */
@@ -976,7 +985,6 @@ public final class Settings implements Serializable {
 
     getLogger().info(
         "System temp directory: " + System.getProperty("java.io.tmpdir"));
-    setTempDirectory(System.getProperty("java.io.tmpdir"));
   }
 
   /**
