@@ -362,6 +362,12 @@ public class ITSuite {
 
     getLogger().config("Action " + this.actionType);
 
+    final File loggerFile = new File(this.loggerPath);
+    if (loggerFile.exists()) {
+      // Create a symbolic link in output test directory
+      createSymbolicLink(loggerFile, this.outputTestsDirectory);
+    }
+
   }
 
   /**
@@ -419,13 +425,6 @@ public class ITSuite {
             + this.successCount + " succeeded, " + this.failCount + " failed, "
             + this.testSkippingCount + " skipped. "
             + (this.failCount == 0 ? "All tests are OK." : ""));
-
-    final File loggerFile = new File(this.loggerPath);
-
-    if (loggerFile.exists()) {
-      // Create a symbolic link in output test directory
-      createSymbolicLink(loggerFile, this.outputTestsDirectory);
-    }
 
     this.globalTimer.stop();
   }
