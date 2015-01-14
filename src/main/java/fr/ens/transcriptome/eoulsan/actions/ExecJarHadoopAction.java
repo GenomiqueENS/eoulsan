@@ -71,11 +71,7 @@ public class ExecJarHadoopAction extends AbstractAction {
         final Path paramPath, final Path designPath, final Path destPath) {
       super(millisSinceEpoch);
 
-      // Set base pathname
-      setHadoopWorkingPathname(designPath.getParent().toString());
-
-      final Path outputPath =
-          new Path(designPath.getParent().toString() + "/" + getJobId());
+      final Path outputPath = designPath.getParent();
 
       final Path logPath = new Path(outputPath, getJobId());
       final Path workingPath = new Path(logPath, "working");
