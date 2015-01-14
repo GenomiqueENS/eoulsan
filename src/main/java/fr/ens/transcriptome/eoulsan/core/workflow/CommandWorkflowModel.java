@@ -41,6 +41,7 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.P
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.ROOT_TAG_NAME;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.SKIP_ATTR_NAME_STEP_TAG;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.STEP_TAG_NAME;
+import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.VERSION_TAG;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.WORKFLOWNAME_TAG_NAME;
 
 import java.io.Serializable;
@@ -67,6 +68,8 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.google.common.base.Strings;
+
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
@@ -91,6 +94,7 @@ public class CommandWorkflowModel implements Serializable {
 
   private final List<String> stepIdList = new ArrayList<>();
   private final Map<String, String> stepIdNames = new HashMap<>();
+  private final Map<String, String> stepVersions = new HashMap<>();
   private final Map<String, Map<String, StepPort>> stepInputs = new HashMap<>();
   private final Map<String, Set<Parameter>> stepParameters = new HashMap<>();
   private final Map<String, Boolean> stepSkiped = new HashMap<>();
@@ -199,6 +203,7 @@ public class CommandWorkflowModel implements Serializable {
    * Add a step to the analysis
    * @param stepId id of the step
    * @param stepName name of the step to add
+   * @param version version of the step to add
    * @param inputs where find step inputs
    * @param parameters parameters of the step
    * @param skipStep true if the step must be skip
@@ -206,7 +211,7 @@ public class CommandWorkflowModel implements Serializable {
    * @throws EoulsanException if an error occurs while adding the step
    */
   void addStep(final String stepId, final String stepName,
-      final Map<String, StepOutputPort> inputs,
+      final String version, final Map<String, StepOutputPort> inputs,
       final Set<Parameter> parameters, final boolean skipStep,
       final boolean discardOutput) throws EoulsanException {
 
@@ -236,6 +241,8 @@ public class CommandWorkflowModel implements Serializable {
           "The id of the step is not valid (only ascii letters and digits are allowed): "
               + stepIdLower);
     }
+
+    final String stepVersion = Strings.nullToEmpty(version).trim();
 
     if (this.stepParameters.containsKey(stepIdLower)
         || StepType.getAllDefaultStepId().contains(stepIdLower)) {
@@ -287,6 +294,7 @@ public class CommandWorkflowModel implements Serializable {
 
     this.stepIdList.add(stepIdLower);
     this.stepIdNames.put(stepIdLower, stepNameLower);
+    this.stepVersions.put(stepIdLower, stepVersion);
     this.stepInputs.put(stepIdLower, inputsMap);
     this.stepParameters.put(stepIdLower, parameters);
     this.stepSkiped.put(stepIdLower, skipStep);
@@ -310,6 +318,16 @@ public class CommandWorkflowModel implements Serializable {
   public String getStepName(final String stepId) {
 
     return this.stepIdNames.get(stepId);
+  }
+
+  /**
+   * Get the required version of the step.
+   * @param stepId step id
+   * @return the required version of the step
+   */
+  public String getStepVersion(final String stepId) {
+
+    return this.stepVersions.get(stepId);
   }
 
   /**
@@ -531,6 +549,10 @@ public class CommandWorkflowModel implements Serializable {
     // Set step name
     addElement(document, stepElement, NAME_TAG_NAME,
         this.stepIdNames.get(stepId));
+
+    // Set version name
+    addElement(document, stepElement, VERSION_TAG,
+        this.stepVersions.get(stepId));
 
     // Set step inputs
     Element inputsElement = document.createElement(INPUTS_TAG_NAMES);

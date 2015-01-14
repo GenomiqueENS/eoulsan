@@ -39,6 +39,7 @@ import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.actions.ExecJarHadoopAction;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -108,8 +109,8 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
   private boolean waitJob = false;
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
+  public void configure(final StepConfigurationContext context,
+      final Set<Parameter> stepParameters) throws EoulsanException {
 
     final Settings settings = EoulsanRuntime.getSettings();
 

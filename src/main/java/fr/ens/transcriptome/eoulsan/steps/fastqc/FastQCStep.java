@@ -60,6 +60,7 @@ import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -86,7 +87,8 @@ public class FastQCStep extends AbstractStep {
   private static final String INPUT_FORMAT_PARAMETER_NAME = "input.format";
 
   /** Collector FastQC kmer size */
-  public static final String FASTQC_KMER_SIZE_PARAMETER_NAME = "fastqc.kmer.size";
+  public static final String FASTQC_KMER_SIZE_PARAMETER_NAME =
+      "fastqc.kmer.size";
   /** Collector FastQC nogroup */
   public static final String FASTQC_NOGROUP_PARAMETER_NAME = "fastqc.nogroup";
   /** Use exponential base groups in graph */
@@ -126,9 +128,9 @@ public class FastQCStep extends AbstractStep {
     final InputPortsBuilder builder = new InputPortsBuilder();
 
     if (this.inputFormat == DataFormats.READS_FASTQ) {
-      builder.addPort("fastq", DataFormats.READS_FASTQ);
+      builder.addPort("input", DataFormats.READS_FASTQ);
     } else {
-      builder.addPort("sam", DataFormats.MAPPER_RESULTS_SAM);
+      builder.addPort("input", DataFormats.MAPPER_RESULTS_SAM);
     }
 
     return builder.create();
@@ -137,12 +139,12 @@ public class FastQCStep extends AbstractStep {
   @Override
   public OutputPorts getOutputPorts() {
 
-    return singleOutputPort(DataFormats.REPORT_HTML);
+    return singleOutputPort(DataFormats.FASTQC_REPORT_HTML);
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
+  public void configure(final StepConfigurationContext context,
+      final Set<Parameter> stepParameters) throws EoulsanException {
 
     // Define parameters of FastQC
     System.setProperty("java.awt.headless", "true");
@@ -211,7 +213,8 @@ public class FastQCStep extends AbstractStep {
     final Data inData = context.getInputData(this.inputFormat);
 
     // Get output BAM data
-    final Data outData = context.getOutputData(DataFormats.REPORT_HTML, inData);
+    final Data outData =
+        context.getOutputData(DataFormats.FASTQC_REPORT_HTML, inData);
 
     // Extract data file
     final DataFile inFile = inData.getDataFile();

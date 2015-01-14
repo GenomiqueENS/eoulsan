@@ -150,6 +150,12 @@ public interface WorkflowStep extends Serializable {
   String getStepName();
 
   /**
+   * Get the step version required by user.
+   * @return a string with the version of the step required by the user
+   */
+  String getStepVersion();
+
+  /**
    * Get the parameter of the step.
    * @return a Set with the parameters of the step
    */

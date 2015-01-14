@@ -24,7 +24,6 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -34,7 +33,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.io.FileUtils;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -42,6 +40,7 @@ import org.testng.TestNG;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.it.ITFactory;
+import fr.ens.transcriptome.eoulsan.it.ITSuite;
 
 /**
  * This class launch integration test with Testng class.
@@ -82,8 +81,8 @@ public class IntegrationTestAction extends AbstractAction {
         help(options);
       }
 
-      if (line.hasOption("c")) {
-        String val = line.getOptionValue("c").trim();
+      if (line.hasOption("testconf")) {
+        final String val = line.getOptionValue("testconf").trim();
 
         if (!(new File(val).exists() && new File(val).canRead())) {
           Common.errorExit(null,
@@ -162,7 +161,7 @@ public class IntegrationTestAction extends AbstractAction {
         argsOptions += 2;
       }
 
-    } catch (ParseException e) {
+    } catch (final ParseException e) {
       Common
           .errorExit(e, "Error while parse parameter file: " + e.getMessage());
     }
@@ -190,7 +189,7 @@ public class IntegrationTestAction extends AbstractAction {
 
     // Path to test configuration
     options.addOption(OptionBuilder.withArgName("file").hasArg(true)
-        .withDescription("configuration file").withLongOpt("conf").create('c'));
+        .withDescription("configuration file").create("testconf"));
 
     // Path to application version to execute
     options.addOption(OptionBuilder.withArgName("appliPath").hasArg()
@@ -232,7 +231,7 @@ public class IntegrationTestAction extends AbstractAction {
     final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE
         + ".sh " + getName()
-        + " [options] configuration_file_path application_path", options);
+        + " [options]", options);
 
     Common.exit(0);
   }
@@ -250,7 +249,7 @@ public class IntegrationTestAction extends AbstractAction {
 
     // Define a listener that print information about the results of the
     // integration tests
-    TestListenerAdapter tla = new TestListenerAdapter() {
+    final TestListenerAdapter tla = new TestListenerAdapter() {
 
       @Override
       public void onTestSuccess(final ITestResult tr) {
@@ -270,7 +269,7 @@ public class IntegrationTestAction extends AbstractAction {
     };
 
     // Create and configure TestNG
-    TestNG testng = new TestNG();
+    final TestNG testng = new TestNG();
     testng.setTestClasses(new Class[] {ITFactory.class});
     testng.addListener(tla);
 
@@ -286,7 +285,7 @@ public class IntegrationTestAction extends AbstractAction {
     final File reportDirectory = new File(testng.getOutputDirectory());
 
     final File outputTestDirectory =
-        new File(ITFactory.getOutputTestDirectoryPath());
+        new File(ITSuite.getInstance().getOutputTestDirectoryPath());
 
     if (reportDirectory.exists() && outputTestDirectory.exists()) {
       // Build destination directory to copy TestNG report
@@ -294,11 +293,12 @@ public class IntegrationTestAction extends AbstractAction {
           new File(outputTestDirectory, reportDirectory.getName());
 
       // Copy TestNG directory
-      try {
-        FileUtils.copyDirectory(reportDirectory, destinationDirectory);
-      } catch (IOException e) {
-        // Nothing to do
-      }
+      // try {
+      // FileUtils.copyDirectory(reportDirectory, destinationDirectory);
+      //
+      // } catch (final IOException e) {
+      // // Nothing to do
+      // }
     }
   }
 

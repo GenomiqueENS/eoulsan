@@ -44,6 +44,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -101,8 +102,8 @@ public class HDFSDataDownloadStep extends AbstractStep {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
+  public void configure(final StepConfigurationContext context,
+      final Set<Parameter> stepParameters) throws EoulsanException {
 
     this.conf = CommonHadoop.createConfiguration(EoulsanRuntime.getSettings());
   }

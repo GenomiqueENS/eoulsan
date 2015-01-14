@@ -33,6 +33,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -69,8 +70,8 @@ public class ShellStep extends AbstractStep {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
+  public void configure(final StepConfigurationContext context,
+      final Set<Parameter> stepParameters) throws EoulsanException {
 
     for (Parameter p : stepParameters) {
 

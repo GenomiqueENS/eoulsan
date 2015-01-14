@@ -24,12 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
-import java.util.logging.Logger;
-
-import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.workflow.Workflow;
-import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
@@ -38,7 +33,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public interface StepContext {
+public interface StepContext extends StepConfigurationContext {
 
   /**
    * Get the context name.
@@ -53,88 +48,10 @@ public interface StepContext {
   void setContextName(String contextName);
 
   /**
-   * Get the command name.
-   * @return the command name
-   */
-  String getCommandName();
-
-  /**
-   * Get the UUID of the job.
-   * @return the job UUID
-   */
-  String getJobUUID();
-
-  /**
-   * Get the job description.
-   * @return the job description
-   */
-  String getJobDescription();
-
-  /**
-   * Get the job environment.
-   * @return the job environment
-   */
-  String getJobEnvironment();
-
-  /**
-   * Get command description.
-   * @return the command description
-   */
-  String getCommandDescription();
-
-  /**
-   * Get the command author.
-   * @return the command author
-   */
-  String getCommandAuthor();
-
-  /**
-   * Get the local working path.
-   * @return Returns the local working Path
-   */
-  String getLocalWorkingPathname();
-
-  /**
-   * Get the Hadoop working path.
-   * @return Returns the Hadoop working Path
-   */
-  String getHadoopWorkingPathname();
-
-  /**
-   * Get the log path.
-   * @return Returns the log Path
-   */
-  String getLogPathname();
-
-  /**
    * Get the task path.
    * @return Returns the task Path
    */
   String getTaskPathname();
-
-  /**
-   * Get the output path.
-   * @return Returns the output Path
-   */
-  String getOutputPathname();
-
-  /**
-   * Get the step working path.
-   * @return Returns the step working path
-   */
-  String getStepWorkingPathname();
-
-  /**
-   * Get the job id.
-   * @return the job id
-   */
-  String getJobId();
-
-  /**
-   * Get the host of the job.
-   * @return a string with the host of the job
-   */
-  String getJobHost();
 
   /**
    * Get the creation time of the context.
@@ -144,52 +61,10 @@ public interface StepContext {
   long getContextCreationTime();
 
   /**
-   * Get the design file path.
-   * @return the design file path
-   */
-  String getDesignPathname();
-
-  /**
-   * Get the workflow file path.
-   * @return the workflow file path
-   */
-  String getWorkflowPathname();
-
-  /**
-   * Get the application jar path.
-   * @return Returns the jar path
-   */
-  String getJarPathname();
-
-  /**
-   * Get EoulsanRuntime.
-   * @return the EoulsanRuntime
-   */
-  AbstractEoulsanRuntime getRuntime();
-
-  /**
-   * Get Eoulsan settings.
-   * @return the Settings
-   */
-  Settings getSettings();
-
-  /**
-   * Get the logger.
-   * @return the logger
-   */
-  Logger getLogger();
-
-  /**
    * Get the workflow description
    * @return the workflow description
    */
   Workflow getWorkflow();
-
-  /**
-   * Get the current step.
-   * @return the current Step or null if no Step is currently running.
-   */
-  WorkflowStep getCurrentStep();
 
   /**
    * Get the input data for an input DataType and a Sample.

@@ -642,11 +642,11 @@ of reads that reject each filter like in local mode.
 
          </release>
 
-         <release version="2.0-alpha4" description="Eoulsan 2.0-alpha4 release" date="TBD">
+         <release version="2.0-alpha4" description="Eoulsan 2.0-alpha4 release" date="2014-12-22">
 
             <action dev="jourdren" type="fix">
                 Fix HTSeq-count bug when an attribute in GFF3 file contains multiple parents. To use this fix,
-                enable the "splitattributevalues" parameter in the expression step.
+                you must enable the "splitattributevalues" parameter in the expression step.
             </action>
 
             <action dev="jourdren" type="fix">
@@ -654,11 +654,11 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="fix">
-                Fix small issues in the workflow engine (step execution order and when adding of uncompression steps were required).
+                Fix small issues in the workflow engine (step execution order, add an uncompression step when required, skip generators steps when only required only skipped steps).
             </action>
 
            <action dev="jourdren" type="fix">
-                Fix many bugs with SOAP mapper.
+                Fix many bugs in SOAP mapper wrapper.
             </action>
 
             <action dev="sperrin" type="fix">

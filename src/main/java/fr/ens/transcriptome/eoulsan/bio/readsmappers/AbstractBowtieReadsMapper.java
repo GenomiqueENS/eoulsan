@@ -115,7 +115,7 @@ public abstract class AbstractBowtieReadsMapper extends
   /**
    * Get the name of a bowtie flavored binary.
    * @param binary the binary
-   * @param newbinary the binary name for the new versions
+   * @param newBinary the binary name for the new versions
    * @param firstFlavoredVersion first version of Bowtie to be flavored
    * @return the flavored binary name
    */

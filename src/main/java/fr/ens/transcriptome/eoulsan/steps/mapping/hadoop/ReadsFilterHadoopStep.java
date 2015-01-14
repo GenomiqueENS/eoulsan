@@ -33,9 +33,7 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterMappe
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -107,14 +105,11 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
       MapReduceUtils.submitAndWaitForJobs(jobsPairedEnd,
           CommonHadoop.CHECK_COMPLETION_TIME);
 
-      // Create the list of jobs to run
-      final Map<Job, String> jobs = new HashMap<>();
-      jobs.put(createJobConf(conf, inData, outData, fastqFormat),
-          inData.getName());
+      // Create the job to run
+      final Job job = createJobConf(conf, inData, outData, fastqFormat);
 
-      // TODO Remove usage of the next method as there now only one element to
-      // process
-      MapReduceUtils.submitAndWaitForJobs(jobs,
+      // Submit main job
+      MapReduceUtils.submitAndWaitForJob(job, inData.getName(),
           CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
 
       return status.createStepResult();

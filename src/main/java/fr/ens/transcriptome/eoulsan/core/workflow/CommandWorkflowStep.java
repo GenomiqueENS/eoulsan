@@ -28,7 +28,6 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
@@ -78,34 +77,18 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
    * @param workflow workflow of the step
    * @param id identifier of the step
    * @param stepName Step name
+   * @param stepVrsion step version
    * @param skip true to skip execution of the step
    * @param parameters parameters of the step
    * @throws EoulsanException id an error occurs while creating the step
    */
   public CommandWorkflowStep(final AbstractWorkflow workflow, final String id,
-      final String stepName, final Set<Parameter> parameters,
-      final boolean skip, final boolean copyResultsToOutput)
-      throws EoulsanException {
+      final String stepName, final String stepVersion,
+      final Set<Parameter> parameters, final boolean skip,
+      final boolean copyResultsToOutput) throws EoulsanException {
 
-    super(workflow, id, stepName, skip, copyResultsToOutput, parameters);
-  }
-
-  /**
-   * Create a step for a standard step.
-   * @param workflow workflow of the step
-   * @param id identifier of the step
-   * @param stepName Step name
-   * @param skip true to skip execution of the step
-   * @param copyResultsToOutput copy step result to output directory
-   * @param parameters parameters of the step
-   * @throws EoulsanException id an error occurs while creating the step
-   */
-  protected CommandWorkflowStep(final AbstractWorkflow workflow,
-      final String id, final String stepName, final boolean skip,
-      final boolean copyResultsToOutput, final DataFile workingDir,
-      final Set<Parameter> parameters) throws EoulsanException {
-
-    super(workflow, id, stepName, skip, copyResultsToOutput, workingDir,
+    super(workflow, id, stepName, stepVersion, skip, copyResultsToOutput,
         parameters);
   }
+
 }

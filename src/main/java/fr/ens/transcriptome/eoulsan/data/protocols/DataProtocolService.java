@@ -24,9 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.data.protocols;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimaps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
@@ -97,14 +97,15 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
   }
 
   @Override
-  public Map<String, String> getServiceClasses() {
+  public ListMultimap<String, String> getServiceClasses() {
 
-    final Map<String, String> result = new HashMap<>(super.getServiceClasses());
+    final ListMultimap<String, String> result =
+        ArrayListMultimap.create(super.getServiceClasses());
 
     result.put(this.defaultProtocolName, this.defaultProtocol.getClass()
         .getName());
 
-    return Collections.unmodifiableMap(result);
+    return Multimaps.unmodifiableListMultimap(result);
   }
 
   @Override
