@@ -2,6 +2,8 @@
   <name>mapper_results_bam</name>
   <description>bam alignments format</description>
   <prefix>alignments</prefix>
+  <splitter>fr.ens.transcriptome.eoulsan.splitermergers.BAMSplitter</splitter>
+  <merger>fr.ens.transcriptome.eoulsan.splitermergers.BAMMerger</merger>
   <extensions>
   	<extension default="true">.bam</extension>
   </extensions>

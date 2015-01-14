@@ -20,7 +20,7 @@ fr.ens.transcriptome.eoulsan.steps.expression.hadoop.ExpressionHadoopStep
 fr.ens.transcriptome.eoulsan.steps.expression.local.ExpressionLocalStep
 fr.ens.transcriptome.eoulsan.steps.expression.ExpressionResultsAnnotationStep
 
-# Normalisation and diffana steps
+# Normalization and differential analysis steps
 fr.ens.transcriptome.eoulsan.steps.diffana.local.NormalizationLocalStep
 fr.ens.transcriptome.eoulsan.steps.diffana.local.DiffAnaLocalStep
 fr.ens.transcriptome.eoulsan.steps.diffana.DiffanaResultsAnnotationStep
@@ -37,10 +37,13 @@ fr.ens.transcriptome.eoulsan.steps.CopyOutputDataStep
 # Splitter and Merger steps
 fr.ens.transcriptome.eoulsan.steps.SplitterStep
 fr.ens.transcriptome.eoulsan.steps.MergerStep
+fr.ens.transcriptome.eoulsan.steps.TechnicalReplicateMerger
 
 # Common step
 fr.ens.transcriptome.eoulsan.steps.ShellStep
 
-# Ohter step
+# QC step
 fr.ens.transcriptome.eoulsan.steps.fastqc.FastQCStep
 
+# Other step
+fr.ens.transcriptome.eoulsan.steps.ImportStep

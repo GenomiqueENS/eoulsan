@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.core.workflow.FileNaming.toValidName;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -191,6 +192,56 @@ public final class DataUtils {
     }
 
     return null;
+  }
+
+  /**
+   * Set the metadata of a data object from the information of another data
+   * object.
+   * @param data the data object
+   * @param dataSourceOfMetadata data source of metadata
+   * @param sample the sample
+   */
+  public static void setDataMetadata(final Data data,
+      final Collection<Data> dataSourceOfMetadata) {
+
+    checkNotNull(data, "data argument cannot be null");
+    checkNotNull(dataSourceOfMetadata,
+        "dataForMetaData argument cannot be null");
+
+    for (Data d : dataSourceOfMetadata) {
+      setDataMetadata(data, d);
+    }
+  }
+
+  /**
+   * Set the metadata of a data object from the information of another data
+   * object.
+   * @param data the data object
+   * @param dataSourceOfMetadata data source of metadata
+   * @param sample the sample
+   */
+  public static void setDataMetadata(final Data data,
+      final Data dataSourceOfMetadata) {
+
+    checkNotNull(data, "data argument cannot be null");
+    checkNotNull(dataSourceOfMetadata,
+        "dataForMetaData argument cannot be null");
+
+    // If data is a list do nothing
+    if (data.isList()) {
+      return;
+    }
+
+    final DataMetadata metadata = data.getMetadata();
+
+    if (dataSourceOfMetadata.isList()) {
+
+      for (Data d : dataSourceOfMetadata.getListElements()) {
+        metadata.set(d.getMetadata());
+      }
+    } else {
+      metadata.set(dataSourceOfMetadata.getMetadata());
+    }
   }
 
   //

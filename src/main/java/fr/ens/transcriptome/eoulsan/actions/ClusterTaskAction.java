@@ -178,7 +178,7 @@ public class ClusterTaskAction extends AbstractAction {
           StepInstances.getInstance().getStep(context.getCurrentStep());
 
       // Configure step
-      step.configure(context.getCurrentStep().getParameters());
+      step.configure(context, context.getCurrentStep().getParameters());
 
       // Force TaskRunner to res-use the step instance that just has been
       // created

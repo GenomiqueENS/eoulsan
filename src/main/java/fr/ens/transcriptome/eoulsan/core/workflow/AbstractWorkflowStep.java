@@ -33,7 +33,6 @@ import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.noOutputPort;
 import java.util.Collections;
 import java.util.Set;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -69,6 +68,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
   private final int number;
   private final String id;
+  private final String version;
   private final StepType type;
   private final Set<Parameter> parameters;
   private ParallelizationMode parallelizationMode =
@@ -125,6 +125,12 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   public String getId() {
 
     return this.id;
+  }
+
+  @Override
+  public String getStepVersion() {
+
+    return this.version;
   }
 
   @Override
@@ -430,7 +436,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
           || step.getClass().getAnnotation(Generator.class) != null) {
 
         // Configure step
-        step.configure(getParameters());
+        step.configure(new WorkflowStepConfigurationContext(this),
+            getParameters());
 
         // Update parallelization mode if step configuration requires it
         this.parallelizationMode = getParallelizationMode(step);
@@ -544,6 +551,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       StepInstances.getInstance().registerStep(this, checkerStep);
 
       this.stepName = checkerStep.getName();
+      this.version = checkerStep.getVersion().toString();
       this.mode = EoulsanMode.getEoulsanMode(checkerStep.getClass());
 
       // Define working directory
@@ -562,6 +570,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       StepInstances.getInstance().registerStep(this, designStep);
 
       this.stepName = designStep.getName();
+      this.version = checkerStep2.getVersion().toString();
       this.mode = EoulsanMode.getEoulsanMode(designStep.getClass());
 
       // Define working directory
@@ -576,6 +585,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       StepInstances.getInstance().registerStep(this, fakeStep);
 
       this.stepName = type.name();
+      this.version = fakeStep.getVersion().toString();
       this.mode = EoulsanMode.NONE;
 
       // Define working directory
@@ -616,6 +626,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.createLogFiles = false;
     this.type = StepType.GENERATOR_STEP;
     this.stepName = generator.getName();
+    this.version = generator.getVersion().toString();
     this.mode = EoulsanMode.getEoulsanMode(generator.getClass());
     this.parameters = Collections.emptySet();
     this.copyResultsToOutput = false;
@@ -636,15 +647,17 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * Create a step for a standard step.
    * @param workflow workflow of the step
    * @param id identifier of the step
+   * @param stepName step name
+   * @param stepVersion step version
    * @param skip true to skip execution of the step
    * @param copyResultsToOutput copy step result to output directory
    * @param parameters parameters of the step
    * @throws EoulsanException id an error occurs while creating the step
    */
   protected AbstractWorkflowStep(final AbstractWorkflow workflow,
-      final String id, final String stepName, final boolean skip,
-      final boolean copyResultsToOutput, final Set<Parameter> parameters)
-      throws EoulsanException {
+      final String id, final String stepName, final String stepVersion,
+      final boolean skip, final boolean copyResultsToOutput,
+      final Set<Parameter> parameters) throws EoulsanException {
 
     checkNotNull(workflow, "Workflow argument cannot be null");
     checkNotNull(id, "Step id argument cannot be null");
@@ -656,10 +669,12 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.id = id;
     this.skip = skip;
     this.stepName = stepName;
+    this.version = stepVersion;
     this.copyResultsToOutput = copyResultsToOutput;
 
     // Load Step instance
-    final Step step = StepInstances.getInstance().getStep(this, stepName);
+    final Step step =
+        StepInstances.getInstance().getStep(this, stepName, stepVersion);
     this.type =
         step.getClass().getAnnotation(Generator.class) != null
             ? StepType.GENERATOR_STEP : StepType.STANDARD_STEP;
@@ -680,57 +695,4 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.workflow.register(this);
   }
 
-  /**
-   * Create a step for a standard step.
-   * @param workflow workflow of the step
-   * @param id identifier of the step
-   * @param skip true to skip execution of the step
-   * @param copyResultsToOutput copy step result to output directory
-   * @param parameters parameters of the step
-   * @throws EoulsanException id an error occurs while creating the step
-   */
-  protected AbstractWorkflowStep(final AbstractWorkflow workflow,
-      final String id, final String stepName, final boolean skip,
-      final boolean copyResultsToOutput, final DataFile workingDir,
-      final Set<Parameter> parameters) throws EoulsanException {
-
-    checkNotNull(workflow, "Workflow argument cannot be null");
-    checkNotNull(id, "Step id argument cannot be null");
-    checkNotNull(stepName, "Step name argument cannot be null");
-    checkNotNull(workingDir, "working directory argument cannot be null");
-    checkNotNull(parameters, "Step arguments argument cannot be null");
-
-    if (!(workingDir.equals(workflow.getOutputDir())
-        || workingDir.equals(workflow.getLocalWorkingDir()) || workingDir
-          .equals(workflow.getHadoopWorkingDir()))) {
-      throw new IllegalArgumentException(
-          "working dir is not the output/local/hadoop directory of the workflow: "
-              + workingDir);
-    }
-
-    this.workflow = workflow;
-    this.number = instanceCounter++;
-    this.id = id;
-    this.skip = skip;
-    this.type = StepType.STANDARD_STEP;
-    this.stepName = stepName;
-    this.copyResultsToOutput = copyResultsToOutput;
-
-    // Load Step instance
-    final Step step = StepInstances.getInstance().getStep(this, stepName);
-    this.mode = EoulsanMode.getEoulsanMode(step.getClass());
-    this.parameters = Sets.newLinkedHashSet(parameters);
-    this.terminalStep = step.isTerminalStep();
-    this.createLogFiles = step.isCreateLogFiles();
-    this.parallelizationMode = getParallelizationMode(step);
-
-    // Define working directory
-    this.workingDir = workingDir;
-
-    // Set state observer
-    this.observer = new WorkflowStepStateObserver(this);
-
-    // Register this step in the workflow
-    this.workflow.register(this);
-  }
 }

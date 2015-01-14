@@ -22,53 +22,46 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core;
+package fr.ens.transcriptome.eoulsan.steps;
 
-import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
-import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
+import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
+import fr.ens.transcriptome.eoulsan.data.Data;
+import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 
 /**
- * This class allow to get a Step object from a class in the classpath.
- * @since 1.0
+ * This class define a merger step for technical replicates.
  * @author Laurent Jourdren
+ * @since 2.0
  */
-public class StepService extends ServiceNameLoader<Step> {
+@HadoopCompatible
+@ReuseStepInstance
+public class TechnicalReplicateMerger extends MergerStep {
 
   //
-  // Protected methods
+  // Protected method
   //
 
   @Override
-  protected boolean accept(final Class<?> clazz) {
+  protected String getMapKey(final Data data) {
 
-    return EoulsanMode
-        .accept(clazz, EoulsanRuntime.getRuntime().isHadoopMode());
+    return data.getMetadata().get(SampleMetadata.REP_TECH_GROUP_FIELD);
   }
 
   @Override
-  protected String getMethodName() {
+  protected boolean checkForPartDuplicates() {
 
-    return "getName";
+    return false;
   }
 
   //
-  // Constructor
+  // Step methods
   //
 
-  /**
-   * Private constructor.
-   */
+  @Override
+  public String getName() {
 
-  StepService() {
-
-    super(Step.class);
-
-    for (String stepName : getServiceClasses().keySet()) {
-
-      getLogger().config("found step: " + stepName + " (" + stepName + ")");
-    }
+    return "technicalreplicatemerger";
   }
 
 }

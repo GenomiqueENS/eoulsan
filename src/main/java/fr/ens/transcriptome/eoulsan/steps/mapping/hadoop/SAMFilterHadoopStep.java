@@ -31,8 +31,6 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUti
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -77,21 +75,15 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
       final Data genomeDescData = context.getInputData(GENOME_DESC_TXT);
       final Data outData = context.getOutputData(MAPPER_RESULTS_SAM, inData);
 
-      // Create the list of jobs to run
-      final Map<Job, String> jobs = new HashMap<>();
-      jobs.put(createJob(conf, inData, genomeDescData, outData),
-          inData.getName());
+      // Create the job to run
+      final Job job = createJob(conf, inData, genomeDescData, outData);
 
       // Launch jobs
-      MapReduceUtils.submitAndWaitForJobs(jobs,
+      MapReduceUtils.submitAndWaitForJob(job, inData.getName(),
           CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
 
       return status.createStepResult();
-    } catch (IOException e) {
-
-      return status.createStepResult(e,
-          "Error while running job: " + e.getMessage());
-    } catch (InterruptedException e) {
+    } catch (IOException | InterruptedException | ClassNotFoundException e) {
 
       return status.createStepResult(e,
           "Error while running job: " + e.getMessage());
