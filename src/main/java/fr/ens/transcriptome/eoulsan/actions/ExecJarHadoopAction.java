@@ -31,8 +31,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -55,12 +53,6 @@ import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
-import fr.ens.transcriptome.eoulsan.core.Step;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.steps.TerminalStep;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.hadoop.CopyDesignAndWorkflowFilesToOutputStep;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep;
-import fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HadoopUploadStep;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -139,7 +131,6 @@ public class ExecJarHadoopAction extends AbstractAction {
 
     String jobDescription = null;
     String jobEnvironment = null;
-    boolean uploadOnly = false;
     long millisSinceEpoch = System.currentTimeMillis();
 
     int argsOptions = 0;
@@ -177,12 +168,6 @@ public class ExecJarHadoopAction extends AbstractAction {
         argsOptions += 2;
       }
 
-      if (line.hasOption("upload")) {
-
-        uploadOnly = true;
-        argsOptions += 1;
-      }
-
     } catch (ParseException e) {
       Common.errorExit(e,
           "Error while parsing command line arguments: " + e.getMessage());
@@ -199,7 +184,7 @@ public class ExecJarHadoopAction extends AbstractAction {
 
     // Execute program in hadoop mode
     run(paramPathname, designPathname, destPathname, jobDescription,
-        jobEnvironment, uploadOnly, millisSinceEpoch);
+        jobEnvironment, millisSinceEpoch);
 
   }
 
@@ -277,12 +262,11 @@ public class ExecJarHadoopAction extends AbstractAction {
    * @param jobDescription job description
    * @param jobEnvironment job environment
    * @param millisSinceEpoch milliseconds since epoch
-   * @param uploadOnly true if execution must end after upload
    */
   private static final void run(final String workflowPathname,
       final String designPathname, final String destPathname,
       final String jobDescription, final String jobEnvironment,
-      final boolean uploadOnly, final long millisSinceEpoch) {
+      final long millisSinceEpoch) {
 
     checkNotNull(workflowPathname, "paramPathname is null");
     checkNotNull(designPathname, "designPathname is null");
@@ -359,34 +343,8 @@ public class ExecJarHadoopAction extends AbstractAction {
       // Create executor
       final Executor e = new Executor(arguments);
 
-      // Add init global logger Step
-      // Add Copy design and workflow file Step
-      // Add terminal step if upload only
-      final List<Step> firstSteps;
-
-      // TODO The upload only option is unnecessary in Eoulsan 2.0
-      if (uploadOnly) {
-
-        // TODO The upload step is unnecessary in Eoulsan 2.0
-        // Create upload step
-        final Step uploadStep =
-            new HadoopUploadStep(new DataFile(destURI.toString()), conf);
-
-        firstSteps =
-            Arrays.asList(uploadStep, new TerminalStep(),
-                new CopyDesignAndWorkflowFilesToOutputStep());
-      } else {
-        // TODO This CopyDesign...OutputStep step is unnecessary in Eoulsan 2.0
-        firstSteps =
-            Arrays.asList((Step) new CopyDesignAndWorkflowFilesToOutputStep());
-      }
-
-      // Add download Step
-      final List<Step> lastSteps =
-          Collections.singletonList((Step) new HDFSDataDownloadStep());
-
       // Launch executor
-      e.execute(firstSteps, lastSteps);
+      e.execute();
 
     } catch (FileNotFoundException e) {
 

@@ -78,7 +78,6 @@ public class HadoopExecAction extends AbstractAction {
     final CommandLineParser parser = new GnuParser();
 
     String jobDescription = null;
-    boolean uploadOnly = false;
 
     int argsOptions = 0;
 
@@ -100,12 +99,6 @@ public class HadoopExecAction extends AbstractAction {
         argsOptions += 2;
       }
 
-      if (line.hasOption("upload")) {
-
-        uploadOnly = true;
-        argsOptions += 1;
-      }
-
     } catch (ParseException e) {
       Common.errorExit(e,
           "Error while parsing command line arguments: " + e.getMessage());
@@ -120,7 +113,7 @@ public class HadoopExecAction extends AbstractAction {
     final String hdfsPath = arguments.get(argsOptions + 2);
 
     // Execute program in hadoop mode
-    run(paramFile, designFile, hdfsPath, jobDescription, uploadOnly);
+    run(paramFile, designFile, hdfsPath, jobDescription);
   }
 
   //
@@ -175,11 +168,9 @@ public class HadoopExecAction extends AbstractAction {
    * @param designFile design file
    * @param hdfsPath path of data on hadoop file system
    * @param jobDescription job description
-   * @param uploadOnly true if execution must end after upload
    */
   private static final void run(final File workflowFile, final File designFile,
-      final String hdfsPath, final String jobDescription,
-      final boolean uploadOnly) {
+      final String hdfsPath, final String jobDescription) {
 
     checkNotNull(workflowFile, "paramFile is null");
     checkNotNull(designFile, "designFile is null");
@@ -223,10 +214,6 @@ public class HadoopExecAction extends AbstractAction {
       if (jobDescription != null) {
         argsList.add("-d");
         argsList.add(jobDescription.trim());
-      }
-
-      if (uploadOnly) {
-        argsList.add("-upload");
       }
 
       argsList.add("-e");
