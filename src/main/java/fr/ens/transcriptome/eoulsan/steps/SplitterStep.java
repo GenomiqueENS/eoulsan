@@ -45,6 +45,7 @@ import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -52,6 +53,7 @@ import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
+import fr.ens.transcriptome.eoulsan.data.DataMetadata;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.splitermergers.Splitter;
 import fr.ens.transcriptome.eoulsan.util.Version;
@@ -79,6 +81,7 @@ public class SplitterStep extends AbstractStep {
   private static final class SplitterIterator {
 
     private final Data data;
+    private final DataMetadata metadata;
     private final List<Data> list = new ArrayList<>();
 
     private Data getData(final int index) {
@@ -89,7 +92,10 @@ public class SplitterStep extends AbstractStep {
       checkArgument(index >= 0, "index argument cannot be lower than 0");
 
       if (index == this.list.size()) {
-        this.list.add(this.data.addDataToList(this.data.getName(), index));
+        final Data newData =
+            this.data.addDataToList(this.data.getName(), index);
+        newData.getMetadata().set(this.metadata);
+        this.list.add(newData);
       }
 
       return this.list.get(index);
@@ -136,9 +142,10 @@ public class SplitterStep extends AbstractStep {
      * Constructor.
      * @param data the data
      */
-    public SplitterIterator(final Data data) {
+    public SplitterIterator(final Data data, final DataMetadata metadata) {
 
       this.data = data;
+      this.metadata = metadata;
     }
 
   }
@@ -173,15 +180,16 @@ public class SplitterStep extends AbstractStep {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
+  public void configure(final StepConfigurationContext context,
+      final Set<Parameter> stepParameters) throws EoulsanException {
 
     final Set<Parameter> splitterParameters = new HashSet<>();
 
     for (Parameter p : stepParameters) {
 
-      if ("format".equals(p.getName())) {
+      switch (p.getName()) {
 
+      case "format":
         // Get format
         final DataFormat format =
             DataFormatRegistry.getInstance()
@@ -200,12 +208,15 @@ public class SplitterStep extends AbstractStep {
 
         // Set the splitter
         this.splitter = format.getSplitter();
+        break;
 
-      } else if ("compression".equals(p.getName())) {
-
+      case "compression":
         this.compression = getCompressionTypeByContentEncoding(p.getValue());
-      } else {
+        break;
+
+      default:
         splitterParameters.add(p);
+        break;
       }
     }
 
@@ -227,6 +238,8 @@ public class SplitterStep extends AbstractStep {
     final Data inData = context.getInputData(format);
     final Data outData = context.getOutputData(format, inData);
 
+    final DataMetadata metadata = inData.getMetadata();
+
     try {
 
       if (inData.getPart() != -1) {
@@ -237,8 +250,8 @@ public class SplitterStep extends AbstractStep {
       if (format.getMaxFilesCount() == 1) {
 
         // Launch splitting
-        this.splitter.split(inData.getDataFile(),
-            new SplitterIterator(outData).getIterator());
+        this.splitter.split(inData.getDataFile(), new SplitterIterator(outData,
+            metadata).getIterator());
 
       } else {
 
@@ -247,7 +260,7 @@ public class SplitterStep extends AbstractStep {
 
           // Launch splitting
           this.splitter.split(inData.getDataFile(fileIndex),
-              new SplitterIterator(outData).getIterator(fileIndex));
+              new SplitterIterator(outData, metadata).getIterator(fileIndex));
         }
       }
 

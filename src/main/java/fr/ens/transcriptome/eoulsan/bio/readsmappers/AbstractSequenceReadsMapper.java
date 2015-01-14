@@ -62,14 +62,21 @@ public abstract class AbstractSequenceReadsMapper implements
   private static final String SYNC = AbstractSequenceReadsMapper.class
       .getName();
 
+  static final String SHORT_INDEX_FLAVOR = "standard";
+  static final String LARGE_INDEX_FLAVOR = "large-index";
+  static final String DEFAULT_FLAVOR = SHORT_INDEX_FLAVOR;
+
   private File archiveIndexFile;
   private File archiveIndexDir;
 
   private FastqFormat fastqFormat = FastqFormat.FASTQ_SANGER;
 
   private String mapperVersionToUse = getDefaultPackageVersion();
+  private String flavorToUse = DEFAULT_FLAVOR;
+  private String flavor = DEFAULT_FLAVOR;
   private int threadsNumber;
   private String mapperArguments = null;
+  private String indexerArguments = null;
   private File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
 
   private ReporterIncrementer incrementer;
@@ -125,13 +132,22 @@ public abstract class AbstractSequenceReadsMapper implements
   protected abstract List<String> getIndexerCommand(
       final String indexerPathname, final String genomePathname);
 
-  /**
-   * Get the version of the mapper to execute
-   * @return the version of the mapper to execute
-   */
-  protected String getMapperVersionToUse() {
+  @Override
+  public String getMapperFlavorToUse() {
+    return this.flavorToUse;
+  }
+
+  @Override
+  public String getMapperVersionToUse() {
 
     return this.mapperVersionToUse;
+  }
+
+  @Override
+  public String getMapperFlavor() {
+
+    checkIfFlavorExists();
+    return this.flavor;
   }
 
   //
@@ -151,25 +167,27 @@ public abstract class AbstractSequenceReadsMapper implements
   }
 
   @Override
+  public String getIndexerArguments() {
+
+    return this.indexerArguments;
+  }
+
+  /**
+   * Get the default mapper arguments.
+   * @return the default mapper arguments
+   */
+  protected abstract String getDefaultMapperArguments();
+
+  @Override
   public List<String> getListMapperArguments() {
 
-    if (getMapperArguments() == null) {
-      return Collections.emptyList();
-    }
+    return getListArguments(getMapperArguments());
+  }
 
-    // Split the mapper arguments
-    final String[] tabMapperArguments = getMapperArguments().trim().split(" ");
+  @Override
+  public List<String> getListIndexerArguments() {
 
-    final List<String> result = new ArrayList<>();
-
-    // Keep only non empty arguments
-    for (String arg : tabMapperArguments) {
-      if (!arg.isEmpty()) {
-        result.add(arg);
-      }
-    }
-
-    return result;
+    return getListArguments(getIndexerArguments());
   }
 
   /**
@@ -203,6 +221,14 @@ public abstract class AbstractSequenceReadsMapper implements
   //
 
   @Override
+  public void setMapperFlavorToUse(final String flavor) {
+
+    checkState(!this.binariesReady, "Mapper has been initialized");
+
+    this.flavorToUse = flavor;
+  }
+
+  @Override
   public void setMapperVersionToUse(final String version) {
 
     checkState(!this.binariesReady, "Mapper has been initialized");
@@ -233,6 +259,17 @@ public abstract class AbstractSequenceReadsMapper implements
   }
 
   @Override
+  public void setIndexerArguments(final String arguments) {
+
+    if (arguments == null) {
+      this.indexerArguments = "";
+    } else {
+
+      this.indexerArguments = arguments;
+    }
+  }
+
+  @Override
   public void setTempDirectory(final File tempDirectory) {
 
     checkState(!this.initialized, "Mapper has been initialized");
@@ -250,6 +287,17 @@ public abstract class AbstractSequenceReadsMapper implements
     }
 
     this.fastqFormat = format;
+  }
+
+  /**
+   * Set the "real" flavor of the mapper.
+   * @param flavor the flavor to set
+   */
+  protected void setFlavor(final String flavor) {
+
+    if (flavor != null) {
+      this.flavor = flavor;
+    }
   }
 
   //
@@ -574,6 +622,13 @@ public abstract class AbstractSequenceReadsMapper implements
   // Init
   //
 
+  /**
+   * Check if the mapper flavor exists.
+   */
+  protected boolean checkIfFlavorExists() {
+    return true;
+  }
+
   @Override
   public void prepareBinaries() throws IOException {
 
@@ -584,7 +639,15 @@ public abstract class AbstractSequenceReadsMapper implements
 
     if (!checkIfBinaryExists(getIndexerExecutables())) {
       throw new IOException("Unable to find mapper "
-          + getMapperName() + " version " + this.mapperVersionToUse);
+          + getMapperName() + " version " + this.mapperVersionToUse
+          + " (flavor: " + this.flavorToUse == null ? "" : this.flavorToUse
+          + ")");
+    }
+
+    if (!checkIfFlavorExists()) {
+      throw new IOException("Unable to find mapper "
+          + getMapperName() + " flavor " + this.flavorToUse + " for version "
+          + this.mapperVersionToUse);
     }
 
     this.binariesReady = true;
@@ -686,6 +749,44 @@ public abstract class AbstractSequenceReadsMapper implements
 
     return BinariesInstaller.check(getSoftwarePackage(),
         this.mapperVersionToUse, binaryFilename);
+  }
+
+  /**
+   * Convert a string that contains a list of arguments to a list of strings.
+   * @param s the string to convert
+   * @return a list of string
+   */
+  private static final List<String> getListArguments(final String s) {
+
+    if (s == null) {
+      return Collections.emptyList();
+    }
+
+    // Split the mapper arguments
+    final String[] tabMapperArguments = s.trim().split(" ");
+
+    final List<String> result = new ArrayList<>();
+
+    // Keep only non empty arguments
+    for (String arg : tabMapperArguments) {
+      if (!arg.isEmpty()) {
+        result.add(arg);
+      }
+    }
+
+    return result;
+  }
+
+  //
+  // Constructor
+  //
+
+  /**
+   * Protected constructor.
+   */
+  protected AbstractSequenceReadsMapper() {
+
+    setMapperArguments(getDefaultMapperArguments());
   }
 
 }

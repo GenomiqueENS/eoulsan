@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,12 +49,14 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
+import fr.ens.transcriptome.eoulsan.core.StepRegistry;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
-import fr.ens.transcriptome.eoulsan.core.StepService;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This class allow to run a task context.
@@ -162,20 +165,31 @@ public class TaskRunner {
 
             // Create the new instance of the step
             getLogger().fine("Create new instance of " + stepDescLog);
+
+            final String stepName = TaskRunner.this.step.getName();
+            final Version stepVersion = TaskRunner.this.step.getVersion();
+
             stepInstance =
-                StepService.getInstance().newService(
-                    TaskRunner.this.step.getName());
+                StepRegistry.getInstance().loadStep(stepName,
+                    stepVersion.toString());
+
+            // Log step parameters
+            logStepParameters();
 
             // Configure the new step instance
             getLogger().fine("Configure step instance");
-            stepInstance.configure(TaskRunner.this.context.getCurrentStep()
-                .getParameters());
+            stepInstance.configure(new WorkflowStepConfigurationContext(
+                TaskRunner.this.context.getStep()), TaskRunner.this.context
+                .getCurrentStep().getParameters());
 
           } else {
 
             // Use the original step instance for the task
             getLogger().fine("Reuse original instance of " + stepDescLog);
             stepInstance = TaskRunner.this.step;
+
+            // Log step parameters
+            logStepParameters();
           }
 
           // Execute task
@@ -192,6 +206,25 @@ public class TaskRunner {
 
         getLogger().info("End of task #" + TaskRunner.this.context.getId());
       }
+
+      /**
+       * Log step parameters.
+       */
+      private void logStepParameters() {
+
+        final Set<Parameter> parameters =
+            context.getCurrentStep().getParameters();
+
+        if (parameters.isEmpty()) {
+          getLogger().fine("Step has no parameter");
+        } else {
+          for (Parameter p : parameters) {
+            getLogger().fine(
+                "Step parameter: " + p.getName() + "=" + p.getValue());
+          }
+        }
+      }
+
     };
 
     // Start the time watch

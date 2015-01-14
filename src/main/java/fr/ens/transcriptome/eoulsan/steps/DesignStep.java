@@ -40,6 +40,7 @@ import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -89,8 +90,8 @@ public class DesignStep extends AbstractStep {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
+  public void configure(final StepConfigurationContext context,
+      final Set<Parameter> stepParameters) throws EoulsanException {
 
     final Set<String> fieldNames =
         Sets.newHashSet(this.design.getMetadataFieldsNames());
@@ -100,8 +101,10 @@ public class DesignStep extends AbstractStep {
 
       if (fieldNames.contains(format.getDesignFieldName())) {
 
-        builder.addPort(format.getDesignFieldName(),
-            !format.isOneFilePerAnalysis(), format, CompressionType.NONE);
+        final String fieldName = format.getDesignFieldName();
+
+        builder.addPort(fieldName, !format.isOneFilePerAnalysis(), format,
+            compressionTypeOfField(fieldName));
       }
     }
 
@@ -110,6 +113,32 @@ public class DesignStep extends AbstractStep {
 
     // Configure Checker input ports
     this.checkerStep.configureInputPorts(this.outputPorts);
+  }
+
+  /**
+   * Get the compression of a field of the design. The compression returned is
+   * the first compression found in the field.
+   * @param fieldname the name of the field
+   * @return a compression type
+   */
+  private CompressionType compressionTypeOfField(final String fieldname) {
+
+    for (Sample sample : this.design.getSamples()) {
+
+      final String fieldValue = sample.getMetadata().getField(fieldname);
+
+      if (fieldValue != null) {
+
+        final DataFile file = new DataFile(fieldValue);
+        final CompressionType fileCompression = file.getCompressionType();
+
+        if (fileCompression != CompressionType.NONE) {
+          return fileCompression;
+        }
+      }
+    }
+
+    return CompressionType.NONE;
   }
 
   @Override

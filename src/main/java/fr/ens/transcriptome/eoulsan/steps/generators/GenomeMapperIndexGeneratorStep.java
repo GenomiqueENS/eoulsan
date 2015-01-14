@@ -24,10 +24,15 @@
 
 package fr.ens.transcriptome.eoulsan.steps.generators;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.MAPPER_FLAVOR_PARAMETER_NAME;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.MAPPER_VERSION_PARAMETER_NAME;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -40,12 +45,16 @@ import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractFilterAndMapReadsStep;
+import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -87,8 +96,8 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
+  public void configure(final StepConfigurationContext context,
+      final Set<Parameter> stepParameters) throws EoulsanException {
 
     if (stepParameters == null) {
       throw new EoulsanException("No parameters set in "
@@ -117,49 +126,130 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
 
   }
 
+  /**
+   * Set the version and the flavor of a mapper.
+   * @param mapper mapper to configure
+   * @param context the context of the task
+   * @throws EoulsanException if more than one mapping step require this
+   *           generator
+   */
+  static void searchMapperVersionAndFlavor(final SequenceReadsMapper mapper,
+      final StepContext context) throws EoulsanException {
+
+    int count = 0;
+    String version = null;
+    String flavor = null;
+
+    for (WorkflowStep step : context.getWorkflow().getSteps()) {
+
+      if (AbstractReadsMapperStep.STEP_NAME.equals(step.getStepName())
+          || AbstractFilterAndMapReadsStep.STEP_NAME.equals(step.getStepName())) {
+
+        for (Parameter p : step.getParameters()) {
+
+          switch (p.getName()) {
+
+          case MAPPER_VERSION_PARAMETER_NAME:
+            version = p.getStringValue();
+            break;
+
+          case MAPPER_FLAVOR_PARAMETER_NAME:
+            flavor = p.getStringValue();
+            break;
+
+          default:
+            break;
+          }
+        }
+        count++;
+      }
+    }
+
+    if (count > 1) {
+      throw new EoulsanException(
+          "Found more than one mapping step in the workflow");
+    }
+
+    // Set the version and the flavor to use
+    mapper.setMapperVersionToUse(version);
+    mapper.setMapperFlavorToUse(flavor);
+  }
+
+  /**
+   * Execute the indexer.
+   * @param mapper Mapper to use for the index generator
+   * @param context
+   * @param additionnalArguments additional indexer arguments
+   * @param additionalDescription additional indexer arguments description
+   */
+  static void execute(final SequenceReadsMapper mapper,
+      final StepContext context, final String additionnalArguments,
+      final Map<String, String> additionalDescription) throws IOException,
+      EoulsanException {
+
+    checkNotNull(mapper, "mapper argument cannot be null");
+    checkNotNull(context, "context argument cannot be null");
+
+    // Set default value for arguments if needed
+    final String args =
+        additionnalArguments != null ? additionnalArguments : "";
+
+    // Set default value for descriptions if needed
+    final Map<String, String> descriptions;
+    if (additionalDescription != null) {
+      descriptions = additionalDescription;
+    } else {
+      descriptions = Collections.emptyMap();
+    }
+
+    // Get input and output data
+    final Data genomeData = context.getInputData(GENOME_FASTA);
+    final Data genomeDescData = context.getInputData(GENOME_DESC_TXT);
+    final Data outData =
+        context.getOutputData(mapper.getArchiveFormat(), genomeData);
+
+    // Get the genome DataFile
+    final DataFile genomeDataFile = genomeData.getDataFile();
+
+    // Get the genome description DataFile
+    final DataFile descDataFile = genomeDescData.getDataFile();
+    final GenomeDescription desc = GenomeDescription.load(descDataFile.open());
+
+    // Get the output DataFile
+    final DataFile mapperIndexDataFile = outData.getDataFile();
+
+    // Set the version and flavor
+    searchMapperVersionAndFlavor(mapper, context);
+
+    // Set mapper temporary directory
+    mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());
+
+    // Set the number of thread to use
+    mapper.setThreadsNumber(Runtime.getRuntime().availableProcessors());
+
+    // Create indexer
+    final GenomeMapperIndexer indexer =
+        new GenomeMapperIndexer(mapper, args, descriptions);
+
+    // Create index
+    indexer.createIndex(genomeDataFile, desc, mapperIndexDataFile);
+  }
+
   @Override
   public StepResult execute(final StepContext context, final StepStatus status) {
 
     try {
 
-      // Get input and output data
-      final Data genomeData = context.getInputData(GENOME_FASTA);
-      final Data genomeDescData = context.getInputData(GENOME_DESC_TXT);
-      final Data outData =
-          context.getOutputData(this.mapper.getArchiveFormat(), genomeData);
+      status.setMessage(this.mapper.getMapperName() + " index creation");
 
-      // Get the genome DataFile
-      final DataFile genomeDataFile = genomeData.getDataFile();
+      // Create the index
+      execute(this.mapper, context, null, null);
 
-      // Get the genome description DataFile
-      final DataFile descDataFile = genomeDescData.getDataFile();
-      final GenomeDescription desc =
-          GenomeDescription.load(descDataFile.open());
-
-      // Get the output DataFile
-      final DataFile mapperIndexDataFile = outData.getDataFile();
-
-      // Set mapper temporary directory
-      this.mapper
-          .setTempDirectory(context.getSettings().getTempDirectoryFile());
-
-      // Set the number of thread to use
-      // TODO the number of thread must be defined by user
-      this.mapper.setThreadsNumber(1);
-
-      // Create indexer
-      final GenomeMapperIndexer indexer = new GenomeMapperIndexer(this.mapper);
-
-      // Create index
-      indexer.createIndex(genomeDataFile, desc, mapperIndexDataFile);
-
-    } catch (IOException e) {
+    } catch (IOException | EoulsanException e) {
 
       return status.createStepResult(e);
     }
 
-    status.setMessage(this.mapper.getMapperName() + " index creation");
     return status.createStepResult();
   }
-
 }

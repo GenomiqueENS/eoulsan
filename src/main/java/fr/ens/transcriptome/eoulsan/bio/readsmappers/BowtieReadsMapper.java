@@ -30,6 +30,7 @@ import java.util.List;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This class define a wrapper on the Bowtie mapper. Includes only specific
@@ -39,16 +40,16 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
  */
 public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
 
+  private static final String MAPPER_NAME = "Bowtie";
   private static final String DEFAULT_PACKAGE_VERSION = "0.12.9";
-  private static final String MAPPER_V0_EXECUTABLE = "bowtie";
-  private static final String INDEXER_V0_EXECUTABLE = "bowtie-build";
-  private static final String MAPPER_V1_EXECUTABLE = "bowtie-align-s";
-  private static final String INDEXER_V1_EXECUTABLE = "bowtie-build-s";
+  public static final String DEFAULT_ARGUMENTS = "--best -k 2";
+
+  private static final Version FIRST_FLAVORED_VERSION = new Version(1, 1, 0);
+  private static final String MAPPER_EXECUTABLE = "bowtie";
+  private static final String MAPPER_NEW_EXECUTABLE = "bowtie-align";
+  private static final String INDEXER_EXECUTABLE = "bowtie-build";
 
   private static final String EXTENSION_INDEX_FILE = ".rev.1.ebwt";
-
-  public static final String DEFAULT_ARGUMENTS = "--best -k 2";
-  private static final String MAPPER_NAME = "Bowtie";
 
   @Override
   public String getMapperName() {
@@ -64,7 +65,9 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
 
   @Override
   protected String getExtensionIndexFile() {
-    return EXTENSION_INDEX_FILE;
+
+    return EXTENSION_INDEX_FILE
+        + (isLongIndexFlavor(FIRST_FLAVORED_VERSION) ? "l" : "");
   }
 
   @Override
@@ -76,21 +79,14 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
   @Override
   protected String getIndexerExecutable() {
 
-    if (getMapperVersionToUse().startsWith("0.")) {
-      return INDEXER_V0_EXECUTABLE;
-    }
-
-    return INDEXER_V1_EXECUTABLE;
+    return flavoredBinary(INDEXER_EXECUTABLE, FIRST_FLAVORED_VERSION);
   }
 
   @Override
   protected String[] getMapperExecutables() {
 
-    if (getMapperVersionToUse().startsWith("0.")) {
-      return new String[] {MAPPER_V0_EXECUTABLE};
-    }
-
-    return new String[] {MAPPER_V1_EXECUTABLE};
+    return new String[] {flavoredBinary(MAPPER_EXECUTABLE,
+        MAPPER_NEW_EXECUTABLE, FIRST_FLAVORED_VERSION)};
   }
 
   protected static final String getBowtieQualityArgument(
@@ -112,7 +108,7 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
   }
 
   @Override
-  public String getDefaultArguments() {
+  public String getDefaultMapperArguments() {
     return DEFAULT_ARGUMENTS;
   }
 

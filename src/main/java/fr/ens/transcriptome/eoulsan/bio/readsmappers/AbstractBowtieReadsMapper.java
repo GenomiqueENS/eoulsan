@@ -36,6 +36,7 @@ import java.util.List;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
+import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * This class define a wrapper on the Bowtie mapper.
@@ -55,11 +56,87 @@ public abstract class AbstractBowtieReadsMapper extends
   @Override
   abstract protected String getIndexerExecutable();
 
-  abstract protected String getDefaultArguments();
-
   @Override
   public boolean isSplitsAllowed() {
     return true;
+  }
+
+  @Override
+  protected boolean checkIfFlavorExists() {
+
+    final String flavor = getMapperFlavorToUse();
+
+    if (flavor == null) {
+      return true;
+    }
+
+    switch (flavor.trim().toLowerCase()) {
+    case "":
+    case SHORT_INDEX_FLAVOR:
+      setFlavor(SHORT_INDEX_FLAVOR);
+      return true;
+
+    case LARGE_INDEX_FLAVOR:
+      setFlavor(LARGE_INDEX_FLAVOR);
+      return true;
+
+    default:
+      return false;
+    }
+  }
+
+  protected boolean isLongIndexFlavor(final Version firstFlavoredVersion) {
+
+    final Version currentVersion = new Version(getMapperVersionToUse());
+
+    if (currentVersion.greaterThanOrEqualTo(firstFlavoredVersion)) {
+
+      final String flavor = getMapperFlavorToUse();
+
+      return flavor != null
+          && LARGE_INDEX_FLAVOR.equals(flavor.trim().toLowerCase());
+    }
+
+    return false;
+  }
+
+  /**
+   * Get the name of a bowtie flavored binary.
+   * @param binary the binary
+   * @param firstFlavoredVersion first version of Bowtie to be flavored
+   * @return the flavored binary name
+   */
+  protected String flavoredBinary(final String binary,
+      final Version firstFlavoredVersion) {
+
+    return flavoredBinary(binary, binary, firstFlavoredVersion);
+  }
+
+  /**
+   * Get the name of a bowtie flavored binary.
+   * @param binary the binary
+   * @param newBinary the binary name for the new versions
+   * @param firstFlavoredVersion first version of Bowtie to be flavored
+   * @return the flavored binary name
+   */
+  protected String flavoredBinary(final String binary, final String newBinary,
+      final Version firstFlavoredVersion) {
+
+    final Version currentVersion = new Version(getMapperVersionToUse());
+
+    if (currentVersion.greaterThanOrEqualTo(firstFlavoredVersion)) {
+
+      final String flavor = getMapperFlavorToUse();
+
+      if (flavor != null
+          && LARGE_INDEX_FLAVOR.equals(flavor.trim().toLowerCase())) {
+        return newBinary + "-l";
+      } else {
+        return newBinary + "-s";
+      }
+    }
+
+    return binary;
   }
 
   @Override
@@ -359,7 +436,6 @@ public abstract class AbstractBowtieReadsMapper extends
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
 
-    setMapperArguments(getDefaultArguments());
     super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }
 

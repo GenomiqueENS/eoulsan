@@ -26,9 +26,6 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.join;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,11 +33,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
-import fr.ens.transcriptome.eoulsan.bio.Sequence;
-import fr.ens.transcriptome.eoulsan.bio.io.FastaReader;
-import fr.ens.transcriptome.eoulsan.bio.io.SequenceReader;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.UnSynchronizedBufferedWriter;
 
 /**
  * This class allow to convert the SOAP2 output to SAM format.
@@ -50,123 +42,76 @@ import fr.ens.transcriptome.eoulsan.util.UnSynchronizedBufferedWriter;
 public class SOAP2SAM {
 
   private final StringBuilder sb = new StringBuilder();
-  private final File fin;
-  private final File funmap;
-  private final File fout;
   private final GenomeDescription gd;
-  private boolean first;
+  private boolean first = true;
 
   private static final Pattern PATTERN = Pattern
       .compile("^([AaCcGgTt])->(\\d+)");
 
   private static final Pattern TAB_PATTERN = Pattern.compile("\t");
 
-  private UnSynchronizedBufferedWriter createWriter() throws IOException {
-
-    final UnSynchronizedBufferedWriter bw =
-        FileUtils.createFastBufferedWriter(this.fout);
-
-    return bw;
-  }
-
   private String[] sLast;
-  private final List<String> results = new ArrayList<>();
+  private List<String> result = new ArrayList<>();
 
-  public List<String> c(final String line, final boolean isPaired) {
+  public List<String> parse(String line, boolean isPaired) {
 
-    this.results.clear();
+    this.result.clear();
 
     if (this.first) {
       if (this.gd != null) {
 
-        this.results.add("@HD\tVN:1.0\tSO:unsorted");
+        this.result.add("@HD\tVN:1.0\tSO:unsorted");
 
         for (String sequenceName : this.gd.getSequencesNames()) {
-          this.results.add("@SQ\tSN:"
+          this.result.add("@SQ\tSN:"
               + sequenceName + "\tLN:"
               + this.gd.getSequenceLength(sequenceName));
         }
-        this.first = false;
       }
+      this.first = false;
+    }
 
-      final String[] sCurr = convert(line, isPaired);
+    internalParse(line, isPaired);
 
-      if (sCurr == null) {
-        return this.results;
-      }
+    return this.result;
+  }
 
-      if (this.sLast != null && this.sLast[0].equals(sCurr[0])) {
+  private void internalParse(String line, boolean isPaired) {
 
-        if (isPaired) { // Fix single end mode, added by Laurent Jourdren
-          mating(this.sLast, sCurr);
-        }
-        this.results.add(join(this.sLast, "\t"));
-        this.results.add(join(sCurr, "\t"));
+    // If end of the input file
+    if (line == null) {
 
+      if (this.sLast != null) {
+        this.result.add(join(sLast, "\t"));
         this.sLast = null;
-
-      } else {
-
-        if (this.sLast != null) {
-          this.results.add(join(this.sLast, "\t"));
-        }
-        this.sLast = sCurr;
       }
 
-      // bw.write(convert(line, false));
+      return;
     }
 
-    return this.results;
-  }
+    final String[] sCurr = convert(line, isPaired);
 
-  public List<String> last() {
-
-    this.results.clear();
-
-    if (this.sLast != null) {
-      this.results.add(join(this.sLast, "\t"));
+    if (sCurr == null) {
+      return;
     }
 
-    return this.results;
-  }
+    if (sLast != null && sLast[0].equals(sCurr[0])) {
 
-  public void convert(final boolean isPaired) throws IOException {
-
-    final BufferedReader br = FileUtils.createBufferedReader(this.fin);
-    final UnSynchronizedBufferedWriter bw = createWriter();
-
-    String line = null;
-
-    while ((line = br.readLine()) != null) {
-
-      for (String l : c(line, isPaired)) {
-        bw.write(l);
-        bw.write('\n');
+      if (isPaired) { // Fix single end mode, added by Laurent Jourdren
+        mating(sLast, sCurr);
       }
+      this.result.add(join(this.sLast, "\t"));
+      this.result.add(join(sCurr, "\t"));
 
-    }
+      sLast = null;
 
-    for (String l : last()) {
-      bw.write(l);
-      bw.write('\n');
-    }
+    } else {
 
-    br.close();
-
-    try (SequenceReader reader = new FastaReader(this.funmap)) {
-
-      for (Sequence sequence : reader) {
-        bw.write(sequence.getName()
-            + "\t4\t*\t0\t0\t*\t*\t0\t0\t" + sequence.getSequence() + "\t*\t\n");
+      if (sLast != null) {
+        this.result.add(join(this.sLast, "\t"));
       }
-
-      // throw IOException of reader if needed
-      reader.throwException();
-
-    } finally {
-      bw.close();
+      sLast = sCurr;
     }
-
   }
 
   public String[] convert(final String line, final boolean isPaired) {
@@ -341,31 +286,6 @@ public class SOAP2SAM {
   public SOAP2SAM(final GenomeDescription gd) {
 
     this.gd = gd;
-    this.fin = null;
-    this.funmap = null;
-    this.fout = null;
-  }
-
-  public SOAP2SAM(final File fin, final File funmap,
-      final GenomeDescription gd, final File fout) {
-
-    if (fin == null) {
-      throw new NullPointerException("fin is null");
-    }
-
-    if (funmap == null) {
-      throw new NullPointerException("funmap is null");
-    }
-
-    if (fout == null) {
-      throw new NullPointerException("fout is null");
-    }
-
-    this.fin = fin;
-    this.funmap = funmap;
-    this.fout = fout;
-    this.gd = gd;
-
   }
 
 }

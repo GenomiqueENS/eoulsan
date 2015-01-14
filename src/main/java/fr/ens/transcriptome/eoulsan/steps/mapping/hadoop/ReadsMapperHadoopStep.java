@@ -29,8 +29,6 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
@@ -48,6 +46,7 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -75,10 +74,10 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
+  public void configure(final StepConfigurationContext context,
+      final Set<Parameter> stepParameters) throws EoulsanException {
 
-    super.configure(stepParameters);
+    super.configure(context, stepParameters);
 
     // Check if the mapper can be used with Hadoop
     if (!getMapper().isSplitsAllowed()) {
@@ -106,23 +105,18 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
       // Get FASTQ format
       final FastqFormat fastqFormat = readsData.getMetadata().getFastqFormat();
 
-      // Create the list of jobs to run
-      final Map<Job, String> jobs = new HashMap<>();
-      jobs.put(
+      // Create the job to run
+      final Job job =
           createJobConf(conf, context, readsData, fastqFormat, mapperIndexData,
-              outData), readsData.getName());
+              outData);
 
       // Launch jobs
-      MapReduceUtils.submitAndWaitForJobs(jobs,
+      MapReduceUtils.submitAndWaitForJob(job, readsData.getName(),
           CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
 
       return status.createStepResult();
 
-    } catch (IOException e) {
-
-      return status.createStepResult(e,
-          "Error while running job: " + e.getMessage());
-    } catch (InterruptedException e) {
+    } catch (IOException | InterruptedException | ClassNotFoundException e) {
 
       return status.createStepResult(e,
           "Error while running job: " + e.getMessage());
@@ -152,7 +146,10 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
 
     // Set mapper version
-    jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperVersion());
+    jobConf.set(ReadsMapperMapper.MAPPER_VERSION_KEY, getMapperVersion());
+
+    // Set mapper flavor
+    jobConf.set(ReadsMapperMapper.MAPPER_FLAVOR_KEY, getMapperFlavor());
 
     // Set pair end or single end mode
     if (readsData.getDataFileCount() == 2) {

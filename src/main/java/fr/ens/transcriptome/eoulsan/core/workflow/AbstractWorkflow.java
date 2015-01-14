@@ -356,6 +356,35 @@ public abstract class AbstractWorkflow implements Workflow {
     }
   }
 
+  /**
+   * Skip the generators that are only required by skipped steps.
+   */
+  private void skipGeneratorsIfNotNeeded() {
+
+    for (AbstractWorkflowStep step : this.steps.keySet()) {
+
+      // Search for generator steps
+      if (step.getType() == StepType.GENERATOR_STEP) {
+
+        boolean allStepSkipped = true;
+
+        // Check if all linked step are skipped
+        for (WorkflowOutputPort outputPort : step.getWorkflowOutputPorts()) {
+
+          if (!outputPort.isAllLinksToSkippedSteps()) {
+            allStepSkipped = false;
+            break;
+          }
+        }
+
+        // If all linked steps are skipped, skip the generator
+        if (allStepSkipped) {
+          step.setSkipped(true);
+        }
+      }
+    }
+  }
+
   //
   // Workflow lifetime methods
   //
@@ -365,6 +394,9 @@ public abstract class AbstractWorkflow implements Workflow {
    * @throws EoulsanException if an error occurs while executing the workflow
    */
   public void execute() throws EoulsanException {
+
+    // Skip generators if needed
+    skipGeneratorsIfNotNeeded();
 
     // check if output files does not exists
     checkExistingOutputFiles();

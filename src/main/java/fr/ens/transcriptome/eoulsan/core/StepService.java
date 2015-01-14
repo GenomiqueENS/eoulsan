@@ -30,30 +30,11 @@ import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
 import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
 
 /**
- * This class allow to get a Step object.
+ * This class allow to get a Step object from a class in the classpath.
  * @since 1.0
  * @author Laurent Jourdren
  */
 public class StepService extends ServiceNameLoader<Step> {
-
-  private static StepService service;
-
-  //
-  // Static method
-  //
-
-  /**
-   * Retrieve the singleton static instance of StepService.
-   * @return A StepService instance
-   */
-  public static synchronized StepService getInstance() {
-
-    if (service == null) {
-      service = new StepService();
-    }
-
-    return service;
-  }
 
   //
   // Protected methods
@@ -80,7 +61,7 @@ public class StepService extends ServiceNameLoader<Step> {
    * Private constructor.
    */
 
-  private StepService() {
+  StepService() {
 
     super(Step.class);
 

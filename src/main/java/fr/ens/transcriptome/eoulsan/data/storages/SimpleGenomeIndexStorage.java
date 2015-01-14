@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.data.storages;
 
+import static com.google.common.base.Strings.nullToEmpty;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 
@@ -32,10 +33,14 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -68,6 +73,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     String genomeMD5;
     String mapperName;
     DataFile file;
+    String description;
 
     String getKey() {
       return createKey(this.mapperName, this.genomeMD5);
@@ -88,43 +94,53 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
 
   @Override
   public DataFile get(final SequenceReadsMapper mapper,
-      final GenomeDescription genome) {
+      final GenomeDescription genome,
+      final Map<String, String> additionalDescription) {
 
     checkNotNull(mapper, "Mapper is null");
     checkNotNull(mapper, "Genome description is null");
+    checkNotNull(additionalDescription, "additionalDescription is null");
 
-    final IndexEntry entry = this.entries.get(createKey(mapper, genome));
+    final IndexEntry entry =
+        this.entries.get(createKey(mapper, genome, additionalDescription));
 
     return entry == null ? null : entry.file;
   }
 
   @Override
   public void put(final SequenceReadsMapper mapper,
-      final GenomeDescription genome, final DataFile indexArchive) {
+      final GenomeDescription genome,
+      final Map<String, String> additionalDescription,
+      final DataFile indexArchive) {
 
     checkNotNull(mapper, "Mapper is null");
     checkNotNull(genome, "Genome description is null");
+    checkNotNull(additionalDescription, "additionalDescription is null");
     checkNotNull(indexArchive, "IndexArchive is null");
+
+    // Update the index to avoid to lost entries when several instances of
+    // Eoulsan are running
+    try {
+      load();
+    } catch (IOException e1) {
+      getLogger().warning("Unable to reload the index mapper storage");
+    }
 
     if (!indexArchive.exists()) {
       return;
     }
 
-    final String key = createKey(mapper, genome);
+    final String key = createKey(mapper, genome, additionalDescription);
 
     if (this.entries.containsKey(key)) {
       return;
     }
 
-    final IndexEntry entry = new IndexEntry();
-    entry.genomeName = genome.getGenomeName().trim();
-    entry.sequences = genome.getSequenceCount();
-    entry.length = genome.getGenomeLength();
-    entry.genomeMD5 = genome.getMD5Sum().trim();
-    entry.mapperName = mapper.getMapperName().toLowerCase().trim();
-    entry.file =
-        new DataFile(this.dir, entry.mapperName
-            + "-" + entry.genomeMD5 + ".zip");
+    final IndexEntry entry =
+        createIndexEntry(mapper, genome, additionalDescription);
+    if (entry == null) {
+      return;
+    }
 
     try {
       FileUtils.copy(indexArchive.rawOpen(), entry.file.create());
@@ -135,7 +151,81 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
               + indexArchive.getName()
               + " index archive to genome index storage.");
     } catch (IOException e) {
+      getLogger().warning(
+          "Failled to add "
+              + indexArchive.getName()
+              + " index archive to genome index storage: " + e.getMessage());
     }
+  }
+
+  //
+  // Sum creation method
+  //
+
+  private IndexEntry createIndexEntry(final SequenceReadsMapper mapper,
+      final GenomeDescription genome,
+      final Map<String, String> additionalDescription) {
+
+    final IndexEntry entry = new IndexEntry();
+    entry.genomeName = genome.getGenomeName().trim();
+    entry.sequences = genome.getSequenceCount();
+    entry.length = genome.getGenomeLength();
+    entry.mapperName = mapper.getMapperName().toLowerCase().trim();
+
+    final Map<String, String> md5Map =
+        createMD5SumMap(mapper, genome, additionalDescription);
+    final String md5Sum = createMD5Sum(md5Map);
+    if (md5Sum == null) {
+      return null;
+    }
+
+    entry.genomeMD5 = md5Sum;
+    entry.file =
+        new DataFile(this.dir, entry.mapperName
+            + "-" + entry.genomeMD5 + ".zip");
+    entry.description = md5Map.toString();
+
+    return entry;
+  }
+
+  private static Map<String, String> createMD5SumMap(
+      final SequenceReadsMapper mapper, final GenomeDescription genome,
+      final Map<String, String> additionalDescription) {
+
+    final LinkedHashMap<String, String> map = new LinkedHashMap<>();
+
+    map.put("mapper.name", nullToEmpty(mapper.getMapperName()));
+    map.put("mapper.version", nullToEmpty(mapper.getMapperVersionToUse())
+        .trim());
+    map.put("mapper.flavor", nullToEmpty(mapper.getMapperFlavor()).trim());
+    map.put("genome.md5sum", nullToEmpty(genome.getMD5Sum()).trim());
+
+    // Add sorted additional description
+    map.putAll(new TreeMap<>(additionalDescription));
+
+    return map;
+  }
+
+  private static String createMD5Sum(final Map<String, String> map) {
+
+    MessageDigest md5Digest;
+    try {
+      md5Digest = MessageDigest.getInstance("MD5");
+    } catch (NoSuchAlgorithmException e) {
+      getLogger().warning(
+          "Failled to create checksum for mapper index: " + e.getMessage());
+      return null;
+    }
+
+    for (Map.Entry<String, String> e : map.entrySet()) {
+
+      md5Digest.update(e.getKey().getBytes(Globals.DEFAULT_CHARSET));
+      md5Digest.update(e.getValue().getBytes(Globals.DEFAULT_CHARSET));
+    }
+
+    final BigInteger bigInt = new BigInteger(1, md5Digest.digest());
+
+    return bigInt.toString(16);
   }
 
   //
@@ -162,38 +252,45 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
       return;
     }
 
-    final BufferedReader br =
+    // Clear the entries (useful when reloading the index)
+    this.entries.clear();
+
+    try (final BufferedReader br =
         new BufferedReader(new InputStreamReader(indexFile.open(),
-            Globals.DEFAULT_CHARSET));
+            Globals.DEFAULT_CHARSET))) {
 
-    final Pattern pattern = Pattern.compile("\t");
-    String line = null;
+      final Pattern pattern = Pattern.compile("\t");
+      String line = null;
 
-    while ((line = br.readLine()) != null) {
+      while ((line = br.readLine()) != null) {
 
-      final String trimmedLine = line.trim();
-      if ("".equals(trimmedLine) || trimmedLine.startsWith("#")) {
-        continue;
-      }
+        final String trimmedLine = line.trim();
+        if ("".equals(trimmedLine) || trimmedLine.startsWith("#")) {
+          continue;
+        }
 
-      final List<String> fields = Arrays.asList(pattern.split(trimmedLine));
+        final List<String> fields = Arrays.asList(pattern.split(trimmedLine));
 
-      if (fields.size() != 6) {
-        continue;
-      }
+        if (fields.size() < 6 || fields.size() > 7) {
+          continue;
+        }
 
-      final IndexEntry e = new IndexEntry();
-      e.genomeName = fields.get(0);
-      e.genomeMD5 = fields.get(1);
-      e.mapperName = fields.get(4);
-      e.file = new DataFile(this.dir, fields.get(5));
+        final IndexEntry e = new IndexEntry();
+        e.genomeName = fields.get(0);
+        e.genomeMD5 = fields.get(1);
+        e.mapperName = fields.get(4);
+        e.file = new DataFile(this.dir, fields.get(5));
 
-      if (e.file.exists()) {
-        this.entries.put(e.getKey(), e);
+        if (e.file.exists()) {
+          this.entries.put(e.getKey(), e);
+        }
+
+        if (fields.size() == 7) {
+          e.description = fields.get(6);
+        }
+
       }
     }
-
-    br.close();
   }
 
   /**
@@ -210,31 +307,36 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     final DataFile indexFile = new DataFile(this.dir, INDEX_FILENAME);
 
     // Create an empty index file
-    final BufferedWriter writer =
+    try (final BufferedWriter writer =
         new BufferedWriter(new OutputStreamWriter(indexFile.create(),
-            Globals.DEFAULT_CHARSET));
-    writer
-        .write("#Genome\tGenomeMD5\tGenomeSequences\tGenomeLength\tMapper\tIndexFile\n");
+            Globals.DEFAULT_CHARSET))) {
+      writer
+          .write("#Genome\tChecksum\tGenomeSequences\tGenomeLength\tMapper\tIndexFile\tDescription\n");
 
-    for (Map.Entry<String, IndexEntry> e : this.entries.entrySet()) {
+      for (Map.Entry<String, IndexEntry> e : this.entries.entrySet()) {
 
-      IndexEntry ie = e.getValue();
+        IndexEntry ie = e.getValue();
 
-      writer.append(ie.genomeName == null ? "???" : ie.genomeName);
-      writer.append("\t");
-      writer.append(ie.genomeMD5);
-      writer.append("\t");
-      writer.append(Integer.toString(ie.sequences));
-      writer.append("\t");
-      writer.append(Long.toString(ie.length));
-      writer.append("\t");
-      writer.append(ie.mapperName);
-      writer.append("\t");
-      writer.append(ie.file.getName());
-      writer.append("\n");
+        writer.append(ie.genomeName == null ? "???" : ie.genomeName);
+        writer.append("\t");
+        writer.append(ie.genomeMD5);
+        writer.append("\t");
+        writer.append(Integer.toString(ie.sequences));
+        writer.append("\t");
+        writer.append(Long.toString(ie.length));
+        writer.append("\t");
+        writer.append(ie.mapperName);
+        writer.append("\t");
+        writer.append(ie.file.getName());
+
+        if (ie.description != null) {
+          writer.append("\t");
+          writer.append(ie.description);
+        }
+
+        writer.append("\n");
+      }
     }
-
-    writer.close();
   }
 
   //
@@ -242,9 +344,11 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
   //
 
   private static final String createKey(final SequenceReadsMapper mapper,
-      final GenomeDescription genome) {
+      final GenomeDescription genome,
+      final Map<String, String> additionalDescription) {
 
-    return createKey(mapper.getMapperName(), genome.getMD5Sum());
+    return createKey(mapper.getMapperName(),
+        createMD5Sum(createMD5SumMap(mapper, genome, additionalDescription)));
   }
 
   private static final String createKey(final String mapperName,

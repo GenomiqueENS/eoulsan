@@ -32,9 +32,7 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterMappe
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
@@ -52,6 +50,7 @@ import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -77,10 +76,10 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
+  public void configure(final StepConfigurationContext context,
+      final Set<Parameter> stepParameters) throws EoulsanException {
 
-    super.configure(stepParameters);
+    super.configure(context, stepParameters);
 
     // Check if the mapper can be used with Hadoop
     if (!getMapper().isSplitsAllowed()) {
@@ -110,14 +109,11 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
       MapReduceUtils.submitAndWaitForJobs(jobsPairedEnd,
           CommonHadoop.CHECK_COMPLETION_TIME);
 
-      // Create the list of jobs to run
-      final Map<Job, String> jobs = new HashMap<>();
-      jobs.put(createJobConf(conf, context), readData.getName());
+      // Create the job to run
+      final Job job = createJobConf(conf, context);
 
       // Submit filter and map job
-      // TODO Remove usage of the next method as there now only one element to
-      // process
-      MapReduceUtils.submitAndWaitForJobs(jobs,
+      MapReduceUtils.submitAndWaitForJob(job, readData.getName(),
           CommonHadoop.CHECK_COMPLETION_TIME, status, getCounterGroup());
 
       return status.createStepResult();
@@ -185,6 +181,12 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set Mapper name
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
+
+    // Set mapper version
+    jobConf.set(ReadsMapperMapper.MAPPER_VERSION_KEY, getMapperVersion());
+
+    // Set mapper flavor
+    jobConf.set(ReadsMapperMapper.MAPPER_FLAVOR_KEY, getMapperFlavor());
 
     // Set pair end or single end mode
     if (readsData.getDataFileCount() == 2) {

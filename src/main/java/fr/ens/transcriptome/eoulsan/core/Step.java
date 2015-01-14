@@ -76,10 +76,13 @@ public interface Step {
 
   /**
    * Set the parameters of the step to configure the step.
+   * @param context configuration context. The context can be null for generator
+   *          steps
    * @param stepParameters parameters of the step
    * @throws EoulsanException if a parameter is invalid
    */
-  void configure(Set<Parameter> stepParameters) throws EoulsanException;
+  void configure(StepConfigurationContext context, Set<Parameter> stepParameters)
+      throws EoulsanException;
 
   /**
    * Execute the step.

@@ -14,6 +14,7 @@ import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
@@ -77,26 +78,33 @@ public abstract class AbstractSAM2BAMStep extends AbstractStep {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
+  public void configure(final StepConfigurationContext context,
+      final Set<Parameter> stepParameters) throws EoulsanException {
 
     for (Parameter p : stepParameters) {
 
-      if ("compression.level".equals(p.getName())) {
+      switch (p.getName()) {
+
+      case "compression.level":
 
         final int level = p.getIntValue();
+
         if (level < 0 || level > 9) {
           throw new EoulsanException("Invalid compression level [0-9]: "
               + level + " step: " + p.getName());
         }
 
         this.compressionLevel = level;
-      } else if ("input.format".equals(p.getName())) {
+        break;
+
+      case "input.format":
 
         getLogger().warning(
             "Deprecated parameter \""
                 + p.getName() + "\" for step " + getName());
-      } else {
+        break;
+
+      default:
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());
       }

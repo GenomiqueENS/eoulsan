@@ -48,14 +48,15 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  */
 public class STARReadsMapper extends AbstractSequenceReadsMapper {
 
-  private static final String DEFAULT_PACKAGE_VERSION = "2.4.0e";
-  private static final String MAPPER_EXECUTABLE = "STARstatic";
-  private static final String INDEXER_EXECUTABLE = MAPPER_EXECUTABLE;
+  private static final String MAPPER_NAME = "STAR";
+  private static final String DEFAULT_PACKAGE_VERSION = "2.4.0h";
+
+  private static final String MAPPER_STANDARD_EXECUTABLE = "STARstatic";
+  private static final String MAPPER_LARGE_INDEX_EXECUTABLE = "STARlong";
 
   public static final String DEFAULT_ARGUMENTS = "";
 
   private static final String SYNC = STARReadsMapper.class.getName();
-  private static final String MAPPER_NAME = "STAR";
 
   @Override
   public String getMapperName() {
@@ -70,7 +71,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       final String execPath;
 
       synchronized (SYNC) {
-        execPath = install(MAPPER_EXECUTABLE);
+        execPath = install(flavoredBinary());
       }
 
       // Create temporary directory
@@ -147,7 +148,55 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   protected String getIndexerExecutable() {
 
-    return INDEXER_EXECUTABLE;
+    return flavoredBinary();
+  }
+
+  @Override
+  protected String getDefaultMapperArguments() {
+
+    return DEFAULT_ARGUMENTS;
+  }
+
+  @Override
+  protected boolean checkIfFlavorExists() {
+
+    final String flavor = getMapperFlavorToUse();
+
+    if (flavor == null) {
+      return true;
+    }
+
+    switch (flavor.trim().toLowerCase()) {
+    case "":
+    case SHORT_INDEX_FLAVOR:
+      setFlavor(SHORT_INDEX_FLAVOR);
+      return true;
+
+    case LARGE_INDEX_FLAVOR:
+      setFlavor(LARGE_INDEX_FLAVOR);
+      return true;
+
+    default:
+      return false;
+    }
+  }
+
+  /**
+   * Get the name of a bowtie flavored binary.
+   * @param binary the binary
+   * @param firstFlavoredVersion first version of Bowtie to be flavored
+   * @return the flavored binary name
+   */
+  private String flavoredBinary() {
+
+    final String flavor = getMapperFlavorToUse();
+
+    if (flavor != null
+        && LARGE_INDEX_FLAVOR.equals(flavor.trim().toLowerCase())) {
+      return MAPPER_LARGE_INDEX_EXECUTABLE;
+    }
+    return MAPPER_STANDARD_EXECUTABLE;
+
   }
 
   @Override
@@ -166,6 +215,8 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
     cmd.add("--genomeFastaFiles");
     cmd.add(genomePathname);
 
+    cmd.addAll(getListIndexerArguments());
+
     return cmd;
   }
 
@@ -176,7 +227,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
     final String starPath;
 
     synchronized (SYNC) {
-      starPath = install(MAPPER_EXECUTABLE);
+      starPath = install(flavoredBinary());
     }
 
     final MapperProcess mapperProcess =
@@ -194,7 +245,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
     final String starPath;
 
     synchronized (SYNC) {
-      starPath = install(MAPPER_EXECUTABLE);
+      starPath = install(flavoredBinary());
     }
 
     final MapperProcess mapperProcess =
@@ -208,13 +259,13 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   protected MapperProcess internalMapSE(final File archiveIndex,
       final GenomeDescription gd) throws IOException {
 
-    final String gsnapPath;
+    final String starPath;
 
     synchronized (SYNC) {
-      gsnapPath = install(MAPPER_EXECUTABLE);
+      starPath = install(flavoredBinary());
     }
 
-    return createMapperProcessSE(gsnapPath, archiveIndex.getAbsolutePath(),
+    return createMapperProcessSE(starPath, archiveIndex.getAbsolutePath(),
         null, false);
   }
 
@@ -225,7 +276,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
     final String starPath;
 
     synchronized (SYNC) {
-      starPath = install(MAPPER_EXECUTABLE);
+      starPath = install(flavoredBinary());
     }
 
     return createMapperProcessPE(starPath, archiveIndex.getAbsolutePath(),
@@ -311,7 +362,6 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
 
-    setMapperArguments(DEFAULT_ARGUMENTS);
     super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }
 

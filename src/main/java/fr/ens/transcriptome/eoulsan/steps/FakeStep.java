@@ -32,6 +32,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -64,7 +65,8 @@ public class FakeStep extends AbstractStep {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters) {
+  public void configure(final StepConfigurationContext context,
+      final Set<Parameter> stepParameters) {
 
     for (Parameter p : stepParameters) {
       getLogger().info("s: " + p.getName() + "\t" + p.getStringValue());

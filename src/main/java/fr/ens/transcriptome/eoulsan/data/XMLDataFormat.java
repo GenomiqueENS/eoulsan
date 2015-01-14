@@ -156,7 +156,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
     }
 
     try {
-      generator.configure(this.generatorParameters);
+      generator.configure(null, this.generatorParameters);
 
       return generator;
     } catch (EoulsanException e) {

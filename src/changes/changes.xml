@@ -640,7 +640,54 @@ of reads that reject each filter like in local mode.
                 Fix Dockerfile URL to download Eoulsan.
             </action>
 
-	</release>
+         </release>
+
+         <release version="2.0-alpha4" description="Eoulsan 2.0-alpha4 release" date="2014-12-22">
+
+            <action dev="jourdren" type="fix">
+                Fix HTSeq-count bug when an attribute in GFF3 file contains multiple parents. To use this fix,
+                you must enable the "splitattributevalues" parameter in the expression step.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                When the identifier of a step was not equals to the step name, the step parameters where empty.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                Fix small issues in the workflow engine (step execution order, add an uncompression step when required, skip generators steps when only required only skipped steps).
+            </action>
+
+           <action dev="jourdren" type="fix">
+                Fix many bugs in SOAP mapper wrapper.
+            </action>
+
+            <action dev="sperrin" type="fix">
+                Fix some issues in the integration tests engine.
+            </action>
+
+            <action dev="jourdren" type="update">
+                The create design action can now handle additional annotations.
+            </action>
+
+            <action dev="jourdren" type="update">
+                The mapper step and the Eoulsan mapper API can now handle several versions and flavors (e.g. long index) of a mapper.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Add new binary versions for bowtie (1.1.1), bowtie2 (2.2.4), BWA (0.7.10) and GSNAP (2014-10-20).
+                The scripts to generate this binaries has also been added to Eoulsan sources.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Add a new mapper: STAR 2.4.0h. A new step named "starindexgenerator" allow to create custom index for STAR (e.g. with a GFF3 file as parameter)
+                like STAR genomeGenerate command.
+            </action>
+
+            <action dev="sperrin" type="add">
+                Add new Eoulsan step for FastQC.
+            </action>
+
+         </release>
 
 	</body>
 </document>

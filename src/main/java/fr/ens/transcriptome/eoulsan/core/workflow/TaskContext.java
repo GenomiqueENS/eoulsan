@@ -283,7 +283,11 @@ public class TaskContext implements StepContext, Serializable {
     final Data result =
         getOutputData(portName, origin.getName(), origin.getPart());
 
-    result.getMetadata().set(origin.getMetadata());
+    // Set the metadata of the new data from the origin data only if each data
+    // are not a list
+    if (!result.isList() && !origin.isList()) {
+      result.getMetadata().set(origin.getMetadata());
+    }
 
     return result;
   }

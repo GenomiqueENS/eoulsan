@@ -44,6 +44,7 @@ import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.CheckerStep;
 import fr.ens.transcriptome.eoulsan.util.Version;
@@ -56,6 +57,8 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @author Claire Wallon
  */
 public abstract class AbstractExpressionStep extends AbstractStep {
+
+  public static final String STEP_NAME = "expression";
 
   public static final String REMOVEAMBIGUOUSCASES_PARAMETER_NAME =
       "removeambiguouscases";
@@ -73,7 +76,6 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
   protected static final String COUNTER_GROUP = "expression";
 
-  private static final String STEP_NAME = "expression";
   private static final String DEFAULT_GENOMIC_TYPE = "exon";
   private static final String DEFAULT_ATTRIBUTE_ID = "PARENT";
 
@@ -205,8 +207,8 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
+  public void configure(final StepConfigurationContext context,
+      final Set<Parameter> stepParameters) throws EoulsanException {
 
     String counterName = null;
 

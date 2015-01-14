@@ -24,12 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.steps.generators;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
-
-import com.google.common.base.Preconditions;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
@@ -48,6 +49,7 @@ public final class GenomeMapperIndexer {
 
   private final SequenceReadsMapper mapper;
   private final GenomeIndexStorage storage;
+  private final LinkedHashMap<String, String> additionalDescription;
 
   /**
    * Create an archived genome index.
@@ -62,21 +64,38 @@ public final class GenomeMapperIndexer {
 
     final DataFile precomputedIndexDataFile;
 
+    getLogger().info("Mapper name: " + this.mapper.getMapperName());
+    getLogger().info("Mapper version: " + this.mapper.getMapperVersion());
+    getLogger().info("Mapper flavor: " + this.mapper.getMapperFlavor());
+    getLogger().info("Indexer arguments: " + this.mapper.getIndexerArguments());
+
     if (this.storage == null) {
       precomputedIndexDataFile = null;
     } else {
       precomputedIndexDataFile =
-          this.storage.get(this.mapper, genomeDescription);
+          this.storage.get(this.mapper, genomeDescription,
+              this.additionalDescription);
     }
 
     // If no index storage or if the index does not already exists compute it
     if (precomputedIndexDataFile == null) {
-      getLogger().info("Genome index not found, must compute it.");
+
+      getLogger().info("Mapper index not found, must compute it");
+
+      // Compute mapper index
       computeIndex(genomeDataFile, mapperIndexDataFile);
+
+      // Save mapper index in storage
       if (this.storage != null) {
-        this.storage.put(this.mapper, genomeDescription, mapperIndexDataFile);
+        this.storage.put(this.mapper, genomeDescription,
+            this.additionalDescription, mapperIndexDataFile);
       }
     } else {
+
+      getLogger().info(
+          "Mapper index found, no need to recompute it (mapper index file: "
+              + precomputedIndexDataFile + ")");
+
       // Else download it
       downloadPrecomputedIndex(precomputedIndexDataFile, mapperIndexDataFile);
     }
@@ -161,16 +180,27 @@ public final class GenomeMapperIndexer {
   /**
    * Public constructor.
    * @param mapper Mapper to use for the index generator
+   * @param additionnalArguments additional indexer arguments
+   * @param additionalDescription additional indexer arguments description
    */
-  public GenomeMapperIndexer(final SequenceReadsMapper mapper) {
+  public GenomeMapperIndexer(final SequenceReadsMapper mapper,
+      final String additionnalArguments,
+      final Map<String, String> additionalDescription) {
 
-    Preconditions.checkNotNull(mapper, "Mapper is null");
+    checkNotNull(mapper, "Mapper is null");
+    checkNotNull(additionalDescription, "additionalDescription is null");
 
     // Set the mapper
     this.mapper = mapper;
 
     // Get genome Index storage path
     this.storage = checkForGenomeIndexStore();
+
+    // Set indexer additional arguments of the indexer
+    this.mapper.setIndexerArguments(additionnalArguments);
+
+    // Get the additional description
+    this.additionalDescription = new LinkedHashMap<>(additionalDescription);
   }
 
 }

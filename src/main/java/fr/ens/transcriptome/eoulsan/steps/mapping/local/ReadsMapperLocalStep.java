@@ -39,6 +39,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.EnumSet;
 
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
@@ -52,6 +53,7 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
+import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep;
 import fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -81,7 +83,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
   public InputPorts getInputPorts() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
-    builder.addPort(READS_PORT_NAME, READS_FASTQ, true);
+    builder.addPort(READS_PORT_NAME, READS_FASTQ,
+        EnumSet.of(CompressionType.NONE), true);
     builder.addPort(MAPPER_INDEX_PORT_NAME, getMapper().getArchiveFormat(),
         true);
     builder.addPort(GENOME_DESCRIPTION_PORT_NAME, GENOME_DESC_TXT, true);

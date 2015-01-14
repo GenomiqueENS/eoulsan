@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.util.hadoop;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -164,10 +165,16 @@ public final class MapReduceUtils {
    */
   public static void submitAndWaitForJobs(final Map<Job, String> jobs,
       final int waitTimeInMillis, final StepStatus status,
-      final String counterGroup) throws InterruptedException, IOException {
+      final String counterGroup) throws InterruptedException, IOException,
+      ClassNotFoundException {
 
     if (jobs == null) {
       throw new NullPointerException("The list of jobs is null");
+    }
+
+    // Submit jobs
+    for (Job job : jobs.keySet()) {
+      job.submit();
     }
 
     final int totalJobs = jobs.size();
@@ -184,7 +191,6 @@ public final class MapReduceUtils {
       for (Map.Entry<Job, String> e : jobs.entrySet()) {
 
         final Job job = e.getKey();
-        final String sample = e.getValue();
 
         if (job.isComplete()) {
           completedJobs++;
@@ -213,6 +219,36 @@ public final class MapReduceUtils {
         }
       }
     }
+  }
+
+  /**
+   * Wait the completion of a job.
+   * @param job the job to submit
+   * @param jobDescription the description of the job
+   * @param waitTimeInMillis waiting time between 2 checks of the completion of
+   *          jobs
+   * @param status step status
+   * @param counterGroup group of the counter to log
+   * @throws IOException if an IO error occurs while waiting for jobs
+   * @throws InterruptedException if an error occurs while waiting for jobs
+   * @throws ClassNotFoundException if a class needed for map reduce execution
+   *           is not found
+   */
+  public static void submitAndWaitForJob(final Job job,
+      final String jobDescription, final int waitTimeInMillis,
+      final StepStatus status, final String counterGroup)
+      throws InterruptedException, IOException, ClassNotFoundException {
+
+    if (job == null) {
+      throw new NullPointerException("The job is null");
+    }
+
+    if (jobDescription == null) {
+      throw new NullPointerException("The jobDescription is null");
+    }
+
+    submitAndWaitForJobs(Collections.singletonMap(job, jobDescription),
+        waitTimeInMillis, status, counterGroup);
   }
 
   /**
