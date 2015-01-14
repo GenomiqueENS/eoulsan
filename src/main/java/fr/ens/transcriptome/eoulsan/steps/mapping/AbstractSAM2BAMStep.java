@@ -83,21 +83,28 @@ public abstract class AbstractSAM2BAMStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      if ("compression.level".equals(p.getName())) {
+      switch (p.getName()) {
+
+      case "compression.level":
 
         final int level = p.getIntValue();
+
         if (level < 0 || level > 9) {
           throw new EoulsanException("Invalid compression level [0-9]: "
               + level + " step: " + p.getName());
         }
 
         this.compressionLevel = level;
-      } else if ("input.format".equals(p.getName())) {
+        break;
+
+      case "input.format":
 
         getLogger().warning(
             "Deprecated parameter \""
                 + p.getName() + "\" for step " + getName());
-      } else {
+        break;
+
+      default:
         throw new EoulsanException("Unknown parameter for "
             + getName() + " step: " + p.getName());
       }
