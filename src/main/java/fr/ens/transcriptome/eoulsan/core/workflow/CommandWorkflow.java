@@ -469,7 +469,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     // Create step
     CommandWorkflowStep step =
         new CommandWorkflowStep(workflow, stepId, stepName, null, parameters,
-            false, false);
+            false, true);
 
     // Configure step
     step.configure();
