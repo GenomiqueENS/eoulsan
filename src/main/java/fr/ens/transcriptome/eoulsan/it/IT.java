@@ -614,14 +614,14 @@ public class IT {
    * @return the pattern form configuration
    */
   private String extractPattern(final String propertyKey) {
-
+    
     final String patterns = this.testConf.getProperty(propertyKey);
 
-    if (patterns == null || patterns.isEmpty()) {
+    if (patterns == null || patterns.trim().isEmpty()) {
       return "none";
     }
 
-    return patterns;
+    return patterns.trim();
   }
 
   //
@@ -689,6 +689,43 @@ public class IT {
   public String getCheckLengthFilePatterns() {
     return this.checkLengthFilePatterns;
   }
+  
+  /**
+   * Gets the count files to check content.
+   * @return the count files to check content
+   */
+  public int getCountFilesToCheckContent() {
+    return (this.itOutput == null ? 0 : this.itOutput
+        .getCountFilesToCheckContent());
+  }
+
+  /**
+   * Gets the count files to check length.
+   * @return the count files to check length
+   */
+  public int getCountFilesToCheckLength() {
+    return (this.itOutput == null ? 0 : this.itOutput
+        .getCountFilesToCheckLength());
+  }
+
+  /**
+   * Gets the count files to check existence.
+   * @return the count files to check existence
+   */
+  public int getCountFilesToCheckExistence() {
+    return (this.itOutput == null ? 0 : this.itOutput
+        .getCountFilesToCheckExistence());
+  }
+
+  /**
+   * Gets the count files to compare.
+   * @return the count files to compare
+   */
+  public int getCountFilesToCompare() {
+    return (this.itOutput == null ? 0 : this.itOutput
+        .getCountFilesToCompare());
+  }
+
 
   /**
    * Gets the IT output.
