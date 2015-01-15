@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.createConfiguration;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 
 import java.io.IOException;
 import java.util.Set;
@@ -67,7 +66,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
   public InputPorts getInputPorts() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
-    builder.addPort(READS_PORT_NAME, READS_TFQ, true);
+    builder.addPort(READS_PORT_NAME, READS_FASTQ, true);
     builder.addPort(MAPPER_INDEX_PORT_NAME, getMapper().getArchiveFormat(),
         true);
 
@@ -141,7 +140,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     final Configuration jobConf = new Configuration(parentConf);
 
-    final Path inputPath = new Path(readsData.getDataFilename());
+    final Path inputPath = new Path(readsData.getDataFile().getSource());
 
     // Set mapper name
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
@@ -193,7 +192,9 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
                 + inputPath.getName() + ")");
 
     // Set genome index reference path in the distributed cache
-    final Path genomeIndex = new Path(mapperIndexData.getDataFilename());
+    final Path genomeIndex =
+        new Path(mapperIndexData.getDataFile().getSource());
+
     job.addCacheFile(genomeIndex.toUri());
 
     // Set the jar
