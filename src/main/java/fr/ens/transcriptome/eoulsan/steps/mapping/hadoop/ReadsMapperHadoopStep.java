@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.createConfiguration;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
@@ -92,7 +93,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
   public StepResult execute(final StepContext context, final StepStatus status) {
 
     // Create configuration object
-    final Configuration conf = new Configuration(false);
+    final Configuration conf = createConfiguration();
 
     try {
 

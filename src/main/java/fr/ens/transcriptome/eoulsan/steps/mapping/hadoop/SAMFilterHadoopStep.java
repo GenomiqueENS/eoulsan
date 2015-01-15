@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.createConfiguration;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
@@ -67,7 +68,7 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
   public StepResult execute(final StepContext context, final StepStatus status) {
 
     // Create configuration object
-    final Configuration conf = new Configuration(false);// this.conf;
+    final Configuration conf = createConfiguration();
 
     try {
 
