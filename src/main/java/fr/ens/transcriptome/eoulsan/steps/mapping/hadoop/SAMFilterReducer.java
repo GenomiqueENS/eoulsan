@@ -140,9 +140,9 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
     // Write SAM header
     if (context.getTaskAttemptID().getTaskID().getId() == 0) {
 
-      // TODO change for Hadoop 2.0
       final Path outputPath =
-          new Path(context.getConfiguration().get("mapred.output.dir"));
+          new Path(context.getConfiguration().get(
+              "mapreduce.output.fileoutputformat.outputdir"));
 
       final FileSystem fs =
           context.getWorkingDirectory().getFileSystem(

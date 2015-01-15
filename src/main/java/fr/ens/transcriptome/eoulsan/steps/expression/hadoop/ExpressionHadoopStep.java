@@ -511,7 +511,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       // Load map-reduce results
       fefc.loadPreResults(new DataFile(rj.getConfiguration().get(
-          "mapred.output.dir")).open());
+          "mapreduce.output.fileoutputformat.outputdir")).open());
 
       fefc.saveFinalResults(fs.create(resultPath));
     }

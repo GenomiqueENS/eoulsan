@@ -178,9 +178,9 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
         // Save headers
 
-        // TODO change for Hadoop 2.0
         final Path outputPath =
-            new Path(context.getConfiguration().get("mapred.output.dir"));
+            new Path(context.getConfiguration().get(
+                "mapreduce.output.fileoutputformat.outputdir"));
 
         final Path headerPath =
             new Path(outputPath, SAM_HEADER_FILE_PREFIX
