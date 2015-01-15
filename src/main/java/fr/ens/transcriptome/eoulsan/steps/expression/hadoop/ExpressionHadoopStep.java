@@ -136,9 +136,6 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
           genomicType, attributeId, exonsIndexPath, jobConf);
     }
 
-    // Debug
-    // conf.set("mapred.job.tracker", "local");
-
     // Create the job and its name
     final Job job =
         Job.getInstance(

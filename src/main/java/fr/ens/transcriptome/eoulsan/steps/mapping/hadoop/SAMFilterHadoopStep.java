@@ -120,7 +120,7 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
         MAP_FILTER_PARAMETER_KEY_PREFIX, jobConf);
 
     // timeout
-    jobConf.set("mapred.task.timeout", "" + 30 * 60 * 1000);
+    jobConf.set("mapreduce.task.timeout", "" + 30 * 60 * 1000);
 
     // Create the job and its name
     final Job job =

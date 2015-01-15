@@ -176,14 +176,11 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
 
-    // Debug
-    // jobConf.set("mapred.job.tracker", "local");
-
     // timeout
-    jobConf.set("mapred.task.timeout", "" + HADOOP_TIMEOUT);
+    jobConf.set("mapreduce.task.timeout", "" + HADOOP_TIMEOUT);
 
     // No JVM task resuse
-    jobConf.set("mapred.job.reuse.jvm.num.tasks", "" + 1);
+    jobConf.set("mapreduce.job.jvm.numtasks", "" + 1);
 
     // Set ZooKeeper client configuration
     setZooKeeperJobConfiguration(jobConf, context);
@@ -241,7 +238,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     if (connectString == null) {
 
       connectString =
-          jobConf.get("mapred.job.tracker").split(":")[0]
+          jobConf.get("mapreduce.jobtracker.address").split(":")[0]
               + ":" + settings.getZooKeeperDefaultPort();
     }
 
