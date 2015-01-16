@@ -95,7 +95,7 @@ public class ToolInterpreterSamtoolrmdupTest {
   public void executionTestPE() {
 
     // Call GalaxyToolStep
-    this.galaxyToolStep.configure(getStepParameters(this.isPE));
+    this.galaxyToolStep.configure(null, getStepParameters(this.isPE));
 
     final int exitValue =
         this.galaxyToolStep.execute(this.inputData, this.outputData,
@@ -111,7 +111,7 @@ public class ToolInterpreterSamtoolrmdupTest {
   public void executionTestSE() {
 
     // Call GalaxyToolStep
-    this.galaxyToolStep.configure(getStepParameters(!this.isPE));
+    this.galaxyToolStep.configure(null, getStepParameters(!this.isPE));
 
     final int exitValue =
         this.galaxyToolStep.execute(this.inputData, this.outputData,
