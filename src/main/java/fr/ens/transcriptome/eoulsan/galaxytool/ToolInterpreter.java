@@ -24,14 +24,14 @@
 
 package fr.ens.transcriptome.eoulsan.galaxytool;
 
-import static fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser.extractCommand;
-import static fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser.extractDescription;
-import static fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser.extractInputs;
-import static fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser.extractInterpreter;
-import static fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser.extractOutputs;
-import static fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser.extractToolID;
-import static fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser.extractToolName;
-import static fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser.extractToolVersion;
+import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractCommand;
+import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractDescription;
+import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractInputs;
+import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractInterpreter;
+import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractOutputs;
+import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolID;
+import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolName;
+import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolVersion;
 
 import java.io.File;
 import java.io.IOException;

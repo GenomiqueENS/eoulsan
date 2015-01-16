@@ -21,7 +21,7 @@
  *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
-package fr.ens.transcriptome.eoulsan.galaxytool.io;
+package fr.ens.transcriptome.eoulsan.util.galaxytool;
 
 import static fr.ens.transcriptome.eoulsan.galaxytool.element.AbstractToolElement.getInstanceToolElement;
 

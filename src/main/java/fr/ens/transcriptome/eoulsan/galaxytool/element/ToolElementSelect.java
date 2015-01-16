@@ -32,7 +32,7 @@ import org.w3c.dom.Element;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.galaxytool.io.GalaxyToolXMLParser;
+import fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser;
 
 // TODO: Auto-generated Javadoc
 /**
