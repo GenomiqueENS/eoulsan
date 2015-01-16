@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.createConfiguration;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
@@ -134,9 +135,6 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       createExonsIndex(context, new Path(annotationDataFile.getSource()),
           genomicType, attributeId, exonsIndexPath, jobConf);
     }
-
-    // Debug
-    // conf.set("mapred.job.tracker", "local");
 
     // Create the job and its name
     final Job job =
@@ -511,7 +509,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       // Load map-reduce results
       fefc.loadPreResults(new DataFile(rj.getConfiguration().get(
-          "mapred.output.dir")).open());
+          "mapreduce.output.fileoutputformat.outputdir")).open());
 
       fefc.saveFinalResults(fs.create(resultPath));
     }
@@ -592,7 +590,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       final Data outData, final StepStatus status) {
 
     // Create configuration object
-    final Configuration conf = new Configuration(false);
+    final Configuration conf = createConfiguration();
 
     try {
       final long startTime = System.currentTimeMillis();
@@ -655,7 +653,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       final StepStatus status) {
 
     // Create configuration object
-    final Configuration conf = new Configuration(false);
+    final Configuration conf = createConfiguration();
 
     // Create the list of jobs to run
     final Map<Job, String> jobsRunning = new HashMap<>();

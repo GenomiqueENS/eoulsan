@@ -713,7 +713,7 @@ public class DistCp implements Tool {
       job.set(PRESERVE_STATUS_LABEL, args.preservedAttributes);
     }
     if (args.mapredSslConf != null) {
-      job.set("dfs.https.client.keystore.resource", args.mapredSslConf);
+      job.set("dfs.client.https.keystore.resource", args.mapredSslConf);
     }
 
     // Initialize the mapper

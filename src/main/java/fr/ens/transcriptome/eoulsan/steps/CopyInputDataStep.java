@@ -144,6 +144,28 @@ public class CopyInputDataStep extends AbstractStep {
   //
 
   /**
+   * Check input and output files.
+   * @param inFile input file
+   * @param outFile output file
+   * @throws IOException if copy cannot be started
+   */
+  private static void checkFiles(final DataFile inFile, final DataFile outFile)
+      throws IOException {
+
+    if (inFile.equals(outFile)) {
+      throw new FileNotFoundException("cannot copy file on itself: " + inFile);
+    }
+
+    if (!inFile.exists()) {
+      throw new FileNotFoundException("input file not found: " + inFile);
+    }
+
+    if (outFile.exists()) {
+      throw new FileNotFoundException("output file already exists: " + outFile);
+    }
+  }
+
+  /**
    * Copy files for a format and a samples.
    * @param inData input data
    * @param outData output data
@@ -160,24 +182,24 @@ public class CopyInputDataStep extends AbstractStep {
       final DataFile in = inData.getDataFile();
       final DataFile out = outData.getDataFile();
 
-      if (!in.exists()) {
-        throw new FileNotFoundException("input file not found: " + in);
-      }
+      // Check input and output files
+      checkFiles(in, out);
 
+      // Copy file
       DataFiles.symlinkOrCopy(in, out);
     } else {
 
-      // Handle multi file format like fastq
+      // Handle multi file format like FASTQ files
 
       for (int i = 0; i < count; i++) {
 
         final DataFile in = inData.getDataFile(i);
         final DataFile out = outData.getDataFile(i);
 
-        if (!in.exists()) {
-          throw new FileNotFoundException("input file not found: " + in);
-        }
+        // Check input and output files
+        checkFiles(in, out);
 
+        // Copy file
         DataFiles.symlinkOrCopy(in, out);
       }
     }

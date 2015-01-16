@@ -292,7 +292,7 @@ public class ITFactory {
     rawProps.load(newReader(configurationFile,
         Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
 
-    props = evaluateProperties(rawProps);
+    props = evaluateProperties(rawProps, true);
 
     // Check include
     final String includeOption = props.getProperty(INCLUDE_CONF_KEY);
@@ -309,7 +309,7 @@ public class ITFactory {
       rawNewProps.load(newReader(otherConfigurationFile,
           Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
 
-      final Properties newProps = evaluateProperties(rawNewProps);
+      final Properties newProps = evaluateProperties(rawNewProps, false);
 
       for (final String propertyName : newProps.stringPropertyNames()) {
         props.put(propertyName, newProps.getProperty(propertyName));
@@ -322,11 +322,12 @@ public class ITFactory {
   /**
    * Evaluate properties.
    * @param rawProps the raw props
+   * @param overwrite if it is true, replace property.
    * @return the properties
    * @throws EoulsanException the Eoulsan exception
    */
-  private static Properties evaluateProperties(final Properties rawProps)
-      throws EoulsanException {
+  private static Properties evaluateProperties(final Properties rawProps,
+      final boolean overwrite) throws EoulsanException {
     final Properties props = new Properties();
 
     // Extract environment variable
@@ -339,11 +340,18 @@ public class ITFactory {
 
     // Evaluate property
     for (final String propertyName : rawProps.stringPropertyNames()) {
+      
       final String propertyValue =
           evaluateExpressions(rawProps.getProperty(propertyName), true);
 
-      props.setProperty(propertyName, propertyValue);
+      // Check property already setting
+      if (props.contains(propertyName) && !overwrite) {
+        continue;
 
+      } else {
+        // Set property
+        props.setProperty(propertyName, propertyValue);
+      }
     }
 
     return props;
@@ -546,8 +554,7 @@ public class ITFactory {
       CONSTANTS.setProperty(APPLICATION_PATH_VARIABLE,
           this.applicationPath.getAbsolutePath());
 
-      checkExistingDirectoryFile(this.applicationPath,
-          "The application path doest not exists.");
+      checkExistingDirectoryFile(this.applicationPath, "application path");
 
       // Get the file with the list of tests to run
       this.selectedTestsFile =

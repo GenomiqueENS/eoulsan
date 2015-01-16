@@ -108,6 +108,9 @@ public class IT {
   private final ITSuite itSuite;
   private final String checkLengthFilePatterns;
 
+  // Compile the result comparison from all tests
+  private ITOutput itOutput = null;
+
   /**
    * Launch test execution, first generate data directory corresponding to the
    * arguments: expected data or data to test. If it is data to test then launch
@@ -128,9 +131,6 @@ public class IT {
     getLogger().info(
         "Output directory " + this.outputTestDirectory.getAbsolutePath());
 
-    // Compile the result comparison from all tests
-    ITOutput itOutput = null;
-
     try {
       // Check data to generate
       if (!isDataNeededToBeGenerated()) {
@@ -146,7 +146,7 @@ public class IT {
       launchScriptsTest(this.itResult);
 
       // Treat result application directory
-      itOutput =
+      this.itOutput =
           new ITOutput(this.outputTestDirectory, this.fileToComparePatterns,
               this.excludeToComparePatterns, this.checkLengthFilePatterns,
               this.checkExistenceFilePatterns, this.checkAbsenceFilePatterns);
@@ -158,19 +158,16 @@ public class IT {
         createExpectedDirectory();
 
         // Copy files corresponding to pattern in expected data directory
-        itOutput.copyFiles(this.expectedTestDirectory);
+        this.itOutput.copyFiles(this.expectedTestDirectory);
 
       } else {
 
         // Case comparison between expected and output test directory
         final Set<ITOutputComparisonResult> results =
-            itOutput
-                .compareTo(new ITOutput(this.expectedTestDirectory
-                    .getParentFile(), this.fileToComparePatterns,
-                    this.excludeToComparePatterns,
-                    this.checkLengthFilePatterns,
-                    this.checkExistenceFilePatterns,
-                    this.checkAbsenceFilePatterns));
+            this.itOutput.compareTo(new ITOutput(this.expectedTestDirectory,
+                this.fileToComparePatterns, this.excludeToComparePatterns,
+                this.checkLengthFilePatterns, this.checkExistenceFilePatterns,
+                this.checkAbsenceFilePatterns));
 
         this.itResult.addComparisonsResults(results);
 
@@ -489,7 +486,7 @@ public class IT {
 
     // Execute test, expected must be existing
     if (expectedDirectories.length == 0
-        && ! this.generateExpectedDirectoryTestData) {
+        && !this.generateExpectedDirectoryTestData) {
       throw new EoulsanException(this.testName
           + ": no expected directory found to launch test in "
           + this.testDataDirectory.getAbsolutePath());
@@ -617,14 +614,14 @@ public class IT {
    * @return the pattern form configuration
    */
   private String extractPattern(final String propertyKey) {
-
+    
     final String patterns = this.testConf.getProperty(propertyKey);
 
-    if (patterns == null || patterns.isEmpty()) {
+    if (patterns == null || patterns.trim().isEmpty()) {
       return "none";
     }
 
-    return patterns;
+    return patterns.trim();
   }
 
   //
@@ -685,13 +682,63 @@ public class IT {
     return this.checkExistenceFilePatterns;
   }
 
+  /**
+   * Gets the check length file patterns.
+   * @return the check length file patterns
+   */
   public String getCheckLengthFilePatterns() {
     return this.checkLengthFilePatterns;
+  }
+  
+  /**
+   * Gets the count files to check content.
+   * @return the count files to check content
+   */
+  public int getCountFilesToCheckContent() {
+    return (this.itOutput == null ? 0 : this.itOutput
+        .getCountFilesToCheckContent());
+  }
+
+  /**
+   * Gets the count files to check length.
+   * @return the count files to check length
+   */
+  public int getCountFilesToCheckLength() {
+    return (this.itOutput == null ? 0 : this.itOutput
+        .getCountFilesToCheckLength());
+  }
+
+  /**
+   * Gets the count files to check existence.
+   * @return the count files to check existence
+   */
+  public int getCountFilesToCheckExistence() {
+    return (this.itOutput == null ? 0 : this.itOutput
+        .getCountFilesToCheckExistence());
+  }
+
+  /**
+   * Gets the count files to compare.
+   * @return the count files to compare
+   */
+  public int getCountFilesToCompare() {
+    return (this.itOutput == null ? 0 : this.itOutput
+        .getCountFilesToCompare());
+  }
+
+
+  /**
+   * Gets the IT output.
+   * @return the IT output
+   */
+  public ITOutput getITOutput() {
+    return this.itOutput;
   }
 
   //
   // Constructor
   //
+
   /**
    * Public constructor.
    * @param itSuite the it suite
@@ -718,14 +765,14 @@ public class IT {
     this.itSuite = itSuite;
     this.applicationPath = applicationPath;
     this.testName = testName;
-    
+
     // Test data directory contains test configuration file and expected
     // directory
     this.testDataDirectory = new File(testsDataDirectory, this.testName);
 
     // Output directory on execution integration test
     this.outputTestDirectory = new File(outputTestsDirectory, this.testName);
-    
+
     // Load properties configuration, added to globals configuration
     this.testConf = loadConfigurationFile(globalsConf);
 
@@ -734,24 +781,24 @@ public class IT {
 
     // Init integration tests result
     this.itResult = new ITResult(this);
-    
+
     // Extract properties on action: generate expected data directory
     this.generateAllExpectedDirectoryTest =
         this.itSuite.isGenerateAllExpectedDirectoryTest();
-    
+
     this.generateNewExpectedDirectoryTests =
         this.itSuite.isGenerateNewExpectedDirectoryTests();
-    
+
     this.generateExpectedDirectoryTestData =
         this.generateAllExpectedDirectoryTest
-        || this.generateNewExpectedDirectoryTests;
-    
+            || this.generateNewExpectedDirectoryTests;
+
     this.manualGenerationExpectedData =
         Boolean.parseBoolean(this.testConf
             .getProperty(ITFactory.MANUAL_GENERATION_EXPECTED_DATA_CONF_KEY));
 
     this.expectedTestDirectory = retrieveExpectedDirectory();
-    
+
     // Extract all patterns define
     this.fileToComparePatterns =
         extractPattern(ITFactory.FILE_TO_COMPARE_PATTERNS_CONF_KEY);

@@ -230,8 +230,7 @@ public class IntegrationTestAction extends AbstractAction {
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + ".sh " + getName()
-        + " [options]", options);
+        + ".sh " + getName() + " [options]", options);
 
     Common.exit(0);
   }
@@ -241,7 +240,7 @@ public class IntegrationTestAction extends AbstractAction {
   //
 
   /**
-   * Run all integrated test
+   * Run all integrated test.
    * @param testNGReportDirectory TestNG report directory, if it is null use the
    *          default directory
    */
@@ -268,17 +267,23 @@ public class IntegrationTestAction extends AbstractAction {
 
     };
 
-    // Create and configure TestNG
     final TestNG testng = new TestNG();
-    testng.setTestClasses(new Class[] {ITFactory.class});
-    testng.addListener(tla);
+    try {
+      // Create and configure TestNG
+      testng.setTestClasses(new Class[] {ITFactory.class});
+      testng.addListener(tla);
 
-    if (testNGReportDirectory != null) {
-      // Replace default output directory
-      testng.setOutputDirectory(testNGReportDirectory.getAbsolutePath());
+      if (testNGReportDirectory != null) {
+        // Replace default output directory
+        testng.setOutputDirectory(testNGReportDirectory.getAbsolutePath());
+      }
+
+    } catch (final Throwable e) {
+      Common.errorExit(e,
+          "Integration test can not be initialized the test factory.");
     }
 
-    // Launch integration tests using TestNG
+// Launch integration tests using TestNG
     testng.run();
 
     // Make a copy testNGReport in output test directory

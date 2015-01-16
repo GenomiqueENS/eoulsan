@@ -382,7 +382,7 @@ public class AWSElasticMapReduceJob {
                 "s3n://eu-west-1.elasticmapreduce/bootstrap-actions/configure-hadoop")
             .withArgs(
                 "--site-key-value",
-                "mapred.tasktracker.map.tasks.maximum="
+                "mapreduce.tasktracker.map.tasks.maximum="
                     + this.taskTrackerMaxMapTasks);
 
     final BootstrapActionConfig bootstrapActions =

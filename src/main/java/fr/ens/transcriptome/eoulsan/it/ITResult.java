@@ -180,13 +180,20 @@ public class ITResult {
 
     report.append("\n\nPatterns:");
     report.append("\n\tFiles to compare content:\t"
+        + this.it.getCountFilesToCheckContent() + " file(s)\twith: "
         + this.it.getFileToComparePatterns());
-    report.append("\n\tFiles to check lenth:\t"
+
+    report.append("\n\tFiles to check length:\t"
+        + this.it.getCountFilesToCheckLength() + " file(s)\twith: "
         + this.it.getCheckLengthFilePatterns());
+
     report.append("\n\tFiles to check existence:\t"
+        + this.it.getCountFilesToCheckExistence() + " file(s)\twith: "
         + this.it.getCheckExistenceFilePatterns());
+
     report.append("\n\tFiles to exclude:\t"
         + this.it.getExcludeToComparePatterns());
+
     report.append('\n');
 
     // Add synthesis on executions scripts
@@ -197,7 +204,8 @@ public class ITResult {
     }
 
     if (isGeneratedData()) {
-      report.append("\nSUCCESS: copy files to ");
+      report.append("\nSUCCESS: copy files "
+          + this.it.getCountFilesToCompare() + " to ");
       report.append(this.it.getExpectedTestDirectory().getAbsolutePath());
     }
 

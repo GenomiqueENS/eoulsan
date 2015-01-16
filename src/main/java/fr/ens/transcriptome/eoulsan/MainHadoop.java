@@ -72,12 +72,21 @@ public final class MainHadoop extends Main {
   @Override
   protected Handler getLogHandler(final String logFile) throws IOException {
 
+    if (logFile == null) {
+      throw new NullPointerException("The log file is null");
+    }
+
     final Path loggerPath = new Path(logFile);
     final FileSystem loggerFs = loggerPath.getFileSystem(this.conf);
 
+    final Path parentPath = loggerPath.getParent();
+
     // Create parent directory if necessary
     if (!loggerFs.exists(loggerPath.getParent())) {
-      loggerFs.mkdirs(loggerPath.getParent());
+      if (!loggerFs.mkdirs(loggerPath.getParent())) {
+        throw new IOException("Unable to create directory "
+            + parentPath + " for log file:" + logFile);
+      }
     }
 
     return new StreamHandler(loggerFs.create(loggerPath), Globals.LOG_FORMATTER);
