@@ -37,7 +37,8 @@
 
     <section name="Create mapper index step">
 
-      <p>This step allow to create index for all the mappers available in Eoulsan. This step is automatically called when needed.</p>
+      <p>This step allow to create index for all the mappers available in Eoulsan. This step is <b>automatically called when needed</b>
+         and <b>must not be added to the workflow file</b>.</p>
 
       <ul>
         <li><b>Internal name</b>: genericindexgenerator</li>
