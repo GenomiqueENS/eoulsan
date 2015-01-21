@@ -261,7 +261,7 @@ public class WorkflowStepResult {
   //
 
   private static String toJSON(final int level, final String key,
-      final Object value) {
+      final Object value, boolean lastValue) {
 
     final StringBuilder sb = new StringBuilder();
 
@@ -281,13 +281,18 @@ public class WorkflowStepResult {
       sb.append(value.toString().trim());
       sb.append('\"');
     }
+
+    if (!lastValue) {
+      sb.append(',');
+    }
+
     sb.append('\n');
 
     return sb.toString();
   }
 
   private static String toJSON(final int level, final String key,
-      final Map<String, ?> counters) {
+      final Map<String, ?> counters, boolean lastValue) {
 
     final StringBuilder sb = new StringBuilder();
 
@@ -299,11 +304,20 @@ public class WorkflowStepResult {
       sb.append("}\n");
     } else {
       sb.append('\n');
+      int count = 0;
       for (Map.Entry<String, ?> e : counters.entrySet()) {
-        sb.append(toJSON(level + 2, e.getKey(), e.getValue()));
+        sb.append(toJSON(level + 2, e.getKey(), e.getValue(),
+            ++count == counters.size()));
       }
+
       sb.append(Strings.repeat(TAB, level));
-      sb.append("}\n");
+      sb.append("}");
+
+      if (!lastValue) {
+        sb.append(',');
+      }
+
+      sb.append("\n");
     }
 
     return sb.toString();
@@ -315,30 +329,30 @@ public class WorkflowStepResult {
     sb.append('{');
     sb.append('\n');
 
-    sb.append(toJSON(1, "Job id", this.jobId));
-    sb.append(toJSON(1, "Job UUID", this.jobUUID));
-    sb.append(toJSON(1, "Job description", this.jobDescription));
-    sb.append(toJSON(1, "Job environment", this.jobEnvironment));
-    sb.append(toJSON(1, "Step id", this.stepId));
-    sb.append(toJSON(1, "Step name", this.stepName));
-    sb.append(toJSON(1, "Step class", this.stepClass));
+    sb.append(toJSON(1, "Job id", this.jobId, false));
+    sb.append(toJSON(1, "Job UUID", this.jobUUID, false));
+    sb.append(toJSON(1, "Job description", this.jobDescription, false));
+    sb.append(toJSON(1, "Job environment", this.jobEnvironment, false));
+    sb.append(toJSON(1, "Step id", this.stepId, false));
+    sb.append(toJSON(1, "Step name", this.stepName, false));
+    sb.append(toJSON(1, "Step class", this.stepClass, false));
     sb.append(toJSON(1, "Step version", this.stepVersion == null
-        ? null : this.stepVersion.toString()));
-    sb.append(toJSON(1, "Start time", this.startTime.toString()));
-    sb.append(toJSON(1, "End time", this.endTime.toString()));
-    sb.append(toJSON(1, "Duration", toTimeHumanReadable(this.duration)));
-    sb.append(toJSON(1, "Duration in milliseconds", this.duration));
-    sb.append(toJSON(1, "Success", Boolean.toString(this.success)));
-    sb.append(toJSON(1, "Step message", this.stepMessage));
+        ? null : this.stepVersion.toString(), false));
+    sb.append(toJSON(1, "Start time", this.startTime.toString(), false));
+    sb.append(toJSON(1, "End time", this.endTime.toString(), false));
+    sb.append(toJSON(1, "Duration", toTimeHumanReadable(this.duration), false));
+    sb.append(toJSON(1, "Duration in milliseconds", this.duration, false));
+    sb.append(toJSON(1, "Success", Boolean.toString(this.success), false));
+    sb.append(toJSON(1, "Step message", this.stepMessage, false));
 
     if (!this.success) {
       sb.append(toJSON(1, "Exception", this.exception == null
-          ? "" : this.exception.getClass().getSimpleName()));
-      sb.append(toJSON(1, "Exception message", this.errorMessage));
+          ? "" : this.exception.getClass().getSimpleName(), false));
+      sb.append(toJSON(1, "Exception message", this.errorMessage, false));
     }
 
     // Step parameters
-    sb.append(toJSON(1, "Step parameters", convert(this.parameters)));
+    sb.append(toJSON(1, "Step parameters", convert(this.parameters), false));
 
     sb.append(Strings.repeat(TAB, 1));
     sb.append("\"Tasks\" : [");
@@ -358,17 +372,23 @@ public class WorkflowStepResult {
 
       sb.append(Strings.repeat(TAB, 2));
       sb.append("{\n");
-      sb.append(toJSON(4, "Task id", contextId));
-      sb.append(toJSON(4, "Task name", this.taskNames.get(contextId)));
+      sb.append(toJSON(4, "Task id", contextId, false));
+      sb.append(toJSON(4, "Task name", this.taskNames.get(contextId), false));
       sb.append(toJSON(4, "Task description",
-          this.taskDescriptions.get(contextId)));
-      sb.append(toJSON(4, "Task message", this.taskMessages.get(contextId)));
+          this.taskDescriptions.get(contextId), false));
+      sb.append(toJSON(4, "Task message", this.taskMessages.get(contextId),
+          false));
 
       // contextName counters
-      sb.append(toJSON(4, "Task counters", this.taskCounters.get(contextId)));
+      sb.append(toJSON(4, "Task counters", this.taskCounters.get(contextId),
+          true));
       sb.append(Strings.repeat(TAB, 2));
-      sb.append("}\n");
+      sb.append("},\n");
     }
+
+    // Remove last comma
+    sb.delete(sb.length() - 2, sb.length() - 1);
+
     if (sampleProcessed) {
       sb.append(Strings.repeat(TAB, 1));
       sb.append("]\n");
