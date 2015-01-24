@@ -48,6 +48,7 @@ import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
+import fr.ens.transcriptome.eoulsan.core.workflow.ContextUtils;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepOutputDataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormatConverter;
@@ -121,15 +122,18 @@ public class HDFSDataDownloadStep extends AbstractStep {
       return status.createStepResult();
     }
 
+    final String hadoopWorkingPathname =
+        ContextUtils.getHadoopWorkingPathname(context);
+
     getLogger().info("Start copying results.");
     getLogger().info(
         "inpath="
-            + context.getHadoopWorkingPathname() + "\toutpath="
+            + hadoopWorkingPathname + "\toutpath="
             + context.getOutputPathname());
 
     final Configuration conf = this.conf;
 
-    if (context.getHadoopWorkingPathname() == null) {
+    if (hadoopWorkingPathname == null) {
       throw new NullPointerException("The input path is null");
     }
 
@@ -142,7 +146,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
 
     try {
 
-      final Path inPath = new Path(context.getHadoopWorkingPathname());
+      final Path inPath = new Path(hadoopWorkingPathname);
 
       if (!PathUtils.isExistingDirectoryFile(inPath, conf)) {
         throw new EoulsanException("The base directory is not a directory: "
@@ -205,9 +209,8 @@ public class HDFSDataDownloadStep extends AbstractStep {
 
           // Create temporary files
           final Path jobPath =
-              PathUtils.createTempPath(
-                  new Path(context.getHadoopWorkingPathname()), "distcp-", "",
-                  this.conf);
+              PathUtils.createTempPath(new Path(hadoopWorkingPathname),
+                  "distcp-", "", this.conf);
 
           final DataFileDistCp dsdcp = new DataFileDistCp(this.conf, jobPath);
           dsdcp.copy(filesToTranscode);

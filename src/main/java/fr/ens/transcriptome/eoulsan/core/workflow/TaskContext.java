@@ -88,26 +88,35 @@ public class TaskContext implements StepContext, Serializable {
     return this.contextName;
   }
 
-  @Override
+  /**
+   * Get the local working path.
+   * @return Returns the local working Path
+   */
   public String getLocalWorkingPathname() {
 
     return this.workflowContext.getLocalWorkingPathname();
   }
 
-  @Override
+  /**
+   * Get the Hadoop working path.
+   * @return Returns the Hadoop working Path
+   */
   public String getHadoopWorkingPathname() {
 
     return this.workflowContext.getHadoopWorkingPathname();
   }
 
-  @Override
-  public String getLogPathname() {
+  /**
+   * Get the job path.
+   * @return Returns the job Path
+   */
+  public String getJobPathname() {
 
-    return this.workflowContext.getLogPathname();
+    return this.workflowContext.getJobPathname();
   }
 
   @Override
-  public String getTaskPathname() {
+  public String getTaskOutputPathname() {
 
     return this.workflowContext.getTaskPathname();
   }
@@ -117,7 +126,10 @@ public class TaskContext implements StepContext, Serializable {
     return this.workflowContext.getOutputPathname();
   }
 
-  @Override
+  /**
+   * Get the step working path.
+   * @return Returns the step working path
+   */
   public String getStepWorkingPathname() {
 
     return this.step.getStepWorkingDir().getSource();
@@ -148,7 +160,10 @@ public class TaskContext implements StepContext, Serializable {
     return this.workflowContext.getWorkflowPathname();
   }
 
-  @Override
+  /**
+   * Get the application jar path.
+   * @return Returns the jar path
+   */
   public String getJarPathname() {
     return this.workflowContext.getJarPathname();
   }

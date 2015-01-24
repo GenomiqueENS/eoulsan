@@ -72,7 +72,7 @@ public class WorkflowContext implements Serializable {
    */
   public String getLocalWorkingPathname() {
 
-    final DataFile dir = this.workflow.getLocalWorkingDir();
+    final DataFile dir = this.workflow.getLocalWorkingDirectory();
 
     return dir == null ? null : dir.getSource();
   }
@@ -83,7 +83,7 @@ public class WorkflowContext implements Serializable {
    */
   public String getHadoopWorkingPathname() {
 
-    final DataFile dir = this.workflow.getHadoopWorkingDir();
+    final DataFile dir = this.workflow.getHadoopWorkingDirectory();
 
     return dir == null ? null : dir.getSource();
   }
@@ -94,18 +94,18 @@ public class WorkflowContext implements Serializable {
    */
   public String getOutputPathname() {
 
-    final DataFile dir = this.workflow.getOutputDir();
+    final DataFile dir = this.workflow.getOutputDirectory();
 
     return dir == null ? null : dir.getSource();
   }
 
   /**
-   * Get the log path.
+   * Get the job path.
    * @return Returns the log Path
    */
-  public String getLogPathname() {
+  public String getJobPathname() {
 
-    final DataFile dir = this.workflow.getLogDir();
+    final DataFile dir = this.workflow.getJobDirectory();
 
     return dir == null ? null : dir.getSource();
   }
@@ -116,7 +116,7 @@ public class WorkflowContext implements Serializable {
    */
   public String getTaskPathname() {
 
-    final DataFile dir = this.workflow.getTaskDir();
+    final DataFile dir = this.workflow.getTaskDirectory();
 
     return dir == null ? null : dir.getSource();
   }
@@ -343,7 +343,7 @@ public class WorkflowContext implements Serializable {
         "parameter path cannot be null");
     checkNotNull(arguments.getDesignPathname(), "design cannot be null");
     checkNotNull(arguments.getOutputPathname(), "output path cannot be null");
-    checkNotNull(arguments.getLogPathname(), "log path cannot be null");
+    checkNotNull(arguments.getJobPathname(), "log path cannot be null");
     checkNotNull(arguments.getJobDescription(),
         "job description cannot be null");
     checkNotNull(arguments.getJobEnvironment(),

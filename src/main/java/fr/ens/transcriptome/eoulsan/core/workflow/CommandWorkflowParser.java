@@ -501,7 +501,7 @@ public class CommandWorkflowParser {
     addConstant(OUTPUT_PATH_CONSTANT_NAME, arguments.getOutputPathname());
     addConstant(JOB_ID_CONSTANT_NAME, arguments.getJobId());
     addConstant(JOB_UUID_CONSTANT_NAME, arguments.getJobUUID());
-    addConstant(LOGS_PATH_CONSTANT_NAME, arguments.getLogPathname());
+    addConstant(LOGS_PATH_CONSTANT_NAME, arguments.getJobPathname());
   }
 
   /**

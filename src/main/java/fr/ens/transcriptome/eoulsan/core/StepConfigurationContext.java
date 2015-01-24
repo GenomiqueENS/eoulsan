@@ -69,34 +69,10 @@ public interface StepConfigurationContext {
   String getCommandAuthor();
 
   /**
-   * Get the local working path.
-   * @return Returns the local working Path
-   */
-  String getLocalWorkingPathname();
-
-  /**
-   * Get the Hadoop working path.
-   * @return Returns the Hadoop working Path
-   */
-  String getHadoopWorkingPathname();
-
-  /**
-   * Get the log path.
-   * @return Returns the log Path
-   */
-  String getLogPathname();
-
-  /**
    * Get the output path.
    * @return Returns the output Path
    */
   String getOutputPathname();
-
-  /**
-   * Get the step working path.
-   * @return Returns the step working path
-   */
-  String getStepWorkingPathname();
 
   /**
    * Get the job id.
@@ -121,12 +97,6 @@ public interface StepConfigurationContext {
    * @return the workflow file path
    */
   String getWorkflowPathname();
-
-  /**
-   * Get the application jar path.
-   * @return Returns the jar path
-   */
-  String getJarPathname();
 
   /**
    * Get EoulsanRuntime.

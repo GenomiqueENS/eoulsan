@@ -48,10 +48,10 @@ public interface StepContext extends StepConfigurationContext {
   void setContextName(String contextName);
 
   /**
-   * Get the task path.
-   * @return Returns the task Path
+   * Get the task output path.
+   * @return Returns the task output path
    */
-  String getTaskPathname();
+  String getTaskOutputPathname();
 
   /**
    * Get the creation time of the context.

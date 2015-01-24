@@ -211,7 +211,7 @@ public class ExecAction extends AbstractAction {
 
       // Create the log File
       Main.getInstance().createLogFileAndFlushLog(
-          arguments.getLogPathname() + File.separator + "eoulsan.log");
+          arguments.getJobPathname() + File.separator + "eoulsan.log");
 
       // Create executor
       final Executor e = new Executor(arguments);

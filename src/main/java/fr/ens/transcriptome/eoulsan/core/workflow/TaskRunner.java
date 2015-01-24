@@ -364,7 +364,7 @@ public class TaskRunner {
 
     // Define the log file for the step
     final DataFile logDir =
-        this.context.getStep().getAbstractWorkflow().getTaskDir();
+        this.context.getStep().getAbstractWorkflow().getTaskDirectory();
     final DataFile logFile =
         new DataFile(logDir, createTaskPrefixFile(this.context)
             + TASK_LOG_EXTENSION);
@@ -413,7 +413,7 @@ public class TaskRunner {
     Preconditions.checkNotNull(outData, "outData argument cannot be null");
 
     final DataFile outputDir =
-        this.context.getStep().getAbstractWorkflow().getOutputDir();
+        this.context.getStep().getAbstractWorkflow().getOutputDirectory();
 
     final DataFile workingDir = this.context.getStep().getStepWorkingDir();
 

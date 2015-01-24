@@ -78,7 +78,7 @@ public class ExecJarHadoopAction extends AbstractAction {
       final Path taskPath = new Path(logPath, "tasks");
 
       // Set log pathname
-      setLogPathname(logPath.toString());
+      setjobPathname(logPath.toString());
 
       // Set output pathname
       setOutputPathname(outputPath.toString());
@@ -334,7 +334,7 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // Create the log File
       Main.getInstance().createLogFileAndFlushLog(
-          arguments.getLogPathname() + File.separator + "eoulsan.log");
+          arguments.getJobPathname() + File.separator + "eoulsan.log");
 
       // Create executor
       final Executor e = new Executor(arguments);
