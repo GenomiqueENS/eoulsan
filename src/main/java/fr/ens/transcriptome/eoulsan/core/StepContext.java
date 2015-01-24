@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.core;
 
 import fr.ens.transcriptome.eoulsan.core.workflow.Workflow;
 import fr.ens.transcriptome.eoulsan.data.Data;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
@@ -47,12 +46,6 @@ public interface StepContext extends StepConfigurationContext {
    * @param contextName the name of the context
    */
   void setContextName(String contextName);
-
-  /**
-   * Get the task output path.
-   * @return Returns the task output path
-   */
-  DataFile getTaskOutputDirectory();
 
   /**
    * Get the creation time of the context.

@@ -122,6 +122,20 @@ public final class ContextUtils {
     return null;
   }
 
+  /**
+   * Get the task output directory.
+   * @return Returns the task output directory
+   */
+  public static DataFile getTaskOutputDirectory(final StepContext context) {
+
+    if (context instanceof TaskContext) {
+
+      return ((TaskContext) context).getTaskOutputDirectory();
+    }
+
+    return null;
+  }
+
   //
   // Constructor
   //
