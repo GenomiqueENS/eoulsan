@@ -64,6 +64,16 @@ abstract class AbstractData implements Data, Serializable {
     return this.part;
   }
 
+  @Override
+  public int size() {
+    return getListElements().size();
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return getListElements().isEmpty();
+  }
+
   /**
    * Set the name of the data.
    * @param name the new name of the data

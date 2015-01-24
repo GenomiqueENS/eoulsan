@@ -78,6 +78,16 @@ public class UnmodifiableData implements Data, Serializable {
   }
 
   @Override
+  public int size() {
+    return getListElements().size();
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return getListElements().isEmpty();
+  }
+
+  @Override
   public Data addDataToList(final String name) {
     throw new UnsupportedOperationException();
   }
