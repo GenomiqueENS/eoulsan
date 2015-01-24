@@ -77,6 +77,12 @@ public interface StepConfigurationContext {
   DataFile getOutputDirectory();
 
   /**
+   * Get the step working directory.
+   * @return Returns the step working directory
+   */
+  DataFile getStepOutputDirectory();
+
+  /**
    * Get the job id.
    * @return the job id
    */

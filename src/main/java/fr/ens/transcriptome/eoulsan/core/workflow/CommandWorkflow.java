@@ -289,9 +289,9 @@ public class CommandWorkflow extends AbstractWorkflow {
       final AbstractWorkflowStep dependencyStep =
           dependencyOutputPort.getStep();
 
-      final DataFile stepDir = inputPort.getStep().getStepWorkingDir();
+      final DataFile stepDir = inputPort.getStep().getStepOutputDirectory();
       final DataFile depDir =
-          dependencyOutputPort.getStep().getStepWorkingDir();
+          dependencyOutputPort.getStep().getStepOutputDirectory();
 
       final DataProtocol stepProtocol = stepDir.getProtocol();
       final DataProtocol depProtocol = depDir.getProtocol();
@@ -724,7 +724,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     for (CommandWorkflowStep step : Lists.newArrayList(this.steps)) {
 
       if (step.isCopyResultsToOutput()
-          && !step.getStepWorkingDir().equals(getOutputDirectory())
+          && !step.getStepOutputDirectory().equals(getOutputDirectory())
           && !step.getWorkflowOutputPorts().isEmpty()) {
 
         CommandWorkflowStep newStep =

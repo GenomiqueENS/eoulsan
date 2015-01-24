@@ -129,13 +129,10 @@ public class TaskContext implements StepContext, Serializable {
     return this.workflowContext.getOutputDirectory();
   }
 
-  /**
-   * Get the step working directory.
-   * @return Returns the step working directory
-   */
-  public DataFile getStepWorkingDirectory() {
+  @Override
+  public DataFile getStepOutputDirectory() {
 
-    return this.step.getStepWorkingDir();
+    return this.step.getStepOutputDirectory();
   }
 
   @Override

@@ -171,18 +171,24 @@ public class WorkflowStepConfigurationContext implements
     return this.workflowContext.getJobDirectory();
   }
 
+  /**
+   * Get the task output directory.
+   * @return Returns the task output directory
+   */
+  public DataFile getTaskOutputDirectory() {
+
+    return this.workflowContext.getTaskDirectory();
+  }
+
   @Override
   public DataFile getOutputDirectory() {
     return this.workflowContext.getOutputDirectory();
   }
 
-  /**
-   * Get the step working path.
-   * @return Returns the step working path
-   */
-  public DataFile getStepWorkingDirectory() {
+  @Override
+  public DataFile getStepOutputDirectory() {
 
-    return this.step.getStepWorkingDir();
+    return this.step.getStepOutputDirectory();
   }
 
   @Override

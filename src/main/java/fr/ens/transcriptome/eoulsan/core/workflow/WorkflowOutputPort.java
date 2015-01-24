@@ -127,7 +127,7 @@ class WorkflowOutputPort extends SimpleOutputPort {
     try {
 
       // List the files of the working directory of the step
-      final List<DataFile> dirFiles = this.step.getStepWorkingDir().list();
+      final List<DataFile> dirFiles = this.step.getStepOutputDirectory().list();
 
       // Get the output file prefix and suffix
       final String filePrefix = FileNaming.filePrefix(this);

@@ -415,7 +415,7 @@ public class TaskRunner {
     final DataFile outputDir =
         this.context.getStep().getAbstractWorkflow().getOutputDirectory();
 
-    final DataFile workingDir = this.context.getStep().getStepWorkingDir();
+    final DataFile workingDir = this.context.getStep().getStepOutputDirectory();
 
     // Nothing to to if the step working directory is the output directory
     if (this.context.getStep().getType() == DESIGN_STEP

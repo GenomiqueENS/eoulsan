@@ -35,24 +35,6 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 public final class ContextUtils {
 
   /**
-   * Get the step working directory.
-   * @return Returns the step working directory
-   */
-  public static DataFile getStepWorkingDirectory(final StepContext context) {
-
-    if (context instanceof TaskContext) {
-
-      return ((TaskContext) context).getStepWorkingDirectory();
-    } else if (context instanceof WorkflowStepConfigurationContext) {
-
-      return ((WorkflowStepConfigurationContext) context)
-          .getStepWorkingDirectory();
-    }
-
-    return null;
-  }
-
-  /**
    * Get the job directory.
    * @return Returns the job directory
    */
@@ -131,6 +113,10 @@ public final class ContextUtils {
     if (context instanceof TaskContext) {
 
       return ((TaskContext) context).getTaskOutputDirectory();
+    } else if (context instanceof WorkflowStepConfigurationContext) {
+
+      return ((WorkflowStepConfigurationContext) context)
+          .getTaskOutputDirectory();
     }
 
     return null;

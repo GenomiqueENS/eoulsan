@@ -45,7 +45,6 @@ import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
-import fr.ens.transcriptome.eoulsan.core.workflow.ContextUtils;
 import fr.ens.transcriptome.eoulsan.core.workflow.DataUtils;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -209,7 +208,7 @@ public class CopyOutputDataStep extends AbstractStep {
   private void copyData(final StepContext context, final Data inData,
       final Data outData) throws IOException {
 
-    final DataFile outputDir = ContextUtils.getStepWorkingDirectory(context);
+    final DataFile outputDir = context.getStepOutputDirectory();
 
     // Handle standard case
     if (inData.getFormat().getMaxFilesCount() == 1) {
