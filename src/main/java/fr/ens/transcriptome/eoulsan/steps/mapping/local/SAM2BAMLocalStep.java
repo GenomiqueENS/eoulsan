@@ -53,7 +53,7 @@ public class SAM2BAMLocalStep extends AbstractSAM2BAMStep {
       final DataFile bamIndexFile = outBAIData.getDataFile();
 
       convert(samFile, bamFile, bamIndexFile, getCompressionLevel(), reporter,
-          context.getSettings().getTempDirectoryFile());
+          context.getLocalTempDirectory());
 
       // Set the description of the context
       status.setDescription("Convert alignments ("

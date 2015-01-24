@@ -222,7 +222,7 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
     searchMapperVersionAndFlavor(mapper, context);
 
     // Set mapper temporary directory
-    mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());
+    mapper.setTempDirectory(context.getLocalTempDirectory());
 
     // Set the number of thread to use
     mapper.setThreadsNumber(Runtime.getRuntime().availableProcessors());

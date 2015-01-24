@@ -347,6 +347,12 @@ public class TaskContext implements StepContext, Serializable {
     }
   }
 
+  @Override
+  public File getLocalTempDirectory() {
+
+    return EoulsanRuntime.getRuntime().getTempDirectory();
+  }
+
   //
   // Package methods
   //

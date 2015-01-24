@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import java.io.File;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
@@ -122,5 +123,11 @@ public interface StepConfigurationContext {
    * @return the current Step or null if no Step is currently running.
    */
   WorkflowStep getCurrentStep();
+
+  /**
+   * Get local temporary directory.
+   * @return the local temporary directory
+   */
+  File getLocalTempDirectory();
 
 }

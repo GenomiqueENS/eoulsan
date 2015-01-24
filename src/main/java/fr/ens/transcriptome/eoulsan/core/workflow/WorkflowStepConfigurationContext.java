@@ -26,10 +26,12 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.File;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
@@ -266,6 +268,12 @@ public class WorkflowStepConfigurationContext implements
   public Logger getLogger() {
 
     return this.workflowContext.getLogger();
+  }
+
+  @Override
+  public File getLocalTempDirectory() {
+
+    return EoulsanRuntime.getRuntime().getTempDirectory();
   }
 
   //

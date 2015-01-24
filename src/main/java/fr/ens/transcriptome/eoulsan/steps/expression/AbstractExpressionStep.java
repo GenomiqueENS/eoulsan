@@ -34,7 +34,6 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounterService;
@@ -81,7 +80,6 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
   private String genomicType = DEFAULT_GENOMIC_TYPE;
   private String attributeId = DEFAULT_ATTRIBUTE_ID;
-  private String tmpDir;
 
   private String counterName;
   private StrandUsage stranded = StrandUsage.NO;
@@ -157,14 +155,6 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   protected ExpressionCounter getCounter() {
 
     return ExpressionCounterService.getInstance().newService(this.counterName);
-  }
-
-  /**
-   * Get the temporary directory
-   * @return Returns the tmpDir
-   */
-  protected String getTmpDir() {
-    return this.tmpDir;
   }
 
   //
@@ -288,9 +278,6 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
     // Configure Checker
     CheckerStep.configureChecker(ANNOTATION_GFF, stepParameters);
-
-    // Set temporary directory
-    this.tmpDir = EoulsanRuntime.getRuntime().getSettings().getTempDirectory();
 
     // Log Step parameters
     getLogger().info("In " + getName() + ", counter=" + this.counterName);
