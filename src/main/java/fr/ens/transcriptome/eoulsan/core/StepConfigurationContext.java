@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 
 public interface StepConfigurationContext {
 
@@ -72,7 +73,7 @@ public interface StepConfigurationContext {
    * Get the output path.
    * @return Returns the output Path
    */
-  String getOutputPathname();
+  DataFile getOutputDirectory();
 
   /**
    * Get the job id.
@@ -90,13 +91,13 @@ public interface StepConfigurationContext {
    * Get the design file path.
    * @return the design file path
    */
-  String getDesignPathname();
+  DataFile getDesignFile();
 
   /**
    * Get the workflow file path.
    * @return the workflow file path
    */
-  String getWorkflowPathname();
+  DataFile getWorkflowFile();
 
   /**
    * Get EoulsanRuntime.

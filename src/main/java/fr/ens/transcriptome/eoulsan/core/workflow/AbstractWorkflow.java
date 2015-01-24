@@ -524,7 +524,7 @@ public abstract class AbstractWorkflow implements Workflow {
   protected void saveConfigurationFiles() throws EoulsanException {
 
     try {
-      DataFile jobDir = new DataFile(getWorkflowContext().getJobPathname());
+      DataFile jobDir = getWorkflowContext().getJobDirectory();
 
       if (!jobDir.exists()) {
         jobDir.mkdirs();
@@ -762,7 +762,7 @@ public abstract class AbstractWorkflow implements Workflow {
             + StringUtils.toTimeHumanReadable(this.stopwatch
                 .elapsed(MILLISECONDS))
             + " s.\n\nOutput files and logs can be found in the following location:\n"
-            + this.workflowContext.getOutputPathname() + "\n\nThe "
+            + this.workflowContext.getOutputDirectory() + "\n\nThe "
             + Globals.APP_NAME + "team.";
 
     // Send mail

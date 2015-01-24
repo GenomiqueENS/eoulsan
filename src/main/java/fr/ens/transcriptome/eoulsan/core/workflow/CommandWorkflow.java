@@ -919,7 +919,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     super.saveConfigurationFiles();
 
     try {
-      DataFile jobDir = new DataFile(getWorkflowContext().getJobPathname());
+      DataFile jobDir = getWorkflowContext().getJobDirectory();
 
       if (!jobDir.exists()) {
         jobDir.mkdirs();

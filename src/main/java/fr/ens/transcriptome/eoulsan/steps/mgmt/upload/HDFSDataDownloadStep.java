@@ -123,13 +123,13 @@ public class HDFSDataDownloadStep extends AbstractStep {
     }
 
     final String hadoopWorkingPathname =
-        ContextUtils.getHadoopWorkingPathname(context);
+        ContextUtils.getHadoopWorkingDirectory(context).getSource();
 
     getLogger().info("Start copying results.");
     getLogger().info(
         "inpath="
             + hadoopWorkingPathname + "\toutpath="
-            + context.getOutputPathname());
+            + context.getOutputDirectory());
 
     final Configuration conf = this.conf;
 
@@ -137,12 +137,12 @@ public class HDFSDataDownloadStep extends AbstractStep {
       throw new NullPointerException("The input path is null");
     }
 
-    if (context.getOutputPathname() == null) {
+    if (context.getOutputDirectory() == null) {
       throw new NullPointerException("The output path is null");
     }
 
     // Set the output directory
-    final DataFile outputDir = new DataFile(context.getOutputPathname());
+    final DataFile outputDir = context.getOutputDirectory();
 
     try {
 

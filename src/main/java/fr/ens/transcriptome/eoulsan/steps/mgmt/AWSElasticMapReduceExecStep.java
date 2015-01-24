@@ -201,8 +201,8 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
     eoulsanArgsList.add(context.getJobDescription());
     eoulsanArgsList.add("-e");
     eoulsanArgsList.add(sb.toString());
-    eoulsanArgsList.add(context.getWorkflowPathname());
-    eoulsanArgsList.add(context.getDesignPathname());
+    eoulsanArgsList.add(context.getWorkflowFile().getSource());
+    eoulsanArgsList.add(context.getDesignFile().getSource());
     eoulsanArgsList.add("hdfs:///test");
 
     final String[] eoulsanArgs =
@@ -222,7 +222,7 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
     builder.withEndpoint(this.endpoint);
 
     // Set command
-    builder.withJarLocation(ContextUtils.getJarPathname(context))
+    builder.withJarLocation(ContextUtils.getJarPathname(context).getSource())
         .withJarArguments(eoulsanArgs);
 
     // Set Instances

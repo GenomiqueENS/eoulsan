@@ -35,6 +35,7 @@ import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 
 /**
  * This class define a concrete implementation of the configuration context of a
@@ -142,44 +143,44 @@ public class WorkflowStepConfigurationContext implements
   //
 
   /**
-   * Get the local working path.
+   * Get the local working directory.
    * @return Returns the local working Path
    */
-  public String getLocalWorkingPathname() {
+  public DataFile getLocalWorkingDirectory() {
 
-    return this.workflowContext.getLocalWorkingPathname();
+    return this.workflowContext.getLocalWorkingDirectory();
   }
 
   /**
-   * Get the Hadoop working path.
-   * @return Returns the Hadoop working Path
+   * Get the Hadoop working directory.
+   * @return Returns the Hadoop working directory
    */
-  public String getHadoopWorkingPathname() {
+  public DataFile getHadoopWorkingDirectory() {
 
-    return this.workflowContext.getHadoopWorkingPathname();
+    return this.workflowContext.getHadoopWorkingDirectory();
   }
 
   /**
-   * Get the job path.
-   * @return Returns the job Path
+   * Get the job directory.
+   * @return Returns the job directory
    */
-  public String getJobPathname() {
+  public DataFile getJobDirectory() {
 
-    return this.workflowContext.getJobPathname();
+    return this.workflowContext.getJobDirectory();
   }
 
   @Override
-  public String getOutputPathname() {
-    return this.workflowContext.getOutputPathname();
+  public DataFile getOutputDirectory() {
+    return this.workflowContext.getOutputDirectory();
   }
 
   /**
    * Get the step working path.
    * @return Returns the step working path
    */
-  public String getStepWorkingPathname() {
+  public DataFile getStepWorkingDirectory() {
 
-    return this.step.getStepWorkingDir().getSource();
+    return this.step.getStepWorkingDir();
   }
 
   @Override
@@ -193,21 +194,21 @@ public class WorkflowStepConfigurationContext implements
   }
 
   @Override
-  public String getDesignPathname() {
-    return this.workflowContext.getDesignPathname();
+  public DataFile getDesignFile() {
+    return this.workflowContext.getDesignFile();
   }
 
   @Override
-  public String getWorkflowPathname() {
-    return this.workflowContext.getWorkflowPathname();
+  public DataFile getWorkflowFile() {
+    return this.workflowContext.getWorkflowFile();
   }
 
   /**
-   * Get the application jar path.
-   * @return Returns the jar path
+   * Get the application jar file.
+   * @return Returns the jar file
    */
-  public String getJarPathname() {
-    return this.workflowContext.getJarPathname();
+  public DataFile getJarPathname() {
+    return this.workflowContext.getJarFile();
   }
 
   @Override

@@ -209,8 +209,7 @@ public class CopyOutputDataStep extends AbstractStep {
   private void copyData(final StepContext context, final Data inData,
       final Data outData) throws IOException {
 
-    final DataFile outputDir =
-        new DataFile(ContextUtils.getStepWorkingPathname(context));
+    final DataFile outputDir = ContextUtils.getStepWorkingDirectory(context);
 
     // Handle standard case
     if (inData.getFormat().getMaxFilesCount() == 1) {

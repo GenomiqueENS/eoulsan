@@ -89,50 +89,50 @@ public class TaskContext implements StepContext, Serializable {
   }
 
   /**
-   * Get the local working path.
-   * @return Returns the local working Path
+   * Get the local working directory.
+   * @return Returns the local working directory
    */
-  public String getLocalWorkingPathname() {
+  public DataFile getLocalWorkingPathname() {
 
-    return this.workflowContext.getLocalWorkingPathname();
+    return this.workflowContext.getLocalWorkingDirectory();
   }
 
   /**
-   * Get the Hadoop working path.
-   * @return Returns the Hadoop working Path
+   * Get the Hadoop working directory.
+   * @return Returns the Hadoop working directory
    */
-  public String getHadoopWorkingPathname() {
+  public DataFile getHadoopWorkingPathname() {
 
-    return this.workflowContext.getHadoopWorkingPathname();
+    return this.workflowContext.getHadoopWorkingDirectory();
   }
 
   /**
-   * Get the job path.
-   * @return Returns the job Path
+   * Get the job directory.
+   * @return Returns the job directory
    */
-  public String getJobPathname() {
+  public DataFile getJobDirectory() {
 
-    return this.workflowContext.getJobPathname();
+    return this.workflowContext.getJobDirectory();
   }
 
   @Override
-  public String getTaskOutputPathname() {
+  public DataFile getTaskOutputDirectory() {
 
-    return this.workflowContext.getTaskPathname();
+    return this.workflowContext.getTaskDirectory();
   }
 
   @Override
-  public String getOutputPathname() {
-    return this.workflowContext.getOutputPathname();
+  public DataFile getOutputDirectory() {
+    return this.workflowContext.getOutputDirectory();
   }
 
   /**
-   * Get the step working path.
-   * @return Returns the step working path
+   * Get the step working directory.
+   * @return Returns the step working directory
    */
-  public String getStepWorkingPathname() {
+  public DataFile getStepWorkingDirectory() {
 
-    return this.step.getStepWorkingDir().getSource();
+    return this.step.getStepWorkingDir();
   }
 
   @Override
@@ -151,21 +151,21 @@ public class TaskContext implements StepContext, Serializable {
   }
 
   @Override
-  public String getDesignPathname() {
-    return this.workflowContext.getDesignPathname();
+  public DataFile getDesignFile() {
+    return this.workflowContext.getDesignFile();
   }
 
   @Override
-  public String getWorkflowPathname() {
-    return this.workflowContext.getWorkflowPathname();
+  public DataFile getWorkflowFile() {
+    return this.workflowContext.getWorkflowFile();
   }
 
   /**
    * Get the application jar path.
    * @return Returns the jar path
    */
-  public String getJarPathname() {
-    return this.workflowContext.getJarPathname();
+  public DataFile getJarPathname() {
+    return this.workflowContext.getJarFile();
   }
 
   @Override

@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import fr.ens.transcriptome.eoulsan.core.StepContext;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 
 /**
  * This class define utility methods on Context.
@@ -34,45 +35,45 @@ import fr.ens.transcriptome.eoulsan.core.StepContext;
 public final class ContextUtils {
 
   /**
-   * Get the step working path.
-   * @return Returns the step working path
+   * Get the step working directory.
+   * @return Returns the step working directory
    */
-  public static String getStepWorkingPathname(final StepContext context) {
+  public static DataFile getStepWorkingDirectory(final StepContext context) {
 
     if (context instanceof TaskContext) {
 
-      return ((TaskContext) context).getStepWorkingPathname();
+      return ((TaskContext) context).getStepWorkingDirectory();
     } else if (context instanceof WorkflowStepConfigurationContext) {
 
       return ((WorkflowStepConfigurationContext) context)
-          .getStepWorkingPathname();
+          .getStepWorkingDirectory();
     }
 
     return null;
   }
 
   /**
-   * Get the job path.
-   * @return Returns the job Path
+   * Get the job directory.
+   * @return Returns the job directory
    */
-  public static String getJobPathname(final StepContext context) {
+  public static DataFile getJobDirectory(final StepContext context) {
 
     if (context instanceof TaskContext) {
 
-      return ((TaskContext) context).getJobPathname();
+      return ((TaskContext) context).getJobDirectory();
     } else if (context instanceof WorkflowStepConfigurationContext) {
 
-      return ((WorkflowStepConfigurationContext) context).getJobPathname();
+      return ((WorkflowStepConfigurationContext) context).getJobDirectory();
     }
 
     return null;
   }
 
   /**
-   * Get the application jar path.
-   * @return Returns the jar path
+   * Get the application jar file.
+   * @return Returns the jar file
    */
-  public static String getJarPathname(final StepContext context) {
+  public static DataFile getJarPathname(final StepContext context) {
 
     if (context instanceof TaskContext) {
 
@@ -86,10 +87,10 @@ public final class ContextUtils {
   }
 
   /**
-   * Get the local working path.
-   * @return Returns the local working Path
+   * Get the local working directory.
+   * @return Returns the local working directory
    */
-  public static String getLocalWorkingPathname(final StepContext context) {
+  public static DataFile getLocalWorkingDirectory(final StepContext context) {
 
     if (context instanceof TaskContext) {
 
@@ -97,17 +98,17 @@ public final class ContextUtils {
     } else if (context instanceof WorkflowStepConfigurationContext) {
 
       return ((WorkflowStepConfigurationContext) context)
-          .getLocalWorkingPathname();
+          .getLocalWorkingDirectory();
     }
 
     return null;
   }
 
   /**
-   * Get the Hadoop working path.
-   * @return Returns the Hadoop working Path
+   * Get the Hadoop working directory.
+   * @return Returns the Hadoop working directory
    */
-  public static String getHadoopWorkingPathname(final StepContext context) {
+  public static DataFile getHadoopWorkingDirectory(final StepContext context) {
 
     if (context instanceof TaskContext) {
 
@@ -115,7 +116,7 @@ public final class ContextUtils {
     } else if (context instanceof WorkflowStepConfigurationContext) {
 
       return ((WorkflowStepConfigurationContext) context)
-          .getHadoopWorkingPathname();
+          .getLocalWorkingDirectory();
     }
 
     return null;

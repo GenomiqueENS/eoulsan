@@ -49,9 +49,9 @@ public class WorkflowContext implements Serializable {
 
   private final String jobId;
   private final String host;
-  private String designPathname;
-  private String workflowPathname;
-  private String jarPathname;
+  private DataFile designFile;
+  private DataFile workflowFile;
+  private DataFile jarFile;
   private final String jobUUID;
   private final String jobDescription;
   private final String jobEnvironment;
@@ -67,58 +67,48 @@ public class WorkflowContext implements Serializable {
   //
 
   /**
-   * Get the local working path.
+   * Get the local working directory.
    * @return Returns the local working path
    */
-  public String getLocalWorkingPathname() {
+  public DataFile getLocalWorkingDirectory() {
 
-    final DataFile dir = this.workflow.getLocalWorkingDirectory();
-
-    return dir == null ? null : dir.getSource();
+    return this.workflow.getLocalWorkingDirectory();
   }
 
   /**
-   * Get the local working path.
-   * @return Returns the local working path
+   * Get the local working directory.
+   * @return Returns the local working directory
    */
-  public String getHadoopWorkingPathname() {
+  public DataFile getHadoopWorkingDirectory() {
 
-    final DataFile dir = this.workflow.getHadoopWorkingDirectory();
-
-    return dir == null ? null : dir.getSource();
+    return this.workflow.getHadoopWorkingDirectory();
   }
 
   /**
-   * Get the output path.
-   * @return Returns the output Path
+   * Get the output directory.
+   * @return Returns the output directory
    */
-  public String getOutputPathname() {
+  public DataFile getOutputDirectory() {
 
-    final DataFile dir = this.workflow.getOutputDirectory();
-
-    return dir == null ? null : dir.getSource();
+    return this.workflow.getOutputDirectory();
   }
 
   /**
    * Get the job path.
    * @return Returns the log Path
    */
-  public String getJobPathname() {
+  public DataFile getJobDirectory() {
 
-    final DataFile dir = this.workflow.getJobDirectory();
-
-    return dir == null ? null : dir.getSource();
+    return this.workflow.getJobDirectory();
   }
 
   /**
-   * Get the task path.
-   * @return Returns the task Path
+   * Get the task directory.
+   * @return Returns the task directory
    */
-  public String getTaskPathname() {
+  public DataFile getTaskDirectory() {
 
-    final DataFile dir = this.workflow.getTaskDirectory();
-
-    return dir == null ? null : dir.getSource();
+    return this.workflow.getTaskDirectory();
   }
 
   /**
@@ -147,27 +137,27 @@ public class WorkflowContext implements Serializable {
   }
 
   /**
-   * Get the design file path.
-   * @return the design file path
+   * Get the design file.
+   * @return the design file
    */
-  public String getDesignPathname() {
-    return this.designPathname;
+  public DataFile getDesignFile() {
+    return this.designFile;
   }
 
   /**
-   * Get the workflow file path.
-   * @return the workflow file path
+   * Get the workflow file.
+   * @return the workflow file
    */
-  public String getWorkflowPathname() {
-    return this.workflowPathname;
+  public DataFile getWorkflowFile() {
+    return this.workflowFile;
   }
 
   /**
-   * Get the application jar path.
-   * @return Returns the jar path
+   * Get the application jar file.
+   * @return Returns the jar file
    */
-  public String getJarPathname() {
-    return this.jarPathname;
+  public DataFile getJarFile() {
+    return this.jarFile;
   }
 
   /**
@@ -219,7 +209,7 @@ public class WorkflowContext implements Serializable {
   }
 
   /**
-   * Get the workflow description
+   * Get the workflow description.
    * @return the workflow description
    */
   public Workflow getWorkflow() {
@@ -232,30 +222,30 @@ public class WorkflowContext implements Serializable {
   //
 
   /**
-   * Set the design file path
-   * @param designPathname The design file path to set
+   * Set the design file.
+   * @param designFile The design file to set
    */
-  public void setDesignPathname(final String designPathname) {
+  public void setDesignFile(final DataFile designFile) {
 
-    this.designPathname = designPathname;
+    this.designFile = designFile;
   }
 
   /**
-   * Set the workflow file path
-   * @param workflowPathname The workflow file path to set
+   * Set the workflow file.
+   * @param workflowFile The workflow file to set
    */
-  public void setWorkflowPathname(final String workflowPathname) {
+  public void setWorkflowFile(final DataFile workflowFile) {
 
-    this.workflowPathname = workflowPathname;
+    this.workflowFile = workflowFile;
   }
 
   /**
-   * Set the jar path
-   * @param jarPathname The jar path to set
+   * Set the jar file.
+   * @param jarFile The jar file to set
    */
-  public void setJarPathname(final String jarPathname) {
+  public void setJarFile(final DataFile jarFile) {
 
-    this.jarPathname = jarPathname;
+    this.jarFile = jarFile;
   }
 
   /**
@@ -349,8 +339,8 @@ public class WorkflowContext implements Serializable {
     checkNotNull(arguments.getJobEnvironment(),
         "job environment cannot be null");
 
-    this.workflowPathname = arguments.getWorkflowPathname();
-    this.designPathname = arguments.getDesignPathname();
+    this.workflowFile = new DataFile(arguments.getWorkflowPathname());
+    this.designFile = new DataFile(arguments.getDesignPathname());
     this.jobDescription = arguments.getJobDescription();
     this.jobEnvironment = arguments.getJobEnvironment();
   }
