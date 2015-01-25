@@ -43,10 +43,12 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 @ReuseStepInstance
 public final class FirstStep extends AbstractStep {
 
+  public static final String STEP_NAME = "first";
+
   @Override
   public String getName() {
 
-    return "first";
+    return STEP_NAME;
   }
 
   @Override

@@ -55,10 +55,12 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  */
 public class GenomeDescriptionGeneratorStep extends AbstractStep {
 
+  public static final String STEP_NAME = "genomedescgenerator";
+
   @Override
   public String getName() {
 
-    return "genomedescgenerator";
+    return STEP_NAME;
   }
 
   @Override

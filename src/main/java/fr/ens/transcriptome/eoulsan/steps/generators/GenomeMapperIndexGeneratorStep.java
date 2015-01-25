@@ -64,12 +64,14 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  */
 public class GenomeMapperIndexGeneratorStep extends AbstractStep {
 
+  public static final String STEP_NAME = "genericindexgenerator";
+
   private SequenceReadsMapper mapper;
 
   @Override
   public String getName() {
 
-    return "genericindexgenerator";
+    return STEP_NAME;
   }
 
   @Override

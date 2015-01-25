@@ -66,6 +66,8 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 @ReuseStepInstance
 public class CheckerStep extends AbstractStep {
 
+  public static final String STEP_NAME = "checker";
+
   private static CheckerStep instance;
 
   private final Map<DataFormat, Checker> checkers = new HashMap<>();
@@ -131,7 +133,7 @@ public class CheckerStep extends AbstractStep {
   @Override
   public String getName() {
 
-    return "_checker";
+    return STEP_NAME;
   }
 
   @Override
