@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Collections.emptySet;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -210,6 +211,22 @@ class WorkflowOutputPort extends SimpleOutputPort {
     }
 
     return true;
+  }
+
+  @Override
+  public Set<WorkflowStep> getLinkedSteps() {
+
+    if (this.links.isEmpty()) {
+      return emptySet();
+    }
+
+    final Set<WorkflowStep> result = new HashSet<>();
+
+    for (WorkflowInputPort inputPort : this.links) {
+      result.add(inputPort.getStep());
+    }
+
+    return Collections.unmodifiableSet(result);
   }
 
   @Override

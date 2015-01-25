@@ -24,6 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import java.util.Set;
+
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
@@ -50,5 +53,11 @@ public interface Port {
    * @return true if the the port requires a list as value
    */
   boolean isList();
+
+  /**
+   * Get the steps linked to this port.
+   * @return a step with the list of linked steps
+   */
+  Set<WorkflowStep> getLinkedSteps();
 
 }
