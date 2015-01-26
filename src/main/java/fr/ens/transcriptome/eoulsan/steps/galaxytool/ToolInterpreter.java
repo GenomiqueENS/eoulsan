@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.galaxytool;
+package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 
 import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractCommand;
 import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractDescription;
@@ -55,7 +55,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.galaxytool.element.ToolElement;
+import fr.ens.transcriptome.eoulsan.steps.galaxytool.element.ToolElement;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 
 /**

@@ -42,7 +42,7 @@ import com.google.common.base.Splitter;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.galaxytool.ToolInterpreter;
+import fr.ens.transcriptome.eoulsan.steps.galaxytool.ToolInterpreter;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 public class ToolInterpreterSimpleTest {

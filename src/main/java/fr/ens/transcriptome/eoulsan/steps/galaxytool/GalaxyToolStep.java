@@ -21,7 +21,7 @@
  *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
-package fr.ens.transcriptome.eoulsan.galaxytool;
+package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,8 +40,8 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.galaxytool.element.ToolElement;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.galaxytool.element.ToolElement;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 // TODO: Auto-generated Javadoc

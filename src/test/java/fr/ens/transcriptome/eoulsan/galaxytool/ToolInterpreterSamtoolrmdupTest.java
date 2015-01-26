@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
+import fr.ens.transcriptome.eoulsan.steps.galaxytool.GalaxyToolStep;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 public class ToolInterpreterSamtoolrmdupTest {

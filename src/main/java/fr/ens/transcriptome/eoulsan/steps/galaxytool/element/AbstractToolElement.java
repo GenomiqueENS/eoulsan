@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.galaxytool.element;
+package fr.ens.transcriptome.eoulsan.steps.galaxytool.element;
 
 import java.util.Map;
 
