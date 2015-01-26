@@ -124,7 +124,8 @@ public class ITOutput {
       if (!new File(destinationDirectory, filename).exists()) {
         final File dest = new File(destinationDirectory, filename);
 
-        if (!FileUtils.copyFile(f, dest)) {
+        // if (!FileUtils.copyFile(f, dest)) {
+        if (Files.copy(f.toPath(), dest.toPath()) == null) {
           throw new IOException("Error when moving file "
               + filename + " to " + destinationDirectory.getAbsolutePath()
               + ".");
