@@ -47,10 +47,12 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 @ReuseStepInstance
 public class FakeStep extends AbstractStep {
 
+  public static final String STEP_NAME = "fakestep";
+
   @Override
   public String getName() {
 
-    return "fakestep";
+    return STEP_NAME;
   }
 
   @Override

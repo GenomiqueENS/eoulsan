@@ -69,6 +69,8 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 @HadoopCompatible
 public class ImportStep extends AbstractStep {
 
+  public static final String STEP_NAME = "import";
+
   private static final Splitter SPACE_SPLITTER = Splitter.on(' ').trimResults()
       .omitEmptyStrings();
 
@@ -78,7 +80,7 @@ public class ImportStep extends AbstractStep {
   @Override
   public String getName() {
 
-    return "import";
+    return STEP_NAME;
   }
 
   @Override

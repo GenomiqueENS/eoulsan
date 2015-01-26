@@ -251,7 +251,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
     mapper.setThreadsNumber(mapperThreads);
 
     // Set mapper temporary directory
-    mapper.setTempDirectory(context.getSettings().getTempDirectoryFile());
+    mapper.setTempDirectory(context.getLocalTempDirectory());
 
     // Init mapper
     mapper.init(archiveIndexFile, indexDir, reporter, COUNTER_GROUP);

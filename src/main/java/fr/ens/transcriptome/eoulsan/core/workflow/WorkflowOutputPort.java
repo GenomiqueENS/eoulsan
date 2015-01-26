@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Collections.emptySet;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -127,7 +128,7 @@ class WorkflowOutputPort extends SimpleOutputPort {
     try {
 
       // List the files of the working directory of the step
-      final List<DataFile> dirFiles = this.step.getStepWorkingDir().list();
+      final List<DataFile> dirFiles = this.step.getStepOutputDirectory().list();
 
       // Get the output file prefix and suffix
       final String filePrefix = FileNaming.filePrefix(this);
@@ -210,6 +211,22 @@ class WorkflowOutputPort extends SimpleOutputPort {
     }
 
     return true;
+  }
+
+  @Override
+  public Set<WorkflowStep> getLinkedSteps() {
+
+    if (this.links.isEmpty()) {
+      return emptySet();
+    }
+
+    final Set<WorkflowStep> result = new HashSet<>();
+
+    for (WorkflowInputPort inputPort : this.links) {
+      result.add(inputPort.getStep());
+    }
+
+    return Collections.unmodifiableSet(result);
   }
 
   @Override

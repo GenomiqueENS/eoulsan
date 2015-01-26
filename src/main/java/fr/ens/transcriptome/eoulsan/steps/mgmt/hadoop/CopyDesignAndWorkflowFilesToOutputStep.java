@@ -97,9 +97,9 @@ public class CopyDesignAndWorkflowFilesToOutputStep extends AbstractStep {
 
     final Configuration conf = this.conf;
 
-    final Path designPath = new Path(context.getDesignPathname());
-    final Path workflowPath = new Path(context.getWorkflowPathname());
-    final Path outputPath = new Path(context.getOutputPathname());
+    final Path designPath = new Path(context.getDesignFile().getSource());
+    final Path workflowPath = new Path(context.getWorkflowFile().getSource());
+    final Path outputPath = new Path(context.getOutputDirectory().getSource());
 
     final Path outputDesignPath = new Path(outputPath, designPath.getName());
     final Path outputWorkflowPath =

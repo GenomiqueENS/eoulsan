@@ -38,6 +38,8 @@ import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 @ReuseStepInstance
 public class TechnicalReplicateMerger extends MergerStep {
 
+  public static final String STEP_NAME = "technicalreplicatemerger";
+
   //
   // Protected method
   //
@@ -61,7 +63,7 @@ public class TechnicalReplicateMerger extends MergerStep {
   @Override
   public String getName() {
 
-    return "technicalreplicatemerger";
+    return STEP_NAME;
   }
 
 }

@@ -56,6 +56,8 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  */
 public class GFFFastaGeneratorStep extends AbstractStep {
 
+  public static final String STEP_NAME = "gfffastagenerator";
+
   @Override
   public String getName() {
 

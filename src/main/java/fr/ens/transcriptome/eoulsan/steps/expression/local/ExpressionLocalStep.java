@@ -116,8 +116,8 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
     } catch (FileNotFoundException e) {
       return status.createStepResult(e, "File not found: " + e.getMessage());
     } catch (IOException e) {
-      return status.createStepResult(e,
-          "Error while computing expression: " + e.getMessage());
+      return status.createStepResult(e, "Error while computing expression: "
+          + e.getMessage());
     } catch (EoulsanException e) {
       return status.createStepResult(e,
           "Error while reading the annotation file: " + e.getMessage());
@@ -138,7 +138,8 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
     counter.init(getGenomicType(), getAttributeId(), reporter, COUNTER_GROUP);
 
     // Set counter arguments
-    initCounterArguments(counter, context.getSettings().getTempDirectory());
+    initCounterArguments(counter, context.getLocalTempDirectory()
+        .getAbsolutePath());
 
     getLogger().info(
         "Expression computation in SAM file: "

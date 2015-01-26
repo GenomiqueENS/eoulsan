@@ -30,6 +30,7 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNME
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,7 +87,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
       filterSample(context, reporter, status, filter);
 
     } catch (IOException e) {
-      status.createStepResult(e, "Error while filtering alignments: " + e.getMessage());
+      status.createStepResult(e,
+          "Error while filtering alignments: " + e.getMessage());
     } catch (EoulsanException e) {
       status.createStepResult(e,
           "Error while initializing filter: " + e.getMessage());
@@ -119,7 +121,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
     final DataFile outFile = outData.getDataFile();
 
     // Filter alignments in single-end mode or in paired-end mode
-    filterFile(inFile, outFile, reporter, filter);
+    filterFile(inFile, outFile, reporter, filter,
+        context.getLocalTempDirectory());
 
     // Set the description of the context
     status.setDescription("Filter SAM file ("
@@ -135,11 +138,12 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
    * @param outFile output file
    * @param reporter reporter to use
    * @param filter alignments filter to use
+   * @param tmpDir temporary directory
    * @throws IOException if an error occurs while filtering data
    */
   private static void filterFile(final DataFile inFile, final DataFile outFile,
-      final Reporter reporter, final ReadAlignmentsFilter filter)
-      throws IOException {
+      final Reporter reporter, final ReadAlignmentsFilter filter,
+      final File tmpDir) throws IOException {
 
     final List<SAMRecord> records = new ArrayList<>();
     int counterInput = 0;
@@ -158,8 +162,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
     // Get Writer
     final SAMFileWriter outputSam =
-        new SAMFileWriterFactory().makeSAMWriter(inputSam.getFileHeader(),
-            false, outFile.create());
+        new SAMFileWriterFactory().setTempDirectory(tmpDir).makeSAMWriter(
+            inputSam.getFileHeader(), false, outFile.create());
 
     try {
 

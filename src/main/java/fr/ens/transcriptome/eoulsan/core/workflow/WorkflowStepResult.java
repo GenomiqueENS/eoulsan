@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Strings.nullToEmpty;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.FAIL;
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 
@@ -33,17 +34,20 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.json.Json;
+import javax.json.stream.JsonGenerator;
+import javax.json.stream.JsonGeneratorFactory;
+
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -58,8 +62,6 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @since 2.0
  */
 public class WorkflowStepResult {
-
-  private static final String TAB = "  ";
 
   private String jobId;
   private String jobUUID;
@@ -260,89 +262,53 @@ public class WorkflowStepResult {
   // JSON
   //
 
-  private static String toJSON(final int level, final String key,
-      final Object value) {
-
-    final StringBuilder sb = new StringBuilder();
-
-    if (value == null) {
-      return sb.toString();
-    }
-
-    sb.append(Strings.repeat(TAB, level));
-    sb.append('\"');
-    sb.append(key);
-    sb.append("\" : ");
-
-    if ((value instanceof Number)) {
-      sb.append(((Number) value).longValue());
-    } else {
-      sb.append('\"');
-      sb.append(value.toString().trim());
-      sb.append('\"');
-    }
-    sb.append('\n');
-
-    return sb.toString();
-  }
-
-  private static String toJSON(final int level, final String key,
-      final Map<String, ?> counters) {
-
-    final StringBuilder sb = new StringBuilder();
-
-    sb.append(Strings.repeat(TAB, level));
-    sb.append('\"');
-    sb.append(key);
-    sb.append("\" : {");
-    if (counters == null || counters.isEmpty()) {
-      sb.append("}\n");
-    } else {
-      sb.append('\n');
-      for (Map.Entry<String, ?> e : counters.entrySet()) {
-        sb.append(toJSON(level + 2, e.getKey(), e.getValue()));
-      }
-      sb.append(Strings.repeat(TAB, level));
-      sb.append("}\n");
-    }
-
-    return sb.toString();
-  }
-
+  /**
+   * Convert the object to JSON
+   * @return a string with the object content at the JSON format
+   */
   public String toJSON() {
 
-    final StringBuilder sb = new StringBuilder();
-    sb.append('{');
-    sb.append('\n');
+    final StringWriter writer = new StringWriter();
 
-    sb.append(toJSON(1, "Job id", this.jobId));
-    sb.append(toJSON(1, "Job UUID", this.jobUUID));
-    sb.append(toJSON(1, "Job description", this.jobDescription));
-    sb.append(toJSON(1, "Job environment", this.jobEnvironment));
-    sb.append(toJSON(1, "Step id", this.stepId));
-    sb.append(toJSON(1, "Step name", this.stepName));
-    sb.append(toJSON(1, "Step class", this.stepClass));
-    sb.append(toJSON(1, "Step version", this.stepVersion == null
-        ? null : this.stepVersion.toString()));
-    sb.append(toJSON(1, "Start time", this.startTime.toString()));
-    sb.append(toJSON(1, "End time", this.endTime.toString()));
-    sb.append(toJSON(1, "Duration", toTimeHumanReadable(this.duration)));
-    sb.append(toJSON(1, "Duration in milliseconds", this.duration));
-    sb.append(toJSON(1, "Success", Boolean.toString(this.success)));
-    sb.append(toJSON(1, "Step message", this.stepMessage));
+    // Create a pretty Json generator
+    final Map<String, Object> properties = new HashMap<String, Object>(1);
+    properties.put(JsonGenerator.PRETTY_PRINTING, true);
+    JsonGeneratorFactory jgf = Json.createGeneratorFactory(properties);
+    JsonGenerator jg = jgf.createGenerator(writer);
+
+    jg.writeStartObject();
+    jg.write("Job id", this.jobId);
+    jg.write("Job UUID", this.jobUUID);
+    jg.write("Job description", this.jobDescription);
+    jg.write("Job environment", this.jobEnvironment);
+    jg.write("Step id", this.stepId);
+    jg.write("Step name", this.stepName);
+    jg.write("Step class", this.stepClass);
+    jg.write("Step version",
+        this.stepVersion == null ? null : this.stepVersion.toString());
+    jg.write("Start time", this.startTime.toString());
+    jg.write("End time", this.endTime.toString());
+    jg.write("Duration", toTimeHumanReadable(this.duration));
+    jg.write("Duration in milliseconds", this.duration);
+    jg.write("Success", this.success);
+    jg.write("Step message", nullToEmpty(this.stepMessage));
 
     if (!this.success) {
-      sb.append(toJSON(1, "Exception", this.exception == null
-          ? "" : this.exception.getClass().getSimpleName()));
-      sb.append(toJSON(1, "Exception message", this.errorMessage));
+      jg.write("Exception", this.exception == null ? "" : this.exception
+          .getClass().getSimpleName());
+      jg.write("Exception message");
     }
 
     // Step parameters
-    sb.append(toJSON(1, "Step parameters", convert(this.parameters)));
+    jg.writeStartObject("Step parameters");
+    for (Parameter p : this.parameters) {
+      jg.write(p.getName(), p.getStringValue());
+    }
+    jg.writeEnd();
 
-    sb.append(Strings.repeat(TAB, 1));
-    sb.append("\"Tasks\" : [");
-    boolean sampleProcessed = false;
+    // Tasks
+    jg.writeStartArray("Tasks");
+
     for (int contextId : this.taskNames.keySet()) {
 
       // Do not log non processed samples
@@ -351,33 +317,28 @@ public class WorkflowStepResult {
         continue;
       }
 
-      if (!sampleProcessed) {
-        sampleProcessed = true;
-        sb.append('\n');
-      }
-
-      sb.append(Strings.repeat(TAB, 2));
-      sb.append("{\n");
-      sb.append(toJSON(4, "Task id", contextId));
-      sb.append(toJSON(4, "Task name", this.taskNames.get(contextId)));
-      sb.append(toJSON(4, "Task description",
-          this.taskDescriptions.get(contextId)));
-      sb.append(toJSON(4, "Task message", this.taskMessages.get(contextId)));
+      jg.writeStartObject();
+      jg.write("Task id", contextId);
+      jg.write("Task name", this.taskNames.get(contextId));
+      jg.write("Task description",
+          nullToEmpty(this.taskDescriptions.get(contextId)));
+      jg.write("Task message", nullToEmpty(this.taskMessages.get(contextId)));
 
       // contextName counters
-      sb.append(toJSON(4, "Task counters", this.taskCounters.get(contextId)));
-      sb.append(Strings.repeat(TAB, 2));
-      sb.append("}\n");
-    }
-    if (sampleProcessed) {
-      sb.append(Strings.repeat(TAB, 1));
-      sb.append("]\n");
-    } else {
-      sb.append("]\n");
-    }
+      jg.writeStartObject("Task counters");
+      for (Map.Entry<String, Long> e : this.taskCounters.get(contextId)
+          .entrySet()) {
+        jg.write(e.getKey(), e.getValue());
+      }
+      jg.writeEnd(); // Tasks counters
 
-    sb.append("}\n");
-    return sb.toString();
+      jg.writeEnd(); // Task
+    }
+    jg.writeEnd(); // Tasks array
+    jg.writeEnd(); // JSON
+    jg.close();
+
+    return writer.toString();
   }
 
   /**
@@ -447,20 +408,6 @@ public class WorkflowStepResult {
     }
 
     return sb.toString();
-  }
-
-  private static Map<String, String> convert(final Set<Parameter> parameters) {
-
-    if (parameters == null) {
-      return Collections.emptyMap();
-    }
-
-    final Map<String, String> result = new LinkedHashMap<>();
-    for (Parameter p : parameters) {
-      result.put(p.getName(), p.getStringValue());
-    }
-
-    return result;
   }
 
   //

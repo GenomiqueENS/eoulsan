@@ -48,6 +48,8 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 @Generator
 public class STARIndexGenerator extends AbstractStep {
 
+  public static final String STEP_NAME = "starindexgenerator";
+
   private final SequenceReadsMapper mapper = new STARReadsMapper();
 
   private Integer overhang = 100;
@@ -62,7 +64,7 @@ public class STARIndexGenerator extends AbstractStep {
   @Override
   public String getName() {
 
-    return "starindexgenerator";
+    return STEP_NAME;
   }
 
   @Override

@@ -258,7 +258,7 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
       checkNotNull(context, "context argument cannot be null");
 
       this.context = context;
-      this.taskDir = new File(context.getTaskPathname());
+      this.taskDir = context.getTaskOutputDirectory().toFile();
       this.taskPrefix = TaskRunner.createTaskPrefixFile(context);
     }
   }

@@ -28,8 +28,11 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.core.workflow.FileNaming;
+import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
@@ -61,6 +64,11 @@ public abstract class AbstractPort implements Port, Serializable {
   public DataFormat getFormat() {
 
     return this.format;
+  }
+
+  @Override
+  public Set<WorkflowStep> getLinkedSteps() {
+    return Collections.emptySet();
   }
 
   //

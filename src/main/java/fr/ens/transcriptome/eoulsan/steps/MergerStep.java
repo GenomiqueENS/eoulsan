@@ -70,6 +70,8 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 @ReuseStepInstance
 public class MergerStep extends AbstractStep {
 
+  public static final String STEP_NAME = "merger";
+
   private Merger merger;
   private CompressionType compression = NONE;
 
@@ -211,7 +213,7 @@ public class MergerStep extends AbstractStep {
   @Override
   public String getName() {
 
-    return "merger";
+    return STEP_NAME;
   }
 
   @Override
