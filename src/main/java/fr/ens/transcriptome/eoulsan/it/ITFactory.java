@@ -292,7 +292,7 @@ public class ITFactory {
     rawProps.load(newReader(configurationFile,
         Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
 
-    props = evaluateProperties(rawProps, true);
+    props = evaluateProperties(rawProps);
 
     // Check include
     final String includeOption = props.getProperty(INCLUDE_CONF_KEY);
@@ -309,9 +309,15 @@ public class ITFactory {
       rawNewProps.load(newReader(otherConfigurationFile,
           Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
 
-      final Properties newProps = evaluateProperties(rawNewProps, false);
+      final Properties newProps = evaluateProperties(rawNewProps);
 
       for (final String propertyName : newProps.stringPropertyNames()) {
+
+        // No overwrite property from includes file configuration
+        if (props.containsKey(propertyName)) {
+          continue;
+        }
+
         props.put(propertyName, newProps.getProperty(propertyName));
       }
     }
@@ -322,12 +328,11 @@ public class ITFactory {
   /**
    * Evaluate properties.
    * @param rawProps the raw props
-   * @param overwrite if it is true, replace property.
    * @return the properties
    * @throws EoulsanException the Eoulsan exception
    */
-  private static Properties evaluateProperties(final Properties rawProps,
-      final boolean overwrite) throws EoulsanException {
+  private static Properties evaluateProperties(final Properties rawProps)
+      throws EoulsanException {
     final Properties props = new Properties();
 
     // Extract environment variable
@@ -340,18 +345,12 @@ public class ITFactory {
 
     // Evaluate property
     for (final String propertyName : rawProps.stringPropertyNames()) {
-      
+
       final String propertyValue =
           evaluateExpressions(rawProps.getProperty(propertyName), true);
 
-      // Check property already setting
-      if (props.contains(propertyName) && !overwrite) {
-        continue;
-
-      } else {
-        // Set property
-        props.setProperty(propertyName, propertyValue);
-      }
+      // Set property
+      props.setProperty(propertyName, propertyValue);
     }
 
     return props;
