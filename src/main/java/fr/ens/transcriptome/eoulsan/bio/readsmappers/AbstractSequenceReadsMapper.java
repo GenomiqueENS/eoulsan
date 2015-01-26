@@ -39,6 +39,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.base.Strings;
+
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
@@ -120,7 +122,7 @@ public abstract class AbstractSequenceReadsMapper implements
    * @return the indexer executables
    */
   protected String[] getIndexerExecutables() {
-    return new String[] {getIndexerExecutable()};
+    return new String[] { getIndexerExecutable() };
   }
 
   /**
@@ -225,7 +227,7 @@ public abstract class AbstractSequenceReadsMapper implements
 
     checkState(!this.binariesReady, "Mapper has been initialized");
 
-    this.flavorToUse = flavor;
+    this.flavorToUse = Strings.emptyToNull(flavor);
   }
 
   @Override
@@ -234,7 +236,8 @@ public abstract class AbstractSequenceReadsMapper implements
     checkState(!this.binariesReady, "Mapper has been initialized");
 
     this.mapperVersionToUse =
-        version == null ? getDefaultPackageVersion() : version;
+        Strings.emptyToNull(version) == null
+            ? getDefaultPackageVersion() : version;
   }
 
   @Override

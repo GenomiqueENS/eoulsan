@@ -199,7 +199,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     job.setNumReduceTasks(0);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(outData.getDataFilename()));
+    FileOutputFormat.setOutputPath(job, new Path(outData.getDataFile().getSource()));
 
     return job;
   }

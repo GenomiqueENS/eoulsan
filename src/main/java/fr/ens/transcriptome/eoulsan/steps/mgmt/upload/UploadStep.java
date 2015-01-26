@@ -128,13 +128,12 @@ public abstract class UploadStep extends AbstractStep {
       // Create a new design file
       final File newDesignFile = writeTempDesignFile(context, design);
       final DataFile uploadedDesignDataFile =
-          getUploadedDataFile(new DataFile(context.getDesignPathname()));
+          getUploadedDataFile(context.getDesignFile());
       filesToCopy.put(new DataFile(newDesignFile.getAbsolutePath()),
           uploadedDesignDataFile);
 
       // Add workflow file to the list of file to upload
-      final DataFile currentParamDataFile =
-          new DataFile(context.getWorkflowPathname());
+      final DataFile currentParamDataFile = context.getWorkflowFile();
       final DataFile uploadedParamDataFile =
           getUploadedDataFile(currentParamDataFile);
       filesToCopy.put(currentParamDataFile, uploadedParamDataFile);
@@ -158,8 +157,10 @@ public abstract class UploadStep extends AbstractStep {
       }
 
       // Change the path of design and workflow file in the context
-      fullContext.setDesignPathname(uploadedDesignDataFile.getSource());
-      fullContext.setWorkflowPathname(uploadedParamDataFile.getSource());
+      fullContext
+          .setDesignFile(new DataFile(uploadedDesignDataFile.getSource()));
+      fullContext.setWorkflowFile(new DataFile(uploadedParamDataFile
+          .getSource()));
 
     } catch (IOException e) {
 
@@ -176,8 +177,8 @@ public abstract class UploadStep extends AbstractStep {
 
     // The path to the jar file
     if (!context.getRuntime().isHadoopMode()) {
-      fullContext.setJarPathname(getDest().toString()
-          + "/" + repackagedJarFile.getName());
+      fullContext.setJarFile(new DataFile(getDest().toString()
+          + "/" + repackagedJarFile.getName()));
     }
 
     status.setMessage(log.toString());

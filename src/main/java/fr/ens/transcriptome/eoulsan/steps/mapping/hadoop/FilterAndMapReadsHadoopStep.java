@@ -158,10 +158,10 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, getCounterGroup());
 
     // timeout
-    jobConf.set("mapred.task.timeout", "" + HADOOP_TIMEOUT);
+    jobConf.set("mapreduce.task.timeout", "" + HADOOP_TIMEOUT);
 
     // Don't reuse JVM
-    jobConf.set("mapred.job.reuse.jvm.num.tasks", "" + 1);
+    jobConf.set("mapreduce.job.jvm.numtasks", "" + 1);
 
     //
     // Reads filters parameters
@@ -235,9 +235,6 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     final Path genomeIndex =
         new Path(context.getInputData(MAPPER_INDEX_PORT_NAME).getDataFilename());
     job.addCacheFile(genomeIndex.toUri());
-
-    // Debug
-    // conf.set("mapred.job.tracker", "local");
 
     // Set the jar
     job.setJarByClass(ReadsFilterHadoopStep.class);

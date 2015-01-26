@@ -33,6 +33,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.Common;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
@@ -157,7 +158,16 @@ public class CommonHadoop {
   }
 
   /**
-   * Create a new Configuration object from global parameters
+   * Create a new Configuration object from Eoulsan runtime settings.
+   * @return a new Configuration object
+   */
+  public static final Configuration createConfiguration() {
+
+    return createConfiguration(EoulsanRuntime.getSettings());
+  }
+
+  /**
+   * Create a new Configuration object from settings.
    * @param settings Settings of the application
    * @return a new Configuration object
    */

@@ -210,8 +210,7 @@ public class Normalization {
             "Experiment : "
                 + experimentSampleList.get(0).getMetadata().getExperiment());
 
-        createLinkExpressionFiles(experimentSampleList, data,
-            new File(context.getStepWorkingPathname()));
+        createLinkExpressionFiles(experimentSampleList, data);
 
         String rScript = generateScript(experimentSampleList, context);
         runRnwScript(rScript, false);
@@ -753,7 +752,7 @@ public class Normalization {
    * @throws REngineException if an error occurs on RServe server
    */
   private void createLinkExpressionFiles(final List<Sample> experiment,
-      final Data data, final File inputDir) throws REngineException {
+      final Data data) throws REngineException {
 
     for (Data d : data.getListElements()) {
 

@@ -88,7 +88,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
   private final WorkflowStepStateObserver observer;
 
-  private final DataFile workingDir;
+  private final DataFile outputDir;
 
   //
   // Getters
@@ -225,12 +225,12 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   }
 
   /**
-   * Get step working directory (where output file of the step will be written).
-   * @return the working directory
+   * Get step output directory (where output file of the step will be written).
+   * @return the output directory
    */
-  public DataFile getStepWorkingDir() {
+  public DataFile getStepOutputDirectory() {
 
-    return this.workingDir;
+    return this.outputDir;
   }
 
   /**
@@ -369,7 +369,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * @param step step instance
    * @return the working directory of the step
    */
-  private static DataFile defineWorkingDirectory(
+  private static DataFile defineOutputDirectory(
       final AbstractWorkflow workflow, final Step step,
       final boolean copyResultsToOutput) {
 
@@ -381,26 +381,26 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     if (!hadoopMode) {
 
       if (copyResultsToOutput) {
-        return workflow.getOutputDir();
+        return workflow.getOutputDirectory();
       }
 
-      return workflow.getLocalWorkingDir();
+      return workflow.getLocalWorkingDirectory();
     }
 
     switch (EoulsanMode.getEoulsanMode(step.getClass())) {
 
     case HADOOP_COMPATIBLE:
       if (copyResultsToOutput) {
-        return workflow.getOutputDir();
+        return workflow.getOutputDirectory();
       }
 
-      return workflow.getHadoopWorkingDir();
+      return workflow.getHadoopWorkingDirectory();
 
     case HADOOP_ONLY:
-      return workflow.getHadoopWorkingDir();
+      return workflow.getHadoopWorkingDirectory();
 
     default:
-      return workflow.getLocalWorkingDir();
+      return workflow.getLocalWorkingDirectory();
     }
 
   }
@@ -554,10 +554,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       this.version = checkerStep.getVersion().toString();
       this.mode = EoulsanMode.getEoulsanMode(checkerStep.getClass());
 
-      // Define working directory
-      this.workingDir =
-          defineWorkingDirectory(workflow, checkerStep,
-              this.copyResultsToOutput);
+      // Define output directory
+      this.outputDir =
+          defineOutputDirectory(workflow, checkerStep, this.copyResultsToOutput);
       break;
 
     case DESIGN_STEP:
@@ -573,9 +572,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       this.version = checkerStep2.getVersion().toString();
       this.mode = EoulsanMode.getEoulsanMode(designStep.getClass());
 
-      // Define working directory
-      this.workingDir =
-          defineWorkingDirectory(workflow, designStep, this.copyResultsToOutput);
+      // Define output directory
+      this.outputDir =
+          defineOutputDirectory(workflow, designStep, this.copyResultsToOutput);
 
       break;
 
@@ -588,9 +587,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       this.version = fakeStep.getVersion().toString();
       this.mode = EoulsanMode.NONE;
 
-      // Define working directory
-      this.workingDir =
-          defineWorkingDirectory(workflow, fakeStep, this.copyResultsToOutput);
+      // Define output directory
+      this.outputDir =
+          defineOutputDirectory(workflow, fakeStep, this.copyResultsToOutput);
       break;
     }
 
@@ -632,9 +631,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.copyResultsToOutput = false;
     this.parallelizationMode = getParallelizationMode(generator);
 
-    // Define working directory
-    this.workingDir =
-        defineWorkingDirectory(workflow, generator, this.copyResultsToOutput);
+    // Define output directory
+    this.outputDir =
+        defineOutputDirectory(workflow, generator, this.copyResultsToOutput);
 
     // Set state observer
     this.observer = new WorkflowStepStateObserver(this);
@@ -684,9 +683,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.createLogFiles = step.isCreateLogFiles();
     this.parallelizationMode = getParallelizationMode(step);
 
-    // Define working directory
-    this.workingDir =
-        defineWorkingDirectory(workflow, step, copyResultsToOutput);
+    // Define output directory
+    this.outputDir = defineOutputDirectory(workflow, step, copyResultsToOutput);
 
     // Set state observer
     this.observer = new WorkflowStepStateObserver(this);

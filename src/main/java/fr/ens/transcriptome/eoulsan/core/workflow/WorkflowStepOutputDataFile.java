@@ -234,7 +234,7 @@ public final class WorkflowStepOutputDataFile implements
     final StringBuilder sb = new StringBuilder();
 
     // Set base path if exists
-    final String basePath = step.getStepWorkingDir().toString();
+    final String basePath = step.getStepOutputDirectory().toString();
     if (basePath != null) {
       sb.append(basePath);
       sb.append('/');

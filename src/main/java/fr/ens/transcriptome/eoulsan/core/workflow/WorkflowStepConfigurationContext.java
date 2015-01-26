@@ -26,15 +26,18 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.File;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 
 /**
  * This class define a concrete implementation of the configuration context of a
@@ -141,33 +144,51 @@ public class WorkflowStepConfigurationContext implements
   // Getters
   //
 
-  @Override
-  public String getLocalWorkingPathname() {
+  /**
+   * Get the local working directory.
+   * @return Returns the local working Path
+   */
+  public DataFile getLocalWorkingDirectory() {
 
-    return this.workflowContext.getLocalWorkingPathname();
+    return this.workflowContext.getLocalWorkingDirectory();
+  }
+
+  /**
+   * Get the Hadoop working directory.
+   * @return Returns the Hadoop working directory
+   */
+  public DataFile getHadoopWorkingDirectory() {
+
+    return this.workflowContext.getHadoopWorkingDirectory();
+  }
+
+  /**
+   * Get the job directory.
+   * @return Returns the job directory
+   */
+  public DataFile getJobDirectory() {
+
+    return this.workflowContext.getJobDirectory();
+  }
+
+  /**
+   * Get the task output directory.
+   * @return Returns the task output directory
+   */
+  public DataFile getTaskOutputDirectory() {
+
+    return this.workflowContext.getTaskDirectory();
   }
 
   @Override
-  public String getHadoopWorkingPathname() {
-
-    return this.workflowContext.getHadoopWorkingPathname();
+  public DataFile getOutputDirectory() {
+    return this.workflowContext.getOutputDirectory();
   }
 
   @Override
-  public String getLogPathname() {
+  public DataFile getStepOutputDirectory() {
 
-    return this.workflowContext.getLogPathname();
-  }
-
-  @Override
-  public String getOutputPathname() {
-    return this.workflowContext.getOutputPathname();
-  }
-
-  @Override
-  public String getStepWorkingPathname() {
-
-    return this.step.getStepWorkingDir().getSource();
+    return this.step.getStepOutputDirectory();
   }
 
   @Override
@@ -181,18 +202,21 @@ public class WorkflowStepConfigurationContext implements
   }
 
   @Override
-  public String getDesignPathname() {
-    return this.workflowContext.getDesignPathname();
+  public DataFile getDesignFile() {
+    return this.workflowContext.getDesignFile();
   }
 
   @Override
-  public String getWorkflowPathname() {
-    return this.workflowContext.getWorkflowPathname();
+  public DataFile getWorkflowFile() {
+    return this.workflowContext.getWorkflowFile();
   }
 
-  @Override
-  public String getJarPathname() {
-    return this.workflowContext.getJarPathname();
+  /**
+   * Get the application jar file.
+   * @return Returns the jar file
+   */
+  public DataFile getJarPathname() {
+    return this.workflowContext.getJarFile();
   }
 
   @Override
@@ -250,6 +274,12 @@ public class WorkflowStepConfigurationContext implements
   public Logger getLogger() {
 
     return this.workflowContext.getLogger();
+  }
+
+  @Override
+  public File getLocalTempDirectory() {
+
+    return EoulsanRuntime.getRuntime().getTempDirectory();
   }
 
   //

@@ -51,10 +51,11 @@ public class ExecutorArguments {
   private String hadoopWorkingPathname;
   private String designPathname;
   private String workflowPathname;
+  private String temporaryPathname;
   private String jobDescription = "";
   private String jobEnvironment = "";
   private String outputPathname;
-  private String logPathname;
+  private String jobPathname;
   private String taskPathname;
   private final String jobId;
   private final String jobUUID = UUID.randomUUID().toString();
@@ -81,11 +82,11 @@ public class ExecutorArguments {
   }
 
   /**
-   * Get the log path.
-   * @return Returns the log Path
+   * Get the job path.
+   * @return Returns the job Path
    */
-  public final String getLogPathname() {
-    return this.logPathname;
+  public final String getJobPathname() {
+    return this.jobPathname;
   }
 
   /**
@@ -118,6 +119,14 @@ public class ExecutorArguments {
    */
   public final String getWorkflowPathname() {
     return this.workflowPathname;
+  }
+
+  /**
+   * Get the temporary directory path.
+   * @return the temporary directory file path
+   */
+  public final String getTemporaryPathname() {
+    return this.temporaryPathname;
   }
 
   /**
@@ -188,16 +197,16 @@ public class ExecutorArguments {
   }
 
   /**
-   * Set the log path
-   * @param logPath The log path to set
+   * Set the job path
+   * @param jobPath The log path to set
    */
-  public final void setLogPathname(final String logPath) {
+  public final void setjobPathname(final String jobPath) {
 
-    if (logPath == null) {
+    if (jobPath == null) {
       return;
     }
 
-    this.logPathname = logPath.trim();
+    this.jobPathname = jobPath.trim();
   }
 
   /**
@@ -241,7 +250,7 @@ public class ExecutorArguments {
 
   /**
    * Set the workflow file path.
-   * @param workflowPathname The parameter path to set
+   * @param workflowPathname The workflow file path to set
    */
   public final void setWorkflowPathname(final String workflowPathname) {
 
@@ -250,6 +259,19 @@ public class ExecutorArguments {
     }
 
     this.workflowPathname = workflowPathname.trim();
+  }
+
+  /**
+   * Set the temporary directory path.
+   * @param temporaryPathname The temporary directory path to set
+   */
+  public final void setTemporaryPathname(final String temporaryPathname) {
+
+    if (temporaryPathname == null) {
+      return;
+    }
+
+    this.temporaryPathname = temporaryPathname;
   }
 
   /**
@@ -313,7 +335,7 @@ public class ExecutorArguments {
         .add("jobDescription", getJobDescription())
         .add("jobEnvironment", getJobEnvironment())
         .add("outputPathname", getOutputPathname())
-        .add("logPathname", getLogPathname()).add("jobId", getJobId())
+        .add("logPathname", getJobPathname()).add("jobId", getJobId())
         .add("jobUUID", getJobUUID()).add("creationTime", getCreationTime())
         .toString();
   }
@@ -365,9 +387,10 @@ public class ExecutorArguments {
 
     final File outputDir = new File(designFile.getAbsoluteFile().getParent());
 
-    final File logDir = new File(outputDir, getJobId());
-    final File workingDir = new File(logDir, "working");
-    final File taskDir = new File(logDir, "tasks");
+    final File jobDir = new File(outputDir, getJobId());
+    final File workingDir = new File(jobDir, "working");
+    final File taskDir = new File(jobDir, "tasks");
+    final File tmpDir = new File(jobDir, "tmp");
 
     // Set the local working path
     setLocalWorkingPathname(workingDir.getAbsolutePath());
@@ -381,11 +404,14 @@ public class ExecutorArguments {
     // Set the output path
     setOutputPathname(outputDir.getAbsolutePath());
 
-    // Set the log path
-    setLogPathname(logDir.getAbsolutePath());
+    // Set the job path
+    setjobPathname(jobDir.getAbsolutePath());
 
     // Set the tasks path
     setTaskPathname(taskDir.getAbsolutePath());
+
+    // Set the temporary directory
+    setTemporaryPathname(tmpDir.getAbsolutePath());
   }
 
 }

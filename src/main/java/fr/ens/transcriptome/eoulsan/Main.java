@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 
@@ -552,10 +551,6 @@ public abstract class Main {
       } catch (IOException e) {
         Common.errorExit(e, "Error while creating log file: " + e.getMessage());
       }
-    } else {
-
-      final ConsoleHandler ch = new ConsoleHandler();
-      this.handler.addHandler(ch);
     }
 
   }

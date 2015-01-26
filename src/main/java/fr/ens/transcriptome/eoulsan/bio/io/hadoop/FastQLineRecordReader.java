@@ -80,7 +80,8 @@ public class FastQLineRecordReader extends RecordReader<LongWritable, Text> {
     FileSplit split = (FileSplit) genericSplit;
     Configuration job = context.getConfiguration();
     this.maxLineLength =
-        job.getInt("mapred.linerecordreader.maxlength", Integer.MAX_VALUE);
+        job.getInt("mapreduce.input.linerecordreader.line.maxlength",
+            Integer.MAX_VALUE);
     this.start = split.getStart();
     this.end = this.start + split.getLength();
     final Path file = split.getPath();

@@ -24,9 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.createConfiguration;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 
 import java.io.IOException;
 import java.util.Set;
@@ -66,7 +66,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
   public InputPorts getInputPorts() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
-    builder.addPort(READS_PORT_NAME, READS_TFQ, true);
+    builder.addPort(READS_PORT_NAME, READS_FASTQ, true);
     builder.addPort(MAPPER_INDEX_PORT_NAME, getMapper().getArchiveFormat(),
         true);
 
@@ -92,7 +92,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
   public StepResult execute(final StepContext context, final StepStatus status) {
 
     // Create configuration object
-    final Configuration conf = new Configuration(false);
+    final Configuration conf = createConfiguration();
 
     try {
 
@@ -140,7 +140,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     final Configuration jobConf = new Configuration(parentConf);
 
-    final Path inputPath = new Path(readsData.getDataFilename());
+    final Path inputPath = new Path(readsData.getDataFile().getSource());
 
     // Set mapper name
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
@@ -175,14 +175,11 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
 
-    // Debug
-    // jobConf.set("mapred.job.tracker", "local");
-
     // timeout
-    jobConf.set("mapred.task.timeout", "" + HADOOP_TIMEOUT);
+    jobConf.set("mapreduce.task.timeout", "" + HADOOP_TIMEOUT);
 
     // No JVM task resuse
-    jobConf.set("mapred.job.reuse.jvm.num.tasks", "" + 1);
+    jobConf.set("mapreduce.job.jvm.numtasks", "" + 1);
 
     // Set ZooKeeper client configuration
     setZooKeeperJobConfiguration(jobConf, context);
@@ -195,7 +192,9 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
                 + inputPath.getName() + ")");
 
     // Set genome index reference path in the distributed cache
-    final Path genomeIndex = new Path(mapperIndexData.getDataFilename());
+    final Path genomeIndex =
+        new Path(mapperIndexData.getDataFile().getSource());
+
     job.addCacheFile(genomeIndex.toUri());
 
     // Set the jar
@@ -240,7 +239,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     if (connectString == null) {
 
       connectString =
-          jobConf.get("mapred.job.tracker").split(":")[0]
+          jobConf.get("mapreduce.jobtracker.address").split(":")[0]
               + ":" + settings.getZooKeeperDefaultPort();
     }
 

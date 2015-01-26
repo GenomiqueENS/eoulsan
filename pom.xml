@@ -342,6 +342,11 @@
 			<artifactId>lanterna</artifactId>
 			<version>2.1.8</version>
 		</dependency>
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.json</artifactId>
+			<version>1.0.2</version>
+		</dependency>
 		<!-- Translator ODF and apache POI dependencies -->
 		<dependency>
 			<groupId>org.apache.poi</groupId>

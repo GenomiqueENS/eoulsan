@@ -72,8 +72,8 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   public static final int HADOOP_TIMEOUT = 60 * 60 * 1000;
 
   private SequenceReadsMapper mapper;
-  private String mapperVersion;
-  private String mapperFlavor;
+  private String mapperVersion = "";
+  private String mapperFlavor = "";
   private String mapperArguments;
 
   private int hadoopThreads;

@@ -74,6 +74,18 @@ public interface Data {
   List<Data> getListElements();
 
   /**
+   * Get the size of the data.
+   * @return the number of the element of the data
+   */
+  int size();
+
+  /**
+   * Test if the number of the elements of the data is equals to 0.
+   * @return true f the number of the elements of the data is equals to 0
+   */
+  boolean isEmpty();
+
+  /**
    * Add a data to the list of data.
    * @param name name of the data
    * @return the data object added to the list

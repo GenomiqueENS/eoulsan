@@ -112,6 +112,8 @@ public final class Settings implements Serializable {
   private static final String SMTP_HOST_KEY = MAIN_PREFIX_KEY
       + ".mail.smtp.host";
 
+  private static final String DOCKER_URI_KEY = MAIN_PREFIX_KEY + ".docker.uri";
+
   private static final String ZOOKEEPER_CONNECT_STRING_KEY =
       "zookeeper.connect.string";
 
@@ -127,12 +129,12 @@ public final class Settings implements Serializable {
   private static final String UI_NAME_KET = MAIN_PREFIX_KEY + "ui.name";
 
   private static final Set<String> FORBIDDEN_KEYS = Utils
-      .unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
-          HADOOP_AWS_SECRET_KEY});
+      .unmodifiableSet(new String[] { HADOOP_AWS_ACCESS_KEY,
+          HADOOP_AWS_SECRET_KEY });
 
   private static final Set<String> OBFUSCATED_KEYS = Utils
-      .unmodifiableSet(new String[] {AWS_ACCESS_KEY, AWS_SECRET_KEY,
-          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY});
+      .unmodifiableSet(new String[] { AWS_ACCESS_KEY, AWS_SECRET_KEY,
+          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY });
 
   //
   // Getters
@@ -235,6 +237,15 @@ public final class Settings implements Serializable {
   public File getTempDirectoryFile() {
 
     return new File(getTempDirectory());
+  }
+
+  /**
+   * Test if the temporary directory File has been defined by user.
+   * @return true id the temporary directory has defined by user
+   */
+  public boolean isUserDefinedTempDirectory() {
+
+    return this.properties.containsKey(TMP_DIR_KEY);
   }
 
   /**
@@ -411,6 +422,15 @@ public final class Settings implements Serializable {
   public String getUIName() {
 
     return this.properties.getProperty(UI_NAME_KET, Globals.UI_NAME_DEFAULT);
+  }
+
+  /**
+   * Get the Docker URI.
+   * @return the docker URI
+   */
+  public String getDockerURI() {
+
+    return this.properties.getProperty(DOCKER_URI_KEY);
   }
 
   /**
@@ -792,6 +812,15 @@ public final class Settings implements Serializable {
   }
 
   /**
+   * Set the Docker URI.
+   * @param uiName the UI name
+   */
+  public void setDockerURI(final String uri) {
+
+    this.properties.setProperty(DOCKER_URI_KEY, uri);
+  }
+
+  /**
    * Set a setting value.
    * @param settingName name of the setting to set
    * @param settingValue value of the setting to set
@@ -976,7 +1005,6 @@ public final class Settings implements Serializable {
 
     getLogger().info(
         "System temp directory: " + System.getProperty("java.io.tmpdir"));
-    setTempDirectory(System.getProperty("java.io.tmpdir"));
   }
 
   /**

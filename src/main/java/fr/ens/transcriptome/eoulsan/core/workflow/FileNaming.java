@@ -779,7 +779,7 @@ public class FileNaming {
   public static DataFile file(final WorkflowOutputPort port,
       final DataElement data, final int fileIndex) {
 
-    return new DataFile(port.getStep().getStepWorkingDir(), filename(port,
+    return new DataFile(port.getStep().getStepOutputDirectory(), filename(port,
         data, fileIndex));
   }
 

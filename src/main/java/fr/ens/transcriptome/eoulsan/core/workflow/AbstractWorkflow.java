@@ -53,6 +53,7 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.schedulers.TaskSchedulerFactory;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
@@ -81,8 +82,9 @@ public abstract class AbstractWorkflow implements Workflow {
   private final DataFile localWorkingDir;
   private final DataFile hadoopWorkingDir;
   private final DataFile outputDir;
-  private final DataFile logDir;
+  private final DataFile jobDir;
   private final DataFile taskDir;
+  private final DataFile tmpDir;
 
   private final Design design;
   private final WorkflowContext workflowContext;
@@ -105,7 +107,7 @@ public abstract class AbstractWorkflow implements Workflow {
    * Get the local working directory.
    * @return Returns the local working directory
    */
-  DataFile getLocalWorkingDir() {
+  DataFile getLocalWorkingDirectory() {
     return this.localWorkingDir;
   }
 
@@ -113,7 +115,7 @@ public abstract class AbstractWorkflow implements Workflow {
    * Get the local working directory.
    * @return Returns the local working directory
    */
-  DataFile getHadoopWorkingDir() {
+  DataFile getHadoopWorkingDirectory() {
     return this.hadoopWorkingDir;
   }
 
@@ -121,23 +123,23 @@ public abstract class AbstractWorkflow implements Workflow {
    * Get the output directory.
    * @return Returns the output directory
    */
-  DataFile getOutputDir() {
+  DataFile getOutputDirectory() {
     return this.outputDir;
   }
 
   /**
-   * Get the log directory.
+   * Get the job directory.
    * @return Returns the log directory
    */
-  DataFile getLogDir() {
-    return this.logDir;
+  DataFile getJobDirectory() {
+    return this.jobDir;
   }
 
   /**
    * Get the task directory.
    * @return Returns the task directory
    */
-  DataFile getTaskDir() {
+  DataFile getTaskDirectory() {
     return this.taskDir;
   }
 
@@ -522,17 +524,17 @@ public abstract class AbstractWorkflow implements Workflow {
   protected void saveConfigurationFiles() throws EoulsanException {
 
     try {
-      DataFile logDir = new DataFile(getWorkflowContext().getLogPathname());
+      DataFile jobDir = getWorkflowContext().getJobDirectory();
 
-      if (!logDir.exists()) {
-        logDir.mkdirs();
+      if (!jobDir.exists()) {
+        jobDir.mkdirs();
       }
 
       // Save design file
 
       DesignWriter designWriter =
           new SimpleDesignWriter(
-              new DataFile(logDir, DESIGN_COPY_FILENAME).create());
+              new DataFile(jobDir, DESIGN_COPY_FILENAME).create());
       designWriter.write(getDesign());
 
     } catch (IOException | EoulsanIOException e) {
@@ -634,14 +636,30 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   public void checkDirectories() throws EoulsanException {
 
-    checkNotNull(this.logDir, "the log directory is null");
+    checkNotNull(this.jobDir, "the job directory is null");
     checkNotNull(this.taskDir, "the task directory is null");
     checkNotNull(this.outputDir, "the output directory is null");
     checkNotNull(this.localWorkingDir, "the local working directory is null");
 
+    // Get Eoulsan settings
+    final Settings settings = EoulsanRuntime.getSettings();
+
+    // Define the list of directories to create
+    final List<DataFile> dirsToCheck =
+        Lists.newArrayList(this.jobDir, this.outputDir, this.localWorkingDir,
+            this.hadoopWorkingDir, this.taskDir);
+
+    // If the temporary directory has not been defined by user
+    if (!settings.isUserDefinedTempDirectory()) {
+
+      // Set the temporary directory
+      checkNotNull(this.tmpDir, "the temporary directory is null");
+      settings.setTempDirectory(this.tmpDir.getSource());
+      dirsToCheck.add(this.tmpDir);
+    }
+
     try {
-      for (DataFile dir : new DataFile[] {this.logDir, this.outputDir,
-          this.localWorkingDir, this.hadoopWorkingDir, this.taskDir}) {
+      for (DataFile dir : dirsToCheck) {
 
         if (dir == null) {
           continue;
@@ -744,7 +762,7 @@ public abstract class AbstractWorkflow implements Workflow {
             + StringUtils.toTimeHumanReadable(this.stopwatch
                 .elapsed(MILLISECONDS))
             + " s.\n\nOutput files and logs can be found in the following location:\n"
-            + this.workflowContext.getOutputPathname() + "\n\nThe "
+            + this.workflowContext.getOutputDirectory() + "\n\nThe "
             + Globals.APP_NAME + "team.";
 
     // Send mail
@@ -766,18 +784,23 @@ public abstract class AbstractWorkflow implements Workflow {
     Preconditions.checkNotNull(executionArguments, "Argument cannot be null");
     Preconditions.checkNotNull(design, "Design argument cannot be null");
 
-    this.workflowContext = new WorkflowContext(executionArguments, this);
     this.design = design;
 
-    this.logDir = newDataFile(executionArguments.getLogPathname());
+    this.jobDir = newDataFile(executionArguments.getJobPathname());
 
     this.taskDir = newDataFile(executionArguments.getTaskPathname());
 
+    this.tmpDir = newDataFile(executionArguments.getTemporaryPathname());
+
     this.localWorkingDir =
         newDataFile(executionArguments.getLocalWorkingPathname());
+
     this.hadoopWorkingDir =
         newDataFile(executionArguments.getHadoopWorkingPathname());
+
     this.outputDir = newDataFile(executionArguments.getOutputPathname());
+
+    this.workflowContext = new WorkflowContext(executionArguments, this);
 
     // Start scheduler
     TaskSchedulerFactory.getScheduler().start();

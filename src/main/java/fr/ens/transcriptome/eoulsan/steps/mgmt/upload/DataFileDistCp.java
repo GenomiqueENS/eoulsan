@@ -324,7 +324,7 @@ public class DataFileDistCp {
     final Configuration jobConf = new Configuration(parentConf);
 
     // timeout
-    jobConf.set("mapred.task.timeout", "" + MAX_COPY_DURATION);
+    jobConf.set("mapreduce.task.timeout", "" + MAX_COPY_DURATION);
 
     // Create the job and its name
     final Job job = Job.getInstance(jobConf, "DataFileDistcp");

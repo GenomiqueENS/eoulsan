@@ -48,9 +48,9 @@ import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.core.workflow.DataUtils;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFiles;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -162,8 +162,7 @@ public class CopyOutputDataStep extends AbstractStep {
         final Data inData = context.getInputData(portName);
         final Data outData = context.getOutputData(portName, inData);
 
-        copyFormat(context, inData, outData);
-
+        copyData(context, inData, outData);
         status.setProgress(1.0);
       }
 
@@ -178,16 +177,38 @@ public class CopyOutputDataStep extends AbstractStep {
   //
 
   /**
+   * Check input and output files.
+   * @param inFile input file
+   * @param outFile output file
+   * @throws IOException if copy cannot be started
+   */
+  private static void checkFiles(final DataFile inFile, final DataFile outFile)
+      throws IOException {
+
+    if (inFile.equals(outFile)) {
+      throw new FileNotFoundException("cannot copy file on itself: " + inFile);
+    }
+
+    if (!inFile.exists()) {
+      throw new FileNotFoundException("input file not found: " + inFile);
+    }
+
+    if (outFile.exists()) {
+      throw new FileNotFoundException("output file already exists: " + outFile);
+    }
+  }
+
+  /**
    * Copy files for a format and a samples.
    * @param context step context
    * @param inData input data
    * @param outData output data
    * @throws IOException if an error occurs while copying
    */
-  private void copyFormat(final StepContext context, final Data inData,
+  private void copyData(final StepContext context, final Data inData,
       final Data outData) throws IOException {
 
-    final DataFile outputDir = new DataFile(context.getStepWorkingPathname());
+    final DataFile outputDir = context.getStepOutputDirectory();
 
     // Handle standard case
     if (inData.getFormat().getMaxFilesCount() == 1) {
@@ -195,12 +216,11 @@ public class CopyOutputDataStep extends AbstractStep {
       final DataFile in = inData.getDataFile();
       final DataFile out = new DataFile(outputDir, in.getName());
 
-      if (!in.exists()) {
-        throw new FileNotFoundException("input file not found: " + in);
-      }
+      // Check input and output files
+      checkFiles(in, out);
 
       // Copy file
-      FileUtils.copy(in.rawOpen(), out.rawCreate());
+      DataFiles.symlinkOrCopy(in, out);
 
       // Set the DataFile in the output data object
       DataUtils.setDataFile(outData, out);
@@ -210,20 +230,18 @@ public class CopyOutputDataStep extends AbstractStep {
       final int count = inData.getDataFileCount();
       final List<DataFile> outFiles = new ArrayList<>();
 
-      // Handle multi file format like fastq
+      // Handle multi file format like FASTQ files
       for (int i = 0; i < count; i++) {
 
         final DataFile in = inData.getDataFile(i);
         final DataFile out = new DataFile(outputDir, in.getName());
         outFiles.add(out);
 
-        if (!in.exists()) {
-          throw new FileNotFoundException("input file not found: " + in);
-        }
+        // Check input and output files
+        checkFiles(in, out);
 
         // Copy file
-        FileUtils.copy(in.rawOpen(), out.rawCreate());
-
+        DataFiles.symlinkOrCopy(in, out);
       }
 
       // Set the DataFile in the output data object
