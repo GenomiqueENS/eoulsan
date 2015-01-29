@@ -95,7 +95,7 @@ abstract class AbstractDataMetadata implements DataMetadata, Serializable {
 
     checkNotNull(sampleName, "sampleName argument cannot be null");
 
-    set(FASTQ_FORMAT_KEY, sampleName);
+    set(SAMPLE_NAME_KEY, sampleName);
   }
 
   @Override
