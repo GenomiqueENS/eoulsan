@@ -84,7 +84,7 @@ public class KeepNumberMatchReadAlignmentsFilter extends
     if (this.numberMatch < 0) {
       throw new IllegalArgumentException(
           "The number of match to keep is not set for "
-              + getName() + " alignments alignments filter.");
+              + getName() + " alignments filter.");
     }
   }
 

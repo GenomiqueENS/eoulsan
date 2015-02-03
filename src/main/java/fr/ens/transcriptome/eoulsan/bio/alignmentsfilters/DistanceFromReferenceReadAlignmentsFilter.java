@@ -85,7 +85,7 @@ public class DistanceFromReferenceReadAlignmentsFilter extends
     if (this.distance < 0) {
       throw new IllegalArgumentException(
           "The distance from the reference is not set for "
-              + getName() + " alignments alignments filter.");
+              + getName() + " alignments filter.");
     }
   }
 
