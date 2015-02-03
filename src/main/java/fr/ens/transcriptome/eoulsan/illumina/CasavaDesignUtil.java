@@ -310,21 +310,24 @@ public final class CasavaDesignUtil {
       return;
     }
 
-    for (int i = 0; i < index.length(); i++) {
-      switch (index.codePointAt(i)) {
+    for (String subIndex : index.split("-")) {
 
-      case 'A':
-      case 'a':
-      case 'T':
-      case 't':
-      case 'G':
-      case 'g':
-      case 'C':
-      case 'c':
-        break;
+      for (int i = 0; i < subIndex.length(); i++) {
+        switch (subIndex.codePointAt(i)) {
 
-      default:
-        throw new EoulsanException("Invalid index found: " + index + ".");
+        case 'A':
+        case 'a':
+        case 'T':
+        case 't':
+        case 'G':
+        case 'g':
+        case 'C':
+        case 'c':
+          break;
+
+        default:
+          throw new EoulsanException("Invalid index found: " + index + ".");
+        }
       }
     }
   }
@@ -479,16 +482,24 @@ public final class CasavaDesignUtil {
         checkIndex(index);
       } catch (EoulsanException e) {
 
-        if (!sequences.containsKey(index.toLowerCase())) {
-          throw new EoulsanException("Unknown index sequence shortcut ("
-              + index + ") for sample: " + sample);
+        final StringBuilder sb = new StringBuilder();
+
+        for (String subIndex : index.split("-")) {
+
+          if (!sequences.containsKey(subIndex.toLowerCase())) {
+            throw new EoulsanException("Unknown index sequence shortcut ("
+                + index + ") for sample: " + sample);
+          }
+
+          if (sb.length() > 0) {
+            sb.append('-');
+          }
+          sb.append(sequences.get(subIndex.toLowerCase()));
         }
 
-        sample.setIndex(sequences.get(index.toLowerCase()));
+        sample.setIndex(sb.toString());
       }
-
     }
-
   }
 
   //
