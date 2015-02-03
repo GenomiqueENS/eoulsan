@@ -289,9 +289,9 @@ public class CommandWorkflow extends AbstractWorkflow {
       final AbstractWorkflowStep dependencyStep =
           dependencyOutputPort.getStep();
 
-      final DataFile stepDir = inputPort.getStep().getStepWorkingDir();
+      final DataFile stepDir = inputPort.getStep().getStepOutputDirectory();
       final DataFile depDir =
-          dependencyOutputPort.getStep().getStepWorkingDir();
+          dependencyOutputPort.getStep().getStepOutputDirectory();
 
       final DataProtocol stepProtocol = stepDir.getProtocol();
       final DataProtocol depProtocol = depDir.getProtocol();
@@ -724,7 +724,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     for (CommandWorkflowStep step : Lists.newArrayList(this.steps)) {
 
       if (step.isCopyResultsToOutput()
-          && !step.getStepWorkingDir().equals(getOutputDir())
+          && !step.getStepOutputDirectory().equals(getOutputDirectory())
           && !step.getWorkflowOutputPorts().isEmpty()) {
 
         CommandWorkflowStep newStep =
@@ -919,16 +919,16 @@ public class CommandWorkflow extends AbstractWorkflow {
     super.saveConfigurationFiles();
 
     try {
-      DataFile logDir = new DataFile(getWorkflowContext().getLogPathname());
+      DataFile jobDir = getWorkflowContext().getJobDirectory();
 
-      if (!logDir.exists()) {
-        logDir.mkdirs();
+      if (!jobDir.exists()) {
+        jobDir.mkdirs();
       }
 
       // Save design file
 
       BufferedWriter writer =
-          FileUtils.createBufferedWriter(new DataFile(logDir,
+          FileUtils.createBufferedWriter(new DataFile(jobDir,
               WORKFLOW_COPY_FILENAME).create());
       writer.write(this.workflowCommand.toXML());
       writer.close();

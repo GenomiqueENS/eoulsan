@@ -67,6 +67,8 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 @ReuseStepInstance
 public class SplitterStep extends AbstractStep {
 
+  public static final String STEP_NAME = "splitter";
+
   private Splitter splitter;
   private CompressionType compression = NONE;
 
@@ -157,7 +159,7 @@ public class SplitterStep extends AbstractStep {
   @Override
   public String getName() {
 
-    return "splitter";
+    return STEP_NAME;
   }
 
   @Override

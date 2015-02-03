@@ -26,9 +26,12 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
 
 import java.io.Serializable;
 import java.util.EnumSet;
+import java.util.Set;
 
 import com.google.common.base.Objects;
 
@@ -119,6 +122,16 @@ class WorkflowInputPort extends SimpleInputPort implements Serializable {
     }
 
     this.link = outputPort;
+  }
+
+  @Override
+  public Set<WorkflowStep> getLinkedSteps() {
+
+    if (this.link == null) {
+      return emptySet();
+    }
+
+    return singleton((WorkflowStep) this.link.getStep());
   }
 
   @Override

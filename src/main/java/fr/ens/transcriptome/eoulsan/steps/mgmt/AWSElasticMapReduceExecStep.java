@@ -43,6 +43,7 @@ import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
+import fr.ens.transcriptome.eoulsan.core.workflow.ContextUtils;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.util.Version;
 import fr.ens.transcriptome.eoulsan.util.cloud.AWSElasticMapReduceBuilder;
@@ -200,8 +201,8 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
     eoulsanArgsList.add(context.getJobDescription());
     eoulsanArgsList.add("-e");
     eoulsanArgsList.add(sb.toString());
-    eoulsanArgsList.add(context.getWorkflowPathname());
-    eoulsanArgsList.add(context.getDesignPathname());
+    eoulsanArgsList.add(context.getWorkflowFile().getSource());
+    eoulsanArgsList.add(context.getDesignFile().getSource());
     eoulsanArgsList.add("hdfs:///test");
 
     final String[] eoulsanArgs =
@@ -221,8 +222,8 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
     builder.withEndpoint(this.endpoint);
 
     // Set command
-    builder.withJarLocation(context.getJarPathname()).withJarArguments(
-        eoulsanArgs);
+    builder.withJarLocation(ContextUtils.getJarPathname(context).getSource())
+        .withJarArguments(eoulsanArgs);
 
     // Set Instances
     builder.withMasterInstanceType(this.instanceType)

@@ -45,7 +45,6 @@ import net.sf.samtools.SAMRecord;
 import com.google.common.base.Joiner;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.SAMComparator;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
@@ -122,8 +121,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
     final DataFile outFile = outData.getDataFile();
 
     // Filter alignments in single-end mode or in paired-end mode
-    filterFile(inFile, outFile, reporter, filter, EoulsanRuntime.getSettings()
-        .getTempDirectoryFile());
+    filterFile(inFile, outFile, reporter, filter,
+        context.getLocalTempDirectory());
 
     // Set the description of the context
     status.setDescription("Filter SAM file ("

@@ -84,18 +84,6 @@
 		</parameters>
 	</step>
 
-
-        <!-- Filter samples -->
-        <step skip="false">
-                <name>filterSamples</name>
-                <parameters>
-                        <parameter>
-                                <name>threshold</name>
-                                <value>0</value>
-                        </parameter>
-                </parameters>
-        </step>
-
         <!-- Expression -->
         <step skip="false">
                 <name>expression</name>

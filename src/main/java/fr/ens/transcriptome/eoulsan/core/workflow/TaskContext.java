@@ -88,39 +88,51 @@ public class TaskContext implements StepContext, Serializable {
     return this.contextName;
   }
 
-  @Override
-  public String getLocalWorkingPathname() {
+  /**
+   * Get the local working directory.
+   * @return Returns the local working directory
+   */
+  public DataFile getLocalWorkingPathname() {
 
-    return this.workflowContext.getLocalWorkingPathname();
+    return this.workflowContext.getLocalWorkingDirectory();
+  }
+
+  /**
+   * Get the Hadoop working directory.
+   * @return Returns the Hadoop working directory
+   */
+  public DataFile getHadoopWorkingPathname() {
+
+    return this.workflowContext.getHadoopWorkingDirectory();
+  }
+
+  /**
+   * Get the job directory.
+   * @return Returns the job directory
+   */
+  public DataFile getJobDirectory() {
+
+    return this.workflowContext.getJobDirectory();
+  }
+
+  /**
+   * Get the task output directory.
+   * @return Returns the task output directory
+   */
+  public DataFile getTaskOutputDirectory() {
+
+    return this.workflowContext.getTaskDirectory();
   }
 
   @Override
-  public String getHadoopWorkingPathname() {
-
-    return this.workflowContext.getHadoopWorkingPathname();
+  public DataFile getOutputDirectory() {
+    return this.workflowContext.getOutputDirectory();
   }
 
   @Override
-  public String getLogPathname() {
+  public DataFile getStepOutputDirectory() {
 
-    return this.workflowContext.getLogPathname();
-  }
-
-  @Override
-  public String getTaskPathname() {
-
-    return this.workflowContext.getTaskPathname();
-  }
-
-  @Override
-  public String getOutputPathname() {
-    return this.workflowContext.getOutputPathname();
-  }
-
-  @Override
-  public String getStepWorkingPathname() {
-
-    return this.step.getStepWorkingDir().getSource();
+    return this.step.getStepOutputDirectory();
   }
 
   @Override
@@ -139,18 +151,21 @@ public class TaskContext implements StepContext, Serializable {
   }
 
   @Override
-  public String getDesignPathname() {
-    return this.workflowContext.getDesignPathname();
+  public DataFile getDesignFile() {
+    return this.workflowContext.getDesignFile();
   }
 
   @Override
-  public String getWorkflowPathname() {
-    return this.workflowContext.getWorkflowPathname();
+  public DataFile getWorkflowFile() {
+    return this.workflowContext.getWorkflowFile();
   }
 
-  @Override
-  public String getJarPathname() {
-    return this.workflowContext.getJarPathname();
+  /**
+   * Get the application jar path.
+   * @return Returns the jar path
+   */
+  public DataFile getJarPathname() {
+    return this.workflowContext.getJarFile();
   }
 
   @Override
@@ -330,6 +345,12 @@ public class TaskContext implements StepContext, Serializable {
       // Update outputData
       this.outputData.put(e.getKey(), e.getValue());
     }
+  }
+
+  @Override
+  public File getLocalTempDirectory() {
+
+    return EoulsanRuntime.getRuntime().getTempDirectory();
   }
 
   //

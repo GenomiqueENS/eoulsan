@@ -63,13 +63,16 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 @ReuseStepInstance
 public class DesignStep extends AbstractStep {
 
+  public static final String STEP_NAME = "design";
+
   private final Design design;
   private final CheckerStep checkerStep;
   private OutputPorts outputPorts;
 
   @Override
   public String getName() {
-    return "design";
+
+    return STEP_NAME;
   }
 
   @Override

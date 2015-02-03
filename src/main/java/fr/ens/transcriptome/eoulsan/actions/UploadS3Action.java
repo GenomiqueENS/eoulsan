@@ -198,7 +198,7 @@ public class UploadS3Action extends AbstractAction {
 
       // Create the log File
       Main.getInstance().createLogFileAndFlushLog(
-          arguments.getLogPathname() + File.separator + "eoulsan.log");
+          arguments.getJobPathname() + File.separator + "eoulsan.log");
 
       // Create the executor
       final Executor e = new Executor(arguments);

@@ -42,10 +42,12 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 @ReuseStepInstance
 public class TerminalStep extends AbstractStep {
 
+  public static final String STEP_NAME = "terminal";
+
   @Override
   public String getName() {
 
-    return "terminal";
+    return STEP_NAME;
   }
 
   @Override

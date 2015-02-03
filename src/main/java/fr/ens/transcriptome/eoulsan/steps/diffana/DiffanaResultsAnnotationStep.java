@@ -230,7 +230,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
 
     try {
 
-      final DataFile outputDir = new DataFile(context.getOutputPathname());
+      final DataFile outputDir = context.getOutputDirectory();
       final List<DataFile> files = outputDir.list();
       final List<DataFile> filesToConvert = new ArrayList<>();
 

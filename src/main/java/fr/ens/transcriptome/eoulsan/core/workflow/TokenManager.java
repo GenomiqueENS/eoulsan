@@ -206,7 +206,7 @@ public class TokenManager implements Runnable {
       // Get the metadata storage
       final DataMetadataStorage metadataStorage =
           DataMetadataStorage.getInstance(this.step.getAbstractWorkflow()
-              .getOutputDir());
+              .getOutputDirectory());
 
       // Store token metadata only if step is not skipped
       if (!this.step.isSkip()) {
@@ -407,7 +407,7 @@ public class TokenManager implements Runnable {
         // Get the metadata storage
         final DataMetadataStorage metadataStorage =
             DataMetadataStorage.getInstance(this.step.getAbstractWorkflow()
-                .getOutputDir());
+                .getOutputDirectory());
 
         // Set the metadata of data from the storage of metadata
         final boolean isMetadataSet = metadataStorage.loadMetadata(data);
@@ -569,7 +569,7 @@ public class TokenManager implements Runnable {
 
     // Step result file
     DataFile logFile =
-        new DataFile(this.step.getAbstractWorkflow().getLogDir(),
+        new DataFile(this.step.getAbstractWorkflow().getJobDirectory(),
             this.step.getId() + STEP_RESULT_EXTENSION);
 
     try {
@@ -587,7 +587,7 @@ public class TokenManager implements Runnable {
 
       // Step result file
       logFile =
-          new DataFile(this.step.getAbstractWorkflow().getLogDir(),
+          new DataFile(this.step.getAbstractWorkflow().getJobDirectory(),
               this.step.getId() + Globals.STEP_RESULT_OLD_FORMAT_EXTENSION);
 
       try {

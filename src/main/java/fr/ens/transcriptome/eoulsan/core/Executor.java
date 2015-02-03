@@ -198,7 +198,7 @@ public class Executor {
 
     getLogger().info("Job Base path: " + execArgs.getLocalWorkingPathname());
     getLogger().info("Job Output path: " + execArgs.getOutputPathname());
-    getLogger().info("Job Log path: " + execArgs.getLogPathname());
+    getLogger().info("Job Log path: " + execArgs.getJobPathname());
   }
 
   private static Design loadDesign(final ExecutorArguments arguments)

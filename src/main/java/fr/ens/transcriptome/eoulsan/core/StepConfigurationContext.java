@@ -24,11 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import java.io.File;
 import java.util.logging.Logger;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 
 public interface StepConfigurationContext {
 
@@ -69,34 +71,16 @@ public interface StepConfigurationContext {
   String getCommandAuthor();
 
   /**
-   * Get the local working path.
-   * @return Returns the local working Path
-   */
-  String getLocalWorkingPathname();
-
-  /**
-   * Get the Hadoop working path.
-   * @return Returns the Hadoop working Path
-   */
-  String getHadoopWorkingPathname();
-
-  /**
-   * Get the log path.
-   * @return Returns the log Path
-   */
-  String getLogPathname();
-
-  /**
    * Get the output path.
    * @return Returns the output Path
    */
-  String getOutputPathname();
+  DataFile getOutputDirectory();
 
   /**
-   * Get the step working path.
-   * @return Returns the step working path
+   * Get the step working directory.
+   * @return Returns the step working directory
    */
-  String getStepWorkingPathname();
+  DataFile getStepOutputDirectory();
 
   /**
    * Get the job id.
@@ -114,19 +98,13 @@ public interface StepConfigurationContext {
    * Get the design file path.
    * @return the design file path
    */
-  String getDesignPathname();
+  DataFile getDesignFile();
 
   /**
    * Get the workflow file path.
    * @return the workflow file path
    */
-  String getWorkflowPathname();
-
-  /**
-   * Get the application jar path.
-   * @return Returns the jar path
-   */
-  String getJarPathname();
+  DataFile getWorkflowFile();
 
   /**
    * Get EoulsanRuntime.
@@ -151,5 +129,11 @@ public interface StepConfigurationContext {
    * @return the current Step or null if no Step is currently running.
    */
   WorkflowStep getCurrentStep();
+
+  /**
+   * Get local temporary directory.
+   * @return the local temporary directory
+   */
+  File getLocalTempDirectory();
 
 }
