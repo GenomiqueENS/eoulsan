@@ -75,13 +75,13 @@ filter will not produce the same output if declared before or after the trim fil
 		<tr><td>max.local.threads</td><td>integer</td><td>Define the maximum number of threads to use in local mode.</td><td>0 (no limit)</td><td>N/A</td></tr>
 		<tr><td>paircheck</td><td>none</td><td>Check if the identifiers of the two ends had the same identifier</td><td>None</td><td>No</td></tr>
 		<tr><td>pairend.accept.pairend</td><td>boolean</td><td>Remove all paired-end reads if false</td><td>Not set</td><td>No</td></tr>
-		<tr><td>pairend.accept.accept.singlend</td><td>boolean</td><td>Remove all single-end reads if false</td><td>Not set</td><td>No</td></tr>
+		<tr><td>pairend.accept.singlend</td><td>boolean</td><td>Remove all single-end reads if false</td><td>Not set</td><td>No</td></tr>
 		<tr><td>illuminaid</td><td>none</td><td>Remove all reads that not pass illumina filters</td><td>Not set</td><td>No</td></tr>
 		<tr><td>quality.threshold</td><td>float</td><td>The threshold for the mean base quality. Unit in decimal quality score</td><td>Not set</td><td>No</td></tr>
 		<tr><td>trim.length.threshold</td><td>integer</td><td>The threshold for the length of the reads. Unit in bases. This filter trim polyN tails of reads.</td><td>Not set</td><td>Yes</td></tr>
 		<tr><td>readnamestartwith.forbidden.prefixes</td><td>string</td><td>Remove all reads with id that starts with one of prefixes separated by comma</td><td>Not set</td><td>No</td></tr>
 		<tr><td>readnamestartwith.allowed.prefixes</td><td>string</td><td>Keep only the reads with id that starts with one of prefixes separated by comma</td><td>Not set</td><td>No</td></tr>
-		<tr><td>readnameregex.allowed.regex</td><td>string</td><td>Remove all the reads with id that matches with the regular expression</td><td>Not set</td><td>No</td></tr>
+		<tr><td>readnameregex.forbidden.regex</td><td>string</td><td>Remove all the reads with id that matches with the regular expression</td><td>Not set</td><td>No</td></tr>
 		<tr><td>readnameregex.allowed.regex</td><td>string</td><td>Keep only the reads with id that matches with the regular expression</td><td>Not set</td><td>No</td></tr>
 	</table>
 
