@@ -194,7 +194,12 @@ public final class GalaxyToolXMLParser {
             + " founded " + result.size() + ".");
       }
     }
-    return result;
+
+    if (result == null || result.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    return Collections.unmodifiableList(result);
   }
 
   /**
@@ -236,7 +241,12 @@ public final class GalaxyToolXMLParser {
             + " founded " + result.size() + ".");
       }
     }
-    return result;
+
+    if (result == null || result.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    return Collections.unmodifiableList(result);
   }
 
   /**
@@ -263,6 +273,10 @@ public final class GalaxyToolXMLParser {
 
       final Node node = nStepsList.item(i);
 
+      // Check element found
+      if (node == null)
+        continue;
+
       if (node.getNodeType() == Node.ELEMENT_NODE) {
         final Element e = (Element) node;
 
@@ -272,7 +286,11 @@ public final class GalaxyToolXMLParser {
       }
     }
 
-    return result;
+    if (result == null || result.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    return Collections.unmodifiableList(result);
   }
 
   /**
