@@ -92,37 +92,37 @@ public class ToolInterpreterSamtoolrmdupTest {
 
   }
 
-  @Test
-  public void executionTestPE() {
-
-    // Call GalaxyToolStep
-    this.galaxyToolStep.configure(null, getStepParameters(this.isPE));
-
-    final int exitValue =
-        this.galaxyToolStep.execute(this.inputData, this.outputData,
-            this.status);
-
-    assertTrue("Exit value? ", exitValue == 0);
-    assertTrue("Result file exist ? ", this.resultFile.exists());
-    assertTrue("Result file not empty ? ", this.resultFile.length() > 0);
-
-  }
-
-  @Test
-  public void executionTestSE() {
-
-    // Call GalaxyToolStep
-    this.galaxyToolStep.configure(null, getStepParameters(!this.isPE));
-
-    final int exitValue =
-        this.galaxyToolStep.execute(this.inputData, this.outputData,
-            this.status);
-
-    assertTrue("Exit value? ", exitValue == 0);
-    assertTrue("Result file exist ? ", this.resultFile.exists());
-    assertTrue("Result file not empty ? ", this.resultFile.length() > 0);
-
-  }
+  // // @Test
+  // public void executionTestPE() {
+  //
+  // // Call GalaxyToolStep
+  // this.galaxyToolStep.configure(null, getStepParameters(this.isPE));
+  //
+  // final int exitValue =
+  // this.galaxyToolStep.execute(this.inputData, this.outputData,
+  // this.status);
+  //
+  // assertTrue("Exit value? ", exitValue == 0);
+  // assertTrue("Result file exist ? ", this.resultFile.exists());
+  // assertTrue("Result file not empty ? ", this.resultFile.length() > 0);
+  //
+  // }
+  //
+  // // @Test
+  // public void executionTestSE() {
+  //
+  // // Call GalaxyToolStep
+  // this.galaxyToolStep.configure(null, getStepParameters(!this.isPE));
+  //
+  // final int exitValue =
+  // this.galaxyToolStep.execute(this.inputData, this.outputData,
+  // this.status);
+  //
+  // assertTrue("Exit value? ", exitValue == 0);
+  // assertTrue("Result file exist ? ", this.resultFile.exists());
+  // assertTrue("Result file not empty ? ", this.resultFile.length() > 0);
+  //
+  // }
 
   /**
    * Gets the step parameters.

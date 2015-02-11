@@ -263,8 +263,12 @@ public class ToolInterpreterSimpleTest {
     // Create input stream
     final InputStream is = FileUtils.createInputStream(toolFile);
 
+    // ToolInterpreter.reload();
+
     // Init interpreter tool galaxy
-    final ToolInterpreter itg = new ToolInterpreter(is);
+    final ToolInterpreter itg = new ToolInterpreter("Unknown", is, null);
+    // final ToolInterpreter itg =
+    // ToolInterpreter.getInstance("Unknown", is, null);
 
     // Configure
     itg.configure(mock.getStepParameters());
