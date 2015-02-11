@@ -23,7 +23,7 @@
  */
 package fr.ens.transcriptome.eoulsan.util.galaxytool;
 
-import static fr.ens.transcriptome.eoulsan.steps.galaxytool.element.AbstractToolElement.getInstanceToolElement;
+import static fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.AbstractToolElement.getInstanceToolElement;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,8 +39,8 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.element.ToolConditionalElement;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.element.ToolElement;
+import fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.ToolConditionalElement;
+import fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.ToolElement;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 
 /**

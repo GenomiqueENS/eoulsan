@@ -21,7 +21,7 @@
  *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
-package fr.ens.transcriptome.eoulsan.steps.galaxytool.element;
+package fr.ens.transcriptome.eoulsan.steps.galaxytool.elements;
 
 import org.w3c.dom.Element;
 
@@ -30,14 +30,14 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class ToolParameterInteger.
+ * The Class ToolParameterFloat.
  * @author Sandrine Perrin
  * @since 2.1
  */
-public class ToolElementInteger extends AbstractToolElement {
+public class ToolElementFloat extends AbstractToolElement {
 
   /** The Constant TYPE. */
-  public final static String TYPE = "integer";
+  public final static String TYPE = "float";
 
   /** The Constant ATT_DEFAULT_KEY. */
   private final static String ATT_DEFAULT_KEY = "value";
@@ -49,21 +49,21 @@ public class ToolElementInteger extends AbstractToolElement {
   private final static String ATT_MAX_KEY = "max";
 
   /** The min. */
-  private final int min;
+  private final double min;
 
   /** The max. */
-  private final int max;
+  private final double max;
 
   /** The value. */
-  private int value;
+  private double value;
+
+  @Override
+  public void setValue() {
+  }
 
   @Override
   public boolean isValueParameterValid() {
     return this.value >= this.min && this.value <= this.max;
-  }
-
-  @Override
-  public void setValue() {
   }
 
   @Override
@@ -75,7 +75,8 @@ public class ToolElementInteger extends AbstractToolElement {
 
   @Override
   public void setValue(final String value) throws EoulsanException {
-    this.value = Integer.parseInt(value);
+    
+    this.value = Double.parseDouble(value);
 
     this.isSetting = true;
 
@@ -93,7 +94,7 @@ public class ToolElementInteger extends AbstractToolElement {
 
   @Override
   public String toString() {
-    return "ToolParameterInteger [min="
+    return "ToolParameterFloat [min="
         + this.min + ", max=" + this.max + ", value=" + this.value + "]";
   }
 
@@ -102,29 +103,28 @@ public class ToolElementInteger extends AbstractToolElement {
   //
 
   /**
-   * Instantiates a new tool parameter integer.
+   * Instantiates a new tool parameter float.
    * @param param the param
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolElementInteger(final Element param) throws EoulsanException {
+  public ToolElementFloat(final Element param) throws EoulsanException {
     this(param, null);
   }
 
   /**
-   * Instantiates a new tool parameter integer.
+   * Instantiates a new tool parameter float.
    * @param param the param
    * @param nameSpace the name space
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolElementInteger(final Element param, final String nameSpace)
+  public ToolElementFloat(final Element param, final String nameSpace)
       throws EoulsanException {
     super(param, nameSpace);
 
     try {
-      final int defaultValue =
-          Integer.parseInt(param.getAttribute(ATT_DEFAULT_KEY));
+      final double defaultValue =
+          Double.parseDouble(param.getAttribute(ATT_DEFAULT_KEY));
 
-      // Set value
       this.value = defaultValue;
 
     } catch (final NumberFormatException e) {
@@ -134,10 +134,10 @@ public class ToolElementInteger extends AbstractToolElement {
 
     try {
       String value = param.getAttribute(ATT_MIN_KEY);
-      this.min = value.isEmpty() ? Integer.MIN_VALUE : Integer.parseInt(value);
+      this.min = value.isEmpty() ? Double.MIN_VALUE : Double.parseDouble(value);
 
       value = param.getAttribute(ATT_MAX_KEY);
-      this.max = value.isEmpty() ? Integer.MAX_VALUE : Integer.parseInt(value);
+      this.max = value.isEmpty() ? Double.MAX_VALUE : Double.parseDouble(value);
 
     } catch (final NumberFormatException e) {
       throw new EoulsanException("Fail extract value " + e.getMessage());

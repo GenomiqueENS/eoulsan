@@ -22,9 +22,9 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.steps.galaxytool.element;
+package fr.ens.transcriptome.eoulsan.steps.galaxytool.elements;
 
-import static fr.ens.transcriptome.eoulsan.steps.galaxytool.element.AbstractToolElement.getInstanceToolElement;
+import static fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.AbstractToolElement.getInstanceToolElement;
 import static fr.ens.transcriptome.eoulsan.util.XMLUtils.getElementsByTagName;
 import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractChildElementsByTagName;
 
