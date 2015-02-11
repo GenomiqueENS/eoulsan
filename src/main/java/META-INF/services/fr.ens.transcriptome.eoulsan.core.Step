@@ -47,3 +47,6 @@ fr.ens.transcriptome.eoulsan.steps.fastqc.FastQCStep
 
 # Other step
 fr.ens.transcriptome.eoulsan.steps.ImportStep
+
+
+fr.ens.transcriptome.eoulsan.steps.galaxytool.GalaxyToolStep
