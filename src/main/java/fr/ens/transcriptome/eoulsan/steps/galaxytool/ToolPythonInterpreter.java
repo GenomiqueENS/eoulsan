@@ -29,24 +29,22 @@ import java.util.Map;
 import java.util.Set;
 
 import org.python.core.PyObject;
-import org.python.google.common.base.Joiner;
 import org.python.util.PythonInterpreter;
 import org.testng.collections.Sets;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
+
+// TODO: Auto-generated Javadoc
 /**
- * This class create a python interpreter which can build a command line tool from
- * command tag from Galaxy tool XML file.
+ * This class create a python interpreter which can build a command line tool
+ * from command tag from Galaxy tool XML file.
  * @author Sandrine Perrin
  * @since 2.1
  */
 public class ToolPythonInterpreter {
-
-  /** The Constant LINE_SEPARATOR. */
-  private static final String LINE_SEPARATOR = System.getProperties()
-      .getProperty("line.separator");
 
   /** The Constant NEW_LINE. */
   public final static Splitter NEW_LINE = Splitter.onPattern("[\r\n]")
@@ -56,7 +54,7 @@ public class ToolPythonInterpreter {
   public static final String VAR_CMD_NAME = "cmd";
 
   /** The Constant INSTANCE_NAME. */
-  public static final String INSTANCE_NAME = "registry";
+  public static final String INSTANCE_NAME = "mapVariables";
 
   /** The Constant CALL_METHOD. */
   public static final String CALL_METHOD = INSTANCE_NAME + ".get";
@@ -64,14 +62,28 @@ public class ToolPythonInterpreter {
   /** The variable names. */
   private final Set<String> variableNames = Sets.newHashSet();
 
+  /** The python script with java code. */
+  private String pythonScriptWithJavaCode = null;
+
   /**
    * Execute script.
-   * @param script the script
-   * @param registry the registry
+   * @param definedVariableCommand the registry
    * @return the string
+   * @throws EoulsanException the eoulsan exception
    */
-  public String executeScript(final String script,
-      final Map<String, String> registry) {
+  public String executeScript(final Map<String, String> definedVariableCommand)
+      throws EoulsanException {
+
+    Preconditions.checkNotNull(this.pythonScriptWithJavaCode,
+        "Not found python script to interprete.");
+
+    Preconditions.checkNotNull(this.variableNames,
+        "None variables setting for python script.");
+
+    if (this.variableNames.isEmpty()) {
+      throw new EoulsanException(
+          "Not found variables in python script to interprete.");
+    }
 
     // TODO
     // System.out.println("script: " + script);
@@ -82,10 +94,10 @@ public class ToolPythonInterpreter {
 
     // Init variable cmd
     interp.set(VAR_CMD_NAME, new String());
-    interp.set(INSTANCE_NAME, registry);
+    interp.set(INSTANCE_NAME, definedVariableCommand);
 
     // Add script
-    interp.exec(script);
+    interp.exec(this.pythonScriptWithJavaCode);
 
     // Retrieve standard output
     final PyObject cmd = interp.get(VAR_CMD_NAME);
@@ -97,26 +109,26 @@ public class ToolPythonInterpreter {
   }
 
   /**
-   * Parses the command string.
-   * @param cmdTag the cmd tag
-   * @return the string
+   * Translate command xml in python.
+   * @param cmdTag the content command tag.
+   * @throws EoulsanException if the translation fails.
    */
-  public String parseCommandString(final String cmdTag) {
+  void translateCommandXMLInPython(final String cmdTag) throws EoulsanException {
+
     // Split on line
-    final List<String> rawCommandInList = NEW_LINE.splitToList(cmdTag);
+    final List<String> rawCommandTag = NEW_LINE.splitToList(cmdTag);
 
-    final List<String> commandInList = Lists.newArrayList();
+    // Init translator
+    final TranslatorStringToPython translator =
+        new TranslatorStringToPython(rawCommandTag);
 
-    // Build line script python
-    for (final String line : rawCommandInList) {
+    // Receive all variables names found in command tag
+    this.variableNames.addAll(translator.getVariableNames());
 
-      final ScriptLineJython newLine = new ScriptLineJython(line);
-      commandInList.add(newLine.asString());
+    // Receive code python for building command line after replace variables by
+    // values
+    this.pythonScriptWithJavaCode = translator.getTranslatedCommandInPython();
 
-      this.variableNames.addAll(newLine.getVariableNames());
-    }
-
-    return Joiner.on(LINE_SEPARATOR).join(commandInList).trim();
   }
 
   /**
@@ -130,4 +142,5 @@ public class ToolPythonInterpreter {
     }
     return Collections.unmodifiableSet(this.variableNames);
   }
+
 }
