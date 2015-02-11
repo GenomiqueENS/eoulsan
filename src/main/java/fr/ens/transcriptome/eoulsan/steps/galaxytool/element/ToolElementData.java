@@ -30,6 +30,7 @@ import org.w3c.dom.Element;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -125,7 +126,10 @@ public class ToolElementData extends AbstractToolElement {
       this.dataFormat = null;
     } else {
       // Convert format in DataFormat
-      this.dataFormat = ConvertorToDataFormat.convert(this.formats.get(0));
+
+      this.dataFormat =
+          DataFormatRegistry.getInstance().getDataFormatsFromToolshedExtension(
+              this.formats.get(0));
     }
   }
 
