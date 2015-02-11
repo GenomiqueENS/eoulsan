@@ -79,7 +79,7 @@ public class ToolInterpreter {
   /** The doc. */
   private final Document doc;
 
-  /** The python interperter. */
+  /** The python interpreter. */
   private final ToolPythonInterpreter pythonInterperter;
 
   /** Data from tool XML. */
@@ -109,6 +109,12 @@ public class ToolInterpreter {
   /** The variable names from command tag. */
   private Set<String> variableNamesFromCommandTag;
 
+  /** The tool name from parameter Eoulsan file. */
+  private final String toolNameFromParameter;
+
+  /** The tool executable path. */
+  private final File toolExecutablePath;;
+
   /** The step parameters. */
   private final Map<String, Parameter> stepParameters;
 
@@ -128,29 +134,33 @@ public class ToolInterpreter {
 
     this.initStepParameters(setStepParameters);
 
-    // Set tool name
-    this.toolID = extractToolID(this.doc);
-    this.toolName = extractToolName(this.doc);
-    this.toolVersion = extractToolVersion(this.doc);
-    this.description = extractDescription(this.doc);
+    final Document localDoc = this.doc;
 
-    this.inputs = extractInputs(this.doc, this.stepParameters);
-    this.outputs = extractOutputs(this.doc);
+    // Set tool name
+    this.toolID = extractToolID(localDoc);
+    this.toolName = extractToolName(localDoc);
+    this.toolVersion = extractToolVersion(localDoc);
+    this.description = extractDescription(localDoc);
+
+    this.inputs = extractInputs(localDoc, this.stepParameters);
+    this.outputs = extractOutputs(localDoc);
 
     this.inDataFormatExpected = this.extractDataFormat(this.inputs);
     this.outDataFormatExpected = this.extractDataFormat(this.outputs);
 
     //
-    this.interpreter = extractInterpreter(this.doc);
-    final String cmdTagContent = extractCommand(this.doc);
+    this.interpreter = extractInterpreter(localDoc);
+    final String cmdTagContent = extractCommand(localDoc);
 
     if (cmdTagContent.isEmpty()) {
       throw new EoulsanException("Parsing tool XML file: no command found.");
     }
 
-    this.command = this.pythonInterperter.parseCommandString(cmdTagContent);
+    this.pythonInterperter.translateCommandXMLInPython(cmdTagContent);
+
     this.variableNamesFromCommandTag =
         this.pythonInterperter.getVariableNames();
+
   }
 
   /**
@@ -158,7 +168,8 @@ public class ToolInterpreter {
    * @param inputData the input data
    * @param outputData the output data
    * @return the string
-   * @throws EoulsanException the eoulsan exception
+   * @throws EoulsanException the Eoulsan exception
+   * @throws IOException
    */
   public String execute(final Map<DataFormat, DataFile> inputData,
       final Map<DataFormat, DataFile> outputData) throws EoulsanException {
@@ -172,13 +183,16 @@ public class ToolInterpreter {
     // Add port with file path
     this.setPortOutput(variablesCommand, outputData);
 
-    String newCommand =
-        this.pythonInterperter.executeScript(this.command, variablesCommand);
+    String newCommand = this.pythonInterperter.executeScript(variablesCommand);
 
     // Add interpreter if exists
     if (!(getInterpreter() == null || getInterpreter().isEmpty())) {
-      newCommand = this.getInterpreter() + " " + newCommand;
+      newCommand =
+          this.getInterpreter() + " " + toolExecutablePath + "/" + newCommand;
     }
+
+    // TODO
+    System.out.println("DEBUG completed command with variable \t" + newCommand);
 
     return newCommand;
   }
@@ -197,8 +211,10 @@ public class ToolInterpreter {
     // List variable name define
     final Map<String, String> variables = this.extractVariables();
 
-    final String newCommand =
-        this.pythonInterperter.executeScript(this.command, variables);
+    final String newCommand = this.pythonInterperter.executeScript(variables);
+
+    // TODO
+    // System.out.println("DEBUG final command \t" + newCommand);
 
     return newCommand;
   }
@@ -249,6 +265,11 @@ public class ToolInterpreter {
     }
   }
 
+  // TODO Auto-generated method stub
+  public String getCommandLine() {
+    return this.command;
+  }
+
   //
   // Private methods
   //
@@ -274,6 +295,9 @@ public class ToolInterpreter {
       }
     }
 
+    if (results.isEmpty())
+      return Collections.emptyMap();
+
     return Collections.unmodifiableMap(results);
   }
 
@@ -292,48 +316,60 @@ public class ToolInterpreter {
   /**
    * Set input ports with name and value.
    * @param variablesCommand the variables command
-   * @param inData the in data
+   * @param inputData the in data
    * @throws EoulsanException the Eoulsan exception
+   * @throws IOException
    */
   private void setPortInput(final Map<String, String> variablesCommand,
-      final Map<DataFormat, DataFile> inData) throws EoulsanException {
+      final Map<DataFormat, DataFile> inputData) throws EoulsanException {
 
-    // Parse format expected
-    for (final Map.Entry<DataFormat, ToolElement> entry : this.inDataFormatExpected
-        .entrySet()) {
+    for (Map.Entry<DataFormat, DataFile> inData : inputData.entrySet()) {
 
-      // TODO add case pair-end
+      DataFormat inDataFormat = inData.getKey();
 
-      // Get the source
-      final File inFile = inData.get(entry.getKey()).toFile();
+      final ToolElement inToolElement =
+          this.inDataFormatExpected.get(inDataFormat);
 
-      final String inVariableName = entry.getValue().getName();
+      // TODO
+      // System.out.println("DEBUG in dataformat found in xml \t"
+      // + Joiner.on(",").join(this.inDataFormatExpected.keySet()));
+      // System.out.println("DEBUG Expected data format from context "
+      // + inDataFormat);
+
+      if (inToolElement == null) {
+        throw new EoulsanException(
+            "DEBUG Toolgalaxy, no toolelement found to set input port.");
+      }
 
       // Initialize variable with path
-      variablesCommand.put(inVariableName, inFile.getAbsolutePath());
+      variablesCommand.put(inToolElement.getName(), inData.getValue().toFile()
+          .getAbsolutePath());
+
     }
+
   }
 
   /**
    * Set output ports with name and value.
    * @param variablesCommand the variables command
-   * @param outData the out data
+   * @param outputData the out data
    * @throws EoulsanException the Eoulsan exception
+   * @throws IOException
    */
   private void setPortOutput(final Map<String, String> variablesCommand,
-      final Map<DataFormat, DataFile> outData) throws EoulsanException {
+      final Map<DataFormat, DataFile> outputData) throws EoulsanException {
 
-    // Parse format expected
-    for (final Map.Entry<DataFormat, ToolElement> entry : this.outDataFormatExpected
-        .entrySet()) {
+    for (Map.Entry<DataFormat, DataFile> outData : outputData.entrySet()) {
 
-      // Get the source
-      final File outFile = outData.get(entry.getKey()).toFile();
+      final DataFormat outDataFormat = outData.getKey();
 
-      final String inVariableName = entry.getValue().getName();
+      final ToolElement outToolElement =
+          this.outDataFormatExpected.get(outDataFormat);
 
       // Initialize variable with path
-      variablesCommand.put(inVariableName, outFile.getAbsolutePath());
+      variablesCommand.put(outToolElement.getName(), outData.getValue()
+          .toFile().getAbsolutePath());
+
     }
 
   }
@@ -410,7 +446,7 @@ public class ToolInterpreter {
         results.put(variableName, DEFAULT_VALUE_NULL);
       }
     }
-    return results;
+    return Collections.unmodifiableMap(results);
   }
 
   /**
@@ -446,10 +482,12 @@ public class ToolInterpreter {
    */
   private void checkDomValidity() throws EoulsanException {
 
+    final Document localDoc = this.doc;
+
     for (final String tag : TAG_FORBIDDEN) {
 
       // Check tag exists in tool file
-      if (!XMLUtils.getElementsByTagName(this.doc, tag).isEmpty()) {
+      if (!XMLUtils.getElementsByTagName(localDoc, tag).isEmpty()) {
         // Throw exception
         throw new EoulsanException("Parsing tool xml: unsupported tag " + tag);
       }
@@ -464,7 +502,7 @@ public class ToolInterpreter {
    * Gets the tool id.
    * @return the tool id
    */
-  public Object getToolID() {
+  public String getToolID() {
     return this.toolID;
   }
 
@@ -539,7 +577,14 @@ public class ToolInterpreter {
    * @throws EoulsanException the Eoulsan exception
    */
   public ToolInterpreter(final InputStream is) throws EoulsanException {
+    this("UNDEFINED", is, null);
+  }
 
+  public ToolInterpreter(final String toolName, final InputStream is,
+      final File toolExecutablePath) throws EoulsanException {
+
+    this.toolNameFromParameter = toolName;
+    this.toolExecutablePath = toolExecutablePath;
     this.toolXMLis = is;
     this.doc = this.buildDOM();
     this.stepParameters = new HashMap<>();
