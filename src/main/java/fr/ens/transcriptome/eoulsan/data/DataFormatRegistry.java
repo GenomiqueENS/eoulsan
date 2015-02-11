@@ -37,6 +37,7 @@ import java.util.ServiceLoader;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.util.ServiceListLoader;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -289,6 +290,32 @@ public class DataFormatRegistry {
     for (DataFormat df : this.formats) {
       if (df.getName().equals(dataFormatName)) {
         return df;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Get DataFormats from an toolshed Galaxy name extension.
+   * @param toolshed Galaxy name extension.
+   * @return DataFormat
+   */
+  public DataFormat getDataFormatsFromToolshedExtension(final String name) {
+
+    if (name == null || name.isEmpty()) {
+      return null;
+    }
+
+    // Search with DataType
+    for (DataFormat df : this.formats) {
+
+      // Parse Galaxy tool extension
+      for (String ext : df.getGalaxyToolExtensions()) {
+
+        if (name.toLowerCase(Globals.DEFAULT_LOCALE).equals(ext)) {
+          return df;
+        }
       }
     }
 
