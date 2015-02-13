@@ -689,5 +689,85 @@ of reads that reject each filter like in local mode.
 
          </release>
 
+         <release version="2.0-alpha5" description="Eoulsan 2.0-alpha5 release" date="TBD">
+
+            <action dev="jourdren" type="fix">
+                The JSON of the result files was not valid.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                SplitterStep and MergerStep, now handle data metadata.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                In the SAM filter step in local mode, force to use Eoulsan temporary directory instead of the system temporary directory.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                If an output port of a step was not linked, the other outputs ports of the step sent no token.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                In STARIndexGenerator, GFF annotation where not uncompressed before starting STAR indexer.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                In MergerStep, the data name where in some cases not valid.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                In SplitterStep, a Data object was created for each file even for multi-file format like FASTQ files.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Add an import step that allow to import files without declare steps that has been used to create the file. This step also allow to import files that are not related to the design file.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Add new splitters and merger for SAM, BAM and expression format.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Add new step named "tecnicalreplicatemerger" that allow to merge technical replicates.
+            </action>
+
+            <action dev="jourdren" type="add">
+                The version of a step to use can now be defined in the workflow file.
+            </action>
+
+            <action dev="sperrin" type="update">
+                Many fixes and update to the IT test engine.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Many fixes and update to support Hadoop 2.x.
+            </action>
+
+            <action dev="jourdren" type="update">
+                If user do not define temporary directory in workflow file or in Eoulsan configuration file, the default directory will be in a "tmp" directory in the job directory.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Remove the "-upload" option of the hadoopexec action.
+            </action>
+            
+            <action dev="jourdren" type="update">
+                Now no log file is written of the console as a log file is always create in the job directory.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Cleanup of the context object methods.
+            </action>
+
+            <action dev="jourdren" type="update">
+                STAR 2.4.0i is now bundled in Eoulsan.
+            </action>
+
+            <action dev="jourdren" type="update">
+                The CopyInputDataStep now create links instead copying files if there is no necessary (un)compression and if the files are on the same filesystem.
+            </action>
+
+         </release>
+
 	</body>
 </document>
