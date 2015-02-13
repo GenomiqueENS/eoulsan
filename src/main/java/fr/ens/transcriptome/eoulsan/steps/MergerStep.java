@@ -53,6 +53,7 @@ import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.core.workflow.DataUtils;
+import fr.ens.transcriptome.eoulsan.core.workflow.FileNaming;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -165,10 +166,33 @@ public class MergerStep extends AbstractStep {
     }
 
     /**
+     * Check that two keys cannot produce the same data name.
+     * @throws EoulsanException if two keys share the same data name
+     */
+    private void checkKeys() throws EoulsanException {
+
+      final Set<String> validNames = new HashSet<>();
+
+      for (String name : getDataNames()) {
+
+        final String validName = FileNaming.toValidName(name);
+
+        if (validNames.contains(validName)) {
+          throw new EoulsanException(
+              "Two merger keys share the same data name ("
+                  + name + " -> " + validName + ")");
+        }
+
+        validNames.add(validName);
+      }
+    }
+
+    /**
      * Constructor.
      * @param data the data
+     * @throws EoulsanException if two keys share the same data name
      */
-    public MergerIterator(final Data data) {
+    public MergerIterator(final Data data) throws EoulsanException {
 
       for (Data d : data.getListElements()) {
 
@@ -183,6 +207,9 @@ public class MergerStep extends AbstractStep {
           }
         }
       }
+
+      // Check keys
+      checkKeys();
     }
 
   }
@@ -302,7 +329,8 @@ public class MergerStep extends AbstractStep {
 
       for (String dataName : it.getDataNames()) {
 
-        final Data outData = outListData.addDataToList(dataName);
+        final Data outData =
+            outListData.addDataToList(FileNaming.toValidName(dataName));
 
         // Set metadata for output data
         DataUtils.setDataMetadata(outData, it.getListData(dataName));
@@ -314,7 +342,7 @@ public class MergerStep extends AbstractStep {
           final DataFile outFile = outData.getDataFile();
 
           // Launch merger
-          merger.merge(it.getIterator(dataName), outFile);
+          this.merger.merge(it.getIterator(dataName), outFile);
         } else {
 
           // For each file of the multi-file format
@@ -324,7 +352,7 @@ public class MergerStep extends AbstractStep {
             final DataFile outFile = outData.getDataFile(fileIndex);
 
             // Launch splitting
-            merger.merge(it.getIterator(dataName, fileIndex), outFile);
+            this.merger.merge(it.getIterator(dataName, fileIndex), outFile);
           }
         }
       }
