@@ -84,6 +84,7 @@
 				<item name="Splitters and mergers" href="/step-splitters-mergers.html" />
 				<item name="Technical replicates merger" href="/step-technical-replicates-mergers.html" />
 				<item name="Shell" href="step-shell.html" />
+				<item name="Import" href="step-import.html" />
 			</item>
 
 			<item name="Command line" href="/command_line.html" collapse="true">
