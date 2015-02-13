@@ -276,8 +276,8 @@ public class MergerStep extends AbstractStep {
       case "format":
         // Get format
         final DataFormat format =
-            DataFormatRegistry.getInstance()
-                .getDataFormatFromName(p.getValue());
+            DataFormatRegistry.getInstance().getDataFormatFromNameOrAlias(
+                p.getValue());
 
         // Check if the format exists
         if (format == null) {
