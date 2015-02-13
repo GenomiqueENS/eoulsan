@@ -32,9 +32,11 @@ import static fr.ens.transcriptome.eoulsan.io.CompressionType.getCompressionType
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -94,6 +96,7 @@ public class SplitterStep extends AbstractStep {
       checkArgument(index >= 0, "index argument cannot be lower than 0");
 
       if (index == this.list.size()) {
+
         final Data newData =
             this.data.addDataToList(this.data.getName(), index);
         newData.getMetadata().set(this.metadata);
@@ -114,7 +117,23 @@ public class SplitterStep extends AbstractStep {
 
       return new Iterator<DataFile>() {
 
-        int count = 0;
+        final Map<Integer, Integer> counts = new HashMap<Integer, Integer>();
+
+        /**
+         * Increment the counter for the current fileIndex.
+         * @return the value of the counter before increment the count
+         */
+        private int incrCount() {
+
+          if (!this.counts.containsKey(fileIndex)) {
+            this.counts.put(fileIndex, 0);
+          }
+
+          final int result = this.counts.get(fileIndex);
+          this.counts.put(fileIndex, result + 1);
+
+          return result;
+        }
 
         @Override
         public boolean hasNext() {
@@ -129,7 +148,7 @@ public class SplitterStep extends AbstractStep {
         @Override
         public DataFile next() {
 
-          final Data d = getData(this.count++);
+          final Data d = getData(incrCount());
 
           if (fileIndex == -1) {
             return d.getDataFile();
@@ -257,12 +276,16 @@ public class SplitterStep extends AbstractStep {
 
       } else {
 
+        // Create iterator
+        final SplitterIterator iterator =
+            new SplitterIterator(outData, metadata);
+
         // For each file of the multi-file format
         for (int fileIndex = 0; fileIndex < inData.getDataFileCount(); fileIndex++) {
 
           // Launch splitting
           this.splitter.split(inData.getDataFile(fileIndex),
-              new SplitterIterator(outData, metadata).getIterator(fileIndex));
+              iterator.getIterator(fileIndex));
         }
       }
 
