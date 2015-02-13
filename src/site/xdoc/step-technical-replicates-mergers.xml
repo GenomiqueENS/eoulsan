@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document>
+
+  <properties>
+    <title>Technical replicates merger step</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
+
+
+
+  <body>
+
+    <section name="Technical replicate merger step">
+
+      <p>This step allow to merge all the data related to the same technical replicates. This step use the RepTechGroup column of the design to define the data to merge.
+         This step works like the <a href="step-splitters-mergers.html">merger step</a> and all formats support by the merger step will be supported by the technical merger step. </p>
+
+      <ul>
+        <li><b>Internal name</b>: technicalreplicatemerger</li>
+        <li><b>Available</b>: Both local and distributed mode</li>
+        <li><b>Multithreaded in local mode</b>: N/A</li>
+ 	<li><b>Input</b>: Data in the format defined in the parameters</li>
+	<li><b>Output</b>: Data merged in the same format as the input</li>
+
+        <br/>
+        <li><b>Mandatory parameter</b>:</li>
+        <table>
+                <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                <tr><td>format</td><td>format</td><td>Name of the format of the data to merge. <a href="step-splitters-mergers.html#supportedformats">See the splitters and mergers step page </a> to get the list of the format that can be merged</td></tr>
+        </table>
+
+        <br/>
+        <li><b>Optional parameters</b>: Mergers can have <a href="step-splitters-mergers.html#supportedformats">optional arguments</a> to set the merge method according to the data format</li>
+      </ul>
+
+    </section>
+
+  </body>
+
+</document>

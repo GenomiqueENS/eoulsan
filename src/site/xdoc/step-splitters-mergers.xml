@@ -101,7 +101,30 @@
         <br/>
         <li><b>Optional parameters</b>: Mergers can have <a href="#supportedformats">optional arguments</a> to set the merge method according to the data format</li>
       </ul>
+   
+     </section>
 
+    <section name="Technical merger step">
+
+      <p>This step allow to merge all the data related to the same technical replicates. This step use the RepTechGroup column of the design to define the data to merge.</p>
+
+      <ul>
+        <li><b>Internal name</b>: technicalreplicatemerger</li>
+        <li><b>Available</b>: Both local and distributed mode</li>
+        <li><b>Multithreaded in local mode</b>: N/A</li>
+ 	<li><b>Input</b>: Data in the format defined in the parameters</li>
+	<li><b>Output</b>: Data merged in the same format as the input</li>
+
+        <br/>
+        <li><b>Mandatory parameter</b>:</li>
+        <table>
+                <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                <tr><td>format</td><td>format</td><td>Name of the format of the data to merge. <a href="#supportedformats">See below</a> to get the list of the format that can be merged</td></tr>
+        </table>
+
+        <br/>
+        <li><b>Optional parameters</b>: Mergers can have <a href="#supportedformats">optional arguments</a> to set the merge method according to the data format</li>
+      </ul>
 
     </section>
 
@@ -111,7 +134,7 @@
       <subsection name="fastq">
 
       <ul>
-        <li><b>Format name</b>: reads_fastq</li>
+        <li><b>Format name</b>: reads_fastq or fastq</li>
         <li><b>Description</b>: FASTQ format</li>
 
         <br/>
@@ -119,6 +142,68 @@
         <table>
                 <tr><th>Parameter</th><th>Type</th><th>Default value</th><th>Description</th></tr>
                 <tr><td>max.lines</td><td>integer</td><td>1000000</td><td>The maximal number of entries in splitter output files</td></tr>
+        </table>
+
+        <br/>
+        <li><b>Merger optional parameters</b>: None</li>
+      </ul>
+
+      </subsection>
+
+
+      <subsection name="sam">
+
+      <ul>
+        <li><b>Format name</b>: mapper_results_sam or sam</li>
+        <li><b>Description</b>: SAM format</li>
+
+        <br/>
+        <li><b>Splitter optional parameters</b>:</li>
+        <table>
+                <tr><th>Parameter</th><th>Type</th><th>Default value</th><th>Description</th></tr>
+                <tr><td>max.lines</td><td>integer</td><td>1000000</td><td>The maximal number of entries in splitter output files</td></tr>
+                <tr><td>chromosomes</td><td>boolean</td><td>false</td><td>Split the origin SAM file in files that only contains entries that map on the same chromosome. 
+This option cannot be used with the max.line option</td></tr>
+        </table>
+
+        <br/>
+        <li><b>Merger optional parameters</b>: None</li>
+      </ul>
+
+      </subsection>
+
+      <subsection name="bam">
+
+      <ul>
+        <li><b>Format name</b>: mapper_results_bam or bam</li>
+        <li><b>Description</b>: BAM format</li>
+
+        <br/>
+        <li><b>Splitter optional parameters</b>:</li>
+        <table>
+                <tr><th>Parameter</th><th>Type</th><th>Default value</th><th>Description</th></tr>
+                <tr><td>max.lines</td><td>integer</td><td>1000000</td><td>The maximal number of entries in splitter output files</td></tr>
+                <tr><td>chromosomes</td><td>boolean</td><td>false</td><td>Split the origin BAM file in files that only contains entries that map on the same chromosome. 
+This option cannot be used with the max.line option</td></tr>
+        </table>
+
+        <br/>
+        <li><b>Merger optional parameters</b>: None</li>
+      </ul>
+
+      </subsection>
+
+      <subsection name="expression">
+
+      <ul>
+        <li><b>Format name</b>: expression_results_tsv or expression</li>
+        <li><b>Description</b>: Expression format</li>
+
+        <br/>
+        <li><b>Splitter optional parameters</b>:</li>
+        <table>
+                <tr><th>Parameter</th><th>Type</th><th>Default value</th><th>Description</th></tr>
+                <tr><td>max.lines</td><td>integer</td><td>10000</td><td>The maximal number of entries in splitter output files</td></tr>
         </table>
 
         <br/>
