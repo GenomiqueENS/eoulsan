@@ -1,5 +1,6 @@
 package fr.ens.transcriptome.eoulsan.steps.generators;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
@@ -38,6 +39,8 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFiles;
+import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
+import fr.ens.transcriptome.eoulsan.data.protocols.StorageDataProtocol;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
@@ -333,6 +336,8 @@ public class STARIndexGenerator extends AbstractStep {
   private File uncompressFileIfNecessary(final StepContext context,
       List<File> temporaryFiles, final DataFile file) throws IOException {
 
+    checkNotNull(file, "file argument cannot be null");
+
     final File result;
 
     if (file.getCompressionType() != CompressionType.NONE
@@ -362,13 +367,27 @@ public class STARIndexGenerator extends AbstractStep {
   private File uncompressFile(final StepContext context, final DataFile file)
       throws IOException {
 
+    checkNotNull(file, "file argument cannot be null");
+
+    final DataFile realFile;
+    final DataProtocol protocol = file.getProtocol();
+
+    // Get the underlying file if the file protocol is a storage protocol
+    if (protocol instanceof StorageDataProtocol) {
+
+      realFile = ((StorageDataProtocol) protocol).getUnderLyingData(file);
+    } else {
+      realFile = file;
+    }
+
     final File outputFile =
         Files.createTempFile(context.getLocalTempDirectory().toPath(),
-            STEP_NAME + "-", file.getExtension()).toFile();
+            STEP_NAME + "-", realFile.getExtension()).toFile();
 
-    context.getLogger().fine("Uncompress/copy " + file + " to " + outputFile);
+    context.getLogger().fine(
+        "Uncompress/copy " + realFile + " to " + outputFile);
 
-    DataFiles.copy(file, new DataFile(outputFile));
+    DataFiles.copy(realFile, new DataFile(outputFile));
 
     return outputFile;
   }
