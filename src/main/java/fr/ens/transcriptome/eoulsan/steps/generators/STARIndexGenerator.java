@@ -5,6 +5,7 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_FASTA;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -12,8 +13,9 @@ import java.nio.file.Files;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.EnumSet;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,6 +36,8 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.data.Data;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFiles;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
@@ -87,8 +91,7 @@ public class STARIndexGenerator extends AbstractStep {
         GENOME_DESC_TXT);
 
     if (this.gtfFile) {
-      builder.addPort("annotation", ANNOTATION_GFF,
-          EnumSet.of(CompressionType.NONE), true);
+      builder.addPort("annotation", ANNOTATION_GFF);
     }
 
     return builder.create();
@@ -199,6 +202,7 @@ public class STARIndexGenerator extends AbstractStep {
 
       final StringBuilder additionalArguments = new StringBuilder();
       final Map<String, String> additionalDescription = new HashMap<>();
+      final List<File> temporaryFiles = new ArrayList<>();
 
       // Search expression parameter is needed
       if (this.useExpressionStepParameters) {
@@ -211,13 +215,16 @@ public class STARIndexGenerator extends AbstractStep {
         final Data annotationData = context.getInputData(ANNOTATION_GFF);
 
         // Get the annotation DataFile
-        final File genomeFile = annotationData.getDataFile().toFile();
+        final DataFile genomeFile = annotationData.getDataFile();
+        final File genomeFilePath =
+            uncompressFileIfNecessary(context, temporaryFiles, genomeFile);
 
         additionalArguments.append("--sjdbGTFfile");
         additionalArguments.append(' ');
-        additionalArguments.append(genomeFile);
+        additionalArguments.append(genomeFilePath);
         additionalArguments.append(' ');
-        additionalDescription.put("sjdbGTFfile", computeMD5SumFile(genomeFile));
+        additionalDescription.put("sjdbGTFfile",
+            computeMD5SumFile(genomeFilePath));
       }
 
       if (this.overhang != null) {
@@ -250,19 +257,22 @@ public class STARIndexGenerator extends AbstractStep {
 
       if (this.chrStartEndFilename != null) {
 
-        File chrStartEndFile = new File(this.chrStartEndFilename);
+        DataFile chrStartEndFile = new DataFile(this.chrStartEndFilename);
 
-        if (!chrStartEndFile.exists() || !chrStartEndFile.isFile()) {
+        if (!chrStartEndFile.exists()) {
           throw new IOException("Unable to read chromosome startend file: "
               + chrStartEndFile);
         }
 
+        final File chrStartEndFilePath =
+            uncompressFileIfNecessary(context, temporaryFiles, chrStartEndFile);
+
         additionalArguments.append("--sjdbFileChrStartEnd");
         additionalArguments.append(' ');
-        additionalArguments.append(chrStartEndFile);
+        additionalArguments.append(chrStartEndFilePath.getAbsolutePath());
         additionalArguments.append(' ');
         additionalDescription.put("sjdbFileChrStartEnd",
-            computeMD5SumFile(chrStartEndFile));
+            computeMD5SumFile(chrStartEndFilePath));
       }
 
       if (this.genomeSAindexNbases != null) {
@@ -290,6 +300,16 @@ public class STARIndexGenerator extends AbstractStep {
       GenomeMapperIndexGeneratorStep.execute(this.mapper, context,
           additionalArguments.toString(), additionalDescription);
 
+      // Remove temporary files
+      for (File temporaryFile : temporaryFiles) {
+
+        if (!temporaryFile.delete()) {
+          context.getLogger().warning(
+              "Cannot remove temporary file: " + temporaryFile);
+        }
+
+      }
+
     } catch (IOException | EoulsanException e) {
 
       return status.createStepResult(e);
@@ -301,6 +321,57 @@ public class STARIndexGenerator extends AbstractStep {
   //
   // Other methods
   //
+
+  /**
+   * Uncompress a file if compressed.
+   * @param context the step context
+   * @param temporaryFiles the list of temporary files
+   * @param file the file to process
+   * @return the absolute path of the file (once uncompressed or not)
+   * @throws IOException if an error occurs while uncompressing the file
+   */
+  private File uncompressFileIfNecessary(final StepContext context,
+      List<File> temporaryFiles, final DataFile file) throws IOException {
+
+    final File result;
+
+    if (file.getCompressionType() != CompressionType.NONE
+        || !file.isLocalFile()) {
+
+      // Uncompress file
+      final File uncompressedFile = uncompressFile(context, file);
+
+      // Add the temporary file to the file of the file to remove
+      temporaryFiles.add(uncompressedFile);
+
+      result = uncompressedFile;
+    } else {
+      result = file.toFile();
+    }
+
+    return result;
+  }
+
+  /**
+   * Uncompress a file to a temporary file.
+   * @param context Step context
+   * @param file file to uncompress
+   * @return the path to the uncompressed file
+   * @throws IOException if an error occurs while creating the uncompressed file
+   */
+  private File uncompressFile(final StepContext context, final DataFile file)
+      throws IOException {
+
+    final File outputFile =
+        Files.createTempFile(context.getLocalTempDirectory().toPath(),
+            STEP_NAME + "-", file.getExtension()).toFile();
+
+    context.getLogger().fine("Uncompress/copy " + file + " to " + outputFile);
+
+    DataFiles.copy(file, new DataFile(outputFile));
+
+    return outputFile;
+  }
 
   /**
    * Compute the md5 sum of a file.
@@ -316,7 +387,7 @@ public class STARIndexGenerator extends AbstractStep {
     } catch (NoSuchAlgorithmException e) {
       md5Digest = null;
     }
-    try (InputStream is = Files.newInputStream(file.toPath())) {
+    try (InputStream is = new FileInputStream(file)) {
       new DigestInputStream(is, md5Digest);
     }
 
