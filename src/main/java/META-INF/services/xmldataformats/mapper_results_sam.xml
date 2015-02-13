@@ -1,6 +1,7 @@
 <dataformat>
   <name>mapper_results_sam</name>
-  <description>bam filtered alignments format</description>
+  <description>sam filtered alignments format</description>
+  <alias>sam</alias>
   <prefix>alignments</prefix>
   <splitter>fr.ens.transcriptome.eoulsan.splitermergers.SAMSplitter</splitter>
   <merger>fr.ens.transcriptome.eoulsan.splitermergers.SAMMerger</merger>

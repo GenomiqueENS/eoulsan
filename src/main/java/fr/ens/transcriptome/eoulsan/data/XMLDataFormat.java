@@ -66,6 +66,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
 
   private String name;
   private String description;
+  private String alias;
   private String prefix;
   private boolean oneFilePerAnalysis;
   private boolean dataFormatFromDesignFile;
@@ -83,6 +84,12 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   public String getName() {
 
     return this.name;
+  }
+
+  @Override
+  public String getAlias() {
+
+    return this.alias;
   }
 
   @Override
@@ -256,6 +263,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
 
       this.name = XMLUtils.getTagValue(e, "name");
       this.description = XMLUtils.getTagValue(e, "description");
+      this.alias = XMLUtils.getTagValue(e, "alias");
       this.prefix = XMLUtils.getTagValue(e, "prefix");
       this.oneFilePerAnalysis =
           Boolean.parseBoolean(XMLUtils.getTagValue(e, "onefileperanalysis"));
@@ -331,6 +339,10 @@ public final class XMLDataFormat extends AbstractDataFormat implements
       this.description = this.description.trim();
     }
 
+    if (this.alias != null) {
+      this.alias = this.alias.trim().toLowerCase();
+    }
+
     if (this.contentType == null || "".equals(this.contentType.trim())) {
       this.contentType = DEFAULT_CONTENT_TYPE;
     }
@@ -388,6 +400,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
 
     return Objects.equals(this.name, that.name)
         && Objects.equals(this.description, that.description)
+        && Objects.equals(this.alias, that.alias)
         && Objects.equals(this.prefix, that.prefix)
         && Objects.equals(this.oneFilePerAnalysis, that.oneFilePerAnalysis)
         && Objects.equals(this.dataFormatFromDesignFile,
@@ -405,7 +418,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   @Override
   public int hashCode() {
 
-    return Objects.hash(this.name, this.description, this.prefix,
+    return Objects.hash(this.name, this.description, this.alias, this.prefix,
         this.oneFilePerAnalysis, this.dataFormatFromDesignFile,
         this.designFieldName, this.contentType, this.extensions,
         this.generatorClassName, this.checkerClassName, this.splitterClassName,
@@ -417,7 +430,8 @@ public final class XMLDataFormat extends AbstractDataFormat implements
 
     return com.google.common.base.Objects.toStringHelper(this)
         .add("name", this.name).add("description", this.description)
-        .add("prefix", this.prefix).add("contentType", this.contentType)
+        .add("alias", this.alias).add("prefix", this.prefix)
+        .add("contentType", this.contentType)
         .add("defaultExtension", this.extensions.get(0))
         .add("extensions", this.extensions)
         .add("generatorClassName", this.generatorClassName)

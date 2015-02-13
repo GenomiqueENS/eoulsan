@@ -51,6 +51,12 @@ public interface DataFormat {
   String getDescription();
 
   /**
+   * Get the alias of the name of the format. The alias is optional.
+   * @return the alias of the format if exist
+   */
+  String getAlias();
+
+  /**
    * Get DataFormat prefix.
    * @return the DataFormat prefix
    */

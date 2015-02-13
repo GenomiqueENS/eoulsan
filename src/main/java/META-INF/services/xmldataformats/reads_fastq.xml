@@ -1,6 +1,7 @@
 <dataformat>
   <name>reads_fastq</name>
   <description>reads in fastq format</description>
+  <alias>fastq</alias>
   <prefix>reads</prefix>
   <designfieldname>Reads</designfieldname>
   <maxfilescount>2</maxfilescount>

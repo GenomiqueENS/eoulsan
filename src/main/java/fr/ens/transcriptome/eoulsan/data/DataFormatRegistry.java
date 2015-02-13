@@ -296,6 +296,41 @@ public class DataFormatRegistry {
   }
 
   /**
+   * Get a DataFormat from its alias.
+   * @param dataFormatAlias the name of the DataFormat to get
+   * @return a DataFormat if found or null
+   */
+  public DataFormat getDataFormatFromAlias(final String dataFormatAlias) {
+
+    if (dataFormatAlias == null) {
+      return null;
+    }
+
+    for (DataFormat df : this.formats) {
+
+      final String alias = df.getAlias();
+
+      if (dataFormatAlias.toLowerCase().equals(alias)) {
+        return df;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Get a DataFormat from its alias.
+   * @param dataFormatAlias the name of the DataFormat to get
+   * @return a DataFormat if found or null
+   */
+  public DataFormat getDataFormatFromNameOrAlias(final String name) {
+
+    DataFormat result = getDataFormatFromName(name);
+
+    return result != null ? result : getDataFormatFromAlias(name);
+  }
+
+  /**
    * Get DataFormats from an extension.
    * @param extension the extension of the file without compression extension
    * @return a set of DataFormat

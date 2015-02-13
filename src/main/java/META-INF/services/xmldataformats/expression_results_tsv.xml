@@ -1,6 +1,7 @@
 <dataformat>
   <name>expression_results_tsv</name>
   <description>tsv expression results format</description>
+  <alias>expression</alias>
   <prefix>expression</prefix>
   <splitter>fr.ens.transcriptome.eoulsan.splitermergers.ExpressionSplitter</splitter>
   <merger>fr.ens.transcriptome.eoulsan.splitermergers.ExpressionMerger</merger>
