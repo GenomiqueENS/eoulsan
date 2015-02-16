@@ -179,19 +179,33 @@ public class ITResult {
         + this.it.getOutputTestDirectory().getAbsolutePath());
 
     report.append("\n\nPatterns:");
-    report.append("\n\tFiles to compare content:\t"
-        + this.it.getCountFilesToCheckContent() + " file(s)\twith: "
+
+    // Result for comparison files
+    report.append("\n\tFile count to compare from pattern(s) "
         + this.it.getFileToComparePatterns());
 
-    report.append("\n\tFiles to check length:\t"
-        + this.it.getCountFilesToCheckLength() + " file(s)\twith: "
+    if (!this.it.getFileToComparePatterns().equals("none")) {
+      report.append(": " + this.it.getCountFilesToCheckContent() + " file(s)");
+    }
+
+    // Result for checking length files
+    report.append("\n\tFile lengths count to check from pattern(s) "
         + this.it.getCheckLengthFilePatterns());
 
-    report.append("\n\tFiles to check existence:\t"
-        + this.it.getCountFilesToCheckExistence() + " file(s)\twith: "
-        + this.it.getCheckExistenceFilePatterns());
+    if (!this.it.getCheckLengthFilePatterns().equals("none")) {
+      report.append(": " + this.it.getCountFilesToCheckLength() + " file(s)");
+    }
 
-    report.append("\n\tFiles to exclude:\t"
+    // Result to check if files exist
+    report.append("\n\tFile count to check if it exists from pattern(s) "
+        + this.it.getCheckExistenceFilePatterns());
+    if (!this.it.getCheckExistenceFilePatterns().equals("none")) {
+      report
+          .append(": " + this.it.getCountFilesToCheckExistence() + " file(s)");
+    }
+
+    // List patterns to exclude files on comparison
+    report.append("\n\tPatterns files to exclude comparisons :\t"
         + this.it.getExcludeToComparePatterns());
 
     report.append('\n');

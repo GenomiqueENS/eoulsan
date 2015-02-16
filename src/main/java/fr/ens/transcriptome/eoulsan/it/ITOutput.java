@@ -663,10 +663,9 @@ public class ITOutput {
 
       if (!b) {
         this.detailComparison =
-            "fail at "
-                + this.comparator.getNumberElementsCompared()
-                + " comparisons, with this line "
-                + this.comparator.getCauseFailComparison();
+            "fail at comparison #"
+                + this.comparator.getNumberElementsCompared() + ":[ "
+                + this.comparator.getCauseFailComparison() + "]";
       }
       return b;
     }
