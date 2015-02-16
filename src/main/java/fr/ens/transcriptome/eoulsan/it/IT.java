@@ -538,7 +538,8 @@ public class IT {
    * @return exclude files patterns for tests
    */
   private String buildExcludePatterns(final String valueConfigTests) {
-    if (valueConfigTests == null || valueConfigTests.trim().length() == 0) {
+
+    if (valueConfigTests == null || valueConfigTests.equals("none")) {
       // Syntax **/filename
       return "**/"
           + IT.TEST_SOURCE_LINK_NAME + SEPARATOR + "**/"
@@ -614,7 +615,7 @@ public class IT {
    * @return the pattern form configuration
    */
   private String extractPattern(final String propertyKey) {
-    
+
     final String patterns = this.testConf.getProperty(propertyKey);
 
     if (patterns == null || patterns.trim().isEmpty()) {
@@ -689,7 +690,7 @@ public class IT {
   public String getCheckLengthFilePatterns() {
     return this.checkLengthFilePatterns;
   }
-  
+
   /**
    * Gets the count files to check content.
    * @return the count files to check content
@@ -722,10 +723,8 @@ public class IT {
    * @return the count files to compare
    */
   public int getCountFilesToCompare() {
-    return (this.itOutput == null ? 0 : this.itOutput
-        .getCountFilesToCompare());
+    return (this.itOutput == null ? 0 : this.itOutput.getCountFilesToCompare());
   }
-
 
   /**
    * Gets the IT output.
