@@ -23,26 +23,18 @@
  */
 package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.io.CharStreams;
-import com.google.common.io.Files;
-
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
@@ -55,8 +47,6 @@ import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
-import fr.ens.transcriptome.eoulsan.data.Data;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.ToolElement;
@@ -78,9 +68,8 @@ public class GalaxyToolStep extends AbstractStep {
   private static final String TOOL_XML_PATH = "toolxmlpath";
   private static final String TOOL_EXECUTABLE_PATH = "toolexecutablepath";
 
-  private static final String STDERR = "stderr";
-
-  private static final String STDOUT = "stdout";
+  private boolean isConfigured = false;
+  private boolean isExecuted = false;
 
   /** The tool interpreter. */
   private ToolInterpreter toolInterpreter;
@@ -96,97 +85,56 @@ public class GalaxyToolStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public InputPorts getInputPorts() {
 
-    final Map<DataFormat, DataFile> inDataFiles = new HashMap<>();
-    final Map<DataFormat, DataFile> outDataFiles = new HashMap<>();
+    final InputPortsBuilder builder = new InputPortsBuilder();
+    boolean isEmpty = true;
 
-    Data inData = null;
+    for (final Map.Entry<DataFormat, ToolElement> entry : this.toolInterpreter
+        .getInDataFormatExpected().entrySet()) {
+      isEmpty = false;
 
-    // TODO check in data and out data corresponding to tool.xml
-
-    // Create all inData set in toolshed
-    for (DataFormat df : this.toolInterpreter.getInDataFormatExpected()
-        .keySet()) {
-
-      inData = context.getInputData(df);
-      inDataFiles.put(df, inData.getDataFile());
+      builder.addPort(entry.getValue().getName(), entry.getKey(), true);
     }
 
-    // Create all inData set in toolshed
-    for (DataFormat df : this.toolInterpreter.getOutDataFormatExpected()
-        .keySet()) {
-
-      outDataFiles.put(df, context.getOutputData(df, inData).getDataFile());
+    if (isEmpty) {
+      return InputPortsBuilder.noInputPort();
     }
 
-    // TODO
-    // System.out.println("DEBUG Before execute tool\n\tin data file :"
-    // + Joiner.on(",").join(inDataFiles.values()) + "\n\tout data file :"
-    // + Joiner.on(",").join(outDataFiles.values()));
+    return builder.create();
+  }
 
-    try {
+  @Override
+  public OutputPorts getOutputPorts() {
 
-      final String commandTool =
-          this.toolInterpreter.execute(inDataFiles, outDataFiles);
+    final OutputPortsBuilder builder = new OutputPortsBuilder();
+    boolean isEmpty = true;
 
-      // TODO
-      // System.out.println("GalaxyToolStep: final command line " +
-      // commandTool);
+    for (final Map.Entry<DataFormat, ToolElement> entry : this.toolInterpreter
+        .getOutDataFormatExpected().entrySet()) {
+      // isEmpty = false;
+      // builder.addPort(entry.getValue().getName(), entry.getKey());
 
-      // Define stdout and stderr file
-      // Execute command
-      final Process p = Runtime.getRuntime().exec(commandTool, null);
-
-      // Save stdout
-      new CopyProcessOutput(p.getInputStream(), STDOUT).start();
-
-      // Save stderr
-      new CopyProcessOutput(p.getErrorStream(), STDERR).start();
-
-      // Wait the end of the process
-      final int exitValue = p.waitFor();
-
-      // Set the description of the context
-      status.setDescription("Launch tool galaxy");
-      status.setMessage("Command line generate by python interpreter: "
-          + commandTool + ")");
-
-      // Execution script fail, create an exception
-      if (exitValue != 0) {
-        // TODO cat in StepResult
-        System.out.println("FAIL process. Exit value " + exitValue);
-
-        return status.createStepResult(null,
-            "Fail execution tool galaxy with command "
-                + commandTool + ". Exit value: " + exitValue);
-      }
-
-    } catch (final InterruptedException e) {
-      e.printStackTrace();
-      return status.createStepResult(e,
-          "Error execution interrupted: " + e.getMessage());
-
-    } catch (final EoulsanException e) {
-      e.printStackTrace();
-      return status.createStepResult(e, "Error while execution command tool: "
-          + e.getMessage());
-
-    } catch (final IOException e) {
-      e.printStackTrace();
-      return status.createStepResult(e, "Error while reading toolshed file: "
-          + e.getMessage());
+      return singleOutputPort(entry.getKey());
     }
 
-    return status.createStepResult();
+    // if (isEmpty) {
+    return OutputPortsBuilder.noOutputPort();
+    // }
 
+    // return builder.create();
   }
 
   @Override
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) {
 
+    if (isExecuted)
+      throw new EoulsanRuntimeException(
+          "GalaxyToolStep, this instance has been already executed");
+
     final Set<Parameter> toolParameters = new HashSet<>();
+
     String toolName = "";
     File toolXmlPath = null;
     File toolExecutablePath = null;
@@ -241,9 +189,29 @@ public class GalaxyToolStep extends AbstractStep {
       }
     }
 
-    // Configure tool interpreter
-    try {
+    // Init tool interpreter
+    initToolInterpreter(toolParameters, toolName, toolXmlPath,
+        toolExecutablePath);
 
+    isConfigured = true;
+  }
+
+  private void initToolInterpreter(final Set<Parameter> toolParameters,
+      final String toolName, final File toolXmlPath,
+      final File toolExecutablePath) {
+
+    checkNotNull(toolName, "None tool name define for Galaxy Tool step.");
+
+    // Set tool xml file
+    // if (toolXmlPath == null)
+    // toolXmlPath = Service.GalaxyTool.newService(toolname, XML);
+
+    // Set tool xml file
+    // if (toolExecutablePath == null)
+    // toolExecutablePath = Service.GalaxyTool.newService(toolname, EXE);
+
+    try {
+      // Configure tool interpreter
       this.toolInterpreter =
           new ToolInterpreter(toolName,
               FileUtils.createInputStream(toolXmlPath), toolExecutablePath);
@@ -259,48 +227,90 @@ public class GalaxyToolStep extends AbstractStep {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-
   }
 
   @Override
-  public InputPorts getInputPorts() {
+  public StepResult execute(final StepContext context, final StepStatus status) {
 
-    final InputPortsBuilder builder = new InputPortsBuilder();
-    boolean isEmpty = true;
+    if (!isConfigured)
+      throw new EoulsanRuntimeException(
+          "GalaxyToolStep, this instance has been configured");
 
-    for (final Map.Entry<DataFormat, ToolElement> entry : this.toolInterpreter
-        .getInDataFormatExpected().entrySet()) {
-      isEmpty = false;
+    // TODO check in data and out data corresponding to tool.xml
+    // Check DataFormat expected corresponding from stepContext
 
-      builder.addPort(entry.getValue().getName(), entry.getKey(), true);
+    checkArgument(
+        this.toolInterpreter.checkDataFormat(context),
+        "GalaxyTool step, dataFormat inval between extract from analysis and setting in xml file.");
+
+    try {
+      this.toolInterpreter.execute(context);
+
+    } catch (EoulsanException e) {
+      return status.createStepResult(e,
+          "Error execution tool interpreter from building tool command line : "
+              + e.getMessage());
     }
 
-    if (isEmpty) {
-      return InputPortsBuilder.noInputPort();
-    }
+    final GalaxyToolExecutor executor =
+        new GalaxyToolExecutor(context, this.toolInterpreter);
 
-    return builder.create();
-  }
+    final int exitValue = executor.getExitValue();
 
-  @Override
-  public OutputPorts getOutputPorts() {
+    // final Map<DataFormat, DataFile> inDataFiles = new HashMap<>();
+    // final Map<DataFormat, DataFile> outDataFiles = new HashMap<>();
 
-    final OutputPortsBuilder builder = new OutputPortsBuilder();
-    boolean isEmpty = true;
-
-    for (final Map.Entry<DataFormat, ToolElement> entry : this.toolInterpreter
-        .getOutDataFormatExpected().entrySet()) {
-      // isEmpty = false;
-      // builder.addPort(entry.getValue().getName(), entry.getKey());
-
-      return singleOutputPort(entry.getKey());
-    }
-
-    // if (isEmpty) {
-    return OutputPortsBuilder.noOutputPort();
+    // // Create all inData set in toolshed
+    // for (DataFormat df : this.toolInterpreter.getInDataFormatExpected()
+    // .keySet()) {
+    //
+    // inData = context.getInputData(df);
+    // inDataFiles.put(df, inData.getDataFile());
+    // }
+    //
+    // // Create all inData set in toolshed
+    // for (DataFormat df : this.toolInterpreter.getOutDataFormatExpected()
+    // .keySet()) {
+    //
+    // outDataFiles.put(df, context.getOutputData(df, inData).getDataFile());
     // }
 
-    // return builder.create();
+    // TODO
+    // System.out.println("DEBUG Before execute tool\n\tin data file :"
+    // + Joiner.on(",").join(inDataFiles.values()) + "\n\tout data file :"
+    // + Joiner.on(",").join(outDataFiles.values()));
+    //
+
+    // Set the description of the context
+    status.setDescription("Launch tool galaxy "
+        + this.toolInterpreter.getToolName() + ", version "
+        + this.toolInterpreter.getToolVersion() + " with interpreter "
+        + this.toolInterpreter.getInterpreter());
+
+    status.setMessage("Command line generate by python interpreter: "
+        + this.toolInterpreter.getCommandLine() + ".");
+
+    // Execution script fail, create an exception
+    if (exitValue != 0) {
+
+      return status.createStepResult(
+          null,
+          "Fail execution tool galaxy with command "
+              + this.toolInterpreter.getCommandLine() + ". Exit value: "
+              + exitValue);
+    }
+
+    if (executor.asThrowedException()) {
+      final Throwable e = executor.getException();
+
+      return status.createStepResult(e,
+          "Error execution interrupted: " + e.getMessage());
+    }
+
+    isExecuted = true;
+
+    return status.createStepResult();
+
   }
 
   //
@@ -326,52 +336,4 @@ public class GalaxyToolStep extends AbstractStep {
     this.toolInterpreter = null;
   }
 
-  /**
-   * This internal class allow to save Process outputs.
-   * @author Laurent Jourdren
-   */
-  private static final class CopyProcessOutput extends Thread {
-
-    /** The default size of the buffer. */
-    private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
-
-    private final InputStream in;
-    private final String desc;
-
-    @Override
-    public void run() {
-
-      try {
-
-        final Path std =
-            new File(EoulsanRuntime.getSettings().getTempDirectory(),
-                "STDERR_OUT").toPath();
-
-        java.nio.file.Files.copy(this.in, std,
-            StandardCopyOption.REPLACE_EXISTING);
-
-        // // String txt = IOUtils.toString(this.in, Globals.DEFAULT_CHARSET);
-        String txt =
-            CharStreams.toString(new InputStreamReader(this.in,
-                Globals.DEFAULT_CHARSET));
-
-        getLogger().warning(txt);
-
-            } catch (final IOException e) {
-        getLogger().warning(
-            "Error while copying " + this.desc + ": " + e.getMessage());
-      }
-
-    }
-
-    CopyProcessOutput(final InputStream in, final String desc) {
-
-      checkNotNull(in, "in argument cannot be null");
-      checkNotNull(desc, "desc argument cannot be null");
-
-      this.in = in;
-      this.desc = desc;
-    }
-
-  }
 }
