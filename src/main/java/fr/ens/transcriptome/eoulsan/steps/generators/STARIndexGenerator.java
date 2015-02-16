@@ -192,6 +192,10 @@ public class STARIndexGenerator extends AbstractStep {
       }
     }
 
+    if (count == 0) {
+      throw new EoulsanException("No expression step found in the workflow");
+    }
+
     if (count > 1) {
       throw new EoulsanException(
           "Found more than one expression step in the workflow");
