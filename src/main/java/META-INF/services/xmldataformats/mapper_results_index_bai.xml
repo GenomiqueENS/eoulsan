@@ -1,6 +1,7 @@
 <dataformat>
   <name>mapper_results_index_bai</name>
   <description>bam index alignments format</description>
+  <alias>bai</alias>
   <prefix>alignmentsindex</prefix>
   <content-type>application/octet-stream</content-type>
   <extensions>

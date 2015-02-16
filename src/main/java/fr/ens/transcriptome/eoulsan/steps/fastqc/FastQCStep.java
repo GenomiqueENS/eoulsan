@@ -67,6 +67,7 @@ import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -156,10 +157,21 @@ public class FastQCStep extends AbstractStep {
       switch (p.getName()) {
 
       case INPUT_FORMAT_PARAMETER_NAME:
+
         // Set inputPort fastq/sam from parameters
-        if ("sam".equals(p.getLowerStringValue())) {
-          this.inputFormat = DataFormats.MAPPER_RESULTS_SAM;
+        DataFormat format =
+            DataFormatRegistry.getInstance().getDataFormatFromNameOrAlias(
+                p.getLowerStringValue());
+
+        if (!(DataFormats.MAPPER_RESULTS_SAM.equals(format) || DataFormats.MAPPER_RESULTS_BAM
+            .equals(format))) {
+          throw new EoulsanException(
+              "Unknown or format not supported as input format for FastQC: "
+                  + p.getStringValue());
         }
+
+        this.inputFormat = format;
+
         break;
 
       case FASTQC_KMER_SIZE_PARAMETER_NAME:
