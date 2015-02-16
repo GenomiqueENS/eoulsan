@@ -397,13 +397,15 @@ public class WorkflowStepResult {
       sb.append(this.taskDescriptions.get(contextId));
       sb.append('\n');
 
-      for (Map.Entry<String, Long> counter : this.taskCounters.get(contextId)
-          .entrySet()) {
-        sb.append('\t');
-        sb.append(counter.getKey());
-        sb.append('=');
-        sb.append(counter.getValue());
-        sb.append('\n');
+      if (this.taskCounters.containsKey(contextId)) {
+        for (Map.Entry<String, Long> counter : this.taskCounters.get(contextId)
+            .entrySet()) {
+          sb.append('\t');
+          sb.append(counter.getKey());
+          sb.append('=');
+          sb.append(counter.getValue());
+          sb.append('\n');
+        }
       }
     }
 
