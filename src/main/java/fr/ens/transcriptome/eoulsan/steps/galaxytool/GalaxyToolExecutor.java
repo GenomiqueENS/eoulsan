@@ -109,7 +109,8 @@ public class GalaxyToolExecutor {
   public GalaxyToolExecutor(final StepContext context,
       final ToolInterpreter toolInpreter) {
 
-    checkNotNull(toolInpreter, "Command line galaxy tool is null.");
+    checkNotNull(toolInpreter, "Tool interpreter is null.");
+    checkNotNull(context, "Step context is null.");
 
     this.toolInterpreter = toolInpreter;
     this.stepContext = context;
