@@ -24,6 +24,7 @@
 package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +33,7 @@ import org.python.core.PyObject;
 import org.python.util.PythonInterpreter;
 import org.testng.collections.Sets;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 
@@ -62,8 +64,13 @@ public class ToolPythonInterpreter {
   /** The variable names. */
   private final Set<String> variableNames = Sets.newHashSet();
 
+  /** The Constant DEFAULT_VALUE_NULL. */
+  static final String DEFAULT_VALUE_NULL = "no_authorized";
+
   /** The python script with java code. */
   private String pythonScriptWithJavaCode = null;
+
+  private boolean isCommandLineTranslate = false;
 
   /**
    * Execute script.
@@ -73,6 +80,11 @@ public class ToolPythonInterpreter {
    */
   public String executeScript(final Map<String, String> definedVariableCommand)
       throws EoulsanException {
+
+    if (!isCommandLineTranslate) {
+      throw new EoulsanException(
+          "Command tag has not been translate in script python, Can not be interpreted.");
+    }
 
     Preconditions.checkNotNull(this.pythonScriptWithJavaCode,
         "Not found python script to interprete.");
@@ -115,6 +127,10 @@ public class ToolPythonInterpreter {
    */
   void translateCommandXMLInPython(final String cmdTag) throws EoulsanException {
 
+    if (isCommandLineTranslate) {
+      return;
+    }
+
     // Split on line
     final List<String> rawCommandTag = NEW_LINE.splitToList(cmdTag);
 
@@ -129,6 +145,7 @@ public class ToolPythonInterpreter {
     // values
     this.pythonScriptWithJavaCode = translator.getTranslatedCommandInPython();
 
+    isCommandLineTranslate = true;
   }
 
   /**
@@ -141,6 +158,29 @@ public class ToolPythonInterpreter {
       return Collections.emptySet();
     }
     return Collections.unmodifiableSet(this.variableNames);
+  }
+
+  /**
+   * Comparison parameters xml variables command.
+   * @param toolInterpreter TODO
+   * @param parametersXML the parameters xml
+   * @return the map
+   * @throws EoulsanException the eoulsan exception
+   */
+  Map<String, String> comparisonVariablesFromXMLToCommand(
+      ToolInterpreter toolInterpreter, final Map<String, String> parametersXML)
+      throws EoulsanException {
+
+    final Map<String, String> results = new HashMap<>();
+
+    // Parsing variable name found in command tag
+    for (final String variableName : this.variableNames) {
+      // Check exist
+      if (parametersXML.get(variableName) == null) {
+        results.put(variableName, DEFAULT_VALUE_NULL);
+      }
+    }
+    return Collections.unmodifiableMap(results);
   }
 
 }
