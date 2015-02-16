@@ -686,7 +686,10 @@ of reads that reject each filter like in local mode.
             <action dev="sperrin" type="add">
                 Add new Eoulsan step for FastQC.
             </action>
-
+            
+            <action dev="sperrin" type="add">
+                Add new Comparator class for bam file.
+            </action>
          </release>
 
          <release version="2.0-alpha5" description="Eoulsan 2.0-alpha5 release" date="TBD">
@@ -739,6 +742,20 @@ of reads that reject each filter like in local mode.
                 Many fixes and update to the IT test engine.
             </action>
 
+            <action dev="sperrin" type="update">
+                Change option IT in command line: replace -c/-conf by -testconf for configuration path.
+            </action>
+            
+            <action dev="sperrin" type="update">
+                Add new patterns to manage comparison between expected and tested directory : 
+            	in configuration test, pattern to check if file exists.
+            </action>
+            
+            <action dev="sperrin" type="fix">
+                Now action it can be run with command line eoulsan.sh it, add missing two dependencies in pom.xml 
+            	(org.beanshell.bsh, v2.0b4 and com.beust.jcommander v1.12).
+            </action>
+            
             <action dev="jourdren" type="update">
                 Many fixes and update to support Hadoop 2.x.
             </action>
