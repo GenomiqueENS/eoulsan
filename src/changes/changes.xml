@@ -695,11 +695,11 @@ of reads that reject each filter like in local mode.
          <release version="2.0-alpha5" description="Eoulsan 2.0-alpha5 release" date="TBD">
 
             <action dev="jourdren" type="fix">
-                The JSON of the result files was not valid.
+                The JSON of the result files in the job directory was not valid.
             </action>
 
             <action dev="jourdren" type="fix">
-                SplitterStep and MergerStep, now handle data metadata.
+                Splitter and Merger steps now handle data metadata.
             </action>
 
             <action dev="jourdren" type="fix">
@@ -707,31 +707,37 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="fix">
-                If an output port of a step was not linked, the other outputs ports of the step sent no token.
+                If an output port of a step was not linked, all the other output ports of the step sent no token.
             </action>
 
             <action dev="jourdren" type="fix">
-                In STARIndexGenerator, GFF annotation where not uncompressed before starting STAR indexer.
+                In the STARIndexGenerator step, the GFF annotations where not uncompressed before starting the STAR indexer.
             </action>
 
             <action dev="jourdren" type="fix">
-                In MergerStep, the data name where in some cases not valid.
+                In the Merger step, the data name of the merged data where not valid in some cases.
             </action>
 
             <action dev="jourdren" type="fix">
-                In SplitterStep, a Data object was created for each file even for multi-file format like FASTQ files.
+                In the Splitter step, a Data object was created for each file even if the file was a part of a multi-file (e.g. paired-end FASTQ files).
+            </action>
+
+            <action dev="sperrin" type="fix">
+                The launch of Eoulsan "it" action failed. Add the two required dependencies in the pom.xml file
+                (org.beanshell.bsh, v2.0b4 and com.beust.jcommander v1.12).
             </action>
 
             <action dev="jourdren" type="add">
-                Add an import step that allow to import files without declare steps that has been used to create the file. This step also allow to import files that are not related to the design file.
+                Add an import step that allow to import files without declaring the steps that has been used to create the files.
+                Files that are not related to the design file can be also imported using this new step.
             </action>
 
             <action dev="jourdren" type="add">
-                Add new splitters and merger for SAM, BAM and expression format.
+                Splitters and mergers now handle new formats: SAM, BAM and expression formats.
             </action>
 
             <action dev="jourdren" type="add">
-                Add new step named "tecnicalreplicatemerger" that allow to merge technical replicates.
+                Add new step named "technicalreplicatemerger" that allow to merge technical replicate files of various formats (FASTQ, SAM, BAM and expression).
             </action>
 
             <action dev="jourdren" type="add">
@@ -743,25 +749,20 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="sperrin" type="update">
-                Change option IT in command line: replace -c/-conf by -testconf for configuration path.
+                Change a command line option for the "it" action: the "-c/-conf" option has been renamed to "-testconf".
             </action>
             
             <action dev="sperrin" type="update">
-                Add new patterns to manage comparison between expected and tested directory : 
-            	in configuration test, pattern to check if file exists.
+                Add new patterns for managing comparisons between expected and tested directories:
+                in the configuration of a test, add a pattern to check if a file exists.
             </action>
-            
-            <action dev="sperrin" type="fix">
-                Now action it can be run with command line eoulsan.sh it, add missing two dependencies in pom.xml 
-            	(org.beanshell.bsh, v2.0b4 and com.beust.jcommander v1.12).
-            </action>
-            
+
             <action dev="jourdren" type="update">
                 Many fixes and update to support Hadoop 2.x.
             </action>
 
             <action dev="jourdren" type="update">
-                If user do not define temporary directory in workflow file or in Eoulsan configuration file, the default directory will be in a "tmp" directory in the job directory.
+                If the user do not define temporary directory in the workflow file or in the Eoulsan configuration file, the default directory will be in a "tmp" directory in the job directory.
             </action>
 
             <action dev="jourdren" type="update">
@@ -769,7 +770,7 @@ of reads that reject each filter like in local mode.
             </action>
             
             <action dev="jourdren" type="update">
-                Now no log file is written of the console as a log file is always create in the job directory.
+                No log file is now written on the console as now a log file is always created in the job directory.
             </action>
 
             <action dev="jourdren" type="update">
@@ -781,7 +782,7 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="update">
-                The CopyInputDataStep now create links instead copying files if there is no necessary (un)compression and if the files are on the same filesystem.
+                The CopyInputData step now create symbolic links instead copying files if there is no necessary (un)compression is required and if the input and output files are on the same filesystem.
             </action>
 
          </release>
