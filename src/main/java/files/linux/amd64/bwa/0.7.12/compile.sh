@@ -3,7 +3,7 @@
 # This file contains the Docker instruction used to build the BWA static
 # executable for Eoulsan
 
-VERSION=0.7.10
+VERSION=0.7.12
 DOCKER_IMAGE="bwa-eoulsan:$VERSION"
 
 cat > Dockerfile << EOF
