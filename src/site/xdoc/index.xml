@@ -112,7 +112,7 @@
 		  <li>Docker support</li>
 		  <li>New mapper added: STAR</li>
 		  <li>Support of flavors of mappers (e.g. standard and large index binary versions of Bowtie 1, Bowtie 2 and STAR)</li>
-		  <li>Update of the bundled versions of the mappers: Bowtie (1.1.1), Bowtie2 (2.2.4), BWA (0.7.10) and GSNAP (2014-10-20)</li>
+		  <li>Update of the bundled versions of the mappers: Bowtie (1.1.1), Bowtie2 (2.2.4), BWA (0.7.12) and GSNAP (2014-12-21)</li>
 		  <li>New FastQC step</li>
 		  <li>And many other enhancements,  see the <a href="changes-report.html#@@@VERSION@@@">full changelog</a> for more information</li>
 		</ul>

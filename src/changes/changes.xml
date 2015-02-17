@@ -778,7 +778,15 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="update">
-                STAR 2.4.0j is now bundled in Eoulsan.
+                STAR 2.4.0j is now bundled in Eoulsan. STAR 2.4.0i has been removed.
+            </action>
+
+            <action dev="jourdren" type="update">
+                BWA 0.7.12 is now bundled in Eoulsan. BWA 0.7.10 has been removed.
+            </action>
+
+            <action dev="jourdren" type="update">
+                GSNAP 2014-12-21 is now bundled in Eoulsan. GSNAP 2014-10-22 has been removed.
             </action>
 
             <action dev="jourdren" type="update">
