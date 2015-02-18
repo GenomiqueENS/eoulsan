@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -44,7 +45,8 @@ public class ExpressionMerger implements Merger {
   public void merge(final Iterator<DataFile> inFileIterator, DataFile outFile)
       throws IOException {
 
-    final Multiset<String> results = HashMultiset.create();
+    final Multiset<String> counts = HashMultiset.create();
+    final Set<String> emptyCounts = new HashSet<String>();
 
     while (inFileIterator.hasNext()) {
 
@@ -77,9 +79,11 @@ public class ExpressionMerger implements Merger {
             final String id = line.substring(0, tabPos).trim();
             final int count = Integer.parseInt(line.substring(tabPos).trim());
 
-            if (count > 0) {
-              results.add(id, count);
+            if (count == 0) {
+              emptyCounts.add(id);
             }
+
+            counts.add(id, count);
 
           } catch (NumberFormatException e) {
 
@@ -90,13 +94,26 @@ public class ExpressionMerger implements Merger {
       }
     }
 
-    // Write file file
+    // Write the result file
     try (Writer writer = new OutputStreamWriter(outFile.create())) {
 
       writer.write(ExpressionSplitter.EXPRESSION_FILE_HEADER);
 
-      for (Multiset.Entry<String> e : results.entrySet()) {
-        writer.write(e.getElement() + '\t' + e.getCount() + '\n');
+      // Write the non empty counts
+      for (Multiset.Entry<String> e : counts.entrySet()) {
+
+        final String id = e.getElement();
+
+        // Remove the id from empty counts
+        emptyCounts.remove(id);
+
+        // Write the entry
+        writer.write(id + '\t' + e.getCount() + '\n');
+      }
+
+      // Write the empty counts
+      for (String id : emptyCounts) {
+        writer.write(id + "\t0\n");
       }
     }
 

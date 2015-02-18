@@ -39,6 +39,12 @@ public class ExpressionSplitter implements Splitter {
 
       if ("max.lines".equals(p.getName())) {
         this.splitMaxLines = p.getIntValue();
+
+        if (this.splitMaxLines < 1) {
+          throw new EoulsanException("Invalid "
+              + p.getName() + " parameter value: " + p.getIntValue());
+        }
+
       } else {
         throw new EoulsanException("Unknown parameter for "
             + getFormat().getName() + " splitter: " + p.getName());
@@ -58,8 +64,15 @@ public class ExpressionSplitter implements Splitter {
         new BufferedReader(new InputStreamReader(inFile.open()))) {
 
       String line = null;
+      boolean first = true;
 
       while ((line = reader.readLine()) != null) {
+
+        // Discard header
+        if (first) {
+          first = false;
+          continue;
+        }
 
         if (readCount % max == 0) {
 
