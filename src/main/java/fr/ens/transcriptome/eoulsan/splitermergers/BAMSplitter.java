@@ -58,7 +58,7 @@ public class BAMSplitter implements Splitter {
   @Override
   public DataFormat getFormat() {
 
-    return DataFormats.MAPPER_RESULTS_SAM;
+    return DataFormats.MAPPER_RESULTS_BAM;
   }
 
   @Override
@@ -118,7 +118,7 @@ public class BAMSplitter implements Splitter {
 
     final int max = this.splitMaxLines;
     int readCount = 0;
-    SAMFileWriter writer = null;
+    BAMFileWriter writer = null;
 
     for (final SAMRecord record : reader) {
 
@@ -129,10 +129,13 @@ public class BAMSplitter implements Splitter {
           writer.close();
         }
 
+        DataFile outFile = outFileIterator.next();
+        
         // Create new writer
         writer =
-            new SAMFileWriterFactory().makeSAMWriter(header, false,
-                outFileIterator.next().create());
+            new BAMFileWriter(outFile.create(), new File(outFile.getName()));
+        writer.setHeader(header);
+
       }
 
       writer.addAlignment(record);
