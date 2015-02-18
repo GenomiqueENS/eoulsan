@@ -35,6 +35,7 @@ import java.util.List;
 import com.google.common.io.Files;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -75,7 +76,10 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       }
 
       // Create temporary directory
-      final File tempDir = File.createTempFile("STAR-get-version-", ".tmp");
+      final File tempDir =
+          File.createTempFile("STAR-get-version-", ".tmp", EoulsanRuntime
+              .getSettings().getTempDirectoryFile());
+
       if (!(tempDir.delete() && tempDir.mkdir())) {
         EoulsanLogger.getLogger().warning(
             "Cannot create temporary directory for STAR: " + tempDir);
@@ -109,11 +113,12 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       }
 
       // Delete temporary files
-      new File(tempDir, "Log.progress.out").delete();
-      new File(tempDir, "Aligned.out.sam").delete();
-      new File(tempDir, "_tmp").delete();
-      logFile.delete();
-      tempDir.delete();
+      deleteFile(new File(tempDir, "Log.progress.out"));
+      deleteFile(new File(tempDir, "Aligned.out.sam"));
+      deleteFile(new File(tempDir, "_tmp"));
+      deleteFile(new File(tempDir, "_STARtmp"));
+      deleteFile(logFile);
+      deleteFile(tempDir);
 
       return version;
     } catch (IOException e) {
@@ -125,6 +130,19 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       e.printStackTrace();
       return null;
     }
+  }
+
+  /**
+   * Remove a file and log a warning if file cannot be removed.
+   * @param file file to remove
+   */
+  private void deleteFile(final File file) {
+
+    // Remove the file
+    if (!file.delete()) {
+      EoulsanLogger.getLogger().warning("Cannot remove file: " + file);
+    }
+
   }
 
   @Override
