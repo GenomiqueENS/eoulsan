@@ -68,6 +68,12 @@ public class SAMSplitter implements Splitter {
 
       case "max.lines":
         this.splitMaxLines = p.getIntValue();
+
+        if (this.splitMaxLines < 1) {
+          throw new EoulsanException("Invalid "
+              + p.getName() + " parameter value: " + p.getIntValue());
+        }
+
         break;
 
       case "chromosomes":
