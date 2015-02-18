@@ -82,7 +82,7 @@ Available actions:
   <p>You can display general help and specific help about an action using <b>-h</b> argument.</p>
 
     <subsection name="-about">
-      <p>When you run Eoulsan with this option, you will get information about Eoulsan authors and and then returns to the shell.</p>
+      <p>When you run Eoulsan with this option, you will get information about Eoulsan authors and then returns to the shell.</p>
     </subsection>
     <subsection name="-conf &lt;file&gt;">
       <p>With this option, Eoulsan will load the <b>file</b> as configuration file. See the <a href="conffile.html">configuration section</a> for more information.</p>
