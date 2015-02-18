@@ -64,8 +64,15 @@ public class ExpressionSplitter implements Splitter {
         new BufferedReader(new InputStreamReader(inFile.open()))) {
 
       String line = null;
+      boolean first = true;
 
       while ((line = reader.readLine()) != null) {
+
+        // Discard header
+        if (first) {
+          first = false;
+          continue;
+        }
 
         if (readCount % max == 0) {
 
