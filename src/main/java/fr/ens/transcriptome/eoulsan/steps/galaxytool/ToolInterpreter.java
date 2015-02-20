@@ -78,29 +78,11 @@ public class ToolInterpreter {
   /** The doc. */
   private final Document doc;
 
-  /** The python interpreter. */
-  private final ToolPythonInterpreter pythonInterperter;
-
   /** Data from tool XML. */
   private Map<String, ToolElement> inputs;
 
   /** The outputs. */
   private Map<String, ToolElement> outputs;
-
-  /** The tool id. */
-  private String toolID;
-
-  /** The tool name. */
-  private String toolName;
-
-  /** The tool version. */
-  private String toolVersion;
-
-  /** The description. */
-  private String description;
-
-  /** The interpreter. */
-  private String interpreter;
 
   /** The command. */
   // private String command;
@@ -111,9 +93,6 @@ public class ToolInterpreter {
   /** The tool name from parameter Eoulsan file. */
   private final String toolNameFromParameter;
 
-  /** The tool executable path. */
-  private final File toolExecutablePath;;
-
   /** The step parameters. */
   private final Map<String, Parameter> stepParameters;
 
@@ -123,7 +102,12 @@ public class ToolInterpreter {
   /** The out data format expected. */
   private Map<DataFormat, ToolElement> outFileExpected;
 
-  private String newCommand;
+  /** The tool. */
+  private final ToolData tool;
+
+  private StepContext context;
+
+  // private String newCommand;
 
   /**
    * Parse tool xml to extract useful data to run tool.
@@ -138,26 +122,20 @@ public class ToolInterpreter {
     final Document localDoc = this.doc;
 
     // Set tool name
-    this.toolID = extractToolID(localDoc);
-    this.toolName = extractToolName(localDoc);
-    this.toolVersion = extractToolVersion(localDoc);
-    this.description = extractDescription(localDoc);
+    this.tool.setToolID(extractToolID(localDoc));
+    this.tool.setToolName(extractToolName(localDoc));
+    this.tool.setToolVersion(extractToolVersion(localDoc));
+    this.tool.setDescription(extractDescription(localDoc));
 
+    this.tool.setInterpreter(extractInterpreter(localDoc));
+    this.tool.setCmdTagContent(extractCommand(localDoc));
+
+    // Extract variable settings
     this.inputs = extractInputs(localDoc, this.stepParameters);
     this.outputs = extractOutputs(localDoc);
 
     this.inFileExpected = this.extractToolElementsIsFile(this.inputs);
     this.outFileExpected = this.extractToolElementsIsFile(this.outputs);
-
-    //
-    this.interpreter = extractInterpreter(localDoc);
-    final String cmdTagContent = extractCommand(localDoc);
-
-    if (cmdTagContent.isEmpty()) {
-      throw new EoulsanException("Parsing tool XML file: no command found.");
-    }
-
-    this.pythonInterperter.translateCommandXMLInPython(cmdTagContent);
 
   }
 
@@ -169,10 +147,14 @@ public class ToolInterpreter {
    * @throws EoulsanException the Eoulsan exception
    * @throws IOException
    */
-  public String execute(final StepContext context) throws EoulsanException {
+  public GalaxyToolResult execute(final StepContext context)
+      throws EoulsanException {
+
+    // TODO debug
+    this.context = context;
 
     // Copy step tool element
-    final Map<String, String> variablesCommand = this.extractVariables();
+    final Map<String, String> variablesCommand = this.extractVariablesFromXML();
 
     final Map<DataFormat, DataFile> inDataFiles = new HashMap<>();
     final Map<DataFormat, DataFile> outDataFiles = new HashMap<>();
@@ -207,24 +189,21 @@ public class ToolInterpreter {
     // Add port with file path
     this.setPortOutput(variablesCommand, outDataFiles);
 
-    this.newCommand = this.pythonInterperter.executeScript(variablesCommand);
+    final ToolPythonInterpreter pythonInterperter =
+        new ToolPythonInterpreter(context, this.tool, variablesCommand);
 
-    // TODO
-    System.out.println("python interpreter return this command line "
-        + newCommand);
-
-    // Add interpreter if exists
-    if (!(getInterpreter() == null || getInterpreter().isEmpty())) {
-      newCommand =
-          this.getInterpreter() + " " + toolExecutablePath + "/" + newCommand;
-    }
-
-    // TODO
-    System.out.println("DEBUG completed command with variable \t" + newCommand);
-
-    return newCommand;
+    final GalaxyToolResult result = pythonInterperter.executeScript();
+    
+    //TODO
+    System.out.println("------------------ result in toolInter "+ result);
+    return result;
   }
 
+  /**
+   * Check data format.
+   * @param context the context
+   * @return true, if successful
+   */
   public boolean checkDataFormat(final StepContext context) {
 
     // Check inData
@@ -248,26 +227,11 @@ public class ToolInterpreter {
     return true;
   }
 
-  //
-  // Test methods for Junit
-  //
+  public String getDescription() {
 
-  /**
-   * Creates the command line.
-   * @return the string
-   * @throws EoulsanException the eoulsan exception
-   */
-  public String createCommandLine() throws EoulsanException {
-
-    // List variable name define
-    final Map<String, String> variables = this.extractVariables();
-
-    final String newCommand = this.pythonInterperter.executeScript(variables);
-
-    // TODO
-    // System.out.println("DEBUG final command \t" + newCommand);
-
-    return newCommand;
+    return "Launch tool galaxy "
+        + this.tool.getToolName() + ", version " + this.tool.getToolVersion()
+        + " with interpreter " + this.tool.getInterpreter();
   }
 
   /**
@@ -421,29 +385,6 @@ public class ToolInterpreter {
   }
 
   /**
-   * Extract all setting variables tools with values.
-   * @return setting parameters tools with values
-   * @throws EoulsanException no parameter setting found
-   */
-  private Map<String, String> extractVariables() throws EoulsanException {
-
-    final Map<String, String> results = extractVariablesFromXML();
-
-    // Compare with variable from command tag
-    // Add variable not found in xml tag, corresponding to dataset value from
-    // external file
-    final Map<String, String> missingVariables =
-        this.pythonInterperter.comparisonVariablesFromXMLToCommand(this,
-            results);
-
-    if (!missingVariables.isEmpty()) {
-      results.putAll(missingVariables);
-    }
-
-    return results;
-  }
-
-  /**
    * Extract parameters from xml.
    * @return the map
    * @throws EoulsanException the eoulsan exception
@@ -521,57 +462,32 @@ public class ToolInterpreter {
   }
 
   //
-  // Getter
+  // Test methods for Junit
   //
 
-  // TODO to test
   /**
-   * Gets the command line.
-   * @return the command line
+   * Creates the command line.
+   * @return the string
+   * @throws EoulsanException the eoulsan exception
    */
-  public String getCommandLine() {
+  public String createCommandLine() throws EoulsanException {
+
+    final ToolPythonInterpreter pythonInterperter =
+        new ToolPythonInterpreter(this.context, this.tool,
+            extractVariablesFromXML());
+
+    final String newCommand = "";
+    // pythonInterperter.createCommandLine();
+
+    // TODO
+    // System.out.println("DEBUG final command \t" + newCommand);
+
     return newCommand;
   }
 
-  /**
-   * Gets the tool id.
-   * @return the tool id
-   */
-  public String getToolID() {
-    return this.toolID;
-  }
-
-  /**
-   * Get tool name.
-   * @return the tool name
-   */
-  public String getToolName() {
-    return this.toolName;
-  }
-
-  /**
-   * Get tool version.
-   * @return the tool version
-   */
-  public String getToolVersion() {
-    return this.toolVersion;
-  }
-
-  /**
-   * Get tool description.
-   * @return the description
-   */
-  public String getDescription() {
-    return this.description;
-  }
-
-  /**
-   * Get interpreter name.
-   * @return the interpreter
-   */
-  public String getInterpreter() {
-    return this.interpreter;
-  }
+  //
+  // Getter
+  //
 
   /**
    * Gets the in data format expected associated with variable found in command
@@ -591,15 +507,17 @@ public class ToolInterpreter {
     return this.outFileExpected;
   }
 
+  public ToolData getToolData() {
+    return this.tool;
+  }
+
   @Override
   public String toString() {
     return "InterpreterToolGalaxy \n[inputs="
         + Joiner.on("\n").withKeyValueSeparator("=").join(this.inputs)
         + ", \noutputs="
         + Joiner.on("\n").withKeyValueSeparator("=").join(this.outputs)
-        + ", \ntoolName=" + this.toolName + ", toolVersion=" + this.toolVersion
-        + ", description=" + this.description + ", interpreter="
-        + this.interpreter + "]";
+        + ", \ntool=" + this.tool + "]";
   }
 
   //
@@ -619,12 +537,11 @@ public class ToolInterpreter {
       final File toolExecutablePath) throws EoulsanException {
 
     this.toolNameFromParameter = toolName;
-    this.toolExecutablePath = toolExecutablePath;
     this.toolXMLis = is;
     this.doc = this.buildDOM();
     this.stepParameters = new HashMap<>();
 
-    this.pythonInterperter = new ToolPythonInterpreter();
+    this.tool = new ToolData(toolExecutablePath);
 
     this.checkDomValidity();
   }
