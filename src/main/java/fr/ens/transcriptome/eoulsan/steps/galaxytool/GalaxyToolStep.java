@@ -202,14 +202,6 @@ public class GalaxyToolStep extends AbstractStep {
 
     checkNotNull(toolName, "None tool name define for Galaxy Tool step.");
 
-    // Set tool xml file
-    // if (toolXmlPath == null)
-    // toolXmlPath = Service.GalaxyTool.newService(toolname, XML);
-
-    // Set tool xml file
-    // if (toolExecutablePath == null)
-    // toolExecutablePath = Service.GalaxyTool.newService(toolname, EXE);
-
     try {
       // Configure tool interpreter
       this.toolInterpreter =
@@ -217,11 +209,6 @@ public class GalaxyToolStep extends AbstractStep {
               FileUtils.createInputStream(toolXmlPath), toolExecutablePath);
 
       this.toolInterpreter.configure(toolParameters);
-
-      // // TODO
-      // System.out.println("----- DEBUG end configure, cmd line "
-      // + this.toolInterpreter.getCommandLine()
-      // + "\n\t----------- name thread " + Thread.currentThread().getName());
 
     } catch (final EoulsanException | IOException e) {
       // TODO Auto-generated catch block
@@ -255,30 +242,6 @@ public class GalaxyToolStep extends AbstractStep {
           "Error execution tool interpreter from building tool command line : "
               + e.getMessage());
     }
-
-    // final Map<DataFormat, DataFile> inDataFiles = new HashMap<>();
-    // final Map<DataFormat, DataFile> outDataFiles = new HashMap<>();
-
-    // // Create all inData set in toolshed
-    // for (DataFormat df : this.toolInterpreter.getInDataFormatExpected()
-    // .keySet()) {
-    //
-    // inData = context.getInputData(df);
-    // inDataFiles.put(df, inData.getDataFile());
-    // }
-    //
-    // // Create all inData set in toolshed
-    // for (DataFormat df : this.toolInterpreter.getOutDataFormatExpected()
-    // .keySet()) {
-    //
-    // outDataFiles.put(df, context.getOutputData(df, inData).getDataFile());
-    // }
-
-    // TODO
-    // System.out.println("DEBUG Before execute tool\n\tin data file :"
-    // + Joiner.on(",").join(inDataFiles.values()) + "\n\tout data file :"
-    // + Joiner.on(",").join(outDataFiles.values()));
-    //
 
     // Set the description of the context
     status.setDescription(this.toolInterpreter.getDescription());
