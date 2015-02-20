@@ -33,47 +33,24 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
-import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 
 public class GalaxyToolExecutor {
 
   private final StepContext stepContext;
-  private final ToolInterpreter toolInterpreter;
+  private final String commandLineTool;
+  private final String toolName;
+  private final String toolVersion;
 
-  private int exitValue = -1;
-  private Throwable exception = null;
-  private boolean asExecutedCommand = false;
+  GalaxyToolResult execute() {
 
-  public Throwable getException() {
-    return this.exception;
-  }
+    checkNotNull(commandLineTool, "Command line galaxy tool is null.");
 
-  public boolean asThrowedException() {
-    return this.exception != null;
-  }
-
-  public int getExitValue() {
-    return exitValue;
-  }
-
-  private void execute() {
-
-    final String commandTool = this.toolInterpreter.getCommandLine();
-
-    checkNotNull(commandTool, "Command line galaxy tool is null.");
-
-    if (asExecutedCommand) {
-      this.exception =
-          new EoulsanException(
-              "GalaxyTool sample already executed this command " + commandTool);
-      return;
-    }
+    final GalaxyToolResult result = new GalaxyToolResult(commandLineTool);
 
     try {
-      // Define stdout and stderr file
       // Execute command
-      final Process p = Runtime.getRuntime().exec(commandTool, null);
+      final Process p = Runtime.getRuntime().exec(commandLineTool, null);
 
       // Save stdout
       new CopyProcessOutput(p.getInputStream(), createStepOutput("STDOUT"),
@@ -84,36 +61,44 @@ public class GalaxyToolExecutor {
           "stderr").start();
 
       // Wait the end of the process
-      exitValue = p.waitFor();
+      final int exitValue = p.waitFor();
 
-      asExecutedCommand = true;
+      result.setExitValue(exitValue);
 
     } catch (InterruptedException | IOException e) {
-      this.exception = e;
+      result.setException(e);
     }
+
+    return result;
   }
 
   private File createStepOutput(final String suffix) {
 
-    final String toolName = this.stepContext.getCommandName();
-    final String idStep = this.stepContext.getJobId();
-
     return new File(this.stepContext.getStepOutputDirectory().toFile(),
-        toolName + "_" + idStep + "_" + suffix + ".txt");
+        this.toolName + "_" + this.toolVersion + "." + suffix);
   }
 
   //
   // Constructor
   //
 
+  /**
+   * Constructor a new galaxy tool executor.
+   * @param context the context
+   * @param commandLine the command line
+   * @param toolName the tool name
+   * @param toolVersion the tool version
+   */
   public GalaxyToolExecutor(final StepContext context,
-      final ToolInterpreter toolInpreter) {
+      final String commandLine, final String toolName, final String toolVersion) {
 
-    checkNotNull(toolInpreter, "Tool interpreter is null.");
+    checkNotNull(commandLine, "commandLine is null.");
     checkNotNull(context, "Step context is null.");
 
-    this.toolInterpreter = toolInpreter;
+    this.commandLineTool = commandLine;
     this.stepContext = context;
+    this.toolName = toolName;
+    this.toolVersion = toolVersion;
 
     execute();
   }
