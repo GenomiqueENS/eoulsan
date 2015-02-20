@@ -243,19 +243,18 @@ public class GalaxyToolStep extends AbstractStep {
         this.toolInterpreter.checkDataFormat(context),
         "GalaxyTool step, dataFormat inval between extract from analysis and setting in xml file.");
 
+    int exitValue = -1;
+    GalaxyToolResult result = null;
+
     try {
-      this.toolInterpreter.execute(context);
+      result = this.toolInterpreter.execute(context);
+      exitValue = result.getExitValue();
 
     } catch (EoulsanException e) {
       return status.createStepResult(e,
           "Error execution tool interpreter from building tool command line : "
               + e.getMessage());
     }
-
-    final GalaxyToolExecutor executor =
-        new GalaxyToolExecutor(context, this.toolInterpreter);
-
-    final int exitValue = executor.getExitValue();
 
     // final Map<DataFormat, DataFile> inDataFiles = new HashMap<>();
     // final Map<DataFormat, DataFile> outDataFiles = new HashMap<>();
@@ -282,26 +281,21 @@ public class GalaxyToolStep extends AbstractStep {
     //
 
     // Set the description of the context
-    status.setDescription("Launch tool galaxy "
-        + this.toolInterpreter.getToolName() + ", version "
-        + this.toolInterpreter.getToolVersion() + " with interpreter "
-        + this.toolInterpreter.getInterpreter());
+    status.setDescription(this.toolInterpreter.getDescription());
 
     status.setMessage("Command line generate by python interpreter: "
-        + this.toolInterpreter.getCommandLine() + ".");
+        + result.getCommandLine() + ".");
 
     // Execution script fail, create an exception
     if (exitValue != 0) {
 
-      return status.createStepResult(
-          null,
+      return status.createStepResult(null,
           "Fail execution tool galaxy with command "
-              + this.toolInterpreter.getCommandLine() + ". Exit value: "
-              + exitValue);
+              + result.getCommandLine() + ". Exit value: " + exitValue);
     }
 
-    if (executor.asThrowedException()) {
-      final Throwable e = executor.getException();
+    if (result.asThrowedException()) {
+      final Throwable e = result.getException();
 
       return status.createStepResult(e,
           "Error execution interrupted: " + e.getMessage());
