@@ -39,6 +39,7 @@ import org.testng.collections.Sets;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -51,6 +52,10 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  * @since 2.0
  */
 class TranslatorStringToPython {
+
+  /** The Constant NEW_LINE. */
+  public final static Splitter NEW_LINE = Splitter.onPattern("[\r\n]")
+      .trimResults().omitEmptyStrings();
 
   /** The Constant LINE_SEPARATOR. */
   private static final String LINE_SEPARATOR = System.getProperties()
@@ -129,16 +134,16 @@ class TranslatorStringToPython {
 
   /**
    * Instantiates a new translator string to script Python.
-   * @param rawCommandTag the raw command tag
+   * @param string the raw command tag
    * @throws EoulsanException occurs if translation fail.
    */
-  TranslatorStringToPython(final List<String> rawCommandTag)
-      throws EoulsanException {
+  TranslatorStringToPython(final String cmdTag) throws EoulsanException {
 
-    Preconditions.checkNotNull(rawCommandTag,
-        "Command tag from tool xml is empty.");
+    Preconditions.checkNotNull(cmdTag, "Command tag from tool xml is empty.");
 
-    this.rawCommand = rawCommandTag;
+    this.rawCommand = NEW_LINE.splitToList(cmdTag);
+
+    ;
 
     // Extract all variables names found in command
     this.variableNames = Sets.newHashSet();
