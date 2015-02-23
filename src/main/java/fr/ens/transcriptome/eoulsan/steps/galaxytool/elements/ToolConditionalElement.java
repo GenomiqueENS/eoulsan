@@ -40,6 +40,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
@@ -98,9 +99,6 @@ public class ToolConditionalElement implements ToolElement {
   public void setValues(final Map<String, Parameter> stepParameters)
       throws EoulsanException {
 
-    // Retrieve choice select from analysis
-    this.toolElementSelect.setValues(stepParameters);
-
     // Parameter corresponding to choice
     final Collection<ToolElement> toolParameters =
         this.actionsRelatedOptions.get(this.toolElementSelect.getValue());
@@ -110,7 +108,8 @@ public class ToolConditionalElement implements ToolElement {
       // Parse parameter
 
       // Extract parameter related tool element
-      final Parameter parameter = stepParameters.get(toolParameter.getName());
+      final Parameter parameter =
+          toolParameter.extractParameterByName(stepParameters);
 
       if (parameter == null) {
         // No parameters found, call default settings
@@ -172,12 +171,23 @@ public class ToolConditionalElement implements ToolElement {
     return result;
   }
 
+  @Override
+  public Parameter extractParameterByName(Map<String, Parameter> stepParameters) {
+    throw new UnsupportedOperationException();
+  }
+  
   //
   // Getter
   //
   @Override
   public String getName() {
     return this.nameSpace;
+  }
+
+  @Override
+  public String getValidedName() {
+    throw new EoulsanRuntimeException(
+        "Name tool conditional can not be change.");
   }
 
   /**
