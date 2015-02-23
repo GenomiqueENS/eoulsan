@@ -67,6 +67,8 @@ public class GalaxyToolStep extends AbstractStep {
   private static final String TOOL_NAME = "toolname";
   private static final String TOOL_XML_PATH = "toolxmlpath";
   private static final String TOOL_EXECUTABLE_PATH = "toolexecutablepath";
+  // TODO to check if possible
+  private static final String TOOL_ARGUMENTS = "toolargument";
 
   private boolean isConfigured = false;
   private boolean isExecuted = false;
@@ -94,7 +96,7 @@ public class GalaxyToolStep extends AbstractStep {
         .getInDataFormatExpected().entrySet()) {
       isEmpty = false;
 
-      builder.addPort(entry.getValue().getName(), entry.getKey(), true);
+      builder.addPort(entry.getValue().getValidedName(), entry.getKey(), true);
     }
 
     if (isEmpty) {
@@ -112,17 +114,17 @@ public class GalaxyToolStep extends AbstractStep {
 
     for (final Map.Entry<DataFormat, ToolElement> entry : this.toolInterpreter
         .getOutDataFormatExpected().entrySet()) {
-      // isEmpty = false;
-      // builder.addPort(entry.getValue().getName(), entry.getKey());
+      isEmpty = false;
+      builder.addPort(entry.getValue().getValidedName(), entry.getKey());
 
       return singleOutputPort(entry.getKey());
     }
 
-    // if (isEmpty) {
-    return OutputPortsBuilder.noOutputPort();
-    // }
+    if (isEmpty) {
+      return OutputPortsBuilder.noOutputPort();
+    }
 
-    // return builder.create();
+    return builder.create();
   }
 
   @Override
