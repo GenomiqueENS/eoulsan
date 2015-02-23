@@ -55,6 +55,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.data.Data;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.ToolElement;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
@@ -141,19 +142,12 @@ public class ToolInterpreter {
 
     context.getLogger().info("Parsing xml file successfully.");
     context.getLogger().info("Tool description " + this.tool);
-    context.getLogger().info("Tool description " + this.tool);
-    context.getLogger().info(
-        "Tool inputs file expected "
-            + Joiner.on("\n\t").withKeyValueSeparator("\t").join(this.inputs));
-
-    context.getLogger().info(
-        "Tool outputs file expected "
-            + Joiner.on("\n\t").withKeyValueSeparator("\t").join(this.outputs));
 
     final int variablesCount = this.inputs.size() + this.outputs.size();
     final Map<String, String> variables = new HashMap<>(variablesCount);
 
     Data inData = null;
+    int inDataFileFoundCount = 0;
 
     // Extract from inputs variable command
     for (final ToolElement ptg : this.inputs.values()) {
@@ -164,14 +158,21 @@ public class ToolInterpreter {
         inData = context.getInputData(ptg.getDataFormat());
 
         if (inData != null) {
-          variables.put(ptg.getName(), inData.getDataFile().toFile()
-              .getAbsolutePath());
+
+          boolean multiInData = inData.getDataFileCount() > 1;
+
+          final DataFile dataFile =
+              (multiInData
+                  ? inData.getDataFile(inDataFileFoundCount++) : inData
+                      .getDataFile());
+
+          variables.put(ptg.getName(), dataFile.toFile().getAbsolutePath());
         }
+        
       } else {
         // Variables setting with parameters file
         variables.put(ptg.getName(), ptg.getValue());
       }
-
     }
 
     // Extract from outputs variable command
@@ -201,7 +202,8 @@ public class ToolInterpreter {
             + Joiner.on("\t").withKeyValueSeparator("=").join(variables));
 
     final ToolPythonInterpreter pythonInterperter =
-        new ToolPythonInterpreter(context, this.tool, variables);
+        new ToolPythonInterpreter(context, this.tool,
+            Collections.unmodifiableMap(variables));
 
     final GalaxyToolResult result = pythonInterperter.executeScript();
 
