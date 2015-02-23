@@ -23,6 +23,8 @@
  */
 package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,6 +92,9 @@ public class ToolPythonInterpreter {
     // Interpreter python script
     final String commandLine = interpreteScript();
 
+    // TODO
+    System.out.println("final commande line " + commandLine);
+
     final GalaxyToolExecutor executor =
         new GalaxyToolExecutor(this.context, commandLine,
             this.tool.getToolName(), this.tool.getToolVersion());
@@ -101,10 +106,11 @@ public class ToolPythonInterpreter {
   }
 
   private String interpreteScript() throws EoulsanException {
-    Preconditions.checkNotNull(this.pythonScriptWithJavaCode,
+
+    checkNotNull(this.pythonScriptWithJavaCode,
         "Not found python script to interprete.");
 
-    Preconditions.checkNotNull(this.variablesCommand,
+    checkNotNull(this.variablesCommand,
         "None variables setting for python script.");
 
     if (this.variablesCommand.isEmpty())
@@ -134,7 +140,24 @@ public class ToolPythonInterpreter {
     // TODO
     // System.out.println("cmd: " + cmd.asString());
 
-    return cmd.asString();
+    return addInterperter(cmd.asString());
+  }
+
+  private String addInterperter(final String cmd) {
+
+    checkNotNull(cmd, "Command line can not be null");
+
+    // Add interpreter if exists
+    if (this.tool.isIntepreterSetting()) {
+
+      return this.tool.getInterpreter()
+          + " " + this.tool.getToolExecutable() + "/" + cmd.trim();
+
+    } else {
+
+      return cmd.trim();
+    }
+
   }
 
   /**
@@ -150,18 +173,7 @@ public class ToolPythonInterpreter {
 
     // Receive code python for building command line after replace variables by
     // values
-    final String cmd = translator.getTranslatedCommandInPython();
-
-    // Add interpreter if exists
-    if (this.tool.isIntepreterSetting()) {
-
-      this.pythonScriptWithJavaCode =
-          this.tool.getInterpreter()
-              + " " + this.tool.getToolExecutable() + "/" + cmd;
-
-    } else {
-      this.pythonScriptWithJavaCode = cmd;
-    }
+    this.pythonScriptWithJavaCode = translator.getTranslatedCommandInPython();
 
     // TODO
     System.out.println("DEBUG completed command with variable \t"
