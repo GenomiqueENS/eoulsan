@@ -47,6 +47,8 @@ public abstract class AbstractToolElement implements ToolElement {
   final static Splitter COMMA = Splitter.on(',').trimResults()
       .omitEmptyStrings();
 
+  private static final String INVALID = "[.-_]";
+
   /** Data from attribute param tag. */
   private final String shortName;
 
@@ -117,6 +119,22 @@ public abstract class AbstractToolElement implements ToolElement {
     throw new UnsupportedOperationException();
   }
 
+  @Override
+  public Parameter extractParameterByName(
+      final Map<String, Parameter> stepParameters) {
+
+    // Without namespace
+    Parameter p = stepParameters.get(getShortName());
+
+    if (p == null) {
+      // Use namespace
+      p = stepParameters.get(getName());
+    }
+
+    // Return parameter founded or null
+    return p;
+  }
+
   //
   // Getter and setter
   //
@@ -168,6 +186,11 @@ public abstract class AbstractToolElement implements ToolElement {
   @Override
   public String getName() {
     return this.name;
+  }
+
+  @Override
+  public String getValidedName() {
+    return this.name.replaceAll(INVALID, "");
   }
 
   /**

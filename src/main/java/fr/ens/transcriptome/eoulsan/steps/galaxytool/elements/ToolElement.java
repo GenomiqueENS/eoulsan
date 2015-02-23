@@ -48,6 +48,12 @@ public interface ToolElement {
   String getName();
 
   /**
+   * Gets the name which respect Eoulsan's syntax.
+   * @return the name
+   */
+  String getValidedName();
+
+  /**
    * Checks if is setting.
    * @return true, if is setting
    */
@@ -97,4 +103,12 @@ public interface ToolElement {
    * @throws EoulsanException
    */
   void setValue(final String value) throws EoulsanException;
+
+  /**
+   * Extract parameter by name.
+   * @param stepParameters
+   * @return the parameter found or null.
+   */
+  Parameter extractParameterByName(final Map<String, Parameter> stepParameters);
+
 }

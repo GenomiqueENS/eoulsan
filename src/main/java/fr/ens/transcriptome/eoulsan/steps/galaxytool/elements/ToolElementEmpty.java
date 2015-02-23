@@ -49,6 +49,11 @@ public class ToolElementEmpty implements ToolElement {
   }
 
   @Override
+  public String getValidedName() {
+    return getName();
+  }
+
+  @Override
   public boolean isSetting() {
     return false;
   }
@@ -83,6 +88,11 @@ public class ToolElementEmpty implements ToolElement {
 
   @Override
   public DataFormat getDataFormat() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Parameter extractParameterByName(Map<String, Parameter> stepParameters) {
     throw new UnsupportedOperationException();
   }
 
