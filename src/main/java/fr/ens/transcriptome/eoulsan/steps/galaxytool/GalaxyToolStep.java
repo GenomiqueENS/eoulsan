@@ -74,7 +74,7 @@ public class GalaxyToolStep extends AbstractStep {
   private boolean isExecuted = false;
 
   /** The tool interpreter. */
-  private ToolInterpreter toolInterpreter;
+  private GalaxyToolInterpreter toolInterpreter;
 
   @Override
   public String getName() {
@@ -207,7 +207,7 @@ public class GalaxyToolStep extends AbstractStep {
     try {
       // Configure tool interpreter
       this.toolInterpreter =
-          new ToolInterpreter(toolName,
+          new GalaxyToolInterpreter(toolName,
               FileUtils.createInputStream(toolXmlPath), toolExecutablePath);
 
       this.toolInterpreter.configure(toolParameters);
@@ -283,7 +283,7 @@ public class GalaxyToolStep extends AbstractStep {
    */
   public GalaxyToolStep(final InputStream toolXMLis) throws EoulsanException {
 
-    this.toolInterpreter = new ToolInterpreter("Unknown", toolXMLis, null);
+    this.toolInterpreter = new GalaxyToolInterpreter("Unknown", toolXMLis, null);
   }
 
   /**
