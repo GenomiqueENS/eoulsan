@@ -35,18 +35,18 @@ import java.nio.file.StandardCopyOption;
 
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 
-public class GalaxyToolExecutor {
+public class ToolExecutor {
 
   private final StepContext stepContext;
   private final String commandLineTool;
   private final String toolName;
   private final String toolVersion;
 
-  GalaxyToolResult execute() {
+  ToolExecutorResult execute() {
 
     checkNotNull(commandLineTool, "Command line galaxy tool is null.");
 
-    final GalaxyToolResult result = new GalaxyToolResult(commandLineTool);
+    final ToolExecutorResult result = new ToolExecutorResult(commandLineTool);
 
     try {
       // Execute command
@@ -89,7 +89,7 @@ public class GalaxyToolExecutor {
    * @param toolName the tool name
    * @param toolVersion the tool version
    */
-  public GalaxyToolExecutor(final StepContext context,
+  public ToolExecutor(final StepContext context,
       final String commandLine, final String toolName, final String toolVersion) {
 
     checkNotNull(commandLine, "commandLine is null.");

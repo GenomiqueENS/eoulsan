@@ -233,7 +233,7 @@ public class GalaxyToolStep extends AbstractStep {
         "GalaxyTool step, dataFormat inval between extract from analysis and setting in xml file.");
 
     int exitValue = -1;
-    GalaxyToolResult result = null;
+    ToolExecutorResult result = null;
 
     try {
       result = this.toolInterpreter.execute(context);

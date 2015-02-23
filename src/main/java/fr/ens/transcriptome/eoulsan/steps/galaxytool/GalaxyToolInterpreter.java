@@ -126,7 +126,7 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
   }
 
   @Override
-  public GalaxyToolResult execute(final StepContext context)
+  public ToolExecutorResult execute(final StepContext context)
       throws EoulsanException {
 
     context.getLogger().info("Parsing xml file successfully.");
@@ -194,7 +194,7 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
         new ToolPythonInterpreter(context, this.tool,
             Collections.unmodifiableMap(variables));
 
-    final GalaxyToolResult result = pythonInterperter.executeScript();
+    final ToolExecutorResult result = pythonInterperter.executeScript();
 
     // TODO
     return result;

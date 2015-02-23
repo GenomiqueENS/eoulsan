@@ -28,7 +28,7 @@ public interface ToolInterpreter {
    * @throws EoulsanException the Eoulsan exception
    * @throws IOException
    */
-  GalaxyToolResult execute(final StepContext context) throws EoulsanException;
+  ToolExecutorResult execute(final StepContext context) throws EoulsanException;
 
   /**
    * Gets the in data format expected associated with variable found in command

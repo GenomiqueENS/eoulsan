@@ -82,7 +82,7 @@ public class ToolPythonInterpreter {
    * @return the string
    * @throws EoulsanException the eoulsan exception
    */
-  public GalaxyToolResult executeScript() throws EoulsanException {
+  public ToolExecutorResult executeScript() throws EoulsanException {
 
     if (!isCommandLineTranslate) {
       throw new EoulsanException(
@@ -95,11 +95,11 @@ public class ToolPythonInterpreter {
     // TODO
     System.out.println("final commande line " + commandLine);
 
-    final GalaxyToolExecutor executor =
-        new GalaxyToolExecutor(this.context, commandLine,
+    final ToolExecutor executor =
+        new ToolExecutor(this.context, commandLine,
             this.tool.getToolName(), this.tool.getToolVersion());
 
-    final GalaxyToolResult result = executor.execute();
+    final ToolExecutorResult result = executor.execute();
 
     return result;
 

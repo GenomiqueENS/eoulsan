@@ -2,7 +2,7 @@ package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 
 import org.python.google.common.base.Preconditions;
 
-public class GalaxyToolResult {
+public class ToolExecutorResult {
 
   private final String commandLineTool;
 
@@ -44,7 +44,7 @@ public class GalaxyToolResult {
   // Constructor
   //
 
-  public GalaxyToolResult(final String commandLineTool) {
+  public ToolExecutorResult(final String commandLineTool) {
 
     Preconditions
         .checkNotNull(commandLineTool, "Command line anc not be null.");
