@@ -316,13 +316,18 @@ public class TokenManager implements Runnable {
       // Register data to process
       final Data data = token.getData();
 
-      if (data.isList()) {
-        for (Data e : data.getListElements()) {
-          addData(inputPort, e);
-        }
-      } else {
+      // Synchronized this part to avoid the lost of some data when creating
+      // Cartesian product
+      synchronized (this.cartesianProductsUsed) {
 
-        addData(inputPort, data);
+        if (data.isList()) {
+          for (Data e : data.getListElements()) {
+            addData(inputPort, e);
+          }
+        } else {
+
+          addData(inputPort, data);
+        }
       }
     }
   }
