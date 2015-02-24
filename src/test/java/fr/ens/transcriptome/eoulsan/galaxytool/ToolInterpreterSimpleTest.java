@@ -35,16 +35,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Test;
-
 import com.google.common.base.Splitter;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.core.StepContext;
+import fr.ens.transcriptome.eoulsan.steps.galaxytool.GalaxyToolInterpreter;
 import fr.ens.transcriptome.eoulsan.steps.galaxytool.ToolData;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.ToolInterpreter;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.ToolPythonInterpreter;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 public class ToolInterpreterSimpleTest {
@@ -266,7 +262,7 @@ public class ToolInterpreterSimpleTest {
     final InputStream is = FileUtils.createInputStream(toolFile);
 
     // Init interpreter tool galaxy
-    final ToolInterpreter itg = new ToolInterpreter("Unknown", is, null);
+    final GalaxyToolInterpreter itg = new GalaxyToolInterpreter("Unknown", is, null);
     final ToolData tool = itg.getToolData();
 
     // Configure

@@ -176,8 +176,8 @@ public class ToolPythonInterpreter {
     this.pythonScriptWithJavaCode = translator.getTranslatedCommandInPython();
 
     // TODO
-    System.out.println("DEBUG completed command with variable \t"
-        + this.pythonScriptWithJavaCode);
+    // System.out.println("DEBUG completed command with variable \t"
+    // + this.pythonScriptWithJavaCode);
 
     isCommandLineTranslate = true;
   }
