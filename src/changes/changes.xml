@@ -727,6 +727,10 @@ of reads that reject each filter like in local mode.
                 (org.beanshell.bsh, v2.0b4 and com.beust.jcommander v1.12).
             </action>
 
+            <action dev="jourdren" type="fix">
+                Due to a lack of thread synchronization, in some case only a part of the list of the data to process where sent to the tasks.
+            </action>
+
             <action dev="jourdren" type="add">
                 Add an import step that allow to import files without declaring the steps that has been used to create the files.
                 Files that are not related to the design file can be also imported using this new step.
