@@ -33,6 +33,7 @@ import net.sf.samtools.BAMFileWriter;
 import net.sf.samtools.SAMFileReader;
 import net.sf.samtools.SAMRecord;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -69,9 +70,14 @@ public class BAMMerger implements Merger {
 
     while (inFileIterator.hasNext()) {
 
+      // Get input file
+      final DataFile inFile = inFileIterator.next();
+
+      EoulsanLogger.getLogger().info(
+          "Merge " + inFile.getName() + " to " + outFile.getName());
+
       // Get reader
-      final SAMFileReader inputSam =
-          new SAMFileReader(inFileIterator.next().open());
+      final SAMFileReader inputSam = new SAMFileReader(inFile.open());
 
       // Get Writer
       if (outputSam == null) {

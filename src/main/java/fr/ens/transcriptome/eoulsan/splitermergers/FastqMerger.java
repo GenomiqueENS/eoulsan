@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
@@ -64,14 +65,19 @@ public class FastqMerger implements Merger {
 
   @Override
   public void merge(final Iterator<DataFile> inDataFileIterator,
-      final DataFile outDataFile) throws FileNotFoundException, IOException {
+      final DataFile outFile) throws FileNotFoundException, IOException {
 
-    final FastqWriter writer = new FastqWriter(outDataFile.create());
+    final FastqWriter writer = new FastqWriter(outFile.create());
 
     while (inDataFileIterator.hasNext()) {
 
-      final FastqReader reader =
-          new FastqReader(inDataFileIterator.next().open());
+      // Get input file
+      final DataFile inFile = inDataFileIterator.next();
+
+      EoulsanLogger.getLogger().info(
+          "Merge " + inFile.getName() + " to " + outFile.getName());
+
+      final FastqReader reader = new FastqReader(inFile.open());
 
       for (final ReadSequence read : reader) {
         writer.write(read);

@@ -13,6 +13,7 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -50,7 +51,11 @@ public class ExpressionMerger implements Merger {
 
     while (inFileIterator.hasNext()) {
 
+      // Get input file
       final DataFile inFile = inFileIterator.next();
+
+      EoulsanLogger.getLogger().info(
+          "Merge " + inFile.getName() + " to " + outFile.getName());
 
       boolean first = true;
 
