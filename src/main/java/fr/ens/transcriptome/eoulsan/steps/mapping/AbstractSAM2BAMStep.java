@@ -26,10 +26,11 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 public abstract class AbstractSAM2BAMStep extends AbstractStep {
 
   private static final String STEP_NAME = "sam2bam";
+  private static final int DEFAULT_COMPRESSION_LEVEL = 5;
 
   protected static final String COUNTER_GROUP = "sam2bam";
 
-  private int compressionLevel;
+  private int compressionLevel = DEFAULT_COMPRESSION_LEVEL;
 
   //
   // Getters
