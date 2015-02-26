@@ -692,7 +692,7 @@ of reads that reject each filter like in local mode.
             </action>
          </release>
 
-         <release version="2.0-alpha5" description="Eoulsan 2.0-alpha5 release" date="TBD">
+         <release version="2.0-alpha5" description="Eoulsan 2.0-alpha5 release" date="2015-02-26">
 
             <action dev="jourdren" type="fix">
                 The JSON of the result files in the job directory was not valid.
