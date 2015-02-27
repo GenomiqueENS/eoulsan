@@ -8,4 +8,8 @@
   <extensions>
   	<extension default="true">.sam</extension>
   </extensions>
+  
+  <toolshedgalaxy>
+  	<extension>sam</extension>    	
+  </toolshedgalaxy>
 </dataformat>

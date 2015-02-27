@@ -43,7 +43,8 @@ public interface DataFormat {
    * @return the name of the format
    */
   String getName();
-
+  
+  
   /**
    * Get the description of the format.
    * @return the name of the format
@@ -97,6 +98,12 @@ public interface DataFormat {
    * @return an list of strings with the extension of the DataType
    */
   List<String> getExtensions();
+
+  /**
+   * Get the extension from Galaxy tool file of the DataType.
+   * @return extension from Galaxy tool 
+   */
+  List<String> getGalaxyToolExtensions();
 
   /**
    * Test if a generator is available for this DataFormat.
@@ -156,4 +163,5 @@ public interface DataFormat {
    * @return the number of maximal of files used to store data.
    */
   int getMaxFilesCount();
+
 }

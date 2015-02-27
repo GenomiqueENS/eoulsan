@@ -73,6 +73,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   private String designFieldName;
   private String contentType = "text/plain";
   private final List<String> extensions = new ArrayList<>();
+  private final List<String> galaxyToolExtensions = new ArrayList<>();
   private String generatorClassName;
   private final Set<Parameter> generatorParameters = new LinkedHashSet<>();
   private String checkerClassName;
@@ -126,6 +127,11 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   public List<String> getExtensions() {
 
     return this.extensions;
+  }
+
+  @Override
+  public List<String> getGalaxyToolExtensions() {
+    return this.galaxyToolExtensions;
   }
 
   @Override
@@ -322,6 +328,15 @@ public final class XMLDataFormat extends AbstractDataFormat implements
 
     }
 
+    // Parse toolshed extensions from Galaxy
+    for (Element toolshed : XMLUtils.getElementsByTagName(document,
+        "toolshedgalaxy")) {
+      for (Element ext : XMLUtils.getElementsByTagName(toolshed, "extension")) {
+
+        this.galaxyToolExtensions.add(ext.getTextContent().trim());
+      }
+    }
+
     // Check object values
     if (this.name == null) {
       throw new EoulsanException("The name of the dataformat is null");
@@ -408,6 +423,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
         && Objects.equals(this.designFieldName, that.designFieldName)
         && Objects.equals(this.contentType, that.contentType)
         && Objects.equals(this.extensions, that.extensions)
+        && Objects.equals(this.galaxyToolExtensions, that.galaxyToolExtensions)
         && Objects.equals(this.generatorClassName, that.generatorClassName)
         && Objects.equals(this.checkerClassName, that.checkerClassName)
         && Objects.equals(this.splitterClassName, that.splitterClassName)
@@ -421,8 +437,9 @@ public final class XMLDataFormat extends AbstractDataFormat implements
     return Objects.hash(this.name, this.description, this.alias, this.prefix,
         this.oneFilePerAnalysis, this.dataFormatFromDesignFile,
         this.designFieldName, this.contentType, this.extensions,
-        this.generatorClassName, this.checkerClassName, this.splitterClassName,
-        this.mergerClassName, this.maxFilesCount);
+        this.galaxyToolExtensions, this.generatorClassName,
+        this.checkerClassName, this.splitterClassName, this.mergerClassName,
+        this.maxFilesCount);
   }
 
   @Override
@@ -434,6 +451,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
         .add("contentType", this.contentType)
         .add("defaultExtension", this.extensions.get(0))
         .add("extensions", this.extensions)
+        .add("galaxyToolExtensions", this.galaxyToolExtensions)
         .add("generatorClassName", this.generatorClassName)
         .add("generatorParameters", this.generatorParameters)
         .add("checkerClassName", this.checkerClassName)

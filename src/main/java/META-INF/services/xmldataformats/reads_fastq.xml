@@ -12,4 +12,9 @@
   	<extension default="true">.fq</extension>
   	<extension>.fastq</extension>
   </extensions>
+
+  <toolshedgalaxy>
+  	<extension>fq</extension>
+  	<extension>fastq</extension>    	
+  </toolshedgalaxy>
 </dataformat>

@@ -8,4 +8,9 @@
   <extensions>
   	<extension default="true">.bam</extension>
   </extensions>
+  
+  <toolshedgalaxy>
+  	<extension>bam</extension>    	
+  </toolshedgalaxy>
+  
 </dataformat>
