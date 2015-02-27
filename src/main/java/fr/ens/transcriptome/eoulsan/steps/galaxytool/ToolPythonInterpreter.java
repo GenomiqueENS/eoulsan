@@ -23,6 +23,7 @@
  */
 package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Collections;
@@ -31,10 +32,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.python.core.PyObject;
-import org.python.google.common.collect.Maps;
 import org.python.util.PythonInterpreter;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
