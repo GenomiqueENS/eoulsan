@@ -30,6 +30,7 @@ import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardF
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -68,7 +69,7 @@ public abstract class AbstractSequenceReadsMapper implements
   static final String LARGE_INDEX_FLAVOR = "large-index";
   static final String DEFAULT_FLAVOR = SHORT_INDEX_FLAVOR;
 
-  private File archiveIndexFile;
+  private InputStream archiveIndexFileInputStream;
   private File archiveIndexDir;
 
   private FastqFormat fastqFormat = FastqFormat.FASTQ_SANGER;
@@ -484,13 +485,8 @@ public abstract class AbstractSequenceReadsMapper implements
     return bwtFile.substring(0, bwtFile.length() - extensionLength);
   }
 
-  private void unzipArchiveIndexFile(final File archiveIndexFile,
+  private void unzipArchiveIndexFile(final InputStream archiveIndexFile,
       final File archiveIndexDir) throws IOException {
-
-    if (!archiveIndexFile.exists()) {
-      throw new IOException("No index for the mapper found: "
-          + archiveIndexFile);
-    }
 
     // Uncompress archive if necessary
     if (!archiveIndexDir.exists()) {
@@ -519,6 +515,9 @@ public abstract class AbstractSequenceReadsMapper implements
   public final void mapPE(final File readsFile1, final File readsFile2,
       final GenomeDescription gd, final File samFile) throws IOException {
 
+    // Check if the mapper has been initialized
+    checkState(this.initialized, "Mapper has not been initialized");
+
     FileUtils.copy(mapPE(readsFile1, readsFile2, gd), new FileOutputStream(
         samFile));
   }
@@ -526,6 +525,9 @@ public abstract class AbstractSequenceReadsMapper implements
   @Override
   public final InputStream mapPE(final File readsFile1, final File readsFile2,
       final GenomeDescription gd) throws IOException {
+
+    // Check if the mapper has been initialized
+    checkState(this.initialized, "Mapper has not been initialized");
 
     getLogger().fine("Mapping with " + getMapperName() + " in pair-end mode");
 
@@ -538,7 +540,8 @@ public abstract class AbstractSequenceReadsMapper implements
         "readsFile2 not exits or is not a standard file.");
 
     // Unzip archive index if necessary
-    unzipArchiveIndexFile(this.archiveIndexFile, this.archiveIndexDir);
+    unzipArchiveIndexFile(this.archiveIndexFileInputStream,
+        this.archiveIndexDir);
 
     // Process to mapping
     return internalMapPE(readsFile1, readsFile2, this.archiveIndexDir, gd);
@@ -548,12 +551,18 @@ public abstract class AbstractSequenceReadsMapper implements
   public final void mapSE(final File readsFile, final GenomeDescription gd,
       final File samFile) throws IOException {
 
+    // Check if the mapper has been initialized
+    checkState(this.initialized, "Mapper has not been initialized");
+
     FileUtils.copy(mapSE(readsFile, gd), new FileOutputStream(samFile));
   }
 
   @Override
   public final InputStream mapSE(final File readsFile,
       final GenomeDescription gd) throws IOException {
+
+    // Check if the mapper has been initialized
+    checkState(this.initialized, "Mapper has not been initialized");
 
     getLogger().fine("Mapping with " + getMapperName() + " in single-end mode");
 
@@ -562,7 +571,8 @@ public abstract class AbstractSequenceReadsMapper implements
         "readsFile1 not exits or is not a standard file.");
 
     // Unzip archive index if necessary
-    unzipArchiveIndexFile(this.archiveIndexFile, this.archiveIndexDir);
+    unzipArchiveIndexFile(this.archiveIndexFileInputStream,
+        this.archiveIndexDir);
 
     // Process to mapping
     return internalMapSE(readsFile, this.archiveIndexDir, gd);
@@ -583,10 +593,14 @@ public abstract class AbstractSequenceReadsMapper implements
   public final MapperProcess mapPE(final GenomeDescription gd)
       throws IOException {
 
+    // Check if the mapper has been initialized
+    checkState(this.initialized, "Mapper has not been initialized");
+
     getLogger().fine("Mapping with " + getMapperName() + " in single-end mode");
 
     // Unzip archive index if necessary
-    unzipArchiveIndexFile(this.archiveIndexFile, this.archiveIndexDir);
+    unzipArchiveIndexFile(this.archiveIndexFileInputStream,
+        this.archiveIndexDir);
 
     // Process to mapping
     final MapperProcess result = internalMapPE(this.archiveIndexDir, gd);
@@ -601,10 +615,14 @@ public abstract class AbstractSequenceReadsMapper implements
   public final MapperProcess mapSE(final GenomeDescription gd)
       throws IOException {
 
+    // Check if the mapper has been initialized
+    checkState(this.initialized, "Mapper has not been initialized");
+
     getLogger().fine("Mapping with " + getMapperName() + " in single-end mode");
 
     // Unzip archive index if necessary
-    unzipArchiveIndexFile(this.archiveIndexFile, this.archiveIndexDir);
+    unzipArchiveIndexFile(this.archiveIndexFileInputStream,
+        this.archiveIndexDir);
 
     // Process to mapping
     final MapperProcess result = internalMapSE(this.archiveIndexDir, gd);
@@ -661,17 +679,28 @@ public abstract class AbstractSequenceReadsMapper implements
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
 
+    checkNotNull(archiveIndexFile, "archiveIndexFile is null");
+    checkExistingStandardFile(archiveIndexFile,
+        "The archive index file not exits or is not a standard file.");
+
+    init(new FileInputStream(archiveIndexFile), archiveIndexDir, incrementer,
+        counterGroup);
+  }
+
+  @Override
+  public void init(final InputStream archiveIndexInputStream,
+      final File archiveIndexDir, final ReporterIncrementer incrementer,
+      final String counterGroup) throws IOException {
+
     checkState(!this.initialized, "Mapper has already been initialized");
 
     checkNotNull(incrementer, "incrementer is null");
     checkNotNull(counterGroup, "counterGroup is null");
 
-    checkNotNull(archiveIndexFile, "archiveIndex is null");
+    checkNotNull(archiveIndexInputStream, "archiveIndexInputStream is null");
     checkNotNull(archiveIndexDir, "archiveIndexDir is null");
-    checkExistingStandardFile(archiveIndexFile,
-        "The archive index file not exits or is not a standard file.");
 
-    this.archiveIndexFile = archiveIndexFile;
+    this.archiveIndexFileInputStream = archiveIndexInputStream;
     this.archiveIndexDir = archiveIndexDir;
     this.incrementer = incrementer;
     this.counterGroup = counterGroup;

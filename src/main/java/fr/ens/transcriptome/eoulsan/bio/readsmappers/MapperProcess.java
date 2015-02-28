@@ -523,8 +523,9 @@ public abstract class MapperProcess {
    * Closes the streams for standard input for the mapper. After this the
    * writeEntry() methods cannot be used.
    * @throws IOException if an error occurs while closing stream(s)
+   * @throws InterruptedException if an error occurs while closing stream(s)
    */
-  public void closeEntriesWriter() throws IOException {
+  public void closeEntriesWriter() throws IOException, InterruptedException {
 
     if (this.writer1 != null) {
       this.writer1.close();
@@ -532,6 +533,10 @@ public abstract class MapperProcess {
 
     if (this.writer2 != null) {
       this.writer2.close();
+    }
+
+    if (this.stdin != null && this.stdout == null) {
+      startProcess();
     }
   }
 

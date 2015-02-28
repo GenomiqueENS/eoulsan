@@ -277,6 +277,18 @@ public interface SequenceReadsMapper {
       ReporterIncrementer incrementer, String counterGroup) throws IOException;
 
   /**
+   * Initialize the mapper before the mapping.
+   * @param archiveIndexInputStream genome index for the mapper as a ZIP input
+   *          stream
+   * @param archiveIndexDir uncompressed directory for the genome index
+   * @param incrementer the incrementer to report the processing of the fastq
+   *          files
+   * @param counterGroup the group for the reporter
+   */
+  void init(InputStream archiveIndexInputStream, File archiveIndexDir,
+      ReporterIncrementer incrementer, String counterGroup) throws IOException;
+
+  /**
    * Get the DataFormat for genome index for the mapper.
    * @return a DataFormat object
    */
