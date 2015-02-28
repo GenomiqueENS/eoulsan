@@ -36,10 +36,9 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
@@ -59,6 +58,7 @@ import fr.ens.transcriptome.eoulsan.bio.readsmappers.MapperProcess;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -177,7 +177,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
       this.counterGroup = counterGroup;
     }
 
-    final boolean pairEnd = Boolean.parseBoolean(conf.get(PAIR_END_KEY));
+    final boolean pairedEnd = Boolean.parseBoolean(conf.get(PAIR_END_KEY));
     final FastqFormat fastqFormat =
         FastqFormat.getFormatFromName(conf.get(FASTQ_FORMAT_KEY, ""
             + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
@@ -196,7 +196,9 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     }
 
     // Get the local genome index zip file
-    File archiveIndexFile = new File(localCacheFiles[0]);
+    getLogger().info("localCacheFiles[0]: " + localCacheFiles[0]);
+    final DataFile archiveIndexFile =
+        new DataFile(localCacheFiles[0].toString());
 
     getLogger().info(
         "Genome index compressed file (from distributed cache): "
@@ -212,13 +214,6 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     // Set FASTQ format
     this.mapper.setFastqFormat(fastqFormat);
-
-    // TODO Handle genome description
-    if (pairEnd) {
-      this.process = this.mapper.mapPE(null);
-    } else {
-      this.process = this.mapper.mapSE(null);
-    }
 
     getLogger().info("Fastq format: " + fastqFormat);
 
@@ -265,26 +260,32 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     this.mapper.setTempDirectory(tempDir);
 
     // Init mapper
-    this.mapper.init(archiveIndexFile, archiveIndexDir, new HadoopReporter(
-        context), this.counterGroup);
+    this.mapper.init(archiveIndexFile.open(), archiveIndexDir,
+        new HadoopReporter(context), this.counterGroup);
+
+    // TODO Handle genome description
+    if (pairedEnd) {
+      this.process = this.mapper.mapPE(null);
+    } else {
+      this.process = this.mapper.mapSE(null);
+    }
 
     getLogger().info("End of setup()");
   }
 
-  private String getIndexLocalName(final File archiveIndexFile)
+  private String getIndexLocalName(final DataFile archiveIndexFile)
       throws IOException {
 
     checkNotNull(archiveIndexFile, "Index Zip file is null");
 
-    final ZipFile zf = new ZipFile(archiveIndexFile);
-    final Enumeration<? extends ZipEntry> entries = zf.entries();
+    final ZipInputStream zis = new ZipInputStream(archiveIndexFile.open());
 
     final HashFunction hf = Hashing.md5();
     final Hasher hs = hf.newHasher();
 
-    while (entries.hasMoreElements()) {
+    ZipEntry e;
 
-      final ZipEntry e = entries.nextElement();
+    while ((e = zis.getNextEntry()) != null) {
 
       hs.putString(e.getName(), StandardCharsets.UTF_8);
       hs.putLong(e.getSize());
@@ -292,7 +293,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
       hs.putLong(e.getCrc());
     }
 
-    zf.close();
+    zis.close();
 
     return this.mapper.getMapperName() + "-index-" + hs.hash().toString();
   }
@@ -400,6 +401,9 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
         entriesParsed
             + " entries parsed in " + this.mapper.getMapperName()
             + " output file");
+
+    // TODO clear mapper temporary files
+
   }
 
 }

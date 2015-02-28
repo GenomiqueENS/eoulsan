@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
+import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
@@ -203,6 +204,9 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     // Set input path
     FileInputFormat.addInputPath(job, inputPath);
 
+    // Set the input format
+    job.setInputFormatClass(FastQFormatNew.class);
+
     // Set the Mapper class
     job.setMapperClass(ReadsMapperMapper.class);
 
@@ -240,8 +244,9 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     if (connectString == null) {
 
       connectString =
-          jobConf.get("mapreduce.jobtracker.address").split(":")[0]
+          jobConf.get("yarn.resourcemanager.hostname").split(":")[0]
               + ":" + settings.getZooKeeperDefaultPort();
+
     }
 
     jobConf.set(ReadsMapperMapper.ZOOKEEPER_CONNECT_STRING_KEY, connectString);
