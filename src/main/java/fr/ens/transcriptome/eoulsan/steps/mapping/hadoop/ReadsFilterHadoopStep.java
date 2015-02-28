@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX;
 
@@ -72,7 +71,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
   @Override
   public OutputPorts getOutputPorts() {
-    return singleOutputPort(READS_TFQ);
+    return singleOutputPort(READS_FASTQ);
   }
 
   @Override
@@ -91,7 +90,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
       // Get input and output data
       final Data inData = context.getInputData(READS_FASTQ);
-      final Data outData = context.getOutputData(READS_TFQ, inData);
+      final Data outData = context.getOutputData(READS_FASTQ, inData);
 
       // Get FASTQ format
       final FastqFormat fastqFormat = inData.getMetadata().getFastqFormat();
@@ -137,6 +136,8 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
    */
   private Job createJobConf(final Configuration parentConf, final Data inData,
       final Data outData, final FastqFormat fastqFormat) throws IOException {
+
+    // TODO handle paired-end
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -199,7 +200,8 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     job.setNumReduceTasks(0);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(outData.getDataFile().getSource()));
+    FileOutputFormat.setOutputPath(job, new Path(outData.getDataFile()
+        .getSource()));
 
     return job;
   }

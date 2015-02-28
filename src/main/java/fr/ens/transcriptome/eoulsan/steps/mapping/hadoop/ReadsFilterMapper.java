@@ -29,7 +29,6 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_R
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.READS_REJECTED_BY_FILTERS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.jobConfToParameters;
-import static fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils.parseKeyValue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,6 +36,7 @@ import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
@@ -59,7 +59,8 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporterIncrementer;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
+public class ReadsFilterMapper extends
+    Mapper<LongWritable, Text, NullWritable, Text> {
 
   // Parameters keys
   static final String FASTQ_FORMAT_KEY = Globals.PARAMETER_PREFIX
@@ -72,11 +73,12 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   private final List<String> fields = new ArrayList<>();
   private MultiReadFilter filter;
   private String counterGroup;
+  private boolean tfqOutput = false;
 
   private final ReadSequence read1 = new ReadSequence();
   private final ReadSequence read2 = new ReadSequence();
 
-  private final Text outKey = new Text();
+  private final NullWritable outKey = NullWritable.get();
   private final Text outValue = new Text();
 
   //
@@ -168,11 +170,11 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
       if (this.filter.accept(this.read1)) {
 
-        parseKeyValue(line, this.outKey, this.outValue);
-
-        this.outKey.set(this.read1.getName());
-        this.outValue.set(this.read1.getSequence()
-            + "\t" + this.read1.getQuality());
+        if (this.tfqOutput) {
+          this.outValue.set(chop(this.read1.toTFQ()));
+        } else {
+          this.outValue.set(chop(this.read1.toFastQ()));
+        }
 
         context.write(this.outKey, this.outValue);
         context.getCounter(this.counterGroup,
@@ -194,10 +196,10 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
 
       if (this.filter.accept(this.read1, this.read2)) {
 
-        this.outKey.set(this.read1.getName());
-        this.outValue.set(this.read1.getSequence()
-            + "\t" + this.read1.getQuality() + "\t" + this.read2.getName()
-            + "\t" + this.read2.getSequence() + "\t" + this.read2.getQuality());
+        this.outValue.set(this.read1.getName()
+            + "\t" + this.read1.getSequence() + "\t" + this.read1.getQuality()
+            + "\t" + this.read2.getName() + "\t" + this.read2.getSequence()
+            + "\t" + this.read2.getQuality());
 
         context.write(this.outKey, this.outValue);
         context.getCounter(this.counterGroup,
@@ -213,6 +215,26 @@ public class ReadsFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
   @Override
   protected void cleanup(final Context context) throws IOException,
       InterruptedException {
+  }
+
+  /**
+   * Remove the last character of a string.
+   * @param s the string to modify
+   * @return a string without the last character
+   */
+  private static final String chop(String s) {
+
+    if (s == null) {
+      return null;
+    }
+
+    final int len = s.length();
+
+    if (len == 0) {
+      return "";
+    }
+
+    return s.substring(0, len - 1);
   }
 
 }
