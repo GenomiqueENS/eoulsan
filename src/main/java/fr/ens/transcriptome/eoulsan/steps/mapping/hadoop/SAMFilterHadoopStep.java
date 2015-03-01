@@ -106,11 +106,11 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     final Configuration jobConf = new Configuration(parentConf);
 
     // Set input path
-    final Path inputPath = new Path(inData.getDataFilename());
+    final Path inputPath = new Path(inData.getDataFile().getSource());
 
     // Set Genome description path
-    jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,
-        genomeDescData.getDataFilename());
+    jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY, genomeDescData
+        .getDataFile().getSource());
 
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
@@ -150,7 +150,8 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     job.setOutputValueClass(Text.class);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(outData.getDataFilename()));
+    FileOutputFormat.setOutputPath(job, new Path(outData.getDataFile()
+        .getSource()));
 
     return job;
   }
