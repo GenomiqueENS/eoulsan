@@ -603,6 +603,26 @@ public abstract class MapperProcess {
     }
 
     clean();
+
+    // Remove temporary files
+    removeFile(tmpInFile1);
+    removeFile(tmpInFile2);
+    removeFile(tmpOutFile1);
+    removeFile(tmpOutFile2);
+  }
+
+  /**
+   * Remove a temporary file.
+   * @param f f file to remove
+   */
+  private void removeFile(final File f) {
+
+    if (f.exists()) {
+
+      if (!f.delete()) {
+        getLogger().warning("Cannot remove temporary file: " + f);
+      }
+    }
   }
 
   //
