@@ -27,8 +27,11 @@ package fr.ens.transcriptome.eoulsan.data;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -303,6 +306,44 @@ public class DataFileTest {
       assertTrue(true);
     }
 
+  }
+
+  @Test
+  public void testToUri() throws IOException, URISyntaxException {
+
+    DataProtocolService registry = DataProtocolService.getInstance();
+
+    assertTrue(registry.isService("file"));
+    assertTrue(registry.isService("http"));
+    assertTrue(registry.isService("ftp"));
+
+    String filename = "toto.txt";
+    DataFile df = new DataFile(filename);
+    assertEquals(new URI(filename), df.toUri());
+
+    filename = "/home/toto/toto.txt";
+    df = new DataFile(filename);
+    assertEquals(new URI(filename), df.toUri());
+
+    filename = "file:///home/toto/toto.txt";
+    df = new DataFile(filename);
+    assertEquals(new URI(filename), df.toUri());
+
+    filename = "file:/home/toto/toto.txt";
+    df = new DataFile(filename);
+    assertEquals(new URI(filename), df.toUri());
+
+    filename = "http://www.toto.com/home/toto/toto.txt";
+    df = new DataFile(filename);
+    assertEquals(new URI(filename), df.toUri());
+
+    filename = "http:/www.toto.com/home/toto/toto.txt";
+    df = new DataFile(filename);
+    assertEquals(new URI(filename), df.toUri());
+
+    filename = ":/www.toto.com/home/toto/toto.txt";
+    df = new DataFile(filename);
+    assertNull(df.toUri());
   }
 
   @Test

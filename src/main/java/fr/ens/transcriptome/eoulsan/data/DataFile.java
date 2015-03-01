@@ -33,6 +33,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
@@ -239,6 +241,19 @@ public class DataFile implements Comparable<DataFile>, Serializable {
     }
 
     return this.protocol.getSourceAsFile(this);
+  }
+
+  /**
+   * Convert the DataFile object to an URI.
+   * @return an URI object or null if the DataFile cannot be converted into URI
+   */
+  public URI toUri() {
+
+    try {
+      return new URI(this.src);
+    } catch (URISyntaxException e) {
+      return null;
+    }
   }
 
   //
