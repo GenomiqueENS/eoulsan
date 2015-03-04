@@ -76,6 +76,7 @@
                 <tr><td>max.local.threads</td><td>integer</td><td>Define the maximum number of threads to use in local mode.</td><td>0 (no limit)</td></tr>
                 <tr><td>hadoop.threads</td><td>integer</td><td>Define the maximum number of threads to use in hadoop mode.</td><td>0 (the number of available processors)</td></tr>
                 <tr><td>mapper.arguments</td><td>string</td><td>Mapper additional command line arguments</td><td>See below in the next table</td></tr>
+                <tr><td>hadoop.mapper.required.memory</td><td>integer</td><td>The amount of mapper required memory in MB. This value is only required in Hadoop mode by the Hadoop scheduler</td><td>8</td></tr>
            </table>
 
          <br/>
@@ -90,6 +91,9 @@
                 <tr><td><a href="https://code.google.com/p/rna-star/">STAR</a></td><td>2.4.0j</td><td>2.4.0j</td><td>large-index</td><td>standard</td><td></td></tr>
            </table>
       </ul>
+
+      <p><b>Note:</b> In hadoop mode, Eoulsan use the <code>mapreduce.cluster.temp.dir</code> hadoop setting as location for the mapping temporary files (mapper indexes and FASTQ temporary files). This path must be set in the Hadoop client properties.</p>
+
     </section>
 
   </body>

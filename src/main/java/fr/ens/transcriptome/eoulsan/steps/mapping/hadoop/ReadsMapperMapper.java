@@ -73,7 +73,7 @@ import fr.ens.transcriptome.eoulsan.util.locker.ZooKeeperLocker;
  */
 public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
 
-  private static final String HADOOP_TEMP_DIR = "hadoop.tmp.dir";
+  private static final String HADOOP_TEMP_DIR = "mapreduce.cluster.temp.dir";
 
   // Parameter keys
   static final String MAPPER_NAME_KEY = Globals.PARAMETER_PREFIX
