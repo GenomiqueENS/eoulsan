@@ -169,10 +169,11 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // Set the number of reducers
     // job.setNumReduceTasks(1);
 
-    // Set output path
+    final DataFile outFile = outData.getDataFile();
 
-    FileOutputFormat.setOutputPath(job, new Path(outData.getDataFile()
-        .getSourceWithoutExtension() + ".tmp"));
+    // Set output path
+    FileOutputFormat.setOutputPath(job, new Path(outFile.getParent()
+        .getSource() + "/" + outFile.getBasename() + ".tmp"));
 
     return job;
   }
@@ -291,10 +292,11 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // Set the output value class
     job.setOutputValueClass(Long.class);
 
-    // Set output path
+    final DataFile outFile = outData.getDataFile();
 
-    FileOutputFormat.setOutputPath(job, new Path(outData.getDataFile()
-        .getSourceWithoutExtension() + ".tmp"));
+    // Set output path
+    FileOutputFormat.setOutputPath(job, new Path(outFile.getParent()
+        .getSource() + "/" + outFile.getBasename() + ".tmp"));
 
     return job;
   }
@@ -475,9 +477,11 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     fetc.initializeExpressionResults();
 
+    final DataFile outFile = outData.getDataFile();
+
     // Load map-reduce results
-    fetc.loadPreResults(new DataFile(outData.getDataFile()
-        .getSourceWithoutExtension() + ".tmp").open(), readsUsed);
+    fetc.loadPreResults(new DataFile(outFile.getParent().getSource()
+        + "/" + outFile.getBasename() + ".tmp").open(), readsUsed);
 
     fetc.saveFinalResults(fs.create(resultPath));
 
