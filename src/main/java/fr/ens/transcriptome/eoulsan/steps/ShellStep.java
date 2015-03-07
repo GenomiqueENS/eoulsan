@@ -75,8 +75,15 @@ public class ShellStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      if ("command".equals(p.getName())) {
+      switch (p.getName()) {
+
+      case "command":
         this.command = p.getValue();
+        break;
+
+      default:
+        throw new EoulsanException("Unknown parameter for step "
+            + getName() + ": " + p.getName());
       }
     }
 
