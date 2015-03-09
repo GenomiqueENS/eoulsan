@@ -24,14 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.steps;
 
-import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-
-import java.io.IOException;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -40,16 +38,18 @@ import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
- * This class define a step that execute a shell command. It use the user shell
- * to execute the command. The launched command is : $SHELL -c "command"
+ * This step is a step that always fail. This step is only used for debugging
+ * purpose.
+ * @since 2.0
  * @author Laurent Jourdren
  */
 @HadoopCompatible
-public class ShellStep extends AbstractStep {
+@ReuseStepInstance
+public class FailStep extends AbstractStep {
 
-  private static final String STEP_NAME = "shell";
+  public static final String STEP_NAME = "fail";
 
-  private String command;
+  private int delay = 0;
 
   @Override
   public String getName() {
@@ -58,15 +58,14 @@ public class ShellStep extends AbstractStep {
   }
 
   @Override
-  public String getDescription() {
-
-    return "This step allow to execute shell commands";
-  }
-
-  @Override
   public Version getVersion() {
 
     return Globals.APP_VERSION;
+  }
+
+  @Override
+  public boolean isCreateLogFiles() {
+    return false;
   }
 
   @Override
@@ -77,8 +76,8 @@ public class ShellStep extends AbstractStep {
 
       switch (p.getName()) {
 
-      case "command":
-        this.command = p.getValue();
+      case "delay":
+        this.delay = p.getIntValue();
         break;
 
       default:
@@ -87,36 +86,25 @@ public class ShellStep extends AbstractStep {
       }
     }
 
-    if (this.command == null || this.command.trim().isEmpty()) {
-      throw new EoulsanException("No command defined.");
+    // Check delay value
+    if (this.delay < 0) {
+      throw new EoulsanException("Delay cannot be lower than 0: " + this.delay);
     }
+
   }
 
   @Override
   public StepResult execute(final StepContext context, final StepStatus status) {
 
     try {
-
-      getLogger().info("Execute: " + this.command);
-
-      final Process p =
-          new ProcessBuilder(System.getenv("SHELL"), "-c", this.command)
-              .start();
-
-      final int exitCode = p.waitFor();
-
-      // If exit code is not 0 throw an exception
-      if (exitCode != 0) {
-        throw new IOException("Finish process with exit code: " + exitCode);
-      }
-
-      // Write log file
-      return status.createStepResult();
-
-    } catch (IOException | InterruptedException e) {
-      return status.createStepResult(e, "Error while running command ("
-          + this.command + "): " + e.getMessage());
+      Thread.sleep(delay * 1000);
+    } catch (InterruptedException e) {
+      context.getLogger().warning(
+          "Thread.sleep() interrupted: " + e.getMessage());
     }
 
+    return status.createStepResult(new EoulsanException(
+        "Fail of the step required by user"));
   }
+
 }

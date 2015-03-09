@@ -80,19 +80,6 @@ public class DataFile implements Comparable<DataFile>, Serializable {
   }
 
   /**
-   * Get the source of this DataFile without extension.
-   * @return a String with the source of this DataFile without extension
-   */
-  public String getSourceWithoutExtension() {
-
-    final String newName = StringUtils.filenameWithoutExtension(this.name);
-    final String result =
-        this.src.substring(0, this.src.length() - this.name.length()) + newName;
-
-    return result;
-  }
-
-  /**
    * Get the name of this DataFile.
    * @return a String with the name of this DataFile
    */
