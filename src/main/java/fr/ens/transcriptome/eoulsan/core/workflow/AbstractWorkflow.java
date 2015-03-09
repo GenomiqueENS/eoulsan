@@ -747,6 +747,16 @@ public abstract class AbstractWorkflow implements Workflow {
             + StringUtils.toTimeHumanReadable(this.stopwatch
                 .elapsed(MILLISECONDS)) + " s.");
 
+    // Inform observers of the end of the analysis
+    for (WorkflowStepObserver o : WorkflowStepObserverRegistry.getInstance()
+        .getObservers()) {
+      o.notifyWorkflowSuccess(
+          success,
+          "(Job done in "
+              + StringUtils.toTimeHumanReadable(this.stopwatch
+                  .elapsed(MILLISECONDS)) + " s.)");
+    }
+
     // Send a mail
 
     final String mailSubject =
