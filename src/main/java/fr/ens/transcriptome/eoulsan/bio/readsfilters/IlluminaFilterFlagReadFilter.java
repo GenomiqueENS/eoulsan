@@ -36,6 +36,8 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
  */
 public class IlluminaFilterFlagReadFilter extends AbstractReadFilter {
 
+  public static final String FILTER_NAME = "illuminaid";
+
   private IlluminaReadId irid;
 
   @Override
@@ -63,7 +65,7 @@ public class IlluminaFilterFlagReadFilter extends AbstractReadFilter {
   @Override
   public String getName() {
 
-    return "illuminaid";
+    return FILTER_NAME;
   }
 
   @Override
