@@ -185,7 +185,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   @Override
   public StepState getState() {
 
-    return this.observer.getState();
+    return this.observer != null ? this.observer.getState() : null;
   }
 
   @Override
