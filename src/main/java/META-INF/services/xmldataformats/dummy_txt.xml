@@ -1,0 +1,10 @@
+<dataformat>
+  <name>dummy_txt</name>
+  <description>dummy format</description>
+  <prefix>dummy</prefix>
+  <onefileperanalysis>false</onefileperanalysis>
+  <generator>fr.ens.transcriptome.eoulsan.steps.generators.DummyGeneratorStep</generator>
+  <extensions>
+  	<extension default="true">.dummy</extension>
+  </extensions>
+</dataformat>
