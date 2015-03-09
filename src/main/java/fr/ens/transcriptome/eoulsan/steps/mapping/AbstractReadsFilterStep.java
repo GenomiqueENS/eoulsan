@@ -35,8 +35,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilter;
 import fr.ens.transcriptome.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.QualityReadFilter;
-import fr.ens.transcriptome.eoulsan.bio.readsfilters.TrimReadFilter;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -98,35 +96,13 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      mrfb.addParameter(convertCompatibilityFilterKey(p.getName()),
-          p.getStringValue());
+      mrfb.addParameter(p.getName(), p.getStringValue());
     }
 
     // Force parameter checking
     mrfb.getReadFilter();
 
     this.readsFiltersParameters = mrfb.getParameters();
-  }
-
-  /**
-   * Convert old key names to new names
-   * @param key key to convert
-   * @return the new key name if necessary
-   */
-  static String convertCompatibilityFilterKey(final String key) {
-
-    if (key == null) {
-      return null;
-    }
-
-    if ("lengththreshold".equals(key)) {
-      return TrimReadFilter.FILTER_NAME + ".length.threshold";
-    }
-
-    if ("qualitythreshold".equals(key)) {
-      return QualityReadFilter.FILTER_NAME + ".threshold";
-    }
-    return key;
   }
 
   /**

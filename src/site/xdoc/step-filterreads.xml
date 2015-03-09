@@ -45,7 +45,9 @@ of the filter as the key and an empty string for the value.</p>
       <p>The filters order that will be applied on the reads is the same order of the filters parameters in the workflow file.
          So the count of the filtered reads by each filter in the log will be different according to the filter parameters order in the workflow file.</p>
 
-      <p><b>Warning:</b> Some filters can modify the output reads (e.g. the trimpolyn filter remove the polyN tails of the reads). So a filter like the quality
+      <p>When the parameter type is none, the value of the parameter is not read by the filter and it can be left empty.</p>
+
+      <p><b>Warning:</b> Some filters can modify the output reads (e.g. the <code>trimpolyn</code> filter remove the polyN tails of the reads). So a filter like the quality
 filter will not produce the same output if declared before or after the trim filter.</p>
 
       <ul>
@@ -83,15 +85,6 @@ filter will not produce the same output if declared before or after the trim fil
 		<tr><td>readnamestartwith.allowed.prefixes</td><td>string</td><td>Keep only the reads with id that starts with one of prefixes separated by comma</td><td>Not set</td><td>No</td></tr>
 		<tr><td>readnameregex.forbidden.regex</td><td>string</td><td>Remove all the reads with id that matches with the regular expression</td><td>Not set</td><td>No</td></tr>
 		<tr><td>readnameregex.allowed.regex</td><td>string</td><td>Keep only the reads with id that matches with the regular expression</td><td>Not set</td><td>No</td></tr>
-	</table>
-
-	<br/>
-        <li><b>Compatibility parameters with Eoulsan 1.0.x</b>:</li>
-	<table>
-	    <tr><th>Parameter</th><th>Type</th><th>New parameter</th><th>Description</th><th>Default value</th><th>Modify reads</th></tr>
-		<tr><td>lengthThreshold</td><td>integer</td><td>trim.length.threshold</td><td>The threshold for the length of the reads. Unit in bases.</td><td>Not Set</td><td>Yes</td></tr>
-		<tr><td>qualityThreshold</td><td>float</td><td>quality.threshold</td><td>The threshold for the mean base quality. Unit in decimal quality score.</td><td>Not Set</td><td>No</td></tr>
-		<!--tr><td>pairedend</td><td>boolean</td><td>True to enable paired-end mode</td></tr-->
 	</table>
       </ul>
 
