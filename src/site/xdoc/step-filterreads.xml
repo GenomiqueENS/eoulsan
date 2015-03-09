@@ -71,8 +71,6 @@ filter will not produce the same output if declared before or after the trim fil
          <table>
 		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th><th>Modify reads</th></tr>
 
-		<tr><td>local.threads</td><td>integer</td><td>Define the number of threads to use in local mode.</td><td>0 (use the <b>main.local.threads</b> global property)</td><td>N/A</td></tr>
-		<tr><td>max.local.threads</td><td>integer</td><td>Define the maximum number of threads to use in local mode.</td><td>0 (no limit)</td><td>N/A</td></tr>
 		<tr><td>paircheck</td><td>none</td><td>Check if the identifiers of the two ends had the same identifier</td><td>None</td><td>No</td></tr>
 		<tr><td>pairend.accept.pairend</td><td>boolean</td><td>Remove all paired-end reads if false</td><td>Not set</td><td>No</td></tr>
 		<tr><td>pairend.accept.singlend</td><td>boolean</td><td>Remove all single-end reads if false</td><td>Not set</td><td>No</td></tr>

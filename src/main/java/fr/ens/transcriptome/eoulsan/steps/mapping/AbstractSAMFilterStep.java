@@ -31,7 +31,6 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import java.util.Map;
 import java.util.Set;
 
-import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
@@ -59,8 +58,6 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   protected static final String COUNTER_GROUP = "sam_filtering";
 
   private Map<String, String> alignmentsFiltersParameters;
-  private int localThreads;
-  private int maxLocalThreads;
 
   //
   // Step methods
@@ -108,14 +105,8 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      if ("local.threads".equals(p.getName())) {
-        this.localThreads = p.getIntValue();
-      } else if ("max.local.threads".equals(p.getName())) {
-        this.maxLocalThreads = p.getIntValue();
-      } else {
-        mrafb.addParameter(convertCompatibilityFilterKey(p.getName()),
-            p.getStringValue());
-      }
+      mrafb.addParameter(convertCompatibilityFilterKey(p.getName()),
+          p.getStringValue());
     }
 
     // Force parameter checking
@@ -169,15 +160,6 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   protected Map<String, String> getAlignmentsFilterParameters() {
 
     return this.alignmentsFiltersParameters;
-  }
-
-  /**
-   * Get the number of threads to use in local mode.
-   * @return Returns the mapperThreads
-   */
-  protected int getLocalThreads() {
-
-    return Common.getThreadsNumber(this.localThreads, this.maxLocalThreads);
   }
 
 }
