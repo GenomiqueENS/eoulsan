@@ -430,10 +430,14 @@ public class TaskRunner {
 
         try {
 
-          // TODO Use the Java 7 api to check if existing link is really a link
-          // Remove existing file/symlink
+          // Remove existing symlink
           if (link.exists()) {
-            link.delete();
+
+            if (link.getMetaData().isSymbolicLink()) {
+              link.delete();
+            } else {
+              throw new IOException();
+            }
           }
 
           // Create symbolic link
