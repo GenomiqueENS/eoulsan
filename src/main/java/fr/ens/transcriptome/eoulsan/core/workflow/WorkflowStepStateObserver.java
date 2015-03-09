@@ -81,7 +81,8 @@ public class WorkflowStepStateObserver implements Serializable {
    */
   public void setState(final StepState state) {
 
-    if (state == null) {
+    if (state == null
+        || this.stepState == state || this.stepState == StepState.ABORTED) {
       return;
     }
 
@@ -91,6 +92,7 @@ public class WorkflowStepStateObserver implements Serializable {
           && state == WAITING) {
         this.stepState = READY;
       } else {
+
         this.stepState = state;
       }
     }

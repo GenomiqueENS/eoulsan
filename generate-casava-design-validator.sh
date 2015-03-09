@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Script can be used with GWT 2.4 or 2.5
-# GWT_HOME=/home/sperrin/Programmes/gwt-2.5.1
 PROJECT_NAME=DesignValidator
 GIT_REVISION=`git log -n 1 --pretty='%h (%ad)' --date=short `
 
@@ -62,7 +61,7 @@ done
 cat > $PROJECT_NAME/war/$HELP_TEXT_PATH << EOF
 Help page for validator sample-sheet for bcl2fastq-1.8.x tool (Illumina: http://support.illumina.com/downloads/bcl2fastq_conversion_software_184.ilmn):
 
-The CASAVA/bcl2fastq sample sheet validator helps users to check their run design. This tool uses only html and javascript. No data is sent to our servers when you use this tool.
+The CASAVA/bcl2fastq version 1.8 sample sheet validator helps users to check their run design. This tool uses only html and javascript. No data is sent to our servers when you use this tool.
 This tool generates a sample sheet only in csv format with a very strict syntax.
 It ensures you that the demultiplexing will not fail because the sample sheet is no correct.
 
@@ -83,7 +82,7 @@ The sample sheet input format is very strict. No field can be null or empty.
         2- Lane: lane number between 1 and 8;
         3- SampleID: name used in the fastq file;
         4- SampleRef: reference name. You can use aliases like index, you can put a key-value list (ex mm10=Mus musculus), available in the 'References Aliases' tab, the program checks if each value exists in the list; if not, it generates a warning message;
-        5- Index: sequence of index or an alias. You can put a key-value list (ex B1=CGATGT), available in the 'Indexes Aliases' tab, the program replaces the aliases by the real value in csv output;
+        5- Index: sequence of index or an alias, in case multi-indexes like TCGAAG-TCGGCA or E1-E2. You can put a key-value list (ex B1=CGATGT), available in the 'Indexes Aliases' tab, the program replaces the aliases by the real value in csv output;
         6- Description;
         7- Control: only N or Y, to identify the control sample if you need a control lane (ex: PhiX);
         8- Recipe;
@@ -211,14 +210,14 @@ public class $PROJECT_NAME implements EntryPoint {
   private boolean first = true;
 
   public static final void updateDesignWithIndexes(final CasavaDesign design,
-      final String indexes) {
+      final String indexesAvailable) {
 
-    if (design == null || indexes == null)
+    if (design == null || indexesAvailable == null)
       return;
 
     final Map<String, String> map = new HashMap<String, String>();
 
-    String[] lines = indexes.split("\n");
+    String[] lines = indexesAvailable.split("\n");
 
     for (String line : lines) {
 
@@ -232,8 +231,27 @@ public class $PROJECT_NAME implements EntryPoint {
     }
 
     for (CasavaSample sample : design) {
-      if (map.containsKey(sample.getIndex()))
-        sample.setIndex(map.get(sample.getIndex()));
+
+      // Case multi-indexes
+      final String[] indexes = sample.getIndex().split("-");
+      String res = null;
+
+      for (int i=0; i < indexes.length; i++){
+        if (map.containsKey(indexes[i])){
+
+          if (res == null){
+            // First index
+            res = map.get(indexes[i]);
+          } else {
+            res += "-" + map.get(indexes[i]);
+          }
+        }
+      }
+
+      // Update sample index
+      if (res != null){
+        sample.setIndex(res);
+      }
     }
 
   }
@@ -604,7 +622,7 @@ public class $PROJECT_NAME implements EntryPoint {
           final CasavaDesign design;
 
           if (inputText.indexOf('\t')!=-1)
-	    design = CasavaDesignUtil.parseTabulatedDesign(inputText);
+            design = CasavaDesignUtil.parseTabulatedDesign(inputText);
           else
             design = CasavaDesignUtil.parseCSVDesign(inputText);
 
@@ -679,7 +697,7 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html.tmp << EOF
     <!--                                           -->
     <!-- Any title is fine                         -->
     <!--                                           -->
-    <title>CASAVA/BCL2FASTQ samplesheet validator</title>
+    <title>CASAVA/BCL2FASTQ version 1.8 samplesheet validator</title>
 
     <!--                                           -->
     <!-- This script loads your compiled module.   -->
@@ -713,7 +731,7 @@ cat > $PROJECT_NAME/war/$PROJECT_NAME.html.tmp << EOF
 <h4 align="right">__VERSION__</h4>
     <div>
       <a href="http://www.transcriptome.ens.fr" ><img src="http://www.transcriptome.ens.fr/aozan/images/logo_genomicpariscentre-90pxh.png" alt="logo genomic paris centre" align="left"/></a>
-      <h1>CASAVA/BCL2FASTQ samplesheet validator</h1>
+      <h1>CASAVA/BCL2FASTQ version 1.8 samplesheet validator</h1>
     </div>
     <table align="center">
       <!--tr>

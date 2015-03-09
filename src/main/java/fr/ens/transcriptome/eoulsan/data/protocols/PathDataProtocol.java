@@ -105,6 +105,10 @@ public abstract class PathDataProtocol extends AbstractDataProtocol {
       result.setDirectory(true);
     }
 
+    if (status.isSymlink()) {
+      result.setSymbolicLink(true);
+    }
+
     return result;
   }
 

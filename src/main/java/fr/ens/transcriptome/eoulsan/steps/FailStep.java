@@ -28,13 +28,16 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
+import fr.ens.transcriptome.eoulsan.core.InputPorts;
+import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
+import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -43,7 +46,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @since 2.0
  * @author Laurent Jourdren
  */
-@HadoopCompatible
+@LocalOnly
 @ReuseStepInstance
 public class FailStep extends AbstractStep {
 
@@ -66,6 +69,12 @@ public class FailStep extends AbstractStep {
   @Override
   public boolean isCreateLogFiles() {
     return false;
+  }
+
+  @Override
+  public InputPorts getInputPorts() {
+
+    return InputPortsBuilder.singleInputPort(DataFormats.DUMMY_TXT);
   }
 
   @Override

@@ -66,4 +66,9 @@ public class NoUI extends AbstractUI {
     // Do nothing
   }
 
+  @Override
+  public void notifyWorkflowSuccess(final boolean success, final String message) {
+    // Do nothing
+  }
+
 }

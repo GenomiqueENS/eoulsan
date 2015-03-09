@@ -699,7 +699,7 @@ public class CommandWorkflow extends AbstractWorkflow {
               return;
             }
 
-            throw new EoulsanException("Cannot found \""
+            throw new EoulsanException("Cannot found input data format \""
                 + format.getName() + "\" for step " + step.getId() + ".");
           }
         }

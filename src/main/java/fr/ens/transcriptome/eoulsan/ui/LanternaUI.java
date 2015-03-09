@@ -57,6 +57,8 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   private final Map<WorkflowStep, Integer> stepLines = new HashMap<>();
   private int lineCount;
 
+  private boolean jobDone;
+
   //
   // UI methods
   //
@@ -102,9 +104,22 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
       return;
     }
 
-    if (step.getState() == StepState.WORKING) {
+    switch (step.getState()) {
+
+    case WORKING:
       notifyStepState(step, 0.0);
+      break;
+
+    case DONE:
+    case FAILED:
+    case ABORTED:
+      notifyStepState(step, 1.0);
+      break;
+
+    default:
+      break;
     }
+
   }
 
   @Override
@@ -117,37 +132,70 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   @Override
   public void notifyStepState(final WorkflowStep step, final double progress) {
 
-    if (this.terminal == null
-        || step == null || step.getWorkflow() != this.workflow
-        || step.getState() != StepState.WORKING
-        || !this.steps.containsKey(step)) {
+    if (this.jobDone) {
       return;
     }
 
-    final double globalProgress = computeGlobalProgress(step, progress);
+    synchronized (this) {
 
-    if (!this.stepLines.containsKey(step)) {
-      this.stepLines.put(step, this.lineCount);
-      this.lineCount++;
-      this.terminal.putCharacter('\n');
+      if (this.terminal == null
+          || step == null || step.getWorkflow() != this.workflow
+          || !this.steps.containsKey(step)) {
+        return;
+      }
+
+      final StepState state = step.getState();
+
+      if (!(state == StepState.WORKING
+          || state == StepState.DONE || state == StepState.FAILED || state == StepState.ABORTED)) {
+        return;
+      }
+
+      final double globalProgress = computeGlobalProgress(step, progress);
+
+      if (!this.stepLines.containsKey(step)) {
+        this.stepLines.put(step, this.lineCount);
+        this.lineCount++;
+        this.terminal.putCharacter('\n');
+      }
+
+      final int lastLineY = this.terminalSize.getRows() - 1;
+      final int stepLineY =
+          lastLineY - this.lineCount + this.stepLines.get(step);
+
+      // Update step progress
+      showStepProgress(stepLineY, step.getId(), progress, state);
+
+      // Update workflow progress
+      showWorkflowProgress(lastLineY, globalProgress, null, null);
+
+      this.terminal.moveCursor(0, lastLineY);
     }
-
-    final int lastLineY = this.terminalSize.getRows() - 1;
-    final int stepLineY = lastLineY - this.lineCount + this.stepLines.get(step);
-
-    // Update step progress
-    showStepProgress(stepLineY, step.getId(), progress);
-
-    // Update workflow progress
-    showWorkflowProgress(lastLineY, globalProgress);
-
-    this.terminal.moveCursor(0, lastLineY);
   }
 
   @Override
   public void notifyStepState(final WorkflowStep step, final String note) {
 
     // Do nothing
+  }
+
+  @Override
+  public void notifyWorkflowSuccess(final boolean success, final String message) {
+
+    synchronized (this) {
+
+      if (!this.jobDone) {
+
+        final int lastLineY = this.terminalSize.getRows() - 1;
+
+        // Update workflow progress
+        showWorkflowProgress(lastLineY, 1.0, success, message);
+
+        this.terminal.moveCursor(0, lastLineY);
+
+        this.jobDone = true;
+      }
+    }
   }
 
   //
@@ -161,15 +209,17 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
    * @param progress progress of the step
    */
   private void showStepProgress(final int y, final String stepId,
-      final double progress) {
+      final double progress, final StepState state) {
 
     int x = 0;
     x = putString(x, y, " * Step ");
     x = putStringSGR(x, y, String.format("%-40s", stepId), SGR.ENTER_BOLD);
     x = putString(x, y, " ");
 
-    if (progress == 1.0) {
-      x = putStringColor(x, y, "DONE", Color.GREEN);
+    if (state != StepState.WORKING) {
+      x =
+          putStringColor(x, y, state.name(), state == StepState.DONE
+              ? Color.GREEN : Color.RED);
     } else {
       x = putString(x, y, format("%.0f%% done", progress * 100));
     }
@@ -181,15 +231,27 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
    * Show the progress of the workflow.
    * @param y y position of the line of the workflow
    * @param progress progress of the workflow
+   * @param success success of the workflow
+   * @param message successMessage
    */
-  private void showWorkflowProgress(final int y, final double progress) {
+  private void showWorkflowProgress(final int y, final double progress,
+      final Boolean success, final String message) {
 
     int x = 0;
 
-    if (progress == 1.0) {
+    if (success != null) {
 
       x = putString(x, y, " * Workflow                                      ");
-      x = putStringColor(x, y, "DONE", Color.GREEN);
+
+      if (success) {
+        x = putStringColor(x, y, "DONE  ", Color.GREEN);
+
+      } else {
+        x = putStringColor(x, y, "FAILED", Color.RED);
+      }
+
+      x = putString(x, y, "  " + message);
+
       this.terminal.putCharacter('\n');
     } else {
 

@@ -41,6 +41,7 @@ class SimpleDataFileMetadata implements DataFileMetadata {
   private long lastModified = -1;
   private DataFormat dataFormat;
   private boolean directory;
+  private boolean symbolicLink;
 
   //
   // Getters
@@ -88,6 +89,12 @@ class SimpleDataFileMetadata implements DataFileMetadata {
     return this.directory;
   }
 
+  @Override
+  public boolean isSymbolicLink() {
+
+    return this.symbolicLink;
+  }
+
   //
   // Setters
   //
@@ -127,6 +134,11 @@ class SimpleDataFileMetadata implements DataFileMetadata {
     this.directory = directory;
   }
 
+  public void setSymbolicLink(final boolean symbolicLink) {
+
+    this.symbolicLink = symbolicLink;
+  }
+
   @Override
   public String toString() {
 
@@ -135,7 +147,8 @@ class SimpleDataFileMetadata implements DataFileMetadata {
         + this.contentType + ", contentEncoding=" + this.contentEncoding
         + ", contentMD5=" + this.contentMD5 + ", lastModified="
         + this.lastModified + ", dataFormat=" + this.dataFormat
-        + ", directory=" + this.directory + "}";
+        + ", directory=" + this.directory + ", symbolicLink=" + symbolicLink
+        + "}";
   }
 
   //

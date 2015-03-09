@@ -29,7 +29,6 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
@@ -64,10 +63,6 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 @HadoopOnly
 public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
-  private static final int DEFAULT_MAPPER_REQUIRED_MEMORY = 8 * 1024;
-
-  private int mapperRequiredMemory = DEFAULT_MAPPER_REQUIRED_MEMORY;
-
   @Override
   public InputPorts getInputPorts() {
 
@@ -83,22 +78,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
 
-    final Set<Parameter> parameters = new HashSet<>(stepParameters);
-
-    for (Parameter p : stepParameters) {
-
-      if ("hadoop.mapper.required.memory".equals(p.getName())) {
-
-        // Set the amount of memory required by the mapper
-        this.mapperRequiredMemory = p.getIntValue() * 1024;
-
-        // Remove the parameter to the list of parameter before calling
-        // super.configure()
-        parameters.remove(p);
-      }
-    }
-
-    super.configure(context, parameters);
+    super.configure(context, stepParameters);
 
     // Check if the mapper can be used with Hadoop
     if (!getMapper().isSplitsAllowed()) {
@@ -203,7 +183,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     jobConf.set("mapreduce.job.jvm.numtasks", "" + 1);
 
     // Set the memory required by the reads mapper
-    jobConf.set("mapreduce.map.memory.mb", "" + this.mapperRequiredMemory);
+    jobConf
+        .set("mapreduce.map.memory.mb", "" + getMapperHadoopMemoryRequired());
 
     // Set ZooKeeper client configuration
     setZooKeeperJobConfiguration(jobConf, context);

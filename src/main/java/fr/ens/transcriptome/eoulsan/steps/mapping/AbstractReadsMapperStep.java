@@ -64,12 +64,15 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
   public static final String MAPPER_ARGUMENTS_PARAMETER_NAME =
       "mapper.arguments";
+  public static final String HADOOP_MAPPER_REQUIRED_MEMORY_PARAMETER_NAME =
+      "hadoop.mapper.required.memory";
   public static final String HADOOP_THREADS_PARAMETER_NAME = "hadoop.threads";
   public static final String LOCAL_THREADS_PARAMETER_NAME = "local.threads";
   public static final String MAX_LOCAL_THREADS_PARAMETER_NAME =
       "max.local.threads";
 
   public static final int HADOOP_TIMEOUT = 60 * 60 * 1000;
+  private static final int DEFAULT_MAPPER_REQUIRED_MEMORY = 8 * 1024;
 
   private SequenceReadsMapper mapper;
   private String mapperVersion = "";
@@ -79,6 +82,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   private int hadoopThreads;
   private int localThreads;
   private int maxLocalThreads;
+  private int hadoopMapperRequiredMemory = DEFAULT_MAPPER_REQUIRED_MEMORY;
 
   //
   // Getters
@@ -132,6 +136,16 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   protected int getMapperHadoopThreads() {
 
     return this.hadoopThreads;
+  }
+
+  /**
+   * Get the amount in MB of memory required to execute the mapper. This value
+   * is required by Hadoop scheduler and if the mapper require more memory than
+   * declared the mapper process will be killed.
+   * @return the amount of memory required by the mapper in MB
+   */
+  protected int getMapperHadoopMemoryRequired() {
+    return this.hadoopMapperRequiredMemory;
   }
 
   /**
@@ -206,6 +220,11 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
       case MAX_LOCAL_THREADS_PARAMETER_NAME:
         this.maxLocalThreads = p.getIntValue();
+        break;
+
+      case HADOOP_MAPPER_REQUIRED_MEMORY_PARAMETER_NAME:
+
+        this.hadoopMapperRequiredMemory = p.getIntValue() * 1024;
         break;
 
       default:

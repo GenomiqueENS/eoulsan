@@ -58,4 +58,11 @@ public interface WorkflowStepObserver {
    */
   void notifyStepState(WorkflowStep step, String note);
 
+  /**
+   * Notify the success of the worklow.
+   * @param success the success of the workflow
+   * @param message success message
+   */
+  void notifyWorkflowSuccess(boolean success, String message);
+
 }

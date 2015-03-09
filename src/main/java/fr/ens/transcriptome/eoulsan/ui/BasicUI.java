@@ -150,6 +150,11 @@ public class BasicUI extends AbstractUI {
         + step.getId() + " " + step.getState().toString() + " note: " + note);
   }
 
+  @Override
+  public void notifyWorkflowSuccess(final boolean success, final String message) {
+    // Do nothing
+  }
+
   //
   // Other methods
   //
