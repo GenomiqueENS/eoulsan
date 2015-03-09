@@ -27,7 +27,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Strings.nullToEmpty;
-import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.FAIL;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.FAILED;
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 
 import java.io.BufferedWriter;
@@ -242,7 +242,7 @@ public class WorkflowStepResult {
         }
 
         // Set the state of the step as fail
-        result.getContext().getStep().setState(FAIL);
+        result.getContext().getStep().setState(FAILED);
       }
 
     }

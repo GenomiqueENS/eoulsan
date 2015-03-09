@@ -436,7 +436,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
       // Get the step that had failed
       final List<AbstractWorkflowStep> failedSteps =
-          getSortedStepsByState(StepState.FAIL);
+          getSortedStepsByState(StepState.FAILED);
 
       if (!failedSteps.isEmpty()) {
 

@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.Globals.STEP_RESULT_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.DONE;
-import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.FAIL;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.FAILED;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
 
@@ -730,7 +730,7 @@ public class TokenManager implements Runnable {
               sendEndOfStepTokens();
 
             } else {
-              this.step.setState(FAIL);
+              this.step.setState(FAILED);
             }
           } else {
 

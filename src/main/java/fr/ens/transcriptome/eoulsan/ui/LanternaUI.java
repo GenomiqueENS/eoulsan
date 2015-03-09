@@ -106,7 +106,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
       notifyStepState(step, 0.0);
     }
 
-    if (step.getState() == StepState.FAIL) {
+    if (step.getState() == StepState.FAILED) {
       notifyStepState(step, 1.0);
     }
   }
@@ -125,7 +125,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
     if (this.terminal == null
         || step == null
         || step.getWorkflow() != this.workflow
-        || !(step.getState() == StepState.WORKING || step.getState() == StepState.FAIL)
+        || !(step.getState() == StepState.WORKING || step.getState() == StepState.FAILED)
         || !this.steps.containsKey(step)) {
       return;
     }
@@ -143,7 +143,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
 
     // Update step progress
     showStepProgress(stepLineY, step.getId(), progress,
-        step.getState() == StepState.FAIL);
+        step.getState() == StepState.FAILED);
 
     // Update workflow progress
     showWorkflowProgress(lastLineY, globalProgress, false);
