@@ -236,9 +236,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
       default:
 
         // Add read filters parameters
-        if (!(mrfb.addParameter(
-            AbstractReadsFilterStep.convertCompatibilityFilterKey(p.getName()),
-            p.getStringValue(), true) ||
+        if (!(mrfb.addParameter(p.getName(), p.getStringValue(), true) ||
         // Add read alignments filters parameters
         mrafb.addParameter(
             AbstractSAMFilterStep.convertCompatibilityFilterKey(p.getName()),
