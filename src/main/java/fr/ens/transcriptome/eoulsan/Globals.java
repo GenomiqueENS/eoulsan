@@ -188,7 +188,7 @@ public final class Globals {
   public static final boolean PRINT_STACK_TRACE_DEFAULT = DEBUG;
 
   /** Default UI name. */
-  public static final String UI_NAME_DEFAULT = "basic";
+  public static final String UI_NAME_DEFAULT = "lanterna";
 
   /** FASTA file width. */
   public static final int FASTA_FILE_WIDTH = 60;
