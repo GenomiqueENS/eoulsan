@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.ABORTED;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
@@ -502,6 +503,11 @@ public abstract class AbstractWorkflow implements Workflow {
    * @param errorMessage error message
    */
   void emergencyStop(final Throwable exception, final String errorMessage) {
+
+    // Change working step state to aborted
+    for (AbstractWorkflowStep step : getSortedStepsByState(WORKING)) {
+      step.setState(ABORTED);
+    }
 
     // Log end of analysis
     logEndAnalysis(false);
