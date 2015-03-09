@@ -62,10 +62,16 @@ public interface DataFileMetadata {
   long getLastModified();
 
   /**
-   * Get if the file is a directory.
+   * Test if the file is a directory.
    * @return true if the file is a directory
    */
   boolean isDir();
+
+  /**
+   * Test if the file is a symbolic link.
+   * @return true if the file is symbolic link
+   */
+  boolean isSymbolicLink();
 
   /**
    * Get the DataFormat of the file.

@@ -29,6 +29,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -123,6 +124,10 @@ public class FileDataProtocol extends AbstractDataProtocol {
 
     if (f.isDirectory()) {
       result.setDirectory(true);
+    }
+
+    if (Files.isSymbolicLink(f.toPath())) {
+      result.setSymbolicLink(true);
     }
 
     return result;
