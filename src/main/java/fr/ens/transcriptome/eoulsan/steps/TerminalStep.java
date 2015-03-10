@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.steps;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
+import fr.ens.transcriptome.eoulsan.annotations.Terminal;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -40,6 +41,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  */
 @HadoopCompatible
 @ReuseStepInstance
+@Terminal
 public class TerminalStep extends AbstractStep {
 
   public static final String STEP_NAME = "terminal";
@@ -65,12 +67,6 @@ public class TerminalStep extends AbstractStep {
   public StepResult execute(final StepContext context, final StepStatus status) {
 
     return status.createStepResult();
-  }
-
-  @Override
-  public boolean isTerminalStep() {
-
-    return true;
   }
 
 }

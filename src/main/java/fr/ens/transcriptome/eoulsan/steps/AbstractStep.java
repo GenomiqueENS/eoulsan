@@ -76,11 +76,6 @@ public abstract class AbstractStep implements Step {
   }
 
   @Override
-  public boolean isTerminalStep() {
-    return false;
-  }
-
-  @Override
   public boolean isCreateLogFiles() {
     return true;
   }

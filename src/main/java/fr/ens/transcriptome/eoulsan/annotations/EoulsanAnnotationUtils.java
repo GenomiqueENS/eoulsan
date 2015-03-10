@@ -38,7 +38,7 @@ import fr.ens.transcriptome.eoulsan.core.Step;
 public class EoulsanAnnotationUtils {
 
   /**
-   * Test if a step contain the Generator annotation.
+   * Test if a step contain the @Generator annotation.
    * @param step the step to test
    * @return true if the step contains the annotation
    */
@@ -55,6 +55,16 @@ public class EoulsanAnnotationUtils {
   public static boolean isReuseStepInstance(final Step step) {
 
     return isAnnotation(step, ReuseStepInstance.class);
+  }
+
+  /**
+   * Test if a step contain the @Terminal annotation.
+   * @param step the step to test
+   * @return true if the step contains the annotation
+   */
+  public static boolean isTerminal(final Step step) {
+
+    return isAnnotation(step, Terminal.class);
   }
 
   /**

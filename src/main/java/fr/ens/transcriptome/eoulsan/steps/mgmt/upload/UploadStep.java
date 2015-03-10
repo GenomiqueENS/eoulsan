@@ -37,6 +37,7 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
+import fr.ens.transcriptome.eoulsan.annotations.Terminal;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -63,6 +64,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJarRepackager;
  * @since 1.0
  * @author Laurent Jourdren
  */
+@Terminal
 public abstract class UploadStep extends AbstractStep {
 
   private final DataFile dest;
@@ -195,12 +197,6 @@ public abstract class UploadStep extends AbstractStep {
   public Version getVersion() {
 
     return Globals.APP_VERSION;
-  }
-
-  @Override
-  public boolean isTerminalStep() {
-
-    return false;
   }
 
   //

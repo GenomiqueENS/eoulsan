@@ -93,12 +93,6 @@ public interface Step {
   StepResult execute(StepContext context, StepStatus status);
 
   /**
-   * Test if the workflow must end after this step.
-   * @return true if this step the last step of the workflow
-   */
-  boolean isTerminalStep();
-
-  /**
    * Test if log files of the step must be created.
    * @return true if log files of the step must be created.
    */

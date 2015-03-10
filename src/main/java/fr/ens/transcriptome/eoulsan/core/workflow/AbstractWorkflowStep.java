@@ -41,6 +41,7 @@ import com.google.common.collect.Sets;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
+import fr.ens.transcriptome.eoulsan.annotations.EoulsanAnnotationUtils;
 import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
@@ -678,7 +679,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.type = isGenerator(step) ? GENERATOR_STEP : STANDARD_STEP;
     this.mode = EoulsanMode.getEoulsanMode(step.getClass());
     this.parameters = Sets.newLinkedHashSet(parameters);
-    this.terminalStep = step.isTerminalStep();
+    this.terminalStep = EoulsanAnnotationUtils.isTerminal(step);
     this.createLogFiles = step.isCreateLogFiles();
     this.parallelizationMode = getParallelizationMode(step);
 
