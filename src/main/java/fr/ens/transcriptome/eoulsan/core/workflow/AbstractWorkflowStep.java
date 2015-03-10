@@ -27,8 +27,11 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.annotations.EoulsanAnnotationUtils.isGenerator;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.noInputPort;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.noOutputPort;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
 
 import java.util.Collections;
 import java.util.Set;
@@ -39,7 +42,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
-import fr.ens.transcriptome.eoulsan.annotations.Generator;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.ParallelizationMode;
@@ -432,8 +434,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
       final Step step = getStep();
       if (getType() == StepType.STANDARD_STEP
-          || getType() == StepType.DESIGN_STEP
-          || step.getClass().getAnnotation(Generator.class) != null) {
+          || getType() == StepType.DESIGN_STEP || isGenerator(step)) {
 
         // Configure step
         step.configure(new WorkflowStepConfigurationContext(this),
@@ -674,9 +675,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     // Load Step instance
     final Step step =
         StepInstances.getInstance().getStep(this, stepName, stepVersion);
-    this.type =
-        step.getClass().getAnnotation(Generator.class) != null
-            ? StepType.GENERATOR_STEP : StepType.STANDARD_STEP;
+    this.type = isGenerator(step) ? GENERATOR_STEP : STANDARD_STEP;
     this.mode = EoulsanMode.getEoulsanMode(step.getClass());
     this.parameters = Sets.newLinkedHashSet(parameters);
     this.terminalStep = step.isTerminalStep();

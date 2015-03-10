@@ -29,6 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_LOG_EXTENSION;
+import static fr.ens.transcriptome.eoulsan.annotations.EoulsanAnnotationUtils.isReuseStepInstance;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.DESIGN_STEP;
 
 import java.io.IOException;
@@ -48,6 +49,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
+import fr.ens.transcriptome.eoulsan.annotations.EoulsanAnnotationUtils;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
@@ -144,9 +146,7 @@ public class TaskRunner {
         final Step stepInstance;
         final StepType stepType =
             TaskRunner.this.context.getWorkflowStep().getType();
-        final boolean reuseAnnot =
-            TaskRunner.this.step.getClass().getAnnotation(
-                ReuseStepInstance.class) != null;
+        final boolean reuseAnnot = isReuseStepInstance(TaskRunner.this.step);
 
         final String stepDescLog =
             String
