@@ -35,6 +35,7 @@ import com.google.common.base.Splitter;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.annotations.NoLog;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
@@ -60,6 +61,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  */
 @HadoopCompatible
 @ReuseStepInstance
+@NoLog
 public class CopyOutputDataStep extends AbstractStep {
 
   public static final String STEP_NAME = "_copyoutputformat";
@@ -79,12 +81,6 @@ public class CopyOutputDataStep extends AbstractStep {
   public Version getVersion() {
 
     return Globals.APP_VERSION;
-  }
-
-  @Override
-  public boolean isCreateLogFiles() {
-
-    return false;
   }
 
   @Override

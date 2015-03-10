@@ -41,6 +41,7 @@ import com.google.common.base.Splitter;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.annotations.NoLog;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
@@ -67,6 +68,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  */
 @ReuseStepInstance
 @HadoopCompatible
+@NoLog
 public class ImportStep extends AbstractStep {
 
   public static final String STEP_NAME = "import";
@@ -87,11 +89,6 @@ public class ImportStep extends AbstractStep {
   public Version getVersion() {
 
     return Globals.APP_VERSION;
-  }
-
-  @Override
-  public boolean isCreateLogFiles() {
-    return false;
   }
 
   @Override

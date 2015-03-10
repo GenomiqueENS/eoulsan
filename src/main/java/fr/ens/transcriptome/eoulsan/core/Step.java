@@ -93,12 +93,6 @@ public interface Step {
   StepResult execute(StepContext context, StepStatus status);
 
   /**
-   * Test if log files of the step must be created.
-   * @return true if log files of the step must be created.
-   */
-  boolean isCreateLogFiles();
-
-  /**
    * Get the parallelization mode of the step.
    * @return a ParalellizationMode enum
    */

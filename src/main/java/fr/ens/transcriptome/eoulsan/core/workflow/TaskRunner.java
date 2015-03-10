@@ -29,6 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_LOG_EXTENSION;
+import static fr.ens.transcriptome.eoulsan.annotations.EoulsanAnnotationUtils.isNoLog;
 import static fr.ens.transcriptome.eoulsan.annotations.EoulsanAnnotationUtils.isReuseStepInstance;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.DESIGN_STEP;
 
@@ -49,8 +50,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
-import fr.ens.transcriptome.eoulsan.annotations.EoulsanAnnotationUtils;
-import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.core.StepRegistry;
@@ -126,8 +125,8 @@ public class TaskRunner {
 
     // Create Log handler and register it
     final Logger logger =
-        this.step.isCreateLogFiles() ? createStepLogger(this.context.getStep(),
-            threadGroupName) : null;
+        isNoLog(this.step) ? null : createStepLogger(this.context.getStep(),
+            threadGroupName);
 
     // Register the logger
     if (logger != null) {

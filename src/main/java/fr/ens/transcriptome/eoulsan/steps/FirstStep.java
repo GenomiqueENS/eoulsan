@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.steps;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.annotations.NoLog;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.checkers.CheckStore;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -41,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  */
 @HadoopCompatible
 @ReuseStepInstance
+@NoLog
 public final class FirstStep extends AbstractStep {
 
   public static final String STEP_NAME = "first";
@@ -55,11 +57,6 @@ public final class FirstStep extends AbstractStep {
   public Version getVersion() {
 
     return Globals.APP_VERSION;
-  }
-
-  @Override
-  public boolean isCreateLogFiles() {
-    return false;
   }
 
   @Override

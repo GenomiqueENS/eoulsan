@@ -76,11 +76,6 @@ public abstract class AbstractStep implements Step {
   }
 
   @Override
-  public boolean isCreateLogFiles() {
-    return true;
-  }
-
-  @Override
   public ParallelizationMode getParallelizationMode() {
     return ParallelizationMode.STANDARD;
   }

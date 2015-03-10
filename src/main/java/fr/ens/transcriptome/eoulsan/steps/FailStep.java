@@ -29,6 +29,7 @@ import java.util.Set;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
+import fr.ens.transcriptome.eoulsan.annotations.NoLog;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
@@ -48,6 +49,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  */
 @LocalOnly
 @ReuseStepInstance
+@NoLog
 public class FailStep extends AbstractStep {
 
   public static final String STEP_NAME = "fail";
@@ -64,11 +66,6 @@ public class FailStep extends AbstractStep {
   public Version getVersion() {
 
     return Globals.APP_VERSION;
-  }
-
-  @Override
-  public boolean isCreateLogFiles() {
-    return false;
   }
 
   @Override

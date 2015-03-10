@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.annotations.EoulsanAnnotationUtils.isGenerator;
+import static fr.ens.transcriptome.eoulsan.annotations.EoulsanAnnotationUtils.isNoLog;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.noInputPort;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.noOutputPort;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
@@ -680,7 +681,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.mode = EoulsanMode.getEoulsanMode(step.getClass());
     this.parameters = Sets.newLinkedHashSet(parameters);
     this.terminalStep = EoulsanAnnotationUtils.isTerminal(step);
-    this.createLogFiles = step.isCreateLogFiles();
+    this.createLogFiles = !isNoLog(step);
     this.parallelizationMode = getParallelizationMode(step);
 
     // Define output directory
