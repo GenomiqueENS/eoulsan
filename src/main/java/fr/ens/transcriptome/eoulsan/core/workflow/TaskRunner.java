@@ -242,7 +242,9 @@ public class TaskRunner {
       thread.join();
 
     } catch (InterruptedException e) {
-      getLogger().severe(e.getMessage());
+      getLogger().severe(
+          e.getMessage() == null ? "Interruption of the thread "
+              + threadGroupName : e.getMessage());
     } finally {
 
       if (logger != null) {
