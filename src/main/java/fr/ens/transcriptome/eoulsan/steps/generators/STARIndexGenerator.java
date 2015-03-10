@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.Generator;
@@ -57,9 +58,11 @@ public class STARIndexGenerator extends AbstractStep {
 
   public static final String STEP_NAME = "starindexgenerator";
 
+  private static final int OVERHANG_DEFAULT = 100;
+
   private final SequenceReadsMapper mapper = new STARReadsMapper();
 
-  private Integer overhang = 100;
+  private Integer overhang = OVERHANG_DEFAULT;
   private boolean gtfFile = false;
   private String chrStartEndFilename;
   private String gtfFeatureExon;
@@ -67,6 +70,9 @@ public class STARIndexGenerator extends AbstractStep {
   private Integer genomeSAindexNbases;
   private Integer genomeChrBinNbits;
   private boolean useExpressionStepParameters;
+
+  private int localThreads;
+  private int maxLocalThreads;
 
   @Override
   public String getName() {
@@ -148,6 +154,14 @@ public class STARIndexGenerator extends AbstractStep {
 
       case "use.expression.step.parameters":
         this.useExpressionStepParameters = p.getBooleanValue();
+        break;
+
+      case "local.threads":
+        this.localThreads = p.getIntValue();
+        break;
+
+      case "max.local.threads":
+        this.maxLocalThreads = p.getIntValue();
         break;
 
       default:
@@ -305,7 +319,8 @@ public class STARIndexGenerator extends AbstractStep {
 
       // Create the index
       GenomeMapperIndexGeneratorStep.execute(this.mapper, context,
-          additionalArguments.toString(), additionalDescription);
+          additionalArguments.toString(), additionalDescription,
+          Common.getThreadsNumber(this.localThreads, this.maxLocalThreads));
 
       // Remove temporary files
       for (File temporaryFile : temporaryFiles) {

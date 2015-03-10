@@ -238,6 +238,7 @@ public final class Common {
    */
   public static final int getThreadsNumber(final int localThreads,
       final int maxLocalThreads) {
+
     int threads = EoulsanRuntime.getSettings().getLocalThreadsNumber();
 
     if (localThreads > 0) {

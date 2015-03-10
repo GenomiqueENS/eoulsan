@@ -67,16 +67,16 @@
          <li><b>Optional parameters</b>:</li>
            <table>
                 <tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
-                <tr><td>overhang</td><td>integer</td><td>Specifies the length of the genomic sequence around the annotated junction
-to be used in constructing the splice junctions database</td><td>100</td></tr>
-                <tr><td>gtf.file</td><td>boolean</td><td>specifies the path to the file with annotated transcripts in the standard GTF/GFF3
-format</td><td>None</td></tr>
+                <tr><td>overhang</td><td>integer</td><td>Specifies the length of the genomic sequence around the annotated junction to be used in constructing the splice junctions database</td><td>100</td></tr>
+                <tr><td>gtf.file</td><td>boolean</td><td>If true, the GFF3 annotation specified in the design file will be used by STAR to extract splice junctions. Using this option greatly improve the accuracy of the mapping. It is <b>highly</b> recommanded to use this option when feature annotation is available.</td><td>None</td></tr>
                 <tr><td>file.chr.start.end</td><td>String</td><td>Path to the file that contains the list of splice junctions coordinates</td><td>None</td></tr>
                 <tr><td>gtf.feature.exon</td><td>String</td><td>Feature type (3rd column in GFF file) to be used</td><td>None</td></tr>
                 <tr><td>gtf.tag.exon.parent.transcript</td><td>String</td><td>GFF attribute to be used as feature ID</td><td>None</td></tr>
                 <tr><td>genome.sa.index.nbases</td><td>Integer</td><td>See <a href="https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf">STAR documentation</a> for more information</td><td>None</td></tr>
                 <tr><td>genome.chr.bin.nbits</td><td>Integer</td><td>See <a href="https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf">STAR documentation</a> for more information</td><td>None</td></tr>
                 <tr><td>use.expression.step.parameters</td><td>Boolean</td><td>Use the <b>genomictype</b> and <b>attributeid</b> parameters values from an <a href="./step-expression.html">expression step</a> to set the values of the <b>gtf.feature.exon</b> and <b>gtf.tag.exon.parent.transcript</b> parameters of this step</td><td>False</td></tr>
+                <tr><td>local.threads</td><td>integer</td><td>Define the number of threads to use in local mode.</td><td>0 (use the <b>main.local.threads</b> global property)</td></tr>
+                <tr><td>max.local.threads</td><td>integer</td><td>Define the maximum number of threads to use in local mode.</td><td>0 (no limit)</td></tr>
            </table>
         
       </ul>

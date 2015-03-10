@@ -183,11 +183,12 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
    * @param context
    * @param additionnalArguments additional indexer arguments
    * @param additionalDescription additional indexer arguments description
+   * @param threadCount the number of thread to use
    */
   static void execute(final SequenceReadsMapper mapper,
       final StepContext context, final String additionnalArguments,
-      final Map<String, String> additionalDescription) throws IOException,
-      EoulsanException {
+      final Map<String, String> additionalDescription, final int threadCount)
+      throws IOException, EoulsanException {
 
     checkNotNull(mapper, "mapper argument cannot be null");
     checkNotNull(context, "context argument cannot be null");
@@ -227,7 +228,10 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
     mapper.setTempDirectory(context.getLocalTempDirectory());
 
     // Set the number of thread to use
-    mapper.setThreadsNumber(Runtime.getRuntime().availableProcessors());
+    final int threads =
+        threadCount < 1
+            ? Runtime.getRuntime().availableProcessors() : threadCount;
+    mapper.setThreadsNumber(threads);
 
     // Create indexer
     final GenomeMapperIndexer indexer =
@@ -245,7 +249,7 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
       status.setMessage(this.mapper.getMapperName() + " index creation");
 
       // Create the index
-      execute(this.mapper, context, null, null);
+      execute(this.mapper, context, null, null, 0);
 
     } catch (IOException | EoulsanException e) {
 
