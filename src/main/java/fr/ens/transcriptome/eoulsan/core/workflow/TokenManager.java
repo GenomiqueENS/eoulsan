@@ -32,6 +32,8 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.FAILED;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -89,6 +91,8 @@ public class TokenManager implements Runnable {
   private final Set<InputPort> closedPorts = new HashSet<>();
   private final Set<ImmutableMap<InputPort, Data>> cartesianProductsUsed =
       new HashSet<>();
+
+  private final Set<Data> failedOutputDataToRemove = new HashSet<>();
 
   private volatile boolean endOfStep;
   private boolean isStarted;
@@ -607,6 +611,128 @@ public class TokenManager implements Runnable {
 
     }
 
+  }
+
+  //
+  // Cleanup methods
+  //
+
+  /**
+   * Add a failed task.
+   * @param failedContext failed task context
+   */
+  void addFailedOutputData(final TaskContext failedContext) {
+
+    checkNotNull(failedContext, "failedContext cannot be null");
+
+    for (OutputPort port : this.outputPorts) {
+      this.failedOutputDataToRemove.add(failedContext.getOutputData(port));
+    }
+  }
+
+  /**
+   * Remove outputs to discard.
+   */
+  void removeOutputsToDiscard() {
+
+    // Remove output only for standard steps
+    if (this.step.getType() != STANDARD_STEP) {
+      return;
+    }
+
+    final DataFile outputStepDir = this.step.getStepOutputDirectory();
+    final DataFile outputWorkflowDir =
+        this.step.getAbstractWorkflow().getOutputDirectory();
+
+    // Do nothing if the output of the step is the output of the workflow
+    if (outputWorkflowDir.equals(outputStepDir)) {
+      return;
+    }
+
+    for (Data entry : this.outputTokens.values()) {
+
+      for (Data data : entry.getListElements()) {
+
+        // Standard data file
+        if (data.getFormat().getMaxFilesCount() < 2) {
+
+          removeFileAndSymLink(data.getDataFile(), outputWorkflowDir);
+        }
+        // Multi file data file
+        else {
+
+          for (int i = 0; i < data.getDataFileCount(); i++) {
+            removeFileAndSymLink(data.getDataFile(i), outputWorkflowDir);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Remove all outputs of the step.
+   */
+  void removeAllOutputs() {
+
+    // Remove output only for standard steps
+    if (!(this.step.getType() == STANDARD_STEP || this.step.getType() == GENERATOR_STEP)) {
+      return;
+    }
+
+    final DataFile outputWorkflowDir =
+        this.step.getAbstractWorkflow().getOutputDirectory();
+
+    final List<Data> list = new ArrayList<>();
+    list.addAll(this.outputTokens.values());
+    list.addAll(this.failedOutputDataToRemove);
+
+    for (Data entry : list) {
+
+      for (Data data : entry.getListElements()) {
+
+        // Standard data file
+        if (data.getFormat().getMaxFilesCount() < 2) {
+
+          removeFileAndSymLink(data.getDataFile(), outputWorkflowDir);
+        }
+        // Multi file data file
+        else {
+
+          for (int i = 0; i < data.getDataFileCount(); i++) {
+            removeFileAndSymLink(data.getDataFile(i), outputWorkflowDir);
+          }
+        }
+      }
+    }
+
+  }
+
+  /**
+   * Remove a file and its symbolic link.
+   * @param file file to remove
+   * @param symlinkDir the directory where is the symbolic link to remove
+   */
+  private void removeFileAndSymLink(final DataFile file,
+      final DataFile symlinkDir) {
+
+    getLogger().fine("Remove output file: " + file);
+
+    try {
+      file.delete();
+    } catch (IOException e) {
+      getLogger().severe("Cannot remove data to discard: " + file);
+    }
+
+    final DataFile link = new DataFile(symlinkDir, file.getName());
+
+    try {
+      if (link.exists() && link.getMetaData().isDir()) {
+        link.delete();
+      }
+    } catch (IOException e) {
+      getLogger()
+          .severe("Cannot remove data symbolic link to discard: " + file);
+    }
   }
 
   //

@@ -245,6 +245,12 @@ public class TaskRunner {
       getLogger().severe(
           e.getMessage() == null ? "Interruption of the thread "
               + threadGroupName : e.getMessage());
+
+      // Inform the step token manager of the failed output data
+      TokenManagerRegistry.getInstance()
+          .getTokenManager(this.context.getStep())
+          .addFailedOutputData(this.context);
+
     } finally {
 
       if (logger != null) {

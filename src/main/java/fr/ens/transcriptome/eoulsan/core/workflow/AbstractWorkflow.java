@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.ABORTED;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.FAILED;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
@@ -471,6 +472,9 @@ public abstract class AbstractWorkflow implements Workflow {
       }
     }
 
+    // Remove outputs to discard
+    removeOutputsToDiscard();
+
     // Stop the workflow
     stop();
 
@@ -509,14 +513,40 @@ public abstract class AbstractWorkflow implements Workflow {
       step.setState(ABORTED);
     }
 
-    // Log end of analysis
-    logEndAnalysis(false);
-
     // Stop the workflow
     stop();
 
+    final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
+
+    // Remove all outputs of failed steps
+    for (AbstractWorkflowStep step : getSortedStepsByState(FAILED)) {
+      registry.getTokenManager(step).removeAllOutputs();
+    }
+
+    // Remove all outputs of aborted steps
+    for (AbstractWorkflowStep step : getSortedStepsByState(ABORTED)) {
+      registry.getTokenManager(step).removeAllOutputs();
+    }
+
+    // Log end of analysis
+    logEndAnalysis(false);
+
     // Exit Eoulsan
     Common.errorExit(exception, errorMessage);
+  }
+
+  /**
+   * Remove outputs to discard.
+   */
+  private void removeOutputsToDiscard() {
+
+    final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
+    for (AbstractWorkflowStep step : this.steps.keySet()) {
+
+      // Stop Token manager dedicated thread
+      final TokenManager tokenManager = registry.getTokenManager(step);
+      tokenManager.removeOutputsToDiscard();
+    }
   }
 
   //
