@@ -6,3 +6,5 @@ fr.ens.transcriptome.eoulsan.bio.readsfilters.ValidReadFilter
 fr.ens.transcriptome.eoulsan.bio.readsfilters.IlluminaFilterFlagReadFilter
 fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadNameStartsWithReadFilter
 fr.ens.transcriptome.eoulsan.bio.readsfilters.ReadNameRegexReadFilter
+fr.ens.transcriptome.eoulsan.bio.readsfilters.TrimPolyNReadFilter
+fr.ens.transcriptome.eoulsan.bio.readsfilters.LengthReadFilter
