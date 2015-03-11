@@ -119,6 +119,9 @@ public class SAM2BAMLocalStep extends AbstractSAM2BAMStep {
         new File(bamDataFile.toFile().getParentFile(), bamIndexFilename);
     bamIndexFile.renameTo(bamIndexDataFile.toFile());
 
+    // Create a symbolic link
+    bamIndexDataFile.symlink(new DataFile(bamIndexFile), true);
+
     samReader.close();
     samWriter.close();
   }
