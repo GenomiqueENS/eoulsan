@@ -36,6 +36,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
@@ -229,6 +230,26 @@ public class DataFile implements Comparable<DataFile>, Serializable {
     }
 
     return this.protocol.getSourceAsFile(this);
+  }
+
+  /**
+   * Convert the DataFile object to Path object if the underlying protocol allow
+   * it.
+   * @return a Path object or null if the underlying protocol does not allow it
+   */
+  public Path toPath() {
+
+    if (this.protocol == null) {
+      return null;
+    }
+
+    final URI uri = toUri();
+
+    if (uri == null) {
+      return null;
+    }
+
+    return Paths.get(uri);
   }
 
   /**
