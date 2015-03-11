@@ -35,6 +35,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
@@ -623,6 +624,32 @@ public class DataFile implements Comparable<DataFile>, Serializable {
     }
 
     parseSource(file.getPath());
+  }
+
+  /**
+   * Public constructor.
+   * @param path the source path of the DataFile
+   */
+  public DataFile(final Path path) {
+
+    if (path == null) {
+      throw new NullPointerException("The source path can not be null.");
+    }
+
+    parseSource(path.toFile().getPath());
+  }
+
+  /**
+   * Public constructor.
+   * @param uri the URI of the DataFile
+   */
+  public DataFile(final URI uri) {
+
+    if (uri == null) {
+      throw new NullPointerException("The source URI can not be null.");
+    }
+
+    parseSource(uri.toString());
   }
 
 }
