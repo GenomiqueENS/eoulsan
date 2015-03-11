@@ -69,7 +69,6 @@ import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class define a token manager for a step.
@@ -268,7 +267,7 @@ public class TokenManager implements Runnable {
 
           // Create link only if not already exists
           if (!link.exists()) {
-            FileUtils.createSymbolicLink(f.toFile(), link.toFile());
+            f.symlink(link, true);
           }
 
         } catch (IOException exp) {

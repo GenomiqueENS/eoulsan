@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -763,7 +764,11 @@ public class Normalization {
       final File linkFile = new File(inputFile.getParentFile(), linkFilename);
 
       if (!linkFile.exists()) {
-        FileUtils.createSymbolicLink(inputFile, linkFile);
+        try {
+          Files.createSymbolicLink(linkFile.toPath(), inputFile.toPath());
+        } catch (IOException e) {
+          // Do nothing
+        }
       }
 
     }

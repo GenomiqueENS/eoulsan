@@ -36,9 +36,9 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFiles;
 import fr.ens.transcriptome.eoulsan.data.storages.GenomeIndexStorage;
 import fr.ens.transcriptome.eoulsan.data.storages.SimpleGenomeIndexStorage;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class define a genome mapper indexer.
@@ -97,7 +97,7 @@ public final class GenomeMapperIndexer {
               + precomputedIndexDataFile + ")");
 
       // Else download it
-      downloadPrecomputedIndex(precomputedIndexDataFile, mapperIndexDataFile);
+      DataFiles.symlinkOrCopy(precomputedIndexDataFile, mapperIndexDataFile);
     }
 
   }
@@ -136,22 +136,6 @@ public final class GenomeMapperIndexer {
                 + this.mapper.getMapperName() + " archive index.");
       }
 
-    }
-  }
-
-  /**
-   * Download the index from the genome index storage.
-   * @param precomputedIndex Path to the precomputed index in the storage
-   * @param output output path to the index
-   * @throws IOException if an error occurs while copying the index
-   */
-  private void downloadPrecomputedIndex(final DataFile precomputedIndex,
-      final DataFile output) throws IOException {
-
-    if (precomputedIndex.isLocalFile() && output.isLocalFile()) {
-      FileUtils.createSymbolicLink(precomputedIndex.toFile(), output.toFile());
-    } else {
-      FileUtils.copy(precomputedIndex.rawOpen(), output.create());
     }
   }
 

@@ -26,11 +26,13 @@ package fr.ens.transcriptome.eoulsan.it;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.LocalEoulsanRuntime.initEoulsanRuntimeForExternalApp;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
-import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
+import static java.nio.file.Files.createSymbolicLink;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -218,48 +220,69 @@ public class ITSuite {
    */
   private void createSymbolicLinkToTest() {
 
-    // Path to the running link
-    final File runningDirLink =
-        new File(this.outputTestsDirectory.getParentFile(), RUNNING_LINKNAME);
-
-    // Path to the latest link
-    final File latestDirLink =
-        new File(this.outputTestsDirectory.getParentFile(), LATEST_LINKNAME);
-
-    // Path to the last succeeded test link
-    final File succeededDirLink =
-        new File(this.outputTestsDirectory.getParentFile(), SUCCEEDED_LINKNAME);
-
-    // Path to the last failed test link
-    final File failedDirLink =
-        new File(this.outputTestsDirectory.getParentFile(), FAILED_LINKNAME);
-
     // Remove old running test link
-    runningDirLink.delete();
+    removeOldLink(RUNNING_LINKNAME);
 
     // Create running test link
     if (this.testRunningCount == 0) {
-      createSymbolicLink(this.outputTestsDirectory, runningDirLink);
+
+      createNewLink(RUNNING_LINKNAME);
 
     } else {
+
       // Replace latest by running test link
-
-      // Remove old link
-      latestDirLink.delete();
-
-      // Recreate the latest link
-      createSymbolicLink(this.outputTestsDirectory, latestDirLink);
+      removeOldLinkAndCreateANewOne(LATEST_LINKNAME);
 
       if (this.failCount == 0) {
+
         // Update succeed link
-        succeededDirLink.delete();
-        createSymbolicLink(this.outputTestsDirectory, succeededDirLink);
+        removeOldLinkAndCreateANewOne(SUCCEEDED_LINKNAME);
       } else {
+
         // Update failed link
-        failedDirLink.delete();
-        createSymbolicLink(this.outputTestsDirectory, failedDirLink);
+        removeOldLinkAndCreateANewOne(FAILED_LINKNAME);
       }
     }
+  }
+
+  private void removeOldLinkAndCreateANewOne(final String linkName) {
+
+    // Remove old link
+    removeOldLink(linkName);
+
+    // Recreate link
+    createNewLink(linkName);
+  }
+
+  private void removeOldLink(final String linkName) {
+
+    final Path outputTestsPath =
+        this.outputTestsDirectory.getParentFile().toPath();
+    final Path linkPath = new File(outputTestsPath.toFile(), linkName).toPath();
+
+    // Remove old link
+    try {
+      Files.delete(linkPath);
+    } catch (IOException e) {
+      getLogger().warning(
+          "Unable to delete old " + linkName + " directory link: " + linkPath);
+    }
+  }
+
+  private void createNewLink(final String linkName) {
+
+    final Path outputTestsPath =
+        this.outputTestsDirectory.getParentFile().toPath();
+    final Path linkPath = new File(outputTestsPath.toFile(), linkName).toPath();
+
+    // Create the link
+    try {
+      createSymbolicLink(linkPath, this.outputTestsDirectory.toPath());
+    } catch (IOException e) {
+      getLogger().warning(
+          "Unable to create " + linkName + " directory link: " + linkPath);
+    }
+
   }
 
   /**
@@ -365,7 +388,9 @@ public class ITSuite {
     final File loggerFile = new File(this.loggerPath);
     if (loggerFile.exists()) {
       // Create a symbolic link in output test directory
-      createSymbolicLink(loggerFile, this.outputTestsDirectory);
+      createSymbolicLink(
+          new File(this.outputTestsDirectory, loggerFile.getName()).toPath(),
+          loggerFile.toPath());
     }
 
   }

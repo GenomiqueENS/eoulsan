@@ -34,13 +34,13 @@ import static fr.ens.transcriptome.eoulsan.it.ITFactory.PRE_TEST_SCRIPT_CONF_KEY
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.evaluateExpressions;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingFile;
-import static fr.ens.transcriptome.eoulsan.util.FileUtils.createSymbolicLink;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.recursiveDelete;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -450,13 +450,15 @@ public class IT {
     for (final File file : this.testDataDirectory.listFiles()) {
       // TODO validate if it should limited only file, not directory
       if (file.isFile()) {
-        createSymbolicLink(file, this.outputTestDirectory);
+        Files.createSymbolicLink(
+            new File(this.outputTestDirectory, file.getName()).toPath(),
+            file.toPath());
       }
     }
 
     // Create a symbolic link to the input directory
-    createSymbolicLink(this.testDataDirectory, new File(
-        this.outputTestDirectory, TEST_SOURCE_LINK_NAME));
+    Files.createSymbolicLink(new File(this.outputTestDirectory,
+        TEST_SOURCE_LINK_NAME).toPath(), this.testDataDirectory.toPath());
   }
 
   //
