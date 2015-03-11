@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -39,6 +40,7 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignBuilder;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
@@ -139,7 +141,7 @@ public class CreateDesignAction extends AbstractAction {
     Main.getInstance().flushLog();
 
     Design design = null;
-    final File designFile = new File(filename);
+    final DataFile designFile = new DataFile(filename);
 
     try {
 
@@ -159,11 +161,10 @@ public class CreateDesignAction extends AbstractAction {
       design = db.getDesign(pairEndMode);
 
       if (symlinks) {
-        DesignUtils.replaceLocalPathBySymlinks(design,
-            designFile.getParentFile());
+        DesignUtils.replaceLocalPathBySymlinks(design, designFile.getParent());
       }
 
-    } catch (EoulsanException e) {
+    } catch (EoulsanException | IOException e) {
       Common.errorExit(e, "Error: " + e.getMessage());
     }
 
@@ -182,11 +183,11 @@ public class CreateDesignAction extends AbstractAction {
             + designFile + " already exists");
       }
 
-      DesignWriter dw = new SimpleDesignWriter(designFile);
+      DesignWriter dw = new SimpleDesignWriter(designFile.create());
 
       dw.write(design);
 
-    } catch (EoulsanIOException e) {
+    } catch (EoulsanIOException | IOException e) {
       Common.errorExit(e, "File not found: " + e.getMessage());
     }
 

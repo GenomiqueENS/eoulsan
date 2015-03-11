@@ -24,7 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.design;
 
-import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +39,6 @@ import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * Utils methods for Design.
@@ -335,7 +334,7 @@ public final class DesignUtils {
    *           of if a path the design file does not exists
    */
   public static void replaceLocalPathBySymlinks(final Design design,
-      final File symlinksDir) throws EoulsanIOException {
+      final DataFile symlinksDir) throws EoulsanIOException {
 
     if (design == null) {
       return;
@@ -358,15 +357,15 @@ public final class DesignUtils {
             new ArrayList<>(s.getMetadata().getFieldAsList(field));
         for (int i = 0; i < values.size(); i++) {
 
-          final DataFile df = new DataFile(values.get(i));
+          final DataFile inFile = new DataFile(values.get(i));
 
-          if (df.isLocalFile()) {
+          if (inFile.isLocalFile()) {
 
-            final File inFile = df.toFile();
-            final File outFile = new File(symlinksDir, df.getName());
+            final DataFile outFile =
+                new DataFile(symlinksDir, inFile.getName());
 
             if (!inFile.exists()) {
-              throw new EoulsanIOException("File not exists: " + df);
+              throw new EoulsanIOException("File not exists: " + inFile);
             }
 
             if (outFile.exists()) {
@@ -374,11 +373,13 @@ public final class DesignUtils {
                   "The symlink to create, already exists: " + outFile);
             }
 
-            if (!FileUtils.createSymbolicLink(df.toFile(), outFile)) {
+            try {
+              outFile.symlink(inFile);
+            } catch (IOException e) {
               throw new EoulsanIOException("Cannot create symlink: " + outFile);
             }
 
-            values.set(i, df.getName());
+            values.set(i, inFile.getName());
           }
 
         }
