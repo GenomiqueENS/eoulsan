@@ -32,6 +32,7 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.FAILED;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.DESIGN_STEP;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
 
@@ -54,6 +55,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.Common;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -194,8 +196,11 @@ public class TokenManager implements Runnable {
     // Test if the token is an end token
     if (!token.isEndOfStepToken()) {
 
+      // Get the data
+      final Data data = token.getData();
+
       synchronized (this.outputTokens) {
-        for (Data e : token.getData().getListElements()) {
+        for (Data e : data.getListElements()) {
           this.outputTokens.put(outputPort, e);
         }
       }
@@ -204,8 +209,11 @@ public class TokenManager implements Runnable {
       if (EoulsanRuntime.getSettings().getBooleanSetting(
           "debug.compatibility.result.file.links")
           && this.step.getType() == StepType.STANDARD_STEP) {
-        createCompatibilityLinkResultFiles(token.getData());
+        createCompatibilityLinkResultFiles(data);
       }
+
+      // Create symbolic links in output directory
+      createSymlinksInOutputDirectory(data);
 
       // Get the metadata storage
       final DataMetadataStorage metadataStorage =
@@ -214,7 +222,7 @@ public class TokenManager implements Runnable {
 
       // Store token metadata only if step is not skipped
       if (!this.step.isSkip()) {
-        metadataStorage.saveMetaData(token.getData());
+        metadataStorage.saveMetaData(data);
       }
     }
   }
@@ -270,6 +278,50 @@ public class TokenManager implements Runnable {
       }
     }
 
+  }
+
+  /**
+   * Create symbolic links in output directory.
+   * @param data the data
+   */
+  private void createSymlinksInOutputDirectory(final Data data) {
+
+    Preconditions.checkNotNull(data, "data argument cannot be null");
+
+    final DataFile outputDir =
+        this.step.getAbstractWorkflow().getOutputDirectory();
+    final DataFile workingDir = this.step.getStepOutputDirectory();
+
+    // Nothing to to if the step working directory is the output directory
+    if (this.step.getType() == DESIGN_STEP || outputDir.equals(workingDir)) {
+      return;
+    }
+
+    for (Data dataElement : data.getListElements()) {
+      for (DataFile file : DataUtils.getDataFiles(dataElement)) {
+
+        final DataFile link = new DataFile(outputDir, file.getName());
+
+        try {
+
+          // Remove existing symlink
+          if (link.exists()) {
+
+            if (link.getMetaData().isSymbolicLink()) {
+              link.delete();
+            } else {
+              throw new IOException();
+            }
+          }
+
+          // Create symbolic link
+          file.symlink(link);
+        } catch (IOException e) {
+          EoulsanLogger.getLogger().severe(
+              "Cannot create symbolic link: " + link);
+        }
+      }
+    }
   }
 
   /**

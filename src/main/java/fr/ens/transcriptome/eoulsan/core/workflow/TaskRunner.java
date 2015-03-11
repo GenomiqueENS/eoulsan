@@ -31,7 +31,6 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_LOG_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.annotations.EoulsanAnnotationUtils.isNoLog;
 import static fr.ens.transcriptome.eoulsan.annotations.EoulsanAnnotationUtils.isReuseStepInstance;
-import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.DESIGN_STEP;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -44,7 +43,6 @@ import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
@@ -308,9 +306,6 @@ public class TaskRunner {
           this.context.getStep().getWorkflowOutputPorts().getPort(portName);
       final Data data = this.context.getOutputData(port);
 
-      // Create symbolic links
-      createSymlinksInOutputDirectory(data);
-
       // Send the token
       this.context.getStep().sendToken(new Token(port, data));
     }
@@ -409,52 +404,6 @@ public class TaskRunner {
     handler.setLevel(Level.parse(logLevel.toUpperCase()));
 
     return logger;
-  }
-
-  /**
-   * Check if the the output data exists.
-   * @param outData data to test
-   */
-  private void createSymlinksInOutputDirectory(final Data outData) {
-
-    Preconditions.checkNotNull(outData, "outData argument cannot be null");
-
-    final DataFile outputDir =
-        this.context.getStep().getAbstractWorkflow().getOutputDirectory();
-
-    final DataFile workingDir = this.context.getStep().getStepOutputDirectory();
-
-    // Nothing to to if the step working directory is the output directory
-    if (this.context.getStep().getType() == DESIGN_STEP
-        || outputDir.equals(workingDir)) {
-      return;
-    }
-
-    for (Data data : outData.getListElements()) {
-      for (DataFile file : DataUtils.getDataFiles(data)) {
-
-        final DataFile link = new DataFile(outputDir, file.getName());
-
-        try {
-
-          // Remove existing symlink
-          if (link.exists()) {
-
-            if (link.getMetaData().isSymbolicLink()) {
-              link.delete();
-            } else {
-              throw new IOException();
-            }
-          }
-
-          // Create symbolic link
-          file.symlink(link);
-        } catch (IOException e) {
-          EoulsanLogger.getLogger().severe(
-              "Cannot create symbolic link: " + link);
-        }
-      }
-    }
   }
 
   //
