@@ -715,24 +715,32 @@ public class TokenManager implements Runnable {
   private void removeFileAndSymLink(final DataFile file,
       final DataFile symlinkDir) {
 
-    getLogger().fine("Remove output file: " + file);
-
-    try {
-      file.delete();
-    } catch (IOException e) {
-      getLogger().severe("Cannot remove data to discard: " + file);
-    }
-
+    // Remove the symbolic link because Java cannot remove a link with an
+    // existing target
     final DataFile link = new DataFile(symlinkDir, file.getName());
-
     try {
-      if (link.exists() && link.getMetaData().isDir()) {
+
+      if (link.getMetaData().isSymbolicLink()) {
+
+        getLogger().fine("Remove symbolic link: " + link);
         link.delete();
       }
     } catch (IOException e) {
-      getLogger()
-          .severe("Cannot remove data symbolic link to discard: " + file);
+      getLogger().severe(
+          "Cannot remove data symbolic link to discard: "
+              + link + " (" + e.getMessage() + ")");
     }
+
+    // Remove the file
+    getLogger().fine("Remove output file: " + file);
+    try {
+      file.delete();
+    } catch (IOException e) {
+      getLogger().severe(
+          "Cannot remove data to discard: "
+              + file + " (" + e.getMessage() + ")");
+    }
+
   }
 
   //
