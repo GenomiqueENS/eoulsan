@@ -418,9 +418,13 @@ public class DataFile implements Comparable<DataFile>, Serializable {
 
     if (relativize) {
 
+      final DataFile newTargetDir =
+          relativize(link.getParent(), this.getParent());
+
       final DataFile newTarget =
-          new DataFile(relativize(link.getParent(), this.getParent()),
-              link.getName());
+          "".equals(newTargetDir.getSource())
+              ? new DataFile(this.getName()) : new DataFile(relativize(
+                  link.getParent(), this.getParent()), this.getName());
 
       getProtocol().symlink(newTarget, link);
 
