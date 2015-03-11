@@ -132,14 +132,15 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   @Override
   public void notifyStepState(final WorkflowStep step, final double progress) {
 
-    if (this.jobDone) {
+    // Do nothing if there is no terminal or if the job is completed
+    if (this.terminal == null || this.jobDone) {
       return;
     }
 
     synchronized (this) {
 
-      if (this.terminal == null
-          || step == null || step.getWorkflow() != this.workflow
+      if (step == null
+          || step.getWorkflow() != this.workflow
           || !this.steps.containsKey(step)) {
         return;
       }
@@ -182,20 +183,23 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   @Override
   public void notifyWorkflowSuccess(final boolean success, final String message) {
 
+    // Do nothing if there is no terminal or if the job is completed
+    if (this.terminal == null || this.jobDone) {
+      return;
+    }
+
     synchronized (this) {
 
-      if (!this.jobDone) {
+      final int lastLineY = this.terminalSize.getRows() - 1;
 
-        final int lastLineY = this.terminalSize.getRows() - 1;
+      // Update workflow progress
+      showWorkflowProgress(lastLineY, 1.0, success, message);
 
-        // Update workflow progress
-        showWorkflowProgress(lastLineY, 1.0, success, message);
+      this.terminal.moveCursor(0, lastLineY);
 
-        this.terminal.moveCursor(0, lastLineY);
-
-        this.jobDone = true;
-      }
+      this.jobDone = true;
     }
+
   }
 
   //
