@@ -395,6 +395,18 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    */
   public void symlink(final DataFile link) throws IOException {
 
+    symlink(link, false);
+  }
+
+  /**
+   * Create a symbolic link that target is the current file.
+   * @param link symbolic file
+   * @param relativize relativize the link target path
+   * @throws IOException if an error occurs while creating the symbolic link
+   */
+  public void symlink(final DataFile link, final boolean relativize)
+      throws IOException {
+
     if (link == null) {
       throw new NullPointerException("The link can not be null.");
     }
@@ -404,7 +416,17 @@ public class DataFile implements Comparable<DataFile>, Serializable {
           "The underlying protocol does not allow creating symbolic links");
     }
 
-    getProtocol().symlink(this, link);
+    if (relativize) {
+
+      final DataFile newTarget =
+          new DataFile(relativize(link.getParent(), this.getParent()),
+              link.getName());
+
+      getProtocol().symlink(newTarget, link);
+
+    } else {
+      getProtocol().symlink(this, link);
+    }
   }
 
   /**
@@ -511,6 +533,20 @@ public class DataFile implements Comparable<DataFile>, Serializable {
       this.name = source.substring(lastSlashPos + 1);
     }
 
+  }
+
+  /**
+   * Relativize two path.
+   * @param f1 first path
+   * @param f2 second path
+   * @return the relative path
+   */
+  private static final DataFile relativize(final DataFile f1, final DataFile f2) {
+
+    final URI uri1 = f1.toUri();
+    final URI uri2 = f2.toUri();
+
+    return new DataFile(uri1.relativize(uri2));
   }
 
   //

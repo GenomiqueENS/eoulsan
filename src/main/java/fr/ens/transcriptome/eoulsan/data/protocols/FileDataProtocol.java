@@ -72,7 +72,7 @@ public class FileDataProtocol extends AbstractDataProtocol {
     final String protocolName = dataFile.getProtocolPrefixInSource();
 
     if (protocolName == null) {
-      return new File(dataFile.getSource()).getAbsoluteFile();
+      return new File(dataFile.getSource());
     }
 
     return new File(dataFile.getSource().substring(protocolName.length() + 1));
@@ -214,10 +214,10 @@ public class FileDataProtocol extends AbstractDataProtocol {
           + getName() + " protocol: " + link);
     }
 
-    final File targetFile = target.toFile();
-    final File linkFile = link.toFile();
+    final Path targetPath = target.toFile().toPath();
+    final Path linkPath = link.toFile().toPath();
 
-    FileUtils.createSymbolicLink(targetFile, linkFile);
+    Files.createSymbolicLink(linkPath, targetPath);
   }
 
   @Override
