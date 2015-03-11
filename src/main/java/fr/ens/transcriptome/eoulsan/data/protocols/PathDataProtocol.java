@@ -31,6 +31,7 @@ import java.io.OutputStream;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime;
@@ -81,7 +82,7 @@ public abstract class PathDataProtocol extends AbstractDataProtocol {
   @Override
   public DataFileMetadata getMetadata(final DataFile src) throws IOException {
 
-    if (!exists(src)) {
+    if (!exists(src, true)) {
       throw new FileNotFoundException("File not found: " + src);
     }
 
@@ -113,12 +114,26 @@ public abstract class PathDataProtocol extends AbstractDataProtocol {
   }
 
   @Override
-  public boolean exists(final DataFile src) {
+  public boolean exists(final DataFile src, final boolean followLink) {
 
     final Path path = getPath(src);
 
     try {
-      return PathUtils.exists(path, this.conf);
+
+      final FileSystem fs = path.getFileSystem(conf);
+
+      final FileStatus status = fs.getFileStatus(path);
+
+      if (status == null) {
+        return false;
+      }
+
+      if (status.isSymlink()) {
+
+        return fs.getFileStatus(fs.getLinkTarget(path)) != null;
+      }
+
+      return true;
     } catch (IOException e) {
       return false;
     }

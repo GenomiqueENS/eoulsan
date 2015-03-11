@@ -96,9 +96,12 @@ public interface DataProtocol {
   /**
    * Test a source exists.
    * @param src source to use
+   * @param followLink if the source is a symbolic file and followLink is true,
+   *          it will check if the symbolic link target exists instead of the
+   *          link
    * @return true if the source exists
    */
-  boolean exists(DataFile src);
+  boolean exists(DataFile src, boolean followLink);
 
   /**
    * Create a directory.

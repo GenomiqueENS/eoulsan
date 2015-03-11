@@ -340,8 +340,18 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    */
   public boolean exists() {
 
+    return exists(true);
+  }
+
+  /**
+   * Check if this DataFile exists.
+   * @param followinLink follow the link target if the file is a symbolic link
+   * @return true if this DataFile exists
+   */
+  public boolean exists(final boolean followLink) {
+
     try {
-      return getProtocol().exists(this);
+      return getProtocol().exists(this, followLink);
     } catch (IOException e) {
 
       return false;

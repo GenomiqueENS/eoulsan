@@ -406,7 +406,7 @@ public class S3DataProtocol implements DataProtocol {
   @Override
   public DataFileMetadata getMetadata(final DataFile src) throws IOException {
 
-    if (!exists(src)) {
+    if (!exists(src, true)) {
       throw new FileNotFoundException("File not found: " + src);
     }
 
@@ -454,7 +454,7 @@ public class S3DataProtocol implements DataProtocol {
   }
 
   @Override
-  public boolean exists(final DataFile src) {
+  public boolean exists(final DataFile src, final boolean followLink) {
 
     try {
       return new S3URL(src).getS3Object() != null;

@@ -59,7 +59,7 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
   }
 
   @Override
-  public boolean exists(final DataFile src) {
+  public boolean exists(final DataFile src, final boolean followLink) {
 
     try {
 

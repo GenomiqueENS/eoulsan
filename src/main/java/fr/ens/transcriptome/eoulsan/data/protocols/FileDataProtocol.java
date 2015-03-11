@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -91,7 +93,7 @@ public class FileDataProtocol extends AbstractDataProtocol {
   @Override
   public DataFileMetadata getMetadata(final DataFile src) throws IOException {
 
-    if (!exists(src)) {
+    if (!exists(src, true)) {
       throw new FileNotFoundException("File not found: " + src);
     }
 
@@ -134,9 +136,17 @@ public class FileDataProtocol extends AbstractDataProtocol {
   }
 
   @Override
-  public boolean exists(final DataFile src) {
+  public boolean exists(final DataFile src, final boolean followLink) {
 
-    return getSourceAsFile(src).exists();
+    // return getSourceAsFile(src).exists();
+
+    final Path path = getSourceAsFile(src).toPath();
+
+    if (followLink) {
+      Files.exists(path);
+    }
+
+    return Files.exists(path, LinkOption.NOFOLLOW_LINKS);
   }
 
   @Override
@@ -219,11 +229,9 @@ public class FileDataProtocol extends AbstractDataProtocol {
   @Override
   public void delete(final DataFile file) throws IOException {
 
-    final File f = getSourceAsFile(file);
+    final Path path = getSourceAsFile(file).toPath();
 
-    if (!f.delete()) {
-      throw new IOException("Unable to create the directory: " + f);
-    }
+    Files.delete(path);
   }
 
   @Override
