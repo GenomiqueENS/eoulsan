@@ -87,6 +87,22 @@ public class DataFiles {
   public static void symlinkOrCopy(final DataFile input, final DataFile output)
       throws IOException {
 
+    symlinkOrCopy(input, output, false);
+  }
+
+  /**
+   * Create a symbolic link if the input and output use the same protocol and if
+   * symbolic links are supported by the protocol. If symbolic link cannot be
+   * created, the input file will be copied.
+   * @param input input file
+   * @param output output file
+   * @param relativize relativize the link target path
+   * @throws IOException if an error occurs while copying data or creating the
+   *           symbolic link
+   */
+  public static void symlinkOrCopy(final DataFile input, final DataFile output,
+      final boolean relativize) throws IOException {
+
     checkNotNull(input, "input file cannot be null");
     checkNotNull(output, "output file cannot be null");
 
@@ -103,7 +119,7 @@ public class DataFiles {
 
       if (inProtocol.equals(outProtocol) && inProtocol.canSymlink()) {
 
-        input.symlink(output);
+        input.symlink(output, relativize);
       } else {
         copy(input, output);
       }

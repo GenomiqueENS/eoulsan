@@ -315,7 +315,7 @@ public class TokenManager implements Runnable {
           }
 
           // Create symbolic link
-          file.symlink(link);
+          file.symlink(link, true);
         } catch (IOException e) {
           EoulsanLogger.getLogger().severe(
               "Cannot create symbolic link: " + link);

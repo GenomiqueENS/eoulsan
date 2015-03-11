@@ -182,7 +182,7 @@ public class CopyInputDataStep extends AbstractStep {
       checkFiles(in, out);
 
       // Copy file
-      DataFiles.symlinkOrCopy(in, out);
+      DataFiles.symlinkOrCopy(in, out, true);
     } else {
 
       // Handle multi file format like FASTQ files
@@ -196,7 +196,7 @@ public class CopyInputDataStep extends AbstractStep {
         checkFiles(in, out);
 
         // Copy file
-        DataFiles.symlinkOrCopy(in, out);
+        DataFiles.symlinkOrCopy(in, out, true);
       }
     }
   }

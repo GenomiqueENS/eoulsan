@@ -225,7 +225,7 @@ public class ImportStep extends AbstractStep {
           }
 
           // Copy or create symbolic link
-          DataFiles.symlinkOrCopy(inputFile, outputFile);
+          DataFiles.symlinkOrCopy(inputFile, outputFile, true);
         }
 
         // Set the metadata for the data

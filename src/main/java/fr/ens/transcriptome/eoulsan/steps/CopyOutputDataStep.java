@@ -216,7 +216,7 @@ public class CopyOutputDataStep extends AbstractStep {
       checkFiles(in, out);
 
       // Copy file
-      DataFiles.symlinkOrCopy(in, out);
+      DataFiles.symlinkOrCopy(in, out, true);
 
       // Set the DataFile in the output data object
       DataUtils.setDataFile(outData, out);
@@ -237,7 +237,7 @@ public class CopyOutputDataStep extends AbstractStep {
         checkFiles(in, out);
 
         // Copy file
-        DataFiles.symlinkOrCopy(in, out);
+        DataFiles.symlinkOrCopy(in, out, true);
       }
 
       // Set the DataFile in the output data object
