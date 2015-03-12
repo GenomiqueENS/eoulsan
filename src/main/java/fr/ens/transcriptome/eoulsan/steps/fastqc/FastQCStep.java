@@ -163,7 +163,7 @@ public class FastQCStep extends AbstractStep {
             DataFormatRegistry.getInstance().getDataFormatFromNameOrAlias(
                 p.getLowerStringValue());
 
-        if (!(DataFormats.MAPPER_RESULTS_SAM.equals(format) || DataFormats.MAPPER_RESULTS_BAM
+        if (!(DataFormats.MAPPER_RESULTS_SAM.equals(format) || DataFormats.READS_FASTQ
             .equals(format))) {
           throw new EoulsanException(
               "Unknown or format not supported as input format for FastQC: "

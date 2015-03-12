@@ -245,6 +245,10 @@ public class ITSuite {
     }
   }
 
+  /**
+   * Removes the old link and create a new one.
+   * @param linkName the link name
+   */
   private void removeOldLinkAndCreateANewOne(final String linkName) {
 
     // Remove old link
@@ -254,6 +258,10 @@ public class ITSuite {
     createNewLink(linkName);
   }
 
+  /**
+   * Removes the old link.
+   * @param linkName the link name
+   */
   private void removeOldLink(final String linkName) {
 
     final Path outputTestsPath =
@@ -269,6 +277,10 @@ public class ITSuite {
     }
   }
 
+  /**
+   * Creates the new link.
+   * @param linkName the link name
+   */
   private void createNewLink(final String linkName) {
 
     final Path outputTestsPath =
