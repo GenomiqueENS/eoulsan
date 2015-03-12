@@ -31,24 +31,24 @@ import org.junit.Test;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 
-public class TrimPolyNReadFilterTest {
+public class TrimPolyNEndReadFilterTest {
 
   @Test
   public void testAcceptReadSequence() throws EoulsanException {
 
-    ReadFilter filter = new TrimPolyNReadFilter();
+    ReadFilter filter = new TrimPolyNEndReadFilter();
     filter.init();
 
     assertFalse(filter.accept(null));
 
     ReadSequence read = new ReadSequence();
-    assertTrue(filter.accept(read));
+    assertFalse(filter.accept(read));
 
     read.setName("read1");
-    assertTrue(filter.accept(read));
+    assertFalse(filter.accept(read));
 
     read.setQuality("xxxxxxxx");
-    assertTrue(filter.accept(read));
+    assertFalse(filter.accept(read));
 
     read = new ReadSequence(0, "toto", "ATGCATGC", "xxxxxxxx");
     assertTrue(filter.accept(read));

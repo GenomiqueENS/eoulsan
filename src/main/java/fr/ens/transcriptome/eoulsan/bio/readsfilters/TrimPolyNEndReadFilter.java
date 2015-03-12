@@ -33,9 +33,9 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class TrimPolyNReadFilter extends AbstractReadFilter {
+public class TrimPolyNEndReadFilter extends AbstractReadFilter {
 
-  public static final String FILTER_NAME = "trimpolyn";
+  public static final String FILTER_NAME = "trimpolynend";
   private static final Pattern PATTERN = Pattern.compile("NN+$");
 
   @Override
@@ -46,6 +46,11 @@ public class TrimPolyNReadFilter extends AbstractReadFilter {
     }
 
     trim(read);
+
+    // Do no accept 0 length reads
+    if (read.length() == 0) {
+      return false;
+    }
 
     return true;
   }
