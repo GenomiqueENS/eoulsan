@@ -439,13 +439,9 @@ public class DataFile implements Comparable<DataFile>, Serializable {
 
     if (relativize) {
 
-      final DataFile newTargetDir =
-          relativize(link.getParent(), this.getParent());
-
       final DataFile newTarget =
-          "".equals(newTargetDir.getSource())
-              ? new DataFile(this.getName()) : new DataFile(relativize(
-                  link.getParent(), this.getParent()), this.getName());
+          new DataFile(relativize(link.getParent(), this.getParent()),
+              this.getName());
 
       getProtocol().symlink(newTarget, link);
 
@@ -671,7 +667,14 @@ public class DataFile implements Comparable<DataFile>, Serializable {
       throw new NullPointerException("The name can not be null.");
     }
 
-    parseSource(parentFile.getSource() + separator + filename);
+    final String parentSource = parentFile.getSource();
+
+    // If parent is empty, use only the filename
+    if (parentSource == null || "".equals(parentSource)) {
+      parseSource(filename);
+    } else {
+      parseSource(parentFile.getSource() + separator + filename);
+    }
   }
 
   /**
