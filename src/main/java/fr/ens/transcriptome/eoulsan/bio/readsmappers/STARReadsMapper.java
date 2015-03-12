@@ -55,7 +55,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   private static final String MAPPER_STANDARD_EXECUTABLE = "STARstatic";
   private static final String MAPPER_LARGE_INDEX_EXECUTABLE = "STARlong";
 
-  public static final String DEFAULT_ARGUMENTS = "";
+  public static final String DEFAULT_ARGUMENTS = "--outSAMunmapped Within";
 
   private static final String SYNC = STARReadsMapper.class.getName();
 
