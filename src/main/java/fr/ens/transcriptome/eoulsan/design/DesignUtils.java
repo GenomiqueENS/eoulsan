@@ -374,7 +374,7 @@ public final class DesignUtils {
             }
 
             try {
-              outFile.symlink(inFile);
+              inFile.symlink(outFile);
             } catch (IOException e) {
               throw new EoulsanIOException("Cannot create symlink: " + outFile);
             }
