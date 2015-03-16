@@ -77,6 +77,8 @@ public final class Settings implements Serializable {
   private static final String RSERVE_SERVER_NAME_KEY = MAIN_PREFIX_KEY
       + "rserve.servername";
 
+  private static final String RSERVE_KEEP_FILES_KEY = MAIN_PREFIX_KEY
+      + "rserve.keep.files";
   private static final String SAVE_RSCRIPTS_KEY = MAIN_PREFIX_KEY
       + "save.r.scripts";
 
@@ -129,12 +131,12 @@ public final class Settings implements Serializable {
   private static final String UI_NAME_KET = MAIN_PREFIX_KEY + "ui.name";
 
   private static final Set<String> FORBIDDEN_KEYS = Utils
-      .unmodifiableSet(new String[] { HADOOP_AWS_ACCESS_KEY,
-          HADOOP_AWS_SECRET_KEY });
+      .unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
+          HADOOP_AWS_SECRET_KEY});
 
   private static final Set<String> OBFUSCATED_KEYS = Utils
-      .unmodifiableSet(new String[] { AWS_ACCESS_KEY, AWS_SECRET_KEY,
-          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY });
+      .unmodifiableSet(new String[] {AWS_ACCESS_KEY, AWS_SECRET_KEY,
+          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY});
 
   //
   // Getters
@@ -218,6 +220,16 @@ public final class Settings implements Serializable {
   public String getRServeServerName() {
 
     return this.properties.getProperty(RSERVE_SERVER_NAME_KEY);
+  }
+
+  /**
+   * Test if save.r.keep.files is true
+   * @return boolean if the RServe files must be kept
+   */
+  public boolean isKeepRServeFiles() {
+
+    return Boolean.parseBoolean(this.properties
+        .getProperty(RSERVE_KEEP_FILES_KEY));
   }
 
   /**
@@ -605,6 +617,16 @@ public final class Settings implements Serializable {
   public void setSaveRscript(final boolean krs) {
 
     this.properties.setProperty(SAVE_RSCRIPTS_KEY, Boolean.toString(krs));
+  }
+
+  /**
+   * Set if save Rscripts is true
+   * @param keepRServeFiles true if Rserve file must be kept
+   */
+  public void setKeepRServeFiles(final boolean keepRServeFiles) {
+
+    this.properties.setProperty(RSERVE_KEEP_FILES_KEY,
+        Boolean.toString(keepRServeFiles));
   }
 
   /**

@@ -36,8 +36,10 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngineException;
@@ -93,6 +95,11 @@ public class Normalization {
    */
   public void run(final StepContext context, final Data data)
       throws EoulsanException {
+
+    // Check if there more than one file to normalize
+    if (data.size() < 2) {
+      throw new EoulsanException("Cannot normalize less than 2 input files");
+    }
 
     if (context.getSettings().isRServeServerEnabled()) {
       getLogger().info("Normalization : Rserve mode");
@@ -161,9 +168,12 @@ public class Normalization {
         String rScript = generateScript(experimentSampleList, context);
         runRnwScript(rScript, true);
 
-        removeExpressionFiles(experimentSampleList);
+        if (!context.getSettings().isKeepRServeFiles()) {
+          removeExpressionFiles(experimentSampleList);
+        }
 
         if (!context.getSettings().isSaveRscripts()) {
+          getLogger().info("Remove R script on RServe: " + rScript);
           this.rConnection.removeFile(rScript);
         }
 
@@ -180,7 +190,10 @@ public class Normalization {
 
       try {
 
-        this.rConnection.removeAllFiles();
+        if (!context.getSettings().isKeepRServeFiles()) {
+          this.rConnection.removeAllFiles();
+        }
+
         this.rConnection.disConnect();
 
       } catch (Exception e) {
@@ -263,6 +276,7 @@ public class Normalization {
       final boolean isRserveEnable) throws REngineException, EoulsanException {
 
     if (isRserveEnable) {
+      getLogger().info("Execute RNW script: " + rnwScript);
       this.rConnection.executeRnwCode(rnwScript);
 
     } else {
@@ -448,6 +462,7 @@ public class Normalization {
               + experimentSamplesList.get(0).getMetadata().getExperiment()
               + ".Rnw";
       if (context.getSettings().isRServeServerEnabled()) {
+        getLogger().info("Write script on Rserve: " + rScript);
         this.rConnection.writeStringAsFile(rScript, sb.toString());
       } else {
         Writer writer = FileUtils.createFastBufferedWriter(rScript);
@@ -731,9 +746,12 @@ public class Normalization {
   /**
    * Put all expression files needed for the analysis on the R server.
    * @throws REngineException if an error occurs on RServe server
+   * @throws EoulsanException if try to overwrite an existing expression file
    */
   private void putExpressionFiles(final List<Sample> experiment, final Data data)
-      throws REngineException {
+      throws REngineException, EoulsanException {
+
+    final Set<String> outputFilenames = new HashSet<>();
 
     for (Data d : data.getListElements()) {
 
@@ -742,7 +760,22 @@ public class Normalization {
       final String outputFilename =
           this.expressionFilesPrefix + sampleId + this.expressionFilesSuffix;
 
+      // Check if the sample ID exists
+      if (sampleId == -1) {
+        throw new EoulsanException("No sample Id found for input file: "
+            + inputFile);
+      }
+
+      // Check if try to overwrite an existing output file
+      if (outputFilenames.contains(outputFilename)) {
+        throw new EoulsanException(
+            "Cannot overwrite expression file on Rserve: " + outputFilename);
+      }
+      outputFilenames.add(outputFilename);
+
       // Put file on rserve server
+      getLogger().info(
+          "Put file on RServe: " + inputFile + " to " + outputFilename);
       this.rConnection.putFile(inputFile, outputFilename);
     }
 
