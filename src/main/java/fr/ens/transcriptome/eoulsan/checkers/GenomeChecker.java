@@ -100,7 +100,7 @@ public class GenomeChecker implements Checker {
 
     } catch (IOException e) {
       throw new EoulsanException("Error while reading genome "
-          + genomeFile.getSource() + " for checking");
+          + genomeFile.getSource() + " for checking: " + e.getMessage());
     } catch (BadBioEntryException e) {
       throw new EoulsanException("Found bad read entry in genome "
           + genomeFile.getSource() + ": " + e.getMessage());
