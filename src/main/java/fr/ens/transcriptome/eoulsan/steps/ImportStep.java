@@ -51,6 +51,7 @@ import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.core.workflow.DataMetadataStorage;
+import fr.ens.transcriptome.eoulsan.core.workflow.DataUtils;
 import fr.ens.transcriptome.eoulsan.core.workflow.FileNaming;
 import fr.ens.transcriptome.eoulsan.core.workflow.FileNamingParsingRuntimeException;
 import fr.ens.transcriptome.eoulsan.data.Data;
@@ -58,6 +59,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFiles;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
+import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
@@ -167,6 +169,12 @@ public class ImportStep extends AbstractStep {
 
     final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
+    // Create a map with the samples
+    final Map<String, Sample> samples = new HashMap<>();
+    for (Sample sample : context.getWorkflow().getDesign().getSamples()) {
+      samples.put(FileNaming.toValidName(sample.getName()), sample);
+    }
+
     try {
 
       // Sort the list of files to process
@@ -197,6 +205,17 @@ public class ImportStep extends AbstractStep {
                   context.getOutputData(format, format.getPrefix())
                       .addDataToList(fileNaming.getDataName(),
                           fileNaming.getPart());
+
+              // Set metadata of imported files
+              final boolean isMetadataSet =
+                  DataMetadataStorage.getInstance().loadMetadata(data,
+                      Collections.singletonList(inputFile));
+
+              // Set the metadata from sample metadata
+              if (!isMetadataSet && samples.containsKey(data.getName())) {
+                DataUtils.setDataMetaData(data, samples.get(data.getName()));
+              }
+
             }
             // If file does not use Eoulsan naming
             else {
