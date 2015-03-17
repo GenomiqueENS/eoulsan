@@ -111,13 +111,6 @@ public class Normalization {
   }
 
   // Getters
-  /**
-   * Get Rserve connection.
-   * @return rConnection
-   */
-  protected RSConnectionNewImpl getRConnection() {
-    return this.rConnection;
-  }
 
   /**
    * Test if there is Technical replicates into rRepTechGroup field.
@@ -151,7 +144,7 @@ public class Normalization {
 
       // print log info
       getLogger().info(
-          "Rserve server name : " + getRConnection().getServerName());
+          "Rserve server name : " + this.rConnection.getServerName());
 
       // create an experiment map
       Map<String, List<Sample>> experiments = experimentsSpliter();
