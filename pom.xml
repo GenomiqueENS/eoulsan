@@ -222,8 +222,8 @@
 		<developerConnection>scm:git:git@github.com:GenomicParisCentre/eoulsan.git</developerConnection>
 	</scm>
 	<issueManagement>
-		<system>GoogleCode</system>
-		<url>http://code.google.com/p/eoulsan/issues/list</url>
+		<system>GitHub Issues</system>
+		<url>https://github.com/GenomicParisCentre/aozan/issues</url>
 	</issueManagement>
 
 

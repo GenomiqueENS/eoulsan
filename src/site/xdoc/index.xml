@@ -171,7 +171,7 @@ $ curl @@@WEBSITE@@@/eoulsan-docker-installer.sh | bash</source>
         <section name="Object model">
 
             <p>Eoulsan contains also a java object model that can be used outside the Eoulsan workflow engine to handle and manipulate NGS data.
-            See the <a href="http://code.google.com/p/eoulsan/wiki/MainPage">Eoulsan developer wiki</a> for more informations about this part
+            See the <a href="https://github.com/GenomicParisCentre/eoulsan/wiki">Eoulsan developer wiki</a> for more informations about this part
             of the project.</p>
 
         </section>

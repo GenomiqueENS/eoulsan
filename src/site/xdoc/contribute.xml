@@ -48,10 +48,10 @@
 
       <ul>
         <li>Testing new versions</li>
-        <li>Submitting bug reports to the <a href="http://code.google.com/p/eoulsan/issues/list">issue tracker</a></li>
+        <li>Submitting bug reports to the <a href="https://github.com/GenomicParisCentre/eoulsan/issues">issue tracker</a></li>
         <li>Programming new <a href="./writingstepplugin.html">Eoulsan plugins</a> and redistributing them (by yourself or in Eoulsan source repository)</li>
         <li>Submitting patches</li>
-        <li>Writing developer documentation on <a href="http://code.google.com/p/eoulsan/wiki/MainPage">Eoulsan Wiki</a> if you become Eoulsan committer</li>
+        <li>Writing developer documentation on <a href="https://github.com/GenomicParisCentre/eoulsan/wiki">Eoulsan Wiki</a> if you become Eoulsan committer</li>
       </ul>
 
       <p>There are several places to look for more information if you want to get involved in the development. The first step is to subscribe to the eoulsan group. You will soon see something that can be improved or added.</p>
@@ -60,14 +60,14 @@
     
 
     <section name="How do I commit a bug report?">
-      <p>As Eoulsan code is  hosting by Google, you can use the <a href="http://code.google.com/p/eoulsan/issues/list">issue tracker</a> bind to our project.</p>
+      <p>As Eoulsan code is  hosting by GitHub, you can use the <a href="https://github.com/GenomicParisCentre/eoulsan/issues/new">issue tracker</a> bind to our project.</p>
     </section>
 
    <section name="How do I get access to the code repository ?">
       <p>The Eoulsan project uses the Git system to develop the core parts of the software. To facilitate contributions to our project, 
-      Eoulsan code is hosted by Google code hosting. You can freely access to the 
-      <a href="http://code.google.com/p/eoulsan">main page of the project</a> and to the
-      <a href="http://code.google.com/p/eoulsan/source/checkout">git repository.</a></p>
+      Eoulsan code is hosted by GitHub. You can freely access to the
+      <a href="https://github.com/GenomicParisCentre/eoulsan">main page of the project</a> and to the
+      <a href="https://github.com/GenomicParisCentre/eoulsan">git repository.</a></p>
     </section>
 
     

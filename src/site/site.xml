@@ -109,8 +109,8 @@
 		    <item name="Writing a Step plugin" href="/writingstepplugin.html" />
 			<item name="Downloading sources" href="/download-src.html" />
 			<item name="Compiling" href="/compiling.html"/>
-			<item name="Developer Wiki" href="http://code.google.com/p/eoulsan/wiki/MainPage" />
-            <item name="Eoulsan on Google code" href="http://code.google.com/p/eoulsan" />
+			<item name="Developer Wiki" href="https://github.com/GenomicParisCentre/eoulsan/wiki" />
+			<item name="Eoulsan on GitHub" href="https://github.com/GenomicParisCentre/eoulsan" />
 			<item name="Javadoc" href="/apidocs/index.html" />			
 		</menu>
 

@@ -24,12 +24,12 @@
  *
  */
 -->
-<document> 
+<document>
 
   <properties>
     <title>Known Bugs for Eoulsan</title>
-    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
-  </properties> 
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
 
 
 
@@ -37,25 +37,25 @@
   
     <section name="Known Bugs for Eoulsan @@@VERSION@@@">
 
-      <p>You can consult the list of Eoulsan bugs on the <a href="http://code.google.com/p/eoulsan/issues/list">issue tracker</a>
-      of the Google code hosting page of our project.</p>  
+      <p>You can consult the list of Eoulsan bugs on the <a href="https://github.com/GenomicParisCentre/eoulsan/issues">issue tracker</a>
+      of the GitHub repository of our project.</p>
 
-      <!--ul> 
+      <!--ul>
         <li>Bug 1.</li>
 	<li>Bug 2.</li>
-      </ul--> 
-      
+      </ul-->
+
     </section>
 
     <section name="Submit a Eoulsan bug">
 
       <!-- eoulsan-list?subject=Bug -->
-      <p>You can submit a bug by filling an entry on the 
-      <a href="http://code.google.com/p/eoulsan/issues/list">issue tracker</a> 
-      of the Google code hosting page of our project.</p>
+      <p>You can submit a bug by filling an entry on the
+      <a href="https://github.com/GenomicParisCentre/eoulsan/issues">issue tracker</a>
+      of the GitHub repository of our project.</p>
 
     </section>
 
   </body>
-  
+
 </document>

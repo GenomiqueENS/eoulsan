@@ -38,7 +38,7 @@
 
 	<p>More informations about writing 
 	plug-ins (e.g. steps, reads filters, mapper wrapper, NGS data handling...) are available 
-	on the <a href="http://code.google.com/p/eoulsan/wiki/MainPage">Eoulsan developer Wiki</a>.</p>
+	on the <a href="https://github.com/GenomicParisCentre/eoulsan/wiki">Eoulsan developer Wiki</a>.</p>
 	<p>This page show how writing a step plug-in for Eoulsan. The sample code here is a step for mapping 
 	reads with the <a href="http://research-pub.gene.com/gmap/">Gsnap</a> mapper in local mode. 
 	The executable of Gsnap is already bundled in Eoulsan 
