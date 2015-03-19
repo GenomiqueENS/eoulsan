@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -138,6 +139,43 @@ public class ITSuite {
 
     throw new EoulsanRuntimeException(
         "Cannot get an instance of ITSuite class because no instance has been created.");
+  }
+
+  /**
+   * Creates the symbolic link, if possible create a relative link otherwise a
+   * absolute link.
+   * @param linkPath the link path
+   * @param tagetPath the target path
+   * @throws IOException if a path is null or not exist.
+   */
+  public static void createRelativeOrAbsoluteSymbolicLink(final Path linkPath,
+      final Path targetPath) throws IOException {
+
+    if (linkPath == null) {
+      throw new IOException(
+          "Can not be create relative symbolic link, link path is null.");
+    }
+
+    if (targetPath == null) {
+      throw new IOException(
+          "Can not be create relative symbolic link, target path is null.");
+    }
+
+    final Path basePath = linkPath.getParent();
+
+    try {
+      // Create relative path on target path
+      Path pathRelative = basePath.relativize(targetPath);
+
+      // Create symbolic link
+      createSymbolicLink(linkPath, pathRelative);
+
+    } catch (IllegalArgumentException e) {
+
+      // Not a Path that can be relativized against this path
+      // Create a absolute symbolic link
+      createSymbolicLink(linkPath, targetPath);
+    }
   }
 
   /**
@@ -285,11 +323,15 @@ public class ITSuite {
 
     final Path outputTestsPath =
         this.outputTestsDirectory.getParentFile().toPath();
-    final Path linkPath = new File(outputTestsPath.toFile(), linkName).toPath();
 
     // Create the link
+    final Path linkPath =
+        new File(outputTestsPath.toFile(), linkName).toPath();
     try {
-      createSymbolicLink(linkPath, this.outputTestsDirectory.toPath());
+
+      createRelativeOrAbsoluteSymbolicLink(linkPath,
+          this.outputTestsDirectory.toPath());
+
     } catch (IOException e) {
       getLogger().warning(
           "Unable to create " + linkName + " directory link: " + linkPath);
@@ -636,4 +678,17 @@ public class ITSuite {
 
   }
 
+  public static void main(String[] argv) throws IOException {
+
+    Path pathAbsolute = Paths.get("/tmp/dir_test/small");
+    Path pathBase = Paths.get("/tmp/dir_test");
+    Path pathRelative = pathBase.relativize(pathAbsolute);
+    System.out.println(pathRelative);
+
+    final Path link = new File(pathBase.toFile(), "latest").toPath();
+    final Path target = pathRelative;
+
+    createSymbolicLink(link, target);
+
+  }
 }
