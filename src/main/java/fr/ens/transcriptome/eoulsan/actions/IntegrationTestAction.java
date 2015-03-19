@@ -24,6 +24,7 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -41,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.it.ITFactory;
 import fr.ens.transcriptome.eoulsan.it.ITSuite;
+import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
  * This class launch integration test with Testng class.
@@ -67,6 +69,7 @@ public class IntegrationTestAction extends AbstractAction {
     final CommandLineParser parser = new GnuParser();
 
     File testNGReportDirectory = null;
+    File testOutputDirectory = null;
     int argsOptions = 0;
 
     try {
@@ -141,21 +144,28 @@ public class IntegrationTestAction extends AbstractAction {
       }
 
       // Optional argument
+      if (line.hasOption("d")) {
+        // List all test to launch
+        testOutputDirectory = new File(line.getOptionValue("d").trim());
+
+        // Add property for test output directory
+        System.setProperty(ITFactory.IT_OUTPUT_DIR_SYSTEM_KEY,
+            testOutputDirectory.getAbsolutePath());
+
+        argsOptions += 2;
+      }
+
       if (line.hasOption("o")) {
 
         // List all test to launch
         testNGReportDirectory = new File(line.getOptionValue("o").trim());
 
-        if (!testNGReportDirectory.exists()) {
-          throw new ParseException(
-              "Output TestNG report directory doesn't exists: "
-                  + testNGReportDirectory.getAbsolutePath());
-        }
+        try {
+          FileUtils.checkExistingDirectoryFile(testNGReportDirectory,
+              "Output TestNG report");
+        } catch (IOException e) {
 
-        if (!testNGReportDirectory.isDirectory()) {
-          throw new ParseException(
-              "Output TestNG report argument is not a directory: "
-                  + testNGReportDirectory.getAbsolutePath());
+          throw new ParseException(e.getMessage());
         }
 
         argsOptions += 2;
@@ -213,6 +223,11 @@ public class IntegrationTestAction extends AbstractAction {
             .withDescription(
                 "optional: mode for generate data expected: all (remove existing) or mode to generate no exists directory new")
             .create("expected"));
+
+    // Optional, the test output directory
+    options.addOption(OptionBuilder.withArgName("outputdir").hasArg(true)
+        .withDescription("optional: test output directory").withLongOpt("dir")
+        .create('d'));
 
     // Optional, path to TestNG report directory
     options.addOption(OptionBuilder.withArgName("file").hasArg(true)
@@ -283,7 +298,7 @@ public class IntegrationTestAction extends AbstractAction {
           "Integration test can not be initialized the test factory.");
     }
 
-// Launch integration tests using TestNG
+    // Launch integration tests using TestNG
     testng.run();
 
     // Make a copy testNGReport in output test directory
