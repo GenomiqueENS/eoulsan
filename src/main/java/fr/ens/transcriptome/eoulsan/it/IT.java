@@ -31,7 +31,9 @@ import static fr.ens.transcriptome.eoulsan.it.ITFactory.POSTTREATMENT_GLOBAL_SCR
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.POST_TEST_SCRIPT_CONF_KEY;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.PRETREATMENT_GLOBAL_SCRIPT_KEY;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.PRE_TEST_SCRIPT_CONF_KEY;
+import static fr.ens.transcriptome.eoulsan.it.ITFactory.SUCCESS_IT_DELETE_FILE_CONF_KEY;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.evaluateExpressions;
+import static fr.ens.transcriptome.eoulsan.it.ITSuite.createRelativeOrAbsoluteSymbolicLink;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingDirectoryFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingFile;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.recursiveDelete;
@@ -41,6 +43,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -110,6 +113,7 @@ public class IT {
 
   // Compile the result comparison from all tests
   private ITOutput itOutput = null;
+  private boolean isRemoveFileRequiered;
 
   /**
    * Launch test execution, first generate data directory corresponding to the
@@ -175,6 +179,7 @@ public class IT {
         if (!this.itResult.isSuccess()) {
           throw this.itResult.getException();
         }
+
       }
 
     } catch (final Throwable e) {
@@ -183,6 +188,10 @@ public class IT {
       throw new Exception(this.itResult.createReportTestngMessage());
 
     } finally {
+
+      // IT succeeded
+      this.itOutput.deleteFileMatchingOnPattern(this.itResult,
+          this.isRemoveFileRequiered);
 
       timer.stop();
 
@@ -446,19 +455,27 @@ public class IT {
     // Check input test directory
     checkExistingDirectoryFile(this.testDataDirectory, "input test directory");
 
+    // Create a symbolic link to the input directory
+    final Path testSourcePath =
+        Files.createSymbolicLink(new File(this.outputTestDirectory,
+            TEST_SOURCE_LINK_NAME).toPath(), this.testDataDirectory.toPath());
+
     // Create a symbolic link for each file from input data test directory
     for (final File file : this.testDataDirectory.listFiles()) {
       // TODO validate if it should limited only file, not directory
       if (file.isFile()) {
-        Files.createSymbolicLink(
-            new File(this.outputTestDirectory, file.getName()).toPath(),
-            file.toPath());
+
+        final Path target =
+            new File(testSourcePath.toFile(), file.getName()).toPath();
+        final Path linkPath =
+            new File(this.outputTestDirectory, file.getName()).toPath();
+
+        // Create relative symbolic link
+        createRelativeOrAbsoluteSymbolicLink(linkPath, target);
+
       }
     }
 
-    // Create a symbolic link to the input directory
-    Files.createSymbolicLink(new File(this.outputTestDirectory,
-        TEST_SOURCE_LINK_NAME).toPath(), this.testDataDirectory.toPath());
   }
 
   //
@@ -782,6 +799,11 @@ public class IT {
 
     // Init integration tests result
     this.itResult = new ITResult(this);
+
+    // Remove file matching on pattern if IT succeeded
+    this.isRemoveFileRequiered =
+        Boolean.parseBoolean(this.testConf
+            .getProperty(SUCCESS_IT_DELETE_FILE_CONF_KEY));
 
     // Extract properties on action: generate expected data directory
     this.generateAllExpectedDirectoryTest =
