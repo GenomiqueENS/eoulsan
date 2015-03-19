@@ -51,6 +51,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 public class ITResult {
 
   private final IT it;
+  private final StringBuilder commentForReport;
 
   private Throwable exception;
   private final List<ITCommandResult> commandsResults;
@@ -70,8 +71,10 @@ public class ITResult {
    */
   public void createReportFile(final long duration) {
 
+    final String durationIT = toTimeHumanReadable(duration);
+
     // End test
-    updateLogger(duration);
+    updateLogger(durationIT);
 
     if (isNothingToDo()) {
       return;
@@ -85,7 +88,7 @@ public class ITResult {
     try {
       fw =
           newWriter(reportFile, Charset.forName(Globals.DEFAULT_FILE_ENCODING));
-      fw.write(createReportText(true));
+      fw.write(createReportText(true, durationIT));
       fw.write("\n");
 
       fw.flush();
@@ -134,7 +137,7 @@ public class ITResult {
    * @param duration duration of execution
    * @return report text
    */
-  private void updateLogger(final long duration) {
+  private void updateLogger(final String duration) {
 
     String txt = "";
 
@@ -147,23 +150,27 @@ public class ITResult {
               + " of the test "
               + this.it.getTestName()
               + ((isGeneratedData())
-                  ? ": generate expected data" : ": launch test and comparison")
-              + " in " + toTimeHumanReadable(duration);
+                  ? "generate expected data" : "launch test and comparison")
+              + ". Duration = " + duration;
 
       if (!isSuccess()) {
+        // Add exception explanation in logger
         txt += createExceptionText(false);
       }
     }
 
     getLogger().info(txt);
+
   }
 
   /**
    * Create report text.
    * @param withStackTrace if true contains the stack trace if exist
+   * @param duration the duration on integrated test.
    * @return report text
    */
-  private String createReportText(final boolean withStackTrace) {
+  private String createReportText(final boolean withStackTrace,
+      final String duration) {
 
     final StringBuilder report = new StringBuilder();
     report.append((isSuccess() ? "SUCCESS" : "FAIL")
@@ -217,6 +224,9 @@ public class ITResult {
       }
     }
 
+    // Add duration on integrated test
+    report.append("\nDuration test: " + duration);
+
     if (isGeneratedData()) {
       report.append("\nSUCCESS: copy files "
           + this.it.getCountFilesToCompare() + " to ");
@@ -243,6 +253,11 @@ public class ITResult {
         report.append(ocr.getReport());
       }
       report.append('\n');
+    }
+
+    // Add comment(s)
+    if (this.commentForReport.length() > 0) {
+      report.append(this.commentForReport.toString());
     }
 
     // Return text
@@ -334,6 +349,21 @@ public class ITResult {
     checkNeededThrowException();
   }
 
+  /**
+   * Adds the comments at the end of repport.
+   * @param msg the message
+   */
+  public void addCommentsForReport(final String msg) {
+
+    if (this.commentForReport.length() == 0) {
+      // Add header
+      this.commentForReport.append("\nComment(s) on this integated test \n");
+    }
+
+    // Add message
+    this.commentForReport.append(msg);
+  }
+
   //
   // Getter and Setter
   //
@@ -404,6 +434,6 @@ public class ITResult {
     this.it = it;
     this.commandsResults = new ArrayList<>();
     this.comparisonsResults = Collections.emptySet();
+    this.commentForReport = new StringBuilder();
   }
-
 }

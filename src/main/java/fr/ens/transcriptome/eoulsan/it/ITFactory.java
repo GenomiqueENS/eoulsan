@@ -65,6 +65,9 @@ public class ITFactory {
       "it.application.path";
   public static final String IT_DEBUG_ENABLE_SYSTEM_KEY = "it.debug.enable";
 
+  /** Set test output directory to replace value in configuration file. */
+  public static final String IT_OUTPUT_DIR_SYSTEM_KEY = "it.output.dir";
+
   // Configuration properties keys
   static final String TESTS_DIRECTORY_CONF_KEY = "tests.directory";
   static final String OUTPUT_ANALYSIS_DIRECTORY_CONF_KEY =
@@ -84,6 +87,13 @@ public class ITFactory {
   static final String COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY =
       "command.to.get.application.version";
   static final String INCLUDE_CONF_KEY = "include";
+
+  // Configure to delete file matching with patterns if IT succeeded
+  static final String SUCCESS_IT_DELETE_FILE_CONF_KEY =
+      "success.it.delete.file";
+
+  // Default value for key configuration success.it.delete.file
+  private static final String SUCCESS_IT_DELETE_FILE_DEFAULT_VALUE = "false";
 
   /** Patterns */
   static final String FILE_TO_COMPARE_PATTERNS_CONF_KEY =
@@ -305,11 +315,12 @@ public class ITFactory {
           "configuration file doesn't exist");
 
       // Load configuration in global configuration
-      final Properties rawNewProps = new Properties();
-      rawNewProps.load(newReader(otherConfigurationFile,
+      final Properties rawPropsIncludedConfigurationFile = new Properties();
+      rawPropsIncludedConfigurationFile.load(newReader(otherConfigurationFile,
           Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING)));
 
-      final Properties newProps = evaluateProperties(rawNewProps);
+      final Properties newProps =
+          evaluateProperties(rawPropsIncludedConfigurationFile);
 
       for (final String propertyName : newProps.stringPropertyNames()) {
 
@@ -320,6 +331,13 @@ public class ITFactory {
 
         props.put(propertyName, newProps.getProperty(propertyName));
       }
+    }
+
+    // Particular case delete files
+    if (props.getProperty(SUCCESS_IT_DELETE_FILE_CONF_KEY) == null) {
+      // Set default value
+      props.put(SUCCESS_IT_DELETE_FILE_CONF_KEY,
+          SUCCESS_IT_DELETE_FILE_DEFAULT_VALUE);
     }
 
     return props;
@@ -441,6 +459,85 @@ public class ITFactory {
   //
   // Other methods
   //
+
+  /**
+   * Adds the parameter command line in configuration.
+   * @throws EoulsanException occurs if the it output directory path is invalid
+   *           (to a file or parent directory not exists).
+   * @throws IOException occurs if it can not be create the directory.
+   */
+  private void addParameterCommandLineInConfiguration()
+      throws EoulsanException, IOException {
+
+    if (this.globalsConf == null) {
+      throw new EoulsanException(
+          "Configuration file from integrated test has not be loaded. "
+              + "Can not add parameter command line.");
+    }
+
+    // Load command line properties
+    // Command generate all expected directories test
+    this.globalsConf.setProperty(GENERATE_ALL_EXPECTED_DATA_CONF_KEY,
+        getBooleanFromSystemProperty(IT_GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY)
+            .toString());
+
+    // Command generate new expected directories test
+    this.globalsConf.setProperty(GENERATE_NEW_EXPECTED_DATA_CONF_KEY,
+        getBooleanFromSystemProperty(IT_GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY)
+            .toString());
+
+    // If exist in command line, replace output directory from configuration
+    final File itOutputDirectoryFromCommandLine =
+        getFileFromSystemProperty(IT_OUTPUT_DIR_SYSTEM_KEY);
+
+    if (itOutputDirectoryFromCommandLine != null) {
+      checkDirectoryFileAndCreateIfNotExist(itOutputDirectoryFromCommandLine);
+
+      // Replace value from configuration file
+      this.globalsConf.put(OUTPUT_ANALYSIS_DIRECTORY_CONF_KEY,
+          itOutputDirectoryFromCommandLine.getAbsolutePath());
+
+    }
+  }
+
+  /**
+   * Check directory file and create if not exist.
+   * @param dir the dir
+   * @throws EoulsanException occurs if the it output directory path is invalid
+   *           (to a file or parent directory not exists).
+   * @throws IOException occurs if it can not be create the directory.
+   */
+  private void checkDirectoryFileAndCreateIfNotExist(File dir)
+      throws EoulsanException, IOException {
+
+    // Check path exist
+    if (dir.isDirectory()) {
+      return;
+    }
+
+    if (dir.exists() && dir.isFile()) {
+      throw new EoulsanException(
+          "The it output directory is a file not a directory "
+              + dir.getAbsolutePath());
+    }
+
+    // Check parent directory exist
+    final File parentDir = dir.getParentFile();
+
+    if (!parentDir.isDirectory()) {
+      throw new EoulsanException("Can not create it output directory ("
+          + dir.getName() + "), parent directory doesn't exist "
+          + parentDir.getAbsolutePath());
+    }
+
+    // Check create directory
+    if (!dir.mkdir()) {
+      throw new IOException(
+          "Fail to create it output directory set in command line "
+              + dir.getAbsolutePath());
+    }
+
+  }
 
   /**
    * Get a File object from a Java System property.
@@ -565,20 +662,7 @@ public class ITFactory {
       // Load configuration file
       this.globalsConf = loadProperties(configurationFile);
 
-      // Load command line properties
-      // Command generate all expected directories test
-      this.globalsConf
-          .setProperty(
-              GENERATE_ALL_EXPECTED_DATA_CONF_KEY,
-              getBooleanFromSystemProperty(
-                  IT_GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY).toString());
-
-      // Command generate new expected directories test
-      this.globalsConf
-          .setProperty(
-              GENERATE_NEW_EXPECTED_DATA_CONF_KEY,
-              getBooleanFromSystemProperty(
-                  IT_GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY).toString());
+      addParameterCommandLineInConfiguration();
 
       // Set test data source directory
       this.testsDataDirectory =
@@ -600,4 +684,5 @@ public class ITFactory {
       this.testsDirectoryFoundToExecute = null;
     }
   }
+
 }

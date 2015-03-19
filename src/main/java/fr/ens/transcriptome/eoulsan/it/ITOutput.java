@@ -224,6 +224,73 @@ public class ITOutput {
     return results;
   }
 
+  /**
+   * Delete file matching on pattern, if is a link, delete the real file too.
+   * @param itResult the it result
+   * @param isDeleteFileRequired the is delete file required.
+   * @throws IOException if can not read the canonical path on file to delete.
+   */
+  public void deleteFileMatchingOnPattern(final ITResult itResult,
+      final boolean isDeleteFileRequired) throws IOException {
+
+    StringBuilder msg = new StringBuilder();
+    boolean success = true;
+
+    if (!itResult.isSuccess()) {
+      msg.append((isDeleteFileRequired
+          ? "Configuration required to delete file, but test fail, is still exist in "
+          : "Configuration required always to keep file in ")
+          + this.directory.getAbsolutePath());
+
+    }
+
+    if (itResult.isSuccess() && isDeleteFileRequired) {
+
+      msg.append("Test succeeded. Configuration required to delete files from directory "
+          + this.directory.getAbsolutePath());
+
+      for (File f : this.filesToCompare) {
+
+        if (!f.exists()) {
+          // No file
+          continue;
+        }
+
+        // Check is a symbolic link or a real path
+        if (!f.getAbsolutePath().equals(f.getCanonicalPath())) {
+          // Is a symbolic link
+          final File realFile = f.getCanonicalFile();
+
+          // Remove real file
+          if (realFile.exists()) {
+            if (!realFile.delete()) {
+              msg.append("\n\tfail to delete real file "
+                  + realFile.getAbsolutePath() + " from symbolic link "
+                  + f.getAbsolutePath());
+            }
+          }
+        }
+        
+        // Delete file
+        if (!f.delete()) {
+          success = false;
+          msg.append("\n\tfail to delete file " + f.getAbsolutePath());
+        }
+      }
+
+      if (success) {
+        msg.append("\nAll deletions successful.");
+      }
+    } else {
+      // No required delete file
+      msg.append("Delete file matching on patterns no required.");
+    }
+
+    // Update itResult
+    itResult.addCommentsForReport(msg.toString());
+
+  }
+
   //
   // Private methods
   //
