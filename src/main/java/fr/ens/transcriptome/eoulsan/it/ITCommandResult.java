@@ -57,10 +57,10 @@ public class ITCommandResult {
    */
   public String getReport() {
 
-    this.message.append("\nExecute " + this.desc);
+    this.message.append("\nExecute " + this.desc + ":");
 
     this.message.append("\n\tCommand line: " + this.commandLine);
-    
+
     this.message.append("\n\tDirectory: " + this.directory.getAbsolutePath());
 
     this.message.append("\n\tDuration: "

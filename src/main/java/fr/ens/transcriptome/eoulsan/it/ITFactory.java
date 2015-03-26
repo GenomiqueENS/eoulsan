@@ -117,6 +117,11 @@ public class ITFactory {
 
   static final String TEST_CONFIGURATION_FILENAME = "test.conf";
 
+  static final String RUNTIME_IT_MAXIMUM = "runtime.test.maximum";
+
+  // Runtime maximum for a test beyond stop execution, in minutes
+  static final String RUNTIME_IT_MAXIMUM_DURATION_DEFAULT = "1";
+
   private static final Properties CONSTANTS = initConstants();
 
   private final Properties globalsConf;
@@ -333,6 +338,17 @@ public class ITFactory {
       }
     }
 
+    // Add default value
+    addDefaultProperties(props);
+
+    return props;
+  }
+
+  /**
+   * Adds the default properties if does not exist in the configuration file.
+   * @param props the props
+   */
+  private static void addDefaultProperties(Properties props) {
     // Particular case delete files
     if (props.getProperty(SUCCESS_IT_DELETE_FILE_CONF_KEY) == null) {
       // Set default value
@@ -340,14 +356,17 @@ public class ITFactory {
           SUCCESS_IT_DELETE_FILE_DEFAULT_VALUE);
     }
 
-    return props;
+    // Add default runtime test duration
+    if (props.getProperty(RUNTIME_IT_MAXIMUM) == null) {
+      props.put(RUNTIME_IT_MAXIMUM, RUNTIME_IT_MAXIMUM_DURATION_DEFAULT);
+    }
   }
 
   /**
    * Evaluate properties.
    * @param rawProps the raw props
    * @return the properties
-   * @throws EoulsanException the Eoulsan exception
+   * @throws EoulsanException if the evaluation expression from value failed.
    */
   private static Properties evaluateProperties(final Properties rawProps)
       throws EoulsanException {

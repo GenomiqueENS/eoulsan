@@ -77,6 +77,7 @@ public class ITResult {
     updateLogger(durationIT);
 
     if (isNothingToDo()) {
+      // No report
       return;
     }
 
@@ -88,6 +89,8 @@ public class ITResult {
     try {
       fw =
           newWriter(reportFile, Charset.forName(Globals.DEFAULT_FILE_ENCODING));
+      
+      // Build text report 
       fw.write(createReportText(true, durationIT));
       fw.write("\n");
 
@@ -150,7 +153,7 @@ public class ITResult {
               + " of the test "
               + this.it.getTestName()
               + ((isGeneratedData())
-                  ? "generate expected data" : "launch test and comparison")
+                  ? ": generate expected data" : ": launch test and comparison")
               + ". Duration = " + duration;
 
       if (!isSuccess()) {
@@ -188,7 +191,7 @@ public class ITResult {
     report.append("\n\nPatterns:");
 
     // Result for comparison files
-    report.append("\n\tFile count to compare from pattern(s) "
+    report.append("\n\tFile count to compare from pattern(s): "
         + this.it.getFileToComparePatterns());
 
     if (!this.it.getFileToComparePatterns().equals("none")) {
@@ -196,7 +199,7 @@ public class ITResult {
     }
 
     // Result for checking length files
-    report.append("\n\tFile lengths count to check from pattern(s) "
+    report.append("\n\tFile lengths count to check from pattern(s): "
         + this.it.getCheckLengthFilePatterns());
 
     if (!this.it.getCheckLengthFilePatterns().equals("none")) {
@@ -204,7 +207,7 @@ public class ITResult {
     }
 
     // Result to check if files exist
-    report.append("\n\tFile count to check if it exists from pattern(s) "
+    report.append("\n\tFile count to check if it exists from pattern(s): "
         + this.it.getCheckExistenceFilePatterns());
     if (!this.it.getCheckExistenceFilePatterns().equals("none")) {
       report
@@ -212,7 +215,7 @@ public class ITResult {
     }
 
     // List patterns to exclude files on comparison
-    report.append("\n\tPatterns files to exclude comparisons :\t"
+    report.append("\n\tPatterns files to exclude comparisons:\t"
         + this.it.getExcludeToComparePatterns());
 
     report.append('\n');
@@ -223,9 +226,6 @@ public class ITResult {
         report.append(icr.getReport());
       }
     }
-
-    // Add duration on integrated test
-    report.append("\nDuration test: " + duration);
 
     if (isGeneratedData()) {
       report.append("\nSUCCESS: copy files "
@@ -259,6 +259,9 @@ public class ITResult {
     if (this.commentForReport.length() > 0) {
       report.append(this.commentForReport.toString());
     }
+
+    // Add duration on integrated test
+    report.append("\n\nDuration test: " + duration);
 
     // Return text
     return report.toString();
@@ -350,15 +353,10 @@ public class ITResult {
   }
 
   /**
-   * Adds the comments at the end of repport.
+   * Adds the comments at the end of report.
    * @param msg the message
    */
-  public void addCommentsForReport(final String msg) {
-
-    if (this.commentForReport.length() == 0) {
-      // Add header
-      this.commentForReport.append("\nComment(s) on this integated test \n");
-    }
+  public void addCommentsIntoTextReport(final String msg) {
 
     // Add message
     this.commentForReport.append(msg);

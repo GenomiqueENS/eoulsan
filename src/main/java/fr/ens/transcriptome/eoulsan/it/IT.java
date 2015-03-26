@@ -189,9 +189,11 @@ public class IT {
 
     } finally {
 
-      // IT succeeded
-      this.itOutput.deleteFileMatchingOnPattern(this.itResult,
-          this.isRemoveFileRequiered);
+      if (this.itOutput != null) {
+        // IT succeeded
+        this.itOutput.deleteFileMatchingOnPattern(this.itResult,
+            this.isRemoveFileRequiered);
+      }
 
       timer.stop();
 
@@ -647,6 +649,15 @@ public class IT {
   //
   // Getter
   //
+
+  /**
+   * Gets the property from configuration test.
+   * @param key the key
+   * @return the property value
+   */
+  public String getProperty(final String key) {
+    return this.testConf.getProperty(key);
+  }
 
   /**
    * Gets the test name.

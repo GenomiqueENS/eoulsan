@@ -228,27 +228,29 @@ public class ITOutput {
    * Delete file matching on pattern, if is a link, delete the real file too.
    * @param itResult the it result
    * @param isDeleteFileRequired the is delete file required.
-   * @throws IOException if can not read the canonical path on file to delete.
    */
   public void deleteFileMatchingOnPattern(final ITResult itResult,
-      final boolean isDeleteFileRequired) throws IOException {
+      final boolean isDeleteFileRequired) {
 
     StringBuilder msg = new StringBuilder();
+    msg.append("\nClean output directory:\n");
+    
     boolean success = true;
 
     if (!itResult.isSuccess()) {
       msg.append((isDeleteFileRequired
-          ? "Configuration required to delete file, but test fail, is still exist in "
-          : "Configuration required always to keep file in ")
+          ? "Configuration required to delete files, but test fail, is still exist in "
+          : "Configuration required always to keep files in ")
           + this.directory.getAbsolutePath());
-
     }
 
+    // Case to delete files
     if (itResult.isSuccess() && isDeleteFileRequired) {
 
-      msg.append("Test succeeded. Configuration required to delete files from directory "
+      msg.append("Test succeeded. \nConfiguration required to delete files from directory "
           + this.directory.getAbsolutePath());
 
+      
       for (File f : this.filesToCompare) {
 
         if (!f.exists()) {
@@ -257,24 +259,28 @@ public class ITOutput {
         }
 
         // Check is a symbolic link or a real path
-        if (!f.getAbsolutePath().equals(f.getCanonicalPath())) {
-          // Is a symbolic link
-          final File realFile = f.getCanonicalFile();
+        if (Files.isSymbolicLink(f.toPath())) {
 
-          // Remove real file
-          if (realFile.exists()) {
-            if (!realFile.delete()) {
-              msg.append("\n\tfail to delete real file "
-                  + realFile.getAbsolutePath() + " from symbolic link "
-                  + f.getAbsolutePath());
+          try {
+            // Is a symbolic link
+            final File realFile = Files.readSymbolicLink(f.toPath()).toFile();
+            // Remove real file
+            if (realFile.exists()) {
+              if (!realFile.delete()) {
+                msg.append("\n\tFail to delete real file "
+                    + realFile.getAbsolutePath() + " from symbolic link "
+                    + f.getAbsolutePath());
+              }
             }
+          } catch (IOException e) {
+            // Nothing to do
           }
         }
-        
+
         // Delete file
         if (!f.delete()) {
           success = false;
-          msg.append("\n\tfail to delete file " + f.getAbsolutePath());
+          msg.append("\n\tFail to delete file " + f.getAbsolutePath());
         }
       }
 
@@ -287,7 +293,7 @@ public class ITOutput {
     }
 
     // Update itResult
-    itResult.addCommentsForReport(msg.toString());
+    itResult.addCommentsIntoTextReport(msg.toString());
 
   }
 
@@ -295,6 +301,13 @@ public class ITOutput {
   // Private methods
   //
 
+  /**
+   * Compare files.
+   * @param comparisonResult the comparison result
+   * @param fileExpected the file expected
+   * @param fileTested the file tested
+   * @throws IOException Signals that an I/O exception has occurred.
+   */
   private void compareFiles(final ITOutputComparisonResult comparisonResult,
       final File fileExpected, final File fileTested) throws IOException {
 
