@@ -217,11 +217,11 @@ public enum CompressionType {
 
     if (SystemUtils
         .isClass("org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream")) {
-      return new LocalBZip2InputStream(is);
+      return ApacheCommonCompressionCodecs.createBZip2InputStream(is);
     }
 
     if (SystemUtils.isClass("org.apache.hadoop.io.compress.BZip2Codec")) {
-      return new HadoopBZip2InputStream(is);
+      return HadoopCompressionCodecs.createBZip2InputStream(is);
     }
 
     throw new IOException(
@@ -255,11 +255,11 @@ public enum CompressionType {
 
     if (SystemUtils
         .isClass("org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream")) {
-      return new LocalBZip2OutputStream(os);
+      return ApacheCommonCompressionCodecs.createBZip2OutputStream(os);
     }
 
     if (SystemUtils.isClass("org.apache.hadoop.io.compress.BZip2Codec")) {
-      return new HadoopBZip2OutputStream(os);
+      return HadoopCompressionCodecs.createBZip2OutputStream(os);
     }
 
     throw new IOException(
