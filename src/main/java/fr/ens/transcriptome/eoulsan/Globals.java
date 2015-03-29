@@ -107,10 +107,13 @@ public final class Globals {
   /** Bypass platform checking. */
   public static final boolean BYPASS_PLATFORM_CHECKING = false;
 
+  /** Minimal java version required by Eoulsan. */
+  public static final int MINIMAL_JAVA_VERSION_REQUIRED = 7;
+
   /** Platforms where the application is available. */
   public static final Set<String> AVAILABLE_BINARY_ARCH = Collections
       .unmodifiableSet(new HashSet<>(Arrays.asList(new String[] {
-          "linux\tamd64", "linux\tx86_64"})));
+          "linux\tamd64", "linux\tx86_64" })));
 
   /** Platforms alias. */
   public static final Map<String, String> AVAILABLE_BINARY_ARCH_ALIAS =
