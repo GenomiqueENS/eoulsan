@@ -107,7 +107,7 @@
                                 &lt;value&gt;bowtie&lt;/value&gt;
                         &lt;/parameter&gt;
                         &lt;parameter&gt;
-                                &lt;name&gt;mapperarguments&lt;/name&gt;
+                                &lt;name&gt;mapper.arguments&lt;/name&gt;
                                 &lt;value&gt;--best -k 2&lt;/value&gt;
                         &lt;/parameter&gt;
                 &lt;/parameters&gt;
@@ -124,17 +124,6 @@
                         &lt;parameter&gt;
                                 &lt;name&gt;removemultimatches&lt;/name&gt;
                                 &lt;value&gt;&lt;/value&gt;
-                        &lt;/parameter&gt;
-                &lt;/parameters&gt;
-        &lt;/step&gt;
-
-        &lt;!-- Filter samples --&gt;
-        &lt;step id="filterSamples" skip="false"&gt;
-                &lt;name&gt;filterSamples&lt;/name&gt;
-                &lt;parameters&gt;
-                        &lt;parameter&gt;
-                                &lt;name&gt;threshold&lt;/name&gt;
-                                &lt;value&gt;0&lt;/value&gt;
                         &lt;/parameter&gt;
                 &lt;/parameters&gt;
         &lt;/step&gt;
@@ -189,10 +178,11 @@
                                 &lt;name&gt;disp.est.sharing.mode&lt;/name&gt;
                                 &lt;value&gt;maximum&lt;/value&gt;
                         &lt;/parameter&gt;
+                        &lt;parameter&gt;
                                 &lt;name>disp.est.fit.type&lt;/name&gt;
                                 &lt;value>local&lt;/value&gt;
                         &lt;/parameter&gt;
-                &lt;parameters/&gt;
+                &lt;/parameters&gt;
         &lt;/step&gt;
 
 
