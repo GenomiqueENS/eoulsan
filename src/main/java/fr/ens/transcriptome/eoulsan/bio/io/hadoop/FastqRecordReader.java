@@ -37,7 +37,7 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class FastQRecordReaderNew extends RecordReader<Text, Text> {
+public class FastqRecordReader extends RecordReader<Text, Text> {
 
   private Text key = new Text();
   private Text value = new Text();
@@ -45,7 +45,7 @@ public class FastQRecordReaderNew extends RecordReader<Text, Text> {
   private final String[] lines = new String[4];
   private final long[] pos = new long[4];
 
-  private FastQLineRecordReader lrr;
+  private FastqLineRecordReader lrr;
 
   // private LineRecordReader lrr;
 
@@ -78,7 +78,7 @@ public class FastQRecordReaderNew extends RecordReader<Text, Text> {
       final TaskAttemptContext taskAttemptContext) throws IOException,
       InterruptedException {
 
-    this.lrr = new FastQLineRecordReader();
+    this.lrr = new FastqLineRecordReader();
     // this.lrr = new LineRecordReader();
     this.lrr.initialize(inputSplit, taskAttemptContext);
   }

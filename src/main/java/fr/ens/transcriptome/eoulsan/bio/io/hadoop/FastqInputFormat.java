@@ -41,13 +41,13 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class FastQFormatNew extends FileInputFormat<Text, Text> {
+public class FastqInputFormat extends FileInputFormat<Text, Text> {
 
   @Override
   public RecordReader<Text, Text> createRecordReader(
       final InputSplit inputSplit, final TaskAttemptContext taskAttemptContext) {
 
-    return new FastQRecordReaderNew();
+    return new FastqRecordReader();
   }
 
   @Override

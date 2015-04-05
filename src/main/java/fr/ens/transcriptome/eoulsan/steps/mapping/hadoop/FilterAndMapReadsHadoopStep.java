@@ -46,7 +46,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
-import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
+import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastqInputFormat;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -244,7 +244,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set the input format
     if (READS_FASTQ.equals(inputDataFile.getDataFormat())) {
-      job.setInputFormatClass(FastQFormatNew.class);
+      job.setInputFormatClass(FastqInputFormat.class);
     }
 
     // Set the Mappers classes using a chain mapper
@@ -329,7 +329,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // Set the input format
     if (READS_FASTQ.equals(inputDataFile1.getDataFormat())
         && READS_FASTQ.equals(inputDataFile2.getDataFormat())) {
-      job.setInputFormatClass(FastQFormatNew.class);
+      job.setInputFormatClass(FastqInputFormat.class);
     }
 
     // Set the Mapper class

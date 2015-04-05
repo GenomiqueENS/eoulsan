@@ -41,7 +41,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import com.google.common.base.Joiner;
 
-import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
+import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastqInputFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 
 /**
@@ -135,7 +135,7 @@ public class PairedEndFastqToTfq {
     FileInputFormat.addInputPath(job, fastqFile2);
 
     // Set the input format
-    job.setInputFormatClass(FastQFormatNew.class);
+    job.setInputFormatClass(FastqInputFormat.class);
 
     // Set the Reducer class
     job.setReducerClass(FastqPairedEndReducer.class);

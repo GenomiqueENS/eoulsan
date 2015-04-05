@@ -42,7 +42,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
-import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
+import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastqInputFormat;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
@@ -209,7 +209,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     FileInputFormat.addInputPath(job, inputPath);
 
     // Set the input format
-    job.setInputFormatClass(FastQFormatNew.class);
+    job.setInputFormatClass(FastqInputFormat.class);
 
     // Set the Mapper class
     job.setMapperClass(ReadsMapperMapper.class);

@@ -63,7 +63,7 @@ import org.apache.hadoop.util.LineReader;
 /**
  * Treats keys as offset in file and value as line.
  */
-public class FastQLineRecordReader extends RecordReader<LongWritable, Text> {
+public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
 
   private CompressionCodecFactory compressionCodecs = null;
   private long start;

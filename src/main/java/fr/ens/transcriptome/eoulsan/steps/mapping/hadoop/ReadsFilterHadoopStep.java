@@ -45,7 +45,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
-import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
+import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastqInputFormat;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
@@ -217,7 +217,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
     // Set the input format
     if (inputFormat == READS_FASTQ) {
-      job.setInputFormatClass(FastQFormatNew.class);
+      job.setInputFormatClass(FastqInputFormat.class);
     } else {
       job.setInputFormatClass(KeyValueTextInputFormat.class);
     }
