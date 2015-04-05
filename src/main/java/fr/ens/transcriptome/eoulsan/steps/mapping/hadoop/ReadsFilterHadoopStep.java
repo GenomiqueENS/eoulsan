@@ -105,6 +105,8 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
       // Create the job to run
       final Job job;
 
+      DataFile tfqFile = null;
+
       // Preprocess paired-end files
       if (inData.getDataFileCount() == 1) {
         job =
@@ -115,7 +117,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
         final DataFile inFile1 = inData.getDataFile(0);
         final DataFile inFile2 = inData.getDataFile(1);
 
-        final DataFile tfqFile =
+        tfqFile =
             new DataFile(inFile1.getParent(), inFile1.getBasename()
                 + READS_TFQ.getDefaultExtension());
 
@@ -136,11 +138,13 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
       // Cleanup paired-end
       if (inData.getDataFileCount() > 1) {
 
-        final DataFile inFile1 = inData.getDataFile(0);
         final DataFile outFile1 = outData.getDataFile(0);
         final DataFile outFile2 = outData.getDataFile(1);
 
-        FileSystem fs = FileSystem.get(conf);
+        // TODO implement DataFile.renameTo(DataFile)
+        // TODO implement DataFile.delete(DataFile,true)
+
+        final FileSystem fs = FileSystem.get(conf);
         fs.rename(
             new Path(outFile1.getSource() + ".tmp/" + outFile1.getName()),
             new Path(outFile1.getSource()));
@@ -149,9 +153,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
             new Path(outFile2.getSource()));
 
         fs.delete(new Path(outFile1.getSource() + ".tmp"), true);
-        fs.delete(
-            new Path(new DataFile(inFile1.getParent(), inFile1.getBasename()
-                + READS_TFQ.getDefaultExtension()).getSource()), true);
+        fs.delete(new Path(tfqFile.getSource()), true);
       }
 
       return status.createStepResult();
