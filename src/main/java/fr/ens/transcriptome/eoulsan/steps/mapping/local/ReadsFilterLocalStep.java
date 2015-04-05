@@ -214,7 +214,8 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
 
     } catch (BadBioEntryException e) {
 
-      throw new IOException("Invalid Fastq format: " + e.getEntry());
+      throw new IOException("Invalid Fastq format: "
+          + e.getMessage() + " Entry: " + e.getEntry());
 
     }
   }
@@ -281,7 +282,8 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
 
     } catch (BadBioEntryException e) {
 
-      throw new IOException("Invalid Fastq format: " + e.getEntry());
+      throw new IOException("Invalid Fastq format: "
+          + e.getMessage() + " Entry: " + e.getEntry());
 
     }
 

@@ -51,6 +51,7 @@ public class FastqReader implements ReadSequenceReader {
   private ReadSequence result = null;
   private final StringBuilder sb = new StringBuilder();
   private int count = 0;
+  private int lineCount = 0;
 
   private boolean end = false;
   private boolean nextCallDone = true;
@@ -86,6 +87,9 @@ public class FastqReader implements ReadSequenceReader {
     try {
       while ((line = this.reader.readLine()) != null) {
 
+        // Increment line count
+        this.lineCount++;
+
         // Trim the line
         final String trim = line.trim();
 
@@ -99,12 +103,14 @@ public class FastqReader implements ReadSequenceReader {
 
         if (entryLine == 1 && trim.charAt(0) != '@') {
           throw new BadBioEntryException(
-              "Invalid Fastq file. First line don't start with '@'", line);
+              "Invalid Fastq file. First line of the entry don't start with '@' at line "
+                  + this.lineCount, line);
         }
 
         if (entryLine == 3 && trim.charAt(0) != '+') {
           throw new BadBioEntryException(
-              "Invalid Fastq file. Third line don't start with '+'", line);
+              "Invalid Fastq file. Third line of the entry don't start with '+' at line "
+                  + this.lineCount, line);
         }
 
         if (entryLine == 4) {
