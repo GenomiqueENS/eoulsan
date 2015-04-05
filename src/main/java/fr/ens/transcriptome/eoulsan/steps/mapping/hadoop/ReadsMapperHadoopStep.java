@@ -27,15 +27,18 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.createConfiguration;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 
 import java.io.IOException;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -52,6 +55,8 @@ import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.Data;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep;
 import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 
@@ -99,21 +104,54 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
       // Get input and output data
       final Data readsData = context.getInputData(READS_FASTQ);
-      final Data mapperIndexData =
-          context.getInputData(getMapper().getArchiveFormat());
-      final Data outData = context.getOutputData(MAPPER_RESULTS_SAM, readsData);
+
+      final DataFile mapperIndexFile =
+          context.getInputData(getMapper().getArchiveFormat()).getDataFile();
+      final DataFile outFile =
+          context.getOutputData(MAPPER_RESULTS_SAM, readsData).getDataFile();
+
+      DataFile tfqFile = null;
 
       // Get FASTQ format
       final FastqFormat fastqFormat = readsData.getMetadata().getFastqFormat();
 
       // Create the job to run
-      final Job job =
-          createJobConf(conf, context, readsData, fastqFormat, mapperIndexData,
-              outData);
+      final Job job;
+
+      // Preprocess paired-end files
+      if (readsData.getDataFileCount() == 1) {
+        job =
+            createJobConf(conf, context, readsData.getDataFile(0), false,
+                READS_FASTQ, fastqFormat, mapperIndexFile, outFile);
+      } else {
+
+        final DataFile inFile1 = readsData.getDataFile(0);
+        final DataFile inFile2 = readsData.getDataFile(1);
+
+        tfqFile =
+            new DataFile(inFile1.getParent(), inFile1.getBasename()
+                + READS_TFQ.getDefaultExtension());
+
+        // Convert FASTQ files to TFQ
+        MapReduceUtils.submitAndWaitForJob(
+            PairedEndFastqToTfq.convert(conf, inFile1, inFile2, tfqFile),
+            CommonHadoop.CHECK_COMPLETION_TIME);
+
+        job =
+            createJobConf(conf, context, tfqFile, true, READS_TFQ, fastqFormat,
+                mapperIndexFile, outFile);
+      }
 
       // Launch jobs
       MapReduceUtils.submitAndWaitForJob(job, readsData.getName(),
           CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
+
+      // Cleanup paired-end
+      if (tfqFile != null) {
+
+        final FileSystem fs = FileSystem.get(conf);
+        fs.delete(new Path(tfqFile.getSource()), true);
+      }
 
       return status.createStepResult();
 
@@ -128,6 +166,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
   /**
    * Create the JobConf object for a sample
    * @param readsData reads data
+   * @param inputFormat inputFormat
    * @param fastqFormat FASTQ format
    * @param mapperIndexData mapper index data
    * @param outData output data
@@ -135,13 +174,14 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
    * @throws IOException
    */
   private Job createJobConf(final Configuration parentConf,
-      final StepContext context, final Data readsData,
-      final FastqFormat fastqFormat, final Data mapperIndexData,
-      final Data outData) throws IOException {
+      final StepContext context, final DataFile readsFile,
+      final boolean pairedEnd, final DataFormat inputFormat,
+      final FastqFormat fastqFormat, final DataFile mapperIndexFile,
+      final DataFile outFile) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
-    final Path inputPath = new Path(readsData.getDataFile().getSource());
+    final Path inputPath = new Path(readsFile.getSource());
 
     // Set mapper name
     jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
@@ -153,11 +193,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     jobConf.set(ReadsMapperMapper.MAPPER_FLAVOR_KEY, getMapperFlavor());
 
     // Set pair end or single end mode
-    if (readsData.getDataFileCount() == 2) {
-      jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.TRUE.toString());
-    } else {
-      jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.FALSE.toString());
-    }
+    jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.toString(pairedEnd));
 
     // Set the number of threads for the mapper
     if (getMapperLocalThreads() < 0) {
@@ -193,12 +229,11 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     final Job job =
         Job.getInstance(jobConf,
             "Map reads with "
-                + getMapperName() + " (" + readsData.getName() + ", "
+                + getMapperName() + " (" + readsFile.getName() + ", "
                 + inputPath.getName() + ")");
 
     // Set genome index reference path in the distributed cache
-    final Path genomeIndex =
-        new Path(mapperIndexData.getDataFile().getSource());
+    final Path genomeIndex = new Path(mapperIndexFile.getSource());
 
     job.addCacheFile(genomeIndex.toUri());
 
@@ -209,7 +244,11 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     FileInputFormat.addInputPath(job, inputPath);
 
     // Set the input format
-    job.setInputFormatClass(FastqInputFormat.class);
+    if (inputFormat == READS_FASTQ) {
+      job.setInputFormatClass(FastqInputFormat.class);
+    } else {
+      job.setInputFormatClass(KeyValueTextInputFormat.class);
+    }
 
     // Set the Mapper class
     job.setMapperClass(ReadsMapperMapper.class);
@@ -227,8 +266,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     job.setNumReduceTasks(0);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(outData.getDataFile()
-        .getSource()));
+    FileOutputFormat.setOutputPath(job, new Path(outFile.getSource()));
 
     return job;
   }

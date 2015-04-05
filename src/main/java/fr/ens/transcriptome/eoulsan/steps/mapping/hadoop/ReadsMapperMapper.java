@@ -41,7 +41,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
@@ -71,7 +70,7 @@ import fr.ens.transcriptome.eoulsan.util.locker.ZooKeeperLocker;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
+public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
   private static final String HADOOP_TEMP_DIR = "mapreduce.cluster.temp.dir";
 
@@ -113,8 +112,8 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
    * fields if data are in paired-end mode).
    */
   @Override
-  protected void map(final LongWritable key, final Text value,
-      final Context context) throws IOException {
+  protected void map(final Text key, final Text value, final Context context)
+      throws IOException {
 
     context.getCounter(this.counterGroup,
         INPUT_MAPPING_READS_COUNTER.counterName()).increment(1);
