@@ -93,11 +93,6 @@ public class FastqReader implements ReadSequenceReader {
         // Trim the line
         final String trim = line.trim();
 
-        // discard empty lines
-        if ("".equals(trim)) {
-          continue;
-        }
-
         entryLine++;
         this.sb.append(trim);
 
