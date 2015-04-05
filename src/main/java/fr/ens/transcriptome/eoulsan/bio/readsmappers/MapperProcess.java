@@ -505,7 +505,7 @@ public abstract class MapperProcess {
           new OutputStreamWriter(new FileOutputStream(this.tmpInFile1),
               StandardCharsets.ISO_8859_1);
       this.writer2 =
-          new OutputStreamWriter(new FileOutputStream(this.tmpInFile1),
+          new OutputStreamWriter(new FileOutputStream(this.tmpInFile2),
               StandardCharsets.ISO_8859_1);
     }
 
