@@ -372,7 +372,7 @@ public abstract class AbstractBowtieReadsMapper extends
 
         // TODO enable memory mapped in streaming mode
         // Add common arguments
-        cmd.addAll(createCommonArgs(bowtiePath, index, true, false));
+        cmd.addAll(createCommonArgs(bowtiePath, index, false, false));
 
         // TODO enable this in streaming mode
         // Read input from stdin (streaming mode)
