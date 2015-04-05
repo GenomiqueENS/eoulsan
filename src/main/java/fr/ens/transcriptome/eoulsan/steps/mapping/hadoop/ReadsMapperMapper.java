@@ -36,7 +36,10 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -277,24 +280,45 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
     checkNotNull(archiveIndexFile, "Index Zip file is null");
 
-    final ZipInputStream zis = new ZipInputStream(archiveIndexFile.open());
+    return this.mapper.getMapperName()
+        + "-index-" + computeZipCheckSum(archiveIndexFile.open());
+  }
+
+  /**
+   * Compute the checksum of a ZIP file.
+   * @param is input stream
+   * @return the checksum as a string
+   * @throws IOException if an error occurs while creating the checksum
+   */
+  public static final String computeZipCheckSum(final InputStream is)
+      throws IOException {
+
+    checkNotNull(is, "is argument cannot be null");
+
+    final ZipInputStream zis = new ZipInputStream(is);
 
     final HashFunction hf = Hashing.md5();
     final Hasher hs = hf.newHasher();
 
     ZipEntry e;
 
+    // Store entries in a map
+    Map<String, long[]> map = new HashMap<>();
     while ((e = zis.getNextEntry()) != null) {
-
-      hs.putString(e.getName(), StandardCharsets.UTF_8);
-      hs.putLong(e.getSize());
-      hs.putLong(e.getTime());
-      hs.putLong(e.getCrc());
+      map.put(e.getName(), new long[] { e.getSize(), e.getCrc() });
     }
-
     zis.close();
 
-    return this.mapper.getMapperName() + "-index-" + hs.hash().toString();
+    // Add values to hash function in an ordered manner
+    for (String filename : new TreeSet<String>(map.keySet())) {
+
+      hs.putString(filename, StandardCharsets.UTF_8);
+      for (long l : map.get(filename)) {
+        hs.putLong(l);
+      }
+    }
+
+    return hs.hash().toString();
   }
 
   @Override
