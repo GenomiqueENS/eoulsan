@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
 import java.io.IOException;
 
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
@@ -38,9 +37,9 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
+public class FastQRecordReaderNew extends RecordReader<Text, Text> {
 
-  private LongWritable key = new LongWritable();
+  private Text key = new Text();
   private Text value = new Text();
 
   private final String[] lines = new String[4];
@@ -57,7 +56,7 @@ public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
   }
 
   @Override
-  public LongWritable getCurrentKey() throws IOException, InterruptedException {
+  public Text getCurrentKey() throws IOException, InterruptedException {
 
     return this.key;
   }
@@ -131,7 +130,9 @@ public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
     }
 
     // Set key
-    this.key = new LongWritable(this.pos[0]);
+
+    // this.key = new LongWritable(this.pos[0]);
+    this.key = new Text(memberId(this.lines[0].substring(1)));
 
     // Set value
     this.value =
@@ -142,6 +143,33 @@ public class FastQRecordReaderNew extends RecordReader<LongWritable, Text> {
     this.lines[0] = this.lines[1] = this.lines[2] = this.lines[3] = null;
 
     return true;
-
   }
+
+  /**
+   * Get the member id of a sequence Id
+   * @param s sequence id
+   * @return the member of the sequence id
+   */
+  private static String memberId(final String s) {
+
+    if (s == null) {
+      return null;
+    }
+
+    // New Illumina Id
+    final int pos1 = s.indexOf(' ');
+    if (pos1 != -1) {
+      return s.substring(0, pos1);
+    }
+
+    // Old Illumina Id
+    final int pos2 = s.indexOf('/');
+    if (pos2 != -1) {
+      return s.substring(0, pos2);
+    }
+
+    // Other, do nothing
+    return s;
+  }
+
 }

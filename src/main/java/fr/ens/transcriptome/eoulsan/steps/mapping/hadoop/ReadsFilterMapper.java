@@ -29,16 +29,18 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_R
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.READS_REJECTED_BY_FILTERS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.jobConfToParameters;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterHadoopStep.OUTPUT_FILE1_KEY;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterHadoopStep.OUTPUT_FILE2_KEY;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -59,8 +61,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporterIncrementer;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class ReadsFilterMapper extends
-    Mapper<LongWritable, Text, NullWritable, Text> {
+public class ReadsFilterMapper extends Mapper<Text, Text, NullWritable, Text> {
 
   // Parameters keys
   static final String FASTQ_FORMAT_KEY = Globals.PARAMETER_PREFIX
@@ -80,6 +81,10 @@ public class ReadsFilterMapper extends
 
   private final NullWritable outKey = NullWritable.get();
   private final Text outValue = new Text();
+
+  private MultipleOutputs<NullWritable, Text> out;
+  private String outputFilename1;
+  private String outputFilename2;
 
   //
   // Setup
@@ -134,7 +139,24 @@ public class ReadsFilterMapper extends
       throw new IOException(e.getMessage());
     }
 
+    // Set the output writers
+    this.out = new MultipleOutputs<NullWritable, Text>(context);
+    this.outputFilename1 = createOutputPath(conf, OUTPUT_FILE1_KEY);
+    this.outputFilename2 = createOutputPath(conf, OUTPUT_FILE2_KEY);
+
     getLogger().info("End of setup()");
+  }
+
+  private static String createOutputPath(final Configuration conf,
+      final String key) {
+
+    if (conf == null || key == null) {
+      return null;
+    }
+
+    final String value = conf.get(key);
+
+    return value + "/part";
   }
 
   //
@@ -146,8 +168,8 @@ public class ReadsFilterMapper extends
    * file. 'value': the TFQ line.
    */
   @Override
-  protected void map(final LongWritable key, final Text value,
-      final Context context) throws IOException, InterruptedException {
+  protected void map(final Text key, final Text value, final Context context)
+      throws IOException, InterruptedException {
 
     context
         .getCounter(this.counterGroup, INPUT_RAW_READS_COUNTER.counterName())
@@ -196,12 +218,21 @@ public class ReadsFilterMapper extends
 
       if (this.filter.accept(this.read1, this.read2)) {
 
-        this.outValue.set(this.read1.getName()
-            + "\t" + this.read1.getSequence() + "\t" + this.read1.getQuality()
-            + "\t" + this.read2.getName() + "\t" + this.read2.getSequence()
-            + "\t" + this.read2.getQuality());
+        // this.outValue.set(this.read1.getName()
+        // + "\t" + this.read1.getSequence() + "\t" + this.read1.getQuality()
+        // + "\t" + this.read2.getName() + "\t" + this.read2.getSequence()
+        // + "\t" + this.read2.getQuality());
+        //
+        // context.write(this.outKey, this.outValue);
 
-        context.write(this.outKey, this.outValue);
+        // Write read 1
+        this.outValue.set(chop(this.read1.toFastQ()));
+        out.write(this.outKey, this.outValue, this.outputFilename1);
+
+        // Write read 2
+        this.outValue.set(chop(this.read2.toFastQ()));
+        out.write(this.outKey, this.outValue, this.outputFilename2);
+
         context.getCounter(this.counterGroup,
             OUTPUT_FILTERED_READS_COUNTER.counterName()).increment(1);
       } else {

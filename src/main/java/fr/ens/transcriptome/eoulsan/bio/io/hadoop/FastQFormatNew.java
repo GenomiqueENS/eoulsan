@@ -24,12 +24,16 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
-import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionCodecFactory;
+import org.apache.hadoop.io.compress.SplittableCompressionCodec;
 import org.apache.hadoop.mapreduce.InputSplit;
+import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 
 /**
  * This class define an InputFormat for FASTQ files for the Hadoop MapReduce
@@ -37,12 +41,26 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class FastQFormatNew extends TextInputFormat {
+public class FastQFormatNew extends FileInputFormat<Text, Text> {
 
   @Override
-  public RecordReader<LongWritable, Text> createRecordReader(
+  public RecordReader<Text, Text> createRecordReader(
       final InputSplit inputSplit, final TaskAttemptContext taskAttemptContext) {
 
     return new FastQRecordReaderNew();
   }
+
+  @Override
+  protected boolean isSplitable(JobContext context, Path file) {
+
+    final CompressionCodec codec =
+        new CompressionCodecFactory(context.getConfiguration()).getCodec(file);
+
+    if (null == codec) {
+      return true;
+    }
+
+    return codec instanceof SplittableCompressionCodec;
+  }
+
 }

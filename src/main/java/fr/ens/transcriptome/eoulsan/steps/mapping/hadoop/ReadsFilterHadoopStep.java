@@ -27,20 +27,22 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastQFormatNew;
@@ -52,8 +54,8 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsFilterStep;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 
 /**
@@ -64,6 +66,11 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
  */
 @HadoopOnly
 public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
+
+  static final String OUTPUT_FILE1_KEY = Globals.PARAMETER_PREFIX
+      + ".filter.reads.output.file1";
+  static final String OUTPUT_FILE2_KEY = Globals.PARAMETER_PREFIX
+      + ".filter.reads.output.file1";
 
   //
   // Step methods
@@ -95,21 +102,57 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
       // Get FASTQ format
       final FastqFormat fastqFormat = inData.getMetadata().getFastqFormat();
 
-      final List<Job> jobsPairedEnd = new ArrayList<>();
-      if (inData.getDataFileCount() == 2) {
-        jobsPairedEnd.add(createJobConfPairedEnd(conf, inData, fastqFormat));
-      }
-
-      // Submit job paired end if needed
-      MapReduceUtils.submitAndWaitForJobs(jobsPairedEnd,
-          CommonHadoop.CHECK_COMPLETION_TIME);
-
       // Create the job to run
-      final Job job = createJobConf(conf, inData, outData, fastqFormat);
+      final Job job;
+
+      // Preprocess paired-end files
+      if (inData.getDataFileCount() == 1) {
+        job =
+            createJobConf(conf, inData.getDataFile(0), READS_FASTQ,
+                fastqFormat, outData.getDataFile(0));
+      } else {
+
+        final DataFile inFile1 = inData.getDataFile(0);
+        final DataFile inFile2 = inData.getDataFile(1);
+
+        final DataFile tfqFile =
+            new DataFile(inFile1.getParent(), inFile1.getBasename()
+                + READS_TFQ.getDefaultExtension());
+
+        // Convert FASTQ files to TFQ
+        MapReduceUtils.submitAndWaitForJob(
+            PairedEndFastqToTfq.convert(conf, inFile1, inFile2, tfqFile),
+            CommonHadoop.CHECK_COMPLETION_TIME);
+
+        job =
+            createJobConf(conf, tfqFile, READS_TFQ, fastqFormat,
+                outData.getDataFile(0), outData.getDataFile(1));
+      }
 
       // Submit main job
       MapReduceUtils.submitAndWaitForJob(job, inData.getName(),
           CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
+
+      // Cleanup paired-end
+      if (inData.getDataFileCount() > 1) {
+
+        final DataFile inFile1 = inData.getDataFile(0);
+        final DataFile outFile1 = outData.getDataFile(0);
+        final DataFile outFile2 = outData.getDataFile(1);
+
+        FileSystem fs = FileSystem.get(conf);
+        fs.rename(
+            new Path(outFile1.getSource() + ".tmp/" + outFile1.getName()),
+            new Path(outFile1.getSource()));
+        fs.rename(
+            new Path(outFile1.getSource() + ".tmp/" + outFile2.getName()),
+            new Path(outFile2.getSource()));
+
+        fs.delete(new Path(outFile1.getSource() + ".tmp"), true);
+        fs.delete(
+            new Path(new DataFile(inFile1.getParent(), inFile1.getBasename()
+                + READS_TFQ.getDefaultExtension()).getSource()), true);
+      }
 
       return status.createStepResult();
 
@@ -134,31 +177,15 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
    * @return a JobConf object
    * @throws IOException
    */
-  private Job createJobConf(final Configuration parentConf, final Data inData,
-      final Data outData, final FastqFormat fastqFormat) throws IOException {
-
-    // TODO handle paired-end
+  private Job createJobConf(final Configuration parentConf,
+      final DataFile inFile, final DataFormat inputFormat,
+      final FastqFormat fastqFormat, final DataFile... outFiles)
+      throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
-    // Get input DataFile
-    DataFile inputDataFile = inData.getDataFile(0);
-
-    if (inputDataFile == null) {
-      throw new IOException("No input file found.");
-    }
-
-    if (inData.getDataFileCount() == 2) {
-
-      String outputName =
-          StringUtils.filenameWithoutExtension(inputDataFile.getName());
-      outputName = outputName.substring(0, outputName.length() - 1);
-      outputName += ".tfq";
-      inputDataFile = new DataFile(inputDataFile.getParent(), outputName);
-    }
-
     // Set input path
-    final Path inputPath = new Path(inputDataFile.getSource());
+    final Path inputPath = new Path(inFile.getSource());
 
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
@@ -170,11 +197,17 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     addParametersToJobConf(getReadFilterParameters(),
         READ_FILTER_PARAMETER_KEY_PREFIX, jobConf);
 
+    // Set outputs
+    if (outFiles.length > 1) {
+      jobConf.set(OUTPUT_FILE1_KEY, outFiles[0].getName());
+      jobConf.set(OUTPUT_FILE2_KEY, outFiles[1].getName());
+    }
+
     // Set Job name
     // Create the job and its name
     final Job job =
         Job.getInstance(jobConf, "Filter reads ("
-            + inData.getName() + ", " + inputDataFile.getSource() + ")");
+            + inFile.getName() + ", " + inFile.getSource() + ")");
 
     // Set the jar
     job.setJarByClass(ReadsFilterHadoopStep.class);
@@ -183,8 +216,10 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     FileInputFormat.addInputPath(job, inputPath);
 
     // Set the input format
-    if (READS_FASTQ.equals(inputDataFile.getDataFormat())) {
+    if (inputFormat == READS_FASTQ) {
       job.setInputFormatClass(FastQFormatNew.class);
+    } else {
+      job.setInputFormatClass(KeyValueTextInputFormat.class);
     }
 
     // Set the Mapper class
@@ -200,91 +235,8 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     job.setNumReduceTasks(0);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(outData.getDataFile()
-        .getSource()));
-
-    return job;
-  }
-
-  /**
-   * Create a job for the pretreatment step in case of paired-end data.
-   * @param inData inputData
-   * @param fastqFormat FASTQ format
-   * @return a JobConf object
-   * @throws IOException
-   */
-  private Job createJobConfPairedEnd(final Configuration parentConf,
-      final Data inData, final FastqFormat fastqFormat) throws IOException {
-
-    final Configuration jobConf = new Configuration(parentConf);
-
-    // get input file count for the sample
-    final int inFileCount = inData.getDataFileCount();
-
-    if (inFileCount < 1) {
-      throw new IOException("No input file found.");
-    }
-
-    if (inFileCount > 2) {
-      throw new IOException(
-          "Cannot handle more than 2 reads files at the same time.");
-    }
-
-    // Get the source
-    final DataFile inputDataFile1 = inData.getDataFile(0);
-    final DataFile inputDataFile2 = inData.getDataFile(1);
-
-    // Set input path
-    final Path inputPath1 = new Path(inputDataFile1.getSource());
-    final Path inputPath2 = new Path(inputDataFile2.getSource());
-
-    // Set counter group
-    jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
-
-    // Set fastq format
-    jobConf.set(PreTreatmentMapper.FASTQ_FORMAT_KEY, fastqFormat.getName());
-
-    // Set Job name
-    // Create the job and its name
-    final Job job =
-        Job.getInstance(jobConf, "Pretreatment ("
-            + inData.getName() + ", " + inputDataFile1.getSource() + ", "
-            + inputDataFile2.getSource() + ")");
-
-    // Set the jar
-    job.setJarByClass(ReadsFilterHadoopStep.class);
-
-    // Set input path : paired-end mode so two input files
-    FileInputFormat.addInputPath(job, inputPath1);
-    FileInputFormat.addInputPath(job, inputPath2);
-
-    // Set the input format
-    if (READS_FASTQ.equals(inputDataFile1.getDataFormat())
-        && READS_FASTQ.equals(inputDataFile2.getDataFormat())) {
-      job.setInputFormatClass(FastQFormatNew.class);
-    }
-
-    // Set the Mapper class
-    job.setMapperClass(PreTreatmentMapper.class);
-
-    // Set the Reducer class
-    job.setReducerClass(PreTreatmentReducer.class);
-
-    // Set the output key class
-    job.setOutputKeyClass(Text.class);
-
-    // Set the output value class
-    job.setOutputValueClass(Text.class);
-
-    // Output name
-    String outputName =
-        StringUtils.filenameWithoutExtension(inputPath2.getName());
-    outputName = outputName.substring(0, outputName.length() - 1);
-    outputName += ".tfq";
-
-    // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(inputPath2.getParent(),
-        outputName));
+    FileOutputFormat.setOutputPath(job, new Path(outFiles[0].getSource()
+        + (outFiles.length > 1 ? ".tmp" : "")));
 
     return job;
   }
