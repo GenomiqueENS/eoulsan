@@ -44,6 +44,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
@@ -403,7 +405,14 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
       if (tabPos != -1) {
 
         outKey.set(line.substring(0, tabPos));
-        outValue.set(line.substring(tabPos + 1));
+        if (!headerLine) {
+          outValue.set(trimmedLine);
+        } else {
+          System.out.println("RMM1: " + trimmedLine);
+          System.out.println("RMM2: "
+              + line.substring(0, tabPos) + '\t' + line.substring(tabPos + 1));
+          outValue.set(line.substring(tabPos + 1));
+        }
 
         context.write(outKey, outValue);
 

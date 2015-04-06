@@ -46,6 +46,7 @@ import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastqInputFormat;
+import fr.ens.transcriptome.eoulsan.bio.io.hadoop.SAMOutputFormat;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
@@ -255,6 +256,9 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     // Set the reducer class
     // job.setReducerClass(IdentityReducer.class);
+
+    // Set the output format
+    job.setOutputFormatClass(SAMOutputFormat.class);
 
     // Set the output key class
     job.setOutputKeyClass(Text.class);

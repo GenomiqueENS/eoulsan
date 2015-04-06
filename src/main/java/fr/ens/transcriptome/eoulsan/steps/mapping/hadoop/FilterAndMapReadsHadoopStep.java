@@ -26,13 +26,15 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.DEFAULT_SINGLE_OUTPUT_PORT_NAME;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsMapperHadoopStep.setZooKeeperJobConfiguration;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
@@ -42,11 +44,14 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.chain.ChainMapper;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
+import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastqInputFormat;
+import fr.ens.transcriptome.eoulsan.bio.io.hadoop.SAMOutputFormat;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -56,6 +61,7 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractFilterAndMapReadsStep;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -98,19 +104,47 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     try {
 
-      final List<Job> jobsPairedEnd = new ArrayList<>();
-      final Data readData = context.getInputData(READS_PORT_NAME);
+      // Get input and output data
+      final Data readData = context.getInputData(READS_FASTQ);
+      final DataFile samFile =
+          context.getOutputData(MAPPER_RESULTS_SAM, readData).getDataFile();
+      final DataFile mapperIndex =
+          context.getInputData(MAPPER_INDEX_PORT_NAME).getDataFile();
+      final DataFile genomeDescFile =
+          context.getInputData(GENOME_DESCRIPTION_PORT_NAME).getDataFile();
 
-      if (readData.getDataFileCount() == 2) {
-        jobsPairedEnd.add(createJobConfPairedEnd(conf, context));
+      // Get FASTQ format
+      final FastqFormat fastqFormat = readData.getMetadata().getFastqFormat();
+
+      // The job to run
+      final Job job;
+
+      DataFile tfqFile = null;
+
+      // Preprocess paired-end files
+      if (readData.getDataFileCount() == 1) {
+        job =
+            createJobConf(conf, context, readData.getDataFile(0),
+                readData.getName(), false, READS_FASTQ, fastqFormat,
+                mapperIndex, genomeDescFile, samFile);
+      } else {
+
+        final DataFile inFile1 = readData.getDataFile(0);
+        final DataFile inFile2 = readData.getDataFile(1);
+
+        tfqFile =
+            new DataFile(inFile1.getParent(), inFile1.getBasename()
+                + READS_TFQ.getDefaultExtension());
+
+        // Convert FASTQ files to TFQ
+        MapReduceUtils.submitAndWaitForJob(
+            PairedEndFastqToTfq.convert(conf, inFile1, inFile2, tfqFile),
+            CommonHadoop.CHECK_COMPLETION_TIME);
+
+        job =
+            createJobConf(conf, context, tfqFile, readData.getName(), true,
+                READS_TFQ, fastqFormat, mapperIndex, genomeDescFile, samFile);
       }
-
-      // Submit job paired end if needed
-      MapReduceUtils.submitAndWaitForJobs(jobsPairedEnd,
-          CommonHadoop.CHECK_COMPLETION_TIME);
-
-      // Create the job to run
-      final Job job = createJobConf(conf, context);
 
       // Submit filter and map job
       MapReduceUtils.submitAndWaitForJob(job, readData.getName(),
@@ -131,6 +165,140 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
       return status.createStepResult(e,
           "Error while running job: " + e.getMessage());
     }
+  }
+
+  private Job createJobConf(final Configuration parentConf,
+      final StepContext context, final DataFile inFile, final String dataName,
+      final boolean pairedEnd, final DataFormat inputFormat,
+      final FastqFormat fastqFormat, final DataFile genomeIndexFile,
+      final DataFile genomeDescFile, final DataFile outFile) throws IOException {
+
+    final Configuration jobConf = new Configuration(parentConf);
+
+    // Set input path
+    final Path inputPath = new Path(inFile.getSource());
+
+    // Set counter group
+    jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, getCounterGroup());
+
+    //
+    // Reads filters parameters
+    //
+
+    // Set fastq format
+    jobConf.set(ReadsFilterMapper.FASTQ_FORMAT_KEY, fastqFormat.getName());
+
+    // Set read filter parameters
+    addParametersToJobConf(getReadFilterParameters(),
+        READ_FILTER_PARAMETER_KEY_PREFIX, jobConf);
+
+    //
+    // Reads mapping parameters
+    //
+
+    // Set mapper name
+    jobConf.set(ReadsMapperMapper.MAPPER_NAME_KEY, getMapperName());
+
+    // Set mapper version
+    jobConf.set(ReadsMapperMapper.MAPPER_VERSION_KEY, getMapperVersion());
+
+    // Set mapper flavor
+    jobConf.set(ReadsMapperMapper.MAPPER_FLAVOR_KEY, getMapperFlavor());
+
+    // Set pair end or single end mode
+    jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.toString(pairedEnd));
+
+    // Set the number of threads for the mapper
+    if (getMapperHadoopThreads() < 0) {
+      jobConf.set(ReadsMapperMapper.MAPPER_THREADS_KEY, ""
+          + getMapperHadoopThreads());
+    }
+
+    // Set mapper arguments
+    if (getMapperArguments() != null) {
+      jobConf.set(ReadsMapperMapper.MAPPER_ARGS_KEY, getMapperArguments());
+    }
+
+    // Set Mapper fastq format
+    jobConf.set(ReadsMapperMapper.FASTQ_FORMAT_KEY, "" + fastqFormat);
+
+    // timeout
+    jobConf.set("mapreduce.task.timeout", "" + HADOOP_TIMEOUT);
+
+    // Don't reuse JVM
+    jobConf.set("mapreduce.job.jvm.numtasks", "" + 1);
+
+    // Set the memory required by the reads mapper
+    jobConf
+        .set("mapreduce.map.memory.mb", "" + getMapperHadoopMemoryRequired());
+
+    // Set ZooKeeper client configuration
+    setZooKeeperJobConfiguration(jobConf, context);
+
+    //
+    // Alignment filtering
+    //
+
+    // Set Genome description path
+    jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,
+        genomeDescFile.getSource());
+
+    // Set SAM filter parameters
+    addParametersToJobConf(getAlignmentsFilterParameters(),
+        MAP_FILTER_PARAMETER_KEY_PREFIX, jobConf);
+
+    //
+    // Job creation
+    //
+
+    // Create the job and its name
+    final Job job =
+        Job.getInstance(jobConf, "Filter and map reads ("
+            + dataName + ", " + inFile.getSource() + ")");
+
+    // Set the jar
+    job.setJarByClass(ReadsFilterHadoopStep.class);
+
+    // Set input path
+    FileInputFormat.addInputPath(job, inputPath);
+
+    // Add genome mapper index to distributed cache
+
+    // Set genome index reference path in the distributed cache
+    final Path genomeIndex = new Path(genomeIndexFile.getSource());
+    job.addCacheFile(genomeIndex.toUri());
+
+    // Set the input format
+    if (inputFormat == READS_FASTQ) {
+      job.setInputFormatClass(FastqInputFormat.class);
+    } else {
+      job.setInputFormatClass(KeyValueTextInputFormat.class);
+    }
+
+    // Set the Mappers classes using a chain mapper
+    ChainMapper.addMapper(job, ReadsFilterMapper.class, Text.class, Text.class,
+        Text.class, Text.class, jobConf);
+    ChainMapper.addMapper(job, ReadsMapperMapper.class, Text.class, Text.class,
+        Text.class, Text.class, jobConf);
+    ChainMapper.addMapper(job, SAMFilterMapper.class, Text.class, Text.class,
+        Text.class, Text.class, jobConf);
+
+    // Set the reducer class
+    job.setReducerClass(SAMFilterReducer.class);
+
+    // Set the output format
+    job.setOutputFormatClass(SAMOutputFormat.class);
+
+    // Set the output key class
+    job.setOutputKeyClass(Text.class);
+
+    // Set the output value class
+    job.setOutputValueClass(Text.class);
+
+    // Set output path
+    FileOutputFormat.setOutputPath(job, new Path(outFile.getSource()));
+
+    return job;
   }
 
   /**

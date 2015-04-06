@@ -41,6 +41,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
+import fr.ens.transcriptome.eoulsan.bio.io.hadoop.SAMOutputFormat;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -142,6 +143,9 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     // job.setPartitionerClass(SAMRecordsPartitioner.class);
     // job.setSortComparatorClass(SAMRecordsKeyComparator.class);
     // job.setGroupingComparatorClass(SAMRecordsGroupComparator.class);
+
+    // Set the output format
+    job.setOutputFormatClass(SAMOutputFormat.class);
 
     // Set the output key class
     job.setOutputKeyClass(Text.class);

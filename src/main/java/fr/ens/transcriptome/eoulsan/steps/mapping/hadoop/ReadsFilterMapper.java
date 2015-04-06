@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
@@ -61,7 +60,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporterIncrementer;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class ReadsFilterMapper extends Mapper<Text, Text, NullWritable, Text> {
+public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
 
   // Parameters keys
   static final String FASTQ_FORMAT_KEY = Globals.PARAMETER_PREFIX
@@ -74,15 +73,14 @@ public class ReadsFilterMapper extends Mapper<Text, Text, NullWritable, Text> {
   private final List<String> fields = new ArrayList<>();
   private MultiReadFilter filter;
   private String counterGroup;
-  private boolean tfqOutput = false;
+  private boolean tfqOutput = true;
 
   private final ReadSequence read1 = new ReadSequence();
   private final ReadSequence read2 = new ReadSequence();
 
-  private final NullWritable outKey = NullWritable.get();
   private final Text outValue = new Text();
 
-  private MultipleOutputs<NullWritable, Text> out;
+  private MultipleOutputs<Text, Text> out;
   private String outputFilename1;
   private String outputFilename2;
 
@@ -140,7 +138,7 @@ public class ReadsFilterMapper extends Mapper<Text, Text, NullWritable, Text> {
     }
 
     // Set the output writers
-    this.out = new MultipleOutputs<NullWritable, Text>(context);
+    this.out = new MultipleOutputs<Text, Text>(context);
     this.outputFilename1 = createOutputPath(conf, OUTPUT_FILE1_KEY);
     this.outputFilename2 = createOutputPath(conf, OUTPUT_FILE2_KEY);
 
@@ -193,12 +191,12 @@ public class ReadsFilterMapper extends Mapper<Text, Text, NullWritable, Text> {
       if (this.filter.accept(this.read1)) {
 
         if (this.tfqOutput) {
-          this.outValue.set(chop(this.read1.toTFQ()));
+          this.outValue.set(this.read1.toTFQ());
         } else {
-          this.outValue.set(chop(this.read1.toFastQ()));
+          this.outValue.set(this.read1.toFastQ());
         }
 
-        context.write(this.outKey, this.outValue);
+        context.write(key, this.outValue);
         context.getCounter(this.counterGroup,
             OUTPUT_FILTERED_READS_COUNTER.counterName()).increment(1);
       } else {
@@ -218,20 +216,28 @@ public class ReadsFilterMapper extends Mapper<Text, Text, NullWritable, Text> {
 
       if (this.filter.accept(this.read1, this.read2)) {
 
-        // this.outValue.set(this.read1.getName()
-        // + "\t" + this.read1.getSequence() + "\t" + this.read1.getQuality()
-        // + "\t" + this.read2.getName() + "\t" + this.read2.getSequence()
-        // + "\t" + this.read2.getQuality());
-        //
-        // context.write(this.outKey, this.outValue);
+        if (this.outputFilename1 == null) {
 
-        // Write read 1
-        this.outValue.set(chop(this.read1.toFastQ()));
-        out.write(this.outKey, this.outValue, this.outputFilename1);
+          // Output of the mapper is chained
 
-        // Write read 2
-        this.outValue.set(chop(this.read2.toFastQ()));
-        out.write(this.outKey, this.outValue, this.outputFilename2);
+          this.outValue.set(this.read1.getName()
+              + "\t" + this.read1.getSequence() + "\t"
+              + this.read1.getQuality() + "\t" + this.read2.getName() + "\t"
+              + this.read2.getSequence() + "\t" + this.read2.getQuality());
+
+          context.write(key, this.outValue);
+        } else {
+
+          // The output of the mapper is not reused by another mapper or reducer
+
+          // Write read 1
+          this.outValue.set(chop(this.read1.toFastQ()));
+          out.write(key, this.outValue, this.outputFilename1);
+
+          // Write read 2
+          this.outValue.set(chop(this.read2.toFastQ()));
+          out.write(key, this.outValue, this.outputFilename2);
+        }
 
         context.getCounter(this.counterGroup,
             OUTPUT_FILTERED_READS_COUNTER.counterName()).increment(1);

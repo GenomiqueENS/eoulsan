@@ -29,6 +29,7 @@ import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputP
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.HADOOP_MAPPER_REQUIRED_MEMORY_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.HADOOP_THREADS_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.MAPPER_ARGUMENTS_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.MAPPER_FLAVOR_PARAMETER_NAME;
@@ -77,12 +78,14 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   private Map<String, String> readsFiltersParameters;
   private Map<String, String> alignmentsFiltersParameters;
   private SequenceReadsMapper mapper;
-  private String mapperVersion;
-  private String mapperFlavor;
+  private String mapperVersion = "";
+  private String mapperFlavor = "";
   private String mapperArguments;
   private int hadoopThreads = -1;
 
   private final int mappingQualityThreshold = -1;
+  private int hadoopMapperRequiredMemory =
+      AbstractReadsMapperStep.DEFAULT_MAPPER_REQUIRED_MEMORY;
 
   //
   // Getters
@@ -142,6 +145,16 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
    */
   protected int getMapperHadoopThreads() {
     return this.hadoopThreads;
+  }
+
+  /**
+   * Get the amount in MB of memory required to execute the mapper. This value
+   * is required by Hadoop scheduler and if the mapper require more memory than
+   * declared the mapper process will be killed.
+   * @return the amount of memory required by the mapper in MB
+   */
+  protected int getMapperHadoopMemoryRequired() {
+    return this.hadoopMapperRequiredMemory;
   }
 
   /**
@@ -231,6 +244,10 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
 
       case HADOOP_THREADS_PARAMETER_NAME:
         this.hadoopThreads = p.getIntValue();
+        break;
+
+      case HADOOP_MAPPER_REQUIRED_MEMORY_PARAMETER_NAME:
+        this.hadoopMapperRequiredMemory = p.getIntValue() * 1024;
         break;
 
       default:

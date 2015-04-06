@@ -46,6 +46,7 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastqInputFormat;
+import fr.ens.transcriptome.eoulsan.bio.io.hadoop.FastqOutputFormat;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
@@ -226,6 +227,9 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
     // Set the Mapper class
     job.setMapperClass(ReadsFilterMapper.class);
+
+    // Set the output format
+    job.setOutputFormatClass(FastqOutputFormat.class);
 
     // Set the output key class
     job.setOutputKeyClass(Text.class);
