@@ -474,7 +474,7 @@ public abstract class MapperProcess {
           "Cannot use this writeEntry method in paired-end mode");
     }
 
-    this.writer1.write(ReadSequence.toFastQ(name, sequence, quality));
+    this.writer1.write(ReadSequence.toFastQ(name, sequence, quality) + '\n');
     inputReadsIncr();
   }
 
@@ -514,8 +514,8 @@ public abstract class MapperProcess {
           "Cannot use this writeEntry method in single-end mode");
     }
 
-    this.writer1.write(ReadSequence.toFastQ(name1, sequence1, quality1));
-    this.writer2.write(ReadSequence.toFastQ(name2, sequence2, quality2));
+    this.writer1.write(ReadSequence.toFastQ(name1, sequence1, quality1) + '\n');
+    this.writer2.write(ReadSequence.toFastQ(name2, sequence2, quality2) + '\n');
     inputReadsIncr();
   }
 
