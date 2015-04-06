@@ -275,7 +275,7 @@ public final class ReadSequence extends Sequence {
 
     return '@'
         + name + '\n' + sequence + '\n' + '+' + (repeatId ? name : "") + '\n'
-        + quality + '\n';
+        + quality;
   }
 
   /**
@@ -329,7 +329,7 @@ public final class ReadSequence extends Sequence {
       return name + '\t' + sequence + '\t' + quality + '\n';
     }
 
-    return '\t' + sequence + '\t' + quality + '\n';
+    return '\t' + sequence + '\t' + quality;
   }
 
   /**
