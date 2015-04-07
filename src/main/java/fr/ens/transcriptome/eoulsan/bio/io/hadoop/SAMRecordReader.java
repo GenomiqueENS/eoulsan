@@ -55,11 +55,15 @@ public class SAMRecordReader extends RecordReader<Text, Text> {
   @Override
   public boolean nextKeyValue() throws IOException, InterruptedException {
 
-    final boolean result = this.lrr.nextKeyValue();
+    if (!this.lrr.nextKeyValue()) {
+      return false;
+    }
 
-    if (true) {
+    final Text value = this.lrr.getCurrentValue();
 
-      final String s = this.lrr.getCurrentValue().toString();
+    if (value != null) {
+
+      final String s = value.toString();
 
       if (s.length() == 0) {
         this.key.set("");
@@ -83,7 +87,7 @@ public class SAMRecordReader extends RecordReader<Text, Text> {
 
     }
 
-    return result;
+    return true;
   }
 
 }
