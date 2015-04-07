@@ -71,7 +71,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
   static final String OUTPUT_FILE1_KEY = Globals.PARAMETER_PREFIX
       + ".filter.reads.output.file1";
   static final String OUTPUT_FILE2_KEY = Globals.PARAMETER_PREFIX
-      + ".filter.reads.output.file1";
+      + ".filter.reads.output.file2";
 
   //
   // Step methods
