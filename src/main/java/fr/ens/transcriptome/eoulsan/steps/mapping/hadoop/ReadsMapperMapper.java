@@ -398,17 +398,25 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
         continue;
       }
 
-      // Set the output key
-      if (headerLine) {
-        outKey.set("");
-      } else {
+      if (!headerLine) {
 
+        // Set the output key as the read id
         final int tabPos = line.indexOf('\t');
         if (tabPos == -1) {
           outKey.set("");
         } else {
           outKey.set(line.substring(0, tabPos));
         }
+
+        // Increment counters if not header
+        entriesParsed++;
+        context.getCounter(this.counterGroup,
+            OUTPUT_MAPPING_ALIGNMENTS_COUNTER.counterName()).increment(1);
+
+      } else {
+
+        // Set empty key for headers
+        outKey.set("");
       }
 
       // Set the output value
@@ -416,14 +424,6 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
       // Write the result
       context.write(outKey, outValue);
-
-      // Increment counters if not header
-      if (!headerLine) {
-
-        entriesParsed++;
-        context.getCounter(this.counterGroup,
-            OUTPUT_MAPPING_ALIGNMENTS_COUNTER.counterName()).increment(1);
-      }
     }
 
     readerResults.close();
