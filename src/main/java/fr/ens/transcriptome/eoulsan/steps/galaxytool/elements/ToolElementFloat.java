@@ -129,7 +129,7 @@ public class ToolElementFloat extends AbstractToolElement {
 
     } catch (final NumberFormatException e) {
       throw new EoulsanException("No found default value for parameter "
-          + this.getName());
+          + this.getName(), e);
     }
 
     try {

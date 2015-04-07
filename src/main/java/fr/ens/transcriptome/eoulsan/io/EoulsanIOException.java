@@ -37,6 +37,13 @@ public class EoulsanIOException extends EoulsanException {
   private static final long serialVersionUID = 2347936040194578705L;
 
   /**
+   * Create a new EoulsanIOException.
+   */
+  public EoulsanIOException() {
+    super();
+  }
+
+  /**
    * Create a new EoulsanRuntimeException with a message.
    * @param message the message
    */
@@ -45,9 +52,22 @@ public class EoulsanIOException extends EoulsanException {
   }
 
   /**
-   * Create a new EoulsanIOException.
+   * Create a new EoulsanIOException with a message and a cause.
+   * @param message the message
+   * @param cause the cause
    */
-  public EoulsanIOException() {
-    super();
+  public EoulsanIOException(String message, Throwable cause) {
+
+    super(message, cause);
   }
+
+  /**
+   * Create a new EoulsanIOException with a cause.
+   * @param cause the cause
+   */
+  public EoulsanIOException(Throwable cause) {
+
+    super(cause);
+  }
+
 }

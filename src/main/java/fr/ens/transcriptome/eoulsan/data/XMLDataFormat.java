@@ -308,7 +308,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
       } catch (NumberFormatException exp) {
         throw new EoulsanException(
             "Invalid maximal files count for data format "
-                + this.name + ": " + maxFiles);
+                + this.name + ": " + maxFiles, exp);
       }
 
       // Parse extensions

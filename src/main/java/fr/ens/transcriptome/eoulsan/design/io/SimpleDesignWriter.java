@@ -99,8 +99,8 @@ public class SimpleDesignWriter extends DesignWriter {
 
       this.bw.close();
     } catch (IOException e) {
-      throw new EoulsanIOException("Error while writing stream : "
-          + e.getMessage());
+      throw new EoulsanIOException("Error while writing stream: "
+          + e.getMessage(), e);
     }
 
   }

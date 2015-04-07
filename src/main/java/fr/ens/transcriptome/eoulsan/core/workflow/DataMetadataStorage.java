@@ -195,7 +195,8 @@ public class DataMetadataStorage {
       }
 
     } catch (IOException e) {
-      throw new EoulsanException("Unable to read metadata: " + e.getMessage());
+      throw new EoulsanException("Unable to read metadata: " + e.getMessage(),
+          e);
     }
   }
 
@@ -213,7 +214,8 @@ public class DataMetadataStorage {
       // Write entry
       out.println(s);
     } catch (IOException e) {
-      throw new EoulsanException("Unable to write metadata: " + e.getMessage());
+      throw new EoulsanException("Unable to write metadata: " + e.getMessage(),
+          e);
     }
   }
 

@@ -104,7 +104,7 @@ public abstract class DesignWriter {
       setOutputStream(FileUtils.createOutputStream(file));
     } catch (IOException e) {
       throw new EoulsanIOException("Error while reading file : "
-          + file.getName());
+          + file.getName(), e);
     }
 
     this.dataSource = file.getAbsolutePath();

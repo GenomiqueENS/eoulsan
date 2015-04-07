@@ -575,7 +575,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
     } catch (IOException | EoulsanIOException e) {
       throw new EoulsanException("Error while writing design file: "
-          + e.getMessage());
+          + e.getMessage(), e);
     }
   }
 

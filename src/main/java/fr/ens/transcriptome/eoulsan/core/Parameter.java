@@ -97,7 +97,7 @@ public class Parameter implements Serializable {
 
       throw new EoulsanException(
           "Invalid parameter, an integer parameter is need for "
-              + this.name + " parameter: " + this.value);
+              + this.name + " parameter: " + this.value, e);
     }
 
   }
@@ -115,7 +115,7 @@ public class Parameter implements Serializable {
 
       throw new EoulsanException(
           "Invalid parameter, an integer parameter is need for "
-              + this.name + " parameter: " + this.value);
+              + this.name + " parameter: " + this.value, e);
     }
 
   }

@@ -177,7 +177,8 @@ public class MultiColumnTranslatorReader {
 
     } catch (IOException e) {
 
-      throw new EoulsanIOException("Error while reading the file");
+      throw new EoulsanIOException("Error while reading the file: "
+          + e.getMessage(), e);
     }
 
     return result;
@@ -283,7 +284,7 @@ public class MultiColumnTranslatorReader {
     try {
       setInputStream(new FileInputStream(file));
     } catch (FileNotFoundException e) {
-      throw new EoulsanIOException("File not found : " + file.getName());
+      throw new EoulsanIOException("File not found : " + file.getName(), e);
     }
 
   }

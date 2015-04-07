@@ -935,7 +935,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
     } catch (IOException | EoulsanRuntimeException e) {
       throw new EoulsanException("Error while writing workflow file: "
-          + e.getMessage());
+          + e.getMessage(), e);
     }
 
   }
