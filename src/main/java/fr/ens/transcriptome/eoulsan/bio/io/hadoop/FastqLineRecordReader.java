@@ -1,27 +1,3 @@
-/*
- *                  Eoulsan development code
- *
- * This code may be freely distributed and modified under the
- * terms of the GNU Lesser General Public License version 2.1 or
- * later and CeCILL-C. This should be distributed with the code.
- * If you do not have a copy, see:
- *
- *      http://www.gnu.org/licenses/lgpl-2.1.txt
- *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
- *
- * Copyright for this code is held jointly by the Genomic platform
- * of the Institut de Biologie de l'École Normale Supérieure and
- * the individual authors. These should be listed in @author doc
- * comments.
- *
- * For more information on the Eoulsan project and its aims,
- * or to join the Eoulsan Google group, visit the home page
- * at:
- *
- *      http://www.transcriptome.ens.fr/eoulsan
- *
- */
-
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -42,73 +18,148 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
-import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.Seekable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.CodecPool;
 import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.io.compress.CompressionCodecFactory;
+import org.apache.hadoop.io.compress.Decompressor;
+import org.apache.hadoop.io.compress.SplitCompressionInputStream;
+import org.apache.hadoop.io.compress.SplittableCompressionCodec;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.apache.hadoop.mapreduce.lib.input.CompressedSplitLineReader;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
-import org.apache.hadoop.util.LineReader;
+import org.apache.hadoop.mapreduce.lib.input.SplitLineReader;
 
 /**
  * Treats keys as offset in file and value as line.
  */
 public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
 
-  private CompressionCodecFactory compressionCodecs = null;
+  public static final String MAX_LINE_LENGTH =
+      "mapreduce.input.linerecordreader.line.maxlength";
+
   private long start;
   private long pos;
   private long end;
-  private LineReader in;
+  private SplitLineReader in;
+  private FSDataInputStream fileIn;
+  private Seekable filePosition;
   private int maxLineLength;
-  private LongWritable key = null;
-  private Text value = null;
+  private LongWritable key;
+  private Text value;
+  private boolean isCompressedInput;
+  private Decompressor decompressor;
+  private byte[] recordDelimiterBytes;
 
-  @Override
-  public void initialize(final InputSplit genericSplit,
-      final TaskAttemptContext context) throws IOException {
+  public FastqLineRecordReader() {
+  }
+
+  public FastqLineRecordReader(byte[] recordDelimiter) {
+    this.recordDelimiterBytes = recordDelimiter;
+  }
+
+  public void initialize(InputSplit genericSplit, TaskAttemptContext context)
+      throws IOException {
     FileSplit split = (FileSplit) genericSplit;
     Configuration job = context.getConfiguration();
-    this.maxLineLength =
-        job.getInt("mapreduce.input.linerecordreader.line.maxlength",
-            Integer.MAX_VALUE);
-    this.start = split.getStart();
-    this.end = this.start + split.getLength();
+    this.maxLineLength = job.getInt(MAX_LINE_LENGTH, Integer.MAX_VALUE);
+    start = split.getStart();
+    end = start + split.getLength();
     final Path file = split.getPath();
-    this.compressionCodecs = new CompressionCodecFactory(job);
-    final CompressionCodec codec = this.compressionCodecs.getCodec(file);
 
     // open the file and seek to the start of the split
-    FileSystem fs = file.getFileSystem(job);
-    FSDataInputStream fileIn = fs.open(split.getPath());
-    boolean skipFirstLine = false;
-    if (codec != null) {
-      this.in = new LineReader(codec.createInputStream(fileIn), job);
-      this.end = Long.MAX_VALUE;
-    } else {
-      if (this.start != 0) {
-        skipFirstLine = true;
-        --this.start;
-        fileIn.seek(this.start);
+    final FileSystem fs = file.getFileSystem(job);
+    fileIn = fs.open(file);
+
+    CompressionCodec codec = new CompressionCodecFactory(job).getCodec(file);
+    if (null != codec) {
+      isCompressedInput = true;
+      decompressor = CodecPool.getDecompressor(codec);
+      if (codec instanceof SplittableCompressionCodec) {
+        final SplitCompressionInputStream cIn =
+            ((SplittableCompressionCodec) codec).createInputStream(fileIn,
+                decompressor, start, end,
+                SplittableCompressionCodec.READ_MODE.BYBLOCK);
+        in = new CompressedSplitLineReader(cIn, job, this.recordDelimiterBytes);
+        start = cIn.getAdjustedStart();
+        end = cIn.getAdjustedEnd();
+        filePosition = cIn;
+      } else {
+        in =
+            new SplitLineReader(codec.createInputStream(fileIn, decompressor),
+                job, this.recordDelimiterBytes);
+        filePosition = fileIn;
       }
-      this.in = new LineReader(fileIn, job);
+    } else {
+      fileIn.seek(start);
+      in = new SplitLineReader(fileIn, job, this.recordDelimiterBytes);
+      filePosition = fileIn;
     }
-    if (skipFirstLine) { // skip first line and re-establish "start".
-      this.start +=
-          this.in.readLine(new Text(), 0,
-              (int) Math.min(Integer.MAX_VALUE, this.end - this.start));
+    // If this is not the first split, we always throw away first record
+    // because we always (except the last split) read one extra line in
+    // next() method.
+    if (start != 0) {
+      start += in.readLine(new Text(), 0, maxBytesToConsume(start));
     }
-    this.pos = this.start;
+    this.pos = start;
+  }
+
+  private int maxBytesToConsume(long pos) {
+    return isCompressedInput ? Integer.MAX_VALUE : (int) Math.max(
+        Math.min(Integer.MAX_VALUE, end - pos), maxLineLength);
+  }
+
+  private long getFilePosition() throws IOException {
+    long retVal;
+    if (isCompressedInput && null != filePosition) {
+      retVal = filePosition.getPos();
+    } else {
+      retVal = pos;
+    }
+    return retVal;
+  }
+
+  private int skipUtfByteOrderMark() throws IOException {
+    // Strip BOM(Byte Order Mark)
+    // Text only support UTF-8, we only need to check UTF-8 BOM
+    // (0xEF,0xBB,0xBF) at the start of the text stream.
+    int newMaxLineLength =
+        (int) Math.min(3L + (long) maxLineLength, Integer.MAX_VALUE);
+    int newSize = in.readLine(value, newMaxLineLength, maxBytesToConsume(pos));
+    // Even we read 3 extra bytes for the first line,
+    // we won't alter existing behavior (no backwards incompat issue).
+    // Because the newSize is less than maxLineLength and
+    // the number of bytes copied to Text is always no more than newSize.
+    // If the return size from readLine is not less than maxLineLength,
+    // we will discard the current line and read the next line.
+    pos += newSize;
+    int textLength = value.getLength();
+    byte[] textBytes = value.getBytes();
+    if ((textLength >= 3)
+        && (textBytes[0] == (byte) 0xEF) && (textBytes[1] == (byte) 0xBB)
+        && (textBytes[2] == (byte) 0xBF)) {
+      // find UTF-8 BOM, strip it.
+      textLength -= 3;
+      newSize -= 3;
+      if (textLength > 0) {
+        // It may work to use the same buffer and not do the copyBytes
+        textBytes = value.copyBytes();
+        value.set(textBytes, 3, textLength);
+      } else {
+        value.clear();
+      }
+    }
+    return newSize;
   }
 
   @Override
@@ -118,36 +169,33 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
   }
 
   public boolean nextKeyValue(final boolean cont) throws IOException {
-    if (this.key == null) {
-      this.key = new LongWritable();
+    if (key == null) {
+      key = new LongWritable();
     }
-    this.key.set(this.pos);
-    if (this.value == null) {
-      this.value = new Text();
+    key.set(pos);
+    if (value == null) {
+      value = new Text();
     }
     int newSize = 0;
-    while (this.pos < this.end || cont) {
-      newSize =
-          this.in.readLine(this.value, this.maxLineLength, Math.max(
-              (int) Math.min(Integer.MAX_VALUE, this.end - this.pos),
-              this.maxLineLength));
-      if (newSize == 0) {
-        break;
+    // We always read one extra line, which lies outside the upper
+    // split limit i.e. (end - 1)
+    while (getFilePosition() <= end
+        || in.needAdditionalRecordAfterSplit() || cont) {
+      if (pos == 0) {
+        newSize = skipUtfByteOrderMark();
+      } else {
+        newSize = in.readLine(value, maxLineLength, maxBytesToConsume(pos));
+        pos += newSize;
       }
-      this.pos += newSize;
-      if (newSize < this.maxLineLength) {
+
+      if ((newSize == 0) || (newSize < maxLineLength)) {
         break;
       }
 
-      // line too long. try again
-      getLogger()
-          .info(
-              "Skipped line of size "
-                  + newSize + " at pos " + (this.pos - newSize));
     }
     if (newSize == 0) {
-      this.key = null;
-      this.value = null;
+      key = null;
+      value = null;
       return false;
     } else {
       return true;
@@ -156,31 +204,35 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
 
   @Override
   public LongWritable getCurrentKey() {
-    return this.key;
+    return key;
   }
 
   @Override
   public Text getCurrentValue() {
-    return this.value;
+    return value;
   }
 
   /**
    * Get the progress within the split
    */
-  @Override
-  public float getProgress() {
-    if (this.start == this.end) {
+  public float getProgress() throws IOException {
+    if (start == end) {
       return 0.0f;
     } else {
-      return Math.min(1.0f, (this.pos - this.start)
-          / (float) (this.end - this.start));
+      return Math
+          .min(1.0f, (getFilePosition() - start) / (float) (end - start));
     }
   }
 
-  @Override
   public synchronized void close() throws IOException {
-    if (this.in != null) {
-      this.in.close();
+    try {
+      if (in != null) {
+        in.close();
+      }
+    } finally {
+      if (decompressor != null) {
+        CodecPool.returnDecompressor(decompressor);
+      }
     }
   }
 }

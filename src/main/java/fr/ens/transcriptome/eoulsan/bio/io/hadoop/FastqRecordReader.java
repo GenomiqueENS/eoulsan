@@ -47,8 +47,6 @@ public class FastqRecordReader extends RecordReader<Text, Text> {
 
   private FastqLineRecordReader lrr;
 
-  // private LineRecordReader lrr;
-
   @Override
   public void close() throws IOException {
 
@@ -79,7 +77,6 @@ public class FastqRecordReader extends RecordReader<Text, Text> {
       InterruptedException {
 
     this.lrr = new FastqLineRecordReader();
-    // this.lrr = new LineRecordReader();
     this.lrr.initialize(inputSplit, taskAttemptContext);
   }
 
