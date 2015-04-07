@@ -32,147 +32,49 @@ package fr.ens.transcriptome.eoulsan;
  * document this clearly in the implementing class.
  * @since 1.0
  * @author Laurent Jourdren
- * @author Matthew Pocock
- * @author Thomas Down
  */
 public class EoulsanRuntimeException extends RuntimeException {
 
   // Serialization version UID
   private static final long serialVersionUID = 4568739390687951448L;
 
-  /** Unknown runtime exception type. */
-  public static final int UNKNOWN = 0;
-  /** Null pointer exception type . */
-  public static final int NULL_POINTER = 1;
-  /** Invalid argument exception type. */
-  public static final int INVALID_ARGUMENT = 2;
-  /** Invalid index exception type. */
-  public static final int INVALID_INDEX = 3;
-
-  /*
-   * private static final String UNKNOW_MESSAGE = "Unknown exception : ";
-   * private static final String NULL_POINTER_MESSAGE =
-   * "Null pointer exception : "; private static final String
-   * INVALID_ARGUMENT_MESSAGE = "Invalid argument exception : "; private static
-   * final String INVALID_INDEX_MESSAGE = "Invalid index exception : "; private
-   * int type; private String causeMessage; private String message;
-   */
-
-  //
-  // Getters
-  //
-
-  /**
-   * Get the type of the RuntimeException
-   * @return Returns the type
-   */
-  // public int getType() {
-  // return type;
-  // }
-
-  /**
-   * Get the cause of the exception
-   * @return Returns the cause of the exception
-   */
-  // public String getCauseMessage() {
-  // return causeMessage;
-  // }
-
-  /**
-   * Get the message of the exception.
-   * @return Returns the message
-   */
-  // public String getMessage() {
-  // return message;
-  // }
-
-  //
-  // Setters
-  //
-
-  /**
-   * Set the type of the exception.
-   * @param type The type to set
-   */
-  // public void setType(final int type) {
-  // this.type = type;
-  // }
-
-  /**
-   * Set the cause message.
-   * @param causeMessage The variable to set
-   */
-  // public void setCauseMessage(final String causeMessage) {
-  // this.causeMessage = causeMessage;
-  // }
-
-  /**
-   * Set the message of the exception.
-   * @param message The message to set
-   */
-  // public void setMessage(final String message) {
-  // this.message = message;
-  // }
-
-  //
-  // Other methods
-  //
-
-  // private String getExceptionMessage() {
-  //
-  // String result;
-  //
-  // switch (getType()) {
-  // case NULL_POINTER:
-  // result = NULL_POINTER_MESSAGE;
-  // break;
-  //
-  // case INVALID_ARGUMENT:
-  // result = INVALID_ARGUMENT_MESSAGE;
-  // break;
-  //
-  // case INVALID_INDEX:
-  // result = INVALID_INDEX_MESSAGE;
-  // break;
-  //
-  // default:
-  // result = UNKNOW_MESSAGE;
-  // break;
-  // }
-  //
-  // return result + " " + getCauseMessage();
-  // }
-
   //
   // Constructors
   //
-
-  /**
-   * Create a new EoulsanRuntimeException with a message.
-   * @param message the message
-   */
-  public EoulsanRuntimeException(final String message) {
-    // setMessage(message);
-    super(message);
-  }
-
-  /**
-   * Create a new EoulsanRuntimeException with a cause and a message.
-   * @param type Type of exception message
-   * @param causeMessage the cause that caused this EoulsanRuntimeException
-   */
-  // public EoulsanRuntimeException(final int type, final String causeMessage) {
-  // setType(type);
-  // setCauseMessage(causeMessage);
-  // setMessage(getExceptionMessage());
-  //
-  // }
 
   /**
    * Create a new EoulsanRuntimeException.
    */
   public EoulsanRuntimeException() {
     super();
+  }
+
+  /**
+   * Create a new EoulsanRuntimeException with a message.
+   * @param message the message
+   */
+  public EoulsanRuntimeException(final String message) {
+
+    super(message);
+  }
+
+  /**
+   * Create a new EoulsanException with a message and a cause.
+   * @param message the message
+   * @param cause the cause
+   */
+  public EoulsanRuntimeException(String message, Throwable cause) {
+
+    super(message, cause);
+  }
+
+  /**
+   * Create a new EoulsanException with a cause.
+   * @param cause the cause
+   */
+  public EoulsanRuntimeException(Throwable cause) {
+
+    super(cause);
   }
 
 }
