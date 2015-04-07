@@ -165,13 +165,13 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
             new BufferedReader(new InputStreamReader(fs.open(bestFile),
                 SAM_CHARSET));
 
+        this.outKey.set("");
+
         String line = null;
 
         while ((line = reader.readLine()) != null) {
 
-          final int indexOfFirstTab = line.indexOf("\t");
-          this.outKey.set(line.substring(0, indexOfFirstTab));
-          this.outValue.set(line.substring(indexOfFirstTab + 1));
+          this.outValue.set(line);
 
           context.write(this.outKey, this.outValue);
         }
@@ -217,13 +217,20 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
     // Writing records
     for (SAMRecord r : this.records) {
+
       strRecord = r.getSAMString().replaceAll("\n", "");
 
+      // Set output key
       final int indexOfFirstTab = strRecord.indexOf("\t");
       this.outKey.set(strRecord.substring(0, indexOfFirstTab));
-      this.outValue.set(strRecord.substring(indexOfFirstTab + 1));
 
+      // Set output value
+      this.outValue.set(strRecord);
+
+      // Write the entry
       context.write(this.outKey, this.outValue);
+
+      // Increment the counter
       context.getCounter(this.counterGroup,
           OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName()).increment(1);
     }

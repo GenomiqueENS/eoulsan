@@ -41,6 +41,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
+import fr.ens.transcriptome.eoulsan.bio.io.hadoop.SAMInputFormat;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.SAMOutputFormat;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
@@ -133,6 +134,9 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
 
     // Set input path
     FileInputFormat.addInputPath(job, inputPath);
+
+    // Set input format
+    job.setInputFormatClass(SAMInputFormat.class);
 
     // Set the Mapper class
     job.setMapperClass(SAMFilterMapper.class);

@@ -59,6 +59,7 @@ import fr.ens.transcriptome.eoulsan.bio.expressioncounters.HTSeqCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.HTSeqUtils;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
+import fr.ens.transcriptome.eoulsan.bio.io.hadoop.SAMInputFormat;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
@@ -153,6 +154,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Set input path
     FileInputFormat.setInputPaths(job, inputPath);
+
+    // Set input format
+    job.setInputFormatClass(SAMInputFormat.class);
 
     // Set the Mapper class
     job.setMapperClass(ExpressionMapper.class);
@@ -276,6 +280,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Set input path
     FileInputFormat.setInputPaths(job, inputPath);
+
+    // Set input format
+    job.setInputFormatClass(SAMInputFormat.class);
 
     // Set the mapper class
     job.setMapperClass(HTSeqCountMapper.class);

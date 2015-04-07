@@ -44,8 +44,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
@@ -307,7 +305,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     // Store entries in a map
     Map<String, long[]> map = new HashMap<>();
     while ((e = zis.getNextEntry()) != null) {
-      map.put(e.getName(), new long[] { e.getSize(), e.getCrc() });
+      map.put(e.getName(), new long[] {e.getSize(), e.getCrc()});
     }
     zis.close();
 
@@ -388,7 +386,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     while ((line = readerResults.readLine()) != null) {
 
       final String trimmedLine = line.trim();
-      if ("".equals(trimmedLine)) {
+      if (trimmedLine.length() == 0) {
         continue;
       }
 
@@ -400,31 +398,32 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
         continue;
       }
 
-      final int tabPos = line.indexOf('\t');
+      // Set the output key
+      if (headerLine) {
+        outKey.set("");
+      } else {
 
-      if (tabPos != -1) {
-
-        outKey.set(line.substring(0, tabPos));
-        if (!headerLine) {
-          outValue.set(trimmedLine);
+        final int tabPos = line.indexOf('\t');
+        if (tabPos == -1) {
+          outKey.set("");
         } else {
-          System.out.println("RMM1: " + trimmedLine);
-          System.out.println("RMM2: "
-              + line.substring(0, tabPos) + '\t' + line.substring(tabPos + 1));
-          outValue.set(line.substring(tabPos + 1));
-        }
-
-        context.write(outKey, outValue);
-
-        // Increment counters if not header
-        if (!headerLine) {
-
-          entriesParsed++;
-          context.getCounter(this.counterGroup,
-              OUTPUT_MAPPING_ALIGNMENTS_COUNTER.counterName()).increment(1);
+          outKey.set(line.substring(0, tabPos));
         }
       }
 
+      // Set the output value
+      outValue.set(line);
+
+      // Write the result
+      context.write(outKey, outValue);
+
+      // Increment counters if not header
+      if (!headerLine) {
+
+        entriesParsed++;
+        context.getCounter(this.counterGroup,
+            OUTPUT_MAPPING_ALIGNMENTS_COUNTER.counterName()).increment(1);
+      }
     }
 
     readerResults.close();

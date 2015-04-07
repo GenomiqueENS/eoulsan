@@ -54,21 +54,7 @@ public class SAMRecordWriter extends RecordWriter<Text, Text> {
   public void write(final Text key, final Text value) throws IOException,
       InterruptedException {
 
-    final StringBuilder sb = this.sb;
-
-    sb.setLength(0);
-
-    sb.append(key.toString());
-    sb.append('\t');
-    sb.append(value.toString());
-
-    if (sb.charAt(sb.length() - 2) == '\t') {
-      sb.setLength(sb.length() - 1);
-    }
-
-    sb.append('\n');
-
-    this.writer.write(sb.toString());
+    this.writer.write(value.toString() + '\n');
   }
 
   //
