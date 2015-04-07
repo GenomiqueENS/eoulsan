@@ -219,23 +219,18 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
         if (this.outputFilename1 == null) {
 
           // Output of the mapper is chained
-
-          this.outValue.set(this.read1.getName()
-              + "\t" + this.read1.getSequence() + "\t"
-              + this.read1.getQuality() + "\t" + this.read2.getName() + "\t"
-              + this.read2.getSequence() + "\t" + this.read2.getQuality());
-
+          this.outValue.set(this.read1.toTFQ() + '\t' + this.read2.toTFQ());
           context.write(key, this.outValue);
         } else {
 
           // The output of the mapper is not reused by another mapper or reducer
 
           // Write read 1
-          this.outValue.set(chop(this.read1.toFastQ()));
+          this.outValue.set(this.read1.toTFQ());
           out.write(key, this.outValue, this.outputFilename1);
 
           // Write read 2
-          this.outValue.set(chop(this.read2.toFastQ()));
+          this.outValue.set(this.read2.toTFQ());
           out.write(key, this.outValue, this.outputFilename2);
         }
 
@@ -252,26 +247,6 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
   @Override
   protected void cleanup(final Context context) throws IOException,
       InterruptedException {
-  }
-
-  /**
-   * Remove the last character of a string.
-   * @param s the string to modify
-   * @return a string without the last character
-   */
-  private static final String chop(String s) {
-
-    if (s == null) {
-      return null;
-    }
-
-    final int len = s.length();
-
-    if (len == 0) {
-      return "";
-    }
-
-    return s.substring(0, len - 1);
   }
 
 }
