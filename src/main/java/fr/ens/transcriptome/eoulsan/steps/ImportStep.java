@@ -160,7 +160,7 @@ public class ImportStep extends AbstractStep {
       this.outputPorts = builder.create();
 
     } catch (IOException e) {
-      throw new EoulsanException(e.getMessage());
+      throw new EoulsanException(e);
     }
   }
 

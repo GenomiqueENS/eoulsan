@@ -295,11 +295,11 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
       return doc;
 
     } catch (final IOException e) {
-      throw new EoulsanException(e.getMessage());
+      throw new EoulsanException(e);
     } catch (final SAXException e) {
-      throw new EoulsanException(e.getMessage());
+      throw new EoulsanException(e);
     } catch (final ParserConfigurationException e) {
-      throw new EoulsanException(e.getMessage());
+      throw new EoulsanException(e);
     }
     // TODO
     // close is

@@ -257,7 +257,7 @@ public final class MapReduceUtils {
       }
 
     } catch (ClassNotFoundException | InterruptedException | IOException e) {
-      throw new EoulsanException(e.getMessage());
+      throw new EoulsanException(e);
     }
   }
 

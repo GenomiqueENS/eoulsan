@@ -570,7 +570,7 @@ public abstract class Main {
       this.handler.addHandler(h);
     } catch (IOException e) {
 
-      throw new EoulsanException(e.getMessage());
+      throw new EoulsanException(e);
     }
 
     flushLog();

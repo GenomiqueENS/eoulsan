@@ -217,7 +217,7 @@ public class Executor {
       return new SimpleDesignReader(is).read();
 
     } catch (IOException e) {
-      throw new EoulsanException(e.getMessage());
+      throw new EoulsanException(e);
     }
   }
 
@@ -236,7 +236,7 @@ public class Executor {
 
       return pp.parse();
     } catch (IOException e) {
-      throw new EoulsanException(e.getMessage());
+      throw new EoulsanException(e);
     }
   }
 

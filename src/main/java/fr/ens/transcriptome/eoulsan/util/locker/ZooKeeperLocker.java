@@ -160,7 +160,7 @@ public class ZooKeeperLocker implements Locker, Watcher {
       try {
         Thread.sleep(1000);
       } catch (InterruptedException e) {
-        throw new IOException(e.getMessage());
+        throw new IOException(e);
       }
 
       count++;

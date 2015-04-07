@@ -711,7 +711,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
       }
     } catch (IOException e) {
-      throw new EoulsanException(e.getMessage());
+      throw new EoulsanException(e);
     }
 
     // Check temporary directory

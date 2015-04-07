@@ -111,7 +111,7 @@ public class FastqSplitter implements Splitter {
     try {
       reader.throwException();
     } catch (BadBioEntryException e) {
-      throw new IOException(e.getMessage());
+      throw new IOException(e);
     }
 
   }

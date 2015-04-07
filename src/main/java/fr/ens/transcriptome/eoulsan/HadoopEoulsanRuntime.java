@@ -139,7 +139,7 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
       return newEoulsanRuntime(new Settings(false), conf);
     } catch (EoulsanException e) {
 
-      throw new IOException(e.getMessage());
+      throw new IOException(e);
     }
 
   }

@@ -161,7 +161,7 @@ public abstract class MapperProcess {
         getLogger().fine("End of writing temporary file for mapper");
         startProcess();
       } catch (InterruptedException e) {
-        throw new IOException(e.getMessage());
+        throw new IOException(e);
       }
     }
 
@@ -225,7 +225,7 @@ public abstract class MapperProcess {
         }
 
       } catch (InterruptedException e) {
-        throw new IOException(e.getMessage());
+        throw new IOException(e);
       }
     }
 
@@ -683,7 +683,7 @@ public abstract class MapperProcess {
       }
 
     } catch (InterruptedException e) {
-      throw new IOException(e.getMessage());
+      throw new IOException(e);
     }
   }
 

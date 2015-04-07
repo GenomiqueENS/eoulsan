@@ -134,7 +134,7 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
               + Joiner.on(", ").join(this.filter.getFilterNames()));
 
     } catch (EoulsanException e) {
-      throw new IOException(e.getMessage());
+      throw new IOException(e);
     }
 
     // Write SAM header

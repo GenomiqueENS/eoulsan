@@ -153,7 +153,7 @@ public class DesignBuilder {
 
         return reader.next().getName();
       } catch (IOException | BadBioEntryException e) {
-        throw new EoulsanException(e.getMessage());
+        throw new EoulsanException(e);
       }
 
     }
@@ -187,7 +187,7 @@ public class DesignBuilder {
         }
       }
 
-      return new Object[] {prefix, pairMember};
+      return new Object[] { prefix, pairMember };
     }
 
     //
@@ -538,7 +538,7 @@ public class DesignBuilder {
       CasavaDesignCSVReader reader = new CasavaDesignCSVReader(file);
       addCasavaDesignProject(reader.read(), projectName, baseDir);
     } catch (IOException e) {
-      throw new EoulsanException(e.getMessage());
+      throw new EoulsanException(e);
     }
 
   }
@@ -680,7 +680,7 @@ public class DesignBuilder {
           FastqFormat.identifyFormat(fileToCheck.open(),
               MAX_FASTQ_ENTRIES_TO_READ);
     } catch (IOException | BadBioEntryException e) {
-      throw new EoulsanException(e.getMessage());
+      throw new EoulsanException(e);
     }
 
     smd.setFastqFormat(format == null ? defaultFastqFormat : format);

@@ -294,7 +294,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
       this.mapper.setMapperFlavorToUse(this.mapperFlavor);
       this.mapper.prepareBinaries();
     } catch (IOException e) {
-      throw new EoulsanException(e.getMessage());
+      throw new EoulsanException(e);
     }
 
     // Log Step parameters

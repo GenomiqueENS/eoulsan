@@ -134,7 +134,7 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
               + Joiner.on(", ").join(this.filter.getFilterNames()));
 
     } catch (EoulsanException e) {
-      throw new IOException(e.getMessage());
+      throw new IOException(e);
     }
 
     // Set the output writers

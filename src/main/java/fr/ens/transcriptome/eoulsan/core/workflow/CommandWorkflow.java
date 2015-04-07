@@ -360,7 +360,7 @@ public class CommandWorkflow extends AbstractWorkflow {
         step.addDependency(inputPort, dependencyOutputPort);
       }
     } catch (IOException e) {
-      throw new EoulsanException(e.getMessage());
+      throw new EoulsanException(e);
     }
   }
 

@@ -197,7 +197,7 @@ public class TaskResult implements StepResult, Serializable {
       return result;
 
     } catch (ClassNotFoundException e) {
-      throw new EoulsanRuntimeException(e.getMessage());
+      throw new EoulsanRuntimeException(e);
     }
   }
 
