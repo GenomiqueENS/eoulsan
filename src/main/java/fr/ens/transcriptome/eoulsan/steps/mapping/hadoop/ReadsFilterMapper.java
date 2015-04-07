@@ -73,7 +73,6 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
   private final List<String> fields = new ArrayList<>();
   private MultiReadFilter filter;
   private String counterGroup;
-  private boolean tfqOutput = true;
 
   private final ReadSequence read1 = new ReadSequence();
   private final ReadSequence read2 = new ReadSequence();
@@ -183,6 +182,7 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
     final int fieldsSize = this.fields.size();
 
     if (fieldsSize == 3) {
+
       // Single end
       this.read1.setName(this.fields.get(0));
       this.read1.setSequence(this.fields.get(1));
@@ -190,11 +190,7 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
 
       if (this.filter.accept(this.read1)) {
 
-        if (this.tfqOutput) {
-          this.outValue.set(this.read1.toTFQ());
-        } else {
-          this.outValue.set(this.read1.toFastQ());
-        }
+        this.outValue.set(this.read1.toTFQ());
 
         context.write(key, this.outValue);
         context.getCounter(this.counterGroup,
@@ -205,11 +201,13 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
       }
 
     } else if (fieldsSize == 6) {
-      // Paired-end
+
+      // First end
       this.read1.setName(this.fields.get(0));
       this.read1.setSequence(this.fields.get(1));
       this.read1.setQuality(this.fields.get(2));
 
+      // Second end
       this.read2.setName(this.fields.get(3));
       this.read2.setSequence(this.fields.get(4));
       this.read2.setQuality(this.fields.get(5));
