@@ -42,6 +42,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
@@ -125,7 +126,8 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
         // Convert FASTQ files to TFQ
         MapReduceUtils.submitAndWaitForJob(
             PairedEndFastqToTfq.convert(conf, inFile1, inFile2, tfqFile),
-            CommonHadoop.CHECK_COMPLETION_TIME);
+            inData.getName(), CommonHadoop.CHECK_COMPLETION_TIME, status,
+            COUNTER_GROUP);
 
         job =
             createJobConf(conf, tfqFile, READS_TFQ, fastqFormat,
@@ -159,20 +161,11 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
       return status.createStepResult();
 
-    } catch (IOException e) {
-
-      return status.createStepResult(e,
-          "Error while running job: " + e.getMessage());
-    } catch (InterruptedException e) {
-
-      return status.createStepResult(e,
-          "Error while running job: " + e.getMessage());
-    } catch (ClassNotFoundException e) {
+    } catch (IOException | EoulsanException e) {
 
       return status.createStepResult(e,
           "Error while running job: " + e.getMessage());
     }
-
   }
 
   /**

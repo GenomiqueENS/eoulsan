@@ -135,7 +135,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
         // Convert FASTQ files to TFQ
         MapReduceUtils.submitAndWaitForJob(
             PairedEndFastqToTfq.convert(conf, inFile1, inFile2, tfqFile),
-            CommonHadoop.CHECK_COMPLETION_TIME);
+            readData.getName(), CommonHadoop.CHECK_COMPLETION_TIME, status,
+            getCounterGroup());
 
         job =
             createJobConf(conf, context, tfqFile, readData.getName(), true,
@@ -148,15 +149,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
       return status.createStepResult();
 
-    } catch (IOException e) {
-
-      return status.createStepResult(e,
-          "Error while running job: " + e.getMessage());
-    } catch (InterruptedException e) {
-
-      return status.createStepResult(e,
-          "Error while running job: " + e.getMessage());
-    } catch (ClassNotFoundException e) {
+    } catch (IOException | EoulsanException e) {
 
       return status.createStepResult(e,
           "Error while running job: " + e.getMessage());

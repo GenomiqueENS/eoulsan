@@ -38,6 +38,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 
 /**
@@ -117,28 +118,6 @@ public final class MapReduceUtils {
     }
 
     waitForJobs(jobs, waitTimeInMillis);
-  }
-
-  /**
-   * Submit a job and wait the completion of the job.
-   * @param job job to submit
-   * @param waitTimeInMillis waiting time between 2 checks of the completion of
-   *          jobs
-   * @throws IOException if an IO error occurs while waiting for jobs
-   * @throws InterruptedException if an error occurs while waiting for jobs
-   * @throws ClassNotFoundException if a class needed for map reduce execution
-   *           is not found
-   */
-  public static void submitAndWaitForJob(Job job, final int waitTimeInMillis)
-      throws IOException, InterruptedException, ClassNotFoundException {
-
-    if (job == null) {
-      throw new NullPointerException("The list of jobs is null");
-    }
-
-    job.submit();
-
-    waitForJobs(Collections.singleton(job), waitTimeInMillis);
   }
 
   /**
@@ -251,15 +230,13 @@ public final class MapReduceUtils {
    *          jobs
    * @param status step status
    * @param counterGroup group of the counter to log
-   * @throws IOException if an IO error occurs while waiting for jobs
-   * @throws InterruptedException if an error occurs while waiting for jobs
-   * @throws ClassNotFoundException if a class needed for map reduce execution
-   *           is not found
+   * @throws EoulsanException if the job fail or if an exception occurs while
+   *           submitting or waiting the end of the job
    */
   public static void submitAndWaitForJob(final Job job,
       final String jobDescription, final int waitTimeInMillis,
       final StepStatus status, final String counterGroup)
-      throws InterruptedException, IOException, ClassNotFoundException {
+      throws EoulsanException {
 
     if (job == null) {
       throw new NullPointerException("The job is null");
@@ -269,8 +246,19 @@ public final class MapReduceUtils {
       throw new NullPointerException("The jobDescription is null");
     }
 
-    submitAndWaitForJobs(Collections.singletonMap(job, jobDescription),
-        waitTimeInMillis, status, counterGroup);
+    try {
+
+      submitAndWaitForJobs(Collections.singletonMap(job, jobDescription),
+          waitTimeInMillis, status, counterGroup);
+
+      if (!job.isSuccessful()) {
+        throw new EoulsanException("Fail of the Hadoop job: "
+            + job.getJobFile());
+      }
+
+    } catch (ClassNotFoundException | InterruptedException | IOException e) {
+      throw new EoulsanException(e.getMessage());
+    }
   }
 
   /**

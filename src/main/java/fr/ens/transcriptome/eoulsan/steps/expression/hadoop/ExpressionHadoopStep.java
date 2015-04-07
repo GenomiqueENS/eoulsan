@@ -635,11 +635,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       return status.createStepResult();
 
-    } catch (IOException e) {
-
-      return status.createStepResult(e,
-          "Error while running job: " + e.getMessage());
-    } catch (InterruptedException e) {
+    } catch (IOException | InterruptedException | EoulsanException e) {
 
       return status.createStepResult(e,
           "Error while running job: " + e.getMessage());
@@ -647,8 +643,6 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       return status.createStepResult(e,
           "Invalid annotation entry: " + e.getEntry());
-    } catch (ClassNotFoundException e) {
-      return status.createStepResult(e, "Class not found: " + e.getMessage());
     }
   }
 

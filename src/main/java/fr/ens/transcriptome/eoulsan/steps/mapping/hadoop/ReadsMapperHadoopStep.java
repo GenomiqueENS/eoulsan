@@ -136,7 +136,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
         // Convert FASTQ files to TFQ
         MapReduceUtils.submitAndWaitForJob(
             PairedEndFastqToTfq.convert(conf, inFile1, inFile2, tfqFile),
-            CommonHadoop.CHECK_COMPLETION_TIME);
+            readsData.getName(), CommonHadoop.CHECK_COMPLETION_TIME, status,
+            COUNTER_GROUP);
 
         job =
             createJobConf(conf, context, tfqFile, true, READS_TFQ, fastqFormat,
@@ -156,7 +157,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
       return status.createStepResult();
 
-    } catch (IOException | InterruptedException | ClassNotFoundException e) {
+    } catch (IOException | EoulsanException e) {
 
       return status.createStepResult(e,
           "Error while running job: " + e.getMessage());

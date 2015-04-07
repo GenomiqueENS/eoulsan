@@ -40,6 +40,7 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.SAMInputFormat;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.SAMOutputFormat;
@@ -86,7 +87,7 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
           CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
 
       return status.createStepResult();
-    } catch (IOException | InterruptedException | ClassNotFoundException e) {
+    } catch (IOException | EoulsanException e) {
 
       return status.createStepResult(e,
           "Error while running job: " + e.getMessage());
