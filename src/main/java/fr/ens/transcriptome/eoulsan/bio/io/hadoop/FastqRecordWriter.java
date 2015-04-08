@@ -46,15 +46,15 @@ public class FastqRecordWriter extends RecordWriter<Text, Text> {
   final ReadSequence read = new ReadSequence();
 
   @Override
-  public void close(final TaskAttemptContext context) throws IOException,
-      InterruptedException {
+  public synchronized void close(final TaskAttemptContext context)
+      throws IOException, InterruptedException {
 
     this.writer.close();
   }
 
   @Override
-  public void write(final Text key, final Text value) throws IOException,
-      InterruptedException {
+  public synchronized void write(final Text key, final Text value)
+      throws IOException, InterruptedException {
 
     this.read.parse(value.toString());
 

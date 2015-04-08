@@ -44,15 +44,15 @@ public class SAMRecordWriter extends RecordWriter<Text, Text> {
   final StringBuilder sb = new StringBuilder();
 
   @Override
-  public void close(final TaskAttemptContext context) throws IOException,
-      InterruptedException {
+  public synchronized void close(final TaskAttemptContext context)
+      throws IOException, InterruptedException {
 
     this.writer.close();
   }
 
   @Override
-  public void write(final Text key, final Text value) throws IOException,
-      InterruptedException {
+  public synchronized void write(final Text key, final Text value)
+      throws IOException, InterruptedException {
 
     this.writer.write(value.toString() + '\n');
   }

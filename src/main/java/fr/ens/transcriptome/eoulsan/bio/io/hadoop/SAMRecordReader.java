@@ -21,7 +21,7 @@ public class SAMRecordReader extends RecordReader<Text, Text> {
   private Text value = new Text();
 
   @Override
-  public void close() throws IOException {
+  public synchronized void close() throws IOException {
 
     this.lrr.close();
   }
@@ -53,7 +53,8 @@ public class SAMRecordReader extends RecordReader<Text, Text> {
   }
 
   @Override
-  public boolean nextKeyValue() throws IOException, InterruptedException {
+  public synchronized boolean nextKeyValue() throws IOException,
+      InterruptedException {
 
     if (!this.lrr.nextKeyValue()) {
       return false;

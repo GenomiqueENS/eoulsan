@@ -43,12 +43,11 @@ public class FastqRecordReader extends RecordReader<Text, Text> {
   private Text value = new Text();
 
   private final String[] lines = new String[4];
-  private final long[] pos = new long[4];
 
   private FastqLineRecordReader lrr;
 
   @Override
-  public void close() throws IOException {
+  public synchronized void close() throws IOException {
 
     this.lrr.close();
   }
@@ -81,7 +80,8 @@ public class FastqRecordReader extends RecordReader<Text, Text> {
   }
 
   @Override
-  public boolean nextKeyValue() throws IOException, InterruptedException {
+  public synchronized boolean nextKeyValue() throws IOException,
+      InterruptedException {
 
     int count = 0;
     boolean found = false;
@@ -90,19 +90,9 @@ public class FastqRecordReader extends RecordReader<Text, Text> {
 
       if (!this.lrr.nextKeyValue(count != 0)) {
         return false;
-        // if (!this.lrr.nextKeyValue())
-        // return false;
       }
 
-      final String s = this.lrr.getCurrentValue().toString().trim();
-
-      // Prevent empty lines
-      if (s.length() == 0) {
-        continue;
-      }
-
-      this.lines[count] = s;
-      this.pos[count] = this.lrr.getCurrentKey().get();
+      this.lines[count] = this.lrr.getCurrentValue().toString().trim();
 
       if (count < 3) {
         count++;
@@ -116,19 +106,11 @@ public class FastqRecordReader extends RecordReader<Text, Text> {
           this.lines[0] = this.lines[1];
           this.lines[1] = this.lines[2];
           this.lines[2] = this.lines[3];
-
-          // Shift positions
-          this.pos[0] = this.pos[1];
-          this.pos[1] = this.pos[2];
-          this.pos[2] = this.pos[3];
         }
       }
-
     }
 
     // Set key
-
-    // this.key = new LongWritable(this.pos[0]);
     this.key = new Text(memberId(this.lines[0].substring(1)));
 
     // Set value
