@@ -30,9 +30,18 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileChecksum;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
@@ -40,6 +49,9 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Settings;
@@ -211,6 +223,10 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     // Set Mapper fastq format
     jobConf.set(ReadsMapperMapper.FASTQ_FORMAT_KEY, "" + fastqFormat);
 
+    // Set mapper index checksum
+    jobConf.set(ReadsMapperMapper.INDEX_CHECKSUM_KEY,
+        "" + computeZipCheckSum(mapperIndexFile, parentConf));
+
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
 
@@ -299,6 +315,66 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     jobConf.set(ReadsMapperMapper.ZOOKEEPER_CONNECT_STRING_KEY, connectString);
     jobConf.set(ReadsMapperMapper.ZOOKEEPER_SESSION_TIMEOUT_KEY,
         "" + settings.getZooKeeperSessionTimeout());
+  }
+
+  /**
+   * Compute the checksum of a ZIP file or use the HDFS checksum if available.
+   * @param is input stream
+   * @return the checksum as a string
+   * @throws IOException if an error occurs while creating the checksum
+   */
+  static String computeZipCheckSum(final DataFile file, final Configuration conf)
+      throws IOException {
+
+    final Path path = new Path(file.getSource());
+
+    FileSystem fs = FileSystem.get(path.toUri(), conf);
+    final FileChecksum checksum = fs.getFileChecksum(path);
+
+    // If exists use checksum provided by the file system
+    if (checksum != null) {
+      return new BigInteger(1, checksum.getBytes()).toString(16);
+    }
+
+    // Fallback solution
+    return computeZipCheckSum(file.open());
+  }
+
+  /**
+   * Compute the checksum of a ZIP file.
+   * @param is input stream
+   * @return the checksum as a string
+   * @throws IOException if an error occurs while creating the checksum
+   */
+  private static String computeZipCheckSum(final InputStream in)
+      throws IOException {
+
+    ZipArchiveInputStream zais = new ZipArchiveInputStream(in);
+
+    // Create Hash function
+    final Hasher hs = Hashing.md5().newHasher();
+
+    // Store entries in a map
+    final Map<String, long[]> map = new HashMap<>();
+
+    ZipArchiveEntry e;
+
+    while ((e = zais.getNextZipEntry()) != null) {
+      map.put(e.getName(), new long[] {e.getSize(), e.getCrc()});
+    }
+
+    zais.close();
+
+    // Add values to hash function in an ordered manner
+    for (String filename : new TreeSet<String>(map.keySet())) {
+
+      hs.putString(filename, StandardCharsets.UTF_8);
+      for (long l : map.get(filename)) {
+        hs.putLong(l);
+      }
+    }
+
+    return hs.hash().toString();
   }
 
 }

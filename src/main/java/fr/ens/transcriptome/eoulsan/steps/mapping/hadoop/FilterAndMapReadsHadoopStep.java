@@ -30,6 +30,7 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsMapperHadoopStep.computeZipCheckSum;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsMapperHadoopStep.setZooKeeperJobConfiguration;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX;
 
@@ -210,6 +211,10 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set Mapper fastq format
     jobConf.set(ReadsMapperMapper.FASTQ_FORMAT_KEY, "" + fastqFormat);
+
+    // Set mapper index checksum
+    jobConf.set(ReadsMapperMapper.INDEX_CHECKSUM_KEY,
+        "" + computeZipCheckSum(genomeIndexFile, parentConf));
 
     // timeout
     jobConf.set("mapreduce.task.timeout", "" + HADOOP_TIMEOUT);

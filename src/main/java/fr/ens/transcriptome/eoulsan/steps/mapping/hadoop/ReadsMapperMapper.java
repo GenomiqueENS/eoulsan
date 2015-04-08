@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_MAPPING_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_MAPPING_ALIGNMENTS_COUNTER;
-import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,23 +33,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import com.google.common.base.Splitter;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hasher;
-import com.google.common.hash.Hashing;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -92,6 +82,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
       + ".mapper.nb.threads";
   static final String FASTQ_FORMAT_KEY = Globals.PARAMETER_PREFIX
       + ".mapper.fastq.format";
+  static final String INDEX_CHECKSUM_KEY = Globals.PARAMETER_PREFIX
+      + ".mapper.index.checksum";
   static final String ZOOKEEPER_CONNECT_STRING_KEY = Globals.PARAMETER_PREFIX
       + ".mapper.zookeeper.connect.string";
   static final String ZOOKEEPER_SESSION_TIMEOUT_KEY = Globals.PARAMETER_PREFIX
@@ -209,7 +201,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     // Set index directory
     final File archiveIndexDir =
         new File(context.getConfiguration().get(HADOOP_TEMP_DIR)
-            + "/" + getIndexLocalName(archiveIndexFile));
+            + "/" + this.mapper.getMapperName() + "-index-"
+            + conf.get(INDEX_CHECKSUM_KEY));
 
     getLogger().info(
         "Genome index directory where decompressed: " + archiveIndexDir);
@@ -261,6 +254,14 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     // Set mapper temporary directory
     this.mapper.setTempDirectory(tempDir);
 
+    final boolean indexMustBeUncompressed = !archiveIndexDir.exists();
+
+    // Lock if mapper index must be uncompressed
+    if (indexMustBeUncompressed) {
+      ProcessUtils.waitRandom(5000);
+      this.lock.lock();
+    }
+
     // Init mapper
     this.mapper.init(archiveIndexFile.open(), archiveIndexDir,
         new HadoopReporter(context), this.counterGroup);
@@ -272,53 +273,12 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
       this.process = this.mapper.mapSE(null);
     }
 
+    // Unlock if mapper index had just been uncompressed
+    if (indexMustBeUncompressed) {
+      this.lock.unlock();
+    }
+
     getLogger().info("End of setup()");
-  }
-
-  private String getIndexLocalName(final DataFile archiveIndexFile)
-      throws IOException {
-
-    checkNotNull(archiveIndexFile, "Index Zip file is null");
-
-    return this.mapper.getMapperName()
-        + "-index-" + computeZipCheckSum(archiveIndexFile.open());
-  }
-
-  /**
-   * Compute the checksum of a ZIP file.
-   * @param is input stream
-   * @return the checksum as a string
-   * @throws IOException if an error occurs while creating the checksum
-   */
-  public static final String computeZipCheckSum(final InputStream is)
-      throws IOException {
-
-    checkNotNull(is, "is argument cannot be null");
-
-    final ZipInputStream zis = new ZipInputStream(is);
-
-    final HashFunction hf = Hashing.md5();
-    final Hasher hs = hf.newHasher();
-
-    ZipEntry e;
-
-    // Store entries in a map
-    Map<String, long[]> map = new HashMap<>();
-    while ((e = zis.getNextEntry()) != null) {
-      map.put(e.getName(), new long[] {e.getSize(), e.getCrc()});
-    }
-    zis.close();
-
-    // Add values to hash function in an ordered manner
-    for (String filename : new TreeSet<String>(map.keySet())) {
-
-      hs.putString(filename, StandardCharsets.UTF_8);
-      for (long l : map.get(filename)) {
-        hs.putLong(l);
-      }
-    }
-
-    return hs.hash().toString();
   }
 
   @Override
