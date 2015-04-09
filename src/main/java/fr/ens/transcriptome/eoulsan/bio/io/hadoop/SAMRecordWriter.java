@@ -24,10 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.RecordWriter;
@@ -40,21 +39,36 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
  */
 public class SAMRecordWriter extends RecordWriter<Text, Text> {
 
-  final Writer writer;
-  final StringBuilder sb = new StringBuilder();
+  private static final String utf8 = "UTF-8";
+  private static final byte[] newline;
 
-  @Override
-  public synchronized void close(final TaskAttemptContext context)
-      throws IOException, InterruptedException {
-
-    this.writer.close();
+  static {
+    try {
+      newline = "\n".getBytes(utf8);
+    } catch (UnsupportedEncodingException uee) {
+      throw new IllegalArgumentException("can't find " + utf8 + " encoding");
+    }
   }
+
+  private final DataOutputStream out;
 
   @Override
   public synchronized void write(final Text key, final Text value)
       throws IOException, InterruptedException {
 
-    this.writer.write(value.toString() + '\n');
+    if (value == null) {
+      return;
+    }
+
+    out.write(value.toString().getBytes(utf8));
+    out.write(value.getBytes(), 0, value.getLength());
+    out.write(newline);
+  }
+
+  @Override
+  public synchronized void close(final TaskAttemptContext context)
+      throws IOException {
+    out.close();
   }
 
   //
@@ -65,9 +79,9 @@ public class SAMRecordWriter extends RecordWriter<Text, Text> {
    * Public constructor.
    * @param os output stream
    */
-  public SAMRecordWriter(final OutputStream os) {
+  public SAMRecordWriter(final DataOutputStream out) {
 
-    this.writer = new OutputStreamWriter(os);
+    this.out = out;
   }
 
 }

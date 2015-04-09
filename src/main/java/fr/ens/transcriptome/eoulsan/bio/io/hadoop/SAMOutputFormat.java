@@ -24,15 +24,20 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.GzipCodec;
 import org.apache.hadoop.mapreduce.RecordWriter;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.util.ReflectionUtils;
 
 /**
  * This class define a SAM output format.
@@ -45,13 +50,33 @@ public class SAMOutputFormat extends FileOutputFormat<Text, Text> {
   public RecordWriter<Text, Text> getRecordWriter(TaskAttemptContext context)
       throws IOException, InterruptedException {
 
-    final Path path = getDefaultWorkFile(context, "");
+    Configuration conf = context.getConfiguration();
+    boolean isCompressed = getCompressOutput(context);
 
-    // create the file in the file system
-    FileSystem fs = path.getFileSystem(context.getConfiguration());
-    FSDataOutputStream out = fs.create(path, context);
+    CompressionCodec codec = null;
+    String extension = "";
 
-    return new SAMRecordWriter(out);
+    if (isCompressed) {
+      Class<? extends CompressionCodec> codecClass =
+          getOutputCompressorClass(context, GzipCodec.class);
+      codec = (CompressionCodec) ReflectionUtils.newInstance(codecClass, conf);
+      extension = codec.getDefaultExtension();
+    }
+
+    // Get the output file path
+    final Path file = getDefaultWorkFile(context, extension);
+
+    final FileSystem fs = file.getFileSystem(conf);
+    if (!isCompressed) {
+
+      FSDataOutputStream fileOut = fs.create(file, false);
+      return new SAMRecordWriter(fileOut);
+    } else {
+
+      FSDataOutputStream fileOut = fs.create(file, false);
+      return new SAMRecordWriter(new DataOutputStream(
+          codec.createOutputStream(fileOut)));
+    }
   }
 
 }

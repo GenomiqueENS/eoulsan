@@ -24,10 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.RecordWriter;
@@ -42,23 +41,38 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
  */
 public class FastqRecordWriter extends RecordWriter<Text, Text> {
 
-  final Writer writer;
-  final ReadSequence read = new ReadSequence();
+  private static final String utf8 = "UTF-8";
+  private static final byte[] newline;
 
-  @Override
-  public synchronized void close(final TaskAttemptContext context)
-      throws IOException, InterruptedException {
-
-    this.writer.close();
+  static {
+    try {
+      newline = "\n".getBytes(utf8);
+    } catch (UnsupportedEncodingException uee) {
+      throw new IllegalArgumentException("can't find " + utf8 + " encoding");
+    }
   }
+
+  final ReadSequence read = new ReadSequence();
+  private final DataOutputStream out;
 
   @Override
   public synchronized void write(final Text key, final Text value)
-      throws IOException, InterruptedException {
+      throws IOException {
+
+    if (value == null) {
+      return;
+    }
 
     this.read.parse(value.toString());
 
-    this.writer.write(this.read.toFastQ() + '\n');
+    out.write(this.read.toFastQ().getBytes(utf8));
+    out.write(newline);
+  }
+
+  @Override
+  public synchronized void close(final TaskAttemptContext context)
+      throws IOException {
+    out.close();
   }
 
   //
@@ -69,9 +83,8 @@ public class FastqRecordWriter extends RecordWriter<Text, Text> {
    * Public constructor.
    * @param os output stream
    */
-  public FastqRecordWriter(final OutputStream os) {
-
-    this.writer = new OutputStreamWriter(os);
+  public FastqRecordWriter(DataOutputStream out) {
+    this.out = out;
   }
 
 }
