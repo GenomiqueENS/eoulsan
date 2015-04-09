@@ -92,7 +92,14 @@ public class FastqRecordReader extends RecordReader<Text, Text> {
         return false;
       }
 
-      this.lines[count] = this.lrr.getCurrentValue().toString().trim();
+      final String s = this.lrr.getCurrentValue().toString().trim();
+
+      // Prevent empty lines
+      if (s.length() == 0) {
+        continue;
+      }
+
+      this.lines[count] = s;
 
       if (count < 3) {
         count++;
