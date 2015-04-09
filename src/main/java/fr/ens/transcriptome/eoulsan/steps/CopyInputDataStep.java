@@ -26,9 +26,12 @@ package fr.ens.transcriptome.eoulsan.steps;
 
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
+import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.DEFAULT_SINGLE_OUTPUT_PORT_NAME;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -44,6 +47,8 @@ import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
+import fr.ens.transcriptome.eoulsan.core.workflow.DataUtils;
+import fr.ens.transcriptome.eoulsan.core.workflow.FileNaming;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFiles;
@@ -91,8 +96,8 @@ public class CopyInputDataStep extends AbstractStep {
   @Override
   public OutputPorts getOutputPorts() {
 
-    return new OutputPortsBuilder().addPort("output", this.format,
-        this.outputCompression).create();
+    return new OutputPortsBuilder().addPort(DEFAULT_SINGLE_OUTPUT_PORT_NAME,
+        this.format, this.outputCompression).create();
   }
 
   @Override
@@ -124,9 +129,10 @@ public class CopyInputDataStep extends AbstractStep {
     try {
 
       final Data inData = context.getInputData(DEFAULT_SINGLE_INPUT_PORT_NAME);
-      final Data outData = context.getOutputData("output", inData);
+      final Data outData =
+          context.getOutputData(DEFAULT_SINGLE_OUTPUT_PORT_NAME, inData);
 
-      copyData(inData, outData);
+      copyData(inData, outData, context);
       status.setProgress(1.0);
 
     } catch (IOException e) {
@@ -165,18 +171,41 @@ public class CopyInputDataStep extends AbstractStep {
    * Copy files for a format and a samples.
    * @param inData input data
    * @param outData output data
+   * @param context task context
    * @throws IOException if an error occurs while copying
    */
-  private void copyData(final Data inData, final Data outData)
-      throws IOException {
+  private void copyData(final Data inData, final Data outData,
+      final StepContext context) throws IOException {
 
+    final String stepId = context.getCurrentStep().getId();
+    final DataFile outputDir = context.getStepOutputDirectory();
     final int count = inData.getDataFileCount();
 
+    //
     // Handle standard case
+    //
+
     if (inData.getFormat().getMaxFilesCount() == 1) {
 
+      // Get the input file
       final DataFile in = inData.getDataFile();
-      final DataFile out = outData.getDataFile();
+
+      // Define the compression of the output
+      final CompressionType compression =
+          this.outputCompression != null ? this.outputCompression : in
+              .getCompressionType();
+
+      // Define the output filename
+      final String outFilename =
+          FileNaming.filename(stepId, DEFAULT_SINGLE_OUTPUT_PORT_NAME,
+              this.format, outData.getName(), -1, outData.getPart(),
+              compression);
+
+      // Define the output file
+      final DataFile out = new DataFile(outputDir, outFilename);
+
+      // Set the file in the data object
+      DataUtils.setDataFile(outData, out);
 
       // Check input and output files
       checkFiles(in, out);
@@ -185,12 +214,27 @@ public class CopyInputDataStep extends AbstractStep {
       DataFiles.symlinkOrCopy(in, out, true);
     } else {
 
+      //
       // Handle multi file format like FASTQ files
+      //
+
+      // The list of output files
+      final List<DataFile> dataFiles = new ArrayList<>();
 
       for (int i = 0; i < count; i++) {
 
+        // Get the input file
         final DataFile in = inData.getDataFile(i);
-        final DataFile out = outData.getDataFile(i);
+
+        // Define the output filename
+        final String outFilename =
+            FileNaming.filename(stepId, DEFAULT_SINGLE_OUTPUT_PORT_NAME,
+                this.format, outData.getName(), i, outData.getPart(),
+                in.getCompressionType());
+
+        // Define the output file
+        final DataFile out = new DataFile(outputDir, outFilename);
+        dataFiles.add(out);
 
         // Check input and output files
         checkFiles(in, out);
@@ -198,7 +242,9 @@ public class CopyInputDataStep extends AbstractStep {
         // Copy file
         DataFiles.symlinkOrCopy(in, out, true);
       }
+
+      // Set the files in the data object
+      DataUtils.setDataFiles(outData, dataFiles);
     }
   }
-
 }
