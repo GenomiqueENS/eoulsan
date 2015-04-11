@@ -271,9 +271,6 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     // Set the Mapper class
     job.setMapperClass(ReadsMapperMapper.class);
 
-    // Set the reducer class
-    // job.setReducerClass(IdentityReducer.class);
-
     // Set the output format
     job.setOutputFormatClass(SAMOutputFormat.class);
 
@@ -360,7 +357,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     ZipArchiveEntry e;
 
     while ((e = zais.getNextZipEntry()) != null) {
-      map.put(e.getName(), new long[] {e.getSize(), e.getCrc()});
+      map.put(e.getName(), new long[] { e.getSize(), e.getCrc() });
     }
 
     zais.close();

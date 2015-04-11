@@ -60,7 +60,6 @@ public class SAMRecordWriter extends RecordWriter<Text, Text> {
       return;
     }
 
-    out.write(value.toString().getBytes(utf8));
     out.write(value.getBytes(), 0, value.getLength());
     out.write(newline);
   }
