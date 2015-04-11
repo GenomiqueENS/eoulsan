@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.createConfiguration;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX;
@@ -76,11 +75,10 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     try {
 
       final Data inData = context.getInputData(MAPPER_RESULTS_SAM);
-      final Data genomeDescData = context.getInputData(GENOME_DESC_TXT);
       final Data outData = context.getOutputData(MAPPER_RESULTS_SAM, inData);
 
       // Create the job to run
-      final Job job = createJob(conf, inData, genomeDescData, outData);
+      final Job job = createJob(conf, inData, outData);
 
       // Launch jobs
       MapReduceUtils.submitAndWaitForJob(job, inData.getName(),
@@ -98,22 +96,17 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
   /**
    * Create the JobConf object for a sample
    * @param inData input data
-   * @param genomeDescData genome description data
    * @param outData output data
    * @return a new JobConf object
    * @throws IOException
    */
   private Job createJob(final Configuration parentConf, final Data inData,
-      final Data genomeDescData, final Data outData) throws IOException {
+      final Data outData) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
     // Set input path
     final Path inputPath = new Path(inData.getDataFile().getSource());
-
-    // Set Genome description path
-    jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY, genomeDescData
-        .getDataFile().getSource());
 
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);

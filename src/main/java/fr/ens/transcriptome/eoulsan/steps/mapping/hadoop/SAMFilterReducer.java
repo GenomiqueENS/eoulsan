@@ -41,6 +41,8 @@ import java.util.List;
 import net.sf.samtools.SAMFileHeader;
 import net.sf.samtools.SAMLineParser;
 import net.sf.samtools.SAMRecord;
+import net.sf.samtools.SAMSequenceDictionary;
+import net.sf.samtools.SAMSequenceRecord;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -50,18 +52,16 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.SAMComparator;
-import fr.ens.transcriptome.eoulsan.bio.SAMUtils;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporterIncrementer;
 
 /**
@@ -102,21 +102,6 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
       throw new IOException("No counter group defined");
     }
 
-    // Get the genome description filename
-    final String genomeDescFile = conf.get(GENOME_DESC_PATH_KEY);
-
-    if (genomeDescFile == null) {
-      throw new IOException("No genome desc file set");
-    }
-
-    // Load genome description object
-    final GenomeDescription genomeDescription =
-        GenomeDescription.load(new DataFile(genomeDescFile).open());
-
-    // Set the chromosomes sizes in the parser
-    this.parser.getFileHeader().setSequenceDictionary(
-        SAMUtils.newSAMSequenceDictionary(genomeDescription));
-
     // Set the filters
     try {
       final MultiReadAlignmentsFilterBuilder mrafb =
@@ -138,48 +123,103 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
     }
 
     // Write SAM header
-    if (context.getTaskAttemptID().getTaskID().getId() == 0) {
+    loadAndWriterSAMHeader(context);
+  }
 
-      final Path outputPath =
-          new Path(context.getConfiguration().get(
-              "mapreduce.output.fileoutputformat.outputdir"));
+  /**
+   * Load the SAM header from a file in output directory of the reducer, add it
+   * to SAM parser and writer SAM header if the split to process is the first
+   * split.
+   * @param context Reducer context
+   * @throws IOException if an error occurs while processing the SAM header file
+   * @throws InterruptedException if an error occurs while writing the SAM
+   *           header
+   */
+  private void loadAndWriterSAMHeader(final Context context)
+      throws IOException, InterruptedException {
 
-      final FileSystem fs =
-          context.getWorkingDirectory().getFileSystem(
-              context.getConfiguration());
+    final boolean writeSAMHeader =
+        context.getTaskAttemptID().getTaskID().getId() == 0;
 
-      // Found the complete SAM header file
-      Path bestFile = null;
-      long maxLen = -1;
+    // Get the output path of the reducer
+    final Path outputPath =
+        new Path(context.getConfiguration().get(
+            "mapreduce.output.fileoutputformat.outputdir"));
 
-      for (FileStatus status : fs.listStatus(outputPath)) {
-        if (status.getPath().getName().startsWith(SAM_HEADER_FILE_PREFIX)
-            && status.getLen() > maxLen) {
-          maxLen = status.getLen();
-          bestFile = status.getPath();
-        }
-      }
+    // Get the file system object
+    final FileSystem fs =
+        context.getWorkingDirectory().getFileSystem(context.getConfiguration());
 
-      if (bestFile != null) {
-        final BufferedReader reader =
-            new BufferedReader(new InputStreamReader(fs.open(bestFile),
-                SAM_CHARSET));
+    // Found the complete SAM header file
+    Path bestFile = null;
+    long maxLen = -1;
 
-        this.outKey.set("");
-
-        String line = null;
-
-        while ((line = reader.readLine()) != null) {
-
-          this.outValue.set(line);
-
-          context.write(this.outKey, this.outValue);
-        }
-
-        reader.close();
+    for (FileStatus status : fs.listStatus(outputPath)) {
+      if (status.getPath().getName().startsWith(SAM_HEADER_FILE_PREFIX)
+          && status.getLen() > maxLen) {
+        maxLen = status.getLen();
+        bestFile = status.getPath();
       }
     }
 
+    // Check if the SAM header file has been found
+    if (bestFile == null) {
+      throw new IOException(
+          "No SAM header file found in reducer output directory: " + outputPath);
+    }
+
+    try (final BufferedReader reader =
+        new BufferedReader(
+            new InputStreamReader(fs.open(bestFile), SAM_CHARSET))) {
+
+      // Dictionary for sequences
+      final SAMSequenceDictionary sequenceDictionary =
+          new SAMSequenceDictionary();
+
+      final Splitter spliter = Splitter.on('\t');
+      String line = null;
+
+      while ((line = reader.readLine()) != null) {
+
+        if (line.startsWith("@SQ\t")) {
+
+          // Parse sequence name and length
+
+          String sequenceName = null;
+          int sequenceLength = -1;
+
+          for (String f : spliter.split(line)) {
+            if (f.startsWith("SN:")) {
+              sequenceName = f.substring(3);
+            } else if (f.startsWith("LN:")) {
+              try {
+                sequenceLength = Integer.parseInt(f.substring(3));
+              } catch (NumberFormatException e) {
+              }
+            }
+          }
+
+          // Add sequence to SAM header
+          if (sequenceName != null && sequenceLength != -1) {
+            sequenceDictionary.addSequence(new SAMSequenceRecord(sequenceName,
+                sequenceLength));
+          }
+        }
+
+        // Write SAM header only for first split
+        if (writeSAMHeader) {
+
+          this.outKey.set("");
+          this.outValue.set(line);
+          context.write(this.outKey, this.outValue);
+        }
+      }
+
+      reader.close();
+
+      // Set the sequences sizes in the parser
+      this.parser.getFileHeader().setSequenceDictionary(sequenceDictionary);
+    }
   }
 
   /**
