@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 import java.io.IOException;
 import java.util.Iterator;
 
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -35,20 +36,23 @@ import org.apache.hadoop.mapreduce.Reducer;
  * @since 1.2
  * @author Claire Wallon
  */
-public class HTSeqCountReducer extends Reducer<Text, Long, Text, Long> {
+public class HTSeqCountReducer extends
+    Reducer<Text, LongWritable, Text, LongWritable> {
+
+  final LongWritable outValue = new LongWritable();
 
   /**
    * This method allow to sum of the values of an Iterable of longs.
    * @param values values to sum
    * @return the sum of the values
    */
-  private static long sum(final Iterable<Long> values) {
+  private static long sum(final Iterable<LongWritable> values) {
 
-    final Iterator<Long> it = values.iterator();
+    final Iterator<LongWritable> it = values.iterator();
     long result = 0L;
 
     while (it.hasNext()) {
-      result += it.next();
+      result += it.next().get();
     }
 
     return result;
@@ -60,10 +64,11 @@ public class HTSeqCountReducer extends Reducer<Text, Long, Text, Long> {
    * on the feature.
    */
   @Override
-  protected void reduce(final Text key, final Iterable<Long> values,
+  protected void reduce(final Text key, final Iterable<LongWritable> values,
       final Context context) throws IOException, InterruptedException {
 
-    context.write(key, sum(values));
+    this.outValue.set(sum(values));
+    context.write(key, this.outValue);
   }
 
 }

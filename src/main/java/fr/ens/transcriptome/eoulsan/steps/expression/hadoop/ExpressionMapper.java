@@ -46,7 +46,6 @@ import net.sf.samtools.SAMRecord;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
@@ -66,7 +65,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
  * @author Laurent Jourdren
  * @author Maria Bernard
  */
-public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
+public class ExpressionMapper extends Mapper<Text, Text, Text, Text> {
 
   // Parameters keys
   static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
@@ -87,8 +86,8 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
    * alignment file. 'value': the SAM record.
    */
   @Override
-  public void map(final LongWritable key, final Text value,
-      final Context context) throws IOException, InterruptedException {
+  public void map(final Text key, final Text value, final Context context)
+      throws IOException, InterruptedException {
 
     final String line = value.toString();
 

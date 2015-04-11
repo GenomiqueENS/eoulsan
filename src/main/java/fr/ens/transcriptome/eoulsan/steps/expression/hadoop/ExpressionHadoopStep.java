@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.createConfiguration;
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
@@ -43,6 +44,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -59,10 +61,10 @@ import fr.ens.transcriptome.eoulsan.bio.expressioncounters.HTSeqCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.HTSeqUtils;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
+import fr.ens.transcriptome.eoulsan.bio.io.hadoop.ExpressionOutputFormat;
 import fr.ens.transcriptome.eoulsan.bio.io.hadoop.SAMInputFormat;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
-import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -128,7 +130,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
         context.getInputData(GENOME_DESC_TXT).getDataFilename());
 
     final Path exonsIndexPath =
-        getAnnotationIndexSerializedPath(context, featureAnnotationData);
+        getAnnotationIndexSerializedPath(featureAnnotationData.getDataFile());
 
     getLogger().info("exonsIndexPath: " + exonsIndexPath);
 
@@ -229,9 +231,18 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // Get annotation DataFile
     final DataFile annotationDataFile = featureAnnotationData.getDataFile();
 
+    // Get output file
+    final DataFile outFile = outData.getDataFile();
+
+    // Get temporary file
+    final DataFile tmpFile =
+        new DataFile(outFile.getParent(), outFile.getBasename() + ".tmp");
+
     getLogger().fine("sample: " + alignmentsData.getName());
     getLogger().fine("inputPath.getName(): " + inputPath.getName());
     getLogger().fine("annotationDataFile: " + annotationDataFile.getSource());
+    getLogger().fine("outFile: " + outFile.getSource());
+    getLogger().fine("tmpFile: " + tmpFile.getSource());
 
     jobConf.set("mapred.child.java.opts", "-Xmx1024m");
 
@@ -254,14 +265,14 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
         removeAmbiguousCases);
 
     final Path featuresIndexPath =
-        getAnnotationIndexSerializedPath(context, featureAnnotationData);
+        getAnnotationIndexSerializedPath(featureAnnotationData.getDataFile());
 
     getLogger().info("featuresIndexPath: " + featuresIndexPath);
 
     if (!PathUtils.isFile(featuresIndexPath, jobConf)) {
-      createFeaturesIndex(context, new Path(annotationDataFile.getSource()),
-          genomicType, attributeId, splitAttributeValues, stranded,
-          genomeDescDataFile, featuresIndexPath, jobConf);
+      createFeaturesIndex(context, annotationDataFile, genomicType,
+          attributeId, splitAttributeValues, stranded, genomeDescDataFile,
+          featuresIndexPath, jobConf);
     }
 
     // Create the job and its name
@@ -293,17 +304,17 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // Set the reducer class
     job.setReducerClass(HTSeqCountReducer.class);
 
+    // Set the output format
+    job.setOutputFormatClass(ExpressionOutputFormat.class);
+
     // Set the output key class
     job.setOutputKeyClass(Text.class);
 
     // Set the output value class
-    job.setOutputValueClass(Long.class);
-
-    final DataFile outFile = outData.getDataFile();
+    job.setOutputValueClass(LongWritable.class);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(outFile.getParent()
-        .getSource() + "/" + outFile.getBasename() + ".tmp"));
+    FileOutputFormat.setOutputPath(job, new Path(tmpFile.getSource()));
 
     return job;
   }
@@ -402,7 +413,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
   /**
    * @param context Eoulsan context
-   * @param gffPath GFF annotation file path
+   * @param gffFile GFF annotation file path
    * @param featureType feature type to use
    * @param attributeId attribute id
    * @param splitAttributeValues split attribute values
@@ -417,22 +428,19 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @throws EoulsanException if an error occurs with feature types and feature
    *           identifiers
    */
-  private static final Path createFeaturesIndex(final StepContext context,
-      final Path gffPath, final String featureType, final String attributeId,
-      final boolean splitAttributeValues, final StrandUsage stranded,
-      final DataFile genomeDescDataFile, final Path featuresIndexPath,
-      final Configuration conf) throws IOException, BadBioEntryException,
-      EoulsanException {
+  private static final void createFeaturesIndex(final StepContext context,
+      final DataFile gffFile, final String featureType,
+      final String attributeId, final boolean splitAttributeValues,
+      final StrandUsage stranded, final DataFile genomeDescDataFile,
+      final Path featuresIndexPath, final Configuration conf)
+      throws IOException, BadBioEntryException, EoulsanException {
 
     final GenomicArray<String> features = new GenomicArray<>();
     final GenomeDescription genomeDescription =
         GenomeDescription.load(genomeDescDataFile.open());
     final Map<String, Integer> counts = new HashMap<>();
 
-    final FileSystem fs = gffPath.getFileSystem(conf);
-    final FSDataInputStream is = fs.open(gffPath);
-
-    HTSeqUtils.storeAnnotation(features, is, featureType, stranded,
+    HTSeqUtils.storeAnnotation(features, gffFile.open(), featureType, stranded,
         attributeId, splitAttributeValues, counts);
 
     if (counts.size() == 0) {
@@ -442,7 +450,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     final File featuresIndexFile =
         context.getRuntime().createFileInTempDir(
-            StringUtils.basename(gffPath.getName()) + SERIALIZATION_EXTENSION);
+            StringUtils.basename(gffFile.getName()) + SERIALIZATION_EXTENSION);
 
     // Add all chromosomes even without annotations to the feature object
     features.addChromosomes(genomeDescription);
@@ -457,8 +465,6 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
           "Can not delete features index file: "
               + featuresIndexFile.getAbsolutePath());
     }
-
-    return featuresIndexPath;
   }
 
   private static final void createFinalExpressionTranscriptsFile(
@@ -473,14 +479,14 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     // Load the annotation index
     final Path exonsIndexPath =
-        getAnnotationIndexSerializedPath(context, featureAnnotationData);
+        getAnnotationIndexSerializedPath(featureAnnotationData.getDataFile());
 
     final FileSystem fs = exonsIndexPath.getFileSystem(conf);
 
     fetc = new FinalExpressionTranscriptsCreator(fs.open(exonsIndexPath));
 
     // Set the result path
-    final Path resultPath = new Path(outData.getDataFilename());
+    final Path resultPath = new Path(outData.getDataFile().getSource());
 
     fetc.initializeExpressionResults();
 
@@ -496,34 +502,29 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
   private static final void createFinalExpressionFeaturesFile(
       final StepContext context, final Data featureAnnotationData,
-      final Data outData, final Map<Job, String> jobconfs,
-      final Configuration conf) throws IOException {
+      final Data outData, final Job job, final Configuration conf)
+      throws IOException {
 
     FinalExpressionFeaturesCreator fefc = null;
 
-    for (Map.Entry<Job, String> e : jobconfs.entrySet()) {
+    // Load the annotation index
+    final Path featuresIndexPath =
+        getAnnotationIndexSerializedPath(featureAnnotationData.getDataFile());
 
-      final Job rj = e.getKey();
+    final FileSystem fs = featuresIndexPath.getFileSystem(conf);
 
-      // Load the annotation index
-      final Path featuresIndexPath =
-          getAnnotationIndexSerializedPath(context, featureAnnotationData);
+    fefc = new FinalExpressionFeaturesCreator(fs.open(featuresIndexPath));
 
-      final FileSystem fs = featuresIndexPath.getFileSystem(conf);
+    // Set the result path
+    final Path resultPath = new Path(outData.getDataFile().getSource());
 
-      fefc = new FinalExpressionFeaturesCreator(fs.open(featuresIndexPath));
+    fefc.initializeExpressionResults();
 
-      // Set the result path
-      final Path resultPath = new Path(outData.getDataFilename());
+    // Load map-reduce results
+    fefc.loadPreResults(new DataFile(job.getConfiguration().get(
+        "mapreduce.output.fileoutputformat.outputdir")).open());
 
-      fefc.initializeExpressionResults();
-
-      // Load map-reduce results
-      fefc.loadPreResults(new DataFile(rj.getConfiguration().get(
-          "mapreduce.output.fileoutputformat.outputdir")).open());
-
-      fefc.saveFinalResults(fs.create(resultPath));
-    }
+    fefc.saveFinalResults(fs.create(resultPath));
   }
 
   /**
@@ -531,17 +532,16 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @param context Eoulsan context
    * @param featureAnnotationData feature annotation data
    * @return an Hadoop path with the path of the serialized annotation
+   * @throws IOException
    */
   private static Path getAnnotationIndexSerializedPath(
-      final StepContext context, final Data featureAnnotationData) {
+      final DataFile featureAnnotationFile) throws IOException {
 
-    // Get annotation DataFile
-    String filename = featureAnnotationData.getDataFilename();
+    final DataFile file =
+        new DataFile(featureAnnotationFile.getParent(),
+            featureAnnotationFile.getBasename() + SERIALIZATION_EXTENSION);
 
-    filename = StringUtils.removeCompressedExtensionFromFilename(filename);
-
-    return new Path(filename.substring(filename.lastIndexOf('.'))
-        + SERIALIZATION_EXTENSION);
+    return new Path(file.getSource());
   }
 
   //
@@ -551,13 +551,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   @Override
   public InputPorts getInputPorts() {
 
-    final InputPortsBuilder builder = new InputPortsBuilder();
-
-    builder.addPort("alignments", MAPPER_RESULTS_SAM, true);
-    builder.addPort("featuresannotation", ANNOTATION_GFF);
-    builder.addPort("genomedescription", GENOME_DESC_TXT, true);
-
-    return builder.create();
+    return allPortsRequiredInWorkingDirectory(super.getInputPorts());
   }
 
   @Override
@@ -660,9 +654,6 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // Create configuration object
     final Configuration conf = createConfiguration();
 
-    // Create the list of jobs to run
-    final Map<Job, String> jobsRunning = new HashMap<>();
-
     try {
       final long startTime = System.currentTimeMillis();
 
@@ -707,7 +698,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       // Create the final expression files
       createFinalExpressionFeaturesFile(context, featureAnnotationData,
-          outData, jobsRunning, this.conf);
+          outData, job, this.conf);
 
       getLogger().info(
           "Finish the create of the final expression files in "

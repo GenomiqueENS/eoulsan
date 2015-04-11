@@ -35,7 +35,6 @@ import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.N
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.TOTAL_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.UNMAPPED_READS_COUNTER;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -73,7 +72,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
  * @since 1.2
  * @author Claire Wallon
  */
-public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
+public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
 
   // Parameters keys
   static final String STRANDED_PARAM = Globals.PARAMETER_PREFIX
@@ -94,6 +93,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
   private final SAMLineParser parser = new SAMLineParser(new SAMFileHeader());
 
   private final Text outKey = new Text();
+  private final LongWritable outValue = new LongWritable(1L);
 
   @Override
   public void setup(final Context context) throws IOException,
@@ -120,8 +120,18 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
           "Genome index compressed file (from distributed cache): "
               + localCacheFiles[0]);
 
-      final File indexFile = new File(localCacheFiles[0]);
-      this.features.load(indexFile);
+      if (localCacheFiles == null || localCacheFiles.length == 0) {
+        throw new IOException("Unable to retrieve annotation index");
+      }
+
+      if (localCacheFiles.length > 1) {
+        throw new IOException(
+            "Retrieve more than one file in distributed cache");
+      }
+
+      // Load features
+      this.features.load(PathUtils.createInputStream(new Path(
+          localCacheFiles[0]), conf));
 
       // Counter group
       this.counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);
@@ -172,8 +182,8 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
    * format).
    */
   @Override
-  public void map(final LongWritable key, final Text value,
-      final Context context) throws IOException, InterruptedException {
+  public void map(final Text key, final Text value, final Context context)
+      throws IOException, InterruptedException {
 
     final String line = value.toString();
 
@@ -295,7 +305,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
       case 1:
         final String id1 = fs.iterator().next();
         this.outKey.set(id1);
-        context.write(this.outKey, 1L);
+        context.write(this.outKey, this.outValue);
         break;
 
       default:
@@ -314,7 +324,7 @@ public class HTSeqCountMapper extends Mapper<LongWritable, Text, Text, Long> {
 
           for (String id2 : fs) {
             this.outKey.set(id2);
-            context.write(this.outKey, 1L);
+            context.write(this.outKey, this.outValue);
           }
         }
         break;
