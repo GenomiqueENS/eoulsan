@@ -154,16 +154,18 @@ public class GalaxyToolStep extends AbstractStep {
       case TOOL_XML_PATH:
         String v = p.getStringValue();
 
-        if (v == null || v.isEmpty())
-          new EoulsanRuntimeException(
+        if (v == null || v.isEmpty()) {
+          throw new EoulsanRuntimeException(
               "Configure step ToolGalaxy, xml path is null or empty.");
+        }
 
         toolXmlPath = new File(v);
 
         // TODO change code, use command guava/utils eoulsan
         if (!(toolXmlPath.exists() || toolXmlPath.canRead())) {
-          new EoulsanRuntimeException("Configure step ToolGalaxy, xml path "
-              + toolXmlPath.getAbsolutePath() + " can not readable.");
+          throw new EoulsanRuntimeException(
+              "Configure step ToolGalaxy, xml path "
+                  + toolXmlPath.getAbsolutePath() + " can not readable.");
         }
 
         break;
@@ -172,14 +174,15 @@ public class GalaxyToolStep extends AbstractStep {
       case TOOL_EXECUTABLE_PATH:
         String exe = p.getStringValue();
 
-        if (exe == null || exe.isEmpty())
-          new EoulsanRuntimeException(
+        if (exe == null || exe.isEmpty()) {
+          throw new EoulsanRuntimeException(
               "Configure step ToolGalaxy, tool executable path is null or empty.");
+        }
 
         toolExecutablePath = new File(exe);
 
         if (!(toolExecutablePath.exists() || toolExecutablePath.canRead())) {
-          new EoulsanRuntimeException("Configure step ToolGalaxy, tool "
+          throw new EoulsanRuntimeException("Configure step ToolGalaxy, tool "
               + toolName + " executable path "
               + toolExecutablePath.getAbsolutePath() + " can not readable.");
         }
@@ -283,7 +286,8 @@ public class GalaxyToolStep extends AbstractStep {
    */
   public GalaxyToolStep(final InputStream toolXMLis) throws EoulsanException {
 
-    this.toolInterpreter = new GalaxyToolInterpreter("Unknown", toolXMLis, null);
+    this.toolInterpreter =
+        new GalaxyToolInterpreter("Unknown", toolXMLis, null);
   }
 
   /**
