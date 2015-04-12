@@ -70,7 +70,8 @@ public class CopyInputDataStep extends AbstractStep {
 
   public static final String STEP_NAME = "_copyinputformat";
   public static final String FORMAT_PARAMETER = "format";
-  public static final String OUTPUT_COMPRESSION_PARAMETER = "compression";
+  public static final String OUTPUT_COMPRESSION_PARAMETER =
+      "output.compression";
 
   private DataFormat format;
   private CompressionType outputCompression;
