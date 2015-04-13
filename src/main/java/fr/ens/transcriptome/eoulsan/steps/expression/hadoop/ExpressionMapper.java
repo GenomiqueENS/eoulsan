@@ -30,7 +30,6 @@ import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.T
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.UNUSED_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.USED_READS_COUNTER;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
@@ -176,8 +175,17 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, Text> {
           "Genome index compressed file (from distributed cache): "
               + localCacheFiles[0]);
 
-      final File indexFile = new File(localCacheFiles[0]);
-      this.tef.load(indexFile);
+      if (localCacheFiles == null || localCacheFiles.length == 0) {
+        throw new IOException("Unable to retrieve annotation index");
+      }
+
+      if (localCacheFiles.length > 1) {
+        throw new IOException(
+            "Retrieve more than one file in distributed cache");
+      }
+
+      this.tef.load(PathUtils.createInputStream(new Path(localCacheFiles[0]),
+          context.getConfiguration()));
 
       // Counter group
       this.counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);

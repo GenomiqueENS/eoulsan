@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -110,10 +109,17 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // Create JobConf
     final Configuration jobConf = new Configuration(parentConf);
 
-    final Path inputPath = new Path(alignmentsData.getDataFilename());
+    final Path inputPath = new Path(alignmentsData.getDataFile().getSource());
 
     // Get annotation DataFile
     final DataFile annotationDataFile = featureAnnotationData.getDataFile();
+
+    // Get output file
+    final DataFile outFile = outData.getDataFile();
+
+    // Get temporary file
+    final DataFile tmpFile =
+        new DataFile(outFile.getParent(), outFile.getBasename() + ".tmp");
 
     getLogger().fine("sample: " + alignmentsData.getName());
     getLogger().fine(
@@ -135,8 +141,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     getLogger().info("exonsIndexPath: " + exonsIndexPath);
 
     if (!PathUtils.isFile(exonsIndexPath, jobConf)) {
-      createExonsIndex(context, new Path(annotationDataFile.getSource()),
-          genomicType, attributeId, exonsIndexPath, jobConf);
+      createExonsIndex(context, annotationDataFile, genomicType, attributeId,
+          exonsIndexPath, jobConf);
     }
 
     // Create the job and its name
@@ -175,11 +181,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     // Set the number of reducers
     // job.setNumReduceTasks(1);
 
-    final DataFile outFile = outData.getDataFile();
-
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(outFile.getParent()
-        .getSource() + "/" + outFile.getBasename() + ".tmp"));
+    FileOutputFormat.setOutputPath(job, new Path(tmpFile.getSource()));
 
     return job;
   }
@@ -379,7 +382,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
   /**
    * Create exon index.
-   * @param gffPath gff path
+   * @param gffFile gff file
    * @param expressionType expression type
    * @param attributeId GFF attribute id
    * @param exonsIndexPath output exon index path
@@ -388,18 +391,15 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @throws BadBioEntryException if an entry of the annotation file is invalid
    */
   private static final Path createExonsIndex(final StepContext context,
-      final Path gffPath, final String expressionType,
+      final DataFile gffFile, final String expressionType,
       final String attributeId, final Path exonsIndexPath,
       final Configuration conf) throws IOException, BadBioEntryException {
 
-    final FileSystem fs = gffPath.getFileSystem(conf);
-    final FSDataInputStream is = fs.open(gffPath);
-
     final TranscriptAndExonFinder ef =
-        new TranscriptAndExonFinder(is, expressionType, attributeId);
+        new TranscriptAndExonFinder(gffFile.open(), expressionType, attributeId);
     final File exonIndexFile =
         context.getRuntime().createFileInTempDir(
-            StringUtils.basename(gffPath.getName()) + SERIALIZATION_EXTENSION);
+            StringUtils.basename(gffFile.getName()) + SERIALIZATION_EXTENSION);
     ef.save(exonIndexFile);
 
     PathUtils.copyLocalFileToPath(exonIndexFile, exonsIndexPath, conf);
