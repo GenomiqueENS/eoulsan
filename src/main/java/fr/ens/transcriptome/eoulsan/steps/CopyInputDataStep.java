@@ -54,6 +54,8 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFiles;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
+import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
+import fr.ens.transcriptome.eoulsan.data.protocols.StorageDataProtocol;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
@@ -169,6 +171,38 @@ public class CopyInputDataStep extends AbstractStep {
   }
 
   /**
+   * Get the compression of the output file from the compression parameter if
+   * defined or from the compression type of the input file.
+   * @param inputDataFile the input file
+   * @return the output compression
+   */
+  private CompressionType getOutputCompression(DataFile inputDataFile) {
+
+    if (this.outputCompression != null) {
+      return this.outputCompression;
+    }
+
+    try {
+
+      final DataFile realFile;
+      final DataProtocol protocol = inputDataFile.getProtocol();
+
+      // Get the underlying file if the file protocol is a storage protocol
+      if (protocol instanceof StorageDataProtocol) {
+
+        realFile =
+            ((StorageDataProtocol) protocol).getUnderLyingData(inputDataFile);
+      } else {
+        realFile = inputDataFile;
+      }
+
+      return realFile.getCompressionType();
+    } catch (IOException e) {
+      return inputDataFile.getCompressionType();
+    }
+  }
+
+  /**
    * Copy files for a format and a samples.
    * @param inData input data
    * @param outData output data
@@ -191,16 +225,11 @@ public class CopyInputDataStep extends AbstractStep {
       // Get the input file
       final DataFile in = inData.getDataFile();
 
-      // Define the compression of the output
-      final CompressionType compression =
-          this.outputCompression != null ? this.outputCompression : in
-              .getCompressionType();
-
       // Define the output filename
       final String outFilename =
           FileNaming.filename(stepId, DEFAULT_SINGLE_OUTPUT_PORT_NAME,
               this.format, outData.getName(), -1, outData.getPart(),
-              compression);
+              getOutputCompression(in));
 
       // Define the output file
       final DataFile out = new DataFile(outputDir, outFilename);
