@@ -171,34 +171,26 @@ public class CopyInputDataStep extends AbstractStep {
   }
 
   /**
-   * Get the compression of the output file from the compression parameter if
-   * defined or from the compression type of the input file.
-   * @param inputDataFile the input file
-   * @return the output compression
+   * Get the real underlying file if the file protocol is a StorageDataProtocol
+   * instance.
+   * @param file the file
+   * @return the underlying file if exists or the file itself
    */
-  private CompressionType getOutputCompression(DataFile inputDataFile) {
-
-    if (this.outputCompression != null) {
-      return this.outputCompression;
-    }
+  private DataFile getRealDataFile(final DataFile file) {
 
     try {
 
-      final DataFile realFile;
-      final DataProtocol protocol = inputDataFile.getProtocol();
+      final DataProtocol protocol = file.getProtocol();
 
       // Get the underlying file if the file protocol is a storage protocol
       if (protocol instanceof StorageDataProtocol) {
 
-        realFile =
-            ((StorageDataProtocol) protocol).getUnderLyingData(inputDataFile);
-      } else {
-        realFile = inputDataFile;
+        return ((StorageDataProtocol) protocol).getUnderLyingData(file);
       }
 
-      return realFile.getCompressionType();
+      return file;
     } catch (IOException e) {
-      return inputDataFile.getCompressionType();
+      return file;
     }
   }
 
@@ -212,69 +204,86 @@ public class CopyInputDataStep extends AbstractStep {
   private void copyData(final Data inData, final Data outData,
       final StepContext context) throws IOException {
 
-    final String stepId = context.getCurrentStep().getId();
-    final DataFile outputDir = context.getStepOutputDirectory();
-    final int count = inData.getDataFileCount();
-
-    //
-    // Handle standard case
-    //
-
     if (inData.getFormat().getMaxFilesCount() == 1) {
 
-      // Get the input file
-      final DataFile in = inData.getDataFile();
+      //
+      // Handle standard case
+      //
 
-      // Define the output filename
-      final String outFilename =
-          FileNaming.filename(stepId, DEFAULT_SINGLE_OUTPUT_PORT_NAME,
-              this.format, outData.getName(), -1, outData.getPart(),
-              getOutputCompression(in));
-
-      // Define the output file
-      final DataFile out = new DataFile(outputDir, outFilename);
+      // Copy the file
+      final DataFile outputFile =
+          copyFile(inData.getDataFile(), -1, outData.getName(),
+              outData.getPart(), context);
 
       // Set the file in the data object
-      DataUtils.setDataFile(outData, out);
-
-      // Check input and output files
-      checkFiles(in, out);
-
-      // Copy file
-      DataFiles.symlinkOrCopy(in, out, true);
+      DataUtils.setDataFile(outData, outputFile);
     } else {
 
       //
       // Handle multi file format like FASTQ files
       //
 
+      // Get the count of input files
+      final int count = inData.getDataFileCount();
+
       // The list of output files
       final List<DataFile> dataFiles = new ArrayList<>();
 
       for (int i = 0; i < count; i++) {
 
-        // Get the input file
-        final DataFile in = inData.getDataFile(i);
+        // Copy the file
+        final DataFile outputFile =
+            copyFile(inData.getDataFile(), i, outData.getName(),
+                outData.getPart(), context);
 
-        // Define the output filename
-        final String outFilename =
-            FileNaming.filename(stepId, DEFAULT_SINGLE_OUTPUT_PORT_NAME,
-                this.format, outData.getName(), i, outData.getPart(),
-                in.getCompressionType());
-
-        // Define the output file
-        final DataFile out = new DataFile(outputDir, outFilename);
-        dataFiles.add(out);
-
-        // Check input and output files
-        checkFiles(in, out);
-
-        // Copy file
-        DataFiles.symlinkOrCopy(in, out, true);
+        dataFiles.add(outputFile);
       }
 
       // Set the files in the data object
       DataUtils.setDataFiles(outData, dataFiles);
     }
   }
+
+  /**
+   * Copy an input file to its destination.
+   * @param inputFile the input file
+   * @param fileIndex the output file index
+   * @param outDataName the output data name
+   * @param outDataPart the output part
+   * @param context the step context
+   * @return the output file
+   * @throws IOException if an error occurs while copying the data
+   */
+  private final DataFile copyFile(final DataFile inputFile,
+      final int fileIndex, final String outDataName, final int outDataPart,
+      final StepContext context) throws IOException {
+
+    final String stepId = context.getCurrentStep().getId();
+    final DataFile outputDir = context.getStepOutputDirectory();
+
+    // Get the real input file
+    final DataFile in = getRealDataFile(inputFile);
+
+    // Define the compression of the output
+    final CompressionType compression =
+        this.outputCompression != null ? this.outputCompression : in
+            .getCompressionType();
+
+    // Define the output filename
+    final String outFilename =
+        FileNaming.filename(stepId, DEFAULT_SINGLE_OUTPUT_PORT_NAME,
+            this.format, outDataName, fileIndex, outDataPart, compression);
+
+    // Define the output file
+    final DataFile out = new DataFile(outputDir, outFilename);
+
+    // Check input and output files
+    checkFiles(in, out);
+
+    // Copy file
+    DataFiles.symlinkOrCopy(in, out, true);
+
+    return out;
+  }
+
 }
