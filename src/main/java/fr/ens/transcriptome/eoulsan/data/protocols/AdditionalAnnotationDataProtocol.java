@@ -1,7 +1,10 @@
 package fr.ens.transcriptome.eoulsan.data.protocols;
 
+import java.util.List;
+
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.data.DataFormats;
 
 /**
  * This class define a additional annotation protocol.
@@ -18,9 +21,9 @@ public class AdditionalAnnotationDataProtocol extends StorageDataProtocol {
   }
 
   @Override
-  protected String getExtension() {
+  protected List<String> getExtensions() {
 
-    return ".tsv";
+    return DataFormats.ADDITIONAL_ANNOTATION_TSV.getExtensions();
   }
 
   @Override

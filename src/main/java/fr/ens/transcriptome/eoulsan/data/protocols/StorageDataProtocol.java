@@ -28,6 +28,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
+import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
@@ -41,9 +43,30 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
  */
 public abstract class StorageDataProtocol extends AbstractDataProtocol {
 
-  protected abstract String getExtension();
-
+  /**
+   * Get the path where searching the files.
+   * @return a string with the path where search the files
+   */
   protected abstract String getBasePath();
+
+  /**
+   * Get the file extensions of the files to search.
+   * @return a string with file extension of the files to search
+   */
+  protected String getExtension() {
+
+    throw new NullPointerException(
+        "No extension has been defined for the storage protocol: " + getName());
+  }
+
+  /**
+   * Get the list of the file extensions of the files to search.
+   * @return a list with file extensions of the files to search
+   */
+  protected List<String> getExtensions() {
+
+    return Collections.singletonList(getExtension());
+  }
 
   @Override
   public InputStream getData(final DataFile src) throws IOException {
@@ -120,14 +143,23 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
           + " storage base path does not exists: " + baseDir);
     }
 
-    final String filename = src.getName().toLowerCase().trim() + getExtension();
+    for (String extension : getExtensions()) {
 
-    for (CompressionType c : CompressionType.values()) {
+      if (extension == null) {
+        throw new NullPointerException(
+            "One of the extensions of the storage protocol is null: "
+                + getName());
+      }
 
-      final DataFile f = new DataFile(baseDir, filename + c.getExtension());
+      final String filename = src.getName().toLowerCase().trim() + extension;
 
-      if (f.exists()) {
-        return f;
+      for (CompressionType c : CompressionType.values()) {
+
+        final DataFile f = new DataFile(baseDir, filename + c.getExtension());
+
+        if (f.exists()) {
+          return f;
+        }
       }
     }
 
