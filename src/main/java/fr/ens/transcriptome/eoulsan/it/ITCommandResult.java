@@ -43,9 +43,11 @@ public class ITCommandResult {
   private Throwable exception;
   private int exitValue = -1;
   private long duration = -1;
+  private final long durationMaxToInterrupProcess;
 
   @SuppressWarnings("unused")
   private String exceptionMessage;
+  private boolean interruptedProcess = false;
 
   public boolean isEmpty() {
     return this.message.toString().isEmpty();
@@ -66,12 +68,24 @@ public class ITCommandResult {
     this.message.append("\n\tDuration: "
         + (this.duration == -1 ? "none" : toTimeHumanReadable(this.duration)));
 
-    this.message.append("\n\tExit value: " + this.exitValue);
+    this.message.append("\n\tMessage: exit value " + this.exitValue);
+
+    // TODO
+    this.message.append("\nMessage: interrupted " + isInterruptedProcess());
+
+    if (isInterruptedProcess()) {
+      this.message.append("\n\tInterrupt process after: "
+          + toTimeHumanReadable(durationMaxToInterrupProcess));
+    }
 
     this.message.append("\n");
 
     return this.message.toString();
   }
+
+  //
+  // Getter & setter
+  //
 
   /**
    * Checks if is catched exception.
@@ -80,10 +94,6 @@ public class ITCommandResult {
   public boolean isCatchedException() {
     return this.exception != null;
   }
-
-  //
-  // Getter & setter
-  //
 
   /**
    * Set the exit value.
@@ -127,6 +137,21 @@ public class ITCommandResult {
     this.exceptionMessage = message;
   }
 
+  /**
+   * Checks if is interrupted process.
+   * @return true, if is interrupted process
+   */
+  public boolean isInterruptedProcess() {
+    return interruptedProcess;
+  }
+
+  /**
+   * Sets the interrupted process at true.
+   */
+  public void asInterruptedProcess() {
+    this.interruptedProcess = true;
+  }
+
   //
   // Constructor
   //
@@ -137,11 +162,12 @@ public class ITCommandResult {
    * @param desc the description on command line
    */
   ITCommandResult(final String commandLine, final File directory,
-      final String desc) {
+      final String desc, final int duration) {
 
     this.commandLine = commandLine;
     this.directory = directory;
     this.desc = desc;
+    this.durationMaxToInterrupProcess = duration * 60 * 1000;
 
     this.message = new StringBuilder();
 
