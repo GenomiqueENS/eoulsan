@@ -72,7 +72,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
       "max.local.threads";
 
   public static final int HADOOP_TIMEOUT = 60 * 60 * 1000;
-  private static final int DEFAULT_MAPPER_REQUIRED_MEMORY = 8 * 1024;
+  static final int DEFAULT_MAPPER_REQUIRED_MEMORY = 8 * 1024;
 
   private SequenceReadsMapper mapper;
   private String mapperVersion = "";
@@ -109,7 +109,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
    * @return the flavor of the mapper to use
    */
   protected String getMapperFlavor() {
-    return this.mapperVersion;
+    return this.mapperFlavor;
   }
 
   /**
@@ -259,7 +259,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
       this.mapper.setMapperFlavorToUse(this.mapperFlavor);
       this.mapper.prepareBinaries();
     } catch (IOException e) {
-      throw new EoulsanException(e.getMessage());
+      throw new EoulsanException(e);
     }
 
     // Log Step parameters

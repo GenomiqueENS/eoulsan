@@ -175,9 +175,10 @@ public class Normalization {
 
     } catch (REngineException e) {
       throw new EoulsanException("Error while running differential analysis: "
-          + e.getMessage());
+          + e.getMessage(), e);
     } catch (REXPMismatchException e) {
-      throw new EoulsanException("Error while getting file : " + e.getMessage());
+      throw new EoulsanException(
+          "Error while getting file : " + e.getMessage(), e);
 
     } finally {
 
@@ -191,7 +192,7 @@ public class Normalization {
 
       } catch (Exception e) {
         throw new EoulsanException("Error while removing files on server : "
-            + e.getMessage());
+            + e.getMessage(), e);
       }
     }
   }
@@ -230,7 +231,7 @@ public class Normalization {
 
     } catch (Exception e) {
       throw new EoulsanException("Error while running differential analysis: "
-          + e.getMessage());
+          + e.getMessage(), e);
     }
   }
 
@@ -288,7 +289,7 @@ public class Normalization {
       } catch (IOException e) {
 
         throw new EoulsanException(
-            "Error while executing R script in anadiff: " + e.getMessage());
+            "Error while executing R script in anadiff: " + e.getMessage(), e);
       }
 
     }

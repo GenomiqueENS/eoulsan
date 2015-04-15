@@ -46,7 +46,7 @@ public class FastqWriter implements ReadSequenceWriter {
   public void write(final ReadSequence readSequence) throws IOException {
 
     if (readSequence != null) {
-      this.writer.write(readSequence.toFastQ());
+      this.writer.write(readSequence.toFastQ() + '\n');
     }
   }
 

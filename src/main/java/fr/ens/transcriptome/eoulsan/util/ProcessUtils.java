@@ -123,7 +123,7 @@ public final class ProcessUtils {
     try {
       return p.waitFor();
     } catch (InterruptedException e) {
-      throw new IOException(e.getMessage());
+      throw new IOException(e);
     }
   }
 
@@ -296,7 +296,7 @@ public final class ProcessUtils {
     final long startTime = System.currentTimeMillis();
 
     final Process p =
-        Runtime.getRuntime().exec(new String[] {"/bin/sh", "-c", cmd});
+        Runtime.getRuntime().exec(new String[] { "/bin/sh", "-c", cmd });
 
     final InputStream std = p.getInputStream();
 

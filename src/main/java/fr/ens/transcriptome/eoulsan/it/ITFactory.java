@@ -451,7 +451,7 @@ public class ITFactory {
 
         } catch (final IOException e) {
           throw new EoulsanException("Error while evaluating expression \""
-              + expr + "\"");
+              + expr + "\"", e);
         }
         i += expr.length() + 1;
         continue;

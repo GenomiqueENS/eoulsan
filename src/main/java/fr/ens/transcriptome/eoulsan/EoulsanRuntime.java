@@ -39,11 +39,13 @@ public final class EoulsanRuntime {
    */
   public static AbstractEoulsanRuntime getRuntime() {
 
-    if (instance == null) {
-      throw new EoulsanRuntimeException("No Eoulsan Runtime has been set.");
-    }
+    synchronized (EoulsanRuntime.class) {
+      if (instance == null) {
+        throw new EoulsanRuntimeException("No Eoulsan Runtime has been set.");
+      }
 
-    return instance;
+      return instance;
+    }
   }
 
   /**
@@ -65,7 +67,9 @@ public final class EoulsanRuntime {
    */
   public static boolean isRuntime() {
 
-    return instance != null;
+    synchronized (EoulsanRuntime.class) {
+      return instance != null;
+    }
   }
 
   /**
@@ -75,12 +79,32 @@ public final class EoulsanRuntime {
    */
   static void setInstance(final AbstractEoulsanRuntime runtime) {
 
-    if (instance != null) {
-      throw new EoulsanRuntimeException(
-          "An Eoulsan Runtime already exists. Cannot change the current instance.");
-    }
+    setInstance(runtime, false);
+  }
 
-    instance = runtime;
+  /**
+   * Set the EoulsanRuntime instance. This method can be only call once at the
+   * startup of the application.
+   * @param runtime the Eoulsan runtime object
+   * @param noException no exception will be thrown if an instance already
+   *          exists
+   */
+  static void setInstance(final AbstractEoulsanRuntime runtime,
+      final boolean noException) {
+
+    synchronized (EoulsanRuntime.class) {
+      if (instance != null) {
+
+        if (noException) {
+          return;
+        }
+
+        throw new EoulsanRuntimeException(
+            "An Eoulsan Runtime already exists. Cannot change the current instance.");
+      }
+
+      instance = runtime;
+    }
   }
 
   //

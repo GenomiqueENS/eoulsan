@@ -161,10 +161,10 @@ public class CommandWorkflowParser {
 
     } catch (ParserConfigurationException | SAXException e) {
       throw new EoulsanException("Error while parsing param file: "
-          + e.getMessage());
+          + e.getMessage(), e);
     } catch (IOException e) {
       throw new EoulsanException("Error while reading param file. "
-          + e.getMessage());
+          + e.getMessage(), e);
     }
 
     final NodeList nAnalysisList = doc.getElementsByTagName(ROOT_TAG_NAME);
@@ -625,7 +625,7 @@ public class CommandWorkflowParser {
 
         } catch (IOException e) {
           throw new EoulsanException("Error while evaluating expression \""
-              + expr + "\"");
+              + expr + "\"", e);
         }
         i += expr.length() + 1;
         continue;

@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_MAPPING_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_MAPPING_ALIGNMENTS_COUNTER;
-import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,21 +33,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import com.google.common.base.Splitter;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hasher;
-import com.google.common.hash.Hashing;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -71,7 +63,7 @@ import fr.ens.transcriptome.eoulsan.util.locker.ZooKeeperLocker;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
+public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
   private static final String HADOOP_TEMP_DIR = "mapreduce.cluster.temp.dir";
 
@@ -90,6 +82,8 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
       + ".mapper.nb.threads";
   static final String FASTQ_FORMAT_KEY = Globals.PARAMETER_PREFIX
       + ".mapper.fastq.format";
+  static final String INDEX_CHECKSUM_KEY = Globals.PARAMETER_PREFIX
+      + ".mapper.index.checksum";
   static final String ZOOKEEPER_CONNECT_STRING_KEY = Globals.PARAMETER_PREFIX
       + ".mapper.zookeeper.connect.string";
   static final String ZOOKEEPER_SESSION_TIMEOUT_KEY = Globals.PARAMETER_PREFIX
@@ -113,8 +107,8 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
    * fields if data are in paired-end mode).
    */
   @Override
-  protected void map(final LongWritable key, final Text value,
-      final Context context) throws IOException {
+  protected void map(final Text key, final Text value, final Context context)
+      throws IOException {
 
     context.getCounter(this.counterGroup,
         INPUT_MAPPING_READS_COUNTER.counterName()).increment(1);
@@ -207,7 +201,8 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     // Set index directory
     final File archiveIndexDir =
         new File(context.getConfiguration().get(HADOOP_TEMP_DIR)
-            + "/" + getIndexLocalName(archiveIndexFile));
+            + "/" + this.mapper.getMapperName() + "-index-"
+            + conf.get(INDEX_CHECKSUM_KEY));
 
     getLogger().info(
         "Genome index directory where decompressed: " + archiveIndexDir);
@@ -259,6 +254,14 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     // Set mapper temporary directory
     this.mapper.setTempDirectory(tempDir);
 
+    final boolean indexMustBeUncompressed = !archiveIndexDir.exists();
+
+    // Lock if mapper index must be uncompressed
+    if (indexMustBeUncompressed) {
+      ProcessUtils.waitRandom(5000);
+      this.lock.lock();
+    }
+
     // Init mapper
     this.mapper.init(archiveIndexFile.open(), archiveIndexDir,
         new HadoopReporter(context), this.counterGroup);
@@ -270,32 +273,12 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
       this.process = this.mapper.mapSE(null);
     }
 
-    getLogger().info("End of setup()");
-  }
-
-  private String getIndexLocalName(final DataFile archiveIndexFile)
-      throws IOException {
-
-    checkNotNull(archiveIndexFile, "Index Zip file is null");
-
-    final ZipInputStream zis = new ZipInputStream(archiveIndexFile.open());
-
-    final HashFunction hf = Hashing.md5();
-    final Hasher hs = hf.newHasher();
-
-    ZipEntry e;
-
-    while ((e = zis.getNextEntry()) != null) {
-
-      hs.putString(e.getName(), StandardCharsets.UTF_8);
-      hs.putLong(e.getSize());
-      hs.putLong(e.getTime());
-      hs.putLong(e.getCrc());
+    // Unlock if mapper index had just been uncompressed
+    if (indexMustBeUncompressed) {
+      this.lock.unlock();
     }
 
-    zis.close();
-
-    return this.mapper.getMapperName() + "-index-" + hs.hash().toString();
+    getLogger().info("End of setup()");
   }
 
   @Override
@@ -363,7 +346,7 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
     while ((line = readerResults.readLine()) != null) {
 
       final String trimmedLine = line.trim();
-      if ("".equals(trimmedLine)) {
+      if (trimmedLine.length() == 0) {
         continue;
       }
 
@@ -375,24 +358,32 @@ public class ReadsMapperMapper extends Mapper<LongWritable, Text, Text, Text> {
         continue;
       }
 
-      final int tabPos = line.indexOf('\t');
+      if (!headerLine) {
 
-      if (tabPos != -1) {
-
-        outKey.set(line.substring(0, tabPos));
-        outValue.set(line.substring(tabPos + 1));
-
-        context.write(outKey, outValue);
+        // Set the output key as the read id
+        final int tabPos = line.indexOf('\t');
+        if (tabPos == -1) {
+          outKey.set("");
+        } else {
+          outKey.set(line.substring(0, tabPos));
+        }
 
         // Increment counters if not header
-        if (!headerLine) {
+        entriesParsed++;
+        context.getCounter(this.counterGroup,
+            OUTPUT_MAPPING_ALIGNMENTS_COUNTER.counterName()).increment(1);
 
-          entriesParsed++;
-          context.getCounter(this.counterGroup,
-              OUTPUT_MAPPING_ALIGNMENTS_COUNTER.counterName()).increment(1);
-        }
+      } else {
+
+        // Set empty key for headers
+        outKey.set("");
       }
 
+      // Set the output value
+      outValue.set(line);
+
+      // Write the result
+      context.write(outKey, outValue);
     }
 
     readerResults.close();

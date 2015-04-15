@@ -25,6 +25,8 @@
 package fr.ens.transcriptome.eoulsan;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.Globals.MINIMAL_JAVA_VERSION_REQUIRED;
+import static fr.ens.transcriptome.eoulsan.util.SystemUtils.getJavaVersion;
 import static java.util.Collections.unmodifiableList;
 
 import java.io.File;
@@ -568,7 +570,7 @@ public abstract class Main {
       this.handler.addHandler(h);
     } catch (IOException e) {
 
-      throw new EoulsanException(e.getMessage());
+      throw new EoulsanException(e);
     }
 
     flushLog();
@@ -697,6 +699,13 @@ public abstract class Main {
     // Set the default local for all the application
     Globals.setDefaultLocale();
 
+    // Check Java version
+    if (getJavaVersion() < MINIMAL_JAVA_VERSION_REQUIRED) {
+      Common.showErrorMessageAndExit(Globals.WELCOME_MSG
+          + "\nError: " + Globals.APP_NAME + " requires Java "
+          + MINIMAL_JAVA_VERSION_REQUIRED + ".");
+    }
+
     // Select the application execution mode
     final String eoulsanMode = System.getProperty(Globals.LAUNCH_MODE_PROPERTY);
 
@@ -716,7 +725,7 @@ public abstract class Main {
     if (!settings.isBypassPlatformChecking()
         && !action.isCurrentArchCompatible()) {
       Common.showErrorMessageAndExit(Globals.WELCOME_MSG
-          + "\nThe " + action.getName() + " of " + Globals.APP_NAME
+          + "\nError: The " + action.getName() + " of " + Globals.APP_NAME
           + " is not available for your platform. Required platforms: "
           + availableArchsToString() + ".");
 

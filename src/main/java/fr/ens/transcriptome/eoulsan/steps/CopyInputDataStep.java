@@ -26,9 +26,12 @@ package fr.ens.transcriptome.eoulsan.steps;
 
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
+import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.DEFAULT_SINGLE_OUTPUT_PORT_NAME;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -44,11 +47,15 @@ import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
+import fr.ens.transcriptome.eoulsan.core.workflow.DataUtils;
+import fr.ens.transcriptome.eoulsan.core.workflow.FileNaming;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFiles;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
+import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
+import fr.ens.transcriptome.eoulsan.data.protocols.StorageDataProtocol;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
@@ -65,7 +72,8 @@ public class CopyInputDataStep extends AbstractStep {
 
   public static final String STEP_NAME = "_copyinputformat";
   public static final String FORMAT_PARAMETER = "format";
-  public static final String OUTPUT_COMPRESSION_PARAMETER = "compression";
+  public static final String OUTPUT_COMPRESSION_PARAMETER =
+      "output.compression";
 
   private DataFormat format;
   private CompressionType outputCompression;
@@ -91,8 +99,8 @@ public class CopyInputDataStep extends AbstractStep {
   @Override
   public OutputPorts getOutputPorts() {
 
-    return new OutputPortsBuilder().addPort("output", this.format,
-        this.outputCompression).create();
+    return new OutputPortsBuilder().addPort(DEFAULT_SINGLE_OUTPUT_PORT_NAME,
+        this.format, this.outputCompression).create();
   }
 
   @Override
@@ -124,9 +132,10 @@ public class CopyInputDataStep extends AbstractStep {
     try {
 
       final Data inData = context.getInputData(DEFAULT_SINGLE_INPUT_PORT_NAME);
-      final Data outData = context.getOutputData("output", inData);
+      final Data outData =
+          context.getOutputData(DEFAULT_SINGLE_OUTPUT_PORT_NAME, inData);
 
-      copyData(inData, outData);
+      copyData(inData, outData, context);
       status.setProgress(1.0);
 
     } catch (IOException e) {
@@ -162,43 +171,119 @@ public class CopyInputDataStep extends AbstractStep {
   }
 
   /**
+   * Get the real underlying file if the file protocol is a StorageDataProtocol
+   * instance.
+   * @param file the file
+   * @return the underlying file if exists or the file itself
+   */
+  private DataFile getRealDataFile(final DataFile file) {
+
+    try {
+
+      final DataProtocol protocol = file.getProtocol();
+
+      // Get the underlying file if the file protocol is a storage protocol
+      if (protocol instanceof StorageDataProtocol) {
+
+        return ((StorageDataProtocol) protocol).getUnderLyingData(file);
+      }
+
+      return file;
+    } catch (IOException e) {
+      return file;
+    }
+  }
+
+  /**
    * Copy files for a format and a samples.
    * @param inData input data
    * @param outData output data
+   * @param context task context
    * @throws IOException if an error occurs while copying
    */
-  private void copyData(final Data inData, final Data outData)
-      throws IOException {
+  private void copyData(final Data inData, final Data outData,
+      final StepContext context) throws IOException {
 
-    final int count = inData.getDataFileCount();
-
-    // Handle standard case
     if (inData.getFormat().getMaxFilesCount() == 1) {
 
-      final DataFile in = inData.getDataFile();
-      final DataFile out = outData.getDataFile();
+      //
+      // Handle standard case
+      //
 
-      // Check input and output files
-      checkFiles(in, out);
+      // Copy the file
+      final DataFile outputFile =
+          copyFile(inData.getDataFile(), -1, outData.getName(),
+              outData.getPart(), context);
 
-      // Copy file
-      DataFiles.symlinkOrCopy(in, out, true);
+      // Set the file in the data object
+      DataUtils.setDataFile(outData, outputFile);
     } else {
 
+      //
       // Handle multi file format like FASTQ files
+      //
+
+      // Get the count of input files
+      final int count = inData.getDataFileCount();
+
+      // The list of output files
+      final List<DataFile> dataFiles = new ArrayList<>();
 
       for (int i = 0; i < count; i++) {
 
-        final DataFile in = inData.getDataFile(i);
-        final DataFile out = outData.getDataFile(i);
+        // Copy the file
+        final DataFile outputFile =
+            copyFile(inData.getDataFile(), i, outData.getName(),
+                outData.getPart(), context);
 
-        // Check input and output files
-        checkFiles(in, out);
-
-        // Copy file
-        DataFiles.symlinkOrCopy(in, out, true);
+        dataFiles.add(outputFile);
       }
+
+      // Set the files in the data object
+      DataUtils.setDataFiles(outData, dataFiles);
     }
+  }
+
+  /**
+   * Copy an input file to its destination.
+   * @param inputFile the input file
+   * @param fileIndex the output file index
+   * @param outDataName the output data name
+   * @param outDataPart the output part
+   * @param context the step context
+   * @return the output file
+   * @throws IOException if an error occurs while copying the data
+   */
+  private final DataFile copyFile(final DataFile inputFile,
+      final int fileIndex, final String outDataName, final int outDataPart,
+      final StepContext context) throws IOException {
+
+    final String stepId = context.getCurrentStep().getId();
+    final DataFile outputDir = context.getStepOutputDirectory();
+
+    // Get the real input file
+    final DataFile in = getRealDataFile(inputFile);
+
+    // Define the compression of the output
+    final CompressionType compression =
+        this.outputCompression != null ? this.outputCompression : in
+            .getCompressionType();
+
+    // Define the output filename
+    final String outFilename =
+        FileNaming.filename(stepId, DEFAULT_SINGLE_OUTPUT_PORT_NAME,
+            this.format, outDataName, fileIndex, outDataPart, compression);
+
+    // Define the output file
+    final DataFile out = new DataFile(outputDir, outFilename);
+
+    // Check input and output files
+    checkFiles(in, out);
+
+    // Copy file
+    DataFiles.symlinkOrCopy(in, out, true);
+
+    return out;
   }
 
 }

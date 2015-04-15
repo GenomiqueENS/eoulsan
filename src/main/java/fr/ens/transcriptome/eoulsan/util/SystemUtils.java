@@ -149,9 +149,23 @@ public final class SystemUtils {
     return Globals.AVAILABLE_BINARY_ARCH.contains(os + "\t" + arch);
   }
 
+  /**
+   * Get the Java version.
+   * @return the java version
+   */
+  public static int getJavaVersion() {
+
+    final String version = System.getProperty("java.version");
+
+    final int pos1 = version.indexOf('.') + 1;
+    final int pos2 = version.indexOf('.', pos1);
+    return Integer.parseInt(version.substring(pos1, pos2));
+  }
+
   //
   // Private constructor
   //
+
   private SystemUtils() {
   }
 }

@@ -30,7 +30,6 @@ import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.T
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.UNUSED_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.USED_READS_COUNTER;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
@@ -46,7 +45,6 @@ import net.sf.samtools.SAMRecord;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
@@ -66,7 +64,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
  * @author Laurent Jourdren
  * @author Maria Bernard
  */
-public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
+public class ExpressionMapper extends Mapper<Text, Text, Text, Text> {
 
   // Parameters keys
   static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
@@ -87,8 +85,8 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
    * alignment file. 'value': the SAM record.
    */
   @Override
-  public void map(final LongWritable key, final Text value,
-      final Context context) throws IOException, InterruptedException {
+  public void map(final Text key, final Text value, final Context context)
+      throws IOException, InterruptedException {
 
     final String line = value.toString();
 
@@ -177,8 +175,17 @@ public class ExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
           "Genome index compressed file (from distributed cache): "
               + localCacheFiles[0]);
 
-      final File indexFile = new File(localCacheFiles[0]);
-      this.tef.load(indexFile);
+      if (localCacheFiles == null || localCacheFiles.length == 0) {
+        throw new IOException("Unable to retrieve annotation index");
+      }
+
+      if (localCacheFiles.length > 1) {
+        throw new IOException(
+            "Retrieve more than one file in distributed cache");
+      }
+
+      this.tef.load(PathUtils.createInputStream(new Path(localCacheFiles[0]),
+          context.getConfiguration()));
 
       // Counter group
       this.counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);

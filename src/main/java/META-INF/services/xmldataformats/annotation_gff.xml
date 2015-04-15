@@ -7,6 +7,7 @@
   <generator/>
   <checker>fr.ens.transcriptome.eoulsan.checkers.AnnotationChecker</checker>
   <extensions>
-  	<extension default="true">.gff</extension>
+    <extension default="true">.gff</extension>
+    <extension>.gff3</extension>
   </extensions>
 </dataformat>

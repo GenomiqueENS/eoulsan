@@ -57,7 +57,7 @@ public class BloomFilterUtils implements Serializable {
       ois.close();
 
     } catch (Exception e) {
-      throw new IOException(e.getMessage());
+      throw new IOException(e);
     }
     return bloomFilter;
   }
@@ -84,7 +84,7 @@ public class BloomFilterUtils implements Serializable {
       oos.close();
 
     } catch (FileNotFoundException e) {
-      throw new IOException(e.getMessage());
+      throw new IOException(e);
     }
 
   }

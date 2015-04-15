@@ -308,7 +308,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
       } catch (NumberFormatException exp) {
         throw new EoulsanException(
             "Invalid maximal files count for data format "
-                + this.name + ": " + maxFiles);
+                + this.name + ": " + maxFiles, exp);
       }
 
       // Parse extensions
@@ -478,7 +478,7 @@ public final class XMLDataFormat extends AbstractDataFormat implements
     try {
       parse(is);
     } catch (ParserConfigurationException | IOException | SAXException e) {
-      throw new EoulsanException(e.getMessage());
+      throw new EoulsanException(e);
     }
   }
 

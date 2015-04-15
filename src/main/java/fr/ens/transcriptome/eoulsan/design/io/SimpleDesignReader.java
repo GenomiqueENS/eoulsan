@@ -140,14 +140,15 @@ public class SimpleDesignReader extends InputStreamDesignReader {
       }
     } catch (IOException e) {
 
-      throw new EoulsanIOException("Error while reading the file");
+      throw new EoulsanIOException("Error while reading the file: "
+          + e.getMessage(), e);
     }
 
     try {
       getBufferedReader().close();
     } catch (IOException e) {
-      throw new EoulsanIOException("Error while closing the file"
-          + e.getMessage());
+      throw new EoulsanIOException("Error while closing the file: "
+          + e.getMessage(), e);
     }
 
     if (!data.containsKey(Design.SAMPLE_NUMBER_FIELD)) {

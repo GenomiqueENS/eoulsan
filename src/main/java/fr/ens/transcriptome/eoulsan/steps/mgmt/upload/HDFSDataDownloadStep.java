@@ -269,7 +269,7 @@ public class HDFSDataDownloadStep extends AbstractStep {
       try {
         destDir = e.getValue().getParent();
       } catch (IOException exp) {
-        throw new EoulsanException(exp.getMessage());
+        throw new EoulsanException(exp.getMessage(), exp);
       }
 
       if (destDir == null) {

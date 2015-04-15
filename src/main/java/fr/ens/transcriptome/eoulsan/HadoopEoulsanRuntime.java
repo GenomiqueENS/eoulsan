@@ -139,7 +139,7 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
       return newEoulsanRuntime(new Settings(false), conf);
     } catch (EoulsanException e) {
 
-      throw new IOException(e.getMessage());
+      throw new IOException(e);
     }
 
   }
@@ -162,7 +162,7 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
    * @param settings Settings of the application
    * @param conf Hadoop configuration object
    */
-  private static HadoopEoulsanRuntime newEoulsanRuntime(
+  private static synchronized HadoopEoulsanRuntime newEoulsanRuntime(
       final Settings settings, final Configuration conf) {
 
     // Create instance
@@ -170,9 +170,9 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
         new HadoopEoulsanRuntime(settings, conf);
 
     // Set the instance
-    EoulsanRuntime.setInstance(instance);
+    EoulsanRuntime.setInstance(instance, true);
 
-    return instance;
+    return (HadoopEoulsanRuntime) EoulsanRuntime.getRuntime();
   }
 
   /**

@@ -376,7 +376,8 @@ public final class DesignUtils {
             try {
               inFile.symlink(outFile);
             } catch (IOException e) {
-              throw new EoulsanIOException("Cannot create symlink: " + outFile);
+              throw new EoulsanIOException("Cannot create symlink: " + outFile,
+                  e);
             }
 
             values.set(i, inFile.getName());

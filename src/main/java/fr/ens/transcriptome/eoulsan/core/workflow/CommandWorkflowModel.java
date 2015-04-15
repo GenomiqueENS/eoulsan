@@ -454,7 +454,7 @@ public class CommandWorkflowModel implements Serializable {
 
       return writer.getBuffer().toString();
     } catch (ParserConfigurationException | TransformerException e) {
-      throw new EoulsanRuntimeException(e.getMessage());
+      throw new EoulsanRuntimeException(e);
     }
   }
 

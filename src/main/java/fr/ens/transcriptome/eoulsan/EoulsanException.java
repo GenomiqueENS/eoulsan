@@ -25,15 +25,22 @@
 package fr.ens.transcriptome.eoulsan;
 
 /**
- * A nestable Eoulsan exception. This class came from from Biojava code.
+ * A nestable Eoulsan exception.
  * @since 1.0
  * @author Laurent Jourdren
- * @author Matthew Pocock
  */
 public class EoulsanException extends Exception {
 
   // Serialization version UID
   private static final long serialVersionUID = 7021095498629981700L;
+
+  /**
+   * Create a new EoulsanException.
+   */
+  public EoulsanException() {
+
+    super();
+  }
 
   /**
    * Create a new EoulsanException with a message.
@@ -45,9 +52,22 @@ public class EoulsanException extends Exception {
   }
 
   /**
-   * Create a new EoulsanException.
+   * Create a new EoulsanException with a message and a cause.
+   * @param message the message
+   * @param cause the cause
    */
-  public EoulsanException() {
-    super();
+  public EoulsanException(String message, Throwable cause) {
+
+    super(message, cause);
   }
+
+  /**
+   * Create a new EoulsanException with a cause.
+   * @param cause the cause
+   */
+  public EoulsanException(Throwable cause) {
+
+    super(cause);
+  }
+
 }

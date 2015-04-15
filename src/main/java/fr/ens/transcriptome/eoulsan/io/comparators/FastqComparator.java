@@ -59,9 +59,9 @@ public class FastqComparator extends AbstractComparatorWithBloomFilter {
     for (ReadSequence read : fastqReader) {
       this.numberElementsCompared++;
 
-      if (!filter.mightContain(read.toFastQ())) {
+      if (!filter.mightContain(read.toFastQ() + '\n')) {
         // Save line occurs fail comparison
-        setCauseFailComparison(read.toFastQ());
+        setCauseFailComparison(read.toFastQ() + '\n');
         fastqReader.close();
         return false;
       }
@@ -90,7 +90,7 @@ public class FastqComparator extends AbstractComparatorWithBloomFilter {
 
     // Search each ReadSequence in BFilter source
     for (ReadSequence read : fastqReader) {
-      filter.put(read.toFastQ());
+      filter.put(read.toFastQ() + '\n');
     }
     fastqReader.close();
 

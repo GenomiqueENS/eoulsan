@@ -272,7 +272,8 @@ public class DataFileDistCp {
     try {
       job.waitForCompletion(false);
     } catch (InterruptedException | ClassNotFoundException e) {
-      throw new EoulsanRuntimeException("Error while distcp: " + e.getMessage());
+      throw new EoulsanRuntimeException(
+          "Error while distcp: " + e.getMessage(), e);
     }
 
     // Remove tmp directory

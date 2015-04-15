@@ -87,7 +87,7 @@ public class FastqMerger implements Merger {
       try {
         reader.throwException();
       } catch (BadBioEntryException e) {
-        throw new IOException(e.getMessage());
+        throw new IOException(e);
       }
     }
 

@@ -25,62 +25,49 @@
 package fr.ens.transcriptome.eoulsan.io;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.hadoop.io.compress.BZip2Codec;
 
 /**
- * This class define an output stream for Bzip2 files in hadoop mode.
- * @since 1.0
+ * This class allow to create input and output stream for compression codecs of
+ * Hadoop.
  * @author Laurent Jourdren
+ * @since 2.0
  */
-public class HadoopBZip2OutputStream extends OutputStream {
-
-  private final OutputStream os;
-
-  @Override
-  public void close() throws IOException {
-
-    this.os.close();
-  }
-
-  @Override
-  public void flush() throws IOException {
-
-    this.os.flush();
-  }
-
-  @Override
-  public void write(final byte[] b, final int off, final int len)
-      throws IOException {
-
-    this.os.write(b, off, len);
-  }
-
-  @Override
-  public void write(final byte[] b) throws IOException {
-
-    this.os.write(b);
-  }
-
-  @Override
-  public void write(final int b) throws IOException {
-
-    this.os.write(b);
-  }
+public class HadoopCompressionCodecs {
 
   //
-  // Constructor
+  // InputStreams
   //
 
   /**
-   * Public constructor.
-   * @param os OutputStream
+   * Create a bzip2 input stream.
+   * @param is
+   * @return
+   * @throws IOException
    */
-  public HadoopBZip2OutputStream(final OutputStream os) throws IOException {
+  public static InputStream createBZip2InputStream(final InputStream is)
+      throws IOException {
 
-    BZip2Codec codec = new BZip2Codec();
-    this.os = codec.createOutputStream(os);
+    return new BZip2Codec().createInputStream(is);
+  }
+
+  //
+  // OutputStreams
+  //
+
+  /**
+   * Create a bzip2 output stream.
+   * @param os the output stream to compress
+   * @return a compressed output stream
+   * @throws IOException if an error occurs while creating the output stream
+   */
+  public static OutputStream createBZip2OutputStream(final OutputStream os)
+      throws IOException {
+
+    return new BZip2Codec().createOutputStream(os);
   }
 
 }

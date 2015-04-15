@@ -61,7 +61,7 @@ public class StepInstances {
     try {
       return getStep(step, stepName, stepVersion);
     } catch (EoulsanException e) {
-      throw new EoulsanRuntimeException(e.getMessage());
+      throw new EoulsanRuntimeException(e);
     }
   }
 

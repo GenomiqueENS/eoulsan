@@ -24,16 +24,16 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
-import java.io.IOException;
-
-import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.FileInputFormat;
-import org.apache.hadoop.mapred.FileSplit;
-import org.apache.hadoop.mapred.InputSplit;
-import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.RecordReader;
-import org.apache.hadoop.mapred.Reporter;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionCodecFactory;
+import org.apache.hadoop.io.compress.SplittableCompressionCodec;
+import org.apache.hadoop.mapreduce.InputSplit;
+import org.apache.hadoop.mapreduce.JobContext;
+import org.apache.hadoop.mapreduce.RecordReader;
+import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 
 /**
  * This class define an InputFormat for FASTQ files for the Hadoop MapReduce
@@ -41,15 +41,26 @@ import org.apache.hadoop.mapred.Reporter;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class FastqInputFormat extends FileInputFormat<LongWritable, Text> {
+public class FastqInputFormat extends FileInputFormat<Text, Text> {
 
   @Override
-  public RecordReader<LongWritable, Text> getRecordReader(
-      final InputSplit input, final JobConf job, final Reporter reporter)
-      throws IOException {
+  public RecordReader<Text, Text> createRecordReader(
+      final InputSplit inputSplit, final TaskAttemptContext taskAttemptContext) {
 
-    reporter.setStatus(input.toString());
-    return new FastqRecordReader(job, (FileSplit) input);
+    return new FastqRecordReader();
+  }
+
+  @Override
+  protected boolean isSplitable(JobContext context, Path file) {
+
+    final CompressionCodec codec =
+        new CompressionCodecFactory(context.getConfiguration()).getCodec(file);
+
+    if (null == codec) {
+      return true;
+    }
+
+    return codec instanceof SplittableCompressionCodec;
   }
 
 }

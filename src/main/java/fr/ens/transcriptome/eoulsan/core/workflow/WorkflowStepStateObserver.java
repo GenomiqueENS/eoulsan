@@ -33,6 +33,7 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -64,6 +65,15 @@ public class WorkflowStepStateObserver implements Serializable {
 
     this.requiredSteps.add(step);
     step.getStepStateObserver().stepsToInform.add(this.step);
+  }
+
+  /**
+   * Get the required steps.
+   * @return a set with the required steps
+   */
+  public Set<AbstractWorkflowStep> getRequiredSteps() {
+
+    return Collections.unmodifiableSet(this.requiredSteps);
   }
 
   /**

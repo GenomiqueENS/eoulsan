@@ -24,8 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan.data.protocols;
 
+import java.util.List;
+
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.data.DataFormats;
 
 /**
  * This class define a annotation protocol.
@@ -42,9 +45,9 @@ public class AnnotationDataProtocol extends StorageDataProtocol {
   }
 
   @Override
-  protected String getExtension() {
+  protected List<String> getExtensions() {
 
-    return ".gff";
+    return DataFormats.ANNOTATION_GFF.getExtensions();
   }
 
   @Override

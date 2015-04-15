@@ -29,10 +29,10 @@ import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.I
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.PARENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.PARENT_ID_NOT_FOUND_COUNTER;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -41,6 +41,7 @@ import fr.ens.transcriptome.eoulsan.steps.expression.ExonsCoverage;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder.Transcript;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
+import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
  * Reducer for Expression computation.
@@ -153,8 +154,17 @@ public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
           "Genome index compressed file (from distributed cache): "
               + localCacheFiles[0]);
 
-      final File indexFile = new File(localCacheFiles[0]);
-      this.tef.load(indexFile);
+      if (localCacheFiles == null || localCacheFiles.length == 0) {
+        throw new IOException("Unable to retrieve annotation index");
+      }
+
+      if (localCacheFiles.length > 1) {
+        throw new IOException(
+            "Retrieve more than one file in distributed cache");
+      }
+
+      this.tef.load(PathUtils.createInputStream(new Path(localCacheFiles[0]),
+          context.getConfiguration()));
 
     } catch (IOException e) {
 

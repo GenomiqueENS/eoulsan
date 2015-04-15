@@ -80,6 +80,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
   private static final String DESIGN_COPY_FILENAME = "design.txt";
   protected static final String WORKFLOW_COPY_FILENAME = "workflow.xml";
+  private static final String WORKFLOW_GRAPHVIZ_FILENAME = "workflow.gv";
 
   private final DataFile localWorkingDir;
   private final DataFile hadoopWorkingDir;
@@ -567,15 +568,19 @@ public abstract class AbstractWorkflow implements Workflow {
       }
 
       // Save design file
-
       DesignWriter designWriter =
           new SimpleDesignWriter(
               new DataFile(jobDir, DESIGN_COPY_FILENAME).create());
       designWriter.write(getDesign());
 
+      // Save the workflow as a Graphviz file
+      new Workflow2Graphviz(this).save(new DataFile(jobDir,
+          WORKFLOW_GRAPHVIZ_FILENAME));
+
     } catch (IOException | EoulsanIOException e) {
-      throw new EoulsanException("Error while writing design file: "
-          + e.getMessage());
+      throw new EoulsanException(
+          "Error while writing design file or Graphiviz workflow file: "
+              + e.getMessage(), e);
     }
   }
 
@@ -711,7 +716,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
       }
     } catch (IOException e) {
-      throw new EoulsanException(e.getMessage());
+      throw new EoulsanException(e);
     }
 
     // Check temporary directory

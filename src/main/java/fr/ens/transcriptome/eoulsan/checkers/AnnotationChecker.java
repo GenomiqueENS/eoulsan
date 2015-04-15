@@ -154,10 +154,10 @@ public class AnnotationChecker implements Checker {
     } catch (IOException e) {
       throw new EoulsanException(
           "Annotation Check: Error while reading annotation file for checking: "
-              + e.getMessage());
+              + e.getMessage(), e);
     } catch (BadBioEntryException e) {
       throw new EoulsanException("Annotation Check: "
-          + e.getMessage() + " in line \"" + e.getEntry() + "\"");
+          + e.getMessage() + " in line \"" + e.getEntry() + "\"", e);
     }
     return false;
   }
@@ -326,7 +326,7 @@ public class AnnotationChecker implements Checker {
         final long start = Integer.parseInt(fields[1]);
         final long end = Integer.parseInt(fields[2]);
 
-        result.put(sequenceName, new long[] {start, end});
+        result.put(sequenceName, new long[] { start, end });
         final long len = desc.getSequenceLength(sequenceName);
 
         if (len == -1) {

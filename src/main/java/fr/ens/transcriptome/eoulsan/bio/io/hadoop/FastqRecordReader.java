@@ -25,20 +25,11 @@
 package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.regex.Pattern;
 
-import org.apache.hadoop.fs.FSDataInputStream;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.DataOutputBuffer;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.FileSplit;
-import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.RecordReader;
-
-import fr.ens.transcriptome.eoulsan.Globals;
+import org.apache.hadoop.mapreduce.InputSplit;
+import org.apache.hadoop.mapreduce.RecordReader;
+import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
 /**
  * This class define a RecordReader for FASTQ files for the Hadoop MapReduce
@@ -46,151 +37,125 @@ import fr.ens.transcriptome.eoulsan.Globals;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class FastqRecordReader implements RecordReader<LongWritable, Text> {
+public class FastqRecordReader extends RecordReader<Text, Text> {
 
-  /* Default Charset. */
-  private static final Charset CHARSET = Charset
-      .forName(Globals.DEFAULT_FILE_ENCODING);
+  private Text key = new Text();
+  private Text value = new Text();
 
-  private final long end;
-  private boolean stillInChunk = true;
+  private final String[] lines = new String[4];
 
-  private final FSDataInputStream fsin;
-  private final DataOutputBuffer buffer = new DataOutputBuffer();
+  private FastqLineRecordReader lrr;
 
-  private final byte[] endTag = "\n@".getBytes(Globals.DEFAULT_CHARSET);
-  private static final Pattern PATTERN = Pattern.compile("\n");
-  private static final StringBuilder sb = new StringBuilder();
+  @Override
+  public synchronized void close() throws IOException {
 
-  public FastqRecordReader(final JobConf job, final FileSplit split)
-      throws IOException {
-
-    Path path = split.getPath();
-    FileSystem fs = path.getFileSystem(job);
-
-    this.fsin = fs.open(path);
-    long start = split.getStart();
-    this.end = split.getStart() + split.getLength();
-    this.fsin.seek(start);
-
-    if (start != 0) {
-      readUntilMatch(this.endTag, false);
-    }
+    this.lrr.close();
   }
 
   @Override
-  public boolean next(final LongWritable key, final Text value)
-      throws IOException {
+  public Text getCurrentKey() throws IOException, InterruptedException {
 
-    if (!this.stillInChunk) {
-      return false;
-    }
+    return this.key;
+  }
 
-    final long startPos = this.fsin.getPos();
+  @Override
+  public Text getCurrentValue() throws IOException, InterruptedException {
 
-    boolean status = readUntilMatch(this.endTag, true);
+    return this.value;
+  }
 
-    final String data;
+  @Override
+  public float getProgress() throws IOException, InterruptedException {
 
-    // If start of the file, ignore first '@'
-    if (startPos == 0) {
-      data =
-          new String(this.buffer.getData(), 1, this.buffer.getLength(), CHARSET);
-    } else {
-      data =
-          new String(this.buffer.getData(), 0, this.buffer.getLength(), CHARSET);
-    }
+    return this.lrr.getProgress();
+  }
 
-    final String[] lines = PATTERN.split(data);
+  @Override
+  public void initialize(final InputSplit inputSplit,
+      final TaskAttemptContext taskAttemptContext) throws IOException,
+      InterruptedException {
 
-    String id = "";
+    this.lrr = new FastqLineRecordReader();
+    this.lrr.initialize(inputSplit, taskAttemptContext);
+  }
+
+  @Override
+  public synchronized boolean nextKeyValue() throws IOException,
+      InterruptedException {
+
     int count = 0;
+    boolean found = false;
 
-    for (String line1 : lines) {
+    while (!found) {
 
-      final String line = line1.trim();
+      if (!this.lrr.nextKeyValue(count != 0)) {
+        return false;
+      }
 
-      if ("".equals(line)) {
+      final String s = this.lrr.getCurrentValue().toString().trim();
+
+      // Prevent empty lines
+      if (s.length() == 0) {
         continue;
       }
 
-      if (count == 0) {
-        id = line;
-      }
+      this.lines[count] = s;
 
-      if (count == 2 && !id.equals(line.substring(1))) {
-        throw new IOException("Invalid record: id not equals "
-            + id + " " + line.substring(1));
-      }
+      if (count < 3) {
+        count++;
+      } else {
 
-      if (count != 2 && count < 4) {
-        if (count > 0) {
-          sb.append("\t");
+        if (this.lines[0].charAt(0) == '@' && this.lines[2].charAt(0) == '+') {
+          found = true;
+        } else {
+
+          // Shift lines
+          this.lines[0] = this.lines[1];
+          this.lines[1] = this.lines[2];
+          this.lines[2] = this.lines[3];
         }
-        sb.append(line);
       }
-      count++;
     }
 
-    key.set(this.fsin.getPos());
-    value.set(sb.toString());
+    // Set key
+    this.key = new Text(memberId(this.lines[0].substring(1)));
 
-    sb.setLength(0);
-    this.buffer.reset();
+    // Set value
+    this.value =
+        new Text(this.lines[0].substring(1)
+            + '\t' + this.lines[1] + '\t' + this.lines[3]);
 
-    if (!status) {
-      this.stillInChunk = false;
-    }
+    // Clean array
+    this.lines[0] = this.lines[1] = this.lines[2] = this.lines[3] = null;
 
     return true;
   }
 
-  @Override
-  public long getPos() throws IOException {
+  /**
+   * Get the member id of a sequence Id
+   * @param s sequence id
+   * @return the member of the sequence id
+   */
+  private static String memberId(final String s) {
 
-    return this.fsin.getPos();
-  }
-
-  @Override
-  public LongWritable createKey() {
-    return new LongWritable();
-  }
-
-  @Override
-  public Text createValue() {
-
-    return new Text();
-  }
-
-  @Override
-  public float getProgress() {
-    return 0;
-  }
-
-  @Override
-  public void close() throws IOException {
-    this.fsin.close();
-  }
-
-  private boolean readUntilMatch(final byte[] match, final boolean withinBlock)
-      throws IOException {
-    int i = 0;
-    while (true) {
-      int b = this.fsin.read();
-      if (b == -1) {
-        return false;
-      }
-      if (withinBlock) {
-        this.buffer.write(b);
-      }
-      if (b == match[i]) {
-        i++;
-        if (i >= match.length) {
-          return this.fsin.getPos() < this.end;
-        }
-      } else {
-        i = 0;
-      }
+    if (s == null) {
+      return null;
     }
+
+    // New Illumina Id
+    final int pos1 = s.indexOf(' ');
+    if (pos1 != -1) {
+      return s.substring(0, pos1);
+    }
+
+    // Old Illumina Id
+    final int pos2 = s.indexOf('/');
+    if (pos2 != -1) {
+      return s.substring(0, pos2);
+    }
+
+    // Other, do nothing
+    return s;
   }
+
 }

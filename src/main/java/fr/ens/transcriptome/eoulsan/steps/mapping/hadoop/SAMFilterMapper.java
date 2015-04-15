@@ -36,7 +36,6 @@ import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
@@ -53,7 +52,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
+public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
 
   // Parameters keys
   static final String MAPPING_QUALITY_THRESOLD_KEY = Globals.PARAMETER_PREFIX
@@ -100,8 +99,8 @@ public class SAMFilterMapper extends Mapper<LongWritable, Text, Text, Text> {
    * paired-end mode. 'value': the SAM or TSAM line.
    */
   @Override
-  protected void map(final LongWritable key, final Text value,
-      final Context context) throws IOException, InterruptedException {
+  protected void map(final Text key, final Text value, final Context context)
+      throws IOException, InterruptedException {
 
     final String line = value.toString();
 

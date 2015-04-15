@@ -24,8 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
 import java.util.Map;
@@ -37,7 +37,6 @@ import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFil
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
 import fr.ens.transcriptome.eoulsan.bio.alignmentsfilters.QualityReadAlignmentsFilter;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
-import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
@@ -84,11 +83,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   @Override
   public InputPorts getInputPorts() {
 
-    final InputPortsBuilder builder = new InputPortsBuilder();
-    builder.addPort("alignments", MAPPER_RESULTS_SAM);
-    builder.addPort("genomedescription", GENOME_DESC_TXT);
-
-    return builder.create();
+    return singleInputPort(MAPPER_RESULTS_SAM);
   }
 
   @Override

@@ -29,16 +29,17 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_R
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.READS_REJECTED_BY_FILTERS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.jobConfToParameters;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterHadoopStep.OUTPUT_FILE1_KEY;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterHadoopStep.OUTPUT_FILE2_KEY;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -59,8 +60,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporterIncrementer;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class ReadsFilterMapper extends
-    Mapper<LongWritable, Text, NullWritable, Text> {
+public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
 
   // Parameters keys
   static final String FASTQ_FORMAT_KEY = Globals.PARAMETER_PREFIX
@@ -73,13 +73,15 @@ public class ReadsFilterMapper extends
   private final List<String> fields = new ArrayList<>();
   private MultiReadFilter filter;
   private String counterGroup;
-  private boolean tfqOutput = false;
 
   private final ReadSequence read1 = new ReadSequence();
   private final ReadSequence read2 = new ReadSequence();
 
-  private final NullWritable outKey = NullWritable.get();
   private final Text outValue = new Text();
+
+  private MultipleOutputs<Text, Text> out;
+  private String outputFilename1;
+  private String outputFilename2;
 
   //
   // Setup
@@ -131,10 +133,27 @@ public class ReadsFilterMapper extends
               + Joiner.on(", ").join(this.filter.getFilterNames()));
 
     } catch (EoulsanException e) {
-      throw new IOException(e.getMessage());
+      throw new IOException(e);
     }
 
+    // Set the output writers
+    this.out = new MultipleOutputs<Text, Text>(context);
+    this.outputFilename1 = createOutputPath(conf, OUTPUT_FILE1_KEY);
+    this.outputFilename2 = createOutputPath(conf, OUTPUT_FILE2_KEY);
+
     getLogger().info("End of setup()");
+  }
+
+  private static String createOutputPath(final Configuration conf,
+      final String key) {
+
+    if (conf == null || key == null) {
+      return null;
+    }
+
+    final String value = conf.get(key);
+
+    return value + "/part";
   }
 
   //
@@ -146,8 +165,8 @@ public class ReadsFilterMapper extends
    * file. 'value': the TFQ line.
    */
   @Override
-  protected void map(final LongWritable key, final Text value,
-      final Context context) throws IOException, InterruptedException {
+  protected void map(final Text key, final Text value, final Context context)
+      throws IOException, InterruptedException {
 
     context
         .getCounter(this.counterGroup, INPUT_RAW_READS_COUNTER.counterName())
@@ -163,6 +182,7 @@ public class ReadsFilterMapper extends
     final int fieldsSize = this.fields.size();
 
     if (fieldsSize == 3) {
+
       // Single end
       this.read1.setName(this.fields.get(0));
       this.read1.setSequence(this.fields.get(1));
@@ -170,13 +190,9 @@ public class ReadsFilterMapper extends
 
       if (this.filter.accept(this.read1)) {
 
-        if (this.tfqOutput) {
-          this.outValue.set(chop(this.read1.toTFQ()));
-        } else {
-          this.outValue.set(chop(this.read1.toFastQ()));
-        }
+        this.outValue.set(this.read1.toTFQ());
 
-        context.write(this.outKey, this.outValue);
+        context.write(key, this.outValue);
         context.getCounter(this.counterGroup,
             OUTPUT_FILTERED_READS_COUNTER.counterName()).increment(1);
       } else {
@@ -185,23 +201,37 @@ public class ReadsFilterMapper extends
       }
 
     } else if (fieldsSize == 6) {
-      // Paired-end
+
+      // First end
       this.read1.setName(this.fields.get(0));
       this.read1.setSequence(this.fields.get(1));
       this.read1.setQuality(this.fields.get(2));
 
+      // Second end
       this.read2.setName(this.fields.get(3));
       this.read2.setSequence(this.fields.get(4));
       this.read2.setQuality(this.fields.get(5));
 
       if (this.filter.accept(this.read1, this.read2)) {
 
-        this.outValue.set(this.read1.getName()
-            + "\t" + this.read1.getSequence() + "\t" + this.read1.getQuality()
-            + "\t" + this.read2.getName() + "\t" + this.read2.getSequence()
-            + "\t" + this.read2.getQuality());
+        if (this.outputFilename1 == null) {
 
-        context.write(this.outKey, this.outValue);
+          // Output of the mapper is chained
+          this.outValue.set(this.read1.toTFQ() + '\t' + this.read2.toTFQ());
+          context.write(key, this.outValue);
+        } else {
+
+          // The output of the mapper is not reused by another mapper or reducer
+
+          // Write read 1
+          this.outValue.set(this.read1.toTFQ());
+          out.write(key, this.outValue, this.outputFilename1);
+
+          // Write read 2
+          this.outValue.set(this.read2.toTFQ());
+          out.write(key, this.outValue, this.outputFilename2);
+        }
+
         context.getCounter(this.counterGroup,
             OUTPUT_FILTERED_READS_COUNTER.counterName()).increment(1);
       } else {
@@ -215,26 +245,6 @@ public class ReadsFilterMapper extends
   @Override
   protected void cleanup(final Context context) throws IOException,
       InterruptedException {
-  }
-
-  /**
-   * Remove the last character of a string.
-   * @param s the string to modify
-   * @return a string without the last character
-   */
-  private static final String chop(String s) {
-
-    if (s == null) {
-      return null;
-    }
-
-    final int len = s.length();
-
-    if (len == 0) {
-      return "";
-    }
-
-    return s.substring(0, len - 1);
   }
 
 }

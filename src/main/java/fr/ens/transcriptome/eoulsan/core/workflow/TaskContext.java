@@ -571,7 +571,7 @@ public class TaskContext implements StepContext, Serializable {
       return result;
 
     } catch (ClassNotFoundException e) {
-      throw new EoulsanRuntimeException(e.getMessage());
+      throw new EoulsanRuntimeException(e);
     }
   }
 
@@ -661,7 +661,7 @@ public class TaskContext implements StepContext, Serializable {
       updateOutputData(outputData);
 
     } catch (ClassNotFoundException e) {
-      throw new EoulsanRuntimeException(e.getMessage());
+      throw new EoulsanRuntimeException(e);
     }
   }
 

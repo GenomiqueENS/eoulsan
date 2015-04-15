@@ -199,7 +199,7 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
     try {
       this.document.save(this.os);
     } catch (Exception e) {
-      throw new IOException(e.getMessage());
+      throw new IOException(e);
     }
 
   }
@@ -228,7 +228,7 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
       this.dom = (OdfFileDom) this.table.getOdfElement().getOwnerDocument();
       Table.newTable(this.document);
     } catch (Exception e) {
-      throw new IOException(e.getMessage());
+      throw new IOException(e);
     }
   }
 

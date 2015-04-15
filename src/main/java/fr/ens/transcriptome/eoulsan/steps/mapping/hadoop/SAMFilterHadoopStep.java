@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.createConfiguration;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX;
@@ -40,7 +39,10 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
+import fr.ens.transcriptome.eoulsan.bio.io.hadoop.SAMInputFormat;
+import fr.ens.transcriptome.eoulsan.bio.io.hadoop.SAMOutputFormat;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -73,18 +75,17 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     try {
 
       final Data inData = context.getInputData(MAPPER_RESULTS_SAM);
-      final Data genomeDescData = context.getInputData(GENOME_DESC_TXT);
       final Data outData = context.getOutputData(MAPPER_RESULTS_SAM, inData);
 
       // Create the job to run
-      final Job job = createJob(conf, inData, genomeDescData, outData);
+      final Job job = createJob(conf, inData, outData);
 
       // Launch jobs
       MapReduceUtils.submitAndWaitForJob(job, inData.getName(),
           CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
 
       return status.createStepResult();
-    } catch (IOException | InterruptedException | ClassNotFoundException e) {
+    } catch (IOException | EoulsanException e) {
 
       return status.createStepResult(e,
           "Error while running job: " + e.getMessage());
@@ -95,22 +96,17 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
   /**
    * Create the JobConf object for a sample
    * @param inData input data
-   * @param genomeDescData genome description data
    * @param outData output data
    * @return a new JobConf object
    * @throws IOException
    */
   private Job createJob(final Configuration parentConf, final Data inData,
-      final Data genomeDescData, final Data outData) throws IOException {
+      final Data outData) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
     // Set input path
     final Path inputPath = new Path(inData.getDataFile().getSource());
-
-    // Set Genome description path
-    jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY, genomeDescData
-        .getDataFile().getSource());
 
     // Set counter group
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
@@ -133,6 +129,9 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     // Set input path
     FileInputFormat.addInputPath(job, inputPath);
 
+    // Set input format
+    job.setInputFormatClass(SAMInputFormat.class);
+
     // Set the Mapper class
     job.setMapperClass(SAMFilterMapper.class);
 
@@ -142,6 +141,9 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     // job.setPartitionerClass(SAMRecordsPartitioner.class);
     // job.setSortComparatorClass(SAMRecordsKeyComparator.class);
     // job.setGroupingComparatorClass(SAMRecordsGroupComparator.class);
+
+    // Set the output format
+    job.setOutputFormatClass(SAMOutputFormat.class);
 
     // Set the output key class
     job.setOutputKeyClass(Text.class);

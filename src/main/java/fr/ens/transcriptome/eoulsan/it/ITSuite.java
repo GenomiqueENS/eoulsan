@@ -471,7 +471,7 @@ public class ITSuite {
       fh = new FileHandler(this.loggerPath);
 
     } catch (final Exception e) {
-      throw new IOException(e.getMessage());
+      throw new IOException(e);
     }
 
     fh.setFormatter(Globals.LOG_FORMATTER);

@@ -24,8 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan.data.protocols;
 
+import java.util.List;
+
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.data.DataFormats;
 
 /**
  * This class define a genome protocol.
@@ -45,9 +48,9 @@ public class GenomeDataProtocol extends StorageDataProtocol {
   }
 
   @Override
-  protected String getExtension() {
+  protected List<String> getExtensions() {
 
-    return ".fasta";
+    return DataFormats.GENOME_FASTA.getExtensions();
   }
 
   @Override

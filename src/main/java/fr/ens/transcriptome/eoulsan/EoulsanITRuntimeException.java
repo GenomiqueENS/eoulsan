@@ -34,12 +34,39 @@ public class EoulsanITRuntimeException extends EoulsanRuntimeException {
   private static final long serialVersionUID = -1897738767737351557L;
 
   /**
-   * Constructor.
+   * Create a new EoulsanITRuntimeException.
+   */
+  public EoulsanITRuntimeException() {
+
+    super();
+  }
+
+  /**
+   * Create a new EoulsanITRuntimeException with a message.
    * @param message Exception message
    */
   public EoulsanITRuntimeException(final String message) {
 
     super(message);
+  }
+
+  /**
+   * Create a new EoulsanITRuntimeException with a message and a cause.
+   * @param message the message
+   * @param cause the cause
+   */
+  public EoulsanITRuntimeException(String message, Throwable cause) {
+
+    super(message, cause);
+  }
+
+  /**
+   * Create a new EoulsanITRuntimeException with a cause.
+   * @param cause the cause
+   */
+  public EoulsanITRuntimeException(Throwable cause) {
+
+    super(cause);
   }
 
 }

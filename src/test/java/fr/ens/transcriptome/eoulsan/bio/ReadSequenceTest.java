@@ -187,7 +187,7 @@ public class ReadSequenceTest {
     assertNull(new ReadSequence().qualityScores());
 
     ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
-    assertArrayEquals(new int[] {0, 0, 0, 0}, s.qualityScores());
+    assertArrayEquals(new int[] { 0, 0, 0, 0 }, s.qualityScores());
 
   }
 
@@ -305,7 +305,7 @@ public class ReadSequenceTest {
   public void testToFastQ() {
 
     ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
-    assertEquals("@read1\nATGC\n+\n!!!!\n", s.toFastQ());
+    assertEquals("@read1\nATGC\n+\n!!!!", s.toFastQ());
 
   }
 
@@ -313,14 +313,14 @@ public class ReadSequenceTest {
   public void testToFastQBoolean() {
 
     ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
-    assertEquals("@read1\nATGC\n+\n!!!!\n", s.toFastQ(false));
-    assertEquals("@read1\nATGC\n+read1\n!!!!\n", s.toFastQ(true));
+    assertEquals("@read1\nATGC\n+\n!!!!", s.toFastQ(false));
+    assertEquals("@read1\nATGC\n+read1\n!!!!", s.toFastQ(true));
   }
 
   @Test
   public void testToFastQStringStringString() {
 
-    assertEquals("@read1\nATGC\n+\n!!!!\n",
+    assertEquals("@read1\nATGC\n+\n!!!!",
         ReadSequence.toFastQ("read1", "ATGC", "!!!!"));
     assertNull(ReadSequence.toFastQ(null, null, null));
     assertNull(ReadSequence.toFastQ("read1", "ATGC", null));
@@ -331,9 +331,9 @@ public class ReadSequenceTest {
   @Test
   public void testToFastQStringStringStringBoolean() {
 
-    assertEquals("@read1\nATGC\n+\n!!!!\n",
+    assertEquals("@read1\nATGC\n+\n!!!!",
         ReadSequence.toFastQ("read1", "ATGC", "!!!!", false));
-    assertEquals("@read1\nATGC\n+read1\n!!!!\n",
+    assertEquals("@read1\nATGC\n+read1\n!!!!",
         ReadSequence.toFastQ("read1", "ATGC", "!!!!", true));
 
     assertNull(ReadSequence.toFastQ(null, null, null, false));
@@ -359,7 +359,7 @@ public class ReadSequenceTest {
 
     ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
     assertEquals("read1\tATGC\t!!!!\n", s.toTFQ(true));
-    assertEquals("\tATGC\t!!!!\n", s.toTFQ(false));
+    assertEquals("\tATGC\t!!!!", s.toTFQ(false));
   }
 
   @Test
@@ -385,7 +385,7 @@ public class ReadSequenceTest {
     assertNull(ReadSequence.toTFQ(true, "read1", null, "!!!!"));
     assertNull(ReadSequence.toTFQ(true, "read1", "ATGC", null));
 
-    assertEquals("\tATGC\t!!!!\n",
+    assertEquals("\tATGC\t!!!!",
         ReadSequence.toTFQ(false, "read1", "ATGC", "!!!!"));
 
     assertNull(ReadSequence.toTFQ(false, null, null, null));
