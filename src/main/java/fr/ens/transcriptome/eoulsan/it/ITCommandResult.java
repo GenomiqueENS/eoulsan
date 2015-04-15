@@ -71,7 +71,8 @@ public class ITCommandResult {
     this.message.append("\n\tMessage: exit value " + this.exitValue);
 
     // TODO
-    this.message.append("\nMessage: interrupted " + isInterruptedProcess());
+    // this.message.append("\n\tMessage: interrupted " +
+    // isInterruptedProcess());
 
     if (isInterruptedProcess()) {
       this.message.append("\n\tInterrupt process after: "
