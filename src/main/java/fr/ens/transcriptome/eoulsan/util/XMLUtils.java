@@ -213,6 +213,12 @@ public final class XMLUtils {
     child.appendChild(doc.createTextNode(value));
   }
 
+  /**
+   * Checks if is element exists by tag name.
+   * @param element the element
+   * @param tagName the tag name
+   * @return true, if is element exists by tag name
+   */
   public static boolean isElementExistsByTagName(final Element element,
       final String tagName) {
 
