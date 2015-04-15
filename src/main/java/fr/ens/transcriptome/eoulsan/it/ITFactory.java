@@ -110,6 +110,8 @@ public class ITFactory {
   static final String MANUAL_GENERATION_EXPECTED_DATA_CONF_KEY =
       "manual.generation.expected.data";
 
+  static final String RUNTIME_IT_MAXIMUM_KEY = "runtime.test.maximum";
+
   static final String PRETREATMENT_GLOBAL_SCRIPT_KEY = "pre.global.script";
   static final String POSTTREATMENT_GLOBAL_SCRIPT_KEY = "post.global.script";
 
@@ -117,10 +119,9 @@ public class ITFactory {
 
   static final String TEST_CONFIGURATION_FILENAME = "test.conf";
 
-  static final String RUNTIME_IT_MAXIMUM = "runtime.test.maximum";
 
   // Runtime maximum for a test beyond stop execution, in minutes
-  static final String RUNTIME_IT_MAXIMUM_DURATION_DEFAULT = "1";
+  static final int RUNTIME_IT_MAXIMUM_DEFAULT = 1;
 
   private static final Properties CONSTANTS = initConstants();
 
@@ -357,8 +358,8 @@ public class ITFactory {
     }
 
     // Add default runtime test duration
-    if (props.getProperty(RUNTIME_IT_MAXIMUM) == null) {
-      props.put(RUNTIME_IT_MAXIMUM, RUNTIME_IT_MAXIMUM_DURATION_DEFAULT);
+    if (props.getProperty(RUNTIME_IT_MAXIMUM_KEY) == null) {
+      props.put(RUNTIME_IT_MAXIMUM_KEY, "" + RUNTIME_IT_MAXIMUM_DEFAULT);
     }
   }
 
