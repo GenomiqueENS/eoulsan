@@ -31,6 +31,7 @@ import static fr.ens.transcriptome.eoulsan.it.ITFactory.POSTTREATMENT_GLOBAL_SCR
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.POST_TEST_SCRIPT_CONF_KEY;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.PRETREATMENT_GLOBAL_SCRIPT_KEY;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.PRE_TEST_SCRIPT_CONF_KEY;
+import static fr.ens.transcriptome.eoulsan.it.ITFactory.RUNTIME_IT_MAXIMUM_DEFAULT;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.SUCCESS_IT_DELETE_FILE_CONF_KEY;
 import static fr.ens.transcriptome.eoulsan.it.ITFactory.evaluateExpressions;
 import static fr.ens.transcriptome.eoulsan.it.ITSuite.createRelativeOrAbsoluteSymbolicLink;
@@ -223,7 +224,7 @@ public class IT {
 
     final ITCommandExecutor cmdExecutor =
         new ITCommandExecutor(this.testConf, this.outputTestDirectory,
-            this.environmentVariables);
+            this.environmentVariables, getDurationMaxInMinutes());
 
     final boolean isApplicationCmdLine = true;
 
@@ -762,6 +763,23 @@ public class IT {
    */
   public ITOutput getITOutput() {
     return this.itOutput;
+  }
+
+  public int getDurationMaxInMinutes() {
+    final String value = getProperty(ITFactory.RUNTIME_IT_MAXIMUM_KEY);
+
+    try {
+
+      return Integer.parseInt(value);
+
+    } catch (Exception e) {
+      getLogger().severe(
+          "Duration set in configuration invalid "
+              + value + ". Use default value " + RUNTIME_IT_MAXIMUM_DEFAULT);
+
+      return RUNTIME_IT_MAXIMUM_DEFAULT;
+    }
+
   }
 
   //
