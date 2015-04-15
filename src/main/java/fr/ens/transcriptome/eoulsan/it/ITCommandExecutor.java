@@ -25,10 +25,12 @@ package fr.ens.transcriptome.eoulsan.it;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -49,18 +51,30 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  */
 public class ITCommandExecutor {
 
+  /** The Constant STDERR_FILENAME. */
   private static final String STDERR_FILENAME = "STDERR";
+
+  /** The Constant STDOUT_FILENAME. */
   private static final String STDOUT_FILENAME = "STDOUT";
 
+  /** The Constant CMDLINE_FILENAME. */
   private static final String CMDLINE_FILENAME = "CMDLINE";
 
+  /** The test conf. */
   private final Properties testConf;
+
+  /** The output test directory. */
   private final File outputTestDirectory;
 
+  /** The duration max. */
+  private final int durationMax;
+
+  /** The cmd line file. */
   private final File cmdLineFile;
 
   // Compile current environment variable and set in configuration file with
   // prefix PREFIX_ENV_VAR
+  /** The environment variables. */
   private final String[] environmentVariables;
 
   /**
@@ -113,12 +127,17 @@ public class ITCommandExecutor {
     final Stopwatch timer = Stopwatch.createStarted();
 
     final ITCommandResult cmdResult =
-        new ITCommandResult(cmdLine, this.outputTestDirectory, desc);
+        new ITCommandResult(cmdLine, this.outputTestDirectory, desc,
+            durationMax);
+
     try {
 
       final Process p =
           Runtime.getRuntime().exec(cmdLine, this.environmentVariables,
               this.outputTestDirectory);
+
+      // Init monitor and start
+      final MonitorThread monitor = new MonitorThread(p, desc, durationMax);
 
       // Save stdout
       if (stdoutFile != null) {
@@ -132,16 +151,31 @@ public class ITCommandExecutor {
 
       // Wait the end of the process
       exitValue = p.waitFor();
+
+      // Stop monitor thread
+      monitor.interrupt();
+
       cmdResult.setExitValue(exitValue);
 
       // Execution script fail, create an exception
       if (exitValue != 0) {
-        cmdResult.setException(new EoulsanException("\tCommand line: "
-            + cmdLine + "\n\tDirectory: " + this.outputTestDirectory
-            + "\n\tBad exit value: " + exitValue));
-      }
 
-      if (exitValue == 0 && !isApplicationCmdLine) {
+        if (monitor.isKilledProcess()) {
+
+          cmdResult.asInterruptedProcess();
+          cmdResult.setException(new EoulsanException(
+              "\tKill process.\n\tCommand line: "
+                  + cmdLine + "\n\tDirectory: " + this.outputTestDirectory
+                  + "\n\tMessage: " + monitor.getMessage()));
+
+        } else {
+
+          cmdResult.setException(new EoulsanException("\tCommand line: "
+              + cmdLine + "\n\tDirectory: " + this.outputTestDirectory
+              + "\n\tMessage: bad exit value: " + exitValue));
+        }
+
+      } else if (exitValue == 0 && !isApplicationCmdLine) {
         // Success execution, remove standard and error output file
         stdoutFile.delete();
         stderrFile.delete();
@@ -162,7 +196,7 @@ public class ITCommandExecutor {
 
   /**
    * Create standard output file with suffix name, if not empty.
-   * @param suffixName
+   * @param suffixName the suffix name
    * @return file
    */
   private File createSdtoutFile(final String suffixName) {
@@ -172,7 +206,7 @@ public class ITCommandExecutor {
 
   /**
    * Create error output file with suffix name, if not empty.
-   * @param suffixName
+   * @param suffixName the suffix name
    * @return file
    */
   private File createSdterrFile(final String suffixName) {
@@ -188,9 +222,11 @@ public class ITCommandExecutor {
    * @param testConf properties on the test
    * @param outputTestDirectory output test directory
    * @param environmentVariables environment variables to run test
+   * @param durationMax the duration maximum in minutes
    */
   public ITCommandExecutor(final Properties testConf,
-      final File outputTestDirectory, final List<String> environmentVariables) {
+      final File outputTestDirectory, final List<String> environmentVariables,
+      final int durationMax) {
 
     this.testConf = testConf;
     this.outputTestDirectory = outputTestDirectory;
@@ -199,6 +235,9 @@ public class ITCommandExecutor {
     this.environmentVariables =
         environmentVariables.toArray(new String[environmentVariables.size()]);
     this.cmdLineFile = new File(this.outputTestDirectory, CMDLINE_FILENAME);
+
+    this.durationMax = durationMax;
+
   }
 
   /**
@@ -207,10 +246,19 @@ public class ITCommandExecutor {
    */
   private static final class CopyProcessOutput extends Thread {
 
+    /** The path. */
     private final Path path;
+
+    /** The in. */
     private final InputStream in;
+
+    /** The desc. */
     private final String desc;
 
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Thread#run()
+     */
     @Override
     public void run() {
 
@@ -223,6 +271,12 @@ public class ITCommandExecutor {
 
     }
 
+    /**
+     * Instantiates a new copy process output.
+     * @param in the in
+     * @param file the file
+     * @param desc the desc
+     */
     CopyProcessOutput(final InputStream in, final File file, final String desc) {
 
       checkNotNull(in, "in argument cannot be null");
@@ -236,4 +290,156 @@ public class ITCommandExecutor {
 
   }
 
+  //
+  // Internal class
+  //
+  /**
+   * This class create a monitor thread on script process to stop him if
+   * overtake runtime maximum period set in configuration file or use default
+   * value in ITFactory class.
+   * @author Sandrine Perrin
+   * @since 2.0
+   */
+  private static final class MonitorThread extends Thread {
+
+    /** Script process. */
+    private final Process p;
+
+    /** PID on the process. */
+    private int pid = -1;
+
+    /** Duration max in minutes. */
+    private final int durationMaxInMinutes;
+
+    /** Descripion on script. */
+    private final String desc;
+
+    /** Process is killed . */
+    private boolean killedProcess = false;
+
+    /** Process is kill by command unix. */
+    private boolean killByCmd = false;
+
+    /** Process is kill by method destroy on process. */
+    private boolean killByMethodDestroy = false;
+
+    public void run() {
+
+      // try {
+      // // TODO
+      // System.out.println("start monitor on script " + desc);
+      //
+      // // Sleep
+      // sleep(durationMaxInMinutes * 60 * 1000);
+      //
+      // System.out.println("end period allowed");
+      // } catch (InterruptedException e) {
+      // // TODO Auto-generated catch block
+      // // e.printStackTrace();
+      // }
+      //
+      // // Destroy process if always running
+      // destroyProcessScript();
+    }
+
+    /**
+     * Destroy process script, in first step use command Unix kill -9, if it is
+     * failed call destroy method from process class.
+     */
+    void destroyProcessScript() {
+
+      // try {
+      // killedProcess = true;
+      // killByCmd = true;
+      //
+      // // Retrieve PID on children process (corresponding to java runtime pid
+      // // for Eoulsan) DON'T WORK
+      // final String n =
+      // ProcessUtils.execToString("ps x -o  \"%p %r %y %x %c \" | grep \"^"
+      // + this.pid + "\" | cut -f 2 -d ' '");
+      //
+      // System.out.println("CMD KILL: kill -TERM " + pid + " " + n);
+      // // Kill process
+      // ProcessUtils.exec("kill -TERM " + pid + " " + n, true);
+      //
+      // // TODO
+      // System.out.println("process was killed");
+      //
+      // } catch (Throwable e) {
+      //
+      // killedProcess = true;
+      // killByMethodDestroy = true;
+      //
+      // // Destroy process
+      // this.p.destroy();
+      // }
+    }
+
+    /**
+     * Gets the pid.
+     * @return the pid
+     */
+    int getPID() {
+
+      try {
+
+        Field f = p.getClass().getDeclaredField("pid");
+        f.setAccessible(true);
+        int pid = (int) f.get(p);
+
+        // System.out.println("script process pid : " + pid);
+
+        return pid;
+
+      } catch (Throwable e) {
+        e.printStackTrace();
+      }
+
+      return -1;
+    }
+
+    //
+    // Getter
+    //
+    /**
+     * Checks if is killed process.
+     * @return true, if is killed process
+     */
+    public boolean isKilledProcess() {
+      return killedProcess;
+    }
+
+    /**
+     * Gets the message for report.
+     * @return the message
+     */
+    public String getMessage() {
+      return "script process on "
+          + this.desc
+          + " with pid "
+          + pid
+          + " has been killed "
+          + (killByCmd ? "by command kill -TERM" : (killByMethodDestroy
+              ? "by method process.destroy" : "other mean")) + " after "
+          + toTimeHumanReadable(this.durationMaxInMinutes * 60 * 1000);
+    }
+
+    /**
+     * Constructor.
+     * @param processScript the process on script
+     * @param desc the description script
+     * @param durationMaxInMinutes the duration maximum in minutes
+     */
+    public MonitorThread(final Process processScript, final String desc,
+        final int durationMaxInMinutes) {
+
+      this.p = processScript;
+      this.desc = desc;
+      this.durationMaxInMinutes = durationMaxInMinutes;
+      this.pid = getPID();
+
+      // Start thread
+      this.start();
+    }
+  }
 }
