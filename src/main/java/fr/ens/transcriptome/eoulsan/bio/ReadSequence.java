@@ -326,7 +326,7 @@ public final class ReadSequence extends Sequence {
     }
 
     if (withId) {
-      return name + '\t' + sequence + '\t' + quality + '\n';
+      return name + '\t' + sequence + '\t' + quality;
     }
 
     return '\t' + sequence + '\t' + quality;

@@ -351,21 +351,21 @@ public class ReadSequenceTest {
   public void testToTFQ() {
 
     ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
-    assertEquals("read1\tATGC\t!!!!\n", s.toTFQ());
+    assertEquals("read1\tATGC\t!!!!", s.toTFQ());
   }
 
   @Test
   public void testToTFQBoolean() {
 
     ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
-    assertEquals("read1\tATGC\t!!!!\n", s.toTFQ(true));
+    assertEquals("read1\tATGC\t!!!!", s.toTFQ(true));
     assertEquals("\tATGC\t!!!!", s.toTFQ(false));
   }
 
   @Test
   public void testToTFQStringStringString() {
 
-    assertEquals("read1\tATGC\t!!!!\n",
+    assertEquals("read1\tATGC\t!!!!",
         ReadSequence.toTFQ("read1", "ATGC", "!!!!"));
 
     assertNull(ReadSequence.toTFQ(null, null, null));
@@ -377,7 +377,7 @@ public class ReadSequenceTest {
   @Test
   public void testToTFQBooleanStringStringString() {
 
-    assertEquals("read1\tATGC\t!!!!\n",
+    assertEquals("read1\tATGC\t!!!!",
         ReadSequence.toTFQ(true, "read1", "ATGC", "!!!!"));
 
     assertNull(ReadSequence.toTFQ(true, null, null, null));
