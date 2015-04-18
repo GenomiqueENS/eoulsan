@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.EoulsanRuntime.getSettings;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -48,6 +49,7 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.HadoopLogConfigurator;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
@@ -329,6 +331,10 @@ public class ExecJarHadoopAction extends AbstractAction {
               destPath);
       arguments.setJobDescription(desc);
       arguments.setJobEnvironment(env);
+
+      // Configure Hadoop log file
+      HadoopLogConfigurator.configureLog4J(getSettings().getHadoopLogLevel(),
+          arguments.getJobPathname() + File.separator + "hadoop.log");
 
       // Create the log File
       Main.getInstance().createLogFileAndFlushLog(

@@ -72,6 +72,9 @@ public final class Settings implements Serializable {
   private static final String HADOOP_AWS_SECRET_KEY =
       "hadoop.conf.fs.s3n.awsSecretAccessKey";
 
+  private static final String HADOOP_LOG_LEVEL_KEY = MAIN_PREFIX_KEY
+      + ".hadoop.log.level";
+
   private static final String RSERVE_ENABLED_KEY = MAIN_PREFIX_KEY
       + "rserve.enable";
   private static final String RSERVE_SERVER_NAME_KEY = MAIN_PREFIX_KEY
@@ -131,12 +134,12 @@ public final class Settings implements Serializable {
   private static final String UI_NAME_KET = MAIN_PREFIX_KEY + "ui.name";
 
   private static final Set<String> FORBIDDEN_KEYS = Utils
-      .unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY,
-          HADOOP_AWS_SECRET_KEY});
+      .unmodifiableSet(new String[] { HADOOP_AWS_ACCESS_KEY,
+          HADOOP_AWS_SECRET_KEY });
 
   private static final Set<String> OBFUSCATED_KEYS = Utils
-      .unmodifiableSet(new String[] {AWS_ACCESS_KEY, AWS_SECRET_KEY,
-          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY});
+      .unmodifiableSet(new String[] { AWS_ACCESS_KEY, AWS_SECRET_KEY,
+          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY });
 
   //
   // Getters
@@ -192,6 +195,15 @@ public final class Settings implements Serializable {
   public String getAWSSecretKey() {
 
     return this.properties.getProperty(AWS_SECRET_KEY);
+  }
+
+  /**
+   * Get the Hadoop log level.
+   * @return the Hadoop log level
+   */
+  public String getHadoopLogLevel() {
+
+    return this.properties.getProperty(HADOOP_LOG_LEVEL_KEY);
   }
 
   /**
@@ -599,6 +611,15 @@ public final class Settings implements Serializable {
 
     this.properties.setProperty(AWS_SECRET_KEY, value);
     this.properties.setProperty(HADOOP_AWS_SECRET_KEY, value);
+  }
+
+  /**
+   * Set the Hadoop log level.
+   * @param value the HAdoop log level
+   */
+  public void setHadoopLogLevel(final String value) {
+
+    this.properties.setProperty(HADOOP_LOG_LEVEL_KEY, value);
   }
 
   /**

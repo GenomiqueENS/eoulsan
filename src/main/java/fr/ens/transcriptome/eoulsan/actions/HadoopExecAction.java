@@ -43,7 +43,6 @@ import org.apache.commons.cli.ParseException;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Main;
-import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJarRepackager;
 
 /**
@@ -68,11 +67,6 @@ public class HadoopExecAction extends AbstractAction {
 
   @Override
   public void action(final List<String> arguments) {
-
-    System.err.println("WARNING: the action \""
-        + getName()
-        + "\" is currently under development for the next version of "
-        + Globals.APP_NAME + " and may actually not work.");
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
@@ -179,55 +173,71 @@ public class HadoopExecAction extends AbstractAction {
     // Write log entries
     Main.getInstance().flushLog();
 
+    // Repackage application for Hadoop
+    System.out.println("Package " + Globals.APP_NAME + " for hadoop mode...");
+    final File repackagedJarFile;
     try {
-
-      File repackagedJarFile = HadoopJarRepackager.repack();
-
-      getLogger().info("Launch Eoulsan in Hadoop mode.");
-
-      // Create command line
-      final List<String> argsList = new ArrayList<>();
-
-      argsList.add("hadoop");
-      argsList.add("jar");
-      argsList.add(repackagedJarFile.getCanonicalPath());
-
-      final Main main = Main.getInstance();
-
-      if (main.getLogLevelArgument() != null) {
-        argsList.add("-loglevel");
-        argsList.add(main.getLogLevelArgument());
-      }
-
-      if (main.getConfigurationFileArgument() != null) {
-        argsList.add("-conf");
-        argsList.add(main.getConfigurationFileArgument());
-      }
-
-      for (String setting : main.getCommandLineSettings()) {
-        argsList.add("-s");
-        argsList.add(setting);
-      }
-
-      argsList.add(ExecJarHadoopAction.ACTION_NAME);
-
-      if (jobDescription != null) {
-        argsList.add("-d");
-        argsList.add(jobDescription.trim());
-      }
-
-      argsList.add("-e");
-      argsList.add("local hadoop cluster");
-      argsList.add(workflowFile.toString());
-      argsList.add(designFile.toString());
-      argsList.add(hdfsPath);
-
-      final String[] args = argsList.toArray(new String[argsList.size()]);
-
-      // execute hadoop
-      ProcessUtils.execThreadOutput(args);
+      repackagedJarFile = HadoopJarRepackager.repack();
 
     } catch (IOException e) {
+      Common.errorExit(e, "Error while repackaging "
+          + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
+
+      // Never called
+      return;
+    }
+
+    getLogger().info("Launch Eoulsan in Hadoop mode.");
+
+    // Create command line
+    final List<String> argsList = new ArrayList<>();
+
+    argsList.add("hadoop");
+    argsList.add("jar");
+    argsList.add(repackagedJarFile.getAbsolutePath());
+
+    final Main main = Main.getInstance();
+
+    if (main.getLogLevelArgument() != null) {
+      argsList.add("-loglevel");
+      argsList.add(main.getLogLevelArgument());
+    }
+
+    if (main.getConfigurationFileArgument() != null) {
+      argsList.add("-conf");
+      argsList.add(main.getConfigurationFileArgument());
+    }
+
+    for (String setting : main.getCommandLineSettings()) {
+      argsList.add("-s");
+      argsList.add(setting);
+    }
+
+    argsList.add(ExecJarHadoopAction.ACTION_NAME);
+
+    if (jobDescription != null) {
+      argsList.add("-d");
+      argsList.add(jobDescription.trim());
+    }
+
+    argsList.add("-e");
+    argsList.add("local hadoop cluster");
+    argsList.add(workflowFile.toString());
+    argsList.add(designFile.toString());
+    argsList.add(hdfsPath);
+
+    // execute Hadoop
+    System.out.println("Launch " + Globals.APP_NAME + " in hadoop mode...");
+
+    try {
+
+      final int exitCode =
+          new ProcessBuilder(argsList).inheritIO().start().waitFor();
+
+      // Exit with the same exit of the child process
+      System.exit(exitCode);
+
+    } catch (IOException | InterruptedException e) {
       Common.errorExit(e, "Error while executing "
           + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
     }
