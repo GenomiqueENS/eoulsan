@@ -234,23 +234,23 @@ public class ITOutput {
 
     StringBuilder msg = new StringBuilder();
     msg.append("\nClean output directory:\n");
-    
+
     boolean success = true;
 
     if (!itResult.isSuccess()) {
       msg.append((isDeleteFileRequired
-          ? "Configuration required to delete files, but test fail, is still exist in "
-          : "Configuration required always to keep files in ")
+          ? "\tConfiguration required to delete files, but test fail, is still exist in "
+          : "\tConfiguration required always to keep files in ")
           + this.directory.getAbsolutePath());
     }
 
     // Case to delete files
     if (itResult.isSuccess() && isDeleteFileRequired) {
 
-      msg.append("Test succeeded. \nConfiguration required to delete files from directory "
+      msg.append("\tTest succeeded.");
+      msg.append("\n\tConfiguration required to delete files from directory "
           + this.directory.getAbsolutePath());
 
-      
       for (File f : this.filesToCompare) {
 
         if (!f.exists()) {
@@ -285,11 +285,11 @@ public class ITOutput {
       }
 
       if (success) {
-        msg.append("\nAll deletions successful.");
+        msg.append("\n\tAll deletions successful.");
       }
     } else {
       // No required delete file
-      msg.append("Delete file matching on patterns no required.");
+      msg.append("\n\tDelete file matching on patterns no required.");
     }
 
     // Update itResult

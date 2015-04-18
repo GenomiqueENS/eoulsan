@@ -89,8 +89,8 @@ public class ITResult {
     try {
       fw =
           newWriter(reportFile, Charset.forName(Globals.DEFAULT_FILE_ENCODING));
-      
-      // Build text report 
+
+      // Build text report
       fw.write(createReportText(true, durationIT));
       fw.write("\n");
 
@@ -181,12 +181,14 @@ public class ITResult {
     report.append(isGeneratedData()
         ? ": generate expected data"
         : ": test execution and output files comparison.");
+    // TODO add stop here
 
     report.append("\n\nDirectories:");
     report.append("\n\tExpected:"
         + this.it.getExpectedTestDirectory().getAbsolutePath());
     report.append("\n\tOuput:"
         + this.it.getOutputTestDirectory().getAbsolutePath());
+
 
     report.append("\n\nPatterns:");
 
@@ -218,6 +220,8 @@ public class ITResult {
     report.append("\n\tPatterns files to exclude comparisons:\t"
         + this.it.getExcludeToComparePatterns());
 
+    report.append("\n\nDuration one script maximum: "
+        + toTimeHumanReadable(this.it.getDurationMaxInMinutes() * 60 * 1000));
     report.append('\n');
 
     // Add synthesis on executions scripts

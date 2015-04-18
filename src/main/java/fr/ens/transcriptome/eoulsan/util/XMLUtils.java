@@ -213,4 +213,36 @@ public final class XMLUtils {
     child.appendChild(doc.createTextNode(value));
   }
 
+  /**
+   * Checks if is element exists by tag name.
+   * @param element the element
+   * @param tagName the tag name
+   * @return true, if is element exists by tag name
+   */
+  public static boolean isElementExistsByTagName(final Element element,
+      final String tagName) {
+
+    if (element == null || tagName == null || tagName.isEmpty()) {
+      return false;
+    }
+
+    // Extract all children on element
+    final NodeList res = element.getChildNodes();
+
+    for (int i = 0; i < res.getLength(); i++) {
+
+      final Node node = res.item(i);
+      if (node.getNodeType() == Node.ELEMENT_NODE) {
+
+        final Element elem = (Element) node;
+
+        // Check matching with tagname expected
+        if (elem.getTagName().equals(tagName)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
 }
