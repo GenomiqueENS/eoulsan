@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.createConfiguration;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
@@ -93,7 +94,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
   public StepResult execute(final StepContext context, final StepStatus status) {
 
     // Create configuration object
-    final Configuration conf = new Configuration();
+    final Configuration conf = createConfiguration();
 
     try {
 
