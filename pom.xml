@@ -16,6 +16,10 @@
 	<properties>
 		<didyouknow>Did you know that eoulsan is the breton word for pipeline?
 		</didyouknow>
+
+		<java.version>1.7</java.version>
+		<hadoop.version>2.3.0</hadoop.version>
+
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
@@ -256,14 +260,12 @@
 		</dependency>
 		
 		<dependency>
-			<!-- Update groupId and artifactId for 2.0.x version -->
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>hadoop-client</artifactId>
-			<version>2.3.0</version>
+			<version>${hadoop.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<!-- Update groupId and artifactId for 2.0.x version -->
 			<groupId>org.apache.hadoop</groupId>
 			<artifactId>zookeeper</artifactId>
 			<version>3.3.0</version>
@@ -496,8 +498,8 @@
 				<version>3.1</version>
 
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
 					<compilerArgument>-Xlint</compilerArgument>
 					<compilerId>javac-with-errorprone</compilerId>
 					<forceJavacCompilerUse>true</forceJavacCompilerUse>
@@ -880,7 +882,7 @@
 				<version>3.0.1</version>
 				<configuration>
 					<!-- PMD options -->
-					<targetJdk>1.7</targetJdk>
+					<targetJdk>${java.version}</targetJdk>
 					<aggregate>true</aggregate>
 					<format>xml</format>
 					<rulesets>
@@ -901,7 +903,7 @@
 			  <artifactId>modernizer-maven-plugin</artifactId>
 			  <version>1.1.0</version>
 			  <configuration>
-			    <javaVersion>1.7</javaVersion>
+			    <javaVersion>${java.version}</javaVersion>
 			  	<failOnViolations>False</failOnViolations>
 			  </configuration>
 			</plugin>
