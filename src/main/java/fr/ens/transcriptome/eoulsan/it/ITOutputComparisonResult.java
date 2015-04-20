@@ -58,9 +58,9 @@ final class ITOutputComparisonResult implements
     if (this.statusComparison.getType().equals(TYPE_FAIL)) {
 
       txt.append(" " + this.statusComparison.getName());
-      txt.append("\n\t\tOuput: " + this.fileTestedPath);
-      txt.append("\n\t\tExpected: " + this.fileExpectedPath);
-      txt.append("\n\t\tMessage: " + this.message);
+      txt.append("\n\t\tOuput file: " + this.fileTestedPath);
+      txt.append("\n\t\tExpected file: " + this.fileExpectedPath);
+      txt.append("\n\t\tError message: " + this.message);
     }
 
     return txt.toString();

@@ -265,7 +265,7 @@ public class ITResult {
     }
 
     // Add duration on integrated test
-    report.append("\n\nDuration test: " + duration);
+    report.append("\n\nTest duration: " + duration);
 
     // Return text
     return report.toString();

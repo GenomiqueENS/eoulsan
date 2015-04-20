@@ -73,9 +73,9 @@ public class LogComparator extends AbstractComparator {
 
         if (Math.abs(diffExpectedTested) >= 1) {
           setCauseFailComparison("Invalid value found: "
-              + getCounterValue(logTested, counterGroup, counter) + " was "
+              + getCounterValue(logTested, counterGroup, counter) + ", "
               + logExpected.getCounterValue(counterGroup, counter)
-              + " expected.");
+              + " was expected.");
           return false;
         }
       }
@@ -83,11 +83,12 @@ public class LogComparator extends AbstractComparator {
 
     // Check all elements present in first log are compare from second log
     if (numberElements != this.numberElementsCompared) {
-      setCauseFailComparison("Different count elements "
-          + this.numberElementsCompared + " was " + numberElements
-          + " expected.");
+      setCauseFailComparison("Found "
+          + this.numberElementsCompared + " elements, " + numberElements
+          + " were expected.");
       return false;
     }
+
     return true;
   }
 
