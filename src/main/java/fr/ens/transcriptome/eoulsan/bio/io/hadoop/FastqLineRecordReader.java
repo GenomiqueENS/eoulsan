@@ -36,7 +36,6 @@ import org.apache.hadoop.io.compress.SplittableCompressionCodec;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
-import org.apache.hadoop.mapreduce.lib.input.CompressedSplitLineReader;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.mapreduce.lib.input.SplitLineReader;
 
@@ -90,7 +89,9 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
             ((SplittableCompressionCodec) codec).createInputStream(fileIn,
                 decompressor, start, end,
                 SplittableCompressionCodec.READ_MODE.BYBLOCK);
-        in = new CompressedSplitLineReader(cIn, job, this.recordDelimiterBytes);
+        in =
+            new CompressedSplitFastqLineReader(cIn, job,
+                this.recordDelimiterBytes);
         start = cIn.getAdjustedStart();
         end = cIn.getAdjustedEnd();
         filePosition = cIn;
@@ -177,10 +178,16 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
       value = new Text();
     }
     int newSize = 0;
+    long filePosition;
     // We always read one extra line, which lies outside the upper
     // split limit i.e. (end - 1)
-    while (getFilePosition() <= end
+    while ((filePosition = getFilePosition()) <= end
         || in.needAdditionalRecordAfterSplit() || cont) {
+
+      if (filePosition > end && in instanceof CompressedSplitFastqLineReader) {
+        ((CompressedSplitFastqLineReader) in).setContinue(cont);
+      }
+
       if (pos == 0) {
         newSize = skipUtfByteOrderMark();
       } else {
