@@ -29,6 +29,10 @@ import static fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode.IN
 import static fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode.UNION;
 import static fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage.REVERSE;
 import static fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage.YES;
+import htsjdk.samtools.Cigar;
+import htsjdk.samtools.CigarElement;
+import htsjdk.samtools.CigarOperator;
+import htsjdk.samtools.SAMRecord;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,11 +42,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import net.sf.samtools.Cigar;
-import net.sf.samtools.CigarElement;
-import net.sf.samtools.CigarOperator;
-import net.sf.samtools.SAMRecord;
 
 import com.google.common.base.Splitter;
 

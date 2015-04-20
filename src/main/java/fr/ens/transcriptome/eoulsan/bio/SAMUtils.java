@@ -24,6 +24,15 @@
 
 package fr.ens.transcriptome.eoulsan.bio;
 
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMSequenceDictionary;
+import htsjdk.samtools.SAMSequenceRecord;
+import htsjdk.samtools.SAMTextHeaderCodec;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -33,12 +42,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.samtools.SAMFileHeader;
-import net.sf.samtools.SAMFileReader;
-import net.sf.samtools.SAMRecord;
-import net.sf.samtools.SAMSequenceDictionary;
-import net.sf.samtools.SAMSequenceRecord;
-import net.sf.samtools.SAMTextHeaderCodec;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 
 /**
@@ -92,11 +95,11 @@ public class SAMUtils {
     }
 
     // Read SAM file header
-    final SAMFileReader reader = new SAMFileReader(is);
+    final SamReader reader = SamReaderFactory.makeDefault().open(SamInputResource.of(is));
     final SAMFileHeader header = reader.getFileHeader();
 
     // Close reader
-    reader.close();
+    //reader.close();
 
     final StringWriter headerTextBuffer = new StringWriter();
     new SAMTextHeaderCodec().encode(headerTextBuffer, header);

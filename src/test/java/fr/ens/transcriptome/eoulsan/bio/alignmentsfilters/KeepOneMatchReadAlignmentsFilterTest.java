@@ -25,12 +25,11 @@
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
 import static org.junit.Assert.assertEquals;
+import htsjdk.samtools.SAMLineParser;
+import htsjdk.samtools.SAMRecord;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import net.sf.samtools.SAMLineParser;
-import net.sf.samtools.SAMRecord;
 
 import org.junit.Before;
 import org.junit.Test;

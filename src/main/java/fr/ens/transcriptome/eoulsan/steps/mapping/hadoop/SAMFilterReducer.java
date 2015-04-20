@@ -30,6 +30,11 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNME
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.jobConfToParameters;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMFilterMapper.SAM_HEADER_FILE_PREFIX;
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMLineParser;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMSequenceDictionary;
+import htsjdk.samtools.SAMSequenceRecord;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,12 +42,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import net.sf.samtools.SAMFileHeader;
-import net.sf.samtools.SAMLineParser;
-import net.sf.samtools.SAMRecord;
-import net.sf.samtools.SAMSequenceDictionary;
-import net.sf.samtools.SAMSequenceRecord;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;

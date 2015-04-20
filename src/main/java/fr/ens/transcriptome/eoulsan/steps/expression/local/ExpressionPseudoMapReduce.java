@@ -33,6 +33,9 @@ import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.P
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.TOTAL_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.UNUSED_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.USED_READS_COUNTER;
+import htsjdk.samtools.SAMException;
+import htsjdk.samtools.SAMLineParser;
+import htsjdk.samtools.SAMRecord;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,10 +47,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import net.sf.samtools.SAMException;
-import net.sf.samtools.SAMLineParser;
-import net.sf.samtools.SAMRecord;
 
 import com.google.common.collect.Lists;
 

@@ -29,6 +29,10 @@ import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.I
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.TOTAL_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.UNUSED_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.USED_READS_COUNTER;
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMFormatException;
+import htsjdk.samtools.SAMLineParser;
+import htsjdk.samtools.SAMRecord;
 
 import java.io.IOException;
 import java.net.URI;
@@ -37,11 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import net.sf.samtools.SAMFileHeader;
-import net.sf.samtools.SAMFormatException;
-import net.sf.samtools.SAMLineParser;
-import net.sf.samtools.SAMRecord;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;

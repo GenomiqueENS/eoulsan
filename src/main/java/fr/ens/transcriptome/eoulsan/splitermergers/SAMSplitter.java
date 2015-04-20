@@ -24,17 +24,20 @@
 
 package fr.ens.transcriptome.eoulsan.splitermergers;
 
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMFileWriter;
+import htsjdk.samtools.SAMFileWriterFactory;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.samtools.SAMFileHeader;
-import net.sf.samtools.SAMFileReader;
-import net.sf.samtools.SAMFileWriter;
-import net.sf.samtools.SAMFileWriterFactory;
-import net.sf.samtools.SAMRecord;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -109,7 +112,8 @@ public class SAMSplitter implements Splitter {
       final Iterator<DataFile> outFileIterator) throws IOException {
 
     // Get reader
-    final SAMFileReader reader = new SAMFileReader(inFile.open());
+    final SamReader reader =
+        SamReaderFactory.makeDefault().open(SamInputResource.of(inFile.open()));
 
     // Get SAM header
     final SAMFileHeader header = reader.getFileHeader();
@@ -155,7 +159,8 @@ public class SAMSplitter implements Splitter {
       final Iterator<DataFile> outFileIterator) throws IOException {
 
     // Get reader
-    final SAMFileReader reader = new SAMFileReader(inFile.open());
+    final SamReader reader =
+        SamReaderFactory.makeDefault().open(SamInputResource.of(inFile.open()));
 
     // Get SAM header
     final SAMFileHeader header = reader.getFileHeader();

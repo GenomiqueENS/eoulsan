@@ -29,18 +29,19 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNME
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.ALIGNMENTS_WITH_INVALID_SAM_FORMAT;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
+import htsjdk.samtools.SAMFileWriter;
+import htsjdk.samtools.SAMFileWriterFactory;
+import htsjdk.samtools.SAMFormatException;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import net.sf.samtools.SAMFileReader;
-import net.sf.samtools.SAMFileWriter;
-import net.sf.samtools.SAMFileWriterFactory;
-import net.sf.samtools.SAMFormatException;
-import net.sf.samtools.SAMRecord;
 
 import com.google.common.base.Joiner;
 
@@ -158,7 +159,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
     getLogger().info("Filter SAM file: " + inFile);
 
     // Get reader
-    final SAMFileReader inputSam = new SAMFileReader(inFile.open());
+    final SamReader inputSam =
+        SamReaderFactory.makeDefault().open(SamInputResource.of(inFile.open()));
 
     // Get Writer
     final SAMFileWriter outputSam =

@@ -24,15 +24,17 @@
 
 package fr.ens.transcriptome.eoulsan.io.comparators;
 
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
-import net.sf.samtools.SAMFileReader;
-import net.sf.samtools.SAMRecord;
 
 import com.google.common.collect.Sets;
 
@@ -60,7 +62,8 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
     this.numberElementsCompared = 0;
 
     // Create Bam reader
-    final SAMFileReader bamfr = new SAMFileReader(isBAM);
+    final SamReader bamfr =
+        SamReaderFactory.makeDefault().open(SamInputResource.of(isBAM));
 
     // Get iterator on file
     final Iterator<SAMRecord> it = bamfr.iterator();
@@ -127,7 +130,8 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
         initBloomFilter(getExpectedNumberOfElements());
 
     // Parse BAM file
-    try (final SAMFileReader bamfr = new SAMFileReader(is)) {
+    try (final SamReader bamfr =
+        SamReaderFactory.makeDefault().open(SamInputResource.of(is))) {
 
       final Iterator<SAMRecord> it = bamfr.iterator();
 

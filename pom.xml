@@ -19,6 +19,7 @@
 
 		<java.version>1.7</java.version>
 		<hadoop.version>2.3.0</hadoop.version>
+		<htsjdk.version>1.118</htsjdk.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -303,16 +304,16 @@
 			<version>15.0</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
+		<!--dependency>
 			<groupId>net.sourceforge.picard</groupId>
 			<artifactId>sam</artifactId>
-			<version>1.83</version>
+			<version>${htsjdk.version}</version>
 			<scope>compile</scope>
-		</dependency>
+		</dependency-->
 		<dependency>
 			<groupId>net.sourceforge.picard</groupId>
-			<artifactId>picard</artifactId>
-			<version>1.76</version>
+			<artifactId>htsjdk</artifactId>
+			<version>${htsjdk.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

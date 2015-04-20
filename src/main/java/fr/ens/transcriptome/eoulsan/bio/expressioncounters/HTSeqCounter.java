@@ -24,6 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.bio.expressioncounters;
 
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMRecordIterator;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -34,9 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.samtools.SAMFileReader;
-import net.sf.samtools.SAMRecord;
-import net.sf.samtools.SAMRecordIterator;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
@@ -79,7 +82,9 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
   private static boolean isPairedData(final InputStream is) {
 
-    final SAMFileReader input = new SAMFileReader(is);
+    final SamReader input =
+        SamReaderFactory.makeDefault().open(SamInputResource.of(is));
+
     SAMRecordIterator samIterator = input.iterator();
 
     boolean result = false;
@@ -90,7 +95,6 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         result = true;
       }
     }
-    input.close();
 
     return result;
   }
@@ -148,7 +152,9 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
     List<GenomicInterval> ivSeq = new ArrayList<>();
 
-    final SAMFileReader inputSam = new SAMFileReader(samFile.open());
+    final SamReader inputSam =
+        SamReaderFactory.makeDefault()
+            .open(SamInputResource.of(samFile.open()));
 
     // paired-end mode ?
     pairedEnd = isPairedData(samFile.open());

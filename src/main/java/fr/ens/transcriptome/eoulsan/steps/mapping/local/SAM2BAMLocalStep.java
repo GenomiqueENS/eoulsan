@@ -1,15 +1,17 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import htsjdk.samtools.SAMFileHeader.SortOrder;
+import htsjdk.samtools.SAMFileWriter;
+import htsjdk.samtools.SAMFileWriterFactory;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 
 import java.io.File;
 import java.io.IOException;
 
-import net.sf.samtools.SAMFileHeader.SortOrder;
-import net.sf.samtools.SAMFileReader;
-import net.sf.samtools.SAMFileWriter;
-import net.sf.samtools.SAMFileWriterFactory;
-import net.sf.samtools.SAMRecord;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
@@ -90,7 +92,9 @@ public class SAM2BAMLocalStep extends AbstractSAM2BAMStep {
         "Invalid compression level [0-9]: " + compressionLevel);
 
     // Open sam file
-    final SAMFileReader samReader = new SAMFileReader(samDataFile.open());
+    final SamReader samReader =
+        SamReaderFactory.makeDefault().open(
+            SamInputResource.of(samDataFile.open()));
 
     // Forse sort
     samReader.getFileHeader().setSortOrder(SortOrder.coordinate);

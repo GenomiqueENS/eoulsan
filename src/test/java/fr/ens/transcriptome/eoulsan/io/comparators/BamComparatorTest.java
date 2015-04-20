@@ -26,17 +26,17 @@ package fr.ens.transcriptome.eoulsan.io.comparators;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import htsjdk.samtools.SAMFileWriter;
+import htsjdk.samtools.SAMFileWriterFactory;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
-
-import net.sf.samtools.SAMFileReader;
-import net.sf.samtools.SAMFileWriter;
-import net.sf.samtools.SAMFileWriterFactory;
-import net.sf.samtools.SAMRecord;
 
 import org.junit.Test;
 
@@ -61,8 +61,7 @@ public class BamComparatorTest {
     this.isA = new FileInputStream(this.fileA);
     this.isB = new FileInputStream(this.fileB);
 
-    assertTrue("files are equals",
-        comparator.compareFiles(this.isA, this.isB));
+    assertTrue("files are equals", comparator.compareFiles(this.isA, this.isB));
   }
 
   @Test
@@ -103,7 +102,8 @@ public class BamComparatorTest {
       this.fileC.delete();
     }
 
-    try (final SAMFileReader bamfr = new SAMFileReader(this.fileA);) {
+    try (final SamReader bamfr =
+        SamReaderFactory.makeDefault().open(this.fileA);) {
 
       final SAMFileWriter samWriter =
           new SAMFileWriterFactory().setCreateIndex(false)
@@ -177,7 +177,8 @@ public class BamComparatorTest {
 
     }
 
-    assertTrue("Create modify BAM file, cann't be empty ?", this.fileC.length() < 10);
+    assertTrue("Create modify BAM file, cann't be empty ?",
+        this.fileC.length() < 10);
 
   }
 }

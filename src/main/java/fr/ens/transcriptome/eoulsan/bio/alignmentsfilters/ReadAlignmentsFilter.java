@@ -24,10 +24,10 @@
 
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
-import java.util.List;
-
-import net.sf.samtools.SAMRecord;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import htsjdk.samtools.SAMRecord;
+
+import java.util.List;
 
 /**
  * This interface define a filter for alignments.

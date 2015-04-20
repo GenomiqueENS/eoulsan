@@ -24,10 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
+import htsjdk.samtools.SAMRecord;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.samtools.SAMRecord;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 
 /**

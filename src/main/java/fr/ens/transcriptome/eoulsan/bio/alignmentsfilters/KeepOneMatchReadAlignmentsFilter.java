@@ -24,9 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
-import java.util.List;
+import htsjdk.samtools.SAMRecord;
 
-import net.sf.samtools.SAMRecord;
+import java.util.List;
 
 /**
  * This alignments filter keep only one alignment for a read. This filter is

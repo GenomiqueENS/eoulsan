@@ -24,18 +24,20 @@
 
 package fr.ens.transcriptome.eoulsan.splitermergers;
 
-import java.io.File;
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMFileWriter;
+import htsjdk.samtools.SAMFileWriterFactory;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.samtools.BAMFileWriter;
-import net.sf.samtools.SAMFileHeader;
-import net.sf.samtools.SAMFileReader;
-import net.sf.samtools.SAMFileWriter;
-import net.sf.samtools.SAMRecord;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -110,14 +112,15 @@ public class BAMSplitter implements Splitter {
       final Iterator<DataFile> outFileIterator) throws IOException {
 
     // Get reader
-    final SAMFileReader reader = new SAMFileReader(inFile.open());
+    final SamReader reader =
+        SamReaderFactory.makeDefault().open(SamInputResource.of(inFile.open()));
 
     // Get SAM header
     final SAMFileHeader header = reader.getFileHeader();
 
     final int max = this.splitMaxLines;
     int readCount = 0;
-    BAMFileWriter writer = null;
+    SAMFileWriter writer = null;
 
     for (final SAMRecord record : reader) {
 
@@ -129,12 +132,11 @@ public class BAMSplitter implements Splitter {
         }
 
         DataFile outFile = outFileIterator.next();
-        
+
         // Create new writer
         writer =
-            new BAMFileWriter(outFile.create(), new File(outFile.getName()));
-        writer.setHeader(header);
-
+            new SAMFileWriterFactory().makeBAMWriter(header, false,
+                outFile.create());
       }
 
       writer.addAlignment(record);
@@ -159,19 +161,20 @@ public class BAMSplitter implements Splitter {
       final Iterator<DataFile> outFileIterator) throws IOException {
 
     // Get reader
-    final SAMFileReader reader = new SAMFileReader(inFile.open());
+    final SamReader reader =
+        SamReaderFactory.makeDefault().open(SamInputResource.of(inFile.open()));
 
     // Get SAM header
     final SAMFileHeader header = reader.getFileHeader();
 
-    final Map<String, BAMFileWriter> writers =
-        new HashMap<String, BAMFileWriter>();
+    final Map<String, SAMFileWriter> writers =
+        new HashMap<String, SAMFileWriter>();
 
     for (final SAMRecord record : reader) {
 
       final String chromosome = record.getReferenceName();
 
-      final BAMFileWriter writer;
+      final SAMFileWriter writer;
 
       // Test if the writer for the chromosome exists
       if (!writers.containsKey(chromosome)) {
@@ -179,8 +182,8 @@ public class BAMSplitter implements Splitter {
         // Create the writer for the chromosome
         DataFile outFile = outFileIterator.next();
         writer =
-            new BAMFileWriter(outFile.create(), new File(outFile.getName()));
-        writer.setHeader(header);
+            new SAMFileWriterFactory().makeBAMWriter(header, false,
+                outFile.create());
         writers.put(chromosome, writer);
       } else {
         writer = writers.get(chromosome);

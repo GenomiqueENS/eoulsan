@@ -24,14 +24,17 @@
 
 package fr.ens.transcriptome.eoulsan.splitermergers;
 
+import htsjdk.samtools.SAMFileWriter;
+import htsjdk.samtools.SAMFileWriterFactory;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
+
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
-import net.sf.samtools.SAMFileReader;
-import net.sf.samtools.SAMFileWriter;
-import net.sf.samtools.SAMFileWriterFactory;
-import net.sf.samtools.SAMRecord;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -77,7 +80,9 @@ public class SAMMerger implements Merger {
           "Merge " + inFile.getName() + " to " + outFile.getName());
 
       // Get reader
-      final SAMFileReader inputSam = new SAMFileReader(inFile.open());
+      final SamReader inputSam =
+          SamReaderFactory.makeDefault().open(
+              SamInputResource.of(inFile.open()));
 
       // Get Writer
       if (outputSam == null) {

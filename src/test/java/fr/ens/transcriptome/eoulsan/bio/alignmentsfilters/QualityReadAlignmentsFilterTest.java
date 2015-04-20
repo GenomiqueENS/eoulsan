@@ -28,19 +28,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.SAMUtils;
+import htsjdk.samtools.SAMLineParser;
+import htsjdk.samtools.SAMRecord;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.samtools.SAMLineParser;
-import net.sf.samtools.SAMRecord;
-
 import org.junit.Before;
 import org.junit.Test;
-
-import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
-import fr.ens.transcriptome.eoulsan.bio.SAMUtils;
 
 /**
  * This class is a JUnit test class to test the class

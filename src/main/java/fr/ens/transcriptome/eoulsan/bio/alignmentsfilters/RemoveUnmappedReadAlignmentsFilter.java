@@ -24,10 +24,10 @@
 
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
+import htsjdk.samtools.SAMRecord;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import net.sf.samtools.SAMRecord;
 
 /**
  * This alignment filter remove all the unmapped alignments.

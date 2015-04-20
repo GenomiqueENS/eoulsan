@@ -24,10 +24,10 @@
 
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
+import htsjdk.samtools.SAMRecord;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import net.sf.samtools.SAMRecord;
 
 /**
  * This class define a buffer that store all the alignments with the same read
