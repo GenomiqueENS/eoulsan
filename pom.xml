@@ -440,19 +440,34 @@
 			<scope>runtime</scope>
 		</dependency>
 		
-	    <dependency>
-       		<groupId>uk.ac.babraham</groupId>
-       		<artifactId>fastqc</artifactId>
-       		<version>0.11.2</version>
-       		<scope>compile</scope>
-     	</dependency>
+		<dependency>
+			<groupId>uk.ac.babraham</groupId>
+			<artifactId>fastqc</artifactId>
+			<version>0.11.2</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.seqdoop</groupId>
+			<artifactId>hadoop-bam</artifactId>
+			<version>7.0.0-hadoop-${hadoop.version}</version>
+			<scope>compile</scope>
+		</dependency>
 		
-     	<dependency>
-       		<groupId>itadaki</groupId>
-       		<artifactId>jbzip2</artifactId>
-       		<version>0.9</version>
-       		<scope>runtime</scope>
-     	</dependency>
+		<dependency>
+			<groupId>itadaki</groupId>
+			<artifactId>jbzip2</artifactId>
+			<version>0.9</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Required by htsjdk -->
+		<dependency>
+			<groupId>org.apache.ant</groupId>
+			<artifactId>ant</artifactId>
+			<version>1.8.2</version>
+			<scope>compile</scope>
+		</dependency>
 
 		<!-- Log4J is used by Hadoop for logging. -->
 		<dependency>
