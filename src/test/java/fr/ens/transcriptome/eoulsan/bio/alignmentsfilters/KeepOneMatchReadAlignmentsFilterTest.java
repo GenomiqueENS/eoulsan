@@ -25,6 +25,8 @@
 package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 
 import static org.junit.Assert.assertEquals;
+import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.SAMUtils;
 import htsjdk.samtools.SAMLineParser;
 import htsjdk.samtools.SAMRecord;
 
@@ -33,9 +35,6 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
-import fr.ens.transcriptome.eoulsan.bio.SAMUtils;
 
 /**
  * This class is a JUnit test class to test the class
