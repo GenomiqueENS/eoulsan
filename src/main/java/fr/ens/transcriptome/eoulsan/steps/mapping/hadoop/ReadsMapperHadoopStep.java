@@ -245,10 +245,11 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     // Create the job and its name
     final Job job =
-        Job.getInstance(jobConf,
-            "Map reads with "
-                + getMapperName() + " (" + readsFile.getName() + ", "
-                + inputPath.getName() + ")");
+        Job.getInstance(
+            jobConf,
+            "Map reads in "
+                + fastqFormat + " with " + getMapperName() + " ("
+                + readsFile.getName() + ", " + inputPath.getName() + ")");
 
     // Set genome index reference path in the distributed cache
     final Path genomeIndex = new Path(mapperIndexFile.getSource());
@@ -357,7 +358,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     ZipArchiveEntry e;
 
     while ((e = zais.getNextZipEntry()) != null) {
-      map.put(e.getName(), new long[] { e.getSize(), e.getCrc() });
+      map.put(e.getName(), new long[] {e.getSize(), e.getCrc()});
     }
 
     zais.close();

@@ -204,7 +204,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     // Create the job and its name
     final Job job =
         Job.getInstance(jobConf, "Filter reads ("
-            + inFile.getName() + ", " + inFile.getSource() + ")");
+            + inFile.getName() + ", " + inFile.getName() + ")");
 
     // Set the jar
     job.setJarByClass(ReadsFilterHadoopStep.class);

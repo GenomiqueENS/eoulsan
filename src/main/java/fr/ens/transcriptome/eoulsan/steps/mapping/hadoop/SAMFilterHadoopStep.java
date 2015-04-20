@@ -120,7 +120,7 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
 
     // Create the job and its name
     final Job job =
-        Job.getInstance(jobConf, "Filter SAM files ("
+        Job.getInstance(jobConf, "Filter SAM file ("
             + inData.getName() + ", " + inputPath.getName() + ")");
 
     // Set the jar
