@@ -696,7 +696,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
       // Set the temporary directory
       checkNotNull(this.tmpDir, "The temporary directory is null");
-      settings.setTempDirectory(this.tmpDir.toFile().getAbsolutePath());
+      settings.setTempDirectory(this.tmpDir.toFile().toString());
       dirsToCheck.add(this.tmpDir);
     }
 
@@ -730,7 +730,7 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   private void checkTemporaryDirectory() throws EoulsanException {
 
-    final File tempDir = this.tmpDir.toFile();
+    final File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
 
     if (tempDir == null) {
       throw new EoulsanException("Temporary directory is null");
