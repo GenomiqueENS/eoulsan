@@ -1,6 +1,7 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.createConfiguration;
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_BAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_INDEX_BAI;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
@@ -47,6 +48,7 @@ import org.seqdoop.hadoop_bam.util.WrapSeekable;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
+import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
@@ -62,6 +64,16 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
  */
 @HadoopOnly
 public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
+
+  //
+  // Step methods
+  //
+
+  @Override
+  public InputPorts getInputPorts() {
+
+    return allPortsRequiredInWorkingDirectory(super.getInputPorts());
+  }
 
   @Override
   public StepResult execute(final StepContext context, final StepStatus status) {
