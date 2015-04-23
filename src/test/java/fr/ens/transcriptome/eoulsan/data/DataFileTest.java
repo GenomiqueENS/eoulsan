@@ -29,6 +29,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -105,6 +106,18 @@ public class DataFileTest {
 
     filename = "file:/home/toto/toto.txt";
     df = new DataFile(filename);
+    assertEquals(filename, df.getSource());
+
+    filename = "/home/toto/toto.txt";
+    df = new DataFile(URI.create(filename));
+    assertEquals(filename, df.getSource());
+
+    filename = "file:///home/toto/toto.txt";
+    df = new DataFile(URI.create(filename));
+    assertEquals(filename, df.getSource());
+
+    filename = "file:/home/toto/toto.txt";
+    df = new DataFile(URI.create(filename));
     assertEquals(filename, df.getSource());
 
     filename = "http://www.toto.com/home/toto/toto.txt";
@@ -250,6 +263,26 @@ public class DataFileTest {
       assertTrue(true);
     }
 
+  }
+
+  @Test
+  public void testToFile() throws IOException, URISyntaxException {
+
+    String filename = "toto.txt";
+    DataFile df = new DataFile(filename);
+    assertEquals(new File(filename), df.toFile());
+
+    filename = "/home/toto/toto.txt";
+    df = new DataFile(filename);
+    assertEquals(new File(filename), df.toFile());
+
+    filename = "file:///home/toto/toto.txt";
+    df = new DataFile(filename);
+    assertEquals(new File(new URI(filename)), df.toFile());
+
+    filename = "file:/home/toto/toto.txt";
+    df = new DataFile(filename);
+    assertEquals(new File(new URI(filename)), df.toFile());
   }
 
   @Test
