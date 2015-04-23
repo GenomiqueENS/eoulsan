@@ -88,9 +88,9 @@ public enum EoulsanMode {
 
     case HADOOP_COMPATIBLE:
     case HADOOP_ONLY:
-    case LOCAL_ONLY:
       return true;
 
+    case LOCAL_ONLY:
     case NONE:
     default:
       return false;

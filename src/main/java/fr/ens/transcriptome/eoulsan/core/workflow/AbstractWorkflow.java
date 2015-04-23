@@ -35,6 +35,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -668,7 +669,7 @@ public abstract class AbstractWorkflow implements Workflow {
       return null;
     }
 
-    return new DataFile(path);
+    return new DataFile(URI.create(path));
   }
 
   /**
@@ -694,8 +695,8 @@ public abstract class AbstractWorkflow implements Workflow {
     if (!settings.isUserDefinedTempDirectory()) {
 
       // Set the temporary directory
-      checkNotNull(this.tmpDir, "the temporary directory is null");
-      settings.setTempDirectory(this.tmpDir.getSource());
+      checkNotNull(this.tmpDir, "The temporary directory is null");
+      settings.setTempDirectory(this.tmpDir.toFile().getAbsolutePath());
       dirsToCheck.add(this.tmpDir);
     }
 
@@ -729,7 +730,7 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   private void checkTemporaryDirectory() throws EoulsanException {
 
-    final File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
+    final File tempDir = this.tmpDir.toFile();
 
     if (tempDir == null) {
       throw new EoulsanException("Temporary directory is null");
