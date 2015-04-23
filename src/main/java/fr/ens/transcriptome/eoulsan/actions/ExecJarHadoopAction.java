@@ -333,8 +333,10 @@ public class ExecJarHadoopAction extends AbstractAction {
       arguments.setJobEnvironment(env);
 
       // Configure Hadoop log file
+      final File hadoopLogDir =
+          new File(URI.create(arguments.getJobPathname()));
       HadoopLogConfigurator.configureLog4J(getSettings().getHadoopLogLevel(),
-          arguments.getJobPathname() + File.separator + "hadoop.log");
+          new File(hadoopLogDir, "hadoop.log"));
 
       // Create the log File
       Main.getInstance().createLogFileAndFlushLog(

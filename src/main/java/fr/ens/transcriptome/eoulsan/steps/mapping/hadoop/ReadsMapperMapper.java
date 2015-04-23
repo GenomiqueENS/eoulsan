@@ -24,7 +24,6 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_MAPPING_READS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_MAPPING_ALIGNMENTS_COUNTER;
 
 import java.io.BufferedReader;
@@ -109,9 +108,6 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
   @Override
   protected void map(final Text key, final Text value, final Context context)
       throws IOException {
-
-    context.getCounter(this.counterGroup,
-        INPUT_MAPPING_READS_COUNTER.counterName()).increment(1);
 
     this.fields.clear();
     for (String e : TAB_SPLITTER.split(value.toString())) {

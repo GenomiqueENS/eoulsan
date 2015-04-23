@@ -33,8 +33,11 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterMappe
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsMapperHadoopStep.computeZipCheckSum;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsMapperHadoopStep.setZooKeeperJobConfiguration;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX;
+import static java.util.Collections.singletonList;
+import static org.python.google.common.collect.Lists.newArrayList;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
@@ -45,6 +48,8 @@ import org.apache.hadoop.mapreduce.lib.chain.ChainMapper;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+import com.google.common.base.Joiner;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
@@ -102,16 +107,18 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     try {
 
       // Get input and output data
-      final Data readData = context.getInputData(READS_FASTQ);
+      final Data readsData = context.getInputData(READS_FASTQ);
+      final String dataName = readsData.getName();
+
       final DataFile samFile =
-          context.getOutputData(MAPPER_RESULTS_SAM, readData).getDataFile();
+          context.getOutputData(MAPPER_RESULTS_SAM, readsData).getDataFile();
       final DataFile mapperIndex =
           context.getInputData(MAPPER_INDEX_PORT_NAME).getDataFile();
       final DataFile genomeDescFile =
           context.getInputData(GENOME_DESCRIPTION_PORT_NAME).getDataFile();
 
       // Get FASTQ format
-      final FastqFormat fastqFormat = readData.getMetadata().getFastqFormat();
+      final FastqFormat fastqFormat = readsData.getMetadata().getFastqFormat();
 
       // The job to run
       final Job job;
@@ -119,15 +126,22 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
       DataFile tfqFile = null;
 
       // Preprocess paired-end files
-      if (readData.getDataFileCount() == 1) {
+      if (readsData.getDataFileCount() == 1) {
+
+        // Define input and output files
+        final DataFile inFile = readsData.getDataFile(0);
+        final List<String> filenames = singletonList(inFile.getName());
+
         job =
-            createJobConf(conf, context, readData.getDataFile(0),
-                readData.getName(), false, READS_FASTQ, fastqFormat,
-                mapperIndex, genomeDescFile, samFile);
+            createJobConf(conf, context, dataName, inFile, filenames, false,
+                READS_FASTQ, fastqFormat, mapperIndex, genomeDescFile, samFile);
       } else {
 
-        final DataFile inFile1 = readData.getDataFile(0);
-        final DataFile inFile2 = readData.getDataFile(1);
+        // Define input and output files
+        final DataFile inFile1 = readsData.getDataFile(0);
+        final DataFile inFile2 = readsData.getDataFile(1);
+        final List<String> filenames =
+            newArrayList(inFile1.getName(), inFile2.getName());
 
         tfqFile =
             new DataFile(inFile1.getParent(), inFile1.getBasename()
@@ -136,16 +150,16 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
         // Convert FASTQ files to TFQ
         MapReduceUtils.submitAndWaitForJob(
             PairedEndFastqToTfq.convert(conf, inFile1, inFile2, tfqFile),
-            readData.getName(), CommonHadoop.CHECK_COMPLETION_TIME, status,
+            readsData.getName(), CommonHadoop.CHECK_COMPLETION_TIME, status,
             getCounterGroup());
 
         job =
-            createJobConf(conf, context, tfqFile, readData.getName(), true,
+            createJobConf(conf, context, dataName, tfqFile, filenames, true,
                 READS_TFQ, fastqFormat, mapperIndex, genomeDescFile, samFile);
       }
 
       // Submit filter and map job
-      MapReduceUtils.submitAndWaitForJob(job, readData.getName(),
+      MapReduceUtils.submitAndWaitForJob(job, readsData.getName(),
           CommonHadoop.CHECK_COMPLETION_TIME, status, getCounterGroup());
 
       return status.createStepResult();
@@ -158,10 +172,11 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
   }
 
   private Job createJobConf(final Configuration parentConf,
-      final StepContext context, final DataFile inFile, final String dataName,
-      final boolean pairedEnd, final DataFormat inputFormat,
-      final FastqFormat fastqFormat, final DataFile genomeIndexFile,
-      final DataFile genomeDescFile, final DataFile outFile) throws IOException {
+      final StepContext context, final String dataName, final DataFile inFile,
+      final List<String> filenames, final boolean pairedEnd,
+      final DataFormat inputFormat, final FastqFormat fastqFormat,
+      final DataFile genomeIndexFile, final DataFile genomeDescFile,
+      final DataFile outFile) throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -248,7 +263,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     // Create the job and its name
     final Job job =
         Job.getInstance(jobConf, "Filter and map reads ("
-            + dataName + ", " + inFile.getSource() + ")");
+            + dataName + ", " + Joiner.on(", ").join(filenames) + ")");
 
     // Set the jar
     job.setJarByClass(ReadsFilterHadoopStep.class);

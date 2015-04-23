@@ -31,8 +31,11 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX;
+import static java.util.Collections.singletonList;
+import static org.python.google.common.collect.Lists.newArrayList;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -42,6 +45,8 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+import com.google.common.base.Joiner;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -101,6 +106,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
       // Get input and output data
       final Data inData = context.getInputData(READS_FASTQ);
       final Data outData = context.getOutputData(READS_FASTQ, inData);
+      final String dataName = inData.getName();
 
       // Get FASTQ format
       final FastqFormat fastqFormat = inData.getMetadata().getFastqFormat();
@@ -112,13 +118,24 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
       // Preprocess paired-end files
       if (inData.getDataFileCount() == 1) {
+
+        // Define input and output files
+        final DataFile inFile = inData.getDataFile(0);
+        final DataFile outFile = outData.getDataFile(0);
+        final List<String> filenames = singletonList(inFile.getName());
+
         job =
-            createJobConf(conf, inData.getDataFile(0), READS_FASTQ,
-                fastqFormat, outData.getDataFile(0));
+            createJobConf(conf, dataName, inFile, filenames, READS_FASTQ,
+                fastqFormat, outFile);
       } else {
 
+        // Define input and output files
         final DataFile inFile1 = inData.getDataFile(0);
         final DataFile inFile2 = inData.getDataFile(1);
+        final DataFile outFile1 = outData.getDataFile(0);
+        final DataFile outFile2 = outData.getDataFile(1);
+        final List<String> filenames =
+            newArrayList(inFile1.getName(), inFile2.getName());
 
         tfqFile =
             new DataFile(inFile1.getParent(), inFile1.getBasename()
@@ -131,8 +148,8 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
             COUNTER_GROUP);
 
         job =
-            createJobConf(conf, tfqFile, READS_TFQ, fastqFormat,
-                outData.getDataFile(0), outData.getDataFile(1));
+            createJobConf(conf, dataName, tfqFile, filenames, READS_TFQ,
+                fastqFormat, outFile1, outFile2);
       }
 
       // Submit main job
@@ -170,12 +187,20 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
   }
 
   /**
-   * Create a filter reads job
-   * @return a JobConf object
-   * @throws IOException
+   * Create a filter reads job.
+   * @param parentConf Hadoop configuration
+   * @param dataName data name
+   * @param inFile input file in FASTQ or TFQ format
+   * @param filenames original input file names
+   * @param inputFormat input format (FASTQ or TFQ)
+   * @param fastqFormat FASTQ format
+   * @param outFiles output files
+   * @return a Job object
+   * @throws IOException if an error occurs while creating the job
    */
   private Job createJobConf(final Configuration parentConf,
-      final DataFile inFile, final DataFormat inputFormat,
+      final String dataName, final DataFile inFile,
+      final List<String> filenames, final DataFormat inputFormat,
       final FastqFormat fastqFormat, final DataFile... outFiles)
       throws IOException {
 
@@ -204,7 +229,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     // Create the job and its name
     final Job job =
         Job.getInstance(jobConf, "Filter reads ("
-            + inFile.getName() + ", " + inFile.getName() + ")");
+            + dataName + ", " + Joiner.on(", ").join(filenames) + ")");
 
     // Set the jar
     job.setJarByClass(ReadsFilterHadoopStep.class);

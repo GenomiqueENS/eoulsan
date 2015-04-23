@@ -117,6 +117,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
       // Get input and output data
       final Data readsData = context.getInputData(READS_FASTQ);
+      final String dataName = readsData.getName();
 
       final DataFile mapperIndexFile =
           context.getInputData(getMapper().getArchiveFormat()).getDataFile();
@@ -134,8 +135,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
       // Preprocess paired-end files
       if (readsData.getDataFileCount() == 1) {
         job =
-            createJobConf(conf, context, readsData.getDataFile(0), false,
-                READS_FASTQ, fastqFormat, mapperIndexFile, outFile);
+            createJobConf(conf, context, dataName, readsData.getDataFile(0),
+                false, READS_FASTQ, fastqFormat, mapperIndexFile, outFile);
       } else {
 
         final DataFile inFile1 = readsData.getDataFile(0);
@@ -152,8 +153,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
             COUNTER_GROUP);
 
         job =
-            createJobConf(conf, context, tfqFile, true, READS_TFQ, fastqFormat,
-                mapperIndexFile, outFile);
+            createJobConf(conf, context, dataName, tfqFile, true, READS_TFQ,
+                fastqFormat, mapperIndexFile, outFile);
       }
 
       // Launch jobs
@@ -188,10 +189,11 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
    * @throws IOException
    */
   private Job createJobConf(final Configuration parentConf,
-      final StepContext context, final DataFile readsFile,
-      final boolean pairedEnd, final DataFormat inputFormat,
-      final FastqFormat fastqFormat, final DataFile mapperIndexFile,
-      final DataFile outFile) throws IOException {
+      final StepContext context, final String dataName,
+      final DataFile readsFile, final boolean pairedEnd,
+      final DataFormat inputFormat, final FastqFormat fastqFormat,
+      final DataFile mapperIndexFile, final DataFile outFile)
+      throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -245,11 +247,9 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     // Create the job and its name
     final Job job =
-        Job.getInstance(
-            jobConf,
-            "Map reads in "
-                + fastqFormat + " with " + getMapperName() + " ("
-                + readsFile.getName() + ", " + inputPath.getName() + ")");
+        Job.getInstance(jobConf, "Mapping reads in "
+            + fastqFormat + " with " + getMapperName() + " (" + dataName + ", "
+            + readsFile.getName() + ")");
 
     // Set genome index reference path in the distributed cache
     final Path genomeIndex = new Path(mapperIndexFile.getSource());
