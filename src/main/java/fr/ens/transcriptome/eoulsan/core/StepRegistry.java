@@ -24,6 +24,10 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import static fr.ens.transcriptome.eoulsan.annotations.EoulsanMode.HADOOP_COMPATIBLE;
+import static fr.ens.transcriptome.eoulsan.annotations.EoulsanMode.HADOOP_ONLY;
+import static fr.ens.transcriptome.eoulsan.annotations.EoulsanMode.LOCAL_ONLY;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,6 +35,7 @@ import java.util.List;
 
 import com.google.common.base.Strings;
 
+import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -165,6 +170,51 @@ public class StepRegistry {
           return -1;
         }
 
+        int result = compareStepModes(s1, s2);
+
+        if (result != 0) {
+          return result;
+        }
+
+        return compareStepVersions(s1, s2);
+      }
+
+      private int compareStepModes(final Step s1, final Step s2) {
+
+        final EoulsanMode mode1 = EoulsanMode.getEoulsanMode(s1.getClass());
+        final EoulsanMode mode2 = EoulsanMode.getEoulsanMode(s2.getClass());
+
+        int result = compareModes(mode1, mode2, HADOOP_ONLY);
+
+        if (result != 0) {
+          return result;
+        }
+
+        result = compareModes(mode1, mode2, HADOOP_COMPATIBLE);
+
+        if (result != 0) {
+          return result;
+        }
+
+        return compareModes(mode1, mode2, LOCAL_ONLY);
+      }
+
+      private int compareModes(EoulsanMode mode1, EoulsanMode mode2,
+          EoulsanMode modeToCompare) {
+
+        if (mode1 == modeToCompare && mode2 != modeToCompare) {
+          return 1;
+        }
+
+        if (mode2 == modeToCompare && mode1 != modeToCompare) {
+          return -1;
+        }
+
+        return 0;
+      }
+
+      private int compareStepVersions(final Step s1, final Step s2) {
+
         final Version v1 = s1.getVersion();
         final Version v2 = s2.getVersion();
 
@@ -178,6 +228,7 @@ public class StepRegistry {
 
         return v1.compareTo(v2);
       }
+
     });
 
   }
