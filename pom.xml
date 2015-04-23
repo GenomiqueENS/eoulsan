@@ -476,6 +476,14 @@
 			<version>2.2</version>
 		</dependency>
 
+		<!-- Required by FastQC -->
+		<dependency>
+			<groupId>net.sourceforge.picard</groupId>
+			<artifactId>sam</artifactId>
+			<version>1.83</version>
+			<scope>runtime</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
