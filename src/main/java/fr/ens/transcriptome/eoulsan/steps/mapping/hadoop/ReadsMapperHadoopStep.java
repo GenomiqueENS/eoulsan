@@ -247,7 +247,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     // Create the job and its name
     final Job job =
-        Job.getInstance(jobConf, "Map reads in "
+        Job.getInstance(jobConf, "Mapping reads in "
             + fastqFormat + " with " + getMapperName() + " (" + dataName + ", "
             + readsFile.getName() + ")");
 
