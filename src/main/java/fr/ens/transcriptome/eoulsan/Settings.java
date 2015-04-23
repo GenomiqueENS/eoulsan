@@ -131,7 +131,7 @@ public final class Settings implements Serializable {
   private static final String USE_OLD_EOULSAN_RESULT_FORMAT_KEY =
       MAIN_PREFIX_KEY + "old.result.format";
 
-  private static final String UI_NAME_KET = MAIN_PREFIX_KEY + "ui.name";
+  private static final String UI_NAME_KEY = MAIN_PREFIX_KEY + "ui.name";
 
   private static final Set<String> FORBIDDEN_KEYS = Utils
       .unmodifiableSet(new String[] { HADOOP_AWS_ACCESS_KEY,
@@ -445,7 +445,7 @@ public final class Settings implements Serializable {
    */
   public String getUIName() {
 
-    return this.properties.getProperty(UI_NAME_KET, Globals.UI_NAME_DEFAULT);
+    return this.properties.getProperty(UI_NAME_KEY, Globals.UI_NAME_DEFAULT);
   }
 
   /**
@@ -851,7 +851,7 @@ public final class Settings implements Serializable {
    */
   public void setUIName(final String uiName) {
 
-    this.properties.setProperty(UI_NAME_KET, uiName);
+    this.properties.setProperty(UI_NAME_KEY, uiName);
   }
 
   /**
