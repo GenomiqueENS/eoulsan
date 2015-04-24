@@ -182,15 +182,15 @@ public class CopyOutputDataStep extends AbstractStep {
       throws IOException {
 
     if (inFile.equals(outFile)) {
-      throw new FileNotFoundException("cannot copy file on itself: " + inFile);
+      throw new IOException("Cannot copy file on itself: " + inFile);
     }
 
     if (!inFile.exists()) {
-      throw new FileNotFoundException("input file not found: " + inFile);
+      throw new FileNotFoundException("Input file not found: " + inFile);
     }
 
     if (outFile.exists()) {
-      throw new FileNotFoundException("output file already exists: " + outFile);
+      throw new IOException("Output file already exists: " + outFile);
     }
   }
 
