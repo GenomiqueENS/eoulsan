@@ -136,7 +136,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
         // Convert FASTQ files to TFQ
         MapReduceUtils.submitAndWaitForJob(
-            PairedEndFastqToTfq.convert(conf, inFile1, inFile2, tfqFile),
+            PairedEndFastqToTfq.convert(conf, inFile1, inFile2, tfqFile, getReducerTaskCount()),
             inData.getName(), CommonHadoop.CHECK_COMPLETION_TIME, status,
             COUNTER_GROUP);
 

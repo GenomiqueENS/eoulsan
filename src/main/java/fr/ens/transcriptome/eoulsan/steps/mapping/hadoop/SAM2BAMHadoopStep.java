@@ -185,6 +185,10 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
     job.setInputFormatClass(SortInputFormat.class);
     job.setOutputFormatClass(CLIMergingAnySAMOutputFormat.class);
 
+    // Set the reducer task count
+    // if (getReducerTaskCount() > 0) {
+    // job.setNumReduceTasks(getReducerTaskCount());
+    // }
     // FIXME Do not work when reduce != 1
     job.setNumReduceTasks(1);
 

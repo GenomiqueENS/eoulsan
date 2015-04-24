@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
+import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
@@ -57,6 +58,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   protected static final String COUNTER_GROUP = "sam_filtering";
 
   private Map<String, String> alignmentsFiltersParameters;
+  private int reducerTaskCount = -1;
 
   //
   // Step methods
@@ -100,8 +102,28 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      mrafb.addParameter(convertCompatibilityFilterKey(p.getName()),
-          p.getStringValue());
+      switch (p.getName()) {
+
+      case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
+
+        int count = p.getIntValue();
+
+        if (count < 1) {
+          throw new EoulsanException("Invalid "
+              + HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME + " parameter value: "
+              + p.getValue());
+        }
+
+        this.reducerTaskCount = count;
+
+        break;
+
+      default:
+
+        mrafb.addParameter(convertCompatibilityFilterKey(p.getName()),
+            p.getStringValue());
+        break;
+      }
     }
 
     // Force parameter checking
@@ -155,6 +177,15 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   protected Map<String, String> getAlignmentsFilterParameters() {
 
     return this.alignmentsFiltersParameters;
+  }
+
+  /**
+   * Get the reducer task count.
+   * @return the reducer task count
+   */
+  protected int getReducerTaskCount() {
+
+    return this.reducerTaskCount;
   }
 
 }

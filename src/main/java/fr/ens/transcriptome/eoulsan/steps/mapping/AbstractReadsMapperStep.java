@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
@@ -67,6 +68,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   public static final String HADOOP_MAPPER_REQUIRED_MEMORY_PARAMETER_NAME =
       "hadoop.mapper.required.memory";
   public static final String HADOOP_THREADS_PARAMETER_NAME = "hadoop.threads";
+
   public static final String LOCAL_THREADS_PARAMETER_NAME = "local.threads";
   public static final String MAX_LOCAL_THREADS_PARAMETER_NAME =
       "max.local.threads";
@@ -79,6 +81,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   private String mapperFlavor = "";
   private String mapperArguments;
 
+  private int reducerTaskCount = -1;
   private int hadoopThreads;
   private int localThreads;
   private int maxLocalThreads;
@@ -157,6 +160,15 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
     return this.mapper;
   }
 
+  /**
+   * Get the reducer task count.
+   * @return the reducer task count
+   */
+  protected int getReducerTaskCount() {
+
+    return this.reducerTaskCount;
+  }
+
   //
   // Step methods
   //
@@ -223,8 +235,20 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
         break;
 
       case HADOOP_MAPPER_REQUIRED_MEMORY_PARAMETER_NAME:
-
         this.hadoopMapperRequiredMemory = p.getIntValue() * 1024;
+        break;
+
+      case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
+
+        final int reducerTaskCount = p.getIntValue();
+
+        if (reducerTaskCount < 1) {
+          throw new EoulsanException("Invalid "
+              + HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME + " parameter value: "
+              + p.getValue());
+        }
+
+        this.reducerTaskCount = reducerTaskCount;
         break;
 
       default:

@@ -1,6 +1,7 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_BAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_INDEX_BAI;
@@ -31,6 +32,7 @@ public abstract class AbstractSAM2BAMStep extends AbstractStep {
   protected static final String COUNTER_GROUP = "sam2bam";
 
   private int compressionLevel = DEFAULT_COMPRESSION_LEVEL;
+  private int reducerTaskCount = -1;
 
   //
   // Getters
@@ -42,6 +44,15 @@ public abstract class AbstractSAM2BAMStep extends AbstractStep {
    */
   protected int getCompressionLevel() {
     return this.compressionLevel;
+  }
+
+  /**
+   * Get the reducer task count.
+   * @return the reducer task count
+   */
+  protected int getReducerTaskCount() {
+
+    return this.reducerTaskCount;
   }
 
   //
@@ -103,6 +114,20 @@ public abstract class AbstractSAM2BAMStep extends AbstractStep {
         getLogger().warning(
             "Deprecated parameter \""
                 + p.getName() + "\" for step " + getName());
+        break;
+
+      case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
+
+        int count = p.getIntValue();
+
+        if (count < 1) {
+          throw new EoulsanException("Invalid "
+              + HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME + " parameter value: "
+              + p.getValue());
+        }
+
+        this.reducerTaskCount = count;
+
         break;
 
       default:
