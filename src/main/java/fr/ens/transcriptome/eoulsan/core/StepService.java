@@ -25,6 +25,9 @@
 package fr.ens.transcriptome.eoulsan.core;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+
+import java.util.Map;
+
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
 import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
@@ -68,9 +71,10 @@ public class StepService extends ServiceNameLoader<Step> {
 
     super(Step.class);
 
-    for (String stepName : getServiceClasses().keySet()) {
+    for (Map.Entry<String, String> e : getServiceClasses().entries()) {
 
-      getLogger().config("found step: " + stepName + " (" + stepName + ")");
+      getLogger().config(
+          "Found step: " + e.getKey() + " (" + e.getValue() + ")");
     }
   }
 
