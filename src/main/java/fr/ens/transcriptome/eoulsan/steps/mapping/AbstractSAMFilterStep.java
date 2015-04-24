@@ -60,6 +60,24 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   private Map<String, String> alignmentsFiltersParameters;
   private int reducerTaskCount = -1;
 
+  /**
+   * Get the parameters of the alignments filter.
+   * @return a map with all the parameters of the filter
+   */
+  protected Map<String, String> getAlignmentsFilterParameters() {
+
+    return this.alignmentsFiltersParameters;
+  }
+
+  /**
+   * Get the reducer task count.
+   * @return the reducer task count
+   */
+  protected int getReducerTaskCount() {
+
+    return this.reducerTaskCount;
+  }
+
   //
   // Step methods
   //
@@ -132,6 +150,10 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
     this.alignmentsFiltersParameters = mrafb.getParameters();
   }
 
+  //
+  // Other methods
+  //
+
   /**
    * Convert old key names to new names
    * @param key key to convert
@@ -168,24 +190,6 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
     return new MultiReadAlignmentsFilterBuilder(
         this.alignmentsFiltersParameters).getAlignmentsFilter(incrementer,
         counterGroup);
-  }
-
-  /**
-   * Get the parameters of the alignments filter.
-   * @return a map with all the parameters of the filter
-   */
-  protected Map<String, String> getAlignmentsFilterParameters() {
-
-    return this.alignmentsFiltersParameters;
-  }
-
-  /**
-   * Get the reducer task count.
-   * @return the reducer task count
-   */
-  protected int getReducerTaskCount() {
-
-    return this.reducerTaskCount;
   }
 
 }

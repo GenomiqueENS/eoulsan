@@ -59,6 +59,28 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
   private int reducerTaskCount = -1;
 
   //
+  // Getters
+  //
+
+  /**
+   * Get the parameters of the read filter.
+   * @return a map with all the parameters of the filter
+   */
+  protected Map<String, String> getReadFilterParameters() {
+
+    return this.readsFiltersParameters;
+  }
+
+  /**
+   * Get the reducer task count.
+   * @return the reducer task count
+   */
+  protected int getReducerTaskCount() {
+
+    return this.reducerTaskCount;
+  }
+
+  //
   // Step methods
   //
 
@@ -127,6 +149,10 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
     this.readsFiltersParameters = mrfb.getParameters();
   }
 
+  //
+  // Other methods
+  //
+
   /**
    * Get the ReadFilter object.
    * @param incrementer incrementer to use
@@ -143,24 +169,6 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
     // with a new instance of each filter
     return new MultiReadFilterBuilder(this.readsFiltersParameters)
         .getReadFilter(incrementer, counterGroup);
-  }
-
-  /**
-   * Get the parameters of the read filter.
-   * @return a map with all the parameters of the filter
-   */
-  protected Map<String, String> getReadFilterParameters() {
-
-    return this.readsFiltersParameters;
-  }
-
-  /**
-   * Get the reducer task count.
-   * @return the reducer task count
-   */
-  protected int getReducerTaskCount() {
-
-    return this.reducerTaskCount;
   }
 
 }

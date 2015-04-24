@@ -187,6 +187,24 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
     return this.reducerTaskCount;
   }
 
+  /**
+   * Get the parameters of the read filters.
+   * @return a map with all the parameters of the filters
+   */
+  protected Map<String, String> getReadFilterParameters() {
+
+    return this.readsFiltersParameters;
+  }
+
+  /**
+   * Get the parameters of the read alignments filters.
+   * @return a map with all the parameters of the filters
+   */
+  protected Map<String, String> getAlignmentsFilterParameters() {
+
+    return this.alignmentsFiltersParameters;
+  }
+
   //
   // Step methods
   //
@@ -329,24 +347,6 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
             + " (version: " + this.mapper.getMapperVersion() + ")");
     getLogger().info(
         "In " + getName() + ", mapperarguments=" + this.mapperArguments);
-  }
-
-  /**
-   * Get the parameters of the read filters.
-   * @return a map with all the parameters of the filters
-   */
-  protected Map<String, String> getReadFilterParameters() {
-
-    return this.readsFiltersParameters;
-  }
-
-  /**
-   * Get the parameters of the read alignments filters.
-   * @return a map with all the parameters of the filters
-   */
-  protected Map<String, String> getAlignmentsFilterParameters() {
-
-    return this.alignmentsFiltersParameters;
   }
 
 }
