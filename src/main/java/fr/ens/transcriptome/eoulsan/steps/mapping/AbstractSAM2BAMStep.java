@@ -98,15 +98,7 @@ public abstract class AbstractSAM2BAMStep extends AbstractStep {
       switch (p.getName()) {
 
       case "compression.level":
-
-        final int level = p.getIntValue();
-
-        if (level < 0 || level > 9) {
-          throw new EoulsanException("Invalid compression level [0-9]: "
-              + level + " step: " + p.getName());
-        }
-
-        this.compressionLevel = level;
+        this.compressionLevel = p.getIntValueInRange(0, 9);
         break;
 
       case "input.format":
@@ -117,17 +109,7 @@ public abstract class AbstractSAM2BAMStep extends AbstractStep {
         break;
 
       case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
-
-        int count = p.getIntValue();
-
-        if (count < 1) {
-          throw new EoulsanException("Invalid "
-              + HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME + " parameter value: "
-              + p.getValue());
-        }
-
-        this.reducerTaskCount = count;
-
+        this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
       default:

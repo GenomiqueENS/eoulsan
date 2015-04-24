@@ -223,32 +223,23 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
         break;
 
       case HADOOP_THREADS_PARAMETER_NAME:
-        this.hadoopThreads = p.getIntValue();
+        this.hadoopThreads = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
       case LOCAL_THREADS_PARAMETER_NAME:
-        this.localThreads = p.getIntValue();
+        this.localThreads = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
       case MAX_LOCAL_THREADS_PARAMETER_NAME:
-        this.maxLocalThreads = p.getIntValue();
+        this.maxLocalThreads = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
       case HADOOP_MAPPER_REQUIRED_MEMORY_PARAMETER_NAME:
-        this.hadoopMapperRequiredMemory = p.getIntValue() * 1024;
+        this.hadoopMapperRequiredMemory = p.getIntValueGreaterOrEqualsTo(1) * 1024;
         break;
 
       case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
-
-        final int reducerTaskCount = p.getIntValue();
-
-        if (reducerTaskCount < 1) {
-          throw new EoulsanException("Invalid "
-              + HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME + " parameter value: "
-              + p.getValue());
-        }
-
-        this.reducerTaskCount = reducerTaskCount;
+        this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
       default:

@@ -42,7 +42,7 @@ public class Parameter implements Serializable {
   private final String value;
 
   /**
-   * Get the name of the parameter
+   * Get the name of the parameter.
    * @return Returns the name
    */
   public String getName() {
@@ -50,7 +50,7 @@ public class Parameter implements Serializable {
   }
 
   /**
-   * Get the value of the parameter
+   * Get the value of the parameter.
    * @return Returns the value
    */
   public String getValue() {
@@ -58,7 +58,7 @@ public class Parameter implements Serializable {
   }
 
   /**
-   * Get the value of the parameter as a String value
+   * Get the value of the parameter as a String value.
    * @return the value as a String
    */
   public String getStringValue() {
@@ -67,7 +67,7 @@ public class Parameter implements Serializable {
   }
 
   /**
-   * Get the value of the parameter as a lower case String value
+   * Get the value of the parameter as a lower case String value.
    * @return the value as a String
    */
   public String getLowerStringValue() {
@@ -76,7 +76,7 @@ public class Parameter implements Serializable {
   }
 
   /**
-   * Get the value of the parameter as a upper case String value
+   * Get the value of the parameter as a upper case String value.
    * @return the value as a String
    */
   public String getUpperStringValue() {
@@ -85,7 +85,7 @@ public class Parameter implements Serializable {
   }
 
   /**
-   * Get the value of the parameter as a integer value
+   * Get the value of the parameter as a integer value.
    * @return the value as an integer
    */
   public int getIntValue() throws EoulsanException {
@@ -99,11 +99,52 @@ public class Parameter implements Serializable {
           "Invalid parameter, an integer parameter is need for "
               + this.name + " parameter: " + this.value, e);
     }
-
   }
 
   /**
-   * Get the value of the parameter as a double value
+   * * Get the value of the parameter as a integer value and check if this value
+   * is greater or equals to the min parameter value.
+   * @param min minimal value (included)
+   * @return the value as an integer
+   */
+  public int getIntValueGreaterOrEqualsTo(final int min)
+      throws EoulsanException {
+
+    return getIntValueInRange(min, Integer.MAX_VALUE);
+  }
+
+  /**
+   * Get the value of the parameter as a integer value and check if this value
+   * is in the correct range.
+   * @param min minimal value (included)
+   * @param max maximal value (included)
+   * @return the value as an integer
+   */
+  public int getIntValueInRange(final int min, final int max)
+      throws EoulsanException {
+
+    final int result = getIntValue();
+
+    final int minValue = Math.min(min, max);
+    final int maxValue = Math.max(min, max);
+
+    if (result < minValue) {
+      throw new EoulsanException("Invalid "
+          + this.name + "parameter (The value must be greater than " + minValue
+          + "): " + result);
+    }
+
+    if (result > maxValue) {
+      throw new EoulsanException("Invalid "
+          + this.name + "parameter (The value must be lower than " + maxValue
+          + "): " + result);
+    }
+
+    return result;
+  }
+
+  /**
+   * Get the value of the parameter as a double value.
    * @return the value as an integer
    */
   public double getDoubleValue() throws EoulsanException {
@@ -117,11 +158,10 @@ public class Parameter implements Serializable {
           "Invalid parameter, an integer parameter is need for "
               + this.name + " parameter: " + this.value, e);
     }
-
   }
 
   /**
-   * Get the value of the parameter as a boolean value
+   * Get the value of the parameter as a boolean value.
    * @return the value as a boolean
    */
   public boolean getBooleanValue() {

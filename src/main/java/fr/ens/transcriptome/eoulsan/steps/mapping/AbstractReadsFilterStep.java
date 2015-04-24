@@ -123,16 +123,7 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
       switch (p.getName()) {
 
       case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
-
-        int count = p.getIntValue();
-
-        if (count < 1) {
-          throw new EoulsanException("Invalid "
-              + HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME + " parameter value: "
-              + p.getValue());
-        }
-
-        this.reducerTaskCount = count;
+        this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
 
         break;
 

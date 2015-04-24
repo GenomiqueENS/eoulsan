@@ -176,40 +176,33 @@ public class FastQCStep extends AbstractStep {
 
       case FASTQC_KMER_SIZE_PARAMETER_NAME:
 
-        // Convert in int
-        if (p.getIntValue() < 1) {
-          throw new EoulsanException(
-              "Invalid value for kmer size parameter in FastQC step: "
-                  + p.getValue());
-        }
-
-        // Kmer Size, default FastQC value 7
-        System.setProperty("fastqc.kmer_size", p.getValue());
+        // Kmer Size, default FastQC value is 7
+        System.setProperty("fastqc.kmer_size", "" + p.getIntValueGreaterOrEqualsTo(1));
         break;
 
       case FASTQC_NOGROUP_PARAMETER_NAME:
 
         // Set fastQC nogroup, default FastQC value false
-        System.setProperty("fastqc.nogroup", p.getBooleanValue() + "");
+        System.setProperty("fastqc.nogroup", "" + p.getBooleanValue());
         break;
 
       case FASTQC_EXPGROUP_PARAMETER_NAME:
 
         // Set fastQC expgroup, default FastQC value false
-        System.setProperty("fastqc.expgroup", p.getBooleanValue() + "");
+        System.setProperty("fastqc.expgroup", "" + p.getBooleanValue());
         break;
 
       case FASTQC_CASAVA_PARAMETER_NAME:
 
         // Set fastQC format fastq, default FastQC value false
-        System.setProperty("fastqc.casava", p.getBooleanValue() + "");
+        System.setProperty("fastqc.casava", "" + p.getBooleanValue());
         break;
 
       case FASTQC_NOFILTER_PARAMETER_NAME:
 
         // Default FastQC value true
         // Set fastQC nofilter default false, if casava=true, filter fastq file
-        System.setProperty("fastqc.nofilter", p.getBooleanValue() + "");
+        System.setProperty("fastqc.nofilter", "" + p.getBooleanValue());
         break;
 
       default:
