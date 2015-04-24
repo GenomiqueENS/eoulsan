@@ -91,7 +91,7 @@ public class StepRegistry {
       return null;
     }
 
-    return stepsFound.get(0);
+    return stepsFound.get(stepsFound.size() - 1);
   }
 
   /**
@@ -114,7 +114,7 @@ public class StepRegistry {
       return;
     }
 
-    Step toKeep = null;
+    final List<Step> toRemove = new ArrayList<>();
 
     // For each step
     for (Step step : steps) {
@@ -128,21 +128,13 @@ public class StepRegistry {
       }
 
       // Keep only the step with the right version
-      if (stepVersion.toString().equals(version)) {
-        toKeep = step;
-
-        // Keep only the first occurrence
-        break;
+      if (!stepVersion.toString().equals(version)) {
+        toRemove.add(step);
       }
     }
 
     // Remove all the entries
-    steps.clear();
-
-    // Add if exist the step with the right version
-    if (toKeep != null) {
-      steps.add(toKeep);
-    }
+    steps.removeAll(toRemove);
   }
 
   /**

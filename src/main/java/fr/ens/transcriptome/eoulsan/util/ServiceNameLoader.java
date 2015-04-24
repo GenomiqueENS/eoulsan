@@ -265,8 +265,7 @@ public abstract class ServiceNameLoader<S> {
     final String serviceName =
         isServiceNameCaseSensible() ? name : name.toLowerCase();
 
-    if (!this.classNames.containsKey(serviceName)
-        && !this.classNames.containsValue(className)) {
+    if (!this.classNames.containsValue(className)) {
       this.classNames.put(serviceName, className);
     }
   }
