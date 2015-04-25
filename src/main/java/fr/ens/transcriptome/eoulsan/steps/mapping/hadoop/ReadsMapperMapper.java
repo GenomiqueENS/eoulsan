@@ -41,6 +41,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import com.google.common.base.Splitter;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
@@ -135,7 +136,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
   @Override
   protected void setup(final Context context) throws IOException {
 
-    getLogger().info("Start of configure()");
+    EoulsanLogger.initConsoleHandler();
+    getLogger().info("Start of setup()");
 
     final Configuration conf = context.getConfiguration();
 

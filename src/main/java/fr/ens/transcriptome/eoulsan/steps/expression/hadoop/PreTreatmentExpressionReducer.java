@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.INVALID_SAM_ENTRIES_COUNTER;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.SAMComparator;
@@ -66,6 +67,9 @@ public class PreTreatmentExpressionReducer extends
   protected void setup(final Context context) throws IOException,
       InterruptedException {
 
+    EoulsanLogger.initConsoleHandler();
+    getLogger().info("Start of setup()");
+
     final Configuration conf = context.getConfiguration();
 
     final String genomeDescFile =
@@ -90,6 +94,7 @@ public class PreTreatmentExpressionReducer extends
       throw new IOException("No counter group defined");
     }
 
+    getLogger().info("End of setup()");
   }
 
   /**

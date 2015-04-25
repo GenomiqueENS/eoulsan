@@ -34,6 +34,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
@@ -62,7 +63,8 @@ public class PreTreatmentExpressionMapper extends
   protected void setup(final Context context) throws IOException,
       InterruptedException {
 
-    getLogger().info("Start of configure()");
+    EoulsanLogger.initConsoleHandler();
+    getLogger().info("Start of setup()");
 
     // Get configuration object
     final Configuration conf = context.getConfiguration();
