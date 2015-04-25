@@ -131,9 +131,6 @@ public class HadoopExecAction extends AbstractAction {
     options.addOption(OptionBuilder.withArgName("description").hasArg()
         .withDescription("job description").withLongOpt("desc").create('d'));
 
-    // UploadOnly option
-    options.addOption("upload", false, "upload only");
-
     return options;
   }
 
