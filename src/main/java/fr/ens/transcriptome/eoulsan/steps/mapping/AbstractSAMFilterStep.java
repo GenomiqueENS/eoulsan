@@ -120,6 +120,9 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
+      // Check if the parameter is deprecated
+      checkDeprecatedParameter(p);
+
       switch (p.getName()) {
 
       case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
@@ -128,8 +131,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
 
       default:
 
-        mrafb.addParameter(convertCompatibilityFilterKey(p.getName()),
-            p.getStringValue());
+        mrafb.addParameter(p.getName(), p.getStringValue());
         break;
       }
     }
@@ -145,21 +147,28 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   //
 
   /**
-   * Convert old key names to new names
-   * @param key key to convert
-   * @return the new key name if necessary
+   * Check deprecated parameters.
+   * @param parameter the parameter to check
+   * @throws EoulsanException if the parameter is no more supported
    */
-  static String convertCompatibilityFilterKey(final String key) {
+  static void checkDeprecatedParameter(final Parameter parameter)
+      throws EoulsanException {
 
-    if (key == null) {
-      return null;
+    if (parameter == null) {
+      return;
     }
 
-    if ("mappingqualitythreshold".equals(key)) {
-      return QualityReadAlignmentsFilter.FILTER_NAME + ".threshold";
-    }
+    switch (parameter.getName()) {
 
-    return key;
+    case "mappingqualitythreshold":
+      throw new EoulsanException("The parameter \""
+          + parameter.getName() + "\" is deprecated, use \""
+          + QualityReadAlignmentsFilter.FILTER_NAME + ".threshold"
+          + "\" parameter " + "instead");
+
+    default:
+      break;
+    }
   }
 
   /**

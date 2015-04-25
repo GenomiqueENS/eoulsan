@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
@@ -120,6 +121,9 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
+      // Check if the parameter is deprecated
+      checkDeprecatedParameter(p);
+
       switch (p.getName()) {
 
       case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
@@ -143,6 +147,43 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
   //
   // Other methods
   //
+
+  /**
+   * Check deprecated parameters.
+   * @param parameter the parameter to check
+   * @throws EoulsanException if the parameter is no more supported
+   */
+  static void checkDeprecatedParameter(final Parameter parameter)
+      throws EoulsanException {
+
+    if (parameter == null) {
+      return;
+    }
+
+    switch (parameter.getName()) {
+
+    case "lengthThreshold":
+      throw new EoulsanException("The parameter \""
+          + parameter.getName()
+          + "\" is deprecated, use \"trim.length.threshold\" parameter "
+          + "instead");
+    case "qualityThreshold":
+      throw new EoulsanException("The parameter \""
+          + parameter.getName()
+          + "\" is deprecated, use \"quality.threshold\" parameter instead");
+
+    case "trim.length.threshold":
+      getLogger().warning(
+          "The \""
+              + parameter.getName()
+              + "\" parameter is deprecated and will be soon removed. "
+              + "Please use \"trimpolynend\" and \"length\" filters instead");
+      break;
+
+    default:
+      break;
+    }
+  }
 
   /**
    * Get the ReadFilter object.

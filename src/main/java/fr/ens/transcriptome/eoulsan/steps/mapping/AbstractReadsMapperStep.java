@@ -35,6 +35,7 @@ import java.util.Set;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.readsmappers.SOAPReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
@@ -204,6 +205,9 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
+      // Check if the parameter is deprecated
+      checkDeprecatedParameter(p);
+
       switch (p.getName()) {
 
       case MAPPER_NAME_PARAMETER_NAME:
@@ -235,7 +239,8 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
         break;
 
       case HADOOP_MAPPER_REQUIRED_MEMORY_PARAMETER_NAME:
-        this.hadoopMapperRequiredMemory = p.getIntValueGreaterOrEqualsTo(1) * 1024;
+        this.hadoopMapperRequiredMemory =
+            p.getIntValueGreaterOrEqualsTo(1) * 1024;
         break;
 
       case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
@@ -285,5 +290,41 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
     getLogger().info(
         "In " + getName() + ", mapperarguments=" + this.mapperArguments);
 
+  }
+
+  //
+  // Other methods
+  //
+
+  /**
+   * Check deprecated parameters.
+   * @param parameter the parameter to check
+   * @throws EoulsanException if the parameter is no more supported
+   */
+  static void checkDeprecatedParameter(final Parameter parameter)
+      throws EoulsanException {
+
+    if (parameter == null) {
+      return;
+    }
+
+    switch (parameter.getName()) {
+
+    case MAPPER_NAME_PARAMETER_NAME:
+
+      if (SOAPReadsMapper.MAPPER_NAME.toLowerCase().equals(
+          parameter.getLowerStringValue())) {
+        getLogger()
+            .warning(
+                "The "
+                    + SOAPReadsMapper.MAPPER_NAME
+                    + " mapper support is deprecated");
+      }
+
+      break;
+
+    default:
+      break;
+    }
   }
 }

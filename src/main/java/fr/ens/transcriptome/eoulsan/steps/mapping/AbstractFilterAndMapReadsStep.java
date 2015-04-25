@@ -254,6 +254,11 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
+      // Check if the parameter is deprecated
+      AbstractReadsFilterStep.checkDeprecatedParameter(p);
+      AbstractReadsMapperStep.checkDeprecatedParameter(p);
+      AbstractSAMFilterStep.checkDeprecatedParameter(p);
+
       switch (p.getName()) {
 
       case MAPPER_NAME_PARAMETER_NAME:
@@ -277,7 +282,8 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
         break;
 
       case HADOOP_MAPPER_REQUIRED_MEMORY_PARAMETER_NAME:
-        this.hadoopMapperRequiredMemory = p.getIntValueGreaterOrEqualsTo(1) * 1024;
+        this.hadoopMapperRequiredMemory =
+            p.getIntValueGreaterOrEqualsTo(1) * 1024;
         break;
 
       case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
@@ -289,9 +295,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
         // Add read filters parameters
         if (!(mrfb.addParameter(p.getName(), p.getStringValue(), true) ||
         // Add read alignments filters parameters
-        mrafb.addParameter(
-            AbstractSAMFilterStep.convertCompatibilityFilterKey(p.getName()),
-            p.getStringValue(), true))) {
+        mrafb.addParameter(p.getName(), p.getStringValue(), true))) {
 
           throw new EoulsanException("Unknown parameter: " + p.getName());
         }

@@ -35,6 +35,7 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.expressioncounters.EoulsanCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounterService;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
@@ -204,6 +205,9 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
+      // Check if the parameter is deprecated
+      checkDeprecatedParameter(p);
+
       switch (p.getName()) {
 
       case GENOMIC_TYPE_PARAMETER_NAME:
@@ -285,5 +289,40 @@ public abstract class AbstractExpressionStep extends AbstractStep {
         "In "
             + getName() + ", stranded=" + this.stranded + ", overlapmode="
             + this.overlapmode);
+  }
+
+  //
+  // Other methods
+  //
+
+  /**
+   * Check deprecated parameters.
+   * @param parameter the parameter to check
+   * @throws EoulsanException if the parameter is no more supported
+   */
+  private static void checkDeprecatedParameter(final Parameter parameter)
+      throws EoulsanException {
+
+    if (parameter == null) {
+      return;
+    }
+
+    switch (parameter.getName()) {
+
+    case COUNTER_PARAMETER_NAME:
+
+      if (EoulsanCounter.COUNTER_NAME.toLowerCase().equals(
+          parameter.getLowerStringValue())) {
+        getLogger().warning(
+            "The "
+                + EoulsanCounter.COUNTER_NAME
+                + " counter support is deprecated");
+      }
+
+      break;
+
+    default:
+      break;
+    }
   }
 }

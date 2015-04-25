@@ -87,11 +87,17 @@
                 <tr><td><a href="http://bowtie-bio.sourceforge.net/index.shtml">Bowtie</a></td><td>0.12.9, 1.1.1</td><td>0.12.9</td><td>standard, large-index</td><td>standard</td><td>--best -k 2</td></tr>
                 <tr><td><a href="http://bowtie-bio.sourceforge.net/index.shtml">Bowtie2</a></td><td>2.0.6, 2.2.4</td><td>2.0.6</td><td>standard, large-index</td><td>standard</td><td></td></tr>
                 <tr><td><a href="http://bio-bwa.sourceforge.net/">BWA</a></td><td>0.6.2, 0.7.12</td><td>0.6.2</td><td>N/A</td><td>N/A</td><td>-l 28</td></tr>
-                <tr><td><a href="http://soap.genomics.org.cn/soapaligner.html">SOAP2</a></td><td>2.20</td><td>2.20</td><td>N/A</td><td>N/A</td><td>-r 2 -l 28</td></tr>
                 <tr><td><a href="http://research-pub.gene.com/gmap/">GSNAP</a></td><td>2012-07-20, 2014-12-21</td><td>2012-07-20</td><td></td><td></td><td>-N 1</td></tr>
                 <tr><td><a href="https://code.google.com/p/rna-star/">STAR</a></td><td>2.4.0j</td><td>2.4.0j</td><td>large-index</td><td>standard</td><td>--outSAMunmapped Within</td></tr>
            </table>
-      </ul>
+
+         <br/>
+         <li><b>Available deprecated built-in mappers (the support of following mappers will be soon removed)</b>:</li>
+           <table>
+                <tr><th>Mapper name</th><th>Bundled versions</th><th>Default version</th><th>Flavors</th><th>Default Flavor</th><th>Default mapper arguments</th></tr>
+                <tr><td><a href="http://soap.genomics.org.cn/soapaligner.html">SOAP</a></td><td>2.20</td><td>2.20</td><td>N/A</td><td>N/A</td><td>-r 2 -l 28</td></tr>
+           </table>
+       </ul>
 
       <p><b>Note:</b> In hadoop mode, Eoulsan use the <code>mapreduce.cluster.temp.dir</code> hadoop setting as location for the mapping temporary files (mapper indexes and FASTQ temporary files). This path must be set in the Hadoop client properties.</p>
 
