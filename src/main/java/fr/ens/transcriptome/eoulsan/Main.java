@@ -463,6 +463,12 @@ public abstract class Main {
         "Operating system version: " + System.getProperty("os.version"));
     getLogger().info("Operating system arch: " + System.getProperty("os.arch"));
 
+    // User information
+    getLogger().info("User name: " + System.getProperty("user.name"));
+    getLogger().info("User home: " + System.getProperty("user.home"));
+    getLogger().info(
+        "User current directory: " + System.getProperty("user.dir"));
+
     // Java version
     getLogger().info("Java vendor: " + System.getProperty("java.vendor"));
     getLogger().info("Java vm name: " + System.getProperty("java.vm.name"));

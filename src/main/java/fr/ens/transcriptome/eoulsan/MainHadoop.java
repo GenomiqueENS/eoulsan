@@ -95,6 +95,9 @@ public final class MainHadoop extends Main {
   @Override
   protected void sysInfoLog() {
 
+    // Log standard system properties
+    super.sysInfoLog();
+
     try {
 
       parseCpuinfo();
