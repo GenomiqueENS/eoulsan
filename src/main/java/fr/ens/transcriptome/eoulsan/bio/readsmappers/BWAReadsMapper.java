@@ -49,6 +49,7 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  */
 public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
+  public static final String MAPPER_NAME = "BWA";
   private static final String DEFAULT_PACKAGE_VERSION = "0.6.2";
   private static final String MAPPER_EXECUTABLE = "bwa";
   private static final String INDEXER_EXECUTABLE = MAPPER_EXECUTABLE;
@@ -57,7 +58,6 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   public static final String DEFAULT_ARGUMENTS = "-l 28";
 
   private static final String SYNC = BWAReadsMapper.class.getName();
-  private static final String MAPPER_NAME = "BWA";
   private static final String PREFIX_FILES = "bwa";
   private static final String SUFFIX_OUTPUT = ".sai";
 
