@@ -50,7 +50,7 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 public class STARReadsMapper extends AbstractSequenceReadsMapper {
 
   public static final String MAPPER_NAME = "STAR";
-  private static final String DEFAULT_PACKAGE_VERSION = "2.4.0j";
+  private static final String DEFAULT_PACKAGE_VERSION = "2.4.0k";
 
   private static final String MAPPER_STANDARD_EXECUTABLE = "STARstatic";
   private static final String MAPPER_LARGE_INDEX_EXECUTABLE = "STARlong";
