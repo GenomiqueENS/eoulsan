@@ -28,14 +28,19 @@ import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URI;
+import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
@@ -90,10 +95,15 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
       + ".mapper.zookeeper.session.timeout";
 
   private static final Splitter TAB_SPLITTER = Splitter.on('\t').trimResults();
+  private static final String MAPPER_INDEX_DIR_PREFIX = Globals.APP_NAME
+      + "-mapper-index-";
+  private static final String MAPPER_LAST_USED_FILENAME = Globals.APP_NAME
+      .toUpperCase() + "_LAST_USED";
+  private static final long DEFAULT_AGE_OF_UNUSED_MAPPER_INDEXES = 7;
+  private static final String LOCK_SUFFIX = ".lock";
 
   private String counterGroup = this.getClass().getName();
-
-  // private File archiveIndexFile;
+  private File mapperIndexDir;
 
   private Locker lock;
 
@@ -197,13 +207,13 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
             + archiveIndexFile);
 
     // Set index directory
-    final File archiveIndexDir =
+    this.mapperIndexDir =
         new File(context.getConfiguration().get(HADOOP_TEMP_DIR)
-            + "/" + this.mapper.getMapperName() + "-index-"
-            + conf.get(INDEX_CHECKSUM_KEY));
+            + "/" + MAPPER_INDEX_DIR_PREFIX + this.mapper.getMapperName()
+            + "-index-" + conf.get(INDEX_CHECKSUM_KEY));
 
     getLogger().info(
-        "Genome index directory where decompressed: " + archiveIndexDir);
+        "Genome index directory where decompressed: " + mapperIndexDir);
 
     // Set FASTQ format
     this.mapper.setFastqFormat(fastqFormat);
@@ -252,7 +262,10 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     // Set mapper temporary directory
     this.mapper.setTempDirectory(tempDir);
 
-    final boolean indexMustBeUncompressed = !archiveIndexDir.exists();
+    // Update last used file timestamp for the mapper indexes clean up
+    updateLastUsedMapperIndex(this.mapperIndexDir);
+
+    final boolean indexMustBeUncompressed = !this.mapperIndexDir.exists();
 
     // Lock if mapper index must be uncompressed
     if (indexMustBeUncompressed) {
@@ -261,7 +274,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     }
 
     // Init mapper
-    this.mapper.init(archiveIndexFile.open(), archiveIndexDir,
+    this.mapper.init(archiveIndexFile.open(), this.mapperIndexDir,
         new HadoopReporter(context), this.counterGroup);
 
     // TODO Handle genome description
@@ -322,11 +335,22 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
       this.lock.unlock();
     }
 
+    // Clear old mapper indexes
+    removeUnusedMapperIndexes(context.getConfiguration());
+
     getLogger().info("End of close() of the mapper.");
   }
 
-  private final void parseSAMResults(final InputStream resultFileInputStream,
-      final Context context) throws IOException, InterruptedException {
+  /**
+   * Parse mapper output.
+   * @param in mapper result input stream
+   * @param context Hadoop context
+   * @throws IOException if an error occurs while parsing the mapper output
+   * @throws InterruptedException if an error occurs while parsing the mapper
+   *           output
+   */
+  private final void parseSAMResults(final InputStream in, final Context context)
+      throws IOException, InterruptedException {
 
     String line;
 
@@ -334,8 +358,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     final Text outValue = new Text();
 
     // Parse SAM result file
-    final BufferedReader readerResults =
-        FileUtils.createBufferedReader(resultFileInputStream);
+    final BufferedReader readerResults = FileUtils.createBufferedReader(in);
 
     final int taskId = context.getTaskAttemptID().getTaskID().getId();
 
@@ -390,9 +413,125 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
         entriesParsed
             + " entries parsed in " + this.mapper.getMapperName()
             + " output file");
+  }
 
-    // TODO clear mapper temporary files
+  //
+  // Old mapper indexes cleanup methods
+  //
 
+  /**
+   * Update the last usage of the current mapper index.
+   * @param mapperIndexDir the mapper index directory
+   */
+  private void updateLastUsedMapperIndex(final File mapperIndexDir) {
+
+    final File lockFile =
+        new File(mapperIndexDir.getParentFile(), mapperIndexDir.getName()
+            + LOCK_SUFFIX);
+
+    try (FileOutputStream out = new FileOutputStream(lockFile)) {
+
+      // Lock the mapper directory
+      FileLock lock = out.getChannel().lock();
+
+      final File lastMapperUsedFile =
+          new File(mapperIndexDir, MAPPER_LAST_USED_FILENAME);
+
+      if (lastMapperUsedFile.exists()) {
+        lastMapperUsedFile.setLastModified(System.currentTimeMillis());
+      }
+
+      // Unlock the mapper directory
+      lock.release();
+    } catch (IOException e) {
+      getLogger().warning(
+          "Cannot update the timestamp of the last usage of the current mapper index: "
+              + e.getMessage());
+    }
+  }
+
+  /**
+   * Remove unused mapper indexes.
+   * @param conf Hadoop configuration
+   */
+  private void removeUnusedMapperIndexes(final Configuration conf) {
+
+    final File mapperIndexesDir = this.mapperIndexDir.getParentFile();
+
+    for (File dir : mapperIndexesDir.listFiles(new FilenameFilter() {
+
+      @Override
+      public boolean accept(final File dir, final String name) {
+
+        final File f = new File(dir, name);
+
+        return f.isDirectory() && name.startsWith(MAPPER_INDEX_DIR_PREFIX);
+      }
+    })) {
+
+      // First check without lock on the mapper index directory
+      if (isMapperIndexMustBeRemoved(mapperIndexesDir)) {
+        removeUnusedMapperIndex(dir, conf);
+      }
+    }
+  }
+
+  /**
+   * Check if a mapper index directory must be removed.
+   * @param mapperIndexDir the mapper index directory
+   * @return true if the mapper index directory must be removed
+   */
+  private boolean isMapperIndexMustBeRemoved(final File mapperIndexDir) {
+
+    final File lastModifiedFile =
+        new File(mapperIndexDir, MAPPER_LAST_USED_FILENAME);
+
+    if (!lastModifiedFile.exists())
+      return false;
+
+    final long duration =
+        System.currentTimeMillis() - lastModifiedFile.lastModified();
+
+    return duration > (DEFAULT_AGE_OF_UNUSED_MAPPER_INDEXES * 24 * 3600 * 1000);
+  }
+
+  /**
+   * Remove an unused mapper index directory.
+   * @param mapperIndexDir the mapper index directory to remove
+   * @param conf Hadoop configuration
+   */
+  private void removeUnusedMapperIndex(final File mapperIndexDir,
+      final Configuration conf) {
+
+    final File lockFile =
+        new File(mapperIndexDir.getParentFile(), mapperIndexDir.getName()
+            + LOCK_SUFFIX);
+
+    try (FileOutputStream out = new FileOutputStream(lockFile)) {
+
+      // Lock the mapper directory
+      FileLock lock = out.getChannel().lock();
+
+      // Second check with lock on the mapper index directory
+      if (isMapperIndexMustBeRemoved(mapperIndexDir)) {
+
+        getLogger().info(
+            "Remove  unused mapper index directory: " + mapperIndexDir);
+
+        // Remove the mapper index
+        // TODO use Datafile.delete(true)
+        final Path mapperIndexPath = new Path(mapperIndexDir.toURI());
+        final FileSystem fs = FileSystem.get(mapperIndexDir.toURI(), conf);
+        fs.delete(mapperIndexPath, true);
+      }
+
+      // Unlock the mapper directory
+      lock.release();
+    } catch (IOException e) {
+      getLogger().warning(
+          "Cannot remove unused mapper index directory ("
+              + mapperIndexDir + "): " + e.getMessage());
+    }
   }
 
 }
