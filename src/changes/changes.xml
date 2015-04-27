@@ -799,5 +799,93 @@ of reads that reject each filter like in local mode.
 
          </release>
 
+         <release version="2.0-alpha6" description="Eoulsan 2.0-alpha6 release" date="TBD">
+
+            <action dev="jourdren" type="update">
+                 Eoulsan code is now officialy hosted on GitHub.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 Add a new UI for Eoulsan for exec and hadoopexec actions.
+            </action>
+
+            <action dev="jourdren" type="update">
+                STAR 2.4.0k is now bundled in Eoulsan. STAR 2.4.0k has been removed.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 Set "--outSAMunmapped Within" as default arguments for the STAR mapper.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Hadoopexec action is now working with Eoulsan 2.0 and Hadoop 2.x. Filterreads, mapreads, filtersam, filterandmap and expression steps had a dedicated implementation for Hadoop 2.x. Hadoop 1.x is no more working with Eoulsan 2.0.
+            </action>
+
+            <action dev="jourdren" type="update">
+                The sam2bam had now a dedicated implementation for Hadoop mode.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Unused mapper index on Hadoop cluster nodes are now automatically removed if they not been used since one week.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Hadoop log is now saved in a dedicated log file in the job directory.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Steps without dedicated Hadoop code can now be executed using the hadoopexec action.
+            </action>
+
+            <action dev="jourdren" type="update">
+                In workflow file, rename ${logs.path} variable to ${job.path}.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 Eoulsan now use htsjdk 1.118 instead of samtools/picard 1.83. Samtools is still used as runtime dependency for FastQC for reading SAM/BAM files.
+            </action>
+
+            <action dev="jourdren" type="update">
+                ".gff3" can now also be used has extension for GFF3 files.
+            </action>
+
+            <action dev="jourdren" type="update">
+                SOAP mapper and original Eoulsan expression counter are now deprecated, they will be removed in a next version of Eoulsan.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 For better source code error detection, Google Errorprone static code analysis tool is now executed at each Eoulsan compilation.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 Eoulsan now produce a Graphviz file for the workflow to execute in the job directory.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 In sam2bam in local mode now create a symbolic link to the BAI file with the same basename than the BAM file.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 Symlink created by Eoulsan in exec action are now relative instead of absolute.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 Now remove at the end of a successful job, all the output of the "discardouput" steps.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 Now remove all the outputs of the failed and aborted steps.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 Add two new read filters: "trimpolynend" and "length.minimal.length.threshold". This filter replace the "trim.length.threshold" filter that is now deprecated and will be remove in a next version of Eoulsan.
+            </action>
+
+             <action dev="jourdren" type="update">
+                 Set the default compression level value in sam2bam step to 5 instead of 0.
+            </action>
+
+         </release>
+
 	</body>
 </document>
