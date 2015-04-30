@@ -1847,4 +1847,36 @@ public class FileUtils {
     return result;
   }
 
+  /**
+   * Create a named pipe.
+   * @param file path of the named pipe
+   * @throws IOException if an error occurs while creating the named pipe
+   */
+  public static void createNamedPipe(final File file) throws IOException {
+
+    if (file == null) {
+      throw new NullPointerException("file argument cannot be null");
+    }
+
+    if (file.exists()) {
+      throw new IOException("Named pipe to create already exists: " + file);
+    }
+
+    final Process process =
+        new ProcessBuilder("mkfifo", file.getAbsolutePath()).start();
+
+    int exitCode;
+    try {
+      exitCode = process.waitFor();
+
+      if (exitCode != 0) {
+        throw new IOException("Unable to create named pipe: " + file);
+      }
+
+    } catch (InterruptedException e) {
+      throw new IOException("Unable to create named pipe: " + file, e);
+    }
+
+  }
+
 }
