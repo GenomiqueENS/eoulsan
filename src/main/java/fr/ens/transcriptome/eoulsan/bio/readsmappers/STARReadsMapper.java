@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -239,41 +238,6 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected InputStream internalMapSE(final File readsFile,
-      final File archiveIndex, final GenomeDescription gd) throws IOException {
-
-    final String starPath;
-
-    synchronized (SYNC) {
-      starPath = install(flavoredBinary());
-    }
-
-    final MapperProcess mapperProcess =
-        createMapperProcessSE(starPath, archiveIndex.getAbsolutePath(),
-            readsFile, true);
-
-    return mapperProcess.getStout();
-  }
-
-  @Override
-  protected InputStream internalMapPE(final File readsFile1,
-      final File readsFile2, final File archiveIndex, final GenomeDescription gd)
-      throws IOException {
-
-    final String starPath;
-
-    synchronized (SYNC) {
-      starPath = install(flavoredBinary());
-    }
-
-    final MapperProcess mapperProcess =
-        createMapperProcessPE(starPath, archiveIndex.getAbsolutePath(),
-            readsFile1, readsFile2, true);
-
-    return mapperProcess.getStout();
-  }
-
-  @Override
   protected MapperProcess internalMapSE(final File archiveIndex,
       final GenomeDescription gd) throws IOException {
 
@@ -283,8 +247,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       starPath = install(flavoredBinary());
     }
 
-    return createMapperProcessSE(starPath, archiveIndex.getAbsolutePath(),
-        null, false);
+    return createMapperProcessSE(starPath, archiveIndex.getAbsolutePath());
   }
 
   @Override
@@ -297,15 +260,13 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       starPath = install(flavoredBinary());
     }
 
-    return createMapperProcessPE(starPath, archiveIndex.getAbsolutePath(),
-        null, null, false);
+    return createMapperProcessPE(starPath, archiveIndex.getAbsolutePath());
   }
 
   private MapperProcess createMapperProcessSE(final String starPath,
-      final String archivePath, final File readsPath, final boolean fileMode)
-      throws IOException {
+      final String archivePath) throws IOException {
 
-    return new MapperProcess(this, fileMode, false, false) {
+    return new MapperProcess(this, false) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -323,11 +284,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
         cmd.addAll(getListMapperArguments());
 
         cmd.add("--readFilesIn");
-        if (fileMode) {
-          cmd.add(readsPath.getAbsolutePath());
-        } else {
-          cmd.add(getTmpInputFile1().getAbsolutePath());
-        }
+        cmd.add(getNamedPipeFile1().getAbsolutePath());
 
         return Collections.singletonList(cmd);
       }
@@ -336,10 +293,9 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   private MapperProcess createMapperProcessPE(final String starPath,
-      final String archivePath, final File reads1File, final File reads2File,
-      final boolean fileMode) throws IOException {
+      final String archivePath) throws IOException {
 
-    return new MapperProcess(this, fileMode, false, false) {
+    return new MapperProcess(this, false) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -357,13 +313,8 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
         cmd.addAll(getListMapperArguments());
 
         cmd.add("--readFilesIn");
-        if (fileMode) {
-          cmd.add(reads1File.getAbsolutePath());
-          cmd.add(reads2File.getAbsolutePath());
-        } else {
-          cmd.add(getTmpInputFile1().getAbsolutePath());
-          cmd.add(getTmpInputFile2().getAbsolutePath());
-        }
+        cmd.add(getNamedPipeFile1().getAbsolutePath());
+        cmd.add(getNamedPipeFile2().getAbsolutePath());
 
         return Collections.singletonList(cmd);
       }

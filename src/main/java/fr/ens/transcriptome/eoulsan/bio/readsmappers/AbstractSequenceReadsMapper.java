@@ -47,6 +47,8 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
+import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -88,6 +90,7 @@ public abstract class AbstractSequenceReadsMapper implements
 
   private boolean binariesReady;
   private boolean initialized;
+  private IOException mappingException;
 
   //
   // Binaries management
@@ -124,7 +127,7 @@ public abstract class AbstractSequenceReadsMapper implements
    * @return the indexer executables
    */
   protected String[] getIndexerExecutables() {
-    return new String[] {getIndexerExecutable()};
+    return new String[] { getIndexerExecutable() };
   }
 
   /**
@@ -549,7 +552,14 @@ public abstract class AbstractSequenceReadsMapper implements
         this.archiveIndexDir);
 
     // Process to mapping
-    return internalMapPE(readsFile1, readsFile2, this.archiveIndexDir, gd);
+    final MapperProcess mapperProcess = mapSE(gd);
+
+    // Copy reads files to named pipes
+    writeFirstPairEntries(readsFile1, mapperProcess);
+    writeSecondPairEntries(readsFile2, mapperProcess);
+
+    // Returns SAM input stream
+    return mapperProcess.getStout();
   }
 
   @Override
@@ -580,15 +590,95 @@ public abstract class AbstractSequenceReadsMapper implements
         this.archiveIndexDir);
 
     // Process to mapping
-    return internalMapSE(readsFile, this.archiveIndexDir, gd);
+    final MapperProcess mapperProcess = mapSE(gd);
+
+    // Copy reads file to named pipe
+    writeFirstPairEntries(readsFile, mapperProcess);
+
+    // Returns SAM input stream
+    return mapperProcess.getStout();
   }
 
-  protected abstract InputStream internalMapPE(final File readsFile1,
-      final File readsFile2, final File archiveIndex, final GenomeDescription gd)
-      throws IOException;
+  /**
+   * Write first pairs entries to the mapper process
+   * @param inputFile first pairs FASTQ file
+   * @param mp mapper process
+   * @throws FileNotFoundException if the input cannot be found
+   */
+  private void writeFirstPairEntries(final File inputFile,
+      final MapperProcess mp) throws FileNotFoundException {
 
-  protected abstract InputStream internalMapSE(final File readsFile,
-      final File archiveIndex, final GenomeDescription gd) throws IOException;
+    final Thread t = new Thread(new Runnable() {
+
+      @Override
+      public void run() {
+
+        try {
+          final FastqReader reader = new FastqReader(inputFile);
+
+          for (ReadSequence read : reader) {
+            mp.writeEntry1(read);
+          }
+
+          reader.close();
+          mp.closeWriter1();
+
+        } catch (IOException e) {
+          mappingException = e;
+        }
+
+      }
+    });
+
+    t.start();
+  }
+
+  /**
+   * Write first pairs entries to the mapper process
+   * @param inputFile first pairs FASTQ file
+   * @param mp mapper process
+   * @throws FileNotFoundException if the input cannot be found
+   */
+  private void writeSecondPairEntries(final File inputFile,
+      final MapperProcess mp) throws FileNotFoundException {
+
+    final Thread t = new Thread(new Runnable() {
+
+      @Override
+      public void run() {
+
+        try {
+
+          final FastqReader reader = new FastqReader(inputFile);
+
+          for (ReadSequence read : reader) {
+
+            mp.writeEntry2(read);
+          }
+
+          reader.close();
+          mp.closeWriter2();
+
+        } catch (IOException e) {
+          mappingException = e;
+        }
+
+      }
+    });
+
+    t.start();
+  }
+
+  /**
+   * Throws an exception if an exception has occurred while mapping.
+   * @throws IOException if an exception has occurred while mapping
+   */
+  public void throwMappingException() throws IOException {
+
+    if (this.mappingException != null) {
+      throw this.mappingException;
+    }
+  }
 
   //
   // Mapping with streams

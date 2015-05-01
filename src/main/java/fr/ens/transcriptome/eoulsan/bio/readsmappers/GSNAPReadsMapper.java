@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -151,44 +150,6 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected InputStream internalMapSE(final File readsFile,
-      final File archiveIndexDir, final GenomeDescription genomeDescription)
-      throws IOException {
-
-    final String gsnapPath;
-
-    synchronized (SYNC) {
-      gsnapPath = install(MAPPER_EXECUTABLE);
-    }
-
-    final MapperProcess mapperProcess =
-        createMapperProcessSE(gsnapPath,
-            getGSNAPQualityArgument(getFastqFormat()),
-            archiveIndexDir.getAbsolutePath(), readsFile, true);
-
-    return mapperProcess.getStout();
-  }
-
-  @Override
-  protected InputStream internalMapPE(final File readsFile1,
-      final File readsFile2, final File archiveIndexDir,
-      final GenomeDescription genomeDescription) throws IOException {
-
-    final String gsnapPath;
-
-    synchronized (SYNC) {
-      gsnapPath = install(MAPPER_EXECUTABLE);
-    }
-
-    final MapperProcess mapperProcess =
-        createMapperProcessPE(gsnapPath,
-            getGSNAPQualityArgument(getFastqFormat()),
-            archiveIndexDir.getAbsolutePath(), readsFile1, readsFile2, true);
-
-    return mapperProcess.getStout();
-  }
-
-  @Override
   protected MapperProcess internalMapSE(final File archiveIndexDir,
       final GenomeDescription gd) throws IOException {
     final String gsnapPath;
@@ -199,7 +160,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
 
     return createMapperProcessSE(gsnapPath,
         getGSNAPQualityArgument(getFastqFormat()),
-        archiveIndexDir.getAbsolutePath(), null, false);
+        archiveIndexDir.getAbsolutePath());
   }
 
   @Override
@@ -213,14 +174,13 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
 
     return createMapperProcessPE(gsnapPath,
         getGSNAPQualityArgument(getFastqFormat()),
-        archiveIndexDir.getAbsolutePath(), null, null, false);
+        archiveIndexDir.getAbsolutePath());
   }
 
   private MapperProcess createMapperProcessSE(final String gsnapPath,
-      final String fastqFormat, final String archivePath, final File readsPath,
-      final boolean fileMode) throws IOException {
+      final String fastqFormat, final String archivePath) throws IOException {
 
-    return new MapperProcess(this, fileMode, false, false) {
+    return new MapperProcess(this, false) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -237,12 +197,11 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
         cmd.add(archivePath);
         cmd.add("-d");
         cmd.add("genome");
+
+        // Set the user options
         cmd.addAll(getListMapperArguments());
-        if (fileMode) {
-          cmd.add(readsPath.getAbsolutePath());
-        } else {
-          cmd.add(getTmpInputFile1().getAbsolutePath());
-        }
+
+        cmd.add(getNamedPipeFile1().getAbsolutePath());
 
         return Collections.singletonList(cmd);
       }
@@ -251,11 +210,9 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   private MapperProcess createMapperProcessPE(final String gsnapPath,
-      final String fastqFormat, final String archivePath,
-      final File reads1File, final File reads2File, final boolean fileMode)
-      throws IOException {
+      final String fastqFormat, final String archivePath) throws IOException {
 
-    return new MapperProcess(this, fileMode, false, true) {
+    return new MapperProcess(this, true) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -272,16 +229,12 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
         cmd.add(archivePath);
         cmd.add("-d");
         cmd.add("genome");
-        if (getListMapperArguments() != null) {
-          cmd.addAll(getListMapperArguments());
-        }
-        if (fileMode) {
-          cmd.add(reads1File.getAbsolutePath());
-          cmd.add(reads2File.getAbsolutePath());
-        } else {
-          cmd.add(getTmpInputFile1().getAbsolutePath());
-          cmd.add(getTmpInputFile2().getAbsolutePath());
-        }
+
+        // Set the user options
+        cmd.addAll(getListMapperArguments());
+
+        cmd.add(getNamedPipeFile1().getAbsolutePath());
+        cmd.add(getNamedPipeFile2().getAbsolutePath());
 
         return Collections.singletonList(cmd);
       }

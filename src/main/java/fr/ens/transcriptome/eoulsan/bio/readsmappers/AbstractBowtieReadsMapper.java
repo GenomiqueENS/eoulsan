@@ -28,7 +28,6 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -188,105 +187,6 @@ public abstract class AbstractBowtieReadsMapper extends
   }
 
   //
-  // Map in file mode
-  //
-
-  @Override
-  protected InputStream internalMapSE(final File readsFile,
-      final File archiveIndexDir, final GenomeDescription genomeDescription)
-      throws IOException {
-
-    final String bowtiePath;
-
-    synchronized (SYNC) {
-      bowtiePath = install(getMapperExecutables());
-    }
-
-    // Get index argument
-    final String index = getIndexArgument(archiveIndexDir);
-
-    final MapperProcess mapperProcess =
-        new MapperProcess(this, true, false, false) {
-
-          @Override
-          protected List<List<String>> createCommandLines() {
-
-            // Build the command line
-            final List<String> cmd = new ArrayList<>();
-
-            // Add common arguments
-            cmd.addAll(createCommonArgs(bowtiePath, index));
-
-            // Input FASTQ file
-            cmd.add(readsFile.getAbsolutePath());
-
-            getLogger().info(cmd.toString());
-
-            return Collections.singletonList(cmd);
-          }
-
-          @Override
-          protected File executionDirectory() {
-
-            return archiveIndexDir;
-          }
-
-        };
-
-    return mapperProcess.getStout();
-  }
-
-  @Override
-  protected InputStream internalMapPE(final File readsFile1,
-      final File readsFile2, final File archiveIndexDir,
-      final GenomeDescription genomeDescription) throws IOException {
-
-    final String bowtiePath;
-
-    synchronized (SYNC) {
-      bowtiePath = install(getMapperExecutables());
-    }
-
-    // Get index argument
-    final String index = getIndexArgument(archiveIndexDir);
-
-    final MapperProcess mapperProcess =
-        new MapperProcess(this, true, false, false) {
-
-          @Override
-          protected List<List<String>> createCommandLines() {
-            // Build the command line
-            final List<String> cmd = new ArrayList<>();
-
-            // Add common arguments
-            cmd.addAll(createCommonArgs(bowtiePath, index));
-
-            // First end input FASTQ file
-            cmd.add("-1");
-            cmd.add(readsFile1.getAbsolutePath());
-
-            // Second end input FASTQ file
-            cmd.add("-2");
-            cmd.add(readsFile2.getAbsolutePath());
-
-            getLogger().info("Command line executed: " + cmd.toString());
-
-            return Collections.singletonList(cmd);
-          }
-
-          @Override
-          protected File executionDirectory() {
-
-            return archiveIndexDir;
-          }
-
-        };
-
-    return mapperProcess.getStout();
-
-  }
-
-  //
   // Map in streaming mode
   //
 
@@ -304,7 +204,7 @@ public abstract class AbstractBowtieReadsMapper extends
     final String index = getIndexArgument(archiveIndexDir);
 
     // TODO Warning streaming mode not currently enabled
-    return new MapperProcess(this, false, false, false) {
+    return new MapperProcess(this, false) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -322,7 +222,7 @@ public abstract class AbstractBowtieReadsMapper extends
 
         // TODO Remove this when streaming mode will be enabled
         // Input from temporary FASTQ file
-        cmd.add(getTmpInputFile1().getAbsolutePath());
+        cmd.add(getNamedPipeFile1().getAbsolutePath());
 
         getLogger().info(cmd.toString());
 
@@ -352,7 +252,7 @@ public abstract class AbstractBowtieReadsMapper extends
     final String index = getIndexArgument(archiveIndexDir);
 
     // TODO Warning streaming mode not currently enabled
-    return new MapperProcess(this, false, false, true) {
+    return new MapperProcess(this, true) {
 
       @Override
       public void writeEntry(final String name1, final String sequence1,
@@ -382,12 +282,12 @@ public abstract class AbstractBowtieReadsMapper extends
         // TODO Remove this when streaming mode will be enabled
         // First end input FASTQ file
         cmd.add("-1");
-        cmd.add(getTmpInputFile1().getAbsolutePath());
+        cmd.add(getNamedPipeFile1().getAbsolutePath());
 
         // TODO Remove this when streaming mode will be enabled
         // Second end input FASTQ file
         cmd.add("-2");
-        cmd.add(getTmpInputFile2().getAbsolutePath());
+        cmd.add(getNamedPipeFile2().getAbsolutePath());
 
         return Collections.singletonList(cmd);
       }

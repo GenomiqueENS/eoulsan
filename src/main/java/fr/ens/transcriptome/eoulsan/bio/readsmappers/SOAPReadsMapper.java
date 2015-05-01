@@ -24,8 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
-import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -138,56 +136,6 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected InputStream internalMapSE(final File readsFile,
-      final File archiveIndexDir, final GenomeDescription genomeDescription)
-      throws IOException {
-
-    final String soapPath;
-
-    synchronized (SYNC) {
-      soapPath = install(MAPPER_EXECUTABLE);
-    }
-
-    final File outputFile =
-        FileUtils.createTempFile(readsFile.getParentFile(), "soap-outputFile-",
-            ".soap");
-    final File unmapFile =
-        FileUtils.createTempFile(readsFile.getParentFile(), "soap-outputFile-",
-            ".unmap");
-
-    return createMapperProcessSE(soapPath,
-        getIndexPath(archiveIndexDir, ".index.amb", 4), readsFile, outputFile,
-        unmapFile, genomeDescription, true).getStout();
-  }
-
-  @Override
-  protected InputStream internalMapPE(final File readsFile1,
-      final File readsFile2, final File archiveIndexDir,
-      final GenomeDescription genomeDescription) throws IOException {
-
-    final String soapPath;
-
-    synchronized (SYNC) {
-      soapPath = install(MAPPER_EXECUTABLE);
-    }
-
-    final File outputFile =
-        FileUtils.createTempFile(readsFile1.getParentFile(), "soap-output-",
-            ".soap");
-    final File unmapFile =
-        FileUtils.createTempFile(readsFile1.getParentFile(), "soap-output-",
-            ".unmap");
-    final File unpairedFile =
-        FileUtils.createTempFile(readsFile1.getParentFile(), "soap-output-",
-            ".unpaired");
-
-    return createMapperProcessPE(soapPath,
-        getIndexPath(archiveIndexDir, ".index.amb", 4), readsFile1, readsFile2,
-        outputFile, unmapFile, unpairedFile, genomeDescription, true)
-        .getStout();
-  }
-
-  @Override
   protected MapperProcess internalMapSE(final File archiveIndex,
       final GenomeDescription genomeDescription) throws IOException {
     final String soapPath;
@@ -206,7 +154,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
 
     return createMapperProcessSE(soapPath,
         getIndexPath(archiveIndex, ".index.amb", 4), null, outputFile,
-        unmapFile, genomeDescription, false);
+        unmapFile, genomeDescription);
   }
 
   @Override
@@ -230,15 +178,15 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
 
     return createMapperProcessPE(soapPath,
         getIndexPath(archiveIndex, ".index.amb", 4), null, null, outputFile,
-        unmapFile, unpairedFile, genomeDescription, true);
+        unmapFile, unpairedFile, genomeDescription);
   }
 
   private MapperProcess createMapperProcessSE(final String soapPath,
       final String archivePath, final File readsFile, final File outputFile,
-      final File unmapFile, final GenomeDescription genomeDescription,
-      final boolean fileMode) throws IOException {
+      final File unmapFile, final GenomeDescription genomeDescription)
+      throws IOException {
 
-    return new MapperProcess(this, fileMode, false, false) {
+    return new MapperProcess(this, false) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -247,17 +195,16 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
         final List<String> cmd = new ArrayList<>();
 
         cmd.add(soapPath);
-        if (getListMapperArguments() != null) {
-          cmd.addAll(getListMapperArguments());
-        }
+
+        // Set the user options
+        cmd.addAll(getListMapperArguments());
+
         cmd.add("-p");
         cmd.add(getThreadsNumber() + "");
         cmd.add("-a");
-        if (fileMode) {
-          cmd.add(readsFile.getAbsolutePath());
-        } else {
-          cmd.add(getTmpInputFile1().getAbsolutePath());
-        }
+
+        cmd.add(getNamedPipeFile1().getAbsolutePath());
+
         cmd.add("-D");
         cmd.add(archivePath);
         cmd.add("-o");
@@ -278,30 +225,20 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       }
 
       @Override
-      protected void clean() {
+      protected void additionalInit() throws IOException {
 
-        if (!outputFile.delete()) {
-          getLogger().warning(
-              "Cannot remove SOAP temporary file: " + outputFile);
-        }
-
-        if (!unmapFile.delete()) {
-          getLogger()
-              .warning("Cannot remove SOAP temporary file: " + unmapFile);
-        }
+        this.addFilesToRemove(outputFile, unmapFile);
       }
 
     };
-
   }
 
   private MapperProcess createMapperProcessPE(final String soapPath,
       final String archivePath, final File readsFile1, final File readsFile2,
       final File outputFile, final File unmapFile, final File unpairedFile,
-      final GenomeDescription genomeDescription, final boolean fileMode)
-      throws IOException {
+      final GenomeDescription genomeDescription) throws IOException {
 
-    return new MapperProcess(this, true, false, true) {
+    return new MapperProcess(this, true) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -310,9 +247,10 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
         final List<String> cmd = new ArrayList<>();
 
         cmd.add(soapPath);
-        if (getListMapperArguments() != null) {
-          cmd.addAll(getListMapperArguments());
-        }
+
+        // Set the user options
+        cmd.addAll(getListMapperArguments());
+
         cmd.add("-p");
         cmd.add(getThreadsNumber() + "");
         cmd.add("-a");
@@ -341,21 +279,12 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       }
 
       @Override
-      protected void clean() {
+      protected void additionalInit() throws IOException {
 
-        if (!outputFile.delete()) {
-          getLogger().warning(
-              "Cannot remove SOAP temporary file: " + outputFile);
-        }
-
-        if (!unmapFile.delete()) {
-          getLogger()
-              .warning("Cannot remove SOAP temporary file: " + unmapFile);
-        }
+        this.addFilesToRemove(outputFile, unmapFile);
       }
 
     };
-
   }
 
   private final static InputStream convertSOAP2SAM(final InputStream in,

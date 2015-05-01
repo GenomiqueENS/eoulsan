@@ -125,9 +125,7 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
     result.add(bowtiePath);
 
     // Set the user options
-    if (getListMapperArguments() != null) {
-      result.addAll(getListMapperArguments());
-    }
+    result.addAll(getListMapperArguments());
 
     // Set the number of threads to use
     result.add("-p");
