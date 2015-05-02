@@ -512,14 +512,19 @@ public abstract class MapperProcess {
    *           the process
    * @throws IOException if an error occurs while waiting the end of the process
    */
-  public void waitFor() throws InterruptedException, IOException {
+  public void waitFor() throws IOException {
 
-    final int exitValue = this.process.waitFor();
-    getLogger().fine("End of process with " + exitValue + " exit value");
+    try {
 
-    if (exitValue != 0) {
-      throw new IOException("Bad error result for "
-          + this.mapperName + " execution: " + exitValue);
+      final int exitValue = this.process.waitFor();
+      getLogger().fine("End of process with " + exitValue + " exit value");
+
+      if (exitValue != 0) {
+        throw new IOException("Bad error result for "
+            + this.mapperName + " execution: " + exitValue);
+      }
+    } catch (InterruptedException e) {
+      throw new IOException(e);
     }
 
     // Remove temporary files

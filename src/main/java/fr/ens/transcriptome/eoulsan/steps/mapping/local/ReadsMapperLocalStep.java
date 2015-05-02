@@ -44,6 +44,7 @@ import java.util.EnumSet;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.readsmappers.MapperProcess;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
@@ -162,8 +163,14 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
                 + " threads option");
 
         // Single read mapping
-        parseSAMResults(mapper.mapSE(inFile, this.genomeDescription), samFile,
-            reporter);
+        final MapperProcess process =
+            mapper.mapSE(inFile, this.genomeDescription);
+
+        // Parse output of the mapper
+        parseSAMResults(process.getStout(), samFile, reporter);
+
+        // Wait the end of the process and do cleanup
+        process.waitFor();
 
         logMsg =
             "Mapping reads in "
@@ -189,8 +196,14 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
                 + mapper.getThreadsNumber() + " threads option");
 
         // Single read mapping
-        parseSAMResults(mapper.mapPE(inFile1, inFile2, this.genomeDescription),
-            samFile, reporter);
+        final MapperProcess process =
+            mapper.mapPE(inFile1, inFile2, this.genomeDescription);
+
+        // Parse output of the mapper
+        parseSAMResults(process.getStout(), samFile, reporter);
+
+        // Wait the end of the process and do cleanup
+        process.waitFor();
 
         logMsg =
             "Mapping reads in "
@@ -198,6 +211,9 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
                 + inData.getName() + ", " + inFile1.getName() + ","
                 + inFile2.getName() + ")";
       }
+
+      // Throw an exception if an exception has occurred while mapping
+      mapper.throwMappingException();
 
       // Set the description of the context
       status.setDescription(logMsg);

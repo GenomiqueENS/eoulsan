@@ -323,6 +323,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
       // Process to mapping
       parseSAMResults(this.process.getStout(), context);
       this.process.waitFor();
+      this.mapper.throwMappingException();
 
     } catch (IOException e) {
 

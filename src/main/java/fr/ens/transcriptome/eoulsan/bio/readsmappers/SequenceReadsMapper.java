@@ -207,17 +207,7 @@ public interface SequenceReadsMapper {
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  InputStream mapSE(File readsFile, GenomeDescription gd) throws IOException;
-
-  /**
-   * Map reads of fastq file in single end mode.
-   * @param readsFile fastq input file mapper
-   * @param gd genome description
-   * @param samFile output SAM file
-   * @throws IOException if an error occurs while mapping the reads
-   */
-  void mapSE(File readsFile, GenomeDescription gd, File samFile)
-      throws IOException;
+  MapperProcess mapSE(File readsFile, GenomeDescription gd) throws IOException;
 
   /**
    * Map reads of fastq file in single end mode.
@@ -234,19 +224,8 @@ public interface SequenceReadsMapper {
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  InputStream mapPE(File readsFile1, File readsFile2, GenomeDescription gd)
+  MapperProcess mapPE(File readsFile1, File readsFile2, GenomeDescription gd)
       throws IOException;
-
-  /**
-   * Map reads of fastq file in paired end mode.
-   * @param readsFile1 fastq input file with reads of the first end
-   * @param readsFile2 fastq input file with reads of the first end mapper
-   * @param gd genome description
-   * @param samFile output SAM file
-   * @throws IOException if an error occurs while mapping the reads
-   */
-  void mapPE(File readsFile1, File readsFile2, GenomeDescription gd,
-      File samFile) throws IOException;
 
   /**
    * Map reads of fastq file in paired end mode.
@@ -254,6 +233,12 @@ public interface SequenceReadsMapper {
    * @throws IOException if an error occurs while mapping the reads
    */
   MapperProcess mapPE(GenomeDescription gd) throws IOException;
+
+  /**
+   * Throws an exception if an exception has occurred while mapping.
+   * @throws IOException if an exception has occurred while mapping
+   */
+  void throwMappingException() throws IOException;
 
   //
   // Other methods

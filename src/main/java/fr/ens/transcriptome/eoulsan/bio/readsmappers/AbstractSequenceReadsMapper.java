@@ -32,7 +32,6 @@ import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -512,7 +511,6 @@ public abstract class AbstractSequenceReadsMapper implements
 
     FileUtils.checkExistingDirectoryFile(archiveIndexDir, getMapperName()
         + " index directory");
-
   }
 
   //
@@ -520,19 +518,8 @@ public abstract class AbstractSequenceReadsMapper implements
   //
 
   @Override
-  public final void mapPE(final File readsFile1, final File readsFile2,
-      final GenomeDescription gd, final File samFile) throws IOException {
-
-    // Check if the mapper has been initialized
-    checkState(this.initialized, "Mapper has not been initialized");
-
-    FileUtils.copy(mapPE(readsFile1, readsFile2, gd), new FileOutputStream(
-        samFile));
-  }
-
-  @Override
-  public final InputStream mapPE(final File readsFile1, final File readsFile2,
-      final GenomeDescription gd) throws IOException {
+  public final MapperProcess mapPE(final File readsFile1,
+      final File readsFile2, final GenomeDescription gd) throws IOException {
 
     // Check if the mapper has been initialized
     checkState(this.initialized, "Mapper has not been initialized");
@@ -558,22 +545,11 @@ public abstract class AbstractSequenceReadsMapper implements
     writeFirstPairEntries(readsFile1, mapperProcess);
     writeSecondPairEntries(readsFile2, mapperProcess);
 
-    // Returns SAM input stream
-    return mapperProcess.getStout();
+    return mapperProcess;
   }
 
   @Override
-  public final void mapSE(final File readsFile, final GenomeDescription gd,
-      final File samFile) throws IOException {
-
-    // Check if the mapper has been initialized
-    checkState(this.initialized, "Mapper has not been initialized");
-
-    FileUtils.copy(mapSE(readsFile, gd), new FileOutputStream(samFile));
-  }
-
-  @Override
-  public final InputStream mapSE(final File readsFile,
+  public final MapperProcess mapSE(final File readsFile,
       final GenomeDescription gd) throws IOException {
 
     // Check if the mapper has been initialized
@@ -595,8 +571,7 @@ public abstract class AbstractSequenceReadsMapper implements
     // Copy reads file to named pipe
     writeFirstPairEntries(readsFile, mapperProcess);
 
-    // Returns SAM input stream
-    return mapperProcess.getStout();
+    return mapperProcess;
   }
 
   /**
@@ -669,10 +644,7 @@ public abstract class AbstractSequenceReadsMapper implements
     t.start();
   }
 
-  /**
-   * Throws an exception if an exception has occurred while mapping.
-   * @throws IOException if an exception has occurred while mapping
-   */
+  @Override
   public void throwMappingException() throws IOException {
 
     if (this.mappingException != null) {
