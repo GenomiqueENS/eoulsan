@@ -36,7 +36,6 @@ import com.google.common.io.Files;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
@@ -238,8 +237,8 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected MapperProcess internalMapSE(final File archiveIndex,
-      final GenomeDescription gd) throws IOException {
+  protected MapperProcess internalMapSE(final File archiveIndex)
+      throws IOException {
 
     final String starPath;
 
@@ -251,8 +250,8 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected MapperProcess internalMapPE(final File archiveIndex,
-      final GenomeDescription gd) throws IOException {
+  protected MapperProcess internalMapPE(final File archiveIndex)
+      throws IOException {
 
     final String starPath;
 

@@ -277,11 +277,10 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     this.mapper.init(archiveIndexFile.open(), this.mapperIndexDir,
         new HadoopReporter(context), this.counterGroup);
 
-    // TODO Handle genome description
     if (pairedEnd) {
-      this.process = this.mapper.mapPE(null);
+      this.process = this.mapper.mapPE();
     } else {
-      this.process = this.mapper.mapSE(null);
+      this.process = this.mapper.mapSE();
     }
 
     // Unlock if mapper index had just been uncompressed

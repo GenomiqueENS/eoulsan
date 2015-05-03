@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
-import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
@@ -150,8 +149,8 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected MapperProcess internalMapSE(final File archiveIndexDir,
-      final GenomeDescription gd) throws IOException {
+  protected MapperProcess internalMapSE(final File archiveIndexDir)
+      throws IOException {
     final String gsnapPath;
 
     synchronized (SYNC) {
@@ -164,8 +163,8 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected MapperProcess internalMapPE(final File archiveIndexDir,
-      final GenomeDescription gd) throws IOException {
+  protected MapperProcess internalMapPE(final File archiveIndexDir)
+      throws IOException {
     final String gsnapPath;
 
     synchronized (SYNC) {

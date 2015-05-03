@@ -58,8 +58,6 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
   // Parameters keys
   static final String MAPPING_QUALITY_THRESOLD_KEY = Globals.PARAMETER_PREFIX
       + ".samfilter.mapping.quality.threshold";
-  static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
-      + ".samfilter.genome.desc.file";
 
   static final String SAM_HEADER_FILE_PREFIX = "_samheader_";
 

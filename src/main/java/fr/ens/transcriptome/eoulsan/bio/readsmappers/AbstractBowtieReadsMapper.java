@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 import fr.ens.transcriptome.eoulsan.util.Version;
@@ -191,8 +190,8 @@ public abstract class AbstractBowtieReadsMapper extends
   //
 
   @Override
-  protected MapperProcess internalMapSE(final File archiveIndexDir,
-      final GenomeDescription genomeDescription) throws IOException {
+  protected MapperProcess internalMapSE(final File archiveIndexDir)
+      throws IOException {
 
     final String bowtiePath;
 
@@ -239,8 +238,8 @@ public abstract class AbstractBowtieReadsMapper extends
   }
 
   @Override
-  protected MapperProcess internalMapPE(final File archiveIndexDir,
-      final GenomeDescription genomeDescription) throws IOException {
+  protected MapperProcess internalMapPE(final File archiveIndexDir)
+      throws IOException {
 
     final String bowtiePath;
 

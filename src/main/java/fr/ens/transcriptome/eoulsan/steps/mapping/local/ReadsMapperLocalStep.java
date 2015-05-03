@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.local;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.OWN_PARALLELIZATION;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 
@@ -39,11 +38,9 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.util.EnumSet;
 
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
-import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.MapperProcess;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
@@ -54,8 +51,6 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep;
 import fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -72,9 +67,6 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 @LocalOnly
 public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
 
-  private boolean firstSample = true;
-  private GenomeDescription genomeDescription;
-
   @Override
   public ParallelizationMode getParallelizationMode() {
 
@@ -87,7 +79,6 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort(READS_PORT_NAME, READS_FASTQ);
     builder.addPort(MAPPER_INDEX_PORT_NAME, getMapper().getArchiveFormat());
-    builder.addPort(GENOME_DESCRIPTION_PORT_NAME, GENOME_DESC_TXT);
 
     return builder.create();
   }
@@ -96,19 +87,6 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
   public StepResult execute(final StepContext context, final StepStatus status) {
 
     try {
-
-      // Load genome description object
-      if (this.firstSample) {
-        if (this.genomeDescription == null) {
-          this.genomeDescription =
-              GenomeDescription.load(context
-                  .getInputData(DataFormats.GENOME_DESC_TXT).getDataFile()
-                  .open());
-        } else {
-          this.genomeDescription = null;
-        }
-        this.firstSample = false;
-      }
 
       // Create the reporter
       final Reporter reporter = new LocalReporter();
@@ -161,8 +139,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
                 + " threads option");
 
         // Single read mapping
-        final MapperProcess process =
-            mapper.mapSE(inFile, this.genomeDescription);
+        final MapperProcess process = mapper.mapSE(inFile);
 
         // Parse output of the mapper
         parseSAMResults(process.getStout(), samFile, reporter);
@@ -194,8 +171,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
                 + mapper.getThreadsNumber() + " threads option");
 
         // Single read mapping
-        final MapperProcess process =
-            mapper.mapPE(inFile1, inFile2, this.genomeDescription);
+        final MapperProcess process = mapper.mapPE(inFile1, inFile2);
 
         // Parse output of the mapper
         parseSAMResults(process.getStout(), samFile, reporter);

@@ -39,7 +39,6 @@ import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqWriter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -222,8 +221,8 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected MapperProcess internalMapSE(final File archiveIndex,
-      final GenomeDescription gd) throws IOException {
+  protected MapperProcess internalMapSE(final File archiveIndex)
+      throws IOException {
 
     final String bwaPath;
 
@@ -238,8 +237,8 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected MapperProcess internalMapPE(final File archiveIndex,
-      final GenomeDescription gd) throws IOException {
+  protected MapperProcess internalMapPE(final File archiveIndex)
+      throws IOException {
 
     final String bwaPath;
 

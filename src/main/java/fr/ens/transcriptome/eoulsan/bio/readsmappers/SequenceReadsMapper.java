@@ -30,7 +30,6 @@ import java.io.InputStream;
 import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
-import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
@@ -204,57 +203,49 @@ public interface SequenceReadsMapper {
   /**
    * Map reads of fastq file in single end mode.
    * @param readsFile fastq input file mapper
-   * @param gd genome description
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  MapperProcess mapSE(DataFile readsFile, GenomeDescription gd)
-      throws IOException;
+  MapperProcess mapSE(DataFile readsFile) throws IOException;
 
   /**
    * Map reads of fastq file in single end mode.
    * @param readsFile fastq input file mapper
-   * @param gd genome description
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  MapperProcess mapSE(File readsFile, GenomeDescription gd) throws IOException;
+  MapperProcess mapSE(File readsFile) throws IOException;
 
   /**
    * Map reads of fastq file in single end mode.
-   * @param gd genome description
    * @throws IOException if an error occurs while mapping the reads
    */
-  MapperProcess mapSE(GenomeDescription gd) throws IOException;
+  MapperProcess mapSE() throws IOException;
 
   /**
    * Map reads of FASTQ file in paired end mode.
    * @param readsFile1 FASTQ input file with reads of the first end
    * @param readsFile2 FASTQ input file with reads of the first end mapper
-   * @param gd genome description
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  MapperProcess mapPE(DataFile readsFile1, DataFile readsFile2,
-      GenomeDescription gd) throws IOException;
-
-  /**
-   * Map reads of FASTQ file in paired end mode.
-   * @param readsFile1 FASTQ input file with reads of the first end
-   * @param readsFile2 FASTQ input file with reads of the first end mapper
-   * @param gd genome description
-   * @return an InputStream with SAM data
-   * @throws IOException if an error occurs while mapping the reads
-   */
-  MapperProcess mapPE(File readsFile1, File readsFile2, GenomeDescription gd)
+  MapperProcess mapPE(DataFile readsFile1, DataFile readsFile2)
       throws IOException;
 
   /**
    * Map reads of FASTQ file in paired end mode.
-   * @param gd genome description
+   * @param readsFile1 FASTQ input file with reads of the first end
+   * @param readsFile2 FASTQ input file with reads of the first end mapper
+   * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  MapperProcess mapPE(GenomeDescription gd) throws IOException;
+  MapperProcess mapPE(File readsFile1, File readsFile2) throws IOException;
+
+  /**
+   * Map reads of FASTQ file in paired end mode.
+   * @throws IOException if an error occurs while mapping the reads
+   */
+  MapperProcess mapPE() throws IOException;
 
   /**
    * Throws an exception if an exception has occurred while mapping.

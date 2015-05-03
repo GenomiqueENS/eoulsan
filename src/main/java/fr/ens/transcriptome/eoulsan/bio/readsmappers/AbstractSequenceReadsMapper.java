@@ -45,7 +45,6 @@ import com.google.common.base.Strings;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
-import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -518,8 +517,7 @@ public abstract class AbstractSequenceReadsMapper implements
   //
 
   @Override
-  public final MapperProcess mapSE(final DataFile readsFile,
-      final GenomeDescription gd) throws IOException {
+  public final MapperProcess mapSE(final DataFile readsFile) throws IOException {
 
     checkNotNull(readsFile, "readsFile is null");
 
@@ -529,12 +527,11 @@ public abstract class AbstractSequenceReadsMapper implements
 
     getLogger().fine("FASTQ file to map: " + readsFile);
 
-    return mapSE(readsFile.open(), gd);
+    return mapSE(readsFile.open());
   }
 
   @Override
-  public final MapperProcess mapSE(final File readsFile,
-      final GenomeDescription gd) throws IOException {
+  public final MapperProcess mapSE(final File readsFile) throws IOException {
 
     checkNotNull(readsFile, "readsFile is null");
     checkExistingStandardFile(readsFile,
@@ -542,18 +539,16 @@ public abstract class AbstractSequenceReadsMapper implements
 
     getLogger().fine("FASTQ file to map: " + readsFile);
 
-    return mapSE(new FileInputStream(readsFile), gd);
+    return mapSE(new FileInputStream(readsFile));
   }
 
   /**
    * Map reads of FASTQ file in single end mode.
    * @param in FASTQ input stream
-   * @param gd genome description
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  private final MapperProcess mapSE(final InputStream in,
-      final GenomeDescription gd) throws IOException {
+  private final MapperProcess mapSE(final InputStream in) throws IOException {
 
     checkNotNull(in, "in argument is null");
 
@@ -567,7 +562,7 @@ public abstract class AbstractSequenceReadsMapper implements
         this.archiveIndexDir);
 
     // Process to mapping
-    final MapperProcess mapperProcess = mapSE(gd);
+    final MapperProcess mapperProcess = mapSE();
 
     // Copy reads file to named pipe
     writeFirstPairEntries(in, mapperProcess);
@@ -577,7 +572,7 @@ public abstract class AbstractSequenceReadsMapper implements
 
   @Override
   public final MapperProcess mapPE(final DataFile readsFile1,
-      final DataFile readsFile2, final GenomeDescription gd) throws IOException {
+      final DataFile readsFile2) throws IOException {
 
     checkNotNull(readsFile1, "readsFile1 is null");
     checkNotNull(readsFile2, "readsFile2 is null");
@@ -593,12 +588,12 @@ public abstract class AbstractSequenceReadsMapper implements
     getLogger().fine("First pair FASTQ file to map: " + readsFile1);
     getLogger().fine("Second pair FASTQ file to map: " + readsFile2);
 
-    return mapPE(readsFile1.open(), readsFile2.open(), gd);
+    return mapPE(readsFile1.open(), readsFile2.open());
   }
 
   @Override
-  public final MapperProcess mapPE(final File readsFile1,
-      final File readsFile2, final GenomeDescription gd) throws IOException {
+  public final MapperProcess mapPE(final File readsFile1, final File readsFile2)
+      throws IOException {
 
     checkNotNull(readsFile1, "readsFile1 is null");
     checkNotNull(readsFile2, "readsFile2 is null");
@@ -612,19 +607,18 @@ public abstract class AbstractSequenceReadsMapper implements
     getLogger().fine("Second pair FASTQ file: " + readsFile2);
 
     return mapPE(new FileInputStream(readsFile1), new FileInputStream(
-        readsFile2), gd);
+        readsFile2));
   }
 
   /**
    * Map reads of FASTQ file in paired end mode.
    * @param in1 FASTQ input file with reads of the first end
    * @param in2 FASTQ input file with reads of the first end mapper
-   * @param gd genome description
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  private final MapperProcess mapPE(final InputStream in1,
-      final InputStream in2, final GenomeDescription gd) throws IOException {
+  private final MapperProcess mapPE(final InputStream in1, final InputStream in2)
+      throws IOException {
 
     checkNotNull(in1, "in1 argument is null");
     checkNotNull(in2, "in2 argument is null");
@@ -642,7 +636,7 @@ public abstract class AbstractSequenceReadsMapper implements
         this.archiveIndexDir);
 
     // Process to mapping
-    final MapperProcess mapperProcess = mapSE(gd);
+    final MapperProcess mapperProcess = mapSE();
 
     // Copy reads files to named pipes
     writeFirstPairEntries(in1, mapperProcess);
@@ -737,8 +731,7 @@ public abstract class AbstractSequenceReadsMapper implements
   //
 
   @Override
-  public final MapperProcess mapPE(final GenomeDescription gd)
-      throws IOException {
+  public final MapperProcess mapPE() throws IOException {
 
     // Check if the mapper has been initialized
     checkState(this.initialized, "Mapper has not been initialized");
@@ -750,7 +743,7 @@ public abstract class AbstractSequenceReadsMapper implements
         this.archiveIndexDir);
 
     // Process to mapping
-    final MapperProcess result = internalMapPE(this.archiveIndexDir, gd);
+    final MapperProcess result = internalMapPE(this.archiveIndexDir);
 
     // Set counter
     result.setIncrementer(this.incrementer, this.counterGroup);
@@ -759,8 +752,7 @@ public abstract class AbstractSequenceReadsMapper implements
   }
 
   @Override
-  public final MapperProcess mapSE(final GenomeDescription gd)
-      throws IOException {
+  public final MapperProcess mapSE() throws IOException {
 
     // Check if the mapper has been initialized
     checkState(this.initialized, "Mapper has not been initialized");
@@ -772,7 +764,7 @@ public abstract class AbstractSequenceReadsMapper implements
         this.archiveIndexDir);
 
     // Process to mapping
-    final MapperProcess result = internalMapSE(this.archiveIndexDir, gd);
+    final MapperProcess result = internalMapSE(this.archiveIndexDir);
 
     // Set counter
     result.setIncrementer(this.incrementer, this.counterGroup);
@@ -780,11 +772,11 @@ public abstract class AbstractSequenceReadsMapper implements
     return result;
   }
 
-  protected abstract MapperProcess internalMapPE(final File archiveIndex,
-      final GenomeDescription gd) throws IOException;
+  protected abstract MapperProcess internalMapPE(final File archiveIndex)
+      throws IOException;
 
-  protected abstract MapperProcess internalMapSE(final File archiveIndex,
-      final GenomeDescription gd) throws IOException;
+  protected abstract MapperProcess internalMapSE(final File archiveIndex)
+      throws IOException;
 
   //
   // Init

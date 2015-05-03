@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.steps.mapping;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.HADOOP_MAPPER_REQUIRED_MEMORY_PARAMETER_NAME;
@@ -227,7 +226,6 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort(READS_PORT_NAME, READS_FASTQ);
     builder.addPort(MAPPER_INDEX_PORT_NAME, this.mapper.getArchiveFormat());
-    builder.addPort(GENOME_DESCRIPTION_PORT_NAME, GENOME_DESC_TXT);
 
     return builder.create();
   }

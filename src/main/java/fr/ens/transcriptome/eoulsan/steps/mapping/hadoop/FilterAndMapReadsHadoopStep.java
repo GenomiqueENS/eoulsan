@@ -114,8 +114,6 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
           context.getOutputData(MAPPER_RESULTS_SAM, readsData).getDataFile();
       final DataFile mapperIndex =
           context.getInputData(MAPPER_INDEX_PORT_NAME).getDataFile();
-      final DataFile genomeDescFile =
-          context.getInputData(GENOME_DESCRIPTION_PORT_NAME).getDataFile();
 
       // Get FASTQ format
       final FastqFormat fastqFormat = readsData.getMetadata().getFastqFormat();
@@ -134,7 +132,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
         job =
             createJobConf(conf, context, dataName, inFile, filenames, false,
-                READS_FASTQ, fastqFormat, mapperIndex, genomeDescFile, samFile);
+                READS_FASTQ, fastqFormat, mapperIndex, samFile);
       } else {
 
         // Define input and output files
@@ -155,7 +153,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
         job =
             createJobConf(conf, context, dataName, tfqFile, filenames, true,
-                READS_TFQ, fastqFormat, mapperIndex, genomeDescFile, samFile);
+                READS_TFQ, fastqFormat, mapperIndex, samFile);
       }
 
       // Submit filter and map job
@@ -175,8 +173,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
       final StepContext context, final String dataName, final DataFile inFile,
       final List<String> filenames, final boolean pairedEnd,
       final DataFormat inputFormat, final FastqFormat fastqFormat,
-      final DataFile genomeIndexFile, final DataFile genomeDescFile,
-      final DataFile outFile) throws IOException {
+      final DataFile genomeIndexFile, final DataFile outFile)
+      throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -247,10 +245,6 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     //
     // Alignment filtering
     //
-
-    // Set Genome description path
-    jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,
-        genomeDescFile.getSource());
 
     // Set SAM filter parameters
     addParametersToJobConf(getAlignmentsFilterParameters(),
