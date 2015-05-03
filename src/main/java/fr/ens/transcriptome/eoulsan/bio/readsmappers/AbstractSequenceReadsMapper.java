@@ -504,9 +504,8 @@ public abstract class AbstractSequenceReadsMapper implements
             + getMapperName() + " index: " + archiveIndexDir);
       }
 
-      getLogger().fine(
-          "Unzip archiveIndexFile "
-              + archiveIndexFile + " in " + archiveIndexDir);
+      getLogger()
+          .fine("Unzip mapper archive index file  in " + archiveIndexDir);
       FileUtils.unzip(archiveIndexFile, archiveIndexDir);
     }
 
@@ -528,6 +527,8 @@ public abstract class AbstractSequenceReadsMapper implements
       throw new IOException("readsFile1 not exits");
     }
 
+    getLogger().fine("FASTQ file to map: " + readsFile);
+
     return mapSE(readsFile.open(), gd);
   }
 
@@ -538,6 +539,8 @@ public abstract class AbstractSequenceReadsMapper implements
     checkNotNull(readsFile, "readsFile is null");
     checkExistingStandardFile(readsFile,
         "readsFile1 not exits or is not a standard file.");
+
+    getLogger().fine("FASTQ file to map: " + readsFile);
 
     return mapSE(new FileInputStream(readsFile), gd);
   }
@@ -587,6 +590,9 @@ public abstract class AbstractSequenceReadsMapper implements
       throw new IOException("readsFile1 not exits");
     }
 
+    getLogger().fine("First pair FASTQ file to map: " + readsFile1);
+    getLogger().fine("Second pair FASTQ file to map: " + readsFile2);
+
     return mapPE(readsFile1.open(), readsFile2.open(), gd);
   }
 
@@ -601,6 +607,9 @@ public abstract class AbstractSequenceReadsMapper implements
         "readsFile1 not exits or is not a standard file.");
     checkExistingStandardFile(readsFile2,
         "readsFile2 not exits or is not a standard file.");
+
+    getLogger().fine("First pair FASTQ file: " + readsFile1);
+    getLogger().fine("Second pair FASTQ file: " + readsFile2);
 
     return mapPE(new FileInputStream(readsFile1), new FileInputStream(
         readsFile2), gd);
@@ -823,6 +832,8 @@ public abstract class AbstractSequenceReadsMapper implements
       throw new IOException("The archive index file not exits");
     }
 
+    getLogger().fine("Mapper index archive file: " + archiveIndexFile);
+
     init(archiveIndexFile.open(), archiveIndexDir, incrementer, counterGroup);
   }
 
@@ -835,6 +846,8 @@ public abstract class AbstractSequenceReadsMapper implements
 
     checkExistingStandardFile(archiveIndexFile,
         "The archive index file not exits or is not a standard file");
+
+    getLogger().fine("Mapper index archive file: " + archiveIndexFile);
 
     init(new FileInputStream(archiveIndexFile), archiveIndexDir, incrementer,
         counterGroup);
