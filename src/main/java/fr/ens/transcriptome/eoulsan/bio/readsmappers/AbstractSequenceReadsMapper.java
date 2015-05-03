@@ -48,6 +48,7 @@ import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -518,48 +519,45 @@ public abstract class AbstractSequenceReadsMapper implements
   //
 
   @Override
-  public final MapperProcess mapPE(final File readsFile1,
-      final File readsFile2, final GenomeDescription gd) throws IOException {
+  public final MapperProcess mapSE(final DataFile readsFile,
+      final GenomeDescription gd) throws IOException {
 
-    // Check if the mapper has been initialized
-    checkState(this.initialized, "Mapper has not been initialized");
+    checkNotNull(readsFile, "readsFile is null");
 
-    getLogger().fine("Mapping with " + getMapperName() + " in pair-end mode");
+    if (!readsFile.exists()) {
+      throw new IOException("readsFile1 not exits");
+    }
 
-    checkNotNull(readsFile1, "readsFile1 is null");
-    checkNotNull(readsFile2, "readsFile2 is null");
-
-    checkExistingStandardFile(readsFile1,
-        "readsFile1 not exits or is not a standard file.");
-    checkExistingStandardFile(readsFile2,
-        "readsFile2 not exits or is not a standard file.");
-
-    // Unzip archive index if necessary
-    unzipArchiveIndexFile(this.archiveIndexFileInputStream,
-        this.archiveIndexDir);
-
-    // Process to mapping
-    final MapperProcess mapperProcess = mapSE(gd);
-
-    // Copy reads files to named pipes
-    writeFirstPairEntries(readsFile1, mapperProcess);
-    writeSecondPairEntries(readsFile2, mapperProcess);
-
-    return mapperProcess;
+    return mapSE(readsFile.open(), gd);
   }
 
   @Override
   public final MapperProcess mapSE(final File readsFile,
       final GenomeDescription gd) throws IOException {
 
+    checkNotNull(readsFile, "readsFile is null");
+    checkExistingStandardFile(readsFile,
+        "readsFile1 not exits or is not a standard file.");
+
+    return mapSE(new FileInputStream(readsFile), gd);
+  }
+
+  /**
+   * Map reads of FASTQ file in single end mode.
+   * @param in FASTQ input stream
+   * @param gd genome description
+   * @return an InputStream with SAM data
+   * @throws IOException if an error occurs while mapping the reads
+   */
+  private final MapperProcess mapSE(final InputStream in,
+      final GenomeDescription gd) throws IOException {
+
+    checkNotNull(in, "in argument is null");
+
     // Check if the mapper has been initialized
     checkState(this.initialized, "Mapper has not been initialized");
 
     getLogger().fine("Mapping with " + getMapperName() + " in single-end mode");
-
-    checkNotNull(readsFile, "readsFile1 is null");
-    checkExistingStandardFile(readsFile,
-        "readsFile1 not exits or is not a standard file.");
 
     // Unzip archive index if necessary
     unzipArchiveIndexFile(this.archiveIndexFileInputStream,
@@ -569,19 +567,92 @@ public abstract class AbstractSequenceReadsMapper implements
     final MapperProcess mapperProcess = mapSE(gd);
 
     // Copy reads file to named pipe
-    writeFirstPairEntries(readsFile, mapperProcess);
+    writeFirstPairEntries(in, mapperProcess);
+
+    return mapperProcess;
+  }
+
+  @Override
+  public final MapperProcess mapPE(final DataFile readsFile1,
+      final DataFile readsFile2, final GenomeDescription gd) throws IOException {
+
+    checkNotNull(readsFile1, "readsFile1 is null");
+    checkNotNull(readsFile2, "readsFile2 is null");
+
+    if (!readsFile1.exists()) {
+      throw new IOException("readsFile1 not exits");
+    }
+
+    if (!readsFile2.exists()) {
+      throw new IOException("readsFile1 not exits");
+    }
+
+    return mapPE(readsFile1.open(), readsFile2.open(), gd);
+  }
+
+  @Override
+  public final MapperProcess mapPE(final File readsFile1,
+      final File readsFile2, final GenomeDescription gd) throws IOException {
+
+    checkNotNull(readsFile1, "readsFile1 is null");
+    checkNotNull(readsFile2, "readsFile2 is null");
+
+    checkExistingStandardFile(readsFile1,
+        "readsFile1 not exits or is not a standard file.");
+    checkExistingStandardFile(readsFile2,
+        "readsFile2 not exits or is not a standard file.");
+
+    return mapPE(new FileInputStream(readsFile1), new FileInputStream(
+        readsFile2), gd);
+  }
+
+  /**
+   * Map reads of FASTQ file in paired end mode.
+   * @param in1 FASTQ input file with reads of the first end
+   * @param in2 FASTQ input file with reads of the first end mapper
+   * @param gd genome description
+   * @return an InputStream with SAM data
+   * @throws IOException if an error occurs while mapping the reads
+   */
+  private final MapperProcess mapPE(final InputStream in1,
+      final InputStream in2, final GenomeDescription gd) throws IOException {
+
+    checkNotNull(in1, "in1 argument is null");
+    checkNotNull(in2, "in2 argument is null");
+
+    // Check if the mapper has been initialized
+    checkState(this.initialized, "Mapper has not been initialized");
+
+    getLogger().fine("Mapping with " + getMapperName() + " in pair-end mode");
+
+    checkNotNull(in1, "readsFile1 is null");
+    checkNotNull(in2, "readsFile2 is null");
+
+    // Unzip archive index if necessary
+    unzipArchiveIndexFile(this.archiveIndexFileInputStream,
+        this.archiveIndexDir);
+
+    // Process to mapping
+    final MapperProcess mapperProcess = mapSE(gd);
+
+    // Copy reads files to named pipes
+    writeFirstPairEntries(in1, mapperProcess);
+    writeSecondPairEntries(in2, mapperProcess);
 
     return mapperProcess;
   }
 
   /**
    * Write first pairs entries to the mapper process
-   * @param inputFile first pairs FASTQ file
+   * @param in first pairs FASTQ file
    * @param mp mapper process
    * @throws FileNotFoundException if the input cannot be found
    */
-  private void writeFirstPairEntries(final File inputFile,
+  private void writeFirstPairEntries(final InputStream in,
       final MapperProcess mp) throws FileNotFoundException {
+
+    checkNotNull(in, "in argument cannot be null");
+    checkNotNull(mp, "mp argument cannot be null");
 
     final Thread t = new Thread(new Runnable() {
 
@@ -589,7 +660,7 @@ public abstract class AbstractSequenceReadsMapper implements
       public void run() {
 
         try {
-          final FastqReader reader = new FastqReader(inputFile);
+          final FastqReader reader = new FastqReader(in);
 
           for (ReadSequence read : reader) {
             mp.writeEntry1(read);
@@ -601,7 +672,6 @@ public abstract class AbstractSequenceReadsMapper implements
         } catch (IOException e) {
           mappingException = e;
         }
-
       }
     });
 
@@ -610,12 +680,15 @@ public abstract class AbstractSequenceReadsMapper implements
 
   /**
    * Write first pairs entries to the mapper process
-   * @param inputFile first pairs FASTQ file
+   * @param in first pairs FASTQ file
    * @param mp mapper process
    * @throws FileNotFoundException if the input cannot be found
    */
-  private void writeSecondPairEntries(final File inputFile,
+  private void writeSecondPairEntries(final InputStream in,
       final MapperProcess mp) throws FileNotFoundException {
+
+    checkNotNull(in, "in argument cannot be null");
+    checkNotNull(mp, "mp argument cannot be null");
 
     final Thread t = new Thread(new Runnable() {
 
@@ -624,10 +697,9 @@ public abstract class AbstractSequenceReadsMapper implements
 
         try {
 
-          final FastqReader reader = new FastqReader(inputFile);
+          final FastqReader reader = new FastqReader(in);
 
           for (ReadSequence read : reader) {
-
             mp.writeEntry2(read);
           }
 
@@ -637,7 +709,6 @@ public abstract class AbstractSequenceReadsMapper implements
         } catch (IOException e) {
           mappingException = e;
         }
-
       }
     });
 
@@ -742,13 +813,28 @@ public abstract class AbstractSequenceReadsMapper implements
   }
 
   @Override
+  public void init(final DataFile archiveIndexFile, final File archiveIndexDir,
+      final ReporterIncrementer incrementer, final String counterGroup)
+      throws IOException {
+
+    checkNotNull(archiveIndexFile, "archiveIndexFile is null");
+
+    if (!archiveIndexFile.exists()) {
+      throw new IOException("The archive index file not exits");
+    }
+
+    init(archiveIndexFile.open(), archiveIndexDir, incrementer, counterGroup);
+  }
+
+  @Override
   public void init(final File archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
       throws IOException {
 
     checkNotNull(archiveIndexFile, "archiveIndexFile is null");
+
     checkExistingStandardFile(archiveIndexFile,
-        "The archive index file not exits or is not a standard file.");
+        "The archive index file not exits or is not a standard file");
 
     init(new FileInputStream(archiveIndexFile), archiveIndexDir, incrementer,
         counterGroup);

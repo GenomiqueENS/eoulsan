@@ -53,6 +53,7 @@ import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.Data;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep;
@@ -84,11 +85,9 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
   public InputPorts getInputPorts() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
-    builder.addPort(READS_PORT_NAME, READS_FASTQ,
-        EnumSet.of(CompressionType.NONE), true);
-    builder.addPort(MAPPER_INDEX_PORT_NAME, getMapper().getArchiveFormat(),
-        true);
-    builder.addPort(GENOME_DESCRIPTION_PORT_NAME, GENOME_DESC_TXT, true);
+    builder.addPort(READS_PORT_NAME, READS_FASTQ);
+    builder.addPort(MAPPER_INDEX_PORT_NAME, getMapper().getArchiveFormat());
+    builder.addPort(GENOME_DESCRIPTION_PORT_NAME, GENOME_DESC_TXT);
 
     return builder.create();
   }
@@ -114,13 +113,12 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       // Create the reporter
       final Reporter reporter = new LocalReporter();
 
-      final File archiveIndexFile =
-          context.getInputData(getMapper().getArchiveFormat()).getDataFile()
-              .toFile();
+      final DataFile archiveIndexFile =
+          context.getInputData(getMapper().getArchiveFormat()).getDataFile();
 
       final File indexDir =
           new File(StringUtils.filenameWithoutExtension(archiveIndexFile
-              .getPath()));
+              .toUri().getPath()));
 
       // Get input data
       final Data inData = context.getInputData(READS_FASTQ);
@@ -153,8 +151,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       if (inData.getDataFileCount() == 1) {
 
         // Get the source
-        final File inFile =
-            context.getInputData(READS_FASTQ).getDataFile(0).toFile();
+        final DataFile inFile =
+            context.getInputData(READS_FASTQ).getDataFile(0);
 
         getLogger().info(
             "Map file: "
@@ -183,11 +181,11 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       if (inData.getDataFileCount() == 2) {
 
         // Get the source
-        final File inFile1 =
-            context.getInputData(READS_FASTQ).getDataFile(0).toFile();
+        final DataFile inFile1 =
+            context.getInputData(READS_FASTQ).getDataFile(0);
 
-        final File inFile2 =
-            context.getInputData(READS_FASTQ).getDataFile(1).toFile();
+        final DataFile inFile2 =
+            context.getInputData(READS_FASTQ).getDataFile(1);
 
         getLogger().info(
             "Map files: "
@@ -243,7 +241,7 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
    * @throws IOException
    */
   private SequenceReadsMapper initMapper(final StepContext context,
-      final FastqFormat format, final File archiveIndexFile,
+      final FastqFormat format, final DataFile archiveIndexFile,
       final File indexDir, final Reporter reporter) throws IOException {
 
     final SequenceReadsMapper mapper = getMapper();

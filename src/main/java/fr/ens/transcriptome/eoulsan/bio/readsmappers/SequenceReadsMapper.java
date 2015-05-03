@@ -31,6 +31,7 @@ import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
@@ -207,6 +208,16 @@ public interface SequenceReadsMapper {
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
+  MapperProcess mapSE(DataFile readsFile, GenomeDescription gd)
+      throws IOException;
+
+  /**
+   * Map reads of fastq file in single end mode.
+   * @param readsFile fastq input file mapper
+   * @param gd genome description
+   * @return an InputStream with SAM data
+   * @throws IOException if an error occurs while mapping the reads
+   */
   MapperProcess mapSE(File readsFile, GenomeDescription gd) throws IOException;
 
   /**
@@ -217,9 +228,20 @@ public interface SequenceReadsMapper {
   MapperProcess mapSE(GenomeDescription gd) throws IOException;
 
   /**
-   * Map reads of fastq file in paired end mode.
-   * @param readsFile1 fastq input file with reads of the first end
-   * @param readsFile2 fastq input file with reads of the first end mapper
+   * Map reads of FASTQ file in paired end mode.
+   * @param readsFile1 FASTQ input file with reads of the first end
+   * @param readsFile2 FASTQ input file with reads of the first end mapper
+   * @param gd genome description
+   * @return an InputStream with SAM data
+   * @throws IOException if an error occurs while mapping the reads
+   */
+  MapperProcess mapPE(DataFile readsFile1, DataFile readsFile2,
+      GenomeDescription gd) throws IOException;
+
+  /**
+   * Map reads of FASTQ file in paired end mode.
+   * @param readsFile1 FASTQ input file with reads of the first end
+   * @param readsFile2 FASTQ input file with reads of the first end mapper
    * @param gd genome description
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
@@ -228,7 +250,7 @@ public interface SequenceReadsMapper {
       throws IOException;
 
   /**
-   * Map reads of fastq file in paired end mode.
+   * Map reads of FASTQ file in paired end mode.
    * @param gd genome description
    * @throws IOException if an error occurs while mapping the reads
    */
@@ -254,7 +276,18 @@ public interface SequenceReadsMapper {
    * Initialize the mapper before the mapping.
    * @param archiveIndexFile genome index for the mapper as a ZIP file
    * @param archiveIndexDir uncompressed directory for the genome index
-   * @param incrementer the incrementer to report the processing of the fastq
+   * @param incrementer the incrementer to report the processing of the FASTQ
+   *          files
+   * @param counterGroup the group for the reporter
+   */
+  void init(DataFile archiveIndexFile, File archiveIndexDir,
+      ReporterIncrementer incrementer, String counterGroup) throws IOException;
+
+  /**
+   * Initialize the mapper before the mapping.
+   * @param archiveIndexFile genome index for the mapper as a ZIP file
+   * @param archiveIndexDir uncompressed directory for the genome index
+   * @param incrementer the incrementer to report the processing of the FASTQ
    *          files
    * @param counterGroup the group for the reporter
    */
@@ -266,7 +299,7 @@ public interface SequenceReadsMapper {
    * @param archiveIndexInputStream genome index for the mapper as a ZIP input
    *          stream
    * @param archiveIndexDir uncompressed directory for the genome index
-   * @param incrementer the incrementer to report the processing of the fastq
+   * @param incrementer the incrementer to report the processing of the FASTQ
    *          files
    * @param counterGroup the group for the reporter
    */
