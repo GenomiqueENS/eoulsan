@@ -31,12 +31,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URI;
 import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -56,7 +58,6 @@ import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
@@ -109,7 +110,20 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
   private SequenceReadsMapper mapper;
   private MapperProcess process;
+  private Thread samResultsParserThread;
+  private final BlockingDeque<String> queue = new LinkedBlockingDeque<>();
+  private final ExceptionWrapper exception = new ExceptionWrapper();
+  private int entriesParsed;
+  private boolean writeHeaders;
+
   private final List<String> fields = new ArrayList<>();
+
+  private final Text outKey = new Text();
+  private final Text outValue = new Text();
+
+  private static final class ExceptionWrapper {
+    private IOException exception;
+  }
 
   /**
    * 'key': offset of the beginning of the line from the beginning of the TFQ
@@ -118,7 +132,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
    */
   @Override
   protected void map(final Text key, final Text value, final Context context)
-      throws IOException {
+      throws IOException, InterruptedException {
 
     this.fields.clear();
     for (String e : TAB_SPLITTER.split(value.toString())) {
@@ -141,6 +155,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
           this.fields.get(5));
     }
 
+    writeResults(context, this.writeHeaders);
   }
 
   @Override
@@ -265,13 +280,12 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     // Update last used file timestamp for the mapper indexes clean up
     updateLastUsedMapperIndex(this.mapperIndexDir);
 
-    final boolean indexMustBeUncompressed = !this.mapperIndexDir.exists();
+    context.setStatus("Wait free JVM for running "
+        + this.mapper.getMapperName());
 
-    // Lock if mapper index must be uncompressed
-    if (indexMustBeUncompressed) {
-      ProcessUtils.waitRandom(5000);
-      this.lock.lock();
-    }
+    // Lock if mapper
+    ProcessUtils.waitRandom(5000);
+    this.lock.lock();
 
     // Init mapper
     this.mapper.init(archiveIndexFile.open(), this.mapperIndexDir,
@@ -282,11 +296,15 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     } else {
       this.process = this.mapper.mapSE();
     }
+    this.lock.unlock();
 
-    // Unlock if mapper index had just been uncompressed
-    if (indexMustBeUncompressed) {
-      this.lock.unlock();
-    }
+    this.writeHeaders = context.getTaskAttemptID().getTaskID().getId() == 0;
+
+    // Wait free JVM
+    waitFreeJVM(context);
+    this.samResultsParserThread = startParseSAMResultsThread(this.process);
+
+    context.setStatus("Run " + this.mapper.getMapperName());
 
     getLogger().info("End of setup()");
   }
@@ -297,43 +315,21 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
     getLogger().info("Start of cleanup() of the mapper.");
 
-    context.setStatus("Wait free JVM for running "
-        + this.mapper.getMapperName());
-    final long waitStartTime = System.currentTimeMillis();
+    // Wait the end of the SAM parsing
+    this.samResultsParserThread.join();
 
-    ProcessUtils.waitRandom(5000);
-    this.lock.lock();
+    this.process.waitFor();
+    this.mapper.throwMappingException();
 
-    try {
-      ProcessUtils.waitUntilExecutableRunning(this.mapper.getMapperName()
-          .toLowerCase());
+    this.lock.unlock();
 
-      getLogger().info(
-          "Wait "
-              + StringUtils.toTimeHumanReadable(System.currentTimeMillis()
-                  - waitStartTime) + " before running "
-              + this.mapper.getMapperName());
+    // Write headers
+    writeResults(context, this.writeHeaders);
 
-      // Close the data file
-      this.process.closeEntriesWriter();
-
-      context.setStatus("Run " + this.mapper.getMapperName());
-
-      // Process to mapping
-      parseSAMResults(this.process.getStout(), context);
-      this.process.waitFor();
-      this.mapper.throwMappingException();
-
-    } catch (IOException e) {
-
-      getLogger().severe(
-          "Error while running "
-              + this.mapper.getMapperName() + ": " + e.getMessage());
-      throw e;
-
-    } finally {
-      this.lock.unlock();
-    }
+    getLogger().info(
+        this.entriesParsed
+            + " entries parsed in " + this.mapper.getMapperName()
+            + " output file");
 
     // Clear old mapper indexes
     removeUnusedMapperIndexes(context.getConfiguration());
@@ -341,41 +337,86 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     getLogger().info("End of close() of the mapper.");
   }
 
+  //
+  // Other mapping methods
+  //
+
   /**
-   * Parse mapper output.
-   * @param in mapper result input stream
-   * @param context Hadoop context
-   * @throws IOException if an error occurs while parsing the mapper output
-   * @throws InterruptedException if an error occurs while parsing the mapper
-   *           output
+   * Wait a free JVM.
+   * @param context the Hadoop context
    */
-  private final void parseSAMResults(final InputStream in, final Context context)
-      throws IOException, InterruptedException {
+  private void waitFreeJVM(final Context context) {
 
-    String line;
+    final long waitStartTime = System.currentTimeMillis();
 
-    final Text outKey = new Text();
-    final Text outValue = new Text();
+    ProcessUtils.waitUntilExecutableRunning(this.mapper.getMapperName()
+        .toLowerCase());
 
-    // Parse SAM result file
-    final BufferedReader readerResults = FileUtils.createBufferedReader(in);
+    getLogger().info(
+        "Wait "
+            + StringUtils.toTimeHumanReadable(System.currentTimeMillis()
+                - waitStartTime) + " before running "
+            + this.mapper.getMapperName());
 
-    final int taskId = context.getTaskAttemptID().getTaskID().getId();
+    context.setStatus("Run " + this.mapper.getMapperName());
 
-    int entriesParsed = 0;
+  }
 
-    while ((line = readerResults.readLine()) != null) {
+  /**
+   * Start SAM parser result thread.
+   * @param mp the mapper process
+   * @return the created thread
+   */
+  private Thread startParseSAMResultsThread(final MapperProcess mp) {
 
-      final String trimmedLine = line.trim();
-      if (trimmedLine.length() == 0) {
+    final Thread t = new Thread(new Runnable() {
+
+      @Override
+      public void run() {
+
+        // Parse SAM result file
+
+        String line;
+        try (BufferedReader readerResults =
+            new BufferedReader(new InputStreamReader(mp.getStout()))) {
+          while ((line = readerResults.readLine()) != null) {
+
+            queue.add(line);
+          }
+        } catch (IOException e) {
+          exception.exception = e;
+        }
+      }
+    });
+
+    t.start();
+
+    return t;
+  }
+
+  /**
+   * Write results.
+   * @param context the Hadoop context
+   * @param writeHeader true if SAM header must be written
+   * @throws InterruptedException if an error occurs while writing data
+   * @throws IOException if an error occurs while writing data
+   */
+  private void writeResults(final Context context, boolean writeHeader)
+      throws InterruptedException, IOException {
+
+    while (!this.queue.isEmpty()) {
+
+      final String line = this.queue.take().trim();
+
+      if (line.length() == 0) {
         continue;
       }
 
       // Test if line is an header line
-      final boolean headerLine = trimmedLine.charAt(0) == '@';
+      final boolean headerLine = line.charAt(0) == '@';
 
       // Only write header lines once (on the first output file)
-      if (headerLine && taskId > 0) {
+      if (headerLine && !writeHeader) {
         continue;
       }
 
@@ -390,33 +431,32 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
         }
 
         // Increment counters if not header
-        entriesParsed++;
+        this.entriesParsed++;
         context.getCounter(this.counterGroup,
             OUTPUT_MAPPING_ALIGNMENTS_COUNTER.counterName()).increment(1);
 
       } else {
 
         // Set empty key for headers
-        outKey.set("");
+        this.outKey.set("");
       }
 
       // Set the output value
-      outValue.set(line);
+      this.outValue.set(line);
 
       // Write the result
-      context.write(outKey, outValue);
+      context.write(this.outKey, this.outValue);
+
     }
 
-    readerResults.close();
-
-    getLogger().info(
-        entriesParsed
-            + " entries parsed in " + this.mapper.getMapperName()
-            + " output file");
+    // Throw reader exception if exists
+    if (this.exception.exception != null) {
+      throw this.exception.exception;
+    }
   }
 
   //
-  // Old mapper indexes cleanup methods
+  // Old mappers indexes cleanup methods
   //
 
   /**
