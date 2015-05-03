@@ -83,6 +83,7 @@ public abstract class AbstractSequenceReadsMapper implements
   private String mapperArguments = null;
   private String indexerArguments = null;
   private File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
+  private boolean multipleInstancesEnabled;
 
   private ReporterIncrementer incrementer;
   private String counterGroup;
@@ -212,6 +213,18 @@ public abstract class AbstractSequenceReadsMapper implements
     return this.tempDir;
   }
 
+  @Override
+  public boolean isMultipleInstancesAllowed() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public boolean isMultipleInstancesEnabled() {
+
+    return this.multipleInstancesEnabled;
+  }
+
   /**
    * Convenient method to directly get the absolute path for the temporary
    * directory.
@@ -305,6 +318,17 @@ public abstract class AbstractSequenceReadsMapper implements
     if (flavor != null) {
       this.flavor = flavor;
     }
+  }
+
+  @Override
+  public void setMultipleInstancesEnabled(final boolean enable) {
+
+    if (isMultipleInstancesAllowed() && enable == true) {
+      this.multipleInstancesEnabled = true;
+    } else {
+      this.multipleInstancesEnabled = false;
+    }
+
   }
 
   //

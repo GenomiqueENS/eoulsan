@@ -83,6 +83,14 @@ public interface SequenceReadsMapper {
    */
   boolean isSplitsAllowed();
 
+  /**
+   * Test if multiples instances of the read mapper can be used at the same
+   * time.
+   * @return true if multiples instances of the read mapper can be used at the
+   *         same time
+   */
+  boolean isMultipleInstancesAllowed();
+
   //
   // Index creation methods
   //
@@ -195,6 +203,22 @@ public interface SequenceReadsMapper {
    * @return the FASTQ format
    */
   FastqFormat getFastqFormat();
+
+  /**
+   * Test if multiples instances of the read mapper must be used at the same
+   * time.
+   * @return true if multiples instances of the read mapper must be used at the
+   *         same time
+   */
+  boolean isMultipleInstancesEnabled();
+
+  /**
+   * set if multiples instances of the read mapper must be used at the same
+   * time.
+   * @param enable true if multiples instances of the read mapper must be used
+   *          at the same time
+   */
+  void setMultipleInstancesEnabled(boolean enable);
 
   //
   // Mapping methods

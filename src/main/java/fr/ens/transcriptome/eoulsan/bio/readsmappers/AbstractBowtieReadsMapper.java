@@ -60,6 +60,11 @@ public abstract class AbstractBowtieReadsMapper extends
   }
 
   @Override
+  public boolean isMultipleInstancesAllowed() {
+    return true;
+  };
+
+  @Override
   protected boolean checkIfFlavorExists() {
 
     final String flavor = getMapperFlavorToUse();
@@ -202,7 +207,6 @@ public abstract class AbstractBowtieReadsMapper extends
     // Get index argument
     final String index = getIndexArgument(archiveIndexDir);
 
-    // TODO Warning streaming mode not currently enabled
     return new MapperProcess(this, false) {
 
       @Override
@@ -211,15 +215,14 @@ public abstract class AbstractBowtieReadsMapper extends
         // Build the command line
         final List<String> cmd = new ArrayList<>();
 
-        // TODO enable memory mapped in streaming mode
         // Add common arguments
         cmd.addAll(createCommonArgs(bowtiePath, index, false, false));
 
-        // TODO Enable this in streaming mode
-        // Input from stdin
-        // cmd.add("-");
+        // Enable Index memory mapped in streaming mode
+        if (isMultipleInstancesEnabled()) {
+          cmd.add("--mm");
+        }
 
-        // TODO Remove this when streaming mode will be enabled
         // Input from temporary FASTQ file
         cmd.add(getNamedPipeFile1().getAbsolutePath());
 
@@ -250,40 +253,26 @@ public abstract class AbstractBowtieReadsMapper extends
     // Get index argument
     final String index = getIndexArgument(archiveIndexDir);
 
-    // TODO Warning streaming mode not currently enabled
     return new MapperProcess(this, true) {
 
       @Override
-      public void writeEntry(final String name1, final String sequence1,
-          final String quality1, final String name2, final String sequence2,
-          final String quality2) throws IOException {
-
-        // TODO Write reads in Crossbow format when streaming mode will be
-        // enabled
-        super
-            .writeEntry(name1, sequence1, quality1, name2, sequence2, quality2);
-      }
-
-      @Override
       protected List<List<String>> createCommandLines() {
+
         // Build the command line
         final List<String> cmd = new ArrayList<>();
 
-        // TODO enable memory mapped in streaming mode
         // Add common arguments
         cmd.addAll(createCommonArgs(bowtiePath, index, false, false));
 
-        // TODO enable this in streaming mode
-        // Read input from stdin (streaming mode)
-        // cmd.add("-12");
-        // cmd.add("-");
+        // Enable Index memory mapped in streaming mode
+        if (isMultipleInstancesEnabled()) {
+          cmd.add("--mm");
+        }
 
-        // TODO Remove this when streaming mode will be enabled
         // First end input FASTQ file
         cmd.add("-1");
         cmd.add(getNamedPipeFile1().getAbsolutePath());
 
-        // TODO Remove this when streaming mode will be enabled
         // Second end input FASTQ file
         cmd.add("-2");
         cmd.add(getNamedPipeFile2().getAbsolutePath());

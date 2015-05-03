@@ -257,7 +257,10 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
       mapperThreads = Runtime.getRuntime().availableProcessors();
     }
 
-    this.mapper.setThreadsNumber(mapperThreads);
+    this.mapper.setMultipleInstancesEnabled(true);
+    if (!this.mapper.isMultipleInstancesEnabled()) {
+      this.mapper.setThreadsNumber(mapperThreads);
+    }
     getLogger().info(
         "Use "
             + this.mapper.getMapperName() + " with " + mapperThreads
@@ -296,12 +299,19 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     } else {
       this.process = this.mapper.mapSE();
     }
-    this.lock.unlock();
+
+    // Lock if no multiple instances enabled
+    if (this.mapper.isMultipleInstancesEnabled()) {
+
+      // Unlock
+      this.lock.unlock();
+    } else {
+
+      // Wait free JVM
+      waitFreeJVM(context);
+    }
 
     this.writeHeaders = context.getTaskAttemptID().getTaskID().getId() == 0;
-
-    // Wait free JVM
-    waitFreeJVM(context);
     this.samResultsParserThread = startParseSAMResultsThread(this.process);
 
     context.setStatus("Run " + this.mapper.getMapperName());
@@ -321,7 +331,10 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     this.process.waitFor();
     this.mapper.throwMappingException();
 
-    this.lock.unlock();
+    // Unlock if no multiple instances enabled
+    if (!this.mapper.isMultipleInstancesEnabled()) {
+      this.lock.unlock();
+    }
 
     // Write headers
     writeResults(context, this.writeHeaders);
