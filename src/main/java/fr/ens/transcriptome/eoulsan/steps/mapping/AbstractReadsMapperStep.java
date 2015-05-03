@@ -35,7 +35,6 @@ import java.util.Set;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.bio.readsmappers.SOAPReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
@@ -312,13 +311,10 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
     case MAPPER_NAME_PARAMETER_NAME:
 
-      if (SOAPReadsMapper.MAPPER_NAME.toLowerCase().equals(
-          parameter.getLowerStringValue())) {
-        getLogger()
-            .warning(
-                "The "
-                    + SOAPReadsMapper.MAPPER_NAME
-                    + " mapper support is deprecated");
+      if ("soap".equals(parameter.getLowerStringValue())) {
+
+        throw new EoulsanException(
+            "The SOAP mapper support has been removed from " + Globals.APP_NAME);
       }
 
       break;
