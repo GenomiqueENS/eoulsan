@@ -62,6 +62,8 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   public static final String MAPPER_NAME_PARAMETER_NAME = "mapper";
   public static final String MAPPER_VERSION_PARAMETER_NAME = "mapper.version";
   public static final String MAPPER_FLAVOR_PARAMETER_NAME = "mapper.flavor";
+  public static final String USE_BUNDLED_BINARIES_PARAMETER_NAME =
+      "mapper.use.bundled.binares";
 
   public static final String MAPPER_ARGUMENTS_PARAMETER_NAME =
       "mapper.arguments";
@@ -79,6 +81,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   private SequenceReadsMapper mapper;
   private String mapperVersion = "";
   private String mapperFlavor = "";
+  private boolean useBundledBinaries = true;
   private String mapperArguments;
 
   private int reducerTaskCount = -1;
@@ -113,6 +116,14 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
    */
   protected String getMapperFlavor() {
     return this.mapperFlavor;
+  }
+
+  /**
+   * Test if the bundled binaries must be used to perform the step.
+   * @return true if the bundled binaries must be used to perform the step
+   */
+  protected boolean isUseBundledBinaries() {
+    return this.useBundledBinaries;
   }
 
   /**
@@ -221,6 +232,10 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
         this.mapperFlavor = p.getStringValue();
         break;
 
+      case USE_BUNDLED_BINARIES_PARAMETER_NAME:
+        this.useBundledBinaries = p.getBooleanValue();
+        break;
+
       case MAPPER_ARGUMENTS_PARAMETER_NAME:
         this.mapperArguments = p.getStringValue();
         break;
@@ -274,8 +289,10 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
     // Check if the binary for the mapper is available
     try {
+
       this.mapper.setMapperVersionToUse(this.mapperVersion);
       this.mapper.setMapperFlavorToUse(this.mapperFlavor);
+      this.mapper.setUseBundledBinaries(this.useBundledBinaries);
       this.mapper.prepareBinaries();
     } catch (IOException e) {
       throw new EoulsanException(e);

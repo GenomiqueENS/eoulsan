@@ -1879,4 +1879,64 @@ public class FileUtils {
 
   }
 
+  /**
+   * Check if an executable is in the PATH.
+   * @param executableName the name of the executable
+   * @return true if an executable is in the PATH
+   */
+  public static boolean checkIfExecutableIsInPATH(final String executableName) {
+
+    if (executableName == null) {
+      throw new NullPointerException("executableName argument cannot be null");
+    }
+
+    final String pathEnv = System.getenv("PATH");
+
+    if (pathEnv == null) {
+      return false;
+    }
+
+    final FilenameFilter filter = new FilenameFilter() {
+
+      @Override
+      public boolean accept(final File dir, final String name) {
+
+        return executableName.equals(name);
+      }
+    };
+
+    final String[] paths = pathEnv.split(":");
+
+    for (String path : paths) {
+
+      path = path.trim();
+
+      if (path.isEmpty()) {
+        continue;
+      }
+
+      File f = new File(path);
+
+      if (!f.exists()) {
+        continue;
+      }
+
+      if (f.isFile()) {
+
+        if (executableName.equals(f.getName())) {
+          return true;
+        }
+      } else {
+
+        final File[] files = f.listFiles(filter);
+
+        if (files != null && files.length > 0) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
 }

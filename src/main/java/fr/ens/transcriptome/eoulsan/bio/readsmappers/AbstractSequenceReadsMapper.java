@@ -79,6 +79,7 @@ public abstract class AbstractSequenceReadsMapper implements
   private String mapperVersionToUse = getDefaultPackageVersion();
   private String flavorToUse = DEFAULT_FLAVOR;
   private String flavor = DEFAULT_FLAVOR;
+  private boolean useBundledBinaries = true;
   private int threadsNumber;
   private String mapperArguments = null;
   private String indexerArguments = null;
@@ -157,6 +158,12 @@ public abstract class AbstractSequenceReadsMapper implements
     return this.flavor;
   }
 
+  @Override
+  public boolean isUseBundledBinaries() {
+
+    return this.useBundledBinaries;
+  }
+
   //
   // Getters
   //
@@ -215,7 +222,7 @@ public abstract class AbstractSequenceReadsMapper implements
 
   @Override
   public boolean isMultipleInstancesAllowed() {
-    // TODO Auto-generated method stub
+
     return false;
   }
 
@@ -255,6 +262,14 @@ public abstract class AbstractSequenceReadsMapper implements
     this.mapperVersionToUse =
         Strings.emptyToNull(version) == null
             ? getDefaultPackageVersion() : version;
+  }
+
+  @Override
+  public void setUseBundledBinaries(final boolean use) {
+
+    checkState(!this.binariesReady, "Mapper has been initialized");
+
+    this.useBundledBinaries = use;
   }
 
   @Override
@@ -824,14 +839,15 @@ public abstract class AbstractSequenceReadsMapper implements
     if (!checkIfBinaryExists(getIndexerExecutables())) {
       throw new IOException("Unable to find mapper "
           + getMapperName() + " version " + this.mapperVersionToUse
-          + " (flavor: " + this.flavorToUse == null ? "" : this.flavorToUse
-          + ")");
+          + " (flavor: "
+          + (this.flavorToUse == null ? "not defined" : this.flavorToUse) + ")");
     }
 
     if (!checkIfFlavorExists()) {
       throw new IOException("Unable to find mapper "
-          + getMapperName() + " flavor " + this.flavorToUse + " for version "
-          + this.mapperVersionToUse);
+          + getMapperName() + " version " + this.mapperVersionToUse
+          + " (flavor: "
+          + (this.flavorToUse == null ? "not defined" : this.flavorToUse) + ")");
     }
 
     this.binariesReady = true;
@@ -928,8 +944,13 @@ public abstract class AbstractSequenceReadsMapper implements
    */
   protected String install(final String binaryFilename) throws IOException {
 
-    return BinariesInstaller.install(getSoftwarePackage(),
-        this.mapperVersionToUse, binaryFilename, getTempDirectoryPath());
+    if (isUseBundledBinaries()) {
+
+      return BinariesInstaller.install(getSoftwarePackage(),
+          this.mapperVersionToUse, binaryFilename, getTempDirectoryPath());
+    }
+
+    return binaryFilename;
   }
 
   /**
@@ -961,8 +982,13 @@ public abstract class AbstractSequenceReadsMapper implements
    */
   protected boolean checkIfBinaryExists(final String binaryFilename) {
 
-    return BinariesInstaller.check(getSoftwarePackage(),
-        this.mapperVersionToUse, binaryFilename);
+    if (isUseBundledBinaries()) {
+
+      return BinariesInstaller.check(getSoftwarePackage(),
+          this.mapperVersionToUse, binaryFilename);
+    }
+
+    return FileUtils.checkIfExecutableIsInPATH(binaryFilename);
   }
 
   /**

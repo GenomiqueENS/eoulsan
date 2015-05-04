@@ -72,6 +72,7 @@
                 <tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
                 <tr><td>mapper.version</td><td>string</td><td>Define the version of the mapper to use</td><td>See below in the next table</td></tr>
                 <tr><td>mapper.flavor</td><td>string</td><td>Define the flavor of the mapper to use (e.g. standard version or large index version)</td><td>See below in the next table</td></tr>
+                <tr><td>mapper.use.bundled.binares</td><td>boolean</td><td>Use the mapper bundled binaries in Eouslan to perform the mapping. If the value is false, the mapper will be search in the PATH environnment variable</td><td>True</td></tr>
                 <tr><td>local.threads</td><td>integer</td><td>Define the number of threads to use in local mode.</td><td>0 (use the <b>main.local.threads</b> global property)</td></tr>
                 <tr><td>max.local.threads</td><td>integer</td><td>Define the maximum number of threads to use in local mode.</td><td>0 (no limit)</td></tr>
                 <tr><td>hadoop.threads</td><td>integer</td><td>Define the maximum number of threads to use in hadoop mode.</td><td>0 (the number of available processors)</td></tr>

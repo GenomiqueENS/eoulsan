@@ -72,6 +72,12 @@ public interface SequenceReadsMapper {
   String getMapperFlavorToUse();
 
   /**
+   * Test if the bundled binaries must be used to perform the mapping.
+   * @return true if the bundled binaries must be used to perform the mapping
+   */
+  boolean isUseBundledBinaries();
+
+  /**
    * Test if the mapper can only be use for generate the mapper index.
    * @return true if the mapper is a fake mapper
    */
@@ -131,6 +137,12 @@ public interface SequenceReadsMapper {
    *          used
    */
   void setMapperVersionToUse(String version);
+
+  /**
+   * Set if the bundled binaries must be used to perform the mapping.
+   * @param use true if the bundled binaries must be used to perform the mapping
+   */
+  void setUseBundledBinaries(boolean use);
 
   /**
    * Get the number of thread to use by the mapper.

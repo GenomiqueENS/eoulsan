@@ -101,10 +101,17 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     // Check if the mapper can be used with Hadoop
     if (!getMapper().isSplitsAllowed()) {
       throw new EoulsanException(
-          "The selected mapper cannot be used in hadoop mode as "
+          "The selected mapper cannot be used in Hadoop mode as "
               + "computation cannot be parallelized: "
               + getMapper().getMapperName());
     }
+
+    // Check if user want to use non bundled mapper binaries
+    if (isUseBundledBinaries()) {
+      throw new EoulsanException(
+          "Non bundled mapper binaries cannot be used in Hadoop mode");
+    }
+
   }
 
   @Override
@@ -358,7 +365,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     ZipArchiveEntry e;
 
     while ((e = zais.getNextZipEntry()) != null) {
-      map.put(e.getName(), new long[] {e.getSize(), e.getCrc()});
+      map.put(e.getName(), new long[] { e.getSize(), e.getCrc() });
     }
 
     zais.close();
