@@ -177,7 +177,8 @@ public class FastQCStep extends AbstractStep {
       case FASTQC_KMER_SIZE_PARAMETER_NAME:
 
         // Kmer Size, default FastQC value is 7
-        System.setProperty("fastqc.kmer_size", "" + p.getIntValueGreaterOrEqualsTo(1));
+        System.setProperty("fastqc.kmer_size",
+            "" + p.getIntValueGreaterOrEqualsTo(1));
         break;
 
       case FASTQC_NOGROUP_PARAMETER_NAME:

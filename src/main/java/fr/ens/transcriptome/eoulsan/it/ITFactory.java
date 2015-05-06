@@ -119,7 +119,6 @@ public class ITFactory {
 
   static final String TEST_CONFIGURATION_FILENAME = "test.conf";
 
-
   // Runtime maximum for a test beyond stop execution, in minutes
   static final int RUNTIME_IT_MAXIMUM_DEFAULT = 1;
 

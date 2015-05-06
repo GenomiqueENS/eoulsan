@@ -358,7 +358,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     ZipArchiveEntry e;
 
     while ((e = zais.getNextZipEntry()) != null) {
-      map.put(e.getName(), new long[] {e.getSize(), e.getCrc()});
+      map.put(e.getName(), new long[] { e.getSize(), e.getCrc() });
     }
 
     zais.close();

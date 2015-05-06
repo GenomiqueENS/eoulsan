@@ -1367,7 +1367,7 @@ public class DistCp implements Tool {
       final Text dstpath = new Text();
       final Text dstfrom = new Text();
       final FsShell shell = new FsShell(conf);
-      final String[] shellargs = {"-rmr", null};
+      final String[] shellargs = { "-rmr", null };
 
       boolean hasnext = dstin.next(dstpath, dstfrom);
       for (; lsrin.next(lsrpath, lsrstatus);) {

@@ -89,8 +89,8 @@ public class ToolExecutor {
    * @param toolName the tool name
    * @param toolVersion the tool version
    */
-  public ToolExecutor(final StepContext context,
-      final String commandLine, final String toolName, final String toolVersion) {
+  public ToolExecutor(final StepContext context, final String commandLine,
+      final String toolName, final String toolVersion) {
 
     checkNotNull(commandLine, "commandLine is null.");
     checkNotNull(context, "Step context is null.");

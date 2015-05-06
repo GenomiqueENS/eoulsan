@@ -285,7 +285,7 @@ public class IntegrationTestAction extends AbstractAction {
     final TestNG testng = new TestNG();
     try {
       // Create and configure TestNG
-      testng.setTestClasses(new Class[] {ITFactory.class});
+      testng.setTestClasses(new Class[] { ITFactory.class });
       testng.addListener(tla);
 
       if (testNGReportDirectory != null) {

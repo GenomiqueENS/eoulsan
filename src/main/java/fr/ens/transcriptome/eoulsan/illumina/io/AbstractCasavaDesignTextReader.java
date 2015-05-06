@@ -38,9 +38,9 @@ import fr.ens.transcriptome.eoulsan.illumina.CasavaSample;
 public abstract class AbstractCasavaDesignTextReader implements
     CasavaDesignReader {
 
-  private static final String[] FIELDNAMES = new String[] {"FCID", "Lane",
+  private static final String[] FIELDNAMES = new String[] { "FCID", "Lane",
       "SampleID", "SampleRef", "Index", "Description", "Control", "Recipe",
-      "Operator", "SampleProject"};
+      "Operator", "SampleProject" };
 
   private CasavaDesign design;
   private boolean firstLine = true;

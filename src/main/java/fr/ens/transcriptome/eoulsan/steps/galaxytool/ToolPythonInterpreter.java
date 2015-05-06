@@ -23,7 +23,6 @@
  */
 package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Collections;
@@ -97,8 +96,8 @@ public class ToolPythonInterpreter {
     System.out.println("final commande line " + commandLine);
 
     final ToolExecutor executor =
-        new ToolExecutor(this.context, commandLine,
-            this.tool.getToolName(), this.tool.getToolVersion());
+        new ToolExecutor(this.context, commandLine, this.tool.getToolName(),
+            this.tool.getToolVersion());
 
     final ToolExecutorResult result = executor.execute();
 

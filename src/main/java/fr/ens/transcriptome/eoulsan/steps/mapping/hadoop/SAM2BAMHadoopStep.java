@@ -206,9 +206,9 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
           FileInputFormat.addInputPath(job, p);
 
           if (first) {
-            job.getConfiguration()
-                .setStrings(Utils.HEADERMERGER_INPUTS_PROPERTY,
-                    new String[] {p.toString()});
+            job.getConfiguration().setStrings(
+                Utils.HEADERMERGER_INPUTS_PROPERTY,
+                new String[] { p.toString() });
           }
 
           context.getLogger().info("add path1: " + p);
@@ -217,7 +217,7 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
     } else {
       FileInputFormat.addInputPath(job, input);
       job.getConfiguration().setStrings(Utils.HEADERMERGER_INPUTS_PROPERTY,
-          new String[] {input.toString()});
+          new String[] { input.toString() });
       context.getLogger().info("add path2: " + input);
     }
 

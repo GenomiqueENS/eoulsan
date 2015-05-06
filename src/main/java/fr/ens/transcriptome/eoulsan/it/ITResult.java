@@ -189,7 +189,6 @@ public class ITResult {
     report.append("\n\tOuput:"
         + this.it.getOutputTestDirectory().getAbsolutePath());
 
-
     report.append("\n\nPatterns:");
 
     // Result for comparison files

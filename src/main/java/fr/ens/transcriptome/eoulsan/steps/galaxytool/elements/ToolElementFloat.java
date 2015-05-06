@@ -75,7 +75,7 @@ public class ToolElementFloat extends AbstractToolElement {
 
   @Override
   public void setValue(final String value) throws EoulsanException {
-    
+
     this.value = Double.parseDouble(value);
 
     this.isSetting = true;

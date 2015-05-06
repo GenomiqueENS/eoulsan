@@ -175,7 +175,7 @@ public class ToolConditionalElement implements ToolElement {
   public Parameter extractParameterByName(Map<String, Parameter> stepParameters) {
     throw new UnsupportedOperationException();
   }
-  
+
   //
   // Getter
   //

@@ -21,7 +21,8 @@ public interface ToolInterpreter {
       throws EoulsanException;
 
   /**
-   * Convert command tag from tool file in string, variable are replace by value.
+   * Convert command tag from tool file in string, variable are replace by
+   * value.
    * @param inputData the input data
    * @param outputData the output data
    * @return the string

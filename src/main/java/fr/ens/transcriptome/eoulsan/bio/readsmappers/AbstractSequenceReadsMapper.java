@@ -124,7 +124,7 @@ public abstract class AbstractSequenceReadsMapper implements
    * @return the indexer executables
    */
   protected String[] getIndexerExecutables() {
-    return new String[] {getIndexerExecutable()};
+    return new String[] { getIndexerExecutable() };
   }
 
   /**

@@ -95,11 +95,12 @@ public class SAMUtils {
     }
 
     // Read SAM file header
-    final SamReader reader = SamReaderFactory.makeDefault().open(SamInputResource.of(is));
+    final SamReader reader =
+        SamReaderFactory.makeDefault().open(SamInputResource.of(is));
     final SAMFileHeader header = reader.getFileHeader();
 
     // Close reader
-    //reader.close();
+    // reader.close();
 
     final StringWriter headerTextBuffer = new StringWriter();
     new SAMTextHeaderCodec().encode(headerTextBuffer, header);
