@@ -423,7 +423,7 @@ public class STARIndexGenerator extends AbstractStep {
     try {
       md5Digest = MessageDigest.getInstance("MD5");
     } catch (NoSuchAlgorithmException e) {
-      md5Digest = null;
+      throw new IOException(e);
     }
     try (InputStream is = new FileInputStream(file)) {
       new DigestInputStream(is, md5Digest);

@@ -234,8 +234,8 @@ public class FileDataProtocol extends AbstractDataProtocol {
     final Path path = getSourceAsFile(file).toPath();
 
     // Check if use wants to remove /
-    if (new File("/").equals(path.normalize().toAbsolutePath())) {
-      new IOException("Cannot remove /: " + file);
+    if (new File("/").toPath().equals(path.normalize().toAbsolutePath())) {
+      throw new IOException("Cannot remove /: " + file);
     }
 
     // Non recursive deletion
