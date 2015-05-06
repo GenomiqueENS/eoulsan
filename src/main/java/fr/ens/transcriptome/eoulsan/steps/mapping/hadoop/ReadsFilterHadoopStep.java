@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -155,19 +154,18 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
         final DataFile outFile1 = outData.getDataFile(0);
         final DataFile outFile2 = outData.getDataFile(1);
 
-        // TODO implement DataFile.renameTo(DataFile)
-        // TODO implement DataFile.delete(DataFile,true)
+        final DataFile outTmpFile1 =
+            new DataFile(outFile1.getSource() + ".tmp/" + outFile1.getName());
+        final DataFile outTmpFile2 =
+            new DataFile(outFile2.getSource() + ".tmp/" + outFile2.getName());
 
-        final FileSystem fs = FileSystem.get(conf);
-        fs.rename(
-            new Path(outFile1.getSource() + ".tmp/" + outFile1.getName()),
-            new Path(outFile1.getSource()));
-        fs.rename(
-            new Path(outFile1.getSource() + ".tmp/" + outFile2.getName()),
-            new Path(outFile2.getSource()));
+        // Rename temporary file
+        outTmpFile1.renameTo(outFile1);
+        outTmpFile2.renameTo(outFile2);
 
-        fs.delete(new Path(outFile1.getSource() + ".tmp"), true);
-        fs.delete(new Path(tfqFile.getSource()), true);
+        // Remove temporary directories
+        outTmpFile1.delete(true);
+        outTmpFile2.delete(true);
       }
 
       return status.createStepResult();
