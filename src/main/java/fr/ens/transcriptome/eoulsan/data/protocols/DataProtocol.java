@@ -141,6 +141,14 @@ public interface DataProtocol {
   List<DataFile> list(DataFile dir) throws IOException;
 
   /**
+   * Rename a file.
+   * @param oldName old file name
+   * @param newName new file name
+   * @throws IOException if an error occurs while renaming the directory
+   */
+  void rename(DataFile oldName, DataFile newName) throws IOException;
+
+  /**
    * Get the metadata for the source.
    * @param src source to use
    * @return always a metadataObject
@@ -183,6 +191,12 @@ public interface DataProtocol {
    * @return true if list() is available
    */
   boolean canList();
+
+  /**
+   * Test if the renameTo() method is available with this protocol.
+   * @return true if renameTo() is available
+   */
+  boolean canRename();
 
   /**
    * Get the underlying File object for the DataFile if the protocol allow it.

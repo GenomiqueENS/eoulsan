@@ -588,4 +588,18 @@ public class S3DataProtocol implements DataProtocol {
     return false;
   }
 
+  @Override
+  public void rename(final DataFile oldName, final DataFile newName)
+      throws IOException {
+
+    throw new IOException("The rename() method is not supported by the "
+        + getName() + " protocol");
+  }
+
+  @Override
+  public boolean canRename() {
+
+    return false;
+  }
+
 }

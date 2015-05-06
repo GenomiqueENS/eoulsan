@@ -236,4 +236,31 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
     return true;
   }
 
+  @Override
+  public void rename(final DataFile file, final DataFile dest)
+      throws IOException {
+
+    if (dest == null) {
+      throw new NullPointerException("dest argument is null");
+    }
+
+    if (dest.getProtocol() != this) {
+      throw new IOException("the protocol of the dest is not "
+          + getName() + " protocol: " + dest);
+    }
+
+    final Path path = getPath(file);
+    final Path newPath = getPath(dest);
+
+    final FileSystem fs = path.getFileSystem(this.conf);
+
+    fs.rename(path, newPath);
+  }
+
+  @Override
+  public boolean canRename() {
+
+    return true;
+  }
+
 }

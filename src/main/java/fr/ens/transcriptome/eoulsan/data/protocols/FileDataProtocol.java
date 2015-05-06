@@ -138,8 +138,6 @@ public class FileDataProtocol extends AbstractDataProtocol {
   @Override
   public boolean exists(final DataFile src, final boolean followLink) {
 
-    // return getSourceAsFile(src).exists();
-
     final Path path = getSourceAsFile(src).toPath();
 
     if (followLink) {
@@ -193,11 +191,11 @@ public class FileDataProtocol extends AbstractDataProtocol {
       throws IOException {
 
     if (target == null) {
-      throw new NullPointerException("target is null");
+      throw new NullPointerException("target argument is null");
     }
 
     if (link == null) {
-      throw new NullPointerException("link is null");
+      throw new NullPointerException("link argument is null");
     }
 
     if (link.exists()) {
@@ -268,6 +266,33 @@ public class FileDataProtocol extends AbstractDataProtocol {
 
   @Override
   public boolean canList() {
+
+    return true;
+  }
+
+  @Override
+  public void rename(final DataFile src, final DataFile dest)
+      throws IOException {
+
+    if (dest == null) {
+      throw new NullPointerException("dest argument is null");
+    }
+
+    if (dest.getProtocol() != this) {
+      throw new IOException("the protocol of the dest is not "
+          + getName() + " protocol: " + dest);
+    }
+
+    final File file = getSourceAsFile(src);
+    final File destFile = getSourceAsFile(dest);
+
+    if (!file.renameTo(destFile)) {
+      throw new IOException("Cannot rename " + src + " to " + dest);
+    }
+  }
+
+  @Override
+  public boolean canRename() {
 
     return true;
   }
