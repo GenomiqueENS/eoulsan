@@ -29,9 +29,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -225,11 +228,51 @@ public class FileDataProtocol extends AbstractDataProtocol {
   }
 
   @Override
-  public void delete(final DataFile file) throws IOException {
+  public void delete(final DataFile file, final boolean recursive)
+      throws IOException {
 
     final Path path = getSourceAsFile(file).toPath();
 
-    Files.delete(path);
+    // Check if use wants to remove /
+    if (new File("/").equals(path.normalize().toAbsolutePath())) {
+      new IOException("Cannot remove /: " + file);
+    }
+
+    // Non recursive deletion
+    if (!(recursive && Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS))) {
+
+      Files.delete(path);
+      return;
+    }
+
+    // Remove recursively a directory
+    Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+
+      @Override
+      public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+          throws IOException {
+
+        Files.delete(file);
+        return FileVisitResult.CONTINUE;
+      }
+
+      @Override
+      public FileVisitResult postVisitDirectory(Path dir, IOException e)
+          throws IOException {
+
+        Files.delete(dir);
+        return FileVisitResult.CONTINUE;
+      }
+
+      @Override
+      public FileVisitResult visitFileFailed(Path file, IOException e)
+          throws IOException {
+
+        throw new IOException("Cannot remove file: " + file);
+      }
+
+    });
+
   }
 
   @Override

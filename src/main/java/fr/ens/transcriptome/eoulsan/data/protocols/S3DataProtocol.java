@@ -563,7 +563,8 @@ public class S3DataProtocol implements DataProtocol {
   }
 
   @Override
-  public void delete(final DataFile file) throws IOException {
+  public void delete(final DataFile file, final boolean recursive)
+      throws IOException {
 
     throw new IOException("The delete() method is not supported by the "
         + getName() + " protocol");

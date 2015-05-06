@@ -128,9 +128,10 @@ public interface DataProtocol {
   /**
    * Delete a file.
    * @param file file to delete
+   * @param recursive recursive deletion
    * @throws IOException if an error occurs while deleting the file
    */
-  void delete(DataFile file) throws IOException;
+  void delete(DataFile file, boolean recursive) throws IOException;
 
   /**
    * List a directory.

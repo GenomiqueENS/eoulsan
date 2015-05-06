@@ -161,7 +161,8 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
   }
 
   @Override
-  public void delete(final DataFile file) throws IOException {
+  public void delete(final DataFile file, final boolean recursive)
+      throws IOException {
 
     final Path path = getPath(file);
 
@@ -178,7 +179,7 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
       throw new IOException("Unable to delete the file, The FileSystem is null");
     }
 
-    if (!fs.delete(path, false)) {
+    if (!fs.delete(path, recursive)) {
       throw new IOException("Unable to delete the directory: " + file);
     }
   }

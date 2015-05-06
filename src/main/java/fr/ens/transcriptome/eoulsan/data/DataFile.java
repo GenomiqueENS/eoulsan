@@ -456,12 +456,22 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    */
   public void delete() throws IOException {
 
+    delete(false);
+  }
+
+  /**
+   * Delete the DataFile.
+   * @param recursive recursive deletion
+   * @throws IOException if an error occurs while deleting the DataFile
+   */
+  public void delete(final boolean recursive) throws IOException {
+
     if (!getProtocol().canDelete()) {
       throw new IOException(
           "The underlying protocol does not allow deleting files");
     }
 
-    getProtocol().delete(this);
+    getProtocol().delete(this, recursive);
   }
 
   /**
