@@ -143,11 +143,11 @@ public interface DataProtocol {
 
   /**
    * Rename a file.
-   * @param oldName old file name
-   * @param newName new file name
+   * @param file the file to rename
+   * @param dest the destination file
    * @throws IOException if an error occurs while renaming the directory
    */
-  void rename(DataFile oldName, DataFile newName) throws IOException;
+  void rename(DataFile file, DataFile dest) throws IOException;
 
   /**
    * Get the metadata for the source.

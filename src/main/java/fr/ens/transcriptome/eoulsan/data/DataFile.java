@@ -489,6 +489,21 @@ public class DataFile implements Comparable<DataFile>, Serializable {
     return getProtocol().list(this);
   }
 
+  /**
+   * Rename the DataFile.
+   * @param dest destination DataFile
+   * @throws IOException if an error occurs while renaming the DataFile
+   */
+  public void renameTo(final DataFile dest) throws IOException {
+
+    if (!getProtocol().canRename()) {
+      throw new IOException(
+          "The underlying protocol does not allow to rename files");
+    }
+
+    getProtocol().rename(this, dest);
+  }
+
   //
   // Internal methods
   //
