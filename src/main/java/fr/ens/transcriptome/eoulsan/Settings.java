@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
@@ -117,7 +118,7 @@ public final class Settings implements Serializable {
   private static final String SMTP_HOST_KEY = MAIN_PREFIX_KEY
       + ".mail.smtp.host";
 
-  private static final String DOCKER_URI_KEY = MAIN_PREFIX_KEY + ".docker.uri";
+  private static final String DOCKER_URI_KEY = MAIN_PREFIX_KEY + "docker.uri";
 
   private static final String ZOOKEEPER_CONNECT_STRING_KEY =
       "zookeeper.connect.string";

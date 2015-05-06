@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
@@ -78,6 +79,13 @@ public interface SequenceReadsMapper {
   boolean isUseBundledBinaries();
 
   /**
+   * Get the mapper Docker image to use.
+   * @return the mapper Docker image to use or an empty string if no Docker
+   *         image is set
+   */
+  String getMapperDockerImage();
+
+  /**
    * Test if the mapper can only be use for generate the mapper index.
    * @return true if the mapper is a fake mapper
    */
@@ -96,6 +104,12 @@ public interface SequenceReadsMapper {
    *         same time
    */
   boolean isMultipleInstancesAllowed();
+
+  /**
+   * Get the Docker connection URI.
+   * @return the Docker connection URI
+   */
+  URI getDockerConnection();
 
   //
   // Index creation methods
@@ -143,6 +157,12 @@ public interface SequenceReadsMapper {
    * @param use true if the bundled binaries must be used to perform the mapping
    */
   void setUseBundledBinaries(boolean use);
+
+  /**
+   * Set the mapper Docker image to use.
+   * @param dockerImage the mapper Docker image to use
+   */
+  void setMapperDockerImage(String dockerImage);
 
   /**
    * Get the number of thread to use by the mapper.
@@ -231,6 +251,12 @@ public interface SequenceReadsMapper {
    *          at the same time
    */
   void setMultipleInstancesEnabled(boolean enable);
+
+  /**
+   * Set the Docker connection URI.
+   * @param uri the URI to set
+   */
+  void setDockerConnection(URI uri);
 
   //
   // Mapping methods

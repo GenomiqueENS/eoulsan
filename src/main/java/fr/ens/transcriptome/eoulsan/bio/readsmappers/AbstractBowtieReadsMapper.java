@@ -32,7 +32,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
+import com.google.common.collect.Lists;
+
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
@@ -143,7 +144,7 @@ public abstract class AbstractBowtieReadsMapper extends
   }
 
   @Override
-  public String getMapperVersion() {
+  protected String internalGetMapperVersion() {
 
     try {
       final String bowtiePath;
@@ -152,9 +153,9 @@ public abstract class AbstractBowtieReadsMapper extends
         bowtiePath = install(getMapperExecutables());
       }
 
-      final String cmd = bowtiePath + " --version";
+      final List<String> cmd = Lists.newArrayList(bowtiePath, " --version");
 
-      final String s = ProcessUtils.execToString(cmd);
+      final String s = executeToString(cmd);
       final String[] lines = s.split("\n");
       if (lines.length == 0) {
         return null;

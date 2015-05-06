@@ -106,10 +106,16 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
               + getMapper().getMapperName());
     }
 
-    // Check if user want to use non bundled mapper binaries
+    // Check if user wants to use non bundled mapper binaries
     if (isUseBundledBinaries()) {
       throw new EoulsanException(
           "Non bundled mapper binaries cannot be used in Hadoop mode");
+    }
+
+    // Check if user wants to use a mapper Docker image
+    if (!getMapperDockerImage().isEmpty()) {
+      throw new EoulsanException(
+          "Cannot use a mapper Docker image in Hadoop mode");
     }
 
   }

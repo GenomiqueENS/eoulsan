@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
@@ -64,7 +65,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  public String getMapperVersion() {
+  public String internalGetMapperVersion() {
 
     try {
       final String execPath;
@@ -85,10 +86,8 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       }
 
       // Execute STAR with no argument
-      final ProcessBuilder pb = new ProcessBuilder(execPath);
-      pb.directory(tempDir);
-      final Process p = pb.start();
-      p.waitFor();
+      getExecutor().execute(Lists.newArrayList(execPath), tempDir, false,
+          tempDir);
 
       final File logFile = new File(tempDir, "Log.out");
 
@@ -123,9 +122,6 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
 
       e.printStackTrace();
 
-      return null;
-    } catch (InterruptedException e) {
-      e.printStackTrace();
       return null;
     }
   }

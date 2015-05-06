@@ -30,10 +30,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.python.google.common.collect.Lists;
+
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**
@@ -66,7 +67,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  public String getMapperVersion() {
+  public String internalGetMapperVersion() {
 
     try {
       final String gsnapPath;
@@ -75,9 +76,9 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
         gsnapPath = install(MAPPER_EXECUTABLE);
       }
 
-      final String cmd = gsnapPath + " --version";
+      final List<String> cmd = Lists.newArrayList(gsnapPath, " --version");
 
-      final String s = ProcessUtils.execToString(cmd);
+      final String s = executeToString(cmd);
 
       final String[] lines = s.split("\n");
       if (lines.length == 0) {

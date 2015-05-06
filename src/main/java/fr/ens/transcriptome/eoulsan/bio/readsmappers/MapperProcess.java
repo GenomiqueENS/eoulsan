@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,9 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.google.common.base.Joiner;
-
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
+import fr.ens.transcriptome.eoulsan.bio.readsmappers.MapperExecutor.Result;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
@@ -55,9 +53,10 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 public abstract class MapperProcess {
 
   private final String mapperName;
+  private final MapperExecutor executor;
   private final boolean pairedEnd;
 
-  private Process process;
+  private Result process;
 
   private InputStream stdout;
 
@@ -128,8 +127,10 @@ public abstract class MapperProcess {
      * Constructor.
      * @param process process
      * @param os output stream
+     * @throws IOException if an error occurs while creating the input stream
      */
-    public ProcessThreadStdOut(final Process process, final OutputStream os) {
+    public ProcessThreadStdOut(final Result process, final OutputStream os)
+        throws IOException {
 
       if (process == null) {
         throw new NullPointerException("The Process parameter is null");
@@ -163,18 +164,14 @@ public abstract class MapperProcess {
     public void close() throws IOException {
 
       this.is.close();
-      try {
-        final int exitValue = MapperProcess.this.process.waitFor();
 
-        getLogger().fine("End of process with " + exitValue + " exit value");
+      final int exitValue = MapperProcess.this.process.waitFor();
 
-        if (exitValue != 0) {
-          throw new IOException("Bad error result for "
-              + MapperProcess.this.mapperName + " execution: " + exitValue);
-        }
+      getLogger().fine("End of process with " + exitValue + " exit value");
 
-      } catch (InterruptedException e) {
-        throw new IOException(e);
+      if (exitValue != 0) {
+        throw new IOException("Bad error result for "
+            + MapperProcess.this.mapperName + " execution: " + exitValue);
       }
     }
 
@@ -337,9 +334,9 @@ public abstract class MapperProcess {
   /**
    * Convert the output stream from the mapper to a file using a thread.
    * @param outputFile output SAM file
-   * @throws FileNotFoundException if output file cannot be created
+   * @throws IOException if an error occurs while creating the writer thread
    */
-  public void toFile(final File outputFile) throws FileNotFoundException {
+  public void toFile(final File outputFile) throws IOException {
 
     // Start stdout thread
     final Thread tout =
@@ -481,29 +478,23 @@ public abstract class MapperProcess {
 
     // Launch all the commands
     for (int i = 0; i < cmds.size(); i++) {
-      final ProcessBuilder builder = new ProcessBuilder(cmds.get(i));
 
-      if (executionDirectory() != null) {
-        builder.directory(executionDirectory());
-      }
+      final boolean last = i == cmds.size() - 1;
 
-      getLogger().info(
-          "Process command: " + Joiner.on(' ').join(builder.command()));
-      getLogger().info("Process directory: " + builder.directory());
+      this.process =
+          this.executor.execute(cmds.get(i), executionDirectory(), last,
+              this.pipeFile1, this.pipeFile2);
 
-      // Start command
-      this.process = builder.start();
-
-      if (i < cmds.size() - 1) {
+      if (!last) {
 
         Thread.sleep(1000);
       } else {
+
         this.stdout =
             new InputStreamWrapper(
                 createCustomInputStream(this.process.getInputStream()));
       }
     }
-
   }
 
   /**
@@ -514,17 +505,12 @@ public abstract class MapperProcess {
    */
   public void waitFor() throws IOException {
 
-    try {
+    final int exitValue = this.process.waitFor();
+    getLogger().fine("End of process with " + exitValue + " exit value");
 
-      final int exitValue = this.process.waitFor();
-      getLogger().fine("End of process with " + exitValue + " exit value");
-
-      if (exitValue != 0) {
-        throw new IOException("Bad error result for "
-            + this.mapperName + " execution: " + exitValue);
-      }
-    } catch (InterruptedException e) {
-      throw new IOException(e);
+    if (exitValue != 0) {
+      throw new IOException("Bad error result for "
+          + this.mapperName + " execution: " + exitValue);
     }
 
     // Remove temporary files
@@ -551,10 +537,10 @@ public abstract class MapperProcess {
    * Create pipe writer.
    * @param file the pipe file to create
    * @return a writer on the pipe
-   * @throws IOException if an error occurs while creating the pipe
+   * @throws IOException if an error occurs while creating the pipe or the
+   *           writer
    */
-  private static Writer createPipeOutputStream(final File file)
-      throws IOException {
+  private static Writer createPipeWriter(final File file) throws IOException {
 
     FileUtils.createNamedPipe(file);
 
@@ -595,7 +581,7 @@ public abstract class MapperProcess {
    * @param pairedEnd paired-end mode
    * @throws IOException if en error occurs
    */
-  protected MapperProcess(final SequenceReadsMapper mapper,
+  protected MapperProcess(final AbstractSequenceReadsMapper mapper,
       final boolean pairedEnd) throws IOException {
 
     if (mapper == null) {
@@ -604,6 +590,7 @@ public abstract class MapperProcess {
 
     try {
       this.mapperName = mapper.getMapperName();
+      this.executor = mapper.getExecutor();
       this.pairedEnd = pairedEnd;
 
       // Define temporary files
@@ -613,8 +600,8 @@ public abstract class MapperProcess {
       this.pipeFile1 = new File(tmpDir, "mapper-inputfile1-" + uuid + ".fq");
       this.pipeFile2 = new File(tmpDir, "mapper-inputfile2-" + uuid + ".fq");
 
-      this.writer1 = createPipeOutputStream(this.pipeFile1);
-      this.writer2 = pairedEnd ? createPipeOutputStream(this.pipeFile2) : null;
+      this.writer1 = createPipeWriter(this.pipeFile1);
+      this.writer2 = pairedEnd ? createPipeWriter(this.pipeFile2) : null;
 
       addFilesToRemove(this.pipeFile1, this.pipeFile2);
 
@@ -622,10 +609,6 @@ public abstract class MapperProcess {
 
       // Start mapper instance
       startProcess();
-
-      this.stdout =
-          new InputStreamWrapper(
-              createCustomInputStream(this.process.getInputStream()));
 
     } catch (InterruptedException e) {
       throw new IOException(e);

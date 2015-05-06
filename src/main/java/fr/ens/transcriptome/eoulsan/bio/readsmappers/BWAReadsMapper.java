@@ -38,13 +38,14 @@ import java.util.List;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import com.google.common.collect.Lists;
+
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqWriter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
 /**
@@ -94,7 +95,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  public String getMapperVersion() {
+  public String internalGetMapperVersion() {
 
     try {
       final String execPath;
@@ -103,9 +104,9 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         execPath = install(MAPPER_EXECUTABLE);
       }
 
-      final String cmd = execPath;
+      final List<String> cmd = Lists.newArrayList(execPath);
 
-      final String s = ProcessUtils.execToString(cmd, true, false);
+      final String s = executeToString(cmd);
       final String[] lines = s.split("\n");
 
       for (String line : lines) {

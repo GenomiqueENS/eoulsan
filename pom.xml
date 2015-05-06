@@ -424,12 +424,13 @@
 			<version>2.5.3</version>
 		</dependency>
 		<!-- AWS java SDK runtime dependencies -->
-		<dependency>
+		<!-- dependency replaced by Docker httpclient dependency -->
+		<!--dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>4.1</version>
 			<scope>runtime</scope>
-		</dependency>
+		</dependency-->
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
@@ -500,6 +501,48 @@
 			<version>1.83</version>
 			<scope>runtime</scope>
 		</dependency>
+
+		<!-- Required by Docker -->
+		<dependency>
+			<groupId>com.spotify</groupId>
+			<artifactId>docker-client</artifactId>
+			<version>2.6.1</version>
+			<!--scope>compile</scope-->
+		</dependency>
+
+		<!-- Required by Docker -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.3.5</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Required by Docker -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.6</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Required by Docker -->
+		<dependency>
+			<groupId>de.gesellix</groupId>
+			<artifactId>unix-socket-factory</artifactId>
+			<version>2014-09-26T18-52-33</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Required by Docker -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpcore</artifactId>
+			<version>4.3.2</version>
+			<scope>runtime</scope>
+		</dependency>
+
+
 
 	</dependencies>
 

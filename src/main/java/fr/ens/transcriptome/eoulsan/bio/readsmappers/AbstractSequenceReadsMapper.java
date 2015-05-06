@@ -29,12 +29,15 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardFile;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.URI;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,11 +50,10 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
+import fr.ens.transcriptome.eoulsan.bio.readsmappers.MapperExecutor.Result;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
-import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -80,11 +82,13 @@ public abstract class AbstractSequenceReadsMapper implements
   private String flavorToUse = DEFAULT_FLAVOR;
   private String flavor = DEFAULT_FLAVOR;
   private boolean useBundledBinaries = true;
+  private String mapperDockerImage = "";
   private int threadsNumber;
   private String mapperArguments = null;
   private String indexerArguments = null;
   private File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
   private boolean multipleInstancesEnabled;
+  private URI dockerConnection;
 
   private ReporterIncrementer incrementer;
   private String counterGroup;
@@ -92,6 +96,7 @@ public abstract class AbstractSequenceReadsMapper implements
   private boolean binariesReady;
   private boolean initialized;
   private IOException mappingException;
+  private MapperExecutor executor;
 
   //
   // Binaries management
@@ -162,6 +167,12 @@ public abstract class AbstractSequenceReadsMapper implements
   public boolean isUseBundledBinaries() {
 
     return this.useBundledBinaries;
+  }
+
+  @Override
+  public String getMapperDockerImage() {
+
+    return this.mapperDockerImage;
   }
 
   //
@@ -242,6 +253,21 @@ public abstract class AbstractSequenceReadsMapper implements
     return getTempDirectory().getAbsolutePath();
   }
 
+  @Override
+  public URI getDockerConnection() {
+
+    return this.dockerConnection;
+  }
+
+  /**
+   * Get mapper executor.
+   * @return the mapper executor
+   */
+  protected MapperExecutor getExecutor() {
+
+    return this.executor;
+  }
+
   //
   // Setters
   //
@@ -270,6 +296,18 @@ public abstract class AbstractSequenceReadsMapper implements
     checkState(!this.binariesReady, "Mapper has been initialized");
 
     this.useBundledBinaries = use;
+  }
+
+  @Override
+  public void setMapperDockerImage(final String dockerImage) {
+
+    checkState(!this.binariesReady, "Mapper has been initialized");
+
+    if (dockerImage == null) {
+      this.mapperDockerImage = "";
+    } else {
+      this.mapperDockerImage = dockerImage.trim();
+    }
   }
 
   @Override
@@ -330,6 +368,8 @@ public abstract class AbstractSequenceReadsMapper implements
    */
   protected void setFlavor(final String flavor) {
 
+    checkState(!this.initialized, "Mapper has been initialized");
+
     if (flavor != null) {
       this.flavor = flavor;
     }
@@ -338,13 +378,45 @@ public abstract class AbstractSequenceReadsMapper implements
   @Override
   public void setMultipleInstancesEnabled(final boolean enable) {
 
+    checkState(!this.initialized, "Mapper has been initialized");
+
     if (isMultipleInstancesAllowed() && enable == true) {
       this.multipleInstancesEnabled = true;
     } else {
       this.multipleInstancesEnabled = false;
     }
-
   }
+
+  @Override
+  public void setDockerConnection(final URI uri) {
+
+    checkState(!this.initialized, "Mapper has been initialized");
+
+    this.dockerConnection = uri;
+  }
+
+  //
+  // Get mapper version
+  //
+
+  @Override
+  public final String getMapperVersion() {
+
+    // Prepare binaries
+    try {
+      prepareBinaries();
+    } catch (IOException e) {
+      return null;
+    }
+
+    return internalGetMapperVersion();
+  }
+
+  /**
+   * Get mapper version.
+   * @return a string with the version of the mapper
+   */
+  protected abstract String internalGetMapperVersion();
 
   //
   // Index creation
@@ -389,12 +461,12 @@ public abstract class AbstractSequenceReadsMapper implements
     checkNotNull(genomeFile, "genome file is null");
     checkNotNull(outputDir, "output directory is null");
 
-    final File unCompressGenomeFile =
+    final File unCompressedGenomeFile =
         uncompressGenomeIfNecessary(genomeFile, outputDir);
 
     getLogger().fine(
         "Start computing "
-            + getMapperName() + " index for " + unCompressGenomeFile);
+            + getMapperName() + " index for " + unCompressedGenomeFile);
     final long startTime = System.currentTimeMillis();
 
     final String indexerPath;
@@ -408,17 +480,17 @@ public abstract class AbstractSequenceReadsMapper implements
     }
 
     final File tmpGenomeFile =
-        new File(outputDir, unCompressGenomeFile.getName());
+        new File(outputDir, unCompressedGenomeFile.getName());
 
     // Create temporary symbolic link for genome
-    if (!unCompressGenomeFile.equals(tmpGenomeFile)) {
+    if (!unCompressedGenomeFile.equals(tmpGenomeFile)) {
 
       try {
         Files.createSymbolicLink(tmpGenomeFile.toPath(),
-            unCompressGenomeFile.toPath());
+            unCompressedGenomeFile.toPath());
       } catch (IOException e) {
         throw new IOException("Unable to create the symbolic link in "
-            + tmpGenomeFile + " directory for " + unCompressGenomeFile);
+            + tmpGenomeFile + " directory for " + unCompressedGenomeFile);
       }
     }
 
@@ -428,7 +500,9 @@ public abstract class AbstractSequenceReadsMapper implements
 
     getLogger().fine(cmd.toString());
 
-    final int exitValue = ProcessUtils.sh(cmd, tmpGenomeFile.getParentFile());
+    final int exitValue =
+        this.executor.execute(cmd, tmpGenomeFile.getParentFile(), false,
+            unCompressedGenomeFile, tmpGenomeFile).waitFor();
 
     if (exitValue != 0) {
       throw new IOException("Bad error result for index creation execution: "
@@ -448,7 +522,6 @@ public abstract class AbstractSequenceReadsMapper implements
         "Create the "
             + getMapperName() + " index in "
             + StringUtils.toTimeHumanReadable(endTime - startTime));
-
   }
 
   @Override
@@ -675,7 +748,7 @@ public abstract class AbstractSequenceReadsMapper implements
         this.archiveIndexDir);
 
     // Process to mapping
-    final MapperProcess mapperProcess = mapSE();
+    final MapperProcess mapperProcess = mapPE();
 
     // Copy reads files to named pipes
     writeFirstPairEntries(in1, mapperProcess);
@@ -836,6 +909,21 @@ public abstract class AbstractSequenceReadsMapper implements
       return;
     }
 
+    // Set the executor to use
+    if (!this.mapperDockerImage.isEmpty() && this.dockerConnection != null) {
+      this.executor =
+          new DockerMapperExecutor(getDockerConnection(),
+              getMapperDockerImage(), getTempDirectory());
+    } else if (isUseBundledBinaries()) {
+      this.executor =
+          new BundledMapperExecutor(getSoftwarePackage(),
+              getMapperVersionToUse(), getTempDirectory());
+    } else {
+      this.executor = new PathMapperExecutor();
+    }
+
+    getLogger().fine("Use executor: " + this.executor);
+
     if (!checkIfBinaryExists(getIndexerExecutables())) {
       throw new IOException("Unable to find mapper "
           + getMapperName() + " version " + this.mapperVersionToUse
@@ -944,13 +1032,7 @@ public abstract class AbstractSequenceReadsMapper implements
    */
   protected String install(final String binaryFilename) throws IOException {
 
-    if (isUseBundledBinaries()) {
-
-      return BinariesInstaller.install(getSoftwarePackage(),
-          this.mapperVersionToUse, binaryFilename, getTempDirectoryPath());
-    }
-
-    return binaryFilename;
+    return this.executor.install(binaryFilename);
   }
 
   /**
@@ -959,7 +1041,8 @@ public abstract class AbstractSequenceReadsMapper implements
    * @return true if the binary exists
    * @throws IOException if an error occurs while installing binary
    */
-  protected boolean checkIfBinaryExists(final String... binaryFilenames) {
+  protected boolean checkIfBinaryExists(final String... binaryFilenames)
+      throws IOException {
 
     if (binaryFilenames == null || binaryFilenames.length == 0) {
       return false;
@@ -980,15 +1063,10 @@ public abstract class AbstractSequenceReadsMapper implements
    * @return true if the binary exists
    * @throws IOException if an error occurs while installing binary
    */
-  protected boolean checkIfBinaryExists(final String binaryFilename) {
+  protected boolean checkIfBinaryExists(final String binaryFilename)
+      throws IOException {
 
-    if (isUseBundledBinaries()) {
-
-      return BinariesInstaller.check(getSoftwarePackage(),
-          this.mapperVersionToUse, binaryFilename);
-    }
-
-    return FileUtils.checkIfExecutableIsInPATH(binaryFilename);
+    return this.executor.isExecutable(binaryFilename);
   }
 
   /**
@@ -1015,6 +1093,33 @@ public abstract class AbstractSequenceReadsMapper implements
     }
 
     return result;
+  }
+
+  /**
+   * Execute a command and get its output.
+   * @param command the command to execute
+   * @return a string with the output
+   * @throws IOException if an error occurs while executing the command
+   */
+  protected String executeToString(final List<String> command)
+      throws IOException {
+
+    final Result result = this.executor.execute(command, null, true);
+
+    final StringBuilder sb = new StringBuilder();
+
+    try (BufferedReader reader =
+        new BufferedReader(new InputStreamReader(result.getInputStream()))) {
+
+      String line;
+
+      while ((line = reader.readLine()) != null) {
+        sb.append(line);
+        sb.append('\n');
+      }
+    }
+
+    return sb.toString();
   }
 
   //
