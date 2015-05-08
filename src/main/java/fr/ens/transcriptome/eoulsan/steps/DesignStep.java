@@ -40,6 +40,7 @@ import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
+import fr.ens.transcriptome.eoulsan.core.ParallelizationMode;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -87,6 +88,12 @@ public class DesignStep extends AbstractStep {
   public OutputPorts getOutputPorts() {
 
     return this.outputPorts;
+  }
+
+  @Override
+  public ParallelizationMode getParallelizationMode() {
+
+    return ParallelizationMode.NOT_NEEDED;
   }
 
   @Override
