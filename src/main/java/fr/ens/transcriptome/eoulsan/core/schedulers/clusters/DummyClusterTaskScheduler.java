@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core.schedulers;
+package fr.ens.transcriptome.eoulsan.core.schedulers.clusters;
 
 import java.io.File;
 
@@ -40,9 +40,9 @@ public class DummyClusterTaskScheduler extends BpipeTaskScheduler {
   private final File commandWrapperFile;
 
   @Override
-  protected String getSchedulerName() {
+  public String getSchedulerName() {
 
-    return "dummyscheduler";
+    return "dummy";
   }
 
   @Override

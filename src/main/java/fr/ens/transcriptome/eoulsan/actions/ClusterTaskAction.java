@@ -46,6 +46,7 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Step;
+import fr.ens.transcriptome.eoulsan.core.schedulers.TaskSchedulerFactory;
 import fr.ens.transcriptome.eoulsan.core.workflow.StepInstances;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskResult;
@@ -177,6 +178,9 @@ public class ClusterTaskAction extends AbstractAction {
       // Force TaskRunner to res-use the step instance that just has been
       // created
       runner.setForceStepInstanceReuse(true);
+
+      // Initialize scheduler
+      TaskSchedulerFactory.initialize();
 
       // Get the result
       final TaskResult result = runner.run();

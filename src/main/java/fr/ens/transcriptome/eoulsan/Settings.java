@@ -72,6 +72,9 @@ public final class Settings implements Serializable {
   private static final String HADOOP_AWS_SECRET_KEY =
       "hadoop.conf.fs.s3n.awsSecretAccessKey";
 
+  private static final String CLUSTER_SCHEDULER_NAME_KEY = MAIN_PREFIX_KEY
+      + "cluster.scheduler.name";
+
   private static final String HADOOP_LOG_LEVEL_KEY = MAIN_PREFIX_KEY
       + ".hadoop.log.level";
 
@@ -204,6 +207,15 @@ public final class Settings implements Serializable {
   public String getHadoopLogLevel() {
 
     return this.properties.getProperty(HADOOP_LOG_LEVEL_KEY);
+  }
+
+  /**
+   * Get the name of the cluster scheduler.
+   * @return the name of the cluster scheduler
+   */
+  public String getClusterSchedulerName() {
+
+    return this.properties.getProperty(CLUSTER_SCHEDULER_NAME_KEY);
   }
 
   /**
@@ -620,6 +632,15 @@ public final class Settings implements Serializable {
   public void setHadoopLogLevel(final String value) {
 
     this.properties.setProperty(HADOOP_LOG_LEVEL_KEY, value);
+  }
+
+  /**
+   * Set the name of the cluster scheduler.
+   * @param schedulerName the name of the cluster scheduler
+   */
+  public void setClusterSchedulerName(final String schedulerName) {
+
+    this.properties.setProperty(CLUSTER_SCHEDULER_NAME_KEY, schedulerName);
   }
 
   /**

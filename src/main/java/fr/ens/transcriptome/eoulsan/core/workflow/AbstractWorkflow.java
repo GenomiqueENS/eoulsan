@@ -58,6 +58,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
+import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.schedulers.TaskSchedulerFactory;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
@@ -412,6 +413,12 @@ public abstract class AbstractWorkflow implements Workflow {
 
     // Save configuration files (design and workflow files)
     saveConfigurationFiles();
+
+    // Initialize scheduler
+    TaskSchedulerFactory.initialize();
+
+    // Start scheduler
+    TaskSchedulerFactory.getScheduler().start();
 
     // Get the token manager registry
     final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
@@ -829,9 +836,10 @@ public abstract class AbstractWorkflow implements Workflow {
    * Protected constructor.
    * @param executionArguments execution arguments
    * @param design design to use for the workflow
+   * @throws EoulsanException if an error occurs while configuring the workflow
    */
   protected AbstractWorkflow(final ExecutorArguments executionArguments,
-      final Design design) {
+      final Design design) throws EoulsanException {
 
     Preconditions.checkNotNull(executionArguments, "Argument cannot be null");
     Preconditions.checkNotNull(design, "Design argument cannot be null");
@@ -854,7 +862,5 @@ public abstract class AbstractWorkflow implements Workflow {
 
     this.workflowContext = new WorkflowContext(executionArguments, this);
 
-    // Start scheduler
-    TaskSchedulerFactory.getScheduler().start();
   }
 }

@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core.schedulers;
+package fr.ens.transcriptome.eoulsan.core.schedulers.clusters;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
@@ -45,6 +45,7 @@ import com.google.common.collect.Queues;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.actions.ClusterTaskAction;
+import fr.ens.transcriptome.eoulsan.core.schedulers.AbstractTaskScheduler;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskRunner;
@@ -56,69 +57,12 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public abstract class ClusterTaskScheduler extends AbstractTaskScheduler {
+public abstract class AbstractClusterTaskScheduler extends
+    AbstractTaskScheduler implements ClusterTaskScheduler {
 
   private static final int STATUS_UPDATE_DELAY = 5 * 1000;
 
   private final Queue<TaskThread> queue = Queues.newLinkedBlockingQueue();
-
-  public enum StatusValue {
-    WAITING, RUNNING, COMPLETE, UNKNOWN
-  }
-
-  public static final class StatusResult {
-
-    private final StatusValue statusValue;
-    private final int exitCode;
-
-    //
-    // Getters
-    //
-
-    /**
-     * Get status value.
-     * @return the status value
-     */
-    public StatusValue getStatusValue() {
-
-      return this.statusValue;
-    }
-
-    /**
-     * Return the exit code.
-     * @return the exit code
-     */
-    public int getExitCode() {
-
-      return exitCode;
-    }
-
-    //
-    // Constructor
-    //
-
-    /**
-     * Constructor.
-     * @param statusValue status value
-     * @param exitCode exit code
-     */
-    public StatusResult(final StatusValue statusValue) {
-
-      this(statusValue, 0);
-    }
-
-    /**
-     * Constructor.
-     * @param statusValue status value
-     * @param exitCode exit code
-     */
-    public StatusResult(final StatusValue statusValue, final int exitCode) {
-
-      this.statusValue = statusValue;
-      this.exitCode = exitCode;
-    }
-
-  }
 
   /**
    * This class allow to fetch standard output or standard error.
@@ -288,7 +232,7 @@ public abstract class ClusterTaskScheduler extends AbstractTaskScheduler {
         afterExecuteTask(this.context, result);
 
         // Remove the thread from the queue
-        ClusterTaskScheduler.this.queue.remove(this);
+        AbstractClusterTaskScheduler.this.queue.remove(this);
       }
     }
 
@@ -324,22 +268,6 @@ public abstract class ClusterTaskScheduler extends AbstractTaskScheduler {
       this.taskPrefix = TaskRunner.createTaskPrefixFile(context);
     }
   }
-
-  //
-  // Cluster scheduler methods
-  //
-
-  protected abstract String getSchedulerName();
-
-  protected abstract String submitJob(final String jobName,
-      final List<String> jobCommand) throws IOException;
-
-  protected abstract void stopJob(final String jobId) throws IOException;
-
-  protected abstract StatusResult statusJob(final String jobId)
-      throws IOException;
-
-  protected abstract void cleanupJob(final String jobId) throws IOException;
 
   //
   // Task scheduler methods

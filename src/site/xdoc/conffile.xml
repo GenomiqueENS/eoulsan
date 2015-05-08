@@ -92,10 +92,12 @@
 		<tr><td>aws.mapreduce.instances.type</td><td>string</td><td>m1.xlarge</td><td>Instance type</td></tr>
 		<tr><td>aws.mapreduce.endpoint</td><td>string</td><td>Europe (see below for the real value)</td><td>AWS endpoint to use (European as default).</td></tr>
 		<tr><td>aws.mapreduce.log.path</td><td>string</td><td>Not set</td><td>Log path. If not set, no log will be generated</td></tr>
-        <tr><td>aws.mapreduce.task.tracker.mapper.max.tasks</td><td>integer</td><td>0</td><td>The number of maximal task mapper that can be created on a task tracker (0 for no limit)</td></tr>
-        <tr><td>aws.mapreduce.enable.debugging</td><td>boolean</td><td>false</td><td>If set to true, AWS Elastic MapReduce debug mode will be enable. (Require AWS SimpleDB)</td></tr>
+		<tr><td>aws.mapreduce.task.tracker.mapper.max.tasks</td><td>integer</td><td>0</td><td>The number of maximal task mapper that can be created on a task tracker (0 for no limit)</td></tr>
+		<tr><td>aws.mapreduce.enable.debugging</td><td>boolean</td><td>false</td><td>If set to true, AWS Elastic MapReduce debug mode will be enable. (Require AWS SimpleDB)</td></tr>
 
 		<tr><td>aws.mapreduce.wait.job</td><td>boolean</td><td>false</td><td>Wait the end of the job on AWS MapReduce</td></tr>
+
+		<tr><td>main.cluster.scheduler.name</td><td>string</td><td>Not set</td><td>The name of the cluster scheduler to use</td></tr>
 
 	</table>
 

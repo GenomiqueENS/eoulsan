@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.core.schedulers;
+package fr.ens.transcriptome.eoulsan.core.schedulers.clusters;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
@@ -39,13 +39,16 @@ import org.python.google.common.base.Splitter;
 
 import com.google.common.collect.Lists;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Settings;
+
 /**
  * This class allow to submit, stop and get the status of jobs using bpipe
  * scheduler wrappers.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public abstract class BpipeTaskScheduler extends ClusterTaskScheduler {
+public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
 
   /**
    * Get the path to the Bpipe command wrapper.
@@ -58,7 +61,12 @@ public abstract class BpipeTaskScheduler extends ClusterTaskScheduler {
   //
 
   @Override
-  protected String submitJob(final String jobName, final List<String> jobCommand)
+  public void configure(final Settings settings) throws EoulsanException {
+
+  }
+
+  @Override
+  public String submitJob(final String jobName, final List<String> jobCommand)
       throws IOException {
 
     checkNotNull(jobName, "jobName argument cannot be null");
@@ -103,7 +111,7 @@ public abstract class BpipeTaskScheduler extends ClusterTaskScheduler {
   }
 
   @Override
-  protected void stopJob(final String jobId) throws IOException {
+  public void stopJob(final String jobId) throws IOException {
 
     checkNotNull(jobId, "jobId argument cannot be null");
 
@@ -130,7 +138,7 @@ public abstract class BpipeTaskScheduler extends ClusterTaskScheduler {
   }
 
   @Override
-  protected StatusResult statusJob(final String jobId) throws IOException {
+  public StatusResult statusJob(final String jobId) throws IOException {
 
     checkNotNull(jobId, "jobId argument cannot be null");
 
@@ -195,7 +203,7 @@ public abstract class BpipeTaskScheduler extends ClusterTaskScheduler {
   }
 
   @Override
-  protected void cleanupJob(final String jobId) throws IOException {
+  public void cleanupJob(final String jobId) throws IOException {
 
     // Nothing to do
   }
