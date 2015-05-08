@@ -59,7 +59,7 @@ public class TaskStatus implements StepStatus {
 
   private Date startDate;
   private Date endDate;
-  private final Stopwatch stopwatch = Stopwatch.createUnstarted();
+  private final SerializableStopwatch stopwatch = new SerializableStopwatch();
 
   //
   // Getters

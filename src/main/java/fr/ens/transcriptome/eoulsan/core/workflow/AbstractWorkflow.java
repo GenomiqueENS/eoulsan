@@ -96,7 +96,7 @@ public abstract class AbstractWorkflow implements Workflow {
   private final Map<AbstractWorkflowStep, StepState> steps = new HashMap<>();
   private final Multimap<StepState, AbstractWorkflowStep> states =
       ArrayListMultimap.create();
-  private final Stopwatch stopwatch = Stopwatch.createUnstarted();
+  private final SerializableStopwatch stopwatch = new SerializableStopwatch();
 
   private AbstractWorkflowStep rootStep;
   private AbstractWorkflowStep designStep;
