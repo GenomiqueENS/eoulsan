@@ -248,6 +248,6 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
     // Create the schedulers
     this.noTaskScheduler = new MonoThreadTaskScheduler();
     this.stdTaskScheduler = new MultiThreadTaskScheduler(threadNumber);
-    this.clusterTaskScheduler = new ClusterMultiThreadTaskScheduler();
+    this.clusterTaskScheduler = new DummyClusterTaskScheduler();
   }
 }

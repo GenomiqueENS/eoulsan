@@ -25,22 +25,18 @@
 package fr.ens.transcriptome.eoulsan.core.schedulers;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_CONTEXT_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_DATA_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_DONE_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_RESULT_EXTENSION;
-import static fr.ens.transcriptome.eoulsan.Globals.TASK_STDERR_EXTENSION;
-import static fr.ens.transcriptome.eoulsan.Globals.TASK_STDOUT_EXTENSION;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 
@@ -60,14 +56,74 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
+public abstract class ClusterTaskScheduler extends AbstractTaskScheduler {
+
+  private static final int STATUS_UPDATE_DELAY = 5 * 1000;
 
   private final Queue<TaskThread> queue = Queues.newLinkedBlockingQueue();
+
+  public enum StatusValue {
+    WAITING, RUNNING, COMPLETE, UNKNOWN
+  }
+
+  public static final class StatusResult {
+
+    private final StatusValue statusValue;
+    private final int exitCode;
+
+    //
+    // Getters
+    //
+
+    /**
+     * Get status value.
+     * @return the status value
+     */
+    public StatusValue getStatusValue() {
+
+      return this.statusValue;
+    }
+
+    /**
+     * Return the exit code.
+     * @return the exit code
+     */
+    public int getExitCode() {
+
+      return exitCode;
+    }
+
+    //
+    // Constructor
+    //
+
+    /**
+     * Constructor.
+     * @param statusValue status value
+     * @param exitCode exit code
+     */
+    public StatusResult(final StatusValue statusValue) {
+
+      this(statusValue, 0);
+    }
+
+    /**
+     * Constructor.
+     * @param statusValue status value
+     * @param exitCode exit code
+     */
+    public StatusResult(final StatusValue statusValue, final int exitCode) {
+
+      this.statusValue = statusValue;
+      this.exitCode = exitCode;
+    }
+
+  }
 
   /**
    * This class allow to fetch standard output or standard error.
    */
-  public static final class ProcessThreadOutput extends Thread {
+  public final class ProcessThreadOutput extends Thread {
 
     final InputStream in;
     final OutputStream out;
@@ -103,13 +159,14 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
     private final TaskContext context;
     private final File taskDir;
     private final String taskPrefix;
-    private Process process;
+    private String jobId;
 
     /**
-     * Create the process
+     * Create the Eoulsan command to submit.
+     * @return a list with the arguments of the command to submit
      * @throws IOException if an error occurs while creating the process
      */
-    private void createProcess() throws IOException {
+    private List<String> createJobCommand() throws IOException {
 
       // Define the file for the task context
       final File taskContextFile =
@@ -132,10 +189,16 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
       command.add(ClusterTaskAction.ACTION_NAME);
       command.add(taskContextFile.getAbsolutePath());
 
-      final ProcessBuilder pb = new ProcessBuilder(command);
+      return Collections.unmodifiableList(command);
+    }
 
-      // Start the process
-      this.process = pb.start();
+    /**
+     * Create the job name.
+     * @return the job name
+     */
+    private String createJobName() {
+
+      return this.context.getJobId() + "-" + this.taskPrefix;
     }
 
     /**
@@ -166,31 +229,6 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
       return TaskResult.deserialize(taskResultFile);
     }
 
-    /**
-     * Redirect standard and error output of the process to files
-     * @throws FileNotFoundException if file to redirect are not found
-     */
-    private void redirectProcessStream() throws FileNotFoundException {
-
-      checkState(this.process != null, "Process has not been created");
-
-      // Define stdout file
-      final File taskStdoutFile =
-          new File(this.taskDir, this.taskPrefix + TASK_STDOUT_EXTENSION);
-
-      // Start stdout thread
-      new ProcessThreadOutput(this.process.getInputStream(),
-          new FileOutputStream(taskStdoutFile)).start();
-
-      // Define stderr file
-      final File taskStderrFile =
-          new File(this.taskDir, this.taskPrefix + TASK_STDERR_EXTENSION);
-
-      // Start stderr thread
-      new ProcessThreadOutput(this.process.getErrorStream(),
-          new FileOutputStream(taskStderrFile)).start();
-    }
-
     @Override
     public void run() {
 
@@ -201,20 +239,38 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
         // Change task state
         beforeExecuteTask(this.context);
 
-        // Start process
-        createProcess();
+        // Submit Job
+        this.jobId = submitJob(createJobName(), createJobCommand());
 
-        // Redirect stdout and stderr to files
-        redirectProcessStream();
+        StatusResult status = null;
 
-        // Wait process
-        final int exitCode = this.process.waitFor();
+        boolean completed = false;
 
-        // Set exception if exit code is not 0
-        if (exitCode != 0) {
+        do {
+
+          status = statusJob(this.jobId);
+
+          switch (status.getStatusValue()) {
+
+          case COMPLETE:
+            completed = true;
+
+          case WAITING:
+          case RUNNING:
+          case UNKNOWN:
+          default:
+            break;
+          }
+
+          // Wait before do another query on job status
+          Thread.sleep(STATUS_UPDATE_DELAY);
+
+        } while (!completed);
+
+        if (status.getExitCode() != 0) {
           throw new EoulsanException("Invalid task exit code: "
-              + exitCode + " for task #" + this.context.getId() + " in step "
-              + getStep(this.context).getId());
+              + status.getExitCode() + " for task #" + this.context.getId()
+              + " in step " + getStep(this.context).getId());
         }
 
         // Load result
@@ -232,7 +288,7 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
         afterExecuteTask(this.context, result);
 
         // Remove the thread from the queue
-        ClusterMultiThreadTaskScheduler.this.queue.remove(this);
+        ClusterTaskScheduler.this.queue.remove(this);
       }
     }
 
@@ -240,8 +296,14 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
     @SuppressWarnings("deprecation")
     public void destroy() {
 
-      if (this.process != null) {
-        this.process.destroy();
+      if (this.jobId != null) {
+
+        try {
+          stopJob(this.jobId);
+        } catch (IOException e) {
+          getLogger().severe(
+              "Error while stoping job " + this.jobId + ": " + e.getMessage());
+        }
       }
     }
 
@@ -262,6 +324,26 @@ public class ClusterMultiThreadTaskScheduler extends AbstractTaskScheduler {
       this.taskPrefix = TaskRunner.createTaskPrefixFile(context);
     }
   }
+
+  //
+  // Cluster scheduler methods
+  //
+
+  protected abstract String getSchedulerName();
+
+  protected abstract String submitJob(final String jobName,
+      final List<String> jobCommand) throws IOException;
+
+  protected abstract void stopJob(final String jobId) throws IOException;
+
+  protected abstract StatusResult statusJob(final String jobId)
+      throws IOException;
+
+  protected abstract void cleanupJob(final String jobId) throws IOException;
+
+  //
+  // Task scheduler methods
+  //
 
   @Override
   public void submit(final WorkflowStep step, final TaskContext context) {

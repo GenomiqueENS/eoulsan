@@ -1,0 +1,145 @@
+#!/usr/bin/python
+
+import os, os.path, sys, time
+
+EXIT_SUCCESS = 0
+EXIT_INCORRECT_FIRST_ARGUMENT = 1
+
+# Start exit codes
+EXIT_MISSING_JOB_PARAMETER = 2
+EXIT_QSUB_FAILED = 7
+
+# Stop exit codes
+EXIT_QDEL_FAILED = 5
+EXIT_STOP_MISSING_JOBID = 3
+
+# Status exit codes
+EXIT_QSTAT_FAILED = 6
+EXIT_STATUS_MISSING_JOBID = 4
+
+
+command_extension = '.cmd'
+done_extension = '.done'
+running_extension = '.run'
+
+# Create data dir if needed
+command_dir = '/tmp/dummy-scheduler'
+if not os.path.isdir(command_dir):
+    os.mkdir(command_dir)
+
+
+def deamon():
+
+    while True:
+
+        for f in os.listdir(command_dir):
+
+            # Test if file is a command file
+            if f.endswith(command_extension):
+
+                # Read command file
+                command_file = open(command_dir + '/' + f, 'r')
+                for line in command_file:
+
+                    command = line[:-1]
+                    print "File: " + f + "\texecute: " + command
+
+                    # Create running file
+                    running_filename =command_dir + '/' + f[:-len(command_extension)] + running_extension 
+                    open(running_filename, 'w').close()
+
+                    # Execute command
+                    exit_code = os.system(command)
+
+                    # Save exit code in a file
+                    done_file = open(command_dir + '/' + f[:-len(command_extension)] + done_extension, 'w')
+                    done_file.write(str(exit_code) + '\n')
+                    done_file.close() 
+
+                    # Remove running file
+                    os.unlink(running_filename)
+
+                command_file.close()
+
+                # Remove command file 
+                os.unlink(command_dir + '/' + f)
+
+        time.sleep(10)
+
+def submit():
+
+    if not 'COMMAND' in os.environ:
+       sys.exit(EXIT_MISSING_JOB_PARAMETER)
+
+    if not 'NAME' in os.environ:
+       sys.exit(EXIT_MISSING_JOB_PARAMETER)
+        
+    command = os.environ['COMMAND']
+    command_name = os.environ['NAME']
+
+    command_id = str(time.time())
+    command_file = open(command_dir + '/' + str(command_id) + command_extension, 'w')
+    command_file.write(command + '\n')
+    command_file.close()
+    print command_id
+
+def status(command_id):
+
+    if os.path.exists(command_dir + '/' + command_id + command_extension):
+        print 'WAITING'
+    elif os.path.exists(command_dir + '/' + command_id + running_extension):
+        print 'RUNNING'
+    elif os.path.exists(command_dir + '/' + command_id + done_extension):
+        done_file = open(command_dir + '/' + command_id + done_extension, 'r')
+        lines = done_file.readlines()
+        done_file.close()
+        exit_code = int(lines[0][:-1])
+        print 'COMPLETE ' + str(exit_code)
+    else:
+        print 'UNKNOWN'
+        sys.exit(EXIT_QSTAT_FAILED)
+
+def stop(command_id):
+
+    if os.path.exists(command_dir + '/' + command_id + running_extension) or not os.path.exists(command_dir + '/' + command_id + command_extension):
+        sys.exit(EXIT_QDEL_FAILED)
+
+    os.unlink(command_dir + '/' + command_id + command_extension)
+
+    
+    
+ 
+
+#
+# Main
+#
+
+if len(sys.argv)<2:
+    sys.exit(EXIT_INCORRECT_FIRST_ARGUMENT)
+
+action = sys.argv[1]
+
+# deamon action
+if action == 'deamon':
+    deamon()
+
+# submit action
+elif action == 'start':
+    submit()
+
+# status action
+elif action == 'status':
+    if len(sys.argv)<3:
+        sys.exit(EXIT_STATUS_MISSING_JOBID)
+    status(sys.argv[2])
+
+# stop action
+elif action == 'stop':
+    if len(sys.argv)<3:
+        sys.exit(EXIT_STOP_MISSING_JOBID)
+    status(sys.argv[2])
+else:
+    sys.exit(EXIT_INCORRECT_FIRST_ARGUMENT)
+
+
+sys.exit(EXIT_SUCCESS)

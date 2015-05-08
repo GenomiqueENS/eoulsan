@@ -657,6 +657,7 @@
 								<!-- skip this task with command: mvn -Ddistrib.package.skip=true -->
 								<!-- Package binary distribution -->
 
+								<mkdir dir="${basedir}/target/dist/bin" />
 								<mkdir dir="${basedir}/target/dist/lib" />
 								<!--copy file="${basedir}/COMPILING.txt" todir="${basedir}/target/dist/" 
 									/ -->
@@ -666,6 +667,18 @@
 
 								<copy file="${basedir}/src/main/bin/${project.artifactId}.sh" todir="${basedir}/target/dist/" />
 								<chmod file="${basedir}/target/dist/${project.artifactId}.sh" perm="ugo+rx" />
+
+								<copy todir="${basedir}/target/dist/bin">
+									<fileset dir="${basedir}/src/main/bin">
+										<include name="bpipe-*" />
+									</fileset>
+								</copy>
+
+								<chmod perm="ugo+rx">
+									<fileset dir="${basedir}/target/dist/bin">
+										<include name="bpipe-*" />
+									</fileset>
+								</chmod>
 
 								<copy file="${basedir}/target/${project.artifactId}-${project.version}.jar" todir="${basedir}/target/dist/lib/" />
 								<move file="${basedir}/target/dist/" tofile="${basedir}/target/dist/${project.artifactId}-${project.version}"/>
