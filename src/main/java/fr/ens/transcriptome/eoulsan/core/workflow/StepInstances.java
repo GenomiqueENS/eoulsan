@@ -154,7 +154,9 @@ public class StepInstances {
 
     if (result == null) {
       throw new EoulsanException("Unknown step: "
-          + lower + ("".equals(stepVersion) ? "" : " version " + stepVersion));
+          + lower
+          + ("".equals(stepVersion) ? "" : " (version required: "
+              + stepVersion + ")"));
     }
 
     return result;
