@@ -41,7 +41,14 @@ def deamon():
                 command_file = open(command_dir + '/' + f, 'r')
                 for line in command_file:
 
-                    command = line[:-1]
+                    if len(line) == 0:
+                        continue
+
+                    line = line[:-1]
+                    if len(line) == 0:
+                        continue
+
+                    command = line
                     print "File: " + f + "\texecute: " + command
 
                     # Create running file
@@ -78,6 +85,10 @@ def submit():
     command_name = os.environ['NAME']
 
     command_id = str(time.time())
+
+    while os.path.exists(command_dir + '/' + str(command_id) + command_extension):
+        command_id = str(time.time())
+
     command_file = open(command_dir + '/' + str(command_id) + command_extension, 'w')
     command_file.write(command + '\n')
     command_file.close()
