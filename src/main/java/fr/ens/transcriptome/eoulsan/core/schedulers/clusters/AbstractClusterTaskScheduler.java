@@ -125,6 +125,9 @@ public abstract class AbstractClusterTaskScheduler extends
 
       final String logLevel = Main.getInstance().getLogLevelArgument();
 
+      command.add("-w");
+      command.add(System.getProperty("user.dir"));
+
       if (logLevel != null) {
         command.add("-loglevel");
         command.add(logLevel);

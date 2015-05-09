@@ -362,6 +362,9 @@ public abstract class Main {
       if (line.hasOption('p')) {
         argsOptions += 2;
       }
+      if (line.hasOption('w')) {
+        argsOptions += 2;
+      }
 
     } catch (ParseException e) {
       Common.errorExit(e,

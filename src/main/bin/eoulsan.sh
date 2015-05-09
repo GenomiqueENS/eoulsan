@@ -66,6 +66,9 @@ do
 		p)
 			PLUGINS=$OPTARG
 		;;
+		w)
+			cd $OPTARG
+		;;
 	esac
 done
 

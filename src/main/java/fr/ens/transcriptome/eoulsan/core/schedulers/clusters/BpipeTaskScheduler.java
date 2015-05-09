@@ -72,10 +72,7 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
     checkNotNull(jobName, "jobName argument cannot be null");
     checkNotNull(jobCommand, "jobCommand argument cannot be null");
 
-    final String jobCommandString =
-        "cd '"
-            + System.getProperty("user.dir") + "' ; "
-            + Joiner.on(' ').join(jobCommand);
+    final String jobCommandString = Joiner.on(' ').join(jobCommand);
 
     try {
       final Process process = startJobProcess(jobName, jobCommandString);

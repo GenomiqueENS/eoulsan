@@ -67,6 +67,9 @@ public final class MainCLI extends Main {
     options.addOption(OptionBuilder.withArgName("args").hasArg()
         .withDescription("JVM arguments (-server by default)").create('J'));
 
+    options.addOption(OptionBuilder.withArgName("path").hasArg()
+        .withDescription("JVM working directory").create('w'));
+
     options.addOption(OptionBuilder.withArgName("classpath").hasArg()
         .withDescription("additional classpath for eoulsan plugins")
         .create('p'));
