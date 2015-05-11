@@ -90,10 +90,10 @@ public class ToolPythonInterpreter {
     }
 
     // Interpreter python script
-    final String commandLine = interpreteScript();
+    final String commandLine = interpreterScript();
 
     // TODO
-    System.out.println("final commande line " + commandLine);
+    System.out.println("final command line " + commandLine);
 
     final ToolExecutor executor =
         new ToolExecutor(this.context, commandLine, this.tool.getToolName(),
@@ -105,7 +105,7 @@ public class ToolPythonInterpreter {
 
   }
 
-  private String interpreteScript() throws EoulsanException {
+  private String interpreterScript() throws EoulsanException {
 
     checkNotNull(this.pythonScriptWithJavaCode,
         "Not found python script to interprete.");
@@ -125,30 +125,30 @@ public class ToolPythonInterpreter {
     // System.out.println("variables "
     // + Joiner.on("\n\t").withKeyValueSeparator("=").join(registry));
 
-    final PythonInterpreter interp = new PythonInterpreter();
+    final PythonInterpreter interpreter = new PythonInterpreter();
 
     // Init variable cmd
-    interp.set(VAR_CMD_NAME, new String());
-    interp.set(INSTANCE_NAME, variablesCommandFinal);
+    interpreter.set(VAR_CMD_NAME, new String());
+    interpreter.set(INSTANCE_NAME, variablesCommandFinal);
 
     // Add script
-    interp.exec(this.pythonScriptWithJavaCode);
+    interpreter.exec(this.pythonScriptWithJavaCode);
 
     // Retrieve standard output
-    final PyObject cmd = interp.get(VAR_CMD_NAME);
+    final PyObject cmd = interpreter.get(VAR_CMD_NAME);
 
     // TODO
     // System.out.println("cmd: " + cmd.asString());
 
-    return addInterperter(cmd.asString());
+    return addInterpreter(cmd.asString());
   }
 
-  private String addInterperter(final String cmd) {
+  private String addInterpreter(final String cmd) {
 
     checkNotNull(cmd, "Command line can not be null");
 
     // Add interpreter if exists
-    if (this.tool.isIntepreterSetting()) {
+    if (this.tool.isInterpreterSetting()) {
 
       return this.tool.getInterpreter()
           + " " + this.tool.getToolExecutable() + "/" + cmd.trim();

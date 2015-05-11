@@ -185,7 +185,7 @@ public class ToolConditionalElement implements ToolElement {
   }
 
   @Override
-  public String getValidedName() {
+  public String getValidatedName() {
     throw new EoulsanRuntimeException(
         "Name tool conditional can not be change.");
   }

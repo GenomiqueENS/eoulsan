@@ -241,7 +241,7 @@ public abstract class Main {
             + "\t"
             + action.getDescription()
             + (!action.isCurrentArchCompatible()
-                ? " (not availlable for your platform)." : ""));
+                ? " (not available for your platform)." : ""));
       }
     }
 

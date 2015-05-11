@@ -296,7 +296,7 @@ public class RSConnectionNewImpl implements RSConnection {
       RConnection rc = getRConnection();
       rc.voidEval("Sweave(\"" + source + "\")");
     } catch (RserveException e) {
-      throw new REngineException(getRConnection(), "Rserve exeption: " + e);
+      throw new REngineException(getRConnection(), "Rserve exception: " + e);
     }
   }
 

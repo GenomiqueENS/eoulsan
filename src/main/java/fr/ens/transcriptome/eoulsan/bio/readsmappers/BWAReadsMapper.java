@@ -54,7 +54,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   private static final String MAPPER_EXECUTABLE = "bwa";
   private static final String INDEXER_EXECUTABLE = MAPPER_EXECUTABLE;
 
-  private static final int MIN_BWTSW_ALGO_GENOME_SIZE = 1 * 1024 * 1024 * 1024;
+  private static final int MIN_BWTSW_GENOME_SIZE = 1 * 1024 * 1024 * 1024;
   public static final String DEFAULT_ARGUMENTS = "-l 28";
 
   private static final String SYNC = BWAReadsMapper.class.getName();
@@ -120,7 +120,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
     final File genomeFile = new File(genomePathname);
     List<String> cmd = new ArrayList<>();
-    if (genomeFile.length() >= MIN_BWTSW_ALGO_GENOME_SIZE) {
+    if (genomeFile.length() >= MIN_BWTSW_GENOME_SIZE) {
       cmd.add(indexerPathname);
       cmd.add("index");
       cmd.add("-a");

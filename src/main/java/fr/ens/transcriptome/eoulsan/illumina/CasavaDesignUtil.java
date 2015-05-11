@@ -38,7 +38,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.illumina.io.AbstractCasavaDesignTextReader;
 
 /**
- * This class contains utilty methods for Casava design.
+ * This class contains utility methods for Casava design.
  * @since 1.1
  * @author Laurent Jourdren
  */
@@ -113,7 +113,7 @@ public final class CasavaDesignUtil {
       } else {
 
         if (!fcid.equals(sample.getFlowCellId())) {
-          throw new EoulsanException("Two differents flow cell id found: "
+          throw new EoulsanException("Two different flow cells id found: "
               + fcid + " and " + sample.getFlowCellId() + ".");
         }
       }

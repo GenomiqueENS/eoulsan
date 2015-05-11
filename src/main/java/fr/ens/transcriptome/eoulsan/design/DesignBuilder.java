@@ -158,7 +158,7 @@ public class DesignBuilder {
 
     }
 
-    private Object[] initPairedend() {
+    private Object[] initPairedEnd() {
 
       String prefix = this.firstReadId;
       int pairMember = -1;
@@ -253,7 +253,7 @@ public class DesignBuilder {
       this.sampleOperator = null;
       this.sampleDate = getDate(path);
       this.firstReadId = getFirstReadSeqId(path);
-      final Object[] array = initPairedend();
+      final Object[] array = initPairedEnd();
       this.prefix = (String) array[0];
       this.pairMember = (Integer) array[1];
     }
@@ -268,7 +268,7 @@ public class DesignBuilder {
       this.sampleOperator = sampleOperator;
       this.sampleDate = getDate(path);
       this.firstReadId = getFirstReadSeqId(path);
-      final Object[] array = initPairedend();
+      final Object[] array = initPairedEnd();
       this.prefix = (String) array[0];
       this.pairMember = (Integer) array[1];
     }
@@ -666,7 +666,7 @@ public class DesignBuilder {
       smd.setAnnotation(this.gffFile.toString());
     }
 
-    // Set additionnal annotation file
+    // Set additional annotation file
     if (this.additionalAnnotationFile != null) {
       smd.setAdditionalAnnotation(this.additionalAnnotationFile.toString());
     }

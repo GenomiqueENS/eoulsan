@@ -123,7 +123,7 @@ public class AddIdentifierTranslator extends BasicTranslator {
   }
 
   /**
-   * Get the available identfiers by the translator if possible.
+   * Get the available identifiers by the translator if possible.
    * @return a array of string with the identifiers
    */
   @Override

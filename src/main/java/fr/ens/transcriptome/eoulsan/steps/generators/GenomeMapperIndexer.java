@@ -164,11 +164,11 @@ public final class GenomeMapperIndexer {
   /**
    * Public constructor.
    * @param mapper Mapper to use for the index generator
-   * @param additionnalArguments additional indexer arguments
+   * @param additionalArguments additional indexer arguments
    * @param additionalDescription additional indexer arguments description
    */
   public GenomeMapperIndexer(final SequenceReadsMapper mapper,
-      final String additionnalArguments,
+      final String additionalArguments,
       final Map<String, String> additionalDescription) {
 
     checkNotNull(mapper, "Mapper is null");
@@ -181,7 +181,7 @@ public final class GenomeMapperIndexer {
     this.storage = checkForGenomeIndexStore();
 
     // Set indexer additional arguments of the indexer
-    this.mapper.setIndexerArguments(additionnalArguments);
+    this.mapper.setIndexerArguments(additionalArguments);
 
     // Get the additional description
     this.additionalDescription = new LinkedHashMap<>(additionalDescription);

@@ -97,7 +97,7 @@ public class CommandWorkflowModel implements Serializable {
   private final Map<String, String> stepVersions = new HashMap<>();
   private final Map<String, Map<String, StepPort>> stepInputs = new HashMap<>();
   private final Map<String, Set<Parameter>> stepParameters = new HashMap<>();
-  private final Map<String, Boolean> stepSkiped = new HashMap<>();
+  private final Map<String, Boolean> stepSkipped = new HashMap<>();
   private final Map<String, Boolean> stepDiscardOutput = new HashMap<>();
   private final Set<Parameter> globalParameters = new HashSet<>();
 
@@ -297,7 +297,7 @@ public class CommandWorkflowModel implements Serializable {
     this.stepVersions.put(stepIdLower, stepVersion);
     this.stepInputs.put(stepIdLower, inputsMap);
     this.stepParameters.put(stepIdLower, parameters);
-    this.stepSkiped.put(stepIdLower, skipStep);
+    this.stepSkipped.put(stepIdLower, skipStep);
     this.stepDiscardOutput.put(stepIdLower, discardOutput);
   }
 
@@ -369,7 +369,7 @@ public class CommandWorkflowModel implements Serializable {
    */
   public boolean isStepSkipped(final String stepId) {
 
-    return this.stepSkiped.get(stepId);
+    return this.stepSkipped.get(stepId);
   }
 
   /**
@@ -543,7 +543,7 @@ public class CommandWorkflowModel implements Serializable {
 
     // Set skip attribute
     Attr skipAttr = document.createAttribute(SKIP_ATTR_NAME_STEP_TAG);
-    skipAttr.setValue("" + this.stepSkiped.get(stepId));
+    skipAttr.setValue("" + this.stepSkipped.get(stepId));
     stepElement.setAttributeNode(skipAttr);
 
     // Set step name

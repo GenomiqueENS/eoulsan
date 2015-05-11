@@ -56,17 +56,17 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
 
   @Override
   public boolean compareFiles(final BloomFilterUtils filter,
-      final InputStream isBAM) throws IOException {
+      final InputStream in) throws IOException {
 
     String line = null;
     this.numberElementsCompared = 0;
 
     // Create Bam reader
-    final SamReader bamfr =
-        SamReaderFactory.makeDefault().open(SamInputResource.of(isBAM));
+    final SamReader bamReader =
+        SamReaderFactory.makeDefault().open(SamInputResource.of(in));
 
     // Get iterator on file
-    final Iterator<SAMRecord> it = bamfr.iterator();
+    final Iterator<SAMRecord> it = bamReader.iterator();
 
     // Parse file
     while (it.hasNext()) {
@@ -87,7 +87,7 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
             setCauseFailComparison(line);
 
             // Close reader
-            bamfr.close();
+            bamReader.close();
 
             return false;
           }
@@ -99,7 +99,7 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
           setCauseFailComparison(line);
 
           // Close reader
-          bamfr.close();
+          bamReader.close();
 
           return false;
         }
@@ -108,7 +108,7 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
     }
 
     // Close reader
-    bamfr.close();
+    bamReader.close();
 
     // Check count element is the same between two files
     if (this.numberElementsCompared != filter.getAddedNumberOfElements()) {
@@ -130,10 +130,10 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
         initBloomFilter(getExpectedNumberOfElements());
 
     // Parse BAM file
-    try (final SamReader bamfr =
+    try (final SamReader bamReader =
         SamReaderFactory.makeDefault().open(SamInputResource.of(is))) {
 
-      final Iterator<SAMRecord> it = bamfr.iterator();
+      final Iterator<SAMRecord> it = bamReader.iterator();
 
       while (it.hasNext()) {
         // Convert in line in SAM and save in filter

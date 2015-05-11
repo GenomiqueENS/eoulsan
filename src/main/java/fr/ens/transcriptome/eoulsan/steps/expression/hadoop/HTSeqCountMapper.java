@@ -77,7 +77,7 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
   // Parameters keys
   static final String STRANDED_PARAM = Globals.PARAMETER_PREFIX
       + ".expression.stranded.parameter";
-  static final String OVERLAPMODE_PARAM = Globals.PARAMETER_PREFIX
+  static final String OVERLAP_MODE_PARAM = Globals.PARAMETER_PREFIX
       + ".expression.overlapmode.parameter";
   static final String REMOVE_AMBIGUOUS_CASES = Globals.PARAMETER_PREFIX
       + ".expression.no.ambiguous.cases";
@@ -163,7 +163,7 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
 
       // Get the "overlap mode" parameter
       this.overlapMode =
-          OverlapMode.getOverlapModeFromName(conf.get(OVERLAPMODE_PARAM));
+          OverlapMode.getOverlapModeFromName(conf.get(OVERLAP_MODE_PARAM));
 
       // Get the "no ambiguous cases" parameter
       this.removeAmbiguousCases = conf.getBoolean(REMOVE_AMBIGUOUS_CASES, true);

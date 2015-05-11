@@ -159,7 +159,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
         this.annotationFile = new DataFile(p.getStringValue());
       } else if ("outputformat".equals(p.getName())) {
 
-        // Set ouptut format
+        // Set output format
 
         for (String format : Splitter.on(',').trimResults().omitEmptyStrings()
             .split(p.getValue())) {
@@ -310,9 +310,9 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
    * Load translator annotation.
    * @param annotationFile the annotation file to use
    * @return a Translator object with the additional annotation
-   * @throws EoulsanIOException if an error occurs while reading additionnal
+   * @throws EoulsanIOException if an error occurs while reading additional
    *           annotation
-   * @throws IOException if an error occurs while reading additionnal annotation
+   * @throws IOException if an error occurs while reading additional annotation
    */
   private Translator loadTranslator(final DataFile annotationFile)
       throws EoulsanIOException, IOException {

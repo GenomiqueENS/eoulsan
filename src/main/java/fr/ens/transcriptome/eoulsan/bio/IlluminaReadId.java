@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 
 /**
- * This class allow the easily get fields of Illimina reads ids.
+ * This class allow the easily get fields of Illumina reads ids.
  * @since 1.0
  * @author Laurent Jourdren
  */

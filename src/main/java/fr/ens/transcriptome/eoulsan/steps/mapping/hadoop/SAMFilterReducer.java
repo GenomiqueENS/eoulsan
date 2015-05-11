@@ -181,7 +181,7 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
       final SAMSequenceDictionary sequenceDictionary =
           new SAMSequenceDictionary();
 
-      final Splitter spliter = Splitter.on('\t');
+      final Splitter splitter = Splitter.on('\t');
       String line = null;
 
       while ((line = reader.readLine()) != null) {
@@ -193,7 +193,7 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
           String sequenceName = null;
           int sequenceLength = -1;
 
-          for (String f : spliter.split(line)) {
+          for (String f : splitter.split(line)) {
             if (f.startsWith("SN:")) {
               sequenceName = f.substring(3);
             } else if (f.startsWith("LN:")) {

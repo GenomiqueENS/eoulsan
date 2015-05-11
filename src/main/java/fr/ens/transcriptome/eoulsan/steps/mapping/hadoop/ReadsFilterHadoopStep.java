@@ -108,7 +108,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
       DataFile tfqFile = null;
 
-      // Preprocess paired-end files
+      // Pre-process paired-end files
       if (inData.getDataFileCount() == 1) {
 
         // Define input and output files

@@ -189,7 +189,7 @@ public abstract class AbstractToolElement implements ToolElement {
   }
 
   @Override
-  public String getValidedName() {
+  public String getValidatedName() {
     return this.name.replaceAll(INVALID, "");
   }
 
@@ -302,7 +302,7 @@ public abstract class AbstractToolElement implements ToolElement {
 
     if (param == null) {
       throw new EoulsanException(
-          "Parsing xml: no element param found to intantiate a tool element.");
+          "Parsing xml: no element param found to instantiate a tool element.");
     }
 
     // Instantiate a tool parameter according to attribute type value

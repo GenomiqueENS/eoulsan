@@ -94,7 +94,7 @@ public interface Step {
 
   /**
    * Get the parallelization mode of the step.
-   * @return a ParalellizationMode enum
+   * @return a ParallelizationMode enum
    */
   ParallelizationMode getParallelizationMode();
 }

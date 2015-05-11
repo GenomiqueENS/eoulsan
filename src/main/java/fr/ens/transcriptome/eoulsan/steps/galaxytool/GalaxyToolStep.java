@@ -96,7 +96,7 @@ public class GalaxyToolStep extends AbstractStep {
         .getInDataFormatExpected().entrySet()) {
       isEmpty = false;
 
-      builder.addPort(entry.getValue().getValidedName(), entry.getKey(), true);
+      builder.addPort(entry.getValue().getValidatedName(), entry.getKey(), true);
     }
 
     if (isEmpty) {
@@ -115,7 +115,7 @@ public class GalaxyToolStep extends AbstractStep {
     for (final Map.Entry<DataFormat, ToolElement> entry : this.toolInterpreter
         .getOutDataFormatExpected().entrySet()) {
       isEmpty = false;
-      builder.addPort(entry.getValue().getValidedName(), entry.getKey());
+      builder.addPort(entry.getValue().getValidatedName(), entry.getKey());
 
       return singleOutputPort(entry.getKey());
     }

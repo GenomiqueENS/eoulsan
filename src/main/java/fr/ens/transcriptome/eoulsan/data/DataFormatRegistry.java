@@ -322,7 +322,7 @@ public class DataFormatRegistry {
 
   /**
    * Get DataFormats from an toolshed Galaxy name extension.
-   * @param toolshed Galaxy name extension.
+   * @param name Galaxy name extension.
    * @return DataFormat
    */
   public DataFormat getDataFormatsFromToolshedExtension(final String name) {

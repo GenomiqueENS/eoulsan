@@ -165,7 +165,7 @@ public abstract class AbstractComparatorWithBloomFilter extends
     return getName()
         + " compares files with extensions " + getExtensions()
         + " use Bloom filter with parameters: expected numbers elements "
-        + getExpectedNumberOfElements() + " and false positif probability "
+        + getExpectedNumberOfElements() + " and false positive probability "
         + getFalsePositiveProbability();
 
   }
@@ -216,8 +216,8 @@ public abstract class AbstractComparatorWithBloomFilter extends
     this.expectedNumberOfElements = expectedNumberOfElements;
   }
 
-  protected void setFalsePositiveProbability(final double falsePositiveProba) {
-    this.falsePositiveProbability = falsePositiveProba;
+  protected void setFalsePositiveProbability(final double falsePositiveProbability) {
+    this.falsePositiveProbability = falsePositiveProbability;
   }
 
   protected double getFalsePositiveProbability() {

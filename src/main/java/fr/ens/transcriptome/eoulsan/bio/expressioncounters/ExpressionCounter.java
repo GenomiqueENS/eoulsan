@@ -107,10 +107,10 @@ public interface ExpressionCounter {
   void setOverlapMode(OverlapMode mode);
 
   /**
-   * Set if ambiguous cases musr be removed.
-   * @param removeAmbigousCases true if ambiguous cases must be removed
+   * Set if ambiguous cases must be removed.
+   * @param removeAmbiguousCases true if ambiguous cases must be removed
    */
-  void setRemoveAmbiguousCases(boolean removeAmbigousCases);
+  void setRemoveAmbiguousCases(boolean removeAmbiguousCases);
 
   /**
    * Set the genomic type on which to count expression.

@@ -79,7 +79,7 @@ public class ExecJarHadoopAction extends AbstractAction {
       final Path tmpDir = new Path(jobPath, "tmp");
 
       // Set log pathname
-      setjobPathname(jobPath.toString());
+      setJobPathname(jobPath.toString());
 
       // Set output pathname
       setOutputPathname(outputPath.toString());

@@ -311,7 +311,7 @@ public class ITCommandExecutor {
     /** Duration max in minutes. */
     private final int durationMaxInMinutes;
 
-    /** Descripion on script. */
+    /** Description on script. */
     private final String desc;
 
     /** Process is killed . */

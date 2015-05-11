@@ -367,7 +367,7 @@ public class DataFile implements Comparable<DataFile>, Serializable {
 
   /**
    * Check if this DataFile exists.
-   * @param followinLink follow the link target if the file is a symbolic link
+   * @param followLink follow the link target if the file is a symbolic link
    * @return true if this DataFile exists
    */
   public boolean exists(final boolean followLink) {

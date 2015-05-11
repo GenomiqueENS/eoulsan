@@ -43,7 +43,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Settings;
 
 /**
- * This class allow to submit, stop and get the status of jobs using bpipe
+ * This class allow to submit, stop and get the status of jobs using Bpipe
  * scheduler wrappers.
  * @author Laurent Jourdren
  * @since 2.0
@@ -145,7 +145,7 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
       // Read output of the submit command
       final BufferedReader reader =
           new BufferedReader(new InputStreamReader(process.getInputStream()));
-      final String jobstatus = reader.readLine();
+      final String jobStatus = reader.readLine();
       reader.close();
 
       final int exitCode = process.waitFor();
@@ -155,10 +155,10 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
         getLogger().fine(
             "Job "
                 + jobId + " status on " + getSchedulerName()
-                + " scheduler. Job status: " + jobstatus);
+                + " scheduler. Job status: " + jobStatus);
 
         final List<String> fields =
-            Lists.newArrayList(Splitter.on(' ').split(jobstatus.trim()));
+            Lists.newArrayList(Splitter.on(' ').split(jobStatus.trim()));
 
         switch (fields.get(0)) {
 
@@ -171,21 +171,21 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
         case "COMPLETE":
 
           if (fields.size() != 2) {
-            throw new IOException("Invalid complete string: " + jobstatus);
+            throw new IOException("Invalid complete string: " + jobStatus);
           }
 
           try {
             return new StatusResult(StatusValue.COMPLETE,
                 Integer.parseInt(fields.get(1)));
           } catch (NumberFormatException e) {
-            throw new IOException("Invalid complete string: " + jobstatus, e);
+            throw new IOException("Invalid complete string: " + jobStatus, e);
           }
 
         case "UNKNOWN":
           return new StatusResult(StatusValue.UNKNOWN);
 
         default:
-          throw new IOException("Unknown status: " + jobstatus);
+          throw new IOException("Unknown status: " + jobStatus);
         }
 
       } else {

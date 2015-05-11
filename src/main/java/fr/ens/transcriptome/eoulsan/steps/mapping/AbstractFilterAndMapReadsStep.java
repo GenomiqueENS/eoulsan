@@ -248,8 +248,8 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
       final Set<Parameter> stepParameters) throws EoulsanException {
 
     String mapperName = null;
-    final MultiReadFilterBuilder mrfb = new MultiReadFilterBuilder();
-    final MultiReadAlignmentsFilterBuilder mrafb =
+    final MultiReadFilterBuilder readFilterBuilder = new MultiReadFilterBuilder();
+    final MultiReadAlignmentsFilterBuilder alignmentsFilterBuilder =
         new MultiReadAlignmentsFilterBuilder();
 
     for (Parameter p : stepParameters) {
@@ -293,9 +293,9 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
       default:
 
         // Add read filters parameters
-        if (!(mrfb.addParameter(p.getName(), p.getStringValue(), true) ||
+        if (!(readFilterBuilder.addParameter(p.getName(), p.getStringValue(), true) ||
         // Add read alignments filters parameters
-        mrafb.addParameter(p.getName(), p.getStringValue(), true))) {
+        alignmentsFilterBuilder.addParameter(p.getName(), p.getStringValue(), true))) {
 
           throw new EoulsanException("Unknown parameter: " + p.getName());
         }
@@ -303,11 +303,11 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
     }
 
     // Force parameter checking
-    mrfb.getReadFilter();
-    mrafb.getAlignmentsFilter();
+    readFilterBuilder.getReadFilter();
+    alignmentsFilterBuilder.getAlignmentsFilter();
 
-    this.readsFiltersParameters = mrfb.getParameters();
-    this.alignmentsFiltersParameters = mrafb.getParameters();
+    this.readsFiltersParameters = readFilterBuilder.getParameters();
+    this.alignmentsFiltersParameters = alignmentsFilterBuilder.getParameters();
 
     if (mapperName == null) {
       throw new EoulsanException("No mapper set.");

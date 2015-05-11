@@ -125,7 +125,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
       DataFile tfqFile = null;
 
-      // Preprocess paired-end files
+      // Pre-process paired-end files
       if (readsData.getDataFileCount() == 1) {
 
         // Define input and output files

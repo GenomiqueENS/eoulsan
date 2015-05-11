@@ -36,7 +36,7 @@ import fr.ens.transcriptome.eoulsan.steps.expression.local.ExpressionPseudoMapRe
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
- * This class defines a wrapper for the homemade algorithme for the expression
+ * This class defines a wrapper for the homemade algorithm for the expression
  * step.
  * @since 1.2
  * @author Laurent Jourdren

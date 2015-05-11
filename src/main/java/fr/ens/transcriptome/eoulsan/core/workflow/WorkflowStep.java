@@ -121,7 +121,7 @@ public interface WorkflowStep extends Serializable {
 
   /**
    * Get the unique numerical identifier of the step.
-   * @return the number of the setp
+   * @return the number of the step
    */
   int getNumber();
 

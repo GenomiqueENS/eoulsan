@@ -45,7 +45,7 @@ public class MonoThreadTaskScheduler extends AbstractTaskScheduler implements
   private final Queue<TaskContext> queue = Queues.newLinkedBlockingQueue();
 
   //
-  // TaskExcutor methods
+  // TaskExecutor methods
   //
 
   @Override

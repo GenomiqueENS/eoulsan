@@ -121,7 +121,7 @@ class DataElement extends AbstractData implements Serializable {
 
     if (getFormat().getMaxFilesCount() < 2) {
       throw new EoulsanRuntimeException(
-          "Only multifiles DataFormat are handled by this method.");
+          "Only multi-files DataFormat are handled by this method.");
     }
 
     return this.files.get(fileIndex).getName();

@@ -31,7 +31,7 @@ public class ToolData {
   /** The tool executable. */
   private File toolExecutable;
 
-  public boolean isIntepreterSetting() {
+  public boolean isInterpreterSetting() {
 
     return getInterpreter() != null && !getInterpreter().isEmpty();
   }

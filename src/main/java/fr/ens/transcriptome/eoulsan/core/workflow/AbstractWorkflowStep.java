@@ -267,7 +267,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
   /**
    * Get the parallelization mode of the step.
-   * @return a ParalellizationMode enum
+   * @return a ParallelizationMode enum
    */
   public ParallelizationMode getParallelizationMode() {
 

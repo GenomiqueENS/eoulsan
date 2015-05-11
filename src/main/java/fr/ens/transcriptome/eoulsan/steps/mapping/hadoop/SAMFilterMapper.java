@@ -56,7 +56,7 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
 
   // Parameters keys
-  static final String MAPPING_QUALITY_THRESOLD_KEY = Globals.PARAMETER_PREFIX
+  static final String MAPPING_QUALITY_THRESHOLD_KEY = Globals.PARAMETER_PREFIX
       + ".samfilter.mapping.quality.threshold";
   static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
       + ".samfilter.genome.desc.file";
@@ -123,7 +123,7 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
       this.idFields.add(e);
     }
 
-    // Read identifiant format : before Casava 1.8 or other technologies that
+    // Read identifier format : before Casava 1.8 or other technologies that
     // Illumina
     if (this.idFields.size() < 7) {
       endReadId = completeId.indexOf('/');
@@ -139,7 +139,7 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
       }
     }
 
-    // Read identifiant format : Illumina - Casava 1.8
+    // Read identifier format : Illumina - Casava 1.8
     else {
       endReadId = completeId.indexOf(' ');
       // mapped read

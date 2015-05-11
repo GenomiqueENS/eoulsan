@@ -146,7 +146,7 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
 
     if (fs == null) {
       throw new IOException(
-          "Unable to create the directorty, The FileSystem is null");
+          "Unable to create the directory, The FileSystem is null");
     }
 
     if (!fs.mkdirs(path)) {

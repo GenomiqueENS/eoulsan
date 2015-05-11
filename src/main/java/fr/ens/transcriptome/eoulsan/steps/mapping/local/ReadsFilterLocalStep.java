@@ -150,7 +150,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
    * Filter a sample data in paired-end mode.
    * @param inData input Data
    * @param outData output Data
-   * @param fastqFormat FASTQ formatt
+   * @param fastqFormat FASTQ format
    * @param reporter reporter to use
    * @param filter reads filter to use
    * @throws IOException if an error occurs while filtering reads

@@ -176,7 +176,7 @@ public class DiffAnaLocalStep extends AbstractStep {
                   + getName() + " step: " + p.getStringValue());
         }
       } else {
-        throw new EoulsanException("Unkown parameter for step "
+        throw new EoulsanException("Unknown parameter for step "
             + getName() + " : " + p.getName());
       }
 

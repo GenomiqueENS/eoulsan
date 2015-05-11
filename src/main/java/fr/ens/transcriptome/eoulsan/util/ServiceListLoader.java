@@ -86,7 +86,7 @@ public class ServiceListLoader {
     }
 
     /**
-     * Private consctructor.
+     * Private constructor.
      * @param url URL
      * @param lineNumber line number
      * @param value value

@@ -63,10 +63,10 @@ import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
  */
 public class ITSuite {
 
-  private static final String RUNNING_LINKNAME = "running";
-  private static final String SUCCEEDED_LINKNAME = "succeeded";
-  private static final String FAILED_LINKNAME = "failed";
-  private static final String LATEST_LINKNAME = "latest";
+  private static final String RUNNING_LINK_NAME = "running";
+  private static final String SUCCEEDED_LINK_NAME = "succeeded";
+  private static final String FAILED_LINK_NAME = "failed";
+  private static final String LATEST_LINK_NAME = "latest";
 
   private static final Formatter DATE_FORMATTER = new Formatter().format(
       Globals.DEFAULT_LOCALE, "%1$tY%1$tm%1$td_%1$tH%1$tM%1$tS", new Date());
@@ -108,7 +108,7 @@ public class ITSuite {
    * @return the instance of ITSuite object
    * @throws EoulsanException if an error occurs when initialize integration
    *           test
-   * @throws IOException if an error occurs with an test's directories or
+   * @throws IOException if an error occurs with a test directories or
    *           configuration file
    */
   public static ITSuite getInstance(final Map<String, File> tests,
@@ -221,7 +221,7 @@ public class ITSuite {
 
   /**
    * Execute command line shell to obtain the version name of application to
-   * test. If fail, it return UNKOWN.
+   * test. If fail, it return UNKNOWN.
    * @param commandLine command line shell
    * @param applicationPath application path to test
    * @return version name of application to test
@@ -259,26 +259,26 @@ public class ITSuite {
   private void createSymbolicLinkToTest() {
 
     // Remove old running test link
-    removeOldLink(RUNNING_LINKNAME);
+    removeOldLink(RUNNING_LINK_NAME);
 
     // Create running test link
     if (this.testRunningCount == 0) {
 
-      createNewLink(RUNNING_LINKNAME);
+      createNewLink(RUNNING_LINK_NAME);
 
     } else {
 
       // Replace latest by running test link
-      removeOldLinkAndCreateANewOne(LATEST_LINKNAME);
+      removeOldLinkAndCreateANewOne(LATEST_LINK_NAME);
 
       if (this.failCount == 0) {
 
         // Update succeed link
-        removeOldLinkAndCreateANewOne(SUCCEEDED_LINKNAME);
+        removeOldLinkAndCreateANewOne(SUCCEEDED_LINK_NAME);
       } else {
 
         // Update failed link
-        removeOldLinkAndCreateANewOne(FAILED_LINKNAME);
+        removeOldLinkAndCreateANewOne(FAILED_LINK_NAME);
       }
     }
   }
@@ -348,7 +348,7 @@ public class ITSuite {
       throws EoulsanException {
 
     // Keep test with test.conf file exit at the root directory
-    final Map<String, File> valideTests = new HashMap<>();
+    final Map<String, File> validTests = new HashMap<>();
 
     for (final Map.Entry<String, File> entry : tests.entrySet()) {
 
@@ -357,17 +357,17 @@ public class ITSuite {
           .exists()) {
 
         // Keep test
-        valideTests.put(entry.getKey(), entry.getValue());
+        validTests.put(entry.getKey(), entry.getValue());
       }
     }
 
     // Check tests found not empty
-    if (valideTests.isEmpty()) {
+    if (validTests.isEmpty()) {
       throw new EoulsanException("None test valide in directory "
           + this.testsDataDirectory.getAbsolutePath());
     }
 
-    return Collections.unmodifiableMap(valideTests);
+    return Collections.unmodifiableMap(validTests);
   }
 
   /**
@@ -604,7 +604,7 @@ public class ITSuite {
    * @param tests tests count to run
    * @param globalsConf the globals conf
    * @param applicationPath the application path
-   * @throws IOException if an error occurs with an test's directories or
+   * @throws IOException if an error occurs with a test directory or
    *           configuration file
    * @throws EoulsanException if an error occurs when initialize integration
    *           test
@@ -659,7 +659,7 @@ public class ITSuite {
                 : "generate all missing data expected directories ")
             : "launch tests integration ");
 
-    // Initialize itsuite before create integration test instance
+    // Initialize ITSuite before create integration test instance
     init();
 
     // Select tests to execute

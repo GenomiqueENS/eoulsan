@@ -48,7 +48,7 @@ public class BinariesInstaller {
       final String outputPath) throws FileNotFoundException, IOException {
 
     if (new File(outputPath, file).isFile()) {
-      getLogger().fine(file + " is allready installed.");
+      getLogger().fine(file + " is already installed.");
       return;
     }
 
@@ -121,7 +121,7 @@ public class BinariesInstaller {
             + Globals.APP_VERSION_STRING + "/" + softwarePackage + "/"
             + packageVersion;
 
-    // Test if the file is allready installed
+    // Test if the file is already installed
     if (new File(outputPath, binaryFilename).isFile()) {
       getLogger().info(binaryFilename + " is already installed.");
       return outputPath + "/" + binaryFilename;

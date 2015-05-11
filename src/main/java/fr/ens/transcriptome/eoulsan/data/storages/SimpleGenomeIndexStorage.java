@@ -147,12 +147,12 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
       this.entries.put(entry.getKey(), entry);
       save();
       getLogger().info(
-          "Successully added "
+          "Successfully added "
               + indexArchive.getName()
               + " index archive to genome index storage.");
     } catch (IOException e) {
       getLogger().warning(
-          "Failled to add "
+          "Failed to add "
               + indexArchive.getName()
               + " index archive to genome index storage: " + e.getMessage());
     }

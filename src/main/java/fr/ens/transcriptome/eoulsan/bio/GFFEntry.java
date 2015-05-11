@@ -489,8 +489,8 @@ public class GFFEntry {
   }
 
   /**
-   * Test if the start and end position values are valids.
-   * @return true if the positions are valids
+   * Test if the start and end position values are valid.
+   * @return true if the positions are valid
    */
   public final boolean isValidStartAndEnd() {
 

@@ -102,16 +102,16 @@ public class BamComparatorTest {
       this.fileC.delete();
     }
 
-    try (final SamReader bamfr =
+    try (final SamReader bamReader =
         SamReaderFactory.makeDefault().open(this.fileA);) {
 
       final SAMFileWriter samWriter =
           new SAMFileWriterFactory().setCreateIndex(false)
               .setTempDirectory(new File(System.getProperty("java.io.tmpdir")))
-              .makeBAMWriter(bamfr.getFileHeader(), false, this.fileC);
+              .makeBAMWriter(bamReader.getFileHeader(), false, this.fileC);
 
       // Get iterator on file
-      final Iterator<SAMRecord> it = bamfr.iterator();
+      final Iterator<SAMRecord> it = bamReader.iterator();
 
       // Chose no header line
       final int numberLine = 33;
@@ -129,7 +129,7 @@ public class BamComparatorTest {
           switch (typeModification) {
 
           case 0:
-            // duplicate SAMline, no header
+            // duplicate SAM line, no header
             // first time
             samWriter.addAlignment(r);
             // second time

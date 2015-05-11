@@ -190,7 +190,7 @@ public final class GalaxyToolXMLParser {
 
       if (result.size() != expectedCount) {
         throw new EoulsanException("Parsing tool XML file: tag "
-            + tagName + " invalid entry coutn found (expected " + expectedCount
+            + tagName + " invalid entry count found (expected " + expectedCount
             + " founded " + result.size() + ".");
       }
     }
@@ -237,7 +237,7 @@ public final class GalaxyToolXMLParser {
 
       if (result.size() != expectedCount) {
         throw new EoulsanException("Parsing tool XML file: tag "
-            + tagName + " invalid entry coutn found (expected " + expectedCount
+            + tagName + " invalid entry count found (expected " + expectedCount
             + " founded " + result.size() + ".");
       }
     }

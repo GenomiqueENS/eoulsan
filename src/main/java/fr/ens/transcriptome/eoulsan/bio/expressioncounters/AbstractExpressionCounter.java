@@ -45,7 +45,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
 
   private String genomicType;
   private String attributeId;
-  private boolean splitAttritubeValues;
+  private boolean splitAttributeValues;
   private StrandUsage stranded;
   private OverlapMode overlapMode;
   private boolean noAmbiguousCases;
@@ -89,7 +89,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
 
   @Override
   public boolean isSplitAttributeValues() {
-    return this.splitAttritubeValues;
+    return this.splitAttributeValues;
   }
 
   //
@@ -117,9 +117,9 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   }
 
   @Override
-  public void setRemoveAmbiguousCases(final boolean noAmbigousCases) {
+  public void setRemoveAmbiguousCases(final boolean removeAmbiguousCases) {
 
-    this.noAmbiguousCases = noAmbigousCases;
+    this.noAmbiguousCases = removeAmbiguousCases;
   }
 
   @Override
@@ -143,7 +143,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   @Override
   public void setSplitAttributeValues(final boolean splitAttributeValues) {
 
-    this.splitAttritubeValues = splitAttributeValues;
+    this.splitAttributeValues = splitAttributeValues;
   }
 
   //

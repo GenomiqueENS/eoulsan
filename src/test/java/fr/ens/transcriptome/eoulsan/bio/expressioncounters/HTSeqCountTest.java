@@ -89,7 +89,7 @@ public class HTSeqCountTest {
     // File outputFilePE_strict_reverse =
     // new File(dirTest, "PE-strict-java-reverse");
 
-    // All results from HTSeqCount are compared with the HTSeq-count (pyhton
+    // All results from HTSeqCount are compared with the HTSeq-count (python
     // implementation) results
 
     // HTSeqCount.countReadsInFeatures(samFileSE, annotationFileSE,

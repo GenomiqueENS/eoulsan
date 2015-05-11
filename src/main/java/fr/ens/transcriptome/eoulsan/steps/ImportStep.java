@@ -198,7 +198,7 @@ public class ImportStep extends AbstractStep {
           // Define the data object
           if (data == null) {
 
-            // If file use the Eouslan naming
+            // If file use the Eoulsan naming
             if (fileNaming != null) {
 
               data =

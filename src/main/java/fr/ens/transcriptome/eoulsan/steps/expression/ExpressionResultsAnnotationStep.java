@@ -170,7 +170,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
         this.annotationFile = new DataFile(p.getStringValue());
       } else if ("outputformat".equals(p.getName())) {
 
-        // Set ouptut format
+        // Set output format
 
         for (String format : Splitter.on(',').trimResults().omitEmptyStrings()
             .split(p.getValue())) {

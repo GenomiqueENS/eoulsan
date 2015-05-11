@@ -36,7 +36,7 @@ import org.apache.hadoop.fs.Path;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 
 /**
- * This classe define the Runtime to execute low level IO operation for Eoulsan
+ * This class define the Runtime to execute low level IO operation for Eoulsan
  * in Hadoop mode.
  * @since 1.0
  * @author Laurent Jourdren

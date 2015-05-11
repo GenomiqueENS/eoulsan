@@ -140,7 +140,7 @@ public final class Globals {
   private static final String WEBSITE_URL_DEFAULT =
       "http://transcriptome.ens.fr/" + APP_NAME_LOWER_CASE;
 
-  /** Teolenn Website url. */
+  /** Application Website url. */
   public static final String WEBSITE_URL = getWebSiteURL();
 
   private static final String COPYRIGHT_DATE = "2010-" + APP_BUILD_YEAR;

@@ -28,8 +28,8 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.ATTRIBUTE_ID_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.COUNTER_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.GENOMIC_TYPE_PARAMETER_NAME;
-import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.OVERLAPMODE_PARAMETER_NAME;
-import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.REMOVEAMBIGUOUSCASES_PARAMETER_NAME;
+import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.OVERLAP_MODE_PARAMETER_NAME;
+import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep.STRANDED_PARAMETER_NAME;
 
@@ -110,8 +110,8 @@ public class AnnotationChecker implements Checker {
       default:
 
         if (!COUNTER_PARAMETER_NAME.equals(p.getName())
-            && !OVERLAPMODE_PARAMETER_NAME.equals(p.getName())
-            && !REMOVEAMBIGUOUSCASES_PARAMETER_NAME.equals(p.getName())
+            && !OVERLAP_MODE_PARAMETER_NAME.equals(p.getName())
+            && !REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME.equals(p.getName())
             && !SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME.equals(p.getName())) {
           throw new EoulsanException("Unknown parameter for "
               + getName() + " step: " + p.getName());

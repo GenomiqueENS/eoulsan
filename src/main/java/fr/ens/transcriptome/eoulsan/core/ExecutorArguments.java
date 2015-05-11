@@ -200,7 +200,7 @@ public class ExecutorArguments {
    * Set the job path
    * @param jobPath The log path to set
    */
-  public final void setjobPathname(final String jobPath) {
+  public final void setJobPathname(final String jobPath) {
 
     if (jobPath == null) {
       return;
@@ -405,7 +405,7 @@ public class ExecutorArguments {
     setOutputPathname(outputDir.getAbsolutePath());
 
     // Set the job path
-    setjobPathname(jobDir.getAbsolutePath());
+    setJobPathname(jobDir.getAbsolutePath());
 
     // Set the tasks path
     setTaskPathname(taskDir.getAbsolutePath());

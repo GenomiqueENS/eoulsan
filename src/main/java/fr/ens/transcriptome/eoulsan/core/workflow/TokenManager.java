@@ -854,7 +854,7 @@ public class TokenManager implements Runnable {
           continue;
         }
 
-        // Set the step to the workng state
+        // Set the step to the working state
         if (state == READY) {
           this.step.setState(WORKING);
         }

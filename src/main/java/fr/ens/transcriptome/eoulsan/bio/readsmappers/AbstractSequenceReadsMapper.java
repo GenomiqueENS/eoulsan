@@ -213,7 +213,7 @@ public abstract class AbstractSequenceReadsMapper implements
   /**
    * Convenient method to directly get the absolute path for the temporary
    * directory.
-   * @return the absolute path to the tempory directory as a string
+   * @return the absolute path to the temporary directory as a string
    */
   protected String getTempDirectoryPath() {
 

@@ -10,7 +10,7 @@
  *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
  *
  * Copyright for this code is held jointly by the Genomic platform
- * of the Institut de Biologie de l'√âcole Normale Sup√©rieure and
+ * of the Institut de Biologie de l'École Normale Supérieure and
  * the individual authors. These should be listed in @author doc
  * comments.
  *
@@ -21,6 +21,7 @@
  *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
+
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 

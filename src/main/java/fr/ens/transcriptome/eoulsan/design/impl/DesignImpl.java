@@ -60,8 +60,8 @@ public class DesignImpl implements Design, Serializable {
   private int countSamples;
   private int countLabels;
 
-  private String createkeySampleMetadataField(final String sample,
-      final String metadataField) {
+  private String createKeySampleMetadataField(final String sample,
+                                              final String metadataField) {
 
     final int sampleId = this.samples.get(sample);
     final int fieldId = this.metadataFields.get(metadataField);
@@ -164,7 +164,7 @@ public class DesignImpl implements Design, Serializable {
           "The metadata field name doesn't exists: " + fieldName);
     }
 
-    return this.metadataData.get(createkeySampleMetadataField(sampleName,
+    return this.metadataData.get(createKeySampleMetadataField(sampleName,
         fieldName));
   }
 
@@ -313,7 +313,7 @@ public class DesignImpl implements Design, Serializable {
       }
     }
 
-    // Remove formats and bioassays
+    // Remove formats and bioAssays
     final int sampleId = this.samples.get(sampleName);
 
     // Remove entry
@@ -410,7 +410,7 @@ public class DesignImpl implements Design, Serializable {
       addMetadataField(fieldName);
     }
 
-    this.metadataData.put(createkeySampleMetadataField(sampleName, fieldName),
+    this.metadataData.put(createKeySampleMetadataField(sampleName, fieldName),
         value);
   }
 

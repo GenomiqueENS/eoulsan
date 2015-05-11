@@ -65,7 +65,7 @@ public class BloomFilterUtils implements Serializable {
   /**
    * Build a serialization file with the instance of bloomFilterUtils
    * @param fileSer filename to serialization
-   * @param bloomFilter bloomfilter to serialization
+   * @param bloomFilter bloomFilter to serialization
    * @throws IOException if an error occurs during serialization
    */
   public static void serializationBloomFilter(final File fileSer,

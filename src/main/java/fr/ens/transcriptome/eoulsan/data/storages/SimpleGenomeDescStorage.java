@@ -279,7 +279,7 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
       this.entries.put(entry.getKey(), entry);
       save();
       getLogger().info(
-          "Successully added "
+          "Successfully added "
               + entry.genomeName
               + " genome description to genome description storage.");
     } catch (IOException e) {
@@ -295,7 +295,7 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
   //
 
   /**
-   * Create a GenomedescStorage
+   * Create a GenomeDescStorage
    * @param dir the path of the genome descriptions storage
    * @return a GenomeDescStorage object if the path contains an index storage or
    *         null if no index storage is found

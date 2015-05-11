@@ -74,7 +74,7 @@ public class SAM2BAMLocalStep extends AbstractSAM2BAMStep {
   }
 
   /**
-   * Convert SAM file to sorted BAM with picard
+   * Convert SAM file to sorted BAM with Picard
    * @param samDataFile input SAM file
    * @param bamDataFile output SAM file
    * @param bamIndexDataFile output index file
@@ -96,7 +96,7 @@ public class SAM2BAMLocalStep extends AbstractSAM2BAMStep {
         SamReaderFactory.makeDefault().open(
             SamInputResource.of(samDataFile.open()));
 
-    // Forse sort
+    // Force sort
     samReader.getFileHeader().setSortOrder(SortOrder.coordinate);
 
     // Get Bam file

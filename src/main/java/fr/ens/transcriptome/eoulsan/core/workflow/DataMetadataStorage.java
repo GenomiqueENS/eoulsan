@@ -232,7 +232,7 @@ public class DataMetadataStorage {
     if (singleton == null) {
 
       throw new EoulsanRuntimeException(
-          "No metadata storage has been previously instancied");
+          "No metadata storage has been previously instanced");
     }
 
     return singleton;

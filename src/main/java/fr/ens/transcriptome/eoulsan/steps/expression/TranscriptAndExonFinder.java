@@ -112,7 +112,7 @@ public class TranscriptAndExonFinder {
 
     /**
      * Get the start of the gene.
-     * @return the start postion of the gene
+     * @return the start position of the gene
      */
     public int getStart() {
       return this.start;
@@ -446,7 +446,7 @@ public class TranscriptAndExonFinder {
     }
 
     /**
-     * Overide toString()
+     * Override toString()
      * @return a String with the start and end position of the ORF
      */
     @Override

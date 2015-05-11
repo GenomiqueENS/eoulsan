@@ -199,7 +199,7 @@ public class MultiReadAlignmentsFilterBuilder {
 
   /**
    * Get a map with all the parameters used to create the
-   * MultiAlignementsFilter.
+   * MultiAlignmentsFilter.
    * @return an ordered map object
    */
   public Map<String, String> getParameters() {

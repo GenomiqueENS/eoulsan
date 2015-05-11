@@ -43,7 +43,7 @@ public class ITCommandResult {
   private Throwable exception;
   private int exitValue = -1;
   private long duration = -1;
-  private final long durationMaxToInterrupProcess;
+  private final long durationMaxToInterruptProcess;
 
   @SuppressWarnings("unused")
   private String exceptionMessage;
@@ -76,7 +76,7 @@ public class ITCommandResult {
 
     if (isInterruptedProcess()) {
       this.message.append("\n\tInterrupt process after: "
-          + toTimeHumanReadable(durationMaxToInterrupProcess));
+          + toTimeHumanReadable(durationMaxToInterruptProcess));
     }
 
     this.message.append("\n");
@@ -89,10 +89,10 @@ public class ITCommandResult {
   //
 
   /**
-   * Checks if is catched exception.
-   * @return true, if is catched exception
+   * Checks if is caught exception.
+   * @return true, if is caught exception
    */
-  public boolean isCatchedException() {
+  public boolean isCaughtException() {
     return this.exception != null;
   }
 
@@ -168,7 +168,7 @@ public class ITCommandResult {
     this.commandLine = commandLine;
     this.directory = directory;
     this.desc = desc;
-    this.durationMaxToInterrupProcess = duration * 60 * 1000;
+    this.durationMaxToInterruptProcess = duration * 60 * 1000;
 
     this.message = new StringBuilder();
 

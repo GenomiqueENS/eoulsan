@@ -210,7 +210,7 @@ public abstract class PseudoMapReduce {
   }
 
   /**
-   * Execute the map phase with an Inputstream as input Create a list of file :
+   * Execute the map phase with an InputStream as input Create a list of file :
    * one for each index file used
    * @param is input stream for the mapper
    */
@@ -251,7 +251,7 @@ public abstract class PseudoMapReduce {
   }
 
   /**
-   * TODO save or remove ?? Execute the map phase with an Inputstream as input.
+   * TODO save or remove ?? Execute the map phase with an InputStream as input.
    * @param is input stream for the mapper
    */
   public void doMap_OLD(final InputStream is) throws IOException {

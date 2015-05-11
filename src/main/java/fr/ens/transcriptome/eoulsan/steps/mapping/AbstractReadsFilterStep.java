@@ -117,7 +117,7 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
 
-    final MultiReadFilterBuilder mrfb = new MultiReadFilterBuilder();
+    final MultiReadFilterBuilder filterBuilder = new MultiReadFilterBuilder();
 
     for (Parameter p : stepParameters) {
 
@@ -132,16 +132,16 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
         break;
 
       default:
-        mrfb.addParameter(p.getName(), p.getStringValue());
+        filterBuilder.addParameter(p.getName(), p.getStringValue());
         break;
       }
 
     }
 
     // Force parameter checking
-    mrfb.getReadFilter();
+    filterBuilder.getReadFilter();
 
-    this.readsFiltersParameters = mrfb.getParameters();
+    this.readsFiltersParameters = filterBuilder.getParameters();
   }
 
   //

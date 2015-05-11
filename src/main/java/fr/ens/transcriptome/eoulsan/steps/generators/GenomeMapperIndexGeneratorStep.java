@@ -181,12 +181,12 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
    * Execute the indexer.
    * @param mapper Mapper to use for the index generator
    * @param context
-   * @param additionnalArguments additional indexer arguments
+   * @param additionalArguments additional indexer arguments
    * @param additionalDescription additional indexer arguments description
    * @param threadCount the number of thread to use
    */
   static void execute(final SequenceReadsMapper mapper,
-      final StepContext context, final String additionnalArguments,
+      final StepContext context, final String additionalArguments,
       final Map<String, String> additionalDescription, final int threadCount)
       throws IOException, EoulsanException {
 
@@ -195,7 +195,7 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
 
     // Set default value for arguments if needed
     final String args =
-        additionnalArguments != null ? additionnalArguments : "";
+        additionalArguments != null ? additionalArguments : "";
 
     // Set default value for descriptions if needed
     final Map<String, String> descriptions;

@@ -57,7 +57,7 @@ public final class Alphabets {
   //
 
   /**
-   * Transform an array of char to an unmodifable set of Characters.
+   * Transform an array of char to an unmodifiable set of Characters.
    * @param array array to transform
    * @return a unmodifiable Set with the elements of the input array
    */

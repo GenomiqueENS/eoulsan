@@ -34,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
- * This class define an absract EoulsanRuntime.
+ * This class define an abstract EoulsanRuntime.
  * @since 1.0
  * @author Laurent Jourdren
  */

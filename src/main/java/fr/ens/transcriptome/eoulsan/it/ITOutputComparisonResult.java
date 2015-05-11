@@ -58,7 +58,7 @@ final class ITOutputComparisonResult implements
     if (this.statusComparison.getType().equals(TYPE_FAIL)) {
 
       txt.append(" " + this.statusComparison.getName());
-      txt.append("\n\t\tOuput file: " + this.fileTestedPath);
+      txt.append("\n\t\tOutput file: " + this.fileTestedPath);
       txt.append("\n\t\tExpected file: " + this.fileExpectedPath);
       txt.append("\n\t\tError message: " + this.message);
     }
@@ -82,7 +82,7 @@ final class ITOutputComparisonResult implements
 
   public void setResult(final StatusComparison status, final File fileExpected,
       final File fileTested, final String msg) {
-    setStatutComparison(status);
+    setStatusComparison(status);
     setMessage(msg);
 
     this.fileExpectedPath =
@@ -163,7 +163,7 @@ final class ITOutputComparisonResult implements
    * Gets the status comparison.
    * @return the status comparison
    */
-  public StatusComparison getStatutComparison() {
+  public StatusComparison getStatusComparison() {
     return this.statusComparison;
   }
 
@@ -185,10 +185,10 @@ final class ITOutputComparisonResult implements
 
   /**
    * Sets the status comparison.
-   * @param statutComparison the new status comparison
+   * @param statusComparison the new status comparison
    */
-  public void setStatutComparison(final StatusComparison statutComparison) {
-    this.statusComparison = statutComparison;
+  public void setStatusComparison(final StatusComparison statusComparison) {
+    this.statusComparison = statusComparison;
   }
 
   /**
@@ -204,7 +204,7 @@ final class ITOutputComparisonResult implements
   //
   /**
    * Public constructor.
-   * @param itOuput the it output instance
+   * @param itOutput the it output instance
    * @param filename filename to compare
    * @param statusComparison status comparison object
    * @param message detail of comparison

@@ -69,7 +69,7 @@ public class SAMUtils {
 
   /**
    * Read the SAM header of a SAM file.
-   * @param dataFile file to reaf
+   * @param dataFile file to read
    * @return a String with the SAM header
    * @throws IOException if an error occurs while reading the file
    */

@@ -115,7 +115,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
 
-    final MultiReadAlignmentsFilterBuilder mrafb =
+    final MultiReadAlignmentsFilterBuilder filterBuilder =
         new MultiReadAlignmentsFilterBuilder();
 
     for (Parameter p : stepParameters) {
@@ -131,15 +131,15 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
 
       default:
 
-        mrafb.addParameter(p.getName(), p.getStringValue());
+        filterBuilder.addParameter(p.getName(), p.getStringValue());
         break;
       }
     }
 
     // Force parameter checking
-    mrafb.getAlignmentsFilter();
+    filterBuilder.getAlignmentsFilter();
 
-    this.alignmentsFiltersParameters = mrafb.getParameters();
+    this.alignmentsFiltersParameters = filterBuilder.getParameters();
   }
 
   //

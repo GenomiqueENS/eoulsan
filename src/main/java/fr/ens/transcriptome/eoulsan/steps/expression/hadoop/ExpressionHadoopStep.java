@@ -261,7 +261,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
     jobConf.set(HTSeqCountMapper.STRANDED_PARAM, stranded.getName());
 
     // Set the "overlap mode" parameter
-    jobConf.set(HTSeqCountMapper.OVERLAPMODE_PARAM, overlapMode.getName());
+    jobConf.set(HTSeqCountMapper.OVERLAP_MODE_PARAM, overlapMode.getName());
 
     // Set the "remove ambiguous cases" parameter
     jobConf.setBoolean(HTSeqCountMapper.REMOVE_AMBIGUOUS_CASES,

@@ -64,7 +64,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
- * This class implements the local version of map reduce alhorithm for
+ * This class implements the local version of map reduce algorithm for
  * expression computation.
  * @since 1.0
  * @author Laurent Jourdren
@@ -190,23 +190,23 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
       final int exonStart = Integer.parseInt(this.fields[1]);
       final int exonEnd = Integer.parseInt(this.fields[2]);
 
-      final String alignementChr = this.fields[6];
+      final String alignmentChr = this.fields[6];
       final int alignmentStart = Integer.parseInt(this.fields[7]);
-      final int alignementEnd = Integer.parseInt(this.fields[8]);
+      final int alignmentEnd = Integer.parseInt(this.fields[8]);
 
       if (first) {
         chr = exonChr;
         first = false;
       }
 
-      if (!exonChr.equals(alignementChr) || !chr.equals(alignementChr)) {
+      if (!exonChr.equals(alignmentChr) || !chr.equals(alignmentChr)) {
         reporter.incrCounter(this.counterGroup,
             INVALID_CHROMOSOME_COUNTER.counterName(), 1);
         continue;
       }
 
       this.geneExpr.addAlignment(exonStart, exonEnd, alignmentStart,
-          alignementEnd, true);
+          alignmentEnd, true);
     }
 
     if (count == 0) {

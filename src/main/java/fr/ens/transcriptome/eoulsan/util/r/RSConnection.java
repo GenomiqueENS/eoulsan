@@ -77,10 +77,10 @@ public interface RSConnection {
   /**
    * Get a file from the RServer.
    * @param rServeFilename filename of the file to retrieve
-   * @param outputfile output file of the file to retrieve
+   * @param outputFile output file of the file to retrieve
    * @throws REngineException if an error occurs while downloading the file
    */
-  void getFile(final String rServeFilename, final File outputfile)
+  void getFile(final String rServeFilename, final File outputFile)
       throws REngineException;
 
   /**

@@ -60,10 +60,10 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
   public static final String STEP_NAME = "expression";
 
-  public static final String REMOVEAMBIGUOUSCASES_PARAMETER_NAME =
+  public static final String REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME =
       "removeambiguouscases";
 
-  public static final String OVERLAPMODE_PARAMETER_NAME = "overlapmode";
+  public static final String OVERLAP_MODE_PARAMETER_NAME = "overlapmode";
 
   public static final String STRANDED_PARAMETER_NAME = "stranded";
 
@@ -232,7 +232,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
         }
         break;
 
-      case OVERLAPMODE_PARAMETER_NAME:
+      case OVERLAP_MODE_PARAMETER_NAME:
 
         this.overlapmode =
             OverlapMode.getOverlapModeFromName(p.getStringValue());
@@ -243,7 +243,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
         }
         break;
 
-      case REMOVEAMBIGUOUSCASES_PARAMETER_NAME:
+      case REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME:
         this.removeAmbiguousCases = p.getBooleanValue();
         break;
 

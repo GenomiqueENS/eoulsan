@@ -46,7 +46,7 @@ public class HTSeqUtilsTest {
 
     // GenomicArray<String> ga = new GenomicArray<String>();
     //
-    // final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '+');
+    // final FastGenomicInterval fgi = new FastGenomicInterval("chr1", '+');
     //
     // GenomicInterval iv1 = fgi.iv(10, 50);
     // ga.addEntry(iv1, "a");

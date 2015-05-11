@@ -81,7 +81,7 @@ public class FastqFormatTest {
   }
 
   @Test
-  public void testGetIlliminaVersion() {
+  public void testGetIlluminaVersion() {
 
     assertEquals("1.0", FASTQ_SOLEXA.getIlluminaVersion());
     assertEquals("1.3", FASTQ_ILLUMINA.getIlluminaVersion());
@@ -150,7 +150,7 @@ public class FastqFormatTest {
   }
 
   @Test
-  public void testConvertScoretoProbability() {
+  public void testConvertScoreToProbability() {
 
     // assertEquals(1, FASTQ_SANGER.convertQualityToProbability(0), 0.01);
     assertEquals(0.1, FASTQ_SANGER.convertScoreToProbability(10), 0.01);
@@ -173,16 +173,16 @@ public class FastqFormatTest {
   public void testConvertProbabilitytoScore() {
 
     assertEquals(Double.POSITIVE_INFINITY,
-        FASTQ_SANGER.convertProbabilitytoScore(0.0), 0.01);
-    assertEquals(10, FASTQ_SANGER.convertProbabilitytoScore(0.1), 0.01);
-    assertEquals(20, FASTQ_SANGER.convertProbabilitytoScore(0.01), 0.01);
-    assertEquals(30, FASTQ_SANGER.convertProbabilitytoScore(0.001), 0.01);
-    assertEquals(40, FASTQ_SANGER.convertProbabilitytoScore(0.0001), 0.01);
-    assertEquals(50, FASTQ_SANGER.convertProbabilitytoScore(0.00001), 0.01);
-    assertEquals(60, FASTQ_SANGER.convertProbabilitytoScore(0.000001), 0.01);
-    assertEquals(70, FASTQ_SANGER.convertProbabilitytoScore(0.0000001), 0.01);
-    assertEquals(80, FASTQ_SANGER.convertProbabilitytoScore(0.00000001), 0.01);
-    assertEquals(90, FASTQ_SANGER.convertProbabilitytoScore(0.000000001), 0.01);
+        FASTQ_SANGER.convertProbabilityToScore(0.0), 0.01);
+    assertEquals(10, FASTQ_SANGER.convertProbabilityToScore(0.1), 0.01);
+    assertEquals(20, FASTQ_SANGER.convertProbabilityToScore(0.01), 0.01);
+    assertEquals(30, FASTQ_SANGER.convertProbabilityToScore(0.001), 0.01);
+    assertEquals(40, FASTQ_SANGER.convertProbabilityToScore(0.0001), 0.01);
+    assertEquals(50, FASTQ_SANGER.convertProbabilityToScore(0.00001), 0.01);
+    assertEquals(60, FASTQ_SANGER.convertProbabilityToScore(0.000001), 0.01);
+    assertEquals(70, FASTQ_SANGER.convertProbabilityToScore(0.0000001), 0.01);
+    assertEquals(80, FASTQ_SANGER.convertProbabilityToScore(0.00000001), 0.01);
+    assertEquals(90, FASTQ_SANGER.convertProbabilityToScore(0.000000001), 0.01);
 
     for (int i = 0; i <= 90; i += 10) {
       assertEquals(i, convertToProbaToScore(FASTQ_SANGER, i), 0.01);
@@ -198,18 +198,18 @@ public class FastqFormatTest {
 
     final double proba = f.convertScoreToProbability(q);
 
-    return f.convertProbabilitytoScore(proba);
+    return f.convertProbabilityToScore(proba);
   }
 
   private double phredScoreToSolexaScore(final double s) {
 
-    return FASTQ_SOLEXA.convertProbabilitytoScore(FASTQ_SANGER
+    return FASTQ_SOLEXA.convertProbabilityToScore(FASTQ_SANGER
         .convertScoreToProbability((int) Math.round(s)));
   }
 
   private double solexaScoreToPhredScore(final double s) {
 
-    return FASTQ_SANGER.convertProbabilitytoScore(FASTQ_SOLEXA
+    return FASTQ_SANGER.convertProbabilityToScore(FASTQ_SOLEXA
         .convertScoreToProbability((int) Math.round(s)));
   }
 
@@ -252,7 +252,7 @@ public class FastqFormatTest {
         0.9);
     assertEquals(phredScoreToSolexaScore(1), convertPhredSCoreToSolexaScore(1),
         0.9);
-    // assertEquals(phredToSolexta(0), convertPhredQualityToSolexa(0), 0.9);
+    // assertEquals(phredToSolexa(0), convertPhredQualityToSolexa(0), 0.9);
   }
 
   @Test

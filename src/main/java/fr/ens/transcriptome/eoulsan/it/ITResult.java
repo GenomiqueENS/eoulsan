@@ -186,7 +186,7 @@ public class ITResult {
     report.append("\n\nDirectories:");
     report.append("\n\tExpected:"
         + this.it.getExpectedTestDirectory().getAbsolutePath());
-    report.append("\n\tOuput:"
+    report.append("\n\tOutput:"
         + this.it.getOutputTestDirectory().getAbsolutePath());
 
     report.append("\n\nPatterns:");
@@ -282,7 +282,7 @@ public class ITResult {
 
     // Check comparison output it result
     for (final ITOutputComparisonResult ocr : this.comparisonsResults) {
-      if (!ocr.getStatutComparison().isSuccess()) {
+      if (!ocr.getStatusComparison().isSuccess()) {
         final StringBuilder msg = new StringBuilder();
 
         if (getException() != null) {
@@ -292,7 +292,7 @@ public class ITResult {
 
         // Compile exception message
         msg.append("\t");
-        msg.append(ocr.getStatutComparison().getExceptionMessage());
+        msg.append(ocr.getStatusComparison().getExceptionMessage());
         msg.append("\t" + ocr.getFilename());
 
         setException(new EoulsanException(msg.toString()));

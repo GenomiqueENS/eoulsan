@@ -123,7 +123,7 @@ public class SimpleDesignWriter extends DesignWriter {
   }
 
   //
-  // Construtors
+  // Constructors
   //
 
   /**

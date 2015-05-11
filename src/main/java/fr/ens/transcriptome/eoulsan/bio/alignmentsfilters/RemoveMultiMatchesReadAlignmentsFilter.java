@@ -77,18 +77,18 @@ public class RemoveMultiMatchesReadAlignmentsFilter extends
       case 2:
 
         int countFirstInPair = 0;
-        int countsecondInPair = 0;
+        int countSecondInPair = 0;
 
         for (SAMRecord record : records) {
 
           if (record.getFirstOfPairFlag()) {
             countFirstInPair++;
           } else if (record.getSecondOfPairFlag()) {
-            countsecondInPair++;
+            countSecondInPair++;
           }
         }
 
-        if (countFirstInPair > 1 || countsecondInPair > 1) {
+        if (countFirstInPair > 1 || countSecondInPair > 1) {
           records.clear();
         }
 

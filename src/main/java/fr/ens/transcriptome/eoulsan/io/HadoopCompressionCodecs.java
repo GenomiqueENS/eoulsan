@@ -31,7 +31,7 @@ import java.io.OutputStream;
 import org.apache.hadoop.io.compress.BZip2Codec;
 
 /**
- * This class allow to create input and output stream for compression codecs of
+ * This class allow to create input and output stream for compression codec of
  * Hadoop.
  * @author Laurent Jourdren
  * @since 2.0

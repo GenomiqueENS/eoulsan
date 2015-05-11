@@ -27,7 +27,7 @@ package fr.ens.transcriptome.eoulsan.bio.alignmentsfilters;
 import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
 
 /**
- * This class define a service to retrieve a AlignentsFilter.
+ * This class define a service to retrieve a AlignmentsFilter.
  * @since 1.1
  * @author Laurent Jourdren
  */

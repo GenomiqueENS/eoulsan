@@ -249,7 +249,7 @@ public abstract class AbstractClusterTaskScheduler extends
           stopJob(this.jobId);
         } catch (IOException e) {
           getLogger().severe(
-              "Error while stoping job " + this.jobId + ": " + e.getMessage());
+              "Error while stopping job " + this.jobId + ": " + e.getMessage());
         }
       }
     }

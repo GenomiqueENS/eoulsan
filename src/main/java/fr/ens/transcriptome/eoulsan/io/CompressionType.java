@@ -34,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 
 /**
- * This ennum allow to create InputStreams and OutputStream for Gzip and Bzip2
+ * This enum allow to create InputStreams and OutputStream for Gzip and Bzip2
  * according environment (local or hadoop mode).
  * @since 1.0
  * @author Laurent Jourdren

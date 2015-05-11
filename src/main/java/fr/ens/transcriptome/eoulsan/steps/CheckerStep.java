@@ -117,9 +117,9 @@ public class CheckerStep extends AbstractStep {
       final Set<Parameter> parameters) {
 
     checkNotNull(format, "format argument cannot be null");
-    checkNotNull(parameters, "parameter argument connot be null");
+    checkNotNull(parameters, "parameter argument cannot be null");
     checkArgument(format.isChecker(),
-        "No cheker exists for format: " + format.getName());
+        "No checker exists for format: " + format.getName());
     checkState(instance != null,
         "Instance of CheckerStep has not been yet created");
 

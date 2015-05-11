@@ -101,7 +101,7 @@ public enum FastqFormat {
   }
 
   /**
-   * Get the first version of the solexa/illimina tools that can have generated
+   * Get the first version of the solexa/illumina tools that can have generated
    * a file with this format.
    * @return a string with the format version
    */
@@ -257,7 +257,7 @@ public enum FastqFormat {
    * @param p probability to convert
    * @return a quality score
    */
-  public double convertProbabilitytoScore(final double p) {
+  public double convertProbabilityToScore(final double p) {
 
     if (this.phredScore) {
       return -10.0 * log10(p);
@@ -432,7 +432,7 @@ public enum FastqFormat {
 
     reader.close();
 
-    return identifyFormatByHeristic(formats, range[0], range[1]);
+    return identifyFormatByHeuristic(formats, range[0], range[1]);
   }
 
   /**
@@ -452,7 +452,7 @@ public enum FastqFormat {
     final int[] range = new int[] { Integer.MAX_VALUE, Integer.MIN_VALUE };
 
     removeBadFormats(formats, qualityString, range);
-    return identifyFormatByHeristic(formats, range[0], range[1]);
+    return identifyFormatByHeuristic(formats, range[0], range[1]);
   }
 
   private static void removeBadFormats(final Set<FastqFormat> formats,
@@ -490,7 +490,7 @@ public enum FastqFormat {
     }
   }
 
-  private static FastqFormat identifyFormatByHeristic(
+  private static FastqFormat identifyFormatByHeuristic(
       final Set<FastqFormat> formats, final int lowerChar, final int higherChar) {
 
     if (formats == null) {

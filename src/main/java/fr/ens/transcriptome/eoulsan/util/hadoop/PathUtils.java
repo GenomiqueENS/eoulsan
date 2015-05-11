@@ -512,7 +512,7 @@ public final class PathUtils {
    * Fully delete a file of the content of a directory
    * @param path Path of the file
    * @param conf Configuration Object
-   * @return true if the Path is succelly
+   * @return true if the Path is successfully removed
    * @throws IOException
    */
   public static boolean fullyDelete(final Path path, final Configuration conf)

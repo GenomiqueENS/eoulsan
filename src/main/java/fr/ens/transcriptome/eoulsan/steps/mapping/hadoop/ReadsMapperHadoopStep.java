@@ -132,7 +132,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
       // Create the job to run
       final Job job;
 
-      // Preprocess paired-end files
+      // Pre-process paired-end files
       if (readsData.getDataFileCount() == 1) {
         job =
             createJobConf(conf, context, dataName, readsData.getDataFile(0),

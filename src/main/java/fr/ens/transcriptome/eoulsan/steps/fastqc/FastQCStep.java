@@ -318,16 +318,16 @@ public class FastQCStep extends AbstractStep {
     final String outputDir = reportFile.getParent();
 
     // Report zip filename
-    final String basefilename =
+    final String baseFilename =
         reportFile.getName().substring(0,
             reportFile.getName().length() - extension.length());
 
     // Remove zip file
-    if (!new File(outputDir, basefilename + ".zip").delete()) {
+    if (!new File(outputDir, baseFilename + ".zip").delete()) {
     }
 
     // Remove directory file
-    final File zipDir = new File(outputDir, basefilename);
+    final File zipDir = new File(outputDir, baseFilename);
     if (!FileUtils.recursiveDelete(zipDir)) {
     }
   }

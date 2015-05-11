@@ -241,7 +241,7 @@ public interface SampleMetadata {
   void setAdditionalAnnotation(String additionalAnnotation);
 
   /**
-   * Set the hybridation date
+   * Set the sample date
    * @param date The date to set
    */
   void setDate(String date);

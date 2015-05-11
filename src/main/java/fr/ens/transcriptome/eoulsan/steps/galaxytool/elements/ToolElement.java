@@ -51,7 +51,7 @@ public interface ToolElement {
    * Gets the name which respect Eoulsan's syntax.
    * @return the name
    */
-  String getValidedName();
+  String getValidatedName();
 
   /**
    * Checks if is setting.

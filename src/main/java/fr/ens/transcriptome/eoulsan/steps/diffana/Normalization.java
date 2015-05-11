@@ -147,7 +147,7 @@ public class Normalization {
           "Rserve server name : " + this.rConnection.getServerName());
 
       // create an experiment map
-      Map<String, List<Sample>> experiments = experimentsSpliter();
+      Map<String, List<Sample>> experiments = experimentsSplitter();
 
       // create an iterator on the map values
       for (List<Sample> experimentSampleList : experiments.values()) {
@@ -209,7 +209,7 @@ public class Normalization {
     try {
 
       // create an experiment map
-      Map<String, List<Sample>> experiments = experimentsSpliter();
+      Map<String, List<Sample>> experiments = experimentsSplitter();
 
       // create an iterator on the map values
       for (List<Sample> experimentSampleList : experiments.values()) {
@@ -239,7 +239,7 @@ public class Normalization {
    * Split design into multiple experiments Samples list.
    * @return experiementMap a map of experiments
    */
-  protected Map<String, List<Sample>> experimentsSpliter() {
+  protected Map<String, List<Sample>> experimentsSplitter() {
 
     List<Sample> samples = this.design.getSamples();
     // Create design HashMap
@@ -343,7 +343,7 @@ public class Normalization {
     List<String> rRepTechGroup = new ArrayList<>();
     int i = 0;
 
-    // Get samples ids, conditions names/indexes and repTechGoups
+    // Get samples ids, conditions names/indexes and repTechGroups
     for (Sample s : experimentSamplesList) {
 
       if (!s.getMetadata().isConditionField()) {
@@ -381,7 +381,7 @@ public class Normalization {
 
     checkRepTechGroupCoherence(rRepTechGroup, rCondNames);
 
-    // Create Rnw script stringbuilder with preamble
+    // Create Rnw script StringBuilder with preamble
     String pdfTitle =
         escapeUnderScore(experimentSamplesList.get(0).getMetadata()
             .getExperiment())
@@ -473,15 +473,15 @@ public class Normalization {
 
   /**
    * Write Rnw preamble.
-   * @param experimentSamplesList sample experiement list
+   * @param experimentSamplesList sample experiment list
    * @param title title of the document
-   * @return a stringbuilder whith Rnw preamble
+   * @return a StringBuilder with Rnw preamble
    */
   protected StringBuilder generateRnwpreamble(
       final List<Sample> experimentSamplesList, final String title) {
 
     StringBuilder sb = new StringBuilder();
-    // Add packages to the LaTeX stringbuilder
+    // Add packages to the LaTeX StringBuilder
     sb.append("\\documentclass[a4paper,10pt]{article}\n");
     sb.append("\\usepackage[utf8]{inputenc}\n");
     sb.append("\\usepackage{lmodern}\n");
@@ -834,7 +834,7 @@ public class Normalization {
    * @param outPath the output path
    * @param rServerName the name of the RServe server
    * @throws EoulsanException if an error occurs if connection to RServe server
-   *           cannot be etablished
+   *           cannot be established
    */
   public Normalization(final Design design,
       final File expressionFilesDirectory, final String expressionFilesPrefix,
@@ -864,7 +864,7 @@ public class Normalization {
 
     if (!(outPath.isDirectory() && outPath.exists())) {
       throw new NullPointerException(
-          "The outpath file doesn't exist or is not a directory.");
+          "The output path file doesn't exist or is not a directory.");
     }
 
     this.outPath = outPath;

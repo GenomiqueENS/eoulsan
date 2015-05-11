@@ -182,7 +182,7 @@ public class FinalExpressionTranscriptsCreator {
   /**
    * Load pre result file
    * @param preResultFile pre-result file
-   * @param readsUsed the number of read useds
+   * @param readsUsed the number of read used
    * @throws IOException if an error occurs while reading data
    */
   public void loadPreResults(final File preResultFile, final long readsUsed)
@@ -212,11 +212,11 @@ public class FinalExpressionTranscriptsCreator {
 
       final String id = tab[0];
       final int baseNotCovered = Integer.parseInt(tab[1]);
-      final int alignementCount = Integer.parseInt(tab[2]);
+      final int alignmentCount = Integer.parseInt(tab[2]);
 
       if (this.expressionResults.containsKey(id)) {
         this.expressionResults.get(id).setExpressionResult(baseNotCovered,
-            alignementCount, readsUsed);
+            alignmentCount, readsUsed);
       }
     }
 

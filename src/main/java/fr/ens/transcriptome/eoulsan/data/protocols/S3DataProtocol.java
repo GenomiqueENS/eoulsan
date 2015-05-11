@@ -515,8 +515,8 @@ public class S3DataProtocol implements DataProtocol {
   }
 
   /**
-   * Get transfert manager.
-   * @return the transfert manager
+   * Get transfer manager.
+   * @return the transfer manager
    */
   private TransferManager getTransferManager() {
 

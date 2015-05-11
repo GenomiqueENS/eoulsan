@@ -114,7 +114,7 @@ public class IT {
 
   // Compile the result comparison from all tests
   private ITOutput itOutput = null;
-  private boolean isRemoveFileRequiered;
+  private boolean isRemoveFileRequired;
 
   /**
    * Launch test execution, first generate data directory corresponding to the
@@ -193,7 +193,7 @@ public class IT {
       if (this.itOutput != null) {
         // IT succeeded
         this.itOutput.deleteFileMatchingOnPattern(this.itResult,
-            this.isRemoveFileRequiered);
+            this.isRemoveFileRequired);
       }
 
       timer.stop();
@@ -309,7 +309,7 @@ public class IT {
     // Save result of execution command line
     itResult.addCommandResult(cmdResult);
 
-    if (cmdResult.isCatchedException()) {
+    if (cmdResult.isCaughtException()) {
       throw cmdResult.getException();
     }
   }
@@ -830,7 +830,7 @@ public class IT {
     this.itResult = new ITResult(this);
 
     // Remove file matching on pattern if IT succeeded
-    this.isRemoveFileRequiered =
+    this.isRemoveFileRequired =
         Boolean.parseBoolean(this.testConf
             .getProperty(SUCCESS_IT_DELETE_FILE_CONF_KEY));
 

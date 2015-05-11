@@ -190,11 +190,11 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
         "Tool variable settings  "
             + Joiner.on("\t").withKeyValueSeparator("=").join(variables));
 
-    final ToolPythonInterpreter pythonInterperter =
+    final ToolPythonInterpreter pythonInterpreter =
         new ToolPythonInterpreter(context, this.tool,
             Collections.unmodifiableMap(variables));
 
-    final ToolExecutorResult result = pythonInterperter.executeScript();
+    final ToolExecutorResult result = pythonInterpreter.executeScript();
 
     // TODO
     return result;
@@ -208,18 +208,18 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
   public boolean checkDataFormat(final StepContext context) {
 
     // Check inData
-    for (final DataFormat indf : this.inFileExpected.keySet()) {
+    for (final DataFormat inFormat : this.inFileExpected.keySet()) {
 
-      final Data inData = context.getInputData(indf);
+      final Data inData = context.getInputData(inFormat);
 
       // Case not found
       if (inData == null || inData.size() == 0)
         return false;
 
-      for (final DataFormat outdf : this.outFileExpected.keySet()) {
+      for (final DataFormat outFormat : this.outFileExpected.keySet()) {
 
         // Check outData related
-        final Data outData = context.getOutputData(outdf, inData);
+        final Data outData = context.getOutputData(outFormat, inData);
         if (outData == null || outData.size() == 0)
           return false;
       }
@@ -240,7 +240,7 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
   //
 
   /**
-   * Extract input or output tool elementd corresponding to file.
+   * Extract input or output tool elements corresponding to file.
    * @param parameters all parameters extracted from tool xml file.
    * @return the map associated DataFormat and toolElement.
    */
@@ -381,12 +381,12 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
    */
   public String createCommandLine() throws EoulsanException {
 
-    // final ToolPythonInterpreter pythonInterperter =
+    // final ToolPythonInterpreter pythonInterpreter =
     // new ToolPythonInterpreter(this.context, this.tool,
     // extractVariablesFromXML());
 
     final String newCommand = "";
-    // pythonInterperter.createCommandLine();
+    // pythonInterpreter.createCommandLine();
 
     // TODO
     // System.out.println("DEBUG final command \t" + newCommand);

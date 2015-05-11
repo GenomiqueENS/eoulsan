@@ -49,7 +49,7 @@ public class ToolElementEmpty implements ToolElement {
   }
 
   @Override
-  public String getValidedName() {
+  public String getValidatedName() {
     return getName();
   }
 

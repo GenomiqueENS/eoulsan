@@ -1774,7 +1774,7 @@ public class FileUtils {
 
   /**
    * Relativize a path from a base path.
-   * @param path path to relatize
+   * @param path path to relativize
    * @param base base path (must be a directory)
    * @return a File object with the relative path
    */
