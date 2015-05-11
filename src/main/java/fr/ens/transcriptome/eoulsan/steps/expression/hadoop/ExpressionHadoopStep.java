@@ -421,7 +421,6 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @param genomeDescDataFile genome description DataFile
    * @param featuresIndexPath feature index output path
    * @param conf Hadoop configuration object
-   * @return the feature index output path
    * @throws IOException if an error occurs while creating the feature index
    *           file
    * @throws BadBioEntryException if an entry of the annotation file is invalid
@@ -529,10 +528,9 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
   /**
    * Create the path to the serialized annotation index.
-   * @param context Eoulsan context
-   * @param featureAnnotationData feature annotation data
+   * @param featureAnnotationFile feature annotation file
    * @return an Hadoop path with the path of the serialized annotation
-   * @throws IOException
+   * @throws IOException if an error occurs while getting the path
    */
   private static Path getAnnotationIndexSerializedPath(
       final DataFile featureAnnotationFile) throws IOException {

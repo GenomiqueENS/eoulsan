@@ -179,14 +179,16 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
   }
 
   /**
-   * Create the JobConf object for a sample
-   * @param readsData reads data
+   * Create the JobConf object for a sample.
+   * @param parentConf Hadoop configuration
+   * @param dataName data name
+   * @param readsFile reads file
    * @param inputFormat inputFormat
    * @param fastqFormat FASTQ format
-   * @param mapperIndexData mapper index data
-   * @param outData output data
+   * @param mapperIndexFile mapper index file
+   * @param outFile output file
    * @return a new JobConf object
-   * @throws IOException
+   * @throws IOException if an error occurs while creating the job
    */
   private Job createJobConf(final Configuration parentConf,
       final StepContext context, final String dataName,
@@ -317,7 +319,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
   /**
    * Compute the checksum of a ZIP file or use the HDFS checksum if available.
-   * @param is input stream
+   * @param file the zip input file
+   * @param conf The Hadoop configuration
    * @return the checksum as a string
    * @throws IOException if an error occurs while creating the checksum
    */

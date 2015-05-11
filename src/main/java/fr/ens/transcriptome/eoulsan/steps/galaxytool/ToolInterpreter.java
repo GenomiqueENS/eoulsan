@@ -23,11 +23,9 @@ public interface ToolInterpreter {
   /**
    * Convert command tag from tool file in string, variable are replace by
    * value.
-   * @param inputData the input data
-   * @param outputData the output data
+   * @param context Step context
    * @return the string
    * @throws EoulsanException the Eoulsan exception
-   * @throws IOException
    */
   ToolExecutorResult execute(final StepContext context) throws EoulsanException;
 

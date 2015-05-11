@@ -199,7 +199,6 @@ public final class DataUtils {
    * object.
    * @param data the data object
    * @param dataSourceOfMetadata data source of metadata
-   * @param sample the sample
    */
   public static void setDataMetadata(final Data data,
       final Collection<Data> dataSourceOfMetadata) {
@@ -218,7 +217,6 @@ public final class DataUtils {
    * object.
    * @param data the data object
    * @param dataSourceOfMetadata data source of metadata
-   * @param sample the sample
    */
   public static void setDataMetadata(final Data data,
       final Data dataSourceOfMetadata) {

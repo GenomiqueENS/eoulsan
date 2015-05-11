@@ -81,7 +81,7 @@ public class ExpressionRecordWriter extends RecordWriter<Text, LongWritable> {
 
   /**
    * Public constructor.
-   * @param os output stream
+   * @param out output stream
    */
   public ExpressionRecordWriter(final DataOutputStream out) {
 

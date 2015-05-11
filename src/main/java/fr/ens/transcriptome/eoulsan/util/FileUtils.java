@@ -902,8 +902,8 @@ public class FileUtils {
   /**
    * Unzip a zip file in a directory.
    * @param is input stream of the zip file
-   * @param outputDirectory
-   * @throws IOException
+   * @param outputDirectory output directory
+   * @throws IOException if an error occurs while unzipping the file
    */
   public static void unzip(final InputStream is, final File outputDirectory)
       throws IOException {
@@ -968,9 +968,9 @@ public class FileUtils {
 
   /**
    * Unzip a zip file in a directory.
-   * @param zipFile
-   * @param outputDirectory
-   * @throws IOException
+   * @param zipFile The zip file
+   * @param outputDirectory The output directory
+   * @throws IOException if an issue occurs while unzipping the file
    */
   public static void unzip(final File zipFile, final File outputDirectory)
       throws IOException {

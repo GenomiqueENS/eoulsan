@@ -299,8 +299,6 @@ public class ImportStep extends AbstractStep {
    * Listing recursively all files in the source directory which match with
    * patterns files
    * @param patternKey the pattern key
-   * @param excludedFiles the excluded files
-   * @param defaultAllPath the default all path
    * @return the list with all files which match with pattern
    * @throws IOException if an error occurs while parsing input directory
    * @throws EoulsanException if no file to compare found

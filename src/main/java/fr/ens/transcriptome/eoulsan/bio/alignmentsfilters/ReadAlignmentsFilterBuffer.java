@@ -47,11 +47,9 @@ public class ReadAlignmentsFilterBuffer {
   /**
    * Add the provided alignment to a list of SAMRecord objects if this alignment
    * has the same read name as the other alignments of the list.
-   * @param alignment
+   * @param alignment SAM alignment
    * @return true if the alignment provides is stored, i.e. if it has the same
    *         read name as the other alignments already stored.
-   * @return false if the alignment provides has not the same read name than the
-   *         previous one, so this alignment is not stored.
    */
   public boolean addAlignment(final SAMRecord alignment) {
 

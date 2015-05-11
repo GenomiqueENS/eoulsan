@@ -127,8 +127,6 @@ public final class MapReduceUtils {
    *          jobs
    * @throws IOException if an IO error occurs while waiting for jobs
    * @throws InterruptedException if an error occurs while waiting for jobs
-   * @throws ClassNotFoundException if a class needed for map reduce execution
-   *           is not found
    */
   public static void waitForJobs(final Collection<Job> jobs,
       final int waitTimeInMillis) throws InterruptedException, IOException {

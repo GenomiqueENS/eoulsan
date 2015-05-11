@@ -200,9 +200,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   /**
-   * Get the name of a bowtie flavored binary.
-   * @param binary the binary
-   * @param firstFlavoredVersion first version of Bowtie to be flavored
+   * Get the name of the flavored binary.
    * @return the flavored binary name
    */
   private String flavoredBinary() {

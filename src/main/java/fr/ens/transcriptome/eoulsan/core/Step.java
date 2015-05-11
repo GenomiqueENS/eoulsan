@@ -88,7 +88,6 @@ public interface Step {
    * Execute the step.
    * @param context Execution context
    * @param status of the step
-   * @throws EoulsanException if an error occurs while executing step
    */
   StepResult execute(StepContext context, StepStatus status);
 

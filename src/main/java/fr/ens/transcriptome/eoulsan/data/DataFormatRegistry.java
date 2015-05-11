@@ -348,7 +348,7 @@ public class DataFormatRegistry {
 
   /**
    * Get a DataFormat from its alias.
-   * @param dataFormatAlias the name of the DataFormat to get
+   * @param name the name of the DataFormat to get
    * @return a DataFormat if found or null
    */
   public DataFormat getDataFormatFromNameOrAlias(final String name) {

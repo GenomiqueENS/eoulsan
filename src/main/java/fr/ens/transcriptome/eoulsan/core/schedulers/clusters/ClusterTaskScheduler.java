@@ -85,7 +85,6 @@ public interface ClusterTaskScheduler extends TaskScheduler {
     /**
      * Constructor.
      * @param statusValue status value
-     * @param exitCode exit code
      */
     public StatusResult(final StatusValue statusValue) {
 

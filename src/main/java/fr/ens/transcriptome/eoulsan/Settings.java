@@ -550,7 +550,6 @@ public final class Settings implements Serializable {
   /**
    * Get the value of the setting as a boolean value
    * @return the value of the setting as an integer
-   * @throws EoulsanException if the value is not an integer
    */
   public boolean getBooleanSetting(final String settingName) {
 
@@ -877,7 +876,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the Docker URI.
-   * @param uiName the UI name
+   * @param uri the Docker URI
    */
   public void setDockerURI(final String uri) {
 

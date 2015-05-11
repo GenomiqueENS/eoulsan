@@ -107,7 +107,6 @@ public interface RSConnection {
 
   /**
    * Destroy the connection to the Rserve server
-   * @throws REngineException if an error occurs while deleting to Rserve
    */
   void disConnect();
 

@@ -78,7 +78,7 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
    * @param workflow workflow of the step
    * @param id identifier of the step
    * @param stepName Step name
-   * @param stepVrsion step version
+   * @param stepVersion step version
    * @param skip true to skip execution of the step
    * @param parameters parameters of the step
    * @throws EoulsanException id an error occurs while creating the step

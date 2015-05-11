@@ -759,7 +759,6 @@ public abstract class AbstractSequenceReadsMapper implements
    * Check if binaries bundled in the jar exists.
    * @param binaryFilenames program to check
    * @return true if the binary exists
-   * @throws IOException if an error occurs while installing binary
    */
   protected boolean checkIfBinaryExists(final String... binaryFilenames) {
 
@@ -780,7 +779,6 @@ public abstract class AbstractSequenceReadsMapper implements
    * Check if a binary bundled in the jar exists.
    * @param binaryFilename program to check
    * @return true if the binary exists
-   * @throws IOException if an error occurs while installing binary
    */
   protected boolean checkIfBinaryExists(final String binaryFilename) {
 

@@ -204,7 +204,6 @@ final class ITOutputComparisonResult implements
   //
   /**
    * Public constructor.
-   * @param itOutput the it output instance
    * @param filename filename to compare
    * @param statusComparison status comparison object
    * @param message detail of comparison

@@ -134,7 +134,7 @@ class TranslatorStringToPython {
 
   /**
    * Instantiates a new translator string to script Python.
-   * @param string the raw command tag
+   * @param cmdTag the raw command tag
    * @throws EoulsanException occurs if translation fail.
    */
   TranslatorStringToPython(final String cmdTag) throws EoulsanException {

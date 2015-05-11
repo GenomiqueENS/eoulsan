@@ -433,9 +433,9 @@ public class RSConnectionNewImpl implements RSConnection {
 
   /**
    * Open a file to read on Rserve server
-   * @param filename
-   * @return file
-   * @throws REngineException
+   * @param filename the filename
+   * @return an input stream
+   * @throws REngineException if an error occurs while creating the input stream
    */
   public RFileInputStream openFile(final String filename)
       throws REngineException {

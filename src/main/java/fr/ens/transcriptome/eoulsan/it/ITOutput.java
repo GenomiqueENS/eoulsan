@@ -445,7 +445,6 @@ public class ITOutput {
    * Listing recursively all files in the source directory which match with
    * patterns files
    * @param patternKey the pattern key
-   * @param filesToExclude the excluded files
    * @param defaultAllPath the default all path
    * @return the list with all files which match with pattern
    * @throws IOException if an error occurs while parsing input directory

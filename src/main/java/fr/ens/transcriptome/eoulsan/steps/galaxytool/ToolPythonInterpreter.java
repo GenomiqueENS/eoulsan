@@ -162,7 +162,6 @@ public class ToolPythonInterpreter {
 
   /**
    * Translate command xml in python.
-   * @param cmdTag the content command tag.
    * @throws EoulsanException if the translation fails.
    */
   private void translateCommandXMLInPython() throws EoulsanException {
@@ -223,8 +222,6 @@ public class ToolPythonInterpreter {
 
   /**
    * Comparison parameters xml variables command.
-   * @param toolInterpreter TODO
-   * @param parametersXML the parameters xml
    * @return the map
    * @throws EoulsanException the eoulsan exception
    */

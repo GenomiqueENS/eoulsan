@@ -76,7 +76,7 @@ public class SAMRecordWriter extends RecordWriter<Text, Text> {
 
   /**
    * Public constructor.
-   * @param os output stream
+   * @param out output stream
    */
   public SAMRecordWriter(final DataOutputStream out) {
 

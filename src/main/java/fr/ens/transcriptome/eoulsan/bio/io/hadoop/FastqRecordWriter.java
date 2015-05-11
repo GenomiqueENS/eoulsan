@@ -81,7 +81,7 @@ public class FastqRecordWriter extends RecordWriter<Text, Text> {
 
   /**
    * Public constructor.
-   * @param os output stream
+   * @param out output stream
    */
   public FastqRecordWriter(DataOutputStream out) {
     this.out = out;

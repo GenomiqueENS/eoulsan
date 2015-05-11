@@ -138,7 +138,6 @@ public class ITResult {
   /**
    * Create report retrieve by global tests logger.
    * @param duration duration of execution
-   * @return report text
    */
   private void updateLogger(final String duration) {
 

@@ -180,7 +180,7 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
   /**
    * Execute the indexer.
    * @param mapper Mapper to use for the index generator
-   * @param context
+   * @param context Eoulsan context
    * @param additionalArguments additional indexer arguments
    * @param additionalDescription additional indexer arguments description
    * @param threadCount the number of thread to use

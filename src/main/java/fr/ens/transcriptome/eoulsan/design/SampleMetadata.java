@@ -224,7 +224,7 @@ public interface SampleMetadata {
 
   /**
    * Set the project name
-   * @param experiment
+   * @param experiment the name of the experiment
    */
   void setExperiment(String experiment);
 
@@ -266,7 +266,7 @@ public interface SampleMetadata {
 
   /**
    * Set the UUID of the sample.
-   * @param uuid
+   * @param uuid The UUID of the sample
    */
   void setUUID(final String uuid);
 

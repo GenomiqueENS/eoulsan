@@ -106,7 +106,7 @@ public interface ToolElement {
 
   /**
    * Extract parameter by name.
-   * @param stepParameters
+   * @param stepParameters step parameters
    * @return the parameter found or null.
    */
   Parameter extractParameterByName(final Map<String, Parameter> stepParameters);
