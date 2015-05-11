@@ -42,7 +42,7 @@ public interface ClusterTaskScheduler extends TaskScheduler {
    * This enum define the values of the status of a job.
    * @author Laurent Jourdren
    */
-  public enum StatusValue {
+  enum StatusValue {
     WAITING, RUNNING, COMPLETE, UNKNOWN
   }
 
@@ -51,7 +51,7 @@ public interface ClusterTaskScheduler extends TaskScheduler {
    * interface.
    * @author Laurent Jourdren
    */
-  public static final class StatusResult {
+  final class StatusResult {
 
     private final StatusValue statusValue;
     private final int exitCode;
