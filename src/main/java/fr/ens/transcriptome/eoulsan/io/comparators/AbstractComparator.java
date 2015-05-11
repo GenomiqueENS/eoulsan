@@ -71,7 +71,7 @@ public abstract class AbstractComparator implements Comparator {
     }
 
     try (InputStream isA = new FileInputStream(fileA);
-        InputStream isB = new FileInputStream(fileB);) {
+        InputStream isB = new FileInputStream(fileB)) {
 
       return compareFiles(getCompressionTypeByFilename(fileA.getAbsolutePath())
           .createInputStream(isA),

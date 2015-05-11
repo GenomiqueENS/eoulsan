@@ -40,7 +40,7 @@ public interface Comparator {
    * Return collector name.
    * @return collector name.
    */
-  public String getName();
+  String getName();
 
   /**
    * Compare two files no ordered, check if they are the same contents.
@@ -49,7 +49,7 @@ public interface Comparator {
    * @return boolean true if files are same.
    * @throws IOException if an error occurs while comparing the files.
    */
-  public boolean compareFiles(final String pathA, final String pathB)
+  boolean compareFiles(final String pathA, final String pathB)
       throws IOException;
 
   /**
@@ -59,7 +59,7 @@ public interface Comparator {
    * @return boolean true if files are same.
    * @throws IOException if an error occurs while comparing the files.
    */
-  public boolean compareFiles(final File fileA, final File fileB)
+  boolean compareFiles(final File fileA, final File fileB)
       throws FileNotFoundException, IOException;
 
   /**
@@ -68,31 +68,31 @@ public interface Comparator {
    * @param isB the path to the second file,
    * @throws IOException if an error occurs while comparing the files.
    */
-  public boolean compareFiles(final InputStream isA, final InputStream isB)
+  boolean compareFiles(final InputStream isA, final InputStream isB)
       throws IOException;
 
   /**
    * Return all extensions treated by comparator files.
    * @return list extensions.
    */
-  public Collection<String> getExtensions();
+  Collection<String> getExtensions();
 
   /**
    * Return number elements compared by comparator.
    * @return number elements compared
    */
-  public int getNumberElementsCompared();
+  int getNumberElementsCompared();
 
   /**
    * Return line which fail comparison between to file from tested file.
    * @return line which fail comparison between to file from tested file
    */
-  public String getCauseFailComparison();
+  String getCauseFailComparison();
 
   /**
    * Set line which fail comparison between to file from tested file, it can
    * compile few lines.
    */
-  public void setCauseFailComparison(final String line);
+  void setCauseFailComparison(final String line);
 
 }

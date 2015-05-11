@@ -58,7 +58,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
-import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.schedulers.TaskSchedulerFactory;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;

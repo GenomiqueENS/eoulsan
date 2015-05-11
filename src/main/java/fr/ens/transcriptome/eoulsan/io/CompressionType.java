@@ -312,4 +312,4 @@ public enum CompressionType {
     this.extension = extension;
   }
 
-};
+}

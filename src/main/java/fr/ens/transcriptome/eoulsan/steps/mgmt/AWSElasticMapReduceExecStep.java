@@ -172,25 +172,6 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
   public StepResult execute(final StepContext context, final StepStatus status) {
 
     // Environment argument
-    final StringBuilder sb = new StringBuilder();
-    sb.append("hadoopVersion=");
-    sb.append(this.hadoopVersion);
-    sb.append(", ");
-
-    sb.append("nInstances=");
-    sb.append(this.nInstances);
-    sb.append(", ");
-
-    sb.append("instanceType=");
-    sb.append(this.instanceType);
-    sb.append(", ");
-
-    sb.append("endpoint=");
-    sb.append(this.endpoint);
-    sb.append(", ");
-
-    sb.append("logPathname=");
-    sb.append(this.logPathname);
 
     // Command arguments
     final List<String> eoulsanArgsList = new ArrayList<>();
@@ -200,7 +181,7 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
     eoulsanArgsList.add("-d");
     eoulsanArgsList.add(context.getJobDescription());
     eoulsanArgsList.add("-e");
-    eoulsanArgsList.add(sb.toString());
+    eoulsanArgsList.add("hadoopVersion=" + this.hadoopVersion + ", " + "nInstances=" + this.nInstances + ", " + "instanceType=" + this.instanceType + ", " + "endpoint=" + this.endpoint + ", " + "logPathname=" + this.logPathname);
     eoulsanArgsList.add(context.getWorkflowFile().getSource());
     eoulsanArgsList.add(context.getDesignFile().getSource());
     eoulsanArgsList.add("hdfs:///test");

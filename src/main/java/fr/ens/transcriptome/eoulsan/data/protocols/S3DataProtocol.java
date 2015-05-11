@@ -300,7 +300,7 @@ public class S3DataProtocol implements DataProtocol {
 
       try {
 
-        while (myUpload.isDone() == false) {
+        while (!myUpload.isDone()) {
 
           Thread.sleep(500);
         }

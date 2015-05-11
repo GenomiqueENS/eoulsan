@@ -69,7 +69,7 @@ public class DiffAna extends Normalization {
   /**
    * Dispersion estimation method enum for DESeq differential analysis
    */
-  public static enum DispersionMethod {
+  public enum DispersionMethod {
 
     POOLED("pooled"), PER_CONDITION("per-condition"), BLIND("blind");
 
@@ -122,7 +122,7 @@ public class DiffAna extends Normalization {
   /**
    * Dispersion estimation sharingMode enum for DESeq differential analysis
    */
-  public static enum DispersionSharingMode {
+  public enum DispersionSharingMode {
 
     FIT_ONLY("fit-only"), MAXIMUM("maximum"), GENE_EST_ONLY("gene-est-only");
 
@@ -176,7 +176,7 @@ public class DiffAna extends Normalization {
   /**
    * Dispersion estimation fitType enum for DESeq differential analysis
    */
-  public static enum DispersionFitType {
+  public enum DispersionFitType {
 
     PARAMETRIC("parametric"), LOCAL("local");
 

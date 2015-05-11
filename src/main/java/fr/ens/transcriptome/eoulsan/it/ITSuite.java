@@ -385,7 +385,7 @@ public class ITSuite {
 
     // Extract sorted tests name
     final Set<String> testsName =
-        new TreeSet<String>(this.testsToExecute.keySet());
+        new TreeSet<>(this.testsToExecute.keySet());
 
     // Parse selected tests
     for (final String testName : testsName) {

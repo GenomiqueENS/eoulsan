@@ -117,7 +117,7 @@ public class SplitterStep extends AbstractStep {
 
       return new Iterator<DataFile>() {
 
-        final Map<Integer, Integer> counts = new HashMap<Integer, Integer>();
+        final Map<Integer, Integer> counts = new HashMap<>();
 
         /**
          * Increment the counter for the current fileIndex.

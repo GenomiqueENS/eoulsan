@@ -224,40 +224,13 @@ public class CasavaSample {
 
   public String getDemultiplexedFilenamePrefix(final int readNumber) {
 
-    final StringBuilder sb = new StringBuilder();
-
-    sb.append(getSampleId());
-    sb.append('_');
-    sb.append(getIndex() == null || "".equals(getIndex().trim())
-        ? "NoIndex" : getIndex());
-    sb.append('_');
-    sb.append("L00");
-    sb.append(getLane());
-    sb.append('_');
-    sb.append("R");
-    sb.append(readNumber);
-    sb.append('_');
-
-    return sb.toString();
+    return getSampleId() + '_' + (getIndex() == null || "".equals(getIndex().trim())
+        ? "NoIndex" : getIndex()) + '_' + "L00" + getLane() + '_' + "R" + readNumber + '_';
   }
 
   public String getNotDemultiplexedFilenamePrefix(final int readNumber) {
 
-    final StringBuilder sb = new StringBuilder();
-
-    sb.append("lane");
-    sb.append(getLane());
-    sb.append('_');
-    sb.append("Undetermined");
-    sb.append('_');
-    sb.append("L00");
-    sb.append(getLane());
-    sb.append('_');
-    sb.append("R");
-    sb.append(readNumber);
-    sb.append('_');
-
-    return sb.toString();
+    return "lane" + getLane() + '_' + "Undetermined" + '_' + "L00" + getLane() + '_' + "R" + readNumber + '_';
   }
 
   //

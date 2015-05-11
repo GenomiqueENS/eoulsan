@@ -39,7 +39,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 public interface ToolElement {
 
   /** The Constant SEP. */
-  public final static String SEP = ".";
+  String SEP = ".";
 
   /**
    * Gets the name.

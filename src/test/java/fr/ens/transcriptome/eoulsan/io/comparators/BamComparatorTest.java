@@ -103,7 +103,7 @@ public class BamComparatorTest {
     }
 
     try (final SamReader bamReader =
-        SamReaderFactory.makeDefault().open(this.fileA);) {
+        SamReaderFactory.makeDefault().open(this.fileA)) {
 
       final SAMFileWriter samWriter =
           new SAMFileWriterFactory().setCreateIndex(false)

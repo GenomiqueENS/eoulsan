@@ -124,7 +124,7 @@ public class GenomicInterval implements Serializable,
       return -1;
     }
 
-    if (!e.getChromosome().equals(e.getChromosome())) {
+    if (!getChromosome().equals(e.getChromosome())) {
       return getChromosome().compareTo(e.getChromosome());
     }
 

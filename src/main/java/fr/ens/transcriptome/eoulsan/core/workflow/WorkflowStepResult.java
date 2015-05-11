@@ -271,7 +271,7 @@ public class WorkflowStepResult {
     final StringWriter writer = new StringWriter();
 
     // Create a pretty Json generator
-    final Map<String, Object> properties = new HashMap<String, Object>(1);
+    final Map<String, Object> properties = new HashMap<>(1);
     properties.put(JsonGenerator.PRETTY_PRINTING, true);
     JsonGeneratorFactory jgf = Json.createGeneratorFactory(properties);
     JsonGenerator jg = jgf.createGenerator(writer);

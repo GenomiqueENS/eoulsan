@@ -162,7 +162,7 @@ public class BAMSplitter implements Splitter {
     final SAMFileHeader header = reader.getFileHeader();
 
     final Map<String, SAMFileWriter> writers =
-        new HashMap<String, SAMFileWriter>();
+        new HashMap<>();
 
     for (final SAMRecord record : reader) {
 

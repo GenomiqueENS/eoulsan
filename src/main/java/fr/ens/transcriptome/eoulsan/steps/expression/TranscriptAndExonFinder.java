@@ -394,7 +394,7 @@ public class TranscriptAndExonFinder {
         return -1;
       }
 
-      if (!e.getChromosome().equals(e.getChromosome())) {
+      if (!getChromosome().equals(e.getChromosome())) {
         return getChromosome().compareTo(e.getChromosome());
       }
 

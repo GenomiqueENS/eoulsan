@@ -44,7 +44,7 @@ public interface WorkflowStep extends Serializable {
    * @author Laurent Jourdren
    * @since 2.0
    */
-  public static enum StepType {
+  enum StepType {
     ROOT_STEP(0, "root"), DESIGN_STEP(1, "design"), CHECKER_STEP(2, "checker"),
     GENERATOR_STEP(3, null), FIRST_STEP(4, "first"), STANDARD_STEP(5, null),
     TERMINAL_STEP(6, "terminal");
@@ -109,7 +109,7 @@ public interface WorkflowStep extends Serializable {
    * @author Laurent Jourdren
    * @since 2.0
    */
-  public static enum StepState {
+  enum StepState {
     CREATED, CONFIGURED, WAITING, READY, WORKING, DONE, FAILED, ABORTED
   }
 

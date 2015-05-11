@@ -294,11 +294,7 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
       doc.getDocumentElement().normalize();
       return doc;
 
-    } catch (final IOException e) {
-      throw new EoulsanException(e);
-    } catch (final SAXException e) {
-      throw new EoulsanException(e);
-    } catch (final ParserConfigurationException e) {
+    } catch (final IOException | SAXException | ParserConfigurationException e) {
       throw new EoulsanException(e);
     }
     // TODO

@@ -139,7 +139,7 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
     }
 
     // Set the output writers
-    this.out = new MultipleOutputs<Text, Text>(context);
+    this.out = new MultipleOutputs<>(context);
     this.outputFilename1 = createOutputPath(conf, OUTPUT_FILE1_KEY);
     this.outputFilename2 = createOutputPath(conf, OUTPUT_FILE2_KEY);
 

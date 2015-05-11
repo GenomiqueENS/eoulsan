@@ -869,7 +869,7 @@ public class Normalization {
 
     this.outPath = outPath;
 
-    if (rServeEnable == true) {
+    if (rServeEnable) {
 
       if (rServerName != null) {
         this.rConnection = new RSConnectionNewImpl(rServerName);

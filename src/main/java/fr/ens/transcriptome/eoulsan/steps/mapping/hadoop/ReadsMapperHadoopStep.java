@@ -364,7 +364,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     zais.close();
 
     // Add values to hash function in an ordered manner
-    for (String filename : new TreeSet<String>(map.keySet())) {
+    for (String filename : new TreeSet<>(map.keySet())) {
 
       hs.putString(filename, StandardCharsets.UTF_8);
       for (long l : map.get(filename)) {

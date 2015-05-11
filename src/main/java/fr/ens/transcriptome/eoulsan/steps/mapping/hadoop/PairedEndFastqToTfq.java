@@ -66,7 +66,7 @@ public class PairedEndFastqToTfq {
     protected void reduce(final Text key, final Iterable<Text> values,
         final Context context) throws IOException, InterruptedException {
 
-      final List<String> list = new ArrayList<String>();
+      final List<String> list = new ArrayList<>();
       for (Text t : values) {
         list.add(t.toString());
       }

@@ -307,13 +307,7 @@ public class FileNaming {
    */
   public String glob() {
 
-    final StringBuilder sb = new StringBuilder();
-
-    sb.append(filePrefix());
-    sb.append('*');
-    sb.append(fileSuffix());
-
-    return sb.toString();
+    return filePrefix() + '*' + fileSuffix();
   }
 
   /**
@@ -443,21 +437,7 @@ public class FileNaming {
     checkPortName(portName);
     checkFormatPrefix(formatPrefix);
 
-    final StringBuilder sb = new StringBuilder();
-
-    // Set the name of the step that generated the file
-    sb.append(stepId);
-    sb.append(SEPARATOR);
-
-    // Set the port of the step that generated the file
-    sb.append(portName);
-    sb.append(SEPARATOR);
-
-    // Set the name of the format
-    sb.append(formatPrefix);
-    sb.append(SEPARATOR);
-
-    return sb.toString();
+    return stepId + SEPARATOR + portName + SEPARATOR + formatPrefix + SEPARATOR;
   }
 
   /**

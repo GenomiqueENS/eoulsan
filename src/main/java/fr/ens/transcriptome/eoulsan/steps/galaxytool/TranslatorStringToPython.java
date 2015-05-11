@@ -143,8 +143,6 @@ class TranslatorStringToPython {
 
     this.rawCommand = NEW_LINE.splitToList(cmdTag);
 
-    ;
-
     // Extract all variables names found in command
     this.variableNames = Sets.newHashSet();
 

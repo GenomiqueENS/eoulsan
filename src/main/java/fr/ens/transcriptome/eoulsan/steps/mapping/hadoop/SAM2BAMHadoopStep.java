@@ -12,7 +12,6 @@ import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFileHeader.SortOrder;
 import htsjdk.samtools.SAMFileReader;
 import htsjdk.samtools.SAMRecord;
-import htsjdk.samtools.SAMRecordIterator;
 import htsjdk.samtools.ValidationStringency;
 
 import java.io.IOException;
@@ -208,7 +207,7 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
           if (first) {
             job.getConfiguration().setStrings(
                 Utils.HEADERMERGER_INPUTS_PROPERTY,
-                new String[] { p.toString() });
+                p.toString());
           }
 
           context.getLogger().info("add path1: " + p);
@@ -217,7 +216,7 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
     } else {
       FileInputFormat.addInputPath(job, input);
       job.getConfiguration().setStrings(Utils.HEADERMERGER_INPUTS_PROPERTY,
-          new String[] { input.toString() });
+          input.toString());
       context.getLogger().info("add path2: " + input);
     }
 
@@ -228,7 +227,7 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
         Utils.HEADERMERGER_INPUTS_PROPERTY
             + ":"
             + job.getConfiguration().get(Utils.HEADERMERGER_INPUTS_PROPERTY));
-    InputSampler.<LongWritable, SAMRecordWritable> writePartitionFile(job,
+    InputSampler.writePartitionFile(job,
         new InputSampler.RandomSampler<LongWritable, SAMRecordWritable>(0.01,
             10000, Math.max(100, job.getNumReduceTasks())));
 
@@ -269,10 +268,9 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
     // Necessary lest the BAMIndexer complain
     reader.enableFileSource(true);
 
-    final SAMRecordIterator it = reader.iterator();
-
-    while (it.hasNext())
-      indexer.processAlignment(it.next());
+    for (SAMRecord aReader : reader) {
+      indexer.processAlignment(aReader);
+    }
 
     indexer.finish();
   }

@@ -311,7 +311,7 @@ public class FastQCStep extends AbstractStep {
       final SequenceFile seqFile, final File reportFile) throws IOException,
       XMLStreamException {
 
-    new HTMLReportArchive(seqFile, modules.toArray(new QCModule[] {}),
+    new HTMLReportArchive(seqFile, modules.toArray(new QCModule[modules.size()]),
         reportFile);
 
     final String extension = ".html";

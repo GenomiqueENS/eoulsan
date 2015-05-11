@@ -47,7 +47,7 @@ public class ExpressionMerger implements Merger {
       throws IOException {
 
     final Multiset<String> counts = HashMultiset.create();
-    final Set<String> emptyCounts = new HashSet<String>();
+    final Set<String> emptyCounts = new HashSet<>();
 
     while (inFileIterator.hasNext()) {
 

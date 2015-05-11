@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
@@ -66,12 +65,9 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
         SamReaderFactory.makeDefault().open(SamInputResource.of(in));
 
     // Get iterator on file
-    final Iterator<SAMRecord> it = bamReader.iterator();
 
     // Parse file
-    while (it.hasNext()) {
-      final SAMRecord r = it.next();
-
+    for (SAMRecord r : bamReader) {
       // Convert in SAM
       line = r.getSAMString();
       this.numberElementsCompared++;
@@ -133,11 +129,9 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
     try (final SamReader bamReader =
         SamReaderFactory.makeDefault().open(SamInputResource.of(is))) {
 
-      final Iterator<SAMRecord> it = bamReader.iterator();
-
-      while (it.hasNext()) {
+      for (SAMRecord aBamReader : bamReader) {
         // Convert in line in SAM and save in filter
-        filter.put(it.next().getSAMString());
+        filter.put(aBamReader.getSAMString());
       }
 
     } catch (final Exception e) {

@@ -128,7 +128,7 @@ public class ToolPythonInterpreter {
     final PythonInterpreter interpreter = new PythonInterpreter();
 
     // Init variable cmd
-    interpreter.set(VAR_CMD_NAME, new String());
+    interpreter.set(VAR_CMD_NAME, "");
     interpreter.set(INSTANCE_NAME, variablesCommandFinal);
 
     // Add script

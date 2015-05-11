@@ -29,6 +29,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -157,15 +158,15 @@ public class StringUtilsTest {
 
     assertEquals("[]",
         StringUtils.serializeStringArray(Arrays.asList(new String[] {})));
-    assertEquals("[]", StringUtils.serializeStringArray(Arrays.asList("")));
+    assertEquals("[]", StringUtils.serializeStringArray(Collections.singletonList("")));
     assertEquals("[toto]",
-        StringUtils.serializeStringArray(Arrays.asList("toto")));
+        StringUtils.serializeStringArray(Collections.singletonList("toto")));
     assertEquals("[toto,titi]",
         StringUtils.serializeStringArray(Arrays.asList("toto", "titi")));
     assertEquals("[to\\,to]",
-        StringUtils.serializeStringArray(Arrays.asList("to,to")));
+        StringUtils.serializeStringArray(Collections.singletonList("to,to")));
     assertEquals("[to\\\\to]",
-        StringUtils.serializeStringArray(Arrays.asList("to\\to")));
+        StringUtils.serializeStringArray(Collections.singletonList("to\\to")));
   }
 
   @Test

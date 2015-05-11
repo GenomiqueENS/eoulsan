@@ -37,6 +37,6 @@ public interface ReporterIncrementer {
    * @param counterGroup group of the counter
    * @param amount amount to add to the counter
    */
-  public void incrCounter(String counterGroup, String counterName, long amount);
+  void incrCounter(String counterGroup, String counterName, long amount);
 
 }

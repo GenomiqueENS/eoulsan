@@ -52,7 +52,7 @@ public class ReadSequenceTest {
       assertTrue(false);
     }
 
-    assertTrue(Modifier.isFinal(new ReadSequence().getClass().getModifiers()));
+    assertTrue(Modifier.isFinal(ReadSequence.class.getModifiers()));
   }
 
   @Test

@@ -53,7 +53,7 @@ public interface RSConnection {
    * @return an inputStream
    * @throws REngineException if an exception occurs while reading file
    */
-  public InputStream getFileInputStream(final String filename)
+  InputStream getFileInputStream(final String filename)
       throws REngineException;
 
   /**

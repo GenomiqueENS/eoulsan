@@ -38,7 +38,7 @@ public class HadoopBamUtils {
     // would be trickier, given that SamFileHeaderMerger isn't trivially
     // serializable.
 
-    final List<SAMFileHeader> headers = new ArrayList<SAMFileHeader>();
+    final List<SAMFileHeader> headers = new ArrayList<>();
 
     for (final String in : conf.getStrings(Utils.HEADERMERGER_INPUTS_PROPERTY)) {
       final Path p = new Path(in);

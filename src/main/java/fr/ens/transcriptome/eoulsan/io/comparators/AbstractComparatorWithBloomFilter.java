@@ -121,7 +121,7 @@ public abstract class AbstractComparatorWithBloomFilter extends
         getCompressionTypeByFilename(file.getAbsolutePath());
 
     // Create new filter
-    try (InputStream is = new FileInputStream(file);) {
+    try (InputStream is = new FileInputStream(file)) {
       final BloomFilterUtils bloomFilter =
           buildBloomFilter(zType.createInputStream(is));
 

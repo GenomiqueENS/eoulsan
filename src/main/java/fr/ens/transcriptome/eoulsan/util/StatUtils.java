@@ -46,8 +46,8 @@ public final class StatUtils {
 
     final int len = values.length;
     int sum = 0;
-    for (int i = 0; i < len; i++) {
-      sum += values[i];
+    for (int value : values) {
+      sum += value;
     }
 
     return (double) sum / len;
