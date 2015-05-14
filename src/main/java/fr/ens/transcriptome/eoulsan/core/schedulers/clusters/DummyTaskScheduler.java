@@ -33,7 +33,7 @@ import fr.ens.transcriptome.eoulsan.Main;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class DummyClusterTaskScheduler extends BpipeTaskScheduler {
+public class DummyTaskScheduler extends BpipeTaskScheduler {
 
   private static final String COMMAND_WRAPPER_SCRIPT = "bpipe-dummy";
 
@@ -58,7 +58,7 @@ public class DummyClusterTaskScheduler extends BpipeTaskScheduler {
   /**
    * Constructor.
    */
-  public DummyClusterTaskScheduler() {
+  public DummyTaskScheduler() {
 
     final File eoulsanScript =
         new File(Main.getInstance().getEoulsanScriptPath());
