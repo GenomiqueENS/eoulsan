@@ -239,9 +239,10 @@ public abstract class AbstractClusterTaskScheduler extends
       }
     }
 
-    @Override
-    @SuppressWarnings("deprecation")
-    public void destroy() {
+    /**
+     * Stop the thread.
+     */
+    public void stopThread() {
 
       if (this.jobId != null) {
 
@@ -298,7 +299,7 @@ public abstract class AbstractClusterTaskScheduler extends
     for (TaskThread thread : this.queue) {
 
       // Kill the subprocess
-      thread.destroy();
+      thread.stopThread();
     }
 
     this.queue.clear();
