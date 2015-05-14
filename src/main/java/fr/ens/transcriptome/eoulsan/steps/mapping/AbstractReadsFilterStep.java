@@ -172,6 +172,18 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
           + parameter.getName()
           + "\" is deprecated, use \"quality.threshold\" parameter instead");
 
+    case "pairend.accept.pairend":
+      throw new EoulsanException(
+          "The parameter \""
+              + parameter.getName()
+              + "\" is deprecated, use \"pairedend.accept.paired.end\" parameter instead");
+
+    case "pairend.accept.singlend":
+      throw new EoulsanException(
+          "The parameter \""
+              + parameter.getName()
+              + "\" is deprecated, use \"pairedend.accept.single.end\" parameter instead");
+
     case "trim.length.threshold":
       getLogger().warning(
           "The \""

@@ -33,9 +33,9 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class PairEndReadFilter implements ReadFilter {
+public class PairedEndReadFilter implements ReadFilter {
 
-  private boolean acceptPairEnd = true;
+  private boolean acceptPairedEnd = true;
   private final boolean acceptSingleEnd = true;
 
   @Override
@@ -51,13 +51,13 @@ public class PairEndReadFilter implements ReadFilter {
       return false;
     }
 
-    return this.acceptPairEnd;
+    return this.acceptPairedEnd;
   }
 
   @Override
   public String getName() {
 
-    return "pairend";
+    return "pairedend";
   }
 
   @Override
@@ -74,10 +74,10 @@ public class PairEndReadFilter implements ReadFilter {
       return;
     }
 
-    if ("accept.pairend".equals(key.trim())) {
-      this.acceptPairEnd = Boolean.parseBoolean(value.trim());
-    } else if ("accept.singlend".equals(key.trim())) {
-      this.acceptPairEnd = Boolean.parseBoolean(value.trim());
+    if ("accept.paired.end".equals(key.trim())) {
+      this.acceptPairedEnd = Boolean.parseBoolean(value.trim());
+    } else if ("accept.single.end".equals(key.trim())) {
+      this.acceptPairedEnd = Boolean.parseBoolean(value.trim());
     } else {
       throw new EoulsanException("Unknown parameter for "
           + getName() + " read filter: " + key);
@@ -93,8 +93,8 @@ public class PairEndReadFilter implements ReadFilter {
   public String toString() {
 
     return this.getClass().getSimpleName()
-        + "{acceptSingleEnd=" + this.acceptSingleEnd + ", acceptPairEnd="
-        + this.acceptPairEnd + "}";
+        + "{acceptSingleEnd=" + this.acceptSingleEnd + ", acceptPairedEnd="
+        + this.acceptPairedEnd + "}";
   }
 
   //
@@ -104,7 +104,7 @@ public class PairEndReadFilter implements ReadFilter {
   /**
    * Public constructor.
    */
-  public PairEndReadFilter() {
+  public PairedEndReadFilter() {
   }
 
 }
