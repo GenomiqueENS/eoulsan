@@ -25,14 +25,9 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static fr.ens.transcriptome.eoulsan.Globals.TASK_DATA_EXTENSION;
-import static fr.ens.transcriptome.eoulsan.Globals.TASK_RESULT_EXTENSION;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -45,12 +40,8 @@ import org.apache.commons.cli.ParseException;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.core.Step;
-import fr.ens.transcriptome.eoulsan.core.schedulers.TaskSchedulerFactory;
-import fr.ens.transcriptome.eoulsan.core.workflow.StepInstances;
-import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
-import fr.ens.transcriptome.eoulsan.core.workflow.TaskResult;
-import fr.ens.transcriptome.eoulsan.core.workflow.TaskRunner;
+import fr.ens.transcriptome.eoulsan.core.workflow.TaskSerializationUtils;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 
 /**
  * This class define a action to launch a task on a cluster.
@@ -103,8 +94,7 @@ public class ClusterTaskAction extends AbstractAction {
       help(options);
     }
 
-    final File contextFile = new File(arguments.get(0));
-    System.out.println("contextFile: " + contextFile);
+    final DataFile contextFile = new DataFile(arguments.get(0));
 
     // Execute task
     run(contextFile);
@@ -149,55 +139,16 @@ public class ClusterTaskAction extends AbstractAction {
 
   /**
    * Execute the task.
-   * @param contextFile context file
+   * @param taskContextFile context file
    */
-  private static final void run(final File contextFile) {
+  private static final void run(final DataFile taskContextFile) {
 
-    checkNotNull(contextFile, "contextFile is null");
+    checkNotNull(taskContextFile, "contextFile is null");
 
     try {
 
-      // Test if param file exists
-      if (!contextFile.exists()) {
-        throw new FileNotFoundException(contextFile.toString());
-      }
-
-      // Load context file
-      final TaskContext context = TaskContext.deserialize(contextFile);
-
-      // Create the context runner
-      final TaskRunner runner = new TaskRunner(context);
-
-      // Load step instance
-      final Step step =
-          StepInstances.getInstance().getStep(context.getCurrentStep());
-
-      // Configure step
-      step.configure(context, context.getCurrentStep().getParameters());
-
-      // Force TaskRunner to res-use the step instance that just has been
-      // created
-      runner.setForceStepInstanceReuse(true);
-
-      // Initialize scheduler
-      TaskSchedulerFactory.initialize();
-
-      // Get the result
-      final TaskResult result = runner.run();
-
-      // Get the prefix for the task files and the base dir
-      final String taskPrefix = TaskRunner.createTaskPrefixFile(context);
-      final File baseDir = contextFile.getParentFile();
-
-      // Save task result
-      result.serialize(new File(baseDir, taskPrefix + TASK_RESULT_EXTENSION));
-
-      // Save task output data
-      context.serializeOutputData(new File(baseDir, taskPrefix
-          + TASK_DATA_EXTENSION));
-
-      // Create done file
-      createDoneFile(new File(baseDir, taskPrefix + Globals.TASK_DONE_EXTENSION));
+      // Execute the task
+      TaskSerializationUtils.execute(taskContextFile);
 
     } catch (FileNotFoundException e) {
       Common.errorExit(e, "File not found: " + e.getMessage());
@@ -209,19 +160,6 @@ public class ClusterTaskAction extends AbstractAction {
     } catch (Throwable t) {
       t.printStackTrace();
     }
-
-  }
-
-  /**
-   * Create the done file
-   * @param doneFile done file to create
-   * @throws IOException if an error occurs while creating the done file
-   */
-  private static final void createDoneFile(final File doneFile)
-      throws IOException {
-
-    final OutputStream out = new FileOutputStream(doneFile);
-    out.close();
   }
 
 }
