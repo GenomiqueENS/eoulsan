@@ -1,2 +1,3 @@
 # Fake scheduler, only for tests
 fr.ens.transcriptome.eoulsan.core.schedulers.clusters.DummyClusterTaskScheduler
+fr.ens.transcriptome.eoulsan.core.schedulers.clusters.CondorTaskScheduler
