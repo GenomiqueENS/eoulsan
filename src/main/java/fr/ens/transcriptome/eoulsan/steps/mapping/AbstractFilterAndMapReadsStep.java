@@ -254,10 +254,13 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
+      // Get step id
+      final String stepId = context.getCurrentStep().getId();
+
       // Check if the parameter is deprecated
-      AbstractReadsFilterStep.checkDeprecatedParameter(p);
-      AbstractReadsMapperStep.checkDeprecatedParameter(p);
-      AbstractSAMFilterStep.checkDeprecatedParameter(p);
+      AbstractReadsFilterStep.checkDeprecatedParameter(p, stepId);
+      AbstractReadsMapperStep.checkDeprecatedParameter(p, stepId);
+      AbstractSAMFilterStep.checkDeprecatedParameter(p, stepId);
 
       switch (p.getName()) {
 
