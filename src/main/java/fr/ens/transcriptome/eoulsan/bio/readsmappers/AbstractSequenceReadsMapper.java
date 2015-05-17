@@ -430,16 +430,8 @@ public abstract class AbstractSequenceReadsMapper implements
             + indexTmpDirPrefix + " in " + getTempDirectory());
 
     final File indexTmpDir =
-        File.createTempFile(indexTmpDirPrefix, "", getTempDirectory());
-
-    if (!(indexTmpDir.delete())) {
-      throw new IOException("Could not delete temp file ("
-          + indexTmpDir.getAbsolutePath() + ")");
-    }
-
-    if (!indexTmpDir.mkdir()) {
-      throw new IOException("Unable to create directory for genome index");
-    }
+        Files.createTempDirectory(getTempDirectory().toPath(),
+            indexTmpDirPrefix).toFile();
 
     makeIndex(genomeFile, indexTmpDir);
 
