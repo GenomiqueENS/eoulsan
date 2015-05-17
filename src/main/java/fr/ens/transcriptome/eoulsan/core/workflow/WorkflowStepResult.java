@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -78,6 +79,7 @@ public class WorkflowStepResult {
 
   private final Map<Integer, String> taskNames = new HashMap<>();
   private final Map<Integer, Map<String, Long>> taskCounters = new HashMap<>();
+  private final Map<String, Map<String, Long>> counters = new HashMap<>();
   private final Map<Integer, String> taskDescriptions = new HashMap<>();
   private final Map<Integer, String> taskMessages = new HashMap<>();
   private final Map<String, Long> stepCounters = new HashMap<>();
@@ -225,11 +227,13 @@ public class WorkflowStepResult {
     // Compute duration
     this.duration = this.endTime.getTime() - this.startTime.getTime();
 
-    this.taskNames.put(contextId, result.getContext().getContextName());
+    final String taskName = result.getContext().getContextName();
+    this.taskNames.put(contextId, taskName);
 
     // Set counters information
     this.taskCounters.put(contextId, result.getCounters());
     this.taskDescriptions.put(contextId, result.getDescription());
+    addCounters(taskName, result.getCounters());
 
     // Set success (Keep only the first error)
     if (this.success) {
@@ -245,6 +249,37 @@ public class WorkflowStepResult {
         result.getContext().getStep().setState(FAILED);
       }
 
+    }
+  }
+
+  /**
+   * Add counters task to the group counters.
+   * @param counterGroup the name of the counter group
+   * @param counters the counters of the task
+   */
+  private void addCounters(final String counterGroup, Map<String, Long> counters) {
+
+    final Map<String, Long> map;
+
+    if (!this.counters.containsKey(counterGroup)) {
+
+      map = new LinkedHashMap<String, Long>();
+      this.counters.put(counterGroup, map);
+    } else {
+
+      map = this.counters.get(counters);
+    }
+
+    for (Map.Entry<String, Long> e : counters.entrySet()) {
+
+      final String key = e.getKey();
+
+      if (map.containsKey(key)) {
+
+        map.put(key, map.get(key) + e.getValue());
+      } else {
+        map.put(key, e.getValue());
+      }
     }
   }
 
@@ -305,6 +340,21 @@ public class WorkflowStepResult {
       jg.write(p.getName(), p.getStringValue());
     }
     jg.writeEnd();
+
+    // Counters
+    jg.writeStartObject("Counters");
+
+    for (Map.Entry<String, Map<String, Long>> e : this.counters.entrySet()) {
+
+      jg.writeStartObject(e.getKey());
+
+      for (Map.Entry<String, Long> e2 : e.getValue().entrySet()) {
+        jg.write(e2.getKey(), e2.getValue());
+      }
+
+      jg.writeEnd(); // Counter group
+    }
+    jg.writeEnd(); // Counters
 
     // Tasks
     jg.writeStartArray("Tasks");
