@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -124,7 +125,7 @@ public abstract class AbstractSequenceReadsMapper implements
    * @return the indexer executables
    */
   protected String[] getIndexerExecutables() {
-    return new String[] {getIndexerExecutable()};
+    return new String[] { getIndexerExecutable() };
   }
 
   /**
@@ -373,8 +374,12 @@ public abstract class AbstractSequenceReadsMapper implements
     if (!unCompressGenomeFile.equals(tmpGenomeFile)) {
 
       try {
-        Files.createSymbolicLink(tmpGenomeFile.toPath(),
-            unCompressGenomeFile.toPath());
+
+        final Path link = tmpGenomeFile.toPath();
+        final Path target = unCompressGenomeFile.getAbsoluteFile().toPath();
+        final Path relativizedTarget = link.getParent().relativize(target);
+
+        Files.createSymbolicLink(link, relativizedTarget);
       } catch (IOException e) {
         throw new IOException("Unable to create the symbolic link in "
             + tmpGenomeFile + " directory for " + unCompressGenomeFile);
