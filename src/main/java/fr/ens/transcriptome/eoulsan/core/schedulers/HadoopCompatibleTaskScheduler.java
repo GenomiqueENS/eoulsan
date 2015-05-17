@@ -241,7 +241,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
       checkNotNull(conf, "conf argument cannot be null");
       checkNotNull(context, "context argument cannot be null");
 
-      final DataFile hadoopWorkDir = this.context.getHadoopWorkingPathname();
+      final DataFile hadoopWorkDir = context.getHadoopWorkingPathname();
 
       this.conf = conf;
       this.context = context;
