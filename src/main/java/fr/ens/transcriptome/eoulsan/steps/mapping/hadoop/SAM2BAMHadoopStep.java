@@ -10,9 +10,11 @@ import hbparquet.hadoop.util.ContextUtil;
 import htsjdk.samtools.BAMIndexer;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFileHeader.SortOrder;
-import htsjdk.samtools.SAMFileReader;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMRecordIterator;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.ValidationStringency;
 
 import java.io.IOException;
@@ -43,7 +45,6 @@ import org.seqdoop.hadoop_bam.SAMRecordWritable;
 import org.seqdoop.hadoop_bam.cli.CLIMergingAnySAMOutputFormat;
 import org.seqdoop.hadoop_bam.cli.Utils;
 import org.seqdoop.hadoop_bam.util.SAMHeaderReader;
-import org.seqdoop.hadoop_bam.util.WrapSeekable;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
@@ -206,9 +207,9 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
           FileInputFormat.addInputPath(job, p);
 
           if (first) {
-            job.getConfiguration()
-                .setStrings(Utils.HEADERMERGER_INPUTS_PROPERTY,
-                    new String[] {p.toString()});
+            job.getConfiguration().setStrings(
+                Utils.HEADERMERGER_INPUTS_PROPERTY,
+                new String[] { p.toString() });
           }
 
           context.getLogger().info("add path1: " + p);
@@ -217,7 +218,7 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
     } else {
       FileInputFormat.addInputPath(job, input);
       job.getConfiguration().setStrings(Utils.HEADERMERGER_INPUTS_PROPERTY,
-          new String[] {input.toString()});
+          new String[] { input.toString() });
       context.getLogger().info("add path2: " + input);
     }
 
@@ -250,12 +251,16 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
     Path input = new Path(bamFile.toUri());
     Path output = new Path(indexFile.toUri());
 
-    final ValidationStringency stringency =
-        ValidationStringency.DEFAULT_STRINGENCY;
+    // final ValidationStringency stringency =
+    // ValidationStringency.DEFAULT_STRINGENCY;
 
-    final SAMFileReader reader;
+    final SamReader reader;
 
-    reader = new SAMFileReader(WrapSeekable.openPath(conf, input), false);
+    // reader = new SAMFileReader(WrapSeekable.openPath(conf, input), false);
+
+    reader =
+        SamReaderFactory.makeDefault(). open(
+            SamInputResource.of(input.getFileSystem(conf).open(input)));
 
     final SAMFileHeader header;
 
@@ -267,7 +272,7 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
     indexer = new BAMIndexer(p.getFileSystem(conf).create(p), header);
 
     // Necessary lest the BAMIndexer complain
-    reader.enableFileSource(true);
+    // reader.enableFileSource(true);
 
     final SAMRecordIterator it = reader.iterator();
 
@@ -276,7 +281,6 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
 
     indexer.finish();
   }
-
 }
 
 //
