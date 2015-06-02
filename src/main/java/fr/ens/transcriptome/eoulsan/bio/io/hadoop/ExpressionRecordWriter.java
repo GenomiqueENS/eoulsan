@@ -24,6 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.bio.io.hadoop.Counters.ENTRIES_WRITTEN;
+import static fr.ens.transcriptome.eoulsan.bio.io.hadoop.Counters.INPUT_ENTRIES;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -40,6 +43,9 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
  */
 public class ExpressionRecordWriter extends RecordWriter<Text, LongWritable> {
 
+  private static final String COUNTERS_GROUP =
+      "Expression Output Format Counters";
+
   private static final String utf8 = "UTF-8";
   private static final byte[] newline;
   private static final byte[] separator;
@@ -54,25 +60,31 @@ public class ExpressionRecordWriter extends RecordWriter<Text, LongWritable> {
   }
 
   private final DataOutputStream out;
+  private final TaskAttemptContext context;
 
   @Override
   public synchronized void write(final Text key, final LongWritable value)
       throws IOException, InterruptedException {
 
+    this.context.getCounter(COUNTERS_GROUP, INPUT_ENTRIES).increment(1);
+
     if (value == null) {
       return;
     }
 
-    out.write(key.getBytes(), 0, key.getLength());
-    out.write(separator);
-    out.write(value.toString().getBytes(utf8));
-    out.write(newline);
+    this.out.write(key.getBytes(), 0, key.getLength());
+    this.out.write(separator);
+    this.out.write(value.toString().getBytes(utf8));
+    this.out.write(newline);
+
+    this.context.getCounter(COUNTERS_GROUP, ENTRIES_WRITTEN).increment(1);
   }
 
   @Override
   public synchronized void close(final TaskAttemptContext context)
       throws IOException {
-    out.close();
+
+    this.out.close();
   }
 
   //
@@ -81,10 +93,13 @@ public class ExpressionRecordWriter extends RecordWriter<Text, LongWritable> {
 
   /**
    * Public constructor.
+   * @param context the context
    * @param os output stream
    */
-  public ExpressionRecordWriter(final DataOutputStream out) {
+  public ExpressionRecordWriter(final TaskAttemptContext context,
+      final DataOutputStream out) {
 
+    this.context = context;
     this.out = out;
   }
 

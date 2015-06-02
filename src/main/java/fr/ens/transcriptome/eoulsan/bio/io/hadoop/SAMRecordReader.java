@@ -1,5 +1,7 @@
 package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.bio.io.hadoop.Counters.ENTRIES_WRITTEN;
+
 import java.io.IOException;
 
 import org.apache.hadoop.io.Text;
@@ -16,6 +18,9 @@ import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
  */
 public class SAMRecordReader extends RecordReader<Text, Text> {
 
+  private static final String COUNTERS_GROUP = "SAM Input Format Counters";
+
+  private final TaskAttemptContext context;
   private final LineRecordReader lrr = new LineRecordReader();
   private Text key = new Text();
   private Text value = new Text();
@@ -88,7 +93,22 @@ public class SAMRecordReader extends RecordReader<Text, Text> {
 
     }
 
+    this.context.getCounter(COUNTERS_GROUP, ENTRIES_WRITTEN).increment(1);
+
     return true;
+  }
+
+  //
+  // Constructor
+  //
+
+  /**
+   * Public constructor.
+   * @param context the context
+   */
+  public SAMRecordReader(final TaskAttemptContext context) {
+
+    this.context = context;
   }
 
 }
