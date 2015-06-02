@@ -233,7 +233,7 @@ public class CopyInputDataStep extends AbstractStep {
 
         // Copy the file
         final DataFile outputFile =
-            copyFile(inData.getDataFile(), i, outData.getName(),
+            copyFile(inData.getDataFile(i), i, outData.getName(),
                 outData.getPart(), context);
 
         dataFiles.add(outputFile);
