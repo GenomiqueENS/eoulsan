@@ -177,7 +177,8 @@ public class FastQCStep extends AbstractStep {
       case FASTQC_KMER_SIZE_PARAMETER_NAME:
 
         // Kmer Size, default FastQC value is 7
-        System.setProperty("fastqc.kmer_size", "" + p.getIntValueGreaterOrEqualsTo(1));
+        System.setProperty("fastqc.kmer_size",
+            "" + p.getIntValueGreaterOrEqualsTo(1));
         break;
 
       case FASTQC_NOGROUP_PARAMETER_NAME:
@@ -222,7 +223,7 @@ public class FastQCStep extends AbstractStep {
         context.getOutputData(DataFormats.FASTQC_REPORT_HTML, inData);
 
     // Extract data file
-    final DataFile inFile = inData.getDataFile();
+    final DataFile inFile = inData.getDataFile(0);
     final DataFile reportFile = outData.getDataFile();
 
     SequenceFile seqFile = null;
@@ -254,7 +255,7 @@ public class FastQCStep extends AbstractStep {
 
       // Set the description of the context
       status.setDescription("Create FastQC report on "
-          + inData.getDataFile().toFile().getAbsolutePath() + " in "
+          + inData.getDataFile(0).toFile().getAbsolutePath() + " in "
           + reportFile.getName() + ")");
 
       // Keep module data is now unnecessary
