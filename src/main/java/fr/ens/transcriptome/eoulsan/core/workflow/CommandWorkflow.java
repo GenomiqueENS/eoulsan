@@ -310,8 +310,8 @@ public class CommandWorkflow extends AbstractWorkflow {
           && stepProtocol != depProtocol
           && inputPort.isRequiredInWorkingDirectory()) {
         newStep =
-            newInputFormatCopyStep(this, inputPort, depOutputCompression,
-                stepCompressionsAllowed);
+            newInputFormatCopyStep(this, inputPort, dependencyOutputPort,
+                depOutputCompression, stepCompressionsAllowed);
       }
 
       // Check if (un)compression is needed
@@ -321,8 +321,8 @@ public class CommandWorkflow extends AbstractWorkflow {
           && !inputPort.getCompressionsAccepted()
               .contains(depOutputCompression)) {
         newStep =
-            newInputFormatCopyStep(this, inputPort, depOutputCompression,
-                stepCompressionsAllowed);
+            newInputFormatCopyStep(this, inputPort, dependencyOutputPort,
+                depOutputCompression, stepCompressionsAllowed);
       }
 
       // If the dependency if design step and step does not allow all the
@@ -334,8 +334,8 @@ public class CommandWorkflow extends AbstractWorkflow {
           && !EnumSet.allOf(CompressionType.class).containsAll(
               stepCompressionsAllowed)) {
         newStep =
-            newInputFormatCopyStep(this, inputPort, depOutputCompression,
-                stepCompressionsAllowed);
+            newInputFormatCopyStep(this, inputPort, dependencyOutputPort,
+                depOutputCompression, stepCompressionsAllowed);
       }
 
       // Set the dependencies
@@ -367,16 +367,18 @@ public class CommandWorkflow extends AbstractWorkflow {
   /**
    * Create a new step that copy/(un)compress input data of a step.
    * @param workflow workflow where adding the step
-   * @param port input port
+   * @param inputPort input port
+   * @param outputPort output port
    * @param inputCompression compression format of the data to read
-   * @param outputCompressionAllowed compression formats allowed by the step
+   * @param outputCompressionsAllowed compression formats allowed by the step
    * @return a new step
    * @throws EoulsanException if an error occurs while creating the step
    */
   private static CommandWorkflowStep newInputFormatCopyStep(
-      final CommandWorkflow workflow, final WorkflowInputPort port,
+      final CommandWorkflow workflow, final WorkflowInputPort inputPort,
+      final WorkflowOutputPort outputPort,
       final CompressionType inputCompression,
-      final EnumSet<CompressionType> outputCompressionAllowed)
+      final EnumSet<CompressionType> outputCompressionsAllowed)
       throws EoulsanException {
 
     // Set the step name
@@ -391,27 +393,37 @@ public class CommandWorkflow extends AbstractWorkflow {
     String stepId;
     do {
 
-      stepId = port.getStep().getId() + "prepare" + i;
+      stepId = inputPort.getStep().getId() + "prepare" + i;
       i++;
 
     } while (stepsIds.contains(stepId));
 
+    final boolean designOutputport =
+        outputPort.getStep().getType() == StepType.DESIGN_STEP;
+
     // Find output compression
     final CompressionType comp;
-    if (outputCompressionAllowed.contains(inputCompression)) {
+    if (outputCompressionsAllowed.contains(inputCompression)) {
       comp = inputCompression;
-    } else if (outputCompressionAllowed.contains(CompressionType.NONE)) {
+    } else if (outputCompressionsAllowed.contains(CompressionType.NONE)) {
       comp = CompressionType.NONE;
     } else {
-      comp = outputCompressionAllowed.iterator().next();
+      comp = outputCompressionsAllowed.iterator().next();
     }
 
     // Set parameters
     final Set<Parameter> parameters = new HashSet<>();
-    parameters.add(new Parameter(CopyInputDataStep.FORMAT_PARAMETER, port
+    parameters.add(new Parameter(CopyInputDataStep.FORMAT_PARAMETER, inputPort
         .getFormat().getName()));
     parameters.add(new Parameter(
         CopyInputDataStep.OUTPUT_COMPRESSION_PARAMETER, comp.name()));
+    parameters.add(new Parameter(CopyInputDataStep.DESIGN_INPUT_PARAMETER, ""
+        + designOutputport));
+    parameters
+        .add(new Parameter(
+            CopyInputDataStep.OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER,
+            CopyInputDataStep
+                .encodeAllowedCompressionsParameterValue(outputCompressionsAllowed)));
 
     // Create step
     CommandWorkflowStep step =

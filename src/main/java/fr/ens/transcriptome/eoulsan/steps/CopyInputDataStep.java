@@ -31,8 +31,13 @@ import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.DEFAULT_SINGL
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -74,9 +79,14 @@ public class CopyInputDataStep extends AbstractStep {
   public static final String FORMAT_PARAMETER = "format";
   public static final String OUTPUT_COMPRESSION_PARAMETER =
       "output.compression";
+  public static final String DESIGN_INPUT_PARAMETER = "design.input";
+  public static final String OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER =
+      "output.compressions.allowed";
 
   private DataFormat format;
   private CompressionType outputCompression;
+  private boolean designInput;
+  private EnumSet<CompressionType> outputCompressionsAllowed;
 
   @Override
   public String getName() {
@@ -106,15 +116,34 @@ public class CopyInputDataStep extends AbstractStep {
   @Override
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
+
     for (Parameter p : stepParameters) {
 
-      if (FORMAT_PARAMETER.equals(p.getName())) {
+      switch (p.getName()) {
+
+      case FORMAT_PARAMETER:
         this.format =
             DataFormatRegistry.getInstance()
                 .getDataFormatFromName(p.getValue());
-      } else if (OUTPUT_COMPRESSION_PARAMETER.equals(p.getName())) {
+        break;
+
+      case OUTPUT_COMPRESSION_PARAMETER:
         this.outputCompression = CompressionType.valueOf(p.getValue());
+        break;
+
+      case DESIGN_INPUT_PARAMETER:
+        this.designInput = p.getBooleanValue();
+        break;
+
+      case OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER:
+        this.outputCompressionsAllowed =
+            decodeAllowedCompressionsParameterValue(p.getValue());
+        break;
+
+      default:
+        break;
       }
+
     }
 
     if (this.format == null) {
@@ -124,6 +153,7 @@ public class CopyInputDataStep extends AbstractStep {
     if (this.outputCompression == null) {
       throw new EoulsanException("No output compression set.");
     }
+
   }
 
   @Override
@@ -265,9 +295,7 @@ public class CopyInputDataStep extends AbstractStep {
     final DataFile in = getRealDataFile(inputFile);
 
     // Define the compression of the output
-    final CompressionType compression =
-        this.outputCompression != null ? this.outputCompression : in
-            .getCompressionType();
+    final CompressionType compression = getOutputCompressionType(in);
 
     // Define the output filename
     final String outFilename =
@@ -284,6 +312,66 @@ public class CopyInputDataStep extends AbstractStep {
     DataFiles.symlinkOrCopy(in, out, true);
 
     return out;
+  }
+
+  /**
+   * Get the compression type to use for the output file.
+   * @param inputFile the input file
+   * @return the compression type to use for the output file
+   */
+  private CompressionType getOutputCompressionType(final DataFile inputFile) {
+
+    final CompressionType inCompression = inputFile.getCompressionType();
+
+    if (this.designInput
+        && this.outputCompressionsAllowed.contains(inCompression)) {
+      return inCompression;
+    }
+
+    return inCompression;
+  }
+
+  /**
+   * Method to encode an EnumSet of the allowed compressions parameter in a
+   * string.
+   * @param outputCompressionAllowed the EnumSet to encode
+   * @return a string with the EnumSet encoded
+   */
+  public static final String encodeAllowedCompressionsParameterValue(
+      final EnumSet<CompressionType> outputCompressionAllowed) {
+
+    if (outputCompressionAllowed == null) {
+      return null;
+    }
+
+    return Joiner.on('\t').join(outputCompressionAllowed);
+  }
+
+  /**
+   * Method to decode the allowed compressions parameter.
+   * @param value the parameter value as a string
+   * @return the parameter value as an EnumSet
+   */
+  private static final EnumSet<CompressionType> decodeAllowedCompressionsParameterValue(
+      final String value) {
+
+    if (value == null) {
+      return null;
+    }
+
+    final Set<CompressionType> result = new HashSet<>();
+
+    for (String s : Splitter.on('\t').omitEmptyStrings().trimResults()
+        .split(value)) {
+
+      final CompressionType compression = CompressionType.valueOf(s);
+
+      if (compression != null) {
+        result.add(compression);
+      }
+    }
+
+    return EnumSet.copyOf(result);
   }
 
 }
