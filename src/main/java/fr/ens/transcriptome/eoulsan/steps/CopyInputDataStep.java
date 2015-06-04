@@ -141,7 +141,8 @@ public class CopyInputDataStep extends AbstractStep {
         break;
 
       default:
-        break;
+        throw new EoulsanException("Unknown parameter for step "
+            + getName() + ": " + p.getName());
       }
 
     }
