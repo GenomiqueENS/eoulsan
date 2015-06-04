@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.CREATED;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.DONE;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.PARTIALLY_DONE;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
 
@@ -96,8 +97,15 @@ public class WorkflowStepStateObserver implements Serializable {
       return;
     }
 
+    // Do not change the state to READY if the step is already working
+    if (state == READY
+        && (this.stepState == StepState.WORKING || this.stepState == PARTIALLY_DONE)) {
+      return;
+    }
+
     // If is the root step, there is nothing to wait
     synchronized (this) {
+
       if (this.step.getType() == WorkflowStep.StepType.ROOT_STEP
           && state == WAITING) {
         this.stepState = READY;
@@ -124,7 +132,7 @@ public class WorkflowStepStateObserver implements Serializable {
     }
 
     // Inform step that depend of this step
-    if (this.stepState == DONE) {
+    if (this.stepState == PARTIALLY_DONE || this.stepState == DONE) {
       for (AbstractWorkflowStep step : this.stepsToInform) {
         step.getStepStateObserver().updateStatus();
       }
@@ -157,7 +165,7 @@ public class WorkflowStepStateObserver implements Serializable {
     }
 
     for (AbstractWorkflowStep step : this.requiredSteps) {
-      if (step.getState() != DONE) {
+      if (!(step.getState() == PARTIALLY_DONE || step.getState() == DONE)) {
         return;
       }
     }
