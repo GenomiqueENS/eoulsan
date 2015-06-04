@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -443,50 +442,50 @@ public class CommandWorkflow extends AbstractWorkflow {
    * @return a new step
    * @throws EoulsanException if an error occurs while creating the step
    */
-  private static CommandWorkflowStep newOutputFormatCopyStep(
+  private static List<CommandWorkflowStep> newOutputFormatCopyStep(
       final CommandWorkflow workflow, final WorkflowOutputPorts outputPorts)
       throws EoulsanException {
+
+    final List<CommandWorkflowStep> result = new ArrayList<>();
 
     // Set the step name
     final String stepName = CopyOutputDataStep.STEP_NAME;
 
-    // Search a non used step id
-    final Set<String> stepsIds = new HashSet<>();
-    for (WorkflowStep s : workflow.getSteps()) {
-      stepsIds.add(s.getId());
+    for (WorkflowOutputPort outputPort : outputPorts) {
+
+      // Search a non used step id
+      final Set<String> stepsIds = new HashSet<>();
+      for (WorkflowStep s : workflow.getSteps()) {
+        stepsIds.add(s.getId());
+      }
+      int i = 1;
+      String stepId;
+      do {
+
+        stepId = outputPorts.getFirstPort().getStep().getId() + "finalize" + i;
+        i++;
+
+      } while (stepsIds.contains(stepId));
+
+      // Set parameters
+      final Set<Parameter> parameters = new HashSet<>();
+      parameters.add(new Parameter(CopyOutputDataStep.PORTS_PARAMETER,
+          outputPort.getName()));
+      parameters.add(new Parameter(CopyOutputDataStep.FORMATS_PARAMETER,
+          outputPort.getFormat().getName()));
+
+      // Create step
+      CommandWorkflowStep step =
+          new CommandWorkflowStep(workflow, stepId, stepName, null, parameters,
+              false, true);
+
+      // Configure step
+      step.configure();
+
+      result.add(step);
     }
-    int i = 1;
-    String stepId;
-    do {
 
-      stepId = outputPorts.getFirstPort().getStep().getId() + "finalize" + i;
-      i++;
-
-    } while (stepsIds.contains(stepId));
-
-    List<String> portsList = new ArrayList<>();
-    List<String> formatsList = new ArrayList<>();
-    for (WorkflowOutputPort port : outputPorts) {
-      portsList.add(port.getName());
-      formatsList.add(port.getFormat().getName());
-    }
-
-    // Set parameters
-    final Set<Parameter> parameters = new HashSet<>();
-    parameters.add(new Parameter(CopyOutputDataStep.PORTS_PARAMETER, Joiner.on(
-        ',').join(portsList)));
-    parameters.add(new Parameter(CopyOutputDataStep.FORMATS_PARAMETER, Joiner
-        .on(',').join(formatsList)));
-
-    // Create step
-    CommandWorkflowStep step =
-        new CommandWorkflowStep(workflow, stepId, stepName, null, parameters,
-            false, true);
-
-    // Configure step
-    step.configure();
-
-    return step;
+    return result;
   }
 
   /**
@@ -739,18 +738,21 @@ public class CommandWorkflow extends AbstractWorkflow {
           && !step.getStepOutputDirectory().equals(getOutputDirectory())
           && !step.getWorkflowOutputPorts().isEmpty()) {
 
-        CommandWorkflowStep newStep =
+        final List<CommandWorkflowStep> newSteps =
             newOutputFormatCopyStep(this, step.getWorkflowOutputPorts());
 
-        // Add the copy step in the list of steps just before the step given as
-        // method argument
-        addStep(indexOfStep(step) + 1, newStep);
+        for (CommandWorkflowStep newStep : newSteps) {
 
-        // Add the copy dependencies
-        for (WorkflowOutputPort outputPort : step.getWorkflowOutputPorts()) {
-          newStep.addDependency(
-              newStep.getWorkflowInputPorts().getPort(outputPort.getName()),
-              outputPort);
+          // Add the copy step in the list of steps just before the step given
+          // as method argument
+          addStep(indexOfStep(step) + 1, newStep);
+
+          // Add the copy dependencies
+          final WorkflowInputPort newStepInputPort =
+              newStep.getWorkflowInputPorts().getFirstPort();
+          newStep.addDependency(newStepInputPort, step.getWorkflowOutputPorts()
+              .getPort(newStepInputPort.getName()));
+
         }
       }
     }
