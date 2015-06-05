@@ -23,6 +23,7 @@
  */
 package fr.ens.transcriptome.eoulsan.steps.fastqc;
 
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 
 import java.io.File;
@@ -129,9 +130,10 @@ public class FastQCStep extends AbstractStep {
     final InputPortsBuilder builder = new InputPortsBuilder();
 
     if (this.inputFormat == DataFormats.READS_FASTQ) {
-      builder.addPort("input", DataFormats.READS_FASTQ);
+      builder.addPort(DEFAULT_SINGLE_INPUT_PORT_NAME, DataFormats.READS_FASTQ);
     } else {
-      builder.addPort("input", DataFormats.MAPPER_RESULTS_SAM);
+      builder.addPort(DEFAULT_SINGLE_INPUT_PORT_NAME,
+          DataFormats.MAPPER_RESULTS_SAM);
     }
 
     return builder.create();
@@ -223,7 +225,13 @@ public class FastQCStep extends AbstractStep {
         context.getOutputData(DataFormats.FASTQC_REPORT_HTML, inData);
 
     // Extract data file
-    final DataFile inFile = inData.getDataFile(0);
+    final DataFile inFile;
+    if (inData.getFormat().getMaxFilesCount() > 1) {
+      inFile = inData.getDataFile(0);
+    } else {
+      inFile = inData.getDataFile();
+    }
+
     final DataFile reportFile = outData.getDataFile();
 
     SequenceFile seqFile = null;
