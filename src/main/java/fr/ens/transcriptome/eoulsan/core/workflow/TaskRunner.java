@@ -225,6 +225,9 @@ public class TaskRunner {
 
     };
 
+    // Set the progress of the task to 0%
+    this.status.setProgress(0);
+
     // Start the time watch
     this.status.durationStart();
 
