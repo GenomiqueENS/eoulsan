@@ -239,7 +239,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
           putString(
               x,
               y,
-              format("%3.0f%%    (%d/%d task%s)", progress * 100,
+              format("%3.0f%%    (%d/%d task%s done)", progress * 100,
                   terminatedTasks, submittedTasks, plural));
       break;
 
