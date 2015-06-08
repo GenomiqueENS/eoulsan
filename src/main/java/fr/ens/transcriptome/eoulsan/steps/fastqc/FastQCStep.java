@@ -263,8 +263,7 @@ public class FastQCStep extends AbstractStep {
 
       // Set the description of the context
       status.setDescription("Create FastQC report on "
-          + inData.getDataFile(0).toFile().getAbsolutePath() + " in "
-          + reportFile.getName() + ")");
+          + inFile + " in " + reportFile.getName() + ")");
 
       // Keep module data is now unnecessary
       modules.clear();
