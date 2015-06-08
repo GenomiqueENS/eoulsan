@@ -45,13 +45,13 @@ import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngineException;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.Experiment;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
@@ -146,23 +146,18 @@ public class Normalization {
       getLogger().info(
           "Rserve server name : " + this.rConnection.getServerName());
 
-      // create an experiment map
-      Map<String, List<Sample>> experiments = experimentsSpliter();
-
       // create an iterator on the map values
-      for (List<Sample> experimentSampleList : experiments.values()) {
+      for (Experiment experiment : design.getExperiments()) {
 
-        getLogger().info(
-            "Experiment : "
-                + experimentSampleList.get(0).getMetadata().getExperiment());
+        getLogger().info("Experiment : " + experiment.getName());
 
-        putExpressionFiles(experimentSampleList, data);
+        putExpressionFiles(experiment.getSamples(), data);
 
-        String rScript = generateScript(experimentSampleList, context);
+        String rScript = generateScript(experiment, context);
         runRnwScript(rScript, true);
 
         if (!context.getSettings().isKeepRServeFiles()) {
-          removeExpressionFiles(experimentSampleList);
+          removeExpressionFiles(experiment.getSamples());
         }
 
         if (!context.getSettings().isSaveRscripts()) {
@@ -208,19 +203,14 @@ public class Normalization {
 
     try {
 
-      // create an experiment map
-      Map<String, List<Sample>> experiments = experimentsSpliter();
-
       // create an iterator on the map values
-      for (List<Sample> experimentSampleList : experiments.values()) {
+      for (Experiment experiment : this.design.getExperiments()) {
 
-        getLogger().info(
-            "Experiment : "
-                + experimentSampleList.get(0).getMetadata().getExperiment());
+        getLogger().info("Experiment : " + experiment.getName());
 
-        createLinkExpressionFiles(experimentSampleList, data);
+        createLinkExpressionFiles(experiment.getSamples(), data);
 
-        String rScript = generateScript(experimentSampleList, context);
+        String rScript = generateScript(experiment, context);
         runRnwScript(rScript, false);
 
         // Remove R script if keep.rscript parameter is false
@@ -239,24 +229,24 @@ public class Normalization {
    * Split design into multiple experiments Samples list.
    * @return experiementMap a map of experiments
    */
-  protected Map<String, List<Sample>> experimentsSpliter() {
-
-    List<Sample> samples = this.design.getSamples();
-    // Create design HashMap
-    Map<String, List<Sample>> experimentMap = new HashMap<>();
-
-    for (Sample s : samples) {
-      String expName = s.getMetadata().getExperiment();
-
-      if (experimentMap.containsKey(expName)) {
-        experimentMap.get(expName).add(s);
-      } else {
-        experimentMap.put(expName, Lists.newArrayList(s));
-      }
-    }
-
-    return experimentMap;
-  }
+  // protected Map<String, List<Sample>> experimentsSpliter() {
+  //
+  // List<Sample> samples = this.design.getSamples();
+  // // Create design HashMap
+  // Map<String, List<Sample>> experimentMap = new HashMap<>();
+  //
+  // for (Sample s : samples) {
+  // String expName = s.getMetadata().getExperiment();
+  //
+  // if (experimentMap.containsKey(expName)) {
+  // experimentMap.get(expName).add(s);
+  // } else {
+  // experimentMap.put(expName, Lists.newArrayList(s));
+  // }
+  // }
+  //
+  // return experimentMap;
+  // }
 
   /**
    * Execute the analysis.
@@ -328,11 +318,11 @@ public class Normalization {
 
   /**
    * Generate the R script.
-   * @param experimentSamplesList list of sample experiments
+   * @param samples list of sample experiments
    * @return String rScript R script to execute
    * @throws EoulsanException if an error occurs while generate the R script
    */
-  protected String generateScript(final List<Sample> experimentSamplesList,
+  protected String generateScript(final Experiment experiment,
       final StepContext context) throws EoulsanException {
 
     final Map<String, List<Integer>> conditionsMap = new HashMap<>();
@@ -344,9 +334,9 @@ public class Normalization {
     int i = 0;
 
     // Get samples ids, conditions names/indexes and repTechGoups
-    for (Sample s : experimentSamplesList) {
+    for (Sample s : experiment.getSamples()) {
 
-      if (!s.getMetadata().isConditionField()) {
+      if (!s.getMetadata().containsCondition()) {
         throw new EoulsanException("No condition field found in design file.");
       }
 
@@ -372,7 +362,7 @@ public class Normalization {
       }
       index.add(i);
 
-      rSampleIds.add(s.getId());
+      rSampleIds.add(s.getNumber());
       rSampleNames.add(s.getName());
       rCondNames.add(condition);
 
@@ -382,12 +372,9 @@ public class Normalization {
     checkRepTechGroupCoherence(rRepTechGroup, rCondNames);
 
     // Create Rnw script stringbuilder with preamble
-    String pdfTitle =
-        escapeUnderScore(experimentSamplesList.get(0).getMetadata()
-            .getExperiment())
-            + " normalisation";
+    String pdfTitle = escapeUnderScore(experiment.getName()) + " normalisation";
     final StringBuilder sb =
-        generateRnwpreamble(experimentSamplesList, pdfTitle);
+        generateRnwpreamble(experiment.getSamples(), pdfTitle);
 
     /*
      * Replace "na" values of repTechGroup by unique sample ids to avoid pooling
@@ -416,9 +403,7 @@ public class Normalization {
     sb.append("# outPath path of the outputs\n");
     sb.append("outPath <- \"./\"\n");
     sb.append("projectName <- ");
-    sb.append("\""
-        + experimentSamplesList.get(0).getMetadata().getExperiment() + "\""
-        + "\n");
+    sb.append("\"" + experiment.getName() + "\"" + "\n");
     sb.append("@\n\n");
 
     // Add target creation
@@ -428,7 +413,7 @@ public class Normalization {
     sb.append("\t\\subsection{Normalization}\n\n");
     sb.append("\\begin{itemize}\n\n");
 
-    if (experimentSamplesList.size() > 2) {
+    if (experiment.getSamples().size() > 2) {
       sb.append(readStaticScript(CLUSTERING_PCA_RAW));
     }
 
@@ -451,10 +436,7 @@ public class Normalization {
 
     String rScript = null;
     try {
-      rScript =
-          "normalization_"
-              + experimentSamplesList.get(0).getMetadata().getExperiment()
-              + ".Rnw";
+      rScript = "normalization_" + experiment.getName() + ".Rnw";
       if (context.getSettings().isRServeServerEnabled()) {
         getLogger().info("Write script on Rserve: " + rScript);
         this.rConnection.writeStringAsFile(rScript, sb.toString());
@@ -749,7 +731,7 @@ public class Normalization {
 
     for (Data d : data.getListElements()) {
 
-      final int sampleId = d.getMetadata().getSampleId();
+      final int sampleId = d.getMetadata().getSampleNumber();
       final File inputFile = d.getDataFile().toFile();
       final String outputFilename =
           this.expressionFilesPrefix + sampleId + this.expressionFilesSuffix;
@@ -784,7 +766,7 @@ public class Normalization {
 
     for (Data d : data.getListElements()) {
 
-      final int sampleId = d.getMetadata().getSampleId();
+      final int sampleId = d.getMetadata().getSampleNumber();
       final File inputFile = d.getDataFile().toFile();
       final String linkFilename =
           this.expressionFilesPrefix + sampleId + this.expressionFilesSuffix;
@@ -813,7 +795,7 @@ public class Normalization {
     int i;
 
     for (Sample s : experiment) {
-      i = s.getId();
+      i = s.getNumber();
 
       // Remove file from rserve server
       this.rConnection.removeFile(this.expressionFilesDirectory

@@ -31,11 +31,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 
 /**
@@ -62,40 +60,40 @@ public class SimpleDesignWriter extends DesignWriter {
           new BufferedWriter(new OutputStreamWriter(getOutputStream(),
               Globals.DEFAULT_CHARSET));
 
-      List<String> metadataFields = design.getMetadataFieldsNames();
-
-      // Write header
-      this.bw.append(Design.SAMPLE_NUMBER_FIELD);
-      this.bw.append(SEPARATOR);
-
-      this.bw.append(Design.NAME_FIELD);
-
-      for (String f : metadataFields) {
-
-        this.bw.append(SEPARATOR);
-        this.bw.append(f);
-      }
-
-      this.bw.append(NEWLINE);
-
-      // Write data
-      List<Sample> samples = design.getSamples();
-
-      for (Sample s : samples) {
-
-        this.bw.append(Integer.toString(s.getId()));
-        this.bw.append(SEPARATOR);
-
-        this.bw.append(s.getName());
-
-        for (String f : metadataFields) {
-
-          this.bw.append(SEPARATOR);
-          this.bw.append(s.getMetadata().getField(f));
-        }
-
-        this.bw.append(NEWLINE);
-      }
+      // List<String> metadataFields = design.getMetadataFieldsNames();
+      //
+      // // Write header
+      // this.bw.append(Design.SAMPLE_NUMBER_FIELD);
+      // this.bw.append(SEPARATOR);
+      //
+      // this.bw.append(Design.NAME_FIELD);
+      //
+      // for (String f : metadataFields) {
+      //
+      // this.bw.append(SEPARATOR);
+      // this.bw.append(f);
+      // }
+      //
+      // this.bw.append(NEWLINE);
+      //
+      // // Write data
+      // List<Sample> samples = design.getSamples();
+      //
+      // for (Sample s : samples) {
+      //
+      // this.bw.append(Integer.toString(s.getId()));
+      // this.bw.append(SEPARATOR);
+      //
+      // this.bw.append(s.getName());
+      //
+      // for (String f : metadataFields) {
+      //
+      // this.bw.append(SEPARATOR);
+      // this.bw.append(s.getMetadata().getField(f));
+      // }
+      //
+      // this.bw.append(NEWLINE);
+      // }
 
       this.bw.close();
     } catch (IOException e) {

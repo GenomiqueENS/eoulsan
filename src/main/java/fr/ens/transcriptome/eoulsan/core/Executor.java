@@ -70,13 +70,14 @@ public class Executor {
     }
 
     // Check samples count
-    if (this.design.getSampleCount() == 0) {
+    if (this.design.getSamples().isEmpty()) {
       throw new EoulsanException(
           "Nothing to do, no samples found in design file");
     }
 
     getLogger().info(
-        "Found " + this.design.getSampleCount() + " sample(s) in design file");
+        "Found "
+            + this.design.getSamples().size() + " sample(s) in design file");
   }
 
   //

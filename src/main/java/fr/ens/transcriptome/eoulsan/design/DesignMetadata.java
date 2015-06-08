@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.design2;
+package fr.ens.transcriptome.eoulsan.design;
 
 import java.io.Serializable;
 
@@ -36,12 +36,12 @@ public class DesignMetadata extends AbstractMetadata implements Serializable {
 
   /** Serialization version UID. */
   private static final long serialVersionUID = -2481571646937449716L;
-  
+
   // constants
   public static final String GENOME_FILE_KEY = "GenomeFile";
   public static final String GFF_FILE_KEY = "GffFile";
   public static final String ADDITIONNAL_ANNOTATION_FILE_KEY =
-      "additionnalAnnotationFile";
+      "AdditionnalAnnotationFile";
 
   //
   // Getters

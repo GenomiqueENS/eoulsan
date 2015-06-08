@@ -24,9 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.design;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -53,46 +57,160 @@ public final class DesignUtils {
    */
   public static void showDesign(final Design design) {
 
-    List<String> metadataFields = design.getMetadataFieldsNames();
+    checkNotNull(design, "design argument cannot be null");
 
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
 
-    // Write header
-    sb.append(Design.SAMPLE_NUMBER_FIELD);
-    sb.append("\t");
-    sb.append(Design.NAME_FIELD);
-    sb.append("\t");
+    sb.append("Design: ");
+    sb.append(design.getName());
+    sb.append(" (");
+    sb.append(design.getNumber());
+    sb.append(")\n");
 
-    for (String f : metadataFields) {
+    sb.append("Design metadata:\n");
+    for (Map.Entry<String, String> e : design.getMetadata().entrySet()) {
+      sb.append('\t');
+      sb.append(e.getKey());
+      sb.append('=');
+      sb.append(e.getValue());
+      sb.append('\n');
+    }
 
-      sb.append("\t");
-      sb.append(f);
+    sb.append("SampleId");
+    sb.append('\t');
+    sb.append("SampleNumber");
+    sb.append('\t');
+    sb.append("SampleName");
+
+    final List<String> sampleMDKeys = getAllSamplesMetadataKeys(design);
+    for (String key : sampleMDKeys) {
+
+      sb.append('\t');
+      sb.append(key);
+    }
+
+    for (Experiment experiment : design.getExperiments()) {
+
+      final String prefix = "Exp." + experiment.getId();
+
+      sb.append('\t');
+      sb.append(prefix);
+
+      final List<String> experimentMDKeys =
+          getExperimentAllMetadataKeys(experiment);
+      for (String key : experimentMDKeys) {
+
+        sb.append('\t');
+        sb.append(prefix);
+        sb.append(key);
+      }
+    }
+
+    sb.append('\n');
+
+    for (Sample sample : design.getSamples()) {
+
+      sb.append(sample.getId());
+      sb.append('\t');
+      sb.append(sample.getNumber());
+      sb.append('\t');
+      sb.append(sample.getName());
+
+      final SampleMetadata smd = sample.getMetadata();
+
+      for (String key : sampleMDKeys) {
+
+        sb.append('\t');
+
+        if (smd.contains(key)) {
+          sb.append(smd.get(key));
+        }
+      }
+
+      for (Experiment experiment : design.getExperiments()) {
+
+        sb.append('\t');
+        sb.append(experiment.getName());
+        
+        final ExperimentMetadata emd = experiment.getMetadata();
+
+        for (String key : sampleMDKeys) {
+
+          sb.append('\t');
+
+          if (emd.contains(key)) {
+            sb.append(emd.get(key));
+          }
+        }
+
+      }
+      sb.append('\n');
     }
 
     System.out.println(sb.toString());
+  }
 
-    // Write data
-    List<Sample> slides = design.getSamples();
+  public static void main(String[] args) throws EoulsanIOException {
 
-    for (Sample s : slides) {
+    File f = new File("/home/jourdren/tmp/test-small/design.txt");
 
-      sb.setLength(0);
+    Design design = new SimpleDesignReader(f).read();
+    showDesign(design);
+  }
 
-      sb.append(s.getId());
-      sb.append("\t");
+  /**
+   * Get all the sample metadata keys of the samples of a design.
+   * @param design the design
+   * @return a list with the sample metadata keys of the samples of a design
+   */
+  public static List<String> getAllSamplesMetadataKeys(final Design design) {
 
-      sb.append(s.getName());
-      sb.append("\t");
+    checkNotNull(design, "design argument cannot be null");
 
-      for (String f : metadataFields) {
+    final List<String> result = new ArrayList<>();
+    final Set<String> keys = new HashSet<>();
 
-        sb.append("\t");
-        sb.append(s.getMetadata().getField(f));
+    for (Sample sample : design.getSamples()) {
+      for (String key : sample.getMetadata().keySet()) {
+
+        if (keys.contains(key)) {
+          continue;
+        }
+
+        keys.add(key);
+        result.add(key);
       }
-
-      System.out.println(sb.toString());
     }
 
+    return Collections.unmodifiableList(result);
+  }
+
+  /**
+   * Get all the experiment metadata keys of the samples of a design.
+   * @param design the design
+   * @return a list with the experiment metadata keys of the samples of a design
+   */
+  public static List<String> getExperimentAllMetadataKeys(
+      final Experiment experiment) {
+
+    checkNotNull(experiment, "design argument cannot be null");
+
+    final List<String> result = new ArrayList<>();
+    final Set<String> keys = new HashSet<>();
+
+    for (ExperimentSample sample : experiment.getExperimentSamples()) {
+      for (String key : sample.getMetadata().keySet()) {
+
+        if (keys.contains(key)) {
+          continue;
+        }
+
+        keys.add(key);
+        result.add(key);
+      }
+    }
+
+    return Collections.unmodifiableList(result);
   }
 
   //
@@ -161,26 +279,7 @@ public final class DesignUtils {
    */
   public static boolean checkGenomes(final Design design) {
 
-    if (!design.isMetadataField(SampleMetadata.GENOME_FIELD)) {
-      return true;
-    }
-
-    final Set<String> genomes = new HashSet<>();
-
-    for (Sample s : design.getSamples()) {
-
-      String genome = s.getMetadata().getGenome();
-
-      if (genomes.size() == 1 && !genomes.contains(genome)) {
-        return false;
-      }
-
-      if (genomes.size() == 0) {
-        genomes.add(genome);
-      }
-    }
-
-    return true;
+    return design.getMetadata().containsGenomeFile();
   }
 
   /**
@@ -190,26 +289,7 @@ public final class DesignUtils {
    */
   public static boolean checkAnnotations(final Design design) {
 
-    if (!design.isMetadataField(SampleMetadata.GENOME_FIELD)) {
-      return true;
-    }
-
-    final Set<String> annotations = new HashSet<>();
-
-    for (Sample s : design.getSamples()) {
-
-      String annotation = s.getMetadata().getAnnotation();
-
-      if (annotations.size() == 1 && !annotations.contains(annotation)) {
-        return false;
-      }
-
-      if (annotations.size() == 0) {
-        annotations.add(annotation);
-      }
-    }
-
-    return true;
+    return design.getMetadata().containsGffFile();
   }
 
   /**
@@ -251,23 +331,63 @@ public final class DesignUtils {
       return;
     }
 
-    removeFieldIfExists(design, SampleMetadata.COMMENT_FIELD);
-    removeFieldIfExists(design, SampleMetadata.DATE_FIELD);
-    removeFieldIfExists(design, SampleMetadata.OPERATOR_FIELD);
+    removeSampleMedataIfExists(design, SampleMetadata.COMMENT_KEY);
+    removeSampleMedataIfExists(design, SampleMetadata.DATE_KEY);
+    removeSampleMedataIfExists(design, SampleMetadata.OPERATOR_KEY);
 
     if (removeReplicateInformation) {
-      removeFieldIfExists(design, SampleMetadata.EXPERIMENT_FIELD);
-      removeFieldIfExists(design, SampleMetadata.CONDITION_FIELD);
-      removeFieldIfExists(design, SampleMetadata.REP_TECH_GROUP_FIELD);
-      removeFieldIfExists(design, SampleMetadata.REFERENCE_FIELD);
+      removeExperimentSampleMedataIfExists(design,
+          ExperimentSampleMetadata.CONDITION_KEY);
+      removeExperimentSampleMedataIfExists(design,
+          ExperimentSampleMetadata.REP_TECH_GROUP_KEY);
+      removeExperimentSampleMedataIfExists(design,
+          ExperimentSampleMetadata.REFERENCE_KEY);
     }
 
-    final Map<String, Integer> mapExperiment = new HashMap<>();
+    final Map<Experiment, Integer> mapExperiment = new HashMap<>();
     final Map<String, Integer> mapCondition = new HashMap<>();
     final Map<String, Integer> mapRepTechGroup = new HashMap<>();
     int countExperiment = 0;
     int countCondition = 0;
     int countRepTechGroup = 0;
+
+    for (Experiment exp : design.getExperiments()) {
+
+      if (!mapExperiment.containsKey(exp)) {
+        mapExperiment.put(exp, ++countExperiment);
+      }
+
+      exp.setName("e" + mapExperiment.get(exp));
+
+      for (ExperimentSample es : exp.getExperimentSamples()) {
+
+        ExperimentSampleMetadata esmd = es.getMetadata();
+
+        // Obfuscate Condition field
+        if (esmd.containsCondition()) {
+          final String condition = esmd.getCondition();
+
+          if (!mapCondition.containsKey(condition)) {
+            mapCondition.put(condition, ++countCondition);
+          }
+
+          esmd.setCondition("c" + mapCondition.get(condition));
+        }
+
+        // Obfuscate RepTechGroup field
+        if (esmd.containsRepTechGroup()) {
+          final String rtg = esmd.getRepTechGroup();
+
+          if (!mapRepTechGroup.containsKey(rtg)) {
+            mapRepTechGroup.put(rtg, ++countRepTechGroup);
+          }
+
+          esmd.setRepTechGroup("g" + mapRepTechGroup.get(rtg));
+        }
+
+      }
+
+    }
 
     for (Sample s : design.getSamples()) {
 
@@ -275,54 +395,46 @@ public final class DesignUtils {
       if (!newSampleName.equals(s.getName())) {
         s.setName(newSampleName);
       }
-
-      // Obfuscate Experiment field
-      if (design.isMetadataField(SampleMetadata.EXPERIMENT_FIELD)) {
-        final String exp = s.getMetadata().getExperiment();
-
-        if (!mapExperiment.containsKey(exp)) {
-          mapExperiment.put(exp, ++countExperiment);
-        }
-
-        s.getMetadata().setExperiment("e" + mapExperiment.get(exp));
-      }
-
-      // Obfuscate Condition field
-      if (design.isMetadataField(SampleMetadata.CONDITION_FIELD)) {
-        final String condition = s.getMetadata().getCondition();
-
-        if (!mapCondition.containsKey(condition)) {
-          mapCondition.put(condition, ++countCondition);
-        }
-
-        s.getMetadata().setCondition("c" + mapCondition.get(condition));
-      }
-
-      // Obfuscate RepTechGroup field
-      if (design.isMetadataField(SampleMetadata.REP_TECH_GROUP_FIELD)) {
-        final String rtg = s.getMetadata().getRepTechGroup();
-
-        if (!mapRepTechGroup.containsKey(rtg)) {
-          mapRepTechGroup.put(rtg, ++countRepTechGroup);
-        }
-
-        s.getMetadata().setRepTechGroup("g" + mapRepTechGroup.get(rtg));
-      }
-
     }
+
   }
 
-  private static final void removeFieldIfExists(final Design design,
+  private static final void removeSampleMedataIfExists(final Design design,
       final String fieldName) {
 
     if (design == null || fieldName == null) {
       return;
     }
 
-    if (design.isMetadataField(fieldName)) {
-      design.removeMetadataField(fieldName);
+    for (Sample sample : design.getSamples()) {
+
+      SampleMetadata smd = sample.getMetadata();
+
+      if (smd.contains(fieldName)) {
+        smd.remove(fieldName);
+      }
     }
 
+  }
+
+  private static final void removeExperimentSampleMedataIfExists(
+      final Design design, final String fieldName) {
+
+    if (design == null || fieldName == null) {
+      return;
+    }
+
+    for (Experiment experiment : design.getExperiments()) {
+
+      for (ExperimentSample expSample : experiment.getExperimentSamples()) {
+
+        ExperimentSampleMetadata esmd = expSample.getMetadata();
+
+        if (esmd.contains(fieldName)) {
+          esmd.remove(fieldName);
+        }
+      }
+    }
   }
 
   /**
@@ -342,53 +454,80 @@ public final class DesignUtils {
 
     final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
-    final List<String> fieldsToModify = new ArrayList<>();
+    //
+    // Design metadata
+    //
 
-    for (String field : design.getMetadataFieldsNames()) {
-      if (registry.getDataFormatForDesignField(field) != null) {
-        fieldsToModify.add(field);
+    final List<String> designKeysToModify = new ArrayList<>();
+
+    for (String field : design.getMetadata().keySet()) {
+      if (registry.getDataFormatForDesignMetadata(field) != null) {
+        designKeysToModify.add(field);
+      }
+    }
+
+    final DesignMetadata dmd = design.getMetadata();
+    for (final String field : designKeysToModify) {
+      dmd.set(field,
+          replaceLocalPathBySymlinks(dmd.getAsList(field), symlinksDir));
+    }
+
+    //
+    // Sample metadata
+    //
+
+    final List<String> sampleKeysToModify = new ArrayList<>();
+
+    for (String field : design.getMetadata().keySet()) {
+      if (registry.getDataFormatForSampleMetadata(field) != null) {
+        sampleKeysToModify.add(field);
       }
     }
 
     for (final Sample s : design.getSamples()) {
-      for (final String field : fieldsToModify) {
 
-        final List<String> values =
-            new ArrayList<>(s.getMetadata().getFieldAsList(field));
-        for (int i = 0; i < values.size(); i++) {
+      final SampleMetadata smd = s.getMetadata();
+      for (final String field : sampleKeysToModify) {
 
-          final DataFile inFile = new DataFile(values.get(i));
+        smd.set(field,
+            replaceLocalPathBySymlinks(smd.getAsList(field), symlinksDir));
+      }
+    }
+  }
 
-          if (inFile.isLocalFile()) {
+  private static List<String> replaceLocalPathBySymlinks(List<String> values,
+      final DataFile symlinksDir) throws EoulsanIOException {
 
-            final DataFile outFile =
-                new DataFile(symlinksDir, inFile.getName());
+    final List<String> result = new ArrayList<>(values);
 
-            if (!inFile.exists()) {
-              throw new EoulsanIOException("File not exists: " + inFile);
-            }
+    for (int i = 0; i < values.size(); i++) {
 
-            if (outFile.exists()) {
-              throw new EoulsanIOException(
-                  "The symlink to create, already exists: " + outFile);
-            }
+      final DataFile inFile = new DataFile(values.get(i));
 
-            try {
-              inFile.symlink(outFile);
-            } catch (IOException e) {
-              throw new EoulsanIOException("Cannot create symlink: " + outFile,
-                  e);
-            }
+      if (inFile.isLocalFile()) {
 
-            values.set(i, inFile.getName());
-          }
+        final DataFile outFile = new DataFile(symlinksDir, inFile.getName());
 
+        if (!inFile.exists()) {
+          throw new EoulsanIOException("File not exists: " + inFile);
         }
-        s.getMetadata().setField(field, values);
 
+        if (outFile.exists()) {
+          throw new EoulsanIOException(
+              "The symlink to create, already exists: " + outFile);
+        }
+
+        try {
+          inFile.symlink(outFile);
+        } catch (IOException e) {
+          throw new EoulsanIOException("Cannot create symlink: " + outFile, e);
+        }
+
+        values.set(i, inFile.getName());
       }
     }
 
+    return result;
   }
 
 }

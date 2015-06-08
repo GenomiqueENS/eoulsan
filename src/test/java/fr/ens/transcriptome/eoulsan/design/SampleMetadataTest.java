@@ -22,15 +22,20 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.design2;
+package fr.ens.transcriptome.eoulsan.design;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Test;
+
+import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
+import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 
 public class SampleMetadataTest {
 
@@ -43,8 +48,8 @@ public class SampleMetadataTest {
     // test getReads
     assertNull(sm.getReads());
     // test setReads
-    sm.setReads("toto");
-    assertEquals(Arrays.asList(new String[] {"toto"}), sm.getReads());
+    sm.setReads(Collections.singletonList("toto"));
+    assertEquals(Arrays.asList(new String[] { "toto" }), sm.getReads());
     // test containsReads
     assertTrue(sm.containsReads());
 
@@ -107,8 +112,8 @@ public class SampleMetadataTest {
     // test getFastqFormat
     assertNull(sm.getFastqFormat());
     // test setFastqFormat
-    sm.setFastqFormat("toto");
-    assertEquals("toto", sm.getFastqFormat());
+    sm.setFastqFormat(FastqFormat.FASTQ_SOLEXA);
+    assertEquals(FastqFormat.FASTQ_SOLEXA, sm.getFastqFormat());
     // test containsFastqFormat
     assertTrue(sm.containsFastqFormat());
 

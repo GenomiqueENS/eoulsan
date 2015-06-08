@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.design2;
+package fr.ens.transcriptome.eoulsan.design;
 
 import static org.python.google.common.base.Preconditions.checkNotNull;
 
@@ -71,6 +71,31 @@ public abstract class AbstractMetadata {
     checkNotNull(value, "value argument cannot be null");
 
     this.md.put(key, value);
+  }
+
+  /**
+   * Set the value as a list according the key.
+   * @param key the key
+   * @param value the value as a list
+   */
+  public void set(final String key, final List<String> value) {
+
+    checkNotNull(key, "key argument cannot be null");
+    checkNotNull(value, "value argument cannot be null");
+
+    switch (value.size()) {
+
+    case 0:
+      set(key, "");
+      break;
+
+    case 1:
+      set(key, value.get(0));
+      break;
+
+    default:
+      set(key, StringUtils.serializeStringArray(value));
+    }
   }
 
   /**
@@ -125,5 +150,7 @@ public abstract class AbstractMetadata {
 
     this.md.remove(key.trim());
   }
+
+  // TODO Add object methods (hashCode(), toString(), equals())
 
 }

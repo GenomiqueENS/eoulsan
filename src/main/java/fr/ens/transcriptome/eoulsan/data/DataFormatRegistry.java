@@ -39,6 +39,7 @@ import java.util.Set;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.ServiceListLoader;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
@@ -56,7 +57,10 @@ public class DataFormatRegistry {
 
   private final Set<DataFormat> formats = new HashSet<>();
   private final Map<String, DataFormat> mapFormats = new HashMap<>();
-  private final Map<String, DataFormat> mapDesignDataFormat = new HashMap<>();
+  private final Map<String, DataFormat> mapDesignMetadataKeyDataFormat =
+      new HashMap<>();
+  private final Map<String, DataFormat> mapSampleMetadataKeyDataFormat =
+      new HashMap<>();
 
   private static DataFormatRegistry instance;
 
@@ -191,8 +195,15 @@ public class DataFormatRegistry {
       }
 
       // Register DataFormat for design fields is necessary
-      if (df.getDesignFieldName() != null) {
-        this.mapDesignDataFormat.put(df.getDesignFieldName(), df);
+      if (df.getSampleMetadataKeyName() != null) {
+        this.mapSampleMetadataKeyDataFormat.put(df.getSampleMetadataKeyName(),
+            df);
+      }
+
+      // Register DataFormat for design fields is necessary
+      if (df.getDesignMetadataKeyName() != null) {
+        this.mapDesignMetadataKeyDataFormat.put(df.getDesignMetadataKeyName(),
+            df);
       }
 
       this.formats.add(df);
@@ -393,17 +404,32 @@ public class DataFormatRegistry {
   }
 
   /**
-   * Get the DataFormat that define a field in the design file.
-   * @param fieldName the name of the field
+   * Get the DataFormat that define a metadata entry in the design file.
+   * @param key the name of the metadata key
    * @return a DataFormat
    */
-  public DataFormat getDataFormatForDesignField(final String fieldName) {
+  public DataFormat getDataFormatForDesignMetadata(final String key) {
 
-    if (fieldName == null) {
+    if (key == null) {
       return null;
     }
 
-    return this.mapDesignDataFormat.get(fieldName);
+    return this.mapDesignMetadataKeyDataFormat.get(key);
+  }
+
+  /**
+   * Get the DataFormat that define a metadata entry of a sample in the design
+   * file.
+   * @param key the name of the metadata key
+   * @return a DataFormat
+   */
+  public DataFormat getDataFormatForSampleMetadata(final String key) {
+
+    if (key == null) {
+      return null;
+    }
+
+    return this.mapSampleMetadataKeyDataFormat.get(key);
   }
 
   /**
@@ -412,17 +438,40 @@ public class DataFormatRegistry {
    * @param dataformat dataformat to search
    * @return the field name if found or null
    */
-  public String getDesignFieldnameForDataFormat(final Design design,
+  public String getDesignMetadataKeyForDataFormat(final Design design,
       final DataFormat dataformat) {
 
     if (design == null || dataformat == null) {
       return null;
     }
 
-    final List<String> fieldnames = design.getMetadataFieldsNames();
-    for (String fieldname : fieldnames) {
+    for (String fieldname : design.getMetadata().keySet()) {
 
-      final DataFormat df = getDataFormatForDesignField(fieldname);
+      final DataFormat df = getDataFormatForDesignMetadata(fieldname);
+      if (dataformat.equals(df)) {
+        return fieldname;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Get the field name in a Sample object that correspond to a dataformat.
+   * @param sample sample object
+   * @param dataformat dataformat to search
+   * @return the field name if found or null
+   */
+  public String getSampleMetadataKeyForDataFormat(final Sample sample,
+      final DataFormat dataformat) {
+
+    if (sample == null || dataformat == null) {
+      return null;
+    }
+
+    for (String fieldname : sample.getMetadata().keySet()) {
+
+      final DataFormat df = getDataFormatForSampleMetadata(fieldname);
       if (dataformat.equals(df)) {
         return fieldname;
       }

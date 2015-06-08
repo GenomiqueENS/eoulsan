@@ -24,375 +24,332 @@
 
 package fr.ens.transcriptome.eoulsan.design;
 
+import static org.python.google.common.base.Preconditions.checkNotNull;
+
+import java.io.Serializable;
 import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
 
 /**
- * This interface define the description of a slide.
- * @since 1.0
- * @author Laurent Jourdren
+ * This class defines the sample metadata.
+ * @author Xavier Bauquet
+ * @since 2.0
  */
-public interface SampleMetadata {
 
-  /** Description field. */
-  String DESCRIPTION_FIELD = "Description";
-  /** Reads field. */
-  String READS_FIELD = "Reads";
-  /** Genome field. */
-  String GENOME_FIELD = "Genome";
-  /** Annotation field. */
-  String ANNOTATION_FIELD = "Annotation";
-  /** Additional annotation field. */
-  String ADDITIONAL_ANNOTATION_FIELD = "AdditionalAnnotation";
-  /** Comment field. */
-  String COMMENT_FIELD = "Comment";
-  /** Date field. */
-  String DATE_FIELD = "Date";
-  /** Serial Number field. */
-  String SERIAL_NUMBER_FIELD = "SerialNumber";
-  /** Operator field. */
-  String OPERATOR_FIELD = "Operator";
-  /** Condition field. */
-  String CONDITION_FIELD = "Condition";
-  /** UUID field. */
-  String UUID_TYPE_FIELD = "UUID";
-  /** Fastq format field. */
-  String FASTQ_FORMAT_FIELD = "FastqFormat";
-  /** RepTechGroup field. */
-  String REP_TECH_GROUP_FIELD = "RepTechGroup";
-  /** Experiment name field */
-  String EXPERIMENT_FIELD = "Experiment";
-  /** Sample reference */
-  String REFERENCE_FIELD = "Reference";
+public class SampleMetadata extends AbstractMetadata implements Serializable {
+
+  /** Serialization version UID. */
+  private static final long serialVersionUID = -6298102513903455973L;
+
+  // constants
+  public static final String READS_KEY = "Reads";
+  public static final String DESCRIPTION_KEY = "Description";
+  public static final String OPERATOR_KEY = "Operator";
+  public static final String COMMENT_KEY = "Comment";
+  public static final String DATE_KEY = "Date";
+  public static final String SERIAL_NUMBER_KEY = "SerialNumber";
+  public static final String UUID_KEY = "UUID";
+  public static final String REP_TECH_GROUP_KEY = "RepTechGroup";
+  public static final String REFERENCE_KEY = "Reference";
+  public static final String FASTQ_FORMAT_KEY = "FastqFormat";
+  public static final String CONDITION_KEY = "Condition";
 
   //
   // Getters
   //
 
   /**
-   * Get a field value.
-   * @param field Field of the description to get
-   * @return a String with the value
+   * Get the reads as a list.
+   * @return the list of reads
    */
-  String getField(final String field);
+  public List<String> getReads() {
+    return getAsList(READS_KEY);
+  }
 
   /**
-   * Get a field value as a list.
-   * @param field Field of the description to get
-   * @return a list with the values
+   * Get the description.
+   * @return the description
    */
-  List<String> getFieldAsList(final String field);
+  public String getDescription() {
+    return get(DESCRIPTION_KEY);
+  }
 
   /**
-   * Get the fields of the descriptions.
-   * @return a list of strings with the descriptions fields
+   * Get the operator.
+   * @return the operator
    */
-  List<String> getFields();
+  public String getOperator() {
+    return get(OPERATOR_KEY);
+  }
 
   /**
-   * Get the description about the sample.
-   * @return Returns the comment
+   * Get the comment.
+   * @return the comment
    */
-  String getDescription();
+  public String getComment() {
+    return get(COMMENT_KEY);
+  }
 
   /**
-   * Get the comment about the sample.
-   * @return Returns the comment
+   * Get the date.
+   * @return the date
    */
-  String getComment();
+  public String getDate() {
+    return get(DATE_KEY);
+  }
 
   /**
-   * Get the reads file relative to the sample.
-   * @return Returns the reads file
+   * Get the serial number.
+   * @return the serial number
    */
-  List<String> getReads();
+  public String getSerialNumber() {
+    return get(SERIAL_NUMBER_KEY);
+  }
 
   /**
-   * Get the genome file relative to the sample.
-   * @return Returns the genome file
+   * Get the UUID.
+   * @return the UUID
    */
-  String getGenome();
+  public String getUUID() {
+    return get(UUID_KEY);
+  }
 
   /**
-   * Get the annotation relative to the sample.
-   * @return Returns the annotation
+   * Get the RepTechGroup.
+   * @return the RepTechGroup
    */
-  String getAnnotation();
+  public String getRepTechGroup() {
+    return get(REP_TECH_GROUP_KEY);
+  }
 
   /**
-   * Get the additional annotation relative to the sample.
-   * @return Returns the additional annotation
+   * Get the reference.
+   * @return the reference
    */
-  String getAdditionalAnnotation();
+  public boolean isReference() {
 
-  /**
-   * Get the date of the sample.
-   * @return Returns the date
-   */
-  String getDate();
+    String value = get(REFERENCE_KEY);
 
-  /**
-   * Get the name of the operator.
-   * @return Returns the operator
-   */
-  String getOperator();
+    if (value == null) {
+      return false;
+    }
 
-  /**
-   * Get the serial number of the sample.
-   * @return Returns the serialNumber
-   */
-  String getSerialNumber();
+    value = value.trim().toLowerCase();
 
-  /**
-   * Get the condition of the sample.
-   * @return Returns the condition
-   */
-  String getCondition();
-
-  /**
-   * Get UUID.
-   * @return Returns the UUID
-   */
-  String getUUID();
+    return "t".equals(value)
+        || "true".equals(value) || "y".equals(value) || "yes".equals(value);
+  }
 
   /**
    * Get the fastq format.
-   * @return the fastq format.
+   * @return the fastq format
    */
-  FastqFormat getFastqFormat();
+  public FastqFormat getFastqFormat() {
+
+    return FastqFormat.getFormatFromName(get(FASTQ_FORMAT_KEY));
+  }
 
   /**
-   * Get RepTechGroup
-   * @return The repTechGroup
+   * Get the condition.
+   * @return the condition
    */
-  String getRepTechGroup();
-
-  /**
-   * Test if the sample is the reference for the experiment.
-   * @return true if the sample is the reference
-   */
-  boolean isReference();
-
-  /**
-   * Get Reference
-   * @return the Reference
-   */
-  String getExperiment();
+  public String getCondition() {
+    return get(CONDITION_KEY);
+  }
 
   //
   // Setters
   //
 
   /**
-   * Set a field of the metadata.
-   * @param field Field to set
-   * @param value value to set
+   * Set the reads.
+   * @param newReads the new reads
    */
-  void setField(String field, String value);
-
-  /**
-   * Set a field of the metadata.
-   * @param field Field to set
-   * @param values values to set
-   */
-  void setField(String field, List<String> values);
+  public void setReads(List<String> reads) {
+    set(READS_KEY, reads);
+  }
 
   /**
    * Set the description.
-   * @param description The description to set
+   * @param newDescription the new description
    */
-  void setDescription(String description);
+  public void setDescription(String newDescription) {
+    set(DESCRIPTION_KEY, newDescription);
+  }
+
+  /**
+   * Set the operator.
+   * @param newOperator the new operator
+   */
+  public void setOperator(String newOperator) {
+    set(OPERATOR_KEY, newOperator);
+  }
 
   /**
    * Set the comment.
-   * @param comment The comment to set
+   * @param newComment the new comment
    */
-  void setComment(String comment);
+  public void setComment(String newComment) {
+    set(COMMENT_KEY, newComment);
+  }
 
   /**
-   * Set the reads file relative to the sample.
-   * @param reads file to set
+   * Set the date.
+   * @param newDate the new date
    */
-  void setReads(List<String> reads);
+  public void setDate(String newDate) {
+    set(DATE_KEY, newDate);
+  }
 
   /**
-   * Set the genome file relative to the sample.
-   * @param genome file to set
+   * Set the serial number.
+   * @param newSerialNumber the new serial number
    */
-  void setGenome(String genome);
+  public void setSerialNumber(String newSerialNumber) {
+    set(SERIAL_NUMBER_KEY, newSerialNumber);
+  }
 
   /**
-   * Set the project name
-   * @param experiment
+   * Set the UUID.
+   * @param newUUID the new UUID
    */
-  void setExperiment(String experiment);
+  public void setUUID(String newUUID) {
+    set(UUID_KEY, newUUID);
+  }
 
   /**
-   * Set the annotation file relative to the sample.
-   * @param annotation file to set
+   * Set the ReptechGroup.
+   * @param newReptechGroup the new ReptechGroup
    */
-  void setAnnotation(String annotation);
+  public void setRepTechGroup(String newReptechGroup) {
+    set(REP_TECH_GROUP_KEY, newReptechGroup);
+  }
 
   /**
-   * Set the additional annotation file relative to the sample.
-   * @param additionalAnnotation file to set
+   * Set the reference.
+   * @param newReference the new reference
    */
-  void setAdditionalAnnotation(String additionalAnnotation);
-
-  /**
-   * Set the hybridation date
-   * @param date The date to set
-   */
-  void setDate(String date);
-
-  /**
-   * Set the name of the operator.
-   * @param operator The operator to set
-   */
-  void setOperator(String operator);
-
-  /**
-   * Set the serial number of the sample.
-   * @param serialNumber The serialNumber to set
-   */
-  void setSerialNumber(String serialNumber);
-
-  /**
-   * Set the condition of the sample.
-   * @param condition The condition to set
-   */
-  void setCondition(String condition);
-
-  /**
-   * Set the UUID of the sample.
-   * @param uuid
-   */
-  void setUUID(final String uuid);
+  public void setReference(String newReference) {
+    set(REFERENCE_KEY, newReference);
+  }
 
   /**
    * Set the fastq format.
-   * @param fastqFormat the fastq format to set
+   * @param newfastqFormat the new fastq format
    */
-  void setFastqFormat(final FastqFormat fastqFormat);
+  public void setFastqFormat(FastqFormat newfastqFormat) {
+
+    checkNotNull(newfastqFormat, "FastqFormat is null");
+
+    set(FASTQ_FORMAT_KEY, newfastqFormat.getName());
+  }
 
   /**
-   * Set the repTechGroup.
-   * @param repTechGroup the technical replicate group to set
+   * Set the condition.
+   * @param newCondition the new condition
    */
-  void setRepTechGroup(final String repTechGroup);
-
-  /**
-   * Set if the sample is the reference of the experiment.
-   * @param reference true if the sample is a reference
-   */
-  void setReference(final boolean reference);
+  public void setCondition(String newCondition) {
+    set(CONDITION_KEY, newCondition);
+  }
 
   //
-  // Fields tests
+  // Contains
   //
-
-  /**
-   * Test if a field exists.
-   * @param field The field to test
-   * @return true if the field exists
-   */
-  boolean isField(final String field);
-
-  /**
-   * Test if the comment field exists.
-   * @return true if the field exists
-   */
-  boolean isCommentField();
 
   /**
    * Test if the reads field exists.
-   * @return true if the field exists
+   * @return true if the reads field exists
    */
-  boolean isReadsField();
-
-  /**
-   * Test if the genome field exists.
-   * @return true if the field exists
-   */
-  boolean isGenomeField();
-
-  /**
-   * Test id the experiment field exists
-   * @return true if the field exists
-   */
-  boolean isExperiment();
-
-  /**
-   * Test if the annotation field exists.
-   * @return true if the field exists
-   */
-  boolean isAnnotationField();
-
-  /**
-   * Test if the additional annotation field exists.
-   * @return true if the field exists
-   */
-  boolean isAdditionalAnnotationField();
+  public boolean containsReads() {
+    return contains(READS_KEY);
+  }
 
   /**
    * Test if the description field exists.
-   * @return true if the field exists
+   * @return true if the description field exists
    */
-  boolean isDescriptionField();
-
-  /**
-   * Test if the date field exists.
-   * @return true if the field exists
-   */
-  boolean isDateField();
+  public boolean containsDescription() {
+    return contains(DESCRIPTION_KEY);
+  }
 
   /**
    * Test if the operator field exists.
-   * @return true if the field exists
+   * @return true if the operator field exists
    */
-  boolean isOperatorField();
+  public boolean containsOperator() {
+    return contains(OPERATOR_KEY);
+  }
+
+  /**
+   * Test if the comment field exists.
+   * @return true if the comment field exists
+   */
+  public boolean containsComment() {
+    return contains(COMMENT_KEY);
+  }
+
+  /**
+   * Test if the date field exists.
+   * @return true if the date field exists
+   */
+  public boolean containsDate() {
+    return contains(DATE_KEY);
+  }
 
   /**
    * Test if the serial number field exists.
-   * @return true if the field exists
+   * @return true if the serial number field exists
    */
-  boolean isSerialNumberField();
-
-  /**
-   * Test if the condition field exists.
-   * @return true if the field exists
-   */
-  boolean isConditionField();
+  public boolean containsSerialNumber() {
+    return contains(SERIAL_NUMBER_KEY);
+  }
 
   /**
    * Test if the UUID field exists.
-   * @return true if the field exists
+   * @return true if the UUID field exists
    */
-  boolean isUUIDField();
+  public boolean containsUUID() {
+    return contains(UUID_KEY);
+  }
 
   /**
-   * Test if the FastqFormat field exists.
-   * @return true if the field exists
+   * Test if the RepTechGroup field exists.
+   * @return true if the RepTechGroup field exists
    */
-  boolean isFastqFormatField();
+  public boolean containsRepTechGroup() {
+    return contains(REP_TECH_GROUP_KEY);
+  }
 
   /**
-   * Test if the experiment field exists.
-   * @return true if the field exists
+   * Test if the reference field exists.
+   * @return true if the reference field exists
    */
-  boolean isExperimentField();
+  public boolean containsReference() {
+    return contains(REFERENCE_KEY);
+  }
 
   /**
-   * Test if the technical replicates group field exists.
-   * @return true if the field exists
+   * Test if the fastq format field exists.
+   * @return true if the fastq format field exists
    */
-  boolean isRepTechGroupField();
+  public boolean containsFastqFormat() {
+    return contains(FASTQ_FORMAT_KEY);
+  }
 
   /**
-   * Test if the Reference exists
-   * @return true if the reference exists
+   * Test if the condition field exists.
+   * @return true if the condition field exists
    */
-  boolean isReferenceField();
+  public boolean containsCondition() {
+    return contains(CONDITION_KEY);
+  }
+
+  //
+  // Constructor
+  //
+  public SampleMetadata() {
+
+  }
 
 }

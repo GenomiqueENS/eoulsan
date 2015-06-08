@@ -24,6 +24,11 @@
 
 package fr.ens.transcriptome.eoulsan.design.io;
 
+import static fr.ens.transcriptome.eoulsan.design.DesignMetadata.ADDITIONNAL_ANNOTATION_FILE_KEY;
+import static fr.ens.transcriptome.eoulsan.design.DesignMetadata.GENOME_FILE_KEY;
+import static fr.ens.transcriptome.eoulsan.design.DesignMetadata.GFF_FILE_KEY;
+import static java.util.Collections.unmodifiableMap;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,9 +42,9 @@ import java.util.List;
 import java.util.Map;
 
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignFactory;
+import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 
@@ -52,12 +57,40 @@ public class SimpleDesignReader extends InputStreamDesignReader {
 
   // For backward compatibility
   private static final String FILENAME_FIELD = "FileName";
+  private static final String SAMPLE_NUMBER_FIELD = "SampleNumber";
+  private static final String SAMPLE_NAME_FIELD = "Name";
+  private static final String READS_FIELD = "Reads";
+  private static final String EXPERIMENT_FIELD = "Experiment";
+
+  private Map<String, String> defineDesignMetadataFields() {
+
+    final Map<String, String> map = new HashMap<>();
+    map.put("Genome", GENOME_FILE_KEY);
+    map.put("Annotation", GFF_FILE_KEY);
+    map.put("AdditionalAnnotation", ADDITIONNAL_ANNOTATION_FILE_KEY);
+
+    return unmodifiableMap(map);
+  }
+
+  private Map<String, String> defineSampleMetadataFields() {
+
+    final Map<String, String> map = new HashMap<>();
+    map.put(READS_FIELD, SampleMetadata.READS_KEY);
+    map.put("FastqFormat", SampleMetadata.FASTQ_FORMAT_KEY);
+    map.put("Condition", SampleMetadata.CONDITION_KEY);
+    map.put("RepTechGroup", SampleMetadata.REP_TECH_GROUP_KEY);
+    map.put("Reference", SampleMetadata.REFERENCE_KEY);
+    map.put("UUID", SampleMetadata.UUID_KEY);
+    map.put("Operator", SampleMetadata.OPERATOR_KEY);
+
+    return unmodifiableMap(map);
+  }
 
   @Override
   public Design read() throws EoulsanIOException {
 
-    Map<String, List<String>> data = new HashMap<>();
-    List<String> fieldnames = new ArrayList<>();
+    final List<String> fieldnames = new ArrayList<>();
+    final Design design = DesignFactory.createEmptyDesign();
 
     try {
 
@@ -70,6 +103,15 @@ public class SimpleDesignReader extends InputStreamDesignReader {
 
       boolean firstLine = true;
       // String ref = null;
+
+      final Map<String, String> designMetadataFields =
+          defineDesignMetadataFields();
+      final Map<String, String> sampleMetadataFields =
+          defineSampleMetadataFields();
+
+      int idFieldIndex = -1;
+      int nameFieldIndex = -1;
+      int experimentFieldIndex = -1;
 
       while ((line = br.readLine()) != null) {
 
@@ -93,18 +135,45 @@ public class SimpleDesignReader extends InputStreamDesignReader {
 
             // Compatibility with old design files
             if (field.equals(FILENAME_FIELD)) {
-              field = SampleMetadata.READS_FIELD;
+              field = SampleMetadata.READS_KEY;
               fields[i] = field;
             }
 
-            if (data.containsKey(field)) {
+            if (fieldnames.contains(field)) {
               throw new EoulsanIOException("There is two or more field \""
                   + field + "\" in design file header.");
             }
 
-            data.put(field, new ArrayList<String>());
-
             fieldnames.add(field);
+
+            switch (field) {
+
+            case SAMPLE_NUMBER_FIELD:
+              idFieldIndex = i;
+              break;
+
+            case SAMPLE_NAME_FIELD:
+              nameFieldIndex = i;
+              break;
+
+            case EXPERIMENT_FIELD:
+              experimentFieldIndex = i;
+              break;
+
+            default:
+              break;
+            }
+
+          }
+
+          if (idFieldIndex != 0) {
+            throw new EoulsanIOException("Invalid file format: "
+                + "The \"SampleNumber\" field is not the first field.");
+          }
+
+          if (nameFieldIndex != 1) {
+            throw new EoulsanIOException("Invalid file format: "
+                + "The \"Name\" field is not the first field.");
           }
 
           firstLine = false;
@@ -116,22 +185,53 @@ public class SimpleDesignReader extends InputStreamDesignReader {
                 + fieldnames.size() + " are required in line: " + line);
           }
 
+          Sample sample = null;
+
           for (int i = 0; i < fields.length; i++) {
 
             final String value = fields[i].trim();
 
             final String fieldName = fieldnames.get(i);
 
-            List<String> l = data.get(fieldName);
+            if (i == idFieldIndex) {
 
-            if ((Design.SAMPLE_NUMBER_FIELD.equals(fieldName) || Design.NAME_FIELD
-                .equals(fieldName)) && l.contains(value)) {
-              throw new EoulsanIOException(
-                  "Invalid file format: "
-                      + "SlideNumber or Name fields can't contains duplicate values");
+              // Do nothing for the SampleNumber field
+              continue;
+            } else if (i == nameFieldIndex) {
+
+              // The Name filed
+              sample = design.addSample(value);
+            } else if (i == experimentFieldIndex) {
+
+              // The Experiment field
+              if (!design.containsExperiment(value)) {
+                design.addExperiment(value);
+              }
+              design.getExperiment(value).addSample(sample);
+            } else {
+
+              // Other fields
+
+              if (designMetadataFields.containsKey(fieldName)) {
+
+                final String mdKey = designMetadataFields.get(fieldName);
+
+                if (!design.getMetadata().contains(mdKey)) {
+                  design.getMetadata().set(mdKey, value);
+                }
+              } else {
+
+                String mdKey;
+
+                if (sampleMetadataFields.containsKey(fieldName)) {
+                  mdKey = sampleMetadataFields.get(fieldName);
+                } else {
+                  mdKey = fieldName;
+                }
+
+                sample.getMetadata().set(mdKey, value);
+              }
             }
-
-            l.add(value);
 
           }
 
@@ -151,71 +251,11 @@ public class SimpleDesignReader extends InputStreamDesignReader {
           + e.getMessage(), e);
     }
 
-    if (!data.containsKey(Design.SAMPLE_NUMBER_FIELD)) {
-      throw new EoulsanIOException("Invalid file format: No SampleNumber field");
-    }
-
-    if (!fieldnames.contains(SampleMetadata.READS_FIELD)) {
+    if (!fieldnames.contains(READS_FIELD)) {
       throw new EoulsanIOException("Invalid file format: No Reads field");
     }
 
-    Design design = DesignFactory.createEmptyDesign();
-
-    List<String> names = data.get(Design.NAME_FIELD);
-    List<String> ids = data.get(Design.SAMPLE_NUMBER_FIELD);
-
-    for (int i = 0; i < names.size(); i++) {
-
-      final String name = names.get(i);
-      design.addSample(name);
-      design.getSample(name).setId(Integer.parseInt(ids.get(i)));
-    }
-
-    for (String field : fieldnames) {
-
-      if (Design.SAMPLE_NUMBER_FIELD.equals(field)
-          || Design.NAME_FIELD.equals(field)) {
-        continue;
-      }
-
-      design.addMetadataField(field);
-      List<String> fieldValues = data.get(field);
-
-      int k = 0;
-      for (String value : fieldValues) {
-        design.setMetadata(names.get(k++), field, value);
-      }
-    }
-
     return design;
-  }
-
-  /**
-   * Identify the type of the DataFile from the source.
-   * @param baseDir baseDir of the source if this a file
-   * @param source source to identify
-   * @return a new DataFile object
-   * @throws IOException
-   */
-  public static DataFile createDataFile(final String baseDir,
-      final String source) throws IOException {
-
-    if (source == null) {
-      throw new IOException("The source is null.");
-    }
-
-    final DataFile df = new DataFile(source);
-    if (!df.getProtocol().getName().equals("file")) {
-      return df;
-    }
-
-    final String src = df.getSource();
-    if (src.startsWith("file:/") || src.startsWith("/")) {
-      return df;
-    }
-
-    return new DataFile(new File(baseDir, source).getPath());
-
   }
 
   //

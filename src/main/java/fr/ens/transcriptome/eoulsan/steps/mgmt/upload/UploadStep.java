@@ -313,8 +313,8 @@ public abstract class UploadStep extends AbstractStep {
     for (final Sample s : design.getSamples()) {
 
       if (first) {
-        for (String fieldName : s.getMetadata().getFields()) {
-          if (registry.getDataFormatForDesignField(fieldName) != null) {
+        for (String fieldName : s.getMetadata().keySet()) {
+          if (registry.getDataFormatForDesignMetadata(fieldName) != null) {
             fieldWithFiles.add(fieldName);
           }
         }
@@ -323,7 +323,7 @@ public abstract class UploadStep extends AbstractStep {
 
       for (final String field : fieldWithFiles) {
 
-        final List<String> oldValues = s.getMetadata().getFieldAsList(field);
+        final List<String> oldValues = s.getMetadata().getAsList(field);
         final List<String> newValues = new ArrayList<>();
 
         final int nValues = oldValues.size();
@@ -373,7 +373,7 @@ public abstract class UploadStep extends AbstractStep {
         }
 
         // Replace old paths with new path in design
-        s.getMetadata().setField(field, newValues);
+        s.getMetadata().set(field, newValues);
       }
 
     }

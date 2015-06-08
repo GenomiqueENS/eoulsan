@@ -238,10 +238,10 @@ public class TokenManager implements Runnable {
     for (Data e : data.getListElements()) {
 
       // Get the sample id from metadata
-      final int sampleId = e.getMetadata().getSampleId();
+      final int sampleNumber = e.getMetadata().getSampleNumber();
 
       // Do nothing if sample id is not set in metadata
-      if (sampleId == -1) {
+      if (sampleNumber == -1) {
         continue;
       }
 
@@ -259,7 +259,7 @@ public class TokenManager implements Runnable {
 
           // Parse the filename
           final FileNaming name = FileNaming.parse(f.getName());
-          name.setSampleId(sampleId);
+          name.setSampleNumber(sampleNumber);
 
           // Create link name
           final DataFile link =

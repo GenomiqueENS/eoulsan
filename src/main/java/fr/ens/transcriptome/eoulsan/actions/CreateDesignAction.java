@@ -168,7 +168,7 @@ public class CreateDesignAction extends AbstractAction {
       Common.errorExit(e, "Error: " + e.getMessage());
     }
 
-    if (design.getSampleCount() == 0) {
+    if (design.getSamples().isEmpty()) {
       Common
           .showErrorMessageAndExit("Error: Nothing to create, no file found.\n"
               + "  Use the -h option to get more information.\n" + "usage: "

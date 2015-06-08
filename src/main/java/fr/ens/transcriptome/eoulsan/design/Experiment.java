@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.design2;
+package fr.ens.transcriptome.eoulsan.design;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -33,6 +33,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.python.google.common.base.Objects;
+
+import fr.ens.transcriptome.eoulsan.core.workflow.FileNaming;
 
 /**
  * This class defines an experiment.
@@ -58,6 +60,15 @@ public class Experiment implements Serializable {
   //
   // Getters
   //
+
+  /**
+   * Get the design related to the experiment.
+   * @return the Design object related to the experiment
+   */
+  public Design getDesign() {
+
+    return this.design;
+  }
 
   /**
    * get the experiment id.
@@ -96,12 +107,44 @@ public class Experiment implements Serializable {
   }
 
   /**
+   * Get the samples of the experiment.
+   * @return a list of ExperimentSample object
+   */
+  public List<Sample> getSamples() {
+
+    final List<Sample> result = new ArrayList<>();
+
+    for (ExperimentSample es : getExperimentSamples()) {
+      result.add(es.getSample());
+    }
+
+    return Collections.unmodifiableList(result);
+  }
+
+  /**
    * Get experiment samples list.
    * @return a list of ExperimentSample object
    */
-  public List<ExperimentSample> getSamples() {
+  public List<ExperimentSample> getExperimentSamples() {
 
     return Collections.unmodifiableList(samples);
+  }
+
+  /**
+   * Get the experiment sample related to the sample.
+   * @param sample the sample
+   * @return an experiment sample object if exists or null
+   */
+  public ExperimentSample getExperimentSample(final Sample sample) {
+
+    for (ExperimentSample eSample : this.samples) {
+
+      if (eSample.getSample() == sample) {
+        return eSample;
+      }
+    }
+
+    return null;
   }
 
   //
@@ -171,6 +214,29 @@ public class Experiment implements Serializable {
   }
 
   //
+  // Contains
+  //
+
+  /**
+   * Test if the experiment contains a sample.
+   * @param sample the sample to test
+   * @return true if the sample is the experiment
+   */
+  public boolean containsSample(final Sample sample) {
+
+    checkNotNull(sample, "sample argument cannot be null");
+
+    for (ExperimentSample eSample : this.samples) {
+
+      if (eSample.getSample() == sample) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  //
   // Objects methods
   //
 
@@ -222,6 +288,9 @@ public class Experiment implements Serializable {
 
     checkNotNull(design, "design argument cannot be null");
     checkNotNull(experimentId, "sampleId argument cannot be null");
+    checkArgument(FileNaming.isDataNameValid(experimentId),
+        "The id of an experiment can only contains letters and digit: "
+            + experimentId);
 
     this.design = design;
     this.experimentId = experimentId.trim();

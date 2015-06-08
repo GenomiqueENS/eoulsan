@@ -22,8 +22,7 @@
  *
  */
 
-
-package fr.ens.transcriptome.eoulsan.design2;
+package fr.ens.transcriptome.eoulsan.design;
 
 import java.io.Serializable;
 
@@ -33,83 +32,95 @@ import java.io.Serializable;
  * @since 2.0
  */
 
-public class ExperimentSampleMetadata extends AbstractMetadata implements Serializable{
-  
+public class ExperimentSampleMetadata extends AbstractMetadata implements
+    Serializable {
+
   /** Serialization version UID. */
   private static final long serialVersionUID = 4079804296437126108L;
-  
+
   // constants
-  public static final String REPTECHGROUP_KEY = "RepTechGroup";
-  public static final String REFERENCE_KEY ="Reference";
+  public static final String REP_TECH_GROUP_KEY = "RepTechGroup";
+  public static final String REFERENCE_KEY = "Reference";
   public static final String CONDITION_KEY = "Condition";
-  
+
   //
   // Getters
   //
-  
+
   /**
    * Get the RepTechGroup.
    * @return the RepTechGroup
    */
-  public String getRepTechGroup(){
-    return get(REPTECHGROUP_KEY);
+  public String getRepTechGroup() {
+    return get(REP_TECH_GROUP_KEY);
   }
-  
+
   /**
    * Get the reference.
    * @return the reference
    */
-  public String getReference(){
-    return get(REFERENCE_KEY);
+  public boolean getReference() {
+
+    String value = get(REFERENCE_KEY);
+
+    if (value == null) {
+      return false;
+    }
+
+    value = value.trim().toLowerCase();
+
+    return "t".equals(value)
+        || "true".equals(value) || "y".equals(value) || "yes".equals(value);
   }
-  
+
   /**
    * Get the condition.
    * @return the condition
    */
-  public String getCondition(){
+  public String getCondition() {
     return get(CONDITION_KEY);
   }
+
   //
   // Setters
   //
-  
+
   /**
    * Set the ReptechGroup.
    * @param newReptechGroup the new ReptechGroup
    */
-  public void setRepTechGroup(String newReptechGroup){
-    set(REPTECHGROUP_KEY, newReptechGroup);
+  public void setRepTechGroup(String newReptechGroup) {
+    set(REP_TECH_GROUP_KEY, newReptechGroup);
   }
-  
+
   /**
    * Set the reference.
    * @param newReptechGroup the new reference
    */
-  public void setReference(String newReference){
-    set(REFERENCE_KEY, newReference);
+  public void setReference(boolean newReference) {
+    set(REFERENCE_KEY, "" + newReference);
   }
-  
+
   /**
    * Set the condition.
    * @param newCondition the new condition
    */
-  public void setCondition(String newCondition){
+  public void setCondition(String newCondition) {
     set(CONDITION_KEY, newCondition);
   }
-  
+
   //
   // Contains
   //
-  
+
   /**
    * Test if the RepTechGroup field exists.
    * @return true if the RepTechGroup field exists
    */
-  public boolean containsRepTechGroup(){
-    return contains(REPTECHGROUP_KEY);
+  public boolean containsRepTechGroup() {
+    return contains(REP_TECH_GROUP_KEY);
   }
-  
+
   /**
    * Test if the reference field exists.
    * @return true if the reference field exists
@@ -117,19 +128,19 @@ public class ExperimentSampleMetadata extends AbstractMetadata implements Serial
   public boolean containsReference() {
     return contains(REFERENCE_KEY);
   }
-  
+
   /**
    * Test if the condition field exists.
    * @return true if the condition field exists
    */
-  public boolean containsCondition(){
+  public boolean containsCondition() {
     return contains(CONDITION_KEY);
   }
-  
+
   //
   // Constructor
   //
-  
-  public ExperimentSampleMetadata(){
+
+  public ExperimentSampleMetadata() {
   }
 }

@@ -22,13 +22,20 @@
  *
  */
 
-package fr.ens.transcriptome.eoulsan.design2;
+package fr.ens.transcriptome.eoulsan.design;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
+
+import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.Experiment;
+import fr.ens.transcriptome.eoulsan.design.ExperimentSample;
+import fr.ens.transcriptome.eoulsan.design.ExperimentSampleMetadata;
+import fr.ens.transcriptome.eoulsan.design.Sample;
 
 public class ExperimentSampleMetadataTest {
 
@@ -41,7 +48,7 @@ public class ExperimentSampleMetadataTest {
 
     Experiment e = d.getExperiment("1");
     e.addSample(s1);
-    ExperimentSample es = e.getSamples().get(0);
+    ExperimentSample es = e.getExperimentSamples().get(0);
     ExperimentSampleMetadata esm = es.getMetadata();
 
     // test getRepTechGroup
@@ -61,10 +68,10 @@ public class ExperimentSampleMetadataTest {
     assertTrue(esm.containsCondition());
 
     // test getReference
-    assertNull(esm.getReference());
+    assertFalse(esm.getReference());
     // test setReference
-    esm.setReference("toto");
-    assertEquals("toto", esm.getReference());
+    esm.setReference(true);
+    assertTrue(esm.getReference());
     // test containsReference
     assertTrue(esm.containsReference());
   }

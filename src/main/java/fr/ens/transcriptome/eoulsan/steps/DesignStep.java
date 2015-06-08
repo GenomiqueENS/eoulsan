@@ -52,6 +52,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.DesignUtils;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.util.Version;
@@ -70,6 +71,8 @@ public class DesignStep extends AbstractStep {
   private final Design design;
   private final CheckerStep checkerStep;
   private OutputPorts outputPorts;
+  private Set<String> designPortNames = new HashSet<>();
+  private Set<String> samplePortNames = new HashSet<>();
 
   @Override
   public String getName() {
@@ -93,19 +96,37 @@ public class DesignStep extends AbstractStep {
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
 
-    final Set<String> fieldNames =
-        Sets.newHashSet(this.design.getMetadataFieldsNames());
+    // Get the metadata keys of the design and the samples
+    final Set<String> designMetadataKeys = this.design.getMetadata().keySet();
+    final Set<String> sampleMetadataKeys =
+        Sets.newHashSet(DesignUtils.getAllSamplesMetadataKeys(this.design));
+
     final OutputPortsBuilder builder = new OutputPortsBuilder();
 
     for (DataFormat format : DataFormatRegistry.getInstance().getAllFormats()) {
 
-      if (fieldNames.contains(format.getDesignFieldName())) {
+      // Search in Design metadata
+      if (designMetadataKeys.contains(format.getDesignMetadataKeyName())) {
 
-        final String fieldName = format.getDesignFieldName();
+        final String key = format.getDesignMetadataKeyName();
 
-        builder.addPort(fieldName, !format.isOneFilePerAnalysis(), format,
-            compressionTypeOfField(fieldName));
+        builder.addPort(key, !format.isOneFilePerAnalysis(), format,
+            compressionTypeOfDesignMetadata(key));
+
+        this.designPortNames.add(key);
       }
+
+      // Search in Sample metadata
+      if (sampleMetadataKeys.contains(format.getSampleMetadataKeyName())) {
+
+        final String key = format.getSampleMetadataKeyName();
+
+        builder.addPort(key, !format.isOneFilePerAnalysis(), format,
+            compressionTypeOfField(key));
+
+        this.samplePortNames.add(key);
+      }
+
     }
 
     // Create the output ports
@@ -125,7 +146,7 @@ public class DesignStep extends AbstractStep {
 
     for (Sample sample : this.design.getSamples()) {
 
-      final String fieldValue = sample.getMetadata().getField(fieldname);
+      final String fieldValue = sample.getMetadata().get(fieldname);
 
       if (fieldValue != null) {
 
@@ -141,18 +162,70 @@ public class DesignStep extends AbstractStep {
     return CompressionType.NONE;
   }
 
+  /**
+   * Get the compression of a metadata of the design.
+   * @param key the key of the metadata
+   * @return a compression type
+   */
+  private CompressionType compressionTypeOfDesignMetadata(final String key) {
+
+    final String value = this.design.getMetadata().get(key);
+
+    if (value != null) {
+
+      final DataFile file = new DataFile(value);
+      final CompressionType fileCompression = file.getCompressionType();
+
+      if (fileCompression != CompressionType.NONE) {
+        return fileCompression;
+      }
+    }
+
+    return CompressionType.NONE;
+  }
+
   @Override
   public StepResult execute(final StepContext context, final StepStatus status) {
 
     final Set<DataFile> files = new HashSet<>();
     final Set<String> dataNames = new HashSet<>();
 
+    for (String portName : this.designPortNames) {
+
+      final OutputPort port = getOutputPorts().getPort(portName);
+
+      // Create DataFile object(s)
+      List<DataFile> dataFiles = getDesignDatafilesPort(this.design, port);
+
+      // Check if file has not been already processed
+      DataFile f = dataFiles.get(0);
+      if (files.contains(f)) {
+        continue;
+      }
+      files.add(f);
+
+      // Get the data object
+      final Data data = context.getOutputData(port.getName(), port.getName());
+
+      // Set the DataFile(s) in the Data object
+      if (port.getFormat().getMaxFilesCount() == 1) {
+        // Mono file data
+        DataUtils.setDataFile(data, f);
+      } else {
+        // Multi-file data
+        DataUtils.setDataFiles(data, dataFiles);
+      }
+
+    }
+
     for (Sample sample : this.design.getSamples()) {
 
-      for (OutputPort port : getOutputPorts()) {
+      for (String portName : this.samplePortNames) {
+
+        final OutputPort port = getOutputPorts().getPort(portName);
 
         // Create DataFile object(s)
-        List<DataFile> dataFiles = getDesignDatafilesPort(sample, port);
+        List<DataFile> dataFiles = getSampleDatafilesPort(sample, port);
 
         // Check if file has not been already processed
         DataFile f = dataFiles.get(0);
@@ -210,7 +283,7 @@ public class DesignStep extends AbstractStep {
    * @param port the port
    * @return a list with the data files
    */
-  private List<DataFile> getDesignDatafilesPort(final Sample sample,
+  private List<DataFile> getSampleDatafilesPort(final Sample sample,
       final OutputPort port) {
 
     checkNotNull(sample, "sample argument cannot be null");
@@ -220,7 +293,7 @@ public class DesignStep extends AbstractStep {
 
     // Get the design field name for the port
     String fieldName = null;
-    for (String f : sample.getMetadata().getFields()) {
+    for (String f : sample.getMetadata().keySet()) {
       if (port.getName().equals(f.trim().toLowerCase())) {
         fieldName = f;
         break;
@@ -228,8 +301,40 @@ public class DesignStep extends AbstractStep {
     }
 
     // Get the values in the design for the sample
-    final List<String> fieldValues =
-        sample.getMetadata().getFieldAsList(fieldName);
+    final List<String> fieldValues = sample.getMetadata().getAsList(fieldName);
+
+    for (String value : fieldValues) {
+      result.add(new DataFile(value));
+    }
+
+    return result;
+  }
+
+  /**
+   * Create a list of data files from a sample and a port
+   * @param sample the sample
+   * @param port the port
+   * @return a list with the data files
+   */
+  private List<DataFile> getDesignDatafilesPort(final Design design,
+      final OutputPort port) {
+
+    checkNotNull(design, "design argument cannot be null");
+    checkNotNull(port, "port argument cannot be null");
+
+    final List<DataFile> result = new ArrayList<>();
+
+    // Get the design field name for the port
+    String fieldName = null;
+    for (String f : design.getMetadata().keySet()) {
+      if (port.getName().equals(f.trim().toLowerCase())) {
+        fieldName = f;
+        break;
+      }
+    }
+
+    // Get the values in the design for the sample
+    final List<String> fieldValues = design.getMetadata().getAsList(fieldName);
 
     for (String value : fieldValues) {
       result.add(new DataFile(value));

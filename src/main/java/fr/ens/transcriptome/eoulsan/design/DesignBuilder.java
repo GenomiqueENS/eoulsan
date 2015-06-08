@@ -187,7 +187,7 @@ public class DesignBuilder {
         }
       }
 
-      return new Object[] { prefix, pairMember };
+      return new Object[] {prefix, pairMember};
     }
 
     //
@@ -552,6 +552,8 @@ public class DesignBuilder {
   public Design getDesign(final boolean pairEndMode) throws EoulsanException {
 
     final Design result = DesignFactory.createEmptyDesign();
+    result.addExperiment("exp1");
+
     final FastqFormat defaultFastqFormat =
         EoulsanRuntime.getSettings().getDefaultFastqFormat();
 
@@ -640,7 +642,7 @@ public class DesignBuilder {
     // Set the description of the sample if exists
     if (desc != null) {
       smd.setDescription(desc);
-    } else if (design.isMetadataField(SampleMetadata.DESCRIPTION_FIELD)) {
+    } else if (s.getMetadata().containsDescription()) {
       smd.setDescription("no description");
     }
 
@@ -652,23 +654,24 @@ public class DesignBuilder {
     // Set the operator of the sample if exists
     if (operator != null) {
       smd.setOperator(operator);
-    } else if (design.isMetadataField(SampleMetadata.OPERATOR_FIELD)) {
+    } else if (s.getMetadata().containsOperator()) {
       smd.setOperator("unknown operator");
     }
 
     // Set the genome file if exists
     if (this.genomeFile != null) {
-      smd.setGenome(this.genomeFile.toString());
+      design.getMetadata().setGenomeFile(this.genomeFile.toString());
     }
 
     // Set the Annotation file
     if (this.gffFile != null) {
-      smd.setAnnotation(this.gffFile.toString());
+      design.getMetadata().setGffFile(this.gffFile.toString());
     }
 
     // Set additionnal annotation file
     if (this.additionalAnnotationFile != null) {
-      smd.setAdditionalAnnotation(this.additionalAnnotationFile.toString());
+      design.getMetadata().setAdditionnalAnnotationFile(
+          this.additionalAnnotationFile.toString());
     }
 
     // Identify Fastq format
@@ -684,10 +687,13 @@ public class DesignBuilder {
     }
 
     smd.setFastqFormat(format == null ? defaultFastqFormat : format);
-    smd.setExperiment("exp1");
-    smd.setCondition(condition);
-    smd.setRepTechGroup(condition);
-    smd.setReference(false);
+
+    Experiment exp = design.getExperiments().get(0);
+    ExperimentSample es = exp.addSample(s);
+
+    es.getMetadata().setCondition(condition);
+    es.getMetadata().setRepTechGroup(condition);
+    es.getMetadata().setReference(false);
     smd.setUUID(UUID.randomUUID().toString());
 
   }

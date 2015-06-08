@@ -3,7 +3,7 @@
   <description>gff annotation format</description>
   <prefix>gff</prefix>
   <onefileperanalysis>true</onefileperanalysis>
-  <designfieldname>Annotation</designfieldname>
+  <designmetadatakey>GffFile</designmetadatakey>
   <generator/>
   <checker>fr.ens.transcriptome.eoulsan.checkers.AnnotationChecker</checker>
   <extensions>

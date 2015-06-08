@@ -3,7 +3,7 @@
   <description>additional annotation format</description>
   <prefix>additionalannotation</prefix>
   <onefileperanalysis>true</onefileperanalysis>
-  <designfieldname>AdditionalAnnotation</designfieldname>
+  <designmetadatakey>AdditionnalAnnotationFile</designmetadatakey>
   <extensions>
   	<extension default="true">.tsv</extension>
   	<extension>.txt</extension>

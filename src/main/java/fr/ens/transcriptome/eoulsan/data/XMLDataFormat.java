@@ -70,7 +70,8 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   private String prefix;
   private boolean oneFilePerAnalysis;
   private boolean dataFormatFromDesignFile;
-  private String designFieldName;
+  private String designMetadataKeyName;
+  private String sampleMetadataKeyName;
   private String contentType = "text/plain";
   private final List<String> extensions = new ArrayList<>();
   private final List<String> galaxyToolExtensions = new ArrayList<>();
@@ -112,9 +113,15 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   }
 
   @Override
-  public String getDesignFieldName() {
+  public String getDesignMetadataKeyName() {
 
-    return this.designFieldName;
+    return this.designMetadataKeyName;
+  }
+
+  @Override
+  public String getSampleMetadataKeyName() {
+
+    return this.sampleMetadataKeyName;
   }
 
   @Override
@@ -273,15 +280,24 @@ public final class XMLDataFormat extends AbstractDataFormat implements
       this.prefix = XMLUtils.getTagValue(e, "prefix");
       this.oneFilePerAnalysis =
           Boolean.parseBoolean(XMLUtils.getTagValue(e, "onefileperanalysis"));
-      this.designFieldName = XMLUtils.getTagValue(e, "designfieldname");
+      this.designMetadataKeyName = XMLUtils.getTagValue(e, "designmetadatakey");
+      this.sampleMetadataKeyName = XMLUtils.getTagValue(e, "samplemetadatakey");
       this.contentType = XMLUtils.getTagValue(e, "content-type");
       this.generatorClassName = XMLUtils.getTagValue(e, "generator");
       this.checkerClassName = XMLUtils.getTagValue(e, "checker");
       this.splitterClassName = XMLUtils.getTagValue(e, "splitter");
       this.mergerClassName = XMLUtils.getTagValue(e, "merger");
 
-      if (this.designFieldName != null) {
+      if (this.designMetadataKeyName != null
+          || this.sampleMetadataKeyName != null) {
         this.dataFormatFromDesignFile = true;
+      }
+
+      if (this.designMetadataKeyName != null
+          && this.sampleMetadataKeyName != null) {
+        throw new EoulsanException(
+            "A DataFormat cannot be provided by a design "
+                + "metadata entry and a sample metadata entry.");
       }
 
       // Get the parameters of the generator step
@@ -420,7 +436,10 @@ public final class XMLDataFormat extends AbstractDataFormat implements
         && Objects.equals(this.oneFilePerAnalysis, that.oneFilePerAnalysis)
         && Objects.equals(this.dataFormatFromDesignFile,
             that.dataFormatFromDesignFile)
-        && Objects.equals(this.designFieldName, that.designFieldName)
+        && Objects.equals(this.designMetadataKeyName,
+            that.designMetadataKeyName)
+        && Objects.equals(this.sampleMetadataKeyName,
+            that.sampleMetadataKeyName)
         && Objects.equals(this.contentType, that.contentType)
         && Objects.equals(this.extensions, that.extensions)
         && Objects.equals(this.galaxyToolExtensions, that.galaxyToolExtensions)
@@ -436,10 +455,10 @@ public final class XMLDataFormat extends AbstractDataFormat implements
 
     return Objects.hash(this.name, this.description, this.alias, this.prefix,
         this.oneFilePerAnalysis, this.dataFormatFromDesignFile,
-        this.designFieldName, this.contentType, this.extensions,
-        this.galaxyToolExtensions, this.generatorClassName,
-        this.checkerClassName, this.splitterClassName, this.mergerClassName,
-        this.maxFilesCount);
+        this.designMetadataKeyName, this.sampleMetadataKeyName,
+        this.contentType, this.extensions, this.galaxyToolExtensions,
+        this.generatorClassName, this.checkerClassName, this.splitterClassName,
+        this.mergerClassName, this.maxFilesCount);
   }
 
   @Override
