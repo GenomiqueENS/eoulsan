@@ -21,10 +21,10 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
  */
 public class ExpressionSplitter implements Splitter {
 
-  private static final int DEFAULT_SPLIT_MAX_LINES = 10000;
+  private static final int DEFAULT_SPLIT_MAX_ENTRIES = 10000;
   static final String EXPRESSION_FILE_HEADER = "Id\tCount\n";
 
-  private int splitMaxLines = DEFAULT_SPLIT_MAX_LINES;
+  private int splitMaxEntries = DEFAULT_SPLIT_MAX_ENTRIES;
 
   @Override
   public DataFormat getFormat() {
@@ -39,8 +39,8 @@ public class ExpressionSplitter implements Splitter {
 
       switch (p.getName()) {
 
-      case "max.lines":
-        this.splitMaxLines = p.getIntValueGreaterOrEqualsTo(1);
+      case "max.entries":
+        this.splitMaxEntries = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
       default:
@@ -55,7 +55,7 @@ public class ExpressionSplitter implements Splitter {
   public void split(final DataFile inFile,
       final Iterator<DataFile> outFileIterator) throws IOException {
 
-    final int max = this.splitMaxLines;
+    final int max = this.splitMaxEntries;
     int readCount = 0;
     Writer writer = null;
 
