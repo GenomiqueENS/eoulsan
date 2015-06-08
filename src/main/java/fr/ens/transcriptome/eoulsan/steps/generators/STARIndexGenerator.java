@@ -125,7 +125,7 @@ public class STARIndexGenerator extends AbstractStep {
       switch (p.getName()) {
 
       case "overhang":
-        this.overhang = p.getIntValue();
+        this.overhang = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
       case "gtf.file":
@@ -145,11 +145,11 @@ public class STARIndexGenerator extends AbstractStep {
         break;
 
       case "genome.sa.index.nbases":
-        this.genomeSAindexNbases = p.getIntValue();
+        this.genomeSAindexNbases = p.getIntValueGreaterOrEqualsTo(0);
         break;
 
       case "genome.chr.bin.nbits":
-        this.genomeChrBinNbits = p.getIntValue();
+        this.genomeChrBinNbits = p.getIntValueGreaterOrEqualsTo(0);
         break;
 
       case "use.expression.step.parameters":
@@ -157,11 +157,11 @@ public class STARIndexGenerator extends AbstractStep {
         break;
 
       case "local.threads":
-        this.localThreads = p.getIntValue();
+        this.localThreads = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
       case "max.local.threads":
-        this.maxLocalThreads = p.getIntValue();
+        this.maxLocalThreads = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
       default:

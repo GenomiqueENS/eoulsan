@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
@@ -55,6 +57,29 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
   protected static final String COUNTER_GROUP = "reads_filtering";
 
   private Map<String, String> readsFiltersParameters;
+  private int reducerTaskCount = -1;
+
+  //
+  // Getters
+  //
+
+  /**
+   * Get the parameters of the read filter.
+   * @return a map with all the parameters of the filter
+   */
+  protected Map<String, String> getReadFilterParameters() {
+
+    return this.readsFiltersParameters;
+  }
+
+  /**
+   * Get the reducer task count.
+   * @return the reducer task count
+   */
+  protected int getReducerTaskCount() {
+
+    return this.reducerTaskCount;
+  }
 
   //
   // Step methods
@@ -96,13 +121,72 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      mrfb.addParameter(p.getName(), p.getStringValue());
+      // Check if the parameter is deprecated
+      checkDeprecatedParameter(p, context.getCurrentStep().getId());
+
+      switch (p.getName()) {
+
+      case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
+        this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
+
+        break;
+
+      default:
+        mrfb.addParameter(p.getName(), p.getStringValue());
+        break;
+      }
+
     }
 
     // Force parameter checking
     mrfb.getReadFilter();
 
     this.readsFiltersParameters = mrfb.getParameters();
+  }
+
+  //
+  // Other methods
+  //
+
+  /**
+   * Check deprecated parameters.
+   * @param parameter the parameter to check
+   * @param stepId step id
+   * @throws EoulsanException if the parameter is no more supported
+   */
+  static void checkDeprecatedParameter(final Parameter parameter,
+      final String stepId) throws EoulsanException {
+
+    if (parameter == null) {
+      return;
+    }
+
+    final String stepMessage =
+        stepId == null ? "" : "In the \"" + stepId + "\" step, ";
+
+    switch (parameter.getName()) {
+
+    case "lengthThreshold":
+      throw new EoulsanException(stepMessage
+          + "the parameter \"" + parameter.getName()
+          + "\" is deprecated, use \"trim.length.threshold\" parameter "
+          + "instead");
+    case "qualityThreshold":
+      throw new EoulsanException(stepMessage
+          + "the parameter \"" + parameter.getName()
+          + "\" is deprecated, use \"quality.threshold\" parameter instead");
+
+    case "trim.length.threshold":
+      getLogger().warning(
+          stepMessage
+              + "the \"" + parameter.getName()
+              + "\" parameter is deprecated and will be soon removed. "
+              + "Please use \"trimpolynend\" and \"length\" filters instead");
+      break;
+
+    default:
+      break;
+    }
   }
 
   /**
@@ -121,15 +205,6 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
     // with a new instance of each filter
     return new MultiReadFilterBuilder(this.readsFiltersParameters)
         .getReadFilter(incrementer, counterGroup);
-  }
-
-  /**
-   * Get the parameters of the read filter.
-   * @return a map with all the parameters of the filter
-   */
-  protected Map<String, String> getReadFilterParameters() {
-
-    return this.readsFiltersParameters;
   }
 
 }

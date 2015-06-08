@@ -23,6 +23,7 @@
  */
 package fr.ens.transcriptome.eoulsan.steps.fastqc;
 
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 
 import java.io.File;
@@ -128,9 +129,10 @@ public class FastQCStep extends AbstractStep {
     final InputPortsBuilder builder = new InputPortsBuilder();
 
     if (this.inputFormat == DataFormats.READS_FASTQ) {
-      builder.addPort("input", DataFormats.READS_FASTQ);
+      builder.addPort(DEFAULT_SINGLE_INPUT_PORT_NAME, DataFormats.READS_FASTQ);
     } else {
-      builder.addPort("input", DataFormats.MAPPER_RESULTS_SAM);
+      builder.addPort(DEFAULT_SINGLE_INPUT_PORT_NAME,
+          DataFormats.MAPPER_RESULTS_SAM);
     }
 
     return builder.create();
@@ -178,40 +180,34 @@ public class FastQCStep extends AbstractStep {
 
       case FASTQC_KMER_SIZE_PARAMETER_NAME:
 
-        // Convert in int
-        if (p.getIntValue() < 1) {
-          throw new EoulsanException(
-              "Invalid value for kmer size parameter in FastQC step: "
-                  + p.getValue());
-        }
-
-        // Kmer Size, default FastQC value 7
-        System.setProperty("fastqc.kmer_size", p.getValue());
+        // Kmer Size, default FastQC value is 7
+        System.setProperty("fastqc.kmer_size",
+            "" + p.getIntValueGreaterOrEqualsTo(1));
         break;
 
       case FASTQC_NOGROUP_PARAMETER_NAME:
 
         // Set fastQC nogroup, default FastQC value false
-        System.setProperty("fastqc.nogroup", p.getBooleanValue() + "");
+        System.setProperty("fastqc.nogroup", "" + p.getBooleanValue());
         break;
 
       case FASTQC_EXPGROUP_PARAMETER_NAME:
 
         // Set fastQC expgroup, default FastQC value false
-        System.setProperty("fastqc.expgroup", p.getBooleanValue() + "");
+        System.setProperty("fastqc.expgroup", "" + p.getBooleanValue());
         break;
 
       case FASTQC_CASAVA_PARAMETER_NAME:
 
         // Set fastQC format fastq, default FastQC value false
-        System.setProperty("fastqc.casava", p.getBooleanValue() + "");
+        System.setProperty("fastqc.casava", "" + p.getBooleanValue());
         break;
 
       case FASTQC_NOFILTER_PARAMETER_NAME:
 
         // Default FastQC value true
         // Set fastQC nofilter default false, if casava=true, filter fastq file
-        System.setProperty("fastqc.nofilter", p.getBooleanValue() + "");
+        System.setProperty("fastqc.nofilter", "" + p.getBooleanValue());
         break;
 
       default:
@@ -231,7 +227,13 @@ public class FastQCStep extends AbstractStep {
         context.getOutputData(DataFormats.FASTQC_REPORT_HTML, inData);
 
     // Extract data file
-    final DataFile inFile = inData.getDataFile();
+    final DataFile inFile;
+    if (inData.getFormat().getMaxFilesCount() > 1) {
+      inFile = inData.getDataFile(0);
+    } else {
+      inFile = inData.getDataFile();
+    }
+
     final DataFile reportFile = outData.getDataFile();
 
     SequenceFile seqFile = null;
@@ -265,7 +267,7 @@ public class FastQCStep extends AbstractStep {
 
       // Set the description of the context
       status.setDescription("Create FastQC report on "
-          + inData.getDataFile().toFile().getAbsolutePath() + " in "
+          + inData.getDataFile(0).toFile().getAbsolutePath() + " in "
           + reportFile.getName() + ")");
 
       // Keep module data is now unnecessary

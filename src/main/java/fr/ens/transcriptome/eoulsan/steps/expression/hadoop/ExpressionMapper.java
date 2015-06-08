@@ -49,6 +49,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import com.google.common.collect.Lists;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.SAMUtils;
@@ -154,6 +155,9 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, Text> {
 
   @Override
   public void setup(final Context context) {
+
+    EoulsanLogger.initConsoleHandler();
+    getLogger().info("Start of setup()");
 
     try {
 

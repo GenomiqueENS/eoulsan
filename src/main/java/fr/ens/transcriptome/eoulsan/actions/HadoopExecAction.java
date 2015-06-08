@@ -39,6 +39,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.python.google.common.base.Joiner;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -54,6 +55,8 @@ public class HadoopExecAction extends AbstractAction {
 
   /** Name of this action. */
   public static final String ACTION_NAME = "hadoopexec";
+
+  private static final String HADOOP_CLIENT_OPTS_ENV = "HADOOP_CLIENT_OPTS";
 
   @Override
   public String getName() {
@@ -131,9 +134,6 @@ public class HadoopExecAction extends AbstractAction {
     options.addOption(OptionBuilder.withArgName("description").hasArg()
         .withDescription("job description").withLongOpt("desc").create('d'));
 
-    // UploadOnly option
-    options.addOption("upload", false, "upload only");
-
     return options;
   }
 
@@ -155,6 +155,24 @@ public class HadoopExecAction extends AbstractAction {
   //
   // Execution
   //
+
+  /**
+   * Get the JVM memory arguments as a string.
+   * @return a String with the JVM memory arguments
+   */
+  private static String getJVMMemoryArgs() {
+
+    final List<String> result = new ArrayList<>();
+
+    for (String a : Main.getInstance().getJVMArgs()) {
+
+      if (a.startsWith("-Xm")) {
+        result.add(a);
+      }
+    }
+
+    return Joiner.on('\t').join(result);
+  }
 
   /**
    * Run Eoulsan in hadoop mode.
@@ -231,8 +249,14 @@ public class HadoopExecAction extends AbstractAction {
 
     try {
 
-      final int exitCode =
-          new ProcessBuilder(argsList).inheritIO().start().waitFor();
+      // Create the process builder the the command line
+      final ProcessBuilder builder = new ProcessBuilder(argsList).inheritIO();
+
+      // Set the JVM arguments for Hadoop in the process builder
+      builder.environment().put(HADOOP_CLIENT_OPTS_ENV, getJVMMemoryArgs());
+
+      // Execute the hadoop jar command
+      final int exitCode = builder.start().waitFor();
 
       // Exit with the same exit of the child process
       System.exit(exitCode);

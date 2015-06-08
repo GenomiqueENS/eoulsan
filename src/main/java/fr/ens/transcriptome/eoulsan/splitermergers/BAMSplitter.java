@@ -70,13 +70,7 @@ public class BAMSplitter implements Splitter {
       switch (p.getName()) {
 
       case "max.lines":
-        this.splitMaxLines = p.getIntValue();
-
-        if (this.splitMaxLines < 1) {
-          throw new EoulsanException("Invalid "
-              + p.getName() + " parameter value: " + p.getIntValue());
-        }
-
+        this.splitMaxLines = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
       case "chromosomes":

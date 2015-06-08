@@ -83,7 +83,7 @@ public class FailStep extends AbstractStep {
       switch (p.getName()) {
 
       case "delay":
-        this.delay = p.getIntValue();
+        this.delay = p.getIntValueGreaterOrEqualsTo(0);
         break;
 
       default:

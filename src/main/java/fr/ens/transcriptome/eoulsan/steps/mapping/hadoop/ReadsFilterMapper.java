@@ -45,6 +45,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
@@ -91,7 +92,8 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
   protected void setup(final Context context) throws IOException,
       InterruptedException {
 
-    getLogger().info("Start of configure()");
+    EoulsanLogger.initConsoleHandler();
+    getLogger().info("Start of setup()");
 
     // Get configuration object
     final Configuration conf = context.getConfiguration();
@@ -136,7 +138,7 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
       throw new IOException(e);
     }
 
-    // Set the output writers
+    // Set the multiple output writer
     this.out = new MultipleOutputs<Text, Text>(context);
     this.outputFilename1 = createOutputPath(conf, OUTPUT_FILE1_KEY);
     this.outputFilename2 = createOutputPath(conf, OUTPUT_FILE2_KEY);
@@ -225,11 +227,11 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
 
           // Write read 1
           this.outValue.set(this.read1.toTFQ());
-          out.write(key, this.outValue, this.outputFilename1);
+          this.out.write(key, this.outValue, this.outputFilename1);
 
           // Write read 2
           this.outValue.set(this.read2.toTFQ());
-          out.write(key, this.outValue, this.outputFilename2);
+          this.out.write(key, this.outValue, this.outputFilename2);
         }
 
         context.getCounter(this.counterGroup,
@@ -245,6 +247,11 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
   @Override
   protected void cleanup(final Context context) throws IOException,
       InterruptedException {
+
+    // Close the multiple output writer
+    if (this.out != null) {
+      this.out.close();
+    }
   }
 
 }

@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
@@ -34,6 +35,7 @@ import java.util.Set;
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.readsmappers.SOAPReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
@@ -67,6 +69,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   public static final String HADOOP_MAPPER_REQUIRED_MEMORY_PARAMETER_NAME =
       "hadoop.mapper.required.memory";
   public static final String HADOOP_THREADS_PARAMETER_NAME = "hadoop.threads";
+
   public static final String LOCAL_THREADS_PARAMETER_NAME = "local.threads";
   public static final String MAX_LOCAL_THREADS_PARAMETER_NAME =
       "max.local.threads";
@@ -79,6 +82,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   private String mapperFlavor = "";
   private String mapperArguments;
 
+  private int reducerTaskCount = -1;
   private int hadoopThreads;
   private int localThreads;
   private int maxLocalThreads;
@@ -157,6 +161,15 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
     return this.mapper;
   }
 
+  /**
+   * Get the reducer task count.
+   * @return the reducer task count
+   */
+  protected int getReducerTaskCount() {
+
+    return this.reducerTaskCount;
+  }
+
   //
   // Step methods
   //
@@ -192,6 +205,9 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
+      // Check if the parameter is deprecated
+      checkDeprecatedParameter(p, context.getCurrentStep().getId());
+
       switch (p.getName()) {
 
       case MAPPER_NAME_PARAMETER_NAME:
@@ -211,20 +227,24 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
         break;
 
       case HADOOP_THREADS_PARAMETER_NAME:
-        this.hadoopThreads = p.getIntValue();
+        this.hadoopThreads = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
       case LOCAL_THREADS_PARAMETER_NAME:
-        this.localThreads = p.getIntValue();
+        this.localThreads = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
       case MAX_LOCAL_THREADS_PARAMETER_NAME:
-        this.maxLocalThreads = p.getIntValue();
+        this.maxLocalThreads = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
       case HADOOP_MAPPER_REQUIRED_MEMORY_PARAMETER_NAME:
+        this.hadoopMapperRequiredMemory =
+            p.getIntValueGreaterOrEqualsTo(1) * 1024;
+        break;
 
-        this.hadoopMapperRequiredMemory = p.getIntValue() * 1024;
+      case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
+        this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
       default:
@@ -270,5 +290,50 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
     getLogger().info(
         "In " + getName() + ", mapperarguments=" + this.mapperArguments);
 
+  }
+
+  //
+  // Other methods
+  //
+
+  /**
+   * Check deprecated parameters.
+   * @param parameter the parameter to check
+   * @param stepId step id
+   * @throws EoulsanException if the parameter is no more supported
+   */
+  static void checkDeprecatedParameter(final Parameter parameter,
+      final String stepId) throws EoulsanException {
+
+    if (parameter == null) {
+      return;
+    }
+
+    final String stepMessage =
+        stepId == null ? "" : "In the \"" + stepId + "\" step, ";
+
+    switch (parameter.getName()) {
+
+    case "mapperarguments":
+      throw new EoulsanException(stepMessage
+          + "the parameter \"" + parameter.getName()
+          + "\" is deprecated, use \"" + MAPPER_ARGUMENTS_PARAMETER_NAME
+          + "\" parameter " + "instead");
+
+    case MAPPER_NAME_PARAMETER_NAME:
+
+      if (SOAPReadsMapper.MAPPER_NAME.toLowerCase().equals(
+          parameter.getLowerStringValue())) {
+        getLogger().warning(
+            stepMessage
+                + "the " + SOAPReadsMapper.MAPPER_NAME
+                + " mapper support is deprecated");
+      }
+
+      break;
+
+    default:
+      break;
+    }
   }
 }

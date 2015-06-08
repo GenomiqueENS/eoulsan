@@ -36,6 +36,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.steps.expression.ExonsCoverage;
 import fr.ens.transcriptome.eoulsan.steps.expression.TranscriptAndExonFinder;
@@ -129,6 +130,9 @@ public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
 
   @Override
   public void setup(final Context context) throws IOException {
+
+    EoulsanLogger.initConsoleHandler();
+    getLogger().info("Start of setup()");
 
     // Counter group
     this.counterGroup =

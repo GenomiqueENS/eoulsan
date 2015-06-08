@@ -160,7 +160,8 @@ public final class Globals {
       + "  Maria Bernard <mbernard@biologie.ens.fr>\n"
       + "  Stéphane Le Crom <lecrom@biologie.ens.fr>\n"
       + "  Claire Wallon <wallon@biologie.ens.fr>\n"
-      + "  Vivien Deshaies <deshaies@biologie.ens.fr>\n" + "Contacts:\n"
+      + "  Vivien Deshaies <deshaies@biologie.ens.fr>\n"
+      + "  Sandrine Perrin <sperrin@biologie.ens.fr>\n" + "Contacts:\n"
       + "  Mail: " + APP_NAME_LOWER_CASE + "@biologie.ens.fr\n"
       + "  Google group: http://groups.google.com/group/" + APP_NAME_LOWER_CASE
       + "\n" + "  Website: " + WEBSITE_URL + "\n" + "Copyright "

@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
@@ -81,6 +82,8 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
   private String mapperVersion = "";
   private String mapperFlavor = "";
   private String mapperArguments;
+
+  private int reducerTaskCount = -1;
   private int hadoopThreads = -1;
 
   private final int mappingQualityThreshold = -1;
@@ -175,6 +178,33 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
     return this.mappingQualityThreshold;
   }
 
+  /**
+   * Get the reducer task count.
+   * @return the reducer task count
+   */
+  protected int getReducerTaskCount() {
+
+    return this.reducerTaskCount;
+  }
+
+  /**
+   * Get the parameters of the read filters.
+   * @return a map with all the parameters of the filters
+   */
+  protected Map<String, String> getReadFilterParameters() {
+
+    return this.readsFiltersParameters;
+  }
+
+  /**
+   * Get the parameters of the read alignments filters.
+   * @return a map with all the parameters of the filters
+   */
+  protected Map<String, String> getAlignmentsFilterParameters() {
+
+    return this.alignmentsFiltersParameters;
+  }
+
   //
   // Step methods
   //
@@ -224,6 +254,14 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
+      // Get step id
+      final String stepId = context.getCurrentStep().getId();
+
+      // Check if the parameter is deprecated
+      AbstractReadsFilterStep.checkDeprecatedParameter(p, stepId);
+      AbstractReadsMapperStep.checkDeprecatedParameter(p, stepId);
+      AbstractSAMFilterStep.checkDeprecatedParameter(p, stepId);
+
       switch (p.getName()) {
 
       case MAPPER_NAME_PARAMETER_NAME:
@@ -243,11 +281,16 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
         break;
 
       case HADOOP_THREADS_PARAMETER_NAME:
-        this.hadoopThreads = p.getIntValue();
+        this.hadoopThreads = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
       case HADOOP_MAPPER_REQUIRED_MEMORY_PARAMETER_NAME:
-        this.hadoopMapperRequiredMemory = p.getIntValue() * 1024;
+        this.hadoopMapperRequiredMemory =
+            p.getIntValueGreaterOrEqualsTo(1) * 1024;
+        break;
+
+      case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
+        this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
       default:
@@ -255,9 +298,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
         // Add read filters parameters
         if (!(mrfb.addParameter(p.getName(), p.getStringValue(), true) ||
         // Add read alignments filters parameters
-        mrafb.addParameter(
-            AbstractSAMFilterStep.convertCompatibilityFilterKey(p.getName()),
-            p.getStringValue(), true))) {
+        mrafb.addParameter(p.getName(), p.getStringValue(), true))) {
 
           throw new EoulsanException("Unknown parameter: " + p.getName());
         }
@@ -304,24 +345,6 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
             + " (version: " + this.mapper.getMapperVersion() + ")");
     getLogger().info(
         "In " + getName() + ", mapperarguments=" + this.mapperArguments);
-  }
-
-  /**
-   * Get the parameters of the read filters.
-   * @return a map with all the parameters of the filters
-   */
-  protected Map<String, String> getReadFilterParameters() {
-
-    return this.readsFiltersParameters;
-  }
-
-  /**
-   * Get the parameters of the read alignments filters.
-   * @return a map with all the parameters of the filters
-   */
-  protected Map<String, String> getAlignmentsFilterParameters() {
-
-    return this.alignmentsFiltersParameters;
   }
 
 }

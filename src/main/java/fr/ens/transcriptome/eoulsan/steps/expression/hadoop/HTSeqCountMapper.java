@@ -55,6 +55,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
@@ -98,7 +99,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
   public void setup(final Context context) throws IOException,
       InterruptedException {
 
-    getLogger().info("Start of configure()");
+    EoulsanLogger.initConsoleHandler();
+    getLogger().info("Start of setup()");
 
     try {
 
@@ -171,7 +173,7 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
           "Error while loading annotation data in Mapper: " + e.getMessage());
     }
 
-    getLogger().info("End of configure()");
+    getLogger().info("End of setup()");
   }
 
   /**

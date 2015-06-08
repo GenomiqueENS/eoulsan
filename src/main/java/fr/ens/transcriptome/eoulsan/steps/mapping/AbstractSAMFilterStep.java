@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
+import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
@@ -57,6 +58,25 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   protected static final String COUNTER_GROUP = "sam_filtering";
 
   private Map<String, String> alignmentsFiltersParameters;
+  private int reducerTaskCount = -1;
+
+  /**
+   * Get the parameters of the alignments filter.
+   * @return a map with all the parameters of the filter
+   */
+  protected Map<String, String> getAlignmentsFilterParameters() {
+
+    return this.alignmentsFiltersParameters;
+  }
+
+  /**
+   * Get the reducer task count.
+   * @return the reducer task count
+   */
+  protected int getReducerTaskCount() {
+
+    return this.reducerTaskCount;
+  }
 
   //
   // Step methods
@@ -100,8 +120,20 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      mrafb.addParameter(convertCompatibilityFilterKey(p.getName()),
-          p.getStringValue());
+      // Check if the parameter is deprecated
+      checkDeprecatedParameter(p, context.getCurrentStep().getId());
+
+      switch (p.getName()) {
+
+      case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
+        this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
+        break;
+
+      default:
+
+        mrafb.addParameter(p.getName(), p.getStringValue());
+        break;
+      }
     }
 
     // Force parameter checking
@@ -110,22 +142,38 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
     this.alignmentsFiltersParameters = mrafb.getParameters();
   }
 
+  //
+  // Other methods
+  //
+
   /**
-   * Convert old key names to new names
-   * @param key key to convert
-   * @return the new key name if necessary
+   * Check deprecated parameters.
+   * @param parameter the parameter to check
+   * @param stepId step id
+   * @throws EoulsanException if the parameter is no more supported
    */
-  static String convertCompatibilityFilterKey(final String key) {
+  static void checkDeprecatedParameter(final Parameter parameter,
+      final String stepId) throws EoulsanException {
 
-    if (key == null) {
-      return null;
+    if (parameter == null) {
+      return;
     }
 
-    if ("mappingqualitythreshold".equals(key)) {
-      return QualityReadAlignmentsFilter.FILTER_NAME + ".threshold";
-    }
+    final String stepMessage =
+        stepId == null ? "" : "In the \"" + stepId + "\" step, ";
 
-    return key;
+    switch (parameter.getName()) {
+
+    case "mappingqualitythreshold":
+      throw new EoulsanException(stepMessage
+          + "the parameter \"" + parameter.getName()
+          + "\" is deprecated, use \""
+          + QualityReadAlignmentsFilter.FILTER_NAME + ".threshold"
+          + "\" parameter " + "instead");
+
+    default:
+      break;
+    }
   }
 
   /**
@@ -146,15 +194,6 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
     return new MultiReadAlignmentsFilterBuilder(
         this.alignmentsFiltersParameters).getAlignmentsFilter(incrementer,
         counterGroup);
-  }
-
-  /**
-   * Get the parameters of the alignments filter.
-   * @return a map with all the parameters of the filter
-   */
-  protected Map<String, String> getAlignmentsFilterParameters() {
-
-    return this.alignmentsFiltersParameters;
   }
 
 }

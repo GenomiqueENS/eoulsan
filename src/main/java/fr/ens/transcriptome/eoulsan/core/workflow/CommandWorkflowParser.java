@@ -88,7 +88,7 @@ public class CommandWorkflowParser {
   /** Job UUID constant name. */
   public static final String JOB_UUID_CONSTANT_NAME = "job.uuid";
   /** Logs path constant name. */
-  public static final String LOGS_PATH_CONSTANT_NAME = "logs.path";
+  public static final String JOB_PATH_CONSTANT_NAME = "job.path";
 
   /** Version of the format of the workflow file. */
   static final String FORMAT_VERSION = "1.0";
@@ -501,7 +501,7 @@ public class CommandWorkflowParser {
     addConstant(OUTPUT_PATH_CONSTANT_NAME, arguments.getOutputPathname());
     addConstant(JOB_ID_CONSTANT_NAME, arguments.getJobId());
     addConstant(JOB_UUID_CONSTANT_NAME, arguments.getJobUUID());
-    addConstant(LOGS_PATH_CONSTANT_NAME, arguments.getJobPathname());
+    addConstant(JOB_PATH_CONSTANT_NAME, arguments.getJobPathname());
   }
 
   /**

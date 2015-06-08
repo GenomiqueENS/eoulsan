@@ -84,12 +84,13 @@ public class PairedEndFastqToTfq {
    * @param fastqFile1 Path of the first FASTQ file
    * @param fastqFile2 Path of the second FASTQ file
    * @param outputFile Path of the output TFQ file
+   * @param reducerTaskCount the reducer task count
    * @return an Hadoop Job
    * @throws IOException if an error occurs while creating the Job
    */
   public static Job convert(final Configuration parentConf,
       final DataFile fastqFile1, final DataFile fastqFile2,
-      final DataFile outputFile) throws IOException {
+      final DataFile outputFile, final int reducerTaskCount) throws IOException {
 
     checkNotNull(parentConf, "parentConf argument cannot be null");
     checkNotNull(fastqFile1, "fastqFile1 argument cannot be null");
@@ -97,7 +98,8 @@ public class PairedEndFastqToTfq {
     checkNotNull(outputFile, "outputFile argument cannot be null");
 
     return convert(parentConf, new Path(fastqFile1.getSource()), new Path(
-        fastqFile2.getSource()), new Path(outputFile.getSource()));
+        fastqFile2.getSource()), new Path(outputFile.getSource()),
+        reducerTaskCount);
   }
 
   /**
@@ -106,12 +108,13 @@ public class PairedEndFastqToTfq {
    * @param fastqFile1 Path of the first FASTQ file
    * @param fastqFile2 Path of the second FASTQ file
    * @param outputFile Path of the output TFQ file
+   * @param reducerTaskCount the reducer task count
    * @return an Hadoop Job
    * @throws IOException if an error occurs while creating the Job
    */
   public static Job convert(final Configuration parentConf,
-      final Path fastqFile1, final Path fastqFile2, final Path outputFile)
-      throws IOException {
+      final Path fastqFile1, final Path fastqFile2, final Path outputFile,
+      final int reducerTaskCount) throws IOException {
 
     checkNotNull(parentConf, "parentConf argument cannot be null");
     checkNotNull(fastqFile1, "fastqFile1 argument cannot be null");
@@ -148,6 +151,11 @@ public class PairedEndFastqToTfq {
 
     // Set the output value class
     job.setOutputValueClass(Text.class);
+
+    // Set the reducer task count
+    if (reducerTaskCount > 0) {
+      job.setNumReduceTasks(reducerTaskCount);
+    }
 
     // Set output path
     FileOutputFormat.setOutputPath(job, outputFile);

@@ -51,6 +51,7 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
  */
 public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
 
+  public static final String MAPPER_NAME = "SOAP";
   private static final String DEFAULT_PACKAGE_VERSION = "2.20";
   private static final String MAPPER_EXECUTABLE = "soap";
   private static final String INDEXER_EXECUTABLE = "2bwt-builder";
@@ -62,7 +63,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   public String getMapperName() {
 
-    return "SOAP";
+    return MAPPER_NAME;
   }
 
   @Override

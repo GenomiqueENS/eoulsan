@@ -41,6 +41,8 @@
       Eoulsan currently provide two counting methods : the original Eoulsan counting method and htseq-count. The second method is a fast the
       implementation of htseq-count. For more information about this method see <a href="http://www-huber.embl.de/users/anders/HTSeq/doc/count.html">HTSeq website</a>.</p>
 
+      <p><b>WARNING</b>: The support of the original Eoulsan counter is now deprecated and will be soon removed from Eoulsan.</p>
+
       <ul>
          <li><b>Name</b>: expression.</li>
          <li><b>Available</b>: Both local and distributed mode</li>
@@ -63,7 +65,7 @@
          <li><b>Optional parameters</b>:</li>
          <table>
 		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
-		<tr><td>counter</td><td>string</td><td>The name of the counter to use (eoulsanCounter or htseq-count).</td><td>eoulsanCounter</td></tr>
+		<tr><td>counter</td><td>string</td><td>The name of the counter to use (eoulsanCounter or htseq-count). The support of eoulsanCounter will be soon removed from Eoulsan.</td><td>eoulsanCounter</td></tr>
 		<tr><td>genomictype</td><td>string</td><td>feature type (3rd column in GFF file) to be used, all features of other type are ignored.</td><td>exon</td></tr>
 		<tr><td>attributeid</td><td>string</td><td>GFF attribute to be used as feature ID</td><td>PARENT</td></tr>
 	 </table>

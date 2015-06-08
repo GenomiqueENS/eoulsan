@@ -60,15 +60,13 @@ public class FastqSplitter implements Splitter {
 
     for (Parameter p : conf) {
 
-      if ("max.lines".equals(p.getName())) {
-        this.splitMaxLines = p.getIntValue();
+      switch (p.getName()) {
 
-        if (this.splitMaxLines < 1) {
-          throw new EoulsanException("Invalid "
-              + p.getName() + " parameter value: " + p.getIntValue());
-        }
+      case "max.lines":
+        this.splitMaxLines = p.getIntValueGreaterOrEqualsTo(1);
+        break;
 
-      } else {
+      default:
         throw new EoulsanException("Unknown parameter for "
             + getFormat().getName() + " splitter: " + p.getName());
       }

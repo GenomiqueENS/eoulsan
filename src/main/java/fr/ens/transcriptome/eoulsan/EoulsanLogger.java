@@ -26,6 +26,9 @@ package fr.ens.transcriptome.eoulsan;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -120,6 +123,35 @@ public class EoulsanLogger {
     }
 
     threadGroupLoggers.remove(threadGroup.getName());
+  }
+
+  /**
+   * Initialize the console logger handler for Hadoop mappers and reducers. This
+   * method set the Eoulsan logger format and define the logger level.
+   */
+  public static void initConsoleHandler() {
+    initConsoleHandler(null);
+  }
+
+  /**
+   * Initialize the console logger handler for Hadoop mappers and reducers.
+   * @param level log level to use
+   */
+  public static void initConsoleHandler(final Level level) {
+
+    // Disable parent Handler
+    getLogger().setUseParentHandlers(false);
+
+    // Create the new console handler
+    final Handler handler = new ConsoleHandler();
+    handler.setLevel(level != null ? level : Globals.LOG_LEVEL);
+    handler.setFormatter(Globals.LOG_FORMATTER);
+
+    // Add the handler to the logger
+    getLogger().addHandler(handler);
+
+    // Set the log level of the logger
+    getLogger().setLevel(handler.getLevel());
   }
 
 }

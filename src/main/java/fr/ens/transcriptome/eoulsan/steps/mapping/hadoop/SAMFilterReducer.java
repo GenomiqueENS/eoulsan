@@ -54,6 +54,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
@@ -86,6 +87,9 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
   @Override
   protected void setup(final Context context) throws IOException,
       InterruptedException {
+
+    EoulsanLogger.initConsoleHandler();
+    getLogger().info("Start of setup()");
 
     // Get configuration object
     final Configuration conf = context.getConfiguration();
@@ -123,6 +127,8 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
     // Write SAM header
     loadAndWriterSAMHeader(context);
+
+    getLogger().info("End of setup()");
   }
 
   /**

@@ -33,7 +33,6 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
-import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.ZooKeeper;
 
@@ -48,6 +47,7 @@ public class ZooKeeperLocker implements Locker, Watcher {
   private final ZooKeeper zk;
   private final String lockBasePath;
   private final String lockName;
+  private final boolean sequentialLockName;
 
   private String lockPath;
   private boolean response;
@@ -64,8 +64,8 @@ public class ZooKeeperLocker implements Locker, Watcher {
 
       if (this.zk.exists(this.lockBasePath, false) == null) {
 
-        this.zk.create(this.lockBasePath, new byte[0],
-            ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+        this.zk.create(this.lockBasePath, null, Ids.OPEN_ACL_UNSAFE,
+            CreateMode.PERSISTENT);
       }
 
       // lockPath will be different than (lockBasePath + "/" + lockName) because
@@ -73,7 +73,8 @@ public class ZooKeeperLocker implements Locker, Watcher {
 
       this.lockPath =
           this.zk.create(this.lockBasePath + "/" + this.lockName, null,
-              Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
+              Ids.OPEN_ACL_UNSAFE, this.sequentialLockName
+                  ? CreateMode.EPHEMERAL_SEQUENTIAL : CreateMode.EPHEMERAL);
       final Object lock = new Object();
 
       synchronized (lock) {
@@ -144,8 +145,26 @@ public class ZooKeeperLocker implements Locker, Watcher {
   public ZooKeeperLocker(final String connectString, final int sessionTimeout,
       final String lockBasePath, final String lockName) throws IOException {
 
+    this(connectString, sessionTimeout, lockBasePath, lockName, true);
+  }
+
+  /**
+   * Public constructor.
+   * @param connectString Zookeeper connection string
+   * @param sessionTimeout session time out
+   * @param lockBasePath lock base path
+   * @param lockName lock name
+   * @param sequentialLockName sequential lock
+   * @throws IOException if an error occurs while creating the ZooKeeper
+   *           connection
+   */
+  public ZooKeeperLocker(final String connectString, final int sessionTimeout,
+      final String lockBasePath, final String lockName,
+      final boolean sequentialLockName) throws IOException {
+
     this.lockBasePath = lockBasePath;
     this.lockName = lockName;
+    this.sequentialLockName = sequentialLockName;
 
     this.zk = new ZooKeeper(connectString, sessionTimeout, this);
 

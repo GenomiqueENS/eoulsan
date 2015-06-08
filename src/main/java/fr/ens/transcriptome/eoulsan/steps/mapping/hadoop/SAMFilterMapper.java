@@ -41,6 +41,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import com.google.common.base.Splitter;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
@@ -74,7 +75,8 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
   protected void setup(final Context context) throws IOException,
       InterruptedException {
 
-    getLogger().info("Start of configure()");
+    EoulsanLogger.initConsoleHandler();
+    getLogger().info("Start of setup()");
 
     // Get configuration object
     final Configuration conf = context.getConfiguration();
