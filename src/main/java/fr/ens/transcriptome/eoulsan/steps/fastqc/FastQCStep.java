@@ -47,7 +47,6 @@ import uk.ac.babraham.FastQC.Modules.QCModule;
 import uk.ac.babraham.FastQC.Modules.SequenceLengthDistribution;
 import uk.ac.babraham.FastQC.Report.HTMLReportArchive;
 import uk.ac.babraham.FastQC.Sequence.Sequence;
-import uk.ac.babraham.FastQC.Sequence.SequenceFactory;
 import uk.ac.babraham.FastQC.Sequence.SequenceFile;
 import uk.ac.babraham.FastQC.Sequence.SequenceFormatException;
 
@@ -55,7 +54,7 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
+import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
@@ -78,7 +77,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @author Sandrine Perrin
  * @since 2.0
  */
-@LocalOnly
+@HadoopCompatible
 public class FastQCStep extends AbstractStep {
 
   /** Name step. */
@@ -150,6 +149,9 @@ public class FastQCStep extends AbstractStep {
     // Define parameters of FastQC
     System.setProperty("java.awt.headless", "true");
     System.setProperty("fastqc.unzip", "true");
+
+    // Patch FastQC code on sequenceFile to make hadoop compatible
+    RuntimePatchFastQC.runPatchFastQC();
 
     // Parse step parameters to initialize step
     for (final Parameter p : stepParameters) {
@@ -235,9 +237,11 @@ public class FastQCStep extends AbstractStep {
     SequenceFile seqFile = null;
 
     try {
-      seqFile = SequenceFactory.getSequenceFile(inFile.toFile());
+      // seqFile = SequenceFactory.getSequenceFile(inFile.toFile());
 
-    } catch (SequenceFormatException | IOException e) {
+      seqFile = getSequenceFile(inFile);
+
+    } catch (IOException | EoulsanException | SequenceFormatException e) {
       return status.createStepResult(e,
           "Error while init sequence file: " + e.getMessage());
     }
@@ -280,6 +284,31 @@ public class FastQCStep extends AbstractStep {
     } catch (final XMLStreamException e) {
       return status.createStepResult(e, "Error while writing final report: "
           + e.getMessage());
+    }
+
+  }
+
+  /**
+   * Gets the sequence file from input data format.
+   * @param inFile the in file
+   * @return the sequence file
+   * @throws EoulsanException if it is invalid data format.
+   * @throws IOException
+   * @throws SequenceFormatException
+   */
+  private SequenceFile getSequenceFile(final DataFile inFile)
+      throws EoulsanException, IOException, SequenceFormatException {
+
+    if (DataFormats.READS_FASTQ.equals(this.inputFormat)) {
+
+      return new FastQInputStream(inFile.open(), inFile.getName());
+
+    } else if (DataFormats.MAPPER_RESULTS_SAM.equals(this.inputFormat)) {
+      return new SamInputStream(inFile.open(), inFile.getName());
+
+    } else {
+      throw new EoulsanException(
+          "Step FastQC: invalid input format, expected reads or sam.");
     }
 
   }
