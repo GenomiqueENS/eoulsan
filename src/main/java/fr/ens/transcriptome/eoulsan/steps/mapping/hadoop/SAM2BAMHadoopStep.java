@@ -5,7 +5,6 @@ import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.allPortsRequir
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_BAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_INDEX_BAI;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
-import hadoop.org.apache.hadoop.mapreduce.lib.partition.TotalOrderPartitioner;
 import hbparquet.hadoop.util.ContextUtil;
 import htsjdk.samtools.BAMIndexer;
 import htsjdk.samtools.SAMFileHeader.SortOrder;
@@ -40,6 +39,7 @@ import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 import org.apache.hadoop.mapreduce.lib.partition.InputSampler;
+import org.apache.hadoop.mapreduce.lib.partition.TotalOrderPartitioner;
 import org.seqdoop.hadoop_bam.AnySAMInputFormat;
 import org.seqdoop.hadoop_bam.AnySAMOutputFormat;
 import org.seqdoop.hadoop_bam.BAMRecordReader;
@@ -218,11 +218,9 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
     job.setOutputFormatClass(CLIMergingAnySAMOutputFormat.class);
 
     // Set the reducer task count
-    // if (getReducerTaskCount() > 0) {
-    // job.setNumReduceTasks(getReducerTaskCount());
-    // }
-    // FIXME Do not work when reduce != 1
-    job.setNumReduceTasks(1);
+    if (getReducerTaskCount() > 0) {
+      job.setNumReduceTasks(getReducerTaskCount());
+    }
 
     // Set input paths
     FileSystem fs = input.getFileSystem(conf);
@@ -238,9 +236,9 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
           FileInputFormat.addInputPath(job, p);
 
           if (first) {
-            job.getConfiguration().setStrings(
-                Utils.HEADERMERGER_INPUTS_PROPERTY,
-                new String[] { p.toString() });
+            job.getConfiguration()
+                .setStrings(Utils.HEADERMERGER_INPUTS_PROPERTY,
+                    new String[] {p.toString()});
           }
 
           context.getLogger().info("add path1: " + p);
@@ -249,7 +247,7 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
     } else {
       FileInputFormat.addInputPath(job, input);
       job.getConfiguration().setStrings(Utils.HEADERMERGER_INPUTS_PROPERTY,
-          new String[] { input.toString() });
+          new String[] {input.toString()});
       context.getLogger().info("add path2: " + input);
     }
 
@@ -260,6 +258,7 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
         Utils.HEADERMERGER_INPUTS_PROPERTY
             + ":"
             + job.getConfiguration().get(Utils.HEADERMERGER_INPUTS_PROPERTY));
+
     InputSampler.<LongWritable, SAMRecordWritable> writePartitionFile(job,
         new InputSampler.RandomSampler<LongWritable, SAMRecordWritable>(0.01,
             10000, Math.max(100, job.getNumReduceTasks())));
