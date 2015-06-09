@@ -887,5 +887,30 @@ of reads that reject each filter like in local mode.
 
          </release>
 
+
+         <release version="2.0-alpha7" description="Eoulsan 2.0-alpha7 release" date="TBD">
+
+            <action dev="jourdren" type="add">
+                 Add a new action "clusterexec" that allow to execute an Eoulsan workflow on a non Hadoop cluster. Condor is the first cluster scheduler supported by Eoulsan in this mode.
+            </action>
+
+            <action dev="jourdren" type="add">
+                 Add a new scheduler that allow to run tasks from steps that are not designed for Hadoop on an Hadoop cluster. The steps must have the @HadoopCompatible annotation and must only the DataFile API to access to the input and output files.
+            </action>
+
+            <action dev="jourdren" type="add">
+                 Add a "Counters" section in step result files that summaries counters of tasks with the same name (useful when using splitters and mergers in a workflow).
+            </action>
+
+            <action dev="jourdren" type="update">
+                 Many cleanup code, javadoc and typo fixes.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 Rename "pairend.accept.pairend" read filter parameter to "pairedend.accept.paired.end" and rename "pairend.accept.signlend" read filter parameter to "pairedend.accept.single.end".
+            </action>
+
+         </release>
+
 	</body>
 </document>
