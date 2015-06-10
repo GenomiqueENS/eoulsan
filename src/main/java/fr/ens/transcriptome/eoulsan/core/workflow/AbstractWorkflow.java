@@ -65,7 +65,6 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.DesignWriter;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -578,7 +577,7 @@ public abstract class AbstractWorkflow implements Workflow {
       new Workflow2Graphviz(this).save(new DataFile(jobDir,
           WORKFLOW_GRAPHVIZ_FILENAME));
 
-    } catch (IOException | EoulsanIOException e) {
+    } catch (IOException e) {
       throw new EoulsanException(
           "Error while writing design file or Graphiviz workflow file: "
               + e.getMessage(), e);

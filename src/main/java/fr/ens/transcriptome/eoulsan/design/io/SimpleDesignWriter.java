@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.design.io;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,17 +33,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
+import fr.ens.transcriptome.eoulsan.design.DesignUtils;
+import fr.ens.transcriptome.eoulsan.design.Experiment;
+import fr.ens.transcriptome.eoulsan.design.Sample;
+import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 
 /**
  * This class implements a writer for limma design files.
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class SimpleDesignWriter extends DesignWriter {
+public class SimpleDesignWriter implements DesignWriter {
+
+  private final OutputStream out;
 
   private BufferedWriter bw;
   private static final String SEPARATOR = "\t";
@@ -49,58 +57,61 @@ public class SimpleDesignWriter extends DesignWriter {
   private boolean writeScanLabelsSettings = true;
 
   @Override
-  public void write(final Design design) throws EoulsanIOException {
+  public void write(final Design design) throws IOException {
 
     if (design == null) {
       throw new NullPointerException("Design is null");
     }
 
-    try {
-      this.bw =
-          new BufferedWriter(new OutputStreamWriter(getOutputStream(),
-              Globals.DEFAULT_CHARSET));
+    this.bw =
+        new BufferedWriter(new OutputStreamWriter(this.out,
+            Globals.DEFAULT_CHARSET));
 
-      // List<String> metadataFields = design.getMetadataFieldsNames();
-      //
-      // // Write header
-      // this.bw.append(Design.SAMPLE_NUMBER_FIELD);
-      // this.bw.append(SEPARATOR);
-      //
-      // this.bw.append(Design.NAME_FIELD);
-      //
-      // for (String f : metadataFields) {
-      //
-      // this.bw.append(SEPARATOR);
-      // this.bw.append(f);
-      // }
-      //
-      // this.bw.append(NEWLINE);
-      //
-      // // Write data
-      // List<Sample> samples = design.getSamples();
-      //
-      // for (Sample s : samples) {
-      //
-      // this.bw.append(Integer.toString(s.getId()));
-      // this.bw.append(SEPARATOR);
-      //
-      // this.bw.append(s.getName());
-      //
-      // for (String f : metadataFields) {
-      //
-      // this.bw.append(SEPARATOR);
-      // this.bw.append(s.getMetadata().getField(f));
-      // }
-      //
-      // this.bw.append(NEWLINE);
-      // }
+    // Insert the names of the fields for the columns
+    this.bw.append("SampleNumber");
+    this.bw.append(SEPARATOR);
+    this.bw.append("Name");
 
-      this.bw.close();
-    } catch (IOException e) {
-      throw new EoulsanIOException("Error while writing stream: "
-          + e.getMessage(), e);
+    final List<String> sampleMDKeys =
+        DesignUtils.getAllSamplesMetadataKeys(design);
+    for (String key : sampleMDKeys) {
+
+      this.bw.append(SEPARATOR);
+      this.bw.append(key);
+    }
+    if (!design.getExperiments().isEmpty()) {
+      this.bw.append(SEPARATOR);
+      this.bw.append("Experiment");
+    }
+    this.bw.append(NEWLINE);
+
+    // Insert the metadata for each sample
+    for (Sample sample : design.getSamples()) {
+
+      this.bw.append("" + sample.getNumber());
+      this.bw.append(SEPARATOR);
+      this.bw.append(sample.getId());
+
+      final SampleMetadata smd = sample.getMetadata();
+
+      for (String key : sampleMDKeys) {
+
+        this.bw.append(SEPARATOR);
+
+        if (smd.contains(key)) {
+          this.bw.append(smd.get(key));
+        }
+      }
+      for (Experiment experiment : design.getExperiments()) {
+
+        this.bw.append(SEPARATOR);
+        this.bw.append(experiment.getId());
+      }
+      this.bw.append(NEWLINE);
+
     }
 
+    this.bw.close();
   }
 
   /**
@@ -127,32 +138,39 @@ public class SimpleDesignWriter extends DesignWriter {
   /**
    * Public constructor.
    * @param file file to read
-   * @throws EoulsanIOException if an error occurs while reading the file or if
-   *           the file is null.
+   * @throws IOException if an error occurs while reading the file or if the
+   *           file is null.
    */
-  public SimpleDesignWriter(final File file) throws EoulsanIOException {
+  public SimpleDesignWriter(final File file) throws IOException {
 
-    super(file);
+    checkNotNull(file, "file argument cannot be null");
+
+    this.out = new FileOutputStream(file);
   }
 
   /**
    * Public constructor
-   * @param os Input stream to read
-   * @throws EoulsanIOException if the stream is null
+   * @param out Input stream to read
+   * @throws IOException if the stream is null
    */
-  public SimpleDesignWriter(final OutputStream os) throws EoulsanIOException {
-    super(os);
+  public SimpleDesignWriter(final OutputStream out) throws IOException {
+
+    checkNotNull(out, "out argument cannot be null");
+
+    this.out = out;
   }
 
   /**
    * Public constructor
    * @param filename File to write
-   * @throws EoulsanIOException if the stream is null
+   * @throws IOException if the stream is null
    * @throws FileNotFoundException if the file doesn't exist
    */
-  public SimpleDesignWriter(final String filename) throws EoulsanIOException,
+  public SimpleDesignWriter(final String filename) throws IOException,
       FileNotFoundException {
 
-    this(new FileOutputStream(filename));
+    checkNotNull(filename, "filename argument cannot be null");
+
+    this.out = new FileOutputStream(filename);
   }
 }

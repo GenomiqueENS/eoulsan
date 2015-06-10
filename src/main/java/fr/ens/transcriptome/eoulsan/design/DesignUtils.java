@@ -26,7 +26,6 @@ package fr.ens.transcriptome.eoulsan.design;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -42,12 +41,11 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 
 /**
  * Utils methods for Design.
  * @since 1.0
- * @author Laurent Jourdren
+ * @author Laurent Jourdren & Xavier Bauquet
  */
 public final class DesignUtils {
 
@@ -61,12 +59,14 @@ public final class DesignUtils {
 
     final StringBuilder sb = new StringBuilder();
 
+    // Print the name and number of the design
     sb.append("Design: ");
     sb.append(design.getName());
     sb.append(" (");
     sb.append(design.getNumber());
     sb.append(")\n");
 
+    // Print design metadata
     sb.append("Design metadata:\n");
     for (Map.Entry<String, String> e : design.getMetadata().entrySet()) {
       sb.append('\t');
@@ -75,7 +75,26 @@ public final class DesignUtils {
       sb.append(e.getValue());
       sb.append('\n');
     }
+    sb.append('\n');
 
+    // Print experiment metadata
+    sb.append("Experiments:\n");
+    for (Experiment e : design.getExperiments()) {
+      final String expId = e.getId();
+      for (Map.Entry<String, String> m : e.getMetadata().entrySet()) {
+        sb.append('\t');
+        sb.append("Exp." + expId + "." + m.getKey());
+        sb.append('=');
+        sb.append(m.getValue());
+        sb.append('\n');
+      }
+      sb.append('\n');
+    }
+    sb.append('\n');
+
+    //
+    // Print column names
+    //
     sb.append("SampleId");
     sb.append('\t');
     sb.append("SampleNumber");
@@ -83,21 +102,20 @@ public final class DesignUtils {
     sb.append("SampleName");
 
     final List<String> sampleMDKeys = getAllSamplesMetadataKeys(design);
-    for (String key : sampleMDKeys) {
 
+    // Print common column names
+    for (String key : sampleMDKeys) {
       sb.append('\t');
       sb.append(key);
     }
 
+    // Print experiments column names
     for (Experiment experiment : design.getExperiments()) {
 
-      final String prefix = "Exp." + experiment.getId();
-
-      sb.append('\t');
-      sb.append(prefix);
+      final String prefix = "Exp." + experiment.getId() + ".";
 
       final List<String> experimentMDKeys =
-          getExperimentAllMetadataKeys(experiment);
+          getExperimentSampleAllMetadataKeys(experiment);
       for (String key : experimentMDKeys) {
 
         sb.append('\t');
@@ -108,6 +126,7 @@ public final class DesignUtils {
 
     sb.append('\n');
 
+    // Print samples metadata
     for (Sample sample : design.getSamples()) {
 
       sb.append(sample.getId());
@@ -117,6 +136,8 @@ public final class DesignUtils {
       sb.append(sample.getName());
 
       final SampleMetadata smd = sample.getMetadata();
+
+      // System.out.println(sampleMDKeys);
 
       for (String key : sampleMDKeys) {
 
@@ -129,17 +150,18 @@ public final class DesignUtils {
 
       for (Experiment experiment : design.getExperiments()) {
 
-        sb.append('\t');
-        sb.append(experiment.getName());
-        
-        final ExperimentMetadata emd = experiment.getMetadata();
+        final ExperimentSampleMetadata expSampleMetadata =
+            experiment.getExperimentSample(sample).getMetadata();
 
-        for (String key : sampleMDKeys) {
+        final List<String> experimentMDKeys =
+            getExperimentSampleAllMetadataKeys(experiment);
+
+        for (String key : experimentMDKeys) {
 
           sb.append('\t');
 
-          if (emd.contains(key)) {
-            sb.append(emd.get(key));
+          if (expSampleMetadata.contains(key)) {
+            sb.append(expSampleMetadata.get(key));
           }
         }
 
@@ -148,14 +170,6 @@ public final class DesignUtils {
     }
 
     System.out.println(sb.toString());
-  }
-
-  public static void main(String[] args) throws EoulsanIOException {
-
-    File f = new File("/home/jourdren/tmp/test-small/design.txt");
-
-    Design design = new SimpleDesignReader(f).read();
-    showDesign(design);
   }
 
   /**
@@ -190,7 +204,7 @@ public final class DesignUtils {
    * @param design the design
    * @return a list with the experiment metadata keys of the samples of a design
    */
-  public static List<String> getExperimentAllMetadataKeys(
+  public static List<String> getExperimentSampleAllMetadataKeys(
       final Experiment experiment) {
 
     checkNotNull(experiment, "design argument cannot be null");
@@ -301,22 +315,27 @@ public final class DesignUtils {
   public static Design readAndCheckDesign(final InputStream is)
       throws EoulsanException {
 
-    final DesignReader dr = new SimpleDesignReader(is);
-    final Design design = dr.read();
+    try {
+      final DesignReader dr = new SimpleDesignReader(is);
+      final Design design = dr.read();
 
-    DesignUtils.checkSamplesWithException(design);
+      DesignUtils.checkSamplesWithException(design);
 
-    if (!DesignUtils.checkGenomes(design)) {
-      throw new EoulsanException(
-          "Warning: The design contains more than one genome file.");
+      if (!DesignUtils.checkGenomes(design)) {
+        throw new EoulsanException(
+            "Warning: The design contains more than one genome file.");
+      }
+
+      if (!DesignUtils.checkAnnotations(design)) {
+        throw new EoulsanException(
+            "Warning: The design contains more than one annotation file.");
+      }
+
+      return design;
+
+    } catch (IOException e) {
+      throw new EoulsanException(e);
     }
-
-    if (!DesignUtils.checkAnnotations(design)) {
-      throw new EoulsanException(
-          "Warning: The design contains more than one annotation file.");
-    }
-
-    return design;
   }
 
   /**
@@ -442,11 +461,11 @@ public final class DesignUtils {
    * directory.
    * @param design Design object to modify
    * @param symlinksDir path to the directory where create symbolic links
-   * @throws EoulsanIOException if an error occurs while creating symbolic links
-   *           of if a path the design file does not exists
+   * @throws IOException if an error occurs while creating symbolic links of if
+   *           a path the design file does not exists
    */
   public static void replaceLocalPathBySymlinks(final Design design,
-      final DataFile symlinksDir) throws EoulsanIOException {
+      final DataFile symlinksDir) throws IOException {
 
     if (design == null) {
       return;
@@ -496,8 +515,7 @@ public final class DesignUtils {
   }
 
   private static List<String> replaceLocalPathBySymlinks(List<String> values,
-      final DataFile symlinksDir) throws EoulsanIOException {
-
+      final DataFile symlinksDir) throws IOException {
     final List<String> result = new ArrayList<>(values);
 
     for (int i = 0; i < values.size(); i++) {
@@ -509,18 +527,18 @@ public final class DesignUtils {
         final DataFile outFile = new DataFile(symlinksDir, inFile.getName());
 
         if (!inFile.exists()) {
-          throw new EoulsanIOException("File not exists: " + inFile);
+          throw new IOException("File not exists: " + inFile);
         }
 
         if (outFile.exists()) {
-          throw new EoulsanIOException(
-              "The symlink to create, already exists: " + outFile);
+          throw new IOException("The symlink to create, already exists: "
+              + outFile);
         }
 
         try {
           inFile.symlink(outFile);
         } catch (IOException e) {
-          throw new EoulsanIOException("Cannot create symlink: " + outFile, e);
+          throw new IOException("Cannot create symlink: " + outFile, e);
         }
 
         values.set(i, inFile.getName());

@@ -271,7 +271,6 @@ public class Experiment implements Serializable {
     final Experiment that = (Experiment) o;
 
     return Objects.equal(this.experimentId, that.experimentId)
-        && Objects.equal(this.experimentNumber, that.experimentNumber)
         && Objects.equal(this.experimentName, that.experimentName)
         && Objects.equal(this.metadata, that.metadata)
         && Objects.equal(this.samples, that.samples);

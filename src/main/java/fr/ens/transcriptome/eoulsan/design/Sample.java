@@ -164,7 +164,6 @@ public class Sample implements Serializable {
     final Sample that = (Sample) o;
 
     return Objects.equal(this.sampleId, that.sampleId)
-        && Objects.equal(this.sampleNumber, that.sampleNumber)
         && Objects.equal(this.sampleName, that.sampleName)
         && Objects.equal(this.sampleMetadata, that.sampleMetadata);
   }

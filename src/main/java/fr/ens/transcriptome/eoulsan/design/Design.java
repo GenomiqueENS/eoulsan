@@ -346,8 +346,7 @@ public class Design implements Serializable {
 
     final Design that = (Design) o;
 
-    return Objects.equal(this.designNumber, that.designNumber)
-        && Objects.equal(this.designName, that.designName)
+    return Objects.equal(this.designName, that.designName)
         && Objects.equal(this.samples, that.samples)
         && Objects.equal(this.experiments, that.experiments)
         && Objects.equal(this.designMetadata, that.designMetadata);

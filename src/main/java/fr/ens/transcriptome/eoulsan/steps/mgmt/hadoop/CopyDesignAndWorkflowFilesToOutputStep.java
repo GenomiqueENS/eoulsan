@@ -45,7 +45,6 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.util.Version;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
@@ -115,7 +114,7 @@ public class CopyDesignAndWorkflowFilesToOutputStep extends AbstractStep {
         new SimpleDesignWriter(outputDesignFs.create(outputDesignPath))
             .write(design);
       }
-    } catch (IOException | EoulsanIOException e) {
+    } catch (IOException e) {
       getLogger().severe("Unable to copy design file to output path.");
     }
 

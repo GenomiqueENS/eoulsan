@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.python.google.common.base.Objects;
+
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -42,7 +44,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 public abstract class AbstractMetadata {
 
-  private Map<String, String> md = new LinkedHashMap<>();
+  private Map<String, String> metadata = new LinkedHashMap<>();
 
   //
   // Methods
@@ -57,7 +59,7 @@ public abstract class AbstractMetadata {
 
     checkNotNull(key, "key argument cannot be null");
 
-    return this.md.get(key.trim());
+    return this.metadata.get(key.trim());
   }
 
   /**
@@ -70,7 +72,7 @@ public abstract class AbstractMetadata {
     checkNotNull(key, "key argument cannot be null");
     checkNotNull(value, "value argument cannot be null");
 
-    this.md.put(key, value);
+    this.metadata.put(key, value);
   }
 
   /**
@@ -99,6 +101,24 @@ public abstract class AbstractMetadata {
   }
 
   /**
+   * Get the number of metadata.
+   * @return the number of metadata
+   */
+  public int size() {
+
+    return this.metadata.size();
+  }
+
+  /**
+   * Test if there is no metadata.
+   * @return true if there is no metadata
+   */
+  public boolean isEmpty() {
+
+    return this.metadata.isEmpty();
+  }
+
+  /**
    * Test if the key is in md.
    * @param key the key
    * @return true if the key is in md
@@ -107,7 +127,7 @@ public abstract class AbstractMetadata {
 
     checkNotNull(key, "key argument cannot be null");
 
-    return this.md.containsKey(key.trim());
+    return this.metadata.containsKey(key.trim());
   }
 
   /**
@@ -128,7 +148,7 @@ public abstract class AbstractMetadata {
    */
   public Set<String> keySet() {
 
-    return Collections.unmodifiableSet(this.md.keySet());
+    return Collections.unmodifiableSet(this.metadata.keySet());
   }
 
   /**
@@ -137,7 +157,7 @@ public abstract class AbstractMetadata {
    */
   public Set<Map.Entry<String, String>> entrySet() {
 
-    return Collections.unmodifiableSet(this.md.entrySet());
+    return Collections.unmodifiableSet(this.metadata.entrySet());
   }
 
   /**
@@ -148,9 +168,40 @@ public abstract class AbstractMetadata {
 
     checkNotNull(key, "key argument cannot be null");
 
-    this.md.remove(key.trim());
+    this.metadata.remove(key.trim());
   }
 
-  // TODO Add object methods (hashCode(), toString(), equals())
+  //
+  // Object methods
+  //
+
+  @Override
+  public String toString() {
+
+    return Objects.toStringHelper(this).add("metadata", this.metadata)
+        .toString();
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Objects.hashCode(this.metadata);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+
+    if (o == this) {
+      return true;
+    }
+
+    if (!(o instanceof AbstractMetadata)) {
+      return false;
+    }
+
+    final AbstractMetadata that = (AbstractMetadata) o;
+
+    return Objects.equal(this.metadata, that.metadata);
+  }
 
 }

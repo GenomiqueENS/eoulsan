@@ -28,6 +28,7 @@ import static fr.ens.transcriptome.eoulsan.design.DesignMetadata.ADDITIONNAL_ANN
 import static fr.ens.transcriptome.eoulsan.design.DesignMetadata.GENOME_FILE_KEY;
 import static fr.ens.transcriptome.eoulsan.design.DesignMetadata.GFF_FILE_KEY;
 import static java.util.Collections.unmodifiableMap;
+import static org.python.google.common.base.Preconditions.checkNotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -42,18 +43,20 @@ import java.util.List;
 import java.util.Map;
 
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.core.workflow.FileNaming;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignFactory;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 
 /**
  * This class define a design reader for limma design files.
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class SimpleDesignReader extends InputStreamDesignReader {
+public class SimpleDesignReader implements DesignReader {
+
+  private final static String TAB_SEPARATOR = "\t";
 
   // For backward compatibility
   private static final String FILENAME_FIELD = "FileName";
@@ -61,6 +64,8 @@ public class SimpleDesignReader extends InputStreamDesignReader {
   private static final String SAMPLE_NAME_FIELD = "Name";
   private static final String READS_FIELD = "Reads";
   private static final String EXPERIMENT_FIELD = "Experiment";
+
+  private final InputStream is;
 
   private Map<String, String> defineDesignMetadataFields() {
 
@@ -87,215 +92,204 @@ public class SimpleDesignReader extends InputStreamDesignReader {
   }
 
   @Override
-  public Design read() throws EoulsanIOException {
+  public Design read() throws IOException {
 
     final List<String> fieldnames = new ArrayList<>();
     final Design design = DesignFactory.createEmptyDesign();
 
-    try {
+    final BufferedReader br =
+        new BufferedReader(new InputStreamReader(this.is,
+            Globals.DEFAULT_CHARSET));
 
-      setBufferedReader(new BufferedReader(new InputStreamReader(
-          getInputStream(), Globals.DEFAULT_CHARSET)));
+    final String separator = TAB_SEPARATOR;
+    String line = null;
 
-      BufferedReader br = getBufferedReader();
-      final String separator = getSeparatorField();
-      String line = null;
+    boolean firstLine = true;
+    // String ref = null;
 
-      boolean firstLine = true;
-      // String ref = null;
+    final Map<String, String> designMetadataFields =
+        defineDesignMetadataFields();
+    final Map<String, String> sampleMetadataFields =
+        defineSampleMetadataFields();
 
-      final Map<String, String> designMetadataFields =
-          defineDesignMetadataFields();
-      final Map<String, String> sampleMetadataFields =
-          defineSampleMetadataFields();
+    int idFieldIndex = -1;
+    int nameFieldIndex = -1;
+    int experimentFieldIndex = -1;
 
-      int idFieldIndex = -1;
-      int nameFieldIndex = -1;
-      int experimentFieldIndex = -1;
+    while ((line = br.readLine()) != null) {
 
-      while ((line = br.readLine()) != null) {
+      final String empty = line.trim();
+      if ("".equals(empty) || empty.startsWith("#")) {
+        continue;
+      }
 
-        final String empty = line.trim();
-        if ("".equals(empty) || empty.startsWith("#")) {
-          continue;
+      final String[] fields = line.split(separator);
+
+      if (firstLine) {
+
+        for (int i = 0; i < fields.length; i++) {
+
+          String field = fields[i].trim();
+
+          if ("".equals(field)) {
+            throw new IOException(
+                "Found an empty field name in design file header.");
+          }
+
+          // Compatibility with old design files
+          if (field.equals(FILENAME_FIELD)) {
+            field = SampleMetadata.READS_KEY;
+            fields[i] = field;
+          }
+
+          if (fieldnames.contains(field)) {
+            throw new IOException("There is two or more field \""
+                + field + "\" in design file header.");
+          }
+
+          fieldnames.add(field);
+
+          switch (field) {
+
+          case SAMPLE_NUMBER_FIELD:
+            idFieldIndex = i;
+            break;
+
+          case SAMPLE_NAME_FIELD:
+            nameFieldIndex = i;
+            break;
+
+          case EXPERIMENT_FIELD:
+            experimentFieldIndex = i;
+            break;
+
+          default:
+            break;
+          }
+
         }
 
-        final String[] fields = line.split(separator);
+        if (idFieldIndex != 0) {
+          throw new IOException("Invalid file format: "
+              + "The \"SampleNumber\" field is not the first field.");
+        }
 
-        if (firstLine) {
+        if (nameFieldIndex != 1) {
+          throw new IOException("Invalid file format: "
+              + "The \"Name\" field is not the second field.");
+        }
 
-          for (int i = 0; i < fields.length; i++) {
+        firstLine = false;
+      } else {
 
-            String field = fields[i].trim();
+        if (fields.length != fieldnames.size()) {
+          throw new IOException("Invalid file format: "
+              + "Found " + fields.length + " fields whereas "
+              + fieldnames.size() + " are required in line: " + line);
+        }
 
-            if ("".equals(field)) {
-              throw new EoulsanIOException(
-                  "Found an empty field name in design file header.");
+        Sample sample = null;
+
+        for (int i = 0; i < fields.length; i++) {
+
+          final String value = fields[i].trim();
+
+          final String fieldName = fieldnames.get(i);
+
+          if (i == idFieldIndex) {
+
+            // Do nothing for the SampleNumber field
+            continue;
+          } else if (i == nameFieldIndex) {
+
+            // The Name filed
+            sample = design.addSample(FileNaming.toValidName(value));
+          } else if (i == experimentFieldIndex) {
+
+            // The Experiment field
+            if (!design.containsExperiment(value)) {
+              design.addExperiment(value);
             }
+            design.getExperiment(value).addSample(sample);
+          } else {
 
-            // Compatibility with old design files
-            if (field.equals(FILENAME_FIELD)) {
-              field = SampleMetadata.READS_KEY;
-              fields[i] = field;
-            }
+            // Other fields
 
-            if (fieldnames.contains(field)) {
-              throw new EoulsanIOException("There is two or more field \""
-                  + field + "\" in design file header.");
-            }
+            if (designMetadataFields.containsKey(fieldName)) {
 
-            fieldnames.add(field);
+              final String mdKey = designMetadataFields.get(fieldName);
 
-            switch (field) {
-
-            case SAMPLE_NUMBER_FIELD:
-              idFieldIndex = i;
-              break;
-
-            case SAMPLE_NAME_FIELD:
-              nameFieldIndex = i;
-              break;
-
-            case EXPERIMENT_FIELD:
-              experimentFieldIndex = i;
-              break;
-
-            default:
-              break;
-            }
-
-          }
-
-          if (idFieldIndex != 0) {
-            throw new EoulsanIOException("Invalid file format: "
-                + "The \"SampleNumber\" field is not the first field.");
-          }
-
-          if (nameFieldIndex != 1) {
-            throw new EoulsanIOException("Invalid file format: "
-                + "The \"Name\" field is not the first field.");
-          }
-
-          firstLine = false;
-        } else {
-
-          if (fields.length != fieldnames.size()) {
-            throw new EoulsanIOException("Invalid file format: "
-                + "Found " + fields.length + " fields whereas "
-                + fieldnames.size() + " are required in line: " + line);
-          }
-
-          Sample sample = null;
-
-          for (int i = 0; i < fields.length; i++) {
-
-            final String value = fields[i].trim();
-
-            final String fieldName = fieldnames.get(i);
-
-            if (i == idFieldIndex) {
-
-              // Do nothing for the SampleNumber field
-              continue;
-            } else if (i == nameFieldIndex) {
-
-              // The Name filed
-              sample = design.addSample(value);
-            } else if (i == experimentFieldIndex) {
-
-              // The Experiment field
-              if (!design.containsExperiment(value)) {
-                design.addExperiment(value);
+              if (!design.getMetadata().contains(mdKey)) {
+                design.getMetadata().set(mdKey, value);
               }
-              design.getExperiment(value).addSample(sample);
             } else {
 
-              // Other fields
+              String mdKey;
 
-              if (designMetadataFields.containsKey(fieldName)) {
-
-                final String mdKey = designMetadataFields.get(fieldName);
-
-                if (!design.getMetadata().contains(mdKey)) {
-                  design.getMetadata().set(mdKey, value);
-                }
+              if (sampleMetadataFields.containsKey(fieldName)) {
+                mdKey = sampleMetadataFields.get(fieldName);
               } else {
-
-                String mdKey;
-
-                if (sampleMetadataFields.containsKey(fieldName)) {
-                  mdKey = sampleMetadataFields.get(fieldName);
-                } else {
-                  mdKey = fieldName;
-                }
-
-                sample.getMetadata().set(mdKey, value);
+                mdKey = fieldName;
               }
-            }
 
+              sample.getMetadata().set(mdKey, value);
+            }
           }
 
         }
 
       }
-    } catch (IOException e) {
 
-      throw new EoulsanIOException("Error while reading the file: "
-          + e.getMessage(), e);
-    }
-
-    try {
-      getBufferedReader().close();
-    } catch (IOException e) {
-      throw new EoulsanIOException("Error while closing the file: "
-          + e.getMessage(), e);
+      br.close();
     }
 
     if (!fieldnames.contains(READS_FIELD)) {
-      throw new EoulsanIOException("Invalid file format: No Reads field");
+      throw new IOException("Invalid file format: No Reads field");
     }
 
     return design;
   }
 
   //
-  // Constructor
+  // Constructors
   //
 
   /**
    * Public constructor.
    * @param file file to read
-   * @throws EoulsanIOException if an error occurs while reading the file or if
-   *           the file is null.
+   * @throws FileNotFoundException if the file cannot be found
+   * @throws IOException if an error occurs while reading the file or if the
+   *           file is null.
    */
-  public SimpleDesignReader(final File file) throws EoulsanIOException {
+  public SimpleDesignReader(final File file) throws FileNotFoundException {
 
-    super(file);
-    if (file == null) {
-      throw new NullPointerException("The design file to read is null.");
-    }
+    checkNotNull(file, "the file argument cannot be null");
+
+    this.is = new FileInputStream(file);
   }
 
   /**
    * Public constructor
    * @param is Input stream to read
-   * @throws EoulsanIOException if the stream is null
+   * @throws IOException if the stream is null
    */
-  public SimpleDesignReader(final InputStream is) throws EoulsanIOException {
+  public SimpleDesignReader(final InputStream is) throws IOException {
 
-    super(is);
+    checkNotNull(is, "the is argument cannot be null");
+
+    this.is = is;
   }
 
   /**
    * Public constructor
    * @param filename File to read
-   * @throws EoulsanIOException if the stream is null
+   * @throws IOException if the stream is null
    * @throws FileNotFoundException if the file doesn't exist
    */
-  public SimpleDesignReader(final String filename) throws EoulsanIOException,
-      FileNotFoundException {
+  public SimpleDesignReader(final String filename) throws FileNotFoundException {
 
-    this(new FileInputStream(filename));
+    checkNotNull(filename, "the filename argument cannot be null");
+
+    this.is = new FileInputStream(filename);
   }
-
 }
