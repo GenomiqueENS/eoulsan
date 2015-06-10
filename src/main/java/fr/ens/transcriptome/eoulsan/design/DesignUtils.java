@@ -40,7 +40,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.design.io.DesignReader;
-import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
+import fr.ens.transcriptome.eoulsan.design.io.Eoulsan1DesignReader;
 
 /**
  * Utils methods for Design.
@@ -316,7 +316,7 @@ public final class DesignUtils {
       throws EoulsanException {
 
     try {
-      final DesignReader dr = new SimpleDesignReader(is);
+      final DesignReader dr = new Eoulsan1DesignReader(is);
       final Design design = dr.read();
 
       DesignUtils.checkSamplesWithException(design);

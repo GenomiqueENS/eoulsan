@@ -45,7 +45,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignBuilder;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
 import fr.ens.transcriptome.eoulsan.design.io.DesignWriter;
-import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
+import fr.ens.transcriptome.eoulsan.design.io.Eoulsan1DesignWriter;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 
 /**
@@ -183,7 +183,7 @@ public class CreateDesignAction extends AbstractAction {
             + designFile + " already exists");
       }
 
-      DesignWriter dw = new SimpleDesignWriter(designFile.create());
+      DesignWriter dw = new Eoulsan1DesignWriter(designFile.create());
 
       dw.write(design);
 

@@ -44,7 +44,7 @@ import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
+import fr.ens.transcriptome.eoulsan.design.io.Eoulsan1DesignWriter;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.util.Version;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
@@ -111,7 +111,7 @@ public class CopyDesignAndWorkflowFilesToOutputStep extends AbstractStep {
         final FileSystem outputDesignFs = outputDesignPath.getFileSystem(conf);
 
         final Design design = context.getWorkflow().getDesign();
-        new SimpleDesignWriter(outputDesignFs.create(outputDesignPath))
+        new Eoulsan1DesignWriter(outputDesignFs.create(outputDesignPath))
             .write(design);
       }
     } catch (IOException e) {

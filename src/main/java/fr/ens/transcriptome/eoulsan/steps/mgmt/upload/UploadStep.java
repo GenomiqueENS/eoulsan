@@ -52,7 +52,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.io.DesignWriter;
-import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
+import fr.ens.transcriptome.eoulsan.design.io.Eoulsan1DesignWriter;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -394,7 +394,7 @@ public abstract class UploadStep extends AbstractStep {
     final File result = context.getRuntime().createTempFile("design-", ".txt");
 
     DesignWriter writer =
-        new SimpleDesignWriter(FileUtils.createOutputStream(result));
+        new Eoulsan1DesignWriter(FileUtils.createOutputStream(result));
     writer.write(design);
 
     return result;

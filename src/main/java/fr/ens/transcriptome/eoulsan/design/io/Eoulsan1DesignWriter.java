@@ -47,7 +47,7 @@ import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class SimpleDesignWriter implements DesignWriter {
+public class Eoulsan1DesignWriter implements DesignWriter {
 
   private final OutputStream out;
 
@@ -141,7 +141,7 @@ public class SimpleDesignWriter implements DesignWriter {
    * @throws IOException if an error occurs while reading the file or if the
    *           file is null.
    */
-  public SimpleDesignWriter(final File file) throws IOException {
+  public Eoulsan1DesignWriter(final File file) throws IOException {
 
     checkNotNull(file, "file argument cannot be null");
 
@@ -153,7 +153,7 @@ public class SimpleDesignWriter implements DesignWriter {
    * @param out Input stream to read
    * @throws IOException if the stream is null
    */
-  public SimpleDesignWriter(final OutputStream out) throws IOException {
+  public Eoulsan1DesignWriter(final OutputStream out) throws IOException {
 
     checkNotNull(out, "out argument cannot be null");
 
@@ -166,7 +166,7 @@ public class SimpleDesignWriter implements DesignWriter {
    * @throws IOException if the stream is null
    * @throws FileNotFoundException if the file doesn't exist
    */
-  public SimpleDesignWriter(final String filename) throws IOException,
+  public Eoulsan1DesignWriter(final String filename) throws IOException,
       FileNotFoundException {
 
     checkNotNull(filename, "filename argument cannot be null");

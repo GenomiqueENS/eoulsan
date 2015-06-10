@@ -54,7 +54,7 @@ import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class SimpleDesignReader implements DesignReader {
+public class Eoulsan1DesignReader implements DesignReader {
 
   private final static String TAB_SEPARATOR = "\t";
 
@@ -261,7 +261,7 @@ public class SimpleDesignReader implements DesignReader {
    * @throws IOException if an error occurs while reading the file or if the
    *           file is null.
    */
-  public SimpleDesignReader(final File file) throws FileNotFoundException {
+  public Eoulsan1DesignReader(final File file) throws FileNotFoundException {
 
     checkNotNull(file, "the file argument cannot be null");
 
@@ -273,7 +273,7 @@ public class SimpleDesignReader implements DesignReader {
    * @param is Input stream to read
    * @throws IOException if the stream is null
    */
-  public SimpleDesignReader(final InputStream is) throws IOException {
+  public Eoulsan1DesignReader(final InputStream is) throws IOException {
 
     checkNotNull(is, "the is argument cannot be null");
 
@@ -286,7 +286,7 @@ public class SimpleDesignReader implements DesignReader {
    * @throws IOException if the stream is null
    * @throws FileNotFoundException if the file doesn't exist
    */
-  public SimpleDesignReader(final String filename) throws FileNotFoundException {
+  public Eoulsan1DesignReader(final String filename) throws FileNotFoundException {
 
     checkNotNull(filename, "the filename argument cannot be null");
 
