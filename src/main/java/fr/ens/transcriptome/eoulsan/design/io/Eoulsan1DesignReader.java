@@ -59,11 +59,11 @@ public class Eoulsan1DesignReader implements DesignReader {
   private final static String TAB_SEPARATOR = "\t";
 
   // For backward compatibility
-  private static final String FILENAME_FIELD = "FileName";
-  private static final String SAMPLE_NUMBER_FIELD = "SampleNumber";
-  private static final String SAMPLE_NAME_FIELD = "Name";
-  private static final String READS_FIELD = "Reads";
-  private static final String EXPERIMENT_FIELD = "Experiment";
+  static final String SAMPLE_NUMBER_FIELD = "SampleNumber";
+  static final String SAMPLE_NAME_FIELD = "Name";
+  static final String FILENAME_FIELD = "FileName";
+  static final String READS_FIELD = "Reads";
+  static final String EXPERIMENT_FIELD = "Experiment";
 
   private final InputStream is;
 
@@ -171,12 +171,14 @@ public class Eoulsan1DesignReader implements DesignReader {
 
         if (idFieldIndex != 0) {
           throw new IOException("Invalid file format: "
-              + "The \"SampleNumber\" field is not the first field.");
+              + "The \"" + SAMPLE_NUMBER_FIELD
+              + "\" field is not the first field.");
         }
 
         if (nameFieldIndex != 1) {
           throw new IOException("Invalid file format: "
-              + "The \"Name\" field is not the second field.");
+              + "The \"" + SAMPLE_NAME_FIELD
+              + "\" field is not the second field.");
         }
 
         firstLine = false;
@@ -286,7 +288,8 @@ public class Eoulsan1DesignReader implements DesignReader {
    * @throws IOException if the stream is null
    * @throws FileNotFoundException if the file doesn't exist
    */
-  public Eoulsan1DesignReader(final String filename) throws FileNotFoundException {
+  public Eoulsan1DesignReader(final String filename)
+      throws FileNotFoundException {
 
     checkNotNull(filename, "the filename argument cannot be null");
 

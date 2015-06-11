@@ -27,6 +27,13 @@ package fr.ens.transcriptome.eoulsan.design.io;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.design.DesignUtils.getAllSamplesMetadataKeys;
 import static fr.ens.transcriptome.eoulsan.design.DesignUtils.getExperimentSampleAllMetadataKeys;
+import static fr.ens.transcriptome.eoulsan.design.io.Eoulsan2DesignReader.DOT_SEPARATOR;
+import static fr.ens.transcriptome.eoulsan.design.io.Eoulsan2DesignReader.EQUAL_SEPARATOR;
+import static fr.ens.transcriptome.eoulsan.design.io.Eoulsan2DesignReader.EXPERIMENT_FIELD_PREFIX;
+import static fr.ens.transcriptome.eoulsan.design.io.Eoulsan2DesignReader.PROJECT_NAME_SUFFIX;
+import static fr.ens.transcriptome.eoulsan.design.io.Eoulsan2DesignReader.SAMPLE_ID_FIELDNAME;
+import static fr.ens.transcriptome.eoulsan.design.io.Eoulsan2DesignReader.SAMPLE_NAME_FIELDNAME;
+import static fr.ens.transcriptome.eoulsan.design.io.Eoulsan2DesignReader.TAB_SEPARATOR;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -55,7 +62,10 @@ public class Eoulsan2DesignWriter implements DesignWriter {
 
   private final OutputStream out;
 
-  private static final String SEPARATOR = "\t";
+  private static final String HEADER_SECTION = "[Header]";
+  private static final String EXPERIMENT_SECTION = "[Experiments]";
+  private static final String COLUMN_SECTION = "[Columns]";
+
   private static final String NEWLINE = "\r\n";
 
   @Override
@@ -71,12 +81,13 @@ public class Eoulsan2DesignWriter implements DesignWriter {
 
     // Write design metadata
     if (design.getMetadata().isEmpty()) {
-      bw.append("[header]" + NEWLINE);
+      bw.append(HEADER_SECTION);
+      bw.append(NEWLINE);
     }
 
     for (Map.Entry<String, String> e : design.getMetadata().entrySet()) {
       bw.append(e.getKey());
-      bw.append('=');
+      bw.append(EQUAL_SEPARATOR);
       bw.append(e.getValue());
       bw.append(NEWLINE);
     }
@@ -84,48 +95,53 @@ public class Eoulsan2DesignWriter implements DesignWriter {
 
     // Write experiment metadata
     if (!design.getExperiments().isEmpty()) {
-      bw.append("[experiments]" + NEWLINE);
+      bw.append(EXPERIMENT_SECTION);
+      bw.append(NEWLINE);
     }
 
     for (Experiment e : design.getExperiments()) {
       final String expId = e.getId();
-      bw.append("Exp." + expId + ".projectName=" + e.getName() + NEWLINE);
+      bw.append(EXPERIMENT_FIELD_PREFIX
+          + expId + PROJECT_NAME_SUFFIX + EQUAL_SEPARATOR + e.getName()
+          + NEWLINE);
       for (Map.Entry<String, String> m : e.getMetadata().entrySet()) {
-        bw.append("Exp." + expId + "." + m.getKey());
-        bw.append('=');
+        bw.append(EXPERIMENT_FIELD_PREFIX + expId + DOT_SEPARATOR + m.getKey());
+        bw.append(EQUAL_SEPARATOR);
         bw.append(m.getValue());
         bw.append(NEWLINE);
       }
       bw.append(NEWLINE);
     }
     bw.append(NEWLINE);
-    bw.append("[columns]" + NEWLINE);
+    bw.append(COLUMN_SECTION);
+    bw.append(NEWLINE);
 
     //
     // Print column names
     //
-    bw.append("SampleId");
-    bw.append(SEPARATOR);
-    bw.append("SampleName");
+    bw.append(SAMPLE_ID_FIELDNAME);
+    bw.append(TAB_SEPARATOR);
+    bw.append(SAMPLE_NAME_FIELDNAME);
 
     final List<String> sampleMDKeys = getAllSamplesMetadataKeys(design);
 
     // Print common column names
     for (String key : sampleMDKeys) {
-      bw.append(SEPARATOR);
+      bw.append(TAB_SEPARATOR);
       bw.append(key);
     }
 
     // Print experiments column names
     for (Experiment experiment : design.getExperiments()) {
 
-      final String prefix = "Exp." + experiment.getId() + ".";
+      final String prefix =
+          EXPERIMENT_FIELD_PREFIX + experiment.getId() + DOT_SEPARATOR;
 
       final List<String> experimentMDKeys =
           getExperimentSampleAllMetadataKeys(experiment);
       for (String key : experimentMDKeys) {
 
-        bw.append(SEPARATOR);
+        bw.append(TAB_SEPARATOR);
         bw.append(prefix);
         bw.append(key);
       }
@@ -137,7 +153,7 @@ public class Eoulsan2DesignWriter implements DesignWriter {
     for (Sample sample : design.getSamples()) {
 
       bw.append(sample.getId());
-      bw.append(SEPARATOR);
+      bw.append(TAB_SEPARATOR);
       bw.append(sample.getName());
 
       final SampleMetadata smd = sample.getMetadata();
@@ -146,7 +162,7 @@ public class Eoulsan2DesignWriter implements DesignWriter {
 
       for (String key : sampleMDKeys) {
 
-        bw.append(SEPARATOR);
+        bw.append(TAB_SEPARATOR);
 
         if (smd.contains(key)) {
           bw.append(smd.get(key));
@@ -163,7 +179,7 @@ public class Eoulsan2DesignWriter implements DesignWriter {
 
         for (String key : experimentMDKeys) {
 
-          bw.append(SEPARATOR);
+          bw.append(TAB_SEPARATOR);
 
           if (expSampleMetadata.contains(key)) {
             bw.append(expSampleMetadata.get(key));
@@ -185,8 +201,8 @@ public class Eoulsan2DesignWriter implements DesignWriter {
   /**
    * Public constructor.
    * @param file file to read
-   * @throws IOException if an error occurs while reading the file or if
-   *           the file is null.
+   * @throws IOException if an error occurs while reading the file or if the
+   *           file is null.
    */
   public Eoulsan2DesignWriter(final File file) throws IOException {
 

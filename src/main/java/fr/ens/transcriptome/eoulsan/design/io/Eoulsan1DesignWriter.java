@@ -25,6 +25,9 @@
 package fr.ens.transcriptome.eoulsan.design.io;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.design.io.Eoulsan1DesignReader.EXPERIMENT_FIELD;
+import static fr.ens.transcriptome.eoulsan.design.io.Eoulsan1DesignReader.SAMPLE_NAME_FIELD;
+import static fr.ens.transcriptome.eoulsan.design.io.Eoulsan1DesignReader.SAMPLE_NUMBER_FIELD;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -68,9 +71,9 @@ public class Eoulsan1DesignWriter implements DesignWriter {
             Globals.DEFAULT_CHARSET));
 
     // Insert the names of the fields for the columns
-    this.bw.append("SampleNumber");
+    this.bw.append(SAMPLE_NUMBER_FIELD);
     this.bw.append(SEPARATOR);
-    this.bw.append("Name");
+    this.bw.append(SAMPLE_NAME_FIELD);
 
     final List<String> sampleMDKeys =
         DesignUtils.getAllSamplesMetadataKeys(design);
@@ -81,7 +84,7 @@ public class Eoulsan1DesignWriter implements DesignWriter {
     }
     if (!design.getExperiments().isEmpty()) {
       this.bw.append(SEPARATOR);
-      this.bw.append("Experiment");
+      this.bw.append(EXPERIMENT_FIELD);
     }
     this.bw.append(NEWLINE);
 

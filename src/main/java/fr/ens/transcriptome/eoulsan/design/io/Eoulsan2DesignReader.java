@@ -50,17 +50,19 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 /**
  * This class define a design reader for Eoulsan 2 design file.
  * @since 2.0
- * @author Bauquet Xavier
+ * @author Xavier Bauquet
  */
 
 public class Eoulsan2DesignReader implements DesignReader {
 
-  private static final String SAMPLE_NAME_FIELDNAME = "SampleName";
-  private static final String SAMPLE_ID_FIELDNAME = "SampleId";
-  private static final String EXPERIMENT_FIELD_PREFIX = "Exp.";
-  private final static String EQUAL_SEPARATOR = "=";
-  private final static String TAB_SEPARATOR = "\t";
-  private final static String DOT_SEPARATOR = ".";
+  static final String SAMPLE_ID_FIELDNAME = "SampleId";
+  static final String SAMPLE_NAME_FIELDNAME = "SampleName";
+  static final String EXPERIMENT_FIELD_PREFIX = "Exp.";
+  static final String PROJECT_NAME_SUFFIX = "projectName";
+
+  static final char EQUAL_SEPARATOR = '=';
+  static final char TAB_SEPARATOR = '\t';
+  static final char DOT_SEPARATOR = '.';
 
   private final InputStream is;
 
@@ -138,7 +140,7 @@ public class Eoulsan2DesignReader implements DesignReader {
 
     }
 
-    if ("projectName".equals(expKey)) {
+    if (PROJECT_NAME_SUFFIX.equals(expKey)) {
 
       // Set for experiment name
       design.getExperiment(expId).setName(value);
