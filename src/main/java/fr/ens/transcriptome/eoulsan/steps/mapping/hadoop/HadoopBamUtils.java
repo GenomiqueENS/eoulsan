@@ -1,8 +1,10 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMFileReader;
 import htsjdk.samtools.SamFileHeaderMerger;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.util.BlockCompressedStreamConstants;
 
 import java.io.IOException;
@@ -43,7 +45,9 @@ public class HadoopBamUtils {
     for (final String in : conf.getStrings(Utils.HEADERMERGER_INPUTS_PROPERTY)) {
       final Path p = new Path(in);
 
-      final SAMFileReader r = new SAMFileReader(p.getFileSystem(conf).open(p));
+      final SamReader r =
+          SamReaderFactory.makeDefault().open(
+              SamInputResource.of(p.getFileSystem(conf).open(p)));
       headers.add(r.getFileHeader());
       r.close();
     }
@@ -100,8 +104,6 @@ public class HadoopBamUtils {
         fs.globStatus(new Path(directory, basePrefix
             + conf.get(Utils.WORK_FILENAME_PROPERTY) + basePostfix
             + "-[0-9][0-9][0-9][0-9][0-9][0-9]*"));
-
-    int i = 0;
 
     for (final FileStatus part : parts) {
 

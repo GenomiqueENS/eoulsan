@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.ABORTED;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.FAILED;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.PARTIALLY_DONE;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
@@ -428,7 +429,8 @@ public abstract class AbstractWorkflow implements Workflow {
     // Start stop watch
     this.stopwatch.start();
 
-    while (!getSortedStepsByState(READY, WAITING, WORKING).isEmpty()) {
+    while (!getSortedStepsByState(READY, WAITING, PARTIALLY_DONE, WORKING)
+        .isEmpty()) {
 
       try {
         // TODO 2000 must be a constant
@@ -510,7 +512,8 @@ public abstract class AbstractWorkflow implements Workflow {
   void emergencyStop(final Throwable exception, final String errorMessage) {
 
     // Change working step state to aborted
-    for (AbstractWorkflowStep step : getSortedStepsByState(WORKING)) {
+    for (AbstractWorkflowStep step : getSortedStepsByState(PARTIALLY_DONE,
+        WORKING)) {
       step.setState(ABORTED);
     }
 

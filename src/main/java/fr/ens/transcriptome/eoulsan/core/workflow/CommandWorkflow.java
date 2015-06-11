@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -311,8 +310,8 @@ public class CommandWorkflow extends AbstractWorkflow {
           && stepProtocol != depProtocol
           && inputPort.isRequiredInWorkingDirectory()) {
         newStep =
-            newInputFormatCopyStep(this, inputPort, depOutputCompression,
-                stepCompressionsAllowed);
+            newInputFormatCopyStep(this, inputPort, dependencyOutputPort,
+                depOutputCompression, stepCompressionsAllowed);
       }
 
       // Check if (un)compression is needed
@@ -322,8 +321,8 @@ public class CommandWorkflow extends AbstractWorkflow {
           && !inputPort.getCompressionsAccepted()
               .contains(depOutputCompression)) {
         newStep =
-            newInputFormatCopyStep(this, inputPort, depOutputCompression,
-                stepCompressionsAllowed);
+            newInputFormatCopyStep(this, inputPort, dependencyOutputPort,
+                depOutputCompression, stepCompressionsAllowed);
       }
 
       // If the dependency if design step and step does not allow all the
@@ -335,8 +334,8 @@ public class CommandWorkflow extends AbstractWorkflow {
           && !EnumSet.allOf(CompressionType.class).containsAll(
               stepCompressionsAllowed)) {
         newStep =
-            newInputFormatCopyStep(this, inputPort, depOutputCompression,
-                stepCompressionsAllowed);
+            newInputFormatCopyStep(this, inputPort, dependencyOutputPort,
+                depOutputCompression, stepCompressionsAllowed);
       }
 
       // Set the dependencies
@@ -368,16 +367,18 @@ public class CommandWorkflow extends AbstractWorkflow {
   /**
    * Create a new step that copy/(un)compress input data of a step.
    * @param workflow workflow where adding the step
-   * @param port input port
+   * @param inputPort input port
+   * @param outputPort output port
    * @param inputCompression compression format of the data to read
-   * @param outputCompressionAllowed compression formats allowed by the step
+   * @param outputCompressionsAllowed compression formats allowed by the step
    * @return a new step
    * @throws EoulsanException if an error occurs while creating the step
    */
   private static CommandWorkflowStep newInputFormatCopyStep(
-      final CommandWorkflow workflow, final WorkflowInputPort port,
+      final CommandWorkflow workflow, final WorkflowInputPort inputPort,
+      final WorkflowOutputPort outputPort,
       final CompressionType inputCompression,
-      final EnumSet<CompressionType> outputCompressionAllowed)
+      final EnumSet<CompressionType> outputCompressionsAllowed)
       throws EoulsanException {
 
     // Set the step name
@@ -392,27 +393,37 @@ public class CommandWorkflow extends AbstractWorkflow {
     String stepId;
     do {
 
-      stepId = port.getStep().getId() + "prepare" + i;
+      stepId = inputPort.getStep().getId() + "prepare" + i;
       i++;
 
     } while (stepsIds.contains(stepId));
 
+    final boolean designOutputport =
+        outputPort.getStep().getType() == StepType.DESIGN_STEP;
+
     // Find output compression
     final CompressionType comp;
-    if (outputCompressionAllowed.contains(inputCompression)) {
+    if (outputCompressionsAllowed.contains(inputCompression)) {
       comp = inputCompression;
-    } else if (outputCompressionAllowed.contains(CompressionType.NONE)) {
+    } else if (outputCompressionsAllowed.contains(CompressionType.NONE)) {
       comp = CompressionType.NONE;
     } else {
-      comp = outputCompressionAllowed.iterator().next();
+      comp = outputCompressionsAllowed.iterator().next();
     }
 
     // Set parameters
     final Set<Parameter> parameters = new HashSet<>();
-    parameters.add(new Parameter(CopyInputDataStep.FORMAT_PARAMETER, port
+    parameters.add(new Parameter(CopyInputDataStep.FORMAT_PARAMETER, inputPort
         .getFormat().getName()));
     parameters.add(new Parameter(
         CopyInputDataStep.OUTPUT_COMPRESSION_PARAMETER, comp.name()));
+    parameters.add(new Parameter(CopyInputDataStep.DESIGN_INPUT_PARAMETER, ""
+        + designOutputport));
+    parameters
+        .add(new Parameter(
+            CopyInputDataStep.OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER,
+            CopyInputDataStep
+                .encodeAllowedCompressionsParameterValue(outputCompressionsAllowed)));
 
     // Create step
     CommandWorkflowStep step =
@@ -432,50 +443,50 @@ public class CommandWorkflow extends AbstractWorkflow {
    * @return a new step
    * @throws EoulsanException if an error occurs while creating the step
    */
-  private static CommandWorkflowStep newOutputFormatCopyStep(
+  private static List<CommandWorkflowStep> newOutputFormatCopyStep(
       final CommandWorkflow workflow, final WorkflowOutputPorts outputPorts)
       throws EoulsanException {
+
+    final List<CommandWorkflowStep> result = new ArrayList<>();
 
     // Set the step name
     final String stepName = CopyOutputDataStep.STEP_NAME;
 
-    // Search a non used step id
-    final Set<String> stepsIds = new HashSet<>();
-    for (WorkflowStep s : workflow.getSteps()) {
-      stepsIds.add(s.getId());
+    for (WorkflowOutputPort outputPort : outputPorts) {
+
+      // Search a non used step id
+      final Set<String> stepsIds = new HashSet<>();
+      for (WorkflowStep s : workflow.getSteps()) {
+        stepsIds.add(s.getId());
+      }
+      int i = 1;
+      String stepId;
+      do {
+
+        stepId = outputPorts.getFirstPort().getStep().getId() + "finalize" + i;
+        i++;
+
+      } while (stepsIds.contains(stepId));
+
+      // Set parameters
+      final Set<Parameter> parameters = new HashSet<>();
+      parameters.add(new Parameter(CopyOutputDataStep.PORTS_PARAMETER,
+          outputPort.getName()));
+      parameters.add(new Parameter(CopyOutputDataStep.FORMATS_PARAMETER,
+          outputPort.getFormat().getName()));
+
+      // Create step
+      CommandWorkflowStep step =
+          new CommandWorkflowStep(workflow, stepId, stepName, null, parameters,
+              false, true);
+
+      // Configure step
+      step.configure();
+
+      result.add(step);
     }
-    int i = 1;
-    String stepId;
-    do {
 
-      stepId = outputPorts.getFirstPort().getStep().getId() + "finalize" + i;
-      i++;
-
-    } while (stepsIds.contains(stepId));
-
-    List<String> portsList = new ArrayList<>();
-    List<String> formatsList = new ArrayList<>();
-    for (WorkflowOutputPort port : outputPorts) {
-      portsList.add(port.getName());
-      formatsList.add(port.getFormat().getName());
-    }
-
-    // Set parameters
-    final Set<Parameter> parameters = new HashSet<>();
-    parameters.add(new Parameter(CopyOutputDataStep.PORTS_PARAMETER, Joiner.on(
-        ',').join(portsList)));
-    parameters.add(new Parameter(CopyOutputDataStep.FORMATS_PARAMETER, Joiner
-        .on(',').join(formatsList)));
-
-    // Create step
-    CommandWorkflowStep step =
-        new CommandWorkflowStep(workflow, stepId, stepName, null, parameters,
-            false, true);
-
-    // Configure step
-    step.configure();
-
-    return step;
+    return result;
   }
 
   /**
@@ -728,18 +739,21 @@ public class CommandWorkflow extends AbstractWorkflow {
           && !step.getStepOutputDirectory().equals(getOutputDirectory())
           && !step.getWorkflowOutputPorts().isEmpty()) {
 
-        CommandWorkflowStep newStep =
+        final List<CommandWorkflowStep> newSteps =
             newOutputFormatCopyStep(this, step.getWorkflowOutputPorts());
 
-        // Add the copy step in the list of steps just before the step given as
-        // method argument
-        addStep(indexOfStep(step) + 1, newStep);
+        for (CommandWorkflowStep newStep : newSteps) {
 
-        // Add the copy dependencies
-        for (WorkflowOutputPort outputPort : step.getWorkflowOutputPorts()) {
-          newStep.addDependency(
-              newStep.getWorkflowInputPorts().getPort(outputPort.getName()),
-              outputPort);
+          // Add the copy step in the list of steps just before the step given
+          // as method argument
+          addStep(indexOfStep(step) + 1, newStep);
+
+          // Add the copy dependencies
+          final WorkflowInputPort newStepInputPort =
+              newStep.getWorkflowInputPorts().getFirstPort();
+          newStep.addDependency(newStepInputPort, step.getWorkflowOutputPorts()
+              .getPort(newStepInputPort.getName()));
+
         }
       }
     }

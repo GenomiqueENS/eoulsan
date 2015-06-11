@@ -23,6 +23,7 @@
  */
 package fr.ens.transcriptome.eoulsan.steps.fastqc;
 
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 
 import java.io.File;
@@ -129,9 +130,10 @@ public class FastQCStep extends AbstractStep {
     final InputPortsBuilder builder = new InputPortsBuilder();
 
     if (this.inputFormat == DataFormats.READS_FASTQ) {
-      builder.addPort("input", DataFormats.READS_FASTQ);
+      builder.addPort(DEFAULT_SINGLE_INPUT_PORT_NAME, DataFormats.READS_FASTQ);
     } else {
-      builder.addPort("input", DataFormats.MAPPER_RESULTS_SAM);
+      builder.addPort(DEFAULT_SINGLE_INPUT_PORT_NAME,
+          DataFormats.MAPPER_RESULTS_SAM);
     }
 
     return builder.create();
@@ -177,7 +179,8 @@ public class FastQCStep extends AbstractStep {
       case FASTQC_KMER_SIZE_PARAMETER_NAME:
 
         // Kmer Size, default FastQC value is 7
-        System.setProperty("fastqc.kmer_size", "" + p.getIntValueGreaterOrEqualsTo(1));
+        System.setProperty("fastqc.kmer_size",
+            "" + p.getIntValueGreaterOrEqualsTo(1));
         break;
 
       case FASTQC_NOGROUP_PARAMETER_NAME:
@@ -222,7 +225,13 @@ public class FastQCStep extends AbstractStep {
         context.getOutputData(DataFormats.FASTQC_REPORT_HTML, inData);
 
     // Extract data file
-    final DataFile inFile = inData.getDataFile();
+    final DataFile inFile;
+    if (inData.getFormat().getMaxFilesCount() > 1) {
+      inFile = inData.getDataFile(0);
+    } else {
+      inFile = inData.getDataFile();
+    }
+
     final DataFile reportFile = outData.getDataFile();
 
     SequenceFile seqFile = null;
@@ -254,8 +263,7 @@ public class FastQCStep extends AbstractStep {
 
       // Set the description of the context
       status.setDescription("Create FastQC report on "
-          + inData.getDataFile().toFile().getAbsolutePath() + " in "
-          + reportFile.getName() + ")");
+          + inFile + " in " + reportFile.getName() + ")");
 
       // Keep module data is now unnecessary
       modules.clear();

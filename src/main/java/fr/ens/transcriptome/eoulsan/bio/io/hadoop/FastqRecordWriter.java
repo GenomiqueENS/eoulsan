@@ -24,6 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.bio.io.hadoop.Counters.ENTRIES_WRITTEN;
+import static fr.ens.transcriptome.eoulsan.bio.io.hadoop.Counters.INPUT_ENTRIES;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -41,6 +44,8 @@ import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
  */
 public class FastqRecordWriter extends RecordWriter<Text, Text> {
 
+  private static final String COUNTERS_GROUP = "FASTQ Output Format Counters";
+
   private static final String utf8 = "UTF-8";
   private static final byte[] newline;
 
@@ -52,12 +57,15 @@ public class FastqRecordWriter extends RecordWriter<Text, Text> {
     }
   }
 
-  final ReadSequence read = new ReadSequence();
   private final DataOutputStream out;
+  private final TaskAttemptContext context;
+  private final ReadSequence read = new ReadSequence();
 
   @Override
   public synchronized void write(final Text key, final Text value)
       throws IOException {
+
+    this.context.getCounter(COUNTERS_GROUP, INPUT_ENTRIES).increment(1);
 
     if (value == null) {
       return;
@@ -65,14 +73,17 @@ public class FastqRecordWriter extends RecordWriter<Text, Text> {
 
     this.read.parse(value.toString());
 
-    out.write(this.read.toFastQ().getBytes(utf8));
-    out.write(newline);
+    this.out.write(this.read.toFastQ().getBytes(utf8));
+    this.out.write(newline);
+
+    this.context.getCounter(COUNTERS_GROUP, ENTRIES_WRITTEN).increment(1);
   }
 
   @Override
   public synchronized void close(final TaskAttemptContext context)
       throws IOException {
-    out.close();
+
+    this.out.close();
   }
 
   //
@@ -81,9 +92,13 @@ public class FastqRecordWriter extends RecordWriter<Text, Text> {
 
   /**
    * Public constructor.
+   * @param context the context
    * @param os output stream
    */
-  public FastqRecordWriter(DataOutputStream out) {
+  public FastqRecordWriter(final TaskAttemptContext context,
+      final DataOutputStream out) {
+
+    this.context = context;
     this.out = out;
   }
 

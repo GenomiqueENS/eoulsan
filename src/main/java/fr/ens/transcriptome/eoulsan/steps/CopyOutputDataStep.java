@@ -30,8 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.Splitter;
-
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
@@ -68,8 +66,8 @@ public class CopyOutputDataStep extends AbstractStep {
   public static final String PORTS_PARAMETER = "ports";
   public static final String FORMATS_PARAMETER = "formats";
 
-  private final List<String> portNames = new ArrayList<>();
-  private final List<DataFormat> formats = new ArrayList<>();
+  private String portName;
+  private DataFormat format;
 
   @Override
   public String getName() {
@@ -86,64 +84,46 @@ public class CopyOutputDataStep extends AbstractStep {
   @Override
   public InputPorts getInputPorts() {
 
-    final InputPortsBuilder builder = new InputPortsBuilder();
-
-    for (int i = 0; i < this.portNames.size(); i++) {
-      builder.addPort(this.portNames.get(i), this.formats.get(i));
-    }
-
-    return builder.create();
+    return new InputPortsBuilder().addPort(this.portName, this.format).create();
   }
 
   @Override
   public OutputPorts getOutputPorts() {
 
-    final OutputPortsBuilder builder = new OutputPortsBuilder();
-
-    for (int i = 0; i < this.portNames.size(); i++) {
-      builder.addPort(this.portNames.get(i), this.formats.get(i));
-    }
-
-    return builder.create();
+    return new OutputPortsBuilder().addPort(this.portName, this.format)
+        .create();
   }
 
   @Override
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
+
     for (Parameter p : stepParameters) {
 
-      if (FORMATS_PARAMETER.equals(p.getName())) {
+      switch (p.getName()) {
+
+      case FORMATS_PARAMETER:
 
         final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
-        for (String formatName : Splitter.on(',').split(p.getValue())) {
+        final DataFormat format = registry.getDataFormatFromName(p.getValue());
 
-          final DataFormat format = registry.getDataFormatFromName(formatName);
-
-          if (format == null) {
-            throw new EoulsanException("Unknown format: " + formatName);
-          }
-          this.formats.add(format);
+        if (format == null) {
+          throw new EoulsanException("Unknown format: " + p.getValue());
         }
-      } else if (PORTS_PARAMETER.equals(p.getName())) {
 
-        for (String portName : Splitter.on(',').split(p.getValue())) {
-          this.portNames.add(portName);
-        }
+        this.format = format;
+        break;
+
+      case PORTS_PARAMETER:
+        this.portName = p.getValue();
+        break;
+
+      default:
+        throw new EoulsanException("Unknown parameter for step "
+            + getName() + ": " + p.getName());
       }
-
     }
-
-    if (this.formats.isEmpty()) {
-      throw new EoulsanException("No format set.");
-    }
-
-    if (this.formats.size() != this.portNames.size()) {
-      throw new EoulsanException("The number of formats ("
-          + this.formats.size() + ") is not the same of the number of ports ("
-          + this.portNames.size() + ")");
-    }
-
   }
 
   @Override

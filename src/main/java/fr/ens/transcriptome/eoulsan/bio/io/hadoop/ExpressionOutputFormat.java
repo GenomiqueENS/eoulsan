@@ -72,11 +72,11 @@ public class ExpressionOutputFormat extends
     if (!isCompressed) {
 
       FSDataOutputStream fileOut = fs.create(file, false);
-      return new ExpressionRecordWriter(fileOut);
+      return new ExpressionRecordWriter(context, fileOut);
     } else {
 
       FSDataOutputStream fileOut = fs.create(file, false);
-      return new ExpressionRecordWriter(new DataOutputStream(
+      return new ExpressionRecordWriter(context, new DataOutputStream(
           codec.createOutputStream(fileOut)));
     }
   }

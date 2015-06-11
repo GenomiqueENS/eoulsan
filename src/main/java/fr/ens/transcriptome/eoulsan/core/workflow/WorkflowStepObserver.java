@@ -49,8 +49,12 @@ public interface WorkflowStepObserver {
   /**
    * The progress of the step has been changed.
    * @param step step that the progress has been changed
+   * @param terminatedTasks the terminated tasks count
+   * @param submittedTasks the submitted tasks count
+   * @param progress the progress of the step
    */
-  void notifyStepState(WorkflowStep step, double progress);
+  void notifyStepState(WorkflowStep step, int terminatedTasks,
+      int submittedTasks, double progress);
 
   /**
    * The note of the step has been changed.
