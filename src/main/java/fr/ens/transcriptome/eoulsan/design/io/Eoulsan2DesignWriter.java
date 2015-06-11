@@ -105,8 +105,8 @@ public class Eoulsan2DesignWriter implements DesignWriter {
     for (Experiment e : design.getExperiments()) {
       final String expId = e.getId();
       bw.append(EXPERIMENT_FIELD_PREFIX
-          + expId + PROJECT_NAME_SUFFIX + EQUAL_SEPARATOR + e.getName()
-          + NEWLINE);
+          + expId + DOT_SEPARATOR + PROJECT_NAME_SUFFIX + EQUAL_SEPARATOR
+          + e.getName() + NEWLINE);
       for (Map.Entry<String, String> m : e.getMetadata().entrySet()) {
         bw.append(EXPERIMENT_FIELD_PREFIX + expId + DOT_SEPARATOR + m.getKey());
         bw.append(EQUAL_SEPARATOR);
