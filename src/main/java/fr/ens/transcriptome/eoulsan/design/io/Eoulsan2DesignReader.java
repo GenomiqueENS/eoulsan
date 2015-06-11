@@ -132,7 +132,7 @@ public class Eoulsan2DesignReader implements DesignReader {
     final List<String> expField = this.dotSplitter.splitToList(key);
 
     if (expField.size() != 3) {
-      throw new IOException("The experiment key is invalide.");
+      throw new IOException("The experiment key is invalid.");
     }
 
     String expId = expField.get(1);
@@ -380,78 +380,65 @@ public class Eoulsan2DesignReader implements DesignReader {
         new BufferedReader(new InputStreamReader(this.is,
             Globals.DEFAULT_CHARSET));
 
-    try {
+    final StringBuilder lineBuffer = new StringBuilder();
 
-      final StringBuilder lineBuffer = new StringBuilder();
+    String line = null;
 
-      String line = null;
+    while ((line = br.readLine()) != null) {
 
-      while ((line = br.readLine()) != null) {
+      // Trim trailing tabular
+      if (header) {
 
-        // Trim trailing tabular
-        if (header) {
+        final List<String> fields = this.trimTabSplitter.splitToList(line);
 
-          final List<String> fields = this.trimTabSplitter.splitToList(line);
-
-          if (fields.size() == 1) {
-            line = fields.get(0);
-          }
-        }
-
-        // Concatenate lines that ends with "\\"
-        if (header && line.endsWith("\\")) {
-          lineBuffer.append(line.substring(0, line.length() - 1));
-          continue;
-        }
-
-        lineBuffer.append(line);
-        line = lineBuffer.toString();
-
-        // go through the lines of the design file
-        final String trimmedLine = line.trim();
-        lineBuffer.setLength(0);
-
-        if ("".equals(trimmedLine)
-            || trimmedLine.startsWith("#") || trimmedLine.startsWith("[")) {
-
-          // If the line is empty or begin by # or [ this line is ignored
-          continue;
-        }
-
-        if (header && line.indexOf('\t') != -1) {
-
-          // Test if the line is in the header or in the column
-          header = false;
-        }
-
-        if (header) {
-
-          // Read the Header
-          parseHeader(design, line);
-        } else {
-
-          // Read the columns
-          parseColumns(design, columnNames, line, firstLine);
-
-          if (firstLine) {
-            firstLine = false;
-          }
-
+        if (fields.size() == 1) {
+          line = fields.get(0);
         }
       }
 
-    } catch (IOException e) {
+      // Concatenate lines that ends with "\\"
+      if (header && line.endsWith("\\")) {
+        lineBuffer.append(line.substring(0, line.length() - 1));
+        continue;
+      }
 
-      throw new IOException("Error while reading the file: " + e.getMessage(),
-          e);
+      lineBuffer.append(line);
+      line = lineBuffer.toString();
+
+      // go through the lines of the design file
+      final String trimmedLine = line.trim();
+      lineBuffer.setLength(0);
+
+      if ("".equals(trimmedLine)
+          || trimmedLine.startsWith("#") || trimmedLine.startsWith("[")) {
+
+        // If the line is empty or begin by # or [ this line is ignored
+        continue;
+      }
+
+      if (header && line.indexOf('\t') != -1) {
+
+        // Test if the line is in the header or in the column
+        header = false;
+      }
+
+      if (header) {
+
+        // Read the Header
+        parseHeader(design, line);
+      } else {
+
+        // Read the columns
+        parseColumns(design, columnNames, line, firstLine);
+
+        if (firstLine) {
+          firstLine = false;
+        }
+
+      }
     }
 
-    try {
-      br.close();
-    } catch (IOException e) {
-      throw new IOException("Error while closing the file: " + e.getMessage(),
-          e);
-    }
+    br.close();
 
     return design;
   }
