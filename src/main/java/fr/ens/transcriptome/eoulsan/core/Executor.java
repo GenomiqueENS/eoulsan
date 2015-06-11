@@ -40,7 +40,7 @@ import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser;
 import fr.ens.transcriptome.eoulsan.core.workflow.Workflow;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepObserverRegistry;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.io.Eoulsan1DesignReader;
+import fr.ens.transcriptome.eoulsan.design.io.DefaultDesignReader;
 import fr.ens.transcriptome.eoulsan.ui.UI;
 import fr.ens.transcriptome.eoulsan.ui.UIService;
 
@@ -215,7 +215,7 @@ public class Executor {
       checkNotNull(is, "The input stream for design file is null");
 
       // Read design file and return the design object
-      return new Eoulsan1DesignReader(is).read();
+      return new DefaultDesignReader(is).read();
 
     } catch (IOException e) {
       throw new EoulsanException(e);
