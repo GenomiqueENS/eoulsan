@@ -57,7 +57,6 @@ import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.translators.BasicTranslator;
 import fr.ens.transcriptome.eoulsan.translators.CommonLinksInfoTranslator;
@@ -221,7 +220,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
         translator = loadTranslator(this.annotationFile);
       }
 
-    } catch (IOException | EoulsanIOException e) {
+    } catch (IOException e) {
       return status.createStepResult(e);
     }
 
@@ -310,12 +309,10 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
    * Load translator annotation.
    * @param annotationFile the annotation file to use
    * @return a Translator object with the additional annotation
-   * @throws EoulsanIOException if an error occurs while reading additionnal
-   *           annotation
    * @throws IOException if an error occurs while reading additionnal annotation
    */
   private Translator loadTranslator(final DataFile annotationFile)
-      throws EoulsanIOException, IOException {
+      throws IOException {
 
     checkNotNull(annotationFile, "annotationFile argument cannot be null");
 
@@ -339,7 +336,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
       @Override
       public String[] getFields() {
 
-        return new String[] { "EnsemblGeneID" };
+        return new String[] {"EnsemblGeneID"};
       }
     };
 

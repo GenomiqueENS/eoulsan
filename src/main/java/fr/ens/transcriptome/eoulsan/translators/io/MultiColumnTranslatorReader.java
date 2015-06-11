@@ -27,13 +27,11 @@ package fr.ens.transcriptome.eoulsan.translators.io;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.translators.MultiColumnTranslator;
 
 /**
@@ -103,12 +101,12 @@ public class MultiColumnTranslatorReader {
   /**
    * Set the input stream.
    * @param is The input stream to set
-   * @throws EoulsanIOException if the stream is null
+   * @throws IOException if the stream is null
    */
-  protected void setInputStream(final InputStream is) throws EoulsanIOException {
+  protected void setInputStream(final InputStream is) throws IOException {
 
     if (is == null) {
-      throw new EoulsanIOException("No stream to read");
+      throw new IOException("No stream to read");
     }
     this.is = is;
   }
@@ -128,9 +126,9 @@ public class MultiColumnTranslatorReader {
   /**
    * Read the design.
    * @return a new Design object
-   * @throws EoulsanIOException if an error occurs while reading the design
+   * @throws IOException if an error occurs while reading the design
    */
-  public MultiColumnTranslator read() throws EoulsanIOException {
+  public MultiColumnTranslator read() throws IOException {
 
     setBufferedReader(new BufferedReader(new InputStreamReader(
         getInputStream(), Globals.DEFAULT_CHARSET)));
@@ -143,42 +141,34 @@ public class MultiColumnTranslatorReader {
 
     MultiColumnTranslator result = null;
 
-    try {
+    while ((line = br.readLine()) != null) {
 
-      while ((line = br.readLine()) != null) {
-
-        if ("".equals(line)) {
-          continue;
-        }
-
-        String[] cols = line.split(separator);
-
-        if (removeQuotes) {
-          for (int i = 0; i < cols.length; i++) {
-            cols[i] = removeDoubleQuotesAndTrim(cols[i]);
-          }
-        }
-
-        if (result == null && this.noHeader) {
-          final String[] header = new String[cols.length];
-          for (int i = 0; i < header.length; i++) {
-            header[i] = "#" + i;
-          }
-          result = new MultiColumnTranslator(header);
-        }
-
-        if (result == null) {
-          result = new MultiColumnTranslator(cols);
-        } else {
-          result.addRow(cols);
-        }
-
+      if ("".equals(line)) {
+        continue;
       }
 
-    } catch (IOException e) {
+      String[] cols = line.split(separator);
 
-      throw new EoulsanIOException("Error while reading the file: "
-          + e.getMessage(), e);
+      if (removeQuotes) {
+        for (int i = 0; i < cols.length; i++) {
+          cols[i] = removeDoubleQuotesAndTrim(cols[i]);
+        }
+      }
+
+      if (result == null && this.noHeader) {
+        final String[] header = new String[cols.length];
+        for (int i = 0; i < header.length; i++) {
+          header[i] = "#" + i;
+        }
+        result = new MultiColumnTranslator(header);
+      }
+
+      if (result == null) {
+        result = new MultiColumnTranslator(cols);
+      } else {
+        result.addRow(cols);
+      }
+
     }
 
     return result;
@@ -232,11 +222,10 @@ public class MultiColumnTranslatorReader {
   /**
    * Public constructor.
    * @param filename file to read
-   * @throws EoulsanIOException if an error occurs while reading the file or if
-   *           the file is null.
+   * @throws IOException if an error occurs while reading the file or if the
+   *           file is null.
    */
-  public MultiColumnTranslatorReader(final String filename)
-      throws EoulsanIOException {
+  public MultiColumnTranslatorReader(final String filename) throws IOException {
 
     this(new File(filename), false);
   }
@@ -245,11 +234,11 @@ public class MultiColumnTranslatorReader {
    * Public constructor.
    * @param filename file to read
    * @param noHeader true if there is no header for column names
-   * @throws EoulsanIOException if an error occurs while reading the file or if
-   *           the file is null.
+   * @throws IOException if an error occurs while reading the file or if the
+   *           file is null.
    */
   public MultiColumnTranslatorReader(final String filename,
-      final boolean noHeader) throws EoulsanIOException {
+      final boolean noHeader) throws IOException {
 
     this(new File(filename), noHeader);
   }
@@ -257,10 +246,10 @@ public class MultiColumnTranslatorReader {
   /**
    * Public constructor.
    * @param file file to read
-   * @throws EoulsanIOException if an error occurs while reading the file or if
-   *           the file is null.
+   * @throws IOException if an error occurs while reading the file or if the
+   *           file is null.
    */
-  public MultiColumnTranslatorReader(final File file) throws EoulsanIOException {
+  public MultiColumnTranslatorReader(final File file) throws IOException {
 
     this(file, false);
   }
@@ -269,33 +258,27 @@ public class MultiColumnTranslatorReader {
    * Public constructor.
    * @param file file to read
    * @param noHeader true if there is no header for column names
-   * @throws EoulsanIOException if an error occurs while reading the file or if
-   *           the file is null.
+   * @throws IOException if an error occurs while reading the file or if the
+   *           file is null.
    */
   public MultiColumnTranslatorReader(final File file, final boolean noHeader)
-      throws EoulsanIOException {
+      throws IOException {
 
     if (file == null) {
-      throw new EoulsanIOException("No file to load");
+      throw new IOException("No file to load");
     }
 
     this.noHeader = noHeader;
 
-    try {
-      setInputStream(new FileInputStream(file));
-    } catch (FileNotFoundException e) {
-      throw new EoulsanIOException("File not found : " + file.getName(), e);
-    }
-
+    setInputStream(new FileInputStream(file));
   }
 
   /**
    * Public constructor
    * @param is Input stream to read
-   * @throws EoulsanIOException if the stream is null
+   * @throws IOException if the stream is null
    */
-  public MultiColumnTranslatorReader(final InputStream is)
-      throws EoulsanIOException {
+  public MultiColumnTranslatorReader(final InputStream is) throws IOException {
 
     this(is, false);
   }
@@ -304,10 +287,10 @@ public class MultiColumnTranslatorReader {
    * Public constructor
    * @param is Input stream to read
    * @param noHeader true if there is no header for column names
-   * @throws EoulsanIOException if the stream is null
+   * @throws IOException if the stream is null
    */
   public MultiColumnTranslatorReader(final InputStream is,
-      final boolean noHeader) throws EoulsanIOException {
+      final boolean noHeader) throws IOException {
 
     this.noHeader = noHeader;
     setInputStream(is);

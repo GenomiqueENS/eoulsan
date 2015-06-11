@@ -53,7 +53,6 @@ import fr.ens.transcriptome.eoulsan.design.DesignUtils;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.io.DesignWriter;
 import fr.ens.transcriptome.eoulsan.design.io.Eoulsan1DesignWriter;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Version;
@@ -165,9 +164,6 @@ public abstract class UploadStep extends AbstractStep {
           .getSource()));
 
     } catch (IOException e) {
-
-      return status.createStepResult(e);
-    } catch (EoulsanIOException e) {
 
       return status.createStepResult(e);
     }
@@ -385,11 +381,10 @@ public abstract class UploadStep extends AbstractStep {
    * @param context context object
    * @param design Design object
    * @return the temporary design file
-   * @throws EoulsanIOException if an error occurs while writing the design file
    * @throws IOException if an error occurs while writing the design file
    */
   private File writeTempDesignFile(final StepContext context,
-      final Design design) throws EoulsanIOException, IOException {
+      final Design design) throws IOException {
 
     final File result = context.getRuntime().createTempFile("design-", ".txt");
 

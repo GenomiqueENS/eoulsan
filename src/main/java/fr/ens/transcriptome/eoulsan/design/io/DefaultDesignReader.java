@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 
 /**
  * This class allow to read a design file whatever the underlying design format.
@@ -51,9 +50,9 @@ public class DefaultDesignReader implements DesignReader {
   /**
    * Public constructor
    * @param is Input stream to read
-   * @throws EoulsanIOException if the stream is null
+   * @throws IOException if the stream is null
    */
-  public DefaultDesignReader(final InputStream is) throws EoulsanIOException {
+  public DefaultDesignReader(final InputStream is) throws IOException {
 
     checkNotNull(is, "is argument cannot be null");
 
@@ -63,10 +62,10 @@ public class DefaultDesignReader implements DesignReader {
   /**
    * Public constructor
    * @param filename File to read
-   * @throws EoulsanIOException if the stream is null
+   * @throws IOException if the stream is null
    * @throws FileNotFoundException if the file doesn't exist
    */
-  public DefaultDesignReader(final String filename) throws EoulsanIOException,
+  public DefaultDesignReader(final String filename) throws IOException,
       FileNotFoundException {
 
     checkNotNull(filename, "filename argument cannot be null");
