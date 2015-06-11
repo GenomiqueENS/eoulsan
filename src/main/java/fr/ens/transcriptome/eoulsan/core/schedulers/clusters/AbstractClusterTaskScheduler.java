@@ -121,7 +121,9 @@ public abstract class AbstractClusterTaskScheduler extends
 
       final List<String> command = new ArrayList<>();
 
-      command.add(Main.getInstance().getEoulsanScriptPath());
+      final File eoulsanScriptFile =
+          new File(Main.getInstance().getEoulsanScriptPath());
+      command.add(eoulsanScriptFile.getAbsolutePath());
 
       final String logLevel = Main.getInstance().getLogLevelArgument();
 
