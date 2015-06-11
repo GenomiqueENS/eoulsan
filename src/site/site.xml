@@ -63,7 +63,8 @@
 		<menu name="Documentation">
 
 			<item name="Quickstart Guide" href="/quickstart.html"/>
-			<item name="Design file" href="/designfile.html"/>
+			<item name="Design file v1" href="/designfile.html"/>
+			<item name="Design file v2" href="/Eoulsan2designfile.html"/>
 			<item name="Workflow file" href="/workflowfile.html"/>
 			<item name="Configuration file" href="/conffile.html"/>
 			
