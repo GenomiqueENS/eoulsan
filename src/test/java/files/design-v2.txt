@@ -1,5 +1,5 @@
 [Header]
-DesignFormatVersion=1	
+DesignFormatVersion=2
 Project=testDEseq2	
 ProjectDescription=testDEseq2	
 Owner=Xavier Bauquet	

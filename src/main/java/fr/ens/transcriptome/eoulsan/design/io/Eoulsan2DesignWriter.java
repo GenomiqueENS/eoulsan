@@ -83,6 +83,9 @@ public class Eoulsan2DesignWriter implements DesignWriter {
     if (design.getMetadata().isEmpty()) {
       bw.append(HEADER_SECTION);
       bw.append(NEWLINE);
+      bw.append(Eoulsan2DesignReader.DESIGN_FORMAT_VERSION_METADATA_KEY);
+      bw.append(EQUAL_SEPARATOR);
+      bw.append(Eoulsan2DesignReader.FORMAT_VERSION);
     }
 
     for (Map.Entry<String, String> e : design.getMetadata().entrySet()) {

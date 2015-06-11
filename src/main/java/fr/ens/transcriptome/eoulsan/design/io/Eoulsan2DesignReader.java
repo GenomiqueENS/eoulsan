@@ -60,6 +60,10 @@ public class Eoulsan2DesignReader implements DesignReader {
   static final String EXPERIMENT_FIELD_PREFIX = "Exp.";
   static final String PROJECT_NAME_SUFFIX = "projectName";
 
+  static final String DESIGN_FORMAT_VERSION_METADATA_KEY =
+      "DesignFormatVersion";
+  static final String FORMAT_VERSION = "2";
+
   static final char EQUAL_SEPARATOR = '=';
   static final char TAB_SEPARATOR = '\t';
   static final char DOT_SEPARATOR = '.';
@@ -166,6 +170,15 @@ public class Eoulsan2DesignReader implements DesignReader {
    */
   private void readDesignMetadata(String key, String value, Design design)
       throws IOException {
+
+    if (DESIGN_FORMAT_VERSION_METADATA_KEY.equals(key)) {
+
+      if (!FORMAT_VERSION.equals(value.trim())) {
+        throw new IOException("Unsupported design format version: " + value);
+      }
+
+      return;
+    }
 
     // If the field name already exist
     if (design.getMetadata().contains(key)) {
