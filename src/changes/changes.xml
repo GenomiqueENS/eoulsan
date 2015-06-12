@@ -901,6 +901,10 @@ of reads that reject each filter like in local mode.
                  The tasks can now be launched once all the required data of the task is available. Before, tasks where launched only if all the tasks of the dependency steps where completed.
             </action>
 
+            <action dev="jourdren" type="update">
+                 The genome and annotation data have now the basename of the file as name.
+            </action>
+
          </release>
 
 	</body>
