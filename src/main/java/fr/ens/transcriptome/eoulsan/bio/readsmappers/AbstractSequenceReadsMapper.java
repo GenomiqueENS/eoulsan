@@ -36,6 +36,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -124,7 +126,7 @@ public abstract class AbstractSequenceReadsMapper implements
    * @return the indexer executables
    */
   protected String[] getIndexerExecutables() {
-    return new String[] { getIndexerExecutable() };
+    return new String[] {getIndexerExecutable()};
   }
 
   /**
@@ -480,8 +482,16 @@ public abstract class AbstractSequenceReadsMapper implements
     final File[] indexFiles =
         FileUtils.listFilesByExtension(archiveIndexDir, extension);
 
-    if (indexFiles == null || indexFiles.length != 1) {
-      throw new IOException("Unable to get index file for " + getMapperName());
+    if (indexFiles == null || indexFiles.length == 0) {
+      throw new IOException("Unable to get index file for "
+          + getMapperName() + " with \"" + extension
+          + "\" extension in directory: " + archiveIndexDir);
+    }
+
+    if (indexFiles.length > 1) {
+      throw new IOException("More than one index file for "
+          + getMapperName() + " with \"" + extension
+          + "\" extension in directory: " + archiveIndexDir);
     }
 
     // Get the path to the index
@@ -493,18 +503,35 @@ public abstract class AbstractSequenceReadsMapper implements
   private void unzipArchiveIndexFile(final InputStream archiveIndexFile,
       final File archiveIndexDir) throws IOException {
 
-    // Uncompress archive if necessary
-    if (!archiveIndexDir.exists()) {
+    final File lockFile =
+        new File(archiveIndexDir.getAbsoluteFile().getParentFile(),
+            archiveIndexDir.getName() + ".lock");
 
-      if (!archiveIndexDir.mkdir()) {
-        throw new IOException("Can't create directory for "
-            + getMapperName() + " index: " + archiveIndexDir);
+    final RandomAccessFile lockIs = new RandomAccessFile(lockFile, "rw");
+
+    final FileLock lock = lockIs.getChannel().lock();
+
+    try {
+      // Uncompress archive if necessary
+      if (!archiveIndexDir.exists()) {
+
+        if (!archiveIndexDir.mkdir()) {
+          throw new IOException("Can't create directory for "
+              + getMapperName() + " index: " + archiveIndexDir);
+        }
+
+        getLogger().fine(
+            "Unzip archiveIndexFile "
+                + archiveIndexFile + " in " + archiveIndexDir);
+        FileUtils.unzip(archiveIndexFile, archiveIndexDir);
       }
+    } catch (IOException e) {
+      throw e;
+    } finally {
 
-      getLogger().fine(
-          "Unzip archiveIndexFile "
-              + archiveIndexFile + " in " + archiveIndexDir);
-      FileUtils.unzip(archiveIndexFile, archiveIndexDir);
+      lock.release();
+      lockIs.close();
+      lockFile.delete();
     }
 
     FileUtils.checkExistingDirectoryFile(archiveIndexDir, getMapperName()
