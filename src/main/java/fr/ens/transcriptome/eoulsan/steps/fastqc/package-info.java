@@ -24,6 +24,6 @@
 
 /**
  * This package contain all the classes related to FastQC.
- * @since 1.0
+ * @since 2.0
  */
 package fr.ens.transcriptome.eoulsan.steps.fastqc;
