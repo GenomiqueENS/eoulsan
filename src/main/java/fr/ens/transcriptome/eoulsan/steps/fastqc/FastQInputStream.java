@@ -22,8 +22,6 @@ public class FastQInputStream extends FastQFile {
   private boolean casavaMode;
   @SuppressWarnings("unused")
   private boolean nofilter;
-  @SuppressWarnings("unused")
-  private BufferedReader br;
 
   FastQInputStream(final InputStream is, final String filename)
       throws SequenceFormatException, IOException, EoulsanException {
@@ -41,13 +39,20 @@ public class FastQInputStream extends FastQFile {
       }
     }
 
-    br = new BufferedReader(new InputStreamReader(is));
-
     // readNext();
     // Call private method
 
+    Method setBufferMethod;
     Method readNextMethod;
     try {
+      // Extract method
+      setBufferMethod =
+          FastQFile.class.getDeclaredMethod("setBuffer", new Class<?>[] {});
+
+      // Invoke method, not parameter useful
+      setBufferMethod.invoke(this, new Object[] {new BufferedReader(
+          new InputStreamReader(is))});
+
       // Extract method by name
       readNextMethod =
           FastQFile.class.getDeclaredMethod("readNext", new Class<?>[] {});

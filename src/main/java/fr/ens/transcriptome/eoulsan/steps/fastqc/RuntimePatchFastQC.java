@@ -1,9 +1,13 @@
 package fr.ens.transcriptome.eoulsan.steps.fastqc;
 
+import java.io.IOException;
+
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtConstructor;
+import javassist.CtMethod;
+import javassist.CtNewMethod;
 import javassist.NotFoundException;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 
@@ -38,6 +42,16 @@ public class RuntimePatchFastQC {
         // Modify constructor, it does nothing
         constructors[0].setBody(null);
 
+        // Add method
+        CtMethod newmethod =
+            CtNewMethod
+                .make(
+                    "\n\npublic void setBuffered(final BufferedReader br){ this.br = br;}\n\n",
+                    cc);
+        cc.addMethod(newmethod);
+
+        cc.writeFile();
+
         // Load the class by the ClassLoader
         cc.toClass();
       }
@@ -46,7 +60,7 @@ public class RuntimePatchFastQC {
       throw new EoulsanException("Fail to found class "
           + className + " for patch code");
 
-    } catch (final CannotCompileException e) {
+    } catch (final CannotCompileException | IOException e) {
       throw new EoulsanException(e);
     }
   }
