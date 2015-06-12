@@ -189,7 +189,10 @@ public abstract class AbstractClusterTaskScheduler extends
         beforeExecuteTask(this.context);
 
         // Submit Job
-        this.jobId = submitJob(createJobName(), createJobCommand());
+        this.jobId =
+            submitJob(createJobName(), createJobCommand(),
+                ((TaskContext) this.context).getTaskOutputDirectory().toFile(),
+                this.context.getId());
 
         StatusResult status = null;
 

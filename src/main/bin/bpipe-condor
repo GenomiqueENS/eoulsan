@@ -151,6 +151,8 @@ make_condor_description_file () {
       job_script_name="job-$JOB_SCRIPT_ID.condor"
    fi
 
+   job_script_dir=`dirname $job_script_name`
+
    # write out the job script to a file
    # Output masking unreliable at moment, stores the sbatch stdout and stderr in logs
    EXECUTABLE=`echo $COMMAND | cut -f 1 -d ' '`
@@ -158,8 +160,8 @@ make_condor_description_file () {
    cat > $job_script_name << HERE
 Universe = vanilla
 Executable = $EXECUTABLE
-Output = script-$JOB_SCRIPT_ID.stdout
-Error = script-$JOB_SCRIPT_ID.stderr
+Output = $job_script_dir/script-$JOB_SCRIPT_ID.stdout
+Error = $job_script_dir/script-$JOB_SCRIPT_ID.stderr
 Arguments = $ARGUMENTS
 Queue
 HERE

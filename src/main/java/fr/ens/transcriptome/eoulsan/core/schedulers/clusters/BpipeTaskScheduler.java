@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.schedulers.clusters;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
@@ -66,16 +67,21 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
   }
 
   @Override
-  public String submitJob(final String jobName, final List<String> jobCommand)
-      throws IOException {
+  public String submitJob(final String jobName, final List<String> jobCommand,
+      final File jobDirectory, final int taskId) throws IOException {
 
     checkNotNull(jobName, "jobName argument cannot be null");
     checkNotNull(jobCommand, "jobCommand argument cannot be null");
+    checkNotNull(jobDirectory, "jobDirectory argument cannot be null");
+    checkArgument(jobDirectory.isDirectory(),
+        "The job directory does not exists or is not a directory: "
+            + jobDirectory);
 
     final String jobCommandString = Joiner.on(' ').join(jobCommand);
 
     try {
-      final Process process = startJobProcess(jobName, jobCommandString);
+      final Process process =
+          startJobProcess(jobName, jobCommandString, jobDirectory, taskId);
 
       // Read output of the submit command
       final BufferedReader reader =
@@ -213,10 +219,13 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
    * Create process to submit a job.
    * @param jobName job name
    * @param jobCommand job command
+   * @param jobDirectory job directory
+   * @param taskId task id
    * @return a Process object
    * @throws IOException if an error occurs while creating the process
    */
-  private Process startJobProcess(final String jobName, final String jobCommand)
+  private Process startJobProcess(final String jobName,
+      final String jobCommand, final File jobDirectory, final int taskId)
       throws IOException {
 
     final List<String> command = new ArrayList<>();
@@ -227,6 +236,8 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
 
     builder.environment().put("NAME", jobName);
     builder.environment().put("COMMAND", jobCommand);
+    builder.environment().put("JOBDIR", jobDirectory.getAbsolutePath());
+    builder.environment().put("EOULSAN_TASK_ID", "" + taskId);
 
     return builder.start();
   }
