@@ -45,9 +45,9 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
  */
 public class FastqSplitter implements Splitter {
 
-  private static final int DEFAULT_SPLIT_MAX_LINES = 1000000;
+  private static final int DEFAULT_SPLIT_MAX_ENTRIES = 1000000;
 
-  private int splitMaxLines = DEFAULT_SPLIT_MAX_LINES;
+  private int splitMaxEntries = DEFAULT_SPLIT_MAX_ENTRIES;
 
   @Override
   public DataFormat getFormat() {
@@ -62,8 +62,8 @@ public class FastqSplitter implements Splitter {
 
       switch (p.getName()) {
 
-      case "max.lines":
-        this.splitMaxLines = p.getIntValueGreaterOrEqualsTo(1);
+      case "max.entries":
+        this.splitMaxEntries = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
       default:
@@ -79,13 +79,13 @@ public class FastqSplitter implements Splitter {
 
     final FastqReader reader = new FastqReader(inFile.open());
 
-    final int max = this.splitMaxLines;
-    int readCount = 0;
+    final int max = this.splitMaxEntries;
+    int entryCount = 0;
     FastqWriter writer = null;
 
     for (final ReadSequence read : reader) {
 
-      if (readCount % max == 0) {
+      if (entryCount % max == 0) {
 
         // Close previous writer
         if (writer != null) {
@@ -97,7 +97,7 @@ public class FastqSplitter implements Splitter {
       }
 
       writer.write(read);
-      readCount++;
+      entryCount++;
     }
 
     // Close reader and writer

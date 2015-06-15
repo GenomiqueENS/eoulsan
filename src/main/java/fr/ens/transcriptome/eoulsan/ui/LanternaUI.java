@@ -160,6 +160,8 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
 
       final double globalProgress = computeGlobalProgress(step, progress);
 
+      this.terminal.setCursorVisible(false);
+
       if (!this.stepLines.containsKey(step)) {
         this.stepLines.put(step, this.lineCount);
         this.lineCount++;
@@ -178,6 +180,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
       showWorkflowProgress(lastLineY, globalProgress, null, null);
 
       this.terminal.moveCursor(0, lastLineY);
+      this.terminal.setCursorVisible(true);
     }
   }
 
@@ -197,13 +200,14 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
 
     synchronized (this) {
 
+      this.terminal.setCursorVisible(false);
       final int lastLineY = this.terminalSize.getRows() - 1;
 
       // Update workflow progress
       showWorkflowProgress(lastLineY, 1.0, success, message);
 
       this.terminal.moveCursor(0, lastLineY);
-
+      this.terminal.setCursorVisible(true);
       this.jobDone = true;
     }
 
@@ -289,7 +293,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
 
       x =
           putString(x, y,
-              String.format("%3.0f%% workflow done", progress * 100.0));
+              String.format("%.0f%% workflow done", progress * 100.0));
     }
 
     clearEndOfLine(x, y);

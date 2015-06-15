@@ -35,9 +35,8 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  * This class define a TranslatorOutputFormat that generate a Microsoft Excel
@@ -47,8 +46,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
 
+  private static final int MAX_LINES_IN_MEMORY = 10;
+
   private final OutputStream os;
-  private final Workbook wb = new XSSFWorkbook();
+  private final SXSSFWorkbook wb = new SXSSFWorkbook(MAX_LINES_IN_MEMORY);
   private final Sheet sheet = this.wb.createSheet("new sheet");
   private final CellStyle style;
   private int rowCount;
@@ -121,6 +122,10 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
   public void close() throws IOException {
 
     this.wb.write(this.os);
+    this.os.close();
+
+    // Dispose of temporary files backing the workbook on disk
+    this.wb.dispose();
   }
 
   //
@@ -138,6 +143,9 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
     }
 
     this.os = os;
+
+    // Temporary files will be compressed
+    this.wb.setCompressTempFiles(true);
 
     // Create a new font and alter it.
     Font font = this.wb.createFont();
