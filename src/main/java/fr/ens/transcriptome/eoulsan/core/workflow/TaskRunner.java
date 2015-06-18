@@ -31,6 +31,8 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_LOG_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.annotations.EoulsanAnnotationUtils.isNoLog;
 import static fr.ens.transcriptome.eoulsan.annotations.EoulsanAnnotationUtils.isReuseStepInstance;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.PARTIALLY_DONE;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -223,6 +225,9 @@ public class TaskRunner {
 
     };
 
+    // Set the progress of the task to 0%
+    this.status.setProgress(0);
+
     // Start the time watch
     this.status.durationStart();
 
@@ -308,6 +313,14 @@ public class TaskRunner {
       // Send the token
       this.context.getStep().sendToken(new Token(port, data));
     }
+
+    // Change the state of the step to PARTIALY_DONE if it the end first task of
+    // the step
+    final AbstractWorkflowStep step = this.context.getWorkflowStep();
+    if (step.getState() == WORKING) {
+      step.setState(PARTIALLY_DONE);
+    }
+
   }
 
   /**

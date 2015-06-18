@@ -79,7 +79,7 @@ public class BasicUI extends AbstractUI {
     }
 
     if (step.getState() == StepState.WORKING) {
-      notifyStepState(step, 0.0);
+      notifyStepState(step, 0, 0, 0.0);
     }
   }
 
@@ -94,7 +94,8 @@ public class BasicUI extends AbstractUI {
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step, final double progress) {
+  public void notifyStepState(final WorkflowStep step,
+      final int terminatedTasks, final int submittedTasks, final double progress) {
 
     // Check if the UI has been initialized
     checkState(this.workflow != null, "The UI has not been initialized");

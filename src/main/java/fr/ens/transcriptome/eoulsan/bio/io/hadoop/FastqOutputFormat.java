@@ -70,11 +70,11 @@ public class FastqOutputFormat extends FileOutputFormat<Text, Text> {
     if (!isCompressed) {
 
       FSDataOutputStream fileOut = fs.create(file, false);
-      return new FastqRecordWriter(fileOut);
+      return new FastqRecordWriter(context, fileOut);
     } else {
 
       FSDataOutputStream fileOut = fs.create(file, false);
-      return new FastqRecordWriter(new DataOutputStream(
+      return new FastqRecordWriter(context, new DataOutputStream(
           codec.createOutputStream(fileOut)));
     }
   }

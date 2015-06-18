@@ -801,12 +801,20 @@ of reads that reject each filter like in local mode.
 
          <release version="2.0-alpha6" description="Eoulsan 2.0-alpha6 release" date="TBD">
 
+            <action dev="jourdren" type="fix">
+                 A cartesian product was done when lanching the CopyOutputDataStep step (the step that copy the outputs of a step).
+            </action>
+
+            <action dev="jourdren" type="fix">
+                 CopyInputDataStep now do not uncompress input data from the design step when is not necessary.
+            </action>
+
             <action dev="jourdren" type="update">
                  Eoulsan code is now officialy hosted on GitHub.
             </action>
 
             <action dev="jourdren" type="update">
-                 Add a new UI for Eoulsan for exec and hadoopexec actions.
+                 Add a new user interface for Eoulsan based on the Lanterna library for exec and hadoopexec actions.
             </action>
 
             <action dev="jourdren" type="update">
@@ -818,43 +826,43 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="update">
-                Hadoopexec action is now working with Eoulsan 2.0 and Hadoop 2.x. Filterreads, mapreads, filtersam, filterandmap and expression steps had a dedicated implementation for Hadoop 2.x. Hadoop 1.x is no more working with Eoulsan 2.0.
+                Hadoopexec action is now working with Hadoop 2.x. Filterreads, mapreads, filtersam, filterandmap and expression steps had a dedicated implementation for Hadoop 2.x. Hadoop 1.x support in Eoulsan 2.0 has been removed.
             </action>
 
             <action dev="jourdren" type="update">
-                The sam2bam had now a dedicated implementation for Hadoop mode.
+                The sam2bam step had now a dedicated implementation for Hadoop mode.
             </action>
 
             <action dev="jourdren" type="update">
-                Unused mapper index on Hadoop cluster nodes are now automatically removed if they not been used since one week.
+                Unused mapper indexes on Hadoop cluster nodes are now automatically removed if they not been used since one week.
             </action>
 
             <action dev="jourdren" type="update">
-                Hadoop log is now saved in a dedicated log file in the job directory.
+                The Hadoop log is now saved in a dedicated log file in the job directory.
             </action>
 
             <action dev="jourdren" type="update">
-                Steps without dedicated Hadoop code can now be executed using the hadoopexec action.
+                Steps without a dedicated Hadoop code can now be executed using the hadoopexec action.
             </action>
 
             <action dev="jourdren" type="update">
-                In workflow file, rename ${logs.path} variable to ${job.path}.
+                In workflow file, the "${logs.path}" variable has been renamed to "${job.path}".
             </action>
 
             <action dev="jourdren" type="update">
-                 Eoulsan now use htsjdk 1.118 instead of samtools/picard 1.83. Samtools is still used as runtime dependency for FastQC for reading SAM/BAM files.
+                 Eoulsan now use htsjdk 1.118 instead of samtools/picard 1.83. Samtools 1.83 is still used as runtime dependency for FastQC for reading SAM/BAM files.
             </action>
 
             <action dev="jourdren" type="update">
-                ".gff3" can now also be used has extension for GFF3 files.
+                Files with the ".gff3" extension can now also be used for GFF files.
             </action>
 
             <action dev="jourdren" type="update">
-                SOAP mapper and original Eoulsan expression counter are now deprecated, they will be removed in a next version of Eoulsan.
+                The SOAP mapper and the original Eoulsan expression counter are now deprecated, they will be removed in a next version of Eoulsan.
             </action>
 
             <action dev="jourdren" type="update">
-                 For better source code error detection, Google Errorprone static code analysis tool is now executed at each Eoulsan compilation.
+                 The Google Errorprone static code analysis tool is now executed at each Eoulsan compilation for better source code error detection.
             </action>
 
             <action dev="jourdren" type="update">
@@ -862,27 +870,39 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="update">
-                 In sam2bam in local mode now create a symbolic link to the BAI file with the same basename than the BAM file.
+                 The sam2bam step now create in local mode a symbolic link to the BAI file with the same basename than the BAM file.
             </action>
 
             <action dev="jourdren" type="update">
-                 Symlink created by Eoulsan in exec action are now relative instead of absolute.
+                 The symbolic links created by Eoulsan in the exec action are now relative symbolic links instead of absolute symbolic links.
             </action>
 
             <action dev="jourdren" type="update">
-                 Now remove at the end of a successful job, all the output of the "discardouput" steps.
+                 The output of all the "discardouput" steps are now removed at the end of a successful job.
             </action>
 
             <action dev="jourdren" type="update">
-                 Now remove all the outputs of the failed and aborted steps.
+                 The outputs of the failed and aborted steps are now removed.
             </action>
 
             <action dev="jourdren" type="update">
-                 Add two new read filters: "trimpolynend" and "length.minimal.length.threshold". This filter replace the "trim.length.threshold" filter that is now deprecated and will be remove in a next version of Eoulsan.
+                 Add two new read filters: "trimpolynend" and "length.minimal.length.threshold". This new filters replace the "trim.length.threshold" filter that is now deprecated and will be remove in a next version of Eoulsan.
             </action>
 
-             <action dev="jourdren" type="update">
+            <action dev="jourdren" type="update">
                  Set the default compression level value in sam2bam step to 5 instead of 0.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 The parameters "max.lines" used in many splitter steps has been renamed to "max.entries".
+            </action>
+
+            <action dev="jourdren" type="update">
+                 The tasks can now be launched once all the required data of the task is available. Before, tasks where launched only if all the tasks of the dependency steps where completed.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 The genome and annotation data have now the basename of the file as name.
             </action>
 
          </release>

@@ -130,6 +130,12 @@ class DataElement extends AbstractData implements Serializable {
   @Override
   public DataFile getDataFile() {
 
+    if (getFormat().getMaxFilesCount() > 1) {
+      throw new EoulsanRuntimeException(
+          "Multi-files DataFormat cannot be handled by this method, "
+              + "use getDataFile(int) instead.");
+    }
+
     this.canRename = false;
     return this.files.get(0);
   }
@@ -201,7 +207,8 @@ class DataElement extends AbstractData implements Serializable {
 
     if (getFormat().getMaxFilesCount() < 2) {
       throw new EoulsanRuntimeException(
-          "Only multi-files DataFormat are handled by this method.");
+          "Only multi-files DataFormat are handled by this method, "
+              + "use getDataFile() instead.");
     }
 
     if (fileIndex < 0) {

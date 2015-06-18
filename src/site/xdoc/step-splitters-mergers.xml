@@ -141,7 +141,7 @@
         <li><b>Splitter optional parameters</b>:</li>
         <table>
                 <tr><th>Parameter</th><th>Type</th><th>Default value</th><th>Description</th></tr>
-                <tr><td>max.lines</td><td>integer</td><td>1000000</td><td>The maximal number of entries in splitter output files</td></tr>
+                <tr><td>max.entries</td><td>integer</td><td>1000000</td><td>The maximal number of entries in splitter output files</td></tr>
         </table>
 
         <br/>
@@ -161,7 +161,7 @@
         <li><b>Splitter optional parameters</b>:</li>
         <table>
                 <tr><th>Parameter</th><th>Type</th><th>Default value</th><th>Description</th></tr>
-                <tr><td>max.lines</td><td>integer</td><td>1000000</td><td>The maximal number of entries in splitter output files</td></tr>
+                <tr><td>max.entries</td><td>integer</td><td>1000000</td><td>The maximal number of entries in splitter output files</td></tr>
                 <tr><td>chromosomes</td><td>boolean</td><td>false</td><td>Split the origin SAM file in files that only contains entries that map on the same chromosome. 
 This option cannot be used with the max.line option</td></tr>
         </table>
@@ -182,7 +182,7 @@ This option cannot be used with the max.line option</td></tr>
         <li><b>Splitter optional parameters</b>:</li>
         <table>
                 <tr><th>Parameter</th><th>Type</th><th>Default value</th><th>Description</th></tr>
-                <tr><td>max.lines</td><td>integer</td><td>1000000</td><td>The maximal number of entries in splitter output files</td></tr>
+                <tr><td>max.entries</td><td>integer</td><td>1000000</td><td>The maximal number of entries in splitter output files</td></tr>
                 <tr><td>chromosomes</td><td>boolean</td><td>false</td><td>Split the origin BAM file in files that only contains entries that map on the same chromosome. 
 This option cannot be used with the max.line option</td></tr>
         </table>
@@ -203,7 +203,7 @@ This option cannot be used with the max.line option</td></tr>
         <li><b>Splitter optional parameters</b>:</li>
         <table>
                 <tr><th>Parameter</th><th>Type</th><th>Default value</th><th>Description</th></tr>
-                <tr><td>max.lines</td><td>integer</td><td>10000</td><td>The maximal number of entries in splitter output files</td></tr>
+                <tr><td>max.entries</td><td>integer</td><td>10000</td><td>The maximal number of entries in splitter output files</td></tr>
         </table>
 
         <br/>

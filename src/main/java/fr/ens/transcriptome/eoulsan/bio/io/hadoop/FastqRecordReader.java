@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.bio.io.hadoop.Counters.ENTRIES_WRITTEN;
+
 import java.io.IOException;
 
 import org.apache.hadoop.io.Text;
@@ -39,6 +41,9 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
  */
 public class FastqRecordReader extends RecordReader<Text, Text> {
 
+  private static final String COUNTERS_GROUP = "FASTQ Input Format Counters";
+
+  private final TaskAttemptContext context;
   private Text key = new Text();
   private Text value = new Text();
 
@@ -128,6 +133,8 @@ public class FastqRecordReader extends RecordReader<Text, Text> {
     // Clean array
     this.lines[0] = this.lines[1] = this.lines[2] = this.lines[3] = null;
 
+    this.context.getCounter(COUNTERS_GROUP, ENTRIES_WRITTEN).increment(1);
+
     return true;
   }
 
@@ -156,6 +163,19 @@ public class FastqRecordReader extends RecordReader<Text, Text> {
 
     // Other, do nothing
     return s;
+  }
+
+  //
+  // Constructor
+  //
+
+  /**
+   * Public constructor.
+   * @param context the context
+   */
+  public FastqRecordReader(final TaskAttemptContext context) {
+
+    this.context = context;
   }
 
 }

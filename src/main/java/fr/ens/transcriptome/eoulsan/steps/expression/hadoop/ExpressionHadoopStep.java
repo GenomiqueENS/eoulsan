@@ -34,6 +34,7 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +52,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
@@ -79,6 +81,8 @@ import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsMapperHadoopStep;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
+import fr.ens.transcriptome.eoulsan.util.locker.Locker;
+import fr.ens.transcriptome.eoulsan.util.locker.ZooKeeperLocker;
 
 /**
  * This class is the main class for the expression program of the reads in
@@ -140,9 +144,17 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     getLogger().info("exonsIndexPath: " + exonsIndexPath);
 
+    // Create serialized feature index
     if (!PathUtils.isFile(exonsIndexPath, jobConf)) {
+
+      final Locker lock = createZookeeperLock(parentConf, context);
+
+      lock.lock();
+
       createExonsIndex(context, annotationDataFile, genomicType, attributeId,
           exonsIndexPath, jobConf);
+
+      lock.unlock();
     }
 
     // Create the job and its name
@@ -272,10 +284,18 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
     getLogger().info("featuresIndexPath: " + featuresIndexPath);
 
+    // Create serialized feature index
     if (!PathUtils.isFile(featuresIndexPath, jobConf)) {
+
+      final Locker lock = createZookeeperLock(parentConf, context);
+
+      lock.lock();
+
       createFeaturesIndex(context, annotationDataFile, genomicType,
           attributeId, splitAttributeValues, stranded, genomeDescDataFile,
           featuresIndexPath, jobConf);
+
+      lock.unlock();
     }
 
     // Create the job and its name
@@ -395,6 +415,11 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       final String attributeId, final Path exonsIndexPath,
       final Configuration conf) throws IOException, BadBioEntryException {
 
+    // Do nothing if the file already exists
+    if (PathUtils.isFile(exonsIndexPath, conf)) {
+      return exonsIndexPath;
+    }
+
     final TranscriptAndExonFinder ef =
         new TranscriptAndExonFinder(gffFile.open(), expressionType, attributeId);
     final File exonIndexFile =
@@ -433,6 +458,11 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
       final StrandUsage stranded, final DataFile genomeDescDataFile,
       final Path featuresIndexPath, final Configuration conf)
       throws IOException, BadBioEntryException, EoulsanException {
+
+    // Do nothing if the file already exists
+    if (PathUtils.isFile(featuresIndexPath, conf)) {
+      return;
+    }
 
     final GenomicArray<String> features = new GenomicArray<>();
     final GenomeDescription genomeDescription =
@@ -726,4 +756,34 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
           "Error while reading the annotation file: " + e.getMessage());
     }
   }
+
+  /**
+   * Create a Zookeeper lock.
+   * @param conf Hadoop configuration
+   * @param context Eoulsan task context
+   * @return a Lock object
+   * @throws IOException if an error occurs while creating the lock
+   */
+  private static Locker createZookeeperLock(final Configuration conf,
+      final StepContext context) throws IOException {
+
+    final Settings settings = context.getSettings();
+
+    String connectString = settings.getZooKeeperConnectString();
+
+    if (connectString == null) {
+
+      connectString =
+          conf.get("yarn.resourcemanager.hostname").split(":")[0]
+              + ":" + settings.getZooKeeperDefaultPort();
+
+    }
+
+    return new ZooKeeperLocker(connectString,
+        settings.getZooKeeperSessionTimeout(), "/eoulsan-locks-"
+            + InetAddress.getLocalHost().getHostName(), "expression-lock-job-"
+            + context.getJobUUID() + "-step-"
+            + context.getCurrentStep().getNumber());
+  }
+
 }

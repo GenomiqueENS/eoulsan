@@ -57,7 +57,8 @@ public class NoUI extends AbstractUI {
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step, final double progress) {
+  public void notifyStepState(final WorkflowStep step,
+      final int terminatedTasks, final int submittedTasks, final double progress) {
     // Do nothing
   }
 

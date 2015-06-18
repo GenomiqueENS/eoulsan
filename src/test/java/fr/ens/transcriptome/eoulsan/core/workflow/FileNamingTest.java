@@ -704,6 +704,15 @@ public class FileNamingTest {
     assertFalse(FileNaming.isFilenameValid("toto.txt"));
     assertFalse(FileNaming.isFilenameValid("filterreads_output_reads_s1.fq"));
     assertFalse(FileNaming.isFilenameValid("filtered_mapper_results_1.sam"));
+    assertFalse(FileNaming
+        .isFilenameValid("genericindex-generator_output_bowtieindex_genome.zip"));
+    assertFalse(FileNaming
+        .isFilenameValid("genericindexgenerator_out-put_bowtieindex_genome.zip"));
+    assertFalse(FileNaming
+        .isFilenameValid("genericindexgenerator_output_bowtie-index_genome.zip"));
+    assertFalse(FileNaming
+        .isFilenameValid("genericindexgenerator_output_bowtieindex_ge-nome.zip"));
+    assertFalse(FileNaming.isFilenameValid("2013-0267_S1_L001_R1_001.fastq.gz"));
 
   }
 
