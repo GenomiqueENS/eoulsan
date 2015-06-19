@@ -1,3 +1,26 @@
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
 package fr.ens.transcriptome.eoulsan.galaxytool;
 
 import static org.junit.Assert.assertEquals;
@@ -28,6 +51,14 @@ import fr.ens.transcriptome.eoulsan.steps.galaxytool.ToolData;
 import fr.ens.transcriptome.eoulsan.steps.galaxytool.ToolPythonInterpreter;
 import fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.ToolElement;
 
+/**
+ * The class define unit tests on GalaxyToolStep, it check if the command line
+ * build from tool shed XML and parameters correspond to the expected syntax. It
+ * use an extra file which set data useful to create command line and expected
+ * value of this.
+ * @author Sandrine Perrin
+ * @since 2.0
+ */
 public class ToolInterpreterTest {
 
   public final static Splitter SPLITTER = Splitter.on("=").trimResults()
@@ -39,20 +70,30 @@ public class ToolInterpreterTest {
   public final static Splitter SPLITTER_SPACE = Splitter.on(" ").trimResults()
       .omitEmptyStrings();
 
+  /** Key for value test description, it marks too the start on a new test. */
   private static final String NEW_TEST_KEY = "test_description";
 
+  /** Directory path which contains all tool shed XML file. */
   private static final File SRC_DIR = new File(new File(".").getAbsolutePath(),
       "src/main/java/META-INF/services/registrytoolshed/");
 
+  /**
+   * Test tool interpreter, it read the extra file. To set a test, it give XML
+   * name file, parameter value, command line expected.
+   * @throws FileNotFoundException the XML file is not found
+   * @throws Exception if an error occurs during setting or execution on a test
+   */
   @Test
   public void testToolInterpreter() throws FileNotFoundException, Exception {
 
+    // Extract extra file, contains key=value
     final File matrixTestToolshed =
         new File("src/test/java/files/testdatatoolshedgalaxy.txt");
 
     String line = "";
     ToolTest tt = null;
 
+    // Read file
     try (final BufferedReader br =
         new BufferedReader(new FileReader(matrixTestToolshed))) {
 
@@ -67,6 +108,7 @@ public class ToolInterpreterTest {
         }
 
         final int pos = lineTrimmed.indexOf("=");
+
         if (pos < 0)
           throw new Exception("Invalid entry key=value in file with "
               + lineTrimmed);
@@ -75,34 +117,30 @@ public class ToolInterpreterTest {
         final String value =
             (pos < lineTrimmed.length() ? lineTrimmed.substring(pos + 1) : "");
 
+        // Check if it is a new test
         if (key.equals(NEW_TEST_KEY)) {
 
           if (tt != null) {
             // Execute current test
-            System.out.println("Launch test");
             tt.launchTest();
           }
 
           // Init new test
-          System.out.println("Init new test");
           tt = new ToolTest(value);
 
         } else {
 
           // Update current test
-          System.out.println("--- add data " + key + " -> " + value);
           tt.addData(key, value);
         }
       }
 
       // Launch last test setting in file
       if (tt != null) {
-        System.out.println("Launch latest ");
         tt.launchTest();
       }
 
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
@@ -112,6 +150,11 @@ public class ToolInterpreterTest {
   // Internal Class
   //
 
+  /**
+   * The class define a test corresponding to a tool and parameters associated.
+   * @author Sandrine Perrin
+   * @since 2.0
+   */
   final class ToolTest {
 
     /** Keys expected from description file */
@@ -131,6 +174,12 @@ public class ToolInterpreterTest {
     private Set<Parameter> setStepParameters;
     private Map<String, String> variablesCommand;
 
+    /**
+     * Adds the data from extra file in test instance.
+     * @param key the key
+     * @param value the value
+     * @throws EoulsanException it occurs if a data is invalid.
+     */
     public void addData(final String key, final String value)
         throws EoulsanException {
 
@@ -157,10 +206,7 @@ public class ToolInterpreterTest {
         break;
 
       case EXECUTABLE_PATH_KEY:
-        final File e = new File(value);
-        if (e.exists())
-          this.executableTool = e;
-
+        this.executableTool = new File(value);
         break;
 
       case COMMAND_KEY:
@@ -181,74 +227,87 @@ public class ToolInterpreterTest {
 
     }
 
+    /**
+     * Launch test.
+     * @throws FileNotFoundException the XML file is not found
+     * @throws Exception if an error occurs during setting or execution on a
+     *           test
+     */
     public void launchTest() throws FileNotFoundException, EoulsanException {
 
+      // TODO
       System.out.println("read xml "
           + toolXML.getAbsolutePath() + " exist " + toolXML.exists());
+
+      // Check if command executed is setting
+      if (this.command == null || this.command.isEmpty()) {
+        throw new EoulsanException(
+            "UnitTest on GalaxyTool: missing command line expected, test can not be launch.");
+      }
 
       // Init tool interpreter
       final GalaxyToolInterpreter interpreter =
           new GalaxyToolInterpreter(new FileInputStream(toolXML));
 
-      // Configure
+      // Configure interpreter with parameters setting in workflow Eoulsan file
       interpreter.configure(setStepParameters);
 
       // Compile variable from parameter workflow and Tool file
-      // compileParameters(interpreter);
+      compileParameters(interpreter);
 
-      System.out.println("Tool interpreter create \n"
-          + interpreter + "\n"
-          + Joiner.on("\t").withKeyValueSeparator(":").join(variablesCommand));
-
-      for (final ToolElement ptg : interpreter.getInputs().values()) {
-
-        if (!ptg.isFile()) {
-
-          System.out.println("TEST tool name "
-              + ptg.getName() + " is include in "
-              + this.variablesCommand.containsKey(ptg.getName()));
-
-          if (!this.variablesCommand.containsKey(ptg.getName())) {
-            System.out.println("TEST add param "
-                + ptg.getName() + " - " + ptg.getValue());
-            this.variablesCommand.put(ptg.getName(), ptg.getValue());
-          }
-        }
-      }
-
-      // Execute
+      // Extract instance on toolData which contains all data useful from XML
+      // file
       final ToolData toolData = interpreter.getToolData();
+
+      // TODO
       System.out.println("Step parameters "
           + Joiner.on(" - ").join(setStepParameters));
       System.out.println("=> tool data generated \n\t" + toolData);
 
+      // Init Tool python interpreter
       final ToolPythonInterpreter tpi =
           new ToolPythonInterpreter(null, toolData, this.variablesCommand);
 
+      // Create command line and compare with command expected
       compareCommandLine(tpi.interpreteScript());
 
     }
 
+    /**
+     * Compile parameters in interpreter instance, replace actions executed by
+     * GalaxyTool from StepContext instance, which is extract from the workflow.
+     * @param interpreter the interpreter instance.
+     */
     private void compileParameters(final GalaxyToolInterpreter interpreter) {
 
+      // Replace actions realize in GalaxyToolInterpreter from StepContext
+      // instance
       for (final ToolElement ptg : interpreter.getInputs().values()) {
 
         if (!ptg.isFile()) {
-          this.variablesCommand.put(ptg.getName(), ptg.getValue());
+
+          // TODO
+          // System.out.println("TEST tool name "
+          // + ptg.getName() + " is include in "
+          // + this.variablesCommand.containsKey(ptg.getName()));
+
+          // Update list variables needed to build command line
+          if (!this.variablesCommand.containsKey(ptg.getName())) {
+
+            this.variablesCommand.put(ptg.getName(), ptg.getValue());
+          }
         }
       }
-
-      for (final ToolElement ptg : interpreter.getOutputs().values()) {
-
-        if (!ptg.isFile()) {
-          this.variablesCommand.put(ptg.getName(), ptg.getValue());
-        }
-      }
-
     }
 
+    /**
+     * Compare command line, word by word from expected version to generate by
+     * Python interpreter.
+     * @param commandLine the command line to compare
+     */
     private void compareCommandLine(final String commandLine) {
 
+      // TODO
       System.out.println("Compare expected \t"
           + this.command + "\nwith generate command \t" + commandLine);
 
@@ -261,6 +320,7 @@ public class ToolInterpreterTest {
 
       int length = commandExpected.size();
 
+      // Compare length
       assertTrue("Number words requiered is invalid, expected "
           + length + " obtains by PythonInterpreter "
           + commandBuildByInterpreter.size(),
@@ -276,6 +336,12 @@ public class ToolInterpreterTest {
       }
     }
 
+    /**
+     * Adds the parameter in test, it should prefixed with param in extra file,
+     * corresponding to value extract from workflow XML file.
+     * @param key the key
+     * @param value the value
+     */
     private void addParam(final String key, final String value) {
 
       Preconditions.checkNotNull(key, "key for parameter");
@@ -288,6 +354,10 @@ public class ToolInterpreterTest {
     // Constructor
     //
 
+    /**
+     * Constructor
+     * @param description the description
+     */
     ToolTest(final String description) {
       this.description = description;
 
