@@ -89,7 +89,9 @@ public class ToolElementBoolean extends AbstractToolElement {
   }
 
   @Override
-  public void setValue(final Parameter stepParameter) {
+  public void setValue(final Parameter stepParameter) throws EoulsanException {
+
+    super.setValue(stepParameter);
 
     final boolean valueParameter = stepParameter.getBooleanValue();
     this.value = valueParameter ? this.trueValue : this.falseValue;
