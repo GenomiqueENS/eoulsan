@@ -905,6 +905,31 @@ of reads that reject each filter like in local mode.
                  The genome and annotation data have now the basename of the file as name.
             </action>
 
+            <action dev="sperrin" type="add">
+                 Add new step, GalaxyToolStep, it can use a Toolshed XML file from Galaxy to run new tool in Eoulsan workflow.
+            	 Actually, it can be manage basic toolshed syntax.
+            </action>
+            
+            <action dev="sperrin" type="add">
+                 Add new step, FastQC can be launch on FASTQ or SAM file in local mode.
+            </action>
+
+            <action dev="jourdren" type="add">
+                 Now FastQC step is hadoop compatible.
+            </action>
+            
+            <action dev="sperrin" type="update">
+                 Add several enhancements to the Eoulsan integration tests report file.
+			</action>
+			
+			<action dev="sperrin" type="update">			
+				Add new option in command line to replace output directory instead of configuration in oulsan integration tests.
+			</action>
+			
+			<action dev="sperrin" type="update">
+				Add new parameter to remove files in output test directory to spare space disk in Eoulsan integration tests
+            </action>            
+                        
          </release>
 
 	</body>
