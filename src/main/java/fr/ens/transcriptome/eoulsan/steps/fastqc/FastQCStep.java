@@ -156,9 +156,6 @@ public class FastQCStep extends AbstractStep {
     System.setProperty("java.awt.headless", "true");
     System.setProperty("fastqc.unzip", "true");
 
-    // Patch FastQC code on sequenceFile to make hadoop compatible
-    RuntimePatchFastQC.runPatchFastQC();
-
     // Parse step parameters to initialize step
     for (final Parameter p : stepParameters) {
 
