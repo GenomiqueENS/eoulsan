@@ -23,7 +23,6 @@
  */
 package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Collections;
@@ -40,12 +39,11 @@ import com.google.common.collect.Maps;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 
-// TODO: Auto-generated Javadoc
 /**
  * This class create a python interpreter which can build a command line tool
  * from command tag from Galaxy tool XML file.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
 public class ToolPythonInterpreter {
 
@@ -81,7 +79,7 @@ public class ToolPythonInterpreter {
   /**
    * Execute script.
    * @return the string
-   * @throws EoulsanException the eoulsan exception
+   * @throws EoulsanException the Eoulsan exception
    */
   public ToolExecutorResult executeScript() throws EoulsanException {
 
@@ -97,8 +95,8 @@ public class ToolPythonInterpreter {
     System.out.println("final commande line " + commandLine);
 
     final ToolExecutor executor =
-        new ToolExecutor(this.context, commandLine,
-            this.tool.getToolName(), this.tool.getToolVersion());
+        new ToolExecutor(this.context, commandLine, this.tool.getToolName(),
+            this.tool.getToolVersion());
 
     final ToolExecutorResult result = executor.execute();
 
@@ -106,7 +104,7 @@ public class ToolPythonInterpreter {
 
   }
 
-  private String interpreteScript() throws EoulsanException {
+  public String interpreteScript() throws EoulsanException {
 
     checkNotNull(this.pythonScriptWithJavaCode,
         "Not found python script to interprete.");
@@ -115,16 +113,11 @@ public class ToolPythonInterpreter {
         "None variables setting for python script.");
 
     if (this.variablesCommand.isEmpty())
-      // TODO Auto-generated method stub
+      // TODO
       return null;
 
     final Map<String, String> variablesCommandFinal =
         addMissingVariableFromCommandLine();
-
-    // TODO
-    // System.out.println("script: " + script);
-    // System.out.println("variables "
-    // + Joiner.on("\n\t").withKeyValueSeparator("=").join(registry));
 
     final PythonInterpreter interp = new PythonInterpreter();
 
@@ -138,9 +131,6 @@ public class ToolPythonInterpreter {
     // Retrieve standard output
     final PyObject cmd = interp.get(VAR_CMD_NAME);
 
-    // TODO
-    // System.out.println("cmd: " + cmd.asString());
-
     return addInterperter(cmd.asString());
   }
 
@@ -151,8 +141,10 @@ public class ToolPythonInterpreter {
     // Add interpreter if exists
     if (this.tool.isIntepreterSetting()) {
 
-      return this.tool.getInterpreter()
-          + " " + this.tool.getToolExecutable() + "/" + cmd.trim();
+      // TODO
+      // return this.tool.getInterpreter()
+      // + " " + this.tool.getToolExecutable() + "/" + cmd.trim();
+      return this.tool.getInterpreter() + " " + cmd.trim();
 
     } else {
 
@@ -175,10 +167,6 @@ public class ToolPythonInterpreter {
     // Receive code python for building command line after replace variables by
     // values
     this.pythonScriptWithJavaCode = translator.getTranslatedCommandInPython();
-
-    // TODO
-    // System.out.println("DEBUG completed command with variable \t"
-    // + this.pythonScriptWithJavaCode);
 
     isCommandLineTranslate = true;
   }
@@ -262,10 +250,6 @@ public class ToolPythonInterpreter {
     Preconditions.checkNotNull(tool,
         "Tool instance from Galaxy Tool can not be null for interpretation.");
 
-    // TODO
-    System.out.println("cons python inter variables size "
-        + variablesCommand.size());
-
     Preconditions
         .checkArgument(variablesCommand.size() != 0,
             "Tool instance from Galaxy Tool not found variables for interpretation");
@@ -279,6 +263,7 @@ public class ToolPythonInterpreter {
         new TranslatorStringToPython(this.tool.getCmdTagContent());
 
     translateCommandXMLInPython();
+
   }
 
 }

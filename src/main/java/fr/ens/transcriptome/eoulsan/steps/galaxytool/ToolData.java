@@ -103,8 +103,8 @@ public class ToolData {
     return cmdTagContent;
   }
 
-  public File getToolExecutable() {
-    return toolExecutable;
+  public String getToolExecutable() {
+    return toolExecutable.getAbsolutePath();
   }
 
   public void setCmdTagContent(final String cmdTagContent)
