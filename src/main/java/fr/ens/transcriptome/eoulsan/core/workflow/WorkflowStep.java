@@ -109,8 +109,9 @@ public interface WorkflowStep extends Serializable {
    * @author Laurent Jourdren
    * @since 2.0
    */
-  enum StepState {
-    CREATED, CONFIGURED, WAITING, READY, WORKING, DONE, FAILED, ABORTED
+  public static enum StepState {
+    CREATED, CONFIGURED, WAITING, READY, WORKING, PARTIALLY_DONE, DONE, FAILED,
+    ABORTED
   }
 
   /**

@@ -121,7 +121,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
     for (Parameter p : stepParameters) {
 
       // Check if the parameter is deprecated
-      checkDeprecatedParameter(p);
+      checkDeprecatedParameter(p, context.getCurrentStep().getId());
 
       switch (p.getName()) {
 
@@ -149,20 +149,25 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   /**
    * Check deprecated parameters.
    * @param parameter the parameter to check
+   * @param stepId step id
    * @throws EoulsanException if the parameter is no more supported
    */
-  static void checkDeprecatedParameter(final Parameter parameter)
-      throws EoulsanException {
+  static void checkDeprecatedParameter(final Parameter parameter,
+      final String stepId) throws EoulsanException {
 
     if (parameter == null) {
       return;
     }
 
+    final String stepMessage =
+        stepId == null ? "" : "In the \"" + stepId + "\" step, ";
+
     switch (parameter.getName()) {
 
     case "mappingqualitythreshold":
-      throw new EoulsanException("The parameter \""
-          + parameter.getName() + "\" is deprecated, use \""
+      throw new EoulsanException(stepMessage
+          + "the parameter \"" + parameter.getName()
+          + "\" is deprecated, use \""
           + QualityReadAlignmentsFilter.FILTER_NAME + ".threshold"
           + "\" parameter " + "instead");
 

@@ -108,6 +108,32 @@ public class WorkflowStepStatus {
     return this.taskProgress.get(contextId);
   }
 
+  /**
+   * Get the number of submitted tasks.
+   * @return the number of submitted tasks
+   */
+  public int getSubmittedTasks() {
+
+    return this.taskProgress.size();
+  }
+
+  /**
+   * Get the number of terminated tasks.
+   * @return the number of terminated tasks
+   */
+  public int getTerminatedTasks() {
+
+    int result = 0;
+
+    for (double progress : this.taskProgress.values()) {
+      if (progress == 1.0) {
+        result++;
+      }
+    }
+
+    return result;
+  }
+
   //
   // Setters
   //
@@ -234,7 +260,8 @@ public class WorkflowStepStatus {
 
     // Inform listeners
     for (WorkflowStepObserver o : this.observers) {
-      o.notifyStepState(this.step, getProgress());
+      o.notifyStepState(this.step, getTerminatedTasks(), getSubmittedTasks(),
+          getProgress());
     }
   }
 

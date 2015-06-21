@@ -206,7 +206,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
     for (Parameter p : stepParameters) {
 
       // Check if the parameter is deprecated
-      checkDeprecatedParameter(p);
+      checkDeprecatedParameter(p, context.getCurrentStep().getId());
 
       switch (p.getName()) {
 
@@ -299,26 +299,35 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   /**
    * Check deprecated parameters.
    * @param parameter the parameter to check
+   * @param stepId step id
    * @throws EoulsanException if the parameter is no more supported
    */
-  static void checkDeprecatedParameter(final Parameter parameter)
-      throws EoulsanException {
+  static void checkDeprecatedParameter(final Parameter parameter,
+      final String stepId) throws EoulsanException {
 
     if (parameter == null) {
       return;
     }
 
+    final String stepMessage =
+        stepId == null ? "" : "In the \"" + stepId + "\" step, ";
+
     switch (parameter.getName()) {
+
+    case "mapperarguments":
+      throw new EoulsanException(stepMessage
+          + "the parameter \"" + parameter.getName()
+          + "\" is deprecated, use \"" + MAPPER_ARGUMENTS_PARAMETER_NAME
+          + "\" parameter " + "instead");
 
     case MAPPER_NAME_PARAMETER_NAME:
 
       if (SOAPReadsMapper.MAPPER_NAME.toLowerCase().equals(
           parameter.getLowerStringValue())) {
-        getLogger()
-            .warning(
-                "The "
-                    + SOAPReadsMapper.MAPPER_NAME
-                    + " mapper support is deprecated");
+        getLogger().warning(
+            stepMessage
+                + "the " + SOAPReadsMapper.MAPPER_NAME
+                + " mapper support is deprecated");
       }
 
       break;

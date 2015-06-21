@@ -688,7 +688,16 @@ public class FileNaming {
           + filename);
     }
 
+    if (fields[0].isEmpty() || !isStepIdValid(fields[0])) {
+      throw new FileNamingParsingRuntimeException("Invalid filename: "
+          + filename);
+    }
     result.setStepId(fields[0]);
+
+    if (fields[1].isEmpty() || !isPortNameValid(fields[1])) {
+      throw new FileNamingParsingRuntimeException("Invalid filename: "
+          + filename);
+    }
     result.setPortName(fields[1]);
 
     final DataFormat format =
@@ -699,9 +708,12 @@ public class FileNaming {
       throw new FileNamingParsingRuntimeException("Invalid filename: "
           + filename);
     }
-
     result.setFormat(format);
 
+    if (fields[3].isEmpty() || !isDataNameValid(fields[3])) {
+      throw new FileNamingParsingRuntimeException("Invalid filename: "
+          + filename);
+    }
     result.setDataName(fields[3]);
 
     for (int i = 4; i < fields.length; i++) {
@@ -923,7 +935,7 @@ public class FileNaming {
 
     checkNotNull(stepId, "stepId argument cannot be null");
     checkArgument(!stepId.isEmpty(), "stepId is empty");
-    checkArgument(isNameValid(stepId),
+    checkArgument(isStepIdValid(stepId),
         "The step id of the file name can only contains letters or digit: "
             + stepId);
   }

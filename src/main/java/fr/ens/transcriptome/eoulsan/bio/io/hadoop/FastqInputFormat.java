@@ -47,7 +47,7 @@ public class FastqInputFormat extends FileInputFormat<Text, Text> {
   public RecordReader<Text, Text> createRecordReader(
       final InputSplit inputSplit, final TaskAttemptContext taskAttemptContext) {
 
-    return new FastqRecordReader();
+    return new FastqRecordReader(taskAttemptContext);
   }
 
   @Override

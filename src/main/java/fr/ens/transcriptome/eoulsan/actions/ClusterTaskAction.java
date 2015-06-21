@@ -38,8 +38,10 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import fr.ens.transcriptome.eoulsan.Common;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.LocalEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskSerializationUtils;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 
@@ -144,6 +146,13 @@ public class ClusterTaskAction extends AbstractAction {
   private static final void run(final DataFile taskContextFile) {
 
     checkNotNull(taskContextFile, "contextFile is null");
+
+    // Get Eoulsan runtime
+    final LocalEoulsanRuntime localRuntime =
+        (LocalEoulsanRuntime) EoulsanRuntime.getRuntime();
+
+    // Set the cluster task mode to true
+    localRuntime.setClusterTaskMode(true);
 
     try {
 

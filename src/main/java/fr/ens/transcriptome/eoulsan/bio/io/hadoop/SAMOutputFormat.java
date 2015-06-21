@@ -70,11 +70,11 @@ public class SAMOutputFormat extends FileOutputFormat<Text, Text> {
     if (!isCompressed) {
 
       FSDataOutputStream fileOut = fs.create(file, false);
-      return new SAMRecordWriter(fileOut);
+      return new SAMRecordWriter(context, fileOut);
     } else {
 
       FSDataOutputStream fileOut = fs.create(file, false);
-      return new SAMRecordWriter(new DataOutputStream(
+      return new SAMRecordWriter(context, new DataOutputStream(
           codec.createOutputStream(fileOut)));
     }
   }

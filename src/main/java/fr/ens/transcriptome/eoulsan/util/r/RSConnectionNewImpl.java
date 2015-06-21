@@ -24,6 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.util.r;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.File;
@@ -146,9 +148,29 @@ public class RSConnectionNewImpl implements RSConnection {
   public void putFile(final File inputFile, final String rServeFilename)
       throws REngineException {
 
+    checkNotNull(inputFile, "inputFile argument cannot be null");
+    checkNotNull(rServeFilename, "rServeFilename argument cannot be null");
+
+    try {
+      putFile(new FileInputStream(inputFile), rServeFilename);
+    } catch (FileNotFoundException e) {
+      throw new REngineException(this.rconnection, "file not found: "
+          + e.getMessage());
+    }
+  }
+
+  /**
+   * Put file on Rserve server
+   */
+  @Override
+  public void putFile(final InputStream is, final String rServeFilename)
+      throws REngineException {
+
+    checkNotNull(is, "inputFile argument cannot be null");
+    checkNotNull(rServeFilename, "rServeFilename argument cannot be null");
+
     try {
 
-      InputStream is = new FileInputStream(inputFile);
       OutputStream os = getFileOutputStream(rServeFilename);
 
       byte[] buf = new byte[BUFFER_SIZE];
@@ -163,9 +185,6 @@ public class RSConnectionNewImpl implements RSConnection {
 
     } catch (REngineException e) {
       throw new REngineException(this.rconnection, "Unable to put file: "
-          + e.getMessage());
-    } catch (FileNotFoundException e) {
-      throw new REngineException(this.rconnection, "file not found: "
           + e.getMessage());
     } catch (IOException e) {
       throw new REngineException(this.rconnection, "Unable to create report: "

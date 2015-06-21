@@ -281,7 +281,9 @@ public abstract class AbstractExpressionStep extends AbstractStep {
     this.counterName = counterName;
 
     // Configure Checker
-    CheckerStep.configureChecker(ANNOTATION_GFF, stepParameters);
+    if (!context.getRuntime().isClusterTaskMode()) {
+      CheckerStep.configureChecker(ANNOTATION_GFF, stepParameters);
+    }
 
     // Log Step parameters
     getLogger().info("In " + getName() + ", counter=" + this.counterName);

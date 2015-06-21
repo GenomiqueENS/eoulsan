@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.core.schedulers.clusters;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -125,11 +126,13 @@ public interface ClusterTaskScheduler extends TaskScheduler {
    * Submit a job.
    * @param jobName job name
    * @param jobCommand job command
+   * @param jobDirectory job directory
+   * @param taskId task id
    * @return a String with the id of the submitted job
    * @throws IOException if an error occurs while submitting job
    */
-  String submitJob(final String jobName, final List<String> jobCommand)
-      throws IOException;
+  String submitJob(final String jobName, final List<String> jobCommand,
+      final File jobDirectory, final int taskId) throws IOException;
 
   /**
    * Stop a job.

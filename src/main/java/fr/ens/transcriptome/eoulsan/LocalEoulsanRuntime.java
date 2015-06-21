@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
 
   private boolean isClusterMode;
+  private boolean isClusterTaskMode;
 
   @Override
   public boolean isHadoopMode() {
@@ -59,6 +60,12 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
   public boolean isClusterMode() {
 
     return this.isClusterMode;
+  }
+
+  @Override
+  public boolean isClusterTaskMode() {
+
+    return this.isClusterTaskMode;
   }
 
   @Override
@@ -113,6 +120,15 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
   public void setClusterMode(final boolean clusterMode) {
 
     this.isClusterMode = clusterMode;
+  }
+
+  /**
+   * Set the cluster task mode.
+   * @param clusterTaskMode cluster task mode
+   */
+  public void setClusterTaskMode(final boolean clusterTaskMode) {
+
+    this.isClusterTaskMode = clusterTaskMode;
   }
 
   //

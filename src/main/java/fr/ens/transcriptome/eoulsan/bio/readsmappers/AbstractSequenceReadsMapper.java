@@ -36,7 +36,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileLock;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -373,8 +376,12 @@ public abstract class AbstractSequenceReadsMapper implements
     if (!unCompressGenomeFile.equals(tmpGenomeFile)) {
 
       try {
-        Files.createSymbolicLink(tmpGenomeFile.toPath(),
-            unCompressGenomeFile.toPath());
+
+        final Path link = tmpGenomeFile.toPath();
+        final Path target = unCompressGenomeFile.getAbsoluteFile().toPath();
+        final Path relativizedTarget = link.getParent().relativize(target);
+
+        Files.createSymbolicLink(link, relativizedTarget);
       } catch (IOException e) {
         throw new IOException("Unable to create the symbolic link in "
             + tmpGenomeFile + " directory for " + unCompressGenomeFile);
@@ -425,16 +432,8 @@ public abstract class AbstractSequenceReadsMapper implements
             + indexTmpDirPrefix + " in " + getTempDirectory());
 
     final File indexTmpDir =
-        File.createTempFile(indexTmpDirPrefix, "", getTempDirectory());
-
-    if (!(indexTmpDir.delete())) {
-      throw new IOException("Could not delete temp file ("
-          + indexTmpDir.getAbsolutePath() + ")");
-    }
-
-    if (!indexTmpDir.mkdir()) {
-      throw new IOException("Unable to create directory for genome index");
-    }
+        Files.createTempDirectory(getTempDirectory().toPath(),
+            indexTmpDirPrefix).toFile();
 
     makeIndex(genomeFile, indexTmpDir);
 
@@ -480,8 +479,16 @@ public abstract class AbstractSequenceReadsMapper implements
     final File[] indexFiles =
         FileUtils.listFilesByExtension(archiveIndexDir, extension);
 
-    if (indexFiles == null || indexFiles.length != 1) {
-      throw new IOException("Unable to get index file for " + getMapperName());
+    if (indexFiles == null || indexFiles.length == 0) {
+      throw new IOException("Unable to get index file for "
+          + getMapperName() + " with \"" + extension
+          + "\" extension in directory: " + archiveIndexDir);
+    }
+
+    if (indexFiles.length > 1) {
+      throw new IOException("More than one index file for "
+          + getMapperName() + " with \"" + extension
+          + "\" extension in directory: " + archiveIndexDir);
     }
 
     // Get the path to the index
@@ -493,18 +500,35 @@ public abstract class AbstractSequenceReadsMapper implements
   private void unzipArchiveIndexFile(final InputStream archiveIndexFile,
       final File archiveIndexDir) throws IOException {
 
-    // Uncompress archive if necessary
-    if (!archiveIndexDir.exists()) {
+    final File lockFile =
+        new File(archiveIndexDir.getAbsoluteFile().getParentFile(),
+            archiveIndexDir.getName() + ".lock");
 
-      if (!archiveIndexDir.mkdir()) {
-        throw new IOException("Can't create directory for "
-            + getMapperName() + " index: " + archiveIndexDir);
+    final RandomAccessFile lockIs = new RandomAccessFile(lockFile, "rw");
+
+    final FileLock lock = lockIs.getChannel().lock();
+
+    try {
+      // Uncompress archive if necessary
+      if (!archiveIndexDir.exists()) {
+
+        if (!archiveIndexDir.mkdir()) {
+          throw new IOException("Can't create directory for "
+              + getMapperName() + " index: " + archiveIndexDir);
+        }
+
+        getLogger().fine(
+            "Unzip archiveIndexFile "
+                + archiveIndexFile + " in " + archiveIndexDir);
+        FileUtils.unzip(archiveIndexFile, archiveIndexDir);
       }
+    } catch (IOException e) {
+      throw e;
+    } finally {
 
-      getLogger().fine(
-          "Unzip archiveIndexFile "
-              + archiveIndexFile + " in " + archiveIndexDir);
-      FileUtils.unzip(archiveIndexFile, archiveIndexDir);
+      lock.release();
+      lockIs.close();
+      lockFile.delete();
     }
 
     FileUtils.checkExistingDirectoryFile(archiveIndexDir, getMapperName()
