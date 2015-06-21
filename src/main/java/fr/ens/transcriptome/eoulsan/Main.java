@@ -131,6 +131,18 @@ public abstract class Main {
   }
 
   /**
+   * Get Eoulsan directory.
+   * @return the Eoulsan directory
+   */
+  public File getEoulsanDirectory() {
+
+    final File scriptFile =
+        new File(System.getProperty(EOULSAN_SCRIPT_PATH_JVM_ARG));
+
+    return scriptFile.getParentFile();
+  }
+
+  /**
    * Get command line arguments.
    * @return Returns the arguments
    */
