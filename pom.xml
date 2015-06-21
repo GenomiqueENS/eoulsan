@@ -659,6 +659,8 @@
 
 								<mkdir dir="${basedir}/target/dist/bin" />
 								<mkdir dir="${basedir}/target/dist/lib" />
+								<mkdir dir="${basedir}/target/dist/formats" />
+								<mkdir dir="${basedir}/target/dist/tools" />
 								<!--copy file="${basedir}/COMPILING.txt" todir="${basedir}/target/dist/" 
 									/ -->
 								<copy file="${basedir}/INSTALL.txt" todir="${basedir}/target/dist/" />

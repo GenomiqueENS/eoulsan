@@ -67,6 +67,12 @@ public final class Settings implements Serializable {
   private static final String LOCAL_THREADS_NUMBER = MAIN_PREFIX_KEY
       + "local.threads";
 
+  private static final String DATA_FORMAT_PATH = MAIN_PREFIX_KEY
+      + "format.path";
+
+  private static final String GALAXY_TOOL_PATH = MAIN_PREFIX_KEY
+      + "galaxy.tool.path";
+
   private static final String HADOOP_AWS_ACCESS_KEY =
       "hadoop.conf.fs.s3n.awsAccessKeyId";
   private static final String HADOOP_AWS_SECRET_KEY =
@@ -467,6 +473,24 @@ public final class Settings implements Serializable {
   public String getDockerURI() {
 
     return this.properties.getProperty(DOCKER_URI_KEY);
+  }
+
+  /**
+   * Get the format path.
+   * @return the format path
+   */
+  public String getDataFormatPath() {
+
+    return this.properties.getProperty(DATA_FORMAT_PATH);
+  }
+
+  /**
+   * Get the Galaxy tool path.
+   * @returnthe Galaxy tool path
+   */
+  public String getGalaxyToolPath() {
+
+    return this.properties.getProperty(GALAXY_TOOL_PATH);
   }
 
   /**
@@ -881,6 +905,24 @@ public final class Settings implements Serializable {
   public void setDockerURI(final String uri) {
 
     this.properties.setProperty(DOCKER_URI_KEY, uri);
+  }
+
+  /**
+   * Set the format path.
+   * @param path the format
+   */
+  public void setDataFormatPath(final String path) {
+
+    this.properties.setProperty(DATA_FORMAT_PATH, path);
+  }
+
+  /**
+   * Set the Galaxy tool path.
+   * @param path the format
+   */
+  public void setGalaxyToolPath(final String path) {
+
+    this.properties.setProperty(DATA_FORMAT_PATH, path);
   }
 
   /**

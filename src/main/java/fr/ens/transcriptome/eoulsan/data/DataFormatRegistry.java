@@ -25,8 +25,12 @@
 package fr.ens.transcriptome.eoulsan.data;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.EoulsanRuntime.getSettings;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,8 +42,10 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.util.ServiceListLoader;
+import fr.ens.transcriptome.eoulsan.util.ClassPathResourceLoader;
+import fr.ens.transcriptome.eoulsan.util.FileResourceLoader;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
 
@@ -53,12 +59,89 @@ public class DataFormatRegistry {
 
   private static final String RESOURCE_PREFIX =
       "META-INF/services/xmldataformats/";
+  private static final String FORMAT_SUBDIR = "formats";
 
   private final Set<DataFormat> formats = new HashSet<>();
   private final Map<String, DataFormat> mapFormats = new HashMap<>();
   private final Map<String, DataFormat> mapDesignDataFormat = new HashMap<>();
 
   private static DataFormatRegistry instance;
+
+  //
+  // Inner classes
+  //
+
+  /**
+   * This class define a resource loader for resource defined in the file
+   * system.
+   */
+  private static final class DataFormatFileResourceLoader extends
+      FileResourceLoader<XMLDataFormat> {
+
+    @Override
+    protected String getExtension() {
+
+      return ".xml";
+    }
+
+    @Override
+    protected XMLDataFormat load(final InputStream in) throws IOException,
+        EoulsanException {
+
+      return new XMLDataFormat(in);
+    }
+
+    /**
+     * Get the default format directory.
+     * @return the default format directory
+     */
+    private static DataFile getDefaultFormatDirectory() {
+
+      final Main main = Main.getInstance();
+
+      if (main == null) {
+        return new DataFile(FORMAT_SUBDIR);
+      }
+
+      return new DataFile(new File(main.getEoulsanDirectory(), FORMAT_SUBDIR));
+    }
+
+    //
+    // Constructors
+    //
+
+    /**
+     * Constructor.
+     * @param resourcePaths paths where searching for the resources.
+     */
+    public DataFormatFileResourceLoader(final String resourcePaths) {
+
+      super(XMLDataFormat.class, getDefaultFormatDirectory());
+
+      if (resourcePaths != null) {
+        addResources(resourcePaths);
+      }
+    }
+  }
+
+  /**
+   * This class define a resource loader for resource defined in the class path.
+   */
+  private static final class DataFormatClassPathLoader extends
+      ClassPathResourceLoader<XMLDataFormat> {
+
+    @Override
+    protected XMLDataFormat load(final InputStream in) throws IOException,
+        EoulsanException {
+
+      return new XMLDataFormat(in);
+    }
+
+    public DataFormatClassPathLoader() {
+
+      super(XMLDataFormat.class, RESOURCE_PREFIX);
+    }
+  }
 
   /**
    * Register a DataFormat.
@@ -458,19 +541,23 @@ public class DataFormatRegistry {
    */
   private void registerAllXMLServices() {
 
-    // Get the classloader
-    final ClassLoader loader = Thread.currentThread().getContextClassLoader();
-
     try {
-      for (String filename : ServiceListLoader.load(XMLDataFormat.class
-          .getName())) {
 
-        final String resource = RESOURCE_PREFIX + filename;
-        getLogger().fine(
-            "Try to register an XML dataformat from " + filename + " resource");
+      final List<DataFormat> formats = new ArrayList<>();
 
-        register(new XMLDataFormat(loader.getResourceAsStream(resource)), true);
+      // Load XML formats from the Jar
+      formats.addAll(new DataFormatClassPathLoader().loadResources());
+
+      // Load XML formats from external resources (files...)
+      formats.addAll(new DataFormatFileResourceLoader(getSettings()
+          .getDataFormatPath()).loadResources());
+
+      // Register formats
+      for (DataFormat format : formats) {
+
+        register(format, true);
       }
+
     } catch (EoulsanException e) {
       getLogger().severe("Cannot register XML data format: " + e.getMessage());
     } catch (IOException e) {
