@@ -24,6 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.bio.io.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.bio.io.hadoop.Counters.ENTRIES_WRITTEN;
+import static fr.ens.transcriptome.eoulsan.bio.io.hadoop.Counters.INPUT_ENTRIES;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -39,6 +42,8 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
  */
 public class SAMRecordWriter extends RecordWriter<Text, Text> {
 
+  private static final String COUNTERS_GROUP = "SAM Output Format Counters";
+
   private static final String utf8 = "UTF-8";
   private static final byte[] newline;
 
@@ -51,23 +56,29 @@ public class SAMRecordWriter extends RecordWriter<Text, Text> {
   }
 
   private final DataOutputStream out;
+  private final TaskAttemptContext context;
 
   @Override
   public synchronized void write(final Text key, final Text value)
       throws IOException, InterruptedException {
 
+    this.context.getCounter(COUNTERS_GROUP, INPUT_ENTRIES).increment(1);
+
     if (value == null) {
       return;
     }
 
-    out.write(value.getBytes(), 0, value.getLength());
-    out.write(newline);
+    this.out.write(value.getBytes(), 0, value.getLength());
+    this.out.write(newline);
+
+    this.context.getCounter(COUNTERS_GROUP, ENTRIES_WRITTEN).increment(1);
   }
 
   @Override
   public synchronized void close(final TaskAttemptContext context)
       throws IOException {
-    out.close();
+
+    this.out.close();
   }
 
   //
@@ -76,10 +87,13 @@ public class SAMRecordWriter extends RecordWriter<Text, Text> {
 
   /**
    * Public constructor.
-   * @param out output stream
+   * @param context the context
+   * @param os output stream
    */
-  public SAMRecordWriter(final DataOutputStream out) {
+  public SAMRecordWriter(final TaskAttemptContext context,
+      final DataOutputStream out) {
 
+    this.context = context;
     this.out = out;
   }
 

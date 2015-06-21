@@ -96,6 +96,10 @@ public final class GenomeMapperIndexer {
           "Mapper index found, no need to recompute it (mapper index file: "
               + precomputedIndexDataFile + ")");
 
+      getLogger().info(
+          "Copy or create a symbolic link for the mapper index file "
+              + "(Created file or symbolic link: " + mapperIndexDataFile + ")");
+
       // Else download it
       DataFiles.symlinkOrCopy(precomputedIndexDataFile, mapperIndexDataFile);
     }

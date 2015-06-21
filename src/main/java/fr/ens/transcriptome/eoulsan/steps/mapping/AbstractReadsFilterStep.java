@@ -122,7 +122,7 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
     for (Parameter p : stepParameters) {
 
       // Check if the parameter is deprecated
-      checkDeprecatedParameter(p);
+      checkDeprecatedParameter(p, context.getCurrentStep().getId());
 
       switch (p.getName()) {
 
@@ -151,25 +151,29 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
   /**
    * Check deprecated parameters.
    * @param parameter the parameter to check
+   * @param stepId step id
    * @throws EoulsanException if the parameter is no more supported
    */
-  static void checkDeprecatedParameter(final Parameter parameter)
-      throws EoulsanException {
+  static void checkDeprecatedParameter(final Parameter parameter,
+      final String stepId) throws EoulsanException {
 
     if (parameter == null) {
       return;
     }
 
+    final String stepMessage =
+        stepId == null ? "" : "In the \"" + stepId + "\" step, ";
+
     switch (parameter.getName()) {
 
     case "lengthThreshold":
-      throw new EoulsanException("The parameter \""
-          + parameter.getName()
+      throw new EoulsanException(stepMessage
+          + "the parameter \"" + parameter.getName()
           + "\" is deprecated, use \"trim.length.threshold\" parameter "
           + "instead");
     case "qualityThreshold":
-      throw new EoulsanException("The parameter \""
-          + parameter.getName()
+      throw new EoulsanException(stepMessage
+          + "the parameter \"" + parameter.getName()
           + "\" is deprecated, use \"quality.threshold\" parameter instead");
 
     case "pairend.accept.pairend":
@@ -186,8 +190,8 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
 
     case "trim.length.threshold":
       getLogger().warning(
-          "The \""
-              + parameter.getName()
+          stepMessage
+              + "the \"" + parameter.getName()
               + "\" parameter is deprecated and will be soon removed. "
               + "Please use \"trimpolynend\" and \"length\" filters instead");
       break;

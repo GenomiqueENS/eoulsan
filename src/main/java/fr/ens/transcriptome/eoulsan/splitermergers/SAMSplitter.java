@@ -51,9 +51,9 @@ import fr.ens.transcriptome.eoulsan.data.DataFormats;
  */
 public class SAMSplitter implements Splitter {
 
-  private static final int DEFAULT_SPLIT_MAX_LINES = 1000000;
+  private static final int DEFAULT_SPLIT_MAX_ENTRIES = 1000000;
 
-  private int splitMaxLines = DEFAULT_SPLIT_MAX_LINES;
+  private int splitMaxEntries = DEFAULT_SPLIT_MAX_ENTRIES;
   private boolean splitByChromosomes;
 
   @Override
@@ -69,8 +69,8 @@ public class SAMSplitter implements Splitter {
 
       switch (p.getName()) {
 
-      case "max.lines":
-        this.splitMaxLines = p.getIntValueGreaterOrEqualsTo(1);
+      case "max.entries":
+        this.splitMaxEntries = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
       case "chromosomes":
@@ -112,13 +112,13 @@ public class SAMSplitter implements Splitter {
     // Get SAM header
     final SAMFileHeader header = reader.getFileHeader();
 
-    final int max = this.splitMaxLines;
-    int readCount = 0;
+    final int max = this.splitMaxEntries;
+    int entryCount = 0;
     SAMFileWriter writer = null;
 
     for (final SAMRecord record : reader) {
 
-      if (readCount % max == 0) {
+      if (entryCount % max == 0) {
 
         // Close previous writer
         if (writer != null) {
@@ -132,7 +132,7 @@ public class SAMSplitter implements Splitter {
       }
 
       writer.addAlignment(record);
-      readCount++;
+      entryCount++;
     }
 
     // Close reader and writer

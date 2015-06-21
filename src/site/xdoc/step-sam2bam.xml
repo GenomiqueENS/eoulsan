@@ -35,7 +35,7 @@
 
     <section name="Sam2bam step">
 
-      <p>This step allow to convert a SAM file into a BAM file and create a BAI file.</p>
+      <p>This step allow to convert a SAM file into a BAM file and create a BAI file. The alignments in the output BAM file are sorted by leftmost coordinates.</p>
 
       <ul>
         <li><b>Internal name</b>: sam2bam</li>

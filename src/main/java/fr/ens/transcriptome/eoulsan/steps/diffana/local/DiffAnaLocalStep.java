@@ -26,8 +26,6 @@ package fr.ens.transcriptome.eoulsan.steps.diffana.local;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
-import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.DIFFANA_RESULTS_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 
 import java.io.File;
@@ -38,7 +36,6 @@ import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
-import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -104,11 +101,6 @@ public class DiffAnaLocalStep extends AbstractStep {
   public InputPorts getInputPorts() {
     return new InputPortsBuilder().addPort(DEFAULT_SINGLE_INPUT_PORT_NAME,
         true, EXPRESSION_RESULTS_TSV).create();
-  }
-
-  @Override
-  public OutputPorts getOutputPorts() {
-    return singleOutputPort(DIFFANA_RESULTS_TSV);
   }
 
   @Override

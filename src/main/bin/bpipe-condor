@@ -36,9 +36,9 @@
 # Andrew Lonsdale
 
 # Modified from bpipe-torque.sh
-# Called from SlurmCommandExecutor.groovy, based on TorqueCommandExecutor.groovy 
+# Called from SlurmCommandExecutor.groovy, based on TorqueCommandExecutor.groovy
 #
-# Approach is mimic the wrapper and shell script relationship, and replace 
+# Approach is mimic the wrapper and shell script relationship, and replace
 # Torque commands with Slurm equivalents
 
 ################################################################################
@@ -52,7 +52,7 @@
 # Example of required format in config file:
 #
 #   commands {
-#   
+#
 #       //quick jobs 10 min and 4GB
 #       small {
 #           walltime="0:10:00"
@@ -60,8 +60,8 @@
 #           modules="python-gcc/2.7.5 qiime-gcc/1.8.0"
 #       }
 #   }
-#       
-#   The modifications then alter the Slurm script produced by bpipe to add the 
+#
+#   The modifications then alter the Slurm script produced by bpipe to add the
 #   correct "module load XXXX/x.x.x" directives at the appropriate place.
 #
 ################################################################################
@@ -128,6 +128,12 @@ make_condor_description_file () {
       JOBTYPE=$DEFAULT_JOBTYPE
    fi
 
+   if [[ -z "$EOULSAN_TASK_ID" ]];  then
+      JOB_SCRIPT_ID=$BASHPID
+   else
+      JOB_SCRIPT_ID=$EOULSAN_TASK_ID
+   fi
+
    # set the job directory if needed
    if [[ -n $JOBDIR ]]; then
       # check if the directory already exists
@@ -140,10 +146,12 @@ make_condor_description_file () {
             exit $MKDIR_JOBDIR_FAILED
          fi
       fi
-      job_script_name="$JOBDIR/job.condor"
+      job_script_name="$JOBDIR/job-$JOB_SCRIPT_ID.condor"
    else
-      job_script_name="job.condor"
+      job_script_name="job-$JOB_SCRIPT_ID.condor"
    fi
+
+   job_script_dir=`dirname $job_script_name`
 
    # write out the job script to a file
    # Output masking unreliable at moment, stores the sbatch stdout and stderr in logs
@@ -152,8 +160,8 @@ make_condor_description_file () {
    cat > $job_script_name << HERE
 Universe = vanilla
 Executable = $EXECUTABLE
-Output = script.stdout
-Error = script.stderr
+Output = $job_script_dir/script-$JOB_SCRIPT_ID.stdout
+Error = $job_script_dir/script-$JOB_SCRIPT_ID.stderr
 Arguments = $ARGUMENTS
 Queue
 HERE
@@ -176,7 +184,7 @@ start () {
          # launch the job and get its id
          job_id_full=`condor_submit -terse $job_script_name`
          condor_submit_exit_status=$?
-         if [[ $? -eq 0 ]]
+         if [[ $condor_submit_exit_status -eq 0 ]]
             then
                job_id_number=`echo $job_id_full | tr -s ' ' | cut -f 1 -d ' '`
                echo $job_id_number
@@ -212,37 +220,45 @@ stop () {
 
 # get the status of a job given its id
 status () {
+
    # make sure we have a job id on the command line
    if [[ $# -ge 1 ]]
    then
          # get the output of condor_q
-         condor_q_output=`condor_q -better-analyze $1`
-         condor_q_success=$?
+         job_state=`condor_q $1 | tail -n +5 | tr -s ' ' | cut -f 6 -d ' '`
+         condor_q_success=${PIPESTATUS[0]}
+
          if [[ $condor_q_success == 0 ]]
          then
-               job_state=`echo $condor_q__output| tail -n +5 | tr -s ' ' | cut -f 6 -d ' '` # JobState is in caps
 
-
-               if [[ -z "job_state"  ]]
+               if [[ -z "$job_state"  ]]
                then
                    job_state=`condor_history $1 | tail -n 1 | tr -s ' ' | cut -f 6 -d ' '`
-                   condor_q_success=$?
+                   condor_history_success=${PIPESTATUS[0]}
 
-                   if [[ $condor_q_success -ne 0 ]]
+                   if [[ $condor_history_success -ne 0 ]]
                    then
                         exit $CONDOR_Q_FAILED
                    fi
                fi
 
                case "$job_state" in
-                  H|I) echo WAITING;; 
-                  R) echo RUNNING;;    
-                  X) echo COMPLETE 999;; # Artificial exit code because Slurm does not provide one    
+                  H|I) echo WAITING;;
+                  R) echo RUNNING;;
+                  X) echo COMPLETE 999;; # Artificial exit code because Slurm does not provide one
                   C)
-                  # TODO how to get the exit code with Condor 
-                  # scontrol will include ExitCode=N:M, where the N is exit code and M is signal (ignored)
-                  #        command_exit_status=`echo $scontrol_output |grep Exit|sed 's/.*ExitCode=\([0-9]*\):[0-9]*/\1/'`
-                  command_exit_status=`echo $condor_q_output|tr ' ' '\n' |awk -vk="ExitCode" -F"=" '$1~k{ print $2}'|awk -F":" '{print $1}'`
+                     command_exit_status=`condor_history -long $1 | grep ExitCode | cut -f 2 -d '=' | tr -d ' '`
+                     condor_history_success=${PIPESTATUS[0]}
+
+                     if [[ -z "command_exit_status" ]]
+                     then
+                        exit $CONDOR_Q_FAILED
+                     fi
+
+                     if [[ $condor_history_success -ne 0 ]]
+                     then
+                        exit $CONDOR_Q_FAILED
+                     fi
 
                   # it is possible that command_exit_status will be empty
                   # for example we start the job and then it waits in the queue
@@ -252,6 +268,7 @@ status () {
                   *) echo UNKNOWN;;
                esac
                exit $SUCCESS
+         fi
 
    else
          echo "$program_name ERROR: status requires a job identifier"

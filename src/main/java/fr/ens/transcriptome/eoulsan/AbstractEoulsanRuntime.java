@@ -76,6 +76,12 @@ public abstract class AbstractEoulsanRuntime {
   public abstract boolean isClusterMode();
 
   /**
+   * Test if Eoulsan execute a task in on a non Hadoop cluster.
+   * @return true Eoulsan execute a task in on a non Hadoop cluster
+   */
+  public abstract boolean isClusterTaskMode();
+
+  /**
    * Create an InputStream to load data.
    * @param dataSource the source of the data to load
    * @return an InputStream corresponding to the source

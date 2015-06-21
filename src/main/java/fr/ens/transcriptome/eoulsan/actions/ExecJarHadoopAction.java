@@ -217,11 +217,11 @@ public class ExecJarHadoopAction extends AbstractAction {
 
     // Description option
     options.addOption(OptionBuilder.withArgName("description").hasArg()
-        .withDescription("job description").withLongOpt("desc").create('d'));
+        .withDescription("job description").withLongOpt("jobdesc").create('d'));
 
     // Environment option
     options.addOption(OptionBuilder.withArgName("environment").hasArg()
-        .withDescription("environment description").withLongOpt("desc")
+        .withDescription("environment description").withLongOpt("envdesc")
         .create('e'));
 
     // UploadOnly option
@@ -245,7 +245,7 @@ public class ExecJarHadoopAction extends AbstractAction {
     final HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp("hadoop -jar "
         + Globals.APP_NAME_LOWER_CASE + ".jar  [options] " + ACTION_NAME
-        + "workflow.xml design.txt hdfs://server/path", options);
+        + " workflow.xml design.txt hdfs://server/path", options);
 
     Common.exit(0);
   }

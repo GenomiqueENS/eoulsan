@@ -47,7 +47,8 @@ public interface UI extends WorkflowStepObserver {
       double progress);
 
   @Override
-  void notifyStepState(WorkflowStep step, double progress);
+  void notifyStepState(WorkflowStep step, int terminatedTasks,
+      int submittedTasks, double progress);
 
   @Override
   void notifyStepState(WorkflowStep step, String note);

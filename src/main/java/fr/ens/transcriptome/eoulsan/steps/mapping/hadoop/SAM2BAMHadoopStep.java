@@ -5,16 +5,19 @@ import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.allPortsRequir
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_BAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_INDEX_BAI;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
-import hadoop.org.apache.hadoop.mapreduce.lib.partition.TotalOrderPartitioner;
 import hbparquet.hadoop.util.ContextUtil;
 import htsjdk.samtools.BAMIndexer;
-import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFileHeader.SortOrder;
-import htsjdk.samtools.SAMFileReader;
 import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 import htsjdk.samtools.ValidationStringency;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
@@ -23,6 +26,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.JobContext;
@@ -31,8 +35,11 @@ import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 import org.apache.hadoop.mapreduce.lib.partition.InputSampler;
+import org.apache.hadoop.mapreduce.lib.partition.TotalOrderPartitioner;
 import org.seqdoop.hadoop_bam.AnySAMInputFormat;
 import org.seqdoop.hadoop_bam.AnySAMOutputFormat;
 import org.seqdoop.hadoop_bam.BAMRecordReader;
@@ -42,7 +49,6 @@ import org.seqdoop.hadoop_bam.SAMRecordWritable;
 import org.seqdoop.hadoop_bam.cli.CLIMergingAnySAMOutputFormat;
 import org.seqdoop.hadoop_bam.cli.Utils;
 import org.seqdoop.hadoop_bam.util.SAMHeaderReader;
-import org.seqdoop.hadoop_bam.util.WrapSeekable;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopOnly;
@@ -54,6 +60,7 @@ import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractSAM2BAMStep;
+import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SortRecordReader.IndexerMapper;
 import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 
 /**
@@ -86,7 +93,12 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
     final Data indexData =
         context.getOutputData(MAPPER_RESULTS_INDEX_BAI, samData);
 
-    final Path bamPath = new Path(bamData.getDataFile().toUri());
+    // Get input and output files
+    final DataFile samFile = samData.getDataFile();
+    final DataFile bamFile = bamData.getDataFile();
+    final DataFile indexFile = indexData.getDataFile();
+
+    final Path bamPath = new Path(bamFile.toUri());
 
     final Path workPath =
         new Path(bamPath.getParent(), bamPath.getName() + ".tmp");
@@ -96,8 +108,8 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
 
       // Create the job to run
       job =
-          createJobConf(conf, context, samData.getName(),
-              samData.getDataFile(), bamData.getDataFile(), workPath);
+          createJobConf(conf, context, samData.getName(), samFile, bamFile,
+              workPath);
 
       // Submit main job
       MapReduceUtils.submitAndWaitForJob(job, samData.getName(),
@@ -114,9 +126,30 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
       return status.createStepResult(e);
     }
 
+    // Create Indexing Hadoop job
     try {
-      createIndex(conf, bamData.getDataFile(), indexData.getDataFile());
-    } catch (IOException e) {
+
+      // Create the indexer submit file
+      final DataFile indexerSubmitFile = createSubmitFile(bamFile, indexFile);
+
+      // Create the indexer job
+      final Job indexingJob =
+          createIndexJob(conf, indexerSubmitFile, "Create "
+              + indexFile + " index file");
+
+      // Submit the job to the Hadoop scheduler, and wait the end of the job
+      // in non verbose mode
+      indexingJob.waitForCompletion(false);
+
+      if (!indexingJob.isSuccessful()) {
+        throw new IOException("Error while running Hadoop job for creating "
+            + indexFile + " index file");
+      }
+
+      // Delete the indexer submit file
+      indexerSubmitFile.delete();
+
+    } catch (IOException | ClassNotFoundException | InterruptedException e) {
       return status.createStepResult(e);
     }
 
@@ -185,11 +218,9 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
     job.setOutputFormatClass(CLIMergingAnySAMOutputFormat.class);
 
     // Set the reducer task count
-    // if (getReducerTaskCount() > 0) {
-    // job.setNumReduceTasks(getReducerTaskCount());
-    // }
-    // FIXME Do not work when reduce != 1
-    job.setNumReduceTasks(1);
+    if (getReducerTaskCount() > 0) {
+      job.setNumReduceTasks(getReducerTaskCount());
+    }
 
     // Set input paths
     FileSystem fs = input.getFileSystem(conf);
@@ -206,8 +237,7 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
 
           if (first) {
             job.getConfiguration().setStrings(
-                Utils.HEADERMERGER_INPUTS_PROPERTY,
-                p.toString());
+                Utils.HEADERMERGER_INPUTS_PROPERTY, p.toString());
           }
 
           context.getLogger().info("add path1: " + p);
@@ -227,9 +257,70 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
         Utils.HEADERMERGER_INPUTS_PROPERTY
             + ":"
             + job.getConfiguration().get(Utils.HEADERMERGER_INPUTS_PROPERTY));
+
     InputSampler.writePartitionFile(job,
         new InputSampler.RandomSampler<LongWritable, SAMRecordWritable>(0.01,
             10000, Math.max(100, job.getNumReduceTasks())));
+
+    return job;
+  }
+
+  private DataFile createSubmitFile(final DataFile bamFile,
+      final DataFile indexFile) throws IOException {
+
+    DataFile out =
+        new DataFile(indexFile.getParent(), indexFile.getName() + ".submitfile");
+
+    Writer writer = new OutputStreamWriter(out.create());
+    writer.write(bamFile.getSource() + '\t' + indexFile.getSource());
+    writer.close();
+
+    return out;
+  }
+
+  /**
+   * Create the index Hadoop job.
+   * @param conf the Hadoop configuration
+   * @param submitFile the path to the submit file
+   * @param jobDescription the job description
+   * @return a Job object
+   * @throws IOException if an error occurs while creating the index
+   */
+  private Job createIndexJob(final Configuration conf,
+      final DataFile submitFile, final String jobDescription)
+      throws IOException {
+
+    final Configuration jobConf = new Configuration(conf);
+
+    // Set one task per map
+    jobConf.set("mapreduce.input.lineinputformat.linespermap", "" + 1);
+
+    // Set Job name
+    // Create the job and its name
+    final Job job = Job.getInstance(jobConf, jobDescription);
+
+    // Set the jar
+    job.setJarByClass(IndexerMapper.class);
+
+    // Set input path
+    FileInputFormat.addInputPath(job, new Path(submitFile.getSource()));
+
+    job.setInputFormatClass(NLineInputFormat.class);
+
+    // Set the Mapper class
+    job.setMapperClass(IndexerMapper.class);
+
+    // Set the output key class
+    job.setOutputKeyClass(NullWritable.class);
+
+    // Set the output value class
+    job.setOutputValueClass(NullWritable.class);
+
+    // Set the output format
+    job.setOutputFormatClass(NullOutputFormat.class);
+
+    // Set the number of reducers
+    job.setNumReduceTasks(0);
 
     return job;
   }
@@ -241,35 +332,24 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
    * @param indexFile the BAI file
    * @throws IOException if an error occurs while creating the index
    */
-  private void createIndex(final Configuration conf, final DataFile bamFile,
-      final DataFile indexFile) throws IOException {
+  static void createIndex(final Configuration conf, final Path bamFile,
+      final Path indexFile) throws IOException {
 
-    // TODO Must create mapper task to do the job
+    final InputStream in = FileSystem.get(conf).open(bamFile);
 
-    Path input = new Path(bamFile.toUri());
-    Path output = new Path(indexFile.toUri());
+    final SamReader reader =
+        SamReaderFactory.makeDefault()
+            .enable(SamReaderFactory.Option.INCLUDE_SOURCE_IN_RECORDS)
+            .validationStringency(ValidationStringency.DEFAULT_STRINGENCY)
+            .open(SamInputResource.of(in));
 
-    final ValidationStringency stringency =
-        ValidationStringency.DEFAULT_STRINGENCY;
+    final BAMIndexer indexer =
+        new BAMIndexer(indexFile.getFileSystem(conf).create(indexFile),
+            reader.getFileHeader());
 
-    final SAMFileReader reader;
+    for (SAMRecord rec : reader) {
+      indexer.processAlignment(rec);
 
-    reader = new SAMFileReader(WrapSeekable.openPath(conf, input), false);
-
-    final SAMFileHeader header;
-
-    header = reader.getFileHeader();
-
-    final BAMIndexer indexer;
-
-    final Path p = output;
-    indexer = new BAMIndexer(p.getFileSystem(conf).create(p), header);
-
-    // Necessary lest the BAMIndexer complain
-    reader.enableFileSource(true);
-
-    for (SAMRecord aReader : reader) {
-      indexer.processAlignment(aReader);
     }
 
     indexer.finish();
@@ -384,4 +464,35 @@ final class SortRecordReader extends
 
     return true;
   }
+
+  //
+  // Index creation map reduces classes
+  //
+
+  /**
+   * This class define the mapper that index a BAM file.
+   * @author Laurent Jourdren
+   */
+  public static final class IndexerMapper extends
+      Mapper<LongWritable, Text, NullWritable, NullWritable> {
+
+    @Override
+    protected void map(final LongWritable key, final Text value,
+        final Context context) throws IOException, InterruptedException {
+
+      final String[] files = value.toString().split("\t");
+
+      if (files.length != 2) {
+        throw new IOException("Invalid arguments: " + value);
+      }
+
+      final Path bamFile = new Path(files[0]);
+      final Path indexFile = new Path(files[1]);
+
+      // Create index
+      SAM2BAMHadoopStep.createIndex(context.getConfiguration(), bamFile,
+          indexFile);
+    }
+  }
+
 }

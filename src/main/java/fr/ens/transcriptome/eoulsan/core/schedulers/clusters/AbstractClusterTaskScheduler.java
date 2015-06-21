@@ -121,7 +121,9 @@ public abstract class AbstractClusterTaskScheduler extends
 
       final List<String> command = new ArrayList<>();
 
-      command.add(Main.getInstance().getEoulsanScriptPath());
+      final File eoulsanScriptFile =
+          new File(Main.getInstance().getEoulsanScriptPath());
+      command.add(eoulsanScriptFile.getAbsolutePath());
 
       final String logLevel = Main.getInstance().getLogLevelArgument();
 
@@ -187,7 +189,10 @@ public abstract class AbstractClusterTaskScheduler extends
         beforeExecuteTask(this.context);
 
         // Submit Job
-        this.jobId = submitJob(createJobName(), createJobCommand());
+        this.jobId =
+            submitJob(createJobName(), createJobCommand(),
+                ((TaskContext) this.context).getTaskOutputDirectory().toFile(),
+                this.context.getId());
 
         StatusResult status = null;
 

@@ -23,7 +23,11 @@
  */
 package fr.ens.transcriptome.eoulsan.steps.fastqc;
 
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
+import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +51,6 @@ import uk.ac.babraham.FastQC.Modules.QCModule;
 import uk.ac.babraham.FastQC.Modules.SequenceLengthDistribution;
 import uk.ac.babraham.FastQC.Report.HTMLReportArchive;
 import uk.ac.babraham.FastQC.Sequence.Sequence;
-import uk.ac.babraham.FastQC.Sequence.SequenceFactory;
 import uk.ac.babraham.FastQC.Sequence.SequenceFile;
 import uk.ac.babraham.FastQC.Sequence.SequenceFormatException;
 
@@ -55,7 +58,7 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
+import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
@@ -66,6 +69,7 @@ import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.DataFiles;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
@@ -78,7 +82,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @author Sandrine Perrin
  * @since 2.0
  */
-@LocalOnly
+@HadoopCompatible
 public class FastQCStep extends AbstractStep {
 
   /** Name step. */
@@ -129,9 +133,10 @@ public class FastQCStep extends AbstractStep {
     final InputPortsBuilder builder = new InputPortsBuilder();
 
     if (this.inputFormat == DataFormats.READS_FASTQ) {
-      builder.addPort("input", DataFormats.READS_FASTQ);
+      builder.addPort(DEFAULT_SINGLE_INPUT_PORT_NAME, DataFormats.READS_FASTQ);
     } else {
-      builder.addPort("input", DataFormats.MAPPER_RESULTS_SAM);
+      builder.addPort(DEFAULT_SINGLE_INPUT_PORT_NAME,
+          DataFormats.MAPPER_RESULTS_SAM);
     }
 
     return builder.create();
@@ -163,8 +168,7 @@ public class FastQCStep extends AbstractStep {
             DataFormatRegistry.getInstance().getDataFormatFromNameOrAlias(
                 p.getLowerStringValue());
 
-        if (!(DataFormats.MAPPER_RESULTS_SAM.equals(format) || DataFormats.READS_FASTQ
-            .equals(format))) {
+        if (!(MAPPER_RESULTS_SAM.equals(format) || READS_FASTQ.equals(format))) {
           throw new EoulsanException(
               "Unknown or format not supported as input format for FastQC: "
                   + p.getStringValue());
@@ -215,48 +219,64 @@ public class FastQCStep extends AbstractStep {
   @Override
   public StepResult execute(final StepContext context, final StepStatus status) {
 
-    // Get input SAM data
+    // Patch FastQC code on sequenceFile to make hadoop compatible
+    try {
+      // RuntimePatchFastQC.runPatchFastQC();
+      FastQCRuntimePatcher.patchFastQC();
+    } catch (EoulsanException e1) {
+      e1.printStackTrace();
+      return status.createStepResult(e1);
+    }
+
+    // Get input data
     final Data inData = context.getInputData(this.inputFormat);
 
-    // Get output BAM data
+    // Get output data
     final Data outData =
         context.getOutputData(DataFormats.FASTQC_REPORT_HTML, inData);
 
     // Extract data file
-    final DataFile inFile = inData.getDataFile();
-    final DataFile reportFile = outData.getDataFile();
-
-    SequenceFile seqFile = null;
-
-    try {
-      seqFile = SequenceFactory.getSequenceFile(inFile.toFile());
-
-    } catch (SequenceFormatException | IOException e) {
-      return status.createStepResult(e,
-          "Error while init sequence file: " + e.getMessage());
+    final DataFile inFile;
+    if (inData.getFormat().getMaxFilesCount() > 1) {
+      inFile = inData.getDataFile(0);
+    } else {
+      inFile = inData.getDataFile();
     }
 
-    // Define modules list
-    final OverRepresentedSeqs os = new OverRepresentedSeqs();
-
-    final List<AbstractQCModule> modules =
-        Lists.newArrayList(new BasicStats(), new PerBaseQualityScores(),
-            new PerTileQualityScores(), new PerSequenceQualityScores(),
-            new PerBaseSequenceContent(), new PerSequenceGCContent(),
-            new NContent(), new SequenceLengthDistribution(),
-            os.duplicationLevelModule(), os, new AdapterContent(),
-            new KmerContent());
+    final DataFile reportFile = outData.getDataFile();
 
     try {
 
+      // Get the SequenceFile object
+      final SequenceFile seqFile;
+      if (this.inputFormat == READS_FASTQ) {
+
+        seqFile = new FastqSequenceFile(inFile);
+      } else {
+
+        seqFile = new SAMSequenceFile(inFile);
+      }
+
+      // Define modules list
+      final OverRepresentedSeqs os = new OverRepresentedSeqs();
+
+      final List<AbstractQCModule> modules =
+          Lists.newArrayList(new BasicStats(), new PerBaseQualityScores(),
+              new PerTileQualityScores(), new PerSequenceQualityScores(),
+              new PerBaseSequenceContent(), new PerSequenceGCContent(),
+              new NContent(), new SequenceLengthDistribution(),
+              os.duplicationLevelModule(), os, new AdapterContent(),
+              new KmerContent());
+
+      // Process sequences
       processSequences(modules, seqFile);
 
-      createReport(modules, seqFile, reportFile.toFile());
+      // Create the report
+      createReport(modules, seqFile, reportFile);
 
       // Set the description of the context
       status.setDescription("Create FastQC report on "
-          + inData.getDataFile().toFile().getAbsolutePath() + " in "
-          + reportFile.getName() + ")");
+          + inFile + " in " + reportFile.getName() + ")");
 
       // Keep module data is now unnecessary
       modules.clear();
@@ -308,28 +328,51 @@ public class FastQCStep extends AbstractStep {
    * @throws XMLStreamException the XML stream exception
    */
   private void createReport(final List<AbstractQCModule> modules,
-      final SequenceFile seqFile, final File reportFile) throws IOException,
-      XMLStreamException {
+      final SequenceFile seqFile, final DataFile reportFile)
+      throws IOException, XMLStreamException {
 
-    new HTMLReportArchive(seqFile, modules.toArray(new QCModule[modules.size()]),
-        reportFile);
+    // Get the report extension
+    final String reportExtension =
+        DataFormats.FASTQC_REPORT_HTML.getDefaultExtension();
 
-    final String extension = ".html";
-    final String outputDir = reportFile.getParent();
+    // Define the temporary output file
+    final File reportTempFile =
+        File.createTempFile("reportfile-", reportExtension);
+
+    // Create the output report
+    new HTMLReportArchive(seqFile, modules.toArray(new QCModule[] {}),
+        reportTempFile);
 
     // Report zip filename
     final String baseFilename =
         reportFile.getName().substring(0,
-            reportFile.getName().length() - extension.length());
+            reportFile.getName().length() - reportExtension.length());
 
     // Remove zip file
-    if (!new File(outputDir, baseFilename + ".zip").delete()) {
+
+    final File zipFile =
+        new File(reportTempFile.getParent(), baseFilename + ".zip");
+    if (!zipFile.delete()) {
+      getLogger()
+          .warning("Unable to remove FastQC output zip file: " + zipFile);
     }
 
     // Remove directory file
-    final File zipDir = new File(outputDir, baseFilename);
-    if (!FileUtils.recursiveDelete(zipDir)) {
-    }
-  }
+    final File zipDir = new File(reportTempFile.getParent(), baseFilename);
 
+    if (!FileUtils.recursiveDelete(zipDir)) {
+      getLogger()
+          .warning("Unable to remove FastQC output directory: " + zipDir);
+    }
+
+    // Copy the temporary file to the real output file
+    DataFiles.copy(new DataFile(reportTempFile), reportFile);
+
+    // Remove the temporary file
+    if (!reportTempFile.delete()) {
+      getLogger().warning(
+          "Unable to remove FastQC temporary output file: " + reportTempFile);
+    }
+
+  }
 }

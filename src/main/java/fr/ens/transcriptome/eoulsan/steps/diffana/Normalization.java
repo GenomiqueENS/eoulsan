@@ -51,6 +51,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.data.Data;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -750,7 +751,8 @@ public class Normalization {
     for (Data d : data.getListElements()) {
 
       final int sampleId = d.getMetadata().getSampleId();
-      final File inputFile = d.getDataFile().toFile();
+      final DataFile inputFile = d.getDataFile();
+
       final String outputFilename =
           this.expressionFilesPrefix + sampleId + this.expressionFilesSuffix;
 
@@ -770,7 +772,11 @@ public class Normalization {
       // Put file on rserve server
       getLogger().info(
           "Put file on RServe: " + inputFile + " to " + outputFilename);
-      this.rConnection.putFile(inputFile, outputFilename);
+      try {
+        this.rConnection.putFile(inputFile.open(), outputFilename);
+      } catch (IOException e) {
+        throw new EoulsanException(e);
+      }
     }
 
   }

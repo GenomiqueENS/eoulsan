@@ -77,6 +77,12 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
   }
 
   @Override
+  public boolean isClusterTaskMode() {
+
+    return false;
+  }
+
+  @Override
   public File getTempDirectory() {
 
     return new File(System.getProperty("java.io.tmpdir"));
