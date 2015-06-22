@@ -111,7 +111,35 @@ public interface WorkflowStep extends Serializable {
    */
   public static enum StepState {
     CREATED, CONFIGURED, WAITING, READY, WORKING, PARTIALLY_DONE, DONE, FAILED,
-    ABORTED
+    ABORTED;
+
+    /**
+     * Test if the state is a final state.
+     * @return true if the state is a final state
+     */
+    public boolean isFinalState() {
+
+      return this == DONE || this == FAILED || this == ABORTED;
+    }
+
+    /**
+     * Test if the state is a working state.
+     * @return true if the state is a working state
+     */
+    public boolean isWorkingState() {
+
+      return this == WORKING || this == PARTIALLY_DONE;
+    }
+
+    /**
+     * Test if the state is a done state.
+     * @return true if the state is a done state
+     */
+    public boolean isDoneState() {
+
+      return this == PARTIALLY_DONE || this == DONE;
+    }
+
   }
 
   /**
