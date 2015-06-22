@@ -1,34 +1,17 @@
-test_description=samtools method rumdup in SE mode
-toolshedxml.path=/tmp/samtools_rmdup.xml
-input.input1=input_value
-output.output1=output_value
-param.bam_paired_end_type.bam_paired_end_type_selector=SE
-command.expected=samtools rmdup -s input_value output_value 2>&1 || echo 'Error running samtools rmdup.' >&2
-
 
 test_description=samtools method rumdup in PE mode
-toolshedxml.path=/home/sperrin/Documents/eoulsan/toolshed/samtools_rmdup-fe83e6f8e65e/samtools_rmdup.xml
+toolshedxml.path=samtools_rmdup/1.0.1/samtools_rmdup.xml
 input.input1=input_value
 output.output1=output_value
 param.bam_paired_end_type.bam_paired_end_type_selector=SE
 command.expected=samtools rmdup -s input_value output_value 2>&1 || echo 'Error running samtools rmdup.' >&2
 
 test_description=samtools method rumdup in PE mode
-toolshedxml.path=/home/sperrin/Documents/eoulsan/toolshed/samtools_rmdup-fe83e6f8e65e/samtools_rmdup.xml
+toolshedxml.path=samtools_rmdup/1.0.1/samtools_rmdup.xml
 input.input1=input_value
 output.output1=output_value
 param.bam_paired_end_type.bam_paired_end_type_selector=PE
 command.expected=samtools rmdup -S input_value output_value 2>&1 || echo 'Error running samtools rmdup.' >&2
-
-
-test_description=samtools method rumdup in PE mode
-toolshedxml.path=/home/sperrin/Documents/eoulsan/toolshed/samtools_rmdup-fe83e6f8e65e/samtools_rmdup.xml
-input.input1=input_value
-output.output1=output_value
-param.bam_paired_end_type.bam_paired_end_type_selector=SE
-command.expected=samtools rmdup -s input_value output_value 2>&1 || echo 'Error running samtools rmdup.' >&2
-
-
 
 
 
