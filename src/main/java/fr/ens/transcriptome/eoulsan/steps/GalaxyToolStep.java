@@ -21,7 +21,7 @@
  *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
-package fr.ens.transcriptome.eoulsan.steps.galaxytool;
+package fr.ens.transcriptome.eoulsan.steps;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
@@ -43,7 +43,9 @@ import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.galaxytool.GalaxyToolInterpreter;
+import fr.ens.transcriptome.eoulsan.steps.galaxytool.ToolData;
+import fr.ens.transcriptome.eoulsan.steps.galaxytool.ToolExecutorResult;
 import fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.ToolElement;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
@@ -188,7 +190,7 @@ public class GalaxyToolStep extends AbstractStep {
   public GalaxyToolStep(final InputStream toolXMLis) throws EoulsanException {
 
     this.toolInterpreter =
-        new GalaxyToolInterpreter("Unknown", toolXMLis, null);
+        new GalaxyToolInterpreter(toolXMLis);
   }
 
 }
