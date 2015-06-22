@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.data;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.EoulsanRuntime.getSettings;
 
@@ -85,6 +86,14 @@ public class DataFormatRegistry {
     }
 
     @Override
+    protected String getResourceName(final XMLDataFormat resource) {
+
+      checkNotNull(resource, "resource argument cannot be null");
+
+      return resource.getName();
+    }
+
+    @Override
     protected XMLDataFormat load(final InputStream in) throws IOException,
         EoulsanException {
 
@@ -119,9 +128,10 @@ public class DataFormatRegistry {
       super(XMLDataFormat.class, getDefaultFormatDirectory());
 
       if (resourcePaths != null) {
-        addResources(resourcePaths);
+        addResourcePaths(resourcePaths);
       }
     }
+
   }
 
   /**
@@ -129,6 +139,14 @@ public class DataFormatRegistry {
    */
   private static final class DataFormatClassPathLoader extends
       ClassPathResourceLoader<XMLDataFormat> {
+
+    @Override
+    protected String getResourceName(final XMLDataFormat resource) {
+
+      checkNotNull(resource, "resource argument cannot be null");
+
+      return resource.getName();
+    }
 
     @Override
     protected XMLDataFormat load(final InputStream in) throws IOException,
@@ -546,11 +564,16 @@ public class DataFormatRegistry {
       final List<DataFormat> formats = new ArrayList<>();
 
       // Load XML formats from the Jar
-      formats.addAll(new DataFormatClassPathLoader().loadResources());
+      DataFormatClassPathLoader formatClassLoader =
+          new DataFormatClassPathLoader();
+      formatClassLoader.reload();
+      formats.addAll(formatClassLoader.loadAllResources());
 
       // Load XML formats from external resources (files...)
-      formats.addAll(new DataFormatFileResourceLoader(getSettings()
-          .getDataFormatPath()).loadResources());
+      DataFormatFileResourceLoader formatFileLoader =
+          new DataFormatFileResourceLoader(getSettings().getDataFormatPath());
+      formatFileLoader.reload();
+      formats.addAll(formatFileLoader.loadAllResources());
 
       // Register formats
       for (DataFormat format : formats) {
@@ -560,11 +583,6 @@ public class DataFormatRegistry {
 
     } catch (EoulsanException e) {
       getLogger().severe("Cannot register XML data format: " + e.getMessage());
-    } catch (IOException e) {
-      getLogger()
-          .severe(
-              "Unable to load the list of XML data format files: "
-                  + e.getMessage());
     }
   }
 

@@ -29,9 +29,8 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+
+import com.sun.jersey.spi.service.ServiceConfigurationError;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 
@@ -41,41 +40,59 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public abstract class ClassPathResourceLoader<S> implements ResourceLoader<S> {
+public abstract class ClassPathResourceLoader<S> extends
+    AbstractResourceLoader<S> {
 
   private final Class<S> clazz;
-  private final String resourcePath;
+  private final String resourceBasePath;
 
-  /**
-   * Load a resource.
-   * @param in input stream
-   * @return a resource object
-   * @throws IOException if an error occurs while loading the resource
-   * @throws EoulsanException if an error occurs while creating the resource
-   *           object
-   */
-  protected abstract S load(final InputStream in) throws IOException,
-      EoulsanException;
+  //
+  // Resources loading
+  //
 
   @Override
-  public List<S> loadResources() throws IOException, EoulsanException {
+  protected InputStream getResourceAsStream(final String resourcePath)
+      throws IOException {
 
-    final List<S> result = new ArrayList<>();
+    checkNotNull(resourcePath, "resourcePath argument cannot be null");
 
     // Get the classloader
     final ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
-    for (String filename : ServiceListLoader.load(this.clazz.getName())) {
+    return loader.getResourceAsStream(resourcePath);
+  }
 
-      final String resource = this.resourcePath + filename;
-      getLogger().fine(
-          "Try to load "
-              + this.clazz.getSimpleName() + " from " + filename + " resource");
+  @Override
+  public void reload() {
 
-      result.add(load(loader.getResourceAsStream(resource)));
+    try {
+
+      for (String filename : ServiceListLoader.load(this.clazz.getName())) {
+
+        final String resourcePath = this.resourceBasePath + filename;
+        getLogger().fine(
+            "Try to load "
+                + this.clazz.getSimpleName() + " from " + filename
+                + " resource");
+
+        final S resource = load(getResourceAsStream(resourcePath));
+
+        if (resource == null) {
+          throw new EoulsanException("Cannot load resource: " + resourcePath);
+        }
+
+        final String resourceName = getResourceName(resource);
+
+        if (resourceName == null) {
+          throw new EoulsanException("Cannot get resource name for resource: "
+              + resource);
+        }
+
+        addResource(resourceName, resourcePath);
+      }
+    } catch (IOException | EoulsanException e) {
+      throw new ServiceConfigurationError(e);
     }
-
-    return Collections.unmodifiableList(result);
   }
 
   //
@@ -94,7 +111,7 @@ public abstract class ClassPathResourceLoader<S> implements ResourceLoader<S> {
     checkNotNull(resourcePath, "resourcePath argument cannot be null");
 
     this.clazz = clazz;
-    this.resourcePath = resourcePath;
+    this.resourceBasePath = resourcePath;
   }
 
 }

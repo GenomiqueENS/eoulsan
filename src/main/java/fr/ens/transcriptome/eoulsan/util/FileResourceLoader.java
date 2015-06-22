@@ -8,8 +8,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+
+import com.sun.xml.internal.ws.util.ServiceConfigurationError;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -20,7 +21,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public abstract class FileResourceLoader<S> implements ResourceLoader<S> {
+public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
 
   private final static String INDEX_FILE = "index";
 
@@ -37,50 +38,61 @@ public abstract class FileResourceLoader<S> implements ResourceLoader<S> {
    */
   protected abstract String getExtension();
 
-  /**
-   * Load a resource.
-   * @param in input stream
-   * @return a resource object
-   * @throws IOException if an error occurs while loading the resource
-   * @throws EoulsanException if an error occurs while creating the resource
-   *           object
-   */
-  protected abstract S load(final InputStream in) throws IOException,
-      EoulsanException;
-
   //
   // Resources loading
   //
 
   @Override
-  public List<S> loadResources() throws IOException, EoulsanException {
+  protected InputStream getResourceAsStream(final String resourcePath)
+      throws IOException {
+
+    checkNotNull(resourcePath, "resourcePath argument cannot be null");
+
+    return new DataFile(resourcePath).open();
+  }
+
+  @Override
+  public void reload() {
 
     if (this.directories.isEmpty()) {
-      return Collections.emptyList();
+      return;
     }
 
-    final List<S> result = new ArrayList<>();
+    try {
+      for (DataFile directory : this.directories) {
 
-    for (DataFile directory : this.directories) {
+        if (!directory.exists()) {
+          return;
+        }
 
-      if (!directory.exists()) {
-        return Collections.emptyList();
+        for (String filename : findResourcePaths(directory)) {
+
+          getLogger().fine(
+              "Try to load "
+                  + this.clazz.getSimpleName() + " from " + filename
+                  + " resource");
+
+          final DataFile file = new DataFile(directory, filename);
+
+          final S resource = load(file.open());
+
+          if (resource == null) {
+            throw new EoulsanException("Cannot load resource: " + file);
+          }
+
+          final String resourceName = getResourceName(resource);
+
+          if (resourceName == null) {
+            throw new EoulsanException(
+                "Cannot get resource name for resource: " + resource);
+          }
+
+          addResource(resourceName, file.getSource());
+        }
       }
-
-      for (String filename : findResourcePaths(directory)) {
-
-        getLogger().fine(
-            "Try to load "
-                + this.clazz.getSimpleName() + " from " + filename
-                + " resource");
-
-        final DataFile file = new DataFile(directory, filename);
-
-        result.add(load(file.open()));
-      }
+    } catch (IOException | EoulsanException e) {
+      throw new ServiceConfigurationError(e);
     }
-
-    return Collections.unmodifiableList(result);
   }
 
   /**
@@ -163,10 +175,10 @@ public abstract class FileResourceLoader<S> implements ResourceLoader<S> {
   //
 
   /**
-   * Add a resource path.
+   * Add a resource paths.
    * @param resourcePath the resource path to add
    */
-  public void addResources(final String resourcePaths) {
+  public void addResourcePaths(final String resourcePaths) {
 
     checkNotNull(resourcePaths, "resourcePaths argument cannot be null");
 
@@ -175,7 +187,7 @@ public abstract class FileResourceLoader<S> implements ResourceLoader<S> {
       directory = directory.trim();
 
       if (!directory.isEmpty()) {
-        addResource(new DataFile(directory));
+        addResourcePath(new DataFile(directory));
       }
     }
   }
@@ -184,7 +196,7 @@ public abstract class FileResourceLoader<S> implements ResourceLoader<S> {
    * Add a resource path.
    * @param resourcePath the resource path to add
    */
-  public void addResource(final DataFile resourcePath) {
+  public void addResourcePath(final DataFile resourcePath) {
 
     checkNotNull(resourcePath, "baseDir argument cannot be null");
 
@@ -196,7 +208,7 @@ public abstract class FileResourceLoader<S> implements ResourceLoader<S> {
    * @param resourcePath the resource path to remove
    * @return true if the resource has been successfully removed
    */
-  public boolean removeResource(final DataFile resourcePath) {
+  public boolean removeResourcePath(final DataFile resourcePath) {
 
     checkNotNull(resourcePath, "baseDir argument cannot be null");
 
@@ -217,7 +229,7 @@ public abstract class FileResourceLoader<S> implements ResourceLoader<S> {
     checkNotNull(clazz, "clazz argument cannot be null");
 
     this.clazz = clazz;
-    addResource(resourcePath);
+    addResourcePath(resourcePath);
   }
 
 }
