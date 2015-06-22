@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.design;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
@@ -66,7 +67,7 @@ public class ExperimentMetadataTest {
     assertTrue(em.containsModel());
 
     // test getContrast
-    assertNull(em.isContrast());
+    assertFalse(em.containsContrast());
     // test setContrast
     em.setContrast(true);
     assertEquals(true, em.isContrast());
@@ -74,10 +75,10 @@ public class ExperimentMetadataTest {
     assertTrue(em.containsContrast());
 
     // test getBuildContrast
-    assertNull(em.isBuildContrast());
+    assertFalse(em.containsBuildContrast());
     // test setBuildContrast
     em.setBuildContrast(true);
-    assertEquals("toto", em.isBuildContrast());
+    assertTrue(em.isBuildContrast());
     // test containsBuildContrast
     assertTrue(em.containsBuildContrast());
 
