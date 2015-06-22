@@ -31,10 +31,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.ServiceConfigurationError;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.sun.xml.internal.ws.util.ServiceConfigurationError;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 
@@ -107,7 +107,7 @@ public abstract class AbstractResourceLoader<S> implements ResourceLoader<S> {
       try {
         result.add(load(getResourceAsStream(resourcePath)));
       } catch (IOException | EoulsanException e) {
-        throw new ServiceConfigurationError(e);
+        throw new ServiceConfigurationError("Unable to load resource", e);
       }
     }
 
@@ -130,7 +130,7 @@ public abstract class AbstractResourceLoader<S> implements ResourceLoader<S> {
       try {
         result.add(load(getResourceAsStream(resourcePath)));
       } catch (IOException | EoulsanException e) {
-        throw new ServiceConfigurationError(e);
+        throw new ServiceConfigurationError("Unable to load resource", e);
       }
     }
 
