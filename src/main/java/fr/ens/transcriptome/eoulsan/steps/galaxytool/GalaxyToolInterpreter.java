@@ -86,9 +86,6 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
   /** The outputs. */
   private Map<String, ToolElement> outputs;
 
-  /** The tool name from parameter Eoulsan file. */
-  private final String toolNameFromParameter;
-
   /** The step parameters. */
   private final Map<String, Parameter> stepParameters;
 
@@ -392,27 +389,14 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
    * @throws EoulsanException the Eoulsan exception
    */
   public GalaxyToolInterpreter(final InputStream is) throws EoulsanException {
-    this("UNDEFINED", is, null);
-  }
-
-  /**
-   * Public constructor.
-   * @param toolName the tool name
-   * @param is the input stream
-   * @param toolExecutablePath the tool executable path
-   * @throws EoulsanException the eoulsan exception
-   */
-  public GalaxyToolInterpreter(final String toolName, final InputStream is,
-      final File toolExecutablePath) throws EoulsanException {
 
     checkNotNull(is, "input stream on XML file");
 
-    this.toolNameFromParameter = toolName;
     this.toolXMLis = is;
     this.doc = this.buildDOM();
     this.stepParameters = new HashMap<>();
 
-    this.tool = new ToolData(toolExecutablePath);
+    this.tool = new ToolData();
 
     this.checkDomValidity();
   }

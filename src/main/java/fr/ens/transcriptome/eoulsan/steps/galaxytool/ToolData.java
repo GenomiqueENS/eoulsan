@@ -36,7 +36,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  */
 public class ToolData {
 
-  private static final String GENERIC_NAME = "toolGalaxy";
   private static final String DEFAULT_VERSION = "unknown";
 
   /** The tool id. */
