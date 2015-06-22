@@ -445,7 +445,7 @@ public class TokenManager implements Runnable {
     // Create a map with the samples
     final Map<String, Sample> samples = new HashMap<>();
     for (Sample sample : this.step.getWorkflow().getDesign().getSamples()) {
-      samples.put(FileNaming.toValidName(sample.getName()), sample);
+      samples.put(FileNaming.toValidName(sample.getId()), sample);
     }
 
     for (WorkflowOutputPort port : this.outputPorts) {

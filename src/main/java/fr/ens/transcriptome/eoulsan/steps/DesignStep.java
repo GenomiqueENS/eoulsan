@@ -250,13 +250,13 @@ public class DesignStep extends AbstractStep {
         // Set metadata
         if (port.isList()) {
 
-          final String dataName = FileNaming.toValidName(sample.getName());
+          final String dataName = FileNaming.toValidName(sample.getId());
 
           // Check if the data name has already used
           if (dataNames.contains(dataName)) {
             return status.createStepResult(new EoulsanException(
                 "The design contains two or more sample with the same name after renaming: "
-                    + dataName + " ( original sample name: " + sample.getName()
+                    + dataName + " ( original sample name: " + sample.getId()
                     + ")"));
           }
 

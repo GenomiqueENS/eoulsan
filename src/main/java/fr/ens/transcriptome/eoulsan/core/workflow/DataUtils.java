@@ -136,9 +136,9 @@ public final class DataUtils {
     checkNotNull(data, "data argument cannot be null");
     checkNotNull(sample, "sample argument cannot be null");
     checkArgument(
-        data.getName().equals(toValidName(sample.getName())),
+        data.getName().equals(toValidName(sample.getId())),
         "The sample name ("
-            + sample.getName() + ") does not match with data name ("
+            + sample.getId() + ") does not match with data id ("
             + data.getName() + ")");
 
     // Do no set metadata on a data list
