@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+
+
+<document> 
+
+  <properties>
+    <title>Design file v2</title>
+    <author email="bauquet@biologie.ens.fr">Xavier Bauquet</author> 
+  </properties> 
+
+  <body>
+  
+    <section name="Design file v2">
+    
+    	<p>The design file is the main element of the pipeline. It contains all informations and descriptions of the experiment and the samples.
+    	Two version of the design file are available in Eoulsan, here the v2 is presented.
+      	Usually the design file is named <b>design.txt</b>, but you can specify another name. Here is an example of design file:</p>
+    
+<source>
+[Header]
+FormatVersion=2							
+Project=finalDesignExample							
+ProjectDescription=Example of the final version of the new design for Eoulsan							
+Owner=Xavier Bauquet							
+						
+GenomeFile=genome://mm10							
+GffFile=gff://mm10
+AdditionalAnnotationFile=additionalannotation://mm10_ens75_transcript							
+
+[Experiments]						
+Exp.1.name=exp1							
+Exp.1.skip=False							
+Exp.1.contrast=False							
+Exp.1.model=~Condition
+Exp.1.reference=sample1							
+
+Exp.2.name=exp2							
+Exp.2.skip=False							
+Exp.2.contrast=True							
+Exp.2.model=~type+day+type:day							
+Exp.2.comparisons=WT1_vs_KO1:typeWTday1_vs_typeKOday1;\
+WT2_vs_KO2:typeWTday2_vs_typeKOday2							
+
+[Columns]							
+SampleId  SampleName  Reads	         Exp.1.Condition  Exp.1.RepTechGroup  Exp.2.type    Exp.2.day	Exp.2.RepTechGroup
+1	      sample1     sample1.fastq	 WT-day1          WT-day1             WT            1	        WT-day1
+2	      sample2     sample2.fastq	 WT-day1          WT-day1             WT            1	        WT-day1
+3	      sample3     sample3.fastq	 KO-day1          KO-day1             KO            1	        KO-day1
+4	      sample4     sample4.fastq  KO-day1          KO-day1             KO            1	        KO-day1
+5	      sample5     sample5.fastq	 WT-day2          WT-day2             WT            2	        WT-day2
+6	      sample6     sample6.fastq	 WT-day2          WT-day2             WT            2	        WT-day2
+7	      sample7     sample7.fastq	 KO-day2          KO-day2             KO            2	        KO-day2
+8	      sample8     sample8.fastq	 KO-day2          KO-day2             KO            2	        KO-day2
+</source>
+    
+    <p>This version of the design file include 3 sections:</p>
+    <ul>
+		<li>Header</li>
+		<li>Experiments</li>
+		<li>Columns</li>
+	</ul>
+	<p>The <b>Header</b> and <b>Experiments</b> sections use a system of key, value separated by "=". The <b>Columns</b> section 
+	is tabulated. This section is comparable to the first version of the design file.</p>
+	<p>You can always use "\" to write your option on several line:
+<source>
+Exp.2.comparisons=WT1_vs_KO1:typeWTday1_vs_typeKOday1;\
+WT2_vs_KO2:typeWTday2_vs_typeKOday2	
+</source>
+	</p>
+	
+	<subsection name="Header">
+		<p>This section contains general informations about the design and the project. There is 2 mandatory keys:
+			<ul>
+				<li><b>GenomeFile:</b> The genome file to be used for the mapping.</li>
+				<li><b>GffFile:</b> The Gff file including the annotations for the count step.</li>
+			</ul>
+			
+		Optional key:
+			<ul>
+				<li><b>AdditionalAnnotationFile:</b> The file including additional information and annotations about the features.</li>
+			</ul>
+		
+		You can add any other key. Here are some examples:
+			<ul>
+				<li><b>FormatVersion</b></li>
+				<li><b>Project</b></li>
+				<li><b>ProjectDescription</b></li>
+				<li><b>Owner</b></li>
+			</ul>
+		</p>
+	</subsection>		
+	<subsection name="Experiments"> 
+		<p>This section allow to specify several differential analysis, called experiment. This represent the principal amelioration bring by this design.
+		An experiment is defined by the following pattern: Exp."id"."key", with id = the experiment id (numeric >0) and key = the key of the option.
+
+<source>		
+Exp.2.name=exp2							
+Exp.2.skip=False							
+Exp.2.contrast=True							
+Exp.2.model=~type+day+type:day							
+Exp.2.comparisons=WT1_vs_KO1:typeWTday1_vs_typeKOday1;\
+WT2_vs_KO2:typeWTday2_vs_typeKOday2
+</source>
+	
+		Two keys are mandatory:
+			<ul>
+				<li><b>name:</b> The name of the experiment.</li>
+				<li><b>skip:</b> true/false. True to skip the experiment.</li>
+			</ul>
+	
+		Optional key: 
+			<ul>
+				<li><b>reference:</b> To define the reference condition for the differential analysis</li>
+			</ul>
+	
+		You can add any other key. To use DEseq2 for the differential analysis you need to add some DEseq2 options as keys:
+			<ul>
+				<li><b>contrast:</b> TRUE/FALSE. TRUE to use DEseq2 in contrast mode</li>
+				<li><b>model:</b> The DEseq2 model. example: "~Condition"</li>
+				<li><b>buildContrast:</b> TRUE/FALSE. TRUE if DEseq2 need to create the contrast matrix</li>
+			</ul>
+			
+		Particular case:
+			<ul>
+				<li><b>comparisons:</b> This key correspond to the comparisons to do with DEseq2 when used in contrast mode.
+				You have to use the following pattern: <b>comparisonName:comparisonCode</b> for each comparison. The comparison are
+				separated by ";". For more information about the comparison code, see the DEseq2 section.</li>
+			</ul>
+		
+		</p>	
+	
+	</subsection>
+	<subsection name="Columns"> 
+		<p>This section correspond to the information about the samples. Three columns are mandatory:
+		<ul>
+			<li><b>SampleId</b>: Numeric, must be unique and >0</li>
+			<li><b>SampleName</b>: Name of the sample. Must be unique</li>
+			<li><b>Reads</b>: Path to the reads data file.</li>
+		</ul>
+		
+		You can add any other keys. Here are some examples:
+		<ul>
+			<li><b>Condition</b>: Condition for the sample in the experiment.</li>
+			<li><b>FastqFormat</b>: Fastq format. Currently Eoulsan handle 4 formats: fastq-sanger (default), fastq-solexa, fastq-illumina and fastq-illumina-1.5. See <a href="http://www.ncbi.nlm.nih.gov/pubmed/20015970">Cock et al</a> for more information about the various fastq formats.</li>
+			<li><b>RepTechGroup</b>: Technical replicates group. Use to pool reads counts between technical replicates in differential analysis step.</li>
+			<li><b>Reference</b>: A boolean field. If this field is present a kinetic differential analysis.
+			Sample with true value are consider as reference. Actually, this is the condition that is consider as reference and there must be only 1 sample of the condition marked as true.</li>
+			<li><b>UUID</b>: Universal Unique Identifier of the sample. This field is generated by Eouslan createdesign command. In obfuscated design files, this value does not change.</li>
+		</ul>
+		
+		To create columns specific to an experiment, you should add Exp."id". before the column name.This allow to create several columns with the same name but with different values for each experiment. 
+		
+		</p>
+	</subsection>
+	
+		
+    </section>
+
+  </body>
+  
+</document>
