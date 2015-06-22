@@ -653,8 +653,6 @@
 
 								<mkdir dir="${basedir}/target/dist/bin" />
 								<mkdir dir="${basedir}/target/dist/lib" />
-								<mkdir dir="${basedir}/target/dist/formats" />
-								<mkdir dir="${basedir}/target/dist/tools" />
 								<!--copy file="${basedir}/COMPILING.txt" todir="${basedir}/target/dist/" 
 									/ -->
 								<copy file="${basedir}/INSTALL.txt" todir="${basedir}/target/dist/" />
@@ -669,6 +667,9 @@
 										<include name="bpipe-*" />
 									</fileset>
 								</copy>
+								<copy file="${basedir}/src/main/galaxytools" todir="${basedir}/target/dist/" />
+								<copy file="${basedir}/src/main/formats" todir="${basedir}/target/dist/" />
+
 
 								<chmod perm="ugo+rx">
 									<fileset dir="${basedir}/target/dist/bin">
