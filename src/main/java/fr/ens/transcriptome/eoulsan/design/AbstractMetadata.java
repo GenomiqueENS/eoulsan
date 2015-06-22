@@ -143,6 +143,18 @@ public abstract class AbstractMetadata {
   }
 
   /**
+   * Get the value according the key as a boolean.
+   * @param key the key
+   * @return the value as a boolean
+   */
+  public boolean getAsBoolean(final String key) {
+
+    checkNotNull(key, "key argument cannot be null");
+
+    return Boolean.parseBoolean(get(key.trim()).toLowerCase());
+  }
+
+  /**
    * Set the key.
    * @return
    */

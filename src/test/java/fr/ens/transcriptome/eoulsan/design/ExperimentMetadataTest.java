@@ -66,18 +66,18 @@ public class ExperimentMetadataTest {
     assertTrue(em.containsModel());
 
     // test getContrast
-    assertNull(em.getContrast());
+    assertNull(em.isContrast());
     // test setContrast
-    em.setContrast("toto");
-    assertEquals("toto", em.getContrast());
+    em.setContrast(true);
+    assertEquals(true, em.isContrast());
     // test containsContrast
     assertTrue(em.containsContrast());
 
     // test getBuildContrast
-    assertNull(em.getBuildContrast());
+    assertNull(em.isBuildContrast());
     // test setBuildContrast
-    em.setBuildContrast("toto");
-    assertEquals("toto", em.getBuildContrast());
+    em.setBuildContrast(true);
+    assertEquals("toto", em.isBuildContrast());
     // test containsBuildContrast
     assertTrue(em.containsBuildContrast());
 
@@ -90,12 +90,12 @@ public class ExperimentMetadataTest {
     assertTrue(em.containsDesignFile());
 
     // test getComparisonFile
-    assertNull(em.getComparisonFile());
+    assertNull(em.getComparison());
     // test setComparisonFile
-    em.setComparisonFile("toto");
-    assertEquals("toto", em.getComparisonFile());
+    em.setComparison("toto");
+    assertEquals("toto", em.getComparison());
     // test containsComparisonFile
-    assertTrue(em.containsComparisonFile());
+    assertTrue(em.containsComparison());
 
     // test getContrastFile
     assertNull(em.getContrastFile());

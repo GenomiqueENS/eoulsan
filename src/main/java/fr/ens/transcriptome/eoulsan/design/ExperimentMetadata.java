@@ -37,7 +37,7 @@ public class ExperimentMetadata extends AbstractMetadata implements
 
   /** Serialization version UID. */
   private static final long serialVersionUID = -625223839967520050L;
-  
+
   // constants
   public static final String SKIP_KEY = "skip";
   public static final String REFERENCE_KEY = "Reference";
@@ -45,7 +45,7 @@ public class ExperimentMetadata extends AbstractMetadata implements
   public static final String CONTRAST_KEY = "contrast";
   public static final String BUILD_CONTRAST_KEY = "buildContrast";
   public static final String DESIGN_FILE_KEY = "designFile";
-  public static final String COMPARISON_FILE_KEY = "comparisonFile";
+  public static final String COMPARISON_KEY = "comparison";
   public static final String CONTRAST_FILE_KEY = "contrastFile";
 
   //
@@ -80,16 +80,16 @@ public class ExperimentMetadata extends AbstractMetadata implements
    * Get the contrast DEseq2 option.
    * @return the contrast DEseq2 option
    */
-  public String getContrast() {
-    return get(CONTRAST_KEY);
+  public boolean isContrast() {
+    return getAsBoolean(CONTRAST_KEY);
   }
 
   /**
    * Get the buildContrast DEseq2 option.
    * @return the buildContrast DEseq2 option
    */
-  public String getBuildContrast() {
-    return get(BUILD_CONTRAST_KEY);
+  public boolean isBuildContrast() {
+    return getAsBoolean(BUILD_CONTRAST_KEY);
   }
 
   /**
@@ -104,8 +104,8 @@ public class ExperimentMetadata extends AbstractMetadata implements
    * Get the comparisonFile DEseq2 option.
    * @return the comparisonFile DEseq2 option
    */
-  public String getComparisonFile() {
-    return get(COMPARISON_FILE_KEY);
+  public String getComparison() {
+    return get(COMPARISON_KEY);
   }
 
   /**
@@ -148,16 +148,16 @@ public class ExperimentMetadata extends AbstractMetadata implements
    * Set the contrast DEseq2 option.
    * @param newContrast the new contrast DEseq2 option
    */
-  public void setContrast(String newContrast) {
-    set(CONTRAST_KEY, newContrast);
+  public void setContrast(boolean newContrast) {
+    set(CONTRAST_KEY, "" + newContrast);
   }
 
   /**
    * Set the buildContrast DEseq2 option.
    * @param newbuildContrast the new buildContrast DEseq2 option
    */
-  public void setBuildContrast(String newBuildContrast) {
-    set(BUILD_CONTRAST_KEY, newBuildContrast);
+  public void setBuildContrast(boolean newBuildContrast) {
+    set(BUILD_CONTRAST_KEY, "" + newBuildContrast);
   }
 
   /**
@@ -172,8 +172,8 @@ public class ExperimentMetadata extends AbstractMetadata implements
    * Set the comparisonFile DEseq2 option.
    * @param newComparisonFile the new comparisonFile DEseq2 option
    */
-  public void setComparisonFile(String newComparisonFile) {
-    set(COMPARISON_FILE_KEY, newComparisonFile);
+  public void setComparison(String newComparisonFile) {
+    set(COMPARISON_KEY, newComparisonFile);
   }
 
   /**
@@ -240,8 +240,8 @@ public class ExperimentMetadata extends AbstractMetadata implements
    * Test if the comparisonFile option exists.
    * @return true if the comparisonFile option exists
    */
-  public boolean containsComparisonFile() {
-    return contains(COMPARISON_FILE_KEY);
+  public boolean containsComparison() {
+    return contains(COMPARISON_KEY);
   }
 
   /**
