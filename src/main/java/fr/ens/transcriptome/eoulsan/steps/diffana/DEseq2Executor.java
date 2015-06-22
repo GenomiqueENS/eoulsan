@@ -319,13 +319,10 @@ public class DEseq2Executor {
       bw.append(NEWLINE);
 
       // Print sample metadata
-      for (Sample sample : design.getSamples()) {
+      for (Sample sample : experiment.getSamples()) {
 
-        // Check if the sample is in the experiment and if the expression file
-        // related to the sample exist
-        if (!experiment.containsSample(sample)
-            || !this.sampleFiles.containsKey(sample.getId())) {
-
+        // Check if the expression file related to the sample exist
+        if (!this.sampleFiles.containsKey(sample.getId())) {
           continue;
         }
 
