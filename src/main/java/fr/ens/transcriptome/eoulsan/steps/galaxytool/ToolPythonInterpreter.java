@@ -24,6 +24,7 @@
 package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,16 +34,14 @@ import java.util.Set;
 import org.python.core.PyObject;
 import org.python.util.PythonInterpreter;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 
-// TODO: Auto-generated Javadoc
 /**
- * This class create a python interpreter which can build a command line tool
- * from command tag from Galaxy tool XML file.
+ * This class create a Python interpreter, it can build a command line tool from
+ * command tag from Galaxy tool XML file.
  * @author Sandrine Perrin
  * @since 2.1
  */
@@ -80,7 +79,7 @@ public class ToolPythonInterpreter {
   /**
    * Execute script.
    * @return the string
-   * @throws EoulsanException the eoulsan exception
+   * @throws EoulsanException the Eoulsan exception
    */
   public ToolExecutorResult executeScript() throws EoulsanException {
 
@@ -90,7 +89,7 @@ public class ToolPythonInterpreter {
     }
 
     // Interpreter python script
-    final String commandLine = interpreterScript();
+    final String commandLine = interpreteScript();
 
     // TODO
     System.out.println("final command line " + commandLine);
@@ -99,13 +98,16 @@ public class ToolPythonInterpreter {
         new ToolExecutor(this.context, commandLine, this.tool.getToolName(),
             this.tool.getToolVersion());
 
-    final ToolExecutorResult result = executor.execute();
-
-    return result;
+    return executor.execute();
 
   }
 
-  private String interpreterScript() throws EoulsanException {
+  /**
+   * Interprete script by Python interpreter and replace variable name by value.
+   * @return final command line
+   * @throws EoulsanException if an error throws by interpretation.
+   */
+  public String interpreteScript() throws EoulsanException {
 
     checkNotNull(this.pythonScriptWithJavaCode,
         "Not found python script to interprete.");
@@ -113,17 +115,12 @@ public class ToolPythonInterpreter {
     checkNotNull(this.variablesCommand,
         "None variables setting for python script.");
 
-    if (this.variablesCommand.isEmpty())
-      // TODO Auto-generated method stub
-      return null;
+    // if (this.variablesCommand.isEmpty())
+    // // TODO
+    // return null;
 
     final Map<String, String> variablesCommandFinal =
         addMissingVariableFromCommandLine();
-
-    // TODO
-    // System.out.println("script: " + script);
-    // System.out.println("variables "
-    // + Joiner.on("\n\t").withKeyValueSeparator("=").join(registry));
 
     final PythonInterpreter interpreter = new PythonInterpreter();
 
@@ -137,21 +134,26 @@ public class ToolPythonInterpreter {
     // Retrieve standard output
     final PyObject cmd = interpreter.get(VAR_CMD_NAME);
 
-    // TODO
-    // System.out.println("cmd: " + cmd.asString());
-
-    return addInterpreter(cmd.asString());
+    return addInterperter(cmd.asString());
   }
 
-  private String addInterpreter(final String cmd) {
+  /**
+   * Include the interperter, if setting in XML file, at the start of command
+   * line's tool
+   * @param cmd command line's tool
+   * @return final command line
+   */
+  private String addInterperter(final String cmd) {
 
     checkNotNull(cmd, "Command line can not be null");
 
     // Add interpreter if exists
     if (this.tool.isInterpreterSetting()) {
 
-      return this.tool.getInterpreter()
-          + " " + this.tool.getToolExecutable() + "/" + cmd.trim();
+      // TODO
+      // return this.tool.getInterpreter()
+      // + " " + this.tool.getToolExecutable() + "/" + cmd.trim();
+      return this.tool.getInterpreter() + " " + cmd.trim();
 
     } else {
 
@@ -161,7 +163,8 @@ public class ToolPythonInterpreter {
   }
 
   /**
-   * Translate command xml in python.
+   * Translate command XML in Python.
+   * @param cmdTag the content command tag.
    * @throws EoulsanException if the translation fails.
    */
   private void translateCommandXMLInPython() throws EoulsanException {
@@ -170,13 +173,9 @@ public class ToolPythonInterpreter {
       return;
     }
 
-    // Receive code python for building command line after replace variables by
+    // Receive code Python for building command line after replace variables by
     // values
     this.pythonScriptWithJavaCode = translator.getTranslatedCommandInPython();
-
-    // TODO
-    // System.out.println("DEBUG completed command with variable \t"
-    // + this.pythonScriptWithJavaCode);
 
     isCommandLineTranslate = true;
   }
@@ -210,10 +209,8 @@ public class ToolPythonInterpreter {
    */
   private Set<String> getVariableNames() throws EoulsanException {
 
-    if (!isCommandLineTranslate) {
-      throw new EoulsanException(
-          "Can not get variable before translate command tag in script Python.");
-    }
+    checkState(!isCommandLineTranslate,
+        "Can not get variable before translate command tag in script Python.");
 
     // Receive all variables names found in command tag
     return translator.getVariableNames();
@@ -247,7 +244,7 @@ public class ToolPythonInterpreter {
   //
 
   /**
-   * Instantiates a new tool python interpreter.
+   * Instantiates a new tool Python interpreter.
    * @param tool the tool
    * @param variablesCommand the variables command
    * @throws EoulsanException
@@ -255,16 +252,11 @@ public class ToolPythonInterpreter {
   public ToolPythonInterpreter(final StepContext context, final ToolData tool,
       final Map<String, String> variablesCommand) throws EoulsanException {
 
-    Preconditions.checkNotNull(tool,
+    checkNotNull(tool,
         "Tool instance from Galaxy Tool can not be null for interpretation.");
 
-    // TODO
-    System.out.println("cons python inter variables size "
-        + variablesCommand.size());
-
-    Preconditions
-        .checkArgument(variablesCommand.size() != 0,
-            "Tool instance from Galaxy Tool not found variables for interpretation");
+    checkState(variablesCommand.size() != 0,
+        "Tool instance from Galaxy Tool not found variables for interpretation");
 
     this.tool = tool;
     this.variablesCommand = variablesCommand;
@@ -274,7 +266,9 @@ public class ToolPythonInterpreter {
     this.translator =
         new TranslatorStringToPython(this.tool.getCmdTagContent());
 
+    // Translate command in Cheetah syntax in Python script
     translateCommandXMLInPython();
+
   }
 
 }

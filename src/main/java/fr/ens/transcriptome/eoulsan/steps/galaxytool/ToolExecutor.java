@@ -35,6 +35,11 @@ import java.nio.file.StandardCopyOption;
 
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 
+/**
+ * The class define an executor on tool set in XML file.
+ * @author Sandrine Perrin
+ * @since 2.1
+ */
 public class ToolExecutor {
 
   private final StepContext stepContext;

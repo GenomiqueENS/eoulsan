@@ -408,7 +408,7 @@ public class DataFormatRegistry {
    * @param name Galaxy name extension.
    * @return DataFormat
    */
-  public DataFormat getDataFormatsFromToolshedExtension(final String name) {
+  public DataFormat getDataFormatFromToolshedExtension(final String name) {
 
     if (name == null || name.isEmpty()) {
       return null;

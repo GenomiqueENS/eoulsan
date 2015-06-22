@@ -96,6 +96,13 @@ public final class GalaxyToolXMLParser {
    */
   public static Map<String, ToolElement> extractParamElement(
       final Element parent, final String elementName) throws EoulsanException {
+    final Map<String, Parameter> stepParameters = Collections.emptyMap();
+    return extractParamElement(parent, elementName, stepParameters);
+  }
+
+  public static Map<String, ToolElement> extractParamElement(
+      final Element parent, final String elementName,
+      final Map<String, Parameter> stepParameters) throws EoulsanException {
 
     final Map<String, ToolElement> results = new HashMap<>();
 
@@ -105,6 +112,10 @@ public final class GalaxyToolXMLParser {
 
     for (final Element param : simpleParams) {
       final ToolElement ptg = getInstanceToolElement(param);
+
+      if (!stepParameters.isEmpty() && !ptg.isFile()) {
+        ptg.setValues(stepParameters);
+      }
 
       results.put(ptg.getName(), ptg);
     }
@@ -329,7 +340,8 @@ public final class GalaxyToolXMLParser {
     final Element inputElement =
         extractElementsByTagName(doc, INPUTS_TAG, 1).get(0);
 
-    results.putAll(extractParamElement(inputElement, PARAM_TAG));
+    results
+        .putAll(extractParamElement(inputElement, PARAM_TAG, stepParameters));
 
     results
         .putAll(extractConditionalParamElement(inputElement, stepParameters));

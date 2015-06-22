@@ -27,8 +27,6 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.CREATED;
-import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.DONE;
-import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.PARTIALLY_DONE;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
 
@@ -92,16 +90,20 @@ public class WorkflowStepStateObserver implements Serializable {
    */
   public void setState(final StepState state) {
 
+    // Do nothing if the state has not changed or if the current state is a
+    // final state
     if (state == null
-        || this.stepState == state || this.stepState == StepState.ABORTED) {
+        || this.stepState == state || this.stepState.isFinalState()) {
       return;
     }
 
     // Do not change the state to READY if the step is already working
-    if (state == READY
-        && (this.stepState == StepState.WORKING || this.stepState == PARTIALLY_DONE)) {
+    if (state == READY && this.stepState.isWorkingState()) {
       return;
     }
+
+    // Save current state
+    final StepState previousState = this.stepState;
 
     // If is the root step, there is nothing to wait
     synchronized (this) {
@@ -111,6 +113,7 @@ public class WorkflowStepStateObserver implements Serializable {
         this.stepState = READY;
       } else {
 
+        // Set the new state
         this.stepState = state;
       }
     }
@@ -119,7 +122,8 @@ public class WorkflowStepStateObserver implements Serializable {
     getLogger().fine(
         "Step #"
             + this.step.getNumber() + " " + this.step.getId()
-            + " is now in state " + this.stepState);
+            + " is now in state " + this.stepState + " (previous state was "
+            + previousState + ")");
 
     // If step has just been created there is nothing to do
     if (this.stepState == CREATED) {
@@ -132,7 +136,7 @@ public class WorkflowStepStateObserver implements Serializable {
     }
 
     // Inform step that depend of this step
-    if (this.stepState == PARTIALLY_DONE || this.stepState == DONE) {
+    if (this.stepState.isDoneState()) {
       for (AbstractWorkflowStep step : this.stepsToInform) {
         step.getStepStateObserver().updateStatus();
       }
@@ -165,7 +169,7 @@ public class WorkflowStepStateObserver implements Serializable {
     }
 
     for (AbstractWorkflowStep step : this.requiredSteps) {
-      if (!(step.getState() == PARTIALLY_DONE || step.getState() == DONE)) {
+      if (!(step.getState().isDoneState())) {
         return;
       }
     }

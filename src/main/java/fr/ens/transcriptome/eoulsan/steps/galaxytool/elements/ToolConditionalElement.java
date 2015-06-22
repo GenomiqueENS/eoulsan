@@ -99,6 +99,8 @@ public class ToolConditionalElement implements ToolElement {
   public void setValues(final Map<String, Parameter> stepParameters)
       throws EoulsanException {
 
+    this.toolElementSelect.setValues(stepParameters);
+
     // Parameter corresponding to choice
     final Collection<ToolElement> toolParameters =
         this.actionsRelatedOptions.get(this.toolElementSelect.getValue());
@@ -118,10 +120,11 @@ public class ToolConditionalElement implements ToolElement {
       } else {
         // Set param
         toolParameter.setValue(parameter);
-      }
 
+      }
       // Save map result
       this.toolElementSelected.put(toolParameter.getName(), toolParameter);
+
     }
 
     // Save setting parameter

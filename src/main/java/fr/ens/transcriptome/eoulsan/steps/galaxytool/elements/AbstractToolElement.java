@@ -90,23 +90,9 @@ public abstract class AbstractToolElement implements ToolElement {
       throws EoulsanException {
 
     // Extract parameter
-    final Parameter parameter = stepParameters.get(getName());
+    Parameter parameter = extractParameterByName(stepParameters);
 
-    // No parameter found
-    if (parameter == null) {
-      // Default init
-      setValue();
-
-    } else {
-
-      // TODO
-      System.out.println(getName()
-          + " -> val in abstract to set paramE, name: "
-          + stepParameters.get(getName()).getName() + ", value: "
-          + stepParameters.get(getName()).getValue());
-
-      setValue(parameter);
-    }
+    setValue(parameter);
   }
 
   @Override
@@ -123,12 +109,12 @@ public abstract class AbstractToolElement implements ToolElement {
   public Parameter extractParameterByName(
       final Map<String, Parameter> stepParameters) {
 
-    // Without namespace
-    Parameter p = stepParameters.get(getShortName());
+    // Use namespace
+    Parameter p = stepParameters.get(getName());
 
     if (p == null) {
-      // Use namespace
-      p = stepParameters.get(getName());
+      // Without namespace
+      p = stepParameters.get(getShortName());
     }
 
     // Return parameter founded or null
@@ -148,8 +134,13 @@ public abstract class AbstractToolElement implements ToolElement {
   abstract public String getValue();
 
   @Override
-  abstract public void setValue(final Parameter stepParameter)
-      throws EoulsanException;
+  public void setValue(final Parameter stepParameter) throws EoulsanException {
+    //TODO
+    if (stepParameter == null && !isSetting())
+      throw new EoulsanException("GalaxyTool parameter missing to set "
+          + getName());
+    
+  }
 
   /**
    * Checks if is optional.

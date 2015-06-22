@@ -68,7 +68,8 @@ public class ToolElementInteger extends AbstractToolElement {
 
   @Override
   public void setValue(final Parameter stepParameter) throws EoulsanException {
-
+    super.setValue(stepParameter);
+    
     this.setValue(stepParameter.getStringValue());
 
   }

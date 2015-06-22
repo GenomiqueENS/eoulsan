@@ -49,7 +49,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  * to script Python then it is interpreted to generate the completed command
  * line on tool.
  * @author Sandrine Perrin
- * @since 2.0
+ * @since 2.1
  */
 class TranslatorStringToPython {
 
@@ -79,9 +79,9 @@ class TranslatorStringToPython {
 
   /**
    * Translate content of command tag from tool XML file.
-   * @return script python to interpreter from building command line tool.
+   * @return script Python to interpreter from building command line tool.
    * @throws EoulsanException an exception occurs if the translation command in
-   *           python return no script.
+   *           Python return no script.
    */
   private String translate() throws EoulsanException {
 
@@ -639,7 +639,6 @@ class TranslatorStringToPython {
     /**
      * The Class InstructionLinePython.
      * @author Sandrine Perrin
-     * @since 2.4
      */
     class InstructionLinePython extends AbstractLinePython {
 

@@ -298,6 +298,8 @@ public class ITFactory {
   private static Properties loadProperties(final File configurationFile)
       throws IOException, EoulsanException {
 
+    // TODO Replace properties by treeMap to use constant in set environment
+    // variables
     final Properties rawProps = new Properties();
     final Properties props;
 
@@ -377,6 +379,9 @@ public class ITFactory {
       if (propertyName.startsWith(IT.PREFIX_ENV_VAR)) {
         CONSTANTS.put(propertyName.substring(IT.PREFIX_ENV_VAR.length()),
             rawProps.getProperty(propertyName));
+
+        // TODO add an evaluation to use constant in value on environment
+        // variable rawProps.getProperty(propertyName));
       }
     }
 

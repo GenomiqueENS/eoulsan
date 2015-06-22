@@ -321,12 +321,6 @@
 			<version>15.0</version>
 			<scope>compile</scope>
 		</dependency>
-		<!--dependency>
-			<groupId>net.sourceforge.picard</groupId>
-			<artifactId>sam</artifactId>
-			<version>${htsjdk.version}</version>
-			<scope>compile</scope>
-		</dependency-->
 		<dependency>
 			<groupId>net.sourceforge.picard</groupId>
 			<artifactId>htsjdk</artifactId>
@@ -493,13 +487,7 @@
 			<version>2.2</version>
 		</dependency>
 
-		<!-- Required by FastQC -->
-		<dependency>
-			<groupId>net.sourceforge.picard</groupId>
-			<artifactId>sam</artifactId>
-			<version>1.83</version>
-			<scope>runtime</scope>
-		</dependency>
+		<!-- Required to patch FastQC at runtime -->
 		<dependency>
 			<groupId>javassist</groupId>
 			<artifactId>javassist</artifactId>
