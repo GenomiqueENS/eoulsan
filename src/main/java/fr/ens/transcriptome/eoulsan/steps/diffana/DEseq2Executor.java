@@ -64,7 +64,7 @@ public class DEseq2Executor {
   private static final String REFERENCE_EXP_MD_KEY = "reference";
 
   // R scripts path in JAR file
-  private static final String SCRIPTS_PATH_IN_JAR_FILE = "/";
+  private static final String SCRIPTS_PATH_IN_JAR_FILE = "/DESeq2/";
   private static final String NORM_DIFFANA_SCRIPT = "normDiffana.R";
   private static final String BUILD_CONTRAST_SCRIPT = "buildContrast.R";
 
@@ -465,14 +465,18 @@ public class DEseq2Executor {
    */
   public void runDEseq2() throws IOException, EoulsanException {
 
-    // Check if the comparison value is correct
-    String comparisons = experiment.getMetadata().getComparison();
-    for (String c : comparisons.split(";")) {
-      String[] splitC = c.split(":");
-      if (splitC.length != 2) {
-        throw new EoulsanException("Error in "
-            + experiment.getName()
-            + " experiment, comparison cannot have more than 1 value.");
+    final ExperimentMetadata emd = experiment.getMetadata();
+
+    if (emd.containsComparison()) {
+
+      // Check if the comparison value is correct
+      for (String c : emd.getComparison().split(";")) {
+        String[] splitC = c.split(":");
+        if (splitC.length != 2) {
+          throw new EoulsanException("Error in "
+              + experiment.getName()
+              + " experiment, comparison cannot have more than 1 value.");
+        }
       }
     }
 
@@ -567,10 +571,10 @@ public class DEseq2Executor {
 
     // copy buildContrast.R
     copyFromJar(SCRIPTS_PATH_IN_JAR_FILE + BUILD_CONTRAST_SCRIPT, new File(
-        tempDir, BUILD_CONTRAST_SCRIPT));
+        tempDir, BUILD_CONTRAST_SCRIPT), true);
     // copy normDiffana.R
     copyFromJar(SCRIPTS_PATH_IN_JAR_FILE + NORM_DIFFANA_SCRIPT, new File(
-        tempDir, NORM_DIFFANA_SCRIPT));
+        tempDir, NORM_DIFFANA_SCRIPT), true);
 
   }
 
@@ -578,10 +582,13 @@ public class DEseq2Executor {
    * Copy file from the Jar to a specific destination.
    * @param filePathInJar, path to the file to copy from the Jar
    * @param outputFile, path to the place to copy the file
+   * @param setExecutableRight set executable rights to the copied file
    * @throws IOException if the copy fails
    */
+  @SuppressWarnings("resource")
   private static void copyFromJar(final String filePathInJar,
-      final File outputFile) throws IOException {
+      final File outputFile, final boolean setExecutableRight)
+      throws IOException {
 
     // Do not copy the file if already exists
     if (outputFile.exists()) {
@@ -591,6 +598,12 @@ public class DEseq2Executor {
     final InputStream is =
         DEseq2Executor.class.getResourceAsStream(filePathInJar);
     FileUtils.copy(is, new FileOutputStream(outputFile));
+
+    if (setExecutableRight) {
+      if (!outputFile.setExecutable(true)) {
+        throw new IOException("Cannot set executable flag to : " + outputFile);
+      }
+    }
   }
 
   //
