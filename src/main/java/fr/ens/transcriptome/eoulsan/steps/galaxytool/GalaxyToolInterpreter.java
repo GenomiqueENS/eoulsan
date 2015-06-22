@@ -32,6 +32,8 @@ import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.e
 import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolID;
 import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolName;
 import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolVersion;
+import static org.python.google.common.base.Preconditions.checkNotNull;
+import static org.python.google.common.base.Preconditions.checkState;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,9 +101,15 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
   /** The tool. */
   private final ToolData tool;
 
+  private boolean isConfigured = false;
+  private boolean isExecuted = false;
+
   @Override
   public void configure(final Set<Parameter> setStepParameters)
       throws EoulsanException {
+
+    checkState(!isConfigured,
+        "GalaxyToolStep, this instance has been already configured");
 
     this.initStepParameters(setStepParameters);
 
@@ -123,11 +131,15 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
     this.inFileExpected = this.extractToolElementsIsFile(this.inputs);
     this.outFileExpected = this.extractToolElementsIsFile(this.outputs);
 
+    isConfigured = true;
   }
 
   @Override
   public ToolExecutorResult execute(final StepContext context)
       throws EoulsanException {
+
+    checkState(!isExecuted,
+        "GalaxyToolStep, this instance has been already executed");
 
     context.getLogger().info("Parsing xml file successfully.");
     context.getLogger().info("Tool description " + this.tool);
@@ -195,6 +207,8 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
             Collections.unmodifiableMap(variables));
 
     final ToolExecutorResult result = pythonInterperter.executeScript();
+
+    isExecuted = true;
 
     // TODO
     return result;
@@ -391,6 +405,8 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
   public GalaxyToolInterpreter(final String toolName, final InputStream is,
       final File toolExecutablePath) throws EoulsanException {
 
+    checkNotNull(is, "input stream on XML file");
+
     this.toolNameFromParameter = toolName;
     this.toolXMLis = is;
     this.doc = this.buildDOM();
@@ -400,5 +416,4 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
 
     this.checkDomValidity();
   }
-
 }
