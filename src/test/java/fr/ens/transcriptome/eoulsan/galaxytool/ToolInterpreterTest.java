@@ -27,11 +27,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -55,7 +54,13 @@ import fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.ToolElement;
  * The class define unit tests on GalaxyToolStep, it check if the command line
  * build from tool shed XML and parameters correspond to the expected syntax. It
  * use an extra file which set data useful to create command line and expected
- * value of this.
+ * value of this. Syntax example: _____________________________________________
+ * test_description=grep python script_________________________________________
+ * toolshedxml.path=grep.xml___________________________________________________
+ * param.key1=value1___________________________________________________________
+ * param.key3=value2___________________________________________________________
+ * output.key3=value3__________________________________________________________
+ * command.expected=python grep.py_____________________________________________
  * @author Sandrine Perrin
  * @since 2.0
  */
@@ -74,8 +79,11 @@ public class ToolInterpreterTest {
   private static final String NEW_TEST_KEY = "test_description";
 
   /** Directory path which contains all tool shed XML file. */
-  private static final File SRC_DIR = new File(new File(".").getAbsolutePath(),
-      "src/main/java/META-INF/services/registrytoolshed/");
+  private static final String SRC_DIR =
+      "/META-INF/services/registrytoolshed/";
+
+  private static final String SRC_TESTS_SETTING =
+      "/testdatatoolshedgalaxy.txt";
 
   /**
    * Test tool interpreter, it read the extra file. To set a test, it give XML
@@ -87,15 +95,15 @@ public class ToolInterpreterTest {
   public void testToolInterpreter() throws FileNotFoundException, Exception {
 
     // Extract extra file, contains key=value
-    final File matrixTestToolshed =
-        new File("src/test/java/files/testdatatoolshedgalaxy.txt");
+    final InputStream srcTestsSetting =
+        this.getClass().getResourceAsStream(SRC_TESTS_SETTING);
 
     String line = "";
     ToolTest tt = null;
 
     // Read file
     try (final BufferedReader br =
-        new BufferedReader(new FileReader(matrixTestToolshed))) {
+        new BufferedReader(new InputStreamReader(srcTestsSetting))) {
 
       while ((line = br.readLine()) != null) {
 
@@ -167,8 +175,8 @@ public class ToolInterpreterTest {
     private static final String PARAM_KEY = "param";
 
     private final String description;
-    private File toolXML;
-    private File executableTool;
+    private String toolXMLPath;
+    private String executableToolPath;
 
     private String command;
     private Set<Parameter> setStepParameters;
@@ -188,25 +196,13 @@ public class ToolInterpreterTest {
 
       switch (keyPrefix) {
       case TOOLSHEDXML_PATH_KEY:
-        File f;
-        // Absolute path
-        if (value.startsWith("/")) {
-          f = new File(value);
-        } else {
-          // File save in test directory files
-          f = new File(SRC_DIR, value);
-        }
-
-        if (f.exists())
-          this.toolXML = f;
-        else
-          throw new EoulsanException("ToolShed XML file does not exist "
-              + f.getAbsolutePath());
+        // File save in test directory files
+        this.toolXMLPath = SRC_DIR + "/" + value;
 
         break;
 
       case EXECUTABLE_PATH_KEY:
-        this.executableTool = new File(value);
+        this.executableToolPath = value;
         break;
 
       case COMMAND_KEY:
@@ -235,10 +231,6 @@ public class ToolInterpreterTest {
      */
     public void launchTest() throws FileNotFoundException, EoulsanException {
 
-      // TODO
-      System.out.println("read xml "
-          + toolXML.getAbsolutePath() + " exist " + toolXML.exists());
-
       // Check if command executed is setting
       if (this.command == null || this.command.isEmpty()) {
         throw new EoulsanException(
@@ -247,7 +239,8 @@ public class ToolInterpreterTest {
 
       // Init tool interpreter
       final GalaxyToolInterpreter interpreter =
-          new GalaxyToolInterpreter(new FileInputStream(toolXML));
+          new GalaxyToolInterpreter(this.getClass().getResourceAsStream(
+              toolXMLPath));
 
       // Configure interpreter with parameters setting in workflow Eoulsan file
       interpreter.configure(setStepParameters);
@@ -285,11 +278,6 @@ public class ToolInterpreterTest {
       for (final ToolElement ptg : interpreter.getInputs().values()) {
 
         if (!ptg.isFile()) {
-
-          // TODO
-          // System.out.println("TEST tool name "
-          // + ptg.getName() + " is include in "
-          // + this.variablesCommand.containsKey(ptg.getName()));
 
           // Update list variables needed to build command line
           if (!this.variablesCommand.containsKey(ptg.getName())) {
