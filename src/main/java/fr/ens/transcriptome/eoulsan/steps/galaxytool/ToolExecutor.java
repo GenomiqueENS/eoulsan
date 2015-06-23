@@ -24,63 +24,86 @@
 package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import com.google.common.base.Preconditions;
 
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 
 /**
  * The class define an executor on tool set in XML file.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
 public class ToolExecutor {
 
+  private static final String STDOUT_SUFFIX = ".STDOUT";
+  private static final String STDERR_SUFFIX = ".STDERR";
+
   private final StepContext stepContext;
-  private final String commandLineTool;
+  private final List<String> commandLineTool;
   private final String toolName;
   private final String toolVersion;
 
+  /**
+   * Execute a tool.
+   * @return a ToolExecutorResult object
+   */
   ToolExecutorResult execute() {
 
-    checkNotNull(commandLineTool, "Command line galaxy tool is null.");
-
-    final ToolExecutorResult result = new ToolExecutorResult(commandLineTool);
+    Preconditions.checkArgument(this.commandLineTool.isEmpty(),
+        "Command line for Galaxy tool is empty");
 
     try {
+
+      ProcessBuilder builder = new ProcessBuilder(this.commandLineTool);
+      builder.redirectOutput(createStepOutput(STDOUT_SUFFIX));
+      builder.redirectError(createStepOutput(STDERR_SUFFIX));
+
       // Execute command
-      final Process p = Runtime.getRuntime().exec(commandLineTool, null);
-
-      // Save stdout
-      new CopyProcessOutput(p.getInputStream(), createStepOutput("STDOUT"),
-          "stdout").start();
-
-      // Save stderr
-      new CopyProcessOutput(p.getErrorStream(), createStepOutput("STDERR"),
-          "stderr").start();
+      final Process p = builder.start();
 
       // Wait the end of the process
       final int exitValue = p.waitFor();
 
-      result.setExitValue(exitValue);
+      return new ToolExecutorResult(commandLineTool, exitValue);
 
     } catch (InterruptedException | IOException e) {
-      result.setException(e);
+      return new ToolExecutorResult(commandLineTool, e);
     }
-
-    return result;
   }
 
+  /**
+   * Get the path of the command output.
+   * @param suffix the suffix of the command output
+   * @return a File
+   */
   private File createStepOutput(final String suffix) {
 
     return new File(this.stepContext.getStepOutputDirectory().toFile(),
-        this.toolName + "_" + this.toolVersion + "." + suffix);
+        this.toolName + "_" + this.toolVersion + suffix);
+  }
+
+  /**
+   * Split the command line in list of arguments.
+   * @param commandLine the command line to parse
+   * @return a list of string arguments
+   */
+  private static final List<String> splitCommandLine(final String commandLine) {
+
+    final StringTokenizer st = new StringTokenizer(commandLine);
+    final List<String> result = new ArrayList<>(st.countTokens());
+
+    while (st.hasMoreTokens()) {
+      result.add(st.nextToken());
+    }
+
+    return result;
   }
 
   //
@@ -100,7 +123,7 @@ public class ToolExecutor {
     checkNotNull(commandLine, "commandLine is null.");
     checkNotNull(context, "Step context is null.");
 
-    this.commandLineTool = commandLine;
+    this.commandLineTool = splitCommandLine(commandLine);
     this.stepContext = context;
     this.toolName = toolName;
     this.toolVersion = toolVersion;
@@ -108,41 +131,4 @@ public class ToolExecutor {
     execute();
   }
 
-  //
-  // Internal class
-  //
-
-  /**
-   * This internal class allow to save Process outputs.
-   * @author Laurent Jourdren
-   */
-  private static final class CopyProcessOutput extends Thread {
-
-    private final Path path;
-    private final InputStream in;
-    private final String desc;
-
-    @Override
-    public void run() {
-
-      try {
-        Files.copy(this.in, this.path, StandardCopyOption.REPLACE_EXISTING);
-      } catch (final IOException e) {
-        getLogger().warning(
-            "Error while copying " + this.desc + ": " + e.getMessage());
-      }
-
-    }
-
-    CopyProcessOutput(final InputStream in, final File file, final String desc) {
-
-      checkNotNull(in, "in argument cannot be null");
-      checkNotNull(file, "file argument cannot be null");
-      checkNotNull(desc, "desc argument cannot be null");
-
-      this.in = in;
-      this.path = file.toPath();
-      this.desc = desc;
-    }
-  }
 }

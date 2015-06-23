@@ -87,7 +87,8 @@ public class GalaxyToolStep extends AbstractStep {
         .getInDataFormatExpected().entrySet()) {
       isEmpty = false;
 
-      builder.addPort(entry.getValue().getValidatedName(), entry.getKey(), true);
+      builder
+          .addPort(entry.getValue().getValidatedName(), entry.getKey(), true);
     }
 
     if (isEmpty) {
@@ -140,13 +141,11 @@ public class GalaxyToolStep extends AbstractStep {
         this.toolInterpreter.checkDataFormat(context),
         "GalaxyTool step, dataFormat inval between extract from analysis and setting in xml file.");
 
-    int exitValue = -1;
-    ToolExecutorResult result = null;
+    final ToolExecutorResult result;
 
     try {
-      result = this.toolInterpreter.execute(context);
-      exitValue = result.getExitValue();
 
+      result = this.toolInterpreter.execute(context);
     } catch (EoulsanException e) {
       return status.createStepResult(e,
           "Error execution tool interpreter from building tool command line : "
@@ -157,21 +156,23 @@ public class GalaxyToolStep extends AbstractStep {
     status.setDescription(this.toolInterpreter.getDescription());
 
     status.setMessage("Command line generate by python interpreter: "
-        + result.getCommandLine() + ".");
+        + result.getCommandLineAsString() + ".");
 
     // Execution script fail, create an exception
-    if (exitValue != 0) {
-
-      return status.createStepResult(null,
-          "Fail execution tool galaxy with command "
-              + result.getCommandLine() + ". Exit value: " + exitValue);
-    }
-
-    if (result.asThrowedException()) {
+    if (!result.isException()) {
       final Throwable e = result.getException();
 
       return status.createStepResult(e,
           "Error execution interrupted: " + e.getMessage());
+    }
+
+    if (result.getExitValue() != 0) {
+
+      return status.createStepResult(
+          null,
+          "Fail execution tool galaxy with command "
+              + result.getCommandLine() + ". Exit value: "
+              + result.getExitValue());
     }
 
     return status.createStepResult();
@@ -189,8 +190,7 @@ public class GalaxyToolStep extends AbstractStep {
    */
   public GalaxyToolStep(final InputStream toolXMLis) throws EoulsanException {
 
-    this.toolInterpreter =
-        new GalaxyToolInterpreter(toolXMLis);
+    this.toolInterpreter = new GalaxyToolInterpreter(toolXMLis);
   }
 
 }

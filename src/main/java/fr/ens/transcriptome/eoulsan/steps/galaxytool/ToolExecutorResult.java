@@ -24,38 +24,29 @@
 package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 
 import static org.python.google.common.base.Preconditions.checkNotNull;
+import static org.python.google.common.base.Preconditions.checkArgument;
+
+import java.util.List;
+
+import com.google.common.base.Joiner;
 
 /**
  * The class define a result on execution tool.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
 public class ToolExecutorResult {
 
+  private static final int NO_EXIT_VALUE = Integer.MIN_VALUE;
+
   /** The command line tool. */
-  private final String commandLineTool;
+  private final List<String> commandLineTool;
 
   /** The exit value. */
-  private int exitValue = -100000;
+  private final int exitValue;
 
   /** The exception. */
-  private Throwable exception = null;
-
-  /**
-   * Sets the exception.
-   * @param exception the new exception
-   */
-  public void setException(final Throwable exception) {
-    this.exception = exception;
-  }
-
-  /**
-   * Sets the exit value.
-   * @param exitValue the new exit value
-   */
-  public void setExitValue(final int exitValue) {
-    this.exitValue = exitValue;
-  }
+  private final Throwable exception;
 
   /**
    * Gets the exception.
@@ -66,11 +57,11 @@ public class ToolExecutorResult {
   }
 
   /**
-   * As throwed exception.
-   * @return true, if successful
+   * Test if an exception has been thrown.
+   * @return false, if successful
    */
-  public boolean asThrowedException() {
-    return this.exception != null;
+  public boolean isException() {
+    return this.exception == null;
   }
 
   /**
@@ -82,11 +73,19 @@ public class ToolExecutorResult {
   }
 
   /**
-   * Gets the command line.
-   * @return the command line
+   * Gets the command line as a list of string arguments.
+   * @return the command line as a list of string arguments
    */
-  public String getCommandLine() {
+  public List<String> getCommandLine() {
     return this.commandLineTool;
+  }
+
+  /**
+   * Gets the command line as a String.
+   * @return the command line as a String
+   */
+  public String getCommandLineAsString() {
+    return Joiner.on(' ').join(this.commandLineTool);
   }
 
   @Override
@@ -103,11 +102,32 @@ public class ToolExecutorResult {
   /**
    * Public constructor, command line can not be null or empty
    * @param commandLineTool the command line tool
+   * @param exitValue exit code
    */
-  public ToolExecutorResult(final String commandLineTool) {
+  public ToolExecutorResult(final List<String> commandLineTool,
+      final int exitValue) {
 
-    checkNotNull(commandLineTool, "Command line anc not be null.");
+    checkNotNull(commandLineTool, "Command line can not be null");
+    checkArgument(commandLineTool.isEmpty(), "Command line can not be empty");
 
     this.commandLineTool = commandLineTool;
+    this.exitValue = exitValue;
+    this.exception = null;
+  }
+
+  /**
+   * Public constructor, command line can not be null or empty
+   * @param commandLineTool the command line tool
+   * @param e exception
+   */
+  public ToolExecutorResult(final List<String> commandLineTool,
+      final Throwable e) {
+
+    checkNotNull(commandLineTool, "Command line can not be null.");
+    checkArgument(commandLineTool.isEmpty(), "Command line can not be empty");
+
+    this.commandLineTool = commandLineTool;
+    this.exitValue = NO_EXIT_VALUE;
+    this.exception = e;
   }
 }
