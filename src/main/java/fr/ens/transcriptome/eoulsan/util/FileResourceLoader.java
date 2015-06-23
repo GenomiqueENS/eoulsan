@@ -9,8 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.sun.xml.internal.ws.util.ServiceConfigurationError;
+import java.util.ServiceConfigurationError;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
@@ -91,7 +90,7 @@ public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
         }
       }
     } catch (IOException | EoulsanException e) {
-      throw new ServiceConfigurationError(e);
+      throw new ServiceConfigurationError("Unable to load resource", e);
     }
   }
 

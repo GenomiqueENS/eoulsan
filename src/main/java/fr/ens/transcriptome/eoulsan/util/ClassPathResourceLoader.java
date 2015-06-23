@@ -29,8 +29,7 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-import com.sun.jersey.spi.service.ServiceConfigurationError;
+import java.util.ServiceConfigurationError;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 
@@ -91,7 +90,7 @@ public abstract class ClassPathResourceLoader<S> extends
         addResource(resourceName, resourcePath);
       }
     } catch (IOException | EoulsanException e) {
-      throw new ServiceConfigurationError(e);
+      throw new ServiceConfigurationError("Unable to load resource", e);
     }
   }
 
