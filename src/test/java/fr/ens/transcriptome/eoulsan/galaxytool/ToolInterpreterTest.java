@@ -39,7 +39,6 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.python.google.common.base.Joiner;
 import org.python.google.common.base.Preconditions;
 
 import com.google.common.base.Splitter;
@@ -81,9 +80,11 @@ public class ToolInterpreterTest {
   private static final String NEW_TEST_KEY = "test_description";
 
   /** Directory path which contains all tool shed XML file. */
-  private static final String SRC_DIR = "/META-INF/services/registrytoolshed/";
-
-  private static final String SRC_TESTS_SETTING = "/testdatatoolshedgalaxy.txt";
+  private static final String SRC_DIR =
+      "/GalaxyTools/";
+  
+  private static final String SRC_TESTS_SETTING =
+      "/GalaxyTools/testdatatoolshedgalaxy.txt";
 
   @Before
   public void setUp() throws Exception {
