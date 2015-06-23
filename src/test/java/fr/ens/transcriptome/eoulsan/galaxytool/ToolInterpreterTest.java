@@ -259,9 +259,9 @@ public class ToolInterpreterTest {
       final ToolData toolData = interpreter.getToolData();
 
       // TODO
-      System.out.println("Step parameters "
-          + Joiner.on(" - ").join(setStepParameters));
-      System.out.println("=> tool data generated \n\t" + toolData);
+      // System.out.println("Step parameters "
+      // + Joiner.on(" - ").join(setStepParameters));
+      // System.out.println("=> tool data generated \n\t" + toolData);
 
       // Init Tool python interpreter
       final ToolPythonInterpreter tpi =
@@ -302,8 +302,8 @@ public class ToolInterpreterTest {
     private void compareCommandLine(final String commandLine) {
 
       // TODO
-      System.out.println("Compare expected \t"
-          + this.command + "\nwith generate command \t" + commandLine);
+      // System.out.println("Compare expected \t"
+      // + this.command + "\nwith generate command \t" + commandLine);
 
       // Compare command
       final List<String> commandBuildByInterpreter =

@@ -91,9 +91,6 @@ public class ToolPythonInterpreter {
     // Interpreter python script
     final String commandLine = interpreteScript();
 
-    // TODO
-    System.out.println("final command line " + commandLine);
-
     final ToolExecutor executor =
         new ToolExecutor(this.context, commandLine, this.tool.getToolName(),
             this.tool.getToolVersion());
@@ -209,7 +206,7 @@ public class ToolPythonInterpreter {
    */
   private Set<String> getVariableNames() throws EoulsanException {
 
-    checkState(!isCommandLineTranslate,
+    checkState(isCommandLineTranslate,
         "Can not get variable before translate command tag in script Python.");
 
     // Receive all variables names found in command tag
