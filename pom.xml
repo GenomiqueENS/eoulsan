@@ -708,9 +708,14 @@
 										<include name="bpipe-*" />
 									</fileset>
 								</copy>
-								<copy file="${basedir}/src/main/galaxytools" todir="${basedir}/target/dist/" />
-								<copy file="${basedir}/src/main/formats" todir="${basedir}/target/dist/" />
 
+								<copy todir="${basedir}/target/dist/galaxytools">
+									<fileset dir="${basedir}/src/main/galaxytools"/>
+								</copy>
+
+								<copy todir="${basedir}/target/dist/formats">
+									<fileset dir="${basedir}/src/main/formats"/>
+								</copy>
 
 								<chmod perm="ugo+rx">
 									<fileset dir="${basedir}/target/dist/bin">
