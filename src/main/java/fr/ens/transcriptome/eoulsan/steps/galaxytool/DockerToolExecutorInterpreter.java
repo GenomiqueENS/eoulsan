@@ -85,8 +85,8 @@ public class DockerToolExecutorInterpreter implements ToolExecutorInterpreter {
       builder.workingDir(executionDirectory.getAbsolutePath());
 
       // Set the UID and GID of the docker process
-      if (userUid >= 0 && userGid >= 0) {
-        builder.user(userUid + ":" + userGid);
+      if (this.userUid >= 0 && this.userGid >= 0) {
+        builder.user(this.userUid + ":" + this.userGid);
       }
 
       // Define binds
@@ -111,6 +111,7 @@ public class DockerToolExecutorInterpreter implements ToolExecutorInterpreter {
       // Get process exit code
       final ContainerInfo info = dockerClient.inspectContainer(containerId);
       final int exitValue = info.state().exitCode();
+      getLogger().fine("Exit value: " + exitValue);
 
       // Remove container
       getLogger().fine("Remove Docker container: " + containerId);
@@ -239,7 +240,8 @@ public class DockerToolExecutorInterpreter implements ToolExecutorInterpreter {
   private static final int uid() {
 
     try {
-      return Integer.parseInt(ProcessUtils.execToString("id -u"));
+      return Integer.parseInt(ProcessUtils.execToString("id -u")
+          .replace("\n", "").trim());
     } catch (NumberFormatException | IOException e) {
       return -1;
     }
@@ -252,7 +254,8 @@ public class DockerToolExecutorInterpreter implements ToolExecutorInterpreter {
   private static final int gid() {
 
     try {
-      return Integer.parseInt(ProcessUtils.execToString("id -u"));
+      return Integer.parseInt(ProcessUtils.execToString("id -g")
+          .replace("\n", "").trim());
     } catch (NumberFormatException | IOException e) {
       return -1;
     }
