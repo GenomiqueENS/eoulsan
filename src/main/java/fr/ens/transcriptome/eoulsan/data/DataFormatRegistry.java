@@ -95,8 +95,8 @@ public class DataFormatRegistry {
     }
 
     @Override
-    protected XMLDataFormat load(final InputStream in) throws IOException,
-        EoulsanException {
+    protected XMLDataFormat load(final InputStream in, final String source)
+        throws IOException, EoulsanException {
 
       return new XMLDataFormat(in);
     }
@@ -150,8 +150,8 @@ public class DataFormatRegistry {
     }
 
     @Override
-    protected XMLDataFormat load(final InputStream in) throws IOException,
-        EoulsanException {
+    protected XMLDataFormat load(final InputStream in, final String source)
+        throws IOException, EoulsanException {
 
       return new XMLDataFormat(in);
     }

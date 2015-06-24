@@ -61,15 +61,18 @@ public class GalaxyToolStep extends AbstractStep {
   private ToolData toolData;
 
   /** The tool interpreter. */
-  private GalaxyToolInterpreter toolInterpreter;
+  private final GalaxyToolInterpreter toolInterpreter;
+
+  /** The source of the Galaxy tool. */
+  private final String source;
+
+  //
+  // Steps methods
+  //
 
   @Override
   public String getName() {
     return this.toolData.getToolName();
-  }
-
-  public String getToolVersionName() {
-    return this.toolData.getToolVersion();
   }
 
   @Override
@@ -180,6 +183,20 @@ public class GalaxyToolStep extends AbstractStep {
   }
 
   //
+  // Other methods
+  //
+
+  public String getToolVersionName() {
+
+    return this.toolData.getToolVersion();
+  }
+
+  public String getSource() {
+
+    return this.source;
+  }
+
+  //
   // Constructor
   //
 
@@ -190,7 +207,20 @@ public class GalaxyToolStep extends AbstractStep {
    */
   public GalaxyToolStep(final InputStream toolXMLis) throws EoulsanException {
 
+    this(toolXMLis, null);
+  }
+
+  /**
+   * Constructor.
+   * @param toolXMLis the input stream on tool xml file
+   * @param source source of the Galaxy tool
+   * @throws EoulsanException the Eoulsan exception
+   */
+  public GalaxyToolStep(final InputStream toolXMLis, final String source)
+      throws EoulsanException {
+
     this.toolInterpreter = new GalaxyToolInterpreter(toolXMLis);
+    this.source = source == null ? "Undefined source" : source.trim();
   }
 
 }

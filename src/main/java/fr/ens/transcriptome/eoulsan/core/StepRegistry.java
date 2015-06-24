@@ -85,10 +85,10 @@ public class StepRegistry {
     }
 
     @Override
-    protected GalaxyToolStep load(final InputStream in) throws IOException,
-        EoulsanException {
+    protected GalaxyToolStep load(final InputStream in, final String source)
+        throws IOException, EoulsanException {
 
-      return new GalaxyToolStep(in);
+      return new GalaxyToolStep(in, source);
     }
 
     /**
@@ -141,10 +141,10 @@ public class StepRegistry {
       ClassPathResourceLoader<GalaxyToolStep> {
 
     @Override
-    protected GalaxyToolStep load(final InputStream in) throws IOException,
-        EoulsanException {
+    protected GalaxyToolStep load(final InputStream in, final String source)
+        throws IOException, EoulsanException {
 
-      return new GalaxyToolStep(in);
+      return new GalaxyToolStep(in, source);
     }
 
     @Override
@@ -241,7 +241,8 @@ public class StepRegistry {
     for (GalaxyToolStep s : stepsFound) {
 
       getLogger().config(
-          "Found step: " + s.getName() + " (" + s.getClass().getName() + ")");
+          "Found step: "
+              + s.getName() + " (Galaxy tool, source: " + s.getSource() + ")");
     }
   }
 
