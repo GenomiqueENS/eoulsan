@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
@@ -52,7 +51,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 /**
  * The Class GalaxyToolStep.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
 @LocalOnly
 public class GalaxyToolStep extends AbstractStep {
@@ -77,7 +76,7 @@ public class GalaxyToolStep extends AbstractStep {
 
   @Override
   public Version getVersion() {
-    return Globals.APP_VERSION;
+    return new Version(this.toolData.getToolVersion());
   }
 
   @Override
@@ -128,10 +127,6 @@ public class GalaxyToolStep extends AbstractStep {
 
     // Configure tool interpreter
     this.toolInterpreter.configure(stepParameters);
-
-    // Extract tool data
-    this.toolData = this.toolInterpreter.getToolData();
-
   }
 
   @Override
@@ -186,11 +181,10 @@ public class GalaxyToolStep extends AbstractStep {
   // Other methods
   //
 
-  public String getToolVersionName() {
-
-    return this.toolData.getToolVersion();
-  }
-
+  /**
+   * Get the source the Galaxy tool.
+   * @return the source of the Galaxy tool
+   */
   public String getSource() {
 
     return this.source;
@@ -221,6 +215,9 @@ public class GalaxyToolStep extends AbstractStep {
 
     this.toolInterpreter = new GalaxyToolInterpreter(toolXMLis);
     this.source = source == null ? "Undefined source" : source.trim();
+
+    // Extract tool data
+    this.toolData = this.toolInterpreter.getToolData();
   }
 
 }

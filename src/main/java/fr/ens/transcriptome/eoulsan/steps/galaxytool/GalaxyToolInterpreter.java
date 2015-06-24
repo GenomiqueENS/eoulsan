@@ -24,14 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 
-import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractCommand;
-import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractDescription;
 import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractInputs;
-import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractInterpreter;
 import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractOutputs;
-import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolID;
-import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolName;
-import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolVersion;
 import static org.python.google.common.base.Preconditions.checkNotNull;
 import static org.python.google.common.base.Preconditions.checkState;
 
@@ -110,15 +104,6 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
     this.initStepParameters(setStepParameters);
 
     final Document localDoc = this.doc;
-
-    // Set tool name
-    this.tool.setToolID(extractToolID(localDoc));
-    this.tool.setToolName(extractToolName(localDoc));
-    this.tool.setToolVersion(extractToolVersion(localDoc));
-    this.tool.setDescription(extractDescription(localDoc));
-
-    this.tool.setInterpreter(extractInterpreter(localDoc));
-    this.tool.setCmdTagContent(extractCommand(localDoc));
 
     // Extract variable settings
     this.inputs = extractInputs(localDoc, this.stepParameters);
@@ -296,20 +281,17 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
    */
   private Document buildDOM() throws EoulsanException {
 
-    try {
+    try (InputStream in = this.toolXMLis) {
       // Read the XML file
       final DocumentBuilder dBuilder =
           DocumentBuilderFactory.newInstance().newDocumentBuilder();
-      final Document doc = dBuilder.parse(this.toolXMLis);
+      final Document doc = dBuilder.parse(in);
       doc.getDocumentElement().normalize();
       return doc;
 
     } catch (final IOException | SAXException | ParserConfigurationException e) {
       throw new EoulsanException(e);
     }
-    // TODO
-    // close is
-
   }
 
   /**
@@ -388,11 +370,12 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
     checkNotNull(is, "input stream on XML file");
 
     this.toolXMLis = is;
-    this.doc = this.buildDOM();
+    this.doc = buildDOM();
     this.stepParameters = new HashMap<>();
 
-    this.tool = new ToolData();
+    this.tool = new ToolData(this.doc);
 
-    this.checkDomValidity();
+    checkDomValidity();
+
   }
 }

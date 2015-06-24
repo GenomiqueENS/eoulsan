@@ -108,7 +108,7 @@ public class ToolExecutorResult {
       final int exitValue) {
 
     checkNotNull(commandLineTool, "Command line can not be null");
-    checkArgument(commandLineTool.isEmpty(), "Command line can not be empty");
+    checkArgument(!commandLineTool.isEmpty(), "Command line can not be empty");
 
     this.commandLineTool = commandLineTool;
     this.exitValue = exitValue;

@@ -31,8 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.python.google.common.base.Strings;
-
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 
 /**
@@ -57,7 +56,7 @@ public class ToolExecutor {
    */
   ToolExecutorResult execute() {
 
-    checkArgument(this.commandLineTool.isEmpty(),
+    checkArgument(!this.commandLineTool.isEmpty(),
         "Command line for Galaxy tool is empty");
 
     // Define the interpreter to use
@@ -124,9 +123,9 @@ public class ToolExecutor {
 
     checkNotNull(commandLine, "commandLine is null.");
     checkNotNull(context, "Step context is null.");
-
+    EoulsanLogger.getLogger().info("commandLine: " + commandLine);
     this.interpreter = interpreter;
-    this.commandLineTool = Strings.nullToEmpty(commandLine).trim();
+    this.commandLineTool = commandLine.trim();
     this.stepContext = context;
     this.toolName = toolName;
     this.toolVersion = toolVersion;
