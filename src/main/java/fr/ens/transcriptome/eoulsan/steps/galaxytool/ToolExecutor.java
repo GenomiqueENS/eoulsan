@@ -45,11 +45,8 @@ public class ToolExecutor {
   private static final String STDERR_SUFFIX = ".STDERR";
 
   private final StepContext stepContext;
-  private final String interpreter;
-  private final String dockerImage;
+  private final ToolData toolData;
   private final String commandLineTool;
-  private final String toolName;
-  private final String toolVersion;
 
   /**
    * Execute a tool.
@@ -60,9 +57,11 @@ public class ToolExecutor {
     checkArgument(!this.commandLineTool.isEmpty(),
         "Command line for Galaxy tool is empty");
 
+    final String interpreter = this.toolData.getInterpreter();
+
     // Define the interpreter to use
     final ToolExecutorInterpreter ti;
-    switch (this.interpreter) {
+    switch (interpreter) {
 
     case "":
       ti = new DefaultToolExecutorInterpreter();
@@ -71,12 +70,12 @@ public class ToolExecutor {
     case "docker":
       ti =
           new DockerToolExecutorInterpreter(EoulsanRuntime.getSettings()
-              .getDockerConnectionURI(), this.dockerImage, EoulsanRuntime
-              .getSettings().getTempDirectoryFile());
+              .getDockerConnectionURI(), this.toolData.getDockerImage(),
+              EoulsanRuntime.getSettings().getTempDirectoryFile());
       break;
 
     default:
-      ti = new GenericToolExecutorInterpreter(this.interpreter);
+      ti = new GenericToolExecutorInterpreter(interpreter);
       break;
     }
 
@@ -86,7 +85,8 @@ public class ToolExecutor {
 
     // TODO Save the output files in the task directory
     final File directory = this.stepContext.getStepOutputDirectory().toFile();
-    final String prefix = this.toolName + "_" + this.toolVersion;
+    final String prefix =
+        this.toolData.getToolName() + "_" + this.toolData.getToolVersion();
     final File stdoutFile = new File(directory, prefix + STDOUT_SUFFIX);
     final File stderrFile = new File(directory, prefix + STDERR_SUFFIX);
 
@@ -122,19 +122,15 @@ public class ToolExecutor {
    * @param toolName the tool name
    * @param toolVersion the tool version
    */
-  public ToolExecutor(final StepContext context, final String interpreter,
-      final String dockerImage, final String commandLine,
-      final String toolName, final String toolVersion) {
+  public ToolExecutor(final StepContext context, final ToolData toolData,
+      final String commandLine) {
 
     checkNotNull(commandLine, "commandLine is null.");
     checkNotNull(context, "Step context is null.");
 
-    this.dockerImage = dockerImage;
-    this.interpreter = interpreter;
+    this.toolData = toolData;
     this.commandLineTool = commandLine.trim();
     this.stepContext = context;
-    this.toolName = toolName;
-    this.toolVersion = toolVersion;
 
     execute();
   }

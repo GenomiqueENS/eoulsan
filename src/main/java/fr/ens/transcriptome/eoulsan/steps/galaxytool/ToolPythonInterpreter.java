@@ -92,9 +92,7 @@ public class ToolPythonInterpreter {
     final String commandLine = interpreteScript();
 
     final ToolExecutor executor =
-        new ToolExecutor(this.context, this.tool.getInterpreter(),
-            this.tool.getDockerImage(), commandLine, this.tool.getToolName(),
-            this.tool.getToolVersion());
+        new ToolExecutor(this.context, this.tool, commandLine);
 
     return executor.execute();
 
