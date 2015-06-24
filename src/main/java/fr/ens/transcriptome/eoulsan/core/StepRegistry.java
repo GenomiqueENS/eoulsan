@@ -25,6 +25,7 @@
 package fr.ens.transcriptome.eoulsan.core;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.EoulsanRuntime.getSettings;
 import static fr.ens.transcriptome.eoulsan.annotations.EoulsanMode.HADOOP_COMPATIBLE;
 import static fr.ens.transcriptome.eoulsan.annotations.EoulsanMode.HADOOP_ONLY;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.base.Strings;
 
@@ -175,6 +177,9 @@ public class StepRegistry {
 
     if (instance == null) {
       instance = new StepRegistry();
+
+      // Load the available steps
+      instance.reload();
     }
 
     return instance;
@@ -219,6 +224,25 @@ public class StepRegistry {
     this.service.reload();
     this.galaxyClassPathLoader.reload();
     this.galaxyFileLoader.reload();
+
+    // Log steps defined in jars
+    for (Map.Entry<String, String> e : this.service.getServiceClasses()
+        .entries()) {
+
+      getLogger().config(
+          "Found step: " + e.getKey() + " (" + e.getValue() + ")");
+    }
+
+    // Log Galaxy tool steps
+    final List<GalaxyToolStep> stepsFound = new ArrayList<>();
+    stepsFound.addAll(this.galaxyClassPathLoader.loadAllResources());
+    stepsFound.addAll(this.galaxyFileLoader.loadAllResources());
+
+    for (GalaxyToolStep s : stepsFound) {
+
+      getLogger().config(
+          "Found step: " + s.getName() + " (" + s.getClass().getName() + ")");
+    }
   }
 
   /**
@@ -357,9 +381,6 @@ public class StepRegistry {
     this.galaxyClassPathLoader = new GalaxyToolStepClassPathLoader();
     this.galaxyFileLoader =
         new GalaxyToolStepFileResourceLoader(getSettings().getGalaxyToolPath());
-
-    // Load the available steps
-    reload();
   }
 
 }
