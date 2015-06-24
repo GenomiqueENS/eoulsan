@@ -89,6 +89,7 @@ public class ToolExecutor {
 
     final File executionDirectory = context.getStepOutputDirectory().toFile();
     final File logDirectory = context.getTaskOutputDirectory().toFile();
+    final File tempDirectory = context.getLocalTempDirectory();
 
     final File stdoutFile =
         new File(logDirectory, context.getTaskFilePrefix() + STDOUT_SUFFIX);
@@ -101,7 +102,8 @@ public class ToolExecutor {
     getLogger().info("Stdout: " + stdoutFile);
     getLogger().info("Stderr: " + stderrFile);
 
-    return ti.execute(command, executionDirectory, stdoutFile, stderrFile);
+    return ti.execute(command, executionDirectory, tempDirectory, stdoutFile,
+        stderrFile);
   }
 
   /**

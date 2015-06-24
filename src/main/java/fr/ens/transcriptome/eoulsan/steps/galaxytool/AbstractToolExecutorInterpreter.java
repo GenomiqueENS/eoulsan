@@ -17,10 +17,12 @@ import java.util.List;
 public abstract class AbstractToolExecutorInterpreter implements
     ToolExecutorInterpreter {
 
+  static final String TMP_DIR_ENV_VARIABLE = "TMPDIR";
+
   @Override
   public ToolExecutorResult execute(final List<String> commandLine,
-      final File executionDirectory, final File stdoutFile,
-      final File stderrFile) {
+      final File executionDirectory, File temporaryDirectory,
+      final File stdoutFile, final File stderrFile) {
 
     checkNotNull(commandLine, "commandLine argument cannot be null");
     checkNotNull(executionDirectory,
@@ -38,6 +40,12 @@ public abstract class AbstractToolExecutorInterpreter implements
       builder.directory(executionDirectory);
       builder.redirectOutput(stdoutFile);
       builder.redirectError(stderrFile);
+
+      // Set the temporary directory if exists
+      if (executionDirectory.isDirectory()) {
+        builder.environment().put(TMP_DIR_ENV_VARIABLE,
+            executionDirectory.getAbsolutePath());
+      }
 
       // Execute command
       final Process p = builder.start();

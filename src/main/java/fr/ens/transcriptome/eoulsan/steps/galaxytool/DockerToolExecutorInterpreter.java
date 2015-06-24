@@ -2,6 +2,7 @@ package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.steps.galaxytool.AbstractToolExecutorInterpreter.TMP_DIR_ENV_VARIABLE;
 import static java.util.Collections.singletonList;
 import static org.python.google.common.base.Preconditions.checkArgument;
 
@@ -9,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,7 +57,8 @@ public class DockerToolExecutorInterpreter implements ToolExecutorInterpreter {
 
   @Override
   public ToolExecutorResult execute(final List<String> commandLine,
-      final File executionDirectory, final File stdoutFile, File stderrFile) {
+      final File executionDirectory, final File temporaryDirectory,
+      final File stdoutFile, File stderrFile) {
 
     checkNotNull(commandLine, "commandLine argument cannot be null");
     checkNotNull(executionDirectory,
@@ -89,9 +92,17 @@ public class DockerToolExecutorInterpreter implements ToolExecutorInterpreter {
         builder.user(this.userUid + ":" + this.userGid);
       }
 
-      // Define binds
-      final HostConfig hostConfig =
-          createBinds(executionDirectory, singletonList(executionDirectory));
+      // Define temporary directory
+      final List<File> toBind;
+      if (temporaryDirectory.isDirectory()) {
+        toBind = singletonList(temporaryDirectory);
+        builder.env(TMP_DIR_ENV_VARIABLE
+            + "=" + temporaryDirectory.getAbsolutePath());
+      } else {
+        toBind = Collections.emptyList();
+      }
+
+      final HostConfig hostConfig = createBinds(executionDirectory, toBind);
 
       // Create container
       final ContainerCreation creation =

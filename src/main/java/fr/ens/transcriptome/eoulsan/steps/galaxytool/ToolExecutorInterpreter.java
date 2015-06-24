@@ -27,11 +27,13 @@ public interface ToolExecutorInterpreter {
    * Execute a command line.
    * @param commandLine the command line to execute
    * @param executionDirectory execution directory
+   * @param temporaryDirectory temporary directory
    * @param stdoutFile stdout file
    * @param stderrFile stderr file
    * @return a ToolExecutor object
    */
   ToolExecutorResult execute(final List<String> commandLine,
-      File executionDirectory, File stdoutFile, File stderrFile);
+      File executionDirectory, File temporaryDirectory, File stdoutFile,
+      File stderrFile);
 
 }
