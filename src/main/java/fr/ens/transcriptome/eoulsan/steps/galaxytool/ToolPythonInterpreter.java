@@ -43,7 +43,7 @@ import fr.ens.transcriptome.eoulsan.core.StepContext;
  * This class create a Python interpreter, it can build a command line tool from
  * command tag from Galaxy tool XML file.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
 public class ToolPythonInterpreter {
 
@@ -92,8 +92,8 @@ public class ToolPythonInterpreter {
     final String commandLine = interpreteScript();
 
     final ToolExecutor executor =
-        new ToolExecutor(this.context, commandLine, this.tool.getToolName(),
-            this.tool.getToolVersion());
+        new ToolExecutor(this.context, this.tool.getInterpreter(), commandLine,
+            this.tool.getToolName(), this.tool.getToolVersion());
 
     return executor.execute();
 

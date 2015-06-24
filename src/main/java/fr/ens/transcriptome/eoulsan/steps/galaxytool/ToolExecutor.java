@@ -23,15 +23,15 @@
  */
 package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import com.google.common.base.Preconditions;
+import org.python.google.common.base.Strings;
 
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 
@@ -46,7 +46,8 @@ public class ToolExecutor {
   private static final String STDERR_SUFFIX = ".STDERR";
 
   private final StepContext stepContext;
-  private final List<String> commandLineTool;
+  private final String interpreter;
+  private final String commandLineTool;
   private final String toolName;
   private final String toolVersion;
 
@@ -56,37 +57,33 @@ public class ToolExecutor {
    */
   ToolExecutorResult execute() {
 
-    Preconditions.checkArgument(this.commandLineTool.isEmpty(),
+    checkArgument(this.commandLineTool.isEmpty(),
         "Command line for Galaxy tool is empty");
 
-    try {
+    // Define the interpreter to use
+    final ToolExecutorInterpreter ti;
+    switch (this.interpreter) {
 
-      ProcessBuilder builder = new ProcessBuilder(this.commandLineTool);
-      builder.redirectOutput(createStepOutput(STDOUT_SUFFIX));
-      builder.redirectError(createStepOutput(STDERR_SUFFIX));
+    case "":
+      ti = new DefaultToolExecutorInterpreter();
+      break;
 
-      // Execute command
-      final Process p = builder.start();
-
-      // Wait the end of the process
-      final int exitValue = p.waitFor();
-
-      return new ToolExecutorResult(commandLineTool, exitValue);
-
-    } catch (InterruptedException | IOException e) {
-      return new ToolExecutorResult(commandLineTool, e);
+    default:
+      ti = new GenericToolExecutorInterpreter(this.interpreter);
+      break;
     }
-  }
 
-  /**
-   * Get the path of the command output.
-   * @param suffix the suffix of the command output
-   * @return a File
-   */
-  private File createStepOutput(final String suffix) {
+    // Create the command line
+    final List<String> command =
+        ti.createCommandLine(splitCommandLine(this.commandLineTool));
 
-    return new File(this.stepContext.getStepOutputDirectory().toFile(),
-        this.toolName + "_" + this.toolVersion + suffix);
+    // TODO Save the output files in the task directory
+    final File directory = this.stepContext.getStepOutputDirectory().toFile();
+    final String prefix = this.toolName + "_" + this.toolVersion;
+    final File stdoutFile = new File(directory, prefix + STDOUT_SUFFIX);
+    final File stderrFile = new File(directory, prefix + STDERR_SUFFIX);
+
+    return ti.execute(command, directory, stdoutFile, stderrFile);
   }
 
   /**
@@ -107,23 +104,29 @@ public class ToolExecutor {
   }
 
   //
+  // Docker methods
+  //
+
+  //
   // Constructor
   //
 
   /**
    * Constructor a new galaxy tool executor.
    * @param context the context
+   * @param interpreter the interpreter to use
    * @param commandLine the command line
    * @param toolName the tool name
    * @param toolVersion the tool version
    */
-  public ToolExecutor(final StepContext context, final String commandLine,
-      final String toolName, final String toolVersion) {
+  public ToolExecutor(final StepContext context, final String interpreter,
+      final String commandLine, final String toolName, final String toolVersion) {
 
     checkNotNull(commandLine, "commandLine is null.");
     checkNotNull(context, "Step context is null.");
 
-    this.commandLineTool = splitCommandLine(commandLine);
+    this.interpreter = interpreter;
+    this.commandLineTool = Strings.nullToEmpty(commandLine).trim();
     this.stepContext = context;
     this.toolName = toolName;
     this.toolVersion = toolVersion;
