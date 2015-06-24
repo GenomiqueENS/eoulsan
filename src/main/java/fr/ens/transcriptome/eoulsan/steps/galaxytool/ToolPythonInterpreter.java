@@ -119,44 +119,20 @@ public class ToolPythonInterpreter {
     final Map<String, String> variablesCommandFinal =
         addMissingVariableFromCommandLine();
 
-    final PythonInterpreter interpreter = new PythonInterpreter();
+    try (final PythonInterpreter interpreter = new PythonInterpreter()) {
 
-    // Init variable cmd
-    interpreter.set(VAR_CMD_NAME, "");
-    interpreter.set(INSTANCE_NAME, variablesCommandFinal);
+      // Init variable cmd
+      interpreter.set(VAR_CMD_NAME, "");
+      interpreter.set(INSTANCE_NAME, variablesCommandFinal);
 
-    // Add script
-    interpreter.exec(this.pythonScriptWithJavaCode);
+      // Add script
+      interpreter.exec(this.pythonScriptWithJavaCode);
 
-    // Retrieve standard output
-    final PyObject cmd = interpreter.get(VAR_CMD_NAME);
+      // Retrieve standard output
+      final PyObject cmd = interpreter.get(VAR_CMD_NAME);
 
-    return addInterperter(cmd.asString());
-  }
-
-  /**
-   * Include the interperter, if setting in XML file, at the start of command
-   * line's tool
-   * @param cmd command line's tool
-   * @return final command line
-   */
-  private String addInterperter(final String cmd) {
-
-    checkNotNull(cmd, "Command line can not be null");
-
-    // Add interpreter if exists
-    if (this.tool.isInterpreterSetting()) {
-
-      // TODO
-      // return this.tool.getInterpreter()
-      // + " " + this.tool.getToolExecutable() + "/" + cmd.trim();
-      return this.tool.getInterpreter() + " " + cmd.trim();
-
-    } else {
-
-      return cmd.trim();
+      return cmd.asString().trim();
     }
-
   }
 
   /**

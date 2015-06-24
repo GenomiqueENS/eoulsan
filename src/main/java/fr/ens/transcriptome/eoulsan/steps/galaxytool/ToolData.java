@@ -118,15 +118,6 @@ public class ToolData {
   }
 
   //
-  // Other methods
-  //
-
-  public boolean isInterpreterSetting() {
-
-    return getInterpreter() != null && !getInterpreter().isEmpty();
-  }
-
-  //
   // Object method
   //
 
