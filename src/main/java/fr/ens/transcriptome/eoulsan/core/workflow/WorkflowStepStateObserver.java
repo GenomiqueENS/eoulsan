@@ -51,7 +51,7 @@ public class WorkflowStepStateObserver implements Serializable {
   private static final long serialVersionUID = -5734184849291521186L;
 
   private final AbstractWorkflowStep step;
-  private StepState stepState;
+  private StepState stepState = CREATED;
 
   private final Set<AbstractWorkflowStep> requiredSteps = new HashSet<>();
   private final Set<AbstractWorkflowStep> stepsToInform = new HashSet<>();
@@ -93,7 +93,8 @@ public class WorkflowStepStateObserver implements Serializable {
     // Do nothing if the state has not changed or if the current state is a
     // final state
     if (state == null
-        || this.stepState == state || this.stepState.isFinalState()) {
+        || state == CREATED || this.stepState == state
+        || this.stepState.isFinalState()) {
       return;
     }
 
@@ -124,11 +125,6 @@ public class WorkflowStepStateObserver implements Serializable {
             + this.step.getNumber() + " " + this.step.getId()
             + " is now in state " + this.stepState + " (previous state was "
             + previousState + ")");
-
-    // If step has just been created there is nothing to do
-    if (this.stepState == CREATED) {
-      return;
-    }
 
     // Log dependencies when step is in WAITING state
     if (this.stepState == WAITING) {
@@ -215,6 +211,10 @@ public class WorkflowStepStateObserver implements Serializable {
     checkNotNull(step, "step cannot be null");
 
     this.step = step;
-    setState(CREATED);
+
+    getLogger().fine(
+        "Step #"
+            + this.step.getNumber() + " " + this.step.getId()
+            + " is now in state " + this.stepState);
   }
 }
