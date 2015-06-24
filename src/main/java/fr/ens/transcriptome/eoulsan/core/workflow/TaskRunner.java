@@ -380,7 +380,7 @@ public class TaskRunner {
     final DataFile logDir =
         this.context.getStep().getAbstractWorkflow().getTaskDirectory();
     final DataFile logFile =
-        new DataFile(logDir, createTaskPrefixFile(this.context)
+        new DataFile(logDir, this.context.getTaskFilePrefix()
             + TASK_LOG_EXTENSION);
 
     OutputStream logOut;
@@ -421,20 +421,6 @@ public class TaskRunner {
   //
   // Static methods
   //
-
-  /**
-   * Create the prefix of a related task file.
-   * @param context the context
-   * @return a string with the prefix of the task file
-   */
-  public static String createTaskPrefixFile(final TaskContext context) {
-
-    if (context == null) {
-      return null;
-    }
-
-    return context.getStep().getId() + "_context#" + context.getId();
-  }
 
   /**
    * Create a step result for an exception.

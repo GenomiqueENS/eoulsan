@@ -25,6 +25,7 @@ package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import java.util.StringTokenizer;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
+import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
 
 /**
  * The class define an executor on tool set in XML file.
@@ -41,8 +43,8 @@ import fr.ens.transcriptome.eoulsan.core.StepContext;
  */
 public class ToolExecutor {
 
-  private static final String STDOUT_SUFFIX = ".STDOUT";
-  private static final String STDERR_SUFFIX = ".STDERR";
+  private static final String STDOUT_SUFFIX = ".galaxytool.out";
+  private static final String STDERR_SUFFIX = ".galaxytool.err";
 
   private final StepContext stepContext;
   private final ToolData toolData;
@@ -83,14 +85,23 @@ public class ToolExecutor {
     final List<String> command =
         ti.createCommandLine(splitCommandLine(this.commandLineTool));
 
-    // TODO Save the output files in the task directory
-    final File directory = this.stepContext.getStepOutputDirectory().toFile();
-    final String prefix =
-        this.toolData.getToolName() + "_" + this.toolData.getToolVersion();
-    final File stdoutFile = new File(directory, prefix + STDOUT_SUFFIX);
-    final File stderrFile = new File(directory, prefix + STDERR_SUFFIX);
+    final TaskContext context = (TaskContext) this.stepContext;
 
-    return ti.execute(command, directory, stdoutFile, stderrFile);
+    final File executionDirectory = context.getStepOutputDirectory().toFile();
+    final File logDirectory = context.getTaskOutputDirectory().toFile();
+
+    final File stdoutFile =
+        new File(logDirectory, context.getTaskFilePrefix() + STDOUT_SUFFIX);
+    final File stderrFile =
+        new File(logDirectory, context.getTaskFilePrefix() + STDERR_SUFFIX);
+
+    getLogger().info("Interpreter: " + interpreter);
+    getLogger().info("Command: " + command);
+    getLogger().info("Execution directory: " + executionDirectory);
+    getLogger().info("Stdout: " + stdoutFile);
+    getLogger().info("Stderr: " + stderrFile);
+
+    return ti.execute(command, executionDirectory, stdoutFile, stderrFile);
   }
 
   /**

@@ -248,7 +248,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
       this.taskDir =
           new DataFile(hadoopWorkDir, "eoulsan-hadoop-compatible-task-"
               + this.context.getId());
-      this.taskPrefix = TaskRunner.createTaskPrefixFile(context);
+      this.taskPrefix = context.getTaskFilePrefix();
     }
   }
 
