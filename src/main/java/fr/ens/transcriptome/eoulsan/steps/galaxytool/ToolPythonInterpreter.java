@@ -92,8 +92,9 @@ public class ToolPythonInterpreter {
     final String commandLine = interpreteScript();
 
     final ToolExecutor executor =
-        new ToolExecutor(this.context, this.tool.getInterpreter(), commandLine,
-            this.tool.getToolName(), this.tool.getToolVersion());
+        new ToolExecutor(this.context, this.tool.getInterpreter(),
+            this.tool.getDockerImage(), commandLine, this.tool.getToolName(),
+            this.tool.getToolVersion());
 
     return executor.execute();
 
@@ -237,7 +238,7 @@ public class ToolPythonInterpreter {
 
     // Init translator
     this.translator =
-        new TranslatorStringToPython(this.tool.getCmdTagContent());
+        new TranslatorStringToPython(this.tool.getCommandScript());
 
     // Translate command in Cheetah syntax in Python script
     translateCommandXMLInPython();

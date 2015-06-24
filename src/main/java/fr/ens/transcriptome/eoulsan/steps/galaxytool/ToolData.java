@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractCommand;
 import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractDescription;
+import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractDockerImage;
 import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractInterpreter;
 import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolID;
 import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolName;
@@ -63,10 +64,14 @@ public class ToolData {
   /** The interpreter. */
   private final String interpreter;
 
-  private final String cmdTagContent;
+  /** The command script. */
+  private final String commandScript;
+
+  /** The Docker image. */
+  private final String dockerImage;
 
   //
-  // Getters and Setters
+  // Getters
   //
 
   /**
@@ -74,7 +79,7 @@ public class ToolData {
    * @return the tool id
    */
   public String getToolID() {
-    return toolID;
+    return this.toolID;
   }
 
   /**
@@ -82,7 +87,7 @@ public class ToolData {
    * @return the tool name
    */
   public String getToolName() {
-    return toolName;
+    return this.toolName;
   }
 
   /**
@@ -90,7 +95,7 @@ public class ToolData {
    * @return the tool version
    */
   public String getToolVersion() {
-    return toolVersion;
+    return this.toolVersion;
   }
 
   /**
@@ -98,7 +103,7 @@ public class ToolData {
    * @return the tool description
    */
   public String getDescription() {
-    return description;
+    return this.description;
   }
 
   /**
@@ -106,15 +111,23 @@ public class ToolData {
    * @return the interpreter
    */
   public String getInterpreter() {
-    return interpreter;
+    return this.interpreter;
   }
 
   /**
-   * Get the content of the tag command.
-   * @return the content of the tag command
+   * Get the command script.
+   * @return the command script
    */
-  public String getCmdTagContent() {
-    return cmdTagContent;
+  public String getCommandScript() {
+    return this.commandScript;
+  }
+
+  /**
+   * Get Docker image.
+   * @return the docker image
+   */
+  public String getDockerImage() {
+    return this.dockerImage;
   }
 
   //
@@ -124,10 +137,12 @@ public class ToolData {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("toolID", toolID)
-        .add("toolName", toolName).add("toolVersion", toolVersion)
-        .add("description", description).add("interpreter", interpreter)
-        .add("cmdTagContent", cmdTagContent).toString();
+    return Objects.toStringHelper(this).add("toolID", this.toolID)
+        .add("toolName", this.toolName).add("toolVersion", this.toolVersion)
+        .add("description", this.description)
+        .add("interpreter", this.interpreter)
+        .add("dockerImage", this.dockerImage)
+        .add("commandScript", this.commandScript).toString();
   }
 
   //
@@ -148,7 +163,8 @@ public class ToolData {
     this.toolName = extractToolName(document);
     this.description = extractDescription(document);
     this.interpreter = extractInterpreter(document);
-    this.cmdTagContent = emptyToNull(extractCommand(document));
+    this.dockerImage = emptyToNull(extractDockerImage(document));
+    this.commandScript = emptyToNull(extractCommand(document));
 
     final String toolVersion = nullToEmpty(extractToolVersion(document));
     this.toolVersion = "".equals(toolVersion) ? DEFAULT_VERSION : toolVersion;
@@ -157,7 +173,7 @@ public class ToolData {
       throw new EoulsanException("GalaxyTool name can not be null");
     }
 
-    if (this.cmdTagContent == null) {
+    if (this.commandScript == null) {
       throw new EoulsanException("No command found in Galaxy tool");
     }
 

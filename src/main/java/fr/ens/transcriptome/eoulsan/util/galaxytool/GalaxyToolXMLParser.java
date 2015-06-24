@@ -69,6 +69,9 @@ public final class GalaxyToolXMLParser {
   /** The Constant INTERPRETER_TAG. */
   private static final String INTERPRETER_TAG = "interpreter";
 
+  /** The Constant DOCKER_IMAGE_TAG. */
+  private static final String DOCKER_IMAGE_TAG = "dockerimage";
+
   /** The Constant COMMAND_TAG. */
   private static final String COMMAND_TAG = "command";
 
@@ -366,6 +369,15 @@ public final class GalaxyToolXMLParser {
    */
   public static String extractInterpreter(final Document doc) {
     return extractValueFromElement(doc, COMMAND_TAG, 0, INTERPRETER_TAG);
+  }
+
+  /**
+   * Extract docker image attribute in string.
+   * @param doc document represented tool xml
+   * @return the docker image name
+   */
+  public static String extractDockerImage(final Document doc) {
+    return extractValueFromElement(doc, COMMAND_TAG, 0, DOCKER_IMAGE_TAG);
   }
 
   /**

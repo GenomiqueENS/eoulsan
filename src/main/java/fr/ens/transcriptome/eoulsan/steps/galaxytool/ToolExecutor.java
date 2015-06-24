@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 
 /**
@@ -46,6 +46,7 @@ public class ToolExecutor {
 
   private final StepContext stepContext;
   private final String interpreter;
+  private final String dockerImage;
   private final String commandLineTool;
   private final String toolName;
   private final String toolVersion;
@@ -65,6 +66,13 @@ public class ToolExecutor {
 
     case "":
       ti = new DefaultToolExecutorInterpreter();
+      break;
+
+    case "docker":
+      ti =
+          new DockerToolExecutorInterpreter(EoulsanRuntime.getSettings()
+              .getDockerConnectionURI(), this.dockerImage, EoulsanRuntime
+              .getSettings().getTempDirectoryFile());
       break;
 
     default:
@@ -103,10 +111,6 @@ public class ToolExecutor {
   }
 
   //
-  // Docker methods
-  //
-
-  //
   // Constructor
   //
 
@@ -119,11 +123,13 @@ public class ToolExecutor {
    * @param toolVersion the tool version
    */
   public ToolExecutor(final StepContext context, final String interpreter,
-      final String commandLine, final String toolName, final String toolVersion) {
+      final String dockerImage, final String commandLine,
+      final String toolName, final String toolVersion) {
 
     checkNotNull(commandLine, "commandLine is null.");
     checkNotNull(context, "Step context is null.");
-    EoulsanLogger.getLogger().info("commandLine: " + commandLine);
+
+    this.dockerImage = dockerImage;
     this.interpreter = interpreter;
     this.commandLineTool = commandLine.trim();
     this.stepContext = context;
