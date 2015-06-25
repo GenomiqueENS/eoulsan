@@ -23,64 +23,104 @@
  */
 package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
+import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
 
 /**
  * The class define an executor on tool set in XML file.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
 public class ToolExecutor {
 
-  private final StepContext stepContext;
-  private final String commandLineTool;
-  private final String toolName;
-  private final String toolVersion;
+  private static final String STDOUT_SUFFIX = ".galaxytool.out";
+  private static final String STDERR_SUFFIX = ".galaxytool.err";
 
+  private final StepContext stepContext;
+  private final ToolData toolData;
+  private final String commandLineTool;
+
+  /**
+   * Execute a tool.
+   * @return a ToolExecutorResult object
+   */
   ToolExecutorResult execute() {
 
-    checkNotNull(commandLineTool, "Command line galaxy tool is null.");
+    checkArgument(!this.commandLineTool.isEmpty(),
+        "Command line for Galaxy tool is empty");
 
-    final ToolExecutorResult result = new ToolExecutorResult(commandLineTool);
+    final String interpreter = this.toolData.getInterpreter();
 
-    try {
-      // Execute command
-      final Process p = Runtime.getRuntime().exec(commandLineTool, null);
+    // Define the interpreter to use
+    final ToolExecutorInterpreter ti;
+    switch (interpreter) {
 
-      // Save stdout
-      new CopyProcessOutput(p.getInputStream(), createStepOutput("STDOUT"),
-          "stdout").start();
+    case "":
+      ti = new DefaultToolExecutorInterpreter();
+      break;
 
-      // Save stderr
-      new CopyProcessOutput(p.getErrorStream(), createStepOutput("STDERR"),
-          "stderr").start();
+    case "docker":
+      ti =
+          new DockerToolExecutorInterpreter(EoulsanRuntime.getSettings()
+              .getDockerConnectionURI(), this.toolData.getDockerImage(),
+              EoulsanRuntime.getSettings().getTempDirectoryFile());
+      break;
 
-      // Wait the end of the process
-      final int exitValue = p.waitFor();
+    default:
+      ti = new GenericToolExecutorInterpreter(interpreter);
+      break;
+    }
 
-      result.setExitValue(exitValue);
+    // Create the command line
+    final List<String> command =
+        ti.createCommandLine(splitCommandLine(this.commandLineTool));
 
-    } catch (InterruptedException | IOException e) {
-      result.setException(e);
+    final TaskContext context = (TaskContext) this.stepContext;
+
+    final File executionDirectory = context.getStepOutputDirectory().toFile();
+    final File logDirectory = context.getTaskOutputDirectory().toFile();
+    final File tempDirectory = context.getLocalTempDirectory();
+
+    final File stdoutFile =
+        new File(logDirectory, context.getTaskFilePrefix() + STDOUT_SUFFIX);
+    final File stderrFile =
+        new File(logDirectory, context.getTaskFilePrefix() + STDERR_SUFFIX);
+
+    getLogger().info("Interpreter: " + interpreter);
+    getLogger().info("Command: " + command);
+    getLogger().info("Execution directory: " + executionDirectory);
+    getLogger().info("Stdout: " + stdoutFile);
+    getLogger().info("Stderr: " + stderrFile);
+
+    return ti.execute(command, executionDirectory, tempDirectory, stdoutFile,
+        stderrFile);
+  }
+
+  /**
+   * Split the command line in list of arguments.
+   * @param commandLine the command line to parse
+   * @return a list of string arguments
+   */
+  private static final List<String> splitCommandLine(final String commandLine) {
+
+    final StringTokenizer st = new StringTokenizer(commandLine);
+    final List<String> result = new ArrayList<>(st.countTokens());
+
+    while (st.hasMoreTokens()) {
+      result.add(st.nextToken());
     }
 
     return result;
-  }
-
-  private File createStepOutput(final String suffix) {
-
-    return new File(this.stepContext.getStepOutputDirectory().toFile(),
-        this.toolName + "_" + this.toolVersion + "." + suffix);
   }
 
   //
@@ -90,59 +130,22 @@ public class ToolExecutor {
   /**
    * Constructor a new galaxy tool executor.
    * @param context the context
+   * @param interpreter the interpreter to use
    * @param commandLine the command line
    * @param toolName the tool name
    * @param toolVersion the tool version
    */
-  public ToolExecutor(final StepContext context, final String commandLine,
-      final String toolName, final String toolVersion) {
+  public ToolExecutor(final StepContext context, final ToolData toolData,
+      final String commandLine) {
 
     checkNotNull(commandLine, "commandLine is null.");
     checkNotNull(context, "Step context is null.");
 
-    this.commandLineTool = commandLine;
+    this.toolData = toolData;
+    this.commandLineTool = commandLine.trim();
     this.stepContext = context;
-    this.toolName = toolName;
-    this.toolVersion = toolVersion;
 
     execute();
   }
 
-  //
-  // Internal class
-  //
-
-  /**
-   * This internal class allow to save Process outputs.
-   * @author Laurent Jourdren
-   */
-  private static final class CopyProcessOutput extends Thread {
-
-    private final Path path;
-    private final InputStream in;
-    private final String desc;
-
-    @Override
-    public void run() {
-
-      try {
-        Files.copy(this.in, this.path, StandardCopyOption.REPLACE_EXISTING);
-      } catch (final IOException e) {
-        getLogger().warning(
-            "Error while copying " + this.desc + ": " + e.getMessage());
-      }
-
-    }
-
-    CopyProcessOutput(final InputStream in, final File file, final String desc) {
-
-      checkNotNull(in, "in argument cannot be null");
-      checkNotNull(file, "file argument cannot be null");
-      checkNotNull(desc, "desc argument cannot be null");
-
-      this.in = in;
-      this.path = file.toPath();
-      this.desc = desc;
-    }
-  }
 }

@@ -274,7 +274,7 @@ public abstract class AbstractClusterTaskScheduler extends
 
       this.context = context;
       this.taskDir = context.getTaskOutputDirectory().toFile();
-      this.taskPrefix = TaskRunner.createTaskPrefixFile(context);
+      this.taskPrefix = context.getTaskFilePrefix();
     }
   }
 

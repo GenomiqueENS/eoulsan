@@ -58,18 +58,19 @@ public abstract class AbstractResourceLoader<S> implements ResourceLoader<S> {
    * @return a resource object
    * @throws IOException if an error occurs while creating the input stream
    */
-  protected abstract InputStream getResourceAsStream(final String resourcePath)
+  protected abstract InputStream getResourceAsStream(String resourcePath)
       throws IOException;
 
   /**
    * Load a resource.
    * @param in input stream
+   * @param source source of the resource
    * @return a resource object
    * @throws IOException if an error occurs while loading the resource
    * @throws EoulsanException if an error occurs while creating the resource
    *           object
    */
-  protected abstract S load(final InputStream in) throws IOException,
+  protected abstract S load(InputStream in, String source) throws IOException,
       EoulsanException;
 
   /**
@@ -105,7 +106,7 @@ public abstract class AbstractResourceLoader<S> implements ResourceLoader<S> {
     for (String resourcePath : this.resources.values()) {
 
       try {
-        result.add(load(getResourceAsStream(resourcePath)));
+        result.add(load(getResourceAsStream(resourcePath), resourcePath));
       } catch (IOException | EoulsanException e) {
         throw new ServiceConfigurationError("Unable to load resource", e);
       }
@@ -128,7 +129,7 @@ public abstract class AbstractResourceLoader<S> implements ResourceLoader<S> {
     for (String resourcePath : this.resources.get(resourceName)) {
 
       try {
-        result.add(load(getResourceAsStream(resourcePath)));
+        result.add(load(getResourceAsStream(resourcePath), resourcePath));
       } catch (IOException | EoulsanException e) {
         throw new ServiceConfigurationError("Unable to load resource", e);
       }

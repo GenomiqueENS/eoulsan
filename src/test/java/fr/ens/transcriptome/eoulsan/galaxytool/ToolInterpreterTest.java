@@ -316,9 +316,11 @@ public class ToolInterpreterTest {
       int length = commandExpected.size();
 
       // Compare length
-      assertTrue("Number words requiered is invalid, expected "
-          + length + " obtains by PythonInterpreter "
-          + commandBuildByInterpreter.size(),
+      assertTrue(
+          "Number words requiered is invalid, expected "
+              + length + " obtains by PythonInterpreter "
+              + commandBuildByInterpreter.size() + ": "
+              + commandBuildByInterpreter,
           length == commandBuildByInterpreter.size());
 
       // Compare word by word
@@ -326,7 +328,8 @@ public class ToolInterpreterTest {
         assertEquals(
             "Word not same, expected "
                 + commandExpected.get(i) + " vs "
-                + commandBuildByInterpreter.get(i), commandExpected.get(i),
+                + commandBuildByInterpreter.get(i) + ": "
+                + commandBuildByInterpreter, commandExpected.get(i),
             commandBuildByInterpreter.get(i));
       }
     }

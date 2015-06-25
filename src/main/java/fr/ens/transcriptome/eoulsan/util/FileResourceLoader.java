@@ -73,7 +73,7 @@ public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
 
           final DataFile file = new DataFile(directory, filename);
 
-          final S resource = load(file.open());
+          final S resource = load(file.open(), file.getSource());
 
           if (resource == null) {
             throw new EoulsanException("Cannot load resource: " + file);

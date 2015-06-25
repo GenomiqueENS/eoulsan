@@ -104,7 +104,7 @@ public class TaskSerializationUtils {
     final TaskResult result = runner.run();
 
     // Get the prefix for the task files and the base dir
-    final String taskPrefix = TaskRunner.createTaskPrefixFile(context);
+    final String taskPrefix = context.getTaskFilePrefix();
     final DataFile baseDir = taskContextFile.getParent();
 
     // Save task result

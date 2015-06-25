@@ -74,7 +74,8 @@ public abstract class ClassPathResourceLoader<S> extends
                 + this.clazz.getSimpleName() + " from " + filename
                 + " resource");
 
-        final S resource = load(getResourceAsStream(resourcePath));
+        final S resource =
+            load(getResourceAsStream(resourcePath), resourcePath);
 
         if (resource == null) {
           throw new EoulsanException("Cannot load resource: " + resourcePath);

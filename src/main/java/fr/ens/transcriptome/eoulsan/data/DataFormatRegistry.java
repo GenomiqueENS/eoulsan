@@ -65,6 +65,7 @@ public class DataFormatRegistry {
   private final Set<DataFormat> formats = new HashSet<>();
   private final Map<String, DataFormat> mapFormats = new HashMap<>();
   private final Map<String, DataFormat> mapDesignDataFormat = new HashMap<>();
+  private boolean xmlServicesCurrentlyLoading;
 
   private static DataFormatRegistry instance;
 
@@ -94,8 +95,8 @@ public class DataFormatRegistry {
     }
 
     @Override
-    protected XMLDataFormat load(final InputStream in) throws IOException,
-        EoulsanException {
+    protected XMLDataFormat load(final InputStream in, final String source)
+        throws IOException, EoulsanException {
 
       return new XMLDataFormat(in);
     }
@@ -149,8 +150,8 @@ public class DataFormatRegistry {
     }
 
     @Override
-    protected XMLDataFormat load(final InputStream in) throws IOException,
-        EoulsanException {
+    protected XMLDataFormat load(final InputStream in, final String source)
+        throws IOException, EoulsanException {
 
       return new XMLDataFormat(in);
     }
@@ -592,7 +593,13 @@ public class DataFormatRegistry {
   public void reload() {
 
     registerAllClassServices();
-    registerAllXMLServices();
+
+    // Avoid to load XML formats if XML formats are currently loading
+    if (!this.xmlServicesCurrentlyLoading) {
+      this.xmlServicesCurrentlyLoading = true;
+      registerAllXMLServices();
+      this.xmlServicesCurrentlyLoading = false;
+    }
   }
 
   //
@@ -603,10 +610,13 @@ public class DataFormatRegistry {
    * Get the singleton instance of DataFormatRegistry
    * @return the DataFormatRegistry singleton
    */
-  public static DataFormatRegistry getInstance() {
+  public static synchronized DataFormatRegistry getInstance() {
 
     if (instance == null) {
       instance = new DataFormatRegistry();
+
+      // Initial loading of the formats
+      instance.reload();
     }
 
     return instance;
@@ -620,8 +630,6 @@ public class DataFormatRegistry {
    * Private constructor.
    */
   private DataFormatRegistry() {
-
-    reload();
   }
 
 }

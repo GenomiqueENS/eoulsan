@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
@@ -82,7 +84,7 @@ public final class Settings implements Serializable {
       + "cluster.scheduler.name";
 
   private static final String HADOOP_LOG_LEVEL_KEY = MAIN_PREFIX_KEY
-      + ".hadoop.log.level";
+      + "hadoop.log.level";
 
   private static final String RSERVE_ENABLED_KEY = MAIN_PREFIX_KEY
       + "rserve.enable";
@@ -118,15 +120,15 @@ public final class Settings implements Serializable {
       MAIN_PREFIX_KEY + "additional.annotation.storage.path";
 
   private static final String SEND_RESULT_MAIL_KEY = MAIN_PREFIX_KEY
-      + ".mail.send.result.mail";
+      + "mail.send.result.mail";
 
   private static final String RESULT_MAIL_KEY = MAIN_PREFIX_KEY
-      + ".mail.send.result.mail.to";
+      + "mail.send.result.mail.to";
 
   private static final String SMTP_HOST_KEY = MAIN_PREFIX_KEY
-      + ".mail.smtp.host";
+      + "mail.smtp.host";
 
-  private static final String DOCKER_URI_KEY = MAIN_PREFIX_KEY + ".docker.uri";
+  private static final String DOCKER_URI_KEY = MAIN_PREFIX_KEY + "docker.uri";
 
   private static final String ZOOKEEPER_CONNECT_STRING_KEY =
       "zookeeper.connect.string";
@@ -467,12 +469,31 @@ public final class Settings implements Serializable {
   }
 
   /**
-   * Get the Docker URI.
-   * @return the docker URI
+   * Get the Docker connection string.
+   * @return the docker connection string
    */
-  public String getDockerURI() {
+  public String getDockerConnection() {
 
     return this.properties.getProperty(DOCKER_URI_KEY);
+  }
+
+  /**
+   * Get the Docker connection URI.
+   * @return the docker connection URI
+   */
+  public URI getDockerConnectionURI() {
+
+    final String connectionString = this.properties.getProperty(DOCKER_URI_KEY);
+
+    if (connectionString == null) {
+      return null;
+    }
+
+    try {
+      return new URI(connectionString);
+    } catch (URISyntaxException e) {
+      return null;
+    }
   }
 
   /**

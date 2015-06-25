@@ -24,8 +24,19 @@
 package fr.ens.transcriptome.eoulsan.steps.galaxytool;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractCommand;
+import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractDescription;
+import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractDockerImage;
+import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractInterpreter;
+import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolID;
+import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolName;
+import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolVersion;
+import static org.python.google.common.base.Strings.emptyToNull;
+import static org.python.google.common.base.Strings.nullToEmpty;
 
-import java.io.File;
+import org.w3c.dom.Document;
+
+import com.google.common.base.Objects;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 
@@ -39,124 +50,135 @@ public class ToolData {
   private static final String DEFAULT_VERSION = "unknown";
 
   /** The tool id. */
-  private String toolID;
+  private final String toolID;
 
   /** The tool name. */
-  private String toolName;
+  private final String toolName;
 
   /** The tool version. */
-  private String toolVersion;
+  private final String toolVersion;
 
   /** The description. */
-  private String description;
+  private final String description;
 
   /** The interpreter. */
-  private String interpreter;
+  private final String interpreter;
 
-  private String cmdTagContent;
+  /** The command script. */
+  private final String commandScript;
 
-  /** The tool executable. */
-  private File toolExecutable;
+  /** The Docker image. */
+  private final String dockerImage;
 
-  public boolean isInterpreterSetting() {
+  //
+  // Getters
+  //
 
-    return getInterpreter() != null && !getInterpreter().isEmpty();
+  /**
+   * Get the tool Id.
+   * @return the tool id
+   */
+  public String getToolID() {
+    return this.toolID;
+  }
+
+  /**
+   * Get the tool name.
+   * @return the tool name
+   */
+  public String getToolName() {
+    return this.toolName;
+  }
+
+  /**
+   * Get the tool version.
+   * @return the tool version
+   */
+  public String getToolVersion() {
+    return this.toolVersion;
+  }
+
+  /**
+   * Get the tool description.
+   * @return the tool description
+   */
+  public String getDescription() {
+    return this.description;
+  }
+
+  /**
+   * Get the interpreter.
+   * @return the interpreter
+   */
+  public String getInterpreter() {
+    return this.interpreter;
+  }
+
+  /**
+   * Get the command script.
+   * @return the command script
+   */
+  public String getCommandScript() {
+    return this.commandScript;
+  }
+
+  /**
+   * Get Docker image.
+   * @return the docker image
+   */
+  public String getDockerImage() {
+    return this.dockerImage;
   }
 
   //
-  // Getters and Setters
+  // Object method
   //
 
   @Override
   public String toString() {
-    return "ToolData [toolID="
-        + toolID + ", toolName=" + toolName + ", toolVersion=" + toolVersion
-        + ", description=" + description + ", interpreter=" + interpreter
-        + ", cmdTagContent=" + cmdTagContent + "]";
-  }
 
-  public String getToolID() {
-    return toolID;
-  }
-
-  public void setToolID(final String toolID) {
-
-    this.toolID = toolID;
-  }
-
-  public String getToolName() {
-
-    return toolName;
-  }
-
-  public void setToolName(final String toolName) {
-
-    checkNotNull(toolName, "GalaxyTool name can not be null.");
-
-    this.toolName = toolName;
-  }
-
-  public String getToolVersion() {
-    return toolVersion;
-  }
-
-  public void setToolVersion(final String toolVersion) {
-
-    if (toolVersion == null || toolVersion.isEmpty()) {
-      this.toolVersion = DEFAULT_VERSION;
-    } else {
-      this.toolVersion = toolVersion;
-    }
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(final String description) {
-    this.description = description;
-  }
-
-  public String getInterpreter() {
-    return interpreter;
-  }
-
-  public void setInterpreter(final String interpreter) {
-    this.interpreter = interpreter;
-  }
-
-  public String getCmdTagContent() {
-
-    return cmdTagContent;
-  }
-
-  public String getToolExecutable() {
-    return toolExecutable.getAbsolutePath();
-  }
-
-  public void setCmdTagContent(final String cmdTagContent)
-      throws EoulsanException {
-
-    checkNotNull(cmdTagContent, "GalaxyTool command tag can not be null.");
-
-    if (cmdTagContent.isEmpty()) {
-      throw new EoulsanException("Parsing tool XML file: no command found.");
-    }
-
-    this.cmdTagContent = cmdTagContent;
+    return Objects.toStringHelper(this).add("toolID", this.toolID)
+        .add("toolName", this.toolName).add("toolVersion", this.toolVersion)
+        .add("description", this.description)
+        .add("interpreter", this.interpreter)
+        .add("dockerImage", this.dockerImage)
+        .add("commandScript", this.commandScript).toString();
   }
 
   //
   // Constructor
   //
 
-  ToolData() {
+  /**
+   * Constructor.
+   * @param document the DOM document to parse
+   * @throws EoulsanException if an error occurs while parsing the document
+   */
+  ToolData(final Document document) throws EoulsanException {
 
-    this(null);
-  }
+    checkNotNull(document, "doc argument cannot be null");
 
-  ToolData(final File toolExecutable) {
-    this.toolExecutable = toolExecutable;
+    // Set tool name
+    this.toolID = extractToolID(document);
+    this.toolName = extractToolName(document);
+    this.description = extractDescription(document);
+    this.interpreter = extractInterpreter(document);
+    this.dockerImage = emptyToNull(extractDockerImage(document));
+    this.commandScript = emptyToNull(extractCommand(document));
+
+    final String toolVersion = nullToEmpty(extractToolVersion(document));
+    this.toolVersion = "".equals(toolVersion) ? DEFAULT_VERSION : toolVersion;
+
+    if (this.toolName == null) {
+      throw new EoulsanException("GalaxyTool name can not be null");
+    }
+
+    if (this.commandScript == null) {
+      throw new EoulsanException("No command found in Galaxy tool");
+    }
+
+    // TODO check the tool id string
+
   }
 
 }

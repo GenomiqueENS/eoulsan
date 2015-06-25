@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
@@ -52,7 +51,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 /**
  * The Class GalaxyToolStep.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
 @LocalOnly
 public class GalaxyToolStep extends AbstractStep {
@@ -61,20 +60,23 @@ public class GalaxyToolStep extends AbstractStep {
   private ToolData toolData;
 
   /** The tool interpreter. */
-  private GalaxyToolInterpreter toolInterpreter;
+  private final GalaxyToolInterpreter toolInterpreter;
+
+  /** The source of the Galaxy tool. */
+  private final String source;
+
+  //
+  // Steps methods
+  //
 
   @Override
   public String getName() {
     return this.toolData.getToolName();
   }
 
-  public String getToolVersionName() {
-    return this.toolData.getToolVersion();
-  }
-
   @Override
   public Version getVersion() {
-    return Globals.APP_VERSION;
+    return new Version(this.toolData.getToolVersion());
   }
 
   @Override
@@ -87,7 +89,8 @@ public class GalaxyToolStep extends AbstractStep {
         .getInDataFormatExpected().entrySet()) {
       isEmpty = false;
 
-      builder.addPort(entry.getValue().getValidatedName(), entry.getKey(), true);
+      builder
+          .addPort(entry.getValue().getValidatedName(), entry.getKey(), true);
     }
 
     if (isEmpty) {
@@ -124,10 +127,6 @@ public class GalaxyToolStep extends AbstractStep {
 
     // Configure tool interpreter
     this.toolInterpreter.configure(stepParameters);
-
-    // Extract tool data
-    this.toolData = this.toolInterpreter.getToolData();
-
   }
 
   @Override
@@ -140,13 +139,11 @@ public class GalaxyToolStep extends AbstractStep {
         this.toolInterpreter.checkDataFormat(context),
         "GalaxyTool step, dataFormat inval between extract from analysis and setting in xml file.");
 
-    int exitValue = -1;
-    ToolExecutorResult result = null;
+    final ToolExecutorResult result;
 
     try {
-      result = this.toolInterpreter.execute(context);
-      exitValue = result.getExitValue();
 
+      result = this.toolInterpreter.execute(context);
     } catch (EoulsanException e) {
       return status.createStepResult(e,
           "Error execution tool interpreter from building tool command line : "
@@ -157,25 +154,40 @@ public class GalaxyToolStep extends AbstractStep {
     status.setDescription(this.toolInterpreter.getDescription());
 
     status.setMessage("Command line generate by python interpreter: "
-        + result.getCommandLine() + ".");
+        + result.getCommandLineAsString() + ".");
 
     // Execution script fail, create an exception
-    if (exitValue != 0) {
-
-      return status.createStepResult(null,
-          "Fail execution tool galaxy with command "
-              + result.getCommandLine() + ". Exit value: " + exitValue);
-    }
-
-    if (result.asThrowedException()) {
+    if (!result.isException()) {
       final Throwable e = result.getException();
 
       return status.createStepResult(e,
           "Error execution interrupted: " + e.getMessage());
     }
 
+    if (result.getExitValue() != 0) {
+
+      return status.createStepResult(
+          null,
+          "Fail execution tool galaxy with command "
+              + result.getCommandLine() + ". Exit value: "
+              + result.getExitValue());
+    }
+
     return status.createStepResult();
 
+  }
+
+  //
+  // Other methods
+  //
+
+  /**
+   * Get the source the Galaxy tool.
+   * @return the source of the Galaxy tool
+   */
+  public String getSource() {
+
+    return this.source;
   }
 
   //
@@ -189,8 +201,23 @@ public class GalaxyToolStep extends AbstractStep {
    */
   public GalaxyToolStep(final InputStream toolXMLis) throws EoulsanException {
 
-    this.toolInterpreter =
-        new GalaxyToolInterpreter(toolXMLis);
+    this(toolXMLis, null);
+  }
+
+  /**
+   * Constructor.
+   * @param toolXMLis the input stream on tool xml file
+   * @param source source of the Galaxy tool
+   * @throws EoulsanException the Eoulsan exception
+   */
+  public GalaxyToolStep(final InputStream toolXMLis, final String source)
+      throws EoulsanException {
+
+    this.toolInterpreter = new GalaxyToolInterpreter(toolXMLis);
+    this.source = source == null ? "Undefined source" : source.trim();
+
+    // Extract tool data
+    this.toolData = this.toolInterpreter.getToolData();
   }
 
 }

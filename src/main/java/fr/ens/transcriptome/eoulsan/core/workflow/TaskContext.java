@@ -353,6 +353,16 @@ public class TaskContext implements StepContext, Serializable {
     return EoulsanRuntime.getRuntime().getTempDirectory();
   }
 
+  /**
+   * Create the prefix of a related task file.
+   * @param context the context
+   * @return a string with the prefix of the task file
+   */
+  public String getTaskFilePrefix() {
+
+    return getStep().getId() + "_context#" + getId();
+  }
+
   //
   // Package methods
   //
