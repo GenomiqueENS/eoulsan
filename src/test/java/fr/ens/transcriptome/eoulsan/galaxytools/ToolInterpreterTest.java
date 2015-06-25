@@ -21,7 +21,7 @@
  *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
-package fr.ens.transcriptome.eoulsan.galaxytool;
+package fr.ens.transcriptome.eoulsan.galaxytools;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -46,9 +46,9 @@ import com.google.common.base.Splitter;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeDebug;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.GalaxyToolInterpreter;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.ToolData;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.ToolPythonInterpreter;
+import fr.ens.transcriptome.eoulsan.galaxytools.GalaxyToolInterpreter;
+import fr.ens.transcriptome.eoulsan.galaxytools.ToolData;
+import fr.ens.transcriptome.eoulsan.galaxytools.ToolPythonInterpreter;
 import fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.ToolElement;
 
 /**

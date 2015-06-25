@@ -1,4 +1,4 @@
-package fr.ens.transcriptome.eoulsan.steps.galaxytool;
+package fr.ens.transcriptome.eoulsan.galaxytools;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

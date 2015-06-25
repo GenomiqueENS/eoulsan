@@ -42,9 +42,9 @@ import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.GalaxyToolInterpreter;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.ToolData;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.ToolExecutorResult;
+import fr.ens.transcriptome.eoulsan.galaxytools.GalaxyToolInterpreter;
+import fr.ens.transcriptome.eoulsan.galaxytools.ToolData;
+import fr.ens.transcriptome.eoulsan.galaxytools.ToolExecutorResult;
 import fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.ToolElement;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
