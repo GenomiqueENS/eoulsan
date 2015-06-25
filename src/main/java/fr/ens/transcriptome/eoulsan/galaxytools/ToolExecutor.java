@@ -35,6 +35,10 @@ import java.util.StringTokenizer;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
+import fr.ens.transcriptome.eoulsan.galaxytools.executorinterpreters.DefaultExecutorInterpreter;
+import fr.ens.transcriptome.eoulsan.galaxytools.executorinterpreters.DockerExecutorInterpreter;
+import fr.ens.transcriptome.eoulsan.galaxytools.executorinterpreters.ExecutorInterpreter;
+import fr.ens.transcriptome.eoulsan.galaxytools.executorinterpreters.GenericExecutorInterpreter;
 
 /**
  * The class define an executor on tool set in XML file.
@@ -62,22 +66,22 @@ public class ToolExecutor {
     final String interpreter = this.toolData.getInterpreter();
 
     // Define the interpreter to use
-    final ToolExecutorInterpreter ti;
+    final ExecutorInterpreter ti;
     switch (interpreter) {
 
     case "":
-      ti = new DefaultToolExecutorInterpreter();
+      ti = new DefaultExecutorInterpreter();
       break;
 
     case "docker":
       ti =
-          new DockerToolExecutorInterpreter(EoulsanRuntime.getSettings()
+          new DockerExecutorInterpreter(EoulsanRuntime.getSettings()
               .getDockerConnectionURI(), this.toolData.getDockerImage(),
               EoulsanRuntime.getSettings().getTempDirectoryFile());
       break;
 
     default:
-      ti = new GenericToolExecutorInterpreter(interpreter);
+      ti = new GenericExecutorInterpreter(interpreter);
       break;
     }
 

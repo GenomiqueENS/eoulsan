@@ -1,8 +1,8 @@
-package fr.ens.transcriptome.eoulsan.galaxytools;
+package fr.ens.transcriptome.eoulsan.galaxytools.executorinterpreters;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.transcriptome.eoulsan.galaxytools.AbstractToolExecutorInterpreter.TMP_DIR_ENV_VARIABLE;
+import static fr.ens.transcriptome.eoulsan.galaxytools.executorinterpreters.AbstractExecutorInterpreter.TMP_DIR_ENV_VARIABLE;
 import static java.util.Collections.singletonList;
 import static org.python.google.common.base.Preconditions.checkArgument;
 
@@ -25,6 +25,7 @@ import com.spotify.docker.client.messages.ContainerInfo;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.Image;
 
+import fr.ens.transcriptome.eoulsan.galaxytools.ToolExecutorResult;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -33,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class DockerToolExecutorInterpreter implements ToolExecutorInterpreter {
+public class DockerExecutorInterpreter implements ExecutorInterpreter {
 
   private final URI dockerConnection;
   private final String dockerImage;
@@ -295,7 +296,7 @@ public class DockerToolExecutorInterpreter implements ToolExecutorInterpreter {
    * @param dockerImage Docker image
    * @param temporaryDirectory temporary directory
    */
-  public DockerToolExecutorInterpreter(final URI dockerConnection,
+  public DockerExecutorInterpreter(final URI dockerConnection,
       final String dockerImage, final File temporaryDirectory) {
 
     checkNotNull(dockerConnection, "dockerConnection argument cannot be null");

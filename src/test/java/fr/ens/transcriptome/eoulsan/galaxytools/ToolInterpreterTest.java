@@ -46,7 +46,6 @@ import com.google.common.base.Splitter;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeDebug;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.galaxytools.GalaxyToolInterpreter;
 import fr.ens.transcriptome.eoulsan.galaxytools.ToolData;
 import fr.ens.transcriptome.eoulsan.galaxytools.ToolPythonInterpreter;
 import fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.ToolElement;

@@ -1,4 +1,4 @@
-package fr.ens.transcriptome.eoulsan.galaxytools;
+package fr.ens.transcriptome.eoulsan.galaxytools.executorinterpreters;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanRuntime.getSettings;
@@ -11,14 +11,13 @@ import java.util.List;
 import com.google.common.base.Splitter;
 
 /**
- * This class define a generic tool executor. The path of the executor is first
- * searched in Eoulsan settings, and not set, it will be search in the system
- * PATH.
+ * This class define a generic executor interpreter. The path of the executor is
+ * first searched in Eoulsan settings, and not set, it will be search in the
+ * system PATH.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class GenericToolExecutorInterpreter extends
-    AbstractToolExecutorInterpreter {
+public class GenericExecutorInterpreter extends AbstractExecutorInterpreter {
 
   private static final String GALAXY_TOOL_INTERPRETER_SETTING_PREFIX =
       "main.galaxy.tool.interpreter.";
@@ -111,7 +110,7 @@ public class GenericToolExecutorInterpreter extends
    * Constructor.
    * @param interpreterName the name of the interpreter
    */
-  public GenericToolExecutorInterpreter(final String interpreterName) {
+  public GenericExecutorInterpreter(final String interpreterName) {
 
     checkNotNull(interpreterName, "interpreterName argument cannot be null");
 

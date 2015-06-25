@@ -1,14 +1,16 @@
-package fr.ens.transcriptome.eoulsan.galaxytools;
+package fr.ens.transcriptome.eoulsan.galaxytools.executorinterpreters;
 
 import java.io.File;
 import java.util.List;
+
+import fr.ens.transcriptome.eoulsan.galaxytools.ToolExecutorResult;
 
 /**
  * This interface define a executor interpreter for Galaxy tools.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public interface ToolExecutorInterpreter {
+public interface ExecutorInterpreter {
 
   /**
    * Get the name of the interpreter.
