@@ -7,8 +7,11 @@ import static java.util.Collections.singletonList;
 import static org.python.google.common.base.Preconditions.checkArgument;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -18,16 +21,19 @@ import java.util.Set;
 import com.google.common.base.Objects;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.DockerClient.LogsParameter;
 import com.spotify.docker.client.DockerException;
+import com.spotify.docker.client.LogMessage;
+import com.spotify.docker.client.LogStream;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.ContainerInfo;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.Image;
 
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.galaxytools.ToolExecutorResult;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define a Docker executor interpreter.
@@ -59,7 +65,7 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
   @Override
   public ToolExecutorResult execute(final List<String> commandLine,
       final File executionDirectory, final File temporaryDirectory,
-      final File stdoutFile, File stderrFile) {
+      final File stdoutFile, final File stderrFile) {
 
     checkNotNull(commandLine, "commandLine argument cannot be null");
     checkNotNull(executionDirectory,
@@ -82,8 +88,7 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
           "Configure container, command to execute: " + commandLine);
 
       final ContainerConfig.Builder builder =
-          ContainerConfig.builder().image(dockerImage)
-              .cmd(convertCommand(commandLine, stdoutFile, stderrFile));
+          ContainerConfig.builder().image(dockerImage).cmd(commandLine);
 
       // Set the working directory
       builder.workingDir(executionDirectory.getAbsolutePath());
@@ -110,11 +115,17 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
           dockerClient.createContainer(builder.build());
 
       // Get container id
-      String containerId = creation.id();
+      final String containerId = creation.id();
 
       // Start container
       getLogger().fine("Start of the Docker container: " + containerId);
       dockerClient.startContainer(containerId, hostConfig);
+
+      // Redirect stdout and stderr
+      final LogStream logStream =
+          dockerClient.logs(containerId, LogsParameter.FOLLOW,
+              LogsParameter.STDERR, LogsParameter.STDOUT);
+      redirect(logStream, stdoutFile, stderrFile);
 
       // Wait the end of the container
       getLogger().fine("Wait the end of the Docker container: " + containerId);
@@ -170,46 +181,6 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
   }
 
   /**
-   * Convert command to sh command if needed.
-   * @param command the command to convert
-   * @param stdout the stdout file to use
-   * @return a converted command
-   */
-  private List<String> convertCommand(final List<String> command,
-      final File stdout, final File stderr) {
-
-    checkNotNull(command, "command argument cannot be null");
-
-    if (stdout == null) {
-      return command;
-    }
-
-    List<String> result = new ArrayList<>();
-    result.add("sh");
-    result.add("-c");
-
-    final StringBuilder sb = new StringBuilder();
-    boolean first = true;
-    for (String c : command) {
-
-      if (first) {
-        sb.append(' ');
-      }
-      sb.append(StringUtils.bashEscaping(c));
-    }
-
-    sb.append(" > ");
-    sb.append(stdout.getAbsolutePath());
-
-    sb.append(" 2> ");
-    sb.append(stderr.getAbsolutePath());
-
-    result.add(sb.toString());
-
-    return result;
-  }
-
-  /**
    * Create Docker binds.
    * @param executionDirectory execution directory
    * @param files files to binds
@@ -239,6 +210,52 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
     builder.binds(new ArrayList<>(binds));
 
     return builder.build();
+  }
+
+  /**
+   * Redirect the outputs of the container to files.
+   * @param logStream the log stream
+   * @param stdout stdout output file
+   * @param stderr stderr output file
+   */
+  private static void redirect(final LogStream logStream, final File stdout,
+      final File stderr) {
+
+    final Runnable r = new Runnable() {
+
+      @Override
+      public void run() {
+
+        try (WritableByteChannel stdoutChannel =
+            Channels.newChannel(new FileOutputStream(stderr));
+            WritableByteChannel stderrChannel =
+                Channels.newChannel(new FileOutputStream(stdout))) {
+
+          for (LogMessage message; logStream.hasNext();) {
+
+            message = logStream.next();
+            switch (message.stream()) {
+
+            case STDOUT:
+              stdoutChannel.write(message.content());
+              break;
+
+            case STDERR:
+              stderrChannel.write(message.content());
+              break;
+
+            case STDIN:
+            default:
+              break;
+            }
+          }
+        } catch (IOException e) {
+          EoulsanLogger.getLogger().severe(e.getMessage());
+        }
+      }
+    };
+
+    new Thread(r).start();
   }
 
   //
