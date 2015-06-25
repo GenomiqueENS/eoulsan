@@ -56,8 +56,8 @@ public class ExperimentMetadata extends AbstractMetadata implements
    * Get the skip option.
    * @return the skip option
    */
-  public String getSkip() {
-    return get(SKIP_KEY);
+  public boolean isSkip() {
+    return getAsBoolean(SKIP_KEY);
   }
 
   /**
@@ -124,8 +124,8 @@ public class ExperimentMetadata extends AbstractMetadata implements
    * Set the skip option.
    * @param newSkip the new skip option
    */
-  public void setSkip(String newSkip) {
-    set(SKIP_KEY, newSkip);
+  public void setSkip(boolean skip) {
+    set(SKIP_KEY, "" + skip);
   }
 
   /**

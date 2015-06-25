@@ -60,6 +60,10 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public class DEseq2Executor {
 
+  private static final String DEFAULT_R_LANG = "C";
+  private static final String LANG_ENVIRONMENT_VARIABLE = "LANG";
+
+  private static final String CONDITION_COLUMN = "Condition";
   private static final String REFERENCE_COLUMN_NAME = "Reference";
   private static final String REFERENCE_EXP_MD_KEY = "reference";
 
@@ -104,7 +108,7 @@ public class DEseq2Executor {
   private final String model;
   private final boolean contrast;
   private final boolean buildContrast;
-  private final String designFile;
+ // private final String designFile;
   private final boolean expHeader = true;
 
   // Files and file names
@@ -116,6 +120,8 @@ public class DEseq2Executor {
   private final File contrastFile;
   private final File outputDir;
   private final File tempDir;
+
+  private final String stepId;
 
   //
   // Enums
@@ -391,8 +397,7 @@ public class DEseq2Executor {
 
     try (Writer bw = new FileWriter(comparisonFile)) {
 
-      String comparisons = experiment.getMetadata().getComparison();
-      for (String c : comparisons.split(";")) {
+      for (String c : experiment.getMetadata().getComparison().split(";")) {
         String[] splitC = c.split(":");
         bw.append(splitC[0]);
         bw.append(TAB_SEPARATOR);
@@ -400,6 +405,7 @@ public class DEseq2Executor {
         bw.append(NEWLINE);
       }
     }
+
   }
 
   /**
@@ -411,7 +417,7 @@ public class DEseq2Executor {
     if (this.buildContrast) {
 
       return asList(this.tempDir + File.separator + BUILD_CONTRAST_SCRIPT,
-          designFile, model, comparisonName, contrastName);
+          deseq2DesignName, model, comparisonName, contrastName, stepId + "_");
     }
 
     return Collections.emptyList();
@@ -431,7 +437,7 @@ public class DEseq2Executor {
     // Define contrast file
     if (contrast) {
       // add the default name of the contrast file if not an other is define
-      command.add(contrastName);
+      command.add(booleanParameter(contrast));
     } else {
       // add FALSE if the contrast parameter is at false
       command.add(booleanParameter(false));
@@ -440,7 +446,7 @@ public class DEseq2Executor {
     command.addAll(asList(deseq2DesignName, model, expName,
         booleanParameter(expHeader), sizeFactorsType.toDESeq2Value(),
         fitType.toDESeq2Value(), statisticTest.toDESeq2Value(),
-        contrastFile.toString()));
+        contrastFile.toString(), stepId + "_"));
 
     return command;
   }
@@ -477,12 +483,20 @@ public class DEseq2Executor {
       }
     }
 
+    // Check if the column Condition is missing for the experiment
+    if (!getExperimentSampleAllMetadataKeys(experiment).contains(
+        CONDITION_COLUMN)
+        && !getAllSamplesMetadataKeys(design).contains(CONDITION_COLUMN)) {
+      throw new EoulsanException("Condition column missing for experiment: "
+          + expName);
+    }
+
     // Write the deseq2 design
     writeDeseq2Design();
 
     // Create the deseq2 log file, delete the deseq2 log file if already exist
-
-    final File logFile = new File(this.outputDir, this.expName + LOG_SUFFIX);
+    final File logFile =
+        new File(this.outputDir, this.stepId + "_" + this.expName + LOG_SUFFIX);
     if (logFile.exists()) {
       if (!logFile.delete()) {
         getLogger().warning(
@@ -493,16 +507,18 @@ public class DEseq2Executor {
     // Build the contrast file
     if (buildContrast) {
 
+      if (!experiment.getMetadata().containsComparison()) {
+        throw new EoulsanException(
+            "No comparison defined to build the constrasts in experiment: "
+                + expName);
+      }
+
       // Write the comparison file from the Eoulsan design (experiment metadata)
       writeComparison();
 
-      // Run buildContrast
-      final ProcessBuilder builder =
-          new ProcessBuilder(createBuidContrastCommandLine())
-              .directory(this.outputDir).redirectErrorStream(true)
-              .redirectOutput(Redirect.to(logFile));
-
-      executeAndWaitRScript(builder, "build constrast",
+      // Run buildContrast.R
+      executeAndWaitRScript(createBuidContrastCommandLine(), this.outputDir,
+          logFile, false, "build constrast",
           "Error while executing build constrast");
     }
 
@@ -510,13 +526,8 @@ public class DEseq2Executor {
     if (normDiffana) {
 
       // Run normDiffana.R
-      final ProcessBuilder builder =
-          new ProcessBuilder(createNormDiffanaCommandLine())
-              .directory(this.outputDir).redirectErrorStream(true)
-              .redirectOutput(Redirect.appendTo(logFile));
-
-      executeAndWaitRScript(builder,
-          "DEseq2 normalization and differential analysis",
+      executeAndWaitRScript(createNormDiffanaCommandLine(), this.outputDir,
+          logFile, true, "DEseq2 normalization and differential analysis",
           "Error while executing normalization and differential analysis.");
     }
 
@@ -533,17 +544,32 @@ public class DEseq2Executor {
    * @param errorMessage, the error message
    * @throws EoulsanException if the wait fails
    */
-  private void executeAndWaitRScript(final ProcessBuilder processBuilder,
+  private void executeAndWaitRScript(final List<String> command,
+      final File outputDir, final File logFile, final boolean appendLogFile,
       final String description, final String errorMessage)
       throws EoulsanException {
 
+    final ProcessBuilder builder =
+        new ProcessBuilder(command).directory(this.outputDir)
+            .redirectErrorStream(true);
+
+    // Configure the log file
+    if (appendLogFile) {
+      builder.redirectOutput(Redirect.appendTo(logFile));
+    } else {
+      builder.redirectOutput(Redirect.to(logFile));
+    }
+
+    // Set the LANG to C
+    builder.environment().put(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG);
+
     // message for eoulsan.log
     getLogger().info(
-        "Step diffana: run " + description + ": " + processBuilder.command());
+        "Step diffana: run " + description + ": " + builder.command());
 
     try {
 
-      final Process process = processBuilder.start();
+      final Process process = builder.start();
 
       if (process.waitFor() != 0) {
         throw new EoulsanException(errorMessage);
@@ -609,6 +635,7 @@ public class DEseq2Executor {
 
   /**
    * Public constructor.
+   * @param stepId the step id
    * @param design, the Eoulsan design
    * @param experiment the experiment
    * @param sampleFiles, the list of expression files
@@ -622,10 +649,11 @@ public class DEseq2Executor {
    * @param fitType, fitType DESeq2 option
    * @param statisticTest, statisticTest DESeq2 option
    */
-  public DEseq2Executor(final Design design, final Experiment experiment,
-      final Map<String, File> sampleFiles, final File outputDir,
-      final File tempDir, final boolean normFig, final boolean diffanaFig,
-      final boolean normDiffana, final boolean diffana,
+  public DEseq2Executor(final String stepId, final Design design,
+      final Experiment experiment, final Map<String, File> sampleFiles,
+      final File outputDir, final File tempDir, final boolean normFig,
+      final boolean diffanaFig, final boolean normDiffana,
+      final boolean diffana,
       final DEseq2Executor.SizeFactorsType sizeFactorsType,
       final DEseq2Executor.FitType fitType,
       final DEseq2Executor.StatisticTest statisticTest) {
@@ -648,11 +676,15 @@ public class DEseq2Executor {
     this.outputDir = outputDir;
     this.tempDir = tempDir;
 
-    this.deseq2DesignName = expName + DESEQ_DESIGN_FILE_SUFFIX;
-    this.comparisonName = expName + COMPARISON_FILE_SUFFIX;
+    this.stepId = stepId;
+
+    this.deseq2DesignName = this.stepId + "_" + expName + DESEQ_DESIGN_FILE_SUFFIX;
+    this.comparisonName = this.stepId + "_" + expName + COMPARISON_FILE_SUFFIX;
     this.contrastName = expName + CONTRAST_FILE_SUFFIX;
-    this.deseq2DesignFile = new File(outputDir, deseq2DesignName);
-    this.comparisonFile = new File(outputDir, comparisonName);
+    this.deseq2DesignFile =
+        new File(outputDir,  deseq2DesignName);
+    this.comparisonFile =
+        new File(outputDir, comparisonName);
 
     ExperimentMetadata expMD = experiment.getMetadata();
 
@@ -680,17 +712,11 @@ public class DEseq2Executor {
     }
 
     // Get designFile option
-    if (expMD.containsDesignFile()) {
-      this.designFile = expMD.getDesignFile();
-    } else {
-      this.designFile = experiment.getName() + DESEQ_DESIGN_FILE_SUFFIX;
-    }
-
-    // Get designFile option
     if (expMD.containsContrastFile()) {
-      this.contrastFile = new File(outputDir, expMD.getContrastFile());
+      this.contrastFile =
+          new File(outputDir, stepId + "_" + expMD.getContrastFile());
     } else {
-      this.contrastFile = new File(outputDir, contrastName);
+      this.contrastFile = new File(outputDir, stepId + "_" + contrastName);
     }
 
     // Workflow options for DEseq2

@@ -30,7 +30,7 @@ import static fr.ens.transcriptome.eoulsan.design.DesignUtils.getExperimentSampl
 import static fr.ens.transcriptome.eoulsan.design.io.Eoulsan2DesignReader.DOT_SEPARATOR;
 import static fr.ens.transcriptome.eoulsan.design.io.Eoulsan2DesignReader.EQUAL_SEPARATOR;
 import static fr.ens.transcriptome.eoulsan.design.io.Eoulsan2DesignReader.EXPERIMENT_FIELD_PREFIX;
-import static fr.ens.transcriptome.eoulsan.design.io.Eoulsan2DesignReader.PROJECT_NAME_SUFFIX;
+import static fr.ens.transcriptome.eoulsan.design.io.Eoulsan2DesignReader.EXPERIMENT_NAME_SUFFIX;
 import static fr.ens.transcriptome.eoulsan.design.io.Eoulsan2DesignReader.SAMPLE_ID_FIELDNAME;
 import static fr.ens.transcriptome.eoulsan.design.io.Eoulsan2DesignReader.SAMPLE_NAME_FIELDNAME;
 import static fr.ens.transcriptome.eoulsan.design.io.Eoulsan2DesignReader.TAB_SEPARATOR;
@@ -105,7 +105,7 @@ public class Eoulsan2DesignWriter implements DesignWriter {
     for (Experiment e : design.getExperiments()) {
       final String expId = e.getId();
       bw.append(EXPERIMENT_FIELD_PREFIX
-          + expId + DOT_SEPARATOR + PROJECT_NAME_SUFFIX + EQUAL_SEPARATOR
+          + expId + DOT_SEPARATOR + EXPERIMENT_NAME_SUFFIX + EQUAL_SEPARATOR
           + e.getName() + NEWLINE);
       for (Map.Entry<String, String> m : e.getMetadata().entrySet()) {
         bw.append(EXPERIMENT_FIELD_PREFIX + expId + DOT_SEPARATOR + m.getKey());

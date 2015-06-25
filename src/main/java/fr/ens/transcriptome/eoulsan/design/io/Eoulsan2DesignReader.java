@@ -58,7 +58,7 @@ public class Eoulsan2DesignReader implements DesignReader {
   static final String SAMPLE_ID_FIELDNAME = "SampleId";
   static final String SAMPLE_NAME_FIELDNAME = "SampleName";
   static final String EXPERIMENT_FIELD_PREFIX = "Exp.";
-  static final String PROJECT_NAME_SUFFIX = "projectName";
+  static final String EXPERIMENT_NAME_SUFFIX = "name";
 
   static final String DESIGN_FORMAT_VERSION_METADATA_KEY =
       "DesignFormatVersion";
@@ -144,7 +144,7 @@ public class Eoulsan2DesignReader implements DesignReader {
 
     }
 
-    if (PROJECT_NAME_SUFFIX.equals(expKey)) {
+    if (EXPERIMENT_NAME_SUFFIX.equals(expKey)) {
 
       // Set for experiment name
       design.getExperiment(expId).setName(value);

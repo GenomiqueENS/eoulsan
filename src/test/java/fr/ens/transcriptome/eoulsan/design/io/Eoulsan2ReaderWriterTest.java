@@ -70,10 +70,10 @@ public class Eoulsan2ReaderWriterTest {
     ExperimentMetadata exp1MD = exp1.getMetadata();
     ExperimentMetadata exp2MD = exp2.getMetadata();
 
-    exp1MD.setSkip("false");
+    exp1MD.setSkip(false);
     exp1MD.setReference("sample1");
     exp1MD.setModel("~type+day+type:day");
-    exp2MD.setSkip("false");
+    exp2MD.setSkip(false);
     exp2MD.setReference("false");
     exp1MD.setModel("~Condition");
 

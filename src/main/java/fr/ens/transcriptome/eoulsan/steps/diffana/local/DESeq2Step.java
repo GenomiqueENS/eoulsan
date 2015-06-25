@@ -49,6 +49,7 @@ import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Experiment;
+import fr.ens.transcriptome.eoulsan.design.ExperimentMetadata;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.diffana.DEseq2Executor;
 import fr.ens.transcriptome.eoulsan.steps.diffana.DEseq2Executor.FitType;
@@ -197,6 +198,8 @@ public class DESeq2Step extends AbstractStep {
       sampleFiles.put(d.getName(), d.getDataFile().toFile());
     }
 
+    String stepId = context.getCurrentStep().getId();
+
     try {
 
       // Extract R scripts
@@ -204,10 +207,16 @@ public class DESeq2Step extends AbstractStep {
 
       for (Experiment e : design.getExperiments()) {
 
+        // Do nothing if the experiment is skipped
+        final ExperimentMetadata emd = e.getMetadata();
+        if (emd.containsSkip() && emd.isSkip()) {
+          continue;
+        }
+
         // run DEseq2
-        new DEseq2Executor(design, e, sampleFiles, outputDir, tempDir, normFig,
-            diffanaFig, normDiffana, diffana, sizeFactorsType, fitType,
-            statisticTest).runDEseq2();
+        new DEseq2Executor(stepId, design, e, sampleFiles, outputDir, tempDir,
+            normFig, diffanaFig, normDiffana, diffana, sizeFactorsType,
+            fitType, statisticTest).runDEseq2();
 
       }
     } catch (IOException | EoulsanException e) {

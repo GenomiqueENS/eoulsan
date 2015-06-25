@@ -43,10 +43,13 @@ public class ExperimentMetadataTest {
     ExperimentMetadata em = d.getExperiment("1").getMetadata();
 
     // test getSkip
-    assertNull(em.getSkip());
+    assertFalse(em.containsSkip());
     // test setSkip
-    em.setSkip("toto");
-    assertEquals("toto", em.getSkip());
+    em.setSkip(false);
+    assertTrue(em.containsSkip());
+    assertFalse(em.isSkip());
+    em.setSkip(true);
+    assertTrue(em.isSkip());
     // test containsSkip
     assertTrue(em.containsSkip());
 
