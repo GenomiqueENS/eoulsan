@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 /*
  *                  Eoulsan development code
  *
@@ -36,7 +36,7 @@
 	<bannerRight>
 		<name>Eoulsan</name>
 		<src>images/eoulsan.png</src>
-		<href>@@@WEBSITE@@@</href>	
+		<href>@@@WEBSITE@@@</href>
 	</bannerRight>
 	<body>
 		<links>
@@ -67,7 +67,7 @@
 			<item name="Design file v2" href="/Eoulsan2designfile.html"/>
 			<item name="Workflow file" href="/workflowfile.html"/>
 			<item name="Configuration file" href="/conffile.html"/>
-			
+
 			<item name="Built-in steps" href="/steps.html" collapse="true">
 				<item name="Create mapper index" href="/step-createmapperindex.html" />
 				<item name="Create STAR mapper index" href="/step-createstarmapperindex.html" />
@@ -82,6 +82,7 @@
 				<item name="Normalization" href="/step-normalization.html" />
 				<item name="Differential analysis" href="/step-diffana.html" />
 				<item name="Differential analysis annotation" href="/step-diffanaresultsannotation.html" />
+				<item name="Differential analysis with DESeq2" href="/step-DESeq2.html" />
 				<item name="Splitters and mergers" href="/step-splitters-mergers.html" />
 				<item name="Technical replicates merger" href="/step-technical-replicates-mergers.html" />
 				<item name="Shell" href="step-shell.html" />
@@ -112,7 +113,7 @@
 			<item name="Compiling" href="/compiling.html"/>
 			<item name="Developer Wiki" href="https://github.com/GenomicParisCentre/eoulsan/wiki" />
 			<item name="Eoulsan on GitHub" href="https://github.com/GenomicParisCentre/eoulsan" />
-			<item name="Javadoc" href="/apidocs/index.html" />			
+			<item name="Javadoc" href="/apidocs/index.html" />
 		</menu>
 
 		<!--menu ref="reports"/-->
