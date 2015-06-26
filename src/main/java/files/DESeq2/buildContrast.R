@@ -7,6 +7,42 @@
 ##
 ## Author : Xavier Bauquet
 ###############################################################################
+# -----------------------------------------------------------------------------
+# betaFactorGenerator
+#
+#	Generate the list of beta factors
+#
+#	input: design -> data frame (the design file)
+#		   deseqModel -> character (the DESeq2 model)
+#	outup: Bfactors -> list (list of beta factors)
+# -----------------------------------------------------------------------------
+betaFactorGenerator <- function(design, deseqModel){
+	cat("2 - Artificial count matrix building\n")
+
+	# Creation of the random count matrix for running the DESeq2 minimal
+	# script to pick up the B factors
+	# Multiplication by 3 are present for the 3 row of the matrix
+	forCounts <- rep(1, (nrow(design)*3))
+
+	for (i in 1:(nrow(design)*3)){
+		forCounts[i] <- round(runif(1, min=1, max=1000000000), digits=0)
+	}
+
+	counts <- matrix(data=forCounts, nrow=3)
+
+	# -----------------------------------------------------------------------------
+		cat("3 - DESeq2 function runing for B factors names\n")
+	# DESeq2 minimal script for pick up the B factors
+	dds <- DESeqDataSetFromMatrix(countData=counts, colData=design,
+		design=as.formula(deseqModel))
+	dds <- estimateSizeFactors(dds)
+	dds <- estimateDispersions(dds)
+	dds <- nbinomWaldTest(dds, modelMatrixType="expanded")
+	# B factors
+	Bfactors <- resultsNames(dds)
+	return(Bfactors)
+}
+
 
 ###############################################################################
 ##
@@ -66,30 +102,15 @@ design <- read.table(designPath, sep="\t", header=T, dec=".",
 	stringsAsFactors=F)
 
 # -----------------------------------------------------------------------------
-    cat("2 - Artificial count matrix building\n")
 
-# Creation of the random count matrix for running the DESeq2 minimal
-# script to pick up the B factors
-# Multiplication by 3 are present for the 3 row of the matrix
-forCounts <- rep(1, (nrow(design)*3))
-
-for (i in 1:(nrow(design)*3)){
-    forCounts[i] <- round(runif(1, min=1, max=1000000000), digits=0)
-}
-
-counts <- matrix(data=forCounts, nrow=3)
-
-# -----------------------------------------------------------------------------
-    cat("3 - DESeq2 function runing for B factors names\n")
-# DESeq2 minimal script for pick up the B factors
-dds <- DESeqDataSetFromMatrix(countData=counts, colData=design,
-	design=as.formula(deseqModel))
-dds <- estimateSizeFactors(dds)
-dds <- estimateDispersions(dds)
-dds <- nbinomWaldTest(dds, modelMatrixType="expanded")
-# B factors
-Bfactors <- resultsNames(dds)
-
+	# Try if the random matrix is good to generate the beta factors,
+	# if not try up to 3 times
+	Bfactors <- NULL
+	attempt <- 0
+	while( is.null(Bfactors) && attempt <= 3 ) {
+		attempt <- attempt + 1
+		try( Bfactors <- betaFactorGenerator(design, deseqModel) )
+	}
 
     cat("\n###############################################################################\n")
     cat("Beta factors:\n")
