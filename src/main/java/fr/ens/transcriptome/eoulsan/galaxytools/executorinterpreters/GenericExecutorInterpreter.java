@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import com.google.common.base.Splitter;
 
@@ -41,14 +42,19 @@ public class GenericExecutorInterpreter extends AbstractExecutorInterpreter {
   }
 
   @Override
-  public List<String> createCommandLine(final List<String> arguments) {
+  public List<String> createCommandLine(final String arguments) {
 
     checkNotNull(arguments, "arguments argument cannot be null");
 
     final List<String> result = new ArrayList<String>();
 
     result.add(getInterpreterPath().getAbsolutePath());
-    result.addAll(arguments);
+
+    final StringTokenizer st = new StringTokenizer(arguments);
+
+    while (st.hasMoreTokens()) {
+      result.add(st.nextToken());
+    }
 
     return Collections.unmodifiableList(result);
   }
@@ -66,9 +72,8 @@ public class GenericExecutorInterpreter extends AbstractExecutorInterpreter {
   private static File getInterpreterPathFromConfiguration(
       final String interpreterName) {
 
-    final String value =
-        getSettings().getSetting(
-            GALAXY_TOOL_INTERPRETER_SETTING_PREFIX + interpreterName);
+    final String value = getSettings()
+        .getSetting(GALAXY_TOOL_INTERPRETER_SETTING_PREFIX + interpreterName);
 
     return value != null ? new File(value) : null;
   }

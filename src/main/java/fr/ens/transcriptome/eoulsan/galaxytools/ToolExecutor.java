@@ -28,9 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -52,7 +50,7 @@ public class ToolExecutor {
 
   private final StepContext stepContext;
   private final ToolData toolData;
-  private final String commandLineTool;
+  private final String commandLine;
 
   /**
    * Execute a tool.
@@ -60,7 +58,7 @@ public class ToolExecutor {
    */
   ToolExecutorResult execute() {
 
-    checkArgument(!this.commandLineTool.isEmpty(),
+    checkArgument(!this.commandLine.isEmpty(),
         "Command line for Galaxy tool is empty");
 
     final String interpreter = this.toolData.getInterpreter();
@@ -74,10 +72,10 @@ public class ToolExecutor {
       break;
 
     case "docker":
-      ti =
-          new DockerExecutorInterpreter(EoulsanRuntime.getSettings()
-              .getDockerConnectionURI(), this.toolData.getDockerImage(),
-              EoulsanRuntime.getSettings().getTempDirectoryFile());
+      ti = new DockerExecutorInterpreter(
+          EoulsanRuntime.getSettings().getDockerConnectionURI(),
+          this.toolData.getDockerImage(),
+          EoulsanRuntime.getSettings().getTempDirectoryFile());
       break;
 
     default:
@@ -86,8 +84,7 @@ public class ToolExecutor {
     }
 
     // Create the command line
-    final List<String> command =
-        ti.createCommandLine(splitCommandLine(this.commandLineTool));
+    final List<String> command = ti.createCommandLine(this.commandLine);
 
     final TaskContext context = (TaskContext) this.stepContext;
 
@@ -110,23 +107,6 @@ public class ToolExecutor {
         stderrFile);
   }
 
-  /**
-   * Split the command line in list of arguments.
-   * @param commandLine the command line to parse
-   * @return a list of string arguments
-   */
-  private static final List<String> splitCommandLine(final String commandLine) {
-
-    final StringTokenizer st = new StringTokenizer(commandLine);
-    final List<String> result = new ArrayList<>(st.countTokens());
-
-    while (st.hasMoreTokens()) {
-      result.add(st.nextToken());
-    }
-
-    return result;
-  }
-
   //
   // Constructor
   //
@@ -146,7 +126,7 @@ public class ToolExecutor {
     checkNotNull(context, "Step context is null.");
 
     this.toolData = toolData;
-    this.commandLineTool = commandLine.trim();
+    this.commandLine = commandLine.trim();
     this.stepContext = context;
 
     execute();

@@ -23,7 +23,7 @@ public interface ExecutorInterpreter {
    * @param arguments the interpreter arguments
    * @return the command line
    */
-  List<String> createCommandLine(List<String> arguments);
+  List<String> createCommandLine(String arguments);
 
   /**
    * Execute a command line.

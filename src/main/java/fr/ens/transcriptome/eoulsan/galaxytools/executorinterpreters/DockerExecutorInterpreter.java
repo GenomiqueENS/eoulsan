@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import com.google.common.base.Objects;
 import com.spotify.docker.client.DefaultDockerClient;
@@ -55,11 +56,18 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
   }
 
   @Override
-  public List<String> createCommandLine(final List<String> arguments) {
+  public List<String> createCommandLine(final String arguments) {
 
     checkNotNull(arguments, "arguments argument cannot be null");
 
-    return arguments;
+    final StringTokenizer st = new StringTokenizer(arguments);
+    final List<String> commandLine = new ArrayList<>(st.countTokens());
+
+    while (st.hasMoreTokens()) {
+      commandLine.add(st.nextToken());
+    }
+
+    return commandLine;
   }
 
   @Override
@@ -84,8 +92,8 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
       pullImageIfNotExists(dockerClient, this.dockerImage);
 
       // Create container configuration
-      getLogger().fine(
-          "Configure container, command to execute: " + commandLine);
+      getLogger()
+          .fine("Configure container, command to execute: " + commandLine);
 
       final ContainerConfig.Builder builder =
           ContainerConfig.builder().image(dockerImage).cmd(commandLine);
@@ -102,8 +110,8 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
       final List<File> toBind;
       if (temporaryDirectory.isDirectory()) {
         toBind = singletonList(temporaryDirectory);
-        builder.env(TMP_DIR_ENV_VARIABLE
-            + "=" + temporaryDirectory.getAbsolutePath());
+        builder.env(
+            TMP_DIR_ENV_VARIABLE + "=" + temporaryDirectory.getAbsolutePath());
       } else {
         toBind = Collections.emptyList();
       }
@@ -122,9 +130,8 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
       dockerClient.startContainer(containerId, hostConfig);
 
       // Redirect stdout and stderr
-      final LogStream logStream =
-          dockerClient.logs(containerId, LogsParameter.FOLLOW,
-              LogsParameter.STDERR, LogsParameter.STDOUT);
+      final LogStream logStream = dockerClient.logs(containerId,
+          LogsParameter.FOLLOW, LogsParameter.STDERR, LogsParameter.STDOUT);
       redirect(logStream, stdoutFile, stderrFile);
 
       // Wait the end of the container
@@ -160,8 +167,8 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
    *           image
    */
   private static void pullImageIfNotExists(DockerClient dockerClient,
-      final String dockerImageName) throws DockerException,
-      InterruptedException {
+      final String dockerImageName)
+          throws DockerException, InterruptedException {
 
     checkNotNull(dockerClient, "dockerClient argument cannot be null");
     checkNotNull(dockerImageName, "dockerImageName argument cannot be null");
@@ -226,8 +233,9 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
       @Override
       public void run() {
 
-        try (WritableByteChannel stdoutChannel =
-            Channels.newChannel(new FileOutputStream(stderr));
+        try (
+            WritableByteChannel stdoutChannel =
+                Channels.newChannel(new FileOutputStream(stderr));
             WritableByteChannel stderrChannel =
                 Channels.newChannel(new FileOutputStream(stdout))) {
 
@@ -269,8 +277,8 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
   private static final int uid() {
 
     try {
-      return Integer.parseInt(ProcessUtils.execToString("id -u")
-          .replace("\n", "").trim());
+      return Integer.parseInt(
+          ProcessUtils.execToString("id -u").replace("\n", "").trim());
     } catch (NumberFormatException | IOException e) {
       return -1;
     }
@@ -283,8 +291,8 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
   private static final int gid() {
 
     try {
-      return Integer.parseInt(ProcessUtils.execToString("id -g")
-          .replace("\n", "").trim());
+      return Integer.parseInt(
+          ProcessUtils.execToString("id -g").replace("\n", "").trim());
     } catch (NumberFormatException | IOException e) {
       return -1;
     }
