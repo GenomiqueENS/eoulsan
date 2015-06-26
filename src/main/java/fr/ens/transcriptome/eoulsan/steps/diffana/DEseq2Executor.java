@@ -108,7 +108,7 @@ public class DEseq2Executor {
   private final String model;
   private final boolean contrast;
   private final boolean buildContrast;
- // private final String designFile;
+
   private final boolean expHeader = true;
 
   // Files and file names
@@ -678,13 +678,12 @@ public class DEseq2Executor {
 
     this.stepId = stepId;
 
-    this.deseq2DesignName = this.stepId + "_" + expName + DESEQ_DESIGN_FILE_SUFFIX;
+    this.deseq2DesignName =
+        this.stepId + "_" + expName + DESEQ_DESIGN_FILE_SUFFIX;
     this.comparisonName = this.stepId + "_" + expName + COMPARISON_FILE_SUFFIX;
     this.contrastName = expName + CONTRAST_FILE_SUFFIX;
-    this.deseq2DesignFile =
-        new File(outputDir,  deseq2DesignName);
-    this.comparisonFile =
-        new File(outputDir, comparisonName);
+    this.deseq2DesignFile = new File(outputDir, deseq2DesignName);
+    this.comparisonFile = new File(outputDir, comparisonName);
 
     ExperimentMetadata expMD = experiment.getMetadata();
 
