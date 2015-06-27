@@ -43,8 +43,10 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
+import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -73,6 +75,7 @@ public class CommandWorkflow extends AbstractWorkflow {
   /** Serialization version UID. */
   private static final long serialVersionUID = 4132064673361068654L;
 
+  private static final String LATEST_SUFFIX = "-latest";
   private static final Set<Parameter> EMPTY_PARAMETERS = Collections.emptySet();
 
   private final List<CommandWorkflowStep> steps = new ArrayList<>();
@@ -940,8 +943,21 @@ public class CommandWorkflow extends AbstractWorkflow {
         jobDir.mkdirs();
       }
 
-      // Save design file
+      // Create a shortcut link to the current job directory
+      final DataFile latest = new DataFile(jobDir.getParent(),
+          Globals.APP_NAME_LOWER_CASE + LATEST_SUFFIX);
+      try {
 
+        if (latest.exists()) {
+          latest.delete();
+        }
+        new DataFile(jobDir.getName()).symlink(latest);
+      } catch (IOException e) {
+        EoulsanLogger.getLogger().severe(
+            "Cannot create the new shortcut to the jod directory: " + latest);
+      }
+
+      // Save workflow file
       BufferedWriter writer =
           FileUtils.createBufferedWriter(new DataFile(jobDir,
               WORKFLOW_COPY_FILENAME).create());
