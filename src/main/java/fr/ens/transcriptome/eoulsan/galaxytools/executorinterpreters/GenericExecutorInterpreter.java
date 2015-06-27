@@ -7,9 +7,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import com.google.common.base.Splitter;
+
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define a generic executor interpreter. The path of the executor is
@@ -46,15 +47,9 @@ public class GenericExecutorInterpreter extends AbstractExecutorInterpreter {
 
     checkNotNull(arguments, "arguments argument cannot be null");
 
-    final List<String> result = new ArrayList<String>();
-
+    final List<String> result = new ArrayList<>();
     result.add(getInterpreterPath().getAbsolutePath());
-
-    final StringTokenizer st = new StringTokenizer(arguments);
-
-    while (st.hasMoreTokens()) {
-      result.add(st.nextToken());
-    }
+    result.addAll(StringUtils.splitShellCommandLine(arguments));
 
     return Collections.unmodifiableList(result);
   }

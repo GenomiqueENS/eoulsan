@@ -84,8 +84,8 @@ public final class StringUtils {
       return myFilename;
     }
 
-    return myFilename.substring(0, myFilename.length()
-        - (shortName.length() - pos));
+    return myFilename.substring(0,
+        myFilename.length() - (shortName.length() - pos));
   }
 
   /**
@@ -189,7 +189,8 @@ public final class StringUtils {
    * @param filename The filename
    * @return the filename without the compression extension
    */
-  public static String filenameWithoutCompressionExtension(final String filename) {
+  public static String filenameWithoutCompressionExtension(
+      final String filename) {
 
     if (filename == null) {
       return null;
@@ -621,7 +622,8 @@ public final class StringUtils {
    * @return true if the String starts with one of the prefix of a list in an
    *         array
    */
-  public static final boolean startsWith(final String s, final String[] prefixes) {
+  public static final boolean startsWith(final String s,
+      final String[] prefixes) {
 
     if (s == null || prefixes == null) {
       return false;
@@ -785,8 +787,8 @@ public final class StringUtils {
       }
 
       if (s.charAt(i) == ',') {
-        result.add(s.substring(last, i).replace("\\\\", "\\")
-            .replace("\\,", ","));
+        result.add(
+            s.substring(last, i).replace("\\\\", "\\").replace("\\,", ","));
         last = i + 1;
       }
     }
@@ -933,6 +935,84 @@ public final class StringUtils {
   public static boolean isNullOrEmpty(final String s) {
 
     return s == null || s.isEmpty();
+  }
+
+  /**
+   * Split a shell command line.
+   * @param commandline the command to parse
+   * @return a list with the command line arguments
+   */
+  public static List<String> splitShellCommandLine(final String commandline) {
+
+    if (commandline == null) {
+      return null;
+    }
+
+    final String s = commandline.trim();
+
+    final List<String> result = new ArrayList<>();
+
+    final StringBuilder sb = new StringBuilder();
+    boolean escape = false;
+    boolean inArgument = false;
+    char quote = ' ';
+
+    for (int i = 0; i < s.length(); i++) {
+
+      final char c = s.charAt(i);
+
+      if (escape) {
+
+        if (c == '\"') {
+          sb.append(c);
+        }
+
+        escape = false;
+        continue;
+      }
+
+      if (c == '\\') {
+        escape = true;
+        continue;
+      }
+
+      if ((c == '"' || c == '\'') && !inArgument) {
+        quote = c;
+        inArgument = true;
+        continue;
+      }
+
+      if ((c == ' ' && !inArgument) || (c == quote && inArgument)) {
+
+        if (inArgument) {
+          result.add(sb.toString());
+        } else {
+
+          String s2 = sb.toString().trim();
+          if (!s2.isEmpty()) {
+            result.add(s2);
+          }
+        }
+
+        sb.setLength(0);
+        inArgument = false;
+        continue;
+      }
+
+      sb.append(c);
+    }
+
+    if (inArgument) {
+      result.add(sb.toString());
+    } else {
+
+      String s2 = sb.toString().trim();
+      if (!s2.isEmpty()) {
+        result.add(s2);
+      }
+    }
+
+    return Collections.unmodifiableList(result);
   }
 
   //

@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.util;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -158,7 +159,8 @@ public class StringUtilsTest {
 
     assertEquals("[]",
         StringUtils.serializeStringArray(Arrays.asList(new String[] {})));
-    assertEquals("[]", StringUtils.serializeStringArray(Collections.singletonList("")));
+    assertEquals("[]",
+        StringUtils.serializeStringArray(Collections.singletonList("")));
     assertEquals("[toto]",
         StringUtils.serializeStringArray(Collections.singletonList("toto")));
     assertEquals("[toto,titi]",
@@ -279,6 +281,39 @@ public class StringUtilsTest {
       i++;
     }
 
+  }
+
+  @Test
+  public void testSplitShellCommandLine() {
+
+    assertNull(StringUtils.splitShellCommandLine(null));
+    assertTrue(StringUtils.splitShellCommandLine("").isEmpty());
+    assertEquals(asList("titi", "toto", "tata"),
+        StringUtils.splitShellCommandLine("titi toto tata"));
+    assertEquals(asList("titi", "toto", "tata"),
+        StringUtils.splitShellCommandLine(" titi  toto  tata "));
+    assertEquals(asList("titi", "toto", "tata"),
+        StringUtils.splitShellCommandLine(" titi  \"toto\"  tata "));
+    assertEquals(asList("titi", "toto tata"),
+        StringUtils.splitShellCommandLine(" titi  \"toto tata\""));
+    assertEquals(asList("titi", " toto ", "tata"),
+        StringUtils.splitShellCommandLine(" titi  \" toto \" tata\""));
+    assertEquals(asList("titi", "toto", "tata"),
+        StringUtils.splitShellCommandLine(" titi  toto  \"tata"));
+    assertEquals(asList("titi", "toto", "tata"),
+        StringUtils.splitShellCommandLine(" titi  toto  \"tata\""));
+    assertEquals(asList("titi", "toto", "tata"),
+        StringUtils.splitShellCommandLine("\"titi\"  toto  \"tata\""));
+    assertEquals(asList("titi", "toto", "tata"),
+        StringUtils.splitShellCommandLine("\'titi\'  toto  \'tata\'"));
+    assertEquals(asList("titi", "toto tata"),
+        StringUtils.splitShellCommandLine(" titi  \'toto tata\'"));
+    assertEquals(asList("titi", "toto\"tata"),
+        StringUtils.splitShellCommandLine("titi  \'toto\"tata\'"));
+    assertEquals(asList("titi", "toto\'tata"),
+        StringUtils.splitShellCommandLine("titi  \"toto\'tata\""));
+    assertEquals(asList("titi", "to\"to", "ta\'ta"),
+        StringUtils.splitShellCommandLine(" titi  \'to\"to\'  \"ta\'ta\" "));
   }
 
 }

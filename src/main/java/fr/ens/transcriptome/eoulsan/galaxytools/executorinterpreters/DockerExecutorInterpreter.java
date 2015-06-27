@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import com.google.common.base.Objects;
 import com.spotify.docker.client.DefaultDockerClient;
@@ -35,6 +34,7 @@ import com.spotify.docker.client.messages.Image;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.galaxytools.ToolExecutorResult;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
+import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
  * This class define a Docker executor interpreter.
@@ -60,14 +60,7 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
 
     checkNotNull(arguments, "arguments argument cannot be null");
 
-    final StringTokenizer st = new StringTokenizer(arguments);
-    final List<String> commandLine = new ArrayList<>(st.countTokens());
-
-    while (st.hasMoreTokens()) {
-      commandLine.add(st.nextToken());
-    }
-
-    return commandLine;
+    return StringUtils.splitShellCommandLine(arguments);
   }
 
   @Override

@@ -16,8 +16,8 @@ import fr.ens.transcriptome.eoulsan.galaxytools.ToolExecutorResult;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public abstract class AbstractExecutorInterpreter implements
-    ExecutorInterpreter {
+public abstract class AbstractExecutorInterpreter
+    implements ExecutorInterpreter {
 
   static final String TMP_DIR_ENV_VARIABLE = "TMPDIR";
 
@@ -32,6 +32,8 @@ public abstract class AbstractExecutorInterpreter implements
     checkNotNull(stdoutFile, "stdoutFile argument cannot be null");
     checkNotNull(stderrFile, "stderrFile argument cannot be null");
 
+    checkArgument(!commandLine.isEmpty(),
+        "commandLine argument cannot be empty");
     checkArgument(executionDirectory.isDirectory(),
         "execution directory does not exists or is not a directory: "
             + executionDirectory.getAbsolutePath());
