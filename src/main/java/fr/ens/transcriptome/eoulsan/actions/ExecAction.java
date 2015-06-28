@@ -84,9 +84,8 @@ public class ExecAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line =
-          parser.parse(options,
-              arguments.toArray(new String[arguments.size()]), true);
+      final CommandLine line = parser.parse(options,
+          arguments.toArray(new String[arguments.size()]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -147,8 +146,10 @@ public class ExecAction extends AbstractAction {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + ".sh " + ACTION_NAME + " [options] workflow.xml design.txt", options);
+    formatter.printHelp(
+        Globals.APP_NAME_LOWER_CASE
+            + ".sh " + ACTION_NAME + " [options] workflow.xml design.txt",
+        options);
 
     Common.exit(0);
   }
@@ -195,11 +196,10 @@ public class ExecAction extends AbstractAction {
       // Create execution context
 
       // Set job environment
-      final String env =
-          "Local Mode on "
-              + new LinuxCpuInfo().getModelName() + ", "
-              + Runtime.getRuntime().availableProcessors()
-              + " CPU(s)/thread(s), " + new LinuxMemInfo().getMemTotal();
+      final String env = "Local Mode on "
+          + new LinuxCpuInfo().getModelName() + ", "
+          + Runtime.getRuntime().availableProcessors() + " CPU(s)/thread(s), "
+          + new LinuxMemInfo().getMemTotal();
 
       // Create ExecutionArgument object
       final ExecutorArguments arguments =
@@ -207,9 +207,10 @@ public class ExecAction extends AbstractAction {
       arguments.setJobDescription(desc);
       arguments.setJobEnvironment(env);
 
-      // Create the log File
-      Main.getInstance().createLogFileAndFlushLog(
-          arguments.getJobPathname() + File.separator + "eoulsan.log");
+      // Create the log Files
+      final String logDirname = arguments.getJobPathname() + File.separator;
+      Main.getInstance().createLogFiles(logDirname + Globals.LOG_FILENAME,
+          logDirname + Globals.OTHER_LOG_FILENAME);
 
       // Create executor
       final Executor e = new Executor(arguments);

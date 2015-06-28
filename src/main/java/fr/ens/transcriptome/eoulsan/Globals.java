@@ -63,8 +63,8 @@ public final class Globals {
   public static final String APP_NAME_LOWER_CASE = APP_NAME.toLowerCase();
 
   /** The prefix of the parameters of the application. */
-  public static final String PARAMETER_PREFIX = "fr.ens.transcriptome."
-      + APP_NAME_LOWER_CASE;
+  public static final String PARAMETER_PREFIX =
+      "fr.ens.transcriptome." + APP_NAME_LOWER_CASE;
 
   /** The version of the application. */
   public static final String APP_VERSION_STRING = getVersion();
@@ -111,14 +111,14 @@ public final class Globals {
   public static final int MINIMAL_JAVA_VERSION_REQUIRED = 7;
 
   /** Platforms where the application is available. */
-  public static final Set<String> AVAILABLE_BINARY_ARCH = Collections
-      .unmodifiableSet(new HashSet<>(Arrays.asList(new String[] {
-          "linux\tamd64", "linux\tx86_64" })));
+  public static final Set<String> AVAILABLE_BINARY_ARCH =
+      Collections.unmodifiableSet(new HashSet<>(
+          Arrays.asList(new String[] { "linux\tamd64", "linux\tx86_64" })));
 
   /** Platforms alias. */
   public static final Map<String, String> AVAILABLE_BINARY_ARCH_ALIAS =
-      Collections.unmodifiableMap(Collections.singletonMap("linux\tx86_64",
-          "linux\tamd64"));
+      Collections.unmodifiableMap(
+          Collections.singletonMap("linux\tx86_64", "linux\tamd64"));
 
   /** Default locale of the application. */
   public static final Locale DEFAULT_LOCALE = Locale.US;
@@ -126,8 +126,8 @@ public final class Globals {
   /** Format of the log. */
   public static final Formatter LOG_FORMATTER = new Formatter() {
 
-    private final DateFormat df = new SimpleDateFormat("yyyy.MM.dd kk:mm:ss",
-        DEFAULT_LOCALE);
+    private final DateFormat df =
+        new SimpleDateFormat("yyyy.MM.dd kk:mm:ss", DEFAULT_LOCALE);
 
     @Override
     public String format(final LogRecord record) {
@@ -154,9 +154,9 @@ public final class Globals {
   public static final String ABOUT_TXT = Globals.APP_NAME
       + " version " + Globals.APP_VERSION_STRING + " (" + APP_BUILD_COMMIT
       + ", " + Globals.APP_BUILD_NUMBER + ")"
-      + " is a pipeline for NGS analysis.\n"
-      + "This version has been built on " + APP_BUILD_DATE + ".\n\n"
-      + "Authors:\n" + "  Laurent Jourdren <jourdren@biologie.ens.fr>\n"
+      + " is a pipeline for NGS analysis.\n" + "This version has been built on "
+      + APP_BUILD_DATE + ".\n\n" + "Authors:\n"
+      + "  Laurent Jourdren <jourdren@biologie.ens.fr>\n"
       + "  Maria Bernard <mbernard@biologie.ens.fr>\n"
       + "  Stéphane Le Crom <lecrom@biologie.ens.fr>\n"
       + "  Claire Wallon <wallon@biologie.ens.fr>\n"
@@ -181,12 +181,12 @@ public final class Globals {
       APP_NAME_LOWER_CASE + ".hadoop.libs";
 
   /** Launch mode property. */
-  public static final String LAUNCH_MODE_PROPERTY = APP_NAME_LOWER_CASE
-      + ".launch.mode";
+  public static final String LAUNCH_MODE_PROPERTY =
+      APP_NAME_LOWER_CASE + ".launch.mode";
 
   /** Launch script path. */
-  public static final String LAUNCH_SCRIPT_PATH = APP_NAME_LOWER_CASE
-      + ".launch.script.path";
+  public static final String LAUNCH_SCRIPT_PATH =
+      APP_NAME_LOWER_CASE + ".launch.script.path";
 
   /** Print stack trace default. */
   public static final boolean PRINT_STACK_TRACE_DEFAULT = DEBUG;
@@ -216,6 +216,12 @@ public final class Globals {
   /** Write results using old Eoulsan format. */
   public static final boolean USE_OLD_EOULSAN_RESULT_FORMAT_DEFAULT = false;
 
+  /** Eoulsan log filename. */
+  public static final String LOG_FILENAME = APP_NAME_LOWER_CASE + ".log";
+
+  /** Other log filename. */
+  public static final String OTHER_LOG_FILENAME = "additional.log";
+
   //
   // Files encoding
   //
@@ -225,8 +231,8 @@ public final class Globals {
       FileCharsets.UTF8_FILE_ENCODING;
 
   /** Default charset. */
-  public static final Charset DEFAULT_CHARSET = Charset
-      .forName(DEFAULT_FILE_ENCODING);
+  public static final Charset DEFAULT_CHARSET =
+      Charset.forName(DEFAULT_FILE_ENCODING);
 
   //
   // Default file extensions
@@ -360,15 +366,13 @@ public final class Globals {
       if (!classPath.startsWith("jar")) {
         // Class not from JAR
 
-        String basePath =
-            classPath.substring(0, classPath.length()
-                - clazz.getName().length() - ".class".length());
+        String basePath = classPath.substring(0,
+            classPath.length() - clazz.getName().length() - ".class".length());
         manifestPath = basePath + MANIFEST_FILE;
 
       } else {
-        manifestPath =
-            classPath.substring(0, classPath.lastIndexOf("!") + 1)
-                + MANIFEST_FILE;
+        manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1)
+            + MANIFEST_FILE;
       }
 
       Manifest manifest = new Manifest(new URL(manifestPath).openStream());

@@ -24,7 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.apache.log4j.Level;
@@ -33,11 +32,11 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 
 /**
- * This class allow to configure Hadoop client log using Log4J.
+ * This class allow to configure non Eoulsan log using Log4J.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class HadoopLogConfigurator {
+public class OtherLogConfigurator {
 
   /** Default Hadoop log level. */
   private static final Level DEFAULT_LOG_LEVEL = Level.INFO;
@@ -52,10 +51,11 @@ public class HadoopLogConfigurator {
    * @param logLevel logLevel as string.
    * @param logFile the log file
    */
-  public static void configureLog4J(final String logLevel, final File logFile) {
+  public static void configureLog4J(final String logLevel,
+      final String logFilename) {
 
-    if (logFile == null) {
-      throw new NullPointerException("The logFile argument cannot be null");
+    if (logFilename == null) {
+      throw new NullPointerException("The logFilename argument cannot be null");
     }
 
     // This is the root logger provided by log4j
@@ -72,7 +72,7 @@ public class HadoopLogConfigurator {
     try {
       // Define file appender with layout and output log file name
       final RollingFileAppender fileAppender =
-          new RollingFileAppender(layout, logFile.getAbsolutePath());
+          new RollingFileAppender(layout, logFilename);
 
       // Add the appender to root logger
       rootLogger.addAppender(fileAppender);

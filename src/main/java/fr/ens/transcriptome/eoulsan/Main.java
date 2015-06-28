@@ -240,8 +240,8 @@ public abstract class Main {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(
-        getHelpEoulsanCommand() + " [options] action arguments", options);
+    formatter.printHelp(getHelpEoulsanCommand() + " [options] action arguments",
+        options);
 
     System.out.println("Available actions:");
     for (Action action : ActionService.getInstance().getActions()) {
@@ -249,9 +249,7 @@ public abstract class Main {
       if (!action.isHadoopJarMode() && !action.isHidden()) {
 
         System.out.println(" - "
-            + action.getName()
-            + "\t"
-            + action.getDescription()
+            + action.getName() + "\t" + action.getDescription()
             + (!action.isCurrentArchCompatible()
                 ? " (not available for your platform)." : ""));
       }
@@ -271,8 +269,8 @@ public abstract class Main {
     final Options options = new Options();
 
     options.addOption("version", false, "show version of the software");
-    options
-        .addOption("about", false, "display information about this software");
+    options.addOption("about", false,
+        "display information about this software");
     options.addOption("h", "help", false, "display this help");
     options.addOption("license", false,
         "display information about the license of this software");
@@ -280,12 +278,10 @@ public abstract class Main {
     options.addOption(OptionBuilder.withArgName("file").hasArg()
         .withDescription("configuration file to use").create("conf"));
 
-    options.addOption(OptionBuilder
-        .withArgName("property=value")
-        .hasArg()
-        .withDescription(
-            "set a configuration setting. This "
-                + "option can be used several times").create('s'));
+    options.addOption(OptionBuilder.withArgName("property=value").hasArg()
+        .withDescription("set a configuration setting. This "
+            + "option can be used several times")
+        .create('s'));
 
     options.addOption(OptionBuilder.withArgName("file").hasArg()
         .withDescription("external log file").create("log"));
@@ -428,19 +424,17 @@ public abstract class Main {
     getLogger().info("Start in " + this.launchModeName + " mode");
 
     // Show versions
-    getLogger().info(
-        Globals.APP_NAME + " version: " + Globals.APP_VERSION_STRING);
-    getLogger().info(
-        Globals.APP_NAME + " revision: " + Globals.APP_BUILD_COMMIT);
-    getLogger().info(
-        Globals.APP_NAME + " build date: " + Globals.APP_BUILD_DATE);
+    getLogger()
+        .info(Globals.APP_NAME + " version: " + Globals.APP_VERSION_STRING);
+    getLogger()
+        .info(Globals.APP_NAME + " revision: " + Globals.APP_BUILD_COMMIT);
+    getLogger()
+        .info(Globals.APP_NAME + " build date: " + Globals.APP_BUILD_DATE);
 
     // Startup script
-    getLogger().info(
-        Globals.APP_NAME
-            + " Startup script: "
-            + (getLaunchScriptPath() == null
-                ? "(no startup script)" : getLaunchScriptPath()));
+    getLogger().info(Globals.APP_NAME
+        + " Startup script: " + (getLaunchScriptPath() == null
+            ? "(no startup script)" : getLaunchScriptPath()));
 
     // Command line arguments
     final List<String> args = new ArrayList<>();
@@ -452,13 +446,12 @@ public abstract class Main {
       }
     }
 
-    getLogger().info(
-        Globals.APP_NAME
-            + " Command line arguments: " + Joiner.on(' ').join(args));
+    getLogger().info(Globals.APP_NAME
+        + " Command line arguments: " + Joiner.on(' ').join(args));
 
     // Log file
-    getLogger().info(
-        "Log file: " + (this.logFile == null ? "(none)" : this.logFile));
+    getLogger()
+        .info("Log file: " + (this.logFile == null ? "(none)" : this.logFile));
 
     // Log level
     getLogger().info("Log level: " + getLogger().getLevel());
@@ -474,15 +467,15 @@ public abstract class Main {
 
     // Operating system
     getLogger().info("Operating system name: " + System.getProperty("os.name"));
-    getLogger().info(
-        "Operating system version: " + System.getProperty("os.version"));
+    getLogger()
+        .info("Operating system version: " + System.getProperty("os.version"));
     getLogger().info("Operating system arch: " + System.getProperty("os.arch"));
 
     // User information
     getLogger().info("User name: " + System.getProperty("user.name"));
     getLogger().info("User home: " + System.getProperty("user.home"));
-    getLogger().info(
-        "User current directory: " + System.getProperty("user.dir"));
+    getLogger()
+        .info("User current directory: " + System.getProperty("user.dir"));
 
     // Java version
     getLogger().info("Java vendor: " + System.getProperty("java.vendor"));
@@ -497,7 +490,8 @@ public abstract class Main {
    * @throws EoulsanException if an error occurs while reading the configuration
    *           file
    */
-  private Settings loadConfigurationFile() throws IOException, EoulsanException {
+  private Settings loadConfigurationFile()
+      throws IOException, EoulsanException {
 
     // Load the setting file if has been defined in command line
     if (this.conf != null) {
@@ -558,10 +552,9 @@ public abstract class Main {
       try {
         this.handler.setLevel(Level.parse(this.logLevel.toUpperCase()));
       } catch (IllegalArgumentException e) {
-        Common
-            .showErrorMessageAndExit("Unknown log level ("
-                + this.logLevel
-                + "). Accepted values are [SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST].");
+        Common.showErrorMessageAndExit("Unknown log level ("
+            + this.logLevel
+            + "). Accepted values are [SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST].");
       }
     } else {
       this.handler.setLevel(Globals.LOG_LEVEL);
@@ -595,6 +588,30 @@ public abstract class Main {
     }
 
     flushLog();
+  }
+
+  /**
+   * Create the additional log file for dependencies that use their own logging
+   * system.
+   * @param logFilename the log file name
+   */
+  public void createOtherLog(final String logFilename) {
+
+    OtherLogConfigurator.configureLog4J(null, logFilename);
+  }
+
+  /**
+   * Create the log file for Eoulsan and additional log file for dependencies
+   * that use their own logging system.
+   * @param EoulsanlogFilename Eoulsan log file name
+   * @param otherlogFilename other log file name
+   * @throws EoulsanException if an error occurs while creating log file
+   */
+  public void createLogFiles(final String EoulsanlogFilename,
+      final String otherlogFilename) throws EoulsanException {
+
+    createLogFileAndFlushLog(EoulsanlogFilename);
+    createOtherLog(otherlogFilename);
   }
 
   /**
