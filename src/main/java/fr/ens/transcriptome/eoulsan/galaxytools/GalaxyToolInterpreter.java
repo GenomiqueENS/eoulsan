@@ -52,7 +52,7 @@ import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.ToolElement;
+import fr.ens.transcriptome.eoulsan.galaxytools.elements.ToolElement;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 
 /**

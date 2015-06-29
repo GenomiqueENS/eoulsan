@@ -21,7 +21,7 @@
  *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
-package fr.ens.transcriptome.eoulsan.steps.galaxytool.elements;
+package fr.ens.transcriptome.eoulsan.galaxytools.elements;
 
 import java.util.List;
 

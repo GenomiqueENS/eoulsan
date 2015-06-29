@@ -24,6 +24,7 @@
 package fr.ens.transcriptome.eoulsan.galaxytools;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
@@ -48,7 +49,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntimeDebug;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.galaxytools.ToolData;
 import fr.ens.transcriptome.eoulsan.galaxytools.ToolPythonInterpreter;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.ToolElement;
+import fr.ens.transcriptome.eoulsan.galaxytools.elements.ToolElement;
 
 /**
  * The class define unit tests on GalaxyToolStep, it check if the command line
@@ -80,10 +81,10 @@ public class ToolInterpreterTest {
 
   /** Directory path which contains all tool shed XML file. */
   private static final String SRC_DIR =
-      "/GalaxyTools/";
+      "/galaxytools";
   
   private static final String SRC_TESTS_SETTING =
-      "/GalaxyTools/testdatatoolshedgalaxy.txt";
+      SRC_DIR + "/testdatatoolshedgalaxy.txt";
 
   @Before
   public void setUp() throws Exception {
@@ -244,9 +245,11 @@ public class ToolInterpreterTest {
       }
 
       // Init tool interpreter
+      final InputStream is = this.getClass().getResourceAsStream(
+          toolXMLPath);
+      assertNotNull("Resource not found: " + toolXMLPath,is);
       final GalaxyToolInterpreter interpreter =
-          new GalaxyToolInterpreter(this.getClass().getResourceAsStream(
-              toolXMLPath));
+          new GalaxyToolInterpreter(is);
 
       // Configure interpreter with parameters setting in workflow Eoulsan file
       interpreter.configure(setStepParameters);

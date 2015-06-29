@@ -45,7 +45,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.galaxytools.GalaxyToolInterpreter;
 import fr.ens.transcriptome.eoulsan.galaxytools.ToolData;
 import fr.ens.transcriptome.eoulsan.galaxytools.ToolExecutorResult;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.ToolElement;
+import fr.ens.transcriptome.eoulsan.galaxytools.elements.ToolElement;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
