@@ -1,4 +1,3 @@
-
 test_description=samtools method rumdup in PE mode
 toolshedxml.path=samtools_rmdup/1.0.1/samtools_rmdup.xml
 input.input1=input_value
@@ -55,7 +54,7 @@ input.source.input1=input_value
 param.source.index_source=cached
 param.source.ref_file=ref_file_value
 output.output1=output_value
-command.expected=sam_to_bam.py --input1= input_value --index= no_authorized --output1= output_value
+command.expected=sam_to_bam.py --input1=input_value --index=no_authorized --output1=output_value
 
 
 test_description=sam2bam tool
@@ -65,4 +64,10 @@ input.source.index.fields.path=index_fields_value
 param.source.index_source=history
 param.source.ref_file=ref_file_value
 output.output1=output_value
-command.expected=sam_to_bam.py --input1= input_value --ref_file= ref_file_value --output1= output_value
+command.expected=sam_to_bam.py --input1=input_value --ref_file=ref_file_value --output1=output_value
+
+test_description=rmdup
+toolshedxml.path=picard_rmdup/rmdup.xml
+input.input=input_value
+output.output=output_value
+command.expected=picard.jar MarkDuplicates REMOVE_DUPLICATES=true INPUT=input_value OUTPUT=output_value

@@ -366,7 +366,8 @@ class TranslatorStringToPython {
         final boolean lastToken = false;
         int currentPos = 0;
 
-        final List<String> modifiedLine = new ArrayList<>();
+        final StringBuilder modifiedLine = new StringBuilder();
+
 
         String variableName = "";
 
@@ -382,19 +383,19 @@ class TranslatorStringToPython {
           if (currentPos < start) {
             // Extract text before variable
             final String txt =
-                this.modifiedLine.substring(currentPos, start).trim();
+                this.modifiedLine.substring(currentPos, start);
+
 
             // Remove double quote
             // txt = txt.replaceAll("\"", "'");
 
             // Add syntax
-            if (!txt.isEmpty()) {
+            if (!txt.trim().isEmpty()) {
               isCurrentTextCode = false;
 
               // TODO
               // System.out.println("add txt " + txt);
-
-              modifiedLine.add(this.addToken(txt, isPreviousTextCode,
+              modifiedLine.append(this.addToken(txt, isPreviousTextCode,
                   isCurrentTextCode, firstToken, lastToken));
               firstToken = false;
             }
@@ -403,7 +404,7 @@ class TranslatorStringToPython {
           isPreviousTextCode = isCurrentTextCode;
 
           // Add motif matched
-          modifiedLine.add(this.addCodeJava(variableName, isPreviousTextCode,
+          modifiedLine.append(this.addCodeJava(variableName, isPreviousTextCode,
               firstToken, lastToken));
           isCurrentTextCode = true;
 
@@ -414,17 +415,18 @@ class TranslatorStringToPython {
         }
 
         // No variable name found
-        if (modifiedLine.isEmpty()) {
+        if (modifiedLine.length() == 0) {
           final String s =
               this.endLine(isCurrentTextCode, firstToken, currentPos);
+
           return this.buildLineScript(s);
         }
 
         // End line
-        modifiedLine.add(this
+        modifiedLine.append(this
             .endLine(isCurrentTextCode, firstToken, currentPos));
 
-        return this.buildLineScript(Joiner.on(" ").join(modifiedLine));
+        return this.buildLineScript(modifiedLine.toString());
       }
 
       /**
@@ -736,9 +738,9 @@ class TranslatorStringToPython {
 
         // Extract last token from string
         String lastToken =
-            this.getModifiedString().substring(currentPos).trim();
+            this.getModifiedString().substring(currentPos);
 
-        if (lastToken.isEmpty()) {
+        if (lastToken.trim().isEmpty()) {
           return txt;
         }
 
@@ -748,6 +750,7 @@ class TranslatorStringToPython {
         }
 
         lastToken += txt;
+
         return this.addToken(lastToken, isCurrentTextCode, false, firstToken,
             true);
       }
@@ -757,37 +760,33 @@ class TranslatorStringToPython {
           final boolean isCurrentCode, final boolean firstToken,
           final boolean lastToken) {
 
-        final List<String> txt = Lists.newArrayList();
+        final StringBuilder txt = new StringBuilder();
 
         if (firstToken) {
           if (!isCurrentCode && !newToken.startsWith("\"")) {
             // Start string
-            txt.add("\" ");
+            txt.append("\"");
           }
         } else {
           // Add in middle string
           if (!isPreviousCode && isCurrentCode) {
             // Concatenate text with code
-            txt.add("\"+");
+            txt.append("\"+");
 
           } else if (isPreviousCode) {
             if (isCurrentCode) {
               // Concatenate code with code
-              txt.add("+\" \"+");
+              txt.append("+\" \"+");
             } else {
               // Concatenate code with text
-              txt.add("+\"");
+              txt.append("+\"");
             }
           }
         }
         // Add text
         // if (!isCurrentCode)
         // newToken = newToken.replaceAll("\"", "'");
-        txt.add(newToken);
-
-        if (txt.isEmpty()) {
-          return "";
-        }
+        txt.append(newToken);
 
         // // TODO
         // System.out.println("before \t"
@@ -801,8 +800,8 @@ class TranslatorStringToPython {
         // + Joiner.on(" ").join(txt).trim());
 
         // Return string with default separator escape
-        return Joiner.on(" ").join(txt).trim();
 
+        return txt.toString();
       }
 
       @Override
@@ -811,8 +810,11 @@ class TranslatorStringToPython {
         final StringBuilder txt = new StringBuilder();
         txt.append(this.tab(currentTabCount));
 
-        txt.append(VAR_CMD_NAME + " +=  \" \" + ");
+        //txt.append(VAR_CMD_NAME + " +=  \" \" + ");
+        txt.append(VAR_CMD_NAME);
+        txt.append(" += ");
         txt.append(line);
+        txt.append(" + \" \"");
 
         // if (!line.endsWith("\""))
         // txt.append("\"");
