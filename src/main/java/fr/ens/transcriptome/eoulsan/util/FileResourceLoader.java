@@ -4,7 +4,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
  */
 public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
 
-  private final static String INDEX_FILE = "index";
+  private final static String INDEX_FILE = "INDEX";
 
   private final Class<S> clazz;
   private final List<DataFile> directories = new ArrayList<>();
@@ -60,16 +59,10 @@ public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
     try {
       for (DataFile directory : this.directories) {
 
-        if (!directory.exists()) {
-          return;
-        }
-
         for (String filename : findResourcePaths(directory)) {
 
-          getLogger().fine(
-              "Try to load "
-                  + this.clazz.getSimpleName() + " from " + filename
-                  + " resource");
+          getLogger().fine("Try to load "
+              + this.clazz.getSimpleName() + " from " + filename + " resource");
 
           final DataFile file = new DataFile(directory, filename);
 
@@ -181,7 +174,7 @@ public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
 
     checkNotNull(resourcePaths, "resourcePaths argument cannot be null");
 
-    for (String directory : resourcePaths.split(File.pathSeparator)) {
+    for (String directory : resourcePaths.split(" ")) {
 
       directory = directory.trim();
 
