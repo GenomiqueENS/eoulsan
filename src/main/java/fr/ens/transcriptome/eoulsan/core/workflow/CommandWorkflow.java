@@ -55,6 +55,7 @@ import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowModel.StepPort;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
@@ -253,10 +254,9 @@ public class CommandWorkflow extends AbstractWorkflow {
   }
 
   /**
-   * Initialize the steps of the Workflow.
-   * @throws EoulsanException if an error occurs while creating the step
+   * Initialize the settings of the Workflow.
    */
-  private void init() throws EoulsanException {
+  private void initializeSettings() {
 
     final CommandWorkflowModel c = this.workflowCommand;
     final Set<Parameter> globalParameters = c.getGlobalParameters();
@@ -264,11 +264,22 @@ public class CommandWorkflow extends AbstractWorkflow {
     final Settings settings = EoulsanRuntime.getSettings();
 
     // Add globals parameters to Settings
-    getLogger().info(
-        "Init all steps with global parameters: " + globalParameters);
+    getLogger()
+        .info("Init all steps with global parameters: " + globalParameters);
     for (Parameter p : globalParameters) {
       settings.setSetting(p.getName(), p.getStringValue());
     }
+
+    // Reload the available formats because the list of the available formats
+    // has already loaded at the startup when using DataFile objects
+    DataFormatRegistry.getInstance().reload();
+  }
+
+  /**
+   * Configure the steps of the Workflow.
+   * @throws EoulsanException if an error occurs while creating the step
+   */
+  private void configureSteps() throws EoulsanException {
 
     // Configure all the steps
     for (CommandWorkflowStep step : this.steps) {
@@ -1019,6 +1030,9 @@ public class CommandWorkflow extends AbstractWorkflow {
     context.setCommandDescription(workflowCommand.getDescription());
     context.setCommandAuthor(workflowCommand.getAuthor());
 
+    // Set the globals parameter in the Eoulsan settings
+    initializeSettings();
+
     // Convert s3:// urls to s3n:// urls
     convertDesignS3URLs();
 
@@ -1031,8 +1045,8 @@ public class CommandWorkflow extends AbstractWorkflow {
     // Add end steps
     addEndSteps(endSteps);
 
-    // initialize steps
-    init();
+    // Initialize steps
+    configureSteps();
 
     // Set manually defined input format source
     addManualDependencies();
