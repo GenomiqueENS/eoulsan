@@ -107,7 +107,7 @@ public abstract class URLDataProtocol extends AbstractDataProtocol {
       return false;
     }
 
-    return false;
+    return true;
   }
 
 }
