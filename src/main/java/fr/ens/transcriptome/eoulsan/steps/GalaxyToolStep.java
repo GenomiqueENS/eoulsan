@@ -24,7 +24,6 @@
 package fr.ens.transcriptome.eoulsan.steps;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -83,18 +82,12 @@ public class GalaxyToolStep extends AbstractStep {
   public InputPorts getInputPorts() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
-    boolean isEmpty = true;
 
     for (final Map.Entry<DataFormat, ToolElement> entry : this.toolInterpreter
         .getInDataFormatExpected().entrySet()) {
-      isEmpty = false;
 
       builder
           .addPort(entry.getValue().getValidatedName(), entry.getKey(), true);
-    }
-
-    if (isEmpty) {
-      return InputPortsBuilder.noInputPort();
     }
 
     return builder.create();
@@ -104,18 +97,11 @@ public class GalaxyToolStep extends AbstractStep {
   public OutputPorts getOutputPorts() {
 
     final OutputPortsBuilder builder = new OutputPortsBuilder();
-    boolean isEmpty = true;
 
     for (final Map.Entry<DataFormat, ToolElement> entry : this.toolInterpreter
         .getOutDataFormatExpected().entrySet()) {
-      isEmpty = false;
+
       builder.addPort(entry.getValue().getValidatedName(), entry.getKey());
-
-      return singleOutputPort(entry.getKey());
-    }
-
-    if (isEmpty) {
-      return OutputPortsBuilder.noOutputPort();
     }
 
     return builder.create();
