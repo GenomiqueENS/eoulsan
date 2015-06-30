@@ -208,14 +208,14 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
       final Data inData = context.getInputData(inFormat);
 
       // Case not found
-      if (inData == null || inData.size() == 0)
+      if (inData == null || inData.isEmpty())
         return false;
 
       for (final DataFormat outFormat : this.outFileExpected.keySet()) {
 
         // Check outData related
         final Data outData = context.getOutputData(outFormat, inData);
-        if (outData == null || outData.size() == 0)
+        if (outData == null || outData.isEmpty())
           return false;
       }
     }

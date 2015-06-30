@@ -129,7 +129,7 @@ public abstract class AbstractPorts<E extends Port> implements Ports<E>,
   protected AbstractPorts(final Set<E> ports) {
 
     // If ports is null
-    if (ports == null) {
+    if (ports == null || ports.isEmpty()) {
       this.ports = Collections.emptyMap();
       return;
     }
