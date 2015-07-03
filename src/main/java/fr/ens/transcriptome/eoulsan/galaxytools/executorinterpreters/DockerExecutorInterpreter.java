@@ -78,8 +78,9 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
         "execution directory does not exists or is not a directory: "
             + executionDirectory.getAbsolutePath());
 
-    try (DockerClient dockerClient =
-        new DefaultDockerClient(this.dockerConnection)) {
+    DockerClient dockerClient = new DefaultDockerClient(this.dockerConnection);
+
+    try {
 
       // Pull image if needed
       pullImageIfNotExists(dockerClient, this.dockerImage);
