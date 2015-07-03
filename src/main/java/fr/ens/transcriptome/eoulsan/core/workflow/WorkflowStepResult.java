@@ -267,7 +267,7 @@ public class WorkflowStepResult {
       this.counters.put(counterGroup, map);
     } else {
 
-      map = this.counters.get(counters);
+      map = this.counters.get(counterGroup);
     }
 
     for (Map.Entry<String, Long> e : counters.entrySet()) {
