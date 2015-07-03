@@ -84,15 +84,12 @@ public class FastQCRuntimePatcher {
                 + " } ", cc);
         cc.addMethod(newBase64ForIconMethod);
 
-        // Write the class file
-        cc.writeFile();
-
         // Load the class by the ClassLoader
         cc.toClass();
 
       }
 
-    } catch (NotFoundException | CannotCompileException | IOException e) {
+    } catch (NotFoundException | CannotCompileException e) {
       throw new EoulsanException(e);
     }
   }

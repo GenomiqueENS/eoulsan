@@ -221,10 +221,8 @@ public class FastQCStep extends AbstractStep {
 
     // Patch FastQC code on sequenceFile to make hadoop compatible
     try {
-      // RuntimePatchFastQC.runPatchFastQC();
       FastQCRuntimePatcher.patchFastQC();
     } catch (EoulsanException e1) {
-      e1.printStackTrace();
       return status.createStepResult(e1);
     }
 
@@ -272,7 +270,8 @@ public class FastQCStep extends AbstractStep {
       processSequences(modules, seqFile);
 
       // Create the report
-      createReport(modules, seqFile, reportFile);
+      createReport(modules, seqFile, reportFile,
+          context.getLocalTempDirectory());
 
       // Set the description of the context
       status.setDescription("Create FastQC report on "
@@ -324,11 +323,13 @@ public class FastQCStep extends AbstractStep {
    * @param modules the modules
    * @param seqFile the sequence file
    * @param reportFile the report file
+   * @param tempDirectory temporary directory
    * @throws IOException Signals that an I/O exception has occurred.
    * @throws XMLStreamException the XML stream exception
    */
   private void createReport(final List<AbstractQCModule> modules,
-      final SequenceFile seqFile, final DataFile reportFile)
+      final SequenceFile seqFile, final DataFile reportFile,
+      final File tempDirectory)
       throws IOException, XMLStreamException {
 
     // Get the report extension
@@ -337,7 +338,7 @@ public class FastQCStep extends AbstractStep {
 
     // Define the temporary output file
     final File reportTempFile =
-        File.createTempFile("reportfile-", reportExtension);
+        File.createTempFile("reportfile-", reportExtension, tempDirectory);
 
     // Create the output report
     new HTMLReportArchive(seqFile, modules.toArray(new QCModule[] {}),
