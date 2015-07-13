@@ -33,7 +33,6 @@ import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.L
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.NOT_ALIGNED_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.NOT_UNIQUE_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.TOTAL_ALIGNMENTS_COUNTER;
-import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.UNMAPPED_READS_COUNTER;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFormatException;
 import htsjdk.samtools.SAMLineParser;
@@ -300,7 +299,7 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
         context.getCounter(this.counterGroup,
             EMPTY_ALIGNMENTS_COUNTER.counterName()).increment(1);
         context.getCounter(this.counterGroup,
-            UNMAPPED_READS_COUNTER.counterName()).increment(1);
+            ELIMINATED_READS_COUNTER.counterName()).increment(1);
         break;
 
       case 1:
