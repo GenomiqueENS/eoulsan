@@ -33,10 +33,14 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.LogRecord;
 
 import com.google.common.base.Joiner;
 
@@ -189,7 +193,6 @@ public class ITResult {
     report.append("\n\tOuput:"
         + this.it.getOutputTestDirectory().getAbsolutePath());
 
-
     report.append("\n\nPatterns:");
 
     // Result for comparison files
@@ -219,6 +222,9 @@ public class ITResult {
     // List patterns to exclude files on comparison
     report.append("\n\tPatterns files to exclude comparisons:\t"
         + this.it.getExcludeToComparePatterns());
+
+    report.append("\n\nDate: " + getCurrentFormatedDate());
+    report.append('\n');
 
     report.append("\n\nDuration one script maximum: "
         + toTimeHumanReadable(this.it.getDurationMaxInMinutes() * 60 * 1000));
@@ -269,6 +275,19 @@ public class ITResult {
 
     // Return text
     return report.toString();
+  }
+
+  /**
+   * Gets the current formated date.
+   * @return the current formated date
+   */
+  private String getCurrentFormatedDate() {
+
+    final DateFormat df =
+        new SimpleDateFormat("yyyy.MM.dd kk:mm:ss", Globals.DEFAULT_LOCALE);
+
+    return df.format(new Date());
+
   }
 
   /**
