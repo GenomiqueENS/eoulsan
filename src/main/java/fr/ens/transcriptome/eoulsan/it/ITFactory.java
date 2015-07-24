@@ -97,15 +97,15 @@ public class ITFactory {
 
   /** Patterns */
   static final String FILE_TO_COMPARE_PATTERNS_CONF_KEY =
-      "file.to.compare.patterns";
+      "files.to.compare";
   static final String EXCLUDE_TO_COMPARE_PATTERNS_CONF_KEY =
-      "exclude.to.compare.patterns";
+      "excluded.files.to.compare";
   static final String CHECK_LENGTH_FILE_PATTERNS_CONF_KEY =
-      "file.to.check.length.patterns";
+      "files.to.check.length";
   static final String CHECK_EXISTENCE_FILE_PATTERNS_CONF_KEY =
-      "file.to.check.existence.patterns";
+      "files.to.check.existences";
   static final String CHECK_ABSENCE_FILE_PATTERNS_CONF_KEY =
-      "file.to.check.absence.patterns";
+      "files.to.check.absence";
 
   static final String MANUAL_GENERATION_EXPECTED_DATA_CONF_KEY =
       "manual.generation.expected.data";
