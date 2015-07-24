@@ -223,6 +223,14 @@ public class ITResult {
     report.append("\n\tPatterns files to exclude comparisons:\t"
         + this.it.getExcludeToComparePatterns());
 
+    // Result to check if files exist
+    report
+        .append("\n\tFile count to remove from pattern(s) if test successed: "
+            + this.it.getFileToRemovePatterns());
+    if (!this.it.getFileToRemovePatterns().equals("none")) {
+      report.append(": " + this.it.getCountFilesToRemove() + " file(s)");
+    }
+
     report.append("\n\nDate: " + getCurrentFormatedDate());
     report.append('\n');
 
