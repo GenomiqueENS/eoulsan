@@ -96,8 +96,7 @@ public class ITFactory {
   private static final String SUCCESS_IT_DELETE_FILE_DEFAULT_VALUE = "false";
 
   /** Patterns */
-  static final String FILE_TO_COMPARE_PATTERNS_CONF_KEY =
-      "files.to.compare";
+  static final String FILE_TO_COMPARE_PATTERNS_CONF_KEY = "files.to.compare";
   static final String EXCLUDE_TO_COMPARE_PATTERNS_CONF_KEY =
       "excluded.files.to.compare";
   static final String CHECK_LENGTH_FILE_PATTERNS_CONF_KEY =
@@ -106,6 +105,7 @@ public class ITFactory {
       "files.to.check.existences";
   static final String CHECK_ABSENCE_FILE_PATTERNS_CONF_KEY =
       "files.to.check.absence";
+  static final String FILE_TO_REMOVE_CONF_KEY = "files.to.remove";
 
   static final String MANUAL_GENERATION_EXPECTED_DATA_CONF_KEY =
       "manual.generation.expected.data";
@@ -373,15 +373,19 @@ public class ITFactory {
   private static Properties evaluateProperties(final Properties rawProps)
       throws EoulsanException {
     final Properties props = new Properties();
+    final int pos = IT.PREFIX_ENV_VAR.length();
 
     // Extract environment variable
     for (final String propertyName : rawProps.stringPropertyNames()) {
       if (propertyName.startsWith(IT.PREFIX_ENV_VAR)) {
-        CONSTANTS.put(propertyName.substring(IT.PREFIX_ENV_VAR.length()),
-            rawProps.getProperty(propertyName));
 
-        // TODO add an evaluation to use constant in value on environment
-        // variable rawProps.getProperty(propertyName));
+        // Evaluate property
+        final String evalPropValue =
+            evaluateExpressions(rawProps.getProperty(propertyName), true);
+
+        // Put in constants map
+        CONSTANTS.put(propertyName.substring(pos), evalPropValue);
+
       }
     }
 
