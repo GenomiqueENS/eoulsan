@@ -169,7 +169,8 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Environment argument
 
@@ -181,7 +182,10 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
     eoulsanArgsList.add("-d");
     eoulsanArgsList.add(context.getJobDescription());
     eoulsanArgsList.add("-e");
-    eoulsanArgsList.add("hadoopVersion=" + this.hadoopVersion + ", " + "nInstances=" + this.nInstances + ", " + "instanceType=" + this.instanceType + ", " + "endpoint=" + this.endpoint + ", " + "logPathname=" + this.logPathname);
+    eoulsanArgsList.add("hadoopVersion="
+        + this.hadoopVersion + ", " + "nInstances=" + this.nInstances + ", "
+        + "instanceType=" + this.instanceType + ", " + "endpoint="
+        + this.endpoint + ", " + "logPathname=" + this.logPathname);
     eoulsanArgsList.add(context.getWorkflowFile().getSource());
     eoulsanArgsList.add(context.getDesignFile().getSource());
     eoulsanArgsList.add("hdfs:///test");
@@ -196,8 +200,8 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
     builder.withJobFlowName(context.getJobDescription());
 
     // Set the credentials
-    builder.withAWSAccessKey(this.awsAccessKey).withAWSSecretKey(
-        this.awsSecretKey);
+    builder.withAWSAccessKey(this.awsAccessKey)
+        .withAWSSecretKey(this.awsSecretKey);
 
     // Set end point
     builder.withEndpoint(this.endpoint);
@@ -260,8 +264,8 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
       return status.createStepResult();
     }
 
-    status.setMessage("Launch of Amazon Elastic MapReduce Job "
-        + jobFlowId + ".");
+    status.setMessage(
+        "Launch of Amazon Elastic MapReduce Job " + jobFlowId + ".");
     return status.createStepResult();
   }
 

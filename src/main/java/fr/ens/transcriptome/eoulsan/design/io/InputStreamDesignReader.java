@@ -99,7 +99,8 @@ public abstract class InputStreamDesignReader implements DesignReader {
    * @param is The input stream to set
    * @throws EoulsanIOException if the stream is null
    */
-  protected void setInputStream(final InputStream is) throws EoulsanIOException {
+  protected void setInputStream(final InputStream is)
+      throws EoulsanIOException {
 
     if (is == null) {
       throw new EoulsanIOException("No stream to read");

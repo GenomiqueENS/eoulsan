@@ -177,23 +177,20 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
           + "\" is deprecated, use \"quality.threshold\" parameter instead");
 
     case "pairend.accept.pairend":
-      throw new EoulsanException(
-          "The parameter \""
-              + parameter.getName()
-              + "\" is deprecated, use \"pairedend.accept.paired.end\" parameter instead");
+      throw new EoulsanException("The parameter \""
+          + parameter.getName()
+          + "\" is deprecated, use \"pairedend.accept.paired.end\" parameter instead");
 
     case "pairend.accept.singlend":
-      throw new EoulsanException(
-          "The parameter \""
-              + parameter.getName()
-              + "\" is deprecated, use \"pairedend.accept.single.end\" parameter instead");
+      throw new EoulsanException("The parameter \""
+          + parameter.getName()
+          + "\" is deprecated, use \"pairedend.accept.single.end\" parameter instead");
 
     case "trim.length.threshold":
-      getLogger().warning(
-          stepMessage
-              + "the \"" + parameter.getName()
-              + "\" parameter is deprecated and will be soon removed. "
-              + "Please use \"trimpolynend\" and \"length\" filters instead");
+      getLogger().warning(stepMessage
+          + "the \"" + parameter.getName()
+          + "\" parameter is deprecated and will be soon removed. "
+          + "Please use \"trimpolynend\" and \"length\" filters instead");
       break;
 
     default:
@@ -209,9 +206,8 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
    * @throws EoulsanException if an error occurs while initialize one of the
    *           filter
    */
-  protected MultiReadFilter getReadFilter(
-      final ReporterIncrementer incrementer, final String counterGroup)
-      throws EoulsanException {
+  protected MultiReadFilter getReadFilter(final ReporterIncrementer incrementer,
+      final String counterGroup) throws EoulsanException {
 
     // As filters are not thread safe, create a new MultiReadFilterBuilder
     // with a new instance of each filter

@@ -75,8 +75,8 @@ public class ExecLock implements Locker {
     try {
 
       if (!this.pidFile.createNewFile()) {
-        throw new IOException("Can not create pid file: "
-            + this.pidFile.getAbsolutePath());
+        throw new IOException(
+            "Can not create pid file: " + this.pidFile.getAbsolutePath());
       }
       int count = 0;
 
@@ -125,10 +125,8 @@ public class ExecLock implements Locker {
           "Can not delete lock file: " + this.lockFile.getAbsolutePath());
     }
     if (!this.pidLockFile.delete()) {
-      getLogger()
-          .warning(
-              "Can not delete pid lock file: "
-                  + this.pidLockFile.getAbsolutePath());
+      getLogger().warning("Can not delete pid lock file: "
+          + this.pidLockFile.getAbsolutePath());
     }
     if (!this.pidFile.delete()) {
       getLogger().warning(

@@ -79,8 +79,8 @@ public class PairedEndReadFilter implements ReadFilter {
     } else if ("accept.single.end".equals(key.trim())) {
       this.acceptPairedEnd = Boolean.parseBoolean(value.trim());
     } else {
-      throw new EoulsanException("Unknown parameter for "
-          + getName() + " read filter: " + key);
+      throw new EoulsanException(
+          "Unknown parameter for " + getName() + " read filter: " + key);
     }
 
   }

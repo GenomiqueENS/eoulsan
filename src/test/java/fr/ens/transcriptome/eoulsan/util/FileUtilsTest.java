@@ -35,15 +35,13 @@ public class FileUtilsTest {
   @Test
   public void relativizePathTest() {
 
-    File r1 =
-        FileUtils.relativizePath(new File("/usr/share/doc/toto.txt"), new File(
-            "/usr/share"));
+    File r1 = FileUtils.relativizePath(new File("/usr/share/doc/toto.txt"),
+        new File("/usr/share"));
 
     assertEquals(new File("doc/toto.txt"), r1);
 
-    File r2 =
-        FileUtils.relativizePath(new File("/usr/share/doc/toto.txt"), new File(
-            "/usr/share/X11/data"));
+    File r2 = FileUtils.relativizePath(new File("/usr/share/doc/toto.txt"),
+        new File("/usr/share/X11/data"));
 
     assertEquals(new File("../../doc/toto.txt"), r2);
 

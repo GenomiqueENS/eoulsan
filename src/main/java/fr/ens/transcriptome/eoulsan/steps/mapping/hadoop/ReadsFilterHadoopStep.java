@@ -72,10 +72,10 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 @HadoopOnly
 public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
-  static final String OUTPUT_FILE1_KEY = Globals.PARAMETER_PREFIX
-      + ".filter.reads.output.file1";
-  static final String OUTPUT_FILE2_KEY = Globals.PARAMETER_PREFIX
-      + ".filter.reads.output.file2";
+  static final String OUTPUT_FILE1_KEY =
+      Globals.PARAMETER_PREFIX + ".filter.reads.output.file1";
+  static final String OUTPUT_FILE2_KEY =
+      Globals.PARAMETER_PREFIX + ".filter.reads.output.file2";
 
   //
   // Step methods
@@ -88,7 +88,8 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Create configuration object
     final Configuration conf = createConfiguration();
@@ -116,9 +117,8 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
         final DataFile outFile = outData.getDataFile(0);
         final List<String> filenames = singletonList(inFile.getName());
 
-        job =
-            createJobConf(conf, dataName, inFile, filenames, READS_FASTQ,
-                fastqFormat, outFile);
+        job = createJobConf(conf, dataName, inFile, filenames, READS_FASTQ,
+            fastqFormat, outFile);
       } else {
 
         // Define input and output files
@@ -129,19 +129,18 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
         final List<String> filenames =
             newArrayList(inFile1.getName(), inFile2.getName());
 
-        tfqFile =
-            new DataFile(inFile1.getParent(), inFile1.getBasename()
-                + READS_TFQ.getDefaultExtension());
+        tfqFile = new DataFile(inFile1.getParent(),
+            inFile1.getBasename() + READS_TFQ.getDefaultExtension());
 
         // Convert FASTQ files to TFQ
-        MapReduceUtils.submitAndWaitForJob(PairedEndFastqToTfq.convert(conf,
-            inFile1, inFile2, tfqFile, getReducerTaskCount()),
+        MapReduceUtils.submitAndWaitForJob(
+            PairedEndFastqToTfq.convert(conf, inFile1, inFile2, tfqFile,
+                getReducerTaskCount()),
             inData.getName(), CommonHadoop.CHECK_COMPLETION_TIME, status,
             COUNTER_GROUP);
 
-        job =
-            createJobConf(conf, dataName, tfqFile, filenames, READS_TFQ,
-                fastqFormat, outFile1, outFile2);
+        job = createJobConf(conf, dataName, tfqFile, filenames, READS_TFQ,
+            fastqFormat, outFile1, outFile2);
       }
 
       // Submit main job
@@ -193,7 +192,7 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
       final String dataName, final DataFile inFile,
       final List<String> filenames, final DataFormat inputFormat,
       final FastqFormat fastqFormat, final DataFile... outFiles)
-      throws IOException {
+          throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -218,9 +217,8 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
 
     // Set Job name
     // Create the job and its name
-    final Job job =
-        Job.getInstance(jobConf, "Filter reads ("
-            + dataName + ", " + Joiner.on(", ").join(filenames) + ")");
+    final Job job = Job.getInstance(jobConf, "Filter reads ("
+        + dataName + ", " + Joiner.on(", ").join(filenames) + ")");
 
     // Set the jar
     job.setJarByClass(ReadsFilterHadoopStep.class);
@@ -251,8 +249,8 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     job.setNumReduceTasks(0);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(outFiles[0].getSource()
-        + (outFiles.length > 1 ? ".tmp" : "")));
+    FileOutputFormat.setOutputPath(job, new Path(
+        outFiles[0].getSource() + (outFiles.length > 1 ? ".tmp" : "")));
 
     return job;
   }

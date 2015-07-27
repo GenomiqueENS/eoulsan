@@ -69,7 +69,7 @@ public class ToolElementFloat extends AbstractToolElement {
   @Override
   public void setValue(final Parameter stepParameter) throws EoulsanException {
     super.setValue(stepParameter);
-    
+
     this.setValue(stepParameter.getStringValue());
 
   }
@@ -129,8 +129,8 @@ public class ToolElementFloat extends AbstractToolElement {
       this.value = defaultValue;
 
     } catch (final NumberFormatException e) {
-      throw new EoulsanException("No found default value for parameter "
-          + this.getName(), e);
+      throw new EoulsanException(
+          "No found default value for parameter " + this.getName(), e);
     }
 
     try {

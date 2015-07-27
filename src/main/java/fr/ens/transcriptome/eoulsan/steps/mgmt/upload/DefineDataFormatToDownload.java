@@ -87,8 +87,8 @@ public class DefineDataFormatToDownload extends AbstractStep {
       if ("formats".equals(p.getName())) {
         formatNames = p.getStringValue();
       } else {
-        throw new EoulsanException("Unknown parameter for "
-            + getName() + " step: " + p.getName());
+        throw new EoulsanException(
+            "Unknown parameter for " + getName() + " step: " + p.getName());
       }
     }
 
@@ -118,7 +118,8 @@ public class DefineDataFormatToDownload extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     final StringBuilder sb = new StringBuilder();
     boolean first = true;

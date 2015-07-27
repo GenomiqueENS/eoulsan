@@ -105,7 +105,8 @@ public class MultiColumnTranslatorReader {
    * @param is The input stream to set
    * @throws EoulsanIOException if the stream is null
    */
-  protected void setInputStream(final InputStream is) throws EoulsanIOException {
+  protected void setInputStream(final InputStream is)
+      throws EoulsanIOException {
 
     if (is == null) {
       throw new EoulsanIOException("No stream to read");
@@ -132,8 +133,8 @@ public class MultiColumnTranslatorReader {
    */
   public MultiColumnTranslator read() throws EoulsanIOException {
 
-    setBufferedReader(new BufferedReader(new InputStreamReader(
-        getInputStream(), Globals.DEFAULT_CHARSET)));
+    setBufferedReader(new BufferedReader(
+        new InputStreamReader(getInputStream(), Globals.DEFAULT_CHARSET)));
 
     final boolean removeQuotes = isRemoveQuotes();
 
@@ -177,8 +178,8 @@ public class MultiColumnTranslatorReader {
 
     } catch (IOException e) {
 
-      throw new EoulsanIOException("Error while reading the file: "
-          + e.getMessage(), e);
+      throw new EoulsanIOException(
+          "Error while reading the file: " + e.getMessage(), e);
     }
 
     return result;
@@ -260,7 +261,8 @@ public class MultiColumnTranslatorReader {
    * @throws EoulsanIOException if an error occurs while reading the file or if
    *           the file is null.
    */
-  public MultiColumnTranslatorReader(final File file) throws EoulsanIOException {
+  public MultiColumnTranslatorReader(final File file)
+      throws EoulsanIOException {
 
     this(file, false);
   }

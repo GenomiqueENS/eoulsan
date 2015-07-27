@@ -115,8 +115,8 @@ public class SAMUtils {
    *         defined in the SAM header
    * @throws FileNotFoundException if the file cannot be found
    */
-  public static GenomeDescription createGenomeDescriptionFromSAM(final File file)
-      throws FileNotFoundException {
+  public static GenomeDescription createGenomeDescriptionFromSAM(
+      final File file) throws FileNotFoundException {
 
     if (file == null) {
       throw new NullPointerException("The file is null");
@@ -207,7 +207,8 @@ public class SAMUtils {
       return desc;
     }
 
-    for (SAMSequenceRecord seq : header.getSequenceDictionary().getSequences()) {
+    for (SAMSequenceRecord seq : header.getSequenceDictionary()
+        .getSequences()) {
       desc.addSequence(seq.getSequenceName(), seq.getSequenceLength());
     }
 

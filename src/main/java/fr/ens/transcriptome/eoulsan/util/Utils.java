@@ -164,7 +164,8 @@ public class Utils {
    * @param elements to add at the creation of the list
    * @return a new ArrayList object
    */
-  public static <E> List<E> newArrayList(final Collection<? extends E> elements) {
+  public static <E> List<E> newArrayList(
+      final Collection<? extends E> elements) {
 
     return new ArrayList<>(elements);
   }
@@ -174,7 +175,8 @@ public class Utils {
    * @param elements to add at the creation of the set
    * @return a new HashSet object
    */
-  public static <E> HashSet<E> newHashSet(final Collection<? extends E> elements) {
+  public static <E> HashSet<E> newHashSet(
+      final Collection<? extends E> elements) {
 
     return new HashSet<>(elements);
   }

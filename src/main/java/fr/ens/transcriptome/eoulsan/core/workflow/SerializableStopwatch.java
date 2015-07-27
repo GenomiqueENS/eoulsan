@@ -63,8 +63,8 @@ public class SerializableStopwatch implements Serializable {
   private void writeObject(ObjectOutputStream s) throws IOException {
   }
 
-  private void readObject(ObjectInputStream s) throws IOException,
-      ClassNotFoundException {
+  private void readObject(ObjectInputStream s)
+      throws IOException, ClassNotFoundException {
 
     this.stopWatch = Stopwatch.createUnstarted();
   }

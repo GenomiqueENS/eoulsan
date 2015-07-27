@@ -154,8 +154,8 @@ public class RSConnectionNewImpl implements RSConnection {
     try {
       putFile(new FileInputStream(inputFile), rServeFilename);
     } catch (FileNotFoundException e) {
-      throw new REngineException(this.rconnection, "file not found: "
-          + e.getMessage());
+      throw new REngineException(this.rconnection,
+          "file not found: " + e.getMessage());
     }
   }
 
@@ -184,11 +184,11 @@ public class RSConnectionNewImpl implements RSConnection {
       os.close();
 
     } catch (REngineException e) {
-      throw new REngineException(this.rconnection, "Unable to put file: "
-          + e.getMessage());
+      throw new REngineException(this.rconnection,
+          "Unable to put file: " + e.getMessage());
     } catch (IOException e) {
-      throw new REngineException(this.rconnection, "Unable to create report: "
-          + e.getMessage());
+      throw new REngineException(this.rconnection,
+          "Unable to create report: " + e.getMessage());
     }
 
   }
@@ -470,8 +470,8 @@ public class RSConnectionNewImpl implements RSConnection {
     return file;
   }
 
-  public void getAllFiles(final String outPath) throws REngineException,
-      REXPMismatchException {
+  public void getAllFiles(final String outPath)
+      throws REngineException, REXPMismatchException {
     String[] files = getFileList();
 
     for (String file : files) {
@@ -485,7 +485,8 @@ public class RSConnectionNewImpl implements RSConnection {
    * @throws REngineException
    * @throws REXPMismatchException
    */
-  private String[] getFileList() throws REngineException, REXPMismatchException {
+  private String[] getFileList()
+      throws REngineException, REXPMismatchException {
     RConnection connection = getRConnection();
     String[] files;
     files = connection.eval("list.files()").asStrings();

@@ -58,9 +58,8 @@ public class SimpleDesignWriter extends DesignWriter {
     }
 
     try {
-      this.bw =
-          new BufferedWriter(new OutputStreamWriter(getOutputStream(),
-              Globals.DEFAULT_CHARSET));
+      this.bw = new BufferedWriter(
+          new OutputStreamWriter(getOutputStream(), Globals.DEFAULT_CHARSET));
 
       List<String> metadataFields = design.getMetadataFieldsNames();
 
@@ -99,8 +98,8 @@ public class SimpleDesignWriter extends DesignWriter {
 
       this.bw.close();
     } catch (IOException e) {
-      throw new EoulsanIOException("Error while writing stream: "
-          + e.getMessage(), e);
+      throw new EoulsanIOException(
+          "Error while writing stream: " + e.getMessage(), e);
     }
 
   }
@@ -152,8 +151,8 @@ public class SimpleDesignWriter extends DesignWriter {
    * @throws EoulsanIOException if the stream is null
    * @throws FileNotFoundException if the file doesn't exist
    */
-  public SimpleDesignWriter(final String filename) throws EoulsanIOException,
-      FileNotFoundException {
+  public SimpleDesignWriter(final String filename)
+      throws EoulsanIOException, FileNotFoundException {
 
     this(new FileOutputStream(filename));
   }

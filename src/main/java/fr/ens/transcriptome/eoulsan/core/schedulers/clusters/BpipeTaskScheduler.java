@@ -93,19 +93,17 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
 
       if (exitCode == 0) {
 
-        getLogger().fine(
-            "Job "
-                + jobId + " submitted to " + getSchedulerName()
-                + " scheduler. Job name: " + jobName + " Job command: "
-                + jobCommand);
+        getLogger().fine("Job "
+            + jobId + " submitted to " + getSchedulerName()
+            + " scheduler. Job name: " + jobName + " Job command: "
+            + jobCommand);
 
         return jobId;
       } else {
 
-        getLogger().warning(
-            "Job submission failed with "
-                + getSchedulerName() + " scheduler. Job name: " + jobName
-                + " Job command: " + jobCommand);
+        getLogger().warning("Job submission failed with "
+            + getSchedulerName() + " scheduler. Job name: " + jobName
+            + " Job command: " + jobCommand);
         throw new IOException("Job submission failed, exit code: " + exitCode);
       }
     } catch (InterruptedException e) {
@@ -123,16 +121,11 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
       final int exitCode = process.waitFor();
 
       if (exitCode == 0) {
-        getLogger()
-            .fine(
-                "Job "
-                    + jobId + " removed from " + getSchedulerName()
-                    + " cluster");
+        getLogger().fine("Job "
+            + jobId + " removed from " + getSchedulerName() + " cluster");
       } else {
-        getLogger().warning(
-            "Job "
-                + jobId + " not removed from " + getSchedulerName()
-                + " cluster");
+        getLogger().warning("Job "
+            + jobId + " not removed from " + getSchedulerName() + " cluster");
       }
     } catch (InterruptedException e) {
       getLogger().severe(e.getMessage());
@@ -158,10 +151,9 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
 
       if (exitCode == 0) {
 
-        getLogger().fine(
-            "Job "
-                + jobId + " status on " + getSchedulerName()
-                + " scheduler. Job status: " + jobStatus);
+        getLogger().fine("Job "
+            + jobId + " status on " + getSchedulerName()
+            + " scheduler. Job status: " + jobStatus);
 
         final List<String> fields =
             Lists.newArrayList(Splitter.on(' ').split(jobStatus.trim()));
@@ -224,9 +216,8 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
    * @return a Process object
    * @throws IOException if an error occurs while creating the process
    */
-  private Process startJobProcess(final String jobName,
-      final String jobCommand, final File jobDirectory, final int taskId)
-      throws IOException {
+  private Process startJobProcess(final String jobName, final String jobCommand,
+      final File jobDirectory, final int taskId) throws IOException {
 
     final List<String> command = new ArrayList<>();
     command.add(getBpipeCommandWrapper().getAbsolutePath());

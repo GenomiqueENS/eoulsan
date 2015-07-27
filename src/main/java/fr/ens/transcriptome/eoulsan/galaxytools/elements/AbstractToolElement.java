@@ -44,8 +44,8 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 public abstract class AbstractToolElement implements ToolElement {
 
   /** SPLITTER. */
-  final static Splitter COMMA = Splitter.on(',').trimResults()
-      .omitEmptyStrings();
+  final static Splitter COMMA =
+      Splitter.on(',').trimResults().omitEmptyStrings();
 
   private static final String INVALID = "[.-_]";
 
@@ -135,11 +135,11 @@ public abstract class AbstractToolElement implements ToolElement {
 
   @Override
   public void setValue(final Parameter stepParameter) throws EoulsanException {
-    //TODO
+    // TODO
     if (stepParameter == null && !isSetting())
-      throw new EoulsanException("GalaxyTool parameter missing to set "
-          + getName());
-    
+      throw new EoulsanException(
+          "GalaxyTool parameter missing to set " + getName());
+
   }
 
   /**
@@ -205,16 +205,12 @@ public abstract class AbstractToolElement implements ToolElement {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((this.help == null) ? 0 : this.help.hashCode());
-    result =
-        prime
-            * result
-            + ((this.isOptional == null) ? 0 : this.isOptional.hashCode());
+    result = prime * result
+        + ((this.isOptional == null) ? 0 : this.isOptional.hashCode());
     result =
         prime * result + ((this.label == null) ? 0 : this.label.hashCode());
-    result =
-        prime
-            * result
-            + ((this.shortName == null) ? 0 : this.shortName.hashCode());
+    result = prime * result
+        + ((this.shortName == null) ? 0 : this.shortName.hashCode());
     result = prime * result + ((this.type == null) ? 0 : this.type.hashCode());
     return result;
   }

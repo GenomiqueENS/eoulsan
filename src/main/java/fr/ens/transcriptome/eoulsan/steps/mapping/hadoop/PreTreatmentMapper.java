@@ -56,8 +56,8 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   // Parameters keys
-  static final String FASTQ_FORMAT_KEY = Globals.PARAMETER_PREFIX
-      + ".pretreatment.fastq.format";
+  static final String FASTQ_FORMAT_KEY =
+      Globals.PARAMETER_PREFIX + ".pretreatment.fastq.format";
 
   private String counterGroup;
 
@@ -74,8 +74,8 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
   //
 
   @Override
-  protected void setup(final Context context) throws IOException,
-      InterruptedException {
+  protected void setup(final Context context)
+      throws IOException, InterruptedException {
 
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
@@ -90,8 +90,8 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     // Set the FastqFormat
     final FastqFormat fastqFormat =
-        FastqFormat.getFormatFromName(conf.get(FASTQ_FORMAT_KEY, ""
-            + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
+        FastqFormat.getFormatFromName(conf.get(FASTQ_FORMAT_KEY,
+            "" + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
     this.read.setFastqFormat(fastqFormat);
 
     getLogger().info("Fastq format: " + fastqFormat);
@@ -117,8 +117,7 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
   protected void map(final LongWritable key, final Text value,
       final Context context) throws IOException, InterruptedException {
 
-    context
-        .getCounter(this.counterGroup, INPUT_RAW_READS_COUNTER.counterName())
+    context.getCounter(this.counterGroup, INPUT_RAW_READS_COUNTER.counterName())
         .increment(1);
 
     final String line = value.toString();
@@ -134,16 +133,14 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
     // Illumina technology and Casava 1.8 format for the '@' line
     if (!this.fields.get(0).contains("/")) {
       this.outKey = new Text(this.read.getName().split(" ")[0]);
-      this.outValue =
-          new Text(this.read.getName().split(" ")[1]
-              + "\t" + this.read.getSequence() + "\t" + this.read.getQuality());
+      this.outValue = new Text(this.read.getName().split(" ")[1]
+          + "\t" + this.read.getSequence() + "\t" + this.read.getQuality());
     }
     // Before Casava 1.8 or technology other than Illumina
     else {
       this.outKey = new Text(this.read.getName().split("/")[0] + "/");
-      this.outValue =
-          new Text(this.read.getName().split("/")[1]
-              + "\t" + this.read.getSequence() + "\t" + this.read.getQuality());
+      this.outValue = new Text(this.read.getName().split("/")[1]
+          + "\t" + this.read.getSequence() + "\t" + this.read.getQuality());
     }
 
     context.write(this.outKey, this.outValue);
@@ -153,8 +150,8 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
   }
 
   @Override
-  protected void cleanup(final Context context) throws IOException,
-      InterruptedException {
+  protected void cleanup(final Context context)
+      throws IOException, InterruptedException {
   }
 
 }

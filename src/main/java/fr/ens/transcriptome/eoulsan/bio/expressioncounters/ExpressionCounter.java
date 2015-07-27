@@ -150,8 +150,8 @@ public interface ExpressionCounter {
    * @throws IOException
    */
   void count(DataFile alignmentFile, DataFile annotationFile,
-      DataFile expressionFile, DataFile genomeDescFile) throws IOException,
-      EoulsanException, BadBioEntryException;
+      DataFile expressionFile, DataFile genomeDescFile)
+          throws IOException, EoulsanException, BadBioEntryException;
 
   //
   // Other methods

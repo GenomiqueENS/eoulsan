@@ -29,8 +29,8 @@ abstract class AbstractUI implements UI {
    */
   protected AbstractUI() {
 
-    if (EoulsanRuntime.getSettings().getBooleanSetting(
-        "main.debug.ui.force.interactive.mode")) {
+    if (EoulsanRuntime.getSettings()
+        .getBooleanSetting("main.debug.ui.force.interactive.mode")) {
       this.interactiveMode = true;
     } else {
       this.interactiveMode = System.console() != null;

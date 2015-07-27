@@ -140,7 +140,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   protected InputStream internalMapSE(final File readsFile,
       final File archiveIndexDir, final GenomeDescription genomeDescription)
-      throws IOException {
+          throws IOException {
 
     final String soapPath;
 
@@ -148,12 +148,10 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       soapPath = install(MAPPER_EXECUTABLE);
     }
 
-    final File outputFile =
-        FileUtils.createTempFile(readsFile.getParentFile(), "soap-outputFile-",
-            ".soap");
-    final File unmapFile =
-        FileUtils.createTempFile(readsFile.getParentFile(), "soap-outputFile-",
-            ".unmap");
+    final File outputFile = FileUtils.createTempFile(readsFile.getParentFile(),
+        "soap-outputFile-", ".soap");
+    final File unmapFile = FileUtils.createTempFile(readsFile.getParentFile(),
+        "soap-outputFile-", ".unmap");
 
     return createMapperProcessSE(soapPath,
         getIndexPath(archiveIndexDir, ".index.amb", 4), readsFile, outputFile,
@@ -171,20 +169,17 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       soapPath = install(MAPPER_EXECUTABLE);
     }
 
-    final File outputFile =
-        FileUtils.createTempFile(readsFile1.getParentFile(), "soap-output-",
-            ".soap");
-    final File unmapFile =
-        FileUtils.createTempFile(readsFile1.getParentFile(), "soap-output-",
-            ".unmap");
-    final File unpairedFile =
-        FileUtils.createTempFile(readsFile1.getParentFile(), "soap-output-",
-            ".unpaired");
+    final File outputFile = FileUtils.createTempFile(readsFile1.getParentFile(),
+        "soap-output-", ".soap");
+    final File unmapFile = FileUtils.createTempFile(readsFile1.getParentFile(),
+        "soap-output-", ".unmap");
+    final File unpairedFile = FileUtils.createTempFile(
+        readsFile1.getParentFile(), "soap-output-", ".unpaired");
 
     return createMapperProcessPE(soapPath,
         getIndexPath(archiveIndexDir, ".index.amb", 4), readsFile1, readsFile2,
         outputFile, unmapFile, unpairedFile, genomeDescription, true)
-        .getStout();
+            .getStout();
   }
 
   @Override
@@ -272,8 +267,8 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       protected InputStream createCustomInputStream(final InputStream stdout)
           throws FileNotFoundException {
 
-        return new SequenceInputStream(convertSOAP2SAM(stdout,
-            genomeDescription, isPairedEnd()),
+        return new SequenceInputStream(
+            convertSOAP2SAM(stdout, genomeDescription, isPairedEnd()),
             convertFasta2SAM(new FileInputStream(unmapFile)));
       }
 
@@ -281,8 +276,8 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       protected void clean() {
 
         if (!outputFile.delete()) {
-          getLogger().warning(
-              "Cannot remove SOAP temporary file: " + outputFile);
+          getLogger()
+              .warning("Cannot remove SOAP temporary file: " + outputFile);
         }
 
         if (!unmapFile.delete()) {
@@ -299,7 +294,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       final String archivePath, final File readsFile1, final File readsFile2,
       final File outputFile, final File unmapFile, final File unpairedFile,
       final GenomeDescription genomeDescription, final boolean fileMode)
-      throws IOException {
+          throws IOException {
 
     return new MapperProcess(this, true, false, true) {
 
@@ -335,8 +330,8 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       protected InputStream createCustomInputStream(final InputStream stdout)
           throws FileNotFoundException {
 
-        return new SequenceInputStream(convertSOAP2SAM(stdout,
-            genomeDescription, isPairedEnd()),
+        return new SequenceInputStream(
+            convertSOAP2SAM(stdout, genomeDescription, isPairedEnd()),
             convertFasta2SAM(new FileInputStream(unmapFile)));
       }
 
@@ -344,8 +339,8 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
       protected void clean() {
 
         if (!outputFile.delete()) {
-          getLogger().warning(
-              "Cannot remove SOAP temporary file: " + outputFile);
+          getLogger()
+              .warning("Cannot remove SOAP temporary file: " + outputFile);
         }
 
         if (!unmapFile.delete()) {
@@ -392,9 +387,8 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
           return null;
         }
 
-        final List<String> result =
-            Collections.singletonList(this.id
-                + "\t4\t*\t0\t0\t*\t*\t0\t0\t" + s + "\t*\t");
+        final List<String> result = Collections.singletonList(
+            this.id + "\t4\t*\t0\t0\t*\t*\t0\t0\t" + s + "\t*\t");
         this.id = null;
 
         return result;
@@ -410,7 +404,7 @@ public class SOAPReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   public void init(final File archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
-      throws IOException {
+          throws IOException {
 
     super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }

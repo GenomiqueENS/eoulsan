@@ -644,8 +644,8 @@ public class GFFEntry {
     setEnd(parseInt(fields[4], Integer.MIN_VALUE));
     setScore(parseDouble(fields[5], Double.NaN));
 
-    setStrand(fields[6] == null || fields[6].length() == 0 ? '.' : fields[6]
-        .charAt(0));
+    setStrand(fields[6] == null || fields[6].length() == 0
+        ? '.' : fields[6].charAt(0));
     setPhase(parseInt(fields[7], -1));
     parseAttributes(fields[8]);
   }

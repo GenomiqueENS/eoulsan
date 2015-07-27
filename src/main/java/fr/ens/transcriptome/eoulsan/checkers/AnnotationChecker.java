@@ -102,9 +102,8 @@ public class AnnotationChecker implements Checker {
         break;
 
       case STRANDED_PARAMETER_NAME:
-        this.stranded =
-            "yes".equals(p.getStringValue())
-                || "reverse".equals(p.getStringValue());
+        this.stranded = "yes".equals(p.getStringValue())
+            || "reverse".equals(p.getStringValue());
         break;
 
       default:
@@ -113,8 +112,8 @@ public class AnnotationChecker implements Checker {
             && !OVERLAP_MODE_PARAMETER_NAME.equals(p.getName())
             && !REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME.equals(p.getName())
             && !SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME.equals(p.getName())) {
-          throw new EoulsanException("Unknown parameter for "
-              + getName() + " step: " + p.getName());
+          throw new EoulsanException(
+              "Unknown parameter for " + getName() + " step: " + p.getName());
 
         }
 
@@ -154,7 +153,8 @@ public class AnnotationChecker implements Checker {
     } catch (IOException e) {
       throw new EoulsanException(
           "Annotation Check: Error while reading annotation file for checking: "
-              + e.getMessage(), e);
+              + e.getMessage(),
+          e);
     } catch (BadBioEntryException e) {
       throw new EoulsanException("Annotation Check: "
           + e.getMessage() + " in line \"" + e.getEntry() + "\"", e);
@@ -164,8 +164,8 @@ public class AnnotationChecker implements Checker {
 
   private static void validationAnnotation(final DataFile file,
       final GenomeDescription desc, final String featureType,
-      final String attributeId, final boolean stranded) throws IOException,
-      BadBioEntryException, EoulsanException {
+      final String attributeId, final boolean stranded)
+          throws IOException, BadBioEntryException, EoulsanException {
 
     final GenomicArray<String> features = new GenomicArray<>();
     Map<String, long[]> sequenceRegions = null;
@@ -200,8 +200,9 @@ public class AnnotationChecker implements Checker {
             interval = sequenceRegions.get(sequenceName);
 
             if (interval == null) {
-              throw new BadBioEntryException("GFF entry with id ("
-                  + sequenceName + ") not found in sequence region",
+              throw new BadBioEntryException(
+                  "GFF entry with id ("
+                      + sequenceName + ") not found in sequence region",
                   e.toString());
             }
           }
@@ -331,8 +332,8 @@ public class AnnotationChecker implements Checker {
 
         if (len == -1) {
           throw new BadBioEntryException(
-              "Unknown sequence found in GFF metadata", "##sequence-region "
-                  + sequenceRegion);
+              "Unknown sequence found in GFF metadata",
+              "##sequence-region " + sequenceRegion);
         }
 
         // Don't check the start position because it can
@@ -343,7 +344,8 @@ public class AnnotationChecker implements Checker {
           throw new BadBioEntryException(
               "Invalid GFF metadata, the end position ("
                   + end + ") is greater than the length of the sequence ("
-                  + (len + 2) + ")", "##sequence-region " + sequenceRegion);
+                  + (len + 2) + ")",
+              "##sequence-region " + sequenceRegion);
         }
 
       } catch (NumberFormatException e) {
@@ -356,8 +358,8 @@ public class AnnotationChecker implements Checker {
   }
 
   private GenomeDescription getGenomeDescription(final DataFile annotationFile,
-      final CheckStore checkInfo) throws EoulsanException,
-      BadBioEntryException, IOException {
+      final CheckStore checkInfo)
+          throws EoulsanException, BadBioEntryException, IOException {
 
     GenomeDescription result =
         (GenomeDescription) checkInfo.get(GenomeChecker.GENOME_DESCRIPTION);
@@ -366,9 +368,8 @@ public class AnnotationChecker implements Checker {
       return result;
     }
 
-    result =
-        new GenomeDescriptionCreator()
-            .createGenomeDescriptionFromAnnotation(annotationFile);
+    result = new GenomeDescriptionCreator()
+        .createGenomeDescriptionFromAnnotation(annotationFile);
 
     return result;
   }

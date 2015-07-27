@@ -53,15 +53,15 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class FinalExpressionTranscriptsCreator {
 
   /* Default Charset. */
-  private static final Charset CHARSET = Charset
-      .forName(Globals.DEFAULT_FILE_ENCODING);
+  private static final Charset CHARSET =
+      Charset.forName(Globals.DEFAULT_FILE_ENCODING);
 
   private TranscriptAndExonFinder tef = new TranscriptAndExonFinder();
   private final Map<String, ExpressionTranscript> expressionResults =
       new HashMap<>();
 
-  private static final class ExpressionTranscript implements
-      Comparable<ExpressionTranscript> {
+  private static final class ExpressionTranscript
+      implements Comparable<ExpressionTranscript> {
 
     private final Transcript transcript;
     private int baseNotCovered;
@@ -247,7 +247,8 @@ public class FinalExpressionTranscriptsCreator {
 
     final OutputStreamWriter osw = new OutputStreamWriter(os, CHARSET);
 
-    osw.write("Id\tType\tChromosome\tStart\tEnd\tStrand\tLength\tFullCovered\tBasesNotCovered\tRatio\tCount\n");
+    osw.write(
+        "Id\tType\tChromosome\tStart\tEnd\tStrand\tLength\tFullCovered\tBasesNotCovered\tRatio\tCount\n");
     for (ExpressionTranscript et : list) {
       osw.write(et.toString() + "\n");
     }

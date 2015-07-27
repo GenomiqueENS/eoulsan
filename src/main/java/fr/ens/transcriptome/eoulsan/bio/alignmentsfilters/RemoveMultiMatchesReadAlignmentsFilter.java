@@ -35,8 +35,8 @@ import java.util.List;
  * @author Laurent Jourdren
  * @author Claire Wallon
  */
-public class RemoveMultiMatchesReadAlignmentsFilter extends
-    AbstractReadAlignmentsFilter {
+public class RemoveMultiMatchesReadAlignmentsFilter
+    extends AbstractReadAlignmentsFilter {
 
   public static final String FILTER_NAME = "removemultimatches";
 

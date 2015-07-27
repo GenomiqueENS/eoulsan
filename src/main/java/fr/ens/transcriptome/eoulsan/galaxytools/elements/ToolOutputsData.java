@@ -70,7 +70,7 @@ public class ToolOutputsData extends AbstractToolElement {
   @Override
   public void setValue(final Parameter stepParameter) throws EoulsanException {
     super.setValue(stepParameter);
-    
+
     this.setValue(stepParameter.getValue());
   }
 
@@ -120,18 +120,16 @@ public class ToolOutputsData extends AbstractToolElement {
 
     // Check count format found
     if (this.formats.size() > 1) {
-      throw new EoulsanException(
-          "Parsing tool xml: more one format data found,"
-              + Joiner.on(",").join(this.formats) + " invalid.");
+      throw new EoulsanException("Parsing tool xml: more one format data found,"
+          + Joiner.on(",").join(this.formats) + " invalid.");
     }
 
     if (this.formats.isEmpty()) {
       this.dataFormat = null;
     } else {
       // Convert format in DataFormat
-      this.dataFormat =
-          DataFormatRegistry.getInstance().getDataFormatFromToolshedExtension(
-              this.formats.get(0));
+      this.dataFormat = DataFormatRegistry.getInstance()
+          .getDataFormatFromToolshedExtension(this.formats.get(0));
     }
   }
 

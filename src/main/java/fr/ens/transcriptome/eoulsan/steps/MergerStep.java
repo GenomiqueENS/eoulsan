@@ -252,15 +252,16 @@ public class MergerStep extends AbstractStep {
   @Override
   public InputPorts getInputPorts() {
 
-    return new InputPortsBuilder().addPort("input", true,
-        this.merger.getFormat()).create();
+    return new InputPortsBuilder()
+        .addPort("input", true, this.merger.getFormat()).create();
   }
 
   @Override
   public OutputPorts getOutputPorts() {
 
-    return new OutputPortsBuilder().addPort("output", true,
-        this.merger.getFormat(), this.compression).create();
+    return new OutputPortsBuilder()
+        .addPort("output", true, this.merger.getFormat(), this.compression)
+        .create();
   }
 
   @Override
@@ -275,9 +276,8 @@ public class MergerStep extends AbstractStep {
 
       case "format":
         // Get format
-        final DataFormat format =
-            DataFormatRegistry.getInstance().getDataFormatFromNameOrAlias(
-                p.getValue());
+        final DataFormat format = DataFormatRegistry.getInstance()
+            .getDataFormatFromNameOrAlias(p.getValue());
 
         // Check if the format exists
         if (format == null) {
@@ -286,8 +286,8 @@ public class MergerStep extends AbstractStep {
 
         // Check if a merger exists for the format
         if (!format.isMerger()) {
-          throw new EoulsanException("No splitter exists for format: "
-              + format.getName());
+          throw new EoulsanException(
+              "No splitter exists for format: " + format.getName());
         }
 
         // Set the merger
@@ -315,7 +315,8 @@ public class MergerStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     final DataFormat format = this.merger.getFormat();
 
@@ -346,7 +347,8 @@ public class MergerStep extends AbstractStep {
         } else {
 
           // For each file of the multi-file format
-          for (int fileIndex = 0; fileIndex < it.getMaxFileIndex(); fileIndex++) {
+          for (int fileIndex = 0; fileIndex < it
+              .getMaxFileIndex(); fileIndex++) {
 
             // Get output file
             final DataFile outFile = outData.getDataFile(fileIndex);

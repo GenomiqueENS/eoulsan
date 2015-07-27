@@ -205,9 +205,10 @@ public class WorkflowStepResult {
 
     // Check if result has been already added
     final int contextId = result.getContext().getId();
-    checkState(!this.taskNames.containsKey(contextId), "Context #"
-        + contextId + " has already been added to result of step "
-        + this.stepId);
+    checkState(!this.taskNames.containsKey(contextId),
+        "Context #"
+            + contextId + " has already been added to result of step "
+            + this.stepId);
 
     // Set start and end times
     if (this.taskNames.isEmpty()) {
@@ -257,7 +258,8 @@ public class WorkflowStepResult {
    * @param counterGroup the name of the counter group
    * @param counters the counters of the task
    */
-  private void addCounters(final String counterGroup, Map<String, Long> counters) {
+  private void addCounters(final String counterGroup,
+      Map<String, Long> counters) {
 
     final Map<String, Long> map;
 
@@ -329,8 +331,8 @@ public class WorkflowStepResult {
     jg.write("Step message", nullToEmpty(this.stepMessage));
 
     if (!this.success) {
-      jg.write("Exception", this.exception == null ? "" : this.exception
-          .getClass().getSimpleName());
+      jg.write("Exception", this.exception == null
+          ? "" : this.exception.getClass().getSimpleName());
       jg.write("Exception message");
     }
 

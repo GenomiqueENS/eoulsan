@@ -28,4 +28,3 @@
  */
 
 package fr.ens.transcriptome.eoulsan.galaxytools;
-

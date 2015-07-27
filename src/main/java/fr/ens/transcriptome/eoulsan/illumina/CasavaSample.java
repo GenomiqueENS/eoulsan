@@ -224,13 +224,18 @@ public class CasavaSample {
 
   public String getDemultiplexedFilenamePrefix(final int readNumber) {
 
-    return getSampleId() + '_' + (getIndex() == null || "".equals(getIndex().trim())
-        ? "NoIndex" : getIndex()) + '_' + "L00" + getLane() + '_' + "R" + readNumber + '_';
+    return getSampleId()
+        + '_'
+        + (getIndex() == null || "".equals(getIndex().trim())
+            ? "NoIndex" : getIndex())
+        + '_' + "L00" + getLane() + '_' + "R" + readNumber + '_';
   }
 
   public String getNotDemultiplexedFilenamePrefix(final int readNumber) {
 
-    return "lane" + getLane() + '_' + "Undetermined" + '_' + "L00" + getLane() + '_' + "R" + readNumber + '_';
+    return "lane"
+        + getLane() + '_' + "Undetermined" + '_' + "L00" + getLane() + '_' + "R"
+        + readNumber + '_';
   }
 
   //

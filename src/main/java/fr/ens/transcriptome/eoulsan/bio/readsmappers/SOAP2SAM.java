@@ -45,8 +45,8 @@ public class SOAP2SAM {
   private final GenomeDescription gd;
   private boolean first = true;
 
-  private static final Pattern PATTERN = Pattern
-      .compile("^([AaCcGgTt])->(\\d+)");
+  private static final Pattern PATTERN =
+      Pattern.compile("^([AaCcGgTt])->(\\d+)");
 
   private static final Pattern TAB_PATTERN = Pattern.compile("\t");
 
@@ -147,9 +147,8 @@ public class SOAP2SAM {
 
     // Read and quality
     result[9] = tab[1];
-    result[10] =
-        tab[2].length() > tab[1].length() ? tab[2]
-            .substring(0, tab[1].length()) : tab[2];
+    result[10] = tab[2].length() > tab[1].length()
+        ? tab[2].substring(0, tab[1].length()) : tab[2];
 
     // Cigar
     result[5] = result[9].length() + "M";

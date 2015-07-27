@@ -149,7 +149,8 @@ public class CheckerStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Get the CheckStore
     final CheckStore checkStore = CheckStore.getCheckStore();
@@ -173,16 +174,16 @@ public class CheckerStep extends AbstractStep {
 
         for (Data data : context.getInputData(format).getListElements()) {
 
-          context.getLogger().info(
-              "Start checker "
+          context.getLogger()
+              .info("Start checker "
                   + checker.getName() + " to check: "
                   + DataUtils.getDataFiles(data));
 
           // Check the data
           checker.check(data, checkStore);
 
-          context.getLogger().info(
-              "End of checker "
+          context.getLogger()
+              .info("End of checker "
                   + checker.getName() + " to check: "
                   + DataUtils.getDataFiles(data));
         }

@@ -63,7 +63,8 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
 public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Create the reporter
     final Reporter reporter = new LocalReporter();
@@ -91,9 +92,8 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
 
       // Get the read filter
       final MultiReadFilter filter = getReadFilter(reporter, COUNTER_GROUP);
-      getLogger().info(
-          "Reads filters to apply: "
-              + Joiner.on(", ").join(filter.getFilterNames()));
+      getLogger().info("Reads filters to apply: "
+          + Joiner.on(", ").join(filter.getFilterNames()));
 
       // Run the filter in single or pair-end mode
       if (inFileCount == 1) {
@@ -139,8 +139,8 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
     filterFile(inFile, outFile, reporter, filter, fastqFormat);
 
     // Set the description of the context
-    status.setDescription("Filter reads ("
-        + inData.getName() + ", " + inFile.getName() + ")");
+    status.setDescription(
+        "Filter reads (" + inData.getName() + ", " + inFile.getName() + ")");
 
     // Add counters for this sample to log file
     status.setCounters(reporter, COUNTER_GROUP);
@@ -231,14 +231,13 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
    * @param fastqFormat FastqFormat
    * @throws IOException if an error occurs while filtering data
    */
-  private static void filterFile(final DataFile inFile1,
-      final DataFile inFile2, final DataFile outFile1, final DataFile outFile2,
-      final Reporter reporter, final ReadFilter filter,
-      final FastqFormat fastqFormat) throws IOException {
+  private static void filterFile(final DataFile inFile1, final DataFile inFile2,
+      final DataFile outFile1, final DataFile outFile2, final Reporter reporter,
+      final ReadFilter filter, final FastqFormat fastqFormat)
+          throws IOException {
 
-    getLogger().info(
-        "Filter files: "
-            + inFile1 + ", " + inFile2 + ", Fastq format: " + fastqFormat);
+    getLogger().info("Filter files: "
+        + inFile1 + ", " + inFile2 + ", Fastq format: " + fastqFormat);
 
     try (FastqReader reader2 = new FastqReader(inFile2.open());
         FastqWriter writer1 = new FastqWriter(outFile1.create());

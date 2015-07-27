@@ -102,8 +102,8 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
       final Set<Parameter> stepParameters) throws EoulsanException {
 
     if (stepParameters == null) {
-      throw new EoulsanException("No parameters set in "
-          + getName() + " generator");
+      throw new EoulsanException(
+          "No parameters set in " + getName() + " generator");
     }
 
     for (Parameter p : stepParameters) {
@@ -120,8 +120,8 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
         }
 
       } else {
-        throw new EoulsanException("Unknown parameter for "
-            + getName() + " step: " + p.getName());
+        throw new EoulsanException(
+            "Unknown parameter for " + getName() + " step: " + p.getName());
       }
 
     }
@@ -145,7 +145,8 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
     for (WorkflowStep step : context.getWorkflow().getSteps()) {
 
       if (AbstractReadsMapperStep.STEP_NAME.equals(step.getStepName())
-          || AbstractFilterAndMapReadsStep.STEP_NAME.equals(step.getStepName())) {
+          || AbstractFilterAndMapReadsStep.STEP_NAME
+              .equals(step.getStepName())) {
 
         for (Parameter p : step.getParameters()) {
 
@@ -188,14 +189,13 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
   static void execute(final SequenceReadsMapper mapper,
       final StepContext context, final String additionalArguments,
       final Map<String, String> additionalDescription, final int threadCount)
-      throws IOException, EoulsanException {
+          throws IOException, EoulsanException {
 
     checkNotNull(mapper, "mapper argument cannot be null");
     checkNotNull(context, "context argument cannot be null");
 
     // Set default value for arguments if needed
-    final String args =
-        additionalArguments != null ? additionalArguments : "";
+    final String args = additionalArguments != null ? additionalArguments : "";
 
     // Set default value for descriptions if needed
     final Map<String, String> descriptions;
@@ -228,9 +228,8 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
     mapper.setTempDirectory(context.getLocalTempDirectory());
 
     // Set the number of thread to use
-    final int threads =
-        threadCount < 1
-            ? Runtime.getRuntime().availableProcessors() : threadCount;
+    final int threads = threadCount < 1
+        ? Runtime.getRuntime().availableProcessors() : threadCount;
     mapper.setThreadsNumber(threads);
 
     // Create indexer
@@ -242,7 +241,8 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     try {
 

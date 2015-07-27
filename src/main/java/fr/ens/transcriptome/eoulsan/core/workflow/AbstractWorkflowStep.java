@@ -332,8 +332,10 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     final AbstractWorkflowStep step = inputPort.getStep();
     final AbstractWorkflowStep dependencyStep = dependencyOutputPort.getStep();
 
-    checkArgument(step == this, "input port ("
-        + inputPort.getName() + ") is not a port of the step (" + getId() + ")");
+    checkArgument(step == this,
+        "input port ("
+            + inputPort.getName() + ") is not a port of the step (" + getId()
+            + ")");
 
     // Set the link
     inputPort.setLink(dependencyOutputPort);
@@ -353,8 +355,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     // Check if try to link a step to itself
     if (step == this) {
-      throw new EoulsanRuntimeException("a step cannot depends on itself: "
-          + step.getId());
+      throw new EoulsanRuntimeException(
+          "a step cannot depends on itself: " + step.getId());
     }
 
     // Check if the step are in the same workflow
@@ -373,9 +375,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * @param step step instance
    * @return the working directory of the step
    */
-  private static DataFile defineOutputDirectory(
-      final AbstractWorkflow workflow, final Step step,
-      final boolean copyResultsToOutput) {
+  private static DataFile defineOutputDirectory(final AbstractWorkflow workflow,
+      final Step step, final boolean copyResultsToOutput) {
 
     checkNotNull(workflow, "workflow argument cannot be null");
     checkNotNull(step, "step argument cannot be null");
@@ -420,8 +421,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   protected void configure() throws EoulsanException {
 
     if (getState() != StepState.CREATED) {
-      throw new IllegalStateException("Illegal step state for configuration: "
-          + getState());
+      throw new IllegalStateException(
+          "Illegal step state for configuration: " + getState());
     }
 
     // Configure only standard steps and generator steps
@@ -430,9 +431,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
         || getType() == StepType.GENERATOR_STEP
         || getType() == StepType.CHECKER_STEP) {
 
-      getLogger().info(
-          "Configure "
-              + getId() + " step with step parameters: " + getParameters());
+      getLogger().info("Configure "
+          + getId() + " step with step parameters: " + getParameters());
 
       final Step step = getStep();
       if (getType() == StepType.STANDARD_STEP
@@ -558,8 +558,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       this.mode = EoulsanMode.getEoulsanMode(checkerStep.getClass());
 
       // Define output directory
-      this.outputDir =
-          defineOutputDirectory(workflow, checkerStep, this.copyResultsToOutput);
+      this.outputDir = defineOutputDirectory(workflow, checkerStep,
+          this.copyResultsToOutput);
       break;
 
     case DESIGN_STEP:
@@ -695,9 +695,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   }
 
   protected AbstractWorkflowStep(final AbstractWorkflow workflow,
-      final String id, final Step step,
-      final boolean skip, final boolean copyResultsToOutput,
-      final Set<Parameter> parameters) throws EoulsanException {
+      final String id, final Step step, final boolean skip,
+      final boolean copyResultsToOutput, final Set<Parameter> parameters)
+          throws EoulsanException {
 
     checkNotNull(workflow, "Workflow argument cannot be null");
     checkNotNull(id, "Step id argument cannot be null");
@@ -709,7 +709,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.id = id;
     this.skip = skip;
     this.stepName = step.getName();
-    this.version = step.getVersion() == null ? null : step.getVersion().toString();
+    this.version =
+        step.getVersion() == null ? null : step.getVersion().toString();
     this.copyResultsToOutput = copyResultsToOutput;
 
     this.type = isGenerator(step) ? GENERATOR_STEP : STANDARD_STEP;

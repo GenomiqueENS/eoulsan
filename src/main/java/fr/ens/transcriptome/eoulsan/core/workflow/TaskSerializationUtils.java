@@ -76,8 +76,8 @@ public class TaskSerializationUtils {
     checkNotNull(outputDir, "taskResultFile argument cannot be null");
 
     if (!taskContextFile.exists()) {
-      throw new FileNotFoundException("The context file does not exists: "
-          + taskContextFile);
+      throw new FileNotFoundException(
+          "The context file does not exists: " + taskContextFile);
     }
 
     // Load context file
@@ -111,8 +111,8 @@ public class TaskSerializationUtils {
     result.serialize(new DataFile(baseDir, taskPrefix + TASK_RESULT_EXTENSION));
 
     // Save task output data
-    context.serializeOutputData(new DataFile(baseDir, taskPrefix
-        + TASK_DATA_EXTENSION));
+    context.serializeOutputData(
+        new DataFile(baseDir, taskPrefix + TASK_DATA_EXTENSION));
 
     // Create done file
     new DataFile(baseDir, taskPrefix + Globals.TASK_DONE_EXTENSION).create()

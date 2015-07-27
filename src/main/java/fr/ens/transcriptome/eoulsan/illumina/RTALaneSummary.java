@@ -368,23 +368,23 @@ public class RTALaneSummary {
   @Override
   public String toString() {
 
-    return String
-        .format(
-            "%d\t%d\t%d\t%.0f\t%.1f\t%.1f\t%.2f\t%.1f\t%.2f\t%.3f\t%.3f\t%d%s\t%.2f\t%.3f\t"
-                + "%.2f\t%.3f\t%.2f\t%.3f\t%.2f\t%.3f\t%.2f\t%.3f\t"
-                + "%d\t%.1f\t%.1f\t%.2f", this.lane, this.read, this.tileCount,
-            this.clustersRaw * this.densityRatio / 1000.0, this.clustersRawSD
-                * this.densityRatio / 1000, this.prcPFClusters,
-            this.prcPFClustersSD, this.clustersPF * this.densityRatio / 1000.0,
-            this.clustersPFSD * this.densityRatio / 1000.0, this.phasing,
-            this.prephasing, this.calledCyclesMin,
-            this.calledCyclesMax > this.calledCyclesMin ? "-"
-                + this.calledCyclesMax : "", this.prcAlign, this.prcAlignSD,
-            this.errRatePhiX, this.errRatePhiXSD, this.errRate35,
-            this.errRate35SD, this.errRate75, this.errRate75SD,
-            this.errRate100, this.errRate100, this.firstCycleIntPF,
-            this.firstCycleIntPFSD, this.prcIntensityAfter20CyclesPF,
-            this.prcIntensityAfter20CyclesPFSD);
+    return String.format(
+        "%d\t%d\t%d\t%.0f\t%.1f\t%.1f\t%.2f\t%.1f\t%.2f\t%.3f\t%.3f\t%d%s\t%.2f\t%.3f\t"
+            + "%.2f\t%.3f\t%.2f\t%.3f\t%.2f\t%.3f\t%.2f\t%.3f\t"
+            + "%d\t%.1f\t%.1f\t%.2f",
+        this.lane, this.read, this.tileCount,
+        this.clustersRaw * this.densityRatio / 1000.0,
+        this.clustersRawSD * this.densityRatio / 1000, this.prcPFClusters,
+        this.prcPFClustersSD, this.clustersPF * this.densityRatio / 1000.0,
+        this.clustersPFSD * this.densityRatio / 1000.0, this.phasing,
+        this.prephasing, this.calledCyclesMin,
+        this.calledCyclesMax > this.calledCyclesMin
+            ? "-" + this.calledCyclesMax : "",
+        this.prcAlign, this.prcAlignSD, this.errRatePhiX, this.errRatePhiXSD,
+        this.errRate35, this.errRate35SD, this.errRate75, this.errRate75SD,
+        this.errRate100, this.errRate100, this.firstCycleIntPF,
+        this.firstCycleIntPFSD, this.prcIntensityAfter20CyclesPF,
+        this.prcIntensityAfter20CyclesPFSD);
   }
 
   //

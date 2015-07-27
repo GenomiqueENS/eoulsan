@@ -61,7 +61,7 @@ public class DesignImpl implements Design, Serializable {
   private int countLabels;
 
   private String createKeySampleMetadataField(final String sample,
-                                              final String metadataField) {
+      final String metadataField) {
 
     final int sampleId = this.samples.get(sample);
     final int fieldId = this.metadataFields.get(metadataField);
@@ -81,8 +81,8 @@ public class DesignImpl implements Design, Serializable {
     }
 
     if (!isSample(sampleName)) {
-      throw new EoulsanRuntimeException("The sample doesn't exists: "
-          + sampleName);
+      throw new EoulsanRuntimeException(
+          "The sample doesn't exists: " + sampleName);
     }
 
     final int sampleId = this.samples.get(sampleName);
@@ -129,8 +129,8 @@ public class DesignImpl implements Design, Serializable {
       throw new EoulsanRuntimeException("Sample name name can't be null");
     }
     if (isSample(sampleName)) {
-      throw new EoulsanRuntimeException("Sample name already exists: "
-          + sampleName);
+      throw new EoulsanRuntimeException(
+          "Sample name already exists: " + sampleName);
     }
 
     final int sampleId = this.countSamples++;
@@ -156,16 +156,16 @@ public class DesignImpl implements Design, Serializable {
     }
 
     if (!isSample(sampleName)) {
-      throw new EoulsanRuntimeException("The sample name doesn't exists: "
-          + sampleName);
+      throw new EoulsanRuntimeException(
+          "The sample name doesn't exists: " + sampleName);
     }
     if (!isMetadataField(fieldName)) {
       throw new EoulsanRuntimeException(
           "The metadata field name doesn't exists: " + fieldName);
     }
 
-    return this.metadataData.get(createKeySampleMetadataField(sampleName,
-        fieldName));
+    return this.metadataData
+        .get(createKeySampleMetadataField(sampleName, fieldName));
   }
 
   @Override
@@ -185,8 +185,8 @@ public class DesignImpl implements Design, Serializable {
 
     final String sampleName = this.samplesOrder.get(index);
     if (sampleName == null) {
-      throw new EoulsanRuntimeException("The sample index doesn't exists: "
-          + index);
+      throw new EoulsanRuntimeException(
+          "The sample index doesn't exists: " + index);
     }
 
     return getSample(sampleName);
@@ -200,8 +200,8 @@ public class DesignImpl implements Design, Serializable {
     }
 
     if (!isSample(sampleName)) {
-      throw new EoulsanRuntimeException("The sample doesn't exists: "
-          + sampleName);
+      throw new EoulsanRuntimeException(
+          "The sample doesn't exists: " + sampleName);
     }
 
     final int sampleId = this.samples.get(sampleName);
@@ -223,8 +223,8 @@ public class DesignImpl implements Design, Serializable {
     }
 
     if (!isSample(sampleName)) {
-      throw new EoulsanRuntimeException("The sample doesn't exists: "
-          + sampleName);
+      throw new EoulsanRuntimeException(
+          "The sample doesn't exists: " + sampleName);
     }
 
     final int id = this.samples.get(sampleName);
@@ -300,8 +300,8 @@ public class DesignImpl implements Design, Serializable {
     }
 
     if (!isSample(sampleName)) {
-      throw new EoulsanRuntimeException("the sample name doesn't exists: "
-          + sampleName);
+      throw new EoulsanRuntimeException(
+          "the sample name doesn't exists: " + sampleName);
     }
 
     // Remove descriptions
@@ -334,12 +334,12 @@ public class DesignImpl implements Design, Serializable {
     }
 
     if (!isMetadataField(oldMetadataFieldName)) {
-      throw new EoulsanRuntimeException("the old label name don't exists: "
-          + oldMetadataFieldName);
+      throw new EoulsanRuntimeException(
+          "the old label name don't exists: " + oldMetadataFieldName);
     }
     if (isMetadataField(newMetadataFieldName)) {
-      throw new EoulsanRuntimeException("the new label name already exists: "
-          + newMetadataFieldName);
+      throw new EoulsanRuntimeException(
+          "the new label name already exists: " + newMetadataFieldName);
     }
 
     int id = this.metadataFields.get(oldMetadataFieldName);
@@ -430,8 +430,8 @@ public class DesignImpl implements Design, Serializable {
     }
 
     if (!isSample(sampleName)) {
-      throw new EoulsanRuntimeException("The sample doesn't exists: "
-          + sampleName);
+      throw new EoulsanRuntimeException(
+          "The sample doesn't exists: " + sampleName);
     }
 
     if (this.ids.containsValue(id)) {

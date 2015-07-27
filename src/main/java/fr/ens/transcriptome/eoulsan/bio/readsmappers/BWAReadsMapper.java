@@ -158,7 +158,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   protected InputStream internalMapSE(final File readsFile,
       final File archiveIndex, final GenomeDescription genomedescription)
-      throws IOException {
+          throws IOException {
 
     this.archiveIndex = archiveIndex;
 
@@ -169,9 +169,8 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     }
 
     // Temporary result file
-    final File tmpFile =
-        FileUtils.createTempFile(readsFile.getParentFile(), PREFIX_FILES
-            + "-output-", SUFFIX_OUTPUT);
+    final File tmpFile = FileUtils.createTempFile(readsFile.getParentFile(),
+        PREFIX_FILES + "-output-", SUFFIX_OUTPUT);
 
     // Path to index
     final String indexPath = getIndexPath(archiveIndex);
@@ -199,14 +198,12 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     }
 
     // Temporary result file 1
-    final File tmpFile1 =
-        FileUtils.createTempFile(readsFile1.getParentFile(), PREFIX_FILES
-            + "-output-", SUFFIX_OUTPUT);
+    final File tmpFile1 = FileUtils.createTempFile(readsFile1.getParentFile(),
+        PREFIX_FILES + "-output-", SUFFIX_OUTPUT);
 
     // Temporary result file 2
-    final File tmpFile2 =
-        FileUtils.createTempFile(readsFile2.getParentFile(), PREFIX_FILES
-            + "-output-", SUFFIX_OUTPUT);
+    final File tmpFile2 = FileUtils.createTempFile(readsFile2.getParentFile(),
+        PREFIX_FILES + "-output-", SUFFIX_OUTPUT);
 
     // Path to index
     final String indexPath = getIndexPath(this.archiveIndex);
@@ -228,9 +225,8 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
     // Temporary result file
     final File tmpFile =
-        FileUtils.createTempFile(
-            EoulsanRuntime.getRuntime().getTempDirectory(), PREFIX_FILES
-                + "-output-", SUFFIX_OUTPUT);
+        FileUtils.createTempFile(EoulsanRuntime.getRuntime().getTempDirectory(),
+            PREFIX_FILES + "-output-", SUFFIX_OUTPUT);
 
     // Path to index
     final String indexPath = getIndexPath(archiveIndex);
@@ -253,14 +249,12 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
 
     // Temporary result file 1
-    final File tmpFile1 =
-        FileUtils.createTempFile(tmpDir, PREFIX_FILES + "-output-",
-            SUFFIX_OUTPUT);
+    final File tmpFile1 = FileUtils.createTempFile(tmpDir,
+        PREFIX_FILES + "-output-", SUFFIX_OUTPUT);
 
     // Temporary result file 2
-    final File tmpFile2 =
-        FileUtils.createTempFile(tmpDir, PREFIX_FILES + "-output-",
-            SUFFIX_OUTPUT);
+    final File tmpFile2 = FileUtils.createTempFile(tmpDir,
+        PREFIX_FILES + "-output-", SUFFIX_OUTPUT);
     // Path to index
     final String indexPath = getIndexPath(archiveIndex);
 
@@ -277,9 +271,8 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       @Override
       protected List<List<String>> createCommandLines() {
 
-        final boolean illuminaFastq =
-            getFastqFormat() == FASTQ_ILLUMINA
-                || getFastqFormat() == FASTQ_ILLUMINA_1_5;
+        final boolean illuminaFastq = getFastqFormat() == FASTQ_ILLUMINA
+            || getFastqFormat() == FASTQ_ILLUMINA_1_5;
 
         final List<String> cmd1 = new ArrayList<>();
         cmd1.add(bwaPath);
@@ -337,16 +330,15 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   private MapperProcess createMapperProcessPE(final String bwaPath,
       final String indexPath, final File readsFile1, final File readsFile2,
       final File tmpFile1, final File tmpFile2, final boolean fileMode)
-      throws IOException {
+          throws IOException {
 
     return new MapperProcess(this, fileMode, false, true) {
 
       @Override
       protected List<List<String>> createCommandLines() {
 
-        final boolean illuminaFastq =
-            getFastqFormat() == FASTQ_ILLUMINA
-                || getFastqFormat() == FASTQ_ILLUMINA_1_5;
+        final boolean illuminaFastq = getFastqFormat() == FASTQ_ILLUMINA
+            || getFastqFormat() == FASTQ_ILLUMINA_1_5;
 
         final List<String> cmd1 = new ArrayList<>();
         cmd1.add(bwaPath);
@@ -430,7 +422,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   public void init(final File archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
-      throws IOException {
+          throws IOException {
 
     super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }

@@ -67,22 +67,21 @@ import fr.ens.transcriptome.eoulsan.galaxytools.elements.ToolElement;
  */
 public class ToolInterpreterTest {
 
-  public final static Splitter SPLITTER = Splitter.on("=").trimResults()
-      .omitEmptyStrings();
+  public final static Splitter SPLITTER =
+      Splitter.on("=").trimResults().omitEmptyStrings();
 
-  public final static Splitter SPLITTER_KEY = Splitter.on(".").trimResults()
-      .omitEmptyStrings();
+  public final static Splitter SPLITTER_KEY =
+      Splitter.on(".").trimResults().omitEmptyStrings();
 
-  public final static Splitter SPLITTER_SPACE = Splitter.on(" ").trimResults()
-      .omitEmptyStrings();
+  public final static Splitter SPLITTER_SPACE =
+      Splitter.on(" ").trimResults().omitEmptyStrings();
 
   /** Key for value test description, it marks too the start on a new test. */
   private static final String NEW_TEST_KEY = "test_description";
 
   /** Directory path which contains all tool shed XML file. */
-  private static final String SRC_DIR =
-      "/galaxytools";
-  
+  private static final String SRC_DIR = "/galaxytools";
+
   private static final String SRC_TESTS_SETTING =
       SRC_DIR + "/testdatatoolshedgalaxy.txt";
 
@@ -125,8 +124,8 @@ public class ToolInterpreterTest {
         final int pos = lineTrimmed.indexOf("=");
 
         if (pos < 0)
-          throw new Exception("Invalid entry key=value in file with "
-              + lineTrimmed);
+          throw new Exception(
+              "Invalid entry key=value in file with " + lineTrimmed);
 
         final String key = lineTrimmed.substring(0, pos);
         final String value =
@@ -245,11 +244,9 @@ public class ToolInterpreterTest {
       }
 
       // Init tool interpreter
-      final InputStream is = this.getClass().getResourceAsStream(
-          toolXMLPath);
-      assertNotNull("Resource not found: " + toolXMLPath,is);
-      final GalaxyToolInterpreter interpreter =
-          new GalaxyToolInterpreter(is);
+      final InputStream is = this.getClass().getResourceAsStream(toolXMLPath);
+      assertNotNull("Resource not found: " + toolXMLPath, is);
+      final GalaxyToolInterpreter interpreter = new GalaxyToolInterpreter(is);
 
       // Configure interpreter with parameters setting in workflow Eoulsan file
       interpreter.configure(setStepParameters);
@@ -318,20 +315,16 @@ public class ToolInterpreterTest {
       int length = commandExpected.size();
 
       // Compare length
-      assertTrue(
-          "Number words requiered is invalid, expected "
-              + length + " obtains by PythonInterpreter "
-              + commandBuildByInterpreter.size() + ": "
-              + commandBuildByInterpreter,
+      assertTrue("Number words requiered is invalid, expected "
+          + length + " obtains by PythonInterpreter "
+          + commandBuildByInterpreter.size() + ": " + commandBuildByInterpreter,
           length == commandBuildByInterpreter.size());
 
       // Compare word by word
       for (int i = 0; i < length; i++) {
-        assertEquals(
-            "Word not same, expected "
-                + commandExpected.get(i) + " vs "
-                + commandBuildByInterpreter.get(i) + ": "
-                + commandBuildByInterpreter, commandExpected.get(i),
+        assertEquals("Word not same, expected "
+            + commandExpected.get(i) + " vs " + commandBuildByInterpreter.get(i)
+            + ": " + commandBuildByInterpreter, commandExpected.get(i),
             commandBuildByInterpreter.get(i));
       }
     }

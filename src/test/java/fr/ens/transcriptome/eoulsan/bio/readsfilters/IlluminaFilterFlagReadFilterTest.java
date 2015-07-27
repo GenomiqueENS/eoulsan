@@ -57,8 +57,7 @@ public class IlluminaFilterFlagReadFilterTest {
 
     // Bad id
     read =
-        new ReadSequence(0,
-            "@AEGIR:25:B0866ABXX:8:1101:1176:2126 1:Y:0:CGATGT",
+        new ReadSequence(0, "@AEGIR:25:B0866ABXX:8:1101:1176:2126 1:Y:0:CGATGT",
             "TGGAGNCAGGAGTCTGGGGGGGGGGGGGGTGGTGCAAAACTGGGGGGACGC",
             "###################################################");
     assertFalse(filter.accept(read));

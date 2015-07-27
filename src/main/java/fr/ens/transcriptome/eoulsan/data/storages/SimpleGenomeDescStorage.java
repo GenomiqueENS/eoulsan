@@ -107,9 +107,8 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
       return;
     }
 
-    final BufferedReader br =
-        new BufferedReader(new InputStreamReader(indexFile.open(),
-            Globals.DEFAULT_CHARSET));
+    final BufferedReader br = new BufferedReader(
+        new InputStreamReader(indexFile.open(), Globals.DEFAULT_CHARSET));
 
     final Pattern pattern = Pattern.compile("\t");
     String line = null;
@@ -155,9 +154,8 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
     final DataFile indexFile = new DataFile(this.dir, INDEX_FILENAME);
 
     // Create an empty index file
-    final BufferedWriter writer =
-        new BufferedWriter(new OutputStreamWriter(indexFile.create(),
-            Globals.DEFAULT_CHARSET));
+    final BufferedWriter writer = new BufferedWriter(
+        new OutputStreamWriter(indexFile.create(), Globals.DEFAULT_CHARSET));
     writer.write("#Genome\tGenomeFileMD5\tGenomeFileLength\n");
 
     for (Map.Entry<String, IndexEntry> e : this.entries.entrySet()) {
@@ -245,14 +243,15 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
     try {
       return GenomeDescription.load(entry.file.open());
     } catch (IOException e) {
-      getLogger().warning(
-          "Cannot read genome description file: " + e.getMessage());
+      getLogger()
+          .warning("Cannot read genome description file: " + e.getMessage());
       return null;
     }
   }
 
   @Override
-  public void put(final DataFile genomeFile, final GenomeDescription genomeDesc) {
+  public void put(final DataFile genomeFile,
+      final GenomeDescription genomeDesc) {
 
     checkNotNull(genomeFile, "GenomeFile is null");
     checkNotNull(genomeDesc, "Genome description is null");
@@ -271,17 +270,15 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
       entry.genomeFileLength = md.getContentLength();
       entry.genomeFileMD5Sum = computeMD5Sum(genomeFile);
 
-      entry.file =
-          new DataFile(this.dir, entry.genomeFileMD5Sum
-              + "_" + entry.genomeFileLength + ".gdesc");
+      entry.file = new DataFile(this.dir,
+          entry.genomeFileMD5Sum + "_" + entry.genomeFileLength + ".gdesc");
 
       genomeDesc.save(entry.file.create());
       this.entries.put(entry.getKey(), entry);
       save();
-      getLogger().info(
-          "Successfully added "
-              + entry.genomeName
-              + " genome description to genome description storage.");
+      getLogger().info("Successfully added "
+          + entry.genomeName
+          + " genome description to genome description storage.");
     } catch (IOException e) {
       getLogger().warning(
           "Cannot add genome description file to genome description storage: "
@@ -327,9 +324,8 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
     this.dir = dir;
     load();
 
-    getLogger().info(
-        "Genome description storage found. "
-            + this.entries.size() + " entries in : " + dir.getSource());
+    getLogger().info("Genome description storage found. "
+        + this.entries.size() + " entries in : " + dir.getSource());
   }
 
 }

@@ -144,8 +144,8 @@ public class Normalization {
     try {
 
       // print log info
-      getLogger().info(
-          "Rserve server name : " + this.rConnection.getServerName());
+      getLogger()
+          .info("Rserve server name : " + this.rConnection.getServerName());
 
       // create an experiment map
       Map<String, List<Sample>> experiments = experimentsSplitter();
@@ -153,9 +153,8 @@ public class Normalization {
       // create an iterator on the map values
       for (List<Sample> experimentSampleList : experiments.values()) {
 
-        getLogger().info(
-            "Experiment : "
-                + experimentSampleList.get(0).getMetadata().getExperiment());
+        getLogger().info("Experiment : "
+            + experimentSampleList.get(0).getMetadata().getExperiment());
 
         putExpressionFiles(experimentSampleList, data);
 
@@ -175,11 +174,11 @@ public class Normalization {
       }
 
     } catch (REngineException e) {
-      throw new EoulsanException("Error while running differential analysis: "
-          + e.getMessage(), e);
-    } catch (REXPMismatchException e) {
       throw new EoulsanException(
-          "Error while getting file : " + e.getMessage(), e);
+          "Error while running differential analysis: " + e.getMessage(), e);
+    } catch (REXPMismatchException e) {
+      throw new EoulsanException("Error while getting file : " + e.getMessage(),
+          e);
 
     } finally {
 
@@ -192,8 +191,8 @@ public class Normalization {
         this.rConnection.disConnect();
 
       } catch (Exception e) {
-        throw new EoulsanException("Error while removing files on server : "
-            + e.getMessage(), e);
+        throw new EoulsanException(
+            "Error while removing files on server : " + e.getMessage(), e);
       }
     }
   }
@@ -215,9 +214,8 @@ public class Normalization {
       // create an iterator on the map values
       for (List<Sample> experimentSampleList : experiments.values()) {
 
-        getLogger().info(
-            "Experiment : "
-                + experimentSampleList.get(0).getMetadata().getExperiment());
+        getLogger().info("Experiment : "
+            + experimentSampleList.get(0).getMetadata().getExperiment());
 
         createLinkExpressionFiles(experimentSampleList, data);
 
@@ -231,8 +229,8 @@ public class Normalization {
       }
 
     } catch (Exception e) {
-      throw new EoulsanException("Error while running differential analysis: "
-          + e.getMessage(), e);
+      throw new EoulsanException(
+          "Error while running differential analysis: " + e.getMessage(), e);
     }
   }
 
@@ -383,10 +381,9 @@ public class Normalization {
     checkRepTechGroupCoherence(rRepTechGroup, rCondNames);
 
     // Create Rnw script StringBuilder with preamble
-    String pdfTitle =
-        escapeUnderScore(experimentSamplesList.get(0).getMetadata()
-            .getExperiment())
-            + " normalisation";
+    String pdfTitle = escapeUnderScore(
+        experimentSamplesList.get(0).getMetadata().getExperiment())
+        + " normalisation";
     final StringBuilder sb =
         generateRnwpreamble(experimentSamplesList, pdfTitle);
 
@@ -452,10 +449,8 @@ public class Normalization {
 
     String rScript = null;
     try {
-      rScript =
-          "normalization_"
-              + experimentSamplesList.get(0).getMetadata().getExperiment()
-              + ".Rnw";
+      rScript = "normalization_"
+          + experimentSamplesList.get(0).getMetadata().getExperiment() + ".Rnw";
       if (context.getSettings().isRServeServerEnabled()) {
         getLogger().info("Write script on Rserve: " + rScript);
         this.rConnection.writeStringAsFile(rScript, sb.toString());
@@ -583,7 +578,8 @@ public class Normalization {
 
     // Add file names vector
     sb.append("#create file names vector\n");
-    sb.append("fileNames <- paste(\"" + this.expressionFilesPrefix + '\"' + ',');
+    sb.append(
+        "fileNames <- paste(\"" + this.expressionFilesPrefix + '\"' + ',');
     sb.append("sampleIds"
         + ',' + '\"' + this.expressionFilesSuffix + '\"' + ',' + "sep=\"\""
         + ")" + "\n\n");
@@ -743,8 +739,8 @@ public class Normalization {
    * @throws REngineException if an error occurs on RServe server
    * @throws EoulsanException if try to overwrite an existing expression file
    */
-  private void putExpressionFiles(final List<Sample> experiment, final Data data)
-      throws REngineException, EoulsanException {
+  private void putExpressionFiles(final List<Sample> experiment,
+      final Data data) throws REngineException, EoulsanException {
 
     final Set<String> outputFilenames = new HashSet<>();
 
@@ -758,8 +754,8 @@ public class Normalization {
 
       // Check if the sample ID exists
       if (sampleId == -1) {
-        throw new EoulsanException("No sample Id found for input file: "
-            + inputFile);
+        throw new EoulsanException(
+            "No sample Id found for input file: " + inputFile);
       }
 
       // Check if try to overwrite an existing output file
@@ -770,8 +766,8 @@ public class Normalization {
       outputFilenames.add(outputFilename);
 
       // Put file on rserve server
-      getLogger().info(
-          "Put file on RServe: " + inputFile + " to " + outputFilename);
+      getLogger()
+          .info("Put file on RServe: " + inputFile + " to " + outputFilename);
       try {
         this.rConnection.putFile(inputFile.open(), outputFilename);
       } catch (IOException e) {
@@ -842,11 +838,10 @@ public class Normalization {
    * @throws EoulsanException if an error occurs if connection to RServe server
    *           cannot be established
    */
-  public Normalization(final Design design,
-      final File expressionFilesDirectory, final String expressionFilesPrefix,
-      final String expressionFilesSuffix, final File outPath,
-      final String rServerName, final boolean rServeEnable)
-      throws EoulsanException {
+  public Normalization(final Design design, final File expressionFilesDirectory,
+      final String expressionFilesPrefix, final String expressionFilesSuffix,
+      final File outPath, final String rServerName, final boolean rServeEnable)
+          throws EoulsanException {
 
     checkNotNull(design, "design is null.");
     checkNotNull(expressionFilesDirectory,
@@ -860,8 +855,8 @@ public class Normalization {
     this.expressionFilesPrefix = expressionFilesPrefix;
     this.expressionFilesSuffix = expressionFilesSuffix;
 
-    if (!(expressionFilesDirectory.isDirectory() && expressionFilesDirectory
-        .exists())) {
+    if (!(expressionFilesDirectory.isDirectory()
+        && expressionFilesDirectory.exists())) {
       throw new NullPointerException(
           "The path of the expression files doesn't exist or is not a directory.");
     }

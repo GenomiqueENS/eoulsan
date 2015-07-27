@@ -32,7 +32,8 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
 public class SAM2BAMLocalStep extends AbstractSAM2BAMStep {
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     try {
 
@@ -86,15 +87,14 @@ public class SAM2BAMLocalStep extends AbstractSAM2BAMStep {
   private static final void convert(final DataFile samDataFile,
       final DataFile bamDataFile, final DataFile bamIndexDataFile,
       final int compressionLevel, final Reporter reporter, final File tmpDir)
-      throws IOException {
+          throws IOException {
 
     checkArgument(compressionLevel >= 0 && compressionLevel <= 9,
         "Invalid compression level [0-9]: " + compressionLevel);
 
     // Open sam file
-    final SamReader samReader =
-        SamReaderFactory.makeDefault().open(
-            SamInputResource.of(samDataFile.open()));
+    final SamReader samReader = SamReaderFactory.makeDefault()
+        .open(SamInputResource.of(samDataFile.open()));
 
     // Force sort
     samReader.getFileHeader().setSortOrder(SortOrder.coordinate);
@@ -103,12 +103,9 @@ public class SAM2BAMLocalStep extends AbstractSAM2BAMStep {
     final File bamFile = bamDataFile.toFile();
 
     // Open Bam file
-    final SAMFileWriter samWriter =
-        new SAMFileWriterFactory()
-            .setCreateIndex(true)
-            .setTempDirectory(tmpDir)
-            .makeBAMWriter(samReader.getFileHeader(), false, bamFile,
-                compressionLevel);
+    final SAMFileWriter samWriter = new SAMFileWriterFactory()
+        .setCreateIndex(true).setTempDirectory(tmpDir).makeBAMWriter(
+            samReader.getFileHeader(), false, bamFile, compressionLevel);
 
     for (final SAMRecord samRecord : samReader) {
       samWriter.addAlignment(samRecord);

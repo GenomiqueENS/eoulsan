@@ -120,14 +120,15 @@ public class CopyOutputDataStep extends AbstractStep {
         break;
 
       default:
-        throw new EoulsanException("Unknown parameter for step "
-            + getName() + ": " + p.getName());
+        throw new EoulsanException(
+            "Unknown parameter for step " + getName() + ": " + p.getName());
       }
     }
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     try {
 

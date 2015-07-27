@@ -87,8 +87,8 @@ public class FailStep extends AbstractStep {
         break;
 
       default:
-        throw new EoulsanException("Unknown parameter for step "
-            + getName() + ": " + p.getName());
+        throw new EoulsanException(
+            "Unknown parameter for step " + getName() + ": " + p.getName());
       }
     }
 
@@ -100,17 +100,18 @@ public class FailStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     try {
       Thread.sleep(delay * 1000);
     } catch (InterruptedException e) {
-      context.getLogger().warning(
-          "Thread.sleep() interrupted: " + e.getMessage());
+      context.getLogger()
+          .warning("Thread.sleep() interrupted: " + e.getMessage());
     }
 
-    return status.createStepResult(new EoulsanException(
-        "Fail of the step required by user"));
+    return status.createStepResult(
+        new EoulsanException("Fail of the step required by user"));
   }
 
 }

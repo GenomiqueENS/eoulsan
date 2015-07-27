@@ -120,8 +120,8 @@ public final class CasavaDesignUtil {
 
       // Check the lane number
       if (sample.getLane() < 1 || sample.getLane() > 8) {
-        throw new EoulsanException("Invalid lane number found: "
-            + sample.getLane() + ".");
+        throw new EoulsanException(
+            "Invalid lane number found: " + sample.getLane() + ".");
       }
 
       // Check if the sample is null or empty
@@ -148,9 +148,8 @@ public final class CasavaDesignUtil {
 
       // Check operator
       if (isNullOrEmpty(sample.getOperator())) {
-        throw new EoulsanException(
-            "Found a null or empty operator for sample: "
-                + sample.getSampleId() + ".");
+        throw new EoulsanException("Found a null or empty operator for sample: "
+            + sample.getSampleId() + ".");
       }
       checkCharset(sample.getOperator());
 
@@ -227,8 +226,8 @@ public final class CasavaDesignUtil {
       final int c = s.codePointAt(i);
 
       if (c < ' ' || c >= 127) {
-        throw new EoulsanException("Found invalid character '"
-            + (char) c + "' in \"" + s + "\".");
+        throw new EoulsanException(
+            "Found invalid character '" + (char) c + "' in \"" + s + "\".");
       }
     }
 
@@ -377,13 +376,13 @@ public final class CasavaDesignUtil {
       final String projectName, final int lane,
       final Map<String, Set<Integer>> sampleInLanes,
       final Map<String, String> samplesProjects, final List<String> warnings)
-      throws EoulsanException {
+          throws EoulsanException {
 
     // Check if two or more project use the same sample
     if (samplesProjects.containsKey(sampleId)
         && !samplesProjects.get(sampleId).equals(projectName)) {
-      throw new EoulsanException("The sample \""
-          + sampleId + "\" is used by two or more projects.");
+      throw new EoulsanException(
+          "The sample \"" + sampleId + "\" is used by two or more projects.");
     }
 
     samplesProjects.put(sampleId, projectName);
@@ -405,7 +404,8 @@ public final class CasavaDesignUtil {
   }
 
   private static void checkSampleInLanes(
-      final Map<String, Set<Integer>> sampleInLanes, final List<String> warnings) {
+      final Map<String, Set<Integer>> sampleInLanes,
+      final List<String> warnings) {
 
     for (Map.Entry<String, Set<Integer>> e : sampleInLanes.entrySet()) {
 
@@ -439,7 +439,7 @@ public final class CasavaDesignUtil {
 
   private static final void checkSampleIndex(final String sampleName,
       final String index, final Map<String, String> samplesIndex)
-      throws EoulsanException {
+          throws EoulsanException {
 
     if (samplesIndex.containsKey(sampleName)
         && !samplesIndex.get(sampleName).equals(index)) {
@@ -461,9 +461,8 @@ public final class CasavaDesignUtil {
    * @param sequences map for the sequences
    * @throws EoulsanException if the shortcut is unknown
    */
-  public static void replaceIndexShortcutsBySequences(
-      final CasavaDesign design, final Map<String, String> sequences)
-      throws EoulsanException {
+  public static void replaceIndexShortcutsBySequences(final CasavaDesign design,
+      final Map<String, String> sequences) throws EoulsanException {
 
     if (design == null || sequences == null) {
       return;
@@ -472,8 +471,8 @@ public final class CasavaDesignUtil {
     for (final CasavaSample sample : design) {
 
       if (sample.getIndex() == null) {
-        throw new NullPointerException("Sample index is null for sample: "
-            + sample);
+        throw new NullPointerException(
+            "Sample index is null for sample: " + sample);
       }
 
       final String index = sample.getIndex().trim();
@@ -515,8 +514,9 @@ public final class CasavaDesignUtil {
 
     final StringBuilder sb = new StringBuilder();
 
-    sb.append("\"FCID\",\"Lane\",\"SampleID\",\"SampleRef\",\"Index\",\"Description\","
-        + "\"Control\",\"Recipe\",\"Operator\",\"SampleProject\"\n");
+    sb.append(
+        "\"FCID\",\"Lane\",\"SampleID\",\"SampleRef\",\"Index\",\"Description\","
+            + "\"Control\",\"Recipe\",\"Operator\",\"SampleProject\"\n");
 
     if (design == null) {
       return sb.toString();

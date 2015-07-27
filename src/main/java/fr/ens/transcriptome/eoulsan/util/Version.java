@@ -261,8 +261,8 @@ public final class Version implements Comparable<Version> {
       }
 
     } catch (NumberFormatException e) {
-      throw new IllegalArgumentException("Invalid version format in string: "
-          + version);
+      throw new IllegalArgumentException(
+          "Invalid version format in string: " + version);
     }
   }
 

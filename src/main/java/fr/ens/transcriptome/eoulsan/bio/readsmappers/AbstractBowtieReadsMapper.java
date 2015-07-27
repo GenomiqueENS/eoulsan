@@ -43,11 +43,11 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public abstract class AbstractBowtieReadsMapper extends
-    AbstractSequenceReadsMapper {
+public abstract class AbstractBowtieReadsMapper
+    extends AbstractSequenceReadsMapper {
 
-  protected static final String SYNC = AbstractBowtieReadsMapper.class
-      .getName();
+  protected static final String SYNC =
+      AbstractBowtieReadsMapper.class.getName();
 
   abstract protected String getExtensionIndexFile();
 
@@ -194,7 +194,7 @@ public abstract class AbstractBowtieReadsMapper extends
   @Override
   protected InputStream internalMapSE(final File readsFile,
       final File archiveIndexDir, final GenomeDescription genomeDescription)
-      throws IOException {
+          throws IOException {
 
     final String bowtiePath;
 
@@ -361,8 +361,8 @@ public abstract class AbstractBowtieReadsMapper extends
 
         // TODO Write reads in Crossbow format when streaming mode will be
         // enabled
-        super
-            .writeEntry(name1, sequence1, quality1, name2, sequence2, quality2);
+        super.writeEntry(name1, sequence1, quality1, name2, sequence2,
+            quality2);
       }
 
       @Override
@@ -434,7 +434,7 @@ public abstract class AbstractBowtieReadsMapper extends
   @Override
   public void init(final File archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
-      throws IOException {
+          throws IOException {
 
     super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }

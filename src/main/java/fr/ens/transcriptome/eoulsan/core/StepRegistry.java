@@ -75,8 +75,8 @@ public class StepRegistry {
    * This class define a resource loader for resource defined in the file
    * system.
    */
-  private static final class GalaxyToolStepFileResourceLoader extends
-      FileResourceLoader<GalaxyToolStep> {
+  private static final class GalaxyToolStepFileResourceLoader
+      extends FileResourceLoader<GalaxyToolStep> {
 
     @Override
     protected String getExtension() {
@@ -103,8 +103,8 @@ public class StepRegistry {
         return new DataFile(GALAXY_TOOL_SUBDIR);
       }
 
-      return new DataFile(new File(main.getEoulsanDirectory(),
-          GALAXY_TOOL_SUBDIR));
+      return new DataFile(
+          new File(main.getEoulsanDirectory(), GALAXY_TOOL_SUBDIR));
     }
 
     @Override
@@ -137,8 +137,8 @@ public class StepRegistry {
   /**
    * This class define a resource loader for resource defined in the class path.
    */
-  private static final class GalaxyToolStepClassPathLoader extends
-      ClassPathResourceLoader<GalaxyToolStep> {
+  private static final class GalaxyToolStepClassPathLoader
+      extends ClassPathResourceLoader<GalaxyToolStep> {
 
     @Override
     protected GalaxyToolStep load(final InputStream in, final String source)
@@ -229,8 +229,8 @@ public class StepRegistry {
     for (Map.Entry<String, String> e : this.service.getServiceClasses()
         .entries()) {
 
-      getLogger().config(
-          "Found step: " + e.getKey() + " (" + e.getValue() + ")");
+      getLogger()
+          .config("Found step: " + e.getKey() + " (" + e.getValue() + ")");
     }
 
     // Log Galaxy tool steps
@@ -240,9 +240,8 @@ public class StepRegistry {
 
     for (GalaxyToolStep s : stepsFound) {
 
-      getLogger().config(
-          "Found step: "
-              + s.getName() + " (Galaxy tool, source: " + s.getSource() + ")");
+      getLogger().config("Found step: "
+          + s.getName() + " (Galaxy tool, source: " + s.getSource() + ")");
     }
   }
 

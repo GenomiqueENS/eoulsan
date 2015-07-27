@@ -59,7 +59,7 @@ public final class MapReduceUtils {
    */
   public static boolean moveMapredOutput(final Path srcDirPath,
       final Path destPath, final boolean overwrite, final Configuration conf)
-      throws IOException {
+          throws IOException {
 
     final List<Path> paths =
         PathUtils.listPathsByPrefix(srcDirPath, "part-", conf);
@@ -106,8 +106,8 @@ public final class MapReduceUtils {
    *           is not found
    */
   public static void submitAndWaitForJobs(final Collection<Job> jobs,
-      final int waitTimeInMillis) throws IOException, InterruptedException,
-      ClassNotFoundException {
+      final int waitTimeInMillis)
+          throws IOException, InterruptedException, ClassNotFoundException {
 
     if (jobs == null) {
       throw new NullPointerException("The list of jobs is null");
@@ -164,8 +164,8 @@ public final class MapReduceUtils {
    */
   public static void submitAndWaitForJobs(final Map<Job, String> jobs,
       final int waitTimeInMillis, final StepStatus status,
-      final String counterGroup) throws InterruptedException, IOException,
-      ClassNotFoundException {
+      final String counterGroup)
+          throws InterruptedException, IOException, ClassNotFoundException {
 
     if (jobs == null) {
       throw new NullPointerException("The list of jobs is null");
@@ -234,7 +234,7 @@ public final class MapReduceUtils {
   public static void submitAndWaitForJob(final Job job,
       final String jobDescription, final int waitTimeInMillis,
       final StepStatus status, final String counterGroup)
-      throws EoulsanException {
+          throws EoulsanException {
 
     if (job == null) {
       throw new NullPointerException("The job is null");
@@ -250,8 +250,8 @@ public final class MapReduceUtils {
           waitTimeInMillis, status, counterGroup);
 
       if (!job.isSuccessful()) {
-        throw new EoulsanException("Fail of the Hadoop job: "
-            + job.getJobFile());
+        throw new EoulsanException(
+            "Fail of the Hadoop job: " + job.getJobFile());
       }
 
     } catch (ClassNotFoundException | InterruptedException | IOException e) {

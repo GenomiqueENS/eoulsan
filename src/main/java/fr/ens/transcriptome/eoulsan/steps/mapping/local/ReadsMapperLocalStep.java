@@ -93,17 +93,16 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     try {
 
       // Load genome description object
       if (this.firstSample) {
         if (this.genomeDescription == null) {
-          this.genomeDescription =
-              GenomeDescription.load(context
-                  .getInputData(DataFormats.GENOME_DESC_TXT).getDataFile()
-                  .open());
+          this.genomeDescription = GenomeDescription.load(context
+              .getInputData(DataFormats.GENOME_DESC_TXT).getDataFile().open());
         } else {
           this.genomeDescription = null;
         }
@@ -113,13 +112,11 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       // Create the reporter
       final Reporter reporter = new LocalReporter();
 
-      final File archiveIndexFile =
-          context.getInputData(getMapper().getArchiveFormat()).getDataFile()
-              .toFile();
+      final File archiveIndexFile = context
+          .getInputData(getMapper().getArchiveFormat()).getDataFile().toFile();
 
-      final File indexDir =
-          new File(StringUtils.filenameWithoutExtension(archiveIndexFile
-              .getPath()));
+      final File indexDir = new File(
+          StringUtils.filenameWithoutExtension(archiveIndexFile.getPath()));
 
       // Get input data
       final Data inData = context.getInputData(READS_FASTQ);
@@ -134,8 +131,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       final FastqFormat fastqFormat = inData.getMetadata().getFastqFormat();
 
       // Initialize the mapper
-      final SequenceReadsMapper mapper =
-          initMapper(context, fastqFormat, archiveIndexFile, indexDir, reporter);
+      final SequenceReadsMapper mapper = initMapper(context, fastqFormat,
+          archiveIndexFile, indexDir, reporter);
 
       if (inData.getDataFileCount() < 1) {
         throw new IOException("No reads file found.");
@@ -155,20 +152,18 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         final File inFile =
             context.getInputData(READS_FASTQ).getDataFile(0).toFile();
 
-        getLogger().info(
-            "Map file: "
-                + inFile + ", Fastq format: " + fastqFormat + ", use "
-                + mapper.getMapperName() + " with " + mapper.getThreadsNumber()
-                + " threads option");
+        getLogger().info("Map file: "
+            + inFile + ", Fastq format: " + fastqFormat + ", use "
+            + mapper.getMapperName() + " with " + mapper.getThreadsNumber()
+            + " threads option");
 
         // Single read mapping
         parseSAMResults(mapper.mapSE(inFile, this.genomeDescription), samFile,
             reporter);
 
-        logMsg =
-            "Mapping reads in "
-                + fastqFormat + " with " + mapper.getMapperName() + " ("
-                + inData.getName() + ", " + inFile.getName() + ")";
+        logMsg = "Mapping reads in "
+            + fastqFormat + " with " + mapper.getMapperName() + " ("
+            + inData.getName() + ", " + inFile.getName() + ")";
 
       }
 
@@ -182,21 +177,19 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         final File inFile2 =
             context.getInputData(READS_FASTQ).getDataFile(1).toFile();
 
-        getLogger().info(
-            "Map files: "
-                + inFile1 + "," + inFile2 + ", Fastq format: " + fastqFormat
-                + ", use " + mapper.getMapperName() + " with "
-                + mapper.getThreadsNumber() + " threads option");
+        getLogger().info("Map files: "
+            + inFile1 + "," + inFile2 + ", Fastq format: " + fastqFormat
+            + ", use " + mapper.getMapperName() + " with "
+            + mapper.getThreadsNumber() + " threads option");
 
         // Single read mapping
         parseSAMResults(mapper.mapPE(inFile1, inFile2, this.genomeDescription),
             samFile, reporter);
 
-        logMsg =
-            "Mapping reads in "
-                + fastqFormat + " with " + mapper.getMapperName() + " ("
-                + inData.getName() + ", " + inFile1.getName() + ","
-                + inFile2.getName() + ")";
+        logMsg = "Mapping reads in "
+            + fastqFormat + " with " + mapper.getMapperName() + " ("
+            + inData.getName() + ", " + inFile1.getName() + ","
+            + inFile2.getName() + ")";
       }
 
       // Set the description of the context
@@ -274,9 +267,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
     // Parse SAM result file
     final BufferedReader readerResults =
         FileUtils.createBufferedReader(samFileInputStream);
-    final Writer writer =
-        new OutputStreamWriter(new FileOutputStream(samFile),
-            StandardCharsets.ISO_8859_1);
+    final Writer writer = new OutputStreamWriter(new FileOutputStream(samFile),
+        StandardCharsets.ISO_8859_1);
 
     int entriesParsed = 0;
 
@@ -303,9 +295,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
     readerResults.close();
     writer.close();
 
-    getLogger().info(
-        entriesParsed
-            + " entries parsed in " + getMapperName() + " output file");
+    getLogger().info(entriesParsed
+        + " entries parsed in " + getMapperName() + " output file");
   }
 
 }

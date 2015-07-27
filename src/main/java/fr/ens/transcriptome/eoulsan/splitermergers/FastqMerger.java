@@ -74,8 +74,8 @@ public class FastqMerger implements Merger {
       // Get input file
       final DataFile inFile = inDataFileIterator.next();
 
-      EoulsanLogger.getLogger().info(
-          "Merge " + inFile.getName() + " to " + outFile.getName());
+      EoulsanLogger.getLogger()
+          .info("Merge " + inFile.getName() + " to " + outFile.getName());
 
       final FastqReader reader = new FastqReader(inFile.open());
 

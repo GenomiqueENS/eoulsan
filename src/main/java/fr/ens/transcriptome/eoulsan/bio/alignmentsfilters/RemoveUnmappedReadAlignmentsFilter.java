@@ -35,8 +35,8 @@ import java.util.List;
  * @author Laurent Jourdren
  * @author Claire Wallon
  */
-public class RemoveUnmappedReadAlignmentsFilter extends
-    AbstractReadAlignmentsFilter {
+public class RemoveUnmappedReadAlignmentsFilter
+    extends AbstractReadAlignmentsFilter {
 
   public static final String FILTER_NAME = "removeunmapped";
 
@@ -73,8 +73,8 @@ public class RemoveUnmappedReadAlignmentsFilter extends
 
     // paired-end mode
     else {
-      for (int counterRecord = 0; counterRecord < records.size() - 1; counterRecord +=
-          2) {
+      for (int counterRecord = 0; counterRecord < records.size()
+          - 1; counterRecord += 2) {
 
         // storage in 'result' of records that do not pass the filter
         if (records.get(counterRecord).getReadUnmappedFlag()

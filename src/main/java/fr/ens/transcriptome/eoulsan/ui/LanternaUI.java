@@ -136,7 +136,8 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
 
   @Override
   public void notifyStepState(final WorkflowStep step,
-      final int terminatedTasks, final int submittedTasks, final double progress) {
+      final int terminatedTasks, final int submittedTasks,
+      final double progress) {
 
     // Do nothing if there is no terminal or if the job is completed
     if (this.terminal == null || this.jobDone) {
@@ -154,7 +155,8 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
       final StepState state = step.getState();
 
       if (!(state == WORKING
-          || state == PARTIALLY_DONE || state == DONE || state == FAILED || state == ABORTED)) {
+          || state == PARTIALLY_DONE || state == DONE || state == FAILED
+          || state == ABORTED)) {
         return;
       }
 
@@ -173,8 +175,8 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
           lastLineY - this.lineCount + this.stepLines.get(step);
 
       // Update step progress
-      showStepProgress(stepLineY, step.getId(), terminatedTasks,
-          submittedTasks, progress, state);
+      showStepProgress(stepLineY, step.getId(), terminatedTasks, submittedTasks,
+          progress, state);
 
       // Update workflow progress
       showWorkflowProgress(lastLineY, globalProgress, null, null);
@@ -191,7 +193,8 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   }
 
   @Override
-  public void notifyWorkflowSuccess(final boolean success, final String message) {
+  public void notifyWorkflowSuccess(final boolean success,
+      final String message) {
 
     // Do nothing if there is no terminal or if the job is completed
     if (this.terminal == null || this.jobDone) {
@@ -239,12 +242,8 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
     case WORKING:
     case PARTIALLY_DONE:
       final String plural = submittedTasks > 1 ? "s" : "";
-      x =
-          putString(
-              x,
-              y,
-              format("%3.0f%%    (%d/%d task%s done)", progress * 100,
-                  terminatedTasks, submittedTasks, plural));
+      x = putString(x, y, format("%3.0f%%    (%d/%d task%s done)",
+          progress * 100, terminatedTasks, submittedTasks, plural));
       break;
 
     case DONE:
@@ -291,9 +290,8 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
       this.terminal.putCharacter('\n');
     } else {
 
-      x =
-          putString(x, y,
-              String.format("%.0f%% workflow done", progress * 100.0));
+      x = putString(x, y,
+          String.format("%.0f%% workflow done", progress * 100.0));
     }
 
     clearEndOfLine(x, y);

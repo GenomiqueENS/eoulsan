@@ -120,11 +120,9 @@ public class WorkflowStepStateObserver implements Serializable {
     }
 
     // Log the new state of the step
-    getLogger().fine(
-        "Step #"
-            + this.step.getNumber() + " " + this.step.getId()
-            + " is now in state " + this.stepState + " (previous state was "
-            + previousState + ")");
+    getLogger().fine("Step #"
+        + this.step.getNumber() + " " + this.step.getId() + " is now in state "
+        + this.stepState + " (previous state was " + previousState + ")");
 
     // Log dependencies when step is in WAITING state
     if (this.stepState == WAITING) {
@@ -179,10 +177,9 @@ public class WorkflowStepStateObserver implements Serializable {
    */
   void logDependencies() {
 
-    String msg =
-        "Step #"
-            + this.step.getNumber() + " " + this.step.getId()
-            + " has the following dependencies: ";
+    String msg = "Step #"
+        + this.step.getNumber() + " " + this.step.getId()
+        + " has the following dependencies: ";
 
     List<String> list = new ArrayList<>();
 
@@ -212,9 +209,8 @@ public class WorkflowStepStateObserver implements Serializable {
 
     this.step = step;
 
-    getLogger().fine(
-        "Step #"
-            + this.step.getNumber() + " " + this.step.getId()
-            + " is now in state " + this.stepState);
+    getLogger().fine("Step #"
+        + this.step.getNumber() + " " + this.step.getId() + " is now in state "
+        + this.stepState);
   }
 }

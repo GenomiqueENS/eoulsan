@@ -89,9 +89,8 @@ public class CreateDesignAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line =
-          parser.parse(options,
-              arguments.toArray(new String[arguments.size()]), true);
+      final CommandLine line = parser.parse(options,
+          arguments.toArray(new String[arguments.size()]), true);
 
       // Pair-end option
       if (line.hasOption("paired-end")) {
@@ -152,7 +151,8 @@ public class CreateDesignAction extends AbstractAction {
 
       // Add all the files of a Casava design if Casava design path is defined
       if (sampleSheetPath != null) {
-        db.addCasavaDesignProject(new File(sampleSheetPath), samplesProjectName);
+        db.addCasavaDesignProject(new File(sampleSheetPath),
+            samplesProjectName);
       }
 
       // Add files in the command line
@@ -179,8 +179,8 @@ public class CreateDesignAction extends AbstractAction {
     try {
 
       if (designFile.exists()) {
-        throw new EoulsanIOException("Output design file "
-            + designFile + " already exists");
+        throw new EoulsanIOException(
+            "Output design file " + designFile + " already exists");
       }
 
       DesignWriter dw = new SimpleDesignWriter(designFile.create());
@@ -215,8 +215,8 @@ public class CreateDesignAction extends AbstractAction {
 
     // Casava design path option
     options.addOption(OptionBuilder.withArgName("file").hasArg()
-        .withDescription("Illumina samplesheet file")
-        .withLongOpt("samplesheet").create('s'));
+        .withDescription("Illumina samplesheet file").withLongOpt("samplesheet")
+        .create('s'));
 
     // Casava project option
     options.addOption(OptionBuilder.withArgName("name").hasArg()
@@ -242,8 +242,10 @@ public class CreateDesignAction extends AbstractAction {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + ".sh " + ACTION_NAME + " [options] file1 file2 ... fileN", options);
+    formatter.printHelp(
+        Globals.APP_NAME_LOWER_CASE
+            + ".sh " + ACTION_NAME + " [options] file1 file2 ... fileN",
+        options);
 
     Common.exit(0);
   }

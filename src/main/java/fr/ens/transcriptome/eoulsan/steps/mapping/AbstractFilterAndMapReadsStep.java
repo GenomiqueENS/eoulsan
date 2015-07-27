@@ -248,7 +248,8 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
       final Set<Parameter> stepParameters) throws EoulsanException {
 
     String mapperName = null;
-    final MultiReadFilterBuilder readFilterBuilder = new MultiReadFilterBuilder();
+    final MultiReadFilterBuilder readFilterBuilder =
+        new MultiReadFilterBuilder();
     final MultiReadAlignmentsFilterBuilder alignmentsFilterBuilder =
         new MultiReadAlignmentsFilterBuilder();
 
@@ -296,9 +297,11 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
       default:
 
         // Add read filters parameters
-        if (!(readFilterBuilder.addParameter(p.getName(), p.getStringValue(), true) ||
-        // Add read alignments filters parameters
-        alignmentsFilterBuilder.addParameter(p.getName(), p.getStringValue(), true))) {
+        if (!(readFilterBuilder.addParameter(p.getName(), p.getStringValue(),
+            true) ||
+            // Add read alignments filters parameters
+            alignmentsFilterBuilder.addParameter(p.getName(),
+                p.getStringValue(), true))) {
 
           throw new EoulsanException("Unknown parameter: " + p.getName());
         }
@@ -339,12 +342,11 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
     }
 
     // Log Step parameters
-    getLogger().info(
-        "In "
-            + getName() + ", mapper=" + this.mapper.getMapperName()
-            + " (version: " + this.mapper.getMapperVersion() + ")");
-    getLogger().info(
-        "In " + getName() + ", mapperarguments=" + this.mapperArguments);
+    getLogger().info("In "
+        + getName() + ", mapper=" + this.mapper.getMapperName() + " (version: "
+        + this.mapper.getMapperVersion() + ")");
+    getLogger()
+        .info("In " + getName() + ", mapperarguments=" + this.mapperArguments);
   }
 
 }

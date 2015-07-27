@@ -74,8 +74,8 @@ public class FastqOutputFormat extends FileOutputFormat<Text, Text> {
     } else {
 
       FSDataOutputStream fileOut = fs.create(file, false);
-      return new FastqRecordWriter(context, new DataOutputStream(
-          codec.createOutputStream(fileOut)));
+      return new FastqRecordWriter(context,
+          new DataOutputStream(codec.createOutputStream(fileOut)));
     }
   }
 

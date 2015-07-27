@@ -44,13 +44,12 @@ public class ReadNameStartsWithReadFilterTest {
     // Null case
     assertFalse(filter.accept(null));
 
-    final String[] ids =
-        {"AEGIR:25:B0866ABXX:8:1101:1193:2125",
-            "TOTO:25:B0866ABXX:8:1101:1176:2126",
-            "TOTO:25:B0866ABXX:8:1102:1111:4444",
-            "TOTO:25:B0866ABXX:8:1202:5555:6666",
-            "TOTO:25:B0866ABXX:7:2202:1176:2126",
-            "TOTO:25:B0866ABXX:8:1301:2222:3333"};
+    final String[] ids = { "AEGIR:25:B0866ABXX:8:1101:1193:2125",
+        "TOTO:25:B0866ABXX:8:1101:1176:2126",
+        "TOTO:25:B0866ABXX:8:1102:1111:4444",
+        "TOTO:25:B0866ABXX:8:1202:5555:6666",
+        "TOTO:25:B0866ABXX:7:2202:1176:2126",
+        "TOTO:25:B0866ABXX:8:1301:2222:3333" };
 
     // Not illumina id case
     ReadSequence read = new ReadSequence(0, "read1", "ATG", "wxy");
@@ -64,8 +63,8 @@ public class ReadNameStartsWithReadFilterTest {
     assertFalse(filter.accept(new ReadSequence(0, ids[5], "", "")));
 
     filter = new ReadNameStartsWithReadFilter();
-    filter.setParameter("allowed.prefixes", "TOTO:25:B0866ABXX:8:11, "
-        + "TOTO:25:B0866ABXX:8:13");
+    filter.setParameter("allowed.prefixes",
+        "TOTO:25:B0866ABXX:8:11, " + "TOTO:25:B0866ABXX:8:13");
     filter.init();
 
     assertFalse(filter.accept(new ReadSequence(0, ids[0], "", "")));
@@ -76,8 +75,8 @@ public class ReadNameStartsWithReadFilterTest {
     assertTrue(filter.accept(new ReadSequence(0, ids[5], "", "")));
 
     filter = new ReadNameStartsWithReadFilter();
-    filter.setParameter("forbidden.prefixes", "TOTO:25:B0866ABXX:8:11, "
-        + "TOTO:25:B0866ABXX:8:13");
+    filter.setParameter("forbidden.prefixes",
+        "TOTO:25:B0866ABXX:8:11, " + "TOTO:25:B0866ABXX:8:13");
     filter.init();
 
     assertTrue(filter.accept(new ReadSequence(0, ids[0], "", "")));
@@ -89,8 +88,8 @@ public class ReadNameStartsWithReadFilterTest {
 
     filter = new ReadNameStartsWithReadFilter();
     filter.setParameter("allowed.prefixes", "TOTO");
-    filter.setParameter("forbidden.prefixes", "TOTO:25:B0866ABXX:8:11, "
-        + "TOTO:25:B0866ABXX:8:13");
+    filter.setParameter("forbidden.prefixes",
+        "TOTO:25:B0866ABXX:8:11, " + "TOTO:25:B0866ABXX:8:13");
     filter.init();
 
     assertFalse(filter.accept(new ReadSequence(0, ids[0], "", "")));

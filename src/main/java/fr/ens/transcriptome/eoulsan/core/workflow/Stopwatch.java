@@ -185,8 +185,9 @@ final class Stopwatch {
   }
 
   private long elapsedNanos() {
-    return this.isRunning ? this.ticker.read()
-        - this.startTick + this.elapsedNanos : this.elapsedNanos;
+    return this.isRunning
+        ? this.ticker.read() - this.startTick + this.elapsedNanos
+        : this.elapsedNanos;
   }
 
   /**

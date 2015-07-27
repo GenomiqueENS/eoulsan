@@ -326,8 +326,8 @@ public final class PathUtils {
    * @throws IOException if an error occurs while copying file
    */
   public static boolean copyLocalFileToPath(final File srcFile,
-      final Path destPath, final boolean removeSrcFile, final Configuration conf)
-      throws IOException {
+      final Path destPath, final boolean removeSrcFile,
+      final Configuration conf) throws IOException {
 
     if (srcFile == null) {
       throw new NullPointerException("The source file is null");
@@ -393,8 +393,8 @@ public final class PathUtils {
    * @throws IOException if an error occurs while copying file
    */
   public static boolean copyAndCompressLocalFileToPath(final File srcFile,
-      final Path destPath, final boolean removeSrcFile, final Configuration conf)
-      throws IOException {
+      final Path destPath, final boolean removeSrcFile,
+      final Configuration conf) throws IOException {
 
     if (srcFile == null) {
       throw new NullPointerException("The source file is null");
@@ -453,8 +453,8 @@ public final class PathUtils {
    * @param conf Configuration object
    * @throws IOException if an error occurs while unzipping the file
    */
-  public static void unZipPathToLocalFile(final Path path,
-      final File outputDir, final Configuration conf) throws IOException {
+  public static void unZipPathToLocalFile(final Path path, final File outputDir,
+      final Configuration conf) throws IOException {
 
     unZipPathToLocalFile(path, outputDir, false, conf);
   }
@@ -488,8 +488,8 @@ public final class PathUtils {
     FileUtils.unzip(tmpZipFile, outputDir);
 
     if (!tmpZipFile.delete()) {
-      throw new IOException("Can't remove temporary zip file: "
-          + tmpZipFile.getAbsolutePath());
+      throw new IOException(
+          "Can't remove temporary zip file: " + tmpZipFile.getAbsolutePath());
     }
   }
 
@@ -612,8 +612,8 @@ public final class PathUtils {
       throw new NullPointerException("Extension is null");
     }
 
-    return new Path(path.getParent(), StringUtils.basename(path.getName())
-        + extension);
+    return new Path(path.getParent(),
+        StringUtils.basename(path.getName()) + extension);
   }
 
   /**
@@ -660,9 +660,8 @@ public final class PathUtils {
       throw new IOException("Directory path is not a directory: " + dir);
     }
 
-    final FileStatus[] filesStatus =
-        fs.listStatus(dir, new PrefixPathFilter(prefix,
-            allowCompressedExtension));
+    final FileStatus[] filesStatus = fs.listStatus(dir,
+        new PrefixPathFilter(prefix, allowCompressedExtension));
 
     if (filesStatus == null) {
       return Collections.emptyList();
@@ -721,9 +720,8 @@ public final class PathUtils {
       throw new IOException("Directory path is not a directory: " + dir);
     }
 
-    final FileStatus[] filesStatus =
-        fs.listStatus(dir, new SuffixPathFilter(suffix,
-            allowCompressedExtension));
+    final FileStatus[] filesStatus = fs.listStatus(dir,
+        new SuffixPathFilter(suffix, allowCompressedExtension));
 
     if (filesStatus == null) {
       return Collections.emptyList();
@@ -931,8 +929,8 @@ public final class PathUtils {
     final FileSystem fs = directory.getFileSystem(conf);
 
     if (!fs.getFileStatus(directory).isDirectory()) {
-      throw new IOException("The "
-          + msgFileType + " is not a directory: " + directory);
+      throw new IOException(
+          "The " + msgFileType + " is not a directory: " + directory);
     }
   }
 
@@ -998,8 +996,8 @@ public final class PathUtils {
     final FileSystem fs = file.getFileSystem(conf);
 
     if (!fs.isFile(file)) {
-      throw new IOException("The "
-          + msgFileType + " is  not a standard file: " + file);
+      throw new IOException(
+          "The " + msgFileType + " is  not a standard file: " + file);
     }
   }
 
@@ -1009,9 +1007,8 @@ public final class PathUtils {
    * @param msgFileType message for the description of the file
    * @throws IOException if the file doesn't exists
    */
-  public static final void checkExistingStandardFileOrDirectory(
-      final Path file, final Configuration conf, final String msgFileType)
-      throws IOException {
+  public static final void checkExistingStandardFileOrDirectory(final Path file,
+      final Configuration conf, final String msgFileType) throws IOException {
 
     checkExistingDirectoryFile(file, conf, msgFileType);
 

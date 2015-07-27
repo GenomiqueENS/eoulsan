@@ -207,9 +207,9 @@ public class DataMetadataStorage {
       return;
     }
 
-    try (PrintWriter out =
-        new PrintWriter(new OutputStreamWriter(new FileOutputStream(
-            this.metadataFile.toFile(), true), Globals.DEFAULT_CHARSET))) {
+    try (PrintWriter out = new PrintWriter(new OutputStreamWriter(
+        new FileOutputStream(this.metadataFile.toFile(), true),
+        Globals.DEFAULT_CHARSET))) {
 
       // Write entry
       out.println(s);

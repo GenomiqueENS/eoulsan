@@ -182,7 +182,8 @@ public class TaskResult implements StepResult, Serializable {
    * @param in input stream
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskResult deserialize(final InputStream in) throws IOException {
+  public static TaskResult deserialize(final InputStream in)
+      throws IOException {
 
     checkNotNull(in, "in argument cannot be null");
 

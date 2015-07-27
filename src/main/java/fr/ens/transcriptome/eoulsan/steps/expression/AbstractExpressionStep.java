@@ -252,20 +252,20 @@ public abstract class AbstractExpressionStep extends AbstractStep {
         break;
 
       default:
-        throw new EoulsanException("Unknown parameter for "
-            + getName() + " step: " + p.getName());
+        throw new EoulsanException(
+            "Unknown parameter for " + getName() + " step: " + p.getName());
       }
 
     }
 
     if (this.genomicType == null) {
-      throw new EoulsanException("Parent type not set for "
-          + getName() + " step.");
+      throw new EoulsanException(
+          "Parent type not set for " + getName() + " step.");
     }
 
     if (this.attributeId == null) {
-      throw new EoulsanException("Attribute id not set for "
-          + getName() + " step.");
+      throw new EoulsanException(
+          "Attribute id not set for " + getName() + " step.");
     }
 
     if (counterName == null) {
@@ -273,7 +273,8 @@ public abstract class AbstractExpressionStep extends AbstractStep {
     }
 
     // Test if counter engine exists
-    if (ExpressionCounterService.getInstance().newService(counterName) == null) {
+    if (ExpressionCounterService.getInstance()
+        .newService(counterName) == null) {
       throw new EoulsanException("Unknown counter: " + counterName);
     }
 
@@ -287,10 +288,9 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
     // Log Step parameters
     getLogger().info("In " + getName() + ", counter=" + this.counterName);
-    getLogger().info(
-        "In "
-            + getName() + ", stranded=" + this.stranded + ", overlapmode="
-            + this.overlapmode);
+    getLogger().info("In "
+        + getName() + ", stranded=" + this.stranded + ", overlapmode="
+        + this.overlapmode);
   }
 
   //
@@ -313,12 +313,10 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
     case COUNTER_PARAMETER_NAME:
 
-      if (EoulsanCounter.COUNTER_NAME.toLowerCase().equals(
-          parameter.getLowerStringValue())) {
-        getLogger().warning(
-            "The "
-                + EoulsanCounter.COUNTER_NAME
-                + " counter support is deprecated");
+      if (EoulsanCounter.COUNTER_NAME.toLowerCase()
+          .equals(parameter.getLowerStringValue())) {
+        getLogger().warning("The "
+            + EoulsanCounter.COUNTER_NAME + " counter support is deprecated");
       }
 
       break;

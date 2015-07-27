@@ -54,12 +54,12 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 class TranslatorStringToPython {
 
   /** The Constant NEW_LINE. */
-  public final static Splitter NEW_LINE = Splitter.onPattern("[\r\n]")
-      .trimResults().omitEmptyStrings();
+  public final static Splitter NEW_LINE =
+      Splitter.onPattern("[\r\n]").trimResults().omitEmptyStrings();
 
   /** The Constant LINE_SEPARATOR. */
-  private static final String LINE_SEPARATOR = System.getProperties()
-      .getProperty("line.separator");
+  private static final String LINE_SEPARATOR =
+      System.getProperties().getProperty("line.separator");
 
   /** The tabulations. */
   private int tabulations = 0;
@@ -285,8 +285,8 @@ class TranslatorStringToPython {
     abstract class AbstractLinePython {
 
       /** The variables pattern. */
-      private final Pattern VARIABLES_PATTERN = Pattern
-          .compile("\\$\\{?[\\w.-_]+\\}?");
+      private final Pattern VARIABLES_PATTERN =
+          Pattern.compile("\\$\\{?[\\w.-_]+\\}?");
 
       /** The Constant TAB. */
       private static final String TAB = "\t";
@@ -368,7 +368,6 @@ class TranslatorStringToPython {
 
         final StringBuilder modifiedLine = new StringBuilder();
 
-
         String variableName = "";
 
         while (matcher.find()) {
@@ -382,9 +381,7 @@ class TranslatorStringToPython {
 
           if (currentPos < start) {
             // Extract text before variable
-            final String txt =
-                this.modifiedLine.substring(currentPos, start);
-
+            final String txt = this.modifiedLine.substring(currentPos, start);
 
             // Remove double quote
             // txt = txt.replaceAll("\"", "'");
@@ -423,8 +420,8 @@ class TranslatorStringToPython {
         }
 
         // End line
-        modifiedLine.append(this
-            .endLine(isCurrentTextCode, firstToken, currentPos));
+        modifiedLine
+            .append(this.endLine(isCurrentTextCode, firstToken, currentPos));
 
         return this.buildLineScript(modifiedLine.toString());
       }
@@ -645,8 +642,8 @@ class TranslatorStringToPython {
     class InstructionLinePython extends AbstractLinePython {
 
       /** The start prefix. */
-      private final List<String> START_PREFIX = Lists.newArrayList(PREFIX_IF,
-          PREFIX_ELSE);
+      private final List<String> START_PREFIX =
+          Lists.newArrayList(PREFIX_IF, PREFIX_ELSE);
 
       @Override
       String endLine(final boolean isCurrentTextCode, final boolean firstToken,
@@ -737,8 +734,7 @@ class TranslatorStringToPython {
         }
 
         // Extract last token from string
-        String lastToken =
-            this.getModifiedString().substring(currentPos);
+        String lastToken = this.getModifiedString().substring(currentPos);
 
         if (lastToken.trim().isEmpty()) {
           return txt;
@@ -810,7 +806,7 @@ class TranslatorStringToPython {
         final StringBuilder txt = new StringBuilder();
         txt.append(this.tab(currentTabCount));
 
-        //txt.append(VAR_CMD_NAME + " +=  \" \" + ");
+        // txt.append(VAR_CMD_NAME + " += \" \" + ");
         txt.append(VAR_CMD_NAME);
         txt.append(" += ");
         txt.append(line);

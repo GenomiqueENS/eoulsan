@@ -47,8 +47,8 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public final class WorkflowStepOutputDataFile implements
-    Comparable<WorkflowStepOutputDataFile> {
+public final class WorkflowStepOutputDataFile
+    implements Comparable<WorkflowStepOutputDataFile> {
 
   private final AbstractWorkflowStep step;
   private final String portName;
@@ -264,9 +264,8 @@ public final class WorkflowStepOutputDataFile implements
     try {
       md = file.getMetaData();
     } catch (IOException e) {
-      getLogger().warning(
-          "Error while getting metadata for file "
-              + file + ": " + e.getMessage());
+      getLogger().warning("Error while getting metadata for file "
+          + file + ": " + e.getMessage());
       md = null;
     }
 
@@ -276,8 +275,8 @@ public final class WorkflowStepOutputDataFile implements
 
     final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
 
-    for (DataFormat sourceDf : dfr.getDataFormatsFromExtension(file
-        .getExtension())) {
+    for (DataFormat sourceDf : dfr
+        .getDataFormatsFromExtension(file.getExtension())) {
 
       if (sourceDf.equals(df)) {
         return true;
@@ -418,9 +417,8 @@ public final class WorkflowStepOutputDataFile implements
 
       do {
 
-        final DataFile file =
-            newStandardDataFile(step, outputPort.getName(), format, sample,
-                count, compression);
+        final DataFile file = newStandardDataFile(step, outputPort.getName(),
+            format, sample, count, compression);
 
         found = file.exists();
         if (found) {

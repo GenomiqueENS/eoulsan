@@ -42,8 +42,8 @@ import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 public class TextComparator extends AbstractComparatorWithBloomFilter {
 
   private static final String NAME_COMPARATOR = "TextComparator";
-  private static final Collection<String> EXTENSIONS = Sets.newHashSet(".txt",
-      ".tsv", ".csv", ".xml");
+  private static final Collection<String> EXTENSIONS =
+      Sets.newHashSet(".txt", ".tsv", ".csv", ".xml");
 
   private int numberElementsCompared;
 

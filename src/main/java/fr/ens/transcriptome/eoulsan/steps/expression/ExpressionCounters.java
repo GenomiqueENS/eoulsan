@@ -34,13 +34,13 @@ public enum ExpressionCounters {
   INVALID_SAM_ENTRIES_COUNTER("invalid SAM input entries"),
   TOTAL_READS_COUNTER("reads total"), UNUSED_READS_COUNTER("reads unused"),
   USED_READS_COUNTER("reads used"), UNMAPPED_READS_COUNTER("unmapped reads"),
-  ELIMINATED_READS_COUNTER("reads eliminated"), TOTAL_ALIGNMENTS_COUNTER(
-      "total number of alignments"), NOT_ALIGNED_ALIGNMENTS_COUNTER(
-      "number of not aligned alignments"), NOT_UNIQUE_ALIGNMENTS_COUNTER(
-      "number of not unique alignments"), LOW_QUAL_ALIGNMENTS_COUNTER(
-      "number of alignments with too low quality"), EMPTY_ALIGNMENTS_COUNTER(
-      "number of alignments with no feature"), AMBIGUOUS_ALIGNMENTS_COUNTER(
-      "number of ambiguous alignments"),
+  ELIMINATED_READS_COUNTER("reads eliminated"),
+  TOTAL_ALIGNMENTS_COUNTER("total number of alignments"),
+  NOT_ALIGNED_ALIGNMENTS_COUNTER("number of not aligned alignments"),
+  NOT_UNIQUE_ALIGNMENTS_COUNTER("number of not unique alignments"),
+  LOW_QUAL_ALIGNMENTS_COUNTER("number of alignments with too low quality"),
+  EMPTY_ALIGNMENTS_COUNTER("number of alignments with no feature"),
+  AMBIGUOUS_ALIGNMENTS_COUNTER("number of ambiguous alignments"),
 
   PARENTS_COUNTER("parent"), INVALID_CHROMOSOME_COUNTER("invalid chromosome"),
   PARENT_ID_NOT_FOUND_COUNTER("Parent Id not found in exon range");

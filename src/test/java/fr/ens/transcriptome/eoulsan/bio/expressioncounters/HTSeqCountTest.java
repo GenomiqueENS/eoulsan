@@ -41,8 +41,8 @@ import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 public class HTSeqCountTest {
 
   @Test
-  public void testCountReadsInFeatures() throws EoulsanException, IOException,
-      BadBioEntryException {
+  public void testCountReadsInFeatures()
+      throws EoulsanException, IOException, BadBioEntryException {
 
     // InputStream isSE =
     // this.getClass().getResourceAsStream("/mapper_results_SE.sam");

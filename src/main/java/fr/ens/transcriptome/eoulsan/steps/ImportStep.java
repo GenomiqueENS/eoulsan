@@ -75,8 +75,8 @@ public class ImportStep extends AbstractStep {
 
   public static final String STEP_NAME = "import";
 
-  private static final Splitter SPACE_SPLITTER = Splitter.on(' ').trimResults()
-      .omitEmptyStrings();
+  private static final Splitter SPACE_SPLITTER =
+      Splitter.on(' ').trimResults().omitEmptyStrings();
 
   private Set<DataFile> files;
   private OutputPorts outputPorts;
@@ -123,8 +123,8 @@ public class ImportStep extends AbstractStep {
         break;
 
       default:
-        throw new EoulsanException("Unknown parameter for step "
-            + getName() + ": " + p.getName());
+        throw new EoulsanException(
+            "Unknown parameter for step " + getName() + ": " + p.getName());
       }
     }
 
@@ -141,8 +141,8 @@ public class ImportStep extends AbstractStep {
 
       // Check if some files has been found
       if (this.files.isEmpty()) {
-        throw new EoulsanException("No input file found in the "
-            + getName() + " step");
+        throw new EoulsanException(
+            "No input file found in the " + getName() + " step");
       }
 
       // Get the format and the compression of the files
@@ -165,7 +165,8 @@ public class ImportStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
@@ -201,15 +202,13 @@ public class ImportStep extends AbstractStep {
             // If file use the Eoulsan naming
             if (fileNaming != null) {
 
-              data =
-                  context.getOutputData(format, format.getPrefix())
-                      .addDataToList(fileNaming.getDataName(),
-                          fileNaming.getPart());
+              data = context.getOutputData(format, format.getPrefix())
+                  .addDataToList(fileNaming.getDataName(),
+                      fileNaming.getPart());
 
               // Set metadata of imported files
-              final boolean isMetadataSet =
-                  DataMetadataStorage.getInstance().loadMetadata(data,
-                      Collections.singletonList(inputFile));
+              final boolean isMetadataSet = DataMetadataStorage.getInstance()
+                  .loadMetadata(data, Collections.singletonList(inputFile));
 
               // Set the metadata from sample metadata
               if (!isMetadataSet && samples.containsKey(data.getName())) {
@@ -224,9 +223,8 @@ public class ImportStep extends AbstractStep {
               final String dataName =
                   FileNaming.toValidName(inputFile.getBasename());
 
-              data =
-                  context.getOutputData(format, format.getPrefix())
-                      .addDataToList(dataName);
+              data = context.getOutputData(format, format.getPrefix())
+                  .addDataToList(dataName);
             }
           }
 
@@ -403,8 +401,8 @@ public class ImportStep extends AbstractStep {
       }
 
       if (formats.size() > 1) {
-        throw new EoulsanException("More than one format found for file: "
-            + file);
+        throw new EoulsanException(
+            "More than one format found for file: " + file);
       }
 
       return formats.iterator().next();

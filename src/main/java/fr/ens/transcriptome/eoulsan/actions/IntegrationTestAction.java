@@ -75,9 +75,8 @@ public class IntegrationTestAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line =
-          parser.parse(options,
-              arguments.toArray(new String[arguments.size()]), true);
+      final CommandLine line = parser.parse(options,
+          arguments.toArray(new String[arguments.size()]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -101,8 +100,8 @@ public class IntegrationTestAction extends AbstractAction {
       if (line.hasOption("exec")) {
 
         // Path to application version
-        System.setProperty(ITFactory.IT_APPLICATION_PATH_KEY_SYSTEM_KEY, line
-            .getOptionValue("exec").trim());
+        System.setProperty(ITFactory.IT_APPLICATION_PATH_KEY_SYSTEM_KEY,
+            line.getOptionValue("exec").trim());
         argsOptions += 2;
       }
 
@@ -110,8 +109,8 @@ public class IntegrationTestAction extends AbstractAction {
       if (line.hasOption("f")) {
 
         // List all test to launch
-        System.setProperty(ITFactory.IT_TEST_LIST_PATH_SYSTEM_KEY, line
-            .getOptionValue("f").trim());
+        System.setProperty(ITFactory.IT_TEST_LIST_PATH_SYSTEM_KEY,
+            line.getOptionValue("f").trim());
         argsOptions += 2;
       }
 
@@ -131,13 +130,13 @@ public class IntegrationTestAction extends AbstractAction {
         // Value equals all, regenerate all expected directories generated
         // automatically
         if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("all")) {
-          System.setProperty(
-              ITFactory.IT_GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY, "true");
+          System.setProperty(ITFactory.IT_GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY,
+              "true");
         }
         // Value equals new, regenerate expected directories doesn't exists
         else if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("new")) {
-          System.setProperty(
-              ITFactory.IT_GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY, "true");
+          System.setProperty(ITFactory.IT_GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY,
+              "true");
         }
 
         argsOptions += 2;
@@ -172,8 +171,8 @@ public class IntegrationTestAction extends AbstractAction {
       }
 
     } catch (final ParseException e) {
-      Common
-          .errorExit(e, "Error while parse parameter file: " + e.getMessage());
+      Common.errorExit(e,
+          "Error while parse parameter file: " + e.getMessage());
     }
 
     if (argsOptions == 0 || arguments.size() != argsOptions) {
@@ -216,13 +215,10 @@ public class IntegrationTestAction extends AbstractAction {
         .create('t'));
 
     // Optional, force generated expected data
-    options
-        .addOption(OptionBuilder
-            .withArgName("mode")
-            .hasArg()
-            .withDescription(
-                "optional: mode for generate data expected: all (remove existing) or mode to generate no exists directory new")
-            .create("expected"));
+    options.addOption(OptionBuilder.withArgName("mode").hasArg()
+        .withDescription(
+            "optional: mode for generate data expected: all (remove existing) or mode to generate no exists directory new")
+        .create("expected"));
 
     // Optional, the test output directory
     options.addOption(OptionBuilder.withArgName("outputdir").hasArg(true)
@@ -244,8 +240,9 @@ public class IntegrationTestAction extends AbstractAction {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + ".sh " + getName() + " [options]", options);
+    formatter.printHelp(
+        Globals.APP_NAME_LOWER_CASE + ".sh " + getName() + " [options]",
+        options);
 
     Common.exit(0);
   }

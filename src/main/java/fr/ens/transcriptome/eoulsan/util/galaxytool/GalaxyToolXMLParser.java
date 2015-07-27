@@ -147,7 +147,7 @@ public final class GalaxyToolXMLParser {
    */
   public static Map<String, ToolElement> extractConditionalParamElement(
       final Element parent, final Map<String, Parameter> stepParameters)
-      throws EoulsanException {
+          throws EoulsanException {
 
     final Map<String, ToolElement> results = new HashMap<>();
 
@@ -198,8 +198,8 @@ public final class GalaxyToolXMLParser {
     // Expected count available
     if (expectedCount > 0) {
       if (result.isEmpty()) {
-        throw new EoulsanException("Parsing tool XML file: no "
-            + tagName + " tag found.");
+        throw new EoulsanException(
+            "Parsing tool XML file: no " + tagName + " tag found.");
       }
 
       if (result.size() != expectedCount) {
@@ -245,8 +245,8 @@ public final class GalaxyToolXMLParser {
     // Expected count available
     if (expectedCount > 0) {
       if (result.isEmpty()) {
-        throw new EoulsanException("Parsing tool XML file: no "
-            + tagName + " tag found.");
+        throw new EoulsanException(
+            "Parsing tool XML file: no " + tagName + " tag found.");
       }
 
       if (result.size() != expectedCount) {

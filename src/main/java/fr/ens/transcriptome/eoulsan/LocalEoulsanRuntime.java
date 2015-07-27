@@ -75,7 +75,8 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
   }
 
   @Override
-  public InputStream getInputStream(final String dataSource) throws IOException {
+  public InputStream getInputStream(final String dataSource)
+      throws IOException {
 
     if (dataSource == null) {
       throw new IllegalArgumentException("The datasource is null.");
@@ -164,8 +165,8 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
    * @throws IOException
    * @throws EoulsanException
    */
-  public static void initEoulsanRuntimeForExternalApp() throws IOException,
-      EoulsanException {
+  public static void initEoulsanRuntimeForExternalApp()
+      throws IOException, EoulsanException {
 
     if (!EoulsanRuntime.isRuntime()) {
       newEoulsanRuntime(new Settings(true));

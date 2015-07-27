@@ -143,10 +143,9 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
 
           boolean multiInData = inData.getDataFileCount() > 1;
 
-          final DataFile dataFile =
-              (multiInData
-                  ? inData.getDataFile(inDataFileFoundCount++) : inData
-                      .getDataFile());
+          final DataFile dataFile = (multiInData
+              ? inData.getDataFile(inDataFileFoundCount++)
+              : inData.getDataFile());
 
           variables.put(ptg.getName(), dataFile.toFile().getAbsolutePath());
         }
@@ -166,8 +165,8 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
         final Data outData = context.getOutputData(ptg.getDataFormat(), inData);
 
         if (outData != null) {
-          variables.put(ptg.getName(), outData.getDataFile().toFile()
-              .getAbsolutePath());
+          variables.put(ptg.getName(),
+              outData.getDataFile().toFile().getAbsolutePath());
         }
       } else {
         // Variables setting with parameters file
@@ -179,13 +178,11 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
       throw new EoulsanException("No parameter settings.");
     }
 
-    context.getLogger().info(
-        "Tool variable settings  "
-            + Joiner.on("\t").withKeyValueSeparator("=").join(variables));
+    context.getLogger().info("Tool variable settings  "
+        + Joiner.on("\t").withKeyValueSeparator("=").join(variables));
 
-    final ToolPythonInterpreter pythonInterpreter =
-        new ToolPythonInterpreter(context, this.tool,
-            Collections.unmodifiableMap(variables));
+    final ToolPythonInterpreter pythonInterpreter = new ToolPythonInterpreter(
+        context, this.tool, Collections.unmodifiableMap(variables));
 
     final ToolExecutorResult result = pythonInterpreter.executeScript();
 
@@ -289,7 +286,8 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
       doc.getDocumentElement().normalize();
       return doc;
 
-    } catch (final IOException | SAXException | ParserConfigurationException e) {
+    } catch (final IOException | SAXException
+        | ParserConfigurationException e) {
       throw new EoulsanException(e);
     }
   }

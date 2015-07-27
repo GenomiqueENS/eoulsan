@@ -66,15 +66,14 @@ public class DataFormatConverter {
     }
 
     final CompressionType srcCT =
-        CompressionType.getCompressionTypeByContentEncoding(this.inFile
-            .getMetaData().getContentEncoding());
+        CompressionType.getCompressionTypeByContentEncoding(
+            this.inFile.getMetaData().getContentEncoding());
     final CompressionType destCT =
         CompressionType.getCompressionTypeByFilename(this.outFile.getName());
 
-    getLogger().fine(
-        "Convert "
-            + this.inFile + " (" + this.inFormat + "/" + srcCT + ") to "
-            + this.outFile + " (" + this.outFormat + "/" + destCT + ").");
+    getLogger().fine("Convert "
+        + this.inFile + " (" + this.inFormat + "/" + srcCT + ") to "
+        + this.outFile + " (" + this.outFormat + "/" + destCT + ").");
 
     if (this.inFormat.equals(this.outFormat) && srcCT.equals(destCT)) {
 
@@ -94,8 +93,10 @@ public class DataFormatConverter {
       return;
     }
 
-    if ((this.inFormat == DataFormats.READS_FASTQ || this.inFormat == DataFormats.READS_TFQ)
-        && (this.outFormat == DataFormats.READS_FASTQ || this.outFormat == DataFormats.READS_TFQ)) {
+    if ((this.inFormat == DataFormats.READS_FASTQ
+        || this.inFormat == DataFormats.READS_TFQ)
+        && (this.outFormat == DataFormats.READS_FASTQ
+            || this.outFormat == DataFormats.READS_TFQ)) {
 
       final ReadSequenceReader reader;
 
@@ -150,8 +151,11 @@ public class DataFormatConverter {
   public DataFormatConverter(final DataFile inFile, final DataFile outFile,
       final OutputStream os) throws IOException {
 
-    this(inFile, outFile, outFile == null ? null : DataFormatRegistry
-        .getInstance().getDataFormatFromFilename(outFile.getName()), os);
+    this(inFile, outFile,
+        outFile == null
+            ? null : DataFormatRegistry.getInstance()
+                .getDataFormatFromFilename(outFile.getName()),
+        os);
   }
 
   /**

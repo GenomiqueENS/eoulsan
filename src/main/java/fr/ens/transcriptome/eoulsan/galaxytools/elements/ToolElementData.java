@@ -124,9 +124,8 @@ public class ToolElementData extends AbstractToolElement {
     } else {
       // Convert format in DataFormat
 
-      this.dataFormat =
-          DataFormatRegistry.getInstance().getDataFormatFromToolshedExtension(
-              this.formats.get(0));
+      this.dataFormat = DataFormatRegistry.getInstance()
+          .getDataFormatFromToolshedExtension(this.formats.get(0));
     }
   }
 

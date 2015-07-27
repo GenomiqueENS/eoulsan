@@ -50,7 +50,7 @@ public interface TranslatorOutputFormat {
    * Add an empty value.
    * @throws IOException if an error occurs
    */
-   void writeEmpty() throws IOException;
+  void writeEmpty() throws IOException;
 
   /**
    * Add a long value.

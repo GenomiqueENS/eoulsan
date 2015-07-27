@@ -145,7 +145,8 @@ public class DesignBuilder {
         if (!reader.hasNext()) {
           reader.close();
           reader.throwException();
-          throw new EmptyFastqException("Fastq file is empty: " + f.getSource());
+          throw new EmptyFastqException(
+              "Fastq file is empty: " + f.getSource());
         }
 
         reader.close();
@@ -165,12 +166,11 @@ public class DesignBuilder {
 
       try {
         IlluminaReadId irid = new IlluminaReadId(this.firstReadId);
-        prefix =
-            irid.getInstrumentId()
-                + "\t" + irid.getFlowCellLane() + "\t"
-                + irid.getTileNumberInFlowCellLane() + "\t"
-                + irid.getXClusterCoordinateInTile() + "\t"
-                + irid.getYClusterCoordinateInTile();
+        prefix = irid.getInstrumentId()
+            + "\t" + irid.getFlowCellLane() + "\t"
+            + irid.getTileNumberInFlowCellLane() + "\t"
+            + irid.getXClusterCoordinateInTile() + "\t"
+            + irid.getYClusterCoordinateInTile();
 
         pairMember = irid.getPairMember();
 
@@ -260,7 +260,7 @@ public class DesignBuilder {
 
     public FastqEntry(final DataFile path, final String sampleName,
         final String sampleDesc, final String sampleOperator)
-        throws EoulsanException {
+            throws EoulsanException {
 
       this.path = path;
       this.sampleName = sampleName;
@@ -287,8 +287,8 @@ public class DesignBuilder {
     }
 
     if (!file.exists()) {
-      throw new EoulsanException("File "
-          + file + " does not exist or is not a regular file.");
+      throw new EoulsanException(
+          "File " + file + " does not exist or is not a regular file.");
     }
 
     final String extension =
@@ -339,7 +339,8 @@ public class DesignBuilder {
       this.genomeFile = file;
     } else if (isDataFormatExtension(ANNOTATION_GFF, extension, md)) {
       this.gffFile = file;
-    } else if (isDataFormatExtension(ADDITIONAL_ANNOTATION_TSV, extension, md)) {
+    } else
+      if (isDataFormatExtension(ADDITIONAL_ANNOTATION_TSV, extension, md)) {
       this.additionalAnnotationFile = file;
     } else {
       throw new EoulsanException("Unknown file type: " + file);
@@ -403,7 +404,7 @@ public class DesignBuilder {
    */
   public void addCasavaDesignProject(final CasavaDesign casavaDesign,
       final String projectName, final File casavaOutputDir)
-      throws EoulsanException {
+          throws EoulsanException {
 
     if (casavaDesign == null || casavaOutputDir == null) {
       return;
@@ -427,9 +428,8 @@ public class DesignBuilder {
         continue;
       }
 
-      final File dataDir =
-          new File(casavaOutputDir.getPath()
-              + "/Project_" + sampleProject + "/Sample_" + sampleName);
+      final File dataDir = new File(casavaOutputDir.getPath()
+          + "/Project_" + sampleProject + "/Sample_" + sampleName);
 
       // Test if the directory with fastq files exists
       if (!dataDir.exists() || !dataDir.isDirectory()) {
@@ -489,19 +489,16 @@ public class DesignBuilder {
       return;
     }
 
-    getLogger().info(
-        "Add Casava design file "
-            + casavaDesignFile
-            + " to design with "
-            + (projectName == null ? "no project filter." : projectName
-                + " project filter."));
+    getLogger().info("Add Casava design file "
+        + casavaDesignFile + " to design with " + (projectName == null
+            ? "no project filter." : projectName + " project filter."));
 
     final File baseDir;
     final File file;
 
     if (!casavaDesignFile.exists()) {
-      throw new EoulsanException("The casava design file does not exists: "
-          + casavaDesignFile);
+      throw new EoulsanException(
+          "The casava design file does not exists: " + casavaDesignFile);
     }
 
     if (casavaDesignFile.isDirectory()) {
@@ -519,8 +516,8 @@ public class DesignBuilder {
       });
 
       if (files == null || files.length == 0) {
-        throw new EoulsanException("No Casava design file found in directory: "
-            + baseDir);
+        throw new EoulsanException(
+            "No Casava design file found in directory: " + baseDir);
       }
 
       if (files.length > 1) {
@@ -570,9 +567,8 @@ public class DesignBuilder {
 
         if (pairEndMode) {
 
-          final String finalSampleName =
-              files.size() == 1 ? sampleName : sampleName
-                  + StringUtils.toLetter(count);
+          final String finalSampleName = files.size() == 1
+              ? sampleName : sampleName + StringUtils.toLetter(count);
 
           // Convert the list of DataFiles to a list of filenames
           final List<String> filenames = new ArrayList<>();
@@ -588,9 +584,8 @@ public class DesignBuilder {
 
           for (FastqEntry fe : fes) {
 
-            final String finalSampleName =
-                e.getValue().size() == 1 ? sampleName : sampleName
-                    + StringUtils.toLetter(count);
+            final String finalSampleName = e.getValue().size() == 1
+                ? sampleName : sampleName + StringUtils.toLetter(count);
 
             addSample(result, finalSampleName, desc, condition, date, operator,
                 defaultFastqFormat,
@@ -623,7 +618,7 @@ public class DesignBuilder {
       final String desc, final String condition, final String date,
       final String operator, final FastqFormat defaultFastqFormat,
       final List<String> filenames, final DataFile fileToCheck)
-      throws EoulsanException {
+          throws EoulsanException {
 
     if (design == null) {
       return;
@@ -676,9 +671,8 @@ public class DesignBuilder {
 
     try {
       getLogger().info("Check fastq format for " + fileToCheck);
-      format =
-          FastqFormat.identifyFormat(fileToCheck.open(),
-              MAX_FASTQ_ENTRIES_TO_READ);
+      format = FastqFormat.identifyFormat(fileToCheck.open(),
+          MAX_FASTQ_ENTRIES_TO_READ);
     } catch (IOException | BadBioEntryException e) {
       throw new EoulsanException(e);
     }
@@ -759,13 +753,13 @@ public class DesignBuilder {
         }
 
         if (member1 < 1 || member1 > 2) {
-          throw new EoulsanException("Invalid pair member for file: "
-              + list.get(0));
+          throw new EoulsanException(
+              "Invalid pair member for file: " + list.get(0));
         }
 
         if (member2 < 1 || member2 > 2) {
-          throw new EoulsanException("Invalid pair member for file: "
-              + list.get(1));
+          throw new EoulsanException(
+              "Invalid pair member for file: " + list.get(1));
         }
 
         // Change the order of the file if necessary

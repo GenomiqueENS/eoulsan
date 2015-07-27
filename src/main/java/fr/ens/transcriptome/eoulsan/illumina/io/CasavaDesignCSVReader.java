@@ -45,8 +45,8 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
 
   /* Default Charset. */
-  private static final Charset CHARSET = Charset
-      .forName(Globals.DEFAULT_FILE_ENCODING);
+  private static final Charset CHARSET =
+      Charset.forName(Globals.DEFAULT_FILE_ENCODING);
 
   private final BufferedReader reader;
 
@@ -107,8 +107,8 @@ public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
     }
 
     if (!file.isFile()) {
-      throw new FileNotFoundException("File not found: "
-          + file.getAbsolutePath());
+      throw new FileNotFoundException(
+          "File not found: " + file.getAbsolutePath());
     }
 
     this.reader = FileUtils.createBufferedReader(file);
@@ -128,8 +128,8 @@ public class CasavaDesignCSVReader extends AbstractCasavaDesignTextReader {
     final File file = new File(filename);
 
     if (!file.isFile()) {
-      throw new FileNotFoundException("File not found: "
-          + file.getAbsolutePath());
+      throw new FileNotFoundException(
+          "File not found: " + file.getAbsolutePath());
     }
 
     this.reader = FileUtils.createBufferedReader(file);

@@ -320,9 +320,8 @@ public class DataFile implements Comparable<DataFile>, Serializable {
     final InputStream is = rawOpen();
     final DataFileMetadata md = getMetaData();
 
-    final CompressionType ct =
-        CompressionType.getCompressionTypeByContentEncoding(md
-            .getContentEncoding());
+    final CompressionType ct = CompressionType
+        .getCompressionTypeByContentEncoding(md.getContentEncoding());
 
     if (ct == null) {
       return is;
@@ -439,9 +438,8 @@ public class DataFile implements Comparable<DataFile>, Serializable {
 
     if (relativize) {
 
-      final DataFile newTarget =
-          new DataFile(relativize(link.getParent(), this.getParent()),
-              this.getName());
+      final DataFile newTarget = new DataFile(
+          relativize(link.getParent(), this.getParent()), this.getName());
 
       getProtocol().symlink(newTarget, link);
 
@@ -561,10 +559,9 @@ public class DataFile implements Comparable<DataFile>, Serializable {
     }
 
     if (this.protocol == null) {
-      getLogger().severe(
-          "Unknown protocol: \""
-              + this.protocolPrefixInSource
-              + "\", can't set protocol for DataFile.");
+      getLogger().severe("Unknown protocol: \""
+          + this.protocolPrefixInSource
+          + "\", can't set protocol for DataFile.");
       this.unknownProtocolName = this.protocolPrefixInSource;
     }
 
@@ -587,7 +584,8 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    * @param f2 second path
    * @return the relative path
    */
-  private static final DataFile relativize(final DataFile f1, final DataFile f2) {
+  private static final DataFile relativize(final DataFile f1,
+      final DataFile f2) {
 
     final URI uri1 = f1.toUri();
     final URI uri2 = f2.toUri();
@@ -652,8 +650,8 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    * @param in the object input stream
    * @throws IOException if an error occurs while deserializing the object
    */
-  private void readObject(final ObjectInputStream in) throws IOException,
-      ClassNotFoundException {
+  private void readObject(final ObjectInputStream in)
+      throws IOException, ClassNotFoundException {
 
     final String source = (String) in.readObject();
 

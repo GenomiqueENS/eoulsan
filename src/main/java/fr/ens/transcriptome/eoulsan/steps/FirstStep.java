@@ -60,7 +60,8 @@ public final class FirstStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Clear the CheckStore before the start of the "real" steps
     CheckStore.getCheckStore().clear();

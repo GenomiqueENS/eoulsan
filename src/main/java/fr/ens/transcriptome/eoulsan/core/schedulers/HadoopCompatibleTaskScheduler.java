@@ -85,7 +85,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
 
     private Job createHadoopJob(final Configuration conf,
         final DataFile submitFile, final String jobDescription)
-        throws IOException {
+            throws IOException {
 
       final Configuration jobConf = new Configuration(conf);
 
@@ -144,8 +144,8 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
       final DataFile taskResultFile =
           new DataFile(this.taskDir, this.taskPrefix + TASK_RESULT_EXTENSION);
       // Load output data objects
-      this.context.deserializeOutputData(new DataFile(this.taskDir,
-          this.taskPrefix + TASK_DATA_EXTENSION));
+      this.context.deserializeOutputData(
+          new DataFile(this.taskDir, this.taskPrefix + TASK_DATA_EXTENSION));
 
       return TaskResult.deserialize(taskResultFile);
     }
@@ -160,9 +160,8 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
         // Create job directory
         this.taskDir.mkdir();
 
-        final DataFile taskContextFile =
-            new DataFile(this.taskDir, this.taskPrefix
-                + Globals.TASK_CONTEXT_EXTENSION);
+        final DataFile taskContextFile = new DataFile(this.taskDir,
+            this.taskPrefix + Globals.TASK_CONTEXT_EXTENSION);
 
         // Serialize the context object
         this.context.serialize(taskContextFile);
@@ -171,8 +170,8 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
         beforeExecuteTask(this.context);
 
         // Submit Job
-        this.hadoopJob =
-            createHadoopJob(this.conf, taskContextFile, "Eoulsan Task #"
+        this.hadoopJob = createHadoopJob(this.conf, taskContextFile,
+            "Eoulsan Task #"
                 + this.context.getId() + " (" + this.context.getContextName()
                 + ")");
 
@@ -245,9 +244,8 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
 
       this.conf = conf;
       this.context = context;
-      this.taskDir =
-          new DataFile(hadoopWorkDir, "eoulsan-hadoop-compatible-task-"
-              + this.context.getId());
+      this.taskDir = new DataFile(hadoopWorkDir,
+          "eoulsan-hadoop-compatible-task-" + this.context.getId());
       this.taskPrefix = context.getTaskFilePrefix();
     }
   }
@@ -256,13 +254,13 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
   // Hadoop Mapper class
   //
 
-  public static final class HadoopCompatibleMapper extends
-      Mapper<LongWritable, Text, NullWritable, NullWritable> {
+  public static final class HadoopCompatibleMapper
+      extends Mapper<LongWritable, Text, NullWritable, NullWritable> {
 
     @Override
     protected void setup(
         Mapper<LongWritable, Text, NullWritable, NullWritable>.Context context)
-        throws IOException, InterruptedException {
+            throws IOException, InterruptedException {
 
       EoulsanLogger.initConsoleHandler();
       getLogger().info("Start of setup()");

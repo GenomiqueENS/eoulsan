@@ -116,17 +116,15 @@ public class TaskRunner {
     checkState(this.result == null, "task has been already executed");
 
     // Thread group name
-    final String threadGroupName =
-        "TaskRunner_"
-            + this.context.getStep().getId() + "_#" + this.context.getId();
+    final String threadGroupName = "TaskRunner_"
+        + this.context.getStep().getId() + "_#" + this.context.getId();
 
     // Define thread group
     final ThreadGroup threadGroup = new ThreadGroup(threadGroupName);
 
     // Create Log handler and register it
-    final Logger logger =
-        isNoLog(this.step) ? null : createStepLogger(this.context.getStep(),
-            threadGroupName);
+    final Logger logger = isNoLog(this.step)
+        ? null : createStepLogger(this.context.getStep(), threadGroupName);
 
     // Register the logger
     if (logger != null) {
@@ -150,8 +148,9 @@ public class TaskRunner {
         final String stepDescLog =
             String.format("step (id: %s, name: %s, class: %s) for task #%d",
                 TaskRunner.this.context.getWorkflowStep().getId(),
-                TaskRunner.this.step.getName(), TaskRunner.this.step.getClass()
-                    .getName(), TaskRunner.this.context.getId());
+                TaskRunner.this.step.getName(),
+                TaskRunner.this.step.getClass().getName(),
+                TaskRunner.this.context.getId());
 
         try {
 
@@ -167,18 +166,18 @@ public class TaskRunner {
             final String stepName = TaskRunner.this.step.getName();
             final Version stepVersion = TaskRunner.this.step.getVersion();
 
-            stepInstance =
-                StepRegistry.getInstance().loadStep(stepName,
-                    stepVersion.toString());
+            stepInstance = StepRegistry.getInstance().loadStep(stepName,
+                stepVersion.toString());
 
             // Log step parameters
             logStepParameters();
 
             // Configure the new step instance
             getLogger().fine("Configure step instance");
-            stepInstance.configure(new WorkflowStepConfigurationContext(
-                TaskRunner.this.context.getStep()), TaskRunner.this.context
-                .getCurrentStep().getParameters());
+            stepInstance.configure(
+                new WorkflowStepConfigurationContext(
+                    TaskRunner.this.context.getStep()),
+                TaskRunner.this.context.getCurrentStep().getParameters());
 
           } else {
 
@@ -192,9 +191,8 @@ public class TaskRunner {
 
           // Execute task
           getLogger().info("Execute task");
-          TaskRunner.this.result =
-              stepInstance.execute(TaskRunner.this.context,
-                  TaskRunner.this.status);
+          TaskRunner.this.result = stepInstance.execute(TaskRunner.this.context,
+              TaskRunner.this.status);
 
         } catch (Throwable t) {
 
@@ -217,8 +215,8 @@ public class TaskRunner {
           getLogger().fine("Step has no parameter");
         } else {
           for (Parameter p : parameters) {
-            getLogger().fine(
-                "Step parameter: " + p.getName() + "=" + p.getValue());
+            getLogger()
+                .fine("Step parameter: " + p.getName() + "=" + p.getValue());
           }
         }
       }
@@ -243,13 +241,11 @@ public class TaskRunner {
       thread.join();
 
     } catch (InterruptedException e) {
-      getLogger().severe(
-          e.getMessage() == null ? "Interruption of the thread "
-              + threadGroupName : e.getMessage());
+      getLogger().severe(e.getMessage() == null
+          ? "Interruption of the thread " + threadGroupName : e.getMessage());
 
       // Inform the step token manager of the failed output data
-      TokenManagerRegistry.getInstance()
-          .getTokenManager(this.context.getStep())
+      TokenManagerRegistry.getInstance().getTokenManager(this.context.getStep())
           .addFailedOutputData(this.context);
 
     } finally {
@@ -379,9 +375,8 @@ public class TaskRunner {
     // Define the log file for the step
     final DataFile logDir =
         this.context.getStep().getAbstractWorkflow().getTaskDirectory();
-    final DataFile logFile =
-        new DataFile(logDir, this.context.getTaskFilePrefix()
-            + TASK_LOG_EXTENSION);
+    final DataFile logFile = new DataFile(logDir,
+        this.context.getTaskFilePrefix() + TASK_LOG_EXTENSION);
 
     OutputStream logOut;
     try {
@@ -502,7 +497,8 @@ public class TaskRunner {
    * @param taskContext task context
    * @param taskResult task result
    */
-  private TaskRunner(final TaskContext taskContext, final TaskResult taskResult) {
+  private TaskRunner(final TaskContext taskContext,
+      final TaskResult taskResult) {
 
     checkNotNull(taskContext, "taskContext cannot be null");
     checkNotNull(taskResult, "taskResult cannot be null");

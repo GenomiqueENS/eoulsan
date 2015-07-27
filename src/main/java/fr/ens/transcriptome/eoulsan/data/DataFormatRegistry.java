@@ -77,8 +77,8 @@ public class DataFormatRegistry {
    * This class define a resource loader for resource defined in the file
    * system.
    */
-  private static final class DataFormatFileResourceLoader extends
-      FileResourceLoader<XMLDataFormat> {
+  private static final class DataFormatFileResourceLoader
+      extends FileResourceLoader<XMLDataFormat> {
 
     @Override
     protected String getExtension() {
@@ -138,8 +138,8 @@ public class DataFormatRegistry {
   /**
    * This class define a resource loader for resource defined in the class path.
    */
-  private static final class DataFormatClassPathLoader extends
-      ClassPathResourceLoader<XMLDataFormat> {
+  private static final class DataFormatClassPathLoader
+      extends ClassPathResourceLoader<XMLDataFormat> {
 
     @Override
     protected String getResourceName(final XMLDataFormat resource) {
@@ -217,8 +217,8 @@ public class DataFormatRegistry {
       throws EoulsanException {
 
     if (df.getName() == null) {
-      throw new EoulsanException("The DataFormat "
-          + df.getClass().getName() + " as no name.");
+      throw new EoulsanException(
+          "The DataFormat " + df.getClass().getName() + " as no name.");
     }
 
     if (!df.getName().toLowerCase().trim().equals(df.getName())) {
@@ -229,8 +229,8 @@ public class DataFormatRegistry {
 
     for (DataFormat format : this.formats) {
       if (format.getName().equals(df.getName())) {
-        throw new EoulsanException("A DataFormat named "
-            + df.getName() + " is already registered.");
+        throw new EoulsanException(
+            "A DataFormat named " + df.getName() + " is already registered.");
       }
     }
 
@@ -549,8 +549,8 @@ public class DataFormatRegistry {
         register(df, true);
 
       } catch (EoulsanException e) {
-        getLogger().warning(
-            "Cannot register " + df.getName() + ": " + e.getMessage());
+        getLogger()
+            .warning("Cannot register " + df.getName() + ": " + e.getMessage());
       }
     }
   }

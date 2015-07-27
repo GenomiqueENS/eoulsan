@@ -56,10 +56,10 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
 
   // Parameters keys
-  static final String MAPPING_QUALITY_THRESHOLD_KEY = Globals.PARAMETER_PREFIX
-      + ".samfilter.mapping.quality.threshold";
-  static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
-      + ".samfilter.genome.desc.file";
+  static final String MAPPING_QUALITY_THRESHOLD_KEY =
+      Globals.PARAMETER_PREFIX + ".samfilter.mapping.quality.threshold";
+  static final String GENOME_DESC_PATH_KEY =
+      Globals.PARAMETER_PREFIX + ".samfilter.genome.desc.file";
 
   static final String SAM_HEADER_FILE_PREFIX = "_samheader_";
 
@@ -72,8 +72,8 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
   private final Text outValue = new Text();
 
   @Override
-  protected void setup(final Context context) throws IOException,
-      InterruptedException {
+  protected void setup(final Context context)
+      throws IOException, InterruptedException {
 
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
@@ -111,8 +111,9 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
       return;
     }
 
-    context.getCounter(this.counterGroup,
-        INPUT_ALIGNMENTS_COUNTER.counterName()).increment(1);
+    context
+        .getCounter(this.counterGroup, INPUT_ALIGNMENTS_COUNTER.counterName())
+        .increment(1);
 
     final int indexOfFirstTab = line.indexOf("\t");
     String completeId = line.substring(0, indexOfFirstTab);
@@ -158,8 +159,8 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
   }
 
   @Override
-  protected void cleanup(final Context context) throws IOException,
-      InterruptedException {
+  protected void cleanup(final Context context)
+      throws IOException, InterruptedException {
   }
 
   private List<String> headers;
@@ -179,13 +180,11 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
 
         // Save headers
 
-        final Path outputPath =
-            new Path(context.getConfiguration().get(
-                "mapreduce.output.fileoutputformat.outputdir"));
+        final Path outputPath = new Path(context.getConfiguration()
+            .get("mapreduce.output.fileoutputformat.outputdir"));
 
-        final Path headerPath =
-            new Path(outputPath, SAM_HEADER_FILE_PREFIX
-                + context.getTaskAttemptID().toString());
+        final Path headerPath = new Path(outputPath,
+            SAM_HEADER_FILE_PREFIX + context.getTaskAttemptID().toString());
         final Writer writer =
             new OutputStreamWriter(PathUtils.createOutputStream(headerPath,
                 context.getConfiguration()), SAM_CHARSET);

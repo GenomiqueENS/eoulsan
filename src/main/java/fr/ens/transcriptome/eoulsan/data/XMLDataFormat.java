@@ -56,8 +56,8 @@ import fr.ens.transcriptome.eoulsan.util.XMLUtils;
  * @since 1.2
  * @author Laurent Jourdren
  */
-public final class XMLDataFormat extends AbstractDataFormat implements
-    Serializable {
+public final class XMLDataFormat extends AbstractDataFormat
+    implements Serializable {
 
   private static final long serialVersionUID = -6926659317643003910L;
 
@@ -212,7 +212,8 @@ public final class XMLDataFormat extends AbstractDataFormat implements
   // Other methods
   //
 
-  private final Object loadClass(final String className, final Class<?> interf) {
+  private final Object loadClass(final String className,
+      final Class<?> interf) {
 
     if (className == null) {
       return null;
@@ -308,7 +309,8 @@ public final class XMLDataFormat extends AbstractDataFormat implements
       } catch (NumberFormatException exp) {
         throw new EoulsanException(
             "Invalid maximal files count for data format "
-                + this.name + ": " + maxFiles, exp);
+                + this.name + ": " + maxFiles,
+            exp);
       }
 
       // Parse extensions
@@ -377,7 +379,8 @@ public final class XMLDataFormat extends AbstractDataFormat implements
       this.splitterClassName = null;
     }
 
-    if (this.mergerClassName != null && "".equals(this.mergerClassName.trim())) {
+    if (this.mergerClassName != null
+        && "".equals(this.mergerClassName.trim())) {
       this.mergerClassName = null;
     }
 
@@ -387,8 +390,8 @@ public final class XMLDataFormat extends AbstractDataFormat implements
     }
 
     if (this.extensions.size() == 0) {
-      throw new EoulsanException("No extension define for the data format "
-          + this.name);
+      throw new EoulsanException(
+          "No extension define for the data format " + this.name);
     }
   }
 

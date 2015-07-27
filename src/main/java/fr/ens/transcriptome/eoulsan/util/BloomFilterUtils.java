@@ -128,8 +128,10 @@ public class BloomFilterUtils implements Serializable {
   @Override
   public String toString() {
 
-    return "Bloom filter features" + "\n\tfalse positive probability "
-        + getFalsePositiveProbability() + "%" + "\n\tnumber elements expected " + getExpectedNumberOfElements() + "\n\tnumber elements added " + getAddedNumberOfElements();
+    return "Bloom filter features"
+        + "\n\tfalse positive probability " + getFalsePositiveProbability()
+        + "%" + "\n\tnumber elements expected " + getExpectedNumberOfElements()
+        + "\n\tnumber elements added " + getAddedNumberOfElements();
   }
 
   //

@@ -197,7 +197,8 @@ public class DiffAna extends Normalization {
      * @return a DispersionFitType or null if no DispersionFitType found for the
      *         name
      */
-    public static DispersionFitType getDispEstFitTypeFromName(final String name) {
+    public static DispersionFitType getDispEstFitTypeFromName(
+        final String name) {
 
       if (name == null) {
         return null;
@@ -297,10 +298,9 @@ public class DiffAna extends Normalization {
     checkRepTechGroupCoherence(rRepTechGroup, rCondNames);
 
     // Create Rnw script stringbuilder with preamble
-    String pdfTitle =
-        escapeUnderScore(experimentSamplesList.get(0).getMetadata()
-            .getExperiment())
-            + " differential analysis";
+    String pdfTitle = escapeUnderScore(
+        experimentSamplesList.get(0).getMetadata().getExperiment())
+        + " differential analysis";
     final StringBuilder sb =
         generateRnwpreamble(experimentSamplesList, pdfTitle);
 
@@ -371,12 +371,10 @@ public class DiffAna extends Normalization {
 
     dispersionEstimation =
         dispersionEstimation.replace("${METHOD}", this.dispEstMethod.getName());
-    dispersionEstimation =
-        dispersionEstimation.replace("${SHARINGMODE}",
-            this.dispEstSharingMode.getName());
-    dispersionEstimation =
-        dispersionEstimation.replace("${FITTYPE}",
-            this.dispEstFitType.getName());
+    dispersionEstimation = dispersionEstimation.replace("${SHARINGMODE}",
+        this.dispEstSharingMode.getName());
+    dispersionEstimation = dispersionEstimation.replace("${FITTYPE}",
+        this.dispEstFitType.getName());
 
     // Add dispersion estimation part to stringbuilder
     sb.append(dispersionEstimation);
@@ -389,8 +387,8 @@ public class DiffAna extends Normalization {
 
         if (passedConditionName.indexOf(cond) == -1) {
           sb.append("<<dispersionPlot_" + cond + ", fig=TRUE>>=\n");
-          sb.append("fitInfo <- fitInfo(countDataSet, name = \""
-              + cond + "\")\n");
+          sb.append(
+              "fitInfo <- fitInfo(countDataSet, name = \"" + cond + "\")\n");
           sb.append("plotDispEsts(countDataSet, fitInfo, \"" + cond + "\")\n");
           sb.append("@\n");
 
@@ -423,10 +421,9 @@ public class DiffAna extends Normalization {
     // create file
     String rScript = null;
     try {
-      rScript =
-          "diffana_"
-              + experimentSamplesList.get(0).getMetadata().getExperiment()
-              + "_" + System.currentTimeMillis() + ".Rnw";
+      rScript = "diffana_"
+          + experimentSamplesList.get(0).getMetadata().getExperiment() + "_"
+          + System.currentTimeMillis() + ".Rnw";
       if (context.getSettings().isRServeServerEnabled()) {
         this.rConnection.writeStringAsFile(rScript, sb.toString());
       } else {
@@ -505,8 +502,8 @@ public class DiffAna extends Normalization {
 
         if (s.getMetadata().isReference()) {
           // Add reference to R script
-          sb.append("ref <- "
-              + "\"" + s.getMetadata().getCondition() + "\"\n\n");
+          sb.append(
+              "ref <- " + "\"" + s.getMetadata().getCondition() + "\"\n\n");
           break;
         }
       }

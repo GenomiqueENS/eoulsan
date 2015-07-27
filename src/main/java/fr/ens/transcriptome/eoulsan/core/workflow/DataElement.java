@@ -305,7 +305,8 @@ class DataElement extends AbstractData implements Serializable {
     this.port = null;
   }
 
-  DataElement(final DataFormat format, final DataFile file, final Design design) {
+  DataElement(final DataFormat format, final DataFile file,
+      final Design design) {
     this(format, Collections.singletonList(file), design);
   }
 

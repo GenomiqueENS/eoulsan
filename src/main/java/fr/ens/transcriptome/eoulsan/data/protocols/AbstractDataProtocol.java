@@ -162,8 +162,8 @@ abstract class AbstractDataProtocol implements DataProtocol {
   @Override
   public List<DataFile> list(final DataFile file) throws IOException {
 
-    throw new IOException("The list() method is not supported by the "
-        + getName() + " protocol");
+    throw new IOException(
+        "The list() method is not supported by the " + getName() + " protocol");
   }
 
   @Override

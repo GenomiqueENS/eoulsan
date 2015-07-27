@@ -87,8 +87,8 @@ public class ITResult {
         new File(this.it.getOutputTestDirectory(), filename);
     Writer fw;
     try {
-      fw =
-          newWriter(reportFile, Charset.forName(Globals.DEFAULT_FILE_ENCODING));
+      fw = newWriter(reportFile,
+          Charset.forName(Globals.DEFAULT_FILE_ENCODING));
 
       // Build text report
       fw.write(createReportText(true, durationIT));
@@ -110,8 +110,8 @@ public class ITResult {
 
       } catch (final IOException e) {
 
-        getLogger().warning(
-            "Error while copying the result execution integration "
+        getLogger()
+            .warning("Error while copying the result execution integration "
                 + "test in expected directory: " + e.getMessage());
       }
     }
@@ -147,13 +147,11 @@ public class ITResult {
       txt += "NOTHING TO DO of the " + this.it.getTestName();
     } else {
 
-      txt +=
-          (isSuccess() ? "SUCCESS" : "FAIL")
-              + " of the test "
-              + this.it.getTestName()
-              + ((isGeneratedData())
-                  ? ": generate expected data" : ": launch test and comparison")
-              + ". Duration = " + duration;
+      txt += (isSuccess() ? "SUCCESS" : "FAIL")
+          + " of the test " + this.it.getTestName()
+          + ((isGeneratedData())
+              ? ": generate expected data" : ": launch test and comparison")
+          + ". Duration = " + duration;
 
       if (!isSuccess()) {
         // Add exception explanation in logger
@@ -175,18 +173,18 @@ public class ITResult {
       final String duration) {
 
     final StringBuilder report = new StringBuilder();
-    report.append((isSuccess() ? "SUCCESS" : "FAIL")
-        + ": " + this.it.getTestName());
+    report.append(
+        (isSuccess() ? "SUCCESS" : "FAIL") + ": " + this.it.getTestName());
     report.append(isGeneratedData()
         ? ": generate expected data"
         : ": test execution and output files comparison.");
     // TODO add stop here
 
     report.append("\n\nDirectories:");
-    report.append("\n\tExpected:"
-        + this.it.getExpectedTestDirectory().getAbsolutePath());
-    report.append("\n\tOutput:"
-        + this.it.getOutputTestDirectory().getAbsolutePath());
+    report.append(
+        "\n\tExpected:" + this.it.getExpectedTestDirectory().getAbsolutePath());
+    report.append(
+        "\n\tOutput:" + this.it.getOutputTestDirectory().getAbsolutePath());
 
     report.append("\n\nPatterns:");
 
@@ -230,8 +228,8 @@ public class ITResult {
     }
 
     if (isGeneratedData()) {
-      report.append("\nSUCCESS: copy files "
-          + this.it.getCountFilesToCompare() + " to ");
+      report.append(
+          "\nSUCCESS: copy files " + this.it.getCountFilesToCompare() + " to ");
       report.append(this.it.getExpectedTestDirectory().getAbsolutePath());
     }
 
@@ -313,16 +311,16 @@ public class ITResult {
     final StringBuilder msgException = new StringBuilder();
 
     msgException.append("\n=== Execution Test Error ===");
-    msgException.append("\nFrom class: \n\t"
-        + this.exception.getClass().getName() + "");
-    msgException.append("\nException message: \n"
-        + this.exception.getMessage() + "\n");
+    msgException.append(
+        "\nFrom class: \n\t" + this.exception.getClass().getName() + "");
+    msgException
+        .append("\nException message: \n" + this.exception.getMessage() + "\n");
 
     if (ITSuite.getInstance().isDebugModeEnabled() && withStackTrace) {
       // Add the stack trace
       msgException.append("\n=== Execution Test Debug Stack Trace ===\n");
-      msgException.append(Joiner.on("\n\t")
-          .join(this.exception.getStackTrace()));
+      msgException
+          .append(Joiner.on("\n\t").join(this.exception.getStackTrace()));
     }
 
     // Return text

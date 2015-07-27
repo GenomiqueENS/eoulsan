@@ -149,7 +149,8 @@ public class DesignStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     final Set<DataFile> files = new HashSet<>();
     final Set<String> dataNames = new HashSet<>();

@@ -31,8 +31,8 @@ import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
  * @since 1.1
  * @author Laurent Jourdren
  */
-public class ReadAlignmentsFilterService extends
-    ServiceNameLoader<ReadAlignmentsFilter> {
+public class ReadAlignmentsFilterService
+    extends ServiceNameLoader<ReadAlignmentsFilter> {
 
   private static ReadAlignmentsFilterService service;
 

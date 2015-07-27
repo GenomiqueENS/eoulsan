@@ -31,8 +31,8 @@ import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class ClusterTaskSchedulerService extends
-    ServiceNameLoader<ClusterTaskScheduler> {
+public class ClusterTaskSchedulerService
+    extends ServiceNameLoader<ClusterTaskScheduler> {
 
   private static ClusterTaskSchedulerService service;
 

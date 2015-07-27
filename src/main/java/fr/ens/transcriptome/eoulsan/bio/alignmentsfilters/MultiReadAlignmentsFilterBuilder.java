@@ -110,8 +110,8 @@ public class MultiReadAlignmentsFilterBuilder {
           return false;
         }
 
-        throw new EoulsanException("Unable to find "
-            + filterName + " alignments filter.");
+        throw new EoulsanException(
+            "Unable to find " + filterName + " alignments filter.");
       }
 
       this.mapFilters.put(filterName, filter);
@@ -123,10 +123,9 @@ public class MultiReadAlignmentsFilterBuilder {
       final String valueTrimmed = value.trim();
       filter.setParameter(filterKey, valueTrimmed);
       this.mapParameters.put(keyTrimmed, valueTrimmed);
-      getLogger().info(
-          "Set alignments filter \""
-              + filterName + "\" with parameter: " + filterKey + "="
-              + valueTrimmed);
+      getLogger().info("Set alignments filter \""
+          + filterName + "\" with parameter: " + filterKey + "="
+          + valueTrimmed);
     } else {
       this.mapParameters.put(filterName, "");
       getLogger().info(
@@ -184,22 +183,20 @@ public class MultiReadAlignmentsFilterBuilder {
    */
   public MultiReadAlignmentsFilter getAlignmentsFilter(
       final ReporterIncrementer incrementer, final String counterGroup)
-      throws EoulsanException {
+          throws EoulsanException {
 
     for (ReadAlignmentsFilter f : this.listFilter) {
       f.init();
     }
 
-    final MultiReadAlignmentsFilter maf =
-        new MultiReadAlignmentsFilter(incrementer, counterGroup,
-            this.listFilter);
+    final MultiReadAlignmentsFilter maf = new MultiReadAlignmentsFilter(
+        incrementer, counterGroup, this.listFilter);
 
     return maf;
   }
 
   /**
-   * Get a map with all the parameters used to create the
-   * MultiAlignmentsFilter.
+   * Get a map with all the parameters used to create the MultiAlignmentsFilter.
    * @return an ordered map object
    */
   public Map<String, String> getParameters() {

@@ -103,9 +103,8 @@ public abstract class AbstractSAM2BAMStep extends AbstractStep {
 
       case "input.format":
 
-        getLogger().warning(
-            "Deprecated parameter \""
-                + p.getName() + "\" for step " + getName());
+        getLogger().warning("Deprecated parameter \""
+            + p.getName() + "\" for step " + getName());
         break;
 
       case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
@@ -113,8 +112,8 @@ public abstract class AbstractSAM2BAMStep extends AbstractStep {
         break;
 
       default:
-        throw new EoulsanException("Unknown parameter for "
-            + getName() + " step: " + p.getName());
+        throw new EoulsanException(
+            "Unknown parameter for " + getName() + " step: " + p.getName());
       }
     }
   }

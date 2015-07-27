@@ -74,12 +74,12 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
 
   // Parameters keys
-  static final String STRANDED_PARAM = Globals.PARAMETER_PREFIX
-      + ".expression.stranded.parameter";
-  static final String OVERLAP_MODE_PARAM = Globals.PARAMETER_PREFIX
-      + ".expression.overlapmode.parameter";
-  static final String REMOVE_AMBIGUOUS_CASES = Globals.PARAMETER_PREFIX
-      + ".expression.no.ambiguous.cases";
+  static final String STRANDED_PARAM =
+      Globals.PARAMETER_PREFIX + ".expression.stranded.parameter";
+  static final String OVERLAP_MODE_PARAM =
+      Globals.PARAMETER_PREFIX + ".expression.overlapmode.parameter";
+  static final String REMOVE_AMBIGUOUS_CASES =
+      Globals.PARAMETER_PREFIX + ".expression.no.ambiguous.cases";
 
   private final GenomicArray<String> features = new GenomicArray<>();
   private final Map<String, Integer> counts = new HashMap<>();
@@ -95,8 +95,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
   private final LongWritable outValue = new LongWritable(1L);
 
   @Override
-  public void setup(final Context context) throws IOException,
-      InterruptedException {
+  public void setup(final Context context)
+      throws IOException, InterruptedException {
 
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
@@ -116,9 +116,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
             "Retrieve more than one file in distributed cache");
       }
 
-      getLogger().info(
-          "Genome index compressed file (from distributed cache): "
-              + localCacheFiles[0]);
+      getLogger().info("Genome index compressed file (from distributed cache): "
+          + localCacheFiles[0]);
 
       if (localCacheFiles == null || localCacheFiles.length == 0) {
         throw new IOException("Unable to retrieve annotation index");
@@ -130,8 +129,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
       }
 
       // Load features
-      this.features.load(PathUtils.createInputStream(new Path(
-          localCacheFiles[0]), conf));
+      this.features.load(
+          PathUtils.createInputStream(new Path(localCacheFiles[0]), conf));
 
       // Counter group
       this.counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);
@@ -148,9 +147,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
       }
 
       // Load genome description object
-      final GenomeDescription genomeDescription =
-          GenomeDescription.load(PathUtils.createInputStream(new Path(
-              genomeDescFile), conf));
+      final GenomeDescription genomeDescription = GenomeDescription
+          .load(PathUtils.createInputStream(new Path(genomeDescFile), conf));
 
       // Set the chromosomes sizes in the parser
       this.parser.getFileHeader().setSequenceDictionary(
@@ -192,8 +190,9 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
       return;
     }
 
-    context.getCounter(this.counterGroup,
-        TOTAL_ALIGNMENTS_COUNTER.counterName()).increment(1);
+    context
+        .getCounter(this.counterGroup, TOTAL_ALIGNMENTS_COUNTER.counterName())
+        .increment(1);
 
     List<GenomicInterval> ivSeq = new ArrayList<>();
 
@@ -226,10 +225,10 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
         }
 
         // multiple alignment
-        if ((samRecord1.getAttribute("NH") != null && samRecord1
-            .getIntegerAttribute("NH") > 1)
-            || (samRecord2.getAttribute("NH") != null && samRecord2
-                .getIntegerAttribute("NH") > 1)) {
+        if ((samRecord1.getAttribute("NH") != null
+            && samRecord1.getIntegerAttribute("NH") > 1)
+            || (samRecord2.getAttribute("NH") != null
+                && samRecord2.getIntegerAttribute("NH") > 1)) {
           context.getCounter(this.counterGroup,
               NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName()).increment(1);
           context.getCounter(this.counterGroup,
@@ -286,9 +285,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
 
       Set<String> fs = null;
 
-      fs =
-          HTSeqUtils.featuresOverlapped(ivSeq, this.features, this.overlapMode,
-              this.stranded);
+      fs = HTSeqUtils.featuresOverlapped(ivSeq, this.features, this.overlapMode,
+          this.stranded);
 
       if (fs == null) {
         fs = new HashSet<>();
@@ -334,9 +332,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
 
       context.getCounter(this.counterGroup,
           INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
-      getLogger().info(
-          "Invalid SAM output entry: "
-              + e.getMessage() + " line='" + line + "'");
+      getLogger().info("Invalid SAM output entry: "
+          + e.getMessage() + " line='" + line + "'");
       return;
     }
 

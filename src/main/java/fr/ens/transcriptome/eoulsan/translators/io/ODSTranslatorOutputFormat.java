@@ -148,16 +148,16 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
   public void writeEmpty() throws IOException {
 
     final TableTableCellElement cell = getCell();
-    cell.setOfficeValueTypeAttribute(OfficeValueTypeAttribute.Value.VOID
-        .toString());
+    cell.setOfficeValueTypeAttribute(
+        OfficeValueTypeAttribute.Value.VOID.toString());
   }
 
   @Override
   public void writeLong(final long l) throws IOException {
 
     final TableTableCellElement cell = getCell();
-    cell.setOfficeValueTypeAttribute(OfficeValueTypeAttribute.Value.FLOAT
-        .toString());
+    cell.setOfficeValueTypeAttribute(
+        OfficeValueTypeAttribute.Value.FLOAT.toString());
     cell.setOfficeValueAttribute((double) l);
   }
 
@@ -165,8 +165,8 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
   public void writeDouble(final double d) throws IOException {
 
     final TableTableCellElement cell = getCell();
-    cell.setOfficeValueTypeAttribute(OfficeValueTypeAttribute.Value.FLOAT
-        .toString());
+    cell.setOfficeValueTypeAttribute(
+        OfficeValueTypeAttribute.Value.FLOAT.toString());
     cell.setOfficeValueAttribute(d);
   }
 
@@ -174,8 +174,8 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
   public void writeText(final String text) throws IOException {
 
     final TableTableCellElement cell = getCell();
-    cell.setOfficeValueTypeAttribute(OfficeValueTypeAttribute.Value.STRING
-        .toString());
+    cell.setOfficeValueTypeAttribute(
+        OfficeValueTypeAttribute.Value.STRING.toString());
     cell.setOfficeStringValueAttribute(text == null ? "" : text);
 
   }
@@ -189,8 +189,8 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
     }
 
     final TableTableCellElement cell = getCell();
-    cell.setTableFormulaAttribute("=HYPERLINK(\""
-        + link + "\";\"" + text + "\")");
+    cell.setTableFormulaAttribute(
+        "=HYPERLINK(\"" + link + "\";\"" + text + "\")");
   }
 
   @Override

@@ -37,8 +37,9 @@ public enum MappingCounters {
   OUTPUT_FILTERED_READS_COUNTER("output accepted reads"),
   READS_REJECTED_BY_FILTERS_COUNTER("reads rejected by filters"),
   OUTPUT_MAPPING_ALIGNMENTS_COUNTER("output mapping alignments"),
-  INPUT_ALIGNMENTS_COUNTER("input alignments"), UNMAP_READS_COUNTER(
-      "unmapped reads"), GOOD_QUALITY_ALIGNMENTS_COUNTER(
+  INPUT_ALIGNMENTS_COUNTER("input alignments"),
+  UNMAP_READS_COUNTER("unmapped reads"),
+  GOOD_QUALITY_ALIGNMENTS_COUNTER(
       "alignments mapped and with " + "good mapping quality"),
   MAPPER_WRITING_ERRORS("errors in mapper writing"),
   ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER("alignments rejected by filters"),

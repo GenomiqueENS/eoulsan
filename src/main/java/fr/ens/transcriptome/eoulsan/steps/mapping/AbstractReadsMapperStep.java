@@ -249,8 +249,8 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
       default:
 
-        throw new EoulsanException("Unknown parameter for "
-            + getName() + " step: " + p.getName());
+        throw new EoulsanException(
+            "Unknown parameter for " + getName() + " step: " + p.getName());
       }
     }
 
@@ -283,12 +283,11 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
     }
 
     // Log Step parameters
-    getLogger().info(
-        "In "
-            + getName() + ", mapper=" + this.mapper.getMapperName()
-            + " (version: " + this.mapper.getMapperVersion() + ")");
-    getLogger().info(
-        "In " + getName() + ", mapperarguments=" + this.mapperArguments);
+    getLogger().info("In "
+        + getName() + ", mapper=" + this.mapper.getMapperName() + " (version: "
+        + this.mapper.getMapperVersion() + ")");
+    getLogger()
+        .info("In " + getName() + ", mapperarguments=" + this.mapperArguments);
 
   }
 
@@ -322,12 +321,11 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
     case MAPPER_NAME_PARAMETER_NAME:
 
-      if (SOAPReadsMapper.MAPPER_NAME.toLowerCase().equals(
-          parameter.getLowerStringValue())) {
-        getLogger().warning(
-            stepMessage
-                + "the " + SOAPReadsMapper.MAPPER_NAME
-                + " mapper support is deprecated");
+      if (SOAPReadsMapper.MAPPER_NAME.toLowerCase()
+          .equals(parameter.getLowerStringValue())) {
+        getLogger().warning(stepMessage
+            + "the " + SOAPReadsMapper.MAPPER_NAME
+            + " mapper support is deprecated");
       }
 
       break;

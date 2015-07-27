@@ -49,8 +49,8 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class GFFReader implements Iterator<GFFEntry>, Iterable<GFFEntry>,
-    Closeable {
+public class GFFReader
+    implements Iterator<GFFEntry>, Iterable<GFFEntry>, Closeable {
 
   private final BufferedReader reader;
   private GFFEntry result = null;

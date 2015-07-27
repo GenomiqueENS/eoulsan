@@ -126,7 +126,8 @@ public class ChangeIndexTranslator extends BasicTranslator {
    * @param translator Translator to use
    * @param field Field to use for the new index
    */
-  public ChangeIndexTranslator(final Translator translator, final String field) {
+  public ChangeIndexTranslator(final Translator translator,
+      final String field) {
 
     if (translator == null) {
       throw new NullPointerException("Translator is null");
@@ -137,8 +138,8 @@ public class ChangeIndexTranslator extends BasicTranslator {
     }
 
     if (!translator.isField(field)) {
-      throw new NullPointerException("The field "
-          + field + " doesn't exist in the translator");
+      throw new NullPointerException(
+          "The field " + field + " doesn't exist in the translator");
     }
 
     this.translator = translator;

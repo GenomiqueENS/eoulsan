@@ -68,8 +68,8 @@ public class BinariesInstaller {
         BinariesInstaller.class.getResourceAsStream(resourcePath);
 
     if (is == null) {
-      throw new FileNotFoundException("Unable to find the correct resource ("
-          + resourcePath + ")");
+      throw new FileNotFoundException(
+          "Unable to find the correct resource (" + resourcePath + ")");
     }
 
     final File outputFile = new File(outputDir, file);
@@ -101,25 +101,22 @@ public class BinariesInstaller {
       final String packageVersion, final String binaryFilename,
       final String tempDir) throws IOException {
 
-    final File tempDirFile =
-        new File(tempDir == null
-            ? System.getProperty("java.io.tmpdir") : tempDir.trim());
+    final File tempDirFile = new File(tempDir == null
+        ? System.getProperty("java.io.tmpdir") : tempDir.trim());
 
     if (!tempDirFile.exists()) {
-      throw new IOException("Temporary directory does not exits: "
-          + tempDirFile);
+      throw new IOException(
+          "Temporary directory does not exits: " + tempDirFile);
     }
 
     if (!tempDirFile.isDirectory()) {
-      throw new IOException("Temporary directory is not a directory: "
-          + tempDirFile);
+      throw new IOException(
+          "Temporary directory is not a directory: " + tempDirFile);
     }
 
-    final String outputPath =
-        tempDirFile.getAbsolutePath()
-            + "/" + Globals.APP_NAME_LOWER_CASE + "/"
-            + Globals.APP_VERSION_STRING + "/" + softwarePackage + "/"
-            + packageVersion;
+    final String outputPath = tempDirFile.getAbsolutePath()
+        + "/" + Globals.APP_NAME_LOWER_CASE + "/" + Globals.APP_VERSION_STRING
+        + "/" + softwarePackage + "/" + packageVersion;
 
     // Test if the file is already installed
     if (new File(outputPath, binaryFilename).isFile()) {
@@ -130,10 +127,9 @@ public class BinariesInstaller {
     final String os = System.getProperty("os.name").toLowerCase();
     final String arch = System.getProperty("os.arch").toLowerCase();
 
-    getLogger().fine(
-        "Try to install \""
-            + binaryFilename + "\" of " + softwarePackage + " package for "
-            + os + " (" + arch + ")");
+    getLogger().fine("Try to install \""
+        + binaryFilename + "\" of " + softwarePackage + " package for " + os
+        + " (" + arch + ")");
 
     // Get inputPath
     final String inputPath = getInputPath(softwarePackage, packageVersion);

@@ -58,36 +58,29 @@ public class MeltingTemp {
 
     // DNA/DNA
     // Allawi and SantaLucia (1997). Biochemistry 36 : 10581-10594
-    vh =
-        vh
-            + (overcount(sup, "AA")) * 7.9f + (overcount(sup, "TT")) * 7.9f
-            + (overcount(sup, "AT")) * 7.2f + (overcount(sup, "TA")) * 7.2f
-            + (overcount(sup, "CA")) * 8.5f + (overcount(sup, "TG")) * 8.5f
-            + (overcount(sup, "GT")) * 8.4f + (overcount(sup, "AC")) * 8.4f;
-    vh =
-        vh
-            + (overcount(sup, "CT")) * 7.8f + (overcount(sup, "AG")) * 7.8f
-            + (overcount(sup, "GA")) * 8.2f + (overcount(sup, "TC")) * 8.2f;
-    vh =
-        vh
-            + (overcount(sup, "CG")) * 10.6f + (overcount(sup, "GC")) * 9.8f
-            + (overcount(sup, "GG")) * 8f + (overcount(sup, "CC")) * 8f;
-    vs =
-        vs
-            + (overcount(sup, "AA")) * 22.2f + (overcount(sup, "TT")) * 22.2f
-            + (overcount(sup, "AT")) * 20.4f + (overcount(sup, "TA")) * 21.3f;
-    vs =
-        vs
-            + (overcount(sup, "CA")) * 22.7f + (overcount(sup, "TG")) * 22.7f
-            + (overcount(sup, "GT")) * 22.4f + (overcount(sup, "AC")) * 22.4f;
-    vs =
-        vs
-            + (overcount(sup, "CT")) * 21.0f + (overcount(sup, "AG")) * 21.0f
-            + (overcount(sup, "GA")) * 22.2f + (overcount(sup, "TC")) * 22.2f;
-    vs =
-        vs
-            + (overcount(sup, "CG")) * 27.2f + (overcount(sup, "GC")) * 24.4f
-            + (overcount(sup, "GG")) * 19.9f + (overcount(sup, "CC")) * 19.9f;
+    vh = vh
+        + (overcount(sup, "AA")) * 7.9f + (overcount(sup, "TT")) * 7.9f
+        + (overcount(sup, "AT")) * 7.2f + (overcount(sup, "TA")) * 7.2f
+        + (overcount(sup, "CA")) * 8.5f + (overcount(sup, "TG")) * 8.5f
+        + (overcount(sup, "GT")) * 8.4f + (overcount(sup, "AC")) * 8.4f;
+    vh = vh
+        + (overcount(sup, "CT")) * 7.8f + (overcount(sup, "AG")) * 7.8f
+        + (overcount(sup, "GA")) * 8.2f + (overcount(sup, "TC")) * 8.2f;
+    vh = vh
+        + (overcount(sup, "CG")) * 10.6f + (overcount(sup, "GC")) * 9.8f
+        + (overcount(sup, "GG")) * 8f + (overcount(sup, "CC")) * 8f;
+    vs = vs
+        + (overcount(sup, "AA")) * 22.2f + (overcount(sup, "TT")) * 22.2f
+        + (overcount(sup, "AT")) * 20.4f + (overcount(sup, "TA")) * 21.3f;
+    vs = vs
+        + (overcount(sup, "CA")) * 22.7f + (overcount(sup, "TG")) * 22.7f
+        + (overcount(sup, "GT")) * 22.4f + (overcount(sup, "AC")) * 22.4f;
+    vs = vs
+        + (overcount(sup, "CT")) * 21.0f + (overcount(sup, "AG")) * 21.0f
+        + (overcount(sup, "GA")) * 22.2f + (overcount(sup, "TC")) * 22.2f;
+    vs = vs
+        + (overcount(sup, "CG")) * 27.2f + (overcount(sup, "GC")) * 24.4f
+        + (overcount(sup, "GG")) * 19.9f + (overcount(sup, "CC")) * 19.9f;
     ds = vs;
     dh = vh;
 
@@ -120,36 +113,29 @@ public class MeltingTemp {
 
     // RNA/RNA hybridisation of Xia et al (1998)
     // Biochemistry 37: 14719-14735
-    vh =
-        vh
-            + (overcount(sup, "AA")) * 6.82f + (overcount(sup, "TT")) * 6.6f
-            + (overcount(sup, "AT")) * 9.38f + (overcount(sup, "TA")) * 7.69f
-            + (overcount(sup, "CA")) * 10.44f + (overcount(sup, "TG")) * 10.5f
-            + (overcount(sup, "GT")) * 11.4f + (overcount(sup, "AC")) * 10.2f;
-    vh =
-        vh
-            + (overcount(sup, "CT")) * 10.48f + (overcount(sup, "AG")) * 7.6f
-            + (overcount(sup, "GA")) * 12.44f + (overcount(sup, "TC")) * 13.3f;
-    vh =
-        vh
-            + (overcount(sup, "CG")) * 10.64f + (overcount(sup, "GC")) * 14.88f
-            + (overcount(sup, "GG")) * 13.39f + (overcount(sup, "CC")) * 12.2f;
-    vs =
-        vs
-            + (overcount(sup, "AA")) * 19.0f + (overcount(sup, "TT")) * 18.4f
-            + (overcount(sup, "AT")) * 26.7f + (overcount(sup, "TA")) * 20.5f;
-    vs =
-        vs
-            + (overcount(sup, "CA")) * 26.9f + (overcount(sup, "TG")) * 27.8f
-            + (overcount(sup, "GT")) * 29.5f + (overcount(sup, "AC")) * 26.2f;
-    vs =
-        vs
-            + (overcount(sup, "CT")) * 27.1f + (overcount(sup, "AG")) * 19.2f
-            + (overcount(sup, "GA")) * 32.5f + (overcount(sup, "TC")) * 35.5f;
-    vs =
-        vs
-            + (overcount(sup, "CG")) * 26.7f + (overcount(sup, "GC")) * 36.9f
-            + (overcount(sup, "GG")) * 32.7f + (overcount(sup, "CC")) * 29.7f;
+    vh = vh
+        + (overcount(sup, "AA")) * 6.82f + (overcount(sup, "TT")) * 6.6f
+        + (overcount(sup, "AT")) * 9.38f + (overcount(sup, "TA")) * 7.69f
+        + (overcount(sup, "CA")) * 10.44f + (overcount(sup, "TG")) * 10.5f
+        + (overcount(sup, "GT")) * 11.4f + (overcount(sup, "AC")) * 10.2f;
+    vh = vh
+        + (overcount(sup, "CT")) * 10.48f + (overcount(sup, "AG")) * 7.6f
+        + (overcount(sup, "GA")) * 12.44f + (overcount(sup, "TC")) * 13.3f;
+    vh = vh
+        + (overcount(sup, "CG")) * 10.64f + (overcount(sup, "GC")) * 14.88f
+        + (overcount(sup, "GG")) * 13.39f + (overcount(sup, "CC")) * 12.2f;
+    vs = vs
+        + (overcount(sup, "AA")) * 19.0f + (overcount(sup, "TT")) * 18.4f
+        + (overcount(sup, "AT")) * 26.7f + (overcount(sup, "TA")) * 20.5f;
+    vs = vs
+        + (overcount(sup, "CA")) * 26.9f + (overcount(sup, "TG")) * 27.8f
+        + (overcount(sup, "GT")) * 29.5f + (overcount(sup, "AC")) * 26.2f;
+    vs = vs
+        + (overcount(sup, "CT")) * 27.1f + (overcount(sup, "AG")) * 19.2f
+        + (overcount(sup, "GA")) * 32.5f + (overcount(sup, "TC")) * 35.5f;
+    vs = vs
+        + (overcount(sup, "CG")) * 26.7f + (overcount(sup, "GC")) * 36.9f
+        + (overcount(sup, "GG")) * 32.7f + (overcount(sup, "CC")) * 29.7f;
     ds = vs;
     dh = vh;
 

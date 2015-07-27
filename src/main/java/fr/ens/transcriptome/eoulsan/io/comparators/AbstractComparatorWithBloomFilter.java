@@ -42,8 +42,8 @@ import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
  * @since 2.0
  * @author Sandrine Perrin
  */
-public abstract class AbstractComparatorWithBloomFilter extends
-    AbstractComparator {
+public abstract class AbstractComparatorWithBloomFilter
+    extends AbstractComparator {
 
   // Limited create serialize bloomfilter file for size file inferior to
   // size of serialize bloomfilter file 27369839 bytes with default parameters
@@ -212,11 +212,13 @@ public abstract class AbstractComparatorWithBloomFilter extends
     return this.expectedNumberOfElements;
   }
 
-  protected void setExpectedNumberOfElements(final int expectedNumberOfElements) {
+  protected void setExpectedNumberOfElements(
+      final int expectedNumberOfElements) {
     this.expectedNumberOfElements = expectedNumberOfElements;
   }
 
-  protected void setFalsePositiveProbability(final double falsePositiveProbability) {
+  protected void setFalsePositiveProbability(
+      final double falsePositiveProbability) {
     this.falsePositiveProbability = falsePositiveProbability;
   }
 

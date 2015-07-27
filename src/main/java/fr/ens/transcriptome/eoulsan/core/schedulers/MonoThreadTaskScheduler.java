@@ -38,8 +38,8 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class MonoThreadTaskScheduler extends AbstractTaskScheduler implements
-    Runnable {
+public class MonoThreadTaskScheduler extends AbstractTaskScheduler
+    implements Runnable {
 
   private static final int SLEEP_TIME_IN_MS = 100;
   private final Queue<TaskContext> queue = Queues.newLinkedBlockingQueue();

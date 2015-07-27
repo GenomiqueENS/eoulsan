@@ -78,7 +78,8 @@ public class EoulsanCounter extends AbstractExpressionCounter {
     epmr.doReduce(expressionTmpFile);
 
     final FinalExpressionTranscriptsCreator fetc =
-        new FinalExpressionTranscriptsCreator(epmr.getTranscriptAndExonFinder());
+        new FinalExpressionTranscriptsCreator(
+            epmr.getTranscriptAndExonFinder());
 
     fetc.initializeExpressionResults();
     fetc.loadPreResults(expressionTmpFile,
@@ -87,9 +88,8 @@ public class EoulsanCounter extends AbstractExpressionCounter {
 
     // Remove expression Temp file
     if (!expressionTmpFile.delete()) {
-      getLogger().warning(
-          "Can not delete expression temporary file: "
-              + expressionTmpFile.getAbsolutePath());
+      getLogger().warning("Can not delete expression temporary file: "
+          + expressionTmpFile.getAbsolutePath());
     }
 
     // } catch (BadBioEntryException e) {

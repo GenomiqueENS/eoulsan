@@ -53,8 +53,8 @@ public class ToolElementBoolean extends AbstractToolElement {
   private final static String ATT_FALSEVALUE_KEY = "falsevalue";
 
   /** The Constant CHECKED_VALUES. */
-  private final static List<String> CHECKED_VALUES = Lists.newArrayList("yes",
-      "on", "true");
+  private final static List<String> CHECKED_VALUES =
+      Lists.newArrayList("yes", "on", "true");
 
   /** The checked_lowered. */
   private final String checked_lowered;

@@ -193,8 +193,8 @@ public class ITFactory {
     // Add the selected test if set
     if (this.selectedTest != null) {
 
-      testsToExecuteDirectories.add(new File(this.testsDataDirectory,
-          this.selectedTest));
+      testsToExecuteDirectories
+          .add(new File(this.testsDataDirectory, this.selectedTest));
     }
 
     // If no test was defined by user use all the existing tests
@@ -276,7 +276,8 @@ public class ITFactory {
     final Properties constants = new Properties();
 
     // Add java properties
-    for (final Map.Entry<Object, Object> e : System.getProperties().entrySet()) {
+    for (final Map.Entry<Object, Object> e : System.getProperties()
+        .entrySet()) {
       constants.put(e.getKey(), e.getValue());
     }
 
@@ -454,8 +455,8 @@ public class ITFactory {
           }
 
         } catch (final IOException e) {
-          throw new EoulsanException("Error while evaluating expression \""
-              + expr + "\"", e);
+          throw new EoulsanException(
+              "Error while evaluating expression \"" + expr + "\"", e);
         }
         i += expr.length() + 1;
         continue;
@@ -473,8 +474,8 @@ public class ITFactory {
     final int endIndex = s.indexOf(charPoint, beginIndex);
 
     if (endIndex == -1) {
-      throw new EoulsanException("Unexpected end of expression in \""
-          + s + "\"");
+      throw new EoulsanException(
+          "Unexpected end of expression in \"" + s + "\"");
     }
 
     return s.substring(beginIndex, endIndex);
@@ -608,9 +609,8 @@ public class ITFactory {
     }
 
     // Get user dir
-    final File distDir =
-        new File(System.getProperty("user.dir")
-            + File.separator + "target" + File.separator + "dist");
+    final File distDir = new File(System.getProperty("user.dir")
+        + File.separator + "target" + File.separator + "dist");
 
     // The dist directory does not exists ?
     if (!distDir.isDirectory()) {

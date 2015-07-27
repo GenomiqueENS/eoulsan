@@ -70,8 +70,8 @@ public abstract class AbstractResourceLoader<S> implements ResourceLoader<S> {
    * @throws EoulsanException if an error occurs while creating the resource
    *           object
    */
-  protected abstract S load(InputStream in, String source) throws IOException,
-      EoulsanException;
+  protected abstract S load(InputStream in, String source)
+      throws IOException, EoulsanException;
 
   /**
    * Get the resource name.

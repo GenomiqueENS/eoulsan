@@ -196,8 +196,9 @@ public class SplitterStep extends AbstractStep {
   @Override
   public OutputPorts getOutputPorts() {
 
-    return new OutputPortsBuilder().addPort("output", true,
-        this.splitter.getFormat(), this.compression).create();
+    return new OutputPortsBuilder()
+        .addPort("output", true, this.splitter.getFormat(), this.compression)
+        .create();
   }
 
   @Override
@@ -212,9 +213,8 @@ public class SplitterStep extends AbstractStep {
 
       case "format":
         // Get format
-        final DataFormat format =
-            DataFormatRegistry.getInstance().getDataFormatFromNameOrAlias(
-                p.getValue());
+        final DataFormat format = DataFormatRegistry.getInstance()
+            .getDataFormatFromNameOrAlias(p.getValue());
 
         // Check if the format exists
         if (format == null) {
@@ -223,8 +223,8 @@ public class SplitterStep extends AbstractStep {
 
         // Check if a splitter exists for the format
         if (!format.isSplitter()) {
-          throw new EoulsanException("No splitter exists for format: "
-              + format.getName());
+          throw new EoulsanException(
+              "No splitter exists for format: " + format.getName());
         }
 
         // Set the splitter
@@ -251,7 +251,8 @@ public class SplitterStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     final DataFormat format = this.splitter.getFormat();
 
@@ -271,8 +272,8 @@ public class SplitterStep extends AbstractStep {
       if (format.getMaxFilesCount() == 1) {
 
         // Launch splitting
-        this.splitter.split(inData.getDataFile(), new SplitterIterator(outData,
-            metadata).getIterator());
+        this.splitter.split(inData.getDataFile(),
+            new SplitterIterator(outData, metadata).getIterator());
 
       } else {
 
@@ -281,7 +282,8 @@ public class SplitterStep extends AbstractStep {
             new SplitterIterator(outData, metadata);
 
         // For each file of the multi-file format
-        for (int fileIndex = 0; fileIndex < inData.getDataFileCount(); fileIndex++) {
+        for (int fileIndex = 0; fileIndex < inData
+            .getDataFileCount(); fileIndex++) {
 
           // Launch splitting
           this.splitter.split(inData.getDataFile(fileIndex),

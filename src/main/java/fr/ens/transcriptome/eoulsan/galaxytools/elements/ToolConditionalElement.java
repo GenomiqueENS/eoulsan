@@ -175,7 +175,8 @@ public class ToolConditionalElement implements ToolElement {
   }
 
   @Override
-  public Parameter extractParameterByName(Map<String, Parameter> stepParameters) {
+  public Parameter extractParameterByName(
+      Map<String, Parameter> stepParameters) {
     throw new UnsupportedOperationException();
   }
 

@@ -88,8 +88,8 @@ public class GalaxyToolStep extends AbstractStep {
     for (final Map.Entry<DataFormat, ToolElement> entry : this.toolInterpreter
         .getInDataFormatExpected().entrySet()) {
 
-      builder
-          .addPort(entry.getValue().getValidatedName(), entry.getKey(), true);
+      builder.addPort(entry.getValue().getValidatedName(), entry.getKey(),
+          true);
     }
 
     return builder.create();
@@ -119,20 +119,21 @@ public class GalaxyToolStep extends AbstractStep {
     // If the interpreter of the tool is Docker, add the Docker image to the
     // list of the Docker image to fetch
     final ToolData toolData = this.toolInterpreter.getToolData();
-    if (DockerExecutorInterpreter.INTERPRETER_NAME.equals(toolData.getInterpreter())) {
+    if (DockerExecutorInterpreter.INTERPRETER_NAME
+        .equals(toolData.getInterpreter())) {
 
       DockerManager.getInstance().addImageToFetch(toolData.getDockerImage());
     }
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // TODO check in data and out data corresponding to tool.xml
     // Check DataFormat expected corresponding from stepContext
 
-    checkArgument(
-        this.toolInterpreter.checkDataFormat(context),
+    checkArgument(this.toolInterpreter.checkDataFormat(context),
         "GalaxyTool step, dataFormat inval between extract from analysis and setting in xml file.");
 
     final ToolExecutorResult result;
@@ -162,8 +163,7 @@ public class GalaxyToolStep extends AbstractStep {
 
     if (result.getExitValue() != 0) {
 
-      return status.createStepResult(
-          null,
+      return status.createStepResult(null,
           "Fail execution tool galaxy with command "
               + result.getCommandLine() + ". Exit value: "
               + result.getExitValue());

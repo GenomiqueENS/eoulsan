@@ -154,9 +154,8 @@ public class ExpressionReducer extends Reducer<Text, Text, Text, Text> {
             "Retrieve more than one file in distributed cache");
       }
 
-      getLogger().info(
-          "Genome index compressed file (from distributed cache): "
-              + localCacheFiles[0]);
+      getLogger().info("Genome index compressed file (from distributed cache): "
+          + localCacheFiles[0]);
 
       if (localCacheFiles == null || localCacheFiles.length == 0) {
         throw new IOException("Unable to retrieve annotation index");

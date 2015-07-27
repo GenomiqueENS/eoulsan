@@ -88,7 +88,8 @@ public class InputPortsBuilder {
       final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted) {
 
-    return addPort(new SimpleInputPort(name, list, format, compressionsAccepted));
+    return addPort(
+        new SimpleInputPort(name, list, format, compressionsAccepted));
   }
 
   /**
@@ -100,7 +101,8 @@ public class InputPortsBuilder {
   public InputPortsBuilder addPort(final String name, final DataFormat format,
       final boolean requiredInWorkingDirectory) {
 
-    return addPort(new SimpleInputPort(name, format, requiredInWorkingDirectory));
+    return addPort(
+        new SimpleInputPort(name, format, requiredInWorkingDirectory));
   }
 
   /**
@@ -113,8 +115,8 @@ public class InputPortsBuilder {
   public InputPortsBuilder addPort(final String name, final boolean list,
       final DataFormat format, final boolean requiredInWorkingDirectory) {
 
-    return addPort(new SimpleInputPort(name, list, format,
-        requiredInWorkingDirectory));
+    return addPort(
+        new SimpleInputPort(name, list, format, requiredInWorkingDirectory));
   }
 
   /**
@@ -145,8 +147,8 @@ public class InputPortsBuilder {
       final EnumSet<CompressionType> compressionsAccepted,
       final boolean requiredInWorkingDirectory) {
 
-    return addPort(new SimpleInputPort(name, list, format,
-        compressionsAccepted, requiredInWorkingDirectory));
+    return addPort(new SimpleInputPort(name, list, format, compressionsAccepted,
+        requiredInWorkingDirectory));
   }
 
   /**
@@ -188,8 +190,8 @@ public class InputPortsBuilder {
    */
   public static final InputPorts singleInputPort(final DataFormat format) {
 
-    return new InputPortsBuilder().addPort(DEFAULT_SINGLE_INPUT_PORT_NAME,
-        format).create();
+    return new InputPortsBuilder()
+        .addPort(DEFAULT_SINGLE_INPUT_PORT_NAME, format).create();
   }
 
   /**

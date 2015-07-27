@@ -51,15 +51,15 @@ public class SAMRecordReader extends RecordReader<Text, Text> {
 
   @Override
   public void initialize(final InputSplit inputSplit,
-      final TaskAttemptContext taskAttemptContext) throws IOException,
-      InterruptedException {
+      final TaskAttemptContext taskAttemptContext)
+          throws IOException, InterruptedException {
 
     this.lrr.initialize(inputSplit, taskAttemptContext);
   }
 
   @Override
-  public synchronized boolean nextKeyValue() throws IOException,
-      InterruptedException {
+  public synchronized boolean nextKeyValue()
+      throws IOException, InterruptedException {
 
     if (!this.lrr.nextKeyValue()) {
       return false;

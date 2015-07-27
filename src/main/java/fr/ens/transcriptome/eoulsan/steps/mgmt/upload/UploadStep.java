@@ -83,7 +83,8 @@ public abstract class UploadStep extends AbstractStep {
   //
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     final StringBuilder log = new StringBuilder();
 
@@ -104,8 +105,8 @@ public abstract class UploadStep extends AbstractStep {
 
       // Check if destination path already exists
       if (getDest().exists()) {
-        throw new IOException("The uploading destination already exists: "
-            + getDest());
+        throw new IOException(
+            "The uploading destination already exists: " + getDest());
       }
 
       // Repackage the jar file if necessary
@@ -154,15 +155,15 @@ public abstract class UploadStep extends AbstractStep {
 
       // Remove temporary design file
       if (!newDesignFile.delete()) {
-        getLogger().warning(
-            "Cannot remove temporary design file: " + newDesignFile);
+        getLogger()
+            .warning("Cannot remove temporary design file: " + newDesignFile);
       }
 
       // Change the path of design and workflow file in the context
       fullContext
           .setDesignFile(new DataFile(uploadedDesignDataFile.getSource()));
-      fullContext.setWorkflowFile(new DataFile(uploadedParamDataFile
-          .getSource()));
+      fullContext
+          .setWorkflowFile(new DataFile(uploadedParamDataFile.getSource()));
 
     } catch (IOException e) {
 
@@ -179,8 +180,8 @@ public abstract class UploadStep extends AbstractStep {
 
     // The path to the jar file
     if (!context.getRuntime().isHadoopMode()) {
-      fullContext.setJarFile(new DataFile(getDest().toString()
-          + "/" + repackagedJarFile.getName()));
+      fullContext.setJarFile(new DataFile(
+          getDest().toString() + "/" + repackagedJarFile.getName()));
     }
 
     status.setMessage(log.toString());
@@ -347,13 +348,11 @@ public abstract class UploadStep extends AbstractStep {
           final DataFile outFile;
 
           if (format.getMaxFilesCount() == 1) {
-            outFile =
-                getUploadedDataFile(inFile, designStep, s, format.getName(),
-                    format);
+            outFile = getUploadedDataFile(inFile, designStep, s,
+                format.getName(), format);
           } else {
-            outFile =
-                getUploadedDataFile(inFile, designStep, s, format.getName(),
-                    format, 0);
+            outFile = getUploadedDataFile(inFile, designStep, s,
+                format.getName(), format, 0);
           }
 
           filesToCopy.put(inFile, outFile);
@@ -364,9 +363,8 @@ public abstract class UploadStep extends AbstractStep {
           for (int i = 0; i < nValues; i++) {
             final DataFile inFile = new DataFile(oldValues.get(i));
             final DataFormat format = inFile.getDataFormat();
-            final DataFile outFile =
-                getUploadedDataFile(inFile, designStep, s, format.getName(),
-                    format, i);
+            final DataFile outFile = getUploadedDataFile(inFile, designStep, s,
+                format.getName(), format, i);
             filesToCopy.put(inFile, outFile);
             newValues.add(outFile.toString());
           }

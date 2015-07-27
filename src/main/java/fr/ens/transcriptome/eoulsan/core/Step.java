@@ -81,8 +81,8 @@ public interface Step {
    * @param stepParameters parameters of the step
    * @throws EoulsanException if a parameter is invalid
    */
-  void configure(StepConfigurationContext context, Set<Parameter> stepParameters)
-      throws EoulsanException;
+  void configure(StepConfigurationContext context,
+      Set<Parameter> stepParameters) throws EoulsanException;
 
   /**
    * Execute the step.

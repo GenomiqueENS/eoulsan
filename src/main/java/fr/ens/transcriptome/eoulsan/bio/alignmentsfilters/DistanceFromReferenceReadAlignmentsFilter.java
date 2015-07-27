@@ -38,8 +38,8 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  * @since 1.2
  * @author Claire Wallon
  */
-public class DistanceFromReferenceReadAlignmentsFilter extends
-    AbstractReadAlignmentsFilter {
+public class DistanceFromReferenceReadAlignmentsFilter
+    extends AbstractReadAlignmentsFilter {
 
   public static final String FILTER_NAME = "distancefromreference";
   private int distance = -1;
@@ -75,8 +75,8 @@ public class DistanceFromReferenceReadAlignmentsFilter extends
         throw new EoulsanException("Invalid distance: " + this.distance);
       }
     } else {
-      throw new EoulsanException("Unknown parameter for "
-          + getName() + " alignments filter: " + key);
+      throw new EoulsanException(
+          "Unknown parameter for " + getName() + " alignments filter: " + key);
     }
   }
 
@@ -103,8 +103,7 @@ public class DistanceFromReferenceReadAlignmentsFilter extends
     if (!records.get(0).getReadPairedFlag()) {
       for (SAMRecord r : records) {
         if (!r.getCigarString().contains("S")
-            && !r.getCigarString().contains("H")
-            && r.getAttribute("NM") != null
+            && !r.getCigarString().contains("H") && r.getAttribute("NM") != null
             && r.getIntegerAttribute("NM") <= this.distance) {
           recordsToKeep.add(r);
         }
@@ -113,8 +112,8 @@ public class DistanceFromReferenceReadAlignmentsFilter extends
 
     // paired-end mode
     else {
-      for (int counterRecord = 0; counterRecord < records.size() - 1; counterRecord +=
-          2) {
+      for (int counterRecord = 0; counterRecord < records.size()
+          - 1; counterRecord += 2) {
         final SAMRecord r1 = records.get(counterRecord);
         final SAMRecord r2 = records.get(counterRecord + 1);
         if (!r1.getCigarString().contains("S")

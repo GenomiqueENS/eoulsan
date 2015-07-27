@@ -102,8 +102,8 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
     final ListMultimap<String, String> result =
         ArrayListMultimap.create(super.getServiceClasses());
 
-    result.put(this.defaultProtocolName, this.defaultProtocol.getClass()
-        .getName());
+    result.put(this.defaultProtocolName,
+        this.defaultProtocol.getClass().getName());
 
     return Multimaps.unmodifiableListMultimap(result);
   }
@@ -131,8 +131,8 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
   @Override
   protected boolean accept(final Class<?> clazz) {
 
-    return EoulsanMode
-        .accept(clazz, EoulsanRuntime.getRuntime().isHadoopMode());
+    return EoulsanMode.accept(clazz,
+        EoulsanRuntime.getRuntime().isHadoopMode());
   }
 
   @Override

@@ -122,7 +122,7 @@ public class ReadsChecker implements Checker {
 
   private void checkReadFile(final DataFile file, final FastqFormat format,
       final boolean checkPairMember, final int pairMember)
-      throws EoulsanException {
+          throws EoulsanException {
 
     // If the file does not exists do nothing
     if (!file.exists()) {
@@ -148,10 +148,9 @@ public class ReadsChecker implements Checker {
 
   }
 
-  private boolean checkReadsFile(final InputStream is,
-      final int maxReadToCheck, final FastqFormat format,
-      final boolean checkPairMember, final int pairMember) throws IOException,
-      BadBioEntryException {
+  private boolean checkReadsFile(final InputStream is, final int maxReadToCheck,
+      final FastqFormat format, final boolean checkPairMember,
+      final int pairMember) throws IOException, BadBioEntryException {
 
     final FastqReader reader = new FastqReader(is);
 
@@ -174,8 +173,9 @@ public class ReadsChecker implements Checker {
 
           readPairMember = irid.getPairMember();
           if (readPairMember != pairMember) {
-            throw new BadBioEntryException("Invalid pair member number, "
-                + pairMember + " was excepted", read.getName());
+            throw new BadBioEntryException(
+                "Invalid pair member number, " + pairMember + " was excepted",
+                read.getName());
           }
 
           // check the quality string
@@ -205,8 +205,9 @@ public class ReadsChecker implements Checker {
 
         if (readPairMember > 0 && readPairMember != pairMember) {
           reader.close();
-          throw new BadBioEntryException("Invalid pair member number, "
-              + pairMember + " was excepted", read.getName());
+          throw new BadBioEntryException(
+              "Invalid pair member number, " + pairMember + " was excepted",
+              read.getName());
         }
       }
 
@@ -217,8 +218,9 @@ public class ReadsChecker implements Checker {
 
         if (invalidChar != -1) {
           reader.close();
-          throw new BadBioEntryException("Invalid quality character found for "
-              + format.getName() + " format: " + (char) invalidChar,
+          throw new BadBioEntryException(
+              "Invalid quality character found for "
+                  + format.getName() + " format: " + (char) invalidChar,
               read.getQuality());
         }
       }

@@ -54,8 +54,8 @@ public class ExpressionMerger implements Merger {
       // Get input file
       final DataFile inFile = inFileIterator.next();
 
-      EoulsanLogger.getLogger().info(
-          "Merge " + inFile.getName() + " to " + outFile.getName());
+      EoulsanLogger.getLogger()
+          .info("Merge " + inFile.getName() + " to " + outFile.getName());
 
       boolean first = true;
 

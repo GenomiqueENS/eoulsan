@@ -113,8 +113,8 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
    * @param parameters parameters of the step
    * @throws EoulsanException id an error occurs while creating the step
    */
-  public CommandWorkflowStep(final AbstractWorkflow workflow, final Step step, final Set<Parameter> parameters)
-      throws EoulsanException {
+  public CommandWorkflowStep(final AbstractWorkflow workflow, final Step step,
+      final Set<Parameter> parameters) throws EoulsanException {
 
     this(workflow, step.getName(), step.getName(), step.getVersion().toString(),
         parameters, false, false);

@@ -70,14 +70,13 @@ public class TaskSchedulerFactory {
       }
 
       // Get cluster scheduler
-      final ClusterTaskScheduler clusterScheduler =
-          ClusterTaskSchedulerService.getInstance().newService(
-              clusterSchedulerName);
+      final ClusterTaskScheduler clusterScheduler = ClusterTaskSchedulerService
+          .getInstance().newService(clusterSchedulerName);
 
       // Check if the cluster scheduler exists
       if (clusterScheduler == null) {
-        throw new EoulsanException("Unknown cluster scheduler name: "
-            + clusterSchedulerName);
+        throw new EoulsanException(
+            "Unknown cluster scheduler name: " + clusterSchedulerName);
       }
 
       // Configure cluster scheduler

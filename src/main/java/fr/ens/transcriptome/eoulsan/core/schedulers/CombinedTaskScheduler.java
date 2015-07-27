@@ -141,7 +141,8 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
         + this.stdTaskScheduler.getTotalTaskSubmittedCount()
         + this.ownTaskScheduler.getTotalTaskSubmittedCount()
         + (this.hadoopCompatibleTaskScheduler != null
-            ? this.hadoopCompatibleTaskScheduler.getTotalTaskRunningCount() : 0);
+            ? this.hadoopCompatibleTaskScheduler.getTotalTaskRunningCount()
+            : 0);
   }
 
   @Override
@@ -151,7 +152,8 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
         + this.stdTaskScheduler.getTotalTaskRunningCount()
         + this.ownTaskScheduler.getTotalTaskRunningCount()
         + (this.hadoopCompatibleTaskScheduler != null
-            ? this.hadoopCompatibleTaskScheduler.getTotalTaskRunningCount() : 0);
+            ? this.hadoopCompatibleTaskScheduler.getTotalTaskRunningCount()
+            : 0);
   }
 
   @Override

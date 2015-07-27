@@ -76,9 +76,8 @@ public class CreateHadoopJarAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line =
-          parser.parse(options,
-              arguments.toArray(new String[arguments.size()]), true);
+      final CommandLine line = parser.parse(options,
+          arguments.toArray(new String[arguments.size()]), true);
 
       // Help option
       if (line.hasOption("help")) {

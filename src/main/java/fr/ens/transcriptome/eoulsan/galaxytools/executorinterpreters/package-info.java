@@ -23,7 +23,8 @@
  */
 
 /**
- * This package contain classes related to the Galaxy tool executor interpreters.
+ * This package contain classes related to the Galaxy tool executor
+ * interpreters.
  * @since 2.0
  */
 

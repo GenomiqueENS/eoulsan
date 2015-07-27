@@ -191,8 +191,8 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
 
     // Check if annotation file exists
     if (this.annotationFile != null && !this.annotationFile.exists()) {
-      throw new EoulsanException("The annotation file does not exists: "
-          + this.annotationFile);
+      throw new EoulsanException(
+          "The annotation file does not exists: " + this.annotationFile);
     }
 
     // Set the default format
@@ -203,7 +203,8 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Load translator
     final Translator translator;
@@ -236,7 +237,8 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
 
       // Filter files to convert
       for (DataFile f : files) {
-        if (f.getName().startsWith("diffana_") && f.getName().endsWith(".tsv")) {
+        if (f.getName().startsWith("diffana_")
+            && f.getName().endsWith(".tsv")) {
           filesToConvert.add(f);
         }
       }
@@ -250,9 +252,8 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
           // Get format
           final DataFormat format = e.getValue();
 
-          final String prefix =
-              "annotated_"
-                  + StringUtils.filenameWithoutExtension(inFile.getName());
+          final String prefix = "annotated_"
+              + StringUtils.filenameWithoutExtension(inFile.getName());
 
           final TranslatorOutputFormat of;
           final DataFile outFile;
@@ -260,25 +261,22 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
           if (format == ANNOTATED_EXPRESSION_RESULTS_XLSX) {
 
             // XLSX output
-            outFile =
-                new DataFile(outputDir, prefix
-                    + ANNOTATED_EXPRESSION_RESULTS_XLSX.getDefaultExtension());
+            outFile = new DataFile(outputDir, prefix
+                + ANNOTATED_EXPRESSION_RESULTS_XLSX.getDefaultExtension());
             of = new XLSXTranslatorOutputFormat(outFile.create());
 
           } else if (format == ANNOTATED_EXPRESSION_RESULTS_ODS) {
 
             // ODS output
-            outFile =
-                new DataFile(outputDir, prefix
-                    + ANNOTATED_EXPRESSION_RESULTS_ODS.getDefaultExtension());
+            outFile = new DataFile(outputDir, prefix
+                + ANNOTATED_EXPRESSION_RESULTS_ODS.getDefaultExtension());
             of = new ODSTranslatorOutputFormat(outFile.create());
 
           } else {
 
             // TSV output
-            outFile =
-                new DataFile(outputDir, prefix
-                    + ANNOTATED_EXPRESSION_RESULTS_TSV.getDefaultExtension());
+            outFile = new DataFile(outputDir, prefix
+                + ANNOTATED_EXPRESSION_RESULTS_TSV.getDefaultExtension());
             of = new TSVTranslatorOutputFormat(outFile.create());
           }
 

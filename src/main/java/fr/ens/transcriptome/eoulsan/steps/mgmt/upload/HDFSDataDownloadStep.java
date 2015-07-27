@@ -110,7 +110,8 @@ public class HDFSDataDownloadStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Skip the step if the global parameter NO_HDFS_DOWNLOAD is set
     final String noDownloadValue =
@@ -126,10 +127,8 @@ public class HDFSDataDownloadStep extends AbstractStep {
         ContextUtils.getHadoopWorkingDirectory(context).getSource();
 
     getLogger().info("Start copying results.");
-    getLogger().info(
-        "inpath="
-            + hadoopWorkingPathname + "\toutpath="
-            + context.getOutputDirectory());
+    getLogger().info("inpath="
+        + hadoopWorkingPathname + "\toutpath=" + context.getOutputDirectory());
 
     final Configuration conf = this.conf;
 
@@ -149,8 +148,8 @@ public class HDFSDataDownloadStep extends AbstractStep {
       final Path inPath = new Path(hadoopWorkingPathname);
 
       if (!PathUtils.isExistingDirectoryFile(inPath, conf)) {
-        throw new EoulsanException("The base directory is not a directory: "
-            + inPath);
+        throw new EoulsanException(
+            "The base directory is not a directory: " + inPath);
       }
 
       // Map with files to download
@@ -166,8 +165,8 @@ public class HDFSDataDownloadStep extends AbstractStep {
 
         final DataFile out =
 
-            new DataFile(outputDir, in.getName()
-                + CompressionType.BZIP2.getExtension());
+        new DataFile(outputDir,
+            in.getName() + CompressionType.BZIP2.getExtension());
 
         files.put(in, out);
       }
@@ -208,9 +207,8 @@ public class HDFSDataDownloadStep extends AbstractStep {
           }
 
           // Create temporary files
-          final Path jobPath =
-              PathUtils.createTempPath(new Path(hadoopWorkingPathname),
-                  "distcp-", "", this.conf);
+          final Path jobPath = PathUtils.createTempPath(
+              new Path(hadoopWorkingPathname), "distcp-", "", this.conf);
 
           final DataFileDistCp dsdcp = new DataFileDistCp(this.conf, jobPath);
           dsdcp.copy(filesToTranscode);
@@ -218,8 +216,8 @@ public class HDFSDataDownloadStep extends AbstractStep {
           // Remove job path directory
           final FileSystem fs = jobPath.getFileSystem(conf);
           if (!fs.delete(jobPath, true)) {
-            getLogger().warning(
-                "Cannot remove DataFileDistCp job path: " + jobPath);
+            getLogger()
+                .warning("Cannot remove DataFileDistCp job path: " + jobPath);
           }
 
           // Copy files to destination

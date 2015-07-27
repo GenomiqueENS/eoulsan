@@ -89,7 +89,8 @@ public final class ProgressCounterInputStream extends FilterInputStream {
   // Constructor
   //
 
-  public ProgressCounterInputStream(final InputStream is, final Counter counter) {
+  public ProgressCounterInputStream(final InputStream is,
+      final Counter counter) {
 
     super(is);
 

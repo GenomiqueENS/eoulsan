@@ -120,9 +120,8 @@ public class Executor {
     checkDesign();
 
     // Create Workflow
-    final CommandWorkflow workflow =
-        new CommandWorkflow(this.arguments, this.command, firstSteps,
-            lastSteps, this.design);
+    final CommandWorkflow workflow = new CommandWorkflow(this.arguments,
+        this.command, firstSteps, lastSteps, this.design);
 
     // Check directories (log, working, output, temporary...)
     workflow.checkDirectories();
@@ -133,8 +132,8 @@ public class Executor {
     // Enable listen workflow events by ui
     WorkflowStepObserverRegistry.getInstance().addObserver(ui);
 
-    getLogger().info(
-        "Start analysis at " + new Date(System.currentTimeMillis()));
+    getLogger()
+        .info("Start analysis at " + new Date(System.currentTimeMillis()));
 
     // Execute Workflow
     workflow.execute();

@@ -164,11 +164,11 @@ public class FastQCStep extends AbstractStep {
       case INPUT_FORMAT_PARAMETER_NAME:
 
         // Set inputPort fastq/sam from parameters
-        DataFormat format =
-            DataFormatRegistry.getInstance().getDataFormatFromNameOrAlias(
-                p.getLowerStringValue());
+        DataFormat format = DataFormatRegistry.getInstance()
+            .getDataFormatFromNameOrAlias(p.getLowerStringValue());
 
-        if (!(MAPPER_RESULTS_SAM.equals(format) || READS_FASTQ.equals(format))) {
+        if (!(MAPPER_RESULTS_SAM.equals(format)
+            || READS_FASTQ.equals(format))) {
           throw new EoulsanException(
               "Unknown or format not supported as input format for FastQC: "
                   + p.getStringValue());
@@ -217,7 +217,8 @@ public class FastQCStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Patch FastQC code on sequenceFile to make hadoop compatible
     try {
@@ -291,8 +292,8 @@ public class FastQCStep extends AbstractStep {
           "Error while parsing file: " + e.getMessage());
 
     } catch (final XMLStreamException e) {
-      return status.createStepResult(e, "Error while writing final report: "
-          + e.getMessage());
+      return status.createStepResult(e,
+          "Error while writing final report: " + e.getMessage());
     }
 
   }
@@ -329,8 +330,7 @@ public class FastQCStep extends AbstractStep {
    */
   private void createReport(final List<AbstractQCModule> modules,
       final SequenceFile seqFile, final DataFile reportFile,
-      final File tempDirectory)
-      throws IOException, XMLStreamException {
+      final File tempDirectory) throws IOException, XMLStreamException {
 
     // Get the report extension
     final String reportExtension =
@@ -345,9 +345,8 @@ public class FastQCStep extends AbstractStep {
         reportTempFile);
 
     // Report zip filename
-    final String baseFilename =
-        reportFile.getName().substring(0,
-            reportFile.getName().length() - reportExtension.length());
+    final String baseFilename = reportFile.getName().substring(0,
+        reportFile.getName().length() - reportExtension.length());
 
     // Remove zip file
 

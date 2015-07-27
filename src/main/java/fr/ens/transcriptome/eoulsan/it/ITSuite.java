@@ -113,7 +113,7 @@ public class ITSuite {
    */
   public static ITSuite getInstance(final Map<String, File> tests,
       final Properties globalsConf, final File applicationPath)
-      throws IOException, EoulsanException {
+          throws IOException, EoulsanException {
 
     if (itSuite == null) {
 
@@ -384,16 +384,14 @@ public class ITSuite {
     final List<IT> tests = new ArrayList<>();
 
     // Extract sorted tests name
-    final Set<String> testsName =
-        new TreeSet<>(this.testsToExecute.keySet());
+    final Set<String> testsName = new TreeSet<>(this.testsToExecute.keySet());
 
     // Parse selected tests
     for (final String testName : testsName) {
 
       // Create instance
-      final IT processIT =
-          new IT(this, this.globalsConf, this.applicationPath,
-              this.testsDataDirectory, this.outputTestsDirectory, testName);
+      final IT processIT = new IT(this, this.globalsConf, this.applicationPath,
+          this.testsDataDirectory, this.outputTestsDirectory, testName);
 
       // Add tests
       tests.add(processIT);
@@ -426,9 +424,8 @@ public class ITSuite {
         "output data parent directory");
 
     // Set directory contain all tests to execute
-    getLogger().config(
-        "Output tests directory: "
-            + this.outputTestsDirectory.getAbsolutePath());
+    getLogger().config("Output tests directory: "
+        + this.outputTestsDirectory.getAbsolutePath());
 
     // Create output test directory
     if (!this.outputTestsDirectory.mkdir()) {
@@ -490,19 +487,15 @@ public class ITSuite {
    */
   private void endLogger() {
 
-    getLogger().info(
-        "End of execution for "
-            + this.testRunningCount
-            + " integration tests in "
-            + toTimeHumanReadable(this.globalTimer
-                .elapsed(TimeUnit.MILLISECONDS)));
+    getLogger().info("End of execution for "
+        + this.testRunningCount + " integration tests in "
+        + toTimeHumanReadable(this.globalTimer.elapsed(TimeUnit.MILLISECONDS)));
 
     // Add summary of tests execution
-    getLogger().info(
-        "RUN : "
-            + this.successCount + " succeeded, " + this.failCount + " failed, "
-            + this.testSkippingCount + " skipped. "
-            + (this.failCount == 0 ? "All tests are OK." : ""));
+    getLogger().info("RUN : "
+        + this.successCount + " succeeded, " + this.failCount + " failed, "
+        + this.testSkippingCount + " skipped. "
+        + (this.failCount == 0 ? "All tests are OK." : ""));
 
     this.globalTimer.stop();
   }
@@ -618,16 +611,14 @@ public class ITSuite {
     this.applicationPath = applicationPath;
 
     // Set test data source directory
-    this.testsDataDirectory =
-        new File(
-            this.globalsConf.getProperty(ITFactory.TESTS_DIRECTORY_CONF_KEY));
+    this.testsDataDirectory = new File(
+        this.globalsConf.getProperty(ITFactory.TESTS_DIRECTORY_CONF_KEY));
 
     // Retrieve application version test
-    this.versionApplication =
-        retrieveVersionApplication(
-            this.globalsConf
-                .getProperty(ITFactory.COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY),
-            this.applicationPath);
+    this.versionApplication = retrieveVersionApplication(
+        this.globalsConf
+            .getProperty(ITFactory.COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY),
+        this.applicationPath);
 
     // Set logger path
     this.loggerPath =
@@ -636,24 +627,20 @@ public class ITSuite {
             + ".log";
 
     // Set test data output directory
-    this.outputTestsDirectory =
-        new File(
-            this.globalsConf
-                .getProperty(ITFactory.OUTPUT_ANALYSIS_DIRECTORY_CONF_KEY),
-            this.versionApplication + "_" + DATE_FORMATTER.toString());
+    this.outputTestsDirectory = new File(
+        this.globalsConf
+            .getProperty(ITFactory.OUTPUT_ANALYSIS_DIRECTORY_CONF_KEY),
+        this.versionApplication + "_" + DATE_FORMATTER.toString());
 
-    this.generateAllExpectedDirectoryTest =
-        Boolean.parseBoolean(globalsConf
-            .getProperty(ITFactory.GENERATE_ALL_EXPECTED_DATA_CONF_KEY));
+    this.generateAllExpectedDirectoryTest = Boolean.parseBoolean(
+        globalsConf.getProperty(ITFactory.GENERATE_ALL_EXPECTED_DATA_CONF_KEY));
 
-    this.generateNewExpectedDirectoryTests =
-        Boolean.parseBoolean(globalsConf
-            .getProperty(ITFactory.GENERATE_NEW_EXPECTED_DATA_CONF_KEY));
+    this.generateNewExpectedDirectoryTests = Boolean.parseBoolean(
+        globalsConf.getProperty(ITFactory.GENERATE_NEW_EXPECTED_DATA_CONF_KEY));
 
     // Set action required
-    this.actionType =
-        (this.generateAllExpectedDirectoryTest
-            || this.generateNewExpectedDirectoryTests
+    this.actionType = (this.generateAllExpectedDirectoryTest
+        || this.generateNewExpectedDirectoryTests
             ? (this.generateAllExpectedDirectoryTest
                 ? "regenerate all data expected directories if is is not generate manually "
                 : "generate all missing data expected directories ")
@@ -672,8 +659,8 @@ public class ITSuite {
     getLogger().config("Found " + this.testsCount + " tests to execute.");
 
     // Initialize debug mode
-    setDebugModeEnabled(Boolean
-        .getBoolean(ITFactory.IT_DEBUG_ENABLE_SYSTEM_KEY));
+    setDebugModeEnabled(
+        Boolean.getBoolean(ITFactory.IT_DEBUG_ENABLE_SYSTEM_KEY));
 
   }
 

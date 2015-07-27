@@ -64,8 +64,8 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporterIncrementer;
 public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
 
   // Parameters keys
-  static final String FASTQ_FORMAT_KEY = Globals.PARAMETER_PREFIX
-      + ".filter.reads.fastq.format";
+  static final String FASTQ_FORMAT_KEY =
+      Globals.PARAMETER_PREFIX + ".filter.reads.fastq.format";
 
   static final String READ_FILTER_PARAMETER_KEY_PREFIX =
       Globals.PARAMETER_PREFIX + ".filter.reads.parameter.";
@@ -89,8 +89,8 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
   //
 
   @Override
-  protected void setup(final Context context) throws IOException,
-      InterruptedException {
+  protected void setup(final Context context)
+      throws IOException, InterruptedException {
 
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
@@ -105,8 +105,8 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
 
     // Set the FastqFormat
     final FastqFormat fastqFormat =
-        FastqFormat.getFormatFromName(conf.get(FASTQ_FORMAT_KEY, ""
-            + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
+        FastqFormat.getFormatFromName(conf.get(FASTQ_FORMAT_KEY,
+            "" + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
     this.read1.setFastqFormat(fastqFormat);
     this.read2.setFastqFormat(fastqFormat);
 
@@ -123,16 +123,14 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
       final MultiReadFilterBuilder mrfb = new MultiReadFilterBuilder();
 
       // Add the parameters from the job configuration to the builder
-      mrfb.addParameters(jobConfToParameters(conf,
-          READ_FILTER_PARAMETER_KEY_PREFIX));
+      mrfb.addParameters(
+          jobConfToParameters(conf, READ_FILTER_PARAMETER_KEY_PREFIX));
 
-      this.filter =
-          mrfb.getReadFilter(new HadoopReporterIncrementer(context),
-              this.counterGroup);
+      this.filter = mrfb.getReadFilter(new HadoopReporterIncrementer(context),
+          this.counterGroup);
 
-      getLogger().info(
-          "Reads filters to apply: "
-              + Joiner.on(", ").join(this.filter.getFilterNames()));
+      getLogger().info("Reads filters to apply: "
+          + Joiner.on(", ").join(this.filter.getFilterNames()));
 
     } catch (EoulsanException e) {
       throw new IOException(e);
@@ -170,8 +168,7 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
   protected void map(final Text key, final Text value, final Context context)
       throws IOException, InterruptedException {
 
-    context
-        .getCounter(this.counterGroup, INPUT_RAW_READS_COUNTER.counterName())
+    context.getCounter(this.counterGroup, INPUT_RAW_READS_COUNTER.counterName())
         .increment(1);
 
     final String line = value.toString();
@@ -245,8 +242,8 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
   }
 
   @Override
-  protected void cleanup(final Context context) throws IOException,
-      InterruptedException {
+  protected void cleanup(final Context context)
+      throws IOException, InterruptedException {
 
     // Close the multiple output writer
     if (this.out != null) {

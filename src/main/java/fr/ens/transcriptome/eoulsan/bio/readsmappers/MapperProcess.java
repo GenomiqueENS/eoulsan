@@ -448,9 +448,8 @@ public abstract class MapperProcess {
   public void toFile(final File outputFile) throws FileNotFoundException {
 
     // Start stdout thread
-    final Thread tout =
-        new Thread(new ProcessThreadStdOut(this.process, new FileOutputStream(
-            outputFile)));
+    final Thread tout = new Thread(new ProcessThreadStdOut(this.process,
+        new FileOutputStream(outputFile)));
     tout.start();
   }
 
@@ -501,12 +500,10 @@ public abstract class MapperProcess {
                 + this.mapperName + " is not available");
       }
 
-      this.writer1 =
-          new OutputStreamWriter(new FileOutputStream(this.tmpInFile1),
-              StandardCharsets.ISO_8859_1);
-      this.writer2 =
-          new OutputStreamWriter(new FileOutputStream(this.tmpInFile2),
-              StandardCharsets.ISO_8859_1);
+      this.writer1 = new OutputStreamWriter(
+          new FileOutputStream(this.tmpInFile1), StandardCharsets.ISO_8859_1);
+      this.writer2 = new OutputStreamWriter(
+          new FileOutputStream(this.tmpInFile2), StandardCharsets.ISO_8859_1);
     }
 
     if (!this.isPairedEnd()) {
@@ -562,8 +559,8 @@ public abstract class MapperProcess {
         builder.directory(executionDirectory());
       }
 
-      getLogger().info(
-          "Process command: " + Joiner.on(' ').join(builder.command()));
+      getLogger()
+          .info("Process command: " + Joiner.on(' ').join(builder.command()));
       getLogger().info("Process directory: " + builder.directory());
 
       // Start command
@@ -578,9 +575,8 @@ public abstract class MapperProcess {
               + this.mapperName + " execution: " + exitValue);
         }
       } else {
-        this.stdout =
-            new InputStreamWrapper(
-                createCustomInputStream(this.process.getInputStream()));
+        this.stdout = new InputStreamWrapper(
+            createCustomInputStream(this.process.getInputStream()));
       }
     }
 
@@ -639,7 +635,7 @@ public abstract class MapperProcess {
    */
   protected MapperProcess(final SequenceReadsMapper mapper,
       final boolean fileMode, final boolean stdinMode, final boolean pairedEnd)
-      throws IOException {
+          throws IOException {
 
     if (mapper == null) {
       throw new NullPointerException("The mapper is null");
@@ -667,15 +663,13 @@ public abstract class MapperProcess {
       if (fileMode) {
         this.stdin = null;
         startProcess();
-        this.stdout =
-            new InputStreamWrapper(
-                createCustomInputStream(this.process.getInputStream()));
+        this.stdout = new InputStreamWrapper(
+            createCustomInputStream(this.process.getInputStream()));
       } else if (stdinMode) {
         startProcess();
         this.stdin = this.process.getOutputStream();
-        this.stdout =
-            new InputStreamWrapper(
-                createCustomInputStream(this.process.getInputStream()));
+        this.stdout = new InputStreamWrapper(
+            createCustomInputStream(this.process.getInputStream()));
       } else {
         this.stdin =
             new OutputStreamWrapper(new FileOutputStream(this.tmpInFile1));

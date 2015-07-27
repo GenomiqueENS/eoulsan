@@ -52,14 +52,17 @@ import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
  */
 public enum FastqFormat {
 
-  FASTQ_SANGER("fastq-sanger", new String[] { "sanger", "fastq-illumina-1.8",
-      "illumina-1.8", "1.8" }, "1.8", 0, 93, 40, 33, true),
+  FASTQ_SANGER("fastq-sanger",
+      new String[] { "sanger", "fastq-illumina-1.8", "illumina-1.8", "1.8" },
+      "1.8", 0, 93, 40, 33, true),
 
-  FASTQ_SOLEXA("fastq-solexa", new String[] { "solexa", "fastq-solexa-1.0",
-      "solexa-1.0", "1.0" }, "1.0", -5, 62, 40, 64, false),
+  FASTQ_SOLEXA("fastq-solexa",
+      new String[] { "solexa", "fastq-solexa-1.0", "solexa-1.0", "1.0" }, "1.0",
+      -5, 62, 40, 64, false),
 
-  FASTQ_ILLUMINA("fastq-illumina-1.3", new String[] { "fastq-illumina",
-      "illumina", "illumina-1.3", "1.3" }, "1.3", 0, 62, 40, 64, true),
+  FASTQ_ILLUMINA("fastq-illumina-1.3",
+      new String[] { "fastq-illumina", "illumina", "illumina-1.3", "1.3" },
+      "1.3", 0, 62, 40, 64, true),
 
   FASTQ_ILLUMINA_1_5("fastq-illumina-1.5",
       new String[] { "illumina-1.5", "1.5" }, "1.5", 2, 62, 40, 64, true);
@@ -275,8 +278,8 @@ public enum FastqFormat {
   public static double convertSolexaScoreToPhredScore(final int solexaScore) {
 
     if (solexaScore < -5) {
-      throw new IllegalArgumentException("Invalid Solexa quality: "
-          + solexaScore);
+      throw new IllegalArgumentException(
+          "Invalid Solexa quality: " + solexaScore);
     }
 
     return 10.0 * log10(pow(10, solexaScore / 10.0) + 1);
@@ -330,8 +333,8 @@ public enum FastqFormat {
    */
   public char convertTo(final char character, final FastqFormat format) {
 
-    return (char) (format.asciiOffset + convertScoreTo(getScore(character),
-        format));
+    return (char) (format.asciiOffset
+        + convertScoreTo(getScore(character), format));
   }
 
   /**
@@ -491,7 +494,8 @@ public enum FastqFormat {
   }
 
   private static FastqFormat identifyFormatByHeuristic(
-      final Set<FastqFormat> formats, final int lowerChar, final int higherChar) {
+      final Set<FastqFormat> formats, final int lowerChar,
+      final int higherChar) {
 
     if (formats == null) {
       return null;

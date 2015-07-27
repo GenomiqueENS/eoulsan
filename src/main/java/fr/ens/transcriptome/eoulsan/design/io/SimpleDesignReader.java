@@ -61,8 +61,8 @@ public class SimpleDesignReader extends InputStreamDesignReader {
 
     try {
 
-      setBufferedReader(new BufferedReader(new InputStreamReader(
-          getInputStream(), Globals.DEFAULT_CHARSET)));
+      setBufferedReader(new BufferedReader(
+          new InputStreamReader(getInputStream(), Globals.DEFAULT_CHARSET)));
 
       BufferedReader br = getBufferedReader();
       final String separator = getSeparatorField();
@@ -124,11 +124,10 @@ public class SimpleDesignReader extends InputStreamDesignReader {
 
             List<String> l = data.get(fieldName);
 
-            if ((Design.SAMPLE_NUMBER_FIELD.equals(fieldName) || Design.NAME_FIELD
-                .equals(fieldName)) && l.contains(value)) {
-              throw new EoulsanIOException(
-                  "Invalid file format: "
-                      + "SlideNumber or Name fields can't contains duplicate values");
+            if ((Design.SAMPLE_NUMBER_FIELD.equals(fieldName)
+                || Design.NAME_FIELD.equals(fieldName)) && l.contains(value)) {
+              throw new EoulsanIOException("Invalid file format: "
+                  + "SlideNumber or Name fields can't contains duplicate values");
             }
 
             l.add(value);
@@ -140,19 +139,20 @@ public class SimpleDesignReader extends InputStreamDesignReader {
       }
     } catch (IOException e) {
 
-      throw new EoulsanIOException("Error while reading the file: "
-          + e.getMessage(), e);
+      throw new EoulsanIOException(
+          "Error while reading the file: " + e.getMessage(), e);
     }
 
     try {
       getBufferedReader().close();
     } catch (IOException e) {
-      throw new EoulsanIOException("Error while closing the file: "
-          + e.getMessage(), e);
+      throw new EoulsanIOException(
+          "Error while closing the file: " + e.getMessage(), e);
     }
 
     if (!data.containsKey(Design.SAMPLE_NUMBER_FIELD)) {
-      throw new EoulsanIOException("Invalid file format: No SampleNumber field");
+      throw new EoulsanIOException(
+          "Invalid file format: No SampleNumber field");
     }
 
     if (!fieldnames.contains(SampleMetadata.READS_FIELD)) {
@@ -252,8 +252,8 @@ public class SimpleDesignReader extends InputStreamDesignReader {
    * @throws EoulsanIOException if the stream is null
    * @throws FileNotFoundException if the file doesn't exist
    */
-  public SimpleDesignReader(final String filename) throws EoulsanIOException,
-      FileNotFoundException {
+  public SimpleDesignReader(final String filename)
+      throws EoulsanIOException, FileNotFoundException {
 
     this(new FileInputStream(filename));
   }

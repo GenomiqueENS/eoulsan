@@ -97,7 +97,8 @@ public class ToolElementEmpty implements ToolElement {
   }
 
   @Override
-  public Parameter extractParameterByName(Map<String, Parameter> stepParameters) {
+  public Parameter extractParameterByName(
+      Map<String, Parameter> stepParameters) {
 
     final Parameter p = stepParameters.get(getName());
 
@@ -119,7 +120,8 @@ public class ToolElementEmpty implements ToolElement {
     this(nameToolElement, null);
   }
 
-  public ToolElementEmpty(final String nameToolElement, final String nameSpace) {
+  public ToolElementEmpty(final String nameToolElement,
+      final String nameSpace) {
     this.shortName = nameToolElement;
 
     // Add name space for full name, if exists

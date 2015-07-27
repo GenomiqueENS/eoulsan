@@ -45,8 +45,8 @@ public abstract class AbstractReadFilter implements ReadFilter {
   public void setParameter(final String key, final String value)
       throws EoulsanException {
 
-    throw new EoulsanException("Unknown parameter for "
-        + getName() + " read filter: " + key);
+    throw new EoulsanException(
+        "Unknown parameter for " + getName() + " read filter: " + key);
   }
 
   @Override

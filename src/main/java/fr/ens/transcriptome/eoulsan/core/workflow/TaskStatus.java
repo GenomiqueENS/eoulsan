@@ -209,10 +209,10 @@ public class TaskStatus implements StepStatus {
     final long duration = endOfStep();
 
     // Create the context result
-    this.result =
-        new TaskResult(this.context, this.startDate, this.endDate, duration,
-            this.message, this.taskDescription == null
-                ? "" : this.taskDescription, this.counters, success);
+    this.result = new TaskResult(this.context, this.startDate, this.endDate,
+        duration, this.message,
+        this.taskDescription == null ? "" : this.taskDescription, this.counters,
+        success);
 
     return this.result;
   }
@@ -228,9 +228,8 @@ public class TaskStatus implements StepStatus {
     final long duration = endOfStep();
 
     // Create the context result
-    this.result =
-        new TaskResult(this.context, this.startDate, this.endDate, duration,
-            exception, exceptionMessage);
+    this.result = new TaskResult(this.context, this.startDate, this.endDate,
+        duration, exception, exceptionMessage);
 
     return this.result;
   }

@@ -108,7 +108,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Create configuration object
     final Configuration conf = createConfiguration();
@@ -134,27 +135,25 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
       // Pre-process paired-end files
       if (readsData.getDataFileCount() == 1) {
-        job =
-            createJobConf(conf, context, dataName, readsData.getDataFile(0),
-                false, READS_FASTQ, fastqFormat, mapperIndexFile, outFile);
+        job = createJobConf(conf, context, dataName, readsData.getDataFile(0),
+            false, READS_FASTQ, fastqFormat, mapperIndexFile, outFile);
       } else {
 
         final DataFile inFile1 = readsData.getDataFile(0);
         final DataFile inFile2 = readsData.getDataFile(1);
 
-        tfqFile =
-            new DataFile(inFile1.getParent(), inFile1.getBasename()
-                + READS_TFQ.getDefaultExtension());
+        tfqFile = new DataFile(inFile1.getParent(),
+            inFile1.getBasename() + READS_TFQ.getDefaultExtension());
 
         // Convert FASTQ files to TFQ
-        MapReduceUtils.submitAndWaitForJob(PairedEndFastqToTfq.convert(conf,
-            inFile1, inFile2, tfqFile, getReducerTaskCount()), readsData
-            .getName(), CommonHadoop.CHECK_COMPLETION_TIME, status,
+        MapReduceUtils.submitAndWaitForJob(
+            PairedEndFastqToTfq.convert(conf, inFile1, inFile2, tfqFile,
+                getReducerTaskCount()),
+            readsData.getName(), CommonHadoop.CHECK_COMPLETION_TIME, status,
             COUNTER_GROUP);
 
-        job =
-            createJobConf(conf, context, dataName, tfqFile, true, READS_TFQ,
-                fastqFormat, mapperIndexFile, outFile);
+        job = createJobConf(conf, context, dataName, tfqFile, true, READS_TFQ,
+            fastqFormat, mapperIndexFile, outFile);
       }
 
       // Launch jobs
@@ -195,7 +194,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
       final DataFile readsFile, final boolean pairedEnd,
       final DataFormat inputFormat, final FastqFormat fastqFormat,
       final DataFile mapperIndexFile, final DataFile outFile)
-      throws IOException {
+          throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -215,8 +214,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     // Set the number of threads for the mapper
     if (getMapperLocalThreads() < 0) {
-      jobConf.set(ReadsMapperMapper.MAPPER_THREADS_KEY, ""
-          + getMapperHadoopThreads());
+      jobConf.set(ReadsMapperMapper.MAPPER_THREADS_KEY,
+          "" + getMapperHadoopThreads());
     }
 
     // Set mapper arguments
@@ -241,15 +240,15 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     jobConf.set("mapreduce.job.jvm.numtasks", "" + 1);
 
     // Set the memory required by the reads mapper
-    jobConf
-        .set("mapreduce.map.memory.mb", "" + getMapperHadoopMemoryRequired());
+    jobConf.set("mapreduce.map.memory.mb",
+        "" + getMapperHadoopMemoryRequired());
 
     // Set ZooKeeper client configuration
     setZooKeeperJobConfiguration(jobConf, context);
 
     // Create the job and its name
-    final Job job =
-        Job.getInstance(jobConf, "Mapping reads in "
+    final Job job = Job.getInstance(jobConf,
+        "Mapping reads in "
             + fastqFormat + " with " + getMapperName() + " (" + dataName + ", "
             + readsFile.getName() + ")");
 
@@ -306,9 +305,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     if (connectString == null) {
 
-      connectString =
-          jobConf.get("yarn.resourcemanager.hostname").split(":")[0]
-              + ":" + settings.getZooKeeperDefaultPort();
+      connectString = jobConf.get("yarn.resourcemanager.hostname").split(":")[0]
+          + ":" + settings.getZooKeeperDefaultPort();
 
     }
 
@@ -324,8 +322,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
    * @return the checksum as a string
    * @throws IOException if an error occurs while creating the checksum
    */
-  static String computeZipCheckSum(final DataFile file, final Configuration conf)
-      throws IOException {
+  static String computeZipCheckSum(final DataFile file,
+      final Configuration conf) throws IOException {
 
     final Path path = new Path(file.getSource());
 

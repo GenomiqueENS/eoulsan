@@ -106,18 +106,16 @@ public class FileDataProtocol extends AbstractDataProtocol {
     result.setContentLength(f.length());
     result.setLastModified(f.lastModified());
 
-    final DataFormat format =
-        DataFormatRegistry.getInstance().getDataFormatFromFilename(
-            src.getName());
+    final DataFormat format = DataFormatRegistry.getInstance()
+        .getDataFormatFromFilename(src.getName());
 
     result.setDataFormat(format);
 
     if (format != null) {
       result.setContentType(format.getContentType());
     } else {
-      result.setContentType(StringUtils
-          .getCommonContentTypeFromExtension(StringUtils
-              .extensionWithoutCompressionExtension(src.getName())));
+      result.setContentType(StringUtils.getCommonContentTypeFromExtension(
+          StringUtils.extensionWithoutCompressionExtension(src.getName())));
     }
 
     final CompressionType ct =

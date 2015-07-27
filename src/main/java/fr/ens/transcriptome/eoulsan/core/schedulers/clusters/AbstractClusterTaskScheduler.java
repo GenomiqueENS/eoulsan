@@ -57,8 +57,8 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public abstract class AbstractClusterTaskScheduler extends
-    AbstractTaskScheduler implements ClusterTaskScheduler {
+public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
+    implements ClusterTaskScheduler {
 
   private static final int STATUS_UPDATE_DELAY = 5 * 1000;
 
@@ -172,8 +172,8 @@ public abstract class AbstractClusterTaskScheduler extends
       final File taskResultFile =
           new File(this.taskDir, this.taskPrefix + TASK_RESULT_EXTENSION);
       // Load output data objects
-      this.context.deserializeOutputData(new File(this.taskDir, this.taskPrefix
-          + TASK_DATA_EXTENSION));
+      this.context.deserializeOutputData(
+          new File(this.taskDir, this.taskPrefix + TASK_DATA_EXTENSION));
 
       return TaskResult.deserialize(taskResultFile);
     }
@@ -189,10 +189,9 @@ public abstract class AbstractClusterTaskScheduler extends
         beforeExecuteTask(this.context);
 
         // Submit Job
-        this.jobId =
-            submitJob(createJobName(), createJobCommand(),
-                ((TaskContext) this.context).getTaskOutputDirectory().toFile(),
-                this.context.getId());
+        this.jobId = submitJob(createJobName(), createJobCommand(),
+            ((TaskContext) this.context).getTaskOutputDirectory().toFile(),
+            this.context.getId());
 
         StatusResult status = null;
 

@@ -63,11 +63,11 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  * @author Maria Bernard
  */
-public abstract class AbstractSequenceReadsMapper implements
-    SequenceReadsMapper {
+public abstract class AbstractSequenceReadsMapper
+    implements SequenceReadsMapper {
 
-  private static final String SYNC = AbstractSequenceReadsMapper.class
-      .getName();
+  private static final String SYNC =
+      AbstractSequenceReadsMapper.class.getName();
 
   static final String SHORT_INDEX_FLAVOR = "standard";
   static final String LARGE_INDEX_FLAVOR = "large-index";
@@ -240,9 +240,8 @@ public abstract class AbstractSequenceReadsMapper implements
 
     checkState(!this.binariesReady, "Mapper has been initialized");
 
-    this.mapperVersionToUse =
-        Strings.emptyToNull(version) == null
-            ? getDefaultPackageVersion() : version;
+    this.mapperVersionToUse = Strings.emptyToNull(version) == null
+        ? getDefaultPackageVersion() : version;
   }
 
   @Override
@@ -323,13 +322,11 @@ public abstract class AbstractSequenceReadsMapper implements
     }
 
     // Define the output filename
-    final File uncompressFile =
-        new File(outputDir,
-            StringUtils.filenameWithoutCompressionExtension(genomeFile
-                .getName()));
+    final File uncompressFile = new File(outputDir,
+        StringUtils.filenameWithoutCompressionExtension(genomeFile.getName()));
 
-    getLogger().fine(
-        "Uncompress genome " + genomeFile + " to " + uncompressFile);
+    getLogger()
+        .fine("Uncompress genome " + genomeFile + " to " + uncompressFile);
 
     // Create input stream
     final InputStream in =
@@ -354,9 +351,8 @@ public abstract class AbstractSequenceReadsMapper implements
     final File unCompressGenomeFile =
         uncompressGenomeIfNecessary(genomeFile, outputDir);
 
-    getLogger().fine(
-        "Start computing "
-            + getMapperName() + " index for " + unCompressGenomeFile);
+    getLogger().fine("Start computing "
+        + getMapperName() + " index for " + unCompressGenomeFile);
     final long startTime = System.currentTimeMillis();
 
     final String indexerPath;
@@ -397,23 +393,21 @@ public abstract class AbstractSequenceReadsMapper implements
     final int exitValue = ProcessUtils.sh(cmd, tmpGenomeFile.getParentFile());
 
     if (exitValue != 0) {
-      throw new IOException("Bad error result for index creation execution: "
-          + exitValue);
+      throw new IOException(
+          "Bad error result for index creation execution: " + exitValue);
     }
 
     // Remove symbolic link
     if (!tmpGenomeFile.delete()) {
-      getLogger().warning(
-          "Cannot remove symbolic link while after creating "
-              + getMapperName() + " index");
+      getLogger().warning("Cannot remove symbolic link while after creating "
+          + getMapperName() + " index");
     }
 
     final long endTime = System.currentTimeMillis();
 
-    getLogger().fine(
-        "Create the "
-            + getMapperName() + " index in "
-            + StringUtils.toTimeHumanReadable(endTime - startTime));
+    getLogger().fine("Create the "
+        + getMapperName() + " index in "
+        + StringUtils.toTimeHumanReadable(endTime - startTime));
 
   }
 
@@ -423,17 +417,15 @@ public abstract class AbstractSequenceReadsMapper implements
 
     getLogger().fine("Start index computation");
 
-    final String indexTmpDirPrefix =
-        Globals.APP_NAME_LOWER_CASE
-            + "-" + getMapperName().toLowerCase() + "-genomeindexdir-";
+    final String indexTmpDirPrefix = Globals.APP_NAME_LOWER_CASE
+        + "-" + getMapperName().toLowerCase() + "-genomeindexdir-";
 
-    getLogger().fine(
-        "Want to create a temporary directory with prefix: "
-            + indexTmpDirPrefix + " in " + getTempDirectory());
+    getLogger().fine("Want to create a temporary directory with prefix: "
+        + indexTmpDirPrefix + " in " + getTempDirectory());
 
-    final File indexTmpDir =
-        Files.createTempDirectory(getTempDirectory().toPath(),
-            indexTmpDirPrefix).toFile();
+    final File indexTmpDir = Files
+        .createTempDirectory(getTempDirectory().toPath(), indexTmpDirPrefix)
+        .toFile();
 
     makeIndex(genomeFile, indexTmpDir);
 
@@ -460,9 +452,8 @@ public abstract class AbstractSequenceReadsMapper implements
 
     getLogger().fine("Copy genome to local disk before computing index");
 
-    final File genomeTmpFile =
-        File.createTempFile(Globals.APP_NAME_LOWER_CASE + "-genome", ".fasta",
-            getTempDirectory());
+    final File genomeTmpFile = File.createTempFile(
+        Globals.APP_NAME_LOWER_CASE + "-genome", ".fasta", getTempDirectory());
     FileUtils.copy(is, FileUtils.createOutputStream(genomeTmpFile));
 
     makeArchiveIndex(genomeTmpFile, archiveOutputFile);
@@ -517,9 +508,8 @@ public abstract class AbstractSequenceReadsMapper implements
               + getMapperName() + " index: " + archiveIndexDir);
         }
 
-        getLogger().fine(
-            "Unzip archiveIndexFile "
-                + archiveIndexFile + " in " + archiveIndexDir);
+        getLogger().fine("Unzip archiveIndexFile "
+            + archiveIndexFile + " in " + archiveIndexDir);
         FileUtils.unzip(archiveIndexFile, archiveIndexDir);
       }
     } catch (IOException e) {
@@ -531,8 +521,8 @@ public abstract class AbstractSequenceReadsMapper implements
       lockFile.delete();
     }
 
-    FileUtils.checkExistingDirectoryFile(archiveIndexDir, getMapperName()
-        + " index directory");
+    FileUtils.checkExistingDirectoryFile(archiveIndexDir,
+        getMapperName() + " index directory");
 
   }
 
@@ -547,8 +537,8 @@ public abstract class AbstractSequenceReadsMapper implements
     // Check if the mapper has been initialized
     checkState(this.initialized, "Mapper has not been initialized");
 
-    FileUtils.copy(mapPE(readsFile1, readsFile2, gd), new FileOutputStream(
-        samFile));
+    FileUtils.copy(mapPE(readsFile1, readsFile2, gd),
+        new FileOutputStream(samFile));
   }
 
   @Override
@@ -608,8 +598,8 @@ public abstract class AbstractSequenceReadsMapper implements
   }
 
   protected abstract InputStream internalMapPE(final File readsFile1,
-      final File readsFile2, final File archiveIndex, final GenomeDescription gd)
-      throws IOException;
+      final File readsFile2, final File archiveIndex,
+      final GenomeDescription gd) throws IOException;
 
   protected abstract InputStream internalMapSE(final File readsFile,
       final File archiveIndex, final GenomeDescription gd) throws IOException;
@@ -690,8 +680,8 @@ public abstract class AbstractSequenceReadsMapper implements
     if (!checkIfBinaryExists(getIndexerExecutables())) {
       throw new IOException("Unable to find mapper "
           + getMapperName() + " version " + this.mapperVersionToUse
-          + " (flavor: " + this.flavorToUse == null ? "" : this.flavorToUse
-          + ")");
+          + " (flavor: " + this.flavorToUse == null
+              ? "" : this.flavorToUse + ")");
     }
 
     if (!checkIfFlavorExists()) {
@@ -706,7 +696,7 @@ public abstract class AbstractSequenceReadsMapper implements
   @Override
   public void init(final File archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
-      throws IOException {
+          throws IOException {
 
     checkNotNull(archiveIndexFile, "archiveIndexFile is null");
     checkExistingStandardFile(archiveIndexFile,

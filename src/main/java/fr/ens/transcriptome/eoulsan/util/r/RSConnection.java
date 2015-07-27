@@ -53,8 +53,7 @@ public interface RSConnection {
    * @return an inputStream
    * @throws REngineException if an exception occurs while reading file
    */
-  InputStream getFileInputStream(final String filename)
-      throws REngineException;
+  InputStream getFileInputStream(final String filename) throws REngineException;
 
   /**
    * Create an outputStream on a file on RServer.

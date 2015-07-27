@@ -176,7 +176,8 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
     final FileSystem fs = path.getFileSystem(this.conf);
 
     if (fs == null) {
-      throw new IOException("Unable to delete the file, The FileSystem is null");
+      throw new IOException(
+          "Unable to delete the file, The FileSystem is null");
     }
 
     if (!fs.delete(path, recursive)) {
@@ -205,7 +206,8 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
     final FileSystem fs = path.getFileSystem(this.conf);
 
     if (fs == null) {
-      throw new IOException("Unable to delete the file, The FileSystem is null");
+      throw new IOException(
+          "Unable to delete the file, The FileSystem is null");
     }
 
     FileStatus fileStatus = fs.getFileStatus(path);

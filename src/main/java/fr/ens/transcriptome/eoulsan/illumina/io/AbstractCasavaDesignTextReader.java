@@ -35,12 +35,12 @@ import fr.ens.transcriptome.eoulsan.illumina.CasavaSample;
  * @since 1.1
  * @author Laurent Jourdren
  */
-public abstract class AbstractCasavaDesignTextReader implements
-    CasavaDesignReader {
+public abstract class AbstractCasavaDesignTextReader
+    implements CasavaDesignReader {
 
-  private static final String[] FIELDNAMES = new String[] { "FCID", "Lane",
-      "SampleID", "SampleRef", "Index", "Description", "Control", "Recipe",
-      "Operator", "SampleProject" };
+  private static final String[] FIELDNAMES =
+      new String[] { "FCID", "Lane", "SampleID", "SampleRef", "Index",
+          "Description", "Control", "Recipe", "Operator", "SampleProject" };
 
   private CasavaDesign design;
   private boolean firstLine = true;
@@ -120,14 +120,14 @@ public abstract class AbstractCasavaDesignTextReader implements
     }
 
     if (fields.size() < 10) {
-      throw new IOException("Invalid number of field ("
-          + fields.size() + "), 10 excepted.");
+      throw new IOException(
+          "Invalid number of field (" + fields.size() + "), 10 excepted.");
     }
 
     for (int i = 10; i < fields.size(); i++) {
       if (!"".equals(fields.get(i).trim())) {
-        throw new IOException("Invalid number of field ("
-            + fields.size() + "), 10 excepted.");
+        throw new IOException(
+            "Invalid number of field (" + fields.size() + "), 10 excepted.");
       }
     }
 
