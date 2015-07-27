@@ -43,6 +43,8 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public class DockerExecutorInterpreter implements ExecutorInterpreter {
 
+  public static final String INTERPRETER_NAME = "docker";
+
   private final URI dockerConnection;
   private final String dockerImage;
   private final int userUid;
@@ -52,7 +54,7 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
   @Override
   public String getName() {
 
-    return "docker";
+    return INTERPRETER_NAME;
   }
 
   @Override

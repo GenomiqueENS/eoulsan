@@ -31,6 +31,7 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
+import fr.ens.transcriptome.eoulsan.core.DockerManager;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
@@ -45,6 +46,7 @@ import fr.ens.transcriptome.eoulsan.galaxytools.GalaxyToolInterpreter;
 import fr.ens.transcriptome.eoulsan.galaxytools.ToolData;
 import fr.ens.transcriptome.eoulsan.galaxytools.ToolExecutorResult;
 import fr.ens.transcriptome.eoulsan.galaxytools.elements.ToolElement;
+import fr.ens.transcriptome.eoulsan.galaxytools.executorinterpreters.DockerExecutorInterpreter;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -113,6 +115,14 @@ public class GalaxyToolStep extends AbstractStep {
 
     // Configure tool interpreter
     this.toolInterpreter.configure(stepParameters);
+
+    // If the interpreter of the tool is Docker, add the Docker image to the
+    // list of the Docker image to fetch
+    final ToolData toolData = this.toolInterpreter.getToolData();
+    if (DockerExecutorInterpreter.INTERPRETER_NAME.equals(toolData.getInterpreter())) {
+
+      DockerManager.getInstance().addImageToFetch(toolData.getDockerImage());
+    }
   }
 
   @Override

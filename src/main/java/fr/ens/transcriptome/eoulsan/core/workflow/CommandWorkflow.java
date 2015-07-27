@@ -28,6 +28,8 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
+import static fr.ens.transcriptome.eoulsan.steps.DockerImagesFetcherStep.IMAGES_TO_FETCH_PARAMETER_NAME;
+import static java.util.Collections.singleton;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -40,6 +42,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.python.google.common.base.Joiner;
+
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -48,6 +52,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
+import fr.ens.transcriptome.eoulsan.core.DockerManager;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
@@ -62,6 +67,7 @@ import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.CopyInputDataStep;
 import fr.ens.transcriptome.eoulsan.steps.CopyOutputDataStep;
+import fr.ens.transcriptome.eoulsan.steps.DockerImagesFetcherStep;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
@@ -77,7 +83,7 @@ public class CommandWorkflow extends AbstractWorkflow {
   private static final long serialVersionUID = 4132064673361068654L;
 
   private static final String LATEST_SUFFIX = "-latest";
-  private static final Set<Parameter> EMPTY_PARAMETERS = Collections.emptySet();
+  static final Set<Parameter> EMPTY_PARAMETERS = Collections.emptySet();
 
   private final List<CommandWorkflowStep> steps = new ArrayList<>();
   private final Set<String> stepsIds = new HashSet<>();
@@ -214,9 +220,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     if (firstSteps != null) {
       for (Step step : Utils.listWithoutNull(firstSteps)) {
 
-        final String stepId = step.getName();
-        addStep(0, new CommandWorkflowStep(this, stepId, step.getName(), step
-            .getVersion().toString(), EMPTY_PARAMETERS, false, false));
+        addStep(0, new CommandWorkflowStep(this, step));
       }
     }
 
@@ -246,10 +250,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
     for (Step step : Utils.listWithoutNull(endSteps)) {
 
-      final String stepId = step.getName();
-
-      addStep(new CommandWorkflowStep(this, stepId, step.getName(), step
-          .getVersion().toString(), EMPTY_PARAMETERS, false, false));
+      addStep(new CommandWorkflowStep(this, step));
     }
   }
 
@@ -285,6 +286,25 @@ public class CommandWorkflow extends AbstractWorkflow {
     for (CommandWorkflowStep step : this.steps) {
       step.configure();
     }
+
+    // Get the Docker images to fecth
+    final Set<String> dockerImages =
+        DockerManager.getInstance().getImagesToFetch();
+
+    // If there is docker images to fetch, add a docker images fetcher step
+    if (!dockerImages.isEmpty()) {
+
+      final Step dockerImagesFetcherStep =
+          new DockerImagesFetcherStep();
+
+      final Set<Parameter> parameters = singleton(new Parameter(IMAGES_TO_FETCH_PARAMETER_NAME,Joiner.on('\t').join(dockerImages)));
+      final CommandWorkflowStep step = new CommandWorkflowStep(this, dockerImagesFetcherStep, parameters);
+
+      step.configure();
+
+      addStep(indexOfStep(getFirstStep()),  step);
+    }
+
   }
 
   /**

@@ -22,13 +22,15 @@
  *
  */
 
-
 package fr.ens.transcriptome.eoulsan.core.workflow;
+
+import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflow.EMPTY_PARAMETERS;
 
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
@@ -92,4 +94,29 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
         parameters);
   }
 
+  /**
+   * Create a step for a standard step from an existing step object.
+   * @param workflow workflow of the step
+   * @param step step object
+   * @throws EoulsanException id an error occurs while creating the step
+   */
+  public CommandWorkflowStep(final AbstractWorkflow workflow, final Step step)
+      throws EoulsanException {
+
+    this(workflow, step, EMPTY_PARAMETERS);
+  }
+
+  /**
+   * Create a step for a standard step from an existing step object.
+   * @param workflow workflow of the step
+   * @param step step object
+   * @param parameters parameters of the step
+   * @throws EoulsanException id an error occurs while creating the step
+   */
+  public CommandWorkflowStep(final AbstractWorkflow workflow, final Step step, final Set<Parameter> parameters)
+      throws EoulsanException {
+
+    this(workflow, step.getName(), step.getName(), step.getVersion().toString(),
+        parameters, false, false);
+  }
 }

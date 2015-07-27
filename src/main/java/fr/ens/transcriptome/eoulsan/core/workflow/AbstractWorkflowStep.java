@@ -694,4 +694,39 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.workflow.register(this);
   }
 
+  protected AbstractWorkflowStep(final AbstractWorkflow workflow,
+      final String id, final Step step,
+      final boolean skip, final boolean copyResultsToOutput,
+      final Set<Parameter> parameters) throws EoulsanException {
+
+    checkNotNull(workflow, "Workflow argument cannot be null");
+    checkNotNull(id, "Step id argument cannot be null");
+    checkNotNull(step, "Step argument cannot be null");
+    checkNotNull(parameters, "Step arguments argument cannot be null");
+
+    this.workflow = workflow;
+    this.number = instanceCounter++;
+    this.id = id;
+    this.skip = skip;
+    this.stepName = step.getName();
+    this.version = step.getVersion() == null ? null : step.getVersion().toString();
+    this.copyResultsToOutput = copyResultsToOutput;
+
+    this.type = isGenerator(step) ? GENERATOR_STEP : STANDARD_STEP;
+    this.mode = EoulsanMode.getEoulsanMode(step.getClass());
+    this.parameters = Sets.newLinkedHashSet(parameters);
+    this.terminalStep = EoulsanAnnotationUtils.isTerminal(step);
+    this.createLogFiles = !isNoLog(step);
+    this.parallelizationMode = getParallelizationMode(step);
+
+    // Define output directory
+    this.outputDir = defineOutputDirectory(workflow, step, copyResultsToOutput);
+
+    // Set state observer
+    this.observer = new WorkflowStepStateObserver(this);
+
+    // Register this step in the workflow
+    this.workflow.register(this);
+  }
+
 }
