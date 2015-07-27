@@ -200,7 +200,7 @@ public final class MapReduceUtils {
 
             if (!job.isSuccessful()) {
 
-              status.setMessage("FAILED");
+              status.setProgressMessage("FAILED");
 
             } else {
 

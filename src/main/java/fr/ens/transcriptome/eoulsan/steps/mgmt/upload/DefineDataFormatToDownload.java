@@ -144,7 +144,7 @@ public class DefineDataFormatToDownload extends AbstractStep {
 
     settings.setSetting(DATAFORMATS_TO_DOWNLOAD_SETTING, formats, false);
 
-    status.setMessage("Formats to download: " + formats);
+    status.setProgressMessage("Formats to download: " + formats);
     return status.createStepResult();
   }
 

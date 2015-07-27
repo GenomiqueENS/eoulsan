@@ -246,7 +246,7 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
 
     try {
 
-      status.setMessage(this.mapper.getMapperName() + " index creation");
+      status.setProgressMessage(this.mapper.getMapperName() + " index creation");
 
       // Create the index
       execute(this.mapper, context, null, null, 0);

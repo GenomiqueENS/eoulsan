@@ -66,7 +66,7 @@ public class TaskStatus implements StepStatus {
   //
 
   @Override
-  public String getMessage() {
+  public String getProgressMessage() {
 
     return this.message;
   }
@@ -94,7 +94,7 @@ public class TaskStatus implements StepStatus {
   //
 
   @Override
-  public void setMessage(final String message) {
+  public void setProgressMessage(final String message) {
 
     synchronized (this) {
       this.message = message;

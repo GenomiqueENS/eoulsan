@@ -252,19 +252,19 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
 
       if ("FAILED".equals(jobStatus)) {
 
-        status.setMessage("End of Amazon MapReduce Job "
+        status.setProgressMessage("End of Amazon MapReduce Job "
             + jobFlowId + " with " + jobStatus + " status.");
         return status.createStepResult(false);
 
       }
 
-      status.setMessage("End of Amazon Elastic MapReduce Job "
+      status.setProgressMessage("End of Amazon Elastic MapReduce Job "
           + jobFlowId + " with " + jobStatus + " status.");
 
       return status.createStepResult();
     }
 
-    status.setMessage(
+    status.setProgressMessage(
         "Launch of Amazon Elastic MapReduce Job " + jobFlowId + ".");
     return status.createStepResult();
   }

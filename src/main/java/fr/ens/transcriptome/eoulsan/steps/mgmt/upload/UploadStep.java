@@ -184,7 +184,7 @@ public abstract class UploadStep extends AbstractStep {
           getDest().toString() + "/" + repackagedJarFile.getName()));
     }
 
-    status.setMessage(log.toString());
+    status.setProgressMessage(log.toString());
     return status.createStepResult();
   }
 

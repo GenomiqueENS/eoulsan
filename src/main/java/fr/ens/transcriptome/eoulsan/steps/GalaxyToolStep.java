@@ -150,7 +150,7 @@ public class GalaxyToolStep extends AbstractStep {
     // Set the description of the context
     status.setDescription(this.toolInterpreter.getDescription());
 
-    status.setMessage("Command line generate by python interpreter: "
+    status.setProgressMessage("Command line generate by python interpreter: "
         + result.getCommandLineAsString() + ".");
 
     // Execution script fail, create an exception
