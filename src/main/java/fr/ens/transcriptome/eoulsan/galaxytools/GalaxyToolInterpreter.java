@@ -59,9 +59,9 @@ import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 /**
  * This class create an interpreter to tool xml file from Galaxy.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
-public class GalaxyToolInterpreter implements ToolInterpreter {
+public class GalaxyToolInterpreter {
 
   /** The tool xm lis. */
   private final InputStream toolXMLis;
@@ -89,7 +89,11 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
   private boolean isConfigured = false;
   private boolean isExecuted = false;
 
-  @Override
+  /**
+   * Parse tool file to extract useful data to run tool.
+   * @param setStepParameters the set step parameters
+   * @throws EoulsanException if an data missing
+   */
   public void configure(final Set<Parameter> setStepParameters)
       throws EoulsanException {
 
@@ -107,7 +111,13 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
     isConfigured = true;
   }
 
-  @Override
+  /**
+   * Convert command tag from tool file in string, variable are replace by
+   * value.
+   * @param context the context
+   * @return the string
+   * @throws EoulsanException the Eoulsan exception
+   */
   public ToolExecutorResult execute(final StepContext context)
       throws EoulsanException {
 
@@ -326,17 +336,28 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
     return this.outputs;
   }
 
-  @Override
+  /**
+   * Gets the in data format expected associated with variable found in command
+   * line.
+   * @return the in data format expected
+   */
   public Set<ToolElement> getInputDataElements() {
     return extractDataElements(this.inputs);
   }
 
-  @Override
+  /**
+   * Gets the out data format expected associated with variable found in command
+   * line.
+   * @return the out data format expected
+   */
   public Set<ToolElement> getOutputDataElements() {
     return extractDataElements(this.outputs);
   }
 
-  @Override
+  /**
+   * Gets the tool data.
+   * @return the tool data
+   */
   public ToolData getToolData() {
     return this.tool;
   }
