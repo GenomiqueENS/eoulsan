@@ -27,8 +27,6 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
-import static fr.ens.transcriptome.eoulsan.steps.DockerImagesFetcherStep.IMAGES_TO_FETCH_PARAMETER_NAME;
-import static java.util.Collections.singleton;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -41,9 +39,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.python.google.common.base.Joiner;
-
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
@@ -51,7 +49,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
-import fr.ens.transcriptome.eoulsan.core.DockerManager;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.Step;
@@ -64,9 +61,10 @@ import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
+import fr.ens.transcriptome.eoulsan.requirements.Requirement;
 import fr.ens.transcriptome.eoulsan.steps.CopyInputDataStep;
 import fr.ens.transcriptome.eoulsan.steps.CopyOutputDataStep;
-import fr.ens.transcriptome.eoulsan.steps.DockerImagesFetcherStep;
+import fr.ens.transcriptome.eoulsan.steps.RequirementInstallerStep;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.Utils;
@@ -285,26 +283,53 @@ public class CommandWorkflow extends AbstractWorkflow {
       step.configure();
     }
 
-    // Get the Docker images to fecth
-    final Set<String> dockerImages =
-        DockerManager.getInstance().getImagesToFetch();
+    Multimap<CommandWorkflowStep, Requirement> requirements =
+        ArrayListMultimap.create();
 
-    // If there is docker images to fetch, add a docker images fetcher step
-    if (!dockerImages.isEmpty()) {
+    // Get the requiement of all steps
+    for (CommandWorkflowStep step : this.steps) {
 
-      final Step dockerImagesFetcherStep = new DockerImagesFetcherStep();
+      Set<Requirement> stepRequirements = step.getStep().getRequirements();
 
-      final Set<Parameter> parameters =
-          singleton(new Parameter(IMAGES_TO_FETCH_PARAMETER_NAME,
-              Joiner.on('\t').join(dockerImages)));
-      final CommandWorkflowStep step =
-          new CommandWorkflowStep(this, dockerImagesFetcherStep, parameters);
-
-      step.configure();
-
-      addStep(indexOfStep(getFirstStep()), step);
+      if (stepRequirements != null && !stepRequirements.isEmpty()) {
+        requirements.putAll(step, stepRequirements);
+      }
     }
 
+    int installerCount = 0;
+    for (Map.Entry<CommandWorkflowStep, Requirement> e : requirements
+        .entries()) {
+
+      final Requirement r = e.getValue();
+
+      if (r.isAvailable()) {
+        continue;
+      }
+
+      if (!r.isInstallable()) {
+
+        if (r.isOptional()) {
+          continue;
+        } else {
+          throw new EoulsanException("Requirement for step \""
+              + e.getKey().getId() + "\" is not available: " + r.getName());
+        }
+      }
+
+      installerCount++;
+
+      // Create an installer step
+      final CommandWorkflowStep step = new CommandWorkflowStep(this,
+          r.getName() + "install" + installerCount,
+          RequirementInstallerStep.STEP_NAME, Globals.APP_VERSION.toString(),
+          r.getParameters(), false, false);
+
+      // Configure the installer step
+      step.configure();
+
+      // Add the new step to the workflow
+      addStep(indexOfStep(getFirstStep()), step);
+    }
   }
 
   /**

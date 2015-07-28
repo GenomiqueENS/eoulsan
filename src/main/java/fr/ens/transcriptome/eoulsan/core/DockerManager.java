@@ -24,54 +24,23 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.net.URI;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 
+/**
+ * This class define a class that manage Eoulsan Docker connections.
+ * @author Laurent Jourdren
+ * @since 2.0
+ */
 public class DockerManager {
 
   private static DockerManager singleton;
 
-  private Set<String> images = new HashSet<>();
   private DockerClient client;
-
-  //
-  // Docker images to use methods
-  //
-
-  /**
-   * Add an Docker image to fetch
-   * @param image the name of the Docker image to fetch
-   */
-  public void addImageToFetch(final String image) {
-
-    checkNotNull(image, "image argument cannot be null");
-    checkArgument(!image.trim().isEmpty(), "image name cannot be empty");
-
-    this.images.add(image.trim());
-  }
-
-  /**
-   * Get the images to fetch.
-   * @return a set with the images to fetch
-   */
-  public Set<String> getImagesToFetch() {
-
-    return Collections.unmodifiableSet(this.images);
-  }
-
-  //
-  // Docker client methods
-  //
 
   /**
    * Get Docker client.

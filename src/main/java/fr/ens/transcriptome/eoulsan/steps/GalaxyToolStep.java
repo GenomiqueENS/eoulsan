@@ -24,14 +24,15 @@
 package fr.ens.transcriptome.eoulsan.steps;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static fr.ens.transcriptome.eoulsan.requirements.DockerRequirement.newDockerRequirement;
 
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
-import fr.ens.transcriptome.eoulsan.core.DockerManager;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
@@ -47,6 +48,7 @@ import fr.ens.transcriptome.eoulsan.galaxytools.ToolData;
 import fr.ens.transcriptome.eoulsan.galaxytools.ToolExecutorResult;
 import fr.ens.transcriptome.eoulsan.galaxytools.elements.ToolElement;
 import fr.ens.transcriptome.eoulsan.galaxytools.executorinterpreters.DockerExecutorInterpreter;
+import fr.ens.transcriptome.eoulsan.requirements.Requirement;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -65,6 +67,9 @@ public class GalaxyToolStep extends AbstractStep {
 
   /** The source of the Galaxy tool. */
   private final String source;
+
+  /** The requirement of the tool. */
+  private Requirement requirement;
 
   //
   // Steps methods
@@ -110,6 +115,16 @@ public class GalaxyToolStep extends AbstractStep {
   }
 
   @Override
+  public Set<Requirement> getRequirements() {
+
+    if (this.requirement == null) {
+      return Collections.emptySet();
+    }
+
+    return Collections.singleton(this.requirement);
+  }
+
+  @Override
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
 
@@ -122,7 +137,7 @@ public class GalaxyToolStep extends AbstractStep {
     if (DockerExecutorInterpreter.INTERPRETER_NAME
         .equals(toolData.getInterpreter())) {
 
-      DockerManager.getInstance().addImageToFetch(toolData.getDockerImage());
+      this.requirement = newDockerRequirement(toolData.getDockerImage());
     }
   }
 

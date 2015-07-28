@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.core;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.requirements.Requirement;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -73,6 +74,12 @@ public interface Step {
    *         output data
    */
   OutputPorts getOutputPorts();
+
+  /**
+   * Get the requirements of the step.
+   * @return a set with the requirements of the step
+   */
+  Set<Requirement> getRequirements();
 
   /**
    * Set the parameters of the step to configure the step.
