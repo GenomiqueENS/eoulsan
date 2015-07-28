@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -82,12 +83,6 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
   /** The step parameters. */
   private final Map<String, Parameter> stepParameters;
 
-  /** The in data format expected. */
-  private Map<DataFormat, ToolElement> inFileExpected;
-
-  /** The out data format expected. */
-  private Map<DataFormat, ToolElement> outFileExpected;
-
   /** The tool. */
   private final ToolData tool;
 
@@ -108,9 +103,6 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
     // Extract variable settings
     this.inputs = extractInputs(localDoc, this.stepParameters);
     this.outputs = extractOutputs(localDoc);
-
-    this.inFileExpected = this.extractToolElementsIsFile(this.inputs);
-    this.outFileExpected = this.extractToolElementsIsFile(this.outputs);
 
     isConfigured = true;
   }
@@ -200,7 +192,9 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
   public boolean checkDataFormat(final StepContext context) {
 
     // Check inData
-    for (final DataFormat inFormat : this.inFileExpected.keySet()) {
+    for (final ToolElement inElement : extractDataElements(this.inputs)) {
+
+      final DataFormat inFormat = inElement.getDataFormat();
 
       final Data inData = context.getInputData(inFormat);
 
@@ -208,7 +202,9 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
       if (inData == null || inData.isEmpty())
         return false;
 
-      for (final DataFormat outFormat : this.outFileExpected.keySet()) {
+      for (final ToolElement outElement : extractDataElements(this.outputs)) {
+
+        final DataFormat outFormat = outElement.getDataFormat();
 
         // Check outData related
         final Data outData = context.getOutputData(outFormat, inData);
@@ -236,10 +232,10 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
    * @param parameters all parameters extracted from tool xml file.
    * @return the map associated DataFormat and toolElement.
    */
-  private Map<DataFormat, ToolElement> extractToolElementsIsFile(
+  private static Set<ToolElement> extractDataElements(
       final Map<String, ToolElement> parameters) {
 
-    final Map<DataFormat, ToolElement> results = new HashMap<>();
+    final Set<ToolElement> results = new HashSet<>();
 
     // Parse parameters
     for (final Map.Entry<String, ToolElement> entry : parameters.entrySet()) {
@@ -249,14 +245,14 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
       if (toolElement.isFile()) {
 
         // Extract data format
-        results.put(toolElement.getDataFormat(), toolElement);
+        results.add(toolElement);
       }
     }
 
     if (results.isEmpty())
-      return Collections.emptyMap();
+      return Collections.emptySet();
 
-    return Collections.unmodifiableMap(results);
+    return Collections.unmodifiableSet(results);
   }
 
   /**
@@ -331,13 +327,13 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
   }
 
   @Override
-  public Map<DataFormat, ToolElement> getInDataFormatExpected() {
-    return this.inFileExpected;
+  public Set<ToolElement> getInputDataElements() {
+    return extractDataElements(this.inputs);
   }
 
   @Override
-  public Map<DataFormat, ToolElement> getOutDataFormatExpected() {
-    return this.outFileExpected;
+  public Set<ToolElement> getOutputDataElements() {
+    return extractDataElements(this.outputs);
   }
 
   @Override

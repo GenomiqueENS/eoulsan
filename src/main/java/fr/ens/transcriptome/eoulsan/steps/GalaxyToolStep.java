@@ -28,7 +28,6 @@ import static fr.ens.transcriptome.eoulsan.requirements.DockerRequirement.newDoc
 
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
@@ -42,7 +41,6 @@ import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.galaxytools.GalaxyToolInterpreter;
 import fr.ens.transcriptome.eoulsan.galaxytools.ToolData;
 import fr.ens.transcriptome.eoulsan.galaxytools.ToolExecutorResult;
@@ -90,10 +88,10 @@ public class GalaxyToolStep extends AbstractStep {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
 
-    for (final Map.Entry<DataFormat, ToolElement> entry : this.toolInterpreter
-        .getInDataFormatExpected().entrySet()) {
+    for (final ToolElement element : this.toolInterpreter
+        .getInputDataElements()) {
 
-      builder.addPort(entry.getValue().getValidatedName(), entry.getKey(),
+      builder.addPort(element.getValidatedName(), element.getDataFormat(),
           true);
     }
 
@@ -105,10 +103,10 @@ public class GalaxyToolStep extends AbstractStep {
 
     final OutputPortsBuilder builder = new OutputPortsBuilder();
 
-    for (final Map.Entry<DataFormat, ToolElement> entry : this.toolInterpreter
-        .getOutDataFormatExpected().entrySet()) {
+    for (final ToolElement element : this.toolInterpreter
+        .getOutputDataElements()) {
 
-      builder.addPort(entry.getValue().getValidatedName(), entry.getKey());
+      builder.addPort(element.getValidatedName(), element.getDataFormat());
     }
 
     return builder.create();

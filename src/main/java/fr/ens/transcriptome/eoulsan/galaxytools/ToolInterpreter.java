@@ -23,13 +23,11 @@
  */
 package fr.ens.transcriptome.eoulsan.galaxytools;
 
-import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.galaxytools.elements.ToolElement;
 
 /**
@@ -61,14 +59,14 @@ public interface ToolInterpreter {
    * line.
    * @return the in data format expected
    */
-  Map<DataFormat, ToolElement> getInDataFormatExpected();
+  Set<ToolElement> getInputDataElements();
 
   /**
    * Gets the out data format expected associated with variable found in command
    * line.
    * @return the out data format expected
    */
-  Map<DataFormat, ToolElement> getOutDataFormatExpected();
+  Set<ToolElement> getOutputDataElements();
 
   /**
    * Gets the tool data.
