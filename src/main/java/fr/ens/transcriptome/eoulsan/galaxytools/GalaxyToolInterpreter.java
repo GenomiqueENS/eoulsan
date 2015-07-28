@@ -183,10 +183,16 @@ public class GalaxyToolInterpreter {
     context.getLogger().info("Tool variable settings  "
         + Joiner.on("\t").withKeyValueSeparator("=").join(variables));
 
-    final ToolPythonInterpreter pythonInterpreter = new ToolPythonInterpreter(
-        context, this.tool, Collections.unmodifiableMap(variables));
+    // Create the Cheetah interpreter
+    final ToolPythonInterpreter pythonInterpreter =
+        new ToolPythonInterpreter(this.tool.getCommandScript(), variables);
 
-    final ToolExecutorResult result = pythonInterpreter.executeScript();
+    // Create the executor and interpret the command tag
+    final ToolExecutor executor = new ToolExecutor(context, this.tool,
+        pythonInterpreter.interpretScript());
+
+    // Execute the command
+    final ToolExecutorResult result = executor.execute();
 
     isExecuted = true;
 

@@ -37,11 +37,10 @@ import org.python.util.PythonInterpreter;
 import com.google.common.collect.Maps;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.core.StepContext;
 
 /**
- * This class create a Python interpreter, it can build a command line tool from
- * command tag from Galaxy tool XML file.
+ * This class create a Cheetah interpreter, it can build a command line tool
+ * from command tag from Galaxy tool XML file.
  * @author Sandrine Perrin
  * @since 2.0
  */
@@ -70,46 +69,19 @@ public class ToolPythonInterpreter {
 
   private final TranslatorStringToPython translator;
 
-  private final Map<String, String> variablesCommand;
-
-  private final ToolData tool;
-
-  private final StepContext context;
-
-  /**
-   * Execute script.
-   * @return the string
-   * @throws EoulsanException the Eoulsan exception
-   */
-  public ToolExecutorResult executeScript() throws EoulsanException {
-
-    if (!isCommandLineTranslate) {
-      throw new EoulsanException(
-          "Command tag has not been translate in script python, Can not be interpreted.");
-    }
-
-    // Interpreter python script
-    final String commandLine = interpreteScript();
-
-    final ToolExecutor executor =
-        new ToolExecutor(this.context, this.tool, commandLine);
-
-    return executor.execute();
-
-  }
+  private final Map<String, String> variables;
 
   /**
    * Interprete script by Python interpreter and replace variable name by value.
    * @return final command line
    * @throws EoulsanException if an error throws by interpretation.
    */
-  public String interpreteScript() throws EoulsanException {
+  public String interpretScript() throws EoulsanException {
 
     checkNotNull(this.pythonScriptWithJavaCode,
         "Not found python script to interprete.");
 
-    checkNotNull(this.variablesCommand,
-        "None variables setting for python script.");
+    checkNotNull(this.variables, "None variables setting for python script.");
 
     // if (this.variablesCommand.isEmpty())
     // // TODO
@@ -161,7 +133,7 @@ public class ToolPythonInterpreter {
   private Map<String, String> addMissingVariableFromCommandLine()
       throws EoulsanException {
 
-    final Map<String, String> results = Maps.newHashMap(variablesCommand);
+    final Map<String, String> results = Maps.newHashMap(variables);
 
     // Compare with variable from command tag
     // Add variable not found in xml tag, corresponding to dataset value from
@@ -203,7 +175,7 @@ public class ToolPythonInterpreter {
     for (final String variableName : getVariableNames()) {
 
       // Check exist
-      if (this.variablesCommand.get(variableName) == null) {
+      if (this.variables.get(variableName) == null) {
         results.put(variableName, DEFAULT_VALUE_NULL);
       }
 
@@ -216,31 +188,25 @@ public class ToolPythonInterpreter {
   //
 
   /**
-   * Instantiates a new tool Python interpreter.
-   * @param tool the tool
-   * @param variablesCommand the variables command
+   * Instantiates a new tool Cheetah script interpreter.
+   * @param script the Cheetah script to execute
+   * @param variables the variables of the script
    * @throws EoulsanException
    */
-  public ToolPythonInterpreter(final StepContext context, final ToolData tool,
-      final Map<String, String> variablesCommand) throws EoulsanException {
+  public ToolPythonInterpreter(final String script,
+      final Map<String, String> variables) throws EoulsanException {
 
-    checkNotNull(tool,
-        "Tool instance from Galaxy Tool can not be null for interpretation.");
-
-    checkState(variablesCommand.size() != 0,
+    checkState(!variables.isEmpty(),
         "Tool instance from Galaxy Tool not found variables for interpretation");
 
-    this.tool = tool;
-    this.variablesCommand = variablesCommand;
-    this.context = context;
+    // this.tool = tool;
+    this.variables = new HashMap<>(variables);
 
     // Init translator
-    this.translator =
-        new TranslatorStringToPython(this.tool.getCommandScript());
+    this.translator = new TranslatorStringToPython(script);
 
     // Translate command in Cheetah syntax in Python script
     translateCommandXMLInPython();
-
   }
 
 }

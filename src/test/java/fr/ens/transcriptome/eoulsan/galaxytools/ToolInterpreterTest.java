@@ -264,11 +264,11 @@ public class ToolInterpreterTest {
       // System.out.println("=> tool data generated \n\t" + toolData);
 
       // Init Tool python interpreter
-      final ToolPythonInterpreter tpi =
-          new ToolPythonInterpreter(null, toolData, this.variablesCommand);
+      final ToolPythonInterpreter tpi = new ToolPythonInterpreter(
+          toolData.getCommandScript(), this.variablesCommand);
 
       // Create command line and compare with command expected
-      compareCommandLine(tpi.interpreteScript());
+      compareCommandLine(tpi.interpretScript());
 
     }
 
