@@ -31,9 +31,13 @@ import static org.python.google.common.base.Preconditions.checkState;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,14 +49,18 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
+import fr.ens.transcriptome.eoulsan.core.workflow.FileNaming;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.galaxytools.elements.ToolElement;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 
@@ -80,6 +88,9 @@ public class GalaxyToolInterpreter {
   /** The outputs. */
   private Map<String, ToolElement> outputs;
 
+  private ElementPorts inputPorts;
+  private ElementPorts outputPorts;
+
   /** The step parameters. */
   private final Map<String, Parameter> stepParameters;
 
@@ -88,6 +99,165 @@ public class GalaxyToolInterpreter {
 
   private boolean isConfigured = false;
   private boolean isExecuted = false;
+
+  //
+  // Inner classes
+  //
+
+  /**
+   * This inner class define the link between an Element an Eoulsan step port.
+   */
+  private static final class ElementPort {
+
+    private final ToolElement element;
+
+    private final String portName;
+
+    private final int fileIndex;
+
+    /**
+     * Get the DataFile linked to the Element.
+     * @param context Step context
+     * @return a DataFile object
+     */
+    public DataFile getInputDataFile(final StepContext context) {
+
+      final Data data = context.getInputData(this.portName);
+
+      return this.fileIndex == -1
+          ? data.getDataFile() : data.getDataFile(this.fileIndex);
+    }
+
+    /**
+     * Get the DataFile linked to the Element.
+     * @param context Step context
+     * @return a DataFile object
+     */
+    public DataFile getOutputDataFile(final StepContext context,
+        final Data inData) {
+
+      final Data data = context.getOutputData(this.portName, inData);
+
+      return this.fileIndex == -1
+          ? data.getDataFile() : data.getDataFile(this.fileIndex);
+    }
+
+    /**
+     * Constructor.
+     * @param element Tool element
+     * @param portName Eoulsan port name
+     * @param fileIndex file index
+     */
+    public ElementPort(final ToolElement element, final String portName,
+        final int fileIndex) {
+
+      this.element = element;
+      this.portName = portName;
+      this.fileIndex = fileIndex;
+    }
+  }
+
+  /**
+   * This inner class define a collection of ElementPorts.
+   */
+  private static final class ElementPorts {
+
+    private Map<String, ElementPort> ports = new HashMap<>();
+
+    /**
+     * Get an ElementPort from its name.
+     * @param elementName the name of the element port
+     * @return an ElementPort or null if the element name does not exists
+     */
+    public ElementPort getPortElements(final String elementName) {
+
+      return this.ports.get(elementName);
+    }
+
+    /**
+     * Get the ToolElement objects that will be used to create the Eoulsan step
+     * ports. Only one of the port of multi-files DataFormat are kept.
+     * @return a set of ToolElement
+     */
+    public Set<ToolElement> getStepElements() {
+
+      final Set<ToolElement> result = new HashSet<>();
+
+      for (ElementPort e : ports.values()) {
+
+        if (e.fileIndex < 1) {
+          result.add(e.element);
+        }
+      }
+
+      return Collections.unmodifiableSet(result);
+    }
+
+    /**
+     * Sort ToolElements.
+     * @param elements element to sort
+     * @return a sorted list of ToolElement
+     */
+    private static List<ToolElement> sortedElements(
+        final Collection<ToolElement> elements) {
+
+      final List<ToolElement> elementsSorted = new ArrayList<>(elements);
+      Collections.sort(elementsSorted, new Comparator<ToolElement>() {
+
+        @Override
+        public int compare(ToolElement o1, ToolElement o2) {
+
+          return o1.getName().compareTo(o2.getName());
+        }
+      });
+
+      return Collections.unmodifiableList(elementsSorted);
+    }
+
+    /**
+     * Constructor.
+     * @param elements the element
+     */
+    public ElementPorts(final Map<String, ToolElement> elements) {
+
+      final Multiset<DataFormat> formatCount = HashMultiset.create();
+      final Map<DataFormat, String> formatPortNames = new HashMap<>();
+
+      for (ToolElement e : sortedElements(elements.values())) {
+
+        // Discard parameters
+        if (!e.isFile()) {
+          continue;
+        }
+
+        final DataFormat format = e.getDataFormat();
+
+        if (format.getMaxFilesCount() == 1) {
+          this.ports.put(e.getName(),
+              new ElementPort(e, e.getValidatedName(), -1));
+        } else {
+
+          // If the DataFormat of the element is multi-file, only keep one
+          // element for Eoulsan step ports
+
+          final String portName;
+
+          if (formatPortNames.containsKey(format)) {
+
+            portName = formatPortNames.get(format);
+          } else {
+
+            portName = e.getValidatedName();
+            formatPortNames.put(format, portName);
+          }
+
+          this.ports.put(e.getName(),
+              new ElementPort(e, portName, formatCount.count(format)));
+          formatCount.add(format);
+        }
+      }
+    }
+  }
 
   /**
    * Parse tool file to extract useful data to run tool.
@@ -107,6 +277,9 @@ public class GalaxyToolInterpreter {
     // Extract variable settings
     this.inputs = extractInputs(localDoc, this.stepParameters);
     this.outputs = extractOutputs(localDoc);
+
+    this.inputPorts = new ElementPorts(this.inputs);
+    this.outputPorts = new ElementPorts(this.outputs);
 
     isConfigured = true;
   }
@@ -131,26 +304,24 @@ public class GalaxyToolInterpreter {
     final Map<String, String> variables = new HashMap<>(variablesCount);
 
     Data inData = null;
-    int inDataFileFoundCount = 0;
 
     // Extract from inputs variable command
     for (final ToolElement ptg : this.inputs.values()) {
 
       if (ptg.isFile()) {
 
+        final ElementPort inPort =
+            this.inputPorts.getPortElements(ptg.getName());
+
         // Extract value from context from DataFormat
-        inData = context.getInputData(ptg.getDataFormat());
+        final Data data = context.getInputData(inPort.portName);
 
-        if (inData != null) {
-
-          boolean multiInData = inData.getDataFileCount() > 1;
-
-          final DataFile dataFile = (multiInData
-              ? inData.getDataFile(inDataFileFoundCount++)
-              : inData.getDataFile());
-
-          variables.put(ptg.getName(), dataFile.toFile().getAbsolutePath());
+        if (inData == null || isDataNameInDesign(inData, context)) {
+          inData = data;
         }
+
+        final DataFile inFile = inPort.getInputDataFile(context);
+        variables.put(ptg.getName(), inFile.toFile().getAbsolutePath());
 
       } else {
         // Variables setting with parameters file
@@ -163,13 +334,12 @@ public class GalaxyToolInterpreter {
 
       if (ptg.isFile()) {
 
-        // Extract value from context from DataFormat
-        final Data outData = context.getOutputData(ptg.getDataFormat(), inData);
+        final ElementPort outPort =
+            this.outputPorts.getPortElements(ptg.getName());
 
-        if (outData != null) {
-          variables.put(ptg.getName(),
-              outData.getDataFile().toFile().getAbsolutePath());
-        }
+        // Extract value from context from DataFormat
+        final DataFile outFile = outPort.getOutputDataFile(context, inData);
+        variables.put(ptg.getName(), outFile.toFile().getAbsolutePath());
       } else {
         // Variables setting with parameters file
         variables.put(ptg.getName(), ptg.getValue());
@@ -200,38 +370,6 @@ public class GalaxyToolInterpreter {
     return result;
   }
 
-  /**
-   * Check data format.
-   * @param context the context
-   * @return true, if successful
-   */
-  public boolean checkDataFormat(final StepContext context) {
-
-    // Check inData
-    for (final ToolElement inElement : extractDataElements(this.inputs)) {
-
-      final DataFormat inFormat = inElement.getDataFormat();
-
-      final Data inData = context.getInputData(inFormat);
-
-      // Case not found
-      if (inData == null || inData.isEmpty())
-        return false;
-
-      for (final ToolElement outElement : extractDataElements(this.outputs)) {
-
-        final DataFormat outFormat = outElement.getDataFormat();
-
-        // Check outData related
-        final Data outData = context.getOutputData(outFormat, inData);
-        if (outData == null || outData.isEmpty())
-          return false;
-      }
-    }
-
-    return true;
-  }
-
   public String getDescription() {
 
     return "Launch tool galaxy "
@@ -242,34 +380,6 @@ public class GalaxyToolInterpreter {
   //
   // Private methods
   //
-
-  /**
-   * Extract input or output tool elements corresponding to file.
-   * @param parameters all parameters extracted from tool xml file.
-   * @return the map associated DataFormat and toolElement.
-   */
-  private static Set<ToolElement> extractDataElements(
-      final Map<String, ToolElement> parameters) {
-
-    final Set<ToolElement> results = new HashSet<>();
-
-    // Parse parameters
-    for (final Map.Entry<String, ToolElement> entry : parameters.entrySet()) {
-      final ToolElement toolElement = entry.getValue();
-
-      // Check tool element is a file
-      if (toolElement.isFile()) {
-
-        // Extract data format
-        results.add(toolElement);
-      }
-    }
-
-    if (results.isEmpty())
-      return Collections.emptySet();
-
-    return Collections.unmodifiableSet(results);
-  }
 
   /**
    * Convert set parameters in map with name parameter related parameter.
@@ -322,6 +432,28 @@ public class GalaxyToolInterpreter {
     }
   }
 
+  /**
+   * Test if a data name is a sample name.
+   * @param data the data to test
+   * @param context the step context
+   * @return true the data name is a sample name
+   */
+  private boolean isDataNameInDesign(final Data data,
+      final StepContext context) {
+
+    final String dataName = data.getName();
+
+    for (Sample sample : context.getWorkflow().getDesign().getSamples()) {
+
+      // TODO Change sample.getName() to sample.getId() with the new Design API
+      if (FileNaming.toValidName(sample.getName()).equals(dataName)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   //
   // Getters
   //
@@ -348,7 +480,7 @@ public class GalaxyToolInterpreter {
    * @return the in data format expected
    */
   public Set<ToolElement> getInputDataElements() {
-    return extractDataElements(this.inputs);
+    return this.inputPorts.getStepElements();
   }
 
   /**
@@ -357,7 +489,7 @@ public class GalaxyToolInterpreter {
    * @return the out data format expected
    */
   public Set<ToolElement> getOutputDataElements() {
-    return extractDataElements(this.outputs);
+    return this.outputPorts.getStepElements();
   }
 
   /**

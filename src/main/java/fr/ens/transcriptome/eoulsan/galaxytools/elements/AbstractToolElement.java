@@ -33,6 +33,7 @@ import com.google.common.base.Splitter;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.workflow.FileNaming;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 // TODO: Auto-generated Javadoc
@@ -46,8 +47,6 @@ public abstract class AbstractToolElement implements ToolElement {
   /** SPLITTER. */
   final static Splitter COMMA =
       Splitter.on(',').trimResults().omitEmptyStrings();
-
-  private static final String INVALID = "[.-_]";
 
   /** Data from attribute param tag. */
   private final String shortName;
@@ -181,7 +180,7 @@ public abstract class AbstractToolElement implements ToolElement {
 
   @Override
   public String getValidatedName() {
-    return this.name.replaceAll(INVALID, "");
+    return FileNaming.toValidName(this.name);
   }
 
   /**

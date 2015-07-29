@@ -23,7 +23,6 @@
  */
 package fr.ens.transcriptome.eoulsan.steps;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static fr.ens.transcriptome.eoulsan.requirements.DockerRequirement.newDockerRequirement;
 
 import java.io.InputStream;
@@ -145,9 +144,6 @@ public class GalaxyToolStep extends AbstractStep {
 
     // TODO check in data and out data corresponding to tool.xml
     // Check DataFormat expected corresponding from stepContext
-
-    checkArgument(this.toolInterpreter.checkDataFormat(context),
-        "GalaxyTool step, dataFormat inval between extract from analysis and setting in xml file.");
 
     final ToolExecutorResult result;
 
