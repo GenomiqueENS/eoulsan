@@ -33,6 +33,8 @@ import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.L
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.NOT_ALIGNED_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.NOT_UNIQUE_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.TOTAL_ALIGNMENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.steps.expression.hadoop.ExpressionHadoopStep.SAM_RECORD_PAIRED_END_SERPARATOR;
+
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFormatException;
 import htsjdk.samtools.SAMLineParser;
@@ -197,12 +199,12 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
 
     List<GenomicInterval> ivSeq = new ArrayList<>();
 
-    String[] fields = line.split("£");
-
+    final String[] fields = line.split("" + SAM_RECORD_PAIRED_END_SERPARATOR);
+    System.out.println("fields length: " + fields.length);
     try {
 
       // paired-end data
-      if (line.contains("£")) {
+      if (fields.length > 1) {
         final SAMRecord samRecord1, samRecord2;
         samRecord1 = this.parser.parseLine(fields[0]);
         samRecord2 = this.parser.parseLine(fields[1]);

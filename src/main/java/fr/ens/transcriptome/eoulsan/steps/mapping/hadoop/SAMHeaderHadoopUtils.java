@@ -16,7 +16,6 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.JobContext;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
