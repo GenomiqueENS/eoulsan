@@ -187,6 +187,9 @@ public class ITResult {
         : ": test execution and output files comparison.");
     // TODO add stop here
 
+    report.append("\n\nDate: " + getCurrentFormatedDate());
+    report.append('\n');
+    
     report.append("\n\nDirectories:");
     report.append("\n\tExpected:"
         + this.it.getExpectedTestDirectory().getAbsolutePath());
@@ -231,8 +234,6 @@ public class ITResult {
       report.append(": " + this.it.getCountFilesToRemove() + " file(s)");
     }
 
-    report.append("\n\nDate: " + getCurrentFormatedDate());
-    report.append('\n');
 
     report.append("\n\nDuration one script maximum: "
         + toTimeHumanReadable(this.it.getDurationMaxInMinutes() * 60 * 1000));
