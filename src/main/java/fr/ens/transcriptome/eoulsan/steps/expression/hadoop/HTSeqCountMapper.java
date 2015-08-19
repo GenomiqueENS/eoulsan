@@ -194,13 +194,13 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
       return;
     }
 
-    context.getCounter(this.counterGroup,
-        TOTAL_ALIGNMENTS_COUNTER.counterName()).increment(1);
-
     List<GenomicInterval> ivSeq = new ArrayList<>();
 
     final String[] fields = line.split("" + SAM_RECORD_PAIRED_END_SERPARATOR);
-    System.out.println("fields length: " + fields.length);
+
+    context.getCounter(this.counterGroup,
+        TOTAL_ALIGNMENTS_COUNTER.counterName()).increment(fields.length);
+
     try {
 
       // paired-end data
