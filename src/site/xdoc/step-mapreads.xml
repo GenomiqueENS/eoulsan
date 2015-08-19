@@ -101,6 +101,8 @@
 
       <p><b>Note:</b> In hadoop mode, Eoulsan use the <code>mapreduce.cluster.temp.dir</code> hadoop setting as location for the mapping temporary files (mapper indexes and FASTQ temporary files). This path must be set in the Hadoop client properties.</p>
 
+      <p><b>Warning:</b> In hadoop mode, the results of BWA are not exactly the same as in local mode because with BWA the SAM output of splitted FASTQ files are not the same as the full FASTQ files (See <a href="https://www.biostars.org/p/44101/">this BioStar post</a> for more information).</p>
+
     </section>
 
   </body>
