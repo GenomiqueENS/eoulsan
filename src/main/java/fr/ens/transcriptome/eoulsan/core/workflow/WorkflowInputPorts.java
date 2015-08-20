@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.AbstractPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPort;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
@@ -66,13 +67,16 @@ class WorkflowInputPorts extends AbstractPorts<WorkflowInputPort>
       throw new NullPointerException("Ports is null");
     }
 
+    final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode()
+        && step.getEoulsanMode().isHadoopCompatible();
+
     final Set<WorkflowInputPort> result = new HashSet<>();
 
     for (InputPort port : ports) {
       if (port != null) {
         result.add(new WorkflowInputPort(step, port.getName(), port.isList(),
             port.getFormat(), port.getCompressionsAccepted(),
-            port.isRequiredInWorkingDirectory()));
+            hadoopMode ? true : port.isRequiredInWorkingDirectory()));
       }
 
     }

@@ -395,14 +395,16 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     switch (EoulsanMode.getEoulsanMode(step.getClass())) {
 
     case HADOOP_COMPATIBLE:
+    case HADOOP_INTERNAL:
+    case HADOOP_ONLY:
+      return workflow.getHadoopWorkingDirectory();
+
+    case LOCAL_ONLY:
       if (copyResultsToOutput) {
         return workflow.getOutputDirectory();
       }
 
-      return workflow.getHadoopWorkingDirectory();
-
-    case HADOOP_ONLY:
-      return workflow.getHadoopWorkingDirectory();
+      return workflow.getLocalWorkingDirectory();
 
     default:
       return workflow.getLocalWorkingDirectory();

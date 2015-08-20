@@ -32,6 +32,8 @@ import static fr.ens.transcriptome.eoulsan.Globals.TASK_RESULT_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.createConfiguration;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Queue;
 
 import org.apache.hadoop.conf.Configuration;
@@ -76,6 +78,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
    */
   private final class TaskThread extends Thread {
 
+    private static final String SUBMIT_FILE_NAME = "submitfile";
     private final TaskContext context;
     private final Configuration conf;
     private final DataFile taskDir;
@@ -120,6 +123,25 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
       job.setNumReduceTasks(0);
 
       return job;
+    }
+
+    /**
+     * Create the submit file for the Hadoop job.
+     * @param taskContextFile the task context file
+     * @return the path to the submit file
+     * @throws IOException if an error occurs while creating the submit file
+     */
+    private DataFile createSubmitFile(final DataFile taskContextFile)
+        throws IOException {
+
+      final DataFile submitFile =
+          new DataFile(taskContextFile.getParent(), SUBMIT_FILE_NAME);
+
+      final Writer writer = new OutputStreamWriter(submitFile.create());
+      writer.write(taskContextFile.getSource());
+      writer.close();
+
+      return submitFile;
     }
 
     /**
@@ -169,9 +191,14 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
         // Change task state
         beforeExecuteTask(this.context);
 
+        // Create submit file
+        final DataFile sumbitFile = createSubmitFile(taskContextFile);
+
         // Submit Job
-        this.hadoopJob = createHadoopJob(this.conf, taskContextFile,
-            "Eoulsan Task #"
+        this.hadoopJob = createHadoopJob(this.conf, sumbitFile,
+            "Eoulsan Step "
+                + this.context.getCurrentStep().getId() + " ("
+                + this.context.getCurrentStep().getStepName() + ") Task #"
                 + this.context.getId() + " (" + this.context.getContextName()
                 + ")");
 
@@ -197,16 +224,18 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
 
       } catch (IOException | EoulsanException | InterruptedException
           | ClassNotFoundException e) {
-        e.printStackTrace();
+
         result = TaskRunner.createStepResult(this.context, e);
+
       } finally {
 
-        // Change task state
-        afterExecuteTask(this.context, result);
-
-        // Remove the thread from the queue
-        queue.remove(this);
       }
+
+      // Change task state
+      afterExecuteTask(this.context, result);
+
+      // Remove the thread from the queue
+      queue.remove(this);
     }
 
     /**
