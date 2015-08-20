@@ -32,6 +32,7 @@ import static java.util.Collections.unmodifiableList;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -596,7 +597,8 @@ public abstract class Main {
    */
   public void createOtherLog(final String logFilename) {
 
-    OtherLogConfigurator.configureLog4J(null, logFilename);
+    OtherLogConfigurator.configureLog4J(null,
+        new File(URI.create(logFilename)).getAbsolutePath());
   }
 
   /**

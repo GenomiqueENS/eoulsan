@@ -332,13 +332,14 @@ public class ExecJarHadoopAction extends AbstractAction {
       arguments.setJobDescription(desc);
       arguments.setJobEnvironment(env);
 
-      final File hadoopLogDir =
-          new File(URI.create(arguments.getJobPathname()));
-
       // Create the log Files
-      final String logDirname = arguments.getJobPathname() + File.separator;
-      Main.getInstance().createLogFiles(logDirname + Globals.LOG_FILENAME,
-          logDirname + Globals.OTHER_LOG_FILENAME);
+      final URI mainLogFile =
+          URI.create(arguments.getJobPathname() + "/" + Globals.LOG_FILENAME);
+      final URI otherLogFile = URI.create(
+          arguments.getJobPathname() + "/" + Globals.OTHER_LOG_FILENAME);
+
+      Main.getInstance().createLogFiles(mainLogFile.toString(),
+          otherLogFile.toString());
 
       // Create executor
       final Executor e = new Executor(arguments);
