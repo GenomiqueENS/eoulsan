@@ -212,7 +212,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     jobConf.set(ReadsMapperMapper.PAIR_END_KEY, Boolean.toString(pairedEnd));
 
     // Set the number of threads for the mapper
-    if (getMapperLocalThreads() < 0) {
+    if (getMapperLocalThreads() > 0) {
       jobConf.set(ReadsMapperMapper.MAPPER_THREADS_KEY, ""
           + getMapperHadoopThreads());
     }

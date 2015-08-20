@@ -95,6 +95,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
   private static final String TSAM_EXTENSION = ".tsam";
   private static final String SERIALIZATION_EXTENSION = ".ser";
+  static final char SAM_RECORD_PAIRED_END_SERPARATOR = '£';
 
   private Configuration conf;
 

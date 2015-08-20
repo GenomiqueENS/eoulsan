@@ -114,6 +114,7 @@
 		  <li>Support of flavors of mappers (e.g. standard and large index binary versions of Bowtie 1, Bowtie 2 and STAR)</li>
 		  <li>Update of the bundled versions of the mappers: Bowtie (1.1.1), Bowtie2 (2.2.4), BWA (0.7.12) and GSNAP (2014-12-21)</li>
 		  <li>New FastQC step</li>
+		  <li>Hadoop 2.x support</li>
 		  <li>And many other enhancements,  see the <a href="changes-report.html#@@@VERSION@@@">full changelog</a> for more information</li>
 		</ul>
 		
@@ -129,7 +130,7 @@ $ curl @@@WEBSITE@@@/eoulsan-docker-installer.sh | bash</source>
 		<table>
 			<tr><th>Eoulsan Mode</th><th>Action name</th><th>Status</th></tr>
 			<tr><td>Local mode</td><td>exec</td><td>Working</td></tr>
-			<tr><td>Hadoop mode</td><td>hadoopexec</td><td>Not working, port to Hadoop 2.x is in progress</td></tr>
+			<tr><td>Hadoop mode</td><td>hadoopexec</td><td>Working, Hadoop 2.x is required</td></tr>
 			<tr><td>Grid mode</td><td>gridexec</td><td>Planned, prototype works, waiting the Hadoop mode achievement</td></tr>
 			<tr><td>Amazon EMR mode</td><td>emrexec</td><td>Not working, waiting the Hadoop mode achievement</td></tr>
 			<tr><td>Cluster mode</td><td>clusterexec</td><td>Planned, partially implemented</td></tr>

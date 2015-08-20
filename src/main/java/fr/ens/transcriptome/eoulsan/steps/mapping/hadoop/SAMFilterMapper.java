@@ -25,17 +25,13 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.transcriptome.eoulsan.bio.io.BioCharsets.SAM_CHARSET;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
@@ -46,7 +42,6 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
-import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 
 /**
  * This class defines a mapper for alignment filtering.
@@ -61,12 +56,11 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
   static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
       + ".samfilter.genome.desc.file";
 
-  static final String SAM_HEADER_FILE_PREFIX = "_samheader_";
-
   private static final Splitter ID_SPLITTER = Splitter.on(':').trimResults();
   private final List<String> idFields = new ArrayList<>();
 
   private String counterGroup;
+  private SAMHeaderHadoopUtils.SAMHeaderWriter samHeaderWriter;
 
   private final Text outKey = new Text();
   private final Text outValue = new Text();
@@ -92,6 +86,9 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
       throw new IOException("No counter group defined");
     }
 
+    // SAM header writer
+    this.samHeaderWriter = new SAMHeaderHadoopUtils.SAMHeaderWriter(context.getTaskAttemptID().toString());
+
     getLogger().info("End of setup()");
   }
 
@@ -107,7 +104,7 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
     final String line = value.toString();
 
     // Avoid empty and header lines
-    if (!isValidLineAndSaveSAMHeader(line, context)) {
+    if (this.samHeaderWriter.writeIfHeaderLine(context, line)) {
       return;
     }
 
@@ -160,56 +157,8 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
   @Override
   protected void cleanup(final Context context) throws IOException,
       InterruptedException {
-  }
 
-  private List<String> headers;
-
-  private final boolean isValidLineAndSaveSAMHeader(final String line,
-      final Context context) throws IOException {
-
-    // Test empty line
-    if (line.length() == 0) {
-      return false;
-    }
-
-    if (line.charAt(0) != '@') {
-
-      // If headers previously found write it in a file
-      if (this.headers != null) {
-
-        // Save headers
-
-        final Path outputPath =
-            new Path(context.getConfiguration().get(
-                "mapreduce.output.fileoutputformat.outputdir"));
-
-        final Path headerPath =
-            new Path(outputPath, SAM_HEADER_FILE_PREFIX
-                + context.getTaskAttemptID().toString());
-        final Writer writer =
-            new OutputStreamWriter(PathUtils.createOutputStream(headerPath,
-                context.getConfiguration()), SAM_CHARSET);
-
-        for (String l : this.headers) {
-          writer.write(l + "\n");
-        }
-
-        writer.close();
-
-        this.headers = null;
-      }
-
-      // The line is an alignment
-      return true;
-    }
-
-    if (this.headers == null) {
-      this.headers = new ArrayList<>();
-    }
-
-    this.headers.add(line);
-
-    // The line is an header
-    return false;
+    // Write SAM header if there is no SAM entries
+    this.samHeaderWriter.close(context);
   }
 }
