@@ -24,7 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps;
 
-import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
@@ -34,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
  * @author Laurent Jourdren
  * @since 2.0
  */
-@HadoopCompatible
+@LocalOnly
 @ReuseStepInstance
 public class TechnicalReplicateMerger extends MergerStep {
 

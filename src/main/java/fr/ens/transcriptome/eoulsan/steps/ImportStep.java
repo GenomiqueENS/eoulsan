@@ -40,7 +40,7 @@ import com.google.common.base.Splitter;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.annotations.NoLog;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
@@ -68,8 +68,8 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @since 2.0
  * @author Laurent Jourdren
  */
+@LocalOnly
 @ReuseStepInstance
-@HadoopCompatible
 @NoLog
 public class ImportStep extends AbstractStep {
 

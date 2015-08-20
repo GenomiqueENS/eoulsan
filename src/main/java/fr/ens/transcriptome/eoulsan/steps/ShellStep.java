@@ -31,7 +31,7 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -44,7 +44,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * to execute the command. The launched command is : $SHELL -c "command"
  * @author Laurent Jourdren
  */
-@HadoopCompatible
+@LocalOnly
 public class ShellStep extends AbstractStep {
 
   private static final String STEP_NAME = "shell";

@@ -40,7 +40,7 @@ import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.checkers.CheckStore;
 import fr.ens.transcriptome.eoulsan.checkers.Checker;
@@ -62,7 +62,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @author Laurent Jourdren
  * @since 2.0
  */
-@HadoopCompatible
+@LocalOnly
 @ReuseStepInstance
 public class CheckerStep extends AbstractStep {
 

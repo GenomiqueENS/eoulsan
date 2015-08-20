@@ -25,7 +25,7 @@
 package fr.ens.transcriptome.eoulsan.steps;
 
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.annotations.NoLog;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.checkers.CheckStore;
@@ -40,7 +40,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @since 1.1
  * @author Laurent Jourdren
  */
-@HadoopCompatible
+@LocalOnly
 @ReuseStepInstance
 @NoLog
 public final class FirstStep extends AbstractStep {
