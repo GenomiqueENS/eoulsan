@@ -38,6 +38,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
+import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMHeaderHadoopUtils;
 
 /**
  * This class define a mapper for the pretreatment of paired-end data before the
@@ -51,6 +52,8 @@ public class PreTreatmentExpressionMapper
   private String counterGroup;
 
   private static final Pattern ID_PATTERN = Pattern.compile(":");
+
+  private SAMHeaderHadoopUtils.SAMHeaderWriter samHeaderWriter;
 
   private final Text outKey = new Text();
   private final Text outValue = new Text();
@@ -80,6 +83,9 @@ public class PreTreatmentExpressionMapper
       throw new IOException("No counter group defined");
     }
 
+    // SAM header writer
+    this.samHeaderWriter = new SAMHeaderHadoopUtils.SAMHeaderWriter(context.getTaskAttemptID().toString());
+
     getLogger().info("End of setup()");
   }
 
@@ -98,7 +104,7 @@ public class PreTreatmentExpressionMapper
     final String line = value.toString();
 
     // Discard SAM headers
-    if (line.length() > 0 && line.charAt(0) == '@') {
+    if (this.samHeaderWriter.writeIfHeaderLine(context, line)) {
       return;
     }
 
@@ -141,8 +147,11 @@ public class PreTreatmentExpressionMapper
   }
 
   @Override
+
   protected void cleanup(final Context context)
       throws IOException, InterruptedException {
+
+    this.samHeaderWriter.close(context);
   }
 
 }

@@ -809,6 +809,10 @@ of reads that reject each filter like in local mode.
                  CopyInputDataStep now do not uncompress input data from the design step when is not necessary.
             </action>
 
+            <action dev="jourdren" type="fix">
+                 In some cases the expression computation in Hadoop mode was not correct. Several counts were missing.
+            </action>
+
             <action dev="jourdren" type="update">
                  Eoulsan code is now officialy hosted on GitHub.
             </action>
@@ -818,7 +822,7 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="update">
-                STAR 2.4.0k is now bundled in Eoulsan. STAR 2.4.0k has been removed.
+                STAR 2.4.0k is now bundled in Eoulsan. STAR 2.4.0j has been removed.
             </action>
 
             <action dev="jourdren" type="update">

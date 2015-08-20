@@ -52,6 +52,7 @@ import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
+import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
@@ -212,6 +213,12 @@ public class DesignStep extends AbstractStep {
         } else {
           // Multi-file data
           DataUtils.setDataFiles(data, dataFiles);
+
+          // Set paired-end metadata
+          if (DataFormats.READS_FASTQ.equals(port.getFormat()) && dataFiles.size()>1) {
+            data.getMetadata().setPairedEnd(true);
+          }
+
         }
       }
 

@@ -80,6 +80,8 @@ public class IT {
   /** Prefix for set environment variable in test configuration file. */
   static final String PREFIX_ENV_VAR = "env.var.";
 
+  private static final List<String> PROPERTIES_TO_COMPILE = loadList();
+
   private static final String TEST_SOURCE_LINK_NAME = "test-source";
   private static final String ENV_FILENAME = "ENV";
 
@@ -95,6 +97,7 @@ public class IT {
   /** Patterns. */
   private final String fileToComparePatterns;
   private final String excludeToComparePatterns;
+  private final String fileToRemovePatterns;
   /** Patterns to check file and compare size. */
   private final String checkExistenceFilePatterns;
   /** Patterns to check file not exist in test directory. */
@@ -154,7 +157,8 @@ public class IT {
       this.itOutput =
           new ITOutput(this.outputTestDirectory, this.fileToComparePatterns,
               this.excludeToComparePatterns, this.checkLengthFilePatterns,
-              this.checkExistenceFilePatterns, this.checkAbsenceFilePatterns);
+              this.checkExistenceFilePatterns, this.checkAbsenceFilePatterns,
+              this.fileToRemovePatterns);
 
       if (this.generateExpectedDirectoryTestData) {
         this.itResult.asGeneratedData();
@@ -172,7 +176,7 @@ public class IT {
             this.itOutput.compareTo(new ITOutput(this.expectedTestDirectory,
                 this.fileToComparePatterns, this.excludeToComparePatterns,
                 this.checkLengthFilePatterns, this.checkExistenceFilePatterns,
-                this.checkAbsenceFilePatterns));
+                this.checkAbsenceFilePatterns, this.fileToRemovePatterns));
 
         this.itResult.addComparisonsResults(results);
 
@@ -207,6 +211,42 @@ public class IT {
       this.itSuite.notifyEndTest(this.itResult);
 
     }
+  }
+
+  /**
+   * Load list with patterns which values are compiled between global
+   * configuration file and test configuration file.
+   * @return the list
+   */
+  private static List<String> loadList() {
+
+    final List<String> l = new ArrayList<>();
+
+    l.add(ITFactory.EXCLUDE_TO_COMPARE_PATTERNS_CONF_KEY);
+    l.add(ITFactory.FILE_TO_COMPARE_PATTERNS_CONF_KEY);
+    l.add(ITFactory.FILE_TO_REMOVE_CONF_KEY);
+    l.add(ITFactory.CHECK_ABSENCE_FILE_PATTERNS_CONF_KEY);
+    l.add(ITFactory.CHECK_EXISTENCE_FILE_PATTERNS_CONF_KEY);
+    l.add(ITFactory.CHECK_LENGTH_FILE_PATTERNS_CONF_KEY);
+
+    return Collections.unmodifiableList(l);
+  }
+
+  /**
+   * Checks if the specific key of property is included in properties to compile
+   * value between configuration file.
+   * @param keyToFind the key to find.
+   * @return true, if is key in compile properties otherwise false.
+   */
+  private boolean isKeyInCompileProperties(final String keyToFind) {
+
+    for (String key : PROPERTIES_TO_COMPILE) {
+      if (key.equals(keyToFind)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -618,7 +658,8 @@ public class IT {
 
       // Key pattern : add value for test to values from
       // configuration general
-      if (key.toLowerCase().endsWith("patterns") && props.containsKey(key)) {
+
+      if (isKeyInCompileProperties(key) && props.containsKey(key)) {
         // Concatenate values
         value = props.getProperty(key) + SEPARATOR + value;
       }
@@ -700,6 +741,14 @@ public class IT {
   }
 
   /**
+   * Gets the file to remove patterns.
+   * @return the file to remove patterns
+   */
+  public String getFileToRemovePatterns() {
+    return this.fileToRemovePatterns;
+  }
+
+  /**
    * Gets the exclude to compare patterns.
    * @return the exclude to compare patterns
    */
@@ -756,6 +805,14 @@ public class IT {
    */
   public int getCountFilesToCompare() {
     return (this.itOutput == null ? 0 : this.itOutput.getCountFilesToCompare());
+  }
+
+  /**
+   * Gets the count files to remove.
+   * @return the count files to remove
+   */
+  public int getCountFilesToRemove() {
+    return (this.itOutput == null ? 0 : this.itOutput.getCountFilesToRemove());
   }
 
   /**
@@ -853,8 +910,12 @@ public class IT {
     this.fileToComparePatterns =
         extractPattern(ITFactory.FILE_TO_COMPARE_PATTERNS_CONF_KEY);
 
-    this.excludeToComparePatterns = buildExcludePatterns(
-        extractPattern(ITFactory.EXCLUDE_TO_COMPARE_PATTERNS_CONF_KEY));
+    // Extract all patterns define
+    this.fileToRemovePatterns =
+        extractPattern(ITFactory.FILE_TO_REMOVE_CONF_KEY);
+
+    this.excludeToComparePatterns =
+        buildExcludePatterns(extractPattern(ITFactory.EXCLUDE_TO_COMPARE_PATTERNS_CONF_KEY));
 
     this.checkExistenceFilePatterns =
         extractPattern(ITFactory.CHECK_EXISTENCE_FILE_PATTERNS_CONF_KEY);

@@ -395,7 +395,7 @@ public final class ProcessUtils {
 
     try {
       final String s =
-          ProcessUtils.execToString("pgrep " + executableName.trim());
+          ProcessUtils.execToString("pgrep -x " + executableName.trim());
 
       final String[] lines = s.split("\n");
       for (String line : lines) {

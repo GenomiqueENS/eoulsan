@@ -33,8 +33,11 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -180,11 +183,15 @@ public class ITResult {
         : ": test execution and output files comparison.");
     // TODO add stop here
 
+    report.append("\n\nDate: " + getCurrentFormatedDate());
+    report.append('\n');
+    
     report.append("\n\nDirectories:");
-    report.append(
-        "\n\tExpected:" + this.it.getExpectedTestDirectory().getAbsolutePath());
-    report.append(
-        "\n\tOutput:" + this.it.getOutputTestDirectory().getAbsolutePath());
+
+    report.append("\n\tExpected:"
+        + this.it.getExpectedTestDirectory().getAbsolutePath());
+    report.append("\n\tOuput:"
+        + this.it.getOutputTestDirectory().getAbsolutePath());
 
     report.append("\n\nPatterns:");
 
@@ -215,6 +222,15 @@ public class ITResult {
     // List patterns to exclude files on comparison
     report.append("\n\tPatterns files to exclude comparisons:\t"
         + this.it.getExcludeToComparePatterns());
+
+    // Result to check if files exist
+    report
+        .append("\n\tFile count to remove from pattern(s) if test successed: "
+            + this.it.getFileToRemovePatterns());
+    if (!this.it.getFileToRemovePatterns().equals("none")) {
+      report.append(": " + this.it.getCountFilesToRemove() + " file(s)");
+    }
+
 
     report.append("\n\nDuration one script maximum: "
         + toTimeHumanReadable(this.it.getDurationMaxInMinutes() * 60 * 1000));
@@ -265,6 +281,19 @@ public class ITResult {
 
     // Return text
     return report.toString();
+  }
+
+  /**
+   * Gets the current formated date.
+   * @return the current formated date
+   */
+  private String getCurrentFormatedDate() {
+
+    final DateFormat df =
+        new SimpleDateFormat("yyyy.MM.dd kk:mm:ss", Globals.DEFAULT_LOCALE);
+
+    return df.format(new Date());
+
   }
 
   /**

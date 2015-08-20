@@ -79,6 +79,7 @@ public class ITOutput {
   private static final double PART_DIFFERENCE_LENGTH_FILE = 0.01;
 
   private final String fileToComparePatterns;
+  private final String fileToRemovePatterns;
   private final String excludeToComparePatterns;
   /** Patterns to check file and is not empty */
   private final String checkExistenceFilePatterns;
@@ -88,6 +89,7 @@ public class ITOutput {
   private final String checkLengthFilePatterns;
 
   private final List<File> filesToCompare;
+  private final List<File> filesToRemove;
   private final List<File> filesToExclude;
   private final List<File> filesToCheckExistence;
   private final List<File> filesToCheckLength;
@@ -229,6 +231,9 @@ public class ITOutput {
   public void deleteFileMatchingOnPattern(final ITResult itResult,
       final boolean isDeleteFileRequired) {
 
+    // Save all symbolic link found with patterns
+    final List<File> linksSymbolic = new ArrayList<>();
+
     StringBuilder msg = new StringBuilder();
     msg.append("\nClean output directory:\n");
 
@@ -248,30 +253,13 @@ public class ITOutput {
       msg.append("\n\tConfiguration required to delete files from directory "
           + this.directory.getAbsolutePath());
 
-      for (File f : this.filesToCompare) {
-
-        if (!f.exists()) {
-          // No file
-          continue;
-        }
+      for (File f : getFilesToRemove()) {
 
         // Check is a symbolic link or a real path
         if (Files.isSymbolicLink(f.toPath())) {
 
-          try {
-            // Is a symbolic link
-            final File realFile = Files.readSymbolicLink(f.toPath()).toFile();
-            // Remove real file
-            if (realFile.exists()) {
-              if (!realFile.delete()) {
-                msg.append("\n\tFail to delete real file "
-                    + realFile.getAbsolutePath() + " from symbolic link "
-                    + f.getAbsolutePath());
-              }
-            }
-          } catch (IOException e) {
-            // Nothing to do
-          }
+          linksSymbolic.add(f);
+          continue;
         }
 
         // Delete file
@@ -280,6 +268,10 @@ public class ITOutput {
           msg.append("\n\tFail to delete file " + f.getAbsolutePath());
         }
       }
+
+      // Clean broken symbolic link
+      final String s = removeBrokenSymbolicLink(linksSymbolic);
+      msg.append(s);
 
       if (success) {
         msg.append("\n\tAll deletions successful.");
@@ -297,6 +289,43 @@ public class ITOutput {
   //
   // Private methods
   //
+
+  /**
+   * Removes broken symbolic links.
+   * @param linksSymbolic the links symbolic
+   * @return message to final report
+   */
+  private String removeBrokenSymbolicLink(final List<File> linksSymbolic) {
+
+    final StringBuilder msg = new StringBuilder();
+
+    for (File link : linksSymbolic) {
+
+      File realFile = null;
+      try {
+        // Is a symbolic link
+        realFile = Files.readSymbolicLink(link.toPath()).toFile();
+
+        // Remove real file
+      } catch (IOException e) {
+        // Nothing to do
+      }
+
+      if (realFile == null)
+        continue;
+
+      if (!realFile.exists()) {
+
+        // TODO
+        if (link.delete()) {
+          msg.append("\n\tFail to delete broken symbolic link file "
+              + link.getName());
+        }
+      }
+    }
+
+    return msg.toString();
+  }
 
   /**
    * Compare files.
@@ -607,6 +636,14 @@ public class ITOutput {
   }
 
   /**
+   * Gets the files to remove.
+   * @return the files to remove
+   */
+  public List<File> getFilesToRemove() {
+    return Collections.unmodifiableList(this.filesToRemove);
+  }
+
+  /**
    * Gets the count files to check content.
    * @return the count files to check content
    */
@@ -646,6 +683,14 @@ public class ITOutput {
     return this.filesToCompare.size();
   }
 
+  /**
+   * Gets the count files to remove.
+   * @return the count files to remove
+   */
+  public int getCountFilesToRemove() {
+    return this.filesToRemove.size();
+  }
+
   //
   // Constructor
   //
@@ -660,6 +705,8 @@ public class ITOutput {
    * @param checkExistenceFilePatterns sequences of patterns, separated by a
    *          space
    * @param checkAbsenceFilePatterns sequences of patterns, separated by a space
+   * @param fileToRemovePatterns the file to remove patterns, separated by a
+   *          space
    * @throws IOException if an error occurs while parsing input directory
    * @throws EoulsanException the Eoulsan exception
    */
@@ -667,11 +714,13 @@ public class ITOutput {
       final String fileToComparePatterns, final String excludeToComparePatterns,
       final String checkLengthFilePatterns,
       final String checkExistenceFilePatterns,
-      final String checkAbsenceFilePatterns)
-          throws IOException, EoulsanException {
+
+      final String checkAbsenceFilePatterns, final String fileToRemovePatterns)
+      throws IOException, EoulsanException {
 
     this.directory = outputTestDirectory;
     this.fileToComparePatterns = fileToComparePatterns;
+    this.fileToRemovePatterns = fileToRemovePatterns;
     this.excludeToComparePatterns = excludeToComparePatterns;
     this.checkLengthFilePatterns = checkLengthFilePatterns;
     this.checkExistenceFilePatterns = checkExistenceFilePatterns;
@@ -698,6 +747,8 @@ public class ITOutput {
 
     this.filesToCheckAbsence =
         collectFilesFromPattern(this.checkAbsenceFilePatterns);
+
+    this.filesToRemove = collectFilesFromPattern(this.fileToRemovePatterns);
 
     // Compile all file to compare pair to pair
     this.filesToCompare.addAll(this.filesToCheckContent);

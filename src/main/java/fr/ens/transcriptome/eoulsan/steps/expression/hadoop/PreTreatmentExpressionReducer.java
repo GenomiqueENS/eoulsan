@@ -26,16 +26,9 @@ package fr.ens.transcriptome.eoulsan.steps.expression.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.INVALID_SAM_ENTRIES_COUNTER;
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
-import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
-import fr.ens.transcriptome.eoulsan.bio.SAMComparator;
-import fr.ens.transcriptome.eoulsan.bio.SAMUtils;
-import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
-import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMFormatException;
-import htsjdk.samtools.SAMLineParser;
-import htsjdk.samtools.SAMRecord;
+import static fr.ens.transcriptome.eoulsan.steps.expression.hadoop.ExpressionHadoopStep.SAM_RECORD_PAIRED_END_SERPARATOR;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMHeaderHadoopUtils.createSAMSequenceDictionaryFromSAMHeader;
+import static fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMHeaderHadoopUtils.loadSAMHeaders;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,9 +36,16 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
+
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
+import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.bio.SAMComparator;
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMFormatException;
+import htsjdk.samtools.SAMLineParser;
+import htsjdk.samtools.SAMRecord;
 
 /**
  * This class define a reducer for the pretreatment of paired-end data before
@@ -72,20 +72,10 @@ public class PreTreatmentExpressionReducer
 
     final Configuration conf = context.getConfiguration();
 
-    final String genomeDescFile =
-        conf.get(ExpressionMapper.GENOME_DESC_PATH_KEY);
-
-    if (genomeDescFile == null) {
-      throw new IOException("No genome desc file set");
-    }
-
-    // Load genome description object
-    final GenomeDescription genomeDescription = GenomeDescription
-        .load(PathUtils.createInputStream(new Path(genomeDescFile), conf));
-
     // Set the chromosomes sizes in the parser
+    final List<String> samHeader = loadSAMHeaders(context);
     this.parser.getFileHeader().setSequenceDictionary(
-        SAMUtils.newSAMSequenceDictionary(genomeDescription));
+        createSAMSequenceDictionaryFromSAMHeader(samHeader));
 
     // Counter group
     this.counterGroup = conf.get(Globals.PARAMETER_PREFIX + ".counter.group");
@@ -149,7 +139,7 @@ public class PreTreatmentExpressionReducer
       if (r.getFirstOfPairFlag()) {
         strOutValue.append('\n');
       } else {
-        strOutValue.append('£');
+        strOutValue.append(SAM_RECORD_PAIRED_END_SERPARATOR);
       }
       strOutValue.append(r.getSAMString().replaceAll("\n", ""));
     }
