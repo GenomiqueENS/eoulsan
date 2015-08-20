@@ -61,9 +61,9 @@ import fr.ens.transcriptome.eoulsan.util.SystemUtils;
  */
 public abstract class Main {
 
-  private static final String EOULSAN_CLASSPATH_JVM_ARG = "eoulsan.classpath";
-  private static final String EOULSAN_SCRIPT_PATH_JVM_ARG =
-      "eoulsan.script.path";
+  public static final String EOULSAN_CLASSPATH_JVM_ARG = "eoulsan.classpath";
+  public static final String EOULSAN_SCRIPT_PATH_JVM_ARG =
+      "eoulsan.launch.script.path";
 
   private static Main main;
 
@@ -136,8 +136,7 @@ public abstract class Main {
    */
   public File getEoulsanDirectory() {
 
-    final File scriptFile =
-        new File(System.getProperty(EOULSAN_SCRIPT_PATH_JVM_ARG));
+    final File scriptFile = new File(getEoulsanScriptPath());
 
     return scriptFile.getParentFile();
   }
