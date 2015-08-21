@@ -334,7 +334,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       final String archivePath, final File reads1File, final File reads2File,
       final boolean fileMode) throws IOException {
 
-    return new MapperProcess(this, fileMode, false, false) {
+    return new MapperProcess(this, fileMode, false, true) {
 
       @Override
       protected List<List<String>> createCommandLines() {

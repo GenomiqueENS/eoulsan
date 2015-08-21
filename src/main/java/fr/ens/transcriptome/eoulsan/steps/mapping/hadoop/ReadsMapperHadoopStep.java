@@ -28,6 +28,7 @@ import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.createConfiguration
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.doubleQuotes;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -220,7 +221,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     // Set mapper arguments
     if (getMapperArguments() != null) {
-      jobConf.set(ReadsMapperMapper.MAPPER_ARGS_KEY, getMapperArguments());
+      jobConf.set(ReadsMapperMapper.MAPPER_ARGS_KEY, doubleQuotes(getMapperArguments()));
     }
 
     // Set Mapper fastq format
