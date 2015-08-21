@@ -33,18 +33,27 @@ import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonValue;
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonGeneratorFactory;
 
@@ -63,6 +72,32 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @since 2.0
  */
 public class WorkflowStepResult {
+
+  private static final String TASK_COUNTERS_TAG = "Task counters";
+  private static final String TASK_MESSAGE_TAG = "Task message";
+  private static final String TASK_DESCRIPTION_TAG = "Task description";
+  private static final String TASK_NAME_TAG = "Task name";
+  private static final String TASK_ID_TAG = "Task id";
+  private static final String TASKS_TAG = "Tasks";
+  private static final String COUNTERS_TAG = "Counters";
+  private static final String STEP_PARAMETERS_TAG = "Step parameters";
+  private static final String STEP_MESSAGE_TAG = "Step message";
+  private static final String SUCCESS_TAG = "Success";
+  private static final String START_TIME_TAG = "Start time";
+  private static final String END_TIME_TAG = "End time";
+  private static final String DURATION_TAG = "Duration";
+  private static final String DURATION_IN_MILLISECONDS_TAG =
+      "Duration in milliseconds";
+  private static final String STEP_VERSION_TAG = "Step version";
+  private static final String STEP_CLASS_TAG = "Step class";
+  private static final String STEP_NAME_TAG = "Step name";
+  private static final String STEP_ID_TAG = "Step id";
+  private static final String JOB_ENVIRONMENT_TAG = "Job environment";
+  private static final String JOB_DESCRIPTION_TAG = "Job description";
+  private static final String JOB_UUID_TAG = "Job UUID";
+  private static final String JOB_ID_TAG = "Job id";
+  private static final String EXCEPTION_MESSAGE_TAG = "Exception message";
+  private static final String EXCEPTION_TAG = "Exception";
 
   private String jobId;
   private String jobUUID;
@@ -90,6 +125,9 @@ public class WorkflowStepResult {
   private String errorMessage;
 
   private boolean immutable;
+
+  private final DateFormat dateFormat = DateFormat.getDateTimeInstance(
+      DateFormat.LONG, DateFormat.LONG, Locale.getDefault());
 
   //
   // Getters
@@ -314,37 +352,37 @@ public class WorkflowStepResult {
     JsonGenerator jg = jgf.createGenerator(writer);
 
     jg.writeStartObject();
-    jg.write("Job id", this.jobId);
-    jg.write("Job UUID", this.jobUUID);
-    jg.write("Job description", this.jobDescription);
-    jg.write("Job environment", this.jobEnvironment);
-    jg.write("Step id", this.stepId);
-    jg.write("Step name", this.stepName);
-    jg.write("Step class", this.stepClass);
-    jg.write("Step version",
+    jg.write(JOB_ID_TAG, this.jobId);
+    jg.write(JOB_UUID_TAG, this.jobUUID);
+    jg.write(JOB_DESCRIPTION_TAG, this.jobDescription);
+    jg.write(JOB_ENVIRONMENT_TAG, this.jobEnvironment);
+    jg.write(STEP_ID_TAG, this.stepId);
+    jg.write(STEP_NAME_TAG, this.stepName);
+    jg.write(STEP_CLASS_TAG, this.stepClass);
+    jg.write(STEP_VERSION_TAG,
         this.stepVersion == null ? null : this.stepVersion.toString());
-    jg.write("Start time", this.startTime.toString());
-    jg.write("End time", this.endTime.toString());
-    jg.write("Duration", toTimeHumanReadable(this.duration));
-    jg.write("Duration in milliseconds", this.duration);
-    jg.write("Success", this.success);
-    jg.write("Step message", nullToEmpty(this.stepMessage));
+    jg.write(START_TIME_TAG, this.dateFormat.format(this.startTime));
+    jg.write(END_TIME_TAG, this.dateFormat.format(this.endTime));
+    jg.write(DURATION_TAG, toTimeHumanReadable(this.duration));
+    jg.write(DURATION_IN_MILLISECONDS_TAG, this.duration);
+    jg.write(SUCCESS_TAG, this.success);
+    jg.write(STEP_MESSAGE_TAG, nullToEmpty(this.stepMessage));
 
     if (!this.success) {
-      jg.write("Exception", this.exception == null
+      jg.write(EXCEPTION_TAG, this.exception == null
           ? "" : this.exception.getClass().getSimpleName());
-      jg.write("Exception message");
+      jg.write(EXCEPTION_MESSAGE_TAG);
     }
 
     // Step parameters
-    jg.writeStartObject("Step parameters");
+    jg.writeStartObject(STEP_PARAMETERS_TAG);
     for (Parameter p : this.parameters) {
       jg.write(p.getName(), p.getStringValue());
     }
     jg.writeEnd();
 
     // Counters
-    jg.writeStartObject("Counters");
+    jg.writeStartObject(COUNTERS_TAG);
 
     for (Map.Entry<String, Map<String, Long>> e : this.counters.entrySet()) {
 
@@ -359,7 +397,7 @@ public class WorkflowStepResult {
     jg.writeEnd(); // Counters
 
     // Tasks
-    jg.writeStartArray("Tasks");
+    jg.writeStartArray(TASKS_TAG);
 
     for (int contextId : this.taskNames.keySet()) {
 
@@ -370,14 +408,14 @@ public class WorkflowStepResult {
       }
 
       jg.writeStartObject();
-      jg.write("Task id", contextId);
-      jg.write("Task name", this.taskNames.get(contextId));
-      jg.write("Task description",
+      jg.write(TASK_ID_TAG, contextId);
+      jg.write(TASK_NAME_TAG, this.taskNames.get(contextId));
+      jg.write(TASK_DESCRIPTION_TAG,
           nullToEmpty(this.taskDescriptions.get(contextId)));
-      jg.write("Task message", nullToEmpty(this.taskMessages.get(contextId)));
+      jg.write(TASK_MESSAGE_TAG, nullToEmpty(this.taskMessages.get(contextId)));
 
       // contextName counters
-      jg.writeStartObject("Task counters");
+      jg.writeStartObject(TASK_COUNTERS_TAG);
       for (Map.Entry<String, Long> e : this.taskCounters.get(contextId)
           .entrySet()) {
         jg.write(e.getKey(), e.getValue());
@@ -468,6 +506,11 @@ public class WorkflowStepResult {
   // I/O
   //
 
+  /**
+   * Read a step result file.
+   * @param file the file to read
+   * @throws IOException if an error occurs while reading the file
+   */
   public void read(final DataFile file) throws IOException {
 
     checkNotNull(file, "file is null");
@@ -475,13 +518,81 @@ public class WorkflowStepResult {
     read(file.open());
   }
 
+  /**
+   * Read a step result file.
+   * @param in the input stream to read
+   * @throws IOException if an error occurs while reading the file
+   */
   public void read(final InputStream in) {
 
     checkNotNull(in);
     checkImmutableState();
 
-    // TODO implement this method
-    throw new UnsupportedOperationException();
+    final JsonReader reader = Json.createReader(new InputStreamReader(in));
+    final JsonObject obj = reader.readObject();
+
+    this.jobId = obj.getString(JOB_ID_TAG);
+    this.jobUUID = obj.getString(JOB_UUID_TAG);
+    this.jobDescription = obj.getString(JOB_DESCRIPTION_TAG);
+    this.jobEnvironment = obj.getString(JOB_ENVIRONMENT_TAG);
+    this.stepId = obj.getString(STEP_ID_TAG);
+    this.stepName = obj.getString(STEP_NAME_TAG);
+    this.stepClass = obj.getString(STEP_CLASS_TAG);
+    this.stepVersion = new Version(obj.getString(STEP_VERSION_TAG));
+    this.startTime = parseDate(obj.getString(START_TIME_TAG));
+    this.endTime = parseDate(obj.getString(END_TIME_TAG));
+    this.duration = obj.getInt(DURATION_IN_MILLISECONDS_TAG);
+    this.success = obj.getBoolean(SUCCESS_TAG);
+    this.stepMessage = obj.getString(STEP_MESSAGE_TAG);
+
+    System.out.println(this.startTime);
+
+    // Parse parameters
+    this.parameters = new LinkedHashSet<>();
+    final JsonObject parametersObj = obj.getJsonObject(STEP_PARAMETERS_TAG);
+    for (String key : parametersObj.keySet()) {
+      this.parameters.add(new Parameter(key, parametersObj.getString(key)));
+    }
+
+    // Parse counters
+    final JsonObject countersObj = obj.getJsonObject(COUNTERS_TAG);
+    for (String group : countersObj.keySet()) {
+
+      if (!this.counters.containsKey(group)) {
+        this.counters.put(group, new HashMap<String, Long>());
+      }
+      final Map<String, Long> map = this.counters.get(group);
+
+      JsonObject groupObj = countersObj.getJsonObject(group);
+      for (String counterName : groupObj.keySet()) {
+        map.put(counterName, groupObj.getJsonNumber(counterName).longValue());
+      }
+    }
+
+    // Parse task
+    final JsonArray tasksArray = obj.getJsonArray(TASKS_TAG);
+    for (JsonValue entry : tasksArray) {
+
+      final JsonObject entryObj = (JsonObject) entry;
+
+      final int taskId = entryObj.getInt(TASK_ID_TAG);
+
+      this.taskNames.put(taskId, entryObj.getString(TASK_NAME_TAG));
+      this.taskDescriptions.put(taskId,
+          entryObj.getString(TASK_DESCRIPTION_TAG));
+      this.taskMessages.put(taskId, entryObj.getString(TASK_MESSAGE_TAG));
+
+      final Map<String, Long> map = new HashMap<>();
+      this.taskCounters.put(taskId, map);
+
+      final JsonObject taskCountersObj =
+          entryObj.getJsonObject(TASK_COUNTERS_TAG);
+      for (String counterName : taskCountersObj.keySet()) {
+        map.put(counterName,
+            taskCountersObj.getJsonNumber(counterName).longValue());
+      }
+    }
+
   }
 
   /**
@@ -521,12 +632,41 @@ public class WorkflowStepResult {
   }
 
   //
+  // Other methods
+  //
+
+  /**
+   * Parse date.
+   * @param s the string to parse
+   * @return a Date object or null if the date cannot be parsed
+   */
+  private final Date parseDate(final String s) {
+
+    if (s == null) {
+      return null;
+    }
+
+    try {
+      return this.dateFormat.parse(s);
+    } catch (ParseException e) {
+      return null;
+    }
+  }
+
+  //
   // Constructor
   //
 
+  /**
+   * Constructor.
+   */
   WorkflowStepResult() {
   }
 
+  /**
+   * Constructor.
+   * @param step the step
+   */
   public WorkflowStepResult(final AbstractWorkflowStep step) {
 
     Preconditions.checkNotNull(step, "step is null");
