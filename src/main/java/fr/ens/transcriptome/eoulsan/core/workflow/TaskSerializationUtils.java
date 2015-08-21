@@ -49,27 +49,29 @@ public class TaskSerializationUtils {
    * Execute a task context serialization file.
    * @param taskContextFile input task context file
    * @param outputDir output directory for results file
+   * @return the task result
    * @throws IOException if an error occurs while reading or writing serialized
    *           files
    * @throws EoulsanException if an error occurs while executing the task
    */
-  public static final void execute(final DataFile taskContextFile)
+  public static final TaskResult execute(final DataFile taskContextFile)
       throws IOException, EoulsanException {
 
     checkNotNull(taskContextFile, "contextFile argument cannot be null");
 
-    execute(taskContextFile, taskContextFile.getParent());
+    return execute(taskContextFile, taskContextFile.getParent());
   }
 
   /**
    * Execute a task context serialization file.
    * @param taskContextFile input task context file
    * @param outputDir output directory for results file
+   * @return the task result
    * @throws IOException if an error occurs while reading or writing serialized
    *           files
    * @throws EoulsanException if an error occurs while executing the task
    */
-  public static final void execute(final DataFile taskContextFile,
+  public static final TaskResult execute(final DataFile taskContextFile,
       final DataFile outputDir) throws IOException, EoulsanException {
 
     checkNotNull(taskContextFile, "contextFile argument cannot be null");
@@ -117,6 +119,8 @@ public class TaskSerializationUtils {
     // Create done file
     new DataFile(baseDir, taskPrefix + Globals.TASK_DONE_EXTENSION).create()
         .close();
+
+    return result;
   }
 
 }

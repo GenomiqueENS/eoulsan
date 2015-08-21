@@ -30,6 +30,7 @@ import static fr.ens.transcriptome.eoulsan.Globals.TASK_DATA_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_DONE_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_RESULT_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.createConfiguration;
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -309,15 +310,41 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
     protected void map(final LongWritable key, final Text value,
         final Context context) throws IOException, InterruptedException {
 
+      getLogger().info("Start of map()");
+      getLogger().info("Task context file: " + value);
+
       try {
 
         // Execute the task
-        TaskSerializationUtils.execute(new DataFile(value.toString()));
+        final TaskResult result =
+            TaskSerializationUtils.execute(new DataFile(value.toString()));
+
+        // Log task result informations
+        if (result != null) {
+
+          getLogger().info(
+              "Task result: " + (result.isSuccess() ? "SUCCESS" : "FAIL"));
+          getLogger().info(
+              "Task Duration: " + toTimeHumanReadable(result.getDuration()));
+
+          if (!result.isSuccess()) {
+
+            getLogger()
+                .severe("Task error message: " + result.getErrorMessage());
+
+            if (result.getException() != null) {
+              result.getException().printStackTrace();
+            }
+          }
+        }
 
       } catch (EoulsanException e) {
         throw new IOException(e);
       }
+
+      getLogger().info("End of map()");
     }
+
   }
 
   //
