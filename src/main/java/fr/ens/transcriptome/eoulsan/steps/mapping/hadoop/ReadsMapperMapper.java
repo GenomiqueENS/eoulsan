@@ -25,6 +25,7 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_MAPPING_ALIGNMENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.unDoubleQuotes;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -227,7 +228,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
             "mapper-lock-");
 
     // Get Mapper arguments
-    final String mapperArguments = conf.get(MAPPER_ARGS_KEY);
+    final String mapperArguments = unDoubleQuotes(conf.get(MAPPER_ARGS_KEY));
     if (mapperArguments != null) {
       this.mapper.setMapperArguments(mapperArguments);
     }

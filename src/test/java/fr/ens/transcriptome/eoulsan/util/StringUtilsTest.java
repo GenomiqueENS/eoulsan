@@ -280,4 +280,26 @@ public class StringUtilsTest {
 
   }
 
+  @Test
+  public void testDoubleQuotes() {
+
+    assertNull(StringUtils.doubleQuotes(null));
+    assertEquals("\"\"", StringUtils.doubleQuotes(""));
+    assertEquals("\"toto\"", StringUtils.doubleQuotes("toto"));
+  }
+
+  @Test
+  public void testUnDoubleQuotes() {
+
+    assertNull(StringUtils.unDoubleQuotes(null));
+    assertEquals("", StringUtils.unDoubleQuotes("\"\""));
+    assertEquals("toto", StringUtils.unDoubleQuotes("\"toto\""));
+    assertEquals("toto\"", StringUtils.unDoubleQuotes("toto\""));
+    assertEquals("\"toto", StringUtils.unDoubleQuotes("\"toto"));
+    assertEquals("", StringUtils.unDoubleQuotes(""));
+    assertEquals("a", StringUtils.unDoubleQuotes("a"));
+    assertEquals("ab", StringUtils.unDoubleQuotes("ab"));
+    assertEquals("abc", StringUtils.unDoubleQuotes("abc"));
+  }
+
 }
