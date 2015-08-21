@@ -737,12 +737,18 @@ public abstract class Main {
 
     }
 
-    getLogger().info("Start " + action.getName() + " action");
+    try {
 
-    // Run action
-    action.action(main.getActionArgs());
+      getLogger().info("Start " + action.getName() + " action");
 
-    getLogger().info("End of " + action.getName() + " action");
+      // Run action
+      action.action(main.getActionArgs());
+
+      getLogger().info("End of " + action.getName() + " action");
+
+    } catch (Throwable e) {
+      Common.errorExit(e, e.getMessage());
+    }
 
     // Flush logs
     main.flushLog();

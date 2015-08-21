@@ -34,6 +34,8 @@
 
 
   <body>
+
+    <p><b>Warning:</b> Eoulsan 2.x do not currently work on AWS. <b>This page is outdated</b>.</p>
   
     <section name="Configure Amazon Elastic MapReduce">
 

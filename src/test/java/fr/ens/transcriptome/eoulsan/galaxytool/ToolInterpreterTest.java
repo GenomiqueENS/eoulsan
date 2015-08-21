@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.python.google.common.base.Joiner;
 import org.python.google.common.base.Preconditions;
@@ -44,6 +45,7 @@ import org.python.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntimeDebug;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.steps.galaxytool.GalaxyToolInterpreter;
 import fr.ens.transcriptome.eoulsan.steps.galaxytool.ToolData;
@@ -79,11 +81,15 @@ public class ToolInterpreterTest {
   private static final String NEW_TEST_KEY = "test_description";
 
   /** Directory path which contains all tool shed XML file. */
-  private static final String SRC_DIR =
-      "/META-INF/services/registrytoolshed/";
+  private static final String SRC_DIR = "/META-INF/services/registrytoolshed/";
 
-  private static final String SRC_TESTS_SETTING =
-      "/testdatatoolshedgalaxy.txt";
+  private static final String SRC_TESTS_SETTING = "/testdatatoolshedgalaxy.txt";
+
+  @Before
+  public void setUp() throws Exception {
+
+    EoulsanRuntimeDebug.initDebugEoulsanRuntime();
+  }
 
   /**
    * Test tool interpreter, it read the extra file. To set a test, it give XML
