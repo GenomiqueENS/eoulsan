@@ -173,6 +173,7 @@ public class ITCommandExecutor {
           cmdResult.setException(new EoulsanException("\tCommand line: "
               + cmdLine + "\n\tDirectory: " + this.outputTestDirectory
               + "\n\tMessage: bad exit value: " + exitValue));
+          cmdResult.setErrorFileOnProcess(stderrFile);
         }
 
       } else if (exitValue == 0 && !isApplicationCmdLine) {

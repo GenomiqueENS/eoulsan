@@ -23,9 +23,14 @@
  */
 package fr.ens.transcriptome.eoulsan.it;
 
+import static fr.ens.transcriptome.eoulsan.Globals.DEFAULT_CHARSET;
 import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+
+import com.google.common.io.Files;
 
 /**
  * This internal class allow to save Process outputs.
@@ -48,6 +53,9 @@ public class ITCommandResult {
   @SuppressWarnings("unused")
   private String exceptionMessage;
   private boolean interruptedProcess = false;
+  private File stderrFile;
+
+  private boolean isReportCreated = false;
 
   public boolean isEmpty() {
     return this.message.toString().isEmpty();
@@ -58,6 +66,10 @@ public class ITCommandResult {
    * @return the report
    */
   public String getReport() {
+
+    if (isReportCreated) {
+      return this.message.toString();
+    }
 
     this.message.append("\nExecute " + this.desc + ":");
 
@@ -70,6 +82,9 @@ public class ITCommandResult {
 
     this.message.append("\n\tMessage: exit value " + this.exitValue);
 
+    // Add standard error on script save un stderr file
+    this.message.append(getSTDERRMessageOnProcess());
+
     // TODO
     // this.message.append("\n\tMessage: interrupted " +
     // isInterruptedProcess());
@@ -81,7 +96,44 @@ public class ITCommandResult {
 
     this.message.append("\n");
 
+    isReportCreated = true;
+    
     return this.message.toString();
+  }
+
+  /**
+   * Adds the stderr message on process in the report.
+   * @return the string
+   */
+  public String getSTDERRMessageOnProcess() {
+
+    if (stderrFile == null || !stderrFile.exists()) {
+      return "";
+    }
+
+    final StringBuilder sb = new StringBuilder();
+    sb.append("\n\tCopy content of standard error file from: "
+        + this.stderrFile.getAbsolutePath() + "\n");
+
+    // Read error file
+    try (BufferedReader br = Files.newReader(stderrFile, DEFAULT_CHARSET)) {
+
+      String line = "";
+
+      // Add all lines
+      while ((line = br.readLine()) != null) {
+        sb.append("\n\t\t" + line);
+      }
+
+      sb.append("\nEnd file\n\n");
+
+    } catch (IOException e) {
+      // Add warning message in report file
+      sb.append("\nAn error occurs during read file "
+          + stderrFile.getAbsolutePath() + "\n\n");
+    }
+
+    return sb.toString();
   }
 
   //
@@ -136,6 +188,22 @@ public class ITCommandResult {
   public void setException(final Exception exception, final String message) {
     this.exception = exception;
     this.exceptionMessage = message;
+  }
+
+  /**
+   * Sets the error file on process.
+   * @param stderrFile the new error file on process
+   */
+  public void setErrorFileOnProcess(final File stderrFile) {
+    this.stderrFile = stderrFile;
+  }
+
+  /**
+   * As error file save.
+   * @return true, if successful
+   */
+  public boolean asErrorFileSave() {
+    return this.stderrFile != null && this.stderrFile.exists();
   }
 
   /**

@@ -40,7 +40,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.LogRecord;
 
 import com.google.common.base.Joiner;
 
@@ -189,7 +188,7 @@ public class ITResult {
 
     report.append("\n\nDate: " + getCurrentFormatedDate());
     report.append('\n');
-    
+
     report.append("\n\nDirectories:");
     report.append("\n\tExpected:"
         + this.it.getExpectedTestDirectory().getAbsolutePath());
@@ -233,7 +232,6 @@ public class ITResult {
     if (!this.it.getFileToRemovePatterns().equals("none")) {
       report.append(": " + this.it.getCountFilesToRemove() + " file(s)");
     }
-
 
     report.append("\n\nDuration one script maximum: "
         + toTimeHumanReadable(this.it.getDurationMaxInMinutes() * 60 * 1000));
@@ -353,6 +351,16 @@ public class ITResult {
       msgException.append("\n=== Execution Test Debug Stack Trace ===\n");
       msgException.append(Joiner.on("\n\t")
           .join(this.exception.getStackTrace()));
+    }
+
+    // Add last command result message if command has failed
+    ITCommandResult lastCommandResult =
+        this.commandsResults.get(this.commandsResults.size() - 1);
+
+    if (lastCommandResult.asErrorFileSave()) {
+      // Include message
+      msgException.append(lastCommandResult.getSTDERRMessageOnProcess());
+
     }
 
     // Return text
