@@ -248,23 +248,6 @@ public class ExecJarHadoopAction extends AbstractAction {
   }
 
   //
-  // Other method
-  //
-
-  /**
-   * Create the log path.
-   * @param arguments Executor arguments
-   * @param logFilename log file name
-   * @return a String with an URI for the log
-   */
-  private static String logPath(final ExecutorArguments arguments,
-      final String logFilename) {
-
-    return URI.create(arguments.getJobPathname() + File.separator + logFilename)
-        .toString();
-  }
-
-  //
   // Execution
   //
 
@@ -350,9 +333,8 @@ public class ExecJarHadoopAction extends AbstractAction {
       arguments.setJobEnvironment(env);
 
       // Create the log Files
-      Main.getInstance().createLogFiles(
-          logPath(arguments, Globals.LOG_FILENAME),
-          logPath(arguments, Globals.OTHER_LOG_FILENAME));
+      Main.getInstance().createLogFiles(arguments.logPath(Globals.LOG_FILENAME),
+          arguments.logPath(Globals.OTHER_LOG_FILENAME));
 
       // Create executor
       final Executor e = new Executor(arguments);

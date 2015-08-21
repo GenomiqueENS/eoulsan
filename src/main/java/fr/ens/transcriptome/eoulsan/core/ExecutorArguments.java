@@ -324,6 +324,17 @@ public class ExecutorArguments {
     return new DataFile(getDesignPathname()).open();
   }
 
+  /**
+   * Create the log path.
+   * @param logFilename log file name
+   * @return a String with an URI for the log
+   */
+  public String logPath(final String logFilename) {
+
+    return new File(getJobPathname(), logFilename).getAbsoluteFile().toURI()
+        .toString();
+  }
+
   @Override
   public String toString() {
 
