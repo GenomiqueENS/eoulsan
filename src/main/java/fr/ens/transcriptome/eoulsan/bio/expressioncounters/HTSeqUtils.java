@@ -29,16 +29,13 @@ import static fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode.IN
 import static fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode.UNION;
 import static fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage.REVERSE;
 import static fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage.YES;
-import htsjdk.samtools.Cigar;
-import htsjdk.samtools.CigarElement;
-import htsjdk.samtools.CigarOperator;
-import htsjdk.samtools.SAMRecord;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +48,10 @@ import fr.ens.transcriptome.eoulsan.bio.GFFEntry;
 import fr.ens.transcriptome.eoulsan.bio.GenomicArray;
 import fr.ens.transcriptome.eoulsan.bio.GenomicInterval;
 import fr.ens.transcriptome.eoulsan.bio.io.GFFReader;
+import htsjdk.samtools.Cigar;
+import htsjdk.samtools.CigarElement;
+import htsjdk.samtools.CigarOperator;
+import htsjdk.samtools.SAMRecord;
 
 /**
  * This class groups HTSeq functions that are used in both local and distributed
@@ -99,7 +100,7 @@ public class HTSeqUtils {
           final List<String> featureIds;
 
           if (splitAttributeValues) {
-            featureIds = splitter.splitToList(featureId);
+            featureIds = splitToList(splitter, featureId);
           } else {
             featureIds = Collections.singletonList(featureId);
           }
@@ -345,6 +346,27 @@ public class HTSeqUtils {
     for (GenomicInterval iv : toRemove) {
       intervals.remove(iv);
     }
+  }
+
+  /**
+   * This method allow to split a string to a list. This method exists because
+   * Guava 14 is bundled with Hadoop 2.x and the splitToList method exists only
+   * since Guava 15.
+   * @param splitter the splitter to use
+   * @param s the string to split
+   * @return an immutable list
+   */
+  private static final List<String> splitToList(final Splitter splitter,
+      final String s) {
+
+    final Iterator<String> it = splitter.split(s).iterator();
+    final List<String> result = new ArrayList<>();
+
+    while (it.hasNext()) {
+      result.add(it.next());
+    }
+
+    return Collections.unmodifiableList(result);
   }
 
 }

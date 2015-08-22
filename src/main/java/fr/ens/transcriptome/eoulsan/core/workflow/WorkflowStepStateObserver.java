@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.CREATED;
-import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.DONE;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
 
@@ -52,7 +51,7 @@ public class WorkflowStepStateObserver implements Serializable {
   private static final long serialVersionUID = -5734184849291521186L;
 
   private final AbstractWorkflowStep step;
-  private StepState stepState;
+  private StepState stepState = CREATED;
 
   private final Set<AbstractWorkflowStep> requiredSteps = new HashSet<>();
   private final Set<AbstractWorkflowStep> stepsToInform = new HashSet<>();
@@ -91,18 +90,31 @@ public class WorkflowStepStateObserver implements Serializable {
    */
   public void setState(final StepState state) {
 
+    // Do nothing if the state has not changed or if the current state is a
+    // final state
     if (state == null
-        || this.stepState == state || this.stepState == StepState.ABORTED) {
+        || state == CREATED || this.stepState == state
+        || this.stepState.isFinalState()) {
       return;
     }
 
+    // Do not change the state to READY if the step is already working
+    if (state == READY && this.stepState.isWorkingState()) {
+      return;
+    }
+
+    // Save current state
+    final StepState previousState = this.stepState;
+
     // If is the root step, there is nothing to wait
     synchronized (this) {
+
       if (this.step.getType() == WorkflowStep.StepType.ROOT_STEP
           && state == WAITING) {
         this.stepState = READY;
       } else {
 
+        // Set the new state
         this.stepState = state;
       }
     }
@@ -111,12 +123,8 @@ public class WorkflowStepStateObserver implements Serializable {
     getLogger().fine(
         "Step #"
             + this.step.getNumber() + " " + this.step.getId()
-            + " is now in state " + this.stepState);
-
-    // If step has just been created there is nothing to do
-    if (this.stepState == CREATED) {
-      return;
-    }
+            + " is now in state " + this.stepState + " (previous state was "
+            + previousState + ")");
 
     // Log dependencies when step is in WAITING state
     if (this.stepState == WAITING) {
@@ -124,7 +132,7 @@ public class WorkflowStepStateObserver implements Serializable {
     }
 
     // Inform step that depend of this step
-    if (this.stepState == DONE) {
+    if (this.stepState.isDoneState()) {
       for (AbstractWorkflowStep step : this.stepsToInform) {
         step.getStepStateObserver().updateStatus();
       }
@@ -157,7 +165,7 @@ public class WorkflowStepStateObserver implements Serializable {
     }
 
     for (AbstractWorkflowStep step : this.requiredSteps) {
-      if (step.getState() != DONE) {
+      if (!(step.getState().isDoneState())) {
         return;
       }
     }
@@ -203,6 +211,10 @@ public class WorkflowStepStateObserver implements Serializable {
     checkNotNull(step, "step cannot be null");
 
     this.step = step;
-    setState(CREATED);
+
+    getLogger().fine(
+        "Step #"
+            + this.step.getNumber() + " " + this.step.getId()
+            + " is now in state " + this.stepState);
   }
 }

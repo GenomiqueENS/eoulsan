@@ -335,7 +335,7 @@ public class TokenManager implements Runnable {
 
     // Check origin step state
     final StepState originStepState = token.getOrigin().getStep().getState();
-    checkState(originStepState == WORKING || originStepState == DONE,
+    checkState(originStepState.isWorkingState() || originStepState == DONE,
         "Invalid token step origin state: " + originStepState);
 
     // Check if token has already been processed
@@ -850,7 +850,7 @@ public class TokenManager implements Runnable {
 
         // Do nothing until the step is not ready
         final StepState state = this.step.getState();
-        if (!(state == READY || state == WORKING)) {
+        if (!(state == READY || state.isWorkingState())) {
           continue;
         }
 

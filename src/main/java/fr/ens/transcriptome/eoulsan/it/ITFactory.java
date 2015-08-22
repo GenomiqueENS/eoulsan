@@ -96,16 +96,16 @@ public class ITFactory {
   private static final String SUCCESS_IT_DELETE_FILE_DEFAULT_VALUE = "false";
 
   /** Patterns */
-  static final String FILE_TO_COMPARE_PATTERNS_CONF_KEY =
-      "file.to.compare.patterns";
+  static final String FILE_TO_COMPARE_PATTERNS_CONF_KEY = "files.to.compare";
   static final String EXCLUDE_TO_COMPARE_PATTERNS_CONF_KEY =
-      "exclude.to.compare.patterns";
+      "excluded.files.to.compare";
   static final String CHECK_LENGTH_FILE_PATTERNS_CONF_KEY =
-      "file.to.check.length.patterns";
+      "files.to.check.length";
   static final String CHECK_EXISTENCE_FILE_PATTERNS_CONF_KEY =
-      "file.to.check.existence.patterns";
+      "files.to.check.existences";
   static final String CHECK_ABSENCE_FILE_PATTERNS_CONF_KEY =
-      "file.to.check.absence.patterns";
+      "files.to.check.absence";
+  static final String FILE_TO_REMOVE_CONF_KEY = "files.to.remove";
 
   static final String MANUAL_GENERATION_EXPECTED_DATA_CONF_KEY =
       "manual.generation.expected.data";
@@ -118,7 +118,6 @@ public class ITFactory {
   static final String APPLICATION_PATH_VARIABLE = "application.path";
 
   static final String TEST_CONFIGURATION_FILENAME = "test.conf";
-
 
   // Runtime maximum for a test beyond stop execution, in minutes
   static final int RUNTIME_IT_MAXIMUM_DEFAULT = 1;
@@ -299,6 +298,8 @@ public class ITFactory {
   private static Properties loadProperties(final File configurationFile)
       throws IOException, EoulsanException {
 
+    // TODO Replace properties by treeMap to use constant in set environment
+    // variables
     final Properties rawProps = new Properties();
     final Properties props;
 
@@ -372,12 +373,19 @@ public class ITFactory {
   private static Properties evaluateProperties(final Properties rawProps)
       throws EoulsanException {
     final Properties props = new Properties();
+    final int pos = IT.PREFIX_ENV_VAR.length();
 
     // Extract environment variable
     for (final String propertyName : rawProps.stringPropertyNames()) {
       if (propertyName.startsWith(IT.PREFIX_ENV_VAR)) {
-        CONSTANTS.put(propertyName.substring(IT.PREFIX_ENV_VAR.length()),
-            rawProps.getProperty(propertyName));
+
+        // Evaluate property
+        final String evalPropValue =
+            evaluateExpressions(rawProps.getProperty(propertyName), true);
+
+        // Put in constants map
+        CONSTANTS.put(propertyName.substring(pos), evalPropValue);
+
       }
     }
 

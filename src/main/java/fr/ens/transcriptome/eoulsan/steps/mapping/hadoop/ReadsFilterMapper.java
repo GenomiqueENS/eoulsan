@@ -138,7 +138,7 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
       throw new IOException(e);
     }
 
-    // Set the output writers
+    // Set the multiple output writer
     this.out = new MultipleOutputs<Text, Text>(context);
     this.outputFilename1 = createOutputPath(conf, OUTPUT_FILE1_KEY);
     this.outputFilename2 = createOutputPath(conf, OUTPUT_FILE2_KEY);
@@ -227,11 +227,11 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
 
           // Write read 1
           this.outValue.set(this.read1.toTFQ());
-          out.write(key, this.outValue, this.outputFilename1);
+          this.out.write(key, this.outValue, this.outputFilename1);
 
           // Write read 2
           this.outValue.set(this.read2.toTFQ());
-          out.write(key, this.outValue, this.outputFilename2);
+          this.out.write(key, this.outValue, this.outputFilename2);
         }
 
         context.getCounter(this.counterGroup,
@@ -247,6 +247,11 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
   @Override
   protected void cleanup(final Context context) throws IOException,
       InterruptedException {
+
+    // Close the multiple output writer
+    if (this.out != null) {
+      this.out.close();
+    }
   }
 
 }

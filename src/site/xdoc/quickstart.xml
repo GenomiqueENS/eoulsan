@@ -197,6 +197,8 @@ $ eoulsan.sh hadoopexec workflow-hadoop.xml design.txt hdfs://master.example.com
 		<a name="aws_mode"/>
 		<subsection name="Launch Eoulsan on Amazon Web Service cloud computing">
 
+			<p><b>Warning:</b> Eoulsan 2.x do not currently work on AWS. <b>This section is outdated</b>.</p>
+
 			<p>You must have an AWS account for Amazon S3 and Amazon 
 			   MapReduce to launch Eoulsan on Amazon cloud. You can register to Amazon Web Services here:</p>
 

@@ -290,7 +290,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   private MapperProcess createMapperProcessPE(final String starPath,
       final String archivePath) throws IOException {
 
-    return new MapperProcess(this, false) {
+    return new MapperProcess(this, true) {
 
       @Override
       protected List<List<String>> createCommandLines() {

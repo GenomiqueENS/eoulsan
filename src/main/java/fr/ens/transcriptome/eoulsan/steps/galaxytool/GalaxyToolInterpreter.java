@@ -32,6 +32,8 @@ import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.e
 import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolID;
 import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolName;
 import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolVersion;
+import static org.python.google.common.base.Preconditions.checkNotNull;
+import static org.python.google.common.base.Preconditions.checkState;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,9 +86,6 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
   /** The outputs. */
   private Map<String, ToolElement> outputs;
 
-  /** The tool name from parameter Eoulsan file. */
-  private final String toolNameFromParameter;
-
   /** The step parameters. */
   private final Map<String, Parameter> stepParameters;
 
@@ -99,9 +98,15 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
   /** The tool. */
   private final ToolData tool;
 
+  private boolean isConfigured = false;
+  private boolean isExecuted = false;
+
   @Override
   public void configure(final Set<Parameter> setStepParameters)
       throws EoulsanException {
+
+    checkState(!isConfigured,
+        "GalaxyToolStep, this instance has been already configured");
 
     this.initStepParameters(setStepParameters);
 
@@ -123,11 +128,15 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
     this.inFileExpected = this.extractToolElementsIsFile(this.inputs);
     this.outFileExpected = this.extractToolElementsIsFile(this.outputs);
 
+    isConfigured = true;
   }
 
   @Override
   public ToolExecutorResult execute(final StepContext context)
       throws EoulsanException {
+
+    checkState(!isExecuted,
+        "GalaxyToolStep, this instance has been already executed");
 
     context.getLogger().info("Parsing xml file successfully.");
     context.getLogger().info("Tool description " + this.tool);
@@ -195,6 +204,8 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
             Collections.unmodifiableMap(variables));
 
     final ToolExecutorResult result = pythonInterperter.executeScript();
+
+    isExecuted = true;
 
     // TODO
     return result;
@@ -324,79 +335,25 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
     }
   }
 
-  // ------------------------------------------------------------------------------------------------------------------------------
-  // Test methods for Junit
-  // ------------------------------------------------------------------------------------------------------------------------------
-
-  /**
-   * Set input ports with name and value.
-   * @param inputsPort the inputs port
-   * @throws EoulsanException the eoulsan exception
-   */
-  public void setPortInput(final Map<String, String> inputsPort)
-      throws EoulsanException {
-
-    this.setToolElementWithPort(this.inputs, inputsPort);
-  }
-
-  /**
-   * Set output ports with name and value.
-   * @param outputsPort the outputs port
-   * @throws EoulsanException the eoulsan exception
-   */
-  public void setPortOutput(final Map<String, String> outputsPort)
-      throws EoulsanException {
-
-    this.setToolElementWithPort(this.outputs, outputsPort);
-  }
-
-  /**
-   * Associate port value on parameter tools corresponding.
-   * @param paramTool set of parameter for tool galaxy
-   * @param ports map on ports
-   * @throws EoulsanException the eoulsan exception
-   */
-  private void setToolElementWithPort(final Map<String, ToolElement> paramTool,
-      final Map<String, String> ports) throws EoulsanException {
-
-    for (final Map.Entry<String, String> e : ports.entrySet()) {
-
-      final ToolElement parameter = paramTool.get(e.getKey());
-
-      if (parameter == null) {
-        throw new EoulsanException(
-            "Parsing tool xml: no parameter found related port: "
-                + e.getKey() + ", " + e.getValue());
-      }
-
-      // Set value
-      parameter.setValue(new Parameter(e.getKey(), e.getValue()));
-    }
-  }
-
-  /**
-   * Creates the command line.
-   * @return the string
-   * @throws EoulsanException the eoulsan exception
-   */
-  public String createCommandLine() throws EoulsanException {
-
-    // final ToolPythonInterpreter pythonInterperter =
-    // new ToolPythonInterpreter(this.context, this.tool,
-    // extractVariablesFromXML());
-
-    final String newCommand = "";
-    // pythonInterperter.createCommandLine();
-
-    // TODO
-    // System.out.println("DEBUG final command \t" + newCommand);
-
-    return newCommand;
-  }
-
   //
   // Getters
   //
+
+  /**
+   * Gets the inputs.
+   * @return the inputs
+   */
+  public Map<String, ToolElement> getInputs() {
+    return this.inputs;
+  }
+
+  /**
+   * Gets the outputs.
+   * @return the outputs
+   */
+  public Map<String, ToolElement> getOutputs() {
+    return this.outputs;
+  }
 
   @Override
   public Map<DataFormat, ToolElement> getInDataFormatExpected() {
@@ -428,24 +385,19 @@ public class GalaxyToolInterpreter implements ToolInterpreter {
 
   /**
    * Public constructor.
-   * @param is the is
+   * @param is the input stream
    * @throws EoulsanException the Eoulsan exception
    */
   public GalaxyToolInterpreter(final InputStream is) throws EoulsanException {
-    this("UNDEFINED", is, null);
-  }
 
-  public GalaxyToolInterpreter(final String toolName, final InputStream is,
-      final File toolExecutablePath) throws EoulsanException {
+    checkNotNull(is, "input stream on XML file");
 
-    this.toolNameFromParameter = toolName;
     this.toolXMLis = is;
     this.doc = this.buildDOM();
     this.stepParameters = new HashMap<>();
 
-    this.tool = new ToolData(toolExecutablePath);
+    this.tool = new ToolData();
 
     this.checkDomValidity();
   }
-
 }

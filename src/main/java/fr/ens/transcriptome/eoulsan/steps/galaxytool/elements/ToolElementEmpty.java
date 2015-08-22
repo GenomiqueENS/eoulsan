@@ -37,15 +37,20 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
  */
 public class ToolElementEmpty implements ToolElement {
 
+  private final String shortName;
+  private final String name;
+
   /**
    * Instantiates a new tool parameter empty.
    */
-  public ToolElementEmpty() {
+
+  public String getShortName() {
+    return this.shortName;
   }
 
   @Override
   public String getName() {
-    return "No name";
+    return this.name;
   }
 
   @Override
@@ -93,7 +98,32 @@ public class ToolElementEmpty implements ToolElement {
 
   @Override
   public Parameter extractParameterByName(Map<String, Parameter> stepParameters) {
-    throw new UnsupportedOperationException();
+
+    final Parameter p = stepParameters.get(getName());
+
+    if (p == null)
+      return stepParameters.get(getShortName());
+
+    return p;
   }
 
+  //
+  // Constructors
+  //
+
+  public ToolElementEmpty() {
+    this("noName");
+  }
+
+  public ToolElementEmpty(final String nameToolElement) {
+    this(nameToolElement, null);
+  }
+
+  public ToolElementEmpty(final String nameToolElement, final String nameSpace) {
+    this.shortName = nameToolElement;
+
+    // Add name space for full name, if exists
+    this.name = (nameSpace == null ? "" : nameSpace + ".") + nameToolElement;
+
+  }
 }

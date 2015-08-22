@@ -21,21 +21,16 @@
  *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
-package fr.ens.transcriptome.eoulsan.steps.galaxytool;
+package fr.ens.transcriptome.eoulsan.steps;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
@@ -48,9 +43,10 @@ import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.galaxytool.GalaxyToolInterpreter;
+import fr.ens.transcriptome.eoulsan.steps.galaxytool.ToolData;
+import fr.ens.transcriptome.eoulsan.steps.galaxytool.ToolExecutorResult;
 import fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.ToolElement;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -61,24 +57,19 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 @LocalOnly
 public class GalaxyToolStep extends AbstractStep {
 
-  /** The Constant NAME. */
-  public static final String STEP_NAME = "galaxytool";
-
-  private static final String TOOL_NAME = "toolname";
-  private static final String TOOL_XML_PATH = "toolxmlpath";
-  private static final String TOOL_EXECUTABLE_PATH = "toolexecutablepath";
-  // TODO to check if possible
-  private static final String TOOL_ARGUMENTS = "toolargument";
-
-  private boolean isConfigured = false;
-  private boolean isExecuted = false;
+  /** Tool data. */
+  private ToolData toolData;
 
   /** The tool interpreter. */
   private GalaxyToolInterpreter toolInterpreter;
 
   @Override
   public String getName() {
-    return STEP_NAME;
+    return this.toolData.getToolName();
+  }
+
+  public String getToolVersionName() {
+    return this.toolData.getToolVersion();
   }
 
   @Override
@@ -129,104 +120,18 @@ public class GalaxyToolStep extends AbstractStep {
 
   @Override
   public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) {
+      final Set<Parameter> stepParameters) throws EoulsanException {
 
-    if (isExecuted)
-      throw new EoulsanRuntimeException(
-          "GalaxyToolStep, this instance has been already executed");
+    // Configure tool interpreter
+    this.toolInterpreter.configure(stepParameters);
 
-    final Set<Parameter> toolParameters = new HashSet<>();
+    // Extract tool data
+    this.toolData = this.toolInterpreter.getToolData();
 
-    String toolName = "";
-    File toolXmlPath = null;
-    File toolExecutablePath = null;
-
-    for (Parameter p : stepParameters) {
-
-      switch (p.getName()) {
-
-      // Name tool
-      case TOOL_NAME:
-        toolName = p.getStringValue();
-        break;
-
-      // Path to a toolXML
-      case TOOL_XML_PATH:
-        String v = p.getStringValue();
-
-        if (v == null || v.isEmpty()) {
-          throw new EoulsanRuntimeException(
-              "Configure step ToolGalaxy, xml path is null or empty.");
-        }
-
-        toolXmlPath = new File(v);
-
-        // TODO change code, use command guava/utils eoulsan
-        if (!(toolXmlPath.exists() || toolXmlPath.canRead())) {
-          throw new EoulsanRuntimeException(
-              "Configure step ToolGalaxy, xml path "
-                  + toolXmlPath.getAbsolutePath() + " can not readable.");
-        }
-
-        break;
-
-      // Path to a executable tool
-      case TOOL_EXECUTABLE_PATH:
-        String exe = p.getStringValue();
-
-        if (exe == null || exe.isEmpty()) {
-          throw new EoulsanRuntimeException(
-              "Configure step ToolGalaxy, tool executable path is null or empty.");
-        }
-
-        toolExecutablePath = new File(exe);
-
-        if (!(toolExecutablePath.exists() || toolExecutablePath.canRead())) {
-          throw new EoulsanRuntimeException("Configure step ToolGalaxy, tool "
-              + toolName + " executable path "
-              + toolExecutablePath.getAbsolutePath() + " can not readable.");
-        }
-
-        break;
-
-      default:
-        toolParameters.add(p);
-      }
-    }
-
-    // Init tool interpreter
-    initToolInterpreter(toolParameters, toolName, toolXmlPath,
-        toolExecutablePath);
-
-    isConfigured = true;
-  }
-
-  private void initToolInterpreter(final Set<Parameter> toolParameters,
-      final String toolName, final File toolXmlPath,
-      final File toolExecutablePath) {
-
-    checkNotNull(toolName, "None tool name define for Galaxy Tool step.");
-
-    try {
-      // Configure tool interpreter
-      this.toolInterpreter =
-          new GalaxyToolInterpreter(toolName,
-              FileUtils.createInputStream(toolXmlPath), toolExecutablePath);
-
-      this.toolInterpreter.configure(toolParameters);
-
-    } catch (final EoulsanException | IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
   }
 
   @Override
   public StepResult execute(final StepContext context, final StepStatus status) {
-
-    if (!isConfigured)
-      throw new EoulsanRuntimeException(
-          "GalaxyToolStep, this instance has been configured");
 
     // TODO check in data and out data corresponding to tool.xml
     // Check DataFormat expected corresponding from stepContext
@@ -269,8 +174,6 @@ public class GalaxyToolStep extends AbstractStep {
           "Error execution interrupted: " + e.getMessage());
     }
 
-    isExecuted = true;
-
     return status.createStepResult();
 
   }
@@ -287,16 +190,7 @@ public class GalaxyToolStep extends AbstractStep {
   public GalaxyToolStep(final InputStream toolXMLis) throws EoulsanException {
 
     this.toolInterpreter =
-        new GalaxyToolInterpreter("Unknown", toolXMLis, null);
-  }
-
-  /**
-   * Constructor.
-   * @throws EoulsanException the Eoulsan exception
-   */
-  public GalaxyToolStep() throws EoulsanException {
-
-    this.toolInterpreter = null;
+        new GalaxyToolInterpreter(toolXMLis);
   }
 
 }

@@ -33,20 +33,17 @@ import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.L
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.NOT_ALIGNED_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.NOT_UNIQUE_ALIGNMENTS_COUNTER;
 import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.TOTAL_ALIGNMENTS_COUNTER;
-import static fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters.UNMAPPED_READS_COUNTER;
-import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMFormatException;
-import htsjdk.samtools.SAMLineParser;
-import htsjdk.samtools.SAMRecord;
+import static fr.ens.transcriptome.eoulsan.steps.expression.hadoop.ExpressionHadoopStep.SAM_RECORD_PAIRED_END_SERPARATOR;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -65,7 +62,12 @@ import fr.ens.transcriptome.eoulsan.bio.expressioncounters.HTSeqUtils;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
+import fr.ens.transcriptome.eoulsan.steps.expression.ExpressionCounters;
 import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMFormatException;
+import htsjdk.samtools.SAMLineParser;
+import htsjdk.samtools.SAMRecord;
 
 /**
  * Mapper for the expression estimation with htseq-count.
@@ -75,12 +77,12 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
 
   // Parameters keys
-  static final String STRANDED_PARAM = Globals.PARAMETER_PREFIX
-      + ".expression.stranded.parameter";
-  static final String OVERLAPMODE_PARAM = Globals.PARAMETER_PREFIX
-      + ".expression.overlapmode.parameter";
-  static final String REMOVE_AMBIGUOUS_CASES = Globals.PARAMETER_PREFIX
-      + ".expression.no.ambiguous.cases";
+  static final String STRANDED_PARAM =
+      Globals.PARAMETER_PREFIX + ".expression.stranded.parameter";
+  static final String OVERLAPMODE_PARAM =
+      Globals.PARAMETER_PREFIX + ".expression.overlapmode.parameter";
+  static final String REMOVE_AMBIGUOUS_CASES =
+      Globals.PARAMETER_PREFIX + ".expression.no.ambiguous.cases";
 
   private final GenomicArray<String> features = new GenomicArray<>();
   private final Map<String, Integer> counts = new HashMap<>();
@@ -91,13 +93,15 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
   private boolean removeAmbiguousCases;
 
   private final SAMLineParser parser = new SAMLineParser(new SAMFileHeader());
+  private final Pattern recordSplitterPattern =
+      Pattern.compile("" + SAM_RECORD_PAIRED_END_SERPARATOR);
 
   private final Text outKey = new Text();
   private final LongWritable outValue = new LongWritable(1L);
 
   @Override
-  public void setup(final Context context) throws IOException,
-      InterruptedException {
+  public void setup(final Context context)
+      throws IOException, InterruptedException {
 
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
@@ -117,9 +121,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
             "Retrieve more than one file in distributed cache");
       }
 
-      getLogger().info(
-          "Genome index compressed file (from distributed cache): "
-              + localCacheFiles[0]);
+      getLogger().info("Genome index compressed file (from distributed cache): "
+          + localCacheFiles[0]);
 
       if (localCacheFiles == null || localCacheFiles.length == 0) {
         throw new IOException("Unable to retrieve annotation index");
@@ -131,8 +134,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
       }
 
       // Load features
-      this.features.load(PathUtils.createInputStream(new Path(
-          localCacheFiles[0]), conf));
+      this.features.load(
+          PathUtils.createInputStream(new Path(localCacheFiles[0]), conf));
 
       // Counter group
       this.counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);
@@ -149,9 +152,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
       }
 
       // Load genome description object
-      final GenomeDescription genomeDescription =
-          GenomeDescription.load(PathUtils.createInputStream(new Path(
-              genomeDescFile), conf));
+      final GenomeDescription genomeDescription = GenomeDescription
+          .load(PathUtils.createInputStream(new Path(genomeDescFile), conf));
 
       // Set the chromosomes sizes in the parser
       this.parser.getFileHeader().setSequenceDictionary(
@@ -193,114 +195,39 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
       return;
     }
 
-    context.getCounter(this.counterGroup,
-        TOTAL_ALIGNMENTS_COUNTER.counterName()).increment(1);
-
-    List<GenomicInterval> ivSeq = new ArrayList<>();
-
-    String[] fields = line.split("£");
+    final String[] fields = recordSplitterPattern.split(line);
+    final List<GenomicInterval> ivSeq;
 
     try {
 
-      // paired-end data
-      if (line.contains("£")) {
-        final SAMRecord samRecord1, samRecord2;
-        samRecord1 = this.parser.parseLine(fields[0]);
-        samRecord2 = this.parser.parseLine(fields[1]);
+      // Add intervals
+      switch (fields.length) {
 
-        if (!samRecord1.getReadUnmappedFlag()) {
-          ivSeq.addAll(HTSeqUtils.addIntervals(samRecord1, this.stranded));
-        }
+      // Single end data
+      case 1:
+        ivSeq = createSingleEndIntervals(context, fields[0]);
+        break;
 
-        if (!samRecord2.getReadUnmappedFlag()) {
-          ivSeq.addAll(HTSeqUtils.addIntervals(samRecord2, this.stranded));
-        }
+      // paired end data
+      case 2:
+        ivSeq = addPairedEndIntervals(context, fields[0], fields[1]);
+        break;
 
-        // unmapped read
-        if (samRecord1.getReadUnmappedFlag()
-            && samRecord2.getReadUnmappedFlag()) {
-          context.getCounter(this.counterGroup,
-              NOT_ALIGNED_ALIGNMENTS_COUNTER.counterName()).increment(1);
-          context.getCounter(this.counterGroup,
-              ELIMINATED_READS_COUNTER.counterName()).increment(1);
-          return;
-        }
-
-        // multiple alignment
-        if ((samRecord1.getAttribute("NH") != null && samRecord1
-            .getIntegerAttribute("NH") > 1)
-            || (samRecord2.getAttribute("NH") != null && samRecord2
-                .getIntegerAttribute("NH") > 1)) {
-          context.getCounter(this.counterGroup,
-              NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName()).increment(1);
-          context.getCounter(this.counterGroup,
-              ELIMINATED_READS_COUNTER.counterName()).increment(1);
-          return;
-        }
-
-        // too low quality
-        if (samRecord1.getMappingQuality() < 0
-            || samRecord2.getMappingQuality() < 0) {
-          context.getCounter(this.counterGroup,
-              LOW_QUAL_ALIGNMENTS_COUNTER.counterName()).increment(1);
-          context.getCounter(this.counterGroup,
-              ELIMINATED_READS_COUNTER.counterName()).increment(1);
-          return;
-        }
-
-      }
-      // single-end data
-      else {
-        final SAMRecord samRecord;
-        samRecord = this.parser.parseLine(line);
-
-        // unmapped read
-        if (samRecord.getReadUnmappedFlag()) {
-          context.getCounter(this.counterGroup,
-              NOT_ALIGNED_ALIGNMENTS_COUNTER.counterName()).increment(1);
-          context.getCounter(this.counterGroup,
-              ELIMINATED_READS_COUNTER.counterName()).increment(1);
-          return;
-        }
-
-        // multiple alignment
-        if (samRecord.getAttribute("NH") != null
-            && samRecord.getIntegerAttribute("NH") > 1) {
-          context.getCounter(this.counterGroup,
-              NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName()).increment(1);
-          context.getCounter(this.counterGroup,
-              ELIMINATED_READS_COUNTER.counterName()).increment(1);
-          return;
-        }
-
-        // too low quality
-        if (samRecord.getMappingQuality() < 0) {
-          context.getCounter(this.counterGroup,
-              LOW_QUAL_ALIGNMENTS_COUNTER.counterName()).increment(1);
-          context.getCounter(this.counterGroup,
-              ELIMINATED_READS_COUNTER.counterName()).increment(1);
-          return;
-        }
-
-        ivSeq.addAll(HTSeqUtils.addIntervals(samRecord, this.stranded));
+      default:
+        throw new EoulsanException(
+            "Invalid number of SAM record(s) found in the entry: "
+                + fields.length);
       }
 
-      Set<String> fs = null;
+      incrementCounter(context, TOTAL_ALIGNMENTS_COUNTER, fields.length);
 
-      fs =
-          HTSeqUtils.featuresOverlapped(ivSeq, this.features, this.overlapMode,
-              this.stranded);
-
-      if (fs == null) {
-        fs = new HashSet<>();
-      }
+      final Set<String> fs = null2empty(HTSeqUtils.featuresOverlapped(ivSeq,
+          this.features, this.overlapMode, this.stranded));
 
       switch (fs.size()) {
       case 0:
-        context.getCounter(this.counterGroup,
-            EMPTY_ALIGNMENTS_COUNTER.counterName()).increment(1);
-        context.getCounter(this.counterGroup,
-            UNMAPPED_READS_COUNTER.counterName()).increment(1);
+        incrementCounter(context, EMPTY_ALIGNMENTS_COUNTER);
+        incrementCounter(context, ELIMINATED_READS_COUNTER);
         break;
 
       case 1:
@@ -315,10 +242,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
 
           // Ambiguous case will be removed
 
-          context.getCounter(this.counterGroup,
-              AMBIGUOUS_ALIGNMENTS_COUNTER.counterName()).increment(1);
-          context.getCounter(this.counterGroup,
-              ELIMINATED_READS_COUNTER.counterName()).increment(1);
+          incrementCounter(context, AMBIGUOUS_ALIGNMENTS_COUNTER);
+          incrementCounter(context, ELIMINATED_READS_COUNTER);
         } else {
 
           // Ambiguous case will be used in the count
@@ -333,11 +258,10 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
 
     } catch (SAMFormatException | EoulsanException e) {
 
-      context.getCounter(this.counterGroup,
-          INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
-      getLogger().info(
-          "Invalid SAM output entry: "
-              + e.getMessage() + " line='" + line + "'");
+      incrementCounter(context, INVALID_SAM_ENTRIES_COUNTER);
+      getLogger().info("Invalid SAM output entry: "
+          + e.getMessage() + " line='" + line + "'");
+
       return;
     }
 
@@ -348,6 +272,154 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
 
     this.features.clear();
     this.counts.clear();
+  }
+
+  //
+  // Intervals creation methods
+  //
+
+  /**
+   * Create single end intervals.
+   * @param context Hadoop context
+   * @param record the SAM record
+   */
+  private final List<GenomicInterval> createSingleEndIntervals(
+      final Context context, final String record) {
+
+    final List<GenomicInterval> ivSeq = new ArrayList<>();
+    final SAMRecord samRecord = this.parser.parseLine(record);
+
+    // unmapped read
+    if (samRecord.getReadUnmappedFlag()) {
+
+      incrementCounter(context, NOT_ALIGNED_ALIGNMENTS_COUNTER);
+      incrementCounter(context, ELIMINATED_READS_COUNTER);
+
+      return ivSeq;
+    }
+
+    // multiple alignment
+    if (samRecord.getAttribute("NH") != null
+        && samRecord.getIntegerAttribute("NH") > 1) {
+
+      incrementCounter(context, NOT_UNIQUE_ALIGNMENTS_COUNTER);
+      incrementCounter(context, ELIMINATED_READS_COUNTER);
+
+      return ivSeq;
+    }
+
+    // too low quality
+    if (samRecord.getMappingQuality() < 0) {
+
+      incrementCounter(context, LOW_QUAL_ALIGNMENTS_COUNTER);
+      incrementCounter(context, ELIMINATED_READS_COUNTER);
+
+      return ivSeq;
+    }
+
+    ivSeq.addAll(HTSeqUtils.addIntervals(samRecord, this.stranded));
+
+    return ivSeq;
+  }
+
+  /**
+   * Create paired end intervals.
+   * @param context Hadoop context
+   * @param record1 the SAM record of the first end
+   * @param record2 the SAM record of the second end
+   */
+  private final List<GenomicInterval> addPairedEndIntervals(
+      final Context context, final String record1, final String record2) {
+
+    final List<GenomicInterval> ivSeq = new ArrayList<>();
+
+    final SAMRecord samRecord1 = this.parser.parseLine(record1);
+    final SAMRecord samRecord2 = this.parser.parseLine(record2);
+
+    if (!samRecord1.getReadUnmappedFlag()) {
+      ivSeq.addAll(HTSeqUtils.addIntervals(samRecord1, this.stranded));
+    }
+
+    if (!samRecord2.getReadUnmappedFlag()) {
+      ivSeq.addAll(HTSeqUtils.addIntervals(samRecord2, this.stranded));
+    }
+
+    // unmapped read
+    if (samRecord1.getReadUnmappedFlag() && samRecord2.getReadUnmappedFlag()) {
+
+      incrementCounter(context, NOT_ALIGNED_ALIGNMENTS_COUNTER);
+      incrementCounter(context, ELIMINATED_READS_COUNTER);
+
+      return ivSeq;
+    }
+
+    // multiple alignment
+    if ((samRecord1.getAttribute("NH") != null
+        && samRecord1.getIntegerAttribute("NH") > 1)
+        || (samRecord2.getAttribute("NH") != null
+            && samRecord2.getIntegerAttribute("NH") > 1)) {
+
+      incrementCounter(context, NOT_UNIQUE_ALIGNMENTS_COUNTER);
+      incrementCounter(context, ELIMINATED_READS_COUNTER);
+
+      return ivSeq;
+    }
+
+    // too low quality
+    if (samRecord1.getMappingQuality() < 0
+        || samRecord2.getMappingQuality() < 0) {
+
+      incrementCounter(context, LOW_QUAL_ALIGNMENTS_COUNTER);
+      incrementCounter(context, ELIMINATED_READS_COUNTER);
+
+      return ivSeq;
+    }
+
+    return ivSeq;
+  }
+
+  //
+  // Other methods
+  //
+
+  /**
+   * Increment an expression counter with a value of 1.
+   * @param context the Hadoop context
+   * @param counter the expression counter
+   * @param increment the increment
+   */
+  private final void incrementCounter(final Context context,
+      final ExpressionCounters counter) {
+
+    incrementCounter(context, counter, 1);
+  }
+
+  /**
+   * Increment an expression counter.
+   * @param context the Hadoop context
+   * @param counter the expression counter
+   * @param increment the increment
+   */
+  private final void incrementCounter(final Context context,
+      final ExpressionCounters counter, final int increment) {
+
+    context
+    .getCounter(this.counterGroup, counter.counterName())
+    .increment(increment);
+  }
+
+  /**
+   * Return an empty set if the parameter is null.
+   * @param set the set
+   * @return an empty set if the parameter is null or the original set
+   */
+  private static final <E> Set<E> null2empty(final Set<E> set) {
+
+    if (set == null) {
+      return Collections.emptySet();
+    }
+
+    return set;
   }
 
 }

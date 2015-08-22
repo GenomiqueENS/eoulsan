@@ -935,6 +935,48 @@ public final class StringUtils {
     return s == null || s.isEmpty();
   }
 
+
+  /**
+   * Returns a string with double quotes at the beginning and at the end of the
+   * string.
+   * @param s the string
+   * @return a string with double quotes at the beginning and at the end of the
+   * string or null if s is null
+   */
+  public static String doubleQuotes(final String s) {
+
+    if (s == null) {
+      return null;
+    }
+
+    return '"' + s + '"';
+  }
+
+  /**
+   * Remove double quotes at the beginning and at the end of the string.
+   * @param s the string.
+   * @return a string without double quote at the beginning and at the end of the
+   * string or null if s is null
+   */
+  public static String unDoubleQuotes(final String s) {
+
+    if (s == null) {
+      return null;
+    }
+
+    final int len = s.length();
+
+    if (len<2) {
+      return s;
+    }
+
+    if (s.charAt(0) == '"' && s.charAt(len-1) == '"') {
+      return s.substring(1, len-1);
+    }
+
+    return s;
+  }
+
   //
   // Constructor
   //

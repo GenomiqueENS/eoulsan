@@ -442,8 +442,13 @@ public class ImportStep extends AbstractStep {
     List<DataFile> group = new ArrayList<>();
     DataFile previous = null;
 
+    // Sort files
+    List<DataFile> sortedFiles = new ArrayList<DataFile>();
+    sortedFiles.addAll(files);
+    Collections.sort(sortedFiles);
+
     // For each files
-    for (DataFile file : files) {
+    for (DataFile file : sortedFiles) {
 
       // Test if current file is related to the same data than the previous data
       if (group.isEmpty() || FileNaming.dataEquals(previous, file)) {

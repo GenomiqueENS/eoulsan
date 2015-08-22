@@ -68,7 +68,9 @@ public class ToolOutputsData extends AbstractToolElement {
   }
 
   @Override
-  public void setValue(final Parameter stepParameter) {
+  public void setValue(final Parameter stepParameter) throws EoulsanException {
+    super.setValue(stepParameter);
+    
     this.setValue(stepParameter.getValue());
   }
 
@@ -128,7 +130,7 @@ public class ToolOutputsData extends AbstractToolElement {
     } else {
       // Convert format in DataFormat
       this.dataFormat =
-          DataFormatRegistry.getInstance().getDataFormatsFromToolshedExtension(
+          DataFormatRegistry.getInstance().getDataFormatFromToolshedExtension(
               this.formats.get(0));
     }
   }

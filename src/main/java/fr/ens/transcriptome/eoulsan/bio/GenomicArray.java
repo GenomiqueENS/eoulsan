@@ -789,6 +789,8 @@ public class GenomicArray<T> {
 
     for (Map.Entry<String, ChromosomeZones<T>> strandedZone : this.chromosomes
         .entrySet()) {
+
+      // Process plus zones
       for (Zone<T> zone : strandedZone.getValue().plus.zones) {
         if (zone.valueCount != 0) {
           for (T value : zone.getValues()) {
@@ -796,6 +798,16 @@ public class GenomicArray<T> {
           }
         }
       }
+
+      // Process minus zones
+      for (Zone<T> zone : strandedZone.getValue().minus.zones) {
+        if (zone.valueCount != 0) {
+          for (T value : zone.getValues()) {
+            results.add(String.valueOf(value));
+          }
+        }
+      }
+
     }
 
     return results;

@@ -25,7 +25,7 @@ public class SAMInputFormat extends FileInputFormat<Text, Text> {
   public RecordReader<Text, Text> createRecordReader(InputSplit inputSplit,
       TaskAttemptContext context) throws IOException, InterruptedException {
 
-    return new SAMRecordReader();
+    return new SAMRecordReader(context);
   }
 
   @Override

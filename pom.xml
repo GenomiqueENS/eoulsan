@@ -321,12 +321,6 @@
 			<version>15.0</version>
 			<scope>compile</scope>
 		</dependency>
-		<!--dependency>
-			<groupId>net.sourceforge.picard</groupId>
-			<artifactId>sam</artifactId>
-			<version>${htsjdk.version}</version>
-			<scope>compile</scope>
-		</dependency-->
 		<dependency>
 			<groupId>net.sourceforge.picard</groupId>
 			<artifactId>htsjdk</artifactId>
@@ -371,19 +365,19 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>3.7</version>
+			<version>3.12</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
-			<version>3.7</version>
+			<version>3.12</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml-schemas</artifactId>
-			<version>3.7</version>
+			<version>3.12</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -494,12 +488,12 @@
 			<version>2.2</version>
 		</dependency>
 
-		<!-- Required by FastQC -->
+		<!-- Required to patch FastQC at runtime -->
 		<dependency>
-			<groupId>net.sourceforge.picard</groupId>
-			<artifactId>sam</artifactId>
-			<version>1.83</version>
-			<scope>runtime</scope>
+			<groupId>javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.12.1.GA</version>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- Required by Docker -->
