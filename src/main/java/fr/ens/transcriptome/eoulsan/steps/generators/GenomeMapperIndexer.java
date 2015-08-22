@@ -72,9 +72,8 @@ public final class GenomeMapperIndexer {
     if (this.storage == null) {
       precomputedIndexDataFile = null;
     } else {
-      precomputedIndexDataFile =
-          this.storage.get(this.mapper, genomeDescription,
-              this.additionalDescription);
+      precomputedIndexDataFile = this.storage.get(this.mapper,
+          genomeDescription, this.additionalDescription);
     }
 
     // If no index storage or if the index does not already exists compute it
@@ -96,8 +95,8 @@ public final class GenomeMapperIndexer {
           "Mapper index found, no need to recompute it (mapper index file: "
               + precomputedIndexDataFile + ")");
 
-      getLogger().info(
-          "Copy or create a symbolic link for the mapper index file "
+      getLogger()
+          .info("Copy or create a symbolic link for the mapper index file "
               + "(Created file or symbolic link: " + mapperIndexDataFile + ")");
 
       // Else download it
@@ -117,9 +116,8 @@ public final class GenomeMapperIndexer {
 
     File outputFile = mapperIndex.toFile();
     if (outputFile == null) {
-      outputFile =
-          EoulsanRuntime.getRuntime().createTempFile(
-              this.mapper.getMapperName() + "-index-archive-", ".zip");
+      outputFile = EoulsanRuntime.getRuntime().createTempFile(
+          this.mapper.getMapperName() + "-index-archive-", ".zip");
     }
 
     if (genome.toFile() != null) {
@@ -135,9 +133,8 @@ public final class GenomeMapperIndexer {
       new DataFile(outputFile.getAbsolutePath()).copyTo(mapperIndex);
 
       if (!outputFile.delete()) {
-        getLogger().severe(
-            "Unable to delete temporary "
-                + this.mapper.getMapperName() + " archive index.");
+        getLogger().severe("Unable to delete temporary "
+            + this.mapper.getMapperName() + " archive index.");
       }
 
     }
@@ -157,8 +154,8 @@ public final class GenomeMapperIndexer {
       return null;
     }
 
-    return SimpleGenomeIndexStorage.getInstance(new DataFile(
-        genomeIndexStoragePath));
+    return SimpleGenomeIndexStorage
+        .getInstance(new DataFile(genomeIndexStoragePath));
   }
 
   //
@@ -168,11 +165,11 @@ public final class GenomeMapperIndexer {
   /**
    * Public constructor.
    * @param mapper Mapper to use for the index generator
-   * @param additionnalArguments additional indexer arguments
+   * @param additionalArguments additional indexer arguments
    * @param additionalDescription additional indexer arguments description
    */
   public GenomeMapperIndexer(final SequenceReadsMapper mapper,
-      final String additionnalArguments,
+      final String additionalArguments,
       final Map<String, String> additionalDescription) {
 
     checkNotNull(mapper, "Mapper is null");
@@ -185,7 +182,7 @@ public final class GenomeMapperIndexer {
     this.storage = checkForGenomeIndexStore();
 
     // Set indexer additional arguments of the indexer
-    this.mapper.setIndexerArguments(additionnalArguments);
+    this.mapper.setIndexerArguments(additionalArguments);
 
     // Get the additional description
     this.additionalDescription = new LinkedHashMap<>(additionalDescription);

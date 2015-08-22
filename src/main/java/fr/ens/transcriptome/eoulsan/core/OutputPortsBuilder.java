@@ -49,7 +49,8 @@ public class OutputPortsBuilder {
    * @param name name of the port
    * @param format format of the port
    */
-  public OutputPortsBuilder addPort(final String name, final DataFormat format) {
+  public OutputPortsBuilder addPort(final String name,
+      final DataFormat format) {
 
     return addPort(new SimpleOutputPort(name, format));
   }
@@ -115,8 +116,8 @@ public class OutputPortsBuilder {
    */
   public static final OutputPorts singleOutputPort(final DataFormat format) {
 
-    return new OutputPortsBuilder().addPort(DEFAULT_SINGLE_OUTPUT_PORT_NAME,
-        format).create();
+    return new OutputPortsBuilder()
+        .addPort(DEFAULT_SINGLE_OUTPUT_PORT_NAME, format).create();
   }
 
   /**
@@ -155,8 +156,8 @@ public class OutputPortsBuilder {
   private OutputPortsBuilder addPort(final OutputPort port) {
 
     if (this.portNames.contains(port.getName())) {
-      throw new EoulsanRuntimeException("Two output ports had the same name: "
-          + port.getName());
+      throw new EoulsanRuntimeException(
+          "Two output ports had the same name: " + port.getName());
     }
 
     this.result.add(port);

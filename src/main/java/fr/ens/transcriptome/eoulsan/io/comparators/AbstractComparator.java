@@ -71,10 +71,11 @@ public abstract class AbstractComparator implements Comparator {
     }
 
     try (InputStream isA = new FileInputStream(fileA);
-        InputStream isB = new FileInputStream(fileB);) {
+        InputStream isB = new FileInputStream(fileB)) {
 
-      return compareFiles(getCompressionTypeByFilename(fileA.getAbsolutePath())
-          .createInputStream(isA),
+      return compareFiles(
+          getCompressionTypeByFilename(fileA.getAbsolutePath())
+              .createInputStream(isA),
           getCompressionTypeByFilename(fileB.getAbsolutePath())
               .createInputStream(isB));
     }
@@ -137,9 +138,8 @@ public abstract class AbstractComparator implements Comparator {
 
   @Override
   public void setCauseFailComparison(final String line) {
-    this.causeFailComparison =
-        (this.causeFailComparison == null)
-            ? "[" + line + "]" : this.causeFailComparison + "\n[" + line + "]";
+    this.causeFailComparison = (this.causeFailComparison == null)
+        ? "[" + line + "]" : this.causeFailComparison + "\n[" + line + "]";
 
   }
 }

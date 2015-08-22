@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.core;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.requirements.Requirement;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -75,26 +76,31 @@ public interface Step {
   OutputPorts getOutputPorts();
 
   /**
+   * Get the requirements of the step.
+   * @return a set with the requirements of the step
+   */
+  Set<Requirement> getRequirements();
+
+  /**
    * Set the parameters of the step to configure the step.
    * @param context configuration context. The context can be null for generator
    *          steps
    * @param stepParameters parameters of the step
    * @throws EoulsanException if a parameter is invalid
    */
-  void configure(StepConfigurationContext context, Set<Parameter> stepParameters)
-      throws EoulsanException;
+  void configure(StepConfigurationContext context,
+      Set<Parameter> stepParameters) throws EoulsanException;
 
   /**
    * Execute the step.
    * @param context Execution context
    * @param status of the step
-   * @throws EoulsanException if an error occurs while executing step
    */
   StepResult execute(StepContext context, StepStatus status);
 
   /**
    * Get the parallelization mode of the step.
-   * @return a ParalellizationMode enum
+   * @return a ParallelizationMode enum
    */
   ParallelizationMode getParallelizationMode();
 }

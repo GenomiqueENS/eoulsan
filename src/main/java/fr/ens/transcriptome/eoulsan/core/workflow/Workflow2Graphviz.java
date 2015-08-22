@@ -51,7 +51,8 @@ public class Workflow2Graphviz {
 
   private void addRow(final StringBuilder sb, final String s) {
 
-    sb.append("<tr><td bgcolor=\"white\" align=\"center\" colspan=\"2\"><font color=\"black\">");
+    sb.append(
+        "<tr><td bgcolor=\"white\" align=\"center\" colspan=\"2\"><font color=\"black\">");
     sb.append(s);
     sb.append("</font></td></tr>");
   }
@@ -82,11 +83,14 @@ public class Workflow2Graphviz {
 
       sb.append("  \"step");
       sb.append(step.getNumber());
-      sb.append("\" [ style = \"filled\" penwidth = 1 fillcolor = \"white\" fontname = \"Courier New\" shape = \"Mrecord\" label =");
+      sb.append(
+          "\" [ style = \"filled\" penwidth = 1 fillcolor = \"white\" fontname = \"Courier New\" shape = \"Mrecord\" label =");
 
-      sb.append("<<table border=\"0\" cellborder=\"0\" cellpadding=\"3\" bgcolor=\"white\">");
+      sb.append(
+          "<<table border=\"0\" cellborder=\"0\" cellpadding=\"3\" bgcolor=\"white\">");
 
-      sb.append("<tr><td bgcolor=\"black\" align=\"center\" colspan=\"2\"><font color=\"white\">");
+      sb.append(
+          "<tr><td bgcolor=\"black\" align=\"center\" colspan=\"2\"><font color=\"white\">");
       sb.append(step.getId());
       sb.append("</font></td></tr>");
 
@@ -136,7 +140,8 @@ public class Workflow2Graphviz {
           sb.append(stepNumber);
           sb.append(" -> step");
           sb.append(linkedStep.getNumber());
-          sb.append(" [ penwidth = 5 fontsize = 28 fontcolor = \"black\" label = \"");
+          sb.append(
+              " [ penwidth = 5 fontsize = 28 fontcolor = \"black\" label = \"");
 
           final DataFormat format = outputPort.getFormat();
 

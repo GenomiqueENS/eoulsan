@@ -65,7 +65,7 @@ public class HTSeqUtils {
       final InputStream gffIs, final String featureType,
       final StrandUsage stranded, final String attributeId,
       final boolean splitAttributeValues, final Map<String, Integer> counts)
-      throws IOException, EoulsanException, BadBioEntryException {
+          throws IOException, EoulsanException, BadBioEntryException {
 
     final Splitter splitter = Splitter.on(',').omitEmptyStrings().trimResults();
 
@@ -140,8 +140,8 @@ public class HTSeqUtils {
       // the read has to be mapped to the opposite strand as the feature
       if (stranded == REVERSE) {
         result.addAll(parseCigar(record.getCigar(), record.getReferenceName(),
-            record.getAlignmentStart(), record.getReadNegativeStrandFlag()
-                ? '+' : '-'));
+            record.getAlignmentStart(),
+            record.getReadNegativeStrandFlag() ? '+' : '-'));
       }
       // stranded == "yes" (so the read has to be mapped to the same strand as
       // the feature) or stranded == "no" (so the read is considered
@@ -149,8 +149,8 @@ public class HTSeqUtils {
       // same or the opposite strand as the feature)
       else {
         result.addAll(parseCigar(record.getCigar(), record.getReferenceName(),
-            record.getAlignmentStart(), record.getReadNegativeStrandFlag()
-                ? '-' : '+'));
+            record.getAlignmentStart(),
+            record.getReadNegativeStrandFlag() ? '-' : '+'));
       }
     }
 
@@ -160,8 +160,8 @@ public class HTSeqUtils {
       // the read has to be mapped to the opposite strand as the feature
       if (stranded == StrandUsage.REVERSE) {
         result.addAll(parseCigar(record.getCigar(), record.getReferenceName(),
-            record.getAlignmentStart(), record.getReadNegativeStrandFlag()
-                ? '-' : '+'));
+            record.getAlignmentStart(),
+            record.getReadNegativeStrandFlag() ? '-' : '+'));
       }
       // stranded == "yes" (so the read has to be mapped to the same strand as
       // the feature) or stranded == "no" (so the read is considered
@@ -169,8 +169,8 @@ public class HTSeqUtils {
       // same or the opposite strand as the feature)
       else {
         result.addAll(parseCigar(record.getCigar(), record.getReferenceName(),
-            record.getAlignmentStart(), record.getReadNegativeStrandFlag()
-                ? '+' : '-'));
+            record.getAlignmentStart(),
+            record.getReadNegativeStrandFlag() ? '+' : '-'));
       }
     } else {
       return null;
@@ -232,7 +232,7 @@ public class HTSeqUtils {
   public static Set<String> featuresOverlapped(
       final List<GenomicInterval> ivList, final GenomicArray<String> features,
       final OverlapMode mode, final StrandUsage stranded)
-      throws EoulsanException, IOException {
+          throws EoulsanException, IOException {
 
     Set<String> fs = null;
 
@@ -260,7 +260,8 @@ public class HTSeqUtils {
 
         // At least one interval is found
         if (intervals != null && intervals.size() > 0) {
-          for (Map.Entry<GenomicInterval, Set<String>> e : intervals.entrySet()) {
+          for (Map.Entry<GenomicInterval, Set<String>> e : intervals
+              .entrySet()) {
 
             if (e.getValue() != null) {
               fs.addAll(e.getValue());
@@ -300,7 +301,8 @@ public class HTSeqUtils {
 
         // At least one interval is found
         if (intervals.size() > 0) {
-          for (Map.Entry<GenomicInterval, Set<String>> i : intervals.entrySet()) {
+          for (Map.Entry<GenomicInterval, Set<String>> i : intervals
+              .entrySet()) {
 
             final Set<String> fs2 = i.getValue();
 

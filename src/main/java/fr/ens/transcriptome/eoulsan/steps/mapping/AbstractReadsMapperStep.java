@@ -291,8 +291,8 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
       default:
 
-        throw new EoulsanException("Unknown parameter for "
-            + getName() + " step: " + p.getName());
+        throw new EoulsanException(
+            "Unknown parameter for " + getName() + " step: " + p.getName());
       }
     }
 
@@ -334,12 +334,11 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
     }
 
     // Log Step parameters
-    getLogger().info(
-        "In "
-            + getName() + ", mapper=" + this.mapper.getMapperName()
-            + " (version: " + this.mapper.getMapperVersion() + ")");
-    getLogger().info(
-        "In " + getName() + ", mapperarguments=" + this.mapperArguments);
+    getLogger().info("In "
+        + getName() + ", mapper=" + this.mapper.getMapperName() + " (version: "
+        + this.mapper.getMapperVersion() + ")");
+    getLogger()
+        .info("In " + getName() + ", mapperarguments=" + this.mapperArguments);
 
   }
 
@@ -352,7 +351,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   private static URI getCheckedDockerURI(final Settings settings)
       throws EoulsanException {
 
-    final String dockerConnectionString = settings.getDockerURI();
+    final String dockerConnectionString = settings.getDockerConnection();
 
     if (dockerConnectionString == null) {
       throw new EoulsanException(
@@ -396,13 +395,11 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
           + "\" parameter " + "instead");
 
     case MAPPER_NAME_PARAMETER_NAME:
-
       if ("soap".equals(parameter.getLowerStringValue())) {
 
         throw new EoulsanException(
             "The SOAP mapper support has been removed from " + Globals.APP_NAME);
       }
-
       break;
 
     default:

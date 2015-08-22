@@ -225,7 +225,8 @@ public abstract class BasicTranslator implements Translator {
    * @return a array of links for the translated ids
    */
   @Override
-  public String[] getLinkInfo(final String[] translatedIds, final String field) {
+  public String[] getLinkInfo(final String[] translatedIds,
+      final String field) {
 
     if (translatedIds == null || field == null) {
       return null;

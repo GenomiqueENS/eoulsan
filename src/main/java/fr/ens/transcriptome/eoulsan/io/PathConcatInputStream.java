@@ -74,7 +74,8 @@ public class PathConcatInputStream extends AbstractConcatInputStream {
    * @param paths paths to concatenate in the InputStream.
    * @param conf Hadoop configuration
    */
-  public PathConcatInputStream(final List<Path> paths, final Configuration conf) {
+  public PathConcatInputStream(final List<Path> paths,
+      final Configuration conf) {
 
     checkNotNull(paths, "paths is null");
     checkNotNull(conf, "conf is null");

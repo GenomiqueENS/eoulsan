@@ -146,9 +146,8 @@ class SimpleDataFileMetadata implements DataFileMetadata {
         + "{contentLength=" + this.contentLength + ", contentType="
         + this.contentType + ", contentEncoding=" + this.contentEncoding
         + ", contentMD5=" + this.contentMD5 + ", lastModified="
-        + this.lastModified + ", dataFormat=" + this.dataFormat
-        + ", directory=" + this.directory + ", symbolicLink=" + symbolicLink
-        + "}";
+        + this.lastModified + ", dataFormat=" + this.dataFormat + ", directory="
+        + this.directory + ", symbolicLink=" + symbolicLink + "}";
   }
 
   //

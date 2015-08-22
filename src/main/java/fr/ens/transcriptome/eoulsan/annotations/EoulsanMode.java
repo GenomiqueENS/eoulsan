@@ -33,7 +33,7 @@ import java.lang.annotation.Annotation;
  */
 public enum EoulsanMode {
 
-  NONE, LOCAL_ONLY, HADOOP_COMPATIBLE, HADOOP_ONLY;
+  NONE, HADOOP_INTERNAL, LOCAL_ONLY, HADOOP_COMPATIBLE, HADOOP_ONLY;
 
   /**
    * Get the Eoulsan annotation class that corresponds to the Eoulsan mode.
@@ -48,6 +48,9 @@ public enum EoulsanMode {
 
     case HADOOP_COMPATIBLE:
       return HadoopCompatible.class;
+
+    case HADOOP_INTERNAL:
+      return HadoopInternal.class;
 
     case HADOOP_ONLY:
       return HadoopOnly.class;
@@ -69,6 +72,7 @@ public enum EoulsanMode {
 
     case LOCAL_ONLY:
     case HADOOP_COMPATIBLE:
+    case HADOOP_INTERNAL:
       return true;
 
     case HADOOP_ONLY:
@@ -87,6 +91,7 @@ public enum EoulsanMode {
     switch (this) {
 
     case HADOOP_COMPATIBLE:
+    case HADOOP_INTERNAL:
     case HADOOP_ONLY:
       return true;
 
@@ -123,6 +128,7 @@ public enum EoulsanMode {
       return hadoopMode == false;
 
     case HADOOP_COMPATIBLE:
+    case HADOOP_INTERNAL:
       return true;
 
     case HADOOP_ONLY:

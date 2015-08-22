@@ -97,7 +97,7 @@ public class CommandWorkflowModel implements Serializable {
   private final Map<String, String> stepVersions = new HashMap<>();
   private final Map<String, Map<String, StepPort>> stepInputs = new HashMap<>();
   private final Map<String, Set<Parameter>> stepParameters = new HashMap<>();
-  private final Map<String, Boolean> stepSkiped = new HashMap<>();
+  private final Map<String, Boolean> stepSkipped = new HashMap<>();
   private final Map<String, Boolean> stepDiscardOutput = new HashMap<>();
   private final Set<Parameter> globalParameters = new HashSet<>();
 
@@ -210,10 +210,10 @@ public class CommandWorkflowModel implements Serializable {
    * @param discardOutput true if the output of the step can be removed
    * @throws EoulsanException if an error occurs while adding the step
    */
-  void addStep(final String stepId, final String stepName,
-      final String version, final Map<String, StepOutputPort> inputs,
-      final Set<Parameter> parameters, final boolean skipStep,
-      final boolean discardOutput) throws EoulsanException {
+  void addStep(final String stepId, final String stepName, final String version,
+      final Map<String, StepOutputPort> inputs, final Set<Parameter> parameters,
+      final boolean skipStep, final boolean discardOutput)
+          throws EoulsanException {
 
     if (stepName == null) {
       throw new EoulsanException("The name of the step is null.");
@@ -297,7 +297,7 @@ public class CommandWorkflowModel implements Serializable {
     this.stepVersions.put(stepIdLower, stepVersion);
     this.stepInputs.put(stepIdLower, inputsMap);
     this.stepParameters.put(stepIdLower, parameters);
-    this.stepSkiped.put(stepIdLower, skipStep);
+    this.stepSkipped.put(stepIdLower, skipStep);
     this.stepDiscardOutput.put(stepIdLower, discardOutput);
   }
 
@@ -369,7 +369,7 @@ public class CommandWorkflowModel implements Serializable {
    */
   public boolean isStepSkipped(final String stepId) {
 
-    return this.stepSkiped.get(stepId);
+    return this.stepSkipped.get(stepId);
   }
 
   /**
@@ -420,8 +420,7 @@ public class CommandWorkflowModel implements Serializable {
       doc.appendChild(rootElement);
 
       // Header
-      addElement(doc, rootElement,
-          CommandWorkflowParser.FORMATVERSION_TAG_NAME,
+      addElement(doc, rootElement, CommandWorkflowParser.FORMATVERSION_TAG_NAME,
           CommandWorkflowParser.FORMAT_VERSION);
       addElement(doc, rootElement, WORKFLOWNAME_TAG_NAME, getName());
       addElement(doc, rootElement, DESCRIPTION_TAG_NAME, getDescription());
@@ -444,8 +443,8 @@ public class CommandWorkflowModel implements Serializable {
       TransformerFactory transformerFactory = TransformerFactory.newInstance();
       Transformer transformer = transformerFactory.newTransformer();
       transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-      transformer.setOutputProperty(
-          "{http://xml.apache.org/xslt}indent-amount", "2");
+      transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount",
+          "2");
       DOMSource source = new DOMSource(doc);
       StringWriter writer = new StringWriter();
       StreamResult result = new StreamResult(writer);
@@ -487,9 +486,8 @@ public class CommandWorkflowModel implements Serializable {
    * @param elementName name of the parameters element
    * @param parameters the parameters to set
    */
-  private void addParametersElement(final Document document,
-      final Element root, final String elementName,
-      final Set<Parameter> parameters) {
+  private void addParametersElement(final Document document, final Element root,
+      final String elementName, final Set<Parameter> parameters) {
 
     if (document == null
         || root == null || parameters == null || elementName == null
@@ -543,7 +541,7 @@ public class CommandWorkflowModel implements Serializable {
 
     // Set skip attribute
     Attr skipAttr = document.createAttribute(SKIP_ATTR_NAME_STEP_TAG);
-    skipAttr.setValue("" + this.stepSkiped.get(stepId));
+    skipAttr.setValue("" + this.stepSkipped.get(stepId));
     stepElement.setAttributeNode(skipAttr);
 
     // Set step name
@@ -557,13 +555,15 @@ public class CommandWorkflowModel implements Serializable {
     // Set step inputs
     Element inputsElement = document.createElement(INPUTS_TAG_NAMES);
     stepElement.appendChild(inputsElement);
-    for (Map.Entry<String, StepPort> e : this.stepInputs.get(stepId).entrySet()) {
+    for (Map.Entry<String, StepPort> e : this.stepInputs.get(stepId)
+        .entrySet()) {
 
       Element inputElement = document.createElement(INPUT_TAG_NAME);
       inputsElement.appendChild(inputElement);
 
       addElement(document, inputElement, PORT_TAG_NAME, e.getKey());
-      addElement(document, inputElement, FROMSTEP_TAG_NAME, e.getValue().stepId);
+      addElement(document, inputElement, FROMSTEP_TAG_NAME,
+          e.getValue().stepId);
       addElement(document, inputElement, FROMPORT_TAG_NAME,
           e.getValue().portName);
     }

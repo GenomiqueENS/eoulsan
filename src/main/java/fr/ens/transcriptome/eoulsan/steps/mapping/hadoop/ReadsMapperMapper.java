@@ -75,32 +75,32 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
   private static final String HADOOP_TEMP_DIR = "mapreduce.cluster.temp.dir";
 
   // Parameter keys
-  static final String MAPPER_NAME_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.name";
-  static final String MAPPER_VERSION_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.version";
-  static final String MAPPER_FLAVOR_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.flavor";
-  static final String PAIR_END_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.pairend";
-  static final String MAPPER_ARGS_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.args";
-  static final String MAPPER_THREADS_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.nb.threads";
-  static final String FASTQ_FORMAT_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.fastq.format";
-  static final String INDEX_CHECKSUM_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.index.checksum";
-  static final String ZOOKEEPER_CONNECT_STRING_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.zookeeper.connect.string";
-  static final String ZOOKEEPER_SESSION_TIMEOUT_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.zookeeper.session.timeout";
+  static final String MAPPER_NAME_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.name";
+  static final String MAPPER_VERSION_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.version";
+  static final String MAPPER_FLAVOR_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.flavor";
+  static final String PAIR_END_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.pairend";
+  static final String MAPPER_ARGS_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.args";
+  static final String MAPPER_THREADS_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.nb.threads";
+  static final String FASTQ_FORMAT_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.fastq.format";
+  static final String INDEX_CHECKSUM_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.index.checksum";
+  static final String ZOOKEEPER_CONNECT_STRING_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.zookeeper.connect.string";
+  static final String ZOOKEEPER_SESSION_TIMEOUT_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.zookeeper.session.timeout";
 
   private static final Splitter TAB_SPLITTER = Splitter.on('\t').trimResults();
-  private static final String MAPPER_INDEX_DIR_PREFIX = Globals.APP_NAME
-      + "-mapper-index-";
-  private static final String MAPPER_LAST_USED_FILENAME = Globals.APP_NAME
-      .toUpperCase() + "_LAST_USED";
+  private static final String MAPPER_INDEX_DIR_PREFIX =
+      Globals.APP_NAME + "-mapper-index-";
+  private static final String MAPPER_LAST_USED_FILENAME =
+      Globals.APP_NAME.toUpperCase() + "_LAST_USED";
   private static final long DEFAULT_AGE_OF_UNUSED_MAPPER_INDEXES = 7;
   private static final String LOCK_SUFFIX = ".lock";
 
@@ -197,8 +197,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
     final boolean pairedEnd = Boolean.parseBoolean(conf.get(PAIR_END_KEY));
     final FastqFormat fastqFormat =
-        FastqFormat.getFormatFromName(conf.get(FASTQ_FORMAT_KEY, ""
-            + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
+        FastqFormat.getFormatFromName(conf.get(FASTQ_FORMAT_KEY,
+            "" + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
 
     // DistributedCache.purgeCache(conf);
 
@@ -218,9 +218,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     final DataFile archiveIndexFile =
         new DataFile(localCacheFiles[0].toString());
 
-    getLogger().info(
-        "Genome index compressed file (from distributed cache): "
-            + archiveIndexFile);
+    getLogger().info("Genome index compressed file (from distributed cache): "
+        + archiveIndexFile);
 
     // Set index directory
     this.mapperIndexDir =
@@ -228,19 +227,18 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
             + "/" + MAPPER_INDEX_DIR_PREFIX + this.mapper.getMapperName()
             + "-index-" + conf.get(INDEX_CHECKSUM_KEY));
 
-    getLogger().info(
-        "Genome index directory where decompressed: " + mapperIndexDir);
+    getLogger()
+        .info("Genome index directory where decompressed: " + mapperIndexDir);
 
     // Set FASTQ format
     this.mapper.setFastqFormat(fastqFormat);
 
     getLogger().info("Fastq format: " + fastqFormat);
 
-    this.lock =
-        new ZooKeeperLocker(conf.get(ZOOKEEPER_CONNECT_STRING_KEY),
-            Integer.parseInt(conf.get(ZOOKEEPER_SESSION_TIMEOUT_KEY)),
-            "/eoulsan-locks-" + InetAddress.getLocalHost().getHostName(),
-            "mapper-lock-");
+    this.lock = new ZooKeeperLocker(conf.get(ZOOKEEPER_CONNECT_STRING_KEY),
+        Integer.parseInt(conf.get(ZOOKEEPER_SESSION_TIMEOUT_KEY)),
+        "/eoulsan-locks-" + InetAddress.getLocalHost().getHostName(),
+        "mapper-lock-");
 
     // Get Mapper arguments
     final String mapperArguments = unDoubleQuotes(conf.get(MAPPER_ARGS_KEY));
@@ -249,9 +247,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     }
 
     // Get the number of threads to use
-    int mapperThreads =
-        Integer.parseInt(conf.get(MAPPER_THREADS_KEY, ""
-            + Runtime.getRuntime().availableProcessors()));
+    int mapperThreads = Integer.parseInt(conf.get(MAPPER_THREADS_KEY,
+        "" + Runtime.getRuntime().availableProcessors()));
 
     if (mapperThreads > Runtime.getRuntime().availableProcessors()
         || mapperThreads < 1) {
@@ -270,8 +267,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     // Create temporary directory if not exists
     final File tempDir = new File(conf.get(HADOOP_TEMP_DIR));
     if (!tempDir.exists()) {
-      getLogger().fine(
-          "Create temporary directory: " + tempDir.getAbsolutePath());
+      getLogger()
+          .fine("Create temporary directory: " + tempDir.getAbsolutePath());
       if (!tempDir.mkdirs()) {
         throw new IOException(
             "Unable to create local Hadoop temporary directory: " + tempDir);
@@ -321,8 +318,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
   }
 
   @Override
-  protected void cleanup(final Context context) throws IOException,
-      InterruptedException {
+  protected void cleanup(final Context context)
+      throws IOException, InterruptedException {
 
     getLogger().info("Start of cleanup() of the mapper.");
 
@@ -373,7 +370,6 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
             + this.mapper.getMapperName());
 
     context.setStatus("Run " + this.mapper.getMapperName());
-
   }
 
   /**
@@ -467,6 +463,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     if (this.exception.exception != null) {
       throw this.exception.exception;
     }
+
   }
 
   //
@@ -479,9 +476,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
    */
   private void updateLastUsedMapperIndex(final File mapperIndexDir) {
 
-    final File lockFile =
-        new File(mapperIndexDir.getParentFile(), mapperIndexDir.getName()
-            + LOCK_SUFFIX);
+    final File lockFile = new File(mapperIndexDir.getParentFile(),
+        mapperIndexDir.getName() + LOCK_SUFFIX);
 
     try (FileOutputStream out = new FileOutputStream(lockFile)) {
 
@@ -557,9 +553,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
   private void removeUnusedMapperIndex(final File mapperIndexDir,
       final Configuration conf) {
 
-    final File lockFile =
-        new File(mapperIndexDir.getParentFile(), mapperIndexDir.getName()
-            + LOCK_SUFFIX);
+    final File lockFile = new File(mapperIndexDir.getParentFile(),
+        mapperIndexDir.getName() + LOCK_SUFFIX);
 
     try (FileOutputStream out = new FileOutputStream(lockFile)) {
 
@@ -569,8 +564,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
       // Second check with lock on the mapper index directory
       if (isMapperIndexMustBeRemoved(mapperIndexDir)) {
 
-        getLogger().info(
-            "Remove  unused mapper index directory: " + mapperIndexDir);
+        getLogger()
+            .info("Remove  unused mapper index directory: " + mapperIndexDir);
 
         // Remove the mapper index
         // TODO use Datafile.delete(true)
@@ -582,9 +577,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
       // Unlock the mapper directory
       lock.release();
     } catch (IOException e) {
-      getLogger().warning(
-          "Cannot remove unused mapper index directory ("
-              + mapperIndexDir + "): " + e.getMessage());
+      getLogger().warning("Cannot remove unused mapper index directory ("
+          + mapperIndexDir + "): " + e.getMessage());
     }
   }
 

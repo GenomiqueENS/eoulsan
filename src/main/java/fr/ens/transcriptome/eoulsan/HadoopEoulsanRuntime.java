@@ -36,7 +36,7 @@ import org.apache.hadoop.fs.Path;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 
 /**
- * This classe define the Runtime to execute low level IO operation for Eoulsan
+ * This class define the Runtime to execute low level IO operation for Eoulsan
  * in Hadoop mode.
  * @since 1.0
  * @author Laurent Jourdren
@@ -77,13 +77,20 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
   }
 
   @Override
+  public boolean isClusterTaskMode() {
+
+    return false;
+  }
+
+  @Override
   public File getTempDirectory() {
 
     return new File(System.getProperty("java.io.tmpdir"));
   }
 
   @Override
-  public InputStream getInputStream(final String dataSource) throws IOException {
+  public InputStream getInputStream(final String dataSource)
+      throws IOException {
 
     if (dataSource == null) {
       throw new IllegalArgumentException("The datasource is null.");
@@ -180,7 +187,8 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
    * @param settings Settings of the application
    * @param conf Hadoop configuration object
    */
-  private HadoopEoulsanRuntime(final Settings settings, final Configuration conf) {
+  private HadoopEoulsanRuntime(final Settings settings,
+      final Configuration conf) {
 
     super(settings);
 

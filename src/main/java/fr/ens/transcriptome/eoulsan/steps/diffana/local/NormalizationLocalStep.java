@@ -79,12 +79,14 @@ public class NormalizationLocalStep extends AbstractStep {
 
   @Override
   public InputPorts getInputPorts() {
-    return new InputPortsBuilder().addPort(DEFAULT_SINGLE_INPUT_PORT_NAME,
-        true, EXPRESSION_RESULTS_TSV).create();
+    return new InputPortsBuilder()
+        .addPort(DEFAULT_SINGLE_INPUT_PORT_NAME, true, EXPRESSION_RESULTS_TSV)
+        .create();
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     try {
 
@@ -97,10 +99,9 @@ public class NormalizationLocalStep extends AbstractStep {
       }
 
       final Design design = context.getWorkflow().getDesign();
-      final Normalization norm =
-          new Normalization(design, new File("."), eDF.getPrefix(),
-              eDF.getDefaultExtension(), new File("."), rServeName,
-              rServeEnable);
+      final Normalization norm = new Normalization(design, new File("."),
+          eDF.getPrefix(), eDF.getDefaultExtension(), new File("."), rServeName,
+          rServeEnable);
 
       norm.run(context, context.getInputData(eDF));
 

@@ -63,8 +63,8 @@ import htsjdk.samtools.SAMRecord;
  */
 public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
-  static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
-      + ".samfilter.genome.desc.file";
+  static final String GENOME_DESC_PATH_KEY =
+      Globals.PARAMETER_PREFIX + ".samfilter.genome.desc.file";
   static final String MAP_FILTER_PARAMETER_KEY_PREFIX =
       Globals.PARAMETER_PREFIX + ".filter.alignments.parameter.";
 
@@ -77,8 +77,8 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
   private final List<SAMRecord> records = new ArrayList<>();
 
   @Override
-  protected void setup(final Context context) throws IOException,
-      InterruptedException {
+  protected void setup(final Context context)
+      throws IOException, InterruptedException {
 
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
@@ -103,21 +103,20 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
           new MultiReadAlignmentsFilterBuilder();
 
       // Add the parameters from the job configuration to the builder
-      mrafb.addParameters(jobConfToParameters(conf,
-          MAP_FILTER_PARAMETER_KEY_PREFIX));
+      mrafb.addParameters(
+          jobConfToParameters(conf, MAP_FILTER_PARAMETER_KEY_PREFIX));
 
-      this.filter =
-          mrafb.getAlignmentsFilter(new HadoopReporterIncrementer(context),
-              this.counterGroup);
-      getLogger().info(
-          "Read alignments filters to apply: "
-              + Joiner.on(", ").join(this.filter.getFilterNames()));
+      this.filter = mrafb.getAlignmentsFilter(
+          new HadoopReporterIncrementer(context), this.counterGroup);
+      getLogger().info("Read alignments filters to apply: "
+          + Joiner.on(", ").join(this.filter.getFilterNames()));
 
     } catch (EoulsanException e) {
       throw new IOException(e);
     }
 
     // Write SAM header
+
     final List<String> samHeader = loadSAMHeaders(context);
     this.outKey.set("");
     for (String line : samHeader) {
@@ -157,9 +156,10 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
     }
 
     this.records.addAll(rafb.getFilteredAlignments());
-    context.getCounter(this.counterGroup,
-        ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName()).increment(
-        cptRecords - this.records.size());
+    context
+        .getCounter(this.counterGroup,
+            ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName())
+        .increment(cptRecords - this.records.size());
 
     // sort alignments of the current read
     Collections.sort(this.records, new SAMComparator());

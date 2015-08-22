@@ -32,8 +32,8 @@ import java.util.Set;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class SimpleOutputPorts extends AbstractPorts<OutputPort> implements
-    OutputPorts, Serializable {
+public class SimpleOutputPorts extends AbstractPorts<OutputPort>
+    implements OutputPorts, Serializable {
 
   private static final long serialVersionUID = -1607044916452828888L;
 

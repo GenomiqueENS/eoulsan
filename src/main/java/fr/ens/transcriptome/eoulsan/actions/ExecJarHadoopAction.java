@@ -25,7 +25,6 @@
 package fr.ens.transcriptome.eoulsan.actions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static fr.ens.transcriptome.eoulsan.EoulsanRuntime.getSettings;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -49,7 +48,6 @@ import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
-import fr.ens.transcriptome.eoulsan.HadoopLogConfigurator;
 import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.core.Executor;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
@@ -79,7 +77,7 @@ public class ExecJarHadoopAction extends AbstractAction {
       final Path tmpDir = new Path(jobPath, "tmp");
 
       // Set log pathname
-      setjobPathname(jobPath.toString());
+      setJobPathname(jobPath.toString());
 
       // Set output pathname
       setOutputPathname(outputPath.toString());
@@ -138,9 +136,8 @@ public class ExecJarHadoopAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line =
-          parser.parse(options,
-              arguments.toArray(new String[arguments.size()]), true);
+      final CommandLine line = parser.parse(options,
+          arguments.toArray(new String[arguments.size()]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -330,21 +327,14 @@ public class ExecJarHadoopAction extends AbstractAction {
       }
 
       // Create ExecutionArgument object
-      final ExecutorArguments arguments =
-          new HadoopExecutorArguments(millisSinceEpoch, paramPath, designPath,
-              destPath);
+      final ExecutorArguments arguments = new HadoopExecutorArguments(
+          millisSinceEpoch, paramPath, designPath, destPath);
       arguments.setJobDescription(desc);
       arguments.setJobEnvironment(env);
 
-      // Configure Hadoop log file
-      final File hadoopLogDir =
-          new File(URI.create(arguments.getJobPathname()));
-      HadoopLogConfigurator.configureLog4J(getSettings().getHadoopLogLevel(),
-          new File(hadoopLogDir, "hadoop.log"));
-
-      // Create the log File
-      Main.getInstance().createLogFileAndFlushLog(
-          arguments.getJobPathname() + File.separator + "eoulsan.log");
+      // Create the log Files
+      Main.getInstance().createLogFiles(arguments.logPath(Globals.LOG_FILENAME),
+          arguments.logPath(Globals.OTHER_LOG_FILENAME));
 
       // Create executor
       final Executor e = new Executor(arguments);

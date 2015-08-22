@@ -113,12 +113,12 @@ public class TrimReadFilter extends AbstractReadFilter {
       }
 
       if (this.lengthThreshold < 1) {
-        throw new EoulsanException("Invalid length threshold: "
-            + this.lengthThreshold);
+        throw new EoulsanException(
+            "Invalid length threshold: " + this.lengthThreshold);
       }
     } else {
-      throw new EoulsanException("Unknown parameter for "
-          + getName() + " read filter: " + key);
+      throw new EoulsanException(
+          "Unknown parameter for " + getName() + " read filter: " + key);
     }
 
   }
@@ -127,8 +127,8 @@ public class TrimReadFilter extends AbstractReadFilter {
   public void init() {
 
     if (this.lengthThreshold < 1) {
-      throw new IllegalArgumentException("Length threshold is not set for "
-          + getName() + " read filter.");
+      throw new IllegalArgumentException(
+          "Length threshold is not set for " + getName() + " read filter.");
     }
   }
 

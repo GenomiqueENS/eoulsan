@@ -65,7 +65,7 @@ public class BloomFilterUtils implements Serializable {
   /**
    * Build a serialization file with the instance of bloomFilterUtils
    * @param fileSer filename to serialization
-   * @param bloomFilter bloomfilter to serialization
+   * @param bloomFilter bloomFilter to serialization
    * @throws IOException if an error occurs during serialization
    */
   public static void serializationBloomFilter(final File fileSer,
@@ -127,15 +127,11 @@ public class BloomFilterUtils implements Serializable {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder();
 
-    sb.append("Bloom filter features");
-    sb.append("\n\tfalse positive probability "
-        + getFalsePositiveProbability() + "%");
-    sb.append("\n\tnumber elements expected " + getExpectedNumberOfElements());
-    sb.append("\n\tnumber elements added " + getAddedNumberOfElements());
-
-    return sb.toString();
+    return "Bloom filter features"
+        + "\n\tfalse positive probability " + getFalsePositiveProbability()
+        + "%" + "\n\tnumber elements expected " + getExpectedNumberOfElements()
+        + "\n\tnumber elements added " + getAddedNumberOfElements();
   }
 
   //

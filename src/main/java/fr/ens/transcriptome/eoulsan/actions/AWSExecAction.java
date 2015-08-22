@@ -64,10 +64,9 @@ public class AWSExecAction extends AbstractAction {
   @Override
   public void action(final List<String> arguments) {
 
-    getLogger().severe(
-        "The \""
-            + getName() + "\" action has been renamed to \""
-            + EMRExecAction.ACTION_NAME + "\".");
+    getLogger().severe("The \""
+        + getName() + "\" action has been renamed to \""
+        + EMRExecAction.ACTION_NAME + "\".");
 
     System.err.println("The \""
         + getName() + "\" action has been renamed to \""

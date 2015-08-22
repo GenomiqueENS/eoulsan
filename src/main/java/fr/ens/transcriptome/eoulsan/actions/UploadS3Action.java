@@ -93,9 +93,8 @@ public class UploadS3Action extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line =
-          parser.parse(options,
-              arguments.toArray(new String[arguments.size()]), true);
+      final CommandLine line = parser.parse(options,
+          arguments.toArray(new String[arguments.size()]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -113,9 +112,8 @@ public class UploadS3Action extends AbstractAction {
 
     final File paramFile = new File(arguments.get(argsOptions));
     final File designFile = new File(arguments.get(argsOptions + 1));
-    final DataFile s3Path =
-        new DataFile(StringUtils.replacePrefix(arguments.get(argsOptions + 2),
-            "s3:/", "s3n:/"));
+    final DataFile s3Path = new DataFile(StringUtils
+        .replacePrefix(arguments.get(argsOptions + 2), "s3:/", "s3n:/"));
     final String jobDescription = "Upload data to " + s3Path;
 
     // Upload data
@@ -194,9 +192,10 @@ public class UploadS3Action extends AbstractAction {
           new ExecutorArguments(workflowFile, designFile);
       arguments.setJobDescription(jobDescription);
 
-      // Create the log File
-      Main.getInstance().createLogFileAndFlushLog(
-          arguments.getJobPathname() + File.separator + "eoulsan.log");
+      // Create the log Files
+      final String logDirname = arguments.getJobPathname() + File.separator;
+      Main.getInstance().createLogFiles(logDirname + Globals.LOG_FILENAME,
+          logDirname + Globals.OTHER_LOG_FILENAME);
 
       // Create the executor
       final Executor e = new Executor(arguments);

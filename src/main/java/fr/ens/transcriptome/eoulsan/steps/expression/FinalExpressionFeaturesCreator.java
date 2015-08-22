@@ -54,15 +54,15 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
 public class FinalExpressionFeaturesCreator {
 
   /* Default Charset. */
-  private static final Charset CHARSET = Charset
-      .forName(Globals.DEFAULT_FILE_ENCODING);
+  private static final Charset CHARSET =
+      Charset.forName(Globals.DEFAULT_FILE_ENCODING);
 
   private GenomicArray<String> ga = new GenomicArray<>();
   private final Map<String, ExpressionFeature> expressionResults =
       new HashMap<>();
 
-  private static final class ExpressionFeature implements
-      Comparable<ExpressionFeature> {
+  private static final class ExpressionFeature
+      implements Comparable<ExpressionFeature> {
 
     private final String id;
     private int alignmentCount = 0;

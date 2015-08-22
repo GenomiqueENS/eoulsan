@@ -129,12 +129,12 @@ public final class DataUtils {
    * @param data the data object
    * @param sample the sample
    */
-  public static final void setDataMetaData(final Data data, final Sample sample) {
+  public static final void setDataMetaData(final Data data,
+      final Sample sample) {
 
     checkNotNull(data, "data argument cannot be null");
     checkNotNull(sample, "sample argument cannot be null");
-    checkArgument(
-        data.getName().equals(toValidName(sample.getName())),
+    checkArgument(data.getName().equals(toValidName(sample.getName())),
         "The sample name ("
             + sample.getName() + ") does not match with data name ("
             + data.getName() + ")");
@@ -199,7 +199,6 @@ public final class DataUtils {
    * object.
    * @param data the data object
    * @param dataSourceOfMetadata data source of metadata
-   * @param sample the sample
    */
   public static void setDataMetadata(final Data data,
       final Collection<Data> dataSourceOfMetadata) {
@@ -218,7 +217,6 @@ public final class DataUtils {
    * object.
    * @param data the data object
    * @param dataSourceOfMetadata data source of metadata
-   * @param sample the sample
    */
   public static void setDataMetadata(final Data data,
       final Data dataSourceOfMetadata) {

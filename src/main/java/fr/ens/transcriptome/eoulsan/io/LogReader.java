@@ -45,8 +45,8 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
 public class LogReader {
 
   /* Default Charset. */
-  private static final Charset CHARSET = Charset
-      .forName(Globals.DEFAULT_FILE_ENCODING);
+  private static final Charset CHARSET =
+      Charset.forName(Globals.DEFAULT_FILE_ENCODING);
 
   private final BufferedReader reader;
 
@@ -131,8 +131,8 @@ public class LogReader {
     }
 
     if (!file.isFile()) {
-      throw new FileNotFoundException("File not found: "
-          + file.getAbsolutePath());
+      throw new FileNotFoundException(
+          "File not found: " + file.getAbsolutePath());
     }
 
     this.reader = FileUtils.createBufferedReader(file);

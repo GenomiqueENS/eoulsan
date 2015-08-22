@@ -37,8 +37,8 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  * @since 1.2
  * @author Claire Wallon
  */
-public class KeepNumberMatchReadAlignmentsFilter extends
-    AbstractReadAlignmentsFilter {
+public class KeepNumberMatchReadAlignmentsFilter
+    extends AbstractReadAlignmentsFilter {
 
   public static final String FILTER_NAME = "keepnumbermatch";
   private int numberMatch = -1;
@@ -70,12 +70,12 @@ public class KeepNumberMatchReadAlignmentsFilter extends
       }
 
       if (this.numberMatch < 0) {
-        throw new EoulsanException("Invalid number of match to keep: "
-            + this.numberMatch);
+        throw new EoulsanException(
+            "Invalid number of match to keep: " + this.numberMatch);
       }
     } else {
-      throw new EoulsanException("Unknown parameter for "
-          + getName() + " alignments filter: " + key);
+      throw new EoulsanException(
+          "Unknown parameter for " + getName() + " alignments filter: " + key);
     }
   }
 

@@ -76,20 +76,18 @@ public class BAMMerger implements Merger {
       // Get input file
       final DataFile inFile = inFileIterator.next();
 
-      EoulsanLogger.getLogger().info(
-          "Merge " + inFile.getName() + " to " + outFile.getName());
+      EoulsanLogger.getLogger()
+          .info("Merge " + inFile.getName() + " to " + outFile.getName());
 
       // Get reader
-      final SamReader inputSam =
-          SamReaderFactory.makeDefault().open(
-              SamInputResource.of(inFile.open()));
+      final SamReader inputSam = SamReaderFactory.makeDefault()
+          .open(SamInputResource.of(inFile.open()));
 
       // Get Writer
       if (outputSam == null) {
 
-        outputSam =
-            new SAMFileWriterFactory().makeBAMWriter(inputSam.getFileHeader(),
-                false, outFile.create());
+        outputSam = new SAMFileWriterFactory()
+            .makeBAMWriter(inputSam.getFileHeader(), false, outFile.create());
       }
 
       // Write all the entries of the input file to the output file

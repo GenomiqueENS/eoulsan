@@ -10,7 +10,7 @@
  *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
  *
  * Copyright for this code is held jointly by the Genomic platform
- * of the Institut de Biologie de l'√âcole Normale Sup√©rieure and
+ * of the Institut de Biologie de l'École Normale Supérieure and
  * the individual authors. These should be listed in @author doc
  * comments.
  *
@@ -24,10 +24,13 @@
 
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
+import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflow.EMPTY_PARAMETERS;
+
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
+import fr.ens.transcriptome.eoulsan.core.Step;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 
 /**
@@ -77,7 +80,7 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
    * @param workflow workflow of the step
    * @param id identifier of the step
    * @param stepName Step name
-   * @param stepVrsion step version
+   * @param stepVersion step version
    * @param skip true to skip execution of the step
    * @param parameters parameters of the step
    * @throws EoulsanException id an error occurs while creating the step
@@ -91,4 +94,29 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
         parameters);
   }
 
+  /**
+   * Create a step for a standard step from an existing step object.
+   * @param workflow workflow of the step
+   * @param step step object
+   * @throws EoulsanException id an error occurs while creating the step
+   */
+  public CommandWorkflowStep(final AbstractWorkflow workflow, final Step step)
+      throws EoulsanException {
+
+    this(workflow, step, EMPTY_PARAMETERS);
+  }
+
+  /**
+   * Create a step for a standard step from an existing step object.
+   * @param workflow workflow of the step
+   * @param step step object
+   * @param parameters parameters of the step
+   * @throws EoulsanException id an error occurs while creating the step
+   */
+  public CommandWorkflowStep(final AbstractWorkflow workflow, final Step step,
+      final Set<Parameter> parameters) throws EoulsanException {
+
+    this(workflow, step.getName(), step.getName(), step.getVersion().toString(),
+        parameters, false, false);
+  }
 }

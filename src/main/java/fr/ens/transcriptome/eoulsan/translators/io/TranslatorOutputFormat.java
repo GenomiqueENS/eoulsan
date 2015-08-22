@@ -38,40 +38,40 @@ public interface TranslatorOutputFormat {
    * @param fieldName name of the field
    * @throws IOException if an error occurs
    */
-  public void addHeaderField(String fieldName) throws IOException;
+  void addHeaderField(String fieldName) throws IOException;
 
   /**
    * Add a mew line.
    * @throws IOException if an error occurs
    */
-  public void newLine() throws IOException;
+  void newLine() throws IOException;
 
   /**
    * Add an empty value.
    * @throws IOException if an error occurs
    */
-  public void writeEmpty() throws IOException;
+  void writeEmpty() throws IOException;
 
   /**
    * Add a long value.
    * @param l long value
    * @throws IOException if an error occurs
    */
-  public void writeLong(long l) throws IOException;
+  void writeLong(long l) throws IOException;
 
   /**
    * Add a double value.
    * @param d double value
    * @throws IOException if an error occurs
    */
-  public void writeDouble(double d) throws IOException;
+  void writeDouble(double d) throws IOException;
 
   /**
    * Add a text value.
    * @param text text value
    * @throws IOException if an error occurs
    */
-  public void writeText(String text) throws IOException;
+  void writeText(String text) throws IOException;
 
   /**
    * Add a link value.
@@ -79,11 +79,11 @@ public interface TranslatorOutputFormat {
    * @param link link value
    * @throws IOException if an error occurs
    */
-  public void writeLink(String text, String link) throws IOException;
+  void writeLink(String text, String link) throws IOException;
 
   /**
    * Close the output format.
    * @throws IOException if an error occurs
    */
-  public void close() throws IOException;
+  void close() throws IOException;
 }

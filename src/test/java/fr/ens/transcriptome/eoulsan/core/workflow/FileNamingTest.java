@@ -58,23 +58,19 @@ public class FileNamingTest {
 
     assertEquals("filterreads",
         FileNaming.parse("filterreads_output_reads_s1_file0.fq").getStepId());
-    assertEquals("filterreads",
-        FileNaming.parse("filterreads_output_reads_s1_file0_part1.fq")
-            .getStepId());
+    assertEquals("filterreads", FileNaming
+        .parse("filterreads_output_reads_s1_file0_part1.fq").getStepId());
     assertEquals("genericindexgenerator",
         FileNaming.parse("genericindexgenerator_output_bowtieindex_genome.zip")
             .getStepId());
 
-    assertEquals("filterreads",
-        FileNaming.parse("filterreads_output_reads_s1_file0.fq.bz2")
-            .getStepId());
-    assertEquals("filterreads",
-        FileNaming.parse("filterreads_output_reads_s1_file0_part1.fq.bz2")
-            .getStepId());
-    assertEquals(
-        "genericindexgenerator",
-        FileNaming.parse(
-            "genericindexgenerator_output_bowtieindex_genome.zip.bz2")
+    assertEquals("filterreads", FileNaming
+        .parse("filterreads_output_reads_s1_file0.fq.bz2").getStepId());
+    assertEquals("filterreads", FileNaming
+        .parse("filterreads_output_reads_s1_file0_part1.fq.bz2").getStepId());
+    assertEquals("genericindexgenerator",
+        FileNaming
+            .parse("genericindexgenerator_output_bowtieindex_genome.zip.bz2")
             .getStepId());
   }
 
@@ -83,49 +79,40 @@ public class FileNamingTest {
 
     assertEquals("output",
         FileNaming.parse("filterreads_output_reads_s1_file0.fq").getPortName());
-    assertEquals("output",
-        FileNaming.parse("filterreads_output_reads_s2_file0_part1.fq")
-            .getPortName());
+    assertEquals("output", FileNaming
+        .parse("filterreads_output_reads_s2_file0_part1.fq").getPortName());
     assertEquals("output2",
-        FileNaming
-            .parse("genericindexgenerator_output2_bowtieindex_genome.zip")
+        FileNaming.parse("genericindexgenerator_output2_bowtieindex_genome.zip")
             .getPortName());
 
-    assertEquals("output",
-        FileNaming.parse("filterreads_output_reads_s1_file0.fq.bz2")
-            .getPortName());
-    assertEquals("output",
-        FileNaming.parse("filterreads_output_reads_s2_file0_part1.fq.bz2")
-            .getPortName());
-    assertEquals(
-        "output2",
-        FileNaming.parse(
-            "genericindexgenerator_output2_bowtieindex_genome.zip.bz2")
+    assertEquals("output", FileNaming
+        .parse("filterreads_output_reads_s1_file0.fq.bz2").getPortName());
+    assertEquals("output", FileNaming
+        .parse("filterreads_output_reads_s2_file0_part1.fq.bz2").getPortName());
+    assertEquals("output2",
+        FileNaming
+            .parse("genericindexgenerator_output2_bowtieindex_genome.zip.bz2")
             .getPortName());
   }
 
   @Test
   public void testGetDataName() {
 
-    assertEquals("s1", FileNaming.parse("filterreads_output_reads_s1_file0.fq")
-        .getDataName());
-    assertEquals("s2",
-        FileNaming.parse("filterreads_output_reads_s2_file0_part1.fq")
-            .getDataName());
+    assertEquals("s1",
+        FileNaming.parse("filterreads_output_reads_s1_file0.fq").getDataName());
+    assertEquals("s2", FileNaming
+        .parse("filterreads_output_reads_s2_file0_part1.fq").getDataName());
     assertEquals("genome",
         FileNaming.parse("genericindexgenerator_output_bowtieindex_genome.zip")
             .getDataName());
 
-    assertEquals("s1",
-        FileNaming.parse("filterreads_output_reads_s1_file0.fq.bz2")
-            .getDataName());
-    assertEquals("s2",
-        FileNaming.parse("filterreads_output_reads_s2_file0_part1.fq.bz2")
-            .getDataName());
-    assertEquals(
-        "genome",
-        FileNaming.parse(
-            "genericindexgenerator_output_bowtieindex_genome.zip.bz2")
+    assertEquals("s1", FileNaming
+        .parse("filterreads_output_reads_s1_file0.fq.bz2").getDataName());
+    assertEquals("s2", FileNaming
+        .parse("filterreads_output_reads_s2_file0_part1.fq.bz2").getDataName());
+    assertEquals("genome",
+        FileNaming
+            .parse("genericindexgenerator_output_bowtieindex_genome.zip.bz2")
             .getDataName());
   }
 
@@ -134,23 +121,19 @@ public class FileNamingTest {
 
     assertEquals(DataFormats.READS_FASTQ,
         FileNaming.parse("filterreads_output_reads_s1_file0.fq").getFormat());
-    assertEquals(DataFormats.READS_FASTQ,
-        FileNaming.parse("filterreads_output_reads_s2_file0_part1.fq")
-            .getFormat());
+    assertEquals(DataFormats.READS_FASTQ, FileNaming
+        .parse("filterreads_output_reads_s2_file0_part1.fq").getFormat());
     assertEquals(DataFormats.BOWTIE_INDEX_ZIP,
         FileNaming.parse("genericindexgenerator_output_bowtieindex_genome.zip")
             .getFormat());
 
-    assertEquals(DataFormats.READS_FASTQ,
-        FileNaming.parse("filterreads_output_reads_s1_file0.fq.bz2")
-            .getFormat());
-    assertEquals(DataFormats.READS_FASTQ,
-        FileNaming.parse("filterreads_output_reads_s2_file0_part1.fq.bz2")
-            .getFormat());
-    assertEquals(
-        DataFormats.BOWTIE_INDEX_ZIP,
-        FileNaming.parse(
-            "genericindexgenerator_output_bowtieindex_genome.zip.bz2")
+    assertEquals(DataFormats.READS_FASTQ, FileNaming
+        .parse("filterreads_output_reads_s1_file0.fq.bz2").getFormat());
+    assertEquals(DataFormats.READS_FASTQ, FileNaming
+        .parse("filterreads_output_reads_s2_file0_part1.fq.bz2").getFormat());
+    assertEquals(DataFormats.BOWTIE_INDEX_ZIP,
+        FileNaming
+            .parse("genericindexgenerator_output_bowtieindex_genome.zip.bz2")
             .getFormat());
   }
 
@@ -160,101 +143,88 @@ public class FileNamingTest {
         .getFileIndex());
     assertEquals(1, FileNaming.parse("filterreads_output_reads_s1_file1.fq")
         .getFileIndex());
-    assertEquals(0,
-        FileNaming.parse("filterreads_output_reads_s2_file0_part3.fq")
-            .getFileIndex());
-    assertEquals(1,
-        FileNaming.parse("filterreads_output_reads_s2_file1_part4.fq")
-            .getFileIndex());
+    assertEquals(0, FileNaming
+        .parse("filterreads_output_reads_s2_file0_part3.fq").getFileIndex());
+    assertEquals(1, FileNaming
+        .parse("filterreads_output_reads_s2_file1_part4.fq").getFileIndex());
     assertEquals(-1,
         FileNaming.parse("genericindexgenerator_output_bowtieindex_genome.zip")
             .getFileIndex());
 
-    assertEquals(0, FileNaming
-        .parse("filterreads_output_reads_s1_file0.fq.bz2").getFileIndex());
-    assertEquals(1, FileNaming
-        .parse("filterreads_output_reads_s1_file1.fq.bz2").getFileIndex());
+    assertEquals(0, FileNaming.parse("filterreads_output_reads_s1_file0.fq.bz2")
+        .getFileIndex());
+    assertEquals(1, FileNaming.parse("filterreads_output_reads_s1_file1.fq.bz2")
+        .getFileIndex());
     assertEquals(0,
         FileNaming.parse("filterreads_output_reads_s2_file0_part3.fq.bz2")
             .getFileIndex());
     assertEquals(1,
         FileNaming.parse("filterreads_output_reads_s2_file1_part4.fq.bz2")
             .getFileIndex());
-    assertEquals(
-        -1,
-        FileNaming.parse(
-            "genericindexgenerator_output_bowtieindex_genome.zip.bz2")
+    assertEquals(-1,
+        FileNaming
+            .parse("genericindexgenerator_output_bowtieindex_genome.zip.bz2")
             .getFileIndex());
   }
 
   @Test
   public void testGetPart() {
-    assertEquals(-1, FileNaming.parse("filterreads_output_reads_s1_file0.fq")
-        .getPart());
-    assertEquals(1,
-        FileNaming.parse("filterreads_output_reads_s2_file0_part1.fq")
-            .getPart());
+    assertEquals(-1,
+        FileNaming.parse("filterreads_output_reads_s1_file0.fq").getPart());
+    assertEquals(1, FileNaming
+        .parse("filterreads_output_reads_s2_file0_part1.fq").getPart());
     assertEquals(-1,
         FileNaming.parse("genericindexgenerator_output_bowtieindex_genome.zip")
             .getPart());
-    assertEquals(
-        1,
-        FileNaming.parse(
-            "genericindexgenerator_output_bowtieindex_genome_part1.zip")
+    assertEquals(1,
+        FileNaming
+            .parse("genericindexgenerator_output_bowtieindex_genome_part1.zip")
             .getPart());
 
     assertEquals(-1,
         FileNaming.parse("filterreads_output_reads_s1_file0.fq.bz2").getPart());
+    assertEquals(1, FileNaming
+        .parse("filterreads_output_reads_s2_file0_part1.fq.bz2").getPart());
+    assertEquals(-1,
+        FileNaming
+            .parse("genericindexgenerator_output_bowtieindex_genome.zip.bz2")
+            .getPart());
     assertEquals(1,
-        FileNaming.parse("filterreads_output_reads_s2_file0_part1.fq.bz2")
-            .getPart());
-    assertEquals(
-        -1,
-        FileNaming.parse(
-            "genericindexgenerator_output_bowtieindex_genome.zip.bz2")
-            .getPart());
-    assertEquals(
-        1,
-        FileNaming.parse(
-            "genericindexgenerator_output_bowtieindex_genome_part1.zip.bz2")
+        FileNaming
+            .parse(
+                "genericindexgenerator_output_bowtieindex_genome_part1.zip.bz2")
             .getPart());
   }
 
   @Test
   public void testGetCompression() {
 
-    assertEquals(CompressionType.NONE,
-        FileNaming.parse("filterreads_output_reads_s1_file0.fq")
-            .getCompression());
-    assertEquals(CompressionType.NONE,
-        FileNaming.parse("filterreads_output_reads_s2_file0_part1.fq")
-            .getCompression());
+    assertEquals(CompressionType.NONE, FileNaming
+        .parse("filterreads_output_reads_s1_file0.fq").getCompression());
+    assertEquals(CompressionType.NONE, FileNaming
+        .parse("filterreads_output_reads_s2_file0_part1.fq").getCompression());
     assertEquals(CompressionType.NONE,
         FileNaming.parse("genericindexgenerator_output_bowtieindex_genome.zip")
             .getCompression());
 
-    assertEquals(CompressionType.BZIP2,
-        FileNaming.parse("filterreads_output_reads_s1_file0.fq.bz2")
-            .getCompression());
+    assertEquals(CompressionType.BZIP2, FileNaming
+        .parse("filterreads_output_reads_s1_file0.fq.bz2").getCompression());
     assertEquals(CompressionType.BZIP2,
         FileNaming.parse("filterreads_output_reads_s2_file0_part1.fq.bz2")
             .getCompression());
-    assertEquals(
-        CompressionType.BZIP2,
-        FileNaming.parse(
-            "genericindexgenerator_output_bowtieindex_genome.zip.bz2")
+    assertEquals(CompressionType.BZIP2,
+        FileNaming
+            .parse("genericindexgenerator_output_bowtieindex_genome.zip.bz2")
             .getCompression());
 
-    assertEquals(CompressionType.GZIP,
-        FileNaming.parse("filterreads_output_reads_s1_file0.fq.gz")
-            .getCompression());
+    assertEquals(CompressionType.GZIP, FileNaming
+        .parse("filterreads_output_reads_s1_file0.fq.gz").getCompression());
     assertEquals(CompressionType.GZIP,
         FileNaming.parse("filterreads_output_reads_s2_file0_part1.fq.gz")
             .getCompression());
-    assertEquals(
-        CompressionType.GZIP,
-        FileNaming.parse(
-            "genericindexgenerator_output_bowtieindex_genome.zip.gz")
+    assertEquals(CompressionType.GZIP,
+        FileNaming
+            .parse("genericindexgenerator_output_bowtieindex_genome.zip.gz")
             .getCompression());
   }
 
@@ -395,8 +365,8 @@ public class FileNamingTest {
   @Test
   public void testFilePrefixStringStringDataFormat() {
 
-    assertEquals("filterreads_output_reads_",
-        FileNaming.filePrefix("filterreads", "output", DataFormats.READS_FASTQ));
+    assertEquals("filterreads_output_reads_", FileNaming
+        .filePrefix("filterreads", "output", DataFormats.READS_FASTQ));
   }
 
   @Test
@@ -463,17 +433,17 @@ public class FileNamingTest {
   @Test
   public void testParseFile() {
 
-    assertTrue(FileNaming
-        .parse(new File("filterreads_output_reads_s1_file0.fq")).filename()
-        .equals("filterreads_output_reads_s1_file0.fq"));
+    assertTrue(
+        FileNaming.parse(new File("filterreads_output_reads_s1_file0.fq"))
+            .filename().equals("filterreads_output_reads_s1_file0.fq"));
   }
 
   @Test
   public void testParseDataFile() {
 
-    assertTrue(FileNaming
-        .parse(new DataFile("filterreads_output_reads_s1_file0.fq")).filename()
-        .equals("filterreads_output_reads_s1_file0.fq"));
+    assertTrue(
+        FileNaming.parse(new DataFile("filterreads_output_reads_s1_file0.fq"))
+            .filename().equals("filterreads_output_reads_s1_file0.fq"));
   }
 
   @Test
@@ -490,8 +460,7 @@ public class FileNamingTest {
         .equals("filterreads_output_reads_s1_file0_part1.fq.bz2"));
 
     assertTrue(FileNaming
-        .parse("genericindexgenerator_output_bowtieindex_genome.zip")
-        .filename()
+        .parse("genericindexgenerator_output_bowtieindex_genome.zip").filename()
         .equals("genericindexgenerator_output_bowtieindex_genome.zip"));
 
     assertTrue(FileNaming
@@ -506,8 +475,8 @@ public class FileNamingTest {
 
     assertTrue(FileNaming
         .parse("genericindexgenerator_output_bowtieindex_genome_part5.zip.gz")
-        .filename()
-        .equals("genericindexgenerator_output_bowtieindex_genome_part5.zip.gz"));
+        .filename().equals(
+            "genericindexgenerator_output_bowtieindex_genome_part5.zip.gz"));
 
   }
 
@@ -525,67 +494,59 @@ public class FileNamingTest {
         FileNaming.parse("filterreads_output_reads_s1_file0.fq.bz2").glob());
 
     assertTrue(FileSystems.getDefault()
-        .getPathMatcher("glob:filterreads_output_reads_*.fq.bz2")
-        .matches(new File("filterreads_output_reads_s1_file0.fq.bz2").toPath()));
+        .getPathMatcher("glob:filterreads_output_reads_*.fq.bz2").matches(
+            new File("filterreads_output_reads_s1_file0.fq.bz2").toPath()));
 
-    assertEquals("filterreads_output_reads_*.fq.bz2",
-        FileNaming.parse("filterreads_output_reads_s1_file0_part1.fq.bz2")
-            .glob());
+    assertEquals("filterreads_output_reads_*.fq.bz2", FileNaming
+        .parse("filterreads_output_reads_s1_file0_part1.fq.bz2").glob());
 
-    assertTrue(FileSystems
-        .getDefault()
+    assertTrue(FileSystems.getDefault()
         .getPathMatcher("glob:filterreads_output_reads_*.fq.bz2")
-        .matches(
-            new File("filterreads_output_reads_s1_file0_part1.fq.bz2").toPath()));
+        .matches(new File("filterreads_output_reads_s1_file0_part1.fq.bz2")
+            .toPath()));
 
     assertEquals("genericindexgenerator_output_bowtieindex_*.zip", FileNaming
         .parse("genericindexgenerator_output_bowtieindex_genome.zip").glob());
 
-    assertTrue(FileSystems
-        .getDefault()
+    assertTrue(FileSystems.getDefault()
         .getPathMatcher("glob:genericindexgenerator_output_bowtieindex_*.zip")
-        .matches(
-            new File("genericindexgenerator_output_bowtieindex_genome.zip")
+        .matches(new File("genericindexgenerator_output_bowtieindex_genome.zip")
+            .toPath()));
+
+    assertEquals("genericindexgenerator_output_bowtieindex_*.zip",
+        FileNaming
+            .parse("genericindexgenerator_output_bowtieindex_genome_part5.zip")
+            .glob());
+
+    assertTrue(FileSystems.getDefault()
+        .getPathMatcher("glob:genericindexgenerator_output_bowtieindex_*.zip")
+        .matches(new File(
+            "genericindexgenerator_output_bowtieindex_genome_part5.zip")
                 .toPath()));
 
-    assertEquals("genericindexgenerator_output_bowtieindex_*.zip", FileNaming
-        .parse("genericindexgenerator_output_bowtieindex_genome_part5.zip")
-        .glob());
+    assertEquals("genericindexgenerator_output_bowtieindex_*.zip.gz",
+        FileNaming
+            .parse("genericindexgenerator_output_bowtieindex_genome.zip.gz")
+            .glob());
 
-    assertTrue(FileSystems
-        .getDefault()
-        .getPathMatcher("glob:genericindexgenerator_output_bowtieindex_*.zip")
-        .matches(
-            new File(
-                "genericindexgenerator_output_bowtieindex_genome_part5.zip")
-                .toPath()));
-
-    assertEquals(
-        "genericindexgenerator_output_bowtieindex_*.zip.gz",
-        FileNaming.parse(
-            "genericindexgenerator_output_bowtieindex_genome.zip.gz").glob());
-
-    assertTrue(FileSystems
-        .getDefault()
+    assertTrue(FileSystems.getDefault()
         .getPathMatcher(
             "glob:genericindexgenerator_output_bowtieindex_*.zip.gz")
         .matches(
             new File("genericindexgenerator_output_bowtieindex_genome.zip.gz")
                 .toPath()));
 
-    assertEquals(
-        "genericindexgenerator_output_bowtieindex_*.zip.gz",
-        FileNaming.parse(
-            "genericindexgenerator_output_bowtieindex_genome_part5.zip.gz")
+    assertEquals("genericindexgenerator_output_bowtieindex_*.zip.gz",
+        FileNaming
+            .parse(
+                "genericindexgenerator_output_bowtieindex_genome_part5.zip.gz")
             .glob());
 
-    assertTrue(FileSystems
-        .getDefault()
+    assertTrue(FileSystems.getDefault()
         .getPathMatcher(
             "glob:genericindexgenerator_output_bowtieindex_*.zip.gz")
-        .matches(
-            new File(
-                "genericindexgenerator_output_bowtieindex_genome_part5.zip.gz")
+        .matches(new File(
+            "genericindexgenerator_output_bowtieindex_genome_part5.zip.gz")
                 .toPath()));
 
   }
@@ -673,46 +634,47 @@ public class FileNamingTest {
   @Test
   public void testIsFilenameValidDataFile() {
 
-    assertTrue(FileNaming.isFilenameValid(new DataFile(
-        "filterreads_output_reads_s1_file0.fq")));
+    assertTrue(FileNaming
+        .isFilenameValid(new DataFile("filterreads_output_reads_s1_file0.fq")));
     assertFalse(FileNaming.isFilenameValid(new DataFile("toto.txt")));
   }
 
   @Test
   public void testIsFilenameValidFile() {
 
-    assertTrue(FileNaming.isFilenameValid(new File(
-        "filterreads_output_reads_s1_file0.fq")));
+    assertTrue(FileNaming
+        .isFilenameValid(new File("filterreads_output_reads_s1_file0.fq")));
     assertFalse(FileNaming.isFilenameValid(new File("toto.txt")));
   }
 
   @Test
   public void testIsFilenameValidString() {
 
-    assertTrue(FileNaming
-        .isFilenameValid("filterreads_output_reads_s1_file0.fq"));
+    assertTrue(
+        FileNaming.isFilenameValid("filterreads_output_reads_s1_file0.fq"));
     assertTrue(FileNaming
         .isFilenameValid("filterreads_output_reads_s1_file0_part1.fq"));
-    assertTrue(FileNaming
-        .isFilenameValid("genericindexgenerator_output_bowtieindex_genome.zip"));
+    assertTrue(FileNaming.isFilenameValid(
+        "genericindexgenerator_output_bowtieindex_genome.zip"));
     assertTrue(FileNaming
         .isFilenameValid("genomedescgenerator_output_genomedesc_genome.txt"));
     assertTrue(FileNaming.isFilenameValid("mapreads_output_alignments_s1.sam"));
-    assertTrue(FileNaming
-        .isFilenameValid("expression_output_expression_s1.tsv"));
+    assertTrue(
+        FileNaming.isFilenameValid("expression_output_expression_s1.tsv"));
 
     assertFalse(FileNaming.isFilenameValid("toto.txt"));
     assertFalse(FileNaming.isFilenameValid("filterreads_output_reads_s1.fq"));
     assertFalse(FileNaming.isFilenameValid("filtered_mapper_results_1.sam"));
-    assertFalse(FileNaming
-        .isFilenameValid("genericindex-generator_output_bowtieindex_genome.zip"));
-    assertFalse(FileNaming
-        .isFilenameValid("genericindexgenerator_out-put_bowtieindex_genome.zip"));
-    assertFalse(FileNaming
-        .isFilenameValid("genericindexgenerator_output_bowtie-index_genome.zip"));
-    assertFalse(FileNaming
-        .isFilenameValid("genericindexgenerator_output_bowtieindex_ge-nome.zip"));
-    assertFalse(FileNaming.isFilenameValid("2013-0267_S1_L001_R1_001.fastq.gz"));
+    assertFalse(FileNaming.isFilenameValid(
+        "genericindex-generator_output_bowtieindex_genome.zip"));
+    assertFalse(FileNaming.isFilenameValid(
+        "genericindexgenerator_out-put_bowtieindex_genome.zip"));
+    assertFalse(FileNaming.isFilenameValid(
+        "genericindexgenerator_output_bowtie-index_genome.zip"));
+    assertFalse(FileNaming.isFilenameValid(
+        "genericindexgenerator_output_bowtieindex_ge-nome.zip"));
+    assertFalse(
+        FileNaming.isFilenameValid("2013-0267_S1_L001_R1_001.fastq.gz"));
 
   }
 
@@ -732,15 +694,15 @@ public class FileNamingTest {
     assertFalse(FileNaming.dataEquals("toto_output_reads_s1_file0.fq",
         "filterreads_toto_reads_s1_file0.fq"));
 
-    assertTrue(FileNaming.dataEquals(
-        "filterreads_output_reads_s1_file0_part1.fq",
-        "filterreads_output_reads_s1_file0_part1.fq"));
-    assertTrue(FileNaming.dataEquals(
-        "filterreads_output_reads_s1_file0_part1.fq",
-        "filterreads_output_reads_s1_file1_part1.fq"));
-    assertFalse(FileNaming.dataEquals(
-        "filterreads_output_reads_s1_file0_part1.fq",
-        "filterreads_output_reads_s1_file0_part2.fq"));
+    assertTrue(
+        FileNaming.dataEquals("filterreads_output_reads_s1_file0_part1.fq",
+            "filterreads_output_reads_s1_file0_part1.fq"));
+    assertTrue(
+        FileNaming.dataEquals("filterreads_output_reads_s1_file0_part1.fq",
+            "filterreads_output_reads_s1_file1_part1.fq"));
+    assertFalse(
+        FileNaming.dataEquals("filterreads_output_reads_s1_file0_part1.fq",
+            "filterreads_output_reads_s1_file0_part2.fq"));
 
     assertTrue(FileNaming.dataEquals(
         "genericindexgenerator_output_bowtieindex_genome.zip",

@@ -128,9 +128,8 @@ public class BAMSplitter implements Splitter {
         DataFile outFile = outFileIterator.next();
 
         // Create new writer
-        writer =
-            new SAMFileWriterFactory().makeBAMWriter(header, false,
-                outFile.create());
+        writer = new SAMFileWriterFactory().makeBAMWriter(header, false,
+            outFile.create());
       }
 
       writer.addAlignment(record);
@@ -161,8 +160,7 @@ public class BAMSplitter implements Splitter {
     // Get SAM header
     final SAMFileHeader header = reader.getFileHeader();
 
-    final Map<String, SAMFileWriter> writers =
-        new HashMap<String, SAMFileWriter>();
+    final Map<String, SAMFileWriter> writers = new HashMap<>();
 
     for (final SAMRecord record : reader) {
 
@@ -175,9 +173,8 @@ public class BAMSplitter implements Splitter {
 
         // Create the writer for the chromosome
         DataFile outFile = outFileIterator.next();
-        writer =
-            new SAMFileWriterFactory().makeBAMWriter(header, false,
-                outFile.create());
+        writer = new SAMFileWriterFactory().makeBAMWriter(header, false,
+            outFile.create());
         writers.put(chromosome, writer);
       } else {
         writer = writers.get(chromosome);

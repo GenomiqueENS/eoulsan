@@ -45,8 +45,8 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class WorkflowStepConfigurationContext implements
-    StepConfigurationContext {
+public class WorkflowStepConfigurationContext
+    implements StepConfigurationContext {
 
   private final WorkflowContext workflowContext;
   private final AbstractWorkflowStep step;

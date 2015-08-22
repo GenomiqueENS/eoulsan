@@ -47,7 +47,8 @@ public class DummyGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Get input and output data
     final Data outData = context.getOutputData(DataFormats.DUMMY_TXT, "dummy");

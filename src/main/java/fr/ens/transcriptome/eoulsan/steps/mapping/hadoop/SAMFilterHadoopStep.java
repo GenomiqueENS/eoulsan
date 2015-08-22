@@ -67,7 +67,8 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Create configuration object
     final Configuration conf = createConfiguration();
@@ -119,9 +120,8 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     jobConf.set("mapreduce.task.timeout", "" + 30 * 60 * 1000);
 
     // Create the job and its name
-    final Job job =
-        Job.getInstance(jobConf, "Filter SAM file ("
-            + inData.getName() + ", " + inputPath.getName() + ")");
+    final Job job = Job.getInstance(jobConf, "Filter SAM file ("
+        + inData.getName() + ", " + inputPath.getName() + ")");
 
     // Set the jar
     job.setJarByClass(ReadsMapperHadoopStep.class);
@@ -157,8 +157,8 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
     job.setOutputValueClass(Text.class);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(outData.getDataFile()
-        .getSource()));
+    FileOutputFormat.setOutputPath(job,
+        new Path(outData.getDataFile().getSource()));
 
     return job;
   }

@@ -339,8 +339,8 @@ public class TaskContext implements StepContext, Serializable {
 
     for (Map.Entry<String, AbstractData> e : data.entrySet()) {
 
-      checkArgument(this.outputData.containsKey(e.getKey()), "Unknown port: "
-          + e.getKey());
+      checkArgument(this.outputData.containsKey(e.getKey()),
+          "Unknown port: " + e.getKey());
 
       // Update outputData
       this.outputData.put(e.getKey(), e.getValue());
@@ -351,6 +351,16 @@ public class TaskContext implements StepContext, Serializable {
   public File getLocalTempDirectory() {
 
     return EoulsanRuntime.getRuntime().getTempDirectory();
+  }
+
+  /**
+   * Create the prefix of a related task file.
+   * @param context the context
+   * @return a string with the prefix of the task file
+   */
+  public String getTaskFilePrefix() {
+
+    return getStep().getId() + "_context#" + getId();
   }
 
   //
@@ -367,8 +377,8 @@ public class TaskContext implements StepContext, Serializable {
     checkNotNull(port, "port cannot be null");
 
     if (!this.inputData.containsKey(port.getName())) {
-      throw new EoulsanRuntimeException("Unknown port: "
-          + port.getName() + " for step " + this.step.getId());
+      throw new EoulsanRuntimeException(
+          "Unknown port: " + port.getName() + " for step " + this.step.getId());
     }
 
     return this.inputData.get(port.getName());
@@ -384,8 +394,8 @@ public class TaskContext implements StepContext, Serializable {
     checkNotNull(port, "port cannot be null");
 
     if (!this.outputData.containsKey(port.getName())) {
-      throw new EoulsanRuntimeException("Unknown port: "
-          + port.getName() + " for step " + this.step.getId());
+      throw new EoulsanRuntimeException(
+          "Unknown port: " + port.getName() + " for step " + this.step.getId());
     }
 
     return this.outputData.get(port.getName());
@@ -537,7 +547,8 @@ public class TaskContext implements StepContext, Serializable {
    * @param file input DataFile
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskContext deserialize(final DataFile file) throws IOException {
+  public static TaskContext deserialize(final DataFile file)
+      throws IOException {
 
     checkNotNull(file, "file argument cannot be null");
 

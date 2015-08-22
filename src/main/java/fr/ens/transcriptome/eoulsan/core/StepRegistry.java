@@ -24,18 +24,31 @@
 
 package fr.ens.transcriptome.eoulsan.core;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.EoulsanRuntime.getSettings;
 import static fr.ens.transcriptome.eoulsan.annotations.EoulsanMode.HADOOP_COMPATIBLE;
 import static fr.ens.transcriptome.eoulsan.annotations.EoulsanMode.HADOOP_ONLY;
 import static fr.ens.transcriptome.eoulsan.annotations.EoulsanMode.LOCAL_ONLY;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.base.Strings;
 
+import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.Main;
 import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.steps.GalaxyToolStep;
+import fr.ens.transcriptome.eoulsan.util.ClassPathResourceLoader;
+import fr.ens.transcriptome.eoulsan.util.FileResourceLoader;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -45,8 +58,112 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  */
 public class StepRegistry {
 
+  private static final String RESOURCE_PREFIX =
+      "META-INF/services/registrytoolshed/";
+  private static final String GALAXY_TOOL_SUBDIR = "galaxytools";
+
   private static StepRegistry instance;
-  private StepService service = new StepService();
+  private final StepService service;
+  private final GalaxyToolStepClassPathLoader galaxyClassPathLoader;
+  private final GalaxyToolStepFileResourceLoader galaxyFileLoader;
+
+  //
+  // Inner classes
+  //
+
+  /**
+   * This class define a resource loader for resource defined in the file
+   * system.
+   */
+  private static final class GalaxyToolStepFileResourceLoader
+      extends FileResourceLoader<GalaxyToolStep> {
+
+    @Override
+    protected String getExtension() {
+
+      return ".xml";
+    }
+
+    @Override
+    protected GalaxyToolStep load(final InputStream in, final String source)
+        throws IOException, EoulsanException {
+
+      return new GalaxyToolStep(in, source);
+    }
+
+    /**
+     * Get the default format directory.
+     * @return the default format directory
+     */
+    private static DataFile getDefaultFormatDirectory() {
+
+      final Main main = Main.getInstance();
+
+      if (main == null) {
+        return new DataFile(GALAXY_TOOL_SUBDIR);
+      }
+
+      return new DataFile(
+          new File(main.getEoulsanDirectory(), GALAXY_TOOL_SUBDIR));
+    }
+
+    @Override
+    protected String getResourceName(final GalaxyToolStep resource) {
+
+      checkNotNull(resource, "resource argument cannot be null");
+
+      return resource.getName();
+    }
+
+    //
+    // Constructors
+    //
+
+    /**
+     * Constructor.
+     * @param resourcePaths paths where searching for the resources.
+     */
+    public GalaxyToolStepFileResourceLoader(final String resourcePaths) {
+
+      super(GalaxyToolStep.class, getDefaultFormatDirectory());
+
+      if (resourcePaths != null) {
+        addResourcePaths(resourcePaths);
+      }
+    }
+
+  }
+
+  /**
+   * This class define a resource loader for resource defined in the class path.
+   */
+  private static final class GalaxyToolStepClassPathLoader
+      extends ClassPathResourceLoader<GalaxyToolStep> {
+
+    @Override
+    protected GalaxyToolStep load(final InputStream in, final String source)
+        throws IOException, EoulsanException {
+
+      return new GalaxyToolStep(in, source);
+    }
+
+    @Override
+    protected String getResourceName(final GalaxyToolStep resource) {
+
+      checkNotNull(resource, "resource argument cannot be null");
+
+      return resource.getName();
+    }
+
+    //
+    // Constructor
+    //
+
+    public GalaxyToolStepClassPathLoader() {
+
+      super(GalaxyToolStep.class, RESOURCE_PREFIX);
+    }
+  }
 
   //
   // Singleton method
@@ -60,6 +177,9 @@ public class StepRegistry {
 
     if (instance == null) {
       instance = new StepRegistry();
+
+      // Load the available steps
+      instance.reload();
     }
 
     return instance;
@@ -79,7 +199,9 @@ public class StepRegistry {
 
     final List<Step> stepsFound = new ArrayList<>();
 
-    stepsFound.addAll(service.newServices(stepName));
+    stepsFound.addAll(this.service.newServices(stepName));
+    stepsFound.addAll(this.galaxyClassPathLoader.loadResources(stepName));
+    stepsFound.addAll(this.galaxyFileLoader.loadResources(stepName));
 
     // Filter steps
     filterSteps(stepsFound, Strings.nullToEmpty(version).trim());
@@ -99,7 +221,28 @@ public class StepRegistry {
    */
   public void reload() {
 
-    service.reload();
+    this.service.reload();
+    this.galaxyClassPathLoader.reload();
+    this.galaxyFileLoader.reload();
+
+    // Log steps defined in jars
+    for (Map.Entry<String, String> e : this.service.getServiceClasses()
+        .entries()) {
+
+      getLogger()
+          .config("Found step: " + e.getKey() + " (" + e.getValue() + ")");
+    }
+
+    // Log Galaxy tool steps
+    final List<GalaxyToolStep> stepsFound = new ArrayList<>();
+    stepsFound.addAll(this.galaxyClassPathLoader.loadAllResources());
+    stepsFound.addAll(this.galaxyFileLoader.loadAllResources());
+
+    for (GalaxyToolStep s : stepsFound) {
+
+      getLogger().config("Found step: "
+          + s.getName() + " (Galaxy tool, source: " + s.getSource() + ")");
+    }
   }
 
   /**
@@ -234,8 +377,10 @@ public class StepRegistry {
    */
   private StepRegistry() {
 
-    // Load the available steps
-    reload();
+    this.service = new StepService();
+    this.galaxyClassPathLoader = new GalaxyToolStepClassPathLoader();
+    this.galaxyFileLoader =
+        new GalaxyToolStepFileResourceLoader(getSettings().getGalaxyToolPath());
   }
 
 }

@@ -75,13 +75,12 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       }
 
       // Create temporary directory
-      final File tempDir =
-          File.createTempFile("STAR-get-version-", ".tmp", EoulsanRuntime
-              .getSettings().getTempDirectoryFile());
+      final File tempDir = File.createTempFile("STAR-get-version-", ".tmp",
+          EoulsanRuntime.getSettings().getTempDirectoryFile());
 
       if (!(tempDir.delete() && tempDir.mkdir())) {
-        EoulsanLogger.getLogger().warning(
-            "Cannot create temporary directory for STAR: " + tempDir);
+        EoulsanLogger.getLogger()
+            .warning("Cannot create temporary directory for STAR: " + tempDir);
         return null;
       }
 
@@ -194,9 +193,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   /**
-   * Get the name of a bowtie flavored binary.
-   * @param binary the binary
-   * @param firstFlavoredVersion first version of Bowtie to be flavored
+   * Get the name of the flavored binary.
    * @return the flavored binary name
    */
   private String flavoredBinary() {
@@ -324,7 +321,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   public void init(final File archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
-      throws IOException {
+          throws IOException {
 
     super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }

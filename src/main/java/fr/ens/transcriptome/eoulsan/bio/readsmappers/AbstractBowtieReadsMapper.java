@@ -42,11 +42,11 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public abstract class AbstractBowtieReadsMapper extends
-    AbstractSequenceReadsMapper {
+public abstract class AbstractBowtieReadsMapper
+    extends AbstractSequenceReadsMapper {
 
-  protected static final String SYNC = AbstractBowtieReadsMapper.class
-      .getName();
+  protected static final String SYNC =
+      AbstractBowtieReadsMapper.class.getName();
 
   abstract protected String getExtensionIndexFile();
 
@@ -323,7 +323,7 @@ public abstract class AbstractBowtieReadsMapper extends
   @Override
   public void init(final File archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
-      throws IOException {
+          throws IOException {
 
     super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }

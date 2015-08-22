@@ -169,28 +169,10 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Environment argument
-    final StringBuilder sb = new StringBuilder();
-    sb.append("hadoopVersion=");
-    sb.append(this.hadoopVersion);
-    sb.append(", ");
-
-    sb.append("nInstances=");
-    sb.append(this.nInstances);
-    sb.append(", ");
-
-    sb.append("instanceType=");
-    sb.append(this.instanceType);
-    sb.append(", ");
-
-    sb.append("endpoint=");
-    sb.append(this.endpoint);
-    sb.append(", ");
-
-    sb.append("logPathname=");
-    sb.append(this.logPathname);
 
     // Command arguments
     final List<String> eoulsanArgsList = new ArrayList<>();
@@ -200,7 +182,10 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
     eoulsanArgsList.add("-d");
     eoulsanArgsList.add(context.getJobDescription());
     eoulsanArgsList.add("-e");
-    eoulsanArgsList.add(sb.toString());
+    eoulsanArgsList.add("hadoopVersion="
+        + this.hadoopVersion + ", " + "nInstances=" + this.nInstances + ", "
+        + "instanceType=" + this.instanceType + ", " + "endpoint="
+        + this.endpoint + ", " + "logPathname=" + this.logPathname);
     eoulsanArgsList.add(context.getWorkflowFile().getSource());
     eoulsanArgsList.add(context.getDesignFile().getSource());
     eoulsanArgsList.add("hdfs:///test");
@@ -215,8 +200,8 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
     builder.withJobFlowName(context.getJobDescription());
 
     // Set the credentials
-    builder.withAWSAccessKey(this.awsAccessKey).withAWSSecretKey(
-        this.awsSecretKey);
+    builder.withAWSAccessKey(this.awsAccessKey)
+        .withAWSSecretKey(this.awsSecretKey);
 
     // Set end point
     builder.withEndpoint(this.endpoint);
@@ -267,20 +252,20 @@ public class AWSElasticMapReduceExecStep extends AbstractStep {
 
       if ("FAILED".equals(jobStatus)) {
 
-        status.setMessage("End of Amazon MapReduce Job "
+        status.setProgressMessage("End of Amazon MapReduce Job "
             + jobFlowId + " with " + jobStatus + " status.");
         return status.createStepResult(false);
 
       }
 
-      status.setMessage("End of Amazon Elastic MapReduce Job "
+      status.setProgressMessage("End of Amazon Elastic MapReduce Job "
           + jobFlowId + " with " + jobStatus + " status.");
 
       return status.createStepResult();
     }
 
-    status.setMessage("Launch of Amazon Elastic MapReduce Job "
-        + jobFlowId + ".");
+    status.setProgressMessage(
+        "Launch of Amazon Elastic MapReduce Job " + jobFlowId + ".");
     return status.createStepResult();
   }
 

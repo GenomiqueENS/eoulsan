@@ -146,15 +146,12 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
       FileUtils.copy(indexArchive.rawOpen(), entry.file.create());
       this.entries.put(entry.getKey(), entry);
       save();
-      getLogger().info(
-          "Successully added "
-              + indexArchive.getName()
-              + " index archive to genome index storage.");
+      getLogger().info("Successfully added "
+          + indexArchive.getName() + " index archive to genome index storage.");
     } catch (IOException e) {
-      getLogger().warning(
-          "Failled to add "
-              + indexArchive.getName()
-              + " index archive to genome index storage: " + e.getMessage());
+      getLogger().warning("Failed to add "
+          + indexArchive.getName() + " index archive to genome index storage: "
+          + e.getMessage());
     }
   }
 
@@ -180,9 +177,8 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     }
 
     entry.genomeMD5 = md5Sum;
-    entry.file =
-        new DataFile(this.dir, entry.mapperName
-            + "-" + entry.genomeMD5 + ".zip");
+    entry.file = new DataFile(this.dir,
+        entry.mapperName + "-" + entry.genomeMD5 + ".zip");
     entry.description = md5Map.toString();
 
     return entry;
@@ -195,8 +191,8 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     final LinkedHashMap<String, String> map = new LinkedHashMap<>();
 
     map.put("mapper.name", nullToEmpty(mapper.getMapperName()));
-    map.put("mapper.version", nullToEmpty(mapper.getMapperVersionToUse())
-        .trim());
+    map.put("mapper.version",
+        nullToEmpty(mapper.getMapperVersionToUse()).trim());
     map.put("mapper.flavor", nullToEmpty(mapper.getMapperFlavor()).trim());
     map.put("genome.md5sum", nullToEmpty(genome.getMD5Sum()).trim());
 
@@ -239,8 +235,8 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
   private void load() throws IOException {
 
     if (!this.dir.exists()) {
-      throw new IOException("Genome index storage directory not found: "
-          + this.dir.getSource());
+      throw new IOException(
+          "Genome index storage directory not found: " + this.dir.getSource());
     }
 
     final DataFile indexFile = new DataFile(this.dir, INDEX_FILENAME);
@@ -255,9 +251,8 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     // Clear the entries (useful when reloading the index)
     this.entries.clear();
 
-    try (final BufferedReader br =
-        new BufferedReader(new InputStreamReader(indexFile.open(),
-            Globals.DEFAULT_CHARSET))) {
+    try (final BufferedReader br = new BufferedReader(
+        new InputStreamReader(indexFile.open(), Globals.DEFAULT_CHARSET))) {
 
       final Pattern pattern = Pattern.compile("\t");
       String line = null;
@@ -300,18 +295,17 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
   private void save() throws IOException {
 
     if (!this.dir.exists()) {
-      throw new IOException("Genome index storage directory not found: "
-          + this.dir.getSource());
+      throw new IOException(
+          "Genome index storage directory not found: " + this.dir.getSource());
     }
 
     final DataFile indexFile = new DataFile(this.dir, INDEX_FILENAME);
 
     // Create an empty index file
-    try (final BufferedWriter writer =
-        new BufferedWriter(new OutputStreamWriter(indexFile.create(),
-            Globals.DEFAULT_CHARSET))) {
-      writer
-          .write("#Genome\tChecksum\tGenomeSequences\tGenomeLength\tMapper\tIndexFile\tDescription\n");
+    try (final BufferedWriter writer = new BufferedWriter(
+        new OutputStreamWriter(indexFile.create(), Globals.DEFAULT_CHARSET))) {
+      writer.write(
+          "#Genome\tChecksum\tGenomeSequences\tGenomeLength\tMapper\tIndexFile\tDescription\n");
 
       for (Map.Entry<String, IndexEntry> e : this.entries.entrySet()) {
 
@@ -394,9 +388,8 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     this.dir = dir;
     load();
 
-    getLogger().info(
-        "Genome index storage found."
-            + this.entries.size() + " entries in : " + dir.getSource());
+    getLogger().info("Genome index storage found."
+        + this.entries.size() + " entries in : " + dir.getSource());
   }
 
 }

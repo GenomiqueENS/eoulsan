@@ -46,7 +46,7 @@ public class HTSeqUtilsTest {
 
     // GenomicArray<String> ga = new GenomicArray<String>();
     //
-    // final FastGemomicInterval fgi = new FastGemomicInterval("chr1", '+');
+    // final FastGenomicInterval fgi = new FastGenomicInterval("chr1", '+');
     //
     // GenomicInterval iv1 = fgi.iv(10, 50);
     // ga.addEntry(iv1, "a");
@@ -83,21 +83,18 @@ public class HTSeqUtilsTest {
     annot.addEntry(new GenomicInterval(chromosome, 1, 20, strand), "a");
     annot.addEntry(new GenomicInterval(chromosome, 25, 45, strand), "b");
 
-    results =
-        HTSeqUtils.featuresOverlapped(ivSeq, annot, OverlapMode.UNION,
-            StrandUsage.YES);
+    results = HTSeqUtils.featuresOverlapped(ivSeq, annot, OverlapMode.UNION,
+        StrandUsage.YES);
     assertTrue(results.contains("a"));
     assertFalse(results.contains("b"));
 
-    results =
-        HTSeqUtils.featuresOverlapped(ivSeq, annot,
-            OverlapMode.INTERSECTION_NONEMPTY, StrandUsage.YES);
+    results = HTSeqUtils.featuresOverlapped(ivSeq, annot,
+        OverlapMode.INTERSECTION_NONEMPTY, StrandUsage.YES);
     assertTrue(results.contains("a"));
     assertFalse(results.contains("b"));
 
-    results =
-        HTSeqUtils.featuresOverlapped(ivSeq, annot,
-            OverlapMode.INTERSECTION_STRICT, StrandUsage.YES);
+    results = HTSeqUtils.featuresOverlapped(ivSeq, annot,
+        OverlapMode.INTERSECTION_STRICT, StrandUsage.YES);
     assertTrue(results.contains("a"));
     assertFalse(results.contains("b"));
 
@@ -106,15 +103,13 @@ public class HTSeqUtilsTest {
     ivSeq.clear();
     ivSeq.add(new GenomicInterval(chromosome, 23, 40, strand));
 
-    results =
-        HTSeqUtils.featuresOverlapped(ivSeq, annot,
-            OverlapMode.INTERSECTION_NONEMPTY, StrandUsage.YES);
+    results = HTSeqUtils.featuresOverlapped(ivSeq, annot,
+        OverlapMode.INTERSECTION_NONEMPTY, StrandUsage.YES);
     assertFalse(results.contains("a"));
     assertTrue(results.contains("b"));
 
-    results =
-        HTSeqUtils.featuresOverlapped(ivSeq, annot,
-            OverlapMode.INTERSECTION_STRICT, StrandUsage.YES);
+    results = HTSeqUtils.featuresOverlapped(ivSeq, annot,
+        OverlapMode.INTERSECTION_STRICT, StrandUsage.YES);
     assertFalse(results.contains("a"));
     assertFalse(results.contains("b"));
 
@@ -123,15 +118,13 @@ public class HTSeqUtilsTest {
     ivSeq.clear();
     ivSeq.add(new GenomicInterval(chromosome, 5, 23, strand));
 
-    results =
-        HTSeqUtils.featuresOverlapped(ivSeq, annot,
-            OverlapMode.INTERSECTION_NONEMPTY, StrandUsage.YES);
+    results = HTSeqUtils.featuresOverlapped(ivSeq, annot,
+        OverlapMode.INTERSECTION_NONEMPTY, StrandUsage.YES);
     assertTrue(results.contains("a"));
     assertFalse(results.contains("b"));
 
-    results =
-        HTSeqUtils.featuresOverlapped(ivSeq, annot,
-            OverlapMode.INTERSECTION_STRICT, StrandUsage.YES);
+    results = HTSeqUtils.featuresOverlapped(ivSeq, annot,
+        OverlapMode.INTERSECTION_STRICT, StrandUsage.YES);
     assertFalse(results.contains("a"));
     assertFalse(results.contains("b"));
 
@@ -140,21 +133,18 @@ public class HTSeqUtilsTest {
     ivSeq.clear();
     ivSeq.add(new GenomicInterval(chromosome, 15, 30, strand));
 
-    results =
-        HTSeqUtils.featuresOverlapped(ivSeq, annot, OverlapMode.UNION,
-            StrandUsage.YES);
+    results = HTSeqUtils.featuresOverlapped(ivSeq, annot, OverlapMode.UNION,
+        StrandUsage.YES);
     assertTrue(results.contains("a"));
     assertTrue(results.contains("b"));
 
-    results =
-        HTSeqUtils.featuresOverlapped(ivSeq, annot,
-            OverlapMode.INTERSECTION_NONEMPTY, StrandUsage.YES);
+    results = HTSeqUtils.featuresOverlapped(ivSeq, annot,
+        OverlapMode.INTERSECTION_NONEMPTY, StrandUsage.YES);
     assertFalse(results.contains("a"));
     assertFalse(results.contains("b"));
 
-    results =
-        HTSeqUtils.featuresOverlapped(ivSeq, annot,
-            OverlapMode.INTERSECTION_STRICT, StrandUsage.YES);
+    results = HTSeqUtils.featuresOverlapped(ivSeq, annot,
+        OverlapMode.INTERSECTION_STRICT, StrandUsage.YES);
     assertFalse(results.contains("a"));
     assertFalse(results.contains("b"));
 
@@ -163,21 +153,18 @@ public class HTSeqUtilsTest {
     ivSeq.clear();
     ivSeq.add(new GenomicInterval(chromosome, 30, 55, strand));
 
-    results =
-        HTSeqUtils.featuresOverlapped(ivSeq, annot, OverlapMode.UNION,
-            StrandUsage.YES);
+    results = HTSeqUtils.featuresOverlapped(ivSeq, annot, OverlapMode.UNION,
+        StrandUsage.YES);
     assertFalse(results.contains("a"));
     assertTrue(results.contains("b"));
 
-    results =
-        HTSeqUtils.featuresOverlapped(ivSeq, annot,
-            OverlapMode.INTERSECTION_NONEMPTY, StrandUsage.YES);
+    results = HTSeqUtils.featuresOverlapped(ivSeq, annot,
+        OverlapMode.INTERSECTION_NONEMPTY, StrandUsage.YES);
     assertFalse(results.contains("a"));
     assertTrue(results.contains("b"));
 
-    results =
-        HTSeqUtils.featuresOverlapped(ivSeq, annot,
-            OverlapMode.INTERSECTION_STRICT, StrandUsage.YES);
+    results = HTSeqUtils.featuresOverlapped(ivSeq, annot,
+        OverlapMode.INTERSECTION_STRICT, StrandUsage.YES);
     assertFalse(results.contains("a"));
     assertFalse(results.contains("b"));
   }

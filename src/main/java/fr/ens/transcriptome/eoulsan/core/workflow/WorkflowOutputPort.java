@@ -97,9 +97,10 @@ class WorkflowOutputPort extends SimpleOutputPort {
     checkNotNull(inputPort, "inputPort argument cannot be null");
 
     // Check the ports are not on the same step
-    checkArgument(inputPort.getStep() != this.step, "cannot link a step ("
-        + this.step.getId() + ") to itself (input port: " + inputPort.getName()
-        + ", output port: " + getName());
+    checkArgument(inputPort.getStep() != this.step,
+        "cannot link a step ("
+            + this.step.getId() + ") to itself (input port: "
+            + inputPort.getName() + ", output port: " + getName());
 
     // Check if a link already exists
     if (this.links.contains(inputPort)) {

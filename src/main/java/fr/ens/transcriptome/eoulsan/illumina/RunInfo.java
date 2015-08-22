@@ -194,14 +194,14 @@ public class RunInfo {
   // Parser
   //
 
-  public void parse(final File file) throws ParserConfigurationException,
-      SAXException, IOException {
+  public void parse(final File file)
+      throws ParserConfigurationException, SAXException, IOException {
 
     parse(FileUtils.createInputStream(file));
   }
 
-  public void parse(final InputStream is) throws ParserConfigurationException,
-      SAXException, IOException {
+  public void parse(final InputStream is)
+      throws ParserConfigurationException, SAXException, IOException {
 
     final Document doc;
 

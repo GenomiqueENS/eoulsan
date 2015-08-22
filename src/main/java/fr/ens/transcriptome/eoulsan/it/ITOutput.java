@@ -64,11 +64,11 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public class ITOutput {
 
-  private static final Splitter SPACE_SPLITTER = Splitter.on(' ').trimResults()
-      .omitEmptyStrings();
+  private static final Splitter SPACE_SPLITTER =
+      Splitter.on(' ').trimResults().omitEmptyStrings();
 
-  private static final PathMatcher ALL_PATH_MATCHER = FileSystems.getDefault()
-      .getPathMatcher("glob:*");
+  private static final PathMatcher ALL_PATH_MATCHER =
+      FileSystems.getDefault().getPathMatcher("glob:*");
 
   private static final boolean USE_DEFAULT_PATTERN = true;
 
@@ -136,9 +136,8 @@ public class ITOutput {
     }
 
     if (noFileFoundToCopy) {
-      final String msg =
-          "Fail: none file to copy in destination "
-              + destinationDirectory.getAbsolutePath();
+      final String msg = "Fail: none file to copy in destination "
+          + destinationDirectory.getAbsolutePath();
       throw new EoulsanException(msg);
     }
 
@@ -182,8 +181,7 @@ public class ITOutput {
           new ITOutputComparisonResult(filename);
 
       if (fileTested == null) {
-        comparisonResult.setResult(
-            StatusComparison.MISSING,
+        comparisonResult.setResult(StatusComparison.MISSING,
             "missing file in output test directory "
                 + this.directory.getAbsolutePath());
       } else {
@@ -202,11 +200,10 @@ public class ITOutput {
 
       for (final File f : allFilesFromTest) {
 
-        final ITOutputComparisonResult ocr =
-            new ITOutputComparisonResult(f.getName(),
-                StatusComparison.UNEXPECTED,
-                "unexpected file in test data directory "
-                    + expectedOutput.getDirectory().getAbsolutePath());
+        final ITOutputComparisonResult ocr = new ITOutputComparisonResult(
+            f.getName(), StatusComparison.UNEXPECTED,
+            "unexpected file in test data directory "
+                + expectedOutput.getDirectory().getAbsolutePath());
 
         results.add(ocr);
       }
@@ -408,10 +405,9 @@ public class ITOutput {
       comparisonResult.setResult(StatusComparison.EQUALS);
 
     } else {
-      msg =
-          String.format("length expected: %s (%d) vs tested %s (%d)%n",
-              fileExpected.getAbsolutePath(), fileExpectedLength,
-              fileTested.getAbsolutePath(), fileTestedLength);
+      msg = String.format("length expected: %s (%d) vs tested %s (%d)%n",
+          fileExpected.getAbsolutePath(), fileExpectedLength,
+          fileTested.getAbsolutePath(), fileTestedLength);
 
       comparisonResult.setResult(StatusComparison.NOT_EQUALS, fileExpected,
           fileTested, msg);
@@ -458,8 +454,7 @@ public class ITOutput {
     for (final File f : this.filesToCheckAbsence) {
 
       final ITOutputComparisonResult ocr =
-          new ITOutputComparisonResult(f.getName(),
-              StatusComparison.UNEXPECTED,
+          new ITOutputComparisonResult(f.getName(), StatusComparison.UNEXPECTED,
               "Unexpected file in output test directory matched to patterns "
                   + this.checkAbsenceFilePatterns);
 
@@ -474,7 +469,6 @@ public class ITOutput {
    * Listing recursively all files in the source directory which match with
    * patterns files
    * @param patternKey the pattern key
-   * @param filesToExclude the excluded files
    * @param defaultAllPath the default all path
    * @return the list with all files which match with pattern
    * @throws IOException if an error occurs while parsing input directory
@@ -717,10 +711,10 @@ public class ITOutput {
    * @throws EoulsanException the Eoulsan exception
    */
   public ITOutput(final File outputTestDirectory,
-      final String fileToComparePatterns,
-      final String excludeToComparePatterns,
+      final String fileToComparePatterns, final String excludeToComparePatterns,
       final String checkLengthFilePatterns,
       final String checkExistenceFilePatterns,
+
       final String checkAbsenceFilePatterns, final String fileToRemovePatterns)
       throws IOException, EoulsanException {
 
@@ -740,8 +734,8 @@ public class ITOutput {
         collectFilesFromPattern(this.excludeToComparePatterns);
 
     // Set specific list, file compare content, compile in fileToCompare
-    this.filesToCheckContent =
-        collectFilesFromPattern(this.fileToComparePatterns, USE_DEFAULT_PATTERN);
+    this.filesToCheckContent = collectFilesFromPattern(
+        this.fileToComparePatterns, USE_DEFAULT_PATTERN);
 
     // Set specific list, file exist and is not empty, compile in fileToCompare
     this.filesToCheckExistence =
@@ -792,10 +786,9 @@ public class ITOutput {
       final boolean b = this.comparator.compareFiles(this.fileA, this.fileB);
 
       if (!b) {
-        this.detailComparison =
-            "fail at comparison #"
-                + this.comparator.getNumberElementsCompared() + ":[ "
-                + this.comparator.getCauseFailComparison() + "]";
+        this.detailComparison = "fail at comparison #"
+            + this.comparator.getNumberElementsCompared() + ":[ "
+            + this.comparator.getCauseFailComparison() + "]";
       }
       return b;
     }
@@ -847,10 +840,10 @@ public class ITOutput {
       this.comparators.add(new BinaryComparator());
 
       this.comparators.add(new FastqComparator(USE_SERIALIZATION_FILE));
-      this.comparators.add(new SAMComparator(USE_SERIALIZATION_FILE, "PG",
-          "HD", "CO"));
-      this.comparators.add(new BAMComparator(USE_SERIALIZATION_FILE, "PG",
-          "HD", "CO"));
+      this.comparators
+          .add(new SAMComparator(USE_SERIALIZATION_FILE, "PG", "HD", "CO"));
+      this.comparators
+          .add(new BAMComparator(USE_SERIALIZATION_FILE, "PG", "HD", "CO"));
       this.comparators.add(new TextComparator(USE_SERIALIZATION_FILE));
       this.comparators.add(new LogComparator());
 

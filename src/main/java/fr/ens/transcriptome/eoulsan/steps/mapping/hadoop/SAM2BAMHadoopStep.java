@@ -82,7 +82,8 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Create configuration object
     final Configuration conf = createConfiguration();
@@ -107,9 +108,8 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
     try {
 
       // Create the job to run
-      job =
-          createJobConf(conf, context, samData.getName(), samFile, bamFile,
-              workPath);
+      job = createJobConf(conf, context, samData.getName(), samFile, bamFile,
+          workPath);
 
       // Submit main job
       MapReduceUtils.submitAndWaitForJob(job, samData.getName(),
@@ -133,9 +133,8 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
       final DataFile indexerSubmitFile = createSubmitFile(bamFile, indexFile);
 
       // Create the indexer job
-      final Job indexingJob =
-          createIndexJob(conf, indexerSubmitFile, "Create "
-              + indexFile + " index file");
+      final Job indexingJob = createIndexJob(conf, indexerSubmitFile,
+          "Create " + indexFile + " index file");
 
       // Submit the job to the Hadoop scheduler, and wait the end of the job
       // in non verbose mode
@@ -169,10 +168,10 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
    * @throws ClassNotFoundException if an error occurs while creating the job
    * @throws InterruptedException if an error occurs while creating the job
    */
-  private Job createJobConf(final Configuration conf,
-      final StepContext context, final String sampleName,
-      final DataFile samFile, final DataFile bamFile, final Path workPath)
-      throws IOException, ClassNotFoundException, InterruptedException {
+  private Job createJobConf(final Configuration conf, final StepContext context,
+      final String sampleName, final DataFile samFile, final DataFile bamFile,
+      final Path workPath)
+          throws IOException, ClassNotFoundException, InterruptedException {
 
     final ValidationStringency stringency =
         ValidationStringency.DEFAULT_STRINGENCY;
@@ -201,8 +200,8 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
 
     Utils.configureSampling(workPath, intermediateOutName, conf);
 
-    final Job job =
-        Job.getInstance(conf, "Sam2Bam ("
+    final Job job = Job.getInstance(conf,
+        "Sam2Bam ("
             + sampleName + ", input file: " + input + ", output file: "
             + workPath + ")");
 
@@ -237,8 +236,7 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
 
           if (first) {
             job.getConfiguration()
-                .setStrings(Utils.HEADERMERGER_INPUTS_PROPERTY,
-                    new String[] {p.toString()});
+                .setStrings(Utils.HEADERMERGER_INPUTS_PROPERTY, p.toString());
           }
 
           context.getLogger().info("add path1: " + p);
@@ -247,19 +245,17 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
     } else {
       FileInputFormat.addInputPath(job, input);
       job.getConfiguration().setStrings(Utils.HEADERMERGER_INPUTS_PROPERTY,
-          new String[] {input.toString()});
+          input.toString());
       context.getLogger().info("add path2: " + input);
     }
 
     FileOutputFormat.setOutputPath(job, workPath);
 
     job.setPartitionerClass(TotalOrderPartitioner.class);
-    context.getLogger().info(
-        Utils.HEADERMERGER_INPUTS_PROPERTY
-            + ":"
-            + job.getConfiguration().get(Utils.HEADERMERGER_INPUTS_PROPERTY));
+    context.getLogger().info(Utils.HEADERMERGER_INPUTS_PROPERTY
+        + ":" + job.getConfiguration().get(Utils.HEADERMERGER_INPUTS_PROPERTY));
 
-    InputSampler.<LongWritable, SAMRecordWritable> writePartitionFile(job,
+    InputSampler.writePartitionFile(job,
         new InputSampler.RandomSampler<LongWritable, SAMRecordWritable>(0.01,
             10000, Math.max(100, job.getNumReduceTasks())));
 
@@ -269,8 +265,8 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
   private DataFile createSubmitFile(final DataFile bamFile,
       final DataFile indexFile) throws IOException {
 
-    DataFile out =
-        new DataFile(indexFile.getParent(), indexFile.getName() + ".submitfile");
+    DataFile out = new DataFile(indexFile.getParent(),
+        indexFile.getName() + ".submitfile");
 
     Writer writer = new OutputStreamWriter(out.create());
     writer.write(bamFile.getSource() + '\t' + indexFile.getSource());
@@ -289,7 +285,7 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
    */
   private Job createIndexJob(final Configuration conf,
       final DataFile submitFile, final String jobDescription)
-      throws IOException {
+          throws IOException {
 
     final Configuration jobConf = new Configuration(conf);
 
@@ -338,11 +334,10 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
 
     final InputStream in = FileSystem.get(conf).open(bamFile);
 
-    final SamReader reader =
-        SamReaderFactory.makeDefault()
-            .enable(SamReaderFactory.Option.INCLUDE_SOURCE_IN_RECORDS)
-            .validationStringency(ValidationStringency.DEFAULT_STRINGENCY)
-            .open(SamInputResource.of(in));
+    final SamReader reader = SamReaderFactory.makeDefault()
+        .enable(SamReaderFactory.Option.INCLUDE_SOURCE_IN_RECORDS)
+        .validationStringency(ValidationStringency.DEFAULT_STRINGENCY)
+        .open(SamInputResource.of(in));
 
     final BAMIndexer indexer =
         new BAMIndexer(indexFile.getFileSystem(conf).create(indexFile),
@@ -350,6 +345,7 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
 
     for (SAMRecord rec : reader) {
       indexer.processAlignment(rec);
+
     }
 
     indexer.finish();
@@ -364,11 +360,10 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
 final class SortReducer extends
     Reducer<LongWritable, SAMRecordWritable, NullWritable, SAMRecordWritable> {
   @Override
-  protected void reduce(
-      LongWritable ignored,
+  protected void reduce(LongWritable ignored,
       Iterable<SAMRecordWritable> records,
       Reducer<LongWritable, SAMRecordWritable, NullWritable, SAMRecordWritable>.Context ctx)
-      throws IOException, InterruptedException {
+          throws IOException, InterruptedException {
     for (SAMRecordWritable rec : records)
       ctx.write(NullWritable.get(), rec);
   }
@@ -377,8 +372,8 @@ final class SortReducer extends
 // Because we want a total order and we may change the key when merging
 // headers, we can't use a mapper here: the InputSampler reads directly from
 // the InputFormat.
-final class SortInputFormat extends
-    FileInputFormat<LongWritable, SAMRecordWritable> {
+final class SortInputFormat
+    extends FileInputFormat<LongWritable, SAMRecordWritable> {
   private AnySAMInputFormat baseIF = null;
 
   private void initBaseIF(final Configuration conf) {
@@ -388,8 +383,8 @@ final class SortInputFormat extends
 
   @Override
   public RecordReader<LongWritable, SAMRecordWritable> createRecordReader(
-      InputSplit split, TaskAttemptContext ctx) throws InterruptedException,
-      IOException {
+      InputSplit split, TaskAttemptContext ctx)
+          throws InterruptedException, IOException {
     initBaseIF(ContextUtil.getConfiguration(ctx));
 
     final RecordReader<LongWritable, SAMRecordWritable> rr =
@@ -411,8 +406,8 @@ final class SortInputFormat extends
   }
 }
 
-final class SortRecordReader extends
-    RecordReader<LongWritable, SAMRecordWritable> {
+final class SortRecordReader
+    extends RecordReader<LongWritable, SAMRecordWritable> {
   private final RecordReader<LongWritable, SAMRecordWritable> baseRR;
 
   private Configuration conf;
@@ -443,8 +438,8 @@ final class SortRecordReader extends
   }
 
   @Override
-  public SAMRecordWritable getCurrentValue() throws InterruptedException,
-      IOException {
+  public SAMRecordWritable getCurrentValue()
+      throws InterruptedException, IOException {
     return baseRR.getCurrentValue();
   }
 
@@ -473,8 +468,8 @@ final class SortRecordReader extends
    * This class define the mapper that index a BAM file.
    * @author Laurent Jourdren
    */
-  public static final class IndexerMapper extends
-      Mapper<LongWritable, Text, NullWritable, NullWritable> {
+  public static final class IndexerMapper
+      extends Mapper<LongWritable, Text, NullWritable, NullWritable> {
 
     @Override
     protected void map(final LongWritable key, final Text value,

@@ -42,8 +42,8 @@ public class BinaryComparator extends AbstractComparator {
   private static final String COMPARATOR_NAME = "BinaryComparator";
 
   // Only file corresponding to the report step log
-  private static final Collection<String> EXTENSIONS = Sets.newHashSet(".bai",
-      "ebwt");
+  private static final Collection<String> EXTENSIONS =
+      Sets.newHashSet(".bai", "ebwt");
 
   private int numberElementsCompared;
 

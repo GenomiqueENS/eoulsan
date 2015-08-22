@@ -227,14 +227,12 @@ public class S3DataProtocol implements DataProtocol {
         md.setContentLength(this.metadata.getContentLength());
       }
 
-      final long fileLength =
-          this.file == null ? this.metadata.getContentLength() : this.file
-              .length();
+      final long fileLength = this.file == null
+          ? this.metadata.getContentLength() : this.file.length();
 
-      getLogger().info(
-          "Try to upload: "
-              + this.s3url + " (" + md.getContentType() + ", "
-              + md.getContentEncoding() + " " + fileLength + " bytes)");
+      getLogger().info("Try to upload: "
+          + this.s3url + " (" + md.getContentType() + ", "
+          + md.getContentEncoding() + " " + fileLength + " bytes)");
 
       int tryCount = 0;
       boolean uploadOk = false;
@@ -251,10 +249,8 @@ public class S3DataProtocol implements DataProtocol {
           uploadOk = true;
         } catch (AmazonClientException e) {
           ace = e;
-          getLogger().warning(
-              "Error while uploading "
-                  + this.s3url + " (Attempt " + tryCount + "): "
-                  + e.getMessage());
+          getLogger().warning("Error while uploading "
+              + this.s3url + " (Attempt " + tryCount + "): " + e.getMessage());
 
           try {
             Thread.sleep(10000);
@@ -274,11 +270,10 @@ public class S3DataProtocol implements DataProtocol {
       final long duration = end - start;
       final int speedKiB = (int) (fileLength / (duration / 1000.0) / 1024.0);
 
-      getLogger().info(
-          "Upload of "
-              + this.s3url + " (" + fileLength + " bytes) in "
-              + StringUtils.toTimeHumanReadable(duration) + " ms. (" + speedKiB
-              + " KiB/s)");
+      getLogger().info("Upload of "
+          + this.s3url + " (" + fileLength + " bytes) in "
+          + StringUtils.toTimeHumanReadable(duration) + " ms. (" + speedKiB
+          + " KiB/s)");
 
     }
 
@@ -289,18 +284,16 @@ public class S3DataProtocol implements DataProtocol {
       final Transfer myUpload;
 
       if (this.file != null) {
-        myUpload =
-            getTransferManager().upload(this.s3url.bucket,
-                this.s3url.getFilePath(), this.file);
+        myUpload = getTransferManager().upload(this.s3url.bucket,
+            this.s3url.getFilePath(), this.file);
       } else {
-        myUpload =
-            getTransferManager().upload(this.s3url.bucket,
-                this.s3url.getFilePath(), this.is, md);
+        myUpload = getTransferManager().upload(this.s3url.bucket,
+            this.s3url.getFilePath(), this.is, md);
       }
 
       try {
 
-        while (myUpload.isDone() == false) {
+        while (!myUpload.isDone()) {
 
           Thread.sleep(500);
         }
@@ -394,8 +387,8 @@ public class S3DataProtocol implements DataProtocol {
         new FileToUpload(dest, FileUtils.createInputStream(f), md2).upload();
 
         if (!f.delete()) {
-          getLogger().severe(
-              "Can not delete temporary file: " + f.getAbsolutePath());
+          getLogger()
+              .severe("Can not delete temporary file: " + f.getAbsolutePath());
         }
       }
 
@@ -503,8 +496,8 @@ public class S3DataProtocol implements DataProtocol {
       final Settings settings = EoulsanRuntime.getSettings();
 
       this.s3 =
-          new AmazonS3Client(new BasicAWSCredentials(
-              settings.getAWSAccessKey(), settings.getAWSSecretKey()));
+          new AmazonS3Client(new BasicAWSCredentials(settings.getAWSAccessKey(),
+              settings.getAWSSecretKey()));
 
       getLogger().info("AWS S3 account owner: " + this.s3.getS3AccountOwner());
 
@@ -515,8 +508,8 @@ public class S3DataProtocol implements DataProtocol {
   }
 
   /**
-   * Get transfert manager.
-   * @return the transfert manager
+   * Get transfer manager.
+   * @return the transfer manager
    */
   private TransferManager getTransferManager() {
 
@@ -563,7 +556,8 @@ public class S3DataProtocol implements DataProtocol {
   }
 
   @Override
-  public void delete(final DataFile file) throws IOException {
+  public void delete(final DataFile file, final boolean recursive)
+      throws IOException {
 
     throw new IOException("The delete() method is not supported by the "
         + getName() + " protocol");
@@ -578,12 +572,26 @@ public class S3DataProtocol implements DataProtocol {
   @Override
   public List<DataFile> list(final DataFile file) throws IOException {
 
-    throw new IOException("The list() method is not supported by the "
-        + getName() + " protocol");
+    throw new IOException(
+        "The list() method is not supported by the " + getName() + " protocol");
   }
 
   @Override
   public boolean canList() {
+
+    return false;
+  }
+
+  @Override
+  public void rename(final DataFile oldName, final DataFile newName)
+      throws IOException {
+
+    throw new IOException("The rename() method is not supported by the "
+        + getName() + " protocol");
+  }
+
+  @Override
+  public boolean canRename() {
 
     return false;
   }

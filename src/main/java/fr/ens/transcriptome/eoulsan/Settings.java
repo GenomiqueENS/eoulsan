@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
@@ -57,66 +58,75 @@ public final class Settings implements Serializable {
   private static final String AWS_ACCESS_KEY = "aws.access.key";
   private static final String AWS_SECRET_KEY = "aws.secret.key";
 
-  private static final String PRINT_STACK_TRACE_KEY = MAIN_PREFIX_KEY
-      + "printstacktrace";
+  private static final String PRINT_STACK_TRACE_KEY =
+      MAIN_PREFIX_KEY + "printstacktrace";
 
-  private static final String BYPASS_PLATFORM_CHECKING_KEY = MAIN_PREFIX_KEY
-      + "bypass.platform.checking";
+  private static final String BYPASS_PLATFORM_CHECKING_KEY =
+      MAIN_PREFIX_KEY + "bypass.platform.checking";
 
   private static final String TMP_DIR_KEY = MAIN_PREFIX_KEY + "tmp.dir";
 
-  private static final String LOCAL_THREADS_NUMBER = MAIN_PREFIX_KEY
-      + "local.threads";
+  private static final String LOCAL_THREADS_NUMBER =
+      MAIN_PREFIX_KEY + "local.threads";
+
+  private static final String DATA_FORMAT_PATH =
+      MAIN_PREFIX_KEY + "format.path";
+
+  private static final String GALAXY_TOOL_PATH =
+      MAIN_PREFIX_KEY + "galaxy.tool.path";
 
   private static final String HADOOP_AWS_ACCESS_KEY =
       "hadoop.conf.fs.s3n.awsAccessKeyId";
   private static final String HADOOP_AWS_SECRET_KEY =
       "hadoop.conf.fs.s3n.awsSecretAccessKey";
 
-  private static final String HADOOP_LOG_LEVEL_KEY = MAIN_PREFIX_KEY
-      + ".hadoop.log.level";
+  private static final String CLUSTER_SCHEDULER_NAME_KEY =
+      MAIN_PREFIX_KEY + "cluster.scheduler.name";
 
-  private static final String RSERVE_ENABLED_KEY = MAIN_PREFIX_KEY
-      + "rserve.enable";
-  private static final String RSERVE_SERVER_NAME_KEY = MAIN_PREFIX_KEY
-      + "rserve.servername";
+  private static final String HADOOP_LOG_LEVEL_KEY =
+      MAIN_PREFIX_KEY + "hadoop.log.level";
 
-  private static final String RSERVE_KEEP_FILES_KEY = MAIN_PREFIX_KEY
-      + "rserve.keep.files";
-  private static final String SAVE_RSCRIPTS_KEY = MAIN_PREFIX_KEY
-      + "save.r.scripts";
+  private static final String RSERVE_ENABLED_KEY =
+      MAIN_PREFIX_KEY + "rserve.enable";
+  private static final String RSERVE_SERVER_NAME_KEY =
+      MAIN_PREFIX_KEY + "rserve.servername";
 
-  private static final String OBFUSCATE_DESIGN_KEY = MAIN_PREFIX_KEY
-      + "design.obfuscate";
+  private static final String RSERVE_KEEP_FILES_KEY =
+      MAIN_PREFIX_KEY + "rserve.keep.files";
+  private static final String SAVE_RSCRIPTS_KEY =
+      MAIN_PREFIX_KEY + "save.r.scripts";
+
+  private static final String OBFUSCATE_DESIGN_KEY =
+      MAIN_PREFIX_KEY + "design.obfuscate";
   private static final String OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_KEY =
       MAIN_PREFIX_KEY + "design.remove.replicate.info";
 
-  private static final String DEFAULT_FASTQ_FORMAT_KEY = MAIN_PREFIX_KEY
-      + "default.fastq.format";
+  private static final String DEFAULT_FASTQ_FORMAT_KEY =
+      MAIN_PREFIX_KEY + "default.fastq.format";
 
-  private static final String GENOME_MAPPER_INDEX_STORAGE_KEY = MAIN_PREFIX_KEY
-      + "genome.mapper.index.storage.path";
+  private static final String GENOME_MAPPER_INDEX_STORAGE_KEY =
+      MAIN_PREFIX_KEY + "genome.mapper.index.storage.path";
 
-  private static final String GENOME_DESC_STORAGE_KEY = MAIN_PREFIX_KEY
-      + "genome.desc.storage.path";
+  private static final String GENOME_DESC_STORAGE_KEY =
+      MAIN_PREFIX_KEY + "genome.desc.storage.path";
 
-  private static final String GENOME_STORAGE_KEY = MAIN_PREFIX_KEY
-      + "genome.storage.path";
+  private static final String GENOME_STORAGE_KEY =
+      MAIN_PREFIX_KEY + "genome.storage.path";
 
-  private static final String ANNOTATION_STORAGE_KEY = MAIN_PREFIX_KEY
-      + "annotation.storage.path";
+  private static final String ANNOTATION_STORAGE_KEY =
+      MAIN_PREFIX_KEY + "annotation.storage.path";
 
   private static final String ADDITIONAL_ANNOTATION_STORAGE_KEY =
       MAIN_PREFIX_KEY + "additional.annotation.storage.path";
 
-  private static final String SEND_RESULT_MAIL_KEY = MAIN_PREFIX_KEY
-      + ".mail.send.result.mail";
+  private static final String SEND_RESULT_MAIL_KEY =
+      MAIN_PREFIX_KEY + "mail.send.result.mail";
 
-  private static final String RESULT_MAIL_KEY = MAIN_PREFIX_KEY
-      + ".mail.send.result.mail.to";
+  private static final String RESULT_MAIL_KEY =
+      MAIN_PREFIX_KEY + "mail.send.result.mail.to";
 
-  private static final String SMTP_HOST_KEY = MAIN_PREFIX_KEY
-      + ".mail.smtp.host";
+  private static final String SMTP_HOST_KEY =
+      MAIN_PREFIX_KEY + "mail.smtp.host";
 
   private static final String DOCKER_URI_KEY = MAIN_PREFIX_KEY + "docker.uri";
 
@@ -134,12 +144,11 @@ public final class Settings implements Serializable {
 
   private static final String UI_NAME_KEY = MAIN_PREFIX_KEY + "ui.name";
 
-  private static final Set<String> FORBIDDEN_KEYS = Utils
-      .unmodifiableSet(new String[] { HADOOP_AWS_ACCESS_KEY,
-          HADOOP_AWS_SECRET_KEY });
+  private static final Set<String> FORBIDDEN_KEYS = Utils.unmodifiableSet(
+      new String[] { HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY });
 
-  private static final Set<String> OBFUSCATED_KEYS = Utils
-      .unmodifiableSet(new String[] { AWS_ACCESS_KEY, AWS_SECRET_KEY,
+  private static final Set<String> OBFUSCATED_KEYS =
+      Utils.unmodifiableSet(new String[] { AWS_ACCESS_KEY, AWS_SECRET_KEY,
           HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY });
 
   //
@@ -173,9 +182,8 @@ public final class Settings implements Serializable {
    */
   public boolean isPrintStackTrace() {
 
-    final String value =
-        this.properties.getProperty(PRINT_STACK_TRACE_KEY,
-            Boolean.toString(Globals.PRINT_STACK_TRACE_DEFAULT));
+    final String value = this.properties.getProperty(PRINT_STACK_TRACE_KEY,
+        Boolean.toString(Globals.PRINT_STACK_TRACE_DEFAULT));
 
     return Boolean.valueOf(value);
   }
@@ -205,6 +213,15 @@ public final class Settings implements Serializable {
   public String getHadoopLogLevel() {
 
     return this.properties.getProperty(HADOOP_LOG_LEVEL_KEY);
+  }
+
+  /**
+   * Get the name of the cluster scheduler.
+   * @return the name of the cluster scheduler
+   */
+  public String getClusterSchedulerName() {
+
+    return this.properties.getProperty(CLUSTER_SCHEDULER_NAME_KEY);
   }
 
   /**
@@ -241,8 +258,8 @@ public final class Settings implements Serializable {
    */
   public boolean isKeepRServeFiles() {
 
-    return Boolean.parseBoolean(this.properties
-        .getProperty(RSERVE_KEEP_FILES_KEY));
+    return Boolean
+        .parseBoolean(this.properties.getProperty(RSERVE_KEEP_FILES_KEY));
   }
 
   /**
@@ -279,9 +296,9 @@ public final class Settings implements Serializable {
    */
   public boolean isObfuscateDesign() {
 
-    return Boolean.parseBoolean(this.properties.getProperty(
-        OBFUSCATE_DESIGN_KEY,
-        Boolean.toString(Globals.OBFUSCATE_DESIGN_DEFAULT)));
+    return Boolean
+        .parseBoolean(this.properties.getProperty(OBFUSCATE_DESIGN_KEY,
+            Boolean.toString(Globals.OBFUSCATE_DESIGN_DEFAULT)));
   }
 
   /**
@@ -290,8 +307,8 @@ public final class Settings implements Serializable {
    */
   public boolean isObfuscateDesignRemoveReplicateInfo() {
 
-    return Boolean.parseBoolean(this.properties.getProperty(
-        OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_KEY, Boolean
+    return Boolean.parseBoolean(this.properties
+        .getProperty(OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_KEY, Boolean
             .toString(Globals.OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_DEFAULT)));
   }
 
@@ -321,8 +338,8 @@ public final class Settings implements Serializable {
    */
   public boolean isBypassPlatformChecking() {
 
-    return Boolean.parseBoolean(this.properties
-        .getProperty(BYPASS_PLATFORM_CHECKING_KEY));
+    return Boolean.parseBoolean(
+        this.properties.getProperty(BYPASS_PLATFORM_CHECKING_KEY));
   }
 
   /**
@@ -376,8 +393,8 @@ public final class Settings implements Serializable {
    */
   public boolean isSendResultMail() {
 
-    return Boolean.parseBoolean(this.properties
-        .getProperty(SEND_RESULT_MAIL_KEY));
+    return Boolean
+        .parseBoolean(this.properties.getProperty(SEND_RESULT_MAIL_KEY));
   }
 
   /**
@@ -413,9 +430,9 @@ public final class Settings implements Serializable {
    */
   public int getZooKeeperDefaultPort() {
 
-    return Integer.parseInt(this.properties
-        .getProperty(ZOOKEEPER_DEFAULT_PORT_KEY, ""
-            + Globals.ZOOKEEPER_DEFAULT_PORT_DEFAULT));
+    return Integer
+        .parseInt(this.properties.getProperty(ZOOKEEPER_DEFAULT_PORT_KEY,
+            "" + Globals.ZOOKEEPER_DEFAULT_PORT_DEFAULT));
   }
 
   /**
@@ -424,9 +441,9 @@ public final class Settings implements Serializable {
    */
   public int getZooKeeperSessionTimeout() {
 
-    return Integer.parseInt(this.properties.getProperty(
-        ZOOKEEPER_SESSION_TIMEOUT_KEY, ""
-            + Globals.ZOOKEEPER_SESSION_TIMEOUT_DEFAULT));
+    return Integer
+        .parseInt(this.properties.getProperty(ZOOKEEPER_SESSION_TIMEOUT_KEY,
+            "" + Globals.ZOOKEEPER_SESSION_TIMEOUT_DEFAULT));
   }
 
   /**
@@ -435,9 +452,9 @@ public final class Settings implements Serializable {
    */
   public boolean isUseOldEoulsanResultFormat() {
 
-    return Boolean.parseBoolean(this.properties.getProperty(
-        USE_OLD_EOULSAN_RESULT_FORMAT_KEY, ""
-            + Globals.USE_OLD_EOULSAN_RESULT_FORMAT_DEFAULT));
+    return Boolean.parseBoolean(
+        this.properties.getProperty(USE_OLD_EOULSAN_RESULT_FORMAT_KEY,
+            "" + Globals.USE_OLD_EOULSAN_RESULT_FORMAT_DEFAULT));
   }
 
   /**
@@ -450,12 +467,49 @@ public final class Settings implements Serializable {
   }
 
   /**
-   * Get the Docker URI.
-   * @return the docker URI
+   * Get the Docker connection string.
+   * @return the docker connection string
    */
-  public String getDockerURI() {
+  public String getDockerConnection() {
 
     return this.properties.getProperty(DOCKER_URI_KEY);
+  }
+
+  /**
+   * Get the Docker connection URI.
+   * @return the docker connection URI
+   */
+  public URI getDockerConnectionURI() {
+
+    final String connectionString = this.properties.getProperty(DOCKER_URI_KEY);
+
+    if (connectionString == null) {
+      return null;
+    }
+
+    try {
+      return new URI(connectionString);
+    } catch (URISyntaxException e) {
+      return null;
+    }
+  }
+
+  /**
+   * Get the format path.
+   * @return the format path
+   */
+  public String getDataFormatPath() {
+
+    return this.properties.getProperty(DATA_FORMAT_PATH);
+  }
+
+  /**
+   * Get the Galaxy tool path.
+   * @returnthe Galaxy tool path
+   */
+  public String getGalaxyToolPath() {
+
+    return this.properties.getProperty(GALAXY_TOOL_PATH);
   }
 
   /**
@@ -539,7 +593,6 @@ public final class Settings implements Serializable {
   /**
    * Get the value of the setting as a boolean value
    * @return the value of the setting as an integer
-   * @throws EoulsanException if the value is not an integer
    */
   public boolean getBooleanSetting(final String settingName) {
 
@@ -621,6 +674,15 @@ public final class Settings implements Serializable {
   public void setHadoopLogLevel(final String value) {
 
     this.properties.setProperty(HADOOP_LOG_LEVEL_KEY, value);
+  }
+
+  /**
+   * Set the name of the cluster scheduler.
+   * @param schedulerName the name of the cluster scheduler
+   */
+  public void setClusterSchedulerName(final String schedulerName) {
+
+    this.properties.setProperty(CLUSTER_SCHEDULER_NAME_KEY, schedulerName);
   }
 
   /**
@@ -857,11 +919,29 @@ public final class Settings implements Serializable {
 
   /**
    * Set the Docker URI.
-   * @param uiName the UI name
+   * @param uri the Docker URI
    */
-  public void setDockerURI(final String uri) {
+  public void setDockerConnectionURI(final String uri) {
 
     this.properties.setProperty(DOCKER_URI_KEY, uri);
+  }
+
+  /**
+   * Set the format path.
+   * @param path the format
+   */
+  public void setDataFormatPath(final String path) {
+
+    this.properties.setProperty(DATA_FORMAT_PATH, path);
+  }
+
+  /**
+   * Set the Galaxy tool path.
+   * @param path the format
+   */
+  public void setGalaxyToolPath(final String path) {
+
+    this.properties.setProperty(DATA_FORMAT_PATH, path);
   }
 
   /**
@@ -1001,8 +1081,8 @@ public final class Settings implements Serializable {
    * @throws IOException if an error occurs while reading the file
    * @throws EoulsanException if an invalid key is found in configuration file
    */
-  public void loadSettings(final File file) throws IOException,
-      EoulsanException {
+  public void loadSettings(final File file)
+      throws IOException, EoulsanException {
 
     getLogger().info("Load configuration file: " + file.getAbsolutePath());
     final InputStream is = FileUtils.createInputStream(file);
@@ -1012,8 +1092,8 @@ public final class Settings implements Serializable {
 
     for (String key : this.properties.stringPropertyNames()) {
       if (FORBIDDEN_KEYS.contains(key)) {
-        throw new EoulsanException("Forbiden key found in configuration file: "
-            + key);
+        throw new EoulsanException(
+            "Forbiden key found in configuration file: " + key);
       }
 
       if ("main.accesskey".equals(key.toLowerCase())) {
@@ -1047,8 +1127,8 @@ public final class Settings implements Serializable {
 
   private void init() {
 
-    getLogger().info(
-        "System temp directory: " + System.getProperty("java.io.tmpdir"));
+    getLogger()
+        .info("System temp directory: " + System.getProperty("java.io.tmpdir"));
   }
 
   /**
@@ -1070,8 +1150,8 @@ public final class Settings implements Serializable {
     if (OBFUSCATED_KEYS.contains(key)) {
       getLogger().info("Setting: " + key + "=xxxx value not shown xxxx");
     } else {
-      getLogger().info(
-          "Setting: " + key + "=" + this.properties.getProperty(key));
+      getLogger()
+          .info("Setting: " + key + "=" + this.properties.getProperty(key));
     }
   }
 
@@ -1106,8 +1186,8 @@ public final class Settings implements Serializable {
    * @throws IOException if an error occurs while reading settings
    * @throws EoulsanException if an invalid key is found in configuration file
    */
-  Settings(final boolean loadDefaultConfigurationFile) throws IOException,
-      EoulsanException {
+  Settings(final boolean loadDefaultConfigurationFile)
+      throws IOException, EoulsanException {
 
     init();
 

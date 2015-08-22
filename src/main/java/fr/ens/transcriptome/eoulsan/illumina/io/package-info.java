@@ -27,4 +27,3 @@
  * @since 1.1
  */
 package fr.ens.transcriptome.eoulsan.illumina.io;
-

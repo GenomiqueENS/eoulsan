@@ -68,8 +68,8 @@ public abstract class LinuxInfo {
       br.close();
     } catch (IOException e) {
 
-      getLogger().warning(
-          "unable to parse " + getInfoFile() + ": " + e.getMessage());
+      getLogger()
+          .warning("unable to parse " + getInfoFile() + ": " + e.getMessage());
     }
   }
 

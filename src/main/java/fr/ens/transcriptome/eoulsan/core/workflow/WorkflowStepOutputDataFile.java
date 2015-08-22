@@ -47,8 +47,8 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public final class WorkflowStepOutputDataFile implements
-    Comparable<WorkflowStepOutputDataFile> {
+public final class WorkflowStepOutputDataFile
+    implements Comparable<WorkflowStepOutputDataFile> {
 
   private final AbstractWorkflowStep step;
   private final String portName;
@@ -127,7 +127,7 @@ public final class WorkflowStepOutputDataFile implements
    * @param portName the port name
    * @param format format of the file
    * @param sample sample of the file
-   * @param fileIndex file index of the file for multifile data
+   * @param fileIndex file index of the file for multi-file data
    * @return a new DataFile object
    */
   private static DataFile newDataFile(final AbstractWorkflowStep step,
@@ -195,7 +195,7 @@ public final class WorkflowStepOutputDataFile implements
    * @param fieldValues field values in the design
    * @param format format of the file
    * @param sample sample of the file
-   * @param fileIndex file index of the file for multifile data
+   * @param fileIndex file index of the file for multi-file data
    * @return a new DataFile object
    */
   private static DataFile newDesignDataFile(final List<String> fieldValues,
@@ -224,7 +224,7 @@ public final class WorkflowStepOutputDataFile implements
    * @param portName the port that generated the file
    * @param format format of the file
    * @param sample sample of the file
-   * @param fileIndex file index of the file for multifile data
+   * @param fileIndex file index of the file for multi-file data
    * @return a new DataFile object
    */
   private static DataFile newStandardDataFile(final AbstractWorkflowStep step,
@@ -264,9 +264,8 @@ public final class WorkflowStepOutputDataFile implements
     try {
       md = file.getMetaData();
     } catch (IOException e) {
-      getLogger().warning(
-          "Error while getting metadata for file "
-              + file + ": " + e.getMessage());
+      getLogger().warning("Error while getting metadata for file "
+          + file + ": " + e.getMessage());
       md = null;
     }
 
@@ -276,8 +275,8 @@ public final class WorkflowStepOutputDataFile implements
 
     final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
 
-    for (DataFormat sourceDf : dfr.getDataFormatsFromExtension(file
-        .getExtension())) {
+    for (DataFormat sourceDf : dfr
+        .getDataFormatsFromExtension(file.getExtension())) {
 
       if (sourceDf.equals(df)) {
         return true;
@@ -331,7 +330,7 @@ public final class WorkflowStepOutputDataFile implements
    * @param portName the port name that generated the file
    * @param format the format of the file
    * @param sample the sample of the file
-   * @param fileIndex file index of the file for multifile data
+   * @param fileIndex file index of the file for multi-file data
    * @param compression the compression of the file
    * @return a file name as a String
    */
@@ -383,7 +382,7 @@ public final class WorkflowStepOutputDataFile implements
 
   /**
    * Get the count of files that exists for a step, a format and sample (case of
-   * multifiles data).
+   * multi-files data).
    * @param outputPort output port that create the file
    * @param sample sample of the file
    * @param existingFiles true if existence of file must be tested. If false the
@@ -402,7 +401,7 @@ public final class WorkflowStepOutputDataFile implements
 
     if (format.getMaxFilesCount() < 2) {
       throw new EoulsanRuntimeException(
-          "Only multifiles DataFormat are handled by this method.");
+          "Only multi-files DataFormat are handled by this method.");
     }
 
     switch (step.getType()) {
@@ -418,9 +417,8 @@ public final class WorkflowStepOutputDataFile implements
 
       do {
 
-        final DataFile file =
-            newStandardDataFile(step, outputPort.getName(), format, sample,
-                count, compression);
+        final DataFile file = newStandardDataFile(step, outputPort.getName(),
+            format, sample, count, compression);
 
         found = file.exists();
         if (found) {
@@ -460,7 +458,7 @@ public final class WorkflowStepOutputDataFile implements
    * Constructor.
    * @param outputPort output port that create the file
    * @param sample sample of the file
-   * @param fileIndex file index of the file for multifile data
+   * @param fileIndex file index of the file for multi-file data
    */
   public WorkflowStepOutputDataFile(final WorkflowOutputPort outputPort,
       final Sample sample, final int fileIndex) {

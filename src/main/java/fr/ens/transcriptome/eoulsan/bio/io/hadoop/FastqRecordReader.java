@@ -77,16 +77,16 @@ public class FastqRecordReader extends RecordReader<Text, Text> {
 
   @Override
   public void initialize(final InputSplit inputSplit,
-      final TaskAttemptContext taskAttemptContext) throws IOException,
-      InterruptedException {
+      final TaskAttemptContext taskAttemptContext)
+          throws IOException, InterruptedException {
 
     this.lrr = new FastqLineRecordReader();
     this.lrr.initialize(inputSplit, taskAttemptContext);
   }
 
   @Override
-  public synchronized boolean nextKeyValue() throws IOException,
-      InterruptedException {
+  public synchronized boolean nextKeyValue()
+      throws IOException, InterruptedException {
 
     int count = 0;
     boolean found = false;
@@ -126,9 +126,8 @@ public class FastqRecordReader extends RecordReader<Text, Text> {
     this.key = new Text(memberId(this.lines[0].substring(1)));
 
     // Set value
-    this.value =
-        new Text(this.lines[0].substring(1)
-            + '\t' + this.lines[1] + '\t' + this.lines[3]);
+    this.value = new Text(this.lines[0].substring(1)
+        + '\t' + this.lines[1] + '\t' + this.lines[3]);
 
     // Clean array
     this.lines[0] = this.lines[1] = this.lines[2] = this.lines[3] = null;

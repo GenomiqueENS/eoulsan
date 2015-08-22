@@ -99,13 +99,15 @@ public class FastqReader implements ReadSequenceReader {
         if (entryLine == 1 && trim.charAt(0) != '@') {
           throw new BadBioEntryException(
               "Invalid Fastq file. First line of the entry don't start with '@' at line "
-                  + this.lineCount, line);
+                  + this.lineCount,
+              line);
         }
 
         if (entryLine == 3 && trim.charAt(0) != '+') {
           throw new BadBioEntryException(
               "Invalid Fastq file. Third line of the entry don't start with '+' at line "
-                  + this.lineCount, line);
+                  + this.lineCount,
+              line);
         }
 
         if (entryLine == 4) {

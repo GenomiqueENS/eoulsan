@@ -70,8 +70,8 @@ public class HTSeqCounter extends AbstractExpressionCounter {
   protected void internalCount(final DataFile alignmentFile,
       final DataFile annotationFile, final DataFile expressionFile,
       final DataFile genomeDescFile, final Reporter reporter,
-      final String counterGroup) throws IOException, EoulsanException,
-      BadBioEntryException {
+      final String counterGroup)
+          throws IOException, EoulsanException, BadBioEntryException {
 
     countReadsInFeatures(alignmentFile, annotationFile, expressionFile,
         getStranded(), getOverlapMode(), isRemoveAmbiguousCases(),
@@ -128,8 +128,8 @@ public class HTSeqCounter extends AbstractExpressionCounter {
       final String attributeId, final boolean splitAttributeValues,
       final boolean quiet, final int minAverageQual, final DataFile samOutFile,
       final DataFile genomeDescFile, final Reporter reporter,
-      final String counterGroup) throws EoulsanException, IOException,
-      BadBioEntryException {
+      final String counterGroup)
+          throws EoulsanException, IOException, BadBioEntryException {
 
     final GenomicArray<String> features =
         new GenomicArray<>(GenomeDescription.load(genomeDescFile.open()));
@@ -146,15 +146,14 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
     if (counts.size() == 0) {
       writer.close();
-      throw new EoulsanException("Warning: No features of type '"
-          + featureType + "' found.\n");
+      throw new EoulsanException(
+          "Warning: No features of type '" + featureType + "' found.\n");
     }
 
     List<GenomicInterval> ivSeq = new ArrayList<>();
 
-    final SamReader inputSam =
-        SamReaderFactory.makeDefault()
-            .open(SamInputResource.of(samFile.open()));
+    final SamReader inputSam = SamReaderFactory.makeDefault()
+        .open(SamInputResource.of(samFile.open()));
 
     // paired-end mode ?
     pairedEnd = isPairedData(samFile.open());
@@ -240,9 +239,10 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         }
 
         // multiple alignment
-        if ((sam1.getAttribute("NH") != null && sam1.getIntegerAttribute("NH") > 1)
-            || (sam2.getAttribute("NH") != null && sam2
-                .getIntegerAttribute("NH") > 1)) {
+        if ((sam1.getAttribute("NH") != null
+            && sam1.getIntegerAttribute("NH") > 1)
+            || (sam2.getAttribute("NH") != null
+                && sam2.getIntegerAttribute("NH") > 1)) {
           nonunique++;
           continue;
         }
@@ -258,8 +258,8 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
       Set<String> fs = null;
 
-      fs =
-          HTSeqUtils.featuresOverlapped(ivSeq, features, overlapMode, stranded);
+      fs = HTSeqUtils.featuresOverlapped(ivSeq, features, overlapMode,
+          stranded);
 
       if (fs == null) {
         fs = Collections.emptySet();
@@ -315,8 +315,8 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         nonunique);
 
     reporter.incrCounter(counterGroup,
-        ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(), empty
-            + ambiguous + lowqual + notaligned + nonunique);
+        ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(),
+        empty + ambiguous + lowqual + notaligned + nonunique);
 
     writer.close();
   }

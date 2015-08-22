@@ -36,7 +36,7 @@ import java.util.Set;
 public interface TicketScheduler extends Remote {
 
   /**
-   * Update a ticket by the TicketScheduler and get all the valids tickets.
+   * Update a ticket by the TicketScheduler and get all the valid tickets.
    * @param ticket the ticket to update
    * @return a set with all the valid tickets
    * @throws RemoteException if an error occurs with the server

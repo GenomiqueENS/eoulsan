@@ -45,8 +45,8 @@ import org.apache.hadoop.util.ReflectionUtils;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class ExpressionOutputFormat extends
-    FileOutputFormat<Text, LongWritable> {
+public class ExpressionOutputFormat
+    extends FileOutputFormat<Text, LongWritable> {
 
   @Override
   public RecordWriter<Text, LongWritable> getRecordWriter(
@@ -61,7 +61,7 @@ public class ExpressionOutputFormat extends
     if (isCompressed) {
       Class<? extends CompressionCodec> codecClass =
           getOutputCompressorClass(context, GzipCodec.class);
-      codec = (CompressionCodec) ReflectionUtils.newInstance(codecClass, conf);
+      codec = ReflectionUtils.newInstance(codecClass, conf);
       extension = codec.getDefaultExtension();
     }
 
@@ -76,8 +76,8 @@ public class ExpressionOutputFormat extends
     } else {
 
       FSDataOutputStream fileOut = fs.create(file, false);
-      return new ExpressionRecordWriter(context, new DataOutputStream(
-          codec.createOutputStream(fileOut)));
+      return new ExpressionRecordWriter(context,
+          new DataOutputStream(codec.createOutputStream(fileOut)));
     }
   }
 

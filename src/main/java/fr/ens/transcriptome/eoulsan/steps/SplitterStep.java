@@ -41,7 +41,7 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
@@ -65,7 +65,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @author Laurent Jourdren
  * @since 2.0
  */
-@HadoopCompatible
+@LocalOnly
 @ReuseStepInstance
 public class SplitterStep extends AbstractStep {
 
@@ -117,7 +117,7 @@ public class SplitterStep extends AbstractStep {
 
       return new Iterator<DataFile>() {
 
-        final Map<Integer, Integer> counts = new HashMap<Integer, Integer>();
+        final Map<Integer, Integer> counts = new HashMap<>();
 
         /**
          * Increment the counter for the current fileIndex.
@@ -196,8 +196,9 @@ public class SplitterStep extends AbstractStep {
   @Override
   public OutputPorts getOutputPorts() {
 
-    return new OutputPortsBuilder().addPort("output", true,
-        this.splitter.getFormat(), this.compression).create();
+    return new OutputPortsBuilder()
+        .addPort("output", true, this.splitter.getFormat(), this.compression)
+        .create();
   }
 
   @Override
@@ -212,9 +213,8 @@ public class SplitterStep extends AbstractStep {
 
       case "format":
         // Get format
-        final DataFormat format =
-            DataFormatRegistry.getInstance().getDataFormatFromNameOrAlias(
-                p.getValue());
+        final DataFormat format = DataFormatRegistry.getInstance()
+            .getDataFormatFromNameOrAlias(p.getValue());
 
         // Check if the format exists
         if (format == null) {
@@ -223,8 +223,8 @@ public class SplitterStep extends AbstractStep {
 
         // Check if a splitter exists for the format
         if (!format.isSplitter()) {
-          throw new EoulsanException("No splitter exists for format: "
-              + format.getName());
+          throw new EoulsanException(
+              "No splitter exists for format: " + format.getName());
         }
 
         // Set the splitter
@@ -251,7 +251,8 @@ public class SplitterStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     final DataFormat format = this.splitter.getFormat();
 
@@ -271,8 +272,8 @@ public class SplitterStep extends AbstractStep {
       if (format.getMaxFilesCount() == 1) {
 
         // Launch splitting
-        this.splitter.split(inData.getDataFile(), new SplitterIterator(outData,
-            metadata).getIterator());
+        this.splitter.split(inData.getDataFile(),
+            new SplitterIterator(outData, metadata).getIterator());
 
       } else {
 
@@ -281,7 +282,8 @@ public class SplitterStep extends AbstractStep {
             new SplitterIterator(outData, metadata);
 
         // For each file of the multi-file format
-        for (int fileIndex = 0; fileIndex < inData.getDataFileCount(); fileIndex++) {
+        for (int fileIndex = 0; fileIndex < inData
+            .getDataFileCount(); fileIndex++) {
 
           // Launch splitting
           this.splitter.split(inData.getDataFile(fileIndex),

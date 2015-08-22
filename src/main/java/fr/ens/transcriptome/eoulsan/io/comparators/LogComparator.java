@@ -67,9 +67,8 @@ public class LogComparator extends AbstractComparator {
         this.numberElementsCompared++;
 
         // Compute difference between two reporter
-        diffExpectedTested =
-            logExpected.getCounterValue(counterGroup, counter)
-                - getCounterValue(logTested, counterGroup, counter);
+        diffExpectedTested = logExpected.getCounterValue(counterGroup, counter)
+            - getCounterValue(logTested, counterGroup, counter);
 
         if (Math.abs(diffExpectedTested) >= 1) {
           setCauseFailComparison("Invalid value found: "

@@ -128,9 +128,10 @@ public interface DataProtocol {
   /**
    * Delete a file.
    * @param file file to delete
+   * @param recursive recursive deletion
    * @throws IOException if an error occurs while deleting the file
    */
-  void delete(DataFile file) throws IOException;
+  void delete(DataFile file, boolean recursive) throws IOException;
 
   /**
    * List a directory.
@@ -139,6 +140,14 @@ public interface DataProtocol {
    * @throws IOException if an error occurs while listing the directory
    */
   List<DataFile> list(DataFile dir) throws IOException;
+
+  /**
+   * Rename a file.
+   * @param file the file to rename
+   * @param dest the destination file
+   * @throws IOException if an error occurs while renaming the directory
+   */
+  void rename(DataFile file, DataFile dest) throws IOException;
 
   /**
    * Get the metadata for the source.
@@ -183,6 +192,12 @@ public interface DataProtocol {
    * @return true if list() is available
    */
   boolean canList();
+
+  /**
+   * Test if the renameTo() method is available with this protocol.
+   * @return true if renameTo() is available
+   */
+  boolean canRename();
 
   /**
    * Get the underlying File object for the DataFile if the protocol allow it.

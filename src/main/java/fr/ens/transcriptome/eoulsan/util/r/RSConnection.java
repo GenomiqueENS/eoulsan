@@ -53,8 +53,7 @@ public interface RSConnection {
    * @return an inputStream
    * @throws REngineException if an exception occurs while reading file
    */
-  public InputStream getFileInputStream(final String filename)
-      throws REngineException;
+  InputStream getFileInputStream(final String filename) throws REngineException;
 
   /**
    * Create an outputStream on a file on RServer.
@@ -86,10 +85,10 @@ public interface RSConnection {
   /**
    * Get a file from the RServer.
    * @param rServeFilename filename of the file to retrieve
-   * @param outputfile output file of the file to retrieve
+   * @param outputFile output file of the file to retrieve
    * @throws REngineException if an error occurs while downloading the file
    */
-  void getFile(final String rServeFilename, final File outputfile)
+  void getFile(final String rServeFilename, final File outputFile)
       throws REngineException;
 
   /**
@@ -116,7 +115,6 @@ public interface RSConnection {
 
   /**
    * Destroy the connection to the Rserve server
-   * @throws REngineException if an error occurs while deleting to Rserve
    */
   void disConnect();
 

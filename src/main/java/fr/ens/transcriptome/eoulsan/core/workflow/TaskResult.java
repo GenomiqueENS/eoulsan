@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Collections;
@@ -66,6 +67,34 @@ public class TaskResult implements StepResult, Serializable {
   private final Map<String, Long> counters = new HashMap<>();
   private final String taskMessage;
   private final String taskDescription;
+
+  /**
+   * This class allow to use ObjectInputStream with a ClassLoader that is not
+   * the default bootstrap ClassLoader. This is very useful is Hadoop mode.
+   */
+  private static class ClassLoaderObjectInputStream extends ObjectInputStream {
+
+    private ClassLoader classLoader;
+
+    public ClassLoaderObjectInputStream(ClassLoader classLoader, InputStream in)
+        throws IOException {
+      super(in);
+      this.classLoader = classLoader;
+    }
+
+    @Override
+    protected Class<?> resolveClass(ObjectStreamClass desc)
+        throws IOException, ClassNotFoundException {
+
+      try {
+        String name = desc.getName();
+        return Class.forName(name, false, classLoader);
+      } catch (ClassNotFoundException e) {
+        return super.resolveClass(desc);
+      }
+    }
+
+  }
 
   TaskContext getContext() {
     return this.context;
@@ -182,17 +211,16 @@ public class TaskResult implements StepResult, Serializable {
    * @param in input stream
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskResult deserialize(final InputStream in) throws IOException {
+  public static TaskResult deserialize(final InputStream in)
+      throws IOException {
 
     checkNotNull(in, "in argument cannot be null");
 
-    try {
-      final ObjectInputStream ois = new ObjectInputStream(in);
+    try (final ObjectInputStream ois = new ClassLoaderObjectInputStream(
+        Thread.currentThread().getContextClassLoader(), in)) {
 
       // Read TaskContext object
       final TaskResult result = (TaskResult) ois.readObject();
-
-      ois.close();
 
       return result;
 

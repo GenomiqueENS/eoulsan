@@ -67,8 +67,8 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 public class ExpressionMapper extends Mapper<Text, Text, Text, Text> {
 
   // Parameters keys
-  static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
-      + ".expression.genome.desc.file";
+  static final String GENOME_DESC_PATH_KEY =
+      Globals.PARAMETER_PREFIX + ".expression.genome.desc.file";
 
   private String counterGroup;
 
@@ -104,9 +104,8 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, Text> {
 
       context.getCounter(this.counterGroup,
           INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
-      getLogger().info(
-          "Invalid SAM output entry: "
-              + e.getMessage() + " line='" + line + "'");
+      getLogger().info("Invalid SAM output entry: "
+          + e.getMessage() + " line='" + line + "'");
       return;
     }
 
@@ -146,8 +145,8 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, Text> {
       this.resultKey.set(e.getParentId());
       this.resultValue.set(e.getChromosome()
           + "\t" + e.getStart() + "\t" + e.getEnd() + "\t" + e.getStrand()
-          + "\t" + (count++) + "\t" + nbExons + "\t" + chr + "\t" + start
-          + "\t" + stop);
+          + "\t" + (count++) + "\t" + nbExons + "\t" + chr + "\t" + start + "\t"
+          + stop);
 
       context.write(this.resultKey, this.resultValue);
     }
@@ -174,9 +173,8 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, Text> {
             "Retrieve more than one file in distributed cache");
       }
 
-      getLogger().info(
-          "Genome index compressed file (from distributed cache): "
-              + localCacheFiles[0]);
+      getLogger().info("Genome index compressed file (from distributed cache): "
+          + localCacheFiles[0]);
 
       if (localCacheFiles == null || localCacheFiles.length == 0) {
         throw new IOException("Unable to retrieve annotation index");
@@ -204,9 +202,8 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, Text> {
       }
 
       // Load genome description object
-      final GenomeDescription genomeDescription =
-          GenomeDescription.load(PathUtils.createInputStream(new Path(
-              genomeDescFile), conf));
+      final GenomeDescription genomeDescription = GenomeDescription
+          .load(PathUtils.createInputStream(new Path(genomeDescFile), conf));
 
       // Set the chromosomes sizes in the parser
       this.parser.getFileHeader().setSequenceDictionary(

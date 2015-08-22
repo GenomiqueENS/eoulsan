@@ -31,98 +31,98 @@ package fr.ens.transcriptome.eoulsan.data;
  */
 public class DataFormats {
 
-  private static final DataFormatRegistry registry = DataFormatRegistry
-      .getInstance();
+  private static final DataFormatRegistry registry =
+      DataFormatRegistry.getInstance();
 
   /** Reads fastq data format. */
-  public static final DataFormat READS_FASTQ = registry
-      .getDataFormatFromName("reads_fastq");
+  public static final DataFormat READS_FASTQ =
+      registry.getDataFormatFromName("reads_fastq");
 
   /** Reads tfq data format. */
-  public static final DataFormat READS_TFQ = registry
-      .getDataFormatFromName("reads_tfq");
+  public static final DataFormat READS_TFQ =
+      registry.getDataFormatFromName("reads_tfq");
 
   /** SOAP index data format. */
-  public static final DataFormat SOAP_INDEX_ZIP = registry
-      .getDataFormatFromName("soap_index_zip");
+  public static final DataFormat SOAP_INDEX_ZIP =
+      registry.getDataFormatFromName("soap_index_zip");
 
   /** BWA index data format. */
-  public static final DataFormat BWA_INDEX_ZIP = registry
-      .getDataFormatFromName("bwa_index_zip");
+  public static final DataFormat BWA_INDEX_ZIP =
+      registry.getDataFormatFromName("bwa_index_zip");
 
   /** Bowtie index data format. */
-  public static final DataFormat BOWTIE_INDEX_ZIP = registry
-      .getDataFormatFromName("bowtie_index_zip");
+  public static final DataFormat BOWTIE_INDEX_ZIP =
+      registry.getDataFormatFromName("bowtie_index_zip");
 
   /** Bowtie2 index data format. */
-  public static final DataFormat BOWTIE2_INDEX_ZIP = registry
-      .getDataFormatFromName("bowtie2_index_zip");
+  public static final DataFormat BOWTIE2_INDEX_ZIP =
+      registry.getDataFormatFromName("bowtie2_index_zip");
 
   /** Gmap index data format. */
-  public static final DataFormat GSNAP_INDEX_ZIP = registry
-      .getDataFormatFromName("gsnap_index_zip");
+  public static final DataFormat GSNAP_INDEX_ZIP =
+      registry.getDataFormatFromName("gsnap_index_zip");
 
   /** STAR index data format. */
-  public static final DataFormat STAR_INDEX_ZIP = registry
-      .getDataFormatFromName("star_index_zip");
+  public static final DataFormat STAR_INDEX_ZIP =
+      registry.getDataFormatFromName("star_index_zip");
 
   /** SAM results data format. */
-  public static final DataFormat MAPPER_RESULTS_SAM = registry
-      .getDataFormatFromName("mapper_results_sam");
+  public static final DataFormat MAPPER_RESULTS_SAM =
+      registry.getDataFormatFromName("mapper_results_sam");
 
   /** BAM results data format. */
-  public static final DataFormat MAPPER_RESULTS_BAM = registry
-      .getDataFormatFromName("mapper_results_bam");
+  public static final DataFormat MAPPER_RESULTS_BAM =
+      registry.getDataFormatFromName("mapper_results_bam");
 
   /** BAM index results data format. */
-  public static final DataFormat MAPPER_RESULTS_INDEX_BAI = registry
-      .getDataFormatFromName("mapper_results_index_bai");
+  public static final DataFormat MAPPER_RESULTS_INDEX_BAI =
+      registry.getDataFormatFromName("mapper_results_index_bai");
 
   /** Expression results data format. */
-  public static final DataFormat EXPRESSION_RESULTS_TSV = registry
-      .getDataFormatFromName("expression_results_tsv");
+  public static final DataFormat EXPRESSION_RESULTS_TSV =
+      registry.getDataFormatFromName("expression_results_tsv");
 
   /** Annotation data format. */
-  public static final DataFormat ANNOTATION_GFF = registry
-      .getDataFormatFromName("annotation_gff");
+  public static final DataFormat ANNOTATION_GFF =
+      registry.getDataFormatFromName("annotation_gff");
 
   /** Diffana results data format. */
-  public static final DataFormat DIFFANA_RESULTS_TSV = registry
-      .getDataFormatFromName("diffana_results_tsv");
+  public static final DataFormat DIFFANA_RESULTS_TSV =
+      registry.getDataFormatFromName("diffana_results_tsv");
 
   /** Genome data format. */
-  public static final DataFormat GENOME_FASTA = registry
-      .getDataFormatFromName("genome_fasta");
+  public static final DataFormat GENOME_FASTA =
+      registry.getDataFormatFromName("genome_fasta");
 
   /** Genome data format. */
-  public static final DataFormat GENOME_DESC_TXT = registry
-      .getDataFormatFromName("genome_desc_txt");
+  public static final DataFormat GENOME_DESC_TXT =
+      registry.getDataFormatFromName("genome_desc_txt");
 
   /** Unmap reads results data format. */
-  public static final DataFormat UNMAP_READS_FASTA = registry
-      .getDataFormatFromName("unmap_fasta");
+  public static final DataFormat UNMAP_READS_FASTA =
+      registry.getDataFormatFromName("unmap_fasta");
 
   /** TSV Annotated expression results data format. */
-  public static final DataFormat ANNOTATED_EXPRESSION_RESULTS_TSV = registry
-      .getDataFormatFromName("annotated_expression_results_tsv");
+  public static final DataFormat ANNOTATED_EXPRESSION_RESULTS_TSV =
+      registry.getDataFormatFromName("annotated_expression_results_tsv");
 
   /** ODS Annotated expression results data format. */
-  public static final DataFormat ANNOTATED_EXPRESSION_RESULTS_ODS = registry
-      .getDataFormatFromName("annotated_expression_results_ods");
+  public static final DataFormat ANNOTATED_EXPRESSION_RESULTS_ODS =
+      registry.getDataFormatFromName("annotated_expression_results_ods");
 
   /** XLSX Annotated expression results data format. */
-  public static final DataFormat ANNOTATED_EXPRESSION_RESULTS_XLSX = registry
-      .getDataFormatFromName("annotated_expression_results_xlsx");
+  public static final DataFormat ANNOTATED_EXPRESSION_RESULTS_XLSX =
+      registry.getDataFormatFromName("annotated_expression_results_xlsx");
 
   /** Additional annotation data format. */
-  public static final DataFormat ADDITIONAL_ANNOTATION_TSV = registry
-      .getDataFormatFromName("additional_annotation_tsv");
+  public static final DataFormat ADDITIONAL_ANNOTATION_TSV =
+      registry.getDataFormatFromName("additional_annotation_tsv");
 
   /** FastQC report format. */
-  public static final DataFormat FASTQC_REPORT_HTML = registry
-      .getDataFormatFromName("fastqc_report_html");
+  public static final DataFormat FASTQC_REPORT_HTML =
+      registry.getDataFormatFromName("fastqc_report_html");
 
   /** Dummy format. */
-  public static final DataFormat DUMMY_TXT = registry
-      .getDataFormatFromName("dummy_txt");
+  public static final DataFormat DUMMY_TXT =
+      registry.getDataFormatFromName("dummy_txt");
 }

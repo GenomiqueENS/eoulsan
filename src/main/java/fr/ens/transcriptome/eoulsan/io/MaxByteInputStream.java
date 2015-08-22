@@ -100,8 +100,8 @@ public class MaxByteInputStream extends InputStream {
     }
 
     if (max < 1) {
-      throw new IllegalArgumentException("Max length cannot be lower than 1: "
-          + max);
+      throw new IllegalArgumentException(
+          "Max length cannot be lower than 1: " + max);
     }
 
     this.in = in;

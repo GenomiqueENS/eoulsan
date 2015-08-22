@@ -111,8 +111,8 @@ public class MultiReadFilterBuilder {
           return false;
         }
 
-        throw new EoulsanException("Unable to find "
-            + filterName + " read filter.");
+        throw new EoulsanException(
+            "Unable to find " + filterName + " read filter.");
       }
       this.mapFilters.put(filterName, filter);
       this.listFilter.add(filter);
@@ -123,14 +123,13 @@ public class MultiReadFilterBuilder {
       final String valueTrimmed = value.trim();
       filter.setParameter(filterKey, valueTrimmed);
       this.mapParameters.put(keyTrimmed, valueTrimmed);
-      getLogger().info(
-          "Set read filter \""
-              + filterName + "\" with parameter: " + filterKey + "="
-              + valueTrimmed);
+      getLogger().info("Set read filter \""
+          + filterName + "\" with parameter: " + filterKey + "="
+          + valueTrimmed);
     } else {
       this.mapParameters.put(filterName, "");
-      getLogger().info(
-          "Set read filter \"" + filterName + "\" with no parameter");
+      getLogger()
+          .info("Set read filter \"" + filterName + "\" with no parameter");
     }
 
     return true;

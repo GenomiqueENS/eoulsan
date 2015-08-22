@@ -43,8 +43,8 @@ public class ConcatTranslator extends BasicTranslator {
   @Override
   public String[] getFields() {
 
-    return this.translators.keySet().toArray(
-        new String[this.translators.size()]);
+    return this.translators.keySet()
+        .toArray(new String[this.translators.size()]);
   }
 
   /**

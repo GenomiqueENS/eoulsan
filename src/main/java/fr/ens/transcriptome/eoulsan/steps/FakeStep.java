@@ -29,7 +29,7 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.annotations.NoLog;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
@@ -44,7 +44,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @since 1.0
  * @author Laurent Jourdren
  */
-@HadoopCompatible
+@LocalOnly
 @ReuseStepInstance
 @NoLog
 public class FakeStep extends AbstractStep {
@@ -74,7 +74,8 @@ public class FakeStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     return status.createStepResult();
   }

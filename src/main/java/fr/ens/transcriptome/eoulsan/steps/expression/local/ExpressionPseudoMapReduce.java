@@ -64,7 +64,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
- * This class implements the local version of map reduce alhorithm for
+ * This class implements the local version of map reduce algorithm for
  * expression computation.
  * @since 1.0
  * @author Laurent Jourdren
@@ -109,9 +109,8 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
 
       reporter.incrCounter(this.counterGroup,
           INVALID_SAM_ENTRIES_COUNTER.counterName(), 1);
-      getLogger().info(
-          "Invalid SAM output entry: "
-              + e.getMessage() + " line='" + value + "'");
+      getLogger().info("Invalid SAM output entry: "
+          + e.getMessage() + " line='" + value + "'");
       return;
     }
 
@@ -129,8 +128,8 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
       return;
     }
 
-    reporter
-        .incrCounter(this.counterGroup, USED_READS_COUNTER.counterName(), 1);
+    reporter.incrCounter(this.counterGroup, USED_READS_COUNTER.counterName(),
+        1);
     int count = 1;
     final int nbExons = exons.size();
 
@@ -190,23 +189,23 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
       final int exonStart = Integer.parseInt(this.fields[1]);
       final int exonEnd = Integer.parseInt(this.fields[2]);
 
-      final String alignementChr = this.fields[6];
+      final String alignmentChr = this.fields[6];
       final int alignmentStart = Integer.parseInt(this.fields[7]);
-      final int alignementEnd = Integer.parseInt(this.fields[8]);
+      final int alignmentEnd = Integer.parseInt(this.fields[8]);
 
       if (first) {
         chr = exonChr;
         first = false;
       }
 
-      if (!exonChr.equals(alignementChr) || !chr.equals(alignementChr)) {
+      if (!exonChr.equals(alignmentChr) || !chr.equals(alignmentChr)) {
         reporter.incrCounter(this.counterGroup,
             INVALID_CHROMOSOME_COUNTER.counterName(), 1);
         continue;
       }
 
       this.geneExpr.addAlignment(exonStart, exonEnd, alignmentStart,
-          alignementEnd, true);
+          alignmentEnd, true);
     }
 
     if (count == 0) {
@@ -253,7 +252,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
    */
   private void loadAnnotationFile(final File annotationFile,
       final String expressionType, final String attributeId)
-      throws IOException, BadBioEntryException {
+          throws IOException, BadBioEntryException {
 
     final CompressionType ct =
         CompressionType.getCompressionTypeByFilename(annotationFile.getName());
@@ -274,7 +273,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
    */
   private void loadAnnotationFile(final InputStream annotationIs,
       final String expressionType, final String attributeId)
-      throws IOException, BadBioEntryException {
+          throws IOException, BadBioEntryException {
 
     checkNotNull(annotationIs, "Annotation stream is null");
     checkNotNull(expressionType, "Expression type is null");
@@ -299,8 +298,8 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
    */
   public ExpressionPseudoMapReduce(final File annotationFile,
       final String expressionType, final String attributeId,
-      final File genomeDescFile, final String counterGroup) throws IOException,
-      BadBioEntryException {
+      final File genomeDescFile, final String counterGroup)
+          throws IOException, BadBioEntryException {
 
     this.counterGroup = counterGroup;
 
@@ -328,7 +327,7 @@ public final class ExpressionPseudoMapReduce extends PseudoMapReduce {
   public ExpressionPseudoMapReduce(final InputStream annotationIs,
       final String expressionType, final String attributeId,
       final InputStream genomeDescIs, final String counterGroup)
-      throws IOException, BadBioEntryException {
+          throws IOException, BadBioEntryException {
 
     this.counterGroup = counterGroup;
 

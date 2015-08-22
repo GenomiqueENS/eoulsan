@@ -156,9 +156,8 @@ public class FileDataProtocolTest {
     assertEquals("", md.getContentEncoding());
     f.delete();
 
-    f =
-        new File(new File(System.getProperty("java.io.tmpdir")),
-            "reads_1.fq.bz2");
+    f = new File(new File(System.getProperty("java.io.tmpdir")),
+        "reads_1.fq.bz2");
     writeFile(f, fileContent);
     md = new DataFile(f.getAbsolutePath()).getMetaData();
     assertEquals(DataFormats.READS_FASTQ, md.getDataFormat());

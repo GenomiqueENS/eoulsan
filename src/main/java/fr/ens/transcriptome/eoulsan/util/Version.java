@@ -27,7 +27,7 @@ package fr.ens.transcriptome.eoulsan.util;
 import java.util.List;
 
 /**
- * Discribe a version of a software.
+ * Describe a version of a software.
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -62,7 +62,7 @@ public final class Version implements Comparable<Version> {
 
   /**
    * Get the number of revision of the Version
-   * @return the number of revsion of the version
+   * @return the number of revision of the version
    */
   public int getRevision() {
     return this.revision;
@@ -261,8 +261,8 @@ public final class Version implements Comparable<Version> {
       }
 
     } catch (NumberFormatException e) {
-      throw new IllegalArgumentException("Invalid version format in string: "
-          + version);
+      throw new IllegalArgumentException(
+          "Invalid version format in string: " + version);
     }
   }
 

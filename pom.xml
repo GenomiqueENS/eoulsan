@@ -415,16 +415,9 @@
 		<dependency>
 			<groupId>org.python</groupId>
 			<artifactId>jython-standalone</artifactId>
-			<version>2.5.3</version>
+			<version>2.7.0</version>
 		</dependency>
 		<!-- AWS java SDK runtime dependencies -->
-		<!-- dependency replaced by Docker httpclient dependency -->
-		<!--dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.1</version>
-			<scope>runtime</scope>
-		</dependency-->
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
@@ -504,7 +497,7 @@
 			<!--scope>compile</scope-->
 		</dependency>
 
-		<!-- Required by Docker -->
+		<!-- Required by Docker and AWS java SDK runtime -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
@@ -536,7 +529,19 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- Docker Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.6</version>
+		</dependency>
 
+		<!-- Docker Logging -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
 
 	</dependencies>
 
@@ -694,6 +699,7 @@
 								<!-- skip this task with command: mvn -Ddistrib.package.skip=true -->
 								<!-- Package binary distribution -->
 
+								<mkdir dir="${basedir}/target/dist/bin" />
 								<mkdir dir="${basedir}/target/dist/lib" />
 								<!--copy file="${basedir}/COMPILING.txt" todir="${basedir}/target/dist/" 
 									/ -->
@@ -703,6 +709,26 @@
 
 								<copy file="${basedir}/src/main/bin/${project.artifactId}.sh" todir="${basedir}/target/dist/" />
 								<chmod file="${basedir}/target/dist/${project.artifactId}.sh" perm="ugo+rx" />
+
+								<copy todir="${basedir}/target/dist/bin">
+									<fileset dir="${basedir}/src/main/bin">
+										<include name="bpipe-*" />
+									</fileset>
+								</copy>
+
+								<copy todir="${basedir}/target/dist/galaxytools">
+									<fileset dir="${basedir}/src/main/galaxytools"/>
+								</copy>
+
+								<copy todir="${basedir}/target/dist/formats">
+									<fileset dir="${basedir}/src/main/formats"/>
+								</copy>
+
+								<chmod perm="ugo+rx">
+									<fileset dir="${basedir}/target/dist/bin">
+										<include name="bpipe-*" />
+									</fileset>
+								</chmod>
 
 								<copy file="${basedir}/target/${project.artifactId}-${project.version}.jar" todir="${basedir}/target/dist/lib/" />
 								<move file="${basedir}/target/dist/" tofile="${basedir}/target/dist/${project.artifactId}-${project.version}"/>

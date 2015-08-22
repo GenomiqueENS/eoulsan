@@ -24,7 +24,12 @@
 
 package fr.ens.transcriptome.eoulsan.core.schedulers;
 
+import static com.google.common.base.Preconditions.checkState;
+import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.Settings;
+import fr.ens.transcriptome.eoulsan.core.schedulers.clusters.ClusterTaskScheduler;
+import fr.ens.transcriptome.eoulsan.core.schedulers.clusters.ClusterTaskSchedulerService;
 
 /**
  * This class define a factory for TaskScheduler that can create only one
@@ -42,32 +47,65 @@ public class TaskSchedulerFactory {
   //
 
   /**
+   * @throws EoulsanException if an error occurs while configuring the scheduler
+   */
+  public static void initialize() throws EoulsanException {
+
+    checkState(scheduler == null,
+        "The TaskSchedulerFactory has been already initialized");
+
+    final Settings settings = EoulsanRuntime.getSettings();
+
+    // Get the thread number to use by the task scheduler
+    final int threadNumber = settings.getLocalThreadsNumber();
+
+    if (EoulsanRuntime.getRuntime().isClusterMode()) {
+
+      final String clusterSchedulerName = settings.getClusterSchedulerName();
+
+      // Check if the cluster scheduler setting has been set
+      if (clusterSchedulerName == null) {
+        throw new EoulsanException(
+            "No cluster scheduler defined. Use the \"main.cluster.scheduler.name\" setting to define it");
+      }
+
+      // Get cluster scheduler
+      final ClusterTaskScheduler clusterScheduler = ClusterTaskSchedulerService
+          .getInstance().newService(clusterSchedulerName);
+
+      // Check if the cluster scheduler exists
+      if (clusterScheduler == null) {
+        throw new EoulsanException(
+            "Unknown cluster scheduler name: " + clusterSchedulerName);
+      }
+
+      // Configure cluster scheduler
+      clusterScheduler.configure(settings);
+
+      // Set Cluster mode
+      scheduler =
+          new ClusterCombinedTaskScheduler(threadNumber, clusterScheduler);
+    } else {
+
+      // Standard mode
+      scheduler = new CombinedTaskScheduler(threadNumber);
+    }
+
+  }
+
+  /**
    * Get the scheduler
    * @return the TaskScheduler object
    */
   public static TaskScheduler getScheduler() {
 
-    if (scheduler == null) {
-
-      // Get the thread number to use by the task scheduler
-      final int threadNumber =
-          EoulsanRuntime.getSettings().getLocalThreadsNumber();
-
-      if (EoulsanRuntime.getRuntime().isClusterMode()) {
-
-        // Cluster mode
-        scheduler = new ClusterCombinedTaskScheduler(threadNumber);
-      } else {
-
-        // Standard mode
-        scheduler = new CombinedTaskScheduler(threadNumber);
-      }
-    }
+    checkState(scheduler != null,
+        "The TaskSchedulerFactory has not been initialized");
 
     return scheduler;
   }
 
-  // Local
+  //
   // Constructor
   //
 

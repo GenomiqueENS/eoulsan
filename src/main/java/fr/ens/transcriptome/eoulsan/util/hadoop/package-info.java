@@ -27,4 +27,3 @@
  * @since 1.2
  */
 package fr.ens.transcriptome.eoulsan.util.hadoop;
-

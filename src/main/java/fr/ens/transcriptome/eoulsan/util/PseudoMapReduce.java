@@ -50,8 +50,8 @@ import java.util.Map;
 public abstract class PseudoMapReduce {
 
   /* Default Charset. */
-  private static final Charset CHARSET = Charset.forName(System
-      .getProperty("file.encoding"));
+  private static final Charset CHARSET =
+      Charset.forName(System.getProperty("file.encoding"));
 
   private File tmpDir;
   private File mapOutputFile;
@@ -210,7 +210,7 @@ public abstract class PseudoMapReduce {
   }
 
   /**
-   * Execute the map phase with an Inputstream as input Create a list of file :
+   * Execute the map phase with an InputStream as input Create a list of file :
    * one for each index file used
    * @param is input stream for the mapper
    */
@@ -251,7 +251,7 @@ public abstract class PseudoMapReduce {
   }
 
   /**
-   * TODO save or remove ?? Execute the map phase with an Inputstream as input.
+   * TODO save or remove ?? Execute the map phase with an InputStream as input.
    * @param is input stream for the mapper
    */
   public void doMap_OLD(final InputStream is) throws IOException {
@@ -332,8 +332,10 @@ public abstract class PseudoMapReduce {
 
     final String cmd =
         "sort"
-            + (this.tmpDir != null ? " -T "
-                + StringUtils.bashEscaping(this.tmpDir.getAbsolutePath()) : "")
+            + (this.tmpDir != null
+                ? " -T "
+                    + StringUtils.bashEscaping(this.tmpDir.getAbsolutePath())
+                : "")
             + " -o "
             + StringUtils.bashEscaping(this.sortOutputFile.getAbsolutePath())
             + " " + listFile.toString();
@@ -341,9 +343,8 @@ public abstract class PseudoMapReduce {
     final boolean result = ProcessUtils.system(cmd) == 0;
     for (File mapOutputFile : this.listMapOutputFile) {
       if (!mapOutputFile.delete()) {
-        getLogger().warning(
-            "Can not delete map output file: "
-                + mapOutputFile.getAbsolutePath());
+        getLogger().warning("Can not delete map output file: "
+            + mapOutputFile.getAbsolutePath());
       }
     }
     return result;
@@ -432,9 +433,8 @@ public abstract class PseudoMapReduce {
     br.close();
     bw.close();
     if (!this.sortOutputFile.delete()) {
-      getLogger().warning(
-          "Can not delete sort output file: "
-              + this.sortOutputFile.getAbsolutePath());
+      getLogger().warning("Can not delete sort output file: "
+          + this.sortOutputFile.getAbsolutePath());
     }
   }
 

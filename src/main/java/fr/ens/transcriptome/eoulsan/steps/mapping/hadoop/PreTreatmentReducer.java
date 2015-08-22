@@ -49,8 +49,8 @@ public class PreTreatmentReducer extends Reducer<Text, Text, Text, Text> {
   private Text outValue, outKey;
 
   @Override
-  protected void setup(final Context context) throws IOException,
-      InterruptedException {
+  protected void setup(final Context context)
+      throws IOException, InterruptedException {
 
     final Configuration conf = context.getConfiguration();
 
@@ -79,8 +79,9 @@ public class PreTreatmentReducer extends Reducer<Text, Text, Text, Text> {
       stringVal = val.toString();
 
       if (stringVal.charAt(0) != '1' && stringVal.charAt(0) != '2') {
-        context.getCounter(this.counterGroup,
-            INVALID_INPUT_PRETREATMENT_READS_COUNTER.counterName())
+        context
+            .getCounter(this.counterGroup,
+                INVALID_INPUT_PRETREATMENT_READS_COUNTER.counterName())
             .increment(1);
         return;
       }
@@ -120,18 +121,19 @@ public class PreTreatmentReducer extends Reducer<Text, Text, Text, Text> {
     }
 
     if (this.read1 == null || this.read2 == null) {
-      context.getCounter(this.counterGroup,
-          INVALID_INPUT_PRETREATMENT_READS_COUNTER.counterName()).increment(1);
+      context
+          .getCounter(this.counterGroup,
+              INVALID_INPUT_PRETREATMENT_READS_COUNTER.counterName())
+          .increment(1);
       return;
     }
 
     this.outKey = new Text(this.completeId1);
 
     // Write results
-    this.outValue =
-        new Text(this.read1.getSequence()
-            + "\t" + this.read1.getQuality() + "\t" + this.completeId2 + "\t"
-            + this.read2.getSequence() + "\t" + this.read2.getQuality());
+    this.outValue = new Text(this.read1.getSequence()
+        + "\t" + this.read1.getQuality() + "\t" + this.completeId2 + "\t"
+        + this.read2.getSequence() + "\t" + this.read2.getQuality());
     context.write(this.outKey, this.outValue);
 
   }

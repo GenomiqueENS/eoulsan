@@ -153,9 +153,8 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
     checkNotNull(sample, "sampleField argument cannot be null");
     checkArgument(sample.getMetadata().isField(sampleField));
 
-    final String value =
-        SAMPLE_METADATA_TYPE
-            + SEPARATOR + sample.getId() + SEPARATOR + sampleField;
+    final String value = SAMPLE_METADATA_TYPE
+        + SEPARATOR + sample.getId() + SEPARATOR + sampleField;
 
     setRaw(sampleField, value);
   }

@@ -57,8 +57,8 @@ public class GenomeDescriptionCreator {
    *           description
    */
   public GenomeDescription createGenomeDescriptionFromAnnotation(
-      final DataFile annotationDataFile) throws BadBioEntryException,
-      IOException {
+      final DataFile annotationDataFile)
+          throws BadBioEntryException, IOException {
 
     return createGenomeDescription(annotationDataFile, true);
   }
@@ -73,8 +73,8 @@ public class GenomeDescriptionCreator {
    * @throws IOException if an error occurs while computing the genome
    *           description
    */
-  public GenomeDescription createGenomeDescription(final DataFile genomeDataFile)
-      throws BadBioEntryException, IOException {
+  public GenomeDescription createGenomeDescription(
+      final DataFile genomeDataFile) throws BadBioEntryException, IOException {
 
     return createGenomeDescription(genomeDataFile, false);
   }
@@ -92,7 +92,7 @@ public class GenomeDescriptionCreator {
    */
   private GenomeDescription createGenomeDescription(
       final DataFile genomeDataFile, final boolean gffFormat)
-      throws BadBioEntryException, IOException {
+          throws BadBioEntryException, IOException {
 
     // Check if the genome description has been already put in the CheckStore
     GenomeDescription desc =
@@ -108,9 +108,8 @@ public class GenomeDescriptionCreator {
     if (desc == null) {
 
       // Compute the genome description
-      desc =
-          GenomeDescription.createGenomeDescFromFasta(genomeDataFile.open(),
-              genomeDataFile.getName());
+      desc = GenomeDescription.createGenomeDescFromFasta(genomeDataFile.open(),
+          genomeDataFile.getName());
 
       // Store it if storage exists
       if (this.storage != null) {

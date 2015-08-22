@@ -140,35 +140,35 @@ public class RemoveMultiMatchesReadAlignmentsFilterTest {
   public void testFilterReadAlignments() {
 
     final List<SAMRecord> records = new ArrayList<>();
-    final List<SAMRecord> recordsVerif = new ArrayList<>();
+    final List<SAMRecord> recordsCheck = new ArrayList<>();
 
     // single-end mode
     records.add(this.samRecordSE1);
-    recordsVerif.add(this.samRecordSE1);
+    recordsCheck.add(this.samRecordSE1);
     this.filter.filterReadAlignments(records);
-    assertEquals(records, recordsVerif);
+    assertEquals(records, recordsCheck);
 
     records.add(this.samRecordSE2);
-    recordsVerif.clear();
+    recordsCheck.clear();
     this.filter.filterReadAlignments(records);
-    assertEquals(records, recordsVerif);
+    assertEquals(records, recordsCheck);
 
     records.clear();
-    recordsVerif.clear();
+    recordsCheck.clear();
 
     // paired-end mode
     records.add(this.samRecordPE1);
     records.add(this.samRecordPE2);
-    recordsVerif.add(this.samRecordPE1);
-    recordsVerif.add(this.samRecordPE2);
+    recordsCheck.add(this.samRecordPE1);
+    recordsCheck.add(this.samRecordPE2);
     this.filter.filterReadAlignments(records);
-    assertEquals(records, recordsVerif);
+    assertEquals(records, recordsCheck);
 
     records.add(this.samRecordPE3);
     records.add(this.samRecordPE4);
-    recordsVerif.clear();
+    recordsCheck.clear();
     this.filter.filterReadAlignments(records);
-    assertEquals(records, recordsVerif);
+    assertEquals(records, recordsCheck);
 
     records.clear();
     records.add(this.samRecordPE1);

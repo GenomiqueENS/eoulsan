@@ -38,7 +38,8 @@ public class AWSElasticMapReduceBuilder {
    * Set the hadoop version.
    * @param hadoopVersion The hadoop version to set
    */
-  public AWSElasticMapReduceBuilder withHadoopVersion(final String hadoopVersion) {
+  public AWSElasticMapReduceBuilder withHadoopVersion(
+      final String hadoopVersion) {
 
     if (this.created) {
       throw new IllegalStateException();
@@ -145,7 +146,8 @@ public class AWSElasticMapReduceBuilder {
    * Set the jar arguments.
    * @param jarArguments jar arguments
    */
-  public AWSElasticMapReduceBuilder withJarArguments(final String[] jarArguments) {
+  public AWSElasticMapReduceBuilder withJarArguments(
+      final String[] jarArguments) {
 
     if (this.created) {
       throw new IllegalStateException();
@@ -175,7 +177,8 @@ public class AWSElasticMapReduceBuilder {
    * Set the AWS access key.
    * @param AWSAccessKey set AWS access key
    */
-  public AWSElasticMapReduceBuilder withAWSAccessKey(final String AWSAccessKey) {
+  public AWSElasticMapReduceBuilder withAWSAccessKey(
+      final String AWSAccessKey) {
 
     if (this.created) {
       throw new IllegalStateException();
@@ -190,7 +193,8 @@ public class AWSElasticMapReduceBuilder {
    * Set the AWS access key.
    * @param AWSSecretKey set AWS secret key
    */
-  public AWSElasticMapReduceBuilder withAWSSecretKey(final String AWSSecretKey) {
+  public AWSElasticMapReduceBuilder withAWSSecretKey(
+      final String AWSSecretKey) {
 
     if (this.created) {
       throw new IllegalStateException();
@@ -237,7 +241,8 @@ public class AWSElasticMapReduceBuilder {
    * Set if debugging must be enabled.
    * @param enableDebugging true if debugging is enabled
    */
-  public AWSElasticMapReduceBuilder withDebugging(final boolean enableDebugging) {
+  public AWSElasticMapReduceBuilder withDebugging(
+      final boolean enableDebugging) {
 
     if (this.created) {
       throw new IllegalStateException();

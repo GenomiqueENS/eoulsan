@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.AbstractPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPort;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
@@ -38,8 +39,8 @@ import fr.ens.transcriptome.eoulsan.core.InputPorts;
  * @since 2.0
  * @author Laurent Jourdren
  */
-class WorkflowInputPorts extends AbstractPorts<WorkflowInputPort> implements
-    Serializable {
+class WorkflowInputPorts extends AbstractPorts<WorkflowInputPort>
+    implements Serializable {
 
   private static final long serialVersionUID = -746211786359434112L;
 
@@ -59,20 +60,23 @@ class WorkflowInputPorts extends AbstractPorts<WorkflowInputPort> implements
    * @param ports ports to convert
    * @return a new set
    */
-  private static Set<WorkflowInputPort> convert(
-      final AbstractWorkflowStep step, final InputPorts ports) {
+  private static Set<WorkflowInputPort> convert(final AbstractWorkflowStep step,
+      final InputPorts ports) {
 
     if (ports == null) {
       throw new NullPointerException("Ports is null");
     }
+
+    final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode()
+        && step.getEoulsanMode().isHadoopCompatible();
 
     final Set<WorkflowInputPort> result = new HashSet<>();
 
     for (InputPort port : ports) {
       if (port != null) {
         result.add(new WorkflowInputPort(step, port.getName(), port.isList(),
-            port.getFormat(), port.getCompressionsAccepted(), port
-                .isRequiredInWorkingDirectory()));
+            port.getFormat(), port.getCompressionsAccepted(),
+            hadoopMode ? true : port.isRequiredInWorkingDirectory()));
       }
 
     }

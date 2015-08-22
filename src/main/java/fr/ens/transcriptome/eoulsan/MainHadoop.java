@@ -89,7 +89,8 @@ public final class MainHadoop extends Main {
       }
     }
 
-    return new StreamHandler(loggerFs.create(loggerPath), Globals.LOG_FORMATTER);
+    return new StreamHandler(loggerFs.create(loggerPath),
+        Globals.LOG_FORMATTER);
   }
 
   @Override
@@ -123,8 +124,8 @@ public final class MainHadoop extends Main {
       HadoopInfo();
 
     } catch (IOException e) {
-      getLogger().severe(
-          "Error while getting system information: " + e.getMessage());
+      getLogger()
+          .severe("Error while getting system information: " + e.getMessage());
     }
 
   }
@@ -145,15 +146,14 @@ public final class MainHadoop extends Main {
 
     getLogger().info(
         "SYSINFO CPU model name: " + (modelName == null ? "NA" : modelName));
-    getLogger().info(
-        "SYSINFO CPU count: "
-            + (processor == null ? "NA" : ""
-                + (Integer.parseInt(processor.trim()) + 1)));
+    getLogger().info("SYSINFO CPU count: "
+        + (processor == null
+            ? "NA" : "" + (Integer.parseInt(processor.trim()) + 1)));
     getLogger().info("SYSINFO CPU cores: " + (cores == null ? "NA" : cores));
     getLogger().info(
         "SYSINFO CPU clock: " + (cpuMHz == null ? "NA" : cpuMHz) + " MHz");
-    getLogger().info(
-        "SYSINFO Bogomips: " + (bogomips == null ? "NA" : bogomips));
+    getLogger()
+        .info("SYSINFO Bogomips: " + (bogomips == null ? "NA" : bogomips));
   }
 
   /**
@@ -165,8 +165,8 @@ public final class MainHadoop extends Main {
     final LinuxMemInfo meminfo = new LinuxMemInfo();
     final String memTotal = meminfo.getMemTotal();
 
-    getLogger().info(
-        "SYSINFO Mem Total: " + (memTotal == null ? "NA" : memTotal));
+    getLogger()
+        .info("SYSINFO Mem Total: " + (memTotal == null ? "NA" : memTotal));
   }
 
   /**
@@ -180,12 +180,11 @@ public final class MainHadoop extends Main {
 
     DF df = new DF(f, conf);
 
-    getLogger().info(
-        "SYSINFO "
-            + f + " " + StringUtils.sizeToHumanReadable(df.getCapacity())
-            + " capacity, " + StringUtils.sizeToHumanReadable(df.getUsed())
-            + " used, " + StringUtils.sizeToHumanReadable(df.getAvailable())
-            + " available, " + df.getPercentUsed() + "% used");
+    getLogger().info("SYSINFO "
+        + f + " " + StringUtils.sizeToHumanReadable(df.getCapacity())
+        + " capacity, " + StringUtils.sizeToHumanReadable(df.getUsed())
+        + " used, " + StringUtils.sizeToHumanReadable(df.getAvailable())
+        + " available, " + df.getPercentUsed() + "% used");
 
   }
 

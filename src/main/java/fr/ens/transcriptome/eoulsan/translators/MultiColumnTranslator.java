@@ -160,8 +160,8 @@ public class MultiColumnTranslator extends BasicTranslator {
   @Override
   public String[] getIds() {
 
-    return this.annotations.keySet().toArray(
-        new String[this.annotations.size()]);
+    return this.annotations.keySet()
+        .toArray(new String[this.annotations.size()]);
   }
 
   //

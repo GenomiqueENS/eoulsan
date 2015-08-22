@@ -40,7 +40,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.LogRecord;
 
 import com.google.common.base.Joiner;
 
@@ -91,8 +90,8 @@ public class ITResult {
         new File(this.it.getOutputTestDirectory(), filename);
     Writer fw;
     try {
-      fw =
-          newWriter(reportFile, Charset.forName(Globals.DEFAULT_FILE_ENCODING));
+      fw = newWriter(reportFile,
+          Charset.forName(Globals.DEFAULT_FILE_ENCODING));
 
       // Build text report
       fw.write(createReportText(true, durationIT));
@@ -114,8 +113,8 @@ public class ITResult {
 
       } catch (final IOException e) {
 
-        getLogger().warning(
-            "Error while copying the result execution integration "
+        getLogger()
+            .warning("Error while copying the result execution integration "
                 + "test in expected directory: " + e.getMessage());
       }
     }
@@ -142,7 +141,6 @@ public class ITResult {
   /**
    * Create report retrieve by global tests logger.
    * @param duration duration of execution
-   * @return report text
    */
   private void updateLogger(final String duration) {
 
@@ -152,13 +150,11 @@ public class ITResult {
       txt += "NOTHING TO DO of the " + this.it.getTestName();
     } else {
 
-      txt +=
-          (isSuccess() ? "SUCCESS" : "FAIL")
-              + " of the test "
-              + this.it.getTestName()
-              + ((isGeneratedData())
-                  ? ": generate expected data" : ": launch test and comparison")
-              + ". Duration = " + duration;
+      txt += (isSuccess() ? "SUCCESS" : "FAIL")
+          + " of the test " + this.it.getTestName()
+          + ((isGeneratedData())
+              ? ": generate expected data" : ": launch test and comparison")
+          + ". Duration = " + duration;
 
       if (!isSuccess()) {
         // Add exception explanation in logger
@@ -180,8 +176,8 @@ public class ITResult {
       final String duration) {
 
     final StringBuilder report = new StringBuilder();
-    report.append((isSuccess() ? "SUCCESS" : "FAIL")
-        + ": " + this.it.getTestName());
+    report.append(
+        (isSuccess() ? "SUCCESS" : "FAIL") + ": " + this.it.getTestName());
     report.append(isGeneratedData()
         ? ": generate expected data"
         : ": test execution and output files comparison.");
@@ -191,6 +187,7 @@ public class ITResult {
     report.append('\n');
     
     report.append("\n\nDirectories:");
+
     report.append("\n\tExpected:"
         + this.it.getExpectedTestDirectory().getAbsolutePath());
     report.append("\n\tOuput:"
@@ -247,8 +244,8 @@ public class ITResult {
     }
 
     if (isGeneratedData()) {
-      report.append("\nSUCCESS: copy files "
-          + this.it.getCountFilesToCompare() + " to ");
+      report.append(
+          "\nSUCCESS: copy files " + this.it.getCountFilesToCompare() + " to ");
       report.append(this.it.getExpectedTestDirectory().getAbsolutePath());
     }
 
@@ -311,7 +308,7 @@ public class ITResult {
 
     // Check comparison output it result
     for (final ITOutputComparisonResult ocr : this.comparisonsResults) {
-      if (!ocr.getStatutComparison().isSuccess()) {
+      if (!ocr.getStatusComparison().isSuccess()) {
         final StringBuilder msg = new StringBuilder();
 
         if (getException() != null) {
@@ -321,7 +318,7 @@ public class ITResult {
 
         // Compile exception message
         msg.append("\t");
-        msg.append(ocr.getStatutComparison().getExceptionMessage());
+        msg.append(ocr.getStatusComparison().getExceptionMessage());
         msg.append("\t" + ocr.getFilename());
 
         setException(new EoulsanException(msg.toString()));
@@ -343,16 +340,16 @@ public class ITResult {
     final StringBuilder msgException = new StringBuilder();
 
     msgException.append("\n=== Execution Test Error ===");
-    msgException.append("\nFrom class: \n\t"
-        + this.exception.getClass().getName() + "");
-    msgException.append("\nException message: \n"
-        + this.exception.getMessage() + "\n");
+    msgException.append(
+        "\nFrom class: \n\t" + this.exception.getClass().getName() + "");
+    msgException
+        .append("\nException message: \n" + this.exception.getMessage() + "\n");
 
     if (ITSuite.getInstance().isDebugModeEnabled() && withStackTrace) {
       // Add the stack trace
       msgException.append("\n=== Execution Test Debug Stack Trace ===\n");
-      msgException.append(Joiner.on("\n\t")
-          .join(this.exception.getStackTrace()));
+      msgException
+          .append(Joiner.on("\n\t").join(this.exception.getStackTrace()));
     }
 
     // Return text

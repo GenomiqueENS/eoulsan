@@ -89,16 +89,14 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
             ((SplittableCompressionCodec) codec).createInputStream(fileIn,
                 decompressor, start, end,
                 SplittableCompressionCodec.READ_MODE.BYBLOCK);
-        in =
-            new CompressedSplitFastqLineReader(cIn, job,
-                this.recordDelimiterBytes);
+        in = new CompressedSplitFastqLineReader(cIn, job,
+            this.recordDelimiterBytes);
         start = cIn.getAdjustedStart();
         end = cIn.getAdjustedEnd();
         filePosition = cIn;
       } else {
-        in =
-            new SplitLineReader(codec.createInputStream(fileIn, decompressor),
-                job, this.recordDelimiterBytes);
+        in = new SplitLineReader(codec.createInputStream(fileIn, decompressor),
+            job, this.recordDelimiterBytes);
         filePosition = fileIn;
       }
     } else {
@@ -116,8 +114,9 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
   }
 
   private int maxBytesToConsume(long pos) {
-    return isCompressedInput ? Integer.MAX_VALUE : (int) Math.max(
-        Math.min(Integer.MAX_VALUE, end - pos), maxLineLength);
+    return isCompressedInput
+        ? Integer.MAX_VALUE
+        : (int) Math.max(Math.min(Integer.MAX_VALUE, end - pos), maxLineLength);
   }
 
   private long getFilePosition() throws IOException {
@@ -226,8 +225,8 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
     if (start == end) {
       return 0.0f;
     } else {
-      return Math
-          .min(1.0f, (getFilePosition() - start) / (float) (end - start));
+      return Math.min(1.0f,
+          (getFilePosition() - start) / (float) (end - start));
     }
   }
 

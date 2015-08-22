@@ -164,11 +164,11 @@ public class FastQCStep extends AbstractStep {
       case INPUT_FORMAT_PARAMETER_NAME:
 
         // Set inputPort fastq/sam from parameters
-        DataFormat format =
-            DataFormatRegistry.getInstance().getDataFormatFromNameOrAlias(
-                p.getLowerStringValue());
+        DataFormat format = DataFormatRegistry.getInstance()
+            .getDataFormatFromNameOrAlias(p.getLowerStringValue());
 
-        if (!(MAPPER_RESULTS_SAM.equals(format) || READS_FASTQ.equals(format))) {
+        if (!(MAPPER_RESULTS_SAM.equals(format)
+            || READS_FASTQ.equals(format))) {
           throw new EoulsanException(
               "Unknown or format not supported as input format for FastQC: "
                   + p.getStringValue());
@@ -217,14 +217,13 @@ public class FastQCStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Patch FastQC code on sequenceFile to make hadoop compatible
     try {
-      // RuntimePatchFastQC.runPatchFastQC();
       FastQCRuntimePatcher.patchFastQC();
     } catch (EoulsanException e1) {
-      e1.printStackTrace();
       return status.createStepResult(e1);
     }
 
@@ -272,7 +271,8 @@ public class FastQCStep extends AbstractStep {
       processSequences(modules, seqFile);
 
       // Create the report
-      createReport(modules, seqFile, reportFile);
+      createReport(modules, seqFile, reportFile,
+          context.getLocalTempDirectory());
 
       // Set the description of the context
       status.setDescription("Create FastQC report on "
@@ -292,8 +292,8 @@ public class FastQCStep extends AbstractStep {
           "Error while parsing file: " + e.getMessage());
 
     } catch (final XMLStreamException e) {
-      return status.createStepResult(e, "Error while writing final report: "
-          + e.getMessage());
+      return status.createStepResult(e,
+          "Error while writing final report: " + e.getMessage());
     }
 
   }
@@ -324,12 +324,13 @@ public class FastQCStep extends AbstractStep {
    * @param modules the modules
    * @param seqFile the sequence file
    * @param reportFile the report file
+   * @param tempDirectory temporary directory
    * @throws IOException Signals that an I/O exception has occurred.
    * @throws XMLStreamException the XML stream exception
    */
   private void createReport(final List<AbstractQCModule> modules,
-      final SequenceFile seqFile, final DataFile reportFile)
-      throws IOException, XMLStreamException {
+      final SequenceFile seqFile, final DataFile reportFile,
+      final File tempDirectory) throws IOException, XMLStreamException {
 
     // Get the report extension
     final String reportExtension =
@@ -337,27 +338,28 @@ public class FastQCStep extends AbstractStep {
 
     // Define the temporary output file
     final File reportTempFile =
-        File.createTempFile("reportfile-", reportExtension);
+        File.createTempFile("reportfile-", reportExtension, tempDirectory);
 
     // Create the output report
     new HTMLReportArchive(seqFile, modules.toArray(new QCModule[] {}),
         reportTempFile);
 
     // Report zip filename
-    final String basefilename =
-        reportFile.getName().substring(0,
-            reportFile.getName().length() - reportExtension.length());
+    final String baseFilename = reportFile.getName().substring(0,
+        reportFile.getName().length() - reportExtension.length());
 
     // Remove zip file
+
     final File zipFile =
-        new File(reportTempFile.getParent(), basefilename + ".zip");
+        new File(reportTempFile.getParent(), baseFilename + ".zip");
     if (!zipFile.delete()) {
       getLogger()
           .warning("Unable to remove FastQC output zip file: " + zipFile);
     }
 
     // Remove directory file
-    final File zipDir = new File(reportTempFile.getParent(), basefilename);
+    final File zipDir = new File(reportTempFile.getParent(), baseFilename);
+
     if (!FileUtils.recursiveDelete(zipDir)) {
       getLogger()
           .warning("Unable to remove FastQC output directory: " + zipDir);

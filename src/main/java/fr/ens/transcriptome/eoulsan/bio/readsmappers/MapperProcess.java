@@ -339,9 +339,8 @@ public abstract class MapperProcess {
   public void toFile(final File outputFile) throws IOException {
 
     // Start stdout thread
-    final Thread tout =
-        new Thread(new ProcessThreadStdOut(this.process, new FileOutputStream(
-            outputFile)));
+    final Thread tout = new Thread(new ProcessThreadStdOut(this.process,
+        new FileOutputStream(outputFile)));
     tout.start();
   }
 

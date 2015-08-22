@@ -235,18 +235,18 @@ public class VersionTest {
   @Test
   public void testGetMinimalVersion() {
 
-    assertEquals(new Version(0, 0, 0, ""), Version.getMinimalVersion(Lists
-        .newArrayList(new Version(1, 0, 0, ""), new Version(0, 0, 0, ""),
-            new Version(2, 0, 0, ""))));
+    assertEquals(new Version(0, 0, 0, ""),
+        Version.getMinimalVersion(Lists.newArrayList(new Version(1, 0, 0, ""),
+            new Version(0, 0, 0, ""), new Version(2, 0, 0, ""))));
 
   }
 
   @Test
   public void testGetMaximalVersion() {
 
-    assertEquals(new Version(2, 0, 0, ""), Version.getMaximalVersion(Lists
-        .newArrayList(new Version(1, 0, 0, ""), new Version(0, 0, 0, ""),
-            new Version(2, 0, 0, ""))));
+    assertEquals(new Version(2, 0, 0, ""),
+        Version.getMaximalVersion(Lists.newArrayList(new Version(1, 0, 0, ""),
+            new Version(0, 0, 0, ""), new Version(2, 0, 0, ""))));
   }
 
   @Test
@@ -257,18 +257,18 @@ public class VersionTest {
     assertTrue(new Version(1, 0, 0, "").equals(new Version(1, 0, 0, "")));
     assertTrue(new Version(0, 1, 0, "").equals(new Version(0, 1, 0, "")));
     assertTrue(new Version(0, 0, 1, "").equals(new Version(0, 0, 1, "")));
-    assertTrue(new Version(0, 0, 0, "beta")
-        .equals(new Version(0, 0, 0, "beta")));
-    assertTrue(new Version(1, 2, 3, "beta")
-        .equals(new Version(1, 2, 3, "beta")));
+    assertTrue(
+        new Version(0, 0, 0, "beta").equals(new Version(0, 0, 0, "beta")));
+    assertTrue(
+        new Version(1, 2, 3, "beta").equals(new Version(1, 2, 3, "beta")));
 
     assertFalse(new Version(1, 0, 0, "").equals(new Version(2, 0, 0, "")));
     assertFalse(new Version(0, 1, 0, "").equals(new Version(0, 2, 0, "")));
     assertFalse(new Version(0, 0, 1, "").equals(new Version(0, 0, 2, "")));
-    assertFalse(new Version(0, 0, 0, "beta").equals(new Version(0, 0, 0,
-        "alpha")));
-    assertFalse(new Version(1, 2, 3, "beta").equals(new Version(3, 0, 1,
-        "alpha")));
+    assertFalse(
+        new Version(0, 0, 0, "beta").equals(new Version(0, 0, 0, "alpha")));
+    assertFalse(
+        new Version(1, 2, 3, "beta").equals(new Version(3, 0, 1, "alpha")));
   }
 
   @Test
@@ -301,7 +301,8 @@ public class VersionTest {
     assertEquals(new Version(0, 0, 0, ""), new Version("."));
     assertEquals(new Version(11, 22, 33, ""), new Version("11.22.33"));
     assertEquals(new Version(11, 22, 0, ""), new Version("11.22"));
-    assertEquals(new Version(11, 22, 33, "-beta"), new Version("11.22.33-beta"));
+    assertEquals(new Version(11, 22, 33, "-beta"),
+        new Version("11.22.33-beta"));
     assertEquals(new Version(11, 22, 0, "-beta"), new Version("11.22-beta"));
     assertEquals(new Version(11, 0, 0, "-beta"), new Version("11-beta"));
   }

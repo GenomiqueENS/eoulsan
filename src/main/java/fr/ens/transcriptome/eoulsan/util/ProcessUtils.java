@@ -52,8 +52,8 @@ import fr.ens.transcriptome.eoulsan.io.FileCharsets;
 public final class ProcessUtils {
 
   /* Default Charset. */
-  private static final Charset CHARSET = Charset.forName(System
-      .getProperty("file.encoding"));
+  private static final Charset CHARSET =
+      Charset.forName(System.getProperty("file.encoding"));
 
   private static Random random;
 
@@ -371,10 +371,9 @@ public final class ProcessUtils {
         throw new IOException("Segmentation fault: " + cmd);
       }
 
-      getLogger().fine(
-          "Done (Thread "
-              + Thread.currentThread().getId() + ", exit code: " + exitValue
-              + ") in " + (endTime - startTime) + " ms.");
+      getLogger().fine("Done (Thread "
+          + Thread.currentThread().getId() + ", exit code: " + exitValue
+          + ") in " + (endTime - startTime) + " ms.");
     } catch (InterruptedException e) {
 
       getLogger().severe("Interrupted exception: " + e.getMessage());
@@ -472,8 +471,9 @@ public final class ProcessUtils {
     @Override
     public void run() {
       try {
-        while (new BufferedReader(new InputStreamReader(this.err,
-            FileCharsets.LATIN1_CHARSET)).readLine() != null) {
+        while (new BufferedReader(
+            new InputStreamReader(this.err, FileCharsets.LATIN1_CHARSET))
+                .readLine() != null) {
         }
 
         this.err.close();
@@ -552,9 +552,8 @@ public final class ProcessUtils {
    */
   public static void execThreadOutput(final String[] cmd) throws IOException {
 
-    getLogger().fine(
-        "execute (Thread "
-            + Thread.currentThread().getId() + "): " + Arrays.toString(cmd));
+    getLogger().fine("execute (Thread "
+        + Thread.currentThread().getId() + "): " + Arrays.toString(cmd));
 
     final long startTime = System.currentTimeMillis();
 

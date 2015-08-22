@@ -77,12 +77,12 @@ public class QualityReadFilter extends AbstractReadFilter {
       }
 
       if (this.qualityThreshold < 0.0) {
-        throw new EoulsanException("Invalid qualityThreshold: "
-            + this.qualityThreshold);
+        throw new EoulsanException(
+            "Invalid qualityThreshold: " + this.qualityThreshold);
       }
     } else {
-      throw new EoulsanException("Unknown parameter for "
-          + getName() + " read filter: " + key);
+      throw new EoulsanException(
+          "Unknown parameter for " + getName() + " read filter: " + key);
     }
 
   }
@@ -91,8 +91,8 @@ public class QualityReadFilter extends AbstractReadFilter {
   public void init() {
 
     if (this.qualityThreshold < 0.0) {
-      throw new IllegalArgumentException("Quality threshold is not set for "
-          + getName() + " read filter.");
+      throw new IllegalArgumentException(
+          "Quality threshold is not set for " + getName() + " read filter.");
     }
   }
 

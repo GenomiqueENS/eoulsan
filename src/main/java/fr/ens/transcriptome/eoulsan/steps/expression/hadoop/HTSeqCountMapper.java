@@ -79,7 +79,7 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
   // Parameters keys
   static final String STRANDED_PARAM =
       Globals.PARAMETER_PREFIX + ".expression.stranded.parameter";
-  static final String OVERLAPMODE_PARAM =
+  static final String OVERLAP_MODE_PARAM =
       Globals.PARAMETER_PREFIX + ".expression.overlapmode.parameter";
   static final String REMOVE_AMBIGUOUS_CASES =
       Globals.PARAMETER_PREFIX + ".expression.no.ambiguous.cases";
@@ -165,7 +165,7 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
 
       // Get the "overlap mode" parameter
       this.overlapMode =
-          OverlapMode.getOverlapModeFromName(conf.get(OVERLAPMODE_PARAM));
+          OverlapMode.getOverlapModeFromName(conf.get(OVERLAP_MODE_PARAM));
 
       // Get the "no ambiguous cases" parameter
       this.removeAmbiguousCases = conf.getBoolean(REMOVE_AMBIGUOUS_CASES, true);
@@ -195,6 +195,7 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
       return;
     }
 
+
     final String[] fields = recordSplitterPattern.split(line);
     final List<GenomicInterval> ivSeq;
 
@@ -202,6 +203,7 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
 
       // Add intervals
       switch (fields.length) {
+
 
       // Single end data
       case 1:
@@ -257,6 +259,7 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
       }
 
     } catch (SAMFormatException | EoulsanException e) {
+
 
       incrementCounter(context, INVALID_SAM_ENTRIES_COUNTER);
       getLogger().info("Invalid SAM output entry: "

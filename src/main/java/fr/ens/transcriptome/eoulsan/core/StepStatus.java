@@ -33,13 +33,7 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public interface StepStatus {
-
-  /**
-   * Get sample message.
-   * @return the message for the context
-   */
-  String getMessage();
+public interface StepStatus extends Progress {
 
   /**
    * Get the sample counters.
@@ -54,19 +48,6 @@ public interface StepStatus {
   String getDescription();
 
   /**
-   * Get the progress of the context processing.
-   * @return the progress of the processing of the sample as percent (between
-   *         0.0 and 1.0)
-   */
-  double getProgress();
-
-  /**
-   * Set the context message.
-   * @param message the message to set
-   */
-  void setMessage(String message);
-
-  /**
    * Set the context description.
    * @param description the description to set
    */
@@ -78,21 +59,6 @@ public interface StepStatus {
    * @param counterGroup counter group to use with the reporter
    */
   void setCounters(Reporter reporter, String counterGroup);
-
-  /**
-   * Set the progress of the processing of the context.
-   * @param min minimal value of the progress
-   * @param max maximal value of the progress
-   * @param value current value of the progress
-   */
-  void setProgress(int min, int max, int value);
-
-  /**
-   * Set the progress of the processing of the context.
-   * @param progress value of the progress. This value must be greater or equals
-   *          to 0 and lower or equals to 1.0
-   */
-  void setProgress(double progress);
 
   /**
    * Create a StepResult object for a successful result.

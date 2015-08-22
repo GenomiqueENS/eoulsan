@@ -23,15 +23,13 @@
  */
 package fr.ens.transcriptome.eoulsan.steps;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
+import static fr.ens.transcriptome.eoulsan.requirements.DockerRequirement.newDockerRequirement;
 
 import java.io.InputStream;
-import java.util.Map;
+import java.util.Collections;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
@@ -42,17 +40,18 @@ import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.core.StepStatus;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.GalaxyToolInterpreter;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.ToolData;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.ToolExecutorResult;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.ToolElement;
+import fr.ens.transcriptome.eoulsan.galaxytools.GalaxyToolInterpreter;
+import fr.ens.transcriptome.eoulsan.galaxytools.ToolData;
+import fr.ens.transcriptome.eoulsan.galaxytools.ToolExecutorResult;
+import fr.ens.transcriptome.eoulsan.galaxytools.elements.ToolElement;
+import fr.ens.transcriptome.eoulsan.galaxytools.executorinterpreters.DockerExecutorInterpreter;
+import fr.ens.transcriptome.eoulsan.requirements.Requirement;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
  * The Class GalaxyToolStep.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
 @LocalOnly
 public class GalaxyToolStep extends AbstractStep {
@@ -61,37 +60,38 @@ public class GalaxyToolStep extends AbstractStep {
   private ToolData toolData;
 
   /** The tool interpreter. */
-  private GalaxyToolInterpreter toolInterpreter;
+  private final GalaxyToolInterpreter toolInterpreter;
+
+  /** The source of the Galaxy tool. */
+  private final String source;
+
+  /** The requirement of the tool. */
+  private Requirement requirement;
+
+  //
+  // Steps methods
+  //
 
   @Override
   public String getName() {
     return this.toolData.getToolName();
   }
 
-  public String getToolVersionName() {
-    return this.toolData.getToolVersion();
-  }
-
   @Override
   public Version getVersion() {
-    return Globals.APP_VERSION;
+    return new Version(this.toolData.getToolVersion());
   }
 
   @Override
   public InputPorts getInputPorts() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
-    boolean isEmpty = true;
 
-    for (final Map.Entry<DataFormat, ToolElement> entry : this.toolInterpreter
-        .getInDataFormatExpected().entrySet()) {
-      isEmpty = false;
+    for (final ToolElement element : this.toolInterpreter
+        .getInputDataElements()) {
 
-      builder.addPort(entry.getValue().getValidedName(), entry.getKey(), true);
-    }
-
-    if (isEmpty) {
-      return InputPortsBuilder.noInputPort();
+      builder.addPort(element.getValidatedName(), element.getDataFormat(),
+          true);
     }
 
     return builder.create();
@@ -101,21 +101,24 @@ public class GalaxyToolStep extends AbstractStep {
   public OutputPorts getOutputPorts() {
 
     final OutputPortsBuilder builder = new OutputPortsBuilder();
-    boolean isEmpty = true;
 
-    for (final Map.Entry<DataFormat, ToolElement> entry : this.toolInterpreter
-        .getOutDataFormatExpected().entrySet()) {
-      isEmpty = false;
-      builder.addPort(entry.getValue().getValidedName(), entry.getKey());
+    for (final ToolElement element : this.toolInterpreter
+        .getOutputDataElements()) {
 
-      return singleOutputPort(entry.getKey());
-    }
-
-    if (isEmpty) {
-      return OutputPortsBuilder.noOutputPort();
+      builder.addPort(element.getValidatedName(), element.getDataFormat());
     }
 
     return builder.create();
+  }
+
+  @Override
+  public Set<Requirement> getRequirements() {
+
+    if (this.requirement == null) {
+      return Collections.emptySet();
+    }
+
+    return Collections.singleton(this.requirement);
   }
 
   @Override
@@ -125,28 +128,28 @@ public class GalaxyToolStep extends AbstractStep {
     // Configure tool interpreter
     this.toolInterpreter.configure(stepParameters);
 
-    // Extract tool data
-    this.toolData = this.toolInterpreter.getToolData();
+    // If the interpreter of the tool is Docker, add the Docker image to the
+    // list of the Docker image to fetch
+    final ToolData toolData = this.toolInterpreter.getToolData();
+    if (DockerExecutorInterpreter.INTERPRETER_NAME
+        .equals(toolData.getInterpreter())) {
 
+      this.requirement = newDockerRequirement(toolData.getDockerImage());
+    }
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // TODO check in data and out data corresponding to tool.xml
     // Check DataFormat expected corresponding from stepContext
 
-    checkArgument(
-        this.toolInterpreter.checkDataFormat(context),
-        "GalaxyTool step, dataFormat inval between extract from analysis and setting in xml file.");
-
-    int exitValue = -1;
-    ToolExecutorResult result = null;
+    final ToolExecutorResult result;
 
     try {
-      result = this.toolInterpreter.execute(context);
-      exitValue = result.getExitValue();
 
+      result = this.toolInterpreter.execute(context);
     } catch (EoulsanException e) {
       return status.createStepResult(e,
           "Error execution tool interpreter from building tool command line : "
@@ -156,26 +159,40 @@ public class GalaxyToolStep extends AbstractStep {
     // Set the description of the context
     status.setDescription(this.toolInterpreter.getDescription());
 
-    status.setMessage("Command line generate by python interpreter: "
-        + result.getCommandLine() + ".");
+    status.setProgressMessage("Command line generate by python interpreter: "
+        + result.getCommandLineAsString() + ".");
 
     // Execution script fail, create an exception
-    if (exitValue != 0) {
-
-      return status.createStepResult(null,
-          "Fail execution tool galaxy with command "
-              + result.getCommandLine() + ". Exit value: " + exitValue);
-    }
-
-    if (result.asThrowedException()) {
+    if (!result.isException()) {
       final Throwable e = result.getException();
 
       return status.createStepResult(e,
           "Error execution interrupted: " + e.getMessage());
     }
 
+    if (result.getExitValue() != 0) {
+
+      return status.createStepResult(null,
+          "Fail execution tool galaxy with command "
+              + result.getCommandLine() + ". Exit value: "
+              + result.getExitValue());
+    }
+
     return status.createStepResult();
 
+  }
+
+  //
+  // Other methods
+  //
+
+  /**
+   * Get the source the Galaxy tool.
+   * @return the source of the Galaxy tool
+   */
+  public String getSource() {
+
+    return this.source;
   }
 
   //
@@ -189,8 +206,23 @@ public class GalaxyToolStep extends AbstractStep {
    */
   public GalaxyToolStep(final InputStream toolXMLis) throws EoulsanException {
 
-    this.toolInterpreter =
-        new GalaxyToolInterpreter(toolXMLis);
+    this(toolXMLis, null);
+  }
+
+  /**
+   * Constructor.
+   * @param toolXMLis the input stream on tool xml file
+   * @param source source of the Galaxy tool
+   * @throws EoulsanException the Eoulsan exception
+   */
+  public GalaxyToolStep(final InputStream toolXMLis, final String source)
+      throws EoulsanException {
+
+    this.toolInterpreter = new GalaxyToolInterpreter(toolXMLis);
+    this.source = source == null ? "Undefined source" : source.trim();
+
+    // Extract tool data
+    this.toolData = this.toolInterpreter.getToolData();
   }
 
 }

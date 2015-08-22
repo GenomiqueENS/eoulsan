@@ -77,12 +77,12 @@ public class LengthReadFilter extends AbstractReadFilter {
       }
 
       if (this.minimalLengthThreshold < 1) {
-        throw new EoulsanException("Invalid length threshold: "
-            + this.minimalLengthThreshold);
+        throw new EoulsanException(
+            "Invalid length threshold: " + this.minimalLengthThreshold);
       }
     } else {
-      throw new EoulsanException("Unknown parameter for "
-          + getName() + " read filter: " + key);
+      throw new EoulsanException(
+          "Unknown parameter for " + getName() + " read filter: " + key);
     }
 
   }

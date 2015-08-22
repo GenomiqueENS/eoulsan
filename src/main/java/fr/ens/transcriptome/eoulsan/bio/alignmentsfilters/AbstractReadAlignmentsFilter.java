@@ -32,15 +32,15 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  * @since 1.1
  * @author Laurent Jourdren
  */
-public abstract class AbstractReadAlignmentsFilter implements
-    ReadAlignmentsFilter {
+public abstract class AbstractReadAlignmentsFilter
+    implements ReadAlignmentsFilter {
 
   @Override
   public void setParameter(final String key, final String value)
       throws EoulsanException {
 
-    throw new EoulsanException("Unknown parameter for "
-        + getName() + " alignments filter: " + key);
+    throw new EoulsanException(
+        "Unknown parameter for " + getName() + " alignments filter: " + key);
   }
 
   @Override

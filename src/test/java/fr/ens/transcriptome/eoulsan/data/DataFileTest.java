@@ -219,8 +219,8 @@ public class DataFileTest {
 
     filename = "ftp://login:passwd@ftp.toto.com/home/toto/toto.txt";
     df = new DataFile(filename);
-    assertEquals("ftp://login:passwd@ftp.toto.com/home/toto", df.getParent()
-        .getSource());
+    assertEquals("ftp://login:passwd@ftp.toto.com/home/toto",
+        df.getParent().getSource());
   }
 
   @Test

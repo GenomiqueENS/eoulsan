@@ -85,10 +85,10 @@ public class TokenManager implements Runnable {
   private final WorkflowOutputPorts outputPorts;
 
   private final Set<Integer> receivedTokens = new HashSet<>();
-  private final Multimap<InputPort, Data> inputTokens = ArrayListMultimap
-      .create();
-  private final Multimap<OutputPort, Data> outputTokens = ArrayListMultimap
-      .create();
+  private final Multimap<InputPort, Data> inputTokens =
+      ArrayListMultimap.create();
+  private final Multimap<OutputPort, Data> outputTokens =
+      ArrayListMultimap.create();
   private final Set<InputPort> closedPorts = new HashSet<>();
   private final Set<ImmutableMap<InputPort, Data>> cartesianProductsUsed =
       new HashSet<>();
@@ -205,8 +205,8 @@ public class TokenManager implements Runnable {
       }
 
       // Create compatibility link for result files
-      if (EoulsanRuntime.getSettings().getBooleanSetting(
-          "debug.compatibility.result.file.links")
+      if (EoulsanRuntime.getSettings()
+          .getBooleanSetting("debug.compatibility.result.file.links")
           && this.step.getType() == StepType.STANDARD_STEP) {
         createCompatibilityLinkResultFiles(data);
       }
@@ -215,9 +215,8 @@ public class TokenManager implements Runnable {
       createSymlinksInOutputDirectory(data);
 
       // Get the metadata storage
-      final DataMetadataStorage metadataStorage =
-          DataMetadataStorage.getInstance(this.step.getAbstractWorkflow()
-              .getOutputDirectory());
+      final DataMetadataStorage metadataStorage = DataMetadataStorage
+          .getInstance(this.step.getAbstractWorkflow().getOutputDirectory());
 
       // Store token metadata only if step is not skipped
       if (!this.step.isSkip()) {
@@ -316,8 +315,8 @@ public class TokenManager implements Runnable {
           // Create symbolic link
           file.symlink(link, true);
         } catch (IOException e) {
-          EoulsanLogger.getLogger().severe(
-              "Cannot create symbolic link: " + link);
+          EoulsanLogger.getLogger()
+              .severe("Cannot create symbolic link: " + link);
         }
       }
     }
@@ -343,13 +342,14 @@ public class TokenManager implements Runnable {
         "Token has been already received: " + token.getId());
 
     // Check if the input is linked to the step
-    checkState(this.inputPorts.contains(inputPort), "Unknown port: "
-        + inputPort);
+    checkState(this.inputPorts.contains(inputPort),
+        "Unknown port: " + inputPort);
 
     // Check if the origin of the token and the input port are linked
-    checkState(inputPort.getLink() == token.getOrigin(), "The input port ("
-        + inputPort + ") and the output port (" + token.getOrigin()
-        + ") are not linked:");
+    checkState(inputPort.getLink() == token.getOrigin(),
+        "The input port ("
+            + inputPort + ") and the output port (" + token.getOrigin()
+            + ") are not linked:");
 
     // Check if the input port is closed
     checkState(!this.closedPorts.contains(inputPort),
@@ -360,9 +360,10 @@ public class TokenManager implements Runnable {
     if (token.isEndOfStepToken()) {
 
       // Check if input port is empty for non skipped steps
-      checkState(!(!this.step.isSkip() && this.inputTokens.get(inputPort)
-          .isEmpty()), "No data receive for port on step "
-          + this.step.getId() + ": " + inputPort.getName());
+      checkState(
+          !(!this.step.isSkip() && this.inputTokens.get(inputPort).isEmpty()),
+          "No data receive for port on step "
+              + this.step.getId() + ": " + inputPort.getName());
 
       // The input port must be closed
       this.closedPorts.add(inputPort);
@@ -465,9 +466,8 @@ public class TokenManager implements Runnable {
       for (Data data : existingData) {
 
         // Get the metadata storage
-        final DataMetadataStorage metadataStorage =
-            DataMetadataStorage.getInstance(this.step.getAbstractWorkflow()
-                .getOutputDirectory());
+        final DataMetadataStorage metadataStorage = DataMetadataStorage
+            .getInstance(this.step.getAbstractWorkflow().getOutputDirectory());
 
         // Set the metadata of data from the storage of metadata
         final boolean isMetadataSet = metadataStorage.loadMetadata(data);
@@ -569,7 +569,8 @@ public class TokenManager implements Runnable {
    * @param workflowContext the Workflow context
    * @return a set with the context
    */
-  private Set<TaskContext> createContexts(final WorkflowContext workflowContext) {
+  private Set<TaskContext> createContexts(
+      final WorkflowContext workflowContext) {
 
     final Set<TaskContext> result = new HashSet<>();
 
@@ -589,8 +590,8 @@ public class TokenManager implements Runnable {
       // Create the Data object for the output port
       Map<OutputPort, AbstractData> outputData = createContextOutputData();
       // Create the context object
-      result.add(new TaskContext(workflowContext, this.step, inputData,
-          outputData));
+      result.add(
+          new TaskContext(workflowContext, this.step, inputData, outputData));
     }
 
     return result;
@@ -610,8 +611,8 @@ public class TokenManager implements Runnable {
     // Create the Data object for the output port
     Map<OutputPort, AbstractData> outputData = createContextOutputData();
 
-    return Collections.singleton(new TaskContext(workflowContext, this.step,
-        inputData, outputData));
+    return Collections.singleton(
+        new TaskContext(workflowContext, this.step, inputData, outputData));
   }
 
   //
@@ -638,17 +639,16 @@ public class TokenManager implements Runnable {
 
     } catch (IOException e) {
 
-      Common.showAndLogErrorMessage("Unable to create log file for "
-          + this.step.getId() + " step.");
+      Common.showAndLogErrorMessage(
+          "Unable to create log file for " + this.step.getId() + " step.");
     }
 
     // Write the result file in old format
     if (EoulsanRuntime.getSettings().isUseOldEoulsanResultFormat()) {
 
       // Step result file
-      logFile =
-          new DataFile(this.step.getAbstractWorkflow().getJobDirectory(),
-              this.step.getId() + Globals.STEP_RESULT_OLD_FORMAT_EXTENSION);
+      logFile = new DataFile(this.step.getAbstractWorkflow().getJobDirectory(),
+          this.step.getId() + Globals.STEP_RESULT_OLD_FORMAT_EXTENSION);
 
       try {
 
@@ -656,8 +656,8 @@ public class TokenManager implements Runnable {
 
       } catch (IOException e) {
 
-        Common.showAndLogErrorMessage("Unable to create log file for "
-            + this.step.getId() + " step.");
+        Common.showAndLogErrorMessage(
+            "Unable to create log file for " + this.step.getId() + " step.");
       }
 
     }
@@ -726,7 +726,8 @@ public class TokenManager implements Runnable {
   void removeAllOutputs() {
 
     // Remove output only for standard steps
-    if (!(this.step.getType() == STANDARD_STEP || this.step.getType() == GENERATOR_STEP)) {
+    if (!(this.step.getType() == STANDARD_STEP
+        || this.step.getType() == GENERATOR_STEP)) {
       return;
     }
 
@@ -771,9 +772,8 @@ public class TokenManager implements Runnable {
     try {
       file.delete();
     } catch (IOException e) {
-      getLogger().severe(
-          "Cannot remove data to discard: "
-              + file + " (" + e.getMessage() + ")");
+      getLogger().severe("Cannot remove data to discard: "
+          + file + " (" + e.getMessage() + ")");
     }
 
     // Remove the symbolic link
@@ -786,9 +786,8 @@ public class TokenManager implements Runnable {
         link.delete();
       }
     } catch (IOException e) {
-      getLogger().severe(
-          "Cannot remove data symbolic link to discard: "
-              + link + " (" + e.getMessage() + ")");
+      getLogger().severe("Cannot remove data symbolic link to discard: "
+          + link + " (" + e.getMessage() + ")");
     }
 
   }
@@ -827,9 +826,8 @@ public class TokenManager implements Runnable {
   void stop() {
 
     // Check if the thread has been started
-    checkState(this.isStarted,
-        "The token manager thread for step "
-            + this.step.getId() + " is not started");
+    checkState(this.isStarted, "The token manager thread for step "
+        + this.step.getId() + " is not started");
 
     this.isStarted = false;
     this.endOfStep = true;
@@ -854,7 +852,7 @@ public class TokenManager implements Runnable {
           continue;
         }
 
-        // Set the step to the workng state
+        // Set the step to the working state
         if (state == READY) {
           this.step.setState(WORKING);
         }
@@ -946,10 +944,9 @@ public class TokenManager implements Runnable {
    */
   private void logReceivedTokens() {
 
-    String msg =
-        "Step #"
-            + this.step.getNumber() + " " + this.step.getId()
-            + " has received tokens: ";
+    String msg = "Step #"
+        + this.step.getNumber() + " " + this.step.getId()
+        + " has received tokens: ";
 
     if (this.inputTokens.size() == 0) {
       msg += "no token received";
@@ -973,10 +970,9 @@ public class TokenManager implements Runnable {
    */
   private void logSentTokens() {
 
-    String msg =
-        "Step #"
-            + this.step.getNumber() + " " + this.step.getId()
-            + " has sent tokens: ";
+    String msg = "Step #"
+        + this.step.getNumber() + " " + this.step.getId()
+        + " has sent tokens: ";
 
     if (this.outputTokens.size() == 0) {
       msg += " no token sent";

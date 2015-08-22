@@ -40,23 +40,22 @@ public class HadoopBamUtils {
     // would be trickier, given that SamFileHeaderMerger isn't trivially
     // serializable.
 
-    final List<SAMFileHeader> headers = new ArrayList<SAMFileHeader>();
+    final List<SAMFileHeader> headers = new ArrayList<>();
 
-    for (final String in : conf.getStrings(Utils.HEADERMERGER_INPUTS_PROPERTY)) {
+    for (final String in : conf
+        .getStrings(Utils.HEADERMERGER_INPUTS_PROPERTY)) {
       final Path p = new Path(in);
 
-      final SamReader r =
-          SamReaderFactory.makeDefault().open(
-              SamInputResource.of(p.getFileSystem(conf).open(p)));
+      final SamReader r = SamReaderFactory.makeDefault()
+          .open(SamInputResource.of(p.getFileSystem(conf).open(p)));
       headers.add(r.getFileHeader());
       r.close();
     }
 
     final String orderStr = conf.get(HEADERMERGER_SORTORDER_PROP);
-    final SAMFileHeader.SortOrder order =
-        orderStr == null
-            ? SAMFileHeader.SortOrder.unsorted : SAMFileHeader.SortOrder
-                .valueOf(orderStr);
+    final SAMFileHeader.SortOrder order = orderStr == null
+        ? SAMFileHeader.SortOrder.unsorted
+        : SAMFileHeader.SortOrder.valueOf(orderStr);
 
     return new SamFileHeaderMerger(order, headers, true);
   }
@@ -100,8 +99,8 @@ public class HadoopBamUtils {
       String commandName) throws IOException {
     final FileSystem fs = directory.getFileSystem(conf);
 
-    final FileStatus[] parts =
-        fs.globStatus(new Path(directory, basePrefix
+    final FileStatus[] parts = fs.globStatus(new Path(directory,
+        basePrefix
             + conf.get(Utils.WORK_FILENAME_PROPERTY) + basePostfix
             + "-[0-9][0-9][0-9][0-9][0-9][0-9]*"));
 

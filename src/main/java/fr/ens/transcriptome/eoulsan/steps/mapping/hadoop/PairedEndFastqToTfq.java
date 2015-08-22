@@ -57,8 +57,8 @@ public class PairedEndFastqToTfq {
    * @author Laurent Jourdren
    * @since 2.0
    */
-  public static final class FastqPairedEndReducer extends
-      Reducer<Text, Text, Text, Text> {
+  public static final class FastqPairedEndReducer
+      extends Reducer<Text, Text, Text, Text> {
 
     private static final Joiner JOINER = Joiner.on('\t');
 
@@ -66,7 +66,7 @@ public class PairedEndFastqToTfq {
     protected void reduce(final Text key, final Iterable<Text> values,
         final Context context) throws IOException, InterruptedException {
 
-      final List<String> list = new ArrayList<String>();
+      final List<String> list = new ArrayList<>();
       for (Text t : values) {
         list.add(t.toString());
       }
@@ -90,15 +90,16 @@ public class PairedEndFastqToTfq {
    */
   public static Job convert(final Configuration parentConf,
       final DataFile fastqFile1, final DataFile fastqFile2,
-      final DataFile outputFile, final int reducerTaskCount) throws IOException {
+      final DataFile outputFile, final int reducerTaskCount)
+          throws IOException {
 
     checkNotNull(parentConf, "parentConf argument cannot be null");
     checkNotNull(fastqFile1, "fastqFile1 argument cannot be null");
     checkNotNull(fastqFile2, "fastqFile2 argument cannot be null");
     checkNotNull(outputFile, "outputFile argument cannot be null");
 
-    return convert(parentConf, new Path(fastqFile1.getSource()), new Path(
-        fastqFile2.getSource()), new Path(outputFile.getSource()),
+    return convert(parentConf, new Path(fastqFile1.getSource()),
+        new Path(fastqFile2.getSource()), new Path(outputFile.getSource()),
         reducerTaskCount);
   }
 
@@ -125,8 +126,8 @@ public class PairedEndFastqToTfq {
 
     // Set Job name
     // Create the job and its name
-    final Job job =
-        Job.getInstance(jobConf, "Convert FASTQ paired files in TFQ ("
+    final Job job = Job.getInstance(jobConf,
+        "Convert FASTQ paired files in TFQ ("
             + fastqFile1.getName() + ", " + fastqFile2.getName() + ", "
             + outputFile.getName() + ")");
 

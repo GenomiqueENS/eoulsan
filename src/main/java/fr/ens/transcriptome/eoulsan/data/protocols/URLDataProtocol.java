@@ -42,7 +42,8 @@ import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
  */
 public abstract class URLDataProtocol extends AbstractDataProtocol {
 
-  private URLConnection createConnection(final DataFile src) throws IOException {
+  private URLConnection createConnection(final DataFile src)
+      throws IOException {
 
     if (src == null) {
       throw new NullPointerException("The source is null.");
@@ -107,7 +108,7 @@ public abstract class URLDataProtocol extends AbstractDataProtocol {
       return false;
     }
 
-    return false;
+    return true;
   }
 
 }

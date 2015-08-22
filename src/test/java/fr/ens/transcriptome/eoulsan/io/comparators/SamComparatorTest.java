@@ -40,8 +40,8 @@ import org.junit.Test;
 
 public class SamComparatorTest {
 
-  private final File dir = new File(new File(".").getAbsolutePath()
-      + "/src/test/java/files");
+  private final File dir =
+      new File(new File(".").getAbsolutePath() + "/src/test/java/files");
 
   private InputStream isA;
   private InputStream isB;

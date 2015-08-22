@@ -51,8 +51,8 @@ public class FileNaming {
   private static final String FILE_INDEX_PREFIX = "file";
   private static final String PART_INDEX_PREFIX = "part";
 
-  private static final CharMatcher ASCII_LETTER_OR_DIGIT = inRange('a', 'z')
-      .or(inRange('A', 'Z')).or(inRange('0', '9'));
+  private static final CharMatcher ASCII_LETTER_OR_DIGIT =
+      inRange('a', 'z').or(inRange('A', 'Z')).or(inRange('0', '9'));
 
   private String stepId;
   private String portName;
@@ -307,13 +307,7 @@ public class FileNaming {
    */
   public String glob() {
 
-    final StringBuilder sb = new StringBuilder();
-
-    sb.append(filePrefix());
-    sb.append('*');
-    sb.append(fileSuffix());
-
-    return sb.toString();
+    return filePrefix() + '*' + fileSuffix();
   }
 
   /**
@@ -443,21 +437,7 @@ public class FileNaming {
     checkPortName(portName);
     checkFormatPrefix(formatPrefix);
 
-    final StringBuilder sb = new StringBuilder();
-
-    // Set the name of the step that generated the file
-    sb.append(stepId);
-    sb.append(SEPARATOR);
-
-    // Set the port of the step that generated the file
-    sb.append(portName);
-    sb.append(SEPARATOR);
-
-    // Set the name of the format
-    sb.append(formatPrefix);
-    sb.append(SEPARATOR);
-
-    return sb.toString();
+    return stepId + SEPARATOR + portName + SEPARATOR + formatPrefix + SEPARATOR;
   }
 
   /**
@@ -688,8 +668,8 @@ public class FileNaming {
     final String[] extensions = filename.split("\\.");
 
     if (extensions.length < 2 || extensions.length > 3) {
-      throw new FileNamingParsingRuntimeException("Invalid filename: "
-          + filename);
+      throw new FileNamingParsingRuntimeException(
+          "Invalid filename: " + filename);
     }
 
     // Get format extension
@@ -697,42 +677,41 @@ public class FileNaming {
 
     // Get compression
     if (extensions.length == 3) {
-      result.setCompression(CompressionType
-          .getCompressionTypeByExtension('.' + extensions[2]));
+      result.setCompression(
+          CompressionType.getCompressionTypeByExtension('.' + extensions[2]));
     }
 
     final String[] fields = extensions[0].split("_");
 
     if (fields.length < 4) {
-      throw new FileNamingParsingRuntimeException("Invalid filename: "
-          + filename);
+      throw new FileNamingParsingRuntimeException(
+          "Invalid filename: " + filename);
     }
 
     if (fields[0].isEmpty() || !isStepIdValid(fields[0])) {
-      throw new FileNamingParsingRuntimeException("Invalid filename: "
-          + filename);
+      throw new FileNamingParsingRuntimeException(
+          "Invalid filename: " + filename);
     }
     result.setStepId(fields[0]);
 
     if (fields[1].isEmpty() || !isPortNameValid(fields[1])) {
-      throw new FileNamingParsingRuntimeException("Invalid filename: "
-          + filename);
+      throw new FileNamingParsingRuntimeException(
+          "Invalid filename: " + filename);
     }
     result.setPortName(fields[1]);
 
-    final DataFormat format =
-        DataFormatRegistry.getInstance().getDataFormatFromFilename(fields[2],
-            formatExtension);
+    final DataFormat format = DataFormatRegistry.getInstance()
+        .getDataFormatFromFilename(fields[2], formatExtension);
 
     if (format == null) {
-      throw new FileNamingParsingRuntimeException("Invalid filename: "
-          + filename);
+      throw new FileNamingParsingRuntimeException(
+          "Invalid filename: " + filename);
     }
     result.setFormat(format);
 
     if (fields[3].isEmpty() || !isDataNameValid(fields[3])) {
-      throw new FileNamingParsingRuntimeException("Invalid filename: "
-          + filename);
+      throw new FileNamingParsingRuntimeException(
+          "Invalid filename: " + filename);
     }
     result.setDataName(fields[3]);
 
@@ -741,28 +720,28 @@ public class FileNaming {
       if (fields[i].startsWith(FILE_INDEX_PREFIX)) {
 
         if (result.getFileIndex() != -1) {
-          throw new FileNamingParsingRuntimeException("Invalid filename: "
-              + filename);
+          throw new FileNamingParsingRuntimeException(
+              "Invalid filename: " + filename);
         }
         try {
-          result.setFileIndex(Integer.parseInt(fields[i]
-              .substring(FILE_INDEX_PREFIX.length())));
+          result.setFileIndex(Integer
+              .parseInt(fields[i].substring(FILE_INDEX_PREFIX.length())));
         } catch (NumberFormatException e) {
-          throw new FileNamingParsingRuntimeException("Invalid filename: "
-              + filename);
+          throw new FileNamingParsingRuntimeException(
+              "Invalid filename: " + filename);
         }
       } else if (fields[i].startsWith(PART_INDEX_PREFIX)) {
 
         if (result.getPart() != -1) {
-          throw new FileNamingParsingRuntimeException("Invalid filename: "
-              + filename);
+          throw new FileNamingParsingRuntimeException(
+              "Invalid filename: " + filename);
         }
         try {
-          result.setPart(Integer.parseInt(fields[i].substring(PART_INDEX_PREFIX
-              .length())));
+          result.setPart(Integer
+              .parseInt(fields[i].substring(PART_INDEX_PREFIX.length())));
         } catch (NumberFormatException e) {
-          throw new FileNamingParsingRuntimeException("Invalid filename: "
-              + filename);
+          throw new FileNamingParsingRuntimeException(
+              "Invalid filename: " + filename);
         }
       }
 
@@ -770,8 +749,8 @@ public class FileNaming {
 
     if (result.getFormat().getMaxFilesCount() > 1
         && result.getFileIndex() == -1) {
-      throw new FileNamingParsingRuntimeException("Invalid filename: "
-          + filename);
+      throw new FileNamingParsingRuntimeException(
+          "Invalid filename: " + filename);
     }
 
     return result;
@@ -791,8 +770,8 @@ public class FileNaming {
   public static DataFile file(final WorkflowOutputPort port,
       final DataElement data, final int fileIndex) {
 
-    return new DataFile(port.getStep().getStepOutputDirectory(), filename(port,
-        data, fileIndex));
+    return new DataFile(port.getStep().getStepOutputDirectory(),
+        filename(port, data, fileIndex));
   }
 
   //
@@ -846,8 +825,8 @@ public class FileNaming {
    */
   private static final boolean isNameValid(final String name) {
 
-    return !(name == null || name.isEmpty() || !ASCII_LETTER_OR_DIGIT
-        .matchesAllOf(name));
+    return !(name == null
+        || name.isEmpty() || !ASCII_LETTER_OR_DIGIT.matchesAllOf(name));
   }
 
   /**

@@ -34,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 
 /**
- * This ennum allow to create InputStreams and OutputStream for Gzip and Bzip2
+ * This enum allow to create InputStreams and OutputStream for Gzip and Bzip2
  * according environment (local or hadoop mode).
  * @since 1.0
  * @author Laurent Jourdren
@@ -78,7 +78,8 @@ public enum CompressionType {
    * @return an input stream
    * @throws IOException if an error occurs while creating the input stream
    */
-  public InputStream createInputStream(final InputStream is) throws IOException {
+  public InputStream createInputStream(final InputStream is)
+      throws IOException {
 
     if (is == null) {
       return null;
@@ -215,8 +216,8 @@ public enum CompressionType {
   public static InputStream createBZip2InputStream(final InputStream is)
       throws IOException {
 
-    if (SystemUtils
-        .isClass("org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream")) {
+    if (SystemUtils.isClass(
+        "org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream")) {
       return ApacheCommonCompressionCodecs.createBZip2InputStream(is);
     }
 
@@ -253,8 +254,8 @@ public enum CompressionType {
   public static OutputStream createBZip2OutputStream(final OutputStream os)
       throws IOException {
 
-    if (SystemUtils
-        .isClass("org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream")) {
+    if (SystemUtils.isClass(
+        "org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream")) {
       return ApacheCommonCompressionCodecs.createBZip2OutputStream(os);
     }
 
@@ -312,4 +313,4 @@ public enum CompressionType {
     this.extension = extension;
   }
 
-};
+}

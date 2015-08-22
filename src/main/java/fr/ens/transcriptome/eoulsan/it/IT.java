@@ -73,8 +73,8 @@ import fr.ens.transcriptome.eoulsan.Globals;
  */
 public class IT {
 
-  public static final Splitter CMD_LINE_SPLITTER = Splitter.on(' ')
-      .trimResults().omitEmptyStrings();
+  public static final Splitter CMD_LINE_SPLITTER =
+      Splitter.on(' ').trimResults().omitEmptyStrings();
   public static final String SEPARATOR = " ";
 
   /** Prefix for set environment variable in test configuration file. */
@@ -117,7 +117,7 @@ public class IT {
 
   // Compile the result comparison from all tests
   private ITOutput itOutput = null;
-  private boolean isRemoveFileRequiered;
+  private boolean isRemoveFileRequired;
 
   /**
    * Launch test execution, first generate data directory corresponding to the
@@ -134,10 +134,10 @@ public class IT {
     // Init logger
     final Stopwatch timer = Stopwatch.createStarted();
     getLogger().info("Start test " + this.testName);
-    getLogger().info(
-        "Test directory " + this.testDataDirectory.getAbsolutePath());
-    getLogger().info(
-        "Output directory " + this.outputTestDirectory.getAbsolutePath());
+    getLogger()
+        .info("Test directory " + this.testDataDirectory.getAbsolutePath());
+    getLogger()
+        .info("Output directory " + this.outputTestDirectory.getAbsolutePath());
 
     try {
       // Check data to generate
@@ -197,7 +197,7 @@ public class IT {
       if (this.itOutput != null) {
         // IT succeeded
         this.itOutput.deleteFileMatchingOnPattern(this.itResult,
-            this.isRemoveFileRequiered);
+            this.isRemoveFileRequired);
       }
 
       timer.stop();
@@ -338,9 +338,8 @@ public class IT {
       final boolean isApplication) throws Throwable {
 
     // Execute command line and save standard and error output in file
-    final ITCommandResult cmdResult =
-        cmdExecutor
-            .executeCommand(keyConf, suffixFilename, desc, isApplication);
+    final ITCommandResult cmdResult = cmdExecutor.executeCommand(keyConf,
+        suffixFilename, desc, isApplication);
 
     if (cmdResult == null) {
       return;
@@ -349,7 +348,7 @@ public class IT {
     // Save result of execution command line
     itResult.addCommandResult(cmdResult);
 
-    if (cmdResult.isCatchedException()) {
+    if (cmdResult.isCaughtException()) {
       throw cmdResult.getException();
     }
   }
@@ -361,7 +360,8 @@ public class IT {
     final File envFile = new File(this.outputTestDirectory, ENV_FILENAME);
 
     // Write in file
-    if (!(this.environmentVariables == null || this.environmentVariables.size() == 0)) {
+    if (!(this.environmentVariables == null
+        || this.environmentVariables.size() == 0)) {
       // Convert to string
       final String envToString =
           Joiner.on("\n").join(this.environmentVariables);
@@ -370,8 +370,8 @@ public class IT {
         com.google.common.io.Files.write(envToString, envFile, Charsets.UTF_8);
 
       } catch (final IOException e) {
-        getLogger().warning(
-            "Error while writing environment variables in file: "
+        getLogger()
+            .warning("Error while writing environment variables in file: "
                 + e.getMessage());
       }
     }
@@ -454,7 +454,8 @@ public class IT {
     }
 
     // Check already exists
-    if ((this.manualGenerationExpectedData || this.generateNewExpectedDirectoryTests)
+    if ((this.manualGenerationExpectedData
+        || this.generateNewExpectedDirectoryTests)
         && this.expectedTestDirectory.exists()) {
       // Nothing to do
       return;
@@ -499,9 +500,9 @@ public class IT {
     checkExistingDirectoryFile(this.testDataDirectory, "input test directory");
 
     // Create a symbolic link to the input directory
-    final Path testSourcePath =
-        Files.createSymbolicLink(new File(this.outputTestDirectory,
-            TEST_SOURCE_LINK_NAME).toPath(), this.testDataDirectory.toPath());
+    final Path testSourcePath = Files.createSymbolicLink(
+        new File(this.outputTestDirectory, TEST_SOURCE_LINK_NAME).toPath(),
+        this.testDataDirectory.toPath());
 
     // Create a symbolic link for each file from input data test directory
     for (final File file : this.testDataDirectory.listFiles()) {
@@ -531,7 +532,8 @@ public class IT {
    * @throws EoulsanException if the existing directory is empty
    * @throws IOException if the source test directory doesn't exist
    */
-  private File retrieveExpectedDirectory() throws EoulsanException, IOException {
+  private File retrieveExpectedDirectory()
+      throws EoulsanException, IOException {
 
     checkExistingDirectoryFile(this.testDataDirectory,
         "output data parent directory");
@@ -561,17 +563,17 @@ public class IT {
       if (this.generateExpectedDirectoryTestData) {
 
         // Retrieve command line from test configuration
-        final String cmdToGetApplicationVersion =
-            this.testConf
-                .getProperty(ITFactory.COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY);
+        final String cmdToGetApplicationVersion = this.testConf
+            .getProperty(ITFactory.COMMAND_TO_GET_APPLICATION_VERSION_CONF_KEY);
 
         final String versionExpectedApplication =
             this.itSuite.retrieveVersionApplication(cmdToGetApplicationVersion,
                 this.applicationPath);
 
-        return new File(this.testDataDirectory, "/expected_"
-            + (this.manualGenerationExpectedData
-                ? "UNKNOWN" : versionExpectedApplication));
+        return new File(this.testDataDirectory,
+            "/expected_"
+                + (this.manualGenerationExpectedData
+                    ? "UNKNOWN" : versionExpectedApplication));
       }
     }
 
@@ -633,9 +635,8 @@ public class IT {
     final Properties props = new Properties();
     props.putAll(globalsConf);
 
-    final BufferedReader br =
-        newReader(testConfFile,
-            Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING));
+    final BufferedReader br = newReader(testConfFile,
+        Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING));
 
     String line = null;
 
@@ -776,8 +777,8 @@ public class IT {
    * @return the count files to check content
    */
   public int getCountFilesToCheckContent() {
-    return (this.itOutput == null ? 0 : this.itOutput
-        .getCountFilesToCheckContent());
+    return (this.itOutput == null
+        ? 0 : this.itOutput.getCountFilesToCheckContent());
   }
 
   /**
@@ -785,8 +786,8 @@ public class IT {
    * @return the count files to check length
    */
   public int getCountFilesToCheckLength() {
-    return (this.itOutput == null ? 0 : this.itOutput
-        .getCountFilesToCheckLength());
+    return (this.itOutput == null
+        ? 0 : this.itOutput.getCountFilesToCheckLength());
   }
 
   /**
@@ -794,8 +795,8 @@ public class IT {
    * @return the count files to check existence
    */
   public int getCountFilesToCheckExistence() {
-    return (this.itOutput == null ? 0 : this.itOutput
-        .getCountFilesToCheckExistence());
+    return (this.itOutput == null
+        ? 0 : this.itOutput.getCountFilesToCheckExistence());
   }
 
   /**
@@ -830,9 +831,8 @@ public class IT {
       return Integer.parseInt(value);
 
     } catch (Exception e) {
-      getLogger().severe(
-          "Duration set in configuration invalid "
-              + value + ". Use default value " + RUNTIME_IT_MAXIMUM_DEFAULT);
+      getLogger().severe("Duration set in configuration invalid "
+          + value + ". Use default value " + RUNTIME_IT_MAXIMUM_DEFAULT);
 
       return RUNTIME_IT_MAXIMUM_DEFAULT;
     }
@@ -860,7 +860,7 @@ public class IT {
   public IT(final ITSuite itSuite, final Properties globalsConf,
       final File applicationPath, final File testsDataDirectory,
       final File outputTestsDirectory, final String testName)
-      throws IOException, EoulsanException {
+          throws IOException, EoulsanException {
 
     checkExistingDirectoryFile(testsDataDirectory, "tests data directory");
     checkExistingDirectoryFile(outputTestsDirectory, "output tests directory");
@@ -887,9 +887,8 @@ public class IT {
     this.itResult = new ITResult(this);
 
     // Remove file matching on pattern if IT succeeded
-    this.isRemoveFileRequiered =
-        Boolean.parseBoolean(this.testConf
-            .getProperty(SUCCESS_IT_DELETE_FILE_CONF_KEY));
+    this.isRemoveFileRequired = Boolean.parseBoolean(
+        this.testConf.getProperty(SUCCESS_IT_DELETE_FILE_CONF_KEY));
 
     // Extract properties on action: generate expected data directory
     this.generateAllExpectedDirectoryTest =
@@ -902,9 +901,8 @@ public class IT {
         this.generateAllExpectedDirectoryTest
             || this.generateNewExpectedDirectoryTests;
 
-    this.manualGenerationExpectedData =
-        Boolean.parseBoolean(this.testConf
-            .getProperty(ITFactory.MANUAL_GENERATION_EXPECTED_DATA_CONF_KEY));
+    this.manualGenerationExpectedData = Boolean.parseBoolean(this.testConf
+        .getProperty(ITFactory.MANUAL_GENERATION_EXPECTED_DATA_CONF_KEY));
 
     this.expectedTestDirectory = retrieveExpectedDirectory();
 
@@ -925,9 +923,8 @@ public class IT {
     this.checkLengthFilePatterns =
         extractPattern(ITFactory.CHECK_LENGTH_FILE_PATTERNS_CONF_KEY);
 
-    this.checkAbsenceFilePatterns =
-        this.testConf
-            .getProperty(ITFactory.CHECK_ABSENCE_FILE_PATTERNS_CONF_KEY);
+    this.checkAbsenceFilePatterns = this.testConf
+        .getProperty(ITFactory.CHECK_ABSENCE_FILE_PATTERNS_CONF_KEY);
 
     // Check not define, use test name
     if (this.testConf.contains(ITFactory.DESCRIPTION_CONF_KEY)) {

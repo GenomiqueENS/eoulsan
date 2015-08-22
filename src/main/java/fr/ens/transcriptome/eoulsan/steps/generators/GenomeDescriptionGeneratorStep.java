@@ -86,7 +86,8 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Get input and output data
     final Data inData = context.getInputData(GENOME_FASTA);
@@ -101,13 +102,12 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
       final DataFile genomeDescriptionDataFile = outData.getDataFile();
 
       getLogger().fine("Input genome file: " + genomeDataFile);
-      getLogger().fine(
-          "Output genome description file: " + genomeDescriptionDataFile);
+      getLogger()
+          .fine("Output genome description file: " + genomeDescriptionDataFile);
 
       // Create genome description DataFile
-      final GenomeDescription desc =
-          new GenomeDescriptionCreator()
-              .createGenomeDescription(genomeDataFile);
+      final GenomeDescription desc = new GenomeDescriptionCreator()
+          .createGenomeDescription(genomeDataFile);
 
       // Save the genome description in the analysis folder
       desc.save(genomeDescriptionDataFile.create());
@@ -122,7 +122,7 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
       return status.createStepResult(e);
     }
 
-    status.setMessage("Genome description creation");
+    status.setProgressMessage("Genome description creation");
     return status.createStepResult();
   }
 
@@ -140,8 +140,8 @@ public class GenomeDescriptionGeneratorStep extends AbstractStep {
       return null;
     }
 
-    return SimpleGenomeDescStorage.getInstance(new DataFile(
-        genomeDescStoragePath));
+    return SimpleGenomeDescStorage
+        .getInstance(new DataFile(genomeDescStoragePath));
   }
 
 }

@@ -84,7 +84,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     try {
 
@@ -111,8 +112,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       final FastqFormat fastqFormat = inData.getMetadata().getFastqFormat();
 
       // Initialize the mapper
-      final SequenceReadsMapper mapper =
-          initMapper(context, fastqFormat, archiveIndexFile, indexDir, reporter);
+      final SequenceReadsMapper mapper = initMapper(context, fastqFormat,
+          archiveIndexFile, indexDir, reporter);
 
       if (inData.getDataFileCount() < 1) {
         throw new IOException("No reads file found.");
@@ -132,11 +133,10 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         final DataFile inFile =
             context.getInputData(READS_FASTQ).getDataFile(0);
 
-        getLogger().info(
-            "Map file: "
-                + inFile + ", Fastq format: " + fastqFormat + ", use "
-                + mapper.getMapperName() + " with " + mapper.getThreadsNumber()
-                + " threads option");
+        getLogger().info("Map file: "
+            + inFile + ", Fastq format: " + fastqFormat + ", use "
+            + mapper.getMapperName() + " with " + mapper.getThreadsNumber()
+            + " threads option");
 
         // Single read mapping
         final MapperProcess process = mapper.mapSE(inFile);
@@ -147,10 +147,9 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         // Wait the end of the process and do cleanup
         process.waitFor();
 
-        logMsg =
-            "Mapping reads in "
-                + fastqFormat + " with " + mapper.getMapperName() + " ("
-                + inData.getName() + ", " + inFile.getName() + ")";
+        logMsg = "Mapping reads in "
+            + fastqFormat + " with " + mapper.getMapperName() + " ("
+            + inData.getName() + ", " + inFile.getName() + ")";
 
       }
 
@@ -164,11 +163,10 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         final DataFile inFile2 =
             context.getInputData(READS_FASTQ).getDataFile(1);
 
-        getLogger().info(
-            "Map files: "
-                + inFile1 + "," + inFile2 + ", Fastq format: " + fastqFormat
-                + ", use " + mapper.getMapperName() + " with "
-                + mapper.getThreadsNumber() + " threads option");
+        getLogger().info("Map files: "
+            + inFile1 + "," + inFile2 + ", Fastq format: " + fastqFormat
+            + ", use " + mapper.getMapperName() + " with "
+            + mapper.getThreadsNumber() + " threads option");
 
         // Single read mapping
         final MapperProcess process = mapper.mapPE(inFile1, inFile2);
@@ -179,11 +177,10 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
         // Wait the end of the process and do cleanup
         process.waitFor();
 
-        logMsg =
-            "Mapping reads in "
-                + fastqFormat + " with " + mapper.getMapperName() + " ("
-                + inData.getName() + ", " + inFile1.getName() + ","
-                + inFile2.getName() + ")";
+        logMsg = "Mapping reads in "
+            + fastqFormat + " with " + mapper.getMapperName() + " ("
+            + inData.getName() + ", " + inFile1.getName() + ","
+            + inFile2.getName() + ")";
       }
 
       // Throw an exception if an exception has occurred while mapping
@@ -264,9 +261,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
     // Parse SAM result file
     final BufferedReader readerResults =
         FileUtils.createBufferedReader(samFileInputStream);
-    final Writer writer =
-        new OutputStreamWriter(new FileOutputStream(samFile),
-            StandardCharsets.ISO_8859_1);
+    final Writer writer = new OutputStreamWriter(new FileOutputStream(samFile),
+        StandardCharsets.ISO_8859_1);
 
     int entriesParsed = 0;
 
@@ -293,9 +289,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
     readerResults.close();
     writer.close();
 
-    getLogger().info(
-        entriesParsed
-            + " entries parsed in " + getMapperName() + " output file");
+    getLogger().info(entriesParsed
+        + " entries parsed in " + getMapperName() + " output file");
   }
 
 }

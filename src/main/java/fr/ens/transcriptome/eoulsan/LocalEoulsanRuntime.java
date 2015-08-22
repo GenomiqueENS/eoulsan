@@ -34,7 +34,7 @@ import java.util.logging.Level;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
 /**
- * This classe define the Runtime to execute low level IO operation for Eoulsan
+ * This class define the Runtime to execute low level IO operation for Eoulsan
  * in local mode.
  * @since 1.0
  * @author Laurent Jourdren
@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
 
   private boolean isClusterMode;
+  private boolean isClusterTaskMode;
 
   @Override
   public boolean isHadoopMode() {
@@ -62,13 +63,20 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
   }
 
   @Override
+  public boolean isClusterTaskMode() {
+
+    return this.isClusterTaskMode;
+  }
+
+  @Override
   public File getTempDirectory() {
 
     return getSettings().getTempDirectoryFile();
   }
 
   @Override
-  public InputStream getInputStream(final String dataSource) throws IOException {
+  public InputStream getInputStream(final String dataSource)
+      throws IOException {
 
     if (dataSource == null) {
       throw new IllegalArgumentException("The datasource is null.");
@@ -115,6 +123,15 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
     this.isClusterMode = clusterMode;
   }
 
+  /**
+   * Set the cluster task mode.
+   * @param clusterTaskMode cluster task mode
+   */
+  public void setClusterTaskMode(final boolean clusterTaskMode) {
+
+    this.isClusterTaskMode = clusterTaskMode;
+  }
+
   //
   // Constructor
   //
@@ -148,8 +165,8 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
    * @throws IOException
    * @throws EoulsanException
    */
-  public static void initEoulsanRuntimeForExternalApp() throws IOException,
-      EoulsanException {
+  public static void initEoulsanRuntimeForExternalApp()
+      throws IOException, EoulsanException {
 
     if (!EoulsanRuntime.isRuntime()) {
       newEoulsanRuntime(new Settings(true));

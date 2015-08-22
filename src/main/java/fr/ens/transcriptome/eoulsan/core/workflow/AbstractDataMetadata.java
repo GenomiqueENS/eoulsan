@@ -116,8 +116,8 @@ abstract class AbstractDataMetadata implements DataMetadata, Serializable {
   @Override
   public void setSampleId(final int sampleId) {
 
-    checkArgument(sampleId > 0, "sampleId argument must be greater than 0: "
-        + sampleId);
+    checkArgument(sampleId > 0,
+        "sampleId argument must be greater than 0: " + sampleId);
 
     set(SAMPLE_ID_KEY, Integer.toString(sampleId));
   }

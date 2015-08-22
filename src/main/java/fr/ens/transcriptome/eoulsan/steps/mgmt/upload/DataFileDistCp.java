@@ -68,8 +68,8 @@ import fr.ens.transcriptome.eoulsan.util.hadoop.PathUtils;
 public class DataFileDistCp {
 
   /* Default Charset. */
-  private static final Charset CHARSET = Charset
-      .forName(Globals.DEFAULT_FILE_ENCODING);
+  private static final Charset CHARSET =
+      Charset.forName(Globals.DEFAULT_FILE_ENCODING);
 
   private final Configuration conf;
   private final Path jobPath;
@@ -81,8 +81,8 @@ public class DataFileDistCp {
    * job.
    * @author Laurent Jourdren
    */
-  public static final class DistCpMapper extends
-      Mapper<LongWritable, Text, Text, Text> {
+  public static final class DistCpMapper
+      extends Mapper<LongWritable, Text, Text, Text> {
 
     private static final String COUNTER_GROUP_NAME = "DataSourceDistCp";
 
@@ -95,8 +95,8 @@ public class DataFileDistCp {
     }
 
     @Override
-    protected void setup(final Context context) throws IOException,
-        InterruptedException {
+    protected void setup(final Context context)
+        throws IOException, InterruptedException {
 
       if (!EoulsanRuntime.isRuntime()) {
         HadoopEoulsanRuntime.newEoulsanRuntime(context.getConfiguration());
@@ -129,9 +129,8 @@ public class DataFileDistCp {
       final FileStatus fStatusSrc = srcFs.getFileStatus(srcPath);
       final long srcSize = fStatusSrc == null ? 0 : fStatusSrc.getLen();
 
-      getLogger().info(
-          "Start copy "
-              + srcPathname + " to " + destPath + " (" + srcSize + " bytes)\n");
+      getLogger().info("Start copy "
+          + srcPathname + " to " + destPath + " (" + srcSize + " bytes)\n");
 
       final long startTime = System.currentTimeMillis();
 
@@ -148,16 +147,15 @@ public class DataFileDistCp {
       final double speed =
           destSize == 0 ? 0 : (double) destSize / (double) duration * 1000;
 
-      getLogger().info(
-          "End copy "
-              + srcPathname + " to " + destPath + " in "
-              + StringUtils.toTimeHumanReadable(duration) + " (" + destSize
-              + " bytes, " + ((int) speed) + " bytes/s)\n");
+      getLogger().info("End copy "
+          + srcPathname + " to " + destPath + " in "
+          + StringUtils.toTimeHumanReadable(duration) + " (" + destSize
+          + " bytes, " + ((int) speed) + " bytes/s)\n");
 
-      context.getCounter(COUNTER_GROUP_NAME, "Input file size").increment(
-          srcSize);
-      context.getCounter(COUNTER_GROUP_NAME, "Output file size").increment(
-          destSize);
+      context.getCounter(COUNTER_GROUP_NAME, "Input file size")
+          .increment(srcSize);
+      context.getCounter(COUNTER_GROUP_NAME, "Output file size")
+          .increment(destSize);
     }
 
     /**
@@ -272,8 +270,8 @@ public class DataFileDistCp {
     try {
       job.waitForCompletion(false);
     } catch (InterruptedException | ClassNotFoundException e) {
-      throw new EoulsanRuntimeException(
-          "Error while distcp: " + e.getMessage(), e);
+      throw new EoulsanRuntimeException("Error while distcp: " + e.getMessage(),
+          e);
     }
 
     // Remove tmp directory

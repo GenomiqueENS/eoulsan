@@ -87,7 +87,8 @@ public class GFFFastaGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     try {
 
@@ -121,7 +122,7 @@ public class GFFFastaGeneratorStep extends AbstractStep {
       return status.createStepResult(e);
     }
 
-    status.setMessage("Genome fasta creation");
+    status.setProgressMessage("Genome fasta creation");
     return status.createStepResult();
   }
 

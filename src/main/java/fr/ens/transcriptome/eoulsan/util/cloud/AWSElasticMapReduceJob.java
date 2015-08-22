@@ -358,15 +358,13 @@ public class AWSElasticMapReduceJob {
     }
 
     // Set the hadoop jar step
-    final HadoopJarStepConfig hadoopJarStep =
-        new HadoopJarStepConfig().withJar(this.jarLocation.trim()).withArgs(
-            this.jarArguments);
+    final HadoopJarStepConfig hadoopJarStep = new HadoopJarStepConfig()
+        .withJar(this.jarLocation.trim()).withArgs(this.jarArguments);
 
     // Set step config
-    final StepConfig stepConfig =
-        new StepConfig().withName(this.jobFlowName + "-step")
-            .withHadoopJarStep(hadoopJarStep)
-            .withActionOnFailure("TERMINATE_JOB_FLOW");
+    final StepConfig stepConfig = new StepConfig()
+        .withName(this.jobFlowName + "-step").withHadoopJarStep(hadoopJarStep)
+        .withActionOnFailure("TERMINATE_JOB_FLOW");
 
     // Set the instance
     final JobFlowInstancesConfig instances =
@@ -380,8 +378,7 @@ public class AWSElasticMapReduceJob {
         new ScriptBootstrapActionConfig()
             .withPath(
                 "s3n://eu-west-1.elasticmapreduce/bootstrap-actions/configure-hadoop")
-            .withArgs(
-                "--site-key-value",
+            .withArgs("--site-key-value",
                 "mapreduce.tasktracker.map.tasks.maximum="
                     + this.taskTrackerMaxMapTasks);
 
@@ -391,10 +388,9 @@ public class AWSElasticMapReduceJob {
 
     // Enable debugging
     StepFactory stepFactory = new StepFactory();
-    StepConfig enableDebugging =
-        new StepConfig().withName("Enable Debugging")
-            .withActionOnFailure("TERMINATE_JOB_FLOW")
-            .withHadoopJarStep(stepFactory.newEnableDebuggingStep());
+    StepConfig enableDebugging = new StepConfig().withName("Enable Debugging")
+        .withActionOnFailure("TERMINATE_JOB_FLOW")
+        .withHadoopJarStep(stepFactory.newEnableDebuggingStep());
 
     // Run flow
     this.runFlowRequest = new RunJobFlowRequest().withName(this.jobFlowName);
@@ -456,8 +452,8 @@ public class AWSElasticMapReduceJob {
     }
 
     final DescribeJobFlowsRequest describeJobFlowsRequest =
-        new DescribeJobFlowsRequest().withJobFlowIds(this.runFlowResult
-            .getJobFlowId());
+        new DescribeJobFlowsRequest()
+            .withJobFlowIds(this.runFlowResult.getJobFlowId());
 
     String state = null;
     String lastState = null;
@@ -492,9 +488,8 @@ public class AWSElasticMapReduceJob {
 
         if (lastState == null || !lastState.equals(state)) {
 
-          getLogger().info(
-              "State of the job "
-                  + this.runFlowResult.getJobFlowId() + ": " + state);
+          getLogger().info("State of the job "
+              + this.runFlowResult.getJobFlowId() + ": " + state);
           lastState = state;
         }
 

@@ -112,7 +112,7 @@ public class TranscriptAndExonFinder {
 
     /**
      * Get the start of the gene.
-     * @return the start postion of the gene
+     * @return the start position of the gene
      */
     public int getStart() {
       return this.start;
@@ -209,7 +209,8 @@ public class TranscriptAndExonFinder {
     // Other methods
     //
 
-    private static final boolean stringEquals(final String s1, final String s2) {
+    private static final boolean stringEquals(final String s1,
+        final String s2) {
 
       if (s1 == null && s2 == null) {
         return true;
@@ -242,9 +243,8 @@ public class TranscriptAndExonFinder {
       return stringEquals(t.name, this.name)
           && stringEquals(t.type, this.type)
           && stringEquals(t.chromosome, this.chromosome)
-          && t.count == this.count && t.start == this.start
-          && t.end == this.end && t.strand == this.strand
-          && t.length == this.length;
+          && t.count == this.count && t.start == this.start && t.end == this.end
+          && t.strand == this.strand && t.length == this.length;
     }
 
     @Override
@@ -394,7 +394,7 @@ public class TranscriptAndExonFinder {
         return -1;
       }
 
-      if (!e.getChromosome().equals(e.getChromosome())) {
+      if (!getChromosome().equals(e.getChromosome())) {
         return getChromosome().compareTo(e.getChromosome());
       }
 
@@ -446,7 +446,7 @@ public class TranscriptAndExonFinder {
     }
 
     /**
-     * Overide toString()
+     * Override toString()
      * @return a String with the start and end position of the ORF
      */
     @Override
@@ -472,13 +472,13 @@ public class TranscriptAndExonFinder {
         final char strand, final String parentId) {
 
       if (start < 1) {
-        throw new IllegalArgumentException("Start position is lower that 1: "
-            + start);
+        throw new IllegalArgumentException(
+            "Start position is lower that 1: " + start);
       }
 
       if (end < start) {
-        throw new IllegalArgumentException("End position is greater that end: "
-            + end);
+        throw new IllegalArgumentException(
+            "End position is greater that end: " + end);
       }
 
       this.chromosome = chromosome;
@@ -677,7 +677,7 @@ public class TranscriptAndExonFinder {
             return maxIndex;
           }
 
-          assert (false);
+          assert(false);
         }
 
         final Zone z = get(index);
@@ -817,7 +817,7 @@ public class TranscriptAndExonFinder {
 
   private void populateMapsFromGFFFile(final InputStream is,
       final String expressionType, final String attributeId)
-      throws IOException, BadBioEntryException {
+          throws IOException, BadBioEntryException {
 
     getLogger().info("Expression Type: " + expressionType);
 
@@ -974,8 +974,8 @@ public class TranscriptAndExonFinder {
    * Save the annotation.
    * @param outputFile Output file
    */
-  public void save(final File outputFile) throws FileNotFoundException,
-      IOException {
+  public void save(final File outputFile)
+      throws FileNotFoundException, IOException {
 
     save(FileUtils.createOutputStream(outputFile));
   }
@@ -1006,8 +1006,8 @@ public class TranscriptAndExonFinder {
    * Load the annotation.
    * @param inputFile input file
    */
-  public void load(final File inputFile) throws FileNotFoundException,
-      IOException {
+  public void load(final File inputFile)
+      throws FileNotFoundException, IOException {
 
     load(FileUtils.createInputStream(inputFile));
   }
@@ -1044,7 +1044,7 @@ public class TranscriptAndExonFinder {
    */
   public TranscriptAndExonFinder(final File annotationFile,
       final String expressionType, final String attributeId)
-      throws IOException, BadBioEntryException {
+          throws IOException, BadBioEntryException {
 
     this(FileUtils.createInputStream(annotationFile), expressionType,
         attributeId);
@@ -1061,7 +1061,7 @@ public class TranscriptAndExonFinder {
    */
   public TranscriptAndExonFinder(final InputStream is,
       final String expressionType, final String attributeId)
-      throws IOException, BadBioEntryException {
+          throws IOException, BadBioEntryException {
 
     populateMapsFromGFFFile(is, expressionType, attributeId);
   }

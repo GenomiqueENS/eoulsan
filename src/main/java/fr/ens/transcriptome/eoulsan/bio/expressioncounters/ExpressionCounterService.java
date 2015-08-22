@@ -31,8 +31,8 @@ import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
  * @since 1.2
  * @author Claire Wallon
  */
-public class ExpressionCounterService extends
-    ServiceNameLoader<ExpressionCounter> {
+public class ExpressionCounterService
+    extends ServiceNameLoader<ExpressionCounter> {
 
   private static ExpressionCounterService service;
 

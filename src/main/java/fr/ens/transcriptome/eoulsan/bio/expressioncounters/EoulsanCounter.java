@@ -36,7 +36,7 @@ import fr.ens.transcriptome.eoulsan.steps.expression.local.ExpressionPseudoMapRe
 import fr.ens.transcriptome.eoulsan.util.Reporter;
 
 /**
- * This class defines a wrapper for the homemade algorithme for the expression
+ * This class defines a wrapper for the homemade algorithm for the expression
  * step.
  * @since 1.2
  * @author Laurent Jourdren
@@ -78,7 +78,8 @@ public class EoulsanCounter extends AbstractExpressionCounter {
     epmr.doReduce(expressionTmpFile);
 
     final FinalExpressionTranscriptsCreator fetc =
-        new FinalExpressionTranscriptsCreator(epmr.getTranscriptAndExonFinder());
+        new FinalExpressionTranscriptsCreator(
+            epmr.getTranscriptAndExonFinder());
 
     fetc.initializeExpressionResults();
     fetc.loadPreResults(expressionTmpFile,
@@ -87,9 +88,8 @@ public class EoulsanCounter extends AbstractExpressionCounter {
 
     // Remove expression Temp file
     if (!expressionTmpFile.delete()) {
-      getLogger().warning(
-          "Can not delete expression temporary file: "
-              + expressionTmpFile.getAbsolutePath());
+      getLogger().warning("Can not delete expression temporary file: "
+          + expressionTmpFile.getAbsolutePath());
     }
 
     // } catch (BadBioEntryException e) {
