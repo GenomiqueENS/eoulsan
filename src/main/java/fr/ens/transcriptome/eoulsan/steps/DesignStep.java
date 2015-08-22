@@ -215,7 +215,8 @@ public class DesignStep extends AbstractStep {
           DataUtils.setDataFiles(data, dataFiles);
 
           // Set paired-end metadata
-          if (DataFormats.READS_FASTQ.equals(port.getFormat()) && dataFiles.size()>1) {
+          if (DataFormats.READS_FASTQ.equals(port.getFormat())
+              && dataFiles.size() > 1) {
             data.getMetadata().setPairedEnd(true);
           }
 

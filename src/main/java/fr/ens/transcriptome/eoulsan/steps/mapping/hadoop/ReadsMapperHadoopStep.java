@@ -228,13 +228,14 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     // Set the number of threads for the mapper
     if (getMapperLocalThreads() > 0) {
-      jobConf.set(ReadsMapperMapper.MAPPER_THREADS_KEY, ""
-          + getMapperHadoopThreads());
+      jobConf.set(ReadsMapperMapper.MAPPER_THREADS_KEY,
+          "" + getMapperHadoopThreads());
     }
 
     // Set mapper arguments
     if (getMapperArguments() != null) {
-      jobConf.set(ReadsMapperMapper.MAPPER_ARGS_KEY, doubleQuotes(getMapperArguments()));
+      jobConf.set(ReadsMapperMapper.MAPPER_ARGS_KEY,
+          doubleQuotes(getMapperArguments()));
     }
 
     // Set Mapper fastq format

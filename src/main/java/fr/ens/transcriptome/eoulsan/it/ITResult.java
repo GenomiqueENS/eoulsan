@@ -185,13 +185,13 @@ public class ITResult {
 
     report.append("\n\nDate: " + getCurrentFormatedDate());
     report.append('\n');
-    
+
     report.append("\n\nDirectories:");
 
-    report.append("\n\tExpected:"
-        + this.it.getExpectedTestDirectory().getAbsolutePath());
-    report.append("\n\tOuput:"
-        + this.it.getOutputTestDirectory().getAbsolutePath());
+    report.append(
+        "\n\tExpected:" + this.it.getExpectedTestDirectory().getAbsolutePath());
+    report.append(
+        "\n\tOuput:" + this.it.getOutputTestDirectory().getAbsolutePath());
 
     report.append("\n\nPatterns:");
 
@@ -224,13 +224,11 @@ public class ITResult {
         + this.it.getExcludeToComparePatterns());
 
     // Result to check if files exist
-    report
-        .append("\n\tFile count to remove from pattern(s) if test successed: "
-            + this.it.getFileToRemovePatterns());
+    report.append("\n\tFile count to remove from pattern(s) if test successed: "
+        + this.it.getFileToRemovePatterns());
     if (!this.it.getFileToRemovePatterns().equals("none")) {
       report.append(": " + this.it.getCountFilesToRemove() + " file(s)");
     }
-
 
     report.append("\n\nDuration one script maximum: "
         + toTimeHumanReadable(this.it.getDurationMaxInMinutes() * 60 * 1000));

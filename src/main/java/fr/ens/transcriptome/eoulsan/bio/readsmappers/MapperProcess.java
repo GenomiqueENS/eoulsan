@@ -480,18 +480,16 @@ public abstract class MapperProcess {
 
       final boolean last = i == cmds.size() - 1;
 
-      this.process =
-          this.executor.execute(cmds.get(i), executionDirectory(), last,
-              this.pipeFile1, this.pipeFile2);
+      this.process = this.executor.execute(cmds.get(i), executionDirectory(),
+          last, this.pipeFile1, this.pipeFile2);
 
       if (!last) {
 
         Thread.sleep(1000);
       } else {
 
-        this.stdout =
-            new InputStreamWrapper(
-                createCustomInputStream(this.process.getInputStream()));
+        this.stdout = new InputStreamWrapper(
+            createCustomInputStream(this.process.getInputStream()));
       }
     }
   }

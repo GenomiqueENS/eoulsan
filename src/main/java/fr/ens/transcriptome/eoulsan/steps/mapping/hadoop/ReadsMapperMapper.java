@@ -259,10 +259,9 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     if (!this.mapper.isMultipleInstancesEnabled()) {
       this.mapper.setThreadsNumber(mapperThreads);
     }
-    getLogger().info(
-        "Use "
-            + this.mapper.getMapperName() + " with " + mapperThreads
-            + " threads option");
+    getLogger().info("Use "
+        + this.mapper.getMapperName() + " with " + mapperThreads
+        + " threads option");
 
     // Create temporary directory if not exists
     final File tempDir = new File(conf.get(HADOOP_TEMP_DIR));
@@ -281,8 +280,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     // Update last used file timestamp for the mapper indexes clean up
     updateLastUsedMapperIndex(this.mapperIndexDir);
 
-    context.setStatus("Wait free JVM for running "
-        + this.mapper.getMapperName());
+    context
+        .setStatus("Wait free JVM for running " + this.mapper.getMapperName());
 
     // Lock if mapper
     ProcessUtils.waitRandom(5000);
@@ -337,10 +336,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     // Write headers
     writeResults(context, this.writeHeaders);
 
-    getLogger().info(
-        this.entriesParsed
-            + " entries parsed in " + this.mapper.getMapperName()
-            + " output file");
+    getLogger().info(this.entriesParsed
+        + " entries parsed in " + this.mapper.getMapperName() + " output file");
 
     // Clear old mapper indexes
     removeUnusedMapperIndexes(context.getConfiguration());
@@ -360,14 +357,13 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
     final long waitStartTime = System.currentTimeMillis();
 
-    ProcessUtils.waitUntilExecutableRunning(this.mapper.getMapperName()
-        .toLowerCase());
+    ProcessUtils
+        .waitUntilExecutableRunning(this.mapper.getMapperName().toLowerCase());
 
-    getLogger().info(
-        "Wait "
-            + StringUtils.toTimeHumanReadable(System.currentTimeMillis()
-                - waitStartTime) + " before running "
-            + this.mapper.getMapperName());
+    getLogger().info("Wait "
+        + StringUtils
+            .toTimeHumanReadable(System.currentTimeMillis() - waitStartTime)
+        + " before running " + this.mapper.getMapperName());
 
     context.setStatus("Run " + this.mapper.getMapperName());
   }

@@ -75,8 +75,8 @@ public class PathMapperExecutor implements MapperExecutor {
       builder.directory(executionDirectory);
     }
 
-    getLogger().info(
-        "Process command: " + Joiner.on(' ').join(builder.command()));
+    getLogger()
+        .info("Process command: " + Joiner.on(' ').join(builder.command()));
     getLogger().info("Process directory: " + builder.directory());
 
     return new ProcessResult(builder.start());

@@ -216,7 +216,6 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       }
     });
 
-
     t.start();
 
     return t;
@@ -231,7 +230,6 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     synchronized (SYNC) {
       bwaPath = install(MAPPER_EXECUTABLE);
     }
-
 
     // Path to index
     final String indexPath = getIndexPath(archiveIndex);
@@ -252,14 +250,12 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
 
     // Temporary result file 1
-    final File tmpFile1 =
-        FileUtils.createTempFile(tmpDir, PREFIX_FILES + "-output-",
-            SAI_EXTENSION);
+    final File tmpFile1 = FileUtils.createTempFile(tmpDir,
+        PREFIX_FILES + "-output-", SAI_EXTENSION);
 
     // Temporary result file 2
-    final File tmpFile2 =
-        FileUtils.createTempFile(tmpDir, PREFIX_FILES + "-output-",
-            SAI_EXTENSION);
+    final File tmpFile2 = FileUtils.createTempFile(tmpDir,
+        PREFIX_FILES + "-output-", SAI_EXTENSION);
 
     // Path to index
     final String indexPath = getIndexPath(archiveIndex);
@@ -311,9 +307,8 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         this.closed = new MutableBoolean();
         this.exception = new ExceptionWrapper();
 
-        this.copyThread =
-            createFastqCopyThread(this.writer, this.queue, this.closed,
-                exception);
+        this.copyThread = createFastqCopyThread(this.writer, this.queue,
+            this.closed, exception);
       }
 
       @Override
@@ -452,12 +447,10 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         this.closed2 = new MutableBoolean();
         this.exception1 = new ExceptionWrapper();
         this.exception2 = new ExceptionWrapper();
-        this.copyThread1 =
-            createFastqCopyThread(this.writer1, this.queue1, this.closed1,
-                exception1);
-        this.copyThread2 =
-            createFastqCopyThread(this.writer2, this.queue2, this.closed2,
-                exception2);
+        this.copyThread1 = createFastqCopyThread(this.writer1, this.queue1,
+            this.closed1, exception1);
+        this.copyThread2 = createFastqCopyThread(this.writer2, this.queue2,
+            this.closed2, exception2);
       }
 
       @Override

@@ -51,8 +51,8 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
 
   // Parameters keys
-  static final String MAPPING_QUALITY_THRESOLD_KEY = Globals.PARAMETER_PREFIX
-      + ".samfilter.mapping.quality.threshold";
+  static final String MAPPING_QUALITY_THRESOLD_KEY =
+      Globals.PARAMETER_PREFIX + ".samfilter.mapping.quality.threshold";
 
   private static final Splitter ID_SPLITTER = Splitter.on(':').trimResults();
   private final List<String> idFields = new ArrayList<>();
@@ -85,7 +85,8 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
     }
 
     // SAM header writer
-    this.samHeaderWriter = new SAMHeaderHadoopUtils.SAMHeaderWriter(context.getTaskAttemptID().toString());
+    this.samHeaderWriter = new SAMHeaderHadoopUtils.SAMHeaderWriter(
+        context.getTaskAttemptID().toString());
 
     getLogger().info("End of setup()");
   }
@@ -154,8 +155,8 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
   }
 
   @Override
-  protected void cleanup(final Context context) throws IOException,
-      InterruptedException {
+  protected void cleanup(final Context context)
+      throws IOException, InterruptedException {
 
     // Write SAM header if there is no SAM entries
     this.samHeaderWriter.close(context);

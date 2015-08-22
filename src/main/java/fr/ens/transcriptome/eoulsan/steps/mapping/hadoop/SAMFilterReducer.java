@@ -125,7 +125,8 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
     }
 
     // Set the sequences sizes in the parser
-    this.parser.getFileHeader().setSequenceDictionary(createSAMSequenceDictionaryFromSAMHeader(samHeader));
+    this.parser.getFileHeader().setSequenceDictionary(
+        createSAMSequenceDictionaryFromSAMHeader(samHeader));
 
     getLogger().info("End of setup()");
   }

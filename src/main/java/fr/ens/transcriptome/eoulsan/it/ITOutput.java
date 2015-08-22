@@ -318,8 +318,8 @@ public class ITOutput {
 
         // TODO
         if (link.delete()) {
-          msg.append("\n\tFail to delete broken symbolic link file "
-              + link.getName());
+          msg.append(
+              "\n\tFail to delete broken symbolic link file " + link.getName());
         }
       }
     }
@@ -715,7 +715,7 @@ public class ITOutput {
       final String checkLengthFilePatterns,
       final String checkExistenceFilePatterns,
 
-      final String checkAbsenceFilePatterns, final String fileToRemovePatterns)
+  final String checkAbsenceFilePatterns, final String fileToRemovePatterns)
       throws IOException, EoulsanException {
 
     this.directory = outputTestDirectory;

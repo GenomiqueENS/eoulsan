@@ -316,7 +316,8 @@ public class STARIndexGenerator extends AbstractStep {
             this.genomeChrBinNbits.toString());
       }
 
-      status.setProgressMessage(this.mapper.getMapperName() + " index creation");
+      status
+          .setProgressMessage(this.mapper.getMapperName() + " index creation");
 
       // Create the index
       GenomeMapperIndexGeneratorStep.execute(this.mapper, context,

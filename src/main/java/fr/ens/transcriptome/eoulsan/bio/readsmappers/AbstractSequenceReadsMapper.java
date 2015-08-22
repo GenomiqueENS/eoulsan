@@ -463,9 +463,8 @@ public abstract class AbstractSequenceReadsMapper
     final File unCompressedGenomeFile =
         uncompressGenomeIfNecessary(genomeFile, outputDir);
 
-    getLogger().fine(
-        "Start computing "
-            + getMapperName() + " index for " + unCompressedGenomeFile);
+    getLogger().fine("Start computing "
+        + getMapperName() + " index for " + unCompressedGenomeFile);
 
     final long startTime = System.currentTimeMillis();
 
@@ -518,10 +517,9 @@ public abstract class AbstractSequenceReadsMapper
 
     final long endTime = System.currentTimeMillis();
 
-    getLogger().fine(
-        "Create the "
-            + getMapperName() + " index in "
-            + StringUtils.toTimeHumanReadable(endTime - startTime));
+    getLogger().fine("Create the "
+        + getMapperName() + " index in "
+        + StringUtils.toTimeHumanReadable(endTime - startTime));
   }
 
   @Override
@@ -629,7 +627,6 @@ public abstract class AbstractSequenceReadsMapper
       throw e;
     } finally {
 
-
       lock.release();
       lockIs.close();
       lockFile.delete();
@@ -644,7 +641,8 @@ public abstract class AbstractSequenceReadsMapper
   //
 
   @Override
-  public final MapperProcess mapSE(final DataFile readsFile) throws IOException {
+  public final MapperProcess mapSE(final DataFile readsFile)
+      throws IOException {
 
     checkNotNull(readsFile, "readsFile is null");
 
@@ -733,8 +731,8 @@ public abstract class AbstractSequenceReadsMapper
     getLogger().fine("First pair FASTQ file: " + readsFile1);
     getLogger().fine("Second pair FASTQ file: " + readsFile2);
 
-    return mapPE(new FileInputStream(readsFile1), new FileInputStream(
-        readsFile2));
+    return mapPE(new FileInputStream(readsFile1),
+        new FileInputStream(readsFile2));
   }
 
   /**
@@ -744,8 +742,8 @@ public abstract class AbstractSequenceReadsMapper
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  private final MapperProcess mapPE(final InputStream in1, final InputStream in2)
-      throws IOException {
+  private final MapperProcess mapPE(final InputStream in1,
+      final InputStream in2) throws IOException {
 
     checkNotNull(in1, "in1 argument is null");
     checkNotNull(in2, "in2 argument is null");
@@ -824,7 +822,6 @@ public abstract class AbstractSequenceReadsMapper
 
       @Override
       public void run() {
-
 
         try {
 
@@ -927,13 +924,11 @@ public abstract class AbstractSequenceReadsMapper
 
     // Set the executor to use
     if (!this.mapperDockerImage.isEmpty() && this.dockerConnection != null) {
-      this.executor =
-          new DockerMapperExecutor(getDockerConnection(),
-              getMapperDockerImage(), getTempDirectory());
+      this.executor = new DockerMapperExecutor(getDockerConnection(),
+          getMapperDockerImage(), getTempDirectory());
     } else if (isUseBundledBinaries()) {
-      this.executor =
-          new BundledMapperExecutor(getSoftwarePackage(),
-              getMapperVersionToUse(), getTempDirectory());
+      this.executor = new BundledMapperExecutor(getSoftwarePackage(),
+          getMapperVersionToUse(), getTempDirectory());
     } else {
       this.executor = new PathMapperExecutor();
     }
@@ -944,7 +939,8 @@ public abstract class AbstractSequenceReadsMapper
       throw new IOException("Unable to find mapper "
           + getMapperName() + " version " + this.mapperVersionToUse
           + " (flavor: "
-          + (this.flavorToUse == null ? "not defined" : this.flavorToUse) + ")");
+          + (this.flavorToUse == null ? "not defined" : this.flavorToUse)
+          + ")");
 
     }
 
@@ -952,7 +948,8 @@ public abstract class AbstractSequenceReadsMapper
       throw new IOException("Unable to find mapper "
           + getMapperName() + " version " + this.mapperVersionToUse
           + " (flavor: "
-          + (this.flavorToUse == null ? "not defined" : this.flavorToUse) + ")");
+          + (this.flavorToUse == null ? "not defined" : this.flavorToUse)
+          + ")");
     }
 
     this.binariesReady = true;
@@ -961,7 +958,7 @@ public abstract class AbstractSequenceReadsMapper
   @Override
   public void init(final DataFile archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
-      throws IOException {
+          throws IOException {
 
     checkNotNull(archiveIndexFile, "archiveIndexFile is null");
 

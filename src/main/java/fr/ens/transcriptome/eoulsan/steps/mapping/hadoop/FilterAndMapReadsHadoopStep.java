@@ -131,9 +131,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
         final DataFile inFile = readsData.getDataFile(0);
         final List<String> filenames = singletonList(inFile.getName());
 
-        job =
-            createJobConf(conf, context, dataName, inFile, filenames, false,
-                READS_FASTQ, fastqFormat, mapperIndex, samFile);
+        job = createJobConf(conf, context, dataName, inFile, filenames, false,
+            READS_FASTQ, fastqFormat, mapperIndex, samFile);
 
       } else {
 
@@ -153,9 +152,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
             readsData.getName(), CommonHadoop.CHECK_COMPLETION_TIME, status,
             getCounterGroup());
 
-        job =
-            createJobConf(conf, context, dataName, tfqFile, filenames, true,
-                READS_TFQ, fastqFormat, mapperIndex, samFile);
+        job = createJobConf(conf, context, dataName, tfqFile, filenames, true,
+            READS_TFQ, fastqFormat, mapperIndex, samFile);
       }
 
       // Submit filter and map job
@@ -176,7 +174,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
       final List<String> filenames, final boolean pairedEnd,
       final DataFormat inputFormat, final FastqFormat fastqFormat,
       final DataFile genomeIndexFile, final DataFile outFile)
-      throws IOException {
+          throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 

@@ -123,8 +123,8 @@ public class BundledMapperExecutor implements MapperExecutor {
       builder.directory(executionDirectory);
     }
 
-    getLogger().info(
-        "Process command: " + Joiner.on(' ').join(builder.command()));
+    getLogger()
+        .info("Process command: " + Joiner.on(' ').join(builder.command()));
     getLogger().info("Process directory: " + builder.directory());
 
     return new ProcessResult(builder.start());
@@ -157,7 +157,8 @@ public class BundledMapperExecutor implements MapperExecutor {
 
     checkNotNull(softwarePackage, "dockerConnection argument cannot be null");
     checkNotNull(version, "dockerConnection argument cannot be null");
-    checkNotNull(temporaryDirectory, "dockerConnection argument cannot be null");
+    checkNotNull(temporaryDirectory,
+        "dockerConnection argument cannot be null");
 
     this.softwarePackage = softwarePackage;
     this.version = version;

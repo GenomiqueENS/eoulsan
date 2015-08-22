@@ -84,7 +84,8 @@ public class PreTreatmentExpressionMapper
     }
 
     // SAM header writer
-    this.samHeaderWriter = new SAMHeaderHadoopUtils.SAMHeaderWriter(context.getTaskAttemptID().toString());
+    this.samHeaderWriter = new SAMHeaderHadoopUtils.SAMHeaderWriter(
+        context.getTaskAttemptID().toString());
 
     getLogger().info("End of setup()");
   }

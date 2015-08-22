@@ -154,11 +154,10 @@ public class IT {
       launchScriptsTest(this.itResult);
 
       // Treat result application directory
-      this.itOutput =
-          new ITOutput(this.outputTestDirectory, this.fileToComparePatterns,
-              this.excludeToComparePatterns, this.checkLengthFilePatterns,
-              this.checkExistenceFilePatterns, this.checkAbsenceFilePatterns,
-              this.fileToRemovePatterns);
+      this.itOutput = new ITOutput(this.outputTestDirectory,
+          this.fileToComparePatterns, this.excludeToComparePatterns,
+          this.checkLengthFilePatterns, this.checkExistenceFilePatterns,
+          this.checkAbsenceFilePatterns, this.fileToRemovePatterns);
 
       if (this.generateExpectedDirectoryTestData) {
         this.itResult.asGeneratedData();
@@ -914,8 +913,8 @@ public class IT {
     this.fileToRemovePatterns =
         extractPattern(ITFactory.FILE_TO_REMOVE_CONF_KEY);
 
-    this.excludeToComparePatterns =
-        buildExcludePatterns(extractPattern(ITFactory.EXCLUDE_TO_COMPARE_PATTERNS_CONF_KEY));
+    this.excludeToComparePatterns = buildExcludePatterns(
+        extractPattern(ITFactory.EXCLUDE_TO_COMPARE_PATTERNS_CONF_KEY));
 
     this.checkExistenceFilePatterns =
         extractPattern(ITFactory.CHECK_EXISTENCE_FILE_PATTERNS_CONF_KEY);

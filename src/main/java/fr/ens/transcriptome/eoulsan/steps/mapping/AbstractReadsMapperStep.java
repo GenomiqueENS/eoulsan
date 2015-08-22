@@ -361,8 +361,8 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
     try {
       return new URI(dockerConnectionString);
     } catch (URISyntaxException e) {
-      throw new EoulsanException("Invalid URI for Docker connection: "
-          + dockerConnectionString);
+      throw new EoulsanException(
+          "Invalid URI for Docker connection: " + dockerConnectionString);
     }
   }
 
@@ -398,7 +398,8 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
       if ("soap".equals(parameter.getLowerStringValue())) {
 
         throw new EoulsanException(
-            "The SOAP mapper support has been removed from " + Globals.APP_NAME);
+            "The SOAP mapper support has been removed from "
+                + Globals.APP_NAME);
       }
       break;
 

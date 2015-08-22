@@ -112,9 +112,8 @@ public class DockerMapperExecutor implements MapperExecutor {
 
         return Channels.newInputStream(fis.getChannel());
       } catch (FileNotFoundException e) {
-        getLogger().severe(
-            "Cannot find stdout named pipe of the container: "
-                + this.stdoutFile);
+        getLogger().severe("Cannot find stdout named pipe of the container: "
+            + this.stdoutFile);
         return null;
       }
     }
@@ -175,7 +174,7 @@ public class DockerMapperExecutor implements MapperExecutor {
      */
     private DockerResult(final List<String> command,
         final File executionDirectory, boolean stdout, File... filesUsed)
-        throws IOException {
+            throws IOException {
 
       checkNotNull(command, "command argument cannot be null");
 
@@ -205,9 +204,8 @@ public class DockerMapperExecutor implements MapperExecutor {
           this.stdoutFile = null;
         }
 
-        final ContainerConfig.Builder builder =
-            ContainerConfig.builder().image(dockerImage)
-                .cmd(convertCommand(command, this.stdoutFile));
+        final ContainerConfig.Builder builder = ContainerConfig.builder()
+            .image(dockerImage).cmd(convertCommand(command, this.stdoutFile));
 
         // Set the working directory
         if (executionDirectory != null) {
@@ -272,7 +270,7 @@ public class DockerMapperExecutor implements MapperExecutor {
   @Override
   public Result execute(final List<String> command,
       final File executionDirectory, boolean stdout, File... filesUsed)
-      throws IOException {
+          throws IOException {
 
     checkNotNull(command, "executable argument cannot be null");
 
@@ -292,8 +290,8 @@ public class DockerMapperExecutor implements MapperExecutor {
    *           image
    */
   private static void pullImageIfNotExists(DockerClient dockerClient,
-      final String dockerImageName) throws DockerException,
-      InterruptedException {
+      final String dockerImageName)
+          throws DockerException, InterruptedException {
 
     checkNotNull(dockerClient, "dockerClient argument cannot be null");
     checkNotNull(dockerImageName, "dockerImageName argument cannot be null");

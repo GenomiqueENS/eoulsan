@@ -95,9 +95,8 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
       final DataFile archiveIndexFile =
           context.getInputData(getMapper().getArchiveFormat()).getDataFile();
 
-      final File indexDir =
-          new File(StringUtils.filenameWithoutExtension(archiveIndexFile
-              .toUri().getPath()));
+      final File indexDir = new File(StringUtils
+          .filenameWithoutExtension(archiveIndexFile.toUri().getPath()));
 
       // Get input data
       final Data inData = context.getInputData(READS_FASTQ);
