@@ -69,15 +69,22 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
     @Override
     public void run() {
 
+      getLogger()
+          .finest("Start of TaskThread.run() for Task #" + context.getId());
+
       try {
 
         // Execute the context
         beforeExecuteTask(this.context);
         afterExecuteTask(this.context, executeTask(this.context));
+
       } catch (Throwable e) {
 
         this.e = e;
       }
+
+      getLogger()
+          .finest("End of TaskThread.run() for Task #" + context.getId());
     }
 
     public void fail(final boolean cancel) {
@@ -119,15 +126,25 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
     // Call to the super method
     super.submit(step, context);
 
+    getLogger().finest(
+        "MultiThreadTaskScheduler.submit(): before creating TaskThread for Task #"
+            + context.getId());
+
     // Create context thread
     final TaskThread st = new TaskThread(context);
 
+    getLogger().finest(
+        "MultiThreadTaskScheduler.submit(): before submitting TaskThread for Task #"
+            + context.getId());
+
     // Submit the context thread the thread executor
     synchronized (this.threads) {
-      final Future<TaskThread> ftt = this.executor.submit(st, st);
-
-      this.threads.add(ftt);
+      this.threads.add(this.executor.submit(st, st));
     }
+
+    getLogger().finest(
+        "MultiThreadTaskScheduler.submit(): after submitting TaskThread for Task #"
+            + context.getId());
   }
 
   @Override
