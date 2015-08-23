@@ -149,7 +149,9 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
 
   @Override
   public void start() {
+
     super.start();
+    new Thread(this, "TaskScheduler_multi_thread").start();
   }
 
   @Override
