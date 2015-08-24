@@ -36,6 +36,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.base.Joiner;
+
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskResult;
@@ -75,10 +77,40 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
       try {
 
         // Execute the context
+        getLogger().finest(
+            "In TaskThread.run() / before beforeExecuteTask() for Task #"
+                + context.getId());
         beforeExecuteTask(this.context);
-        afterExecuteTask(this.context, executeTask(this.context));
+
+        getLogger()
+            .finest("In TaskThread.run() / before executeTask() for Task #"
+                + context.getId());
+        final TaskResult result = executeTask(this.context);
+
+        getLogger()
+            .finest("In TaskThread.run() / before afterExecuteTask() for Task #"
+                + context.getId());
+        afterExecuteTask(this.context, result);
+
+        getLogger()
+            .finest("In TaskThread.run() / after afterExecuteTask() for Task #"
+                + context.getId());
+
+        // afterExecuteTask(this.context, executeTask(this.context));
+
+        this.done = true;
 
       } catch (Throwable e) {
+
+        getLogger().finest("Exception in TaskThread.run() for Task #"
+            + context.getId() + " " + e);
+        getLogger().finest("Exception in TaskThread.run() for Task #"
+            + context.getId() + ", message: " + e.getMessage());
+        getLogger().finest("Exception in TaskThread.run() for Task #"
+            + context.getId() + ", message: " + e.getMessage());
+        getLogger().finest("Exception in TaskThread.run() for Task #"
+            + context.getId() + ", stack trace: "
+            + Joiner.on('\n').join(e.getStackTrace()));
 
         this.e = e;
       }
@@ -91,10 +123,11 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
 
       final long endTime = System.currentTimeMillis();
 
-      final Throwable exception = cancel
-          ? new EoulsanRuntimeException(
-              "Task #" + context.getId() + "has been canceled")
-          : this.e;
+      final Throwable exception = this.e != null
+          ? this.e
+          : new EoulsanRuntimeException("Task #"
+              + context.getId() + "has failed without exception, cancel="
+              + cancel);
 
       final TaskResult result = new TaskResult(this.context,
           new Date(this.submissionTime), new Date(endTime),
@@ -102,7 +135,6 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
 
       afterExecuteTask(this.context, result);
 
-      this.done = true;
     }
 
     //
@@ -157,6 +189,8 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
   @Override
   public void stop() {
 
+    super.stop();
+
     try {
 
       // Shutdown the executor
@@ -208,7 +242,8 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
 
               getLogger().finest("Task #"
                   + tt.context.getId() + " has failed in "
-                  + this.getClass().getName());
+                  + this.getClass().getSimpleName() + ", cancelled: "
+                  + ftt.isCancelled());
 
               tt.fail(ftt.isCancelled());
             }
@@ -217,7 +252,9 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
             threadsToRemove.add(ftt);
 
           } catch (InterruptedException | ExecutionException e) {
-            // Never occurs
+            getLogger().severe("Unexcepted exception in "
+                + this.getClass().getSimpleName() + ".run(): "
+                + e.getMessage());
           }
         }
       }
