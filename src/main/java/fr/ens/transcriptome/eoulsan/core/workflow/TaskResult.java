@@ -257,7 +257,7 @@ public class TaskResult implements StepResult, Serializable {
     this.errorMessage = null;
   }
 
-  TaskResult(final TaskContext context, final Date startTime,
+  public TaskResult(final TaskContext context, final Date startTime,
       final Date endTime, final long duration, final Throwable exception,
       final String errorMessage) {
 
