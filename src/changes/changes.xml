@@ -915,25 +915,25 @@ of reads that reject each filter like in local mode.
             </action>
             
             <action dev="sperrin" type="add">
-                 Add new step, FastQC can be launch on FASTQ or SAM file in local mode.
+                 Add a new FastQC step that can be launch on FASTQ or SAM files in local mode.
             </action>
 
             <action dev="jourdren" type="add">
-                 Now FastQC step is hadoop compatible.
+                 Now the FastQC step is hadoop compatible.
             </action>
             
             <action dev="sperrin" type="update">
                  Add several enhancements to the Eoulsan integration tests report file.
-			</action>
-			
-			<action dev="sperrin" type="update">			
-				Add new option in command line to replace output directory instead of configuration in oulsan integration tests.
-			</action>
-			
-			<action dev="sperrin" type="update">
-				Add new parameter to remove files in output test directory to spare space disk in Eoulsan integration tests
-            </action>            
-                        
+            </action>
+
+            <action dev="sperrin" type="update">
+                 Add a new option in the command line to override the output directory defined in the integration tests configuration.
+            </action>
+
+            <action dev="sperrin" type="update">
+                 Add a new IT parameter that allow to remove output files of an integration test after the end of the test to save space disk.
+            </action>
+
          </release>
 
 	</body>
