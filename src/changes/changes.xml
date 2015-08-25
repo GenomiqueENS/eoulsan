@@ -799,7 +799,7 @@ of reads that reject each filter like in local mode.
 
          </release>
 
-         <release version="2.0-alpha6" description="Eoulsan 2.0-alpha6 release" date="TBD">
+         <release version="2.0-alpha6" description="Eoulsan 2.0-alpha6 release" date="2015-08-25">
 
             <action dev="jourdren" type="fix">
                  A cartesian product was done when lanching the CopyOutputDataStep step (the step that copy the outputs of a step).
