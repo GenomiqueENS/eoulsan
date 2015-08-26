@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.ObjectStreamClass;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Collections;
@@ -46,6 +45,7 @@ import com.google.common.base.Preconditions;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.util.ClassLoaderObjectInputStream;
 
 /**
  * This class define a result for a task context.
@@ -67,34 +67,6 @@ public class TaskResult implements StepResult, Serializable {
   private final Map<String, Long> counters = new HashMap<>();
   private final String taskMessage;
   private final String taskDescription;
-
-  /**
-   * This class allow to use ObjectInputStream with a ClassLoader that is not
-   * the default bootstrap ClassLoader. This is very useful is Hadoop mode.
-   */
-  private static class ClassLoaderObjectInputStream extends ObjectInputStream {
-
-    private ClassLoader classLoader;
-
-    public ClassLoaderObjectInputStream(ClassLoader classLoader, InputStream in)
-        throws IOException {
-      super(in);
-      this.classLoader = classLoader;
-    }
-
-    @Override
-    protected Class<?> resolveClass(ObjectStreamClass desc)
-        throws IOException, ClassNotFoundException {
-
-      try {
-        String name = desc.getName();
-        return Class.forName(name, false, classLoader);
-      } catch (ClassNotFoundException e) {
-        return super.resolveClass(desc);
-      }
-    }
-
-  }
 
   TaskContext getContext() {
     return this.context;
@@ -216,8 +188,7 @@ public class TaskResult implements StepResult, Serializable {
 
     checkNotNull(in, "in argument cannot be null");
 
-    try (final ObjectInputStream ois = new ClassLoaderObjectInputStream(
-        Thread.currentThread().getContextClassLoader(), in)) {
+    try (final ObjectInputStream ois = new ClassLoaderObjectInputStream(in)) {
 
       // Read TaskContext object
       final TaskResult result = (TaskResult) ois.readObject();
