@@ -189,7 +189,12 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
         // Serialize the context object
         this.context.serialize(taskContextFile);
 
-        // Change task state
+        // Do nothing if scheduler is stopped
+        if (isStopped()) {
+          return;
+        }
+
+        // Set task in running state
         beforeExecuteTask(this.context);
 
         // Create submit file
@@ -217,22 +222,29 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
         // Load result
         result = loadResult();
 
-        // Send tokens
-        TaskRunner.sendTokens(this.context, result);
-
         // Remove task files
         this.taskDir.delete(true);
+
+        // Do nothing if scheduler is stopped
+        if (isStopped()) {
+          return;
+        }
+
+        // Send tokens
+        TaskRunner.sendTokens(this.context, result);
 
       } catch (IOException | EoulsanException | InterruptedException
           | ClassNotFoundException e) {
 
         result = TaskRunner.createStepResult(this.context, e);
-
-      } finally {
-
       }
 
-      // Change task state
+      // Do nothing if scheduler is stopped
+      if (isStopped()) {
+        return;
+      }
+
+      // Set task in done state
       afterExecuteTask(this.context, result);
 
       // Remove the thread from the queue
@@ -369,6 +381,9 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
 
   @Override
   public void stop() {
+
+    // Call to the super method
+    super.stop();
 
     for (TaskThread thread : this.queue) {
 

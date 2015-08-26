@@ -61,9 +61,9 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
   private final Map<WorkflowStep, WorkflowStepStatus> status;
   private final Map<WorkflowStep, WorkflowStepResult> results;
 
-  private boolean isStarted;
-  private boolean isStopped;
-  private boolean isPaused;
+  private volatile boolean isStarted;
+  private volatile boolean isStopped;
+  private volatile boolean isPaused;
 
   //
   // Protected methods

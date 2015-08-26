@@ -76,17 +76,31 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
 
       try {
 
-        // Execute the context
+        // Do nothing if scheduler is stopped
+        if (isStopped()) {
+          this.done = true;
+          return;
+        }
+
+        // Set task in running state
         getLogger().finest(
             "In TaskThread.run() / before beforeExecuteTask() for Task #"
                 + context.getId());
         beforeExecuteTask(this.context);
 
+        // Execute the context
         getLogger()
             .finest("In TaskThread.run() / before executeTask() for Task #"
                 + context.getId());
         final TaskResult result = executeTask(this.context);
 
+        // Do nothing if scheduler is stopped
+        if (isStopped()) {
+          this.done = true;
+          return;
+        }
+
+        // Set task in done state
         getLogger()
             .finest("In TaskThread.run() / before afterExecuteTask() for Task #"
                 + context.getId());
@@ -95,8 +109,6 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
         getLogger()
             .finest("In TaskThread.run() / after afterExecuteTask() for Task #"
                 + context.getId());
-
-        // afterExecuteTask(this.context, executeTask(this.context));
 
         this.done = true;
 
@@ -182,13 +194,16 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
   @Override
   public void start() {
 
+    // Call to the super method
     super.start();
+
     new Thread(this, "TaskScheduler_multi_thread").start();
   }
 
   @Override
   public void stop() {
 
+    // Call to the super method
     super.stop();
 
     try {
@@ -207,11 +222,17 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
   @Override
   public void pause() {
 
+    // Call to the super method
+    super.pause();
+
     this.executor.pause();
   }
 
   @Override
   public void resume() {
+
+    // Call to the super method
+    super.resume();
 
     this.executor.resume();
   }
