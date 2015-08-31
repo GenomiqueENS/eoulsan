@@ -61,6 +61,7 @@ import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractSAM2BAMStep;
 import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SortRecordReader.IndexerMapper;
+import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJobEmergencyStopTask;
 import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 
 /**
@@ -136,9 +137,15 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
       final Job indexingJob = createIndexJob(conf, indexerSubmitFile,
           "Create " + indexFile + " index file");
 
+      // Add the Hadoop job to the list of job to kill if workflow fails
+      HadoopJobEmergencyStopTask.addHadoopJobEmergencyStopTask(indexingJob);
+
       // Submit the job to the Hadoop scheduler, and wait the end of the job
       // in non verbose mode
       indexingJob.waitForCompletion(false);
+
+      // Removes the Hadoop job to the list of job to kill if workflow fails
+      HadoopJobEmergencyStopTask.removeHadoopJobEmergencyStopTask(indexingJob);
 
       if (!indexingJob.isSuccessful()) {
         throw new IOException("Error while running Hadoop job for creating "

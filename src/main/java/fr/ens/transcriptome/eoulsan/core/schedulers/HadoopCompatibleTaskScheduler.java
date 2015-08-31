@@ -61,6 +61,7 @@ import fr.ens.transcriptome.eoulsan.core.workflow.TaskRunner;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskSerializationUtils;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJobEmergencyStopTask;
 
 /**
  * This class is a scheduler for tasks from step with the @HadoopComptible
@@ -208,9 +209,17 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
                 + this.context.getId() + " (" + this.context.getContextName()
                 + ")");
 
+        // Add the Hadoop job to the list of job to kill if workflow fails
+        HadoopJobEmergencyStopTask
+            .addHadoopJobEmergencyStopTask(this.hadoopJob);
+
         // Submit the job to the Hadoop scheduler, and wait the end of the job
         // in non verbose mode
         this.hadoopJob.waitForCompletion(false);
+
+        // Remove the Hadoop job to the list of job to kill if workflow fails
+        HadoopJobEmergencyStopTask
+            .removeHadoopJobEmergencyStopTask(this.hadoopJob);
 
         if (!this.hadoopJob.isSuccessful()) {
           throw new EoulsanException(

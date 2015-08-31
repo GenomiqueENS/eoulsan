@@ -71,8 +71,14 @@ public final class MapReduceUtils {
       // Submit the job
       job.submit();
 
+      // Add the Hadoop job to the list of job to kill if workflow fails
+      HadoopJobEmergencyStopTask.addHadoopJobEmergencyStopTask(job);
+
       // Job the completion of the job (non verbose mode)
       job.waitForCompletion(false);
+
+      // Remove the Hadoop job to the list of job to kill if workflow fails
+      HadoopJobEmergencyStopTask.removeHadoopJobEmergencyStopTask(job);
 
       // Check if the job has been successfully executed
       if (!job.isSuccessful()) {
