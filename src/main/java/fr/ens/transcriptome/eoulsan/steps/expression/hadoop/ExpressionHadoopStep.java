@@ -35,9 +35,7 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -681,21 +679,16 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       getLogger().info("Genomic type: " + getGenomicType());
 
-      // Create the list of paired-end jobs to run
-      final List<Job> jobsPairedEnd = new ArrayList<>();
-
       // Get the paired end mode
       boolean pairedEnd = alignmentsData.getMetadata().isPairedEnd();
 
-      if (pairedEnd) {
-        jobsPairedEnd.add(createJobPairedEnd(conf, context, alignmentsData,
-            featureAnnotationData, genomeDescriptionData));
-      }
-
       // Paired-end pre-processing
-      if (jobsPairedEnd.size() > 0) {
-        MapReduceUtils.submitAndWaitForJobs(jobsPairedEnd,
-            CommonHadoop.CHECK_COMPLETION_TIME);
+      if (pairedEnd) {
+        MapReduceUtils.submitAndWaitForJob(
+            createJobPairedEnd(conf, context, alignmentsData,
+                featureAnnotationData, genomeDescriptionData),
+            alignmentsData.getName(), CommonHadoop.CHECK_COMPLETION_TIME,
+            status, COUNTER_GROUP);
       }
 
       // Create the list of jobs to run
@@ -730,17 +723,10 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
 
       return status.createStepResult(e,
           "Error while running job: " + e.getMessage());
-    } catch (InterruptedException e) {
-
-      return status.createStepResult(e,
-          "Error while running job: " + e.getMessage());
     } catch (BadBioEntryException e) {
 
       return status.createStepResult(e,
           "Invalid annotation entry: " + e.getEntry());
-    } catch (ClassNotFoundException e) {
-
-      return status.createStepResult(e, "Class not found: " + e.getMessage());
     } catch (EoulsanException e) {
 
       return status.createStepResult(e,
