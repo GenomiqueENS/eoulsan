@@ -193,9 +193,8 @@ public class UploadS3Action extends AbstractAction {
       arguments.setJobDescription(jobDescription);
 
       // Create the log Files
-      final String logDirname = arguments.getJobPathname() + File.separator;
-      Main.getInstance().createLogFiles(logDirname + Globals.LOG_FILENAME,
-          logDirname + Globals.OTHER_LOG_FILENAME);
+      Main.getInstance().createLogFiles(arguments.logPath(Globals.LOG_FILENAME),
+          arguments.logPath(Globals.OTHER_LOG_FILENAME));
 
       // Create the executor
       final Executor e = new Executor(arguments);

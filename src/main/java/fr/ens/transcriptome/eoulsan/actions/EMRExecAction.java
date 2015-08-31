@@ -215,9 +215,8 @@ public class EMRExecAction extends AbstractAction {
       arguments.setJobDescription(desc);
 
       // Create the log File
-      final String logDirname = arguments.getJobPathname() + File.separator;
-      Main.getInstance().createLogFiles(logDirname + Globals.LOG_FILENAME,
-          logDirname + Globals.OTHER_LOG_FILENAME);
+      Main.getInstance().createLogFiles(arguments.logPath(Globals.LOG_FILENAME),
+          arguments.logPath(Globals.OTHER_LOG_FILENAME));
 
       // Create executor
       final Executor e = new Executor(arguments);
