@@ -98,6 +98,9 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
             + " scheduler. Job name: " + jobName + " Job command: "
             + jobCommand);
 
+        // Add the cluster job to the list of job to kill if workflow fails
+        ClusterJobEmergencyStopTask.addHadoopJobEmergencyStopTask(this, jobId);
+
         return jobId;
       } else {
 
@@ -167,6 +170,10 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
           return new StatusResult(StatusValue.RUNNING);
 
         case "COMPLETE":
+
+          // Remove the cluster job to the list of job to kill if workflow fails
+          ClusterJobEmergencyStopTask.removeHadoopJobEmergencyStopTask(this,
+              jobId);
 
           if (fields.size() != 2) {
             throw new IOException("Invalid complete string: " + jobStatus);
