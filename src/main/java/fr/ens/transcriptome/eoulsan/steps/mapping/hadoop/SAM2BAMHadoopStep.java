@@ -137,6 +137,9 @@ public class SAM2BAMHadoopStep extends AbstractSAM2BAMStep {
       final Job indexingJob = createIndexJob(conf, indexerSubmitFile,
           "Create " + indexFile + " index file");
 
+      // Submit the Hadoop job
+      indexingJob.submit();
+
       // Add the Hadoop job to the list of job to kill if workflow fails
       HadoopJobEmergencyStopTask.addHadoopJobEmergencyStopTask(indexingJob);
 

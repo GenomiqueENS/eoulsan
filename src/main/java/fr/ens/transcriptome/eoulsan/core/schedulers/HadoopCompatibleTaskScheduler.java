@@ -209,6 +209,9 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
                 + this.context.getId() + " (" + this.context.getContextName()
                 + ")");
 
+        // Submit the Hadoop job
+        this.hadoopJob.submit();
+
         // Add the Hadoop job to the list of job to kill if workflow fails
         HadoopJobEmergencyStopTask
             .addHadoopJobEmergencyStopTask(this.hadoopJob);
