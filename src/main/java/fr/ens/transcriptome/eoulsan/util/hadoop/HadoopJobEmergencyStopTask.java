@@ -1,15 +1,17 @@
 package fr.ens.transcriptome.eoulsan.util.hadoop;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.createConfiguration;
 
 import java.io.IOException;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobID;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapreduce.Job;
 
-import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.core.EmergencyStopTask;
 import fr.ens.transcriptome.eoulsan.core.EmergencyStopTasks;
 
@@ -25,21 +27,28 @@ public class HadoopJobEmergencyStopTask implements EmergencyStopTask {
   @Override
   public void stop() {
 
-    final JobClient client = new JobClient();
+    getLogger().info("Try to kill " + this.jobId + " Hadoop job");
 
-    if (client != null) {
+    // Create configuration object
+    final Configuration conf = createConfiguration();
 
-      try {
+    try {
+
+      final JobClient client = new JobClient(conf);
+
+      if (client != null) {
+
         final RunningJob job = client.getJob(JobID.forName(this.jobId));
 
         if (job != null) {
           job.killJob();
         }
-
-      } catch (IOException e) {
-        EoulsanLogger.getLogger().severe(e.getMessage());
       }
+    } catch (IOException e) {
+      getLogger().severe(e.getMessage());
     }
+
+    getLogger().info("Hadoop job " + this.jobId + " killed");
   }
 
   //
