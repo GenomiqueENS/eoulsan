@@ -125,9 +125,11 @@ public class WorkflowStepStatus {
 
     int result = 0;
 
-    for (double progress : this.taskProgress.values()) {
-      if (progress == 1.0) {
-        result++;
+    synchronized (this) {
+      for (double progress : this.taskProgress.values()) {
+        if (progress == 1.0) {
+          result++;
+        }
       }
     }
 
