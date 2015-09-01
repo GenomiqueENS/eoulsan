@@ -1,6 +1,7 @@
 package fr.ens.transcriptome.eoulsan.core.schedulers.clusters;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.IOException;
 
@@ -21,11 +22,17 @@ public class ClusterJobEmergencyStopTask implements EmergencyStopTask {
   @Override
   public void stop() {
 
+    getLogger().info("Try to kill "
+        + this.jobId + " " + this.scheduler.getSchedulerName() + " job");
+
     try {
       this.scheduler.statusJob(this.jobId);
     } catch (IOException e) {
       EoulsanLogger.getLogger().severe(e.getMessage());
     }
+
+    getLogger().info(
+        this.scheduler.getSchedulerName() + " job " + this.jobId + " killed");
   }
 
   //
