@@ -145,7 +145,7 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
 
       // Get the genome description filename
       final String genomeDescFile =
-          conf.get(ExpressionMapper.GENOME_DESC_PATH_KEY);
+          conf.get(ExpressionHadoopStep.GENOME_DESC_PATH_KEY);
 
       if (genomeDescFile == null) {
         throw new IOException("No genome desc file set");
@@ -195,7 +195,6 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
       return;
     }
 
-
     final String[] fields = recordSplitterPattern.split(line);
     final List<GenomicInterval> ivSeq;
 
@@ -203,7 +202,6 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
 
       // Add intervals
       switch (fields.length) {
-
 
       // Single end data
       case 1:
@@ -259,7 +257,6 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
       }
 
     } catch (SAMFormatException | EoulsanException e) {
-
 
       incrementCounter(context, INVALID_SAM_ENTRIES_COUNTER);
       getLogger().info("Invalid SAM output entry: "
@@ -406,9 +403,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
   private final void incrementCounter(final Context context,
       final ExpressionCounters counter, final int increment) {
 
-    context
-    .getCounter(this.counterGroup, counter.counterName())
-    .increment(increment);
+    context.getCounter(this.counterGroup, counter.counterName())
+        .increment(increment);
   }
 
   /**

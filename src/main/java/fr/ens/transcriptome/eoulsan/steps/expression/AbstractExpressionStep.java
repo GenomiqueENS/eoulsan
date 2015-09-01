@@ -35,7 +35,6 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.bio.expressioncounters.EoulsanCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounterService;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
@@ -59,6 +58,8 @@ import fr.ens.transcriptome.eoulsan.util.Version;
 public abstract class AbstractExpressionStep extends AbstractStep {
 
   public static final String STEP_NAME = "expression";
+
+  private static final String OLD_EOULSAN_COUNTER_NAME = "eoulsanCounter";
 
   public static final String REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME =
       "removeambiguouscases";
@@ -313,10 +314,10 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
     case COUNTER_PARAMETER_NAME:
 
-      if (EoulsanCounter.COUNTER_NAME.toLowerCase()
+      if (OLD_EOULSAN_COUNTER_NAME.toLowerCase()
           .equals(parameter.getLowerStringValue())) {
         getLogger().warning("The "
-            + EoulsanCounter.COUNTER_NAME + " counter support is deprecated");
+            + OLD_EOULSAN_COUNTER_NAME + " counter support has been removed");
       }
 
       break;
