@@ -77,6 +77,8 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
   static final String OUTPUT_FILE2_KEY =
       Globals.PARAMETER_PREFIX + ".filter.reads.output.file2";
 
+  private static final String TEMP_DIR_SUFFIX = ".tmp";
+
   //
   // Step methods
   //
@@ -153,18 +155,18 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
         final DataFile outFile1 = outData.getDataFile(0);
         final DataFile outFile2 = outData.getDataFile(1);
 
-        final DataFile outTmpFile1 =
-            new DataFile(outFile1.getSource() + ".tmp/" + outFile1.getName());
-        final DataFile outTmpFile2 =
-            new DataFile(outFile2.getSource() + ".tmp/" + outFile2.getName());
+        final DataFile tmpDir =
+            new DataFile(outFile1.getSource() + TEMP_DIR_SUFFIX);
+
+        final DataFile outTmpFile1 = new DataFile(tmpDir, outFile1.getName());
+        final DataFile outTmpFile2 = new DataFile(tmpDir, outFile2.getName());
 
         // Rename temporary file
         outTmpFile1.renameTo(outFile1);
         outTmpFile2.renameTo(outFile2);
 
-        // Remove temporary directories
-        outTmpFile1.delete(true);
-        outTmpFile2.delete(true);
+        // Remove TFQ temporary directory
+        tmpDir.delete(true);
       }
 
       return status.createStepResult();
@@ -249,8 +251,8 @@ public class ReadsFilterHadoopStep extends AbstractReadsFilterStep {
     job.setNumReduceTasks(0);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(
-        outFiles[0].getSource() + (outFiles.length > 1 ? ".tmp" : "")));
+    FileOutputFormat.setOutputPath(job, new Path(outFiles[0].getSource()
+        + (outFiles.length > 1 ? TEMP_DIR_SUFFIX : "")));
 
     return job;
   }

@@ -49,8 +49,8 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   private final AbstractTaskScheduler stdTaskScheduler;
   private final AbstractTaskScheduler clusterTaskScheduler;
 
-  boolean isStarted;
-  boolean isStopped;
+  private volatile boolean isStarted;
+  private volatile boolean isStopped;
 
   @Override
   public void submit(final WorkflowStep step, final Set<TaskContext> contexts) {

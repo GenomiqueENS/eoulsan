@@ -563,7 +563,8 @@ public abstract class Main {
     // Set the log file in arguments
     if (this.logFile != null) {
       try {
-        this.handler.addHandler(getLogHandler(this.logFile));
+        this.handler.addHandler(
+            getLogHandler(new File(this.logFile).getAbsoluteFile().toURI()));
       } catch (IOException e) {
         Common.errorExit(e, "Error while creating log file: " + e.getMessage());
       }
@@ -576,7 +577,7 @@ public abstract class Main {
    * @param logFilename log file name
    * @throws EoulsanException if an error occurs while creating log file
    */
-  public void createLogFileAndFlushLog(final String logFilename)
+  public void createLogFileAndFlushLog(final URI logFilename)
       throws EoulsanException {
 
     try {
@@ -595,10 +596,10 @@ public abstract class Main {
    * system.
    * @param logFilename the log file name
    */
-  public void createOtherLog(final String logFilename) {
+  public void createOtherLog(final URI logFilename) {
 
     OtherLogConfigurator.configureLog4J(null,
-        new File(URI.create(logFilename)).getAbsolutePath());
+        new File(logFilename).getAbsolutePath());
   }
 
   /**
@@ -608,8 +609,8 @@ public abstract class Main {
    * @param otherlogFilename other log file name
    * @throws EoulsanException if an error occurs while creating log file
    */
-  public void createLogFiles(final String EoulsanlogFilename,
-      final String otherlogFilename) throws EoulsanException {
+  public void createLogFiles(final URI EoulsanlogFilename,
+      final URI otherlogFilename) throws EoulsanException {
 
     createLogFileAndFlushLog(EoulsanlogFilename);
     createOtherLog(otherlogFilename);
@@ -669,7 +670,7 @@ public abstract class Main {
    * @return a new Handler object
    * @throws IOException if an exception occurs while creating the handler
    */
-  protected abstract Handler getLogHandler(final String logFile)
+  protected abstract Handler getLogHandler(final URI logFile)
       throws IOException;
 
   //

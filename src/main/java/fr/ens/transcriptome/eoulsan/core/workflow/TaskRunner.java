@@ -196,6 +196,9 @@ public class TaskRunner {
 
         } catch (Throwable t) {
 
+          getLogger()
+              .severe("Exception while executing task: " + t.getMessage());
+
           // Handle exception not catch by step code
           TaskRunner.this.result = TaskRunner.this.status.createStepResult(t);
         }

@@ -59,6 +59,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.core.DockerManager;
+import fr.ens.transcriptome.eoulsan.core.EmergencyStopTasks;
 import fr.ens.transcriptome.eoulsan.core.ExecutorArguments;
 import fr.ens.transcriptome.eoulsan.core.schedulers.TaskSchedulerFactory;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
@@ -542,6 +543,9 @@ public abstract class AbstractWorkflow implements Workflow {
     for (AbstractWorkflowStep step : getSortedStepsByState(ABORTED)) {
       registry.getTokenManager(step).removeAllOutputs();
     }
+
+    // Stop tasks
+    EmergencyStopTasks.getInstance().stop();
 
     // Close Docker connections
     DockerManager.getInstance().closeConnections();

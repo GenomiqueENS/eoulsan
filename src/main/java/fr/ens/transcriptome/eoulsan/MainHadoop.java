@@ -28,6 +28,7 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.logging.Handler;
 import java.util.logging.StreamHandler;
 
@@ -70,7 +71,7 @@ public final class MainHadoop extends Main {
   }
 
   @Override
-  protected Handler getLogHandler(final String logFile) throws IOException {
+  protected Handler getLogHandler(final URI logFile) throws IOException {
 
     if (logFile == null) {
       throw new NullPointerException("The log file is null");

@@ -30,6 +30,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -329,10 +330,11 @@ public class ExecutorArguments {
    * @param logFilename log file name
    * @return a String with an URI for the log
    */
-  public String logPath(final String logFilename) {
+  public URI logPath(final String logFilename) {
 
-    return new File(getJobPathname(), logFilename).getAbsoluteFile().toURI()
-        .toString();
+    final File logDir = new File(URI.create(getJobPathname()).getPath());
+
+    return new File(logDir, logFilename).getAbsoluteFile().toURI();
   }
 
   @Override

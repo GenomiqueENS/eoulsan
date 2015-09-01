@@ -53,6 +53,7 @@ import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.util.ClassLoaderObjectInputStream;
 
 /**
  * This class define a task context.
@@ -568,7 +569,7 @@ public class TaskContext implements StepContext, Serializable {
 
     checkNotNull(in, "in argument cannot be null");
 
-    try (final ObjectInputStream ois = new ObjectInputStream(in)) {
+    try (final ObjectInputStream ois = new ClassLoaderObjectInputStream(in)) {
 
       // Read TaskContext object
       final TaskContext result = (TaskContext) ois.readObject();
@@ -659,7 +660,7 @@ public class TaskContext implements StepContext, Serializable {
     checkNotNull(in, "in argument cannot be null");
 
     try {
-      final ObjectInputStream ois = new ObjectInputStream(in);
+      final ObjectInputStream ois = new ClassLoaderObjectInputStream(in);
 
       // Read TaskContext object
       @SuppressWarnings("unchecked")

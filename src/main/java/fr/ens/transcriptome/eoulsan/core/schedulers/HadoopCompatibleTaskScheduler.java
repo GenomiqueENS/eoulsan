@@ -61,6 +61,7 @@ import fr.ens.transcriptome.eoulsan.core.workflow.TaskRunner;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskSerializationUtils;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopJobEmergencyStopTask;
 
 /**
  * This class is a scheduler for tasks from step with the @HadoopComptible
@@ -189,7 +190,12 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
         // Serialize the context object
         this.context.serialize(taskContextFile);
 
-        // Change task state
+        // Do nothing if scheduler is stopped
+        if (isStopped()) {
+          return;
+        }
+
+        // Set task in running state
         beforeExecuteTask(this.context);
 
         // Create submit file
@@ -203,9 +209,20 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
                 + this.context.getId() + " (" + this.context.getContextName()
                 + ")");
 
+        // Submit the Hadoop job
+        this.hadoopJob.submit();
+
+        // Add the Hadoop job to the list of job to kill if workflow fails
+        HadoopJobEmergencyStopTask
+            .addHadoopJobEmergencyStopTask(this.hadoopJob);
+
         // Submit the job to the Hadoop scheduler, and wait the end of the job
         // in non verbose mode
         this.hadoopJob.waitForCompletion(false);
+
+        // Remove the Hadoop job to the list of job to kill if workflow fails
+        HadoopJobEmergencyStopTask
+            .removeHadoopJobEmergencyStopTask(this.hadoopJob);
 
         if (!this.hadoopJob.isSuccessful()) {
           throw new EoulsanException(
@@ -217,22 +234,29 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
         // Load result
         result = loadResult();
 
-        // Send tokens
-        TaskRunner.sendTokens(this.context, result);
-
         // Remove task files
         this.taskDir.delete(true);
+
+        // Do nothing if scheduler is stopped
+        if (isStopped()) {
+          return;
+        }
+
+        // Send tokens
+        TaskRunner.sendTokens(this.context, result);
 
       } catch (IOException | EoulsanException | InterruptedException
           | ClassNotFoundException e) {
 
         result = TaskRunner.createStepResult(this.context, e);
-
-      } finally {
-
       }
 
-      // Change task state
+      // Do nothing if scheduler is stopped
+      if (isStopped()) {
+        return;
+      }
+
+      // Set task in done state
       afterExecuteTask(this.context, result);
 
       // Remove the thread from the queue
@@ -369,6 +393,9 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
 
   @Override
   public void stop() {
+
+    // Call to the super method
+    super.stop();
 
     for (TaskThread thread : this.queue) {
 
