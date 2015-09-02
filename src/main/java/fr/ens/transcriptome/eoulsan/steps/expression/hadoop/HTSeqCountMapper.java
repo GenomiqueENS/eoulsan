@@ -145,7 +145,7 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
 
       // Get the genome description filename
       final String genomeDescFile =
-          conf.get(ExpressionMapper.GENOME_DESC_PATH_KEY);
+          conf.get(ExpressionHadoopStep.GENOME_DESC_PATH_KEY);
 
       if (genomeDescFile == null) {
         throw new IOException("No genome desc file set");
