@@ -81,11 +81,12 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
       final String s = executeToString(cmd);
 
       final String[] lines = s.split("\n");
+
       if (lines.length == 0) {
         return null;
       }
 
-      final String[] tokens = lines[2].split(" version ");
+      final String[] tokens = lines[0].split(" version ");
       if (tokens.length == 2) {
         return tokens[1];
       }

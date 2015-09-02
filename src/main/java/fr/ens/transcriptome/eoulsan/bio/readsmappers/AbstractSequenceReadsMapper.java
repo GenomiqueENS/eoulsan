@@ -135,7 +135,7 @@ public abstract class AbstractSequenceReadsMapper
    * @return the indexer executables
    */
   protected String[] getIndexerExecutables() {
-    return new String[] { getIndexerExecutable() };
+    return new String[] {getIndexerExecutable()};
   }
 
   /**
@@ -501,7 +501,7 @@ public abstract class AbstractSequenceReadsMapper
     getLogger().fine(cmd.toString());
 
     final int exitValue =
-        this.executor.execute(cmd, tmpGenomeFile.getParentFile(), false,
+        this.executor.execute(cmd, tmpGenomeFile.getParentFile(), false, false,
             unCompressedGenomeFile, tmpGenomeFile).waitFor();
 
     if (exitValue != 0) {
@@ -1116,7 +1116,7 @@ public abstract class AbstractSequenceReadsMapper
   protected String executeToString(final List<String> command)
       throws IOException {
 
-    final Result result = this.executor.execute(command, null, true);
+    final Result result = this.executor.execute(command, null, true, true);
 
     final StringBuilder sb = new StringBuilder();
 

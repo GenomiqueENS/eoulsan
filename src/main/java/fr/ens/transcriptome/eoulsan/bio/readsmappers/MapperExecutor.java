@@ -80,12 +80,13 @@ interface MapperExecutor {
    * @param command the command to execute
    * @param executionDirectory the execution directory
    * @param stdout true if stdout will be used
+   * @param redirectStderr redirect stderr into stdout
    * @param filesUsed files used by the process
    * @return a MapperExecutor.Result object
    * @throws IOException if an error occurs while starting the execution of the
    *           command
    */
   Result execute(List<String> command, File executionDirectory, boolean stdout,
-      File... filesUsed) throws IOException;
+      boolean redirectStderr, File... filesUsed) throws IOException;
 
 }

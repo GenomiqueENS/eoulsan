@@ -169,12 +169,13 @@ public class DockerMapperExecutor implements MapperExecutor {
      * @param command command to execute
      * @param executionDirectory execution directory
      * @param stdout true if stdout will be read
+     * @param redirectStderr redirect stderr to stdout
      * @param filesUsed files used by the process
      * @throws IOException if an error occurs while creating the object
      */
     private DockerResult(final List<String> command,
-        final File executionDirectory, boolean stdout, File... filesUsed)
-            throws IOException {
+        final File executionDirectory, boolean stdout,
+        final boolean redirectStderr, File... filesUsed) throws IOException {
 
       checkNotNull(command, "command argument cannot be null");
 
@@ -204,8 +205,9 @@ public class DockerMapperExecutor implements MapperExecutor {
           this.stdoutFile = null;
         }
 
-        final ContainerConfig.Builder builder = ContainerConfig.builder()
-            .image(dockerImage).cmd(convertCommand(command, this.stdoutFile));
+        final ContainerConfig.Builder builder =
+            ContainerConfig.builder().image(dockerImage)
+                .cmd(convertCommand(command, this.stdoutFile, redirectStderr));
 
         // Set the working directory
         if (executionDirectory != null) {
@@ -254,7 +256,7 @@ public class DockerMapperExecutor implements MapperExecutor {
 
     final List<String> command = newArrayList("which", executable);
 
-    final Result result = execute(command, null, false, (File[]) null);
+    final Result result = execute(command, null, false, false, (File[]) null);
 
     return result.waitFor() == 0;
   }
@@ -269,12 +271,14 @@ public class DockerMapperExecutor implements MapperExecutor {
 
   @Override
   public Result execute(final List<String> command,
-      final File executionDirectory, boolean stdout, File... filesUsed)
+      final File executionDirectory, final boolean stdout,
+      final boolean redirectStderr, final File... filesUsed)
           throws IOException {
 
     checkNotNull(command, "executable argument cannot be null");
 
-    return new DockerResult(command, executionDirectory, stdout, filesUsed);
+    return new DockerResult(command, executionDirectory, stdout, redirectStderr,
+        filesUsed);
   }
 
   //
@@ -314,10 +318,11 @@ public class DockerMapperExecutor implements MapperExecutor {
    * Convert command to sh command if needed.
    * @param command the command to convert
    * @param stdout the stdout file to use
+   * @param redirectStderr redirect stderr to stdout
    * @return a converted command
    */
   private List<String> convertCommand(final List<String> command,
-      final File stdout) {
+      final File stdout, final boolean redirectStderr) {
 
     checkNotNull(command, "command argument cannot be null");
 
@@ -339,7 +344,7 @@ public class DockerMapperExecutor implements MapperExecutor {
       sb.append(StringUtils.bashEscaping(c));
     }
 
-    sb.append(" > ");
+    sb.append(redirectStderr ? " &> " : " > ");
     sb.append(stdout.getAbsolutePath());
 
     result.add(sb.toString());

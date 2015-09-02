@@ -66,10 +66,12 @@ public class PathMapperExecutor implements MapperExecutor {
   }
 
   @Override
-  public Result execute(List<String> command, File executionDirectory,
-      boolean stdout, File... fileUsed) throws IOException {
+  public Result execute(final List<String> command,
+      final File executionDirectory, final boolean stdout,
+      final boolean redirectStderr, final File... fileUsed) throws IOException {
 
     ProcessBuilder builder = new ProcessBuilder(command);
+    builder.redirectErrorStream(redirectStderr);
 
     if (executionDirectory != null) {
       builder.directory(executionDirectory);
