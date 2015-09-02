@@ -27,6 +27,7 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_ILLUMINA;
 import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_ILLUMINA_1_5;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.createTempFile;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -190,7 +191,12 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       final BlockingDeque<ReadSequence> queue, final MutableBoolean closed,
       final ExceptionWrapper exception) {
 
-    Thread t = new Thread(new Runnable() {
+    checkNotNull(writer, "writer argument cannot be null");
+    checkNotNull(queue, "queue argument cannot be null");
+    checkNotNull(closed, "closed argument cannot be null");
+    checkNotNull(exception, "exception argument cannot be null");
+
+    final Thread t = new Thread(new Runnable() {
 
       @Override
       public void run() {
@@ -437,7 +443,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
         // Create writer on FASTQ files
         this.writer1 = createFastqWriter(this.fastqFile1);
-        this.writer1 = createFastqWriter(this.fastqFile2);
+        this.writer2 = createFastqWriter(this.fastqFile2);
 
         // If the files is not initialized here, the fields will be null because
         // this method is called by the super constructor
@@ -468,7 +474,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       @Override
       public void writeEntry2(final ReadSequence read) throws IOException {
 
-        super.writeEntry1(read);
+        super.writeEntry2(read);
         this.queue2.add(read);
 
         // Throw exception if occurs
