@@ -108,7 +108,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     }
 
     // Check if user wants to use non bundled mapper binaries
-    if (isUseBundledBinaries()) {
+    if (!isUseBundledBinaries()) {
       throw new EoulsanException(
           "Non bundled mapper binaries cannot be used in Hadoop mode");
     }
