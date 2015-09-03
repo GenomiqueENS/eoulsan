@@ -257,9 +257,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
     if (!this.mapper.isMultipleInstancesEnabled()) {
       this.mapper.setThreadsNumber(mapperThreads);
-    } else {
-      this.mapper.setThreadsNumber(1);
     }
+
     getLogger().info("Use "
         + this.mapper.getMapperName() + " with " + mapperThreads
         + " threads option");
@@ -277,6 +276,10 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
     // Set mapper temporary directory
     this.mapper.setTempDirectory(tempDir);
+
+    // Enable multiple instance of the mapper, if not supported
+    // this.mapper.isMultipleInstancesEnabled() will return false
+    this.mapper.setMultipleInstancesEnabled(true);
 
     // Update last used file timestamp for the mapper indexes clean up
     updateLastUsedMapperIndex(this.mapperIndexDir);
