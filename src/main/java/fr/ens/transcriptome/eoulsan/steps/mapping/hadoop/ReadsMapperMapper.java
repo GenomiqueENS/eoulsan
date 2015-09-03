@@ -255,9 +255,10 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
       mapperThreads = Runtime.getRuntime().availableProcessors();
     }
 
-    this.mapper.setMultipleInstancesEnabled(true);
     if (!this.mapper.isMultipleInstancesEnabled()) {
       this.mapper.setThreadsNumber(mapperThreads);
+    } else {
+      this.mapper.setThreadsNumber(1);
     }
     getLogger().info("Use "
         + this.mapper.getMapperName() + " with " + mapperThreads
@@ -280,8 +281,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     // Update last used file timestamp for the mapper indexes clean up
     updateLastUsedMapperIndex(this.mapperIndexDir);
 
-    context
-        .setStatus("Wait free JVM for running " + this.mapper.getMapperName());
+    context.setStatus("Wait lock");
 
     // Lock if mapper
     ProcessUtils.waitRandom(5000);
@@ -291,12 +291,6 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     this.mapper.init(archiveIndexFile.open(), this.mapperIndexDir,
         new HadoopReporter(context), this.counterGroup);
 
-    if (pairedEnd) {
-      this.process = this.mapper.mapPE();
-    } else {
-      this.process = this.mapper.mapSE();
-    }
-
     // Lock if no multiple instances enabled
     if (this.mapper.isMultipleInstancesEnabled()) {
 
@@ -304,8 +298,17 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
       this.lock.unlock();
     } else {
 
+      context.setStatus(
+          "Wait free JVM for running " + this.mapper.getMapperName());
+
       // Wait free JVM
       waitFreeJVM(context);
+    }
+
+    if (pairedEnd) {
+      this.process = this.mapper.mapPE();
+    } else {
+      this.process = this.mapper.mapSE();
     }
 
     this.writeHeaders = context.getTaskAttemptID().getTaskID().getId() == 0;
@@ -321,6 +324,9 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
       throws IOException, InterruptedException {
 
     getLogger().info("Start of cleanup() of the mapper.");
+
+    // Close the writers
+    this.process.closeEntriesWriter();
 
     // Wait the end of the SAM parsing
     this.samResultsParserThread.join();
