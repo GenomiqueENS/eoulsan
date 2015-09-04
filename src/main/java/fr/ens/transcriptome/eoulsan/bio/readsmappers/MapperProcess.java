@@ -39,6 +39,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.MapperExecutor.Result;
@@ -64,7 +66,7 @@ public abstract class MapperProcess {
   private final File pipeFile2;
 
   private final Writer writer1;
-  private final Writer writer2;
+  private final FastqWriterThread writer2;
 
   private ReporterIncrementer incrementer;
   private String counterGroup;
@@ -221,6 +223,104 @@ public abstract class MapperProcess {
     private InputStreamWrapper(final InputStream is) {
       this.is = is;
     }
+  }
+
+  /**
+   * This class allow to do Asynchronous writes in a named piped.
+   */
+  static class FastqWriterThread extends Thread {
+
+    private static final int MAX_CAPACITY = 16 * 1024 * 1024;
+
+    private volatile boolean closed;
+    private final BlockingDeque<String> queue =
+        new LinkedBlockingDeque<>(MAX_CAPACITY);
+    private final Writer writer;
+    private Exception exception;
+
+    @Override
+    public void run() {
+
+      try {
+        while (!this.closed || !queue.isEmpty()) {
+
+          if (!this.queue.isEmpty()) {
+
+            while (!this.queue.isEmpty()) {
+
+              this.writer.write(queue.take());
+            }
+
+          } else {
+            Thread.sleep(1000);
+          }
+
+        }
+
+        this.writer.close();
+
+      } catch (IOException e) {
+        this.exception = e;
+      } catch (InterruptedException e) {
+        this.exception = new IOException(e);
+      }
+    }
+
+    /**
+     * Write a string to the pipe.
+     * @param s string to write
+     * @throws IOException if an error has occurred in writings
+     */
+    public void write(final String s) throws IOException {
+
+      this.queue.add(s);
+
+      throwExceptionIfExists();
+    }
+
+    /**
+     * Asynchronous close.
+     */
+    public void close() {
+
+      this.closed = true;
+    }
+
+    /**
+     * Throw an exception if an exception has occurred while writing data.
+     * @throws IOException if an exception has occurred while writing data
+     */
+    public void throwExceptionIfExists() throws IOException {
+
+      if (this.exception != null) {
+        throw new IOException(this.exception);
+      }
+    }
+
+    //
+    // Constructor
+    //
+
+    /**
+     * Constructor.
+     * @param writer the writer to use to write data
+     */
+    public FastqWriterThread(final Writer writer) {
+
+      this.writer = writer;
+
+      start();
+    }
+
+    /**
+     * Constructor.
+     * @param namedPipeFile the named pipe file
+     */
+    public FastqWriterThread(final File namedPipeFile) throws IOException {
+
+      this(createPipeWriter(namedPipeFile));
+    }
+
   }
 
   //
@@ -440,6 +540,12 @@ public abstract class MapperProcess {
 
     if (this.writer2 != null) {
       this.writer2.close();
+      try {
+        this.writer2.join();
+      } catch (InterruptedException e) {
+        throw new IOException(e);
+      }
+      this.writer2.throwExceptionIfExists();
     }
   }
 
@@ -598,7 +704,7 @@ public abstract class MapperProcess {
       this.pipeFile2 = new File(tmpDir, "mapper-inputfile2-" + uuid + ".fq");
 
       this.writer1 = createPipeWriter(this.pipeFile1);
-      this.writer2 = pairedEnd ? createPipeWriter(this.pipeFile2) : null;
+      this.writer2 = pairedEnd ? new FastqWriterThread(this.pipeFile2) : null;
 
       addFilesToRemove(this.pipeFile1, this.pipeFile2);
 
