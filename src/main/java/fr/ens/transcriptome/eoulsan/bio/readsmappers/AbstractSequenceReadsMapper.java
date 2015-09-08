@@ -1005,10 +1005,10 @@ public abstract class AbstractSequenceReadsMapper
     this.incrementer = incrementer;
     this.counterGroup = counterGroup;
 
-    this.initialized = true;
-
     // Prepare binaries
     prepareBinaries();
+
+    this.initialized = true;
   }
 
   //
