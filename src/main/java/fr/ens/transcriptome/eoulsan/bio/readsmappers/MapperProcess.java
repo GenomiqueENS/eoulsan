@@ -59,7 +59,7 @@ public abstract class MapperProcess {
   private final MapperExecutor executor;
   private final boolean pairedEnd;
 
-  private Result process;
+  private List<Result> processResults = new ArrayList<>();
 
   private InputStream stdout;
 
@@ -168,7 +168,8 @@ public abstract class MapperProcess {
 
       this.is.close();
 
-      final int exitValue = MapperProcess.this.process.waitFor();
+      final int exitValue =
+          MapperProcess.this.getStdoutProcessResult().waitFor();
 
       getLogger().fine("End of process with " + exitValue + " exit value");
 
@@ -460,8 +461,9 @@ public abstract class MapperProcess {
   public void toFile(final File outputFile) throws IOException {
 
     // Start stdout thread
-    final Thread tout = new Thread(new ProcessThreadStdOut(this.process,
-        new FileOutputStream(outputFile)));
+    final Thread tout =
+        new Thread(new ProcessThreadStdOut(getStdoutProcessResult(),
+            new FileOutputStream(outputFile)));
     tout.start();
   }
 
@@ -587,6 +589,21 @@ public abstract class MapperProcess {
   //
 
   /**
+   * Get the process result object which stdout is used to the SAM output.
+   * @return a Result object
+   */
+  private Result getStdoutProcessResult() {
+
+    final int index = this.processResults.size() - 1;
+
+    if (index < 0) {
+      throw new IllegalStateException("No mapper process has been launched");
+    }
+
+    return this.processResults.get(index);
+  }
+
+  /**
    * Start the process(es) of the mapper.
    * @throws IOException if an error occurs while starting the process(es)
    * @throws InterruptedException if an error occurs while starting the
@@ -601,8 +618,10 @@ public abstract class MapperProcess {
 
       final boolean last = i == cmds.size() - 1;
 
-      this.process = this.executor.execute(cmds.get(i), executionDirectory(),
-          last, false, this.pipeFile1, this.pipeFile2);
+      final Result result = this.executor.execute(cmds.get(i),
+          executionDirectory(), last, false, this.pipeFile1, this.pipeFile2);
+
+      this.processResults.add(result);
 
       if (!last) {
 
@@ -610,7 +629,7 @@ public abstract class MapperProcess {
       } else {
 
         this.stdout = new InputStreamWrapper(
-            createCustomInputStream(this.process.getInputStream()));
+            createCustomInputStream(result.getInputStream()));
       }
     }
   }
@@ -623,12 +642,15 @@ public abstract class MapperProcess {
    */
   public void waitFor() throws IOException {
 
-    final int exitValue = this.process.waitFor();
-    getLogger().fine("End of process with " + exitValue + " exit value");
+    for (Result result : this.processResults) {
 
-    if (exitValue != 0) {
-      throw new IOException("Bad error result for "
-          + this.mapperName + " execution: " + exitValue);
+      final int exitValue = result.waitFor();
+      getLogger().fine("End of process with " + exitValue + " exit value");
+
+      if (exitValue != 0) {
+        throw new IOException("Bad error result for "
+            + this.mapperName + " execution: " + exitValue);
+      }
     }
 
     // Remove temporary files
