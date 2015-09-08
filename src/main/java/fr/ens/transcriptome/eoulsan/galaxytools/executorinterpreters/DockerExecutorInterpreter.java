@@ -112,7 +112,7 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
         toBind = Collections.emptyList();
       }
 
-      final HostConfig hostConfig = createBinds(executionDirectory, toBind);
+      builder.hostConfig(createBinds(executionDirectory, toBind));
 
       // Create container
       final ContainerCreation creation =
@@ -123,7 +123,7 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
 
       // Start container
       getLogger().fine("Start of the Docker container: " + containerId);
-      dockerClient.startContainer(containerId, hostConfig);
+      dockerClient.startContainer(containerId);
 
       // Redirect stdout and stderr
       final LogStream logStream = dockerClient.logs(containerId,
