@@ -55,6 +55,7 @@ import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 public abstract class MapperProcess {
 
   private final String mapperName;
+  private final String uuid;
   private final MapperExecutor executor;
   private final boolean pairedEnd;
 
@@ -364,6 +365,15 @@ public abstract class MapperProcess {
       throws IOException {
 
     return stdout;
+  }
+
+  /**
+   * Get the the UUID generated for the mapper process.
+   * @return the UUID generated for the mapper process
+   */
+  protected String getUUID() {
+
+    return this.uuid;
   }
 
   //
@@ -698,12 +708,13 @@ public abstract class MapperProcess {
 
     try {
       this.mapperName = mapper.getMapperName();
+      this.uuid = UUID.randomUUID().toString();
+
       this.executor = mapper.getExecutor();
       this.pairedEnd = pairedEnd;
 
       // Define temporary files
       final File tmpDir = mapper.getTempDirectory();
-      final String uuid = UUID.randomUUID().toString();
 
       this.pipeFile1 = new File(tmpDir, "mapper-inputfile1-" + uuid + ".fq");
       this.pipeFile2 = new File(tmpDir, "mapper-inputfile2-" + uuid + ".fq");

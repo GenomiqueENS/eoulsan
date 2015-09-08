@@ -208,7 +208,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
         final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
 
-        final String uuid = UUID.randomUUID().toString();
+        final String uuid = getUUID();
 
         this.saiFile =
             new File(tmpDir, PREFIX_FILES + "-sai-" + uuid + SAI_EXTENSION);
@@ -301,7 +301,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
         final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
 
-        final String uuid = UUID.randomUUID().toString();
+        final String uuid = getUUID();
 
         this.saiFile1 =
             new File(tmpDir, PREFIX_FILES + "-sai1-" + uuid + SAI_EXTENSION);
