@@ -66,7 +66,7 @@ public abstract class MapperProcess {
   private final File pipeFile1;
   private final File pipeFile2;
 
-  private final FastqWriterThread writer1;
+  private final Writer writer1;
   private final FastqWriterThread writer2;
 
   private ReporterIncrementer incrementer;
@@ -741,8 +741,7 @@ public abstract class MapperProcess {
       this.pipeFile1 = new File(tmpDir, "mapper-inputfile1-" + uuid + ".fq");
       this.pipeFile2 = new File(tmpDir, "mapper-inputfile2-" + uuid + ".fq");
 
-      this.writer1 =
-          new FastqWriterThread(this.pipeFile1, "FastqWriterThread fastq1");
+      this.writer1 = createPipeWriter(this.pipeFile1);
       this.writer2 = pairedEnd
           ? new FastqWriterThread(this.pipeFile2, "FastqWriterThread fastq2")
           : null;
