@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.google.common.collect.Lists;
 
@@ -402,13 +401,11 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         // Build the command line
         cmd3.add(bwaPath);
         cmd3.add("sampe");
-        cmd3.add("-f");
-        cmd3.add("/home/jourdren/toto.sam");
         cmd3.add(indexPath);
         cmd3.add(this.saiFile1.getAbsolutePath());
         cmd3.add(this.saiFile2.getAbsolutePath());
-        cmd3.add(getNamedPipeFile1().getAbsolutePath());
-        cmd3.add(getNamedPipeFile2().getAbsolutePath());
+        cmd3.add(this.fastqFile1.getAbsolutePath());
+        cmd3.add(this.fastqFile2.getAbsolutePath());
 
         final List<List<String>> result = new ArrayList<>();
         result.add(cmd1);
