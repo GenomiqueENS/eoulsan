@@ -801,7 +801,7 @@ public abstract class AbstractSequenceReadsMapper
           mappingException = e;
         }
       }
-    });
+    }, "Mapper writeFirstPairEntries thread");
 
     t.start();
   }
@@ -838,7 +838,7 @@ public abstract class AbstractSequenceReadsMapper
           mappingException = e;
         }
       }
-    });
+    }, "Mapper writeSecondPairEntries thread");
 
     t.start();
   }

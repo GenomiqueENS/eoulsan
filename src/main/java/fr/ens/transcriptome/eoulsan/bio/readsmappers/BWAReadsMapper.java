@@ -26,24 +26,17 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 
 import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_ILLUMINA;
 import static fr.ens.transcriptome.eoulsan.bio.FastqFormat.FASTQ_ILLUMINA_1_5;
-import static fr.ens.transcriptome.eoulsan.util.FileUtils.createTempFile;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.UUID;
 
 import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
-import fr.ens.transcriptome.eoulsan.bio.io.FastqWriter;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
@@ -68,14 +61,6 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   private static final String PREFIX_FILES = "bwa";
   private static final String SAI_EXTENSION = ".sai";
   private static final String FASTQ_EXTENSION = ".fq";
-
-  private static final class MutableBoolean {
-    private boolean value;
-  }
-
-  private static final class ExceptionWrapper {
-    private IOException exception;
-  }
 
   @Override
   public String getMapperName() {
@@ -178,55 +163,6 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   // Utility methods
   //
 
-  private static final FastqWriter createFastqWriter(final File file)
-      throws FileNotFoundException {
-
-    // Create writer on FASTQ file
-    @SuppressWarnings("resource")
-    final RandomAccessFile raf = new RandomAccessFile(file, "rw");
-    return new FastqWriter(Channels.newOutputStream(raf.getChannel()));
-  }
-
-  private static Thread createFastqCopyThread(final FastqWriter writer,
-      final BlockingDeque<ReadSequence> queue, final MutableBoolean closed,
-      final ExceptionWrapper exception) {
-
-    checkNotNull(writer, "writer argument cannot be null");
-    checkNotNull(queue, "queue argument cannot be null");
-    checkNotNull(closed, "closed argument cannot be null");
-    checkNotNull(exception, "exception argument cannot be null");
-
-    final Thread t = new Thread(new Runnable() {
-
-      @Override
-      public void run() {
-
-        try {
-          while (!closed.value || !queue.isEmpty()) {
-
-            if (!queue.isEmpty()) {
-
-              writer.write(queue.take());
-            } else {
-              Thread.sleep(500);
-            }
-          }
-
-          writer.close();
-
-        } catch (IOException e) {
-          exception.exception = e;
-        } catch (InterruptedException e) {
-          exception.exception = new IOException(e);
-        }
-      }
-    });
-
-    t.start();
-
-    return t;
-  }
-
   @Override
   protected MapperProcess internalMapSE(final File archiveIndex)
       throws IOException {
@@ -240,7 +176,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     // Path to index
     final String indexPath = getIndexPath(archiveIndex);
 
-    return createMapperProcessSE(bwaPath, indexPath, null);
+    return createMapperProcessSE(bwaPath, indexPath);
   }
 
   @Override
@@ -250,103 +186,59 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     final String bwaPath;
 
     synchronized (SYNC) {
-      bwaPath = install("bwa");
+      bwaPath = install(MAPPER_EXECUTABLE);
     }
-
-    final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
-
-    // Temporary result file 1
-    final File tmpFile1 = FileUtils.createTempFile(tmpDir,
-        PREFIX_FILES + "-output-", SAI_EXTENSION);
-
-    // Temporary result file 2
-    final File tmpFile2 = FileUtils.createTempFile(tmpDir,
-        PREFIX_FILES + "-output-", SAI_EXTENSION);
 
     // Path to index
     final String indexPath = getIndexPath(archiveIndex);
 
-    return createMapperProcessPE(bwaPath, indexPath, null, null, tmpFile1,
-        tmpFile2);
+    return createMapperProcessPE(bwaPath, indexPath);
   }
 
   private MapperProcess createMapperProcessSE(final String bwaPath,
-      final String indexPath, final File readsFile) throws IOException {
+      final String indexPath) throws IOException {
 
     return new MapperProcess(this, false) {
 
       private File saiFile;
       private File fastqFile;
-      private FastqWriter writer;
-      private BlockingDeque<ReadSequence> queue;
-      private MutableBoolean closed;
-      private ExceptionWrapper exception;
-      private Thread copyThread;
+      private FastqWriterThread writer;
 
       protected void additionalInit() throws IOException {
 
+        final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
+
+        final String uuid = UUID.randomUUID().toString();
+
         this.saiFile =
-            createTempFile(EoulsanRuntime.getRuntime().getTempDirectory(),
-                PREFIX_FILES + "-output-", SAI_EXTENSION);
+            new File(tmpDir, PREFIX_FILES + "-sai-" + uuid + SAI_EXTENSION);
 
         this.fastqFile =
-            createTempFile(EoulsanRuntime.getRuntime().getTempDirectory(),
-                PREFIX_FILES + "-output-", FASTQ_EXTENSION);
-
-        // Delete temporary files
-        this.saiFile.delete();
-        this.fastqFile.delete();
+            new File(tmpDir, PREFIX_FILES + "-fastq-" + uuid + FASTQ_EXTENSION);
 
         // Create named pipes
         FileUtils.createNamedPipe(this.saiFile);
-        FileUtils.createNamedPipe(this.fastqFile);
 
         // Add fastq copy file and sai file to files to remove
         addFilesToRemove(saiFile, this.fastqFile);
 
         // Create FASTQ writer
-        this.writer = createFastqWriter(this.fastqFile);
-
-        // If the files is not initialized here, the fields will be null because
-        // this method is called by the super constructor
-        this.queue = new LinkedBlockingDeque<>();
-        this.closed = new MutableBoolean();
-        this.exception = new ExceptionWrapper();
-
-        this.copyThread = createFastqCopyThread(this.writer, this.queue,
-            this.closed, exception);
+        this.writer = new FastqWriterThread(this.fastqFile,
+            "BWA sampe writeFirstPairEntries thread");
       }
 
       @Override
       public void writeEntry1(final ReadSequence read) throws IOException {
 
         super.writeEntry1(read);
-        this.queue.add(read);
-
-        // Throw exception if occurs
-        if (this.exception.exception != null) {
-          throw this.exception.exception;
-        }
+        this.writer.write(read.toFastQ() + '\n');
       }
 
       @Override
       public void closeWriter1() throws IOException {
 
         super.closeWriter1();
-        this.closed.value = true;
-
-        // Wait the end of the copy thread
-        try {
-          this.copyThread.join();
-        } catch (InterruptedException e) {
-          throw new IOException(e);
-        }
-
-        // Throw exception if occurs
-        if (this.exception.exception != null) {
-          throw this.exception.exception;
-        }
-
+        this.writer.close();
       }
 
       @Override
@@ -369,7 +261,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         cmd1.add("-t");
         cmd1.add(getThreadsNumber() + "");
         cmd1.add("-f");
-        cmd1.add(saiFile.getAbsolutePath());
+        cmd1.add(this.saiFile.getAbsolutePath());
         cmd1.add(indexPath);
         cmd1.add(getNamedPipeFile1().getAbsolutePath());
 
@@ -379,7 +271,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         cmd2.add(bwaPath);
         cmd2.add("samse");
         cmd2.add(indexPath);
-        cmd2.add(saiFile.getAbsolutePath());
+        cmd2.add(this.saiFile.getAbsolutePath());
         cmd2.add(this.fastqFile.getAbsolutePath());
 
         final List<List<String>> result = new ArrayList<>();
@@ -394,131 +286,75 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   private MapperProcess createMapperProcessPE(final String bwaPath,
-      final String indexPath, final File readsFile1, final File readsFile2,
-      final File tmpFile1, final File tmpFile2) throws IOException {
+      final String indexPath) throws IOException {
 
     return new MapperProcess(this, true) {
 
-      private File saiFile;
+      private File saiFile1;
+      private File saiFile2;
       private File fastqFile1;
       private File fastqFile2;
-      private FastqWriter writer1;
-      private FastqWriter writer2;
-      private BlockingDeque<ReadSequence> queue1;
-      private BlockingDeque<ReadSequence> queue2;
-
-      private MutableBoolean closed1;
-      private MutableBoolean closed2;
-
-      private ExceptionWrapper exception1;
-      private ExceptionWrapper exception2;
-      private Thread copyThread1;
-      private Thread copyThread2;
+      private FastqWriterThread writer1;
+      private FastqWriterThread writer2;
 
       protected void additionalInit() throws IOException {
 
-        this.saiFile =
-            createTempFile(EoulsanRuntime.getRuntime().getTempDirectory(),
-                PREFIX_FILES + "-output-", SAI_EXTENSION);
+        final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
 
-        this.fastqFile1 =
-            createTempFile(EoulsanRuntime.getRuntime().getTempDirectory(),
-                PREFIX_FILES + "-output1-", FASTQ_EXTENSION);
-        this.fastqFile2 =
-            createTempFile(EoulsanRuntime.getRuntime().getTempDirectory(),
-                PREFIX_FILES + "-output1-", FASTQ_EXTENSION);
+        final String uuid = UUID.randomUUID().toString();
 
-        // Delete temporary files
-        this.saiFile.delete();
-        this.fastqFile1.delete();
-        this.fastqFile2.delete();
+        this.saiFile1 =
+            new File(tmpDir, PREFIX_FILES + "-sai1-" + uuid + SAI_EXTENSION);
+        this.saiFile2 =
+            new File(tmpDir, PREFIX_FILES + "-sai2-" + uuid + SAI_EXTENSION);
+
+        this.fastqFile1 = new File(tmpDir,
+            PREFIX_FILES + "-fastq1-" + uuid + FASTQ_EXTENSION);
+
+        this.fastqFile2 = new File(tmpDir,
+            PREFIX_FILES + "-fastq2-" + uuid + FASTQ_EXTENSION);
 
         // Create named pipes
-        FileUtils.createNamedPipe(this.saiFile);
-        FileUtils.createNamedPipe(this.fastqFile1);
-        FileUtils.createNamedPipe(this.fastqFile2);
+        FileUtils.createNamedPipe(this.saiFile1);
+        FileUtils.createNamedPipe(this.saiFile2);
 
         // Add fastq copy file and sai file to files to remove
-        addFilesToRemove(saiFile, this.fastqFile1, this.fastqFile2);
+        addFilesToRemove(this.saiFile1, this.saiFile2, this.fastqFile1,
+            this.fastqFile2);
 
         // Create writer on FASTQ files
-        this.writer1 = createFastqWriter(this.fastqFile1);
-        this.writer2 = createFastqWriter(this.fastqFile2);
-
-        // If the files is not initialized here, the fields will be null because
-        // this method is called by the super constructor
-        this.queue1 = new LinkedBlockingDeque<>();
-        this.queue2 = new LinkedBlockingDeque<>();
-        this.closed1 = new MutableBoolean();
-        this.closed2 = new MutableBoolean();
-        this.exception1 = new ExceptionWrapper();
-        this.exception2 = new ExceptionWrapper();
-        this.copyThread1 = createFastqCopyThread(this.writer1, this.queue1,
-            this.closed1, exception1);
-        this.copyThread2 = createFastqCopyThread(this.writer2, this.queue2,
-            this.closed2, exception2);
+        this.writer1 = new FastqWriterThread(this.fastqFile1,
+            "BWA sampe writeFirstPairEntries thread");
+        this.writer2 = new FastqWriterThread(this.fastqFile2,
+            "BWA sampe writeSecondPairEntries thread");
       }
 
       @Override
       public void writeEntry1(final ReadSequence read) throws IOException {
 
         super.writeEntry1(read);
-        this.queue1.add(read);
-
-        // Throw exception if occurs
-        if (this.exception1.exception != null) {
-          throw this.exception1.exception;
-        }
+        this.writer1.write(read.toFastQ() + '\n');
       }
 
       @Override
       public void writeEntry2(final ReadSequence read) throws IOException {
 
         super.writeEntry2(read);
-        this.queue2.add(read);
-
-        // Throw exception if occurs
-        if (this.exception2.exception != null) {
-          throw this.exception2.exception;
-        }
+        this.writer2.write(read.toFastQ() + '\n');
       }
 
       @Override
       public void closeWriter1() throws IOException {
 
         super.closeWriter1();
-        this.closed1.value = true;
-
-        // Wait the end of the copy thread
-        try {
-          this.copyThread1.join();
-        } catch (InterruptedException e) {
-          throw new IOException(e);
-        }
-
-        // Throw exception if occurs
-        if (this.exception1.exception != null) {
-          throw this.exception1.exception;
-        }
+        this.writer1.close();
       }
 
       @Override
       public void closeWriter2() throws IOException {
 
         super.closeWriter2();
-        this.closed2.value = true;
-
-        // Wait the end of the copy thread
-        try {
-          this.copyThread2.join();
-        } catch (InterruptedException e) {
-          throw new IOException(e);
-        }
-
-        // Throw exception if occurs
-        if (this.exception2.exception != null) {
-          throw this.exception2.exception;
-        }
+        this.writer2.close();
       }
 
       @Override
@@ -540,7 +376,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         cmd1.add("-t");
         cmd1.add(getThreadsNumber() + "");
         cmd1.add("-f");
-        cmd1.add(tmpFile1.getAbsolutePath());
+        cmd1.add(this.saiFile1.getAbsolutePath());
         cmd1.add(indexPath);
         cmd1.add(getNamedPipeFile1().getAbsolutePath());
 
@@ -557,7 +393,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         cmd2.add("-t");
         cmd2.add(getThreadsNumber() + "");
         cmd2.add("-f");
-        cmd2.add(tmpFile2.getAbsolutePath());
+        cmd2.add(this.saiFile2.getAbsolutePath());
         cmd2.add(indexPath);
         cmd2.add(getNamedPipeFile2().getAbsolutePath());
 
@@ -566,9 +402,11 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         // Build the command line
         cmd3.add(bwaPath);
         cmd3.add("sampe");
+        cmd3.add("-f");
+        cmd3.add("/home/jourdren/toto.sam");
         cmd3.add(indexPath);
-        cmd3.add(tmpFile1.getAbsolutePath());
-        cmd3.add(tmpFile2.getAbsolutePath());
+        cmd3.add(this.saiFile1.getAbsolutePath());
+        cmd3.add(this.saiFile2.getAbsolutePath());
         cmd3.add(getNamedPipeFile1().getAbsolutePath());
         cmd3.add(getNamedPipeFile2().getAbsolutePath());
 

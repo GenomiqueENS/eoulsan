@@ -65,7 +65,7 @@ public abstract class MapperProcess {
   private final File pipeFile1;
   private final File pipeFile2;
 
-  private final Writer writer1;
+  private final FastqWriterThread writer1;
   private final FastqWriterThread writer2;
 
   private ReporterIncrementer incrementer;
@@ -281,16 +281,23 @@ public abstract class MapperProcess {
     /**
      * Asynchronous close.
      */
-    public void close() {
+    public void close() throws IOException {
 
       this.closed = true;
+      try {
+        join();
+      } catch (InterruptedException e) {
+        throw new IOException(e);
+      }
+
+      throwExceptionIfExists();
     }
 
     /**
      * Throw an exception if an exception has occurred while writing data.
      * @throws IOException if an exception has occurred while writing data
      */
-    public void throwExceptionIfExists() throws IOException {
+    private void throwExceptionIfExists() throws IOException {
 
       if (this.exception != null) {
         throw new IOException(this.exception);
@@ -305,10 +312,13 @@ public abstract class MapperProcess {
      * Constructor.
      * @param writer the writer to use to write data
      */
-    public FastqWriterThread(final Writer writer) {
+    public FastqWriterThread(final Writer writer, final String threadName) {
+
+      super(threadName);
 
       this.writer = writer;
 
+      // Start the thread
       start();
     }
 
@@ -316,9 +326,10 @@ public abstract class MapperProcess {
      * Constructor.
      * @param namedPipeFile the named pipe file
      */
-    public FastqWriterThread(final File namedPipeFile) throws IOException {
+    public FastqWriterThread(final File namedPipeFile, final String threadName)
+        throws IOException {
 
-      this(createPipeWriter(namedPipeFile));
+      this(createPipeWriter(namedPipeFile), threadName);
     }
 
   }
@@ -540,12 +551,6 @@ public abstract class MapperProcess {
 
     if (this.writer2 != null) {
       this.writer2.close();
-      try {
-        this.writer2.join();
-      } catch (InterruptedException e) {
-        throw new IOException(e);
-      }
-      this.writer2.throwExceptionIfExists();
     }
   }
 
@@ -703,8 +708,11 @@ public abstract class MapperProcess {
       this.pipeFile1 = new File(tmpDir, "mapper-inputfile1-" + uuid + ".fq");
       this.pipeFile2 = new File(tmpDir, "mapper-inputfile2-" + uuid + ".fq");
 
-      this.writer1 = createPipeWriter(this.pipeFile1);
-      this.writer2 = pairedEnd ? new FastqWriterThread(this.pipeFile2) : null;
+      this.writer1 =
+          new FastqWriterThread(this.pipeFile1, "FastqWriterThread fastq1");
+      this.writer2 = pairedEnd
+          ? new FastqWriterThread(this.pipeFile2, "FastqWriterThread fastq2")
+          : null;
 
       addFilesToRemove(this.pipeFile1, this.pipeFile2);
 
