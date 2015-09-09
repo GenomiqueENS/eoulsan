@@ -24,6 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.util;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -160,6 +163,65 @@ public final class SystemUtils {
     final int pos1 = version.indexOf('.') + 1;
     final int pos2 = version.indexOf('.', pos1);
     return Integer.parseInt(version.substring(pos1, pos2));
+  }
+
+  /**
+   * Get user UID.
+   * @return the user UID or -1 if UID cannot be found
+   */
+  public static final int uid() {
+
+    try {
+      return Integer.parseInt(execToString("/usr/bin/id", "-u"));
+    } catch (NumberFormatException | IOException e) {
+      return -1;
+    }
+  }
+
+  /**
+   * Get user GID.
+   * @return the user GID or -1 if GID cannot be found
+   */
+  public static final int gid() {
+
+    try {
+      return Integer.parseInt(execToString("/usr/bin/id", "-g"));
+    } catch (NumberFormatException | IOException e) {
+      return -1;
+    }
+  }
+
+  //
+  // Private methods
+  //
+
+  /**
+   * Execute a system command and return the output.
+   * @param args the argument of the command line
+   * @return a String with the stdout of the command
+   * @throws IOException if an error occurs while executing the command
+   */
+  private static final String execToString(final String... args)
+      throws IOException {
+
+    ProcessBuilder pb = new ProcessBuilder(args);
+    Process p = pb.start();
+
+    try (BufferedReader reader =
+        new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+
+      final StringBuilder result = new StringBuilder();
+      String line = null;
+
+      while ((line = reader.readLine()) != null) {
+        result.append(line);
+        result.append('\n');
+      }
+
+      reader.close();
+
+      return result.toString();
+    }
   }
 
   //

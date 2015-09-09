@@ -53,8 +53,8 @@ import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.Image;
 
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
+import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 
 /**
  * This class define a mapper executor that executes process in Docker
@@ -221,8 +221,7 @@ public class DockerMapperExecutor implements MapperExecutor {
         }
 
         // Define binds
-        final HostConfig hostConfig =
-            createBinds(executionDirectory, newFilesUsed);
+        builder.hostConfig(createBinds(executionDirectory, newFilesUsed));
 
         // Create container
         final ContainerCreation creation =
@@ -233,7 +232,7 @@ public class DockerMapperExecutor implements MapperExecutor {
 
         // Start container
         getLogger().fine("Start of the Docker container: " + containerId);
-        dockerClient.startContainer(containerId, hostConfig);
+        dockerClient.startContainer(containerId);
 
       } catch (DockerException e) {
         throw new IOException(e);
@@ -385,36 +384,6 @@ public class DockerMapperExecutor implements MapperExecutor {
   }
 
   //
-  // Get user UID and GID
-  //
-
-  /**
-   * Get user UID.
-   * @return the user UID or -1 if UID cannot be found
-   */
-  private static final int uid() {
-
-    try {
-      return Integer.parseInt(ProcessUtils.execToString("id -u"));
-    } catch (NumberFormatException | IOException e) {
-      return -1;
-    }
-  }
-
-  /**
-   * Get user GID.
-   * @return the user GID or -1 if GID cannot be found
-   */
-  private static final int gid() {
-
-    try {
-      return Integer.parseInt(ProcessUtils.execToString("id -u"));
-    } catch (NumberFormatException | IOException e) {
-      return -1;
-    }
-  }
-
-  //
   // Object methods
   //
 
@@ -448,8 +417,8 @@ public class DockerMapperExecutor implements MapperExecutor {
     this.dockerConnection = dockerConnection;
     this.dockerImage = dockerImage;
     this.temporaryDirectory = temporaryDirectory;
-    this.userUid = uid();
-    this.userGid = gid();
+    this.userUid = SystemUtils.uid();
+    this.userGid = SystemUtils.gid();
   }
 
 }
