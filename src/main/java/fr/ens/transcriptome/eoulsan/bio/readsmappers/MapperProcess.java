@@ -232,11 +232,8 @@ public abstract class MapperProcess {
    */
   static class FastqWriterThread extends Thread {
 
-    private static final int MAX_CAPACITY = 16 * 1024 * 1024;
-
     private volatile boolean closed;
-    private final BlockingDeque<String> queue =
-        new LinkedBlockingDeque<>(MAX_CAPACITY);
+    private final BlockingDeque<String> queue = new LinkedBlockingDeque<>();
     private final Writer writer;
     private Exception exception;
 

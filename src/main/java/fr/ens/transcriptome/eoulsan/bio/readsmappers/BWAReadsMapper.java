@@ -227,10 +227,25 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       }
 
       @Override
+      public void writeEntry(final String name, final String sequence,
+          final String quality) throws IOException {
+
+        super.writeEntry(name, sequence, quality);
+        this.writer.write(ReadSequence.toFastQ(name, sequence, quality) + '\n');
+      }
+
+      @Override
       public void writeEntry1(final ReadSequence read) throws IOException {
 
         super.writeEntry1(read);
         this.writer.write(read.toFastQ() + '\n');
+      }
+
+      @Override
+      public void closeEntriesWriter() throws IOException {
+
+        super.closeWriter1();
+        this.writer.close();
       }
 
       @Override
@@ -329,6 +344,19 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
       }
 
       @Override
+      public void writeEntry(final String name1, final String sequence1,
+          final String quality1, final String name2, final String sequence2,
+          final String quality2) throws IOException {
+
+        super.writeEntry(name1, sequence1, quality1, name2, sequence2,
+            quality2);
+        this.writer1
+            .write(ReadSequence.toFastQ(name1, sequence1, quality2) + '\n');
+        this.writer2
+            .write(ReadSequence.toFastQ(name2, sequence2, quality2) + '\n');
+      }
+
+      @Override
       public void writeEntry1(final ReadSequence read) throws IOException {
 
         super.writeEntry1(read);
@@ -340,6 +368,15 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
         super.writeEntry2(read);
         this.writer2.write(read.toFastQ() + '\n');
+      }
+
+      @Override
+      public void closeEntriesWriter() throws IOException {
+
+        super.closeWriter1();
+        super.closeWriter2();
+        this.writer1.close();
+        this.writer2.close();
       }
 
       @Override

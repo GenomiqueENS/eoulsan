@@ -239,6 +239,10 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     jobConf.set("mapreduce.map.memory.mb",
         "" + getMapperHadoopMemoryRequired());
 
+    // Set the memory required by JVM (BWA need more memory than the other
+    // mapper for buffering named pipes)
+    jobConf.set("mapreduce.map.java.opts", "-Xmx4096M");
+
     // Set ZooKeeper client configuration
     setZooKeeperJobConfiguration(jobConf, context);
 
