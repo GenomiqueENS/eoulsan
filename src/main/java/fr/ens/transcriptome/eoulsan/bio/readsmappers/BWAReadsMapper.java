@@ -406,11 +406,16 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
           cmd1.add("-I");
         }
 
+        // There are 2 bwa aln processes in paired-end mode, so we divided the
+        // number of threads by 2
+        final int threadNumber =
+            getThreadsNumber() > 1 ? getThreadsNumber() / 2 : 1;
+
         // Set the user options
         cmd1.addAll(getListMapperArguments());
 
         cmd1.add("-t");
-        cmd1.add(getThreadsNumber() + "");
+        cmd1.add(threadNumber + "");
         cmd1.add("-f");
         cmd1.add(this.saiFile1.getAbsolutePath());
         cmd1.add(indexPath);
@@ -427,7 +432,7 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         cmd2.addAll(getListMapperArguments());
 
         cmd2.add("-t");
-        cmd2.add(getThreadsNumber() + "");
+        cmd2.add(threadNumber + "");
         cmd2.add("-f");
         cmd2.add(this.saiFile2.getAbsolutePath());
         cmd2.add(indexPath);
