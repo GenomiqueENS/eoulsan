@@ -37,36 +37,36 @@ public interface Action {
    * Get the name of the action.
    * @return the name of the action
    */
-  public String getName();
+  String getName();
 
   /**
    * Get action description.
    * @return the description description
    */
-  public String getDescription();
+  String getDescription();
 
   /**
    * Execute action.
    * @param arguments arguments of the action.
    */
-  public void action(List<String> arguments);
+  void action(List<String> arguments);
 
   /**
    * Test if the action can be executed in hadoop Jar mode.
    * @return true if the action can be executed in hadoop Jar mode
    */
-  public boolean isHadoopJarMode();
+  boolean isHadoopJarMode();
 
   /**
    * Test if the action can be executed with current platform.
    * @return true if the action can be executed with current platform
    */
-  public boolean isCurrentArchCompatible();
+  boolean isCurrentArchCompatible();
 
   /**
    * Test if the action must be hidden from the list of available actions.
    * @return true if the action must be hidden
    */
-  public boolean isHidden();
+  boolean isHidden();
 
 }

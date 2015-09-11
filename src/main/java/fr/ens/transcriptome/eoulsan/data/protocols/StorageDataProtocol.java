@@ -77,8 +77,8 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
   @Override
   public OutputStream putData(final DataFile dest) throws IOException {
 
-    throw new IOException("PutData() method is no supported by "
-        + getName() + " protocol");
+    throw new IOException(
+        "PutData() method is no supported by " + getName() + " protocol");
   }
 
   @Override
@@ -139,8 +139,8 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
     final DataFile baseDir = new DataFile(basePath);
 
     if (!baseDir.exists()) {
-      throw new IOException(getName()
-          + " storage base path does not exists: " + baseDir);
+      throw new IOException(
+          getName() + " storage base path does not exists: " + baseDir);
     }
 
     for (String extension : getExtensions()) {

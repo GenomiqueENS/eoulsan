@@ -35,8 +35,8 @@ import java.util.List;
  * @author Laurent Jourdren
  * @author Claire Wallon
  */
-public class KeepOneMatchReadAlignmentsFilter extends
-    AbstractReadAlignmentsFilter {
+public class KeepOneMatchReadAlignmentsFilter
+    extends AbstractReadAlignmentsFilter {
 
   public static final String FILTER_NAME = "keeponematch";
 

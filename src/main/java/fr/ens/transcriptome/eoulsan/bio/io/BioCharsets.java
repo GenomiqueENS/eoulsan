@@ -61,8 +61,8 @@ public class BioCharsets {
   public static final String EXPRESSION_ENCODING = "UTF-8";
 
   /** Expression files Charset. */
-  public static final Charset EXPRESSION_CHARSET = Charset
-      .forName(EXPRESSION_ENCODING);
+  public static final Charset EXPRESSION_CHARSET =
+      Charset.forName(EXPRESSION_ENCODING);
 
   //
   // Constructor

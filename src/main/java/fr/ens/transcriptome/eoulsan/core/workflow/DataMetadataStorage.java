@@ -207,9 +207,9 @@ public class DataMetadataStorage {
       return;
     }
 
-    try (PrintWriter out =
-        new PrintWriter(new OutputStreamWriter(new FileOutputStream(
-            this.metadataFile.toFile(), true), Globals.DEFAULT_CHARSET))) {
+    try (PrintWriter out = new PrintWriter(new OutputStreamWriter(
+        new FileOutputStream(this.metadataFile.toFile(), true),
+        Globals.DEFAULT_CHARSET))) {
 
       // Write entry
       out.println(s);
@@ -232,7 +232,7 @@ public class DataMetadataStorage {
     if (singleton == null) {
 
       throw new EoulsanRuntimeException(
-          "No metadata storage has been previously instancied");
+          "No metadata storage has been previously instanced");
     }
 
     return singleton;

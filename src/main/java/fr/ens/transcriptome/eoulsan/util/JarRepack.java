@@ -80,7 +80,8 @@ public class JarRepack {
    * @param destDir destination in the jar file
    * @throws IOException if an error occurs while adding the file
    */
-  public void addFile(final File file, final String destDir) throws IOException {
+  public void addFile(final File file, final String destDir)
+      throws IOException {
 
     if (file == null) {
       return;

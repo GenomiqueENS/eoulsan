@@ -46,19 +46,18 @@ public class SAMUtilsTest {
     final InputStream is =
         SAMUtilsTest.class.getResourceAsStream("/mapper_results_SE.sam");
 
-    String s =
-        "@HD\tVN:1.4\n"
-            + "@SQ\tSN:chr1\tLN:197195432\n" + "@SQ\tSN:chr2\tLN:181748087\n"
-            + "@SQ\tSN:chr3\tLN:159599783\n" + "@SQ\tSN:chr4\tLN:155630120\n"
-            + "@SQ\tSN:chr5\tLN:152537259\n" + "@SQ\tSN:chr6\tLN:149517037\n"
-            + "@SQ\tSN:chr7\tLN:152524553\n" + "@SQ\tSN:chr8\tLN:131738871\n"
-            + "@SQ\tSN:chr9\tLN:124076172\n" + "@SQ\tSN:chr10\tLN:129993255\n"
-            + "@SQ\tSN:chr11\tLN:121843856\n" + "@SQ\tSN:chr12\tLN:121257530\n"
-            + "@SQ\tSN:chr13\tLN:120284312\n" + "@SQ\tSN:chr14\tLN:125194864\n"
-            + "@SQ\tSN:chr15\tLN:103494974\n" + "@SQ\tSN:chr16\tLN:98319150\n"
-            + "@SQ\tSN:chr17\tLN:95272651\n" + "@SQ\tSN:chr18\tLN:90772031\n"
-            + "@SQ\tSN:chr19\tLN:61342430\n" + "@SQ\tSN:chrX\tLN:166650296\n"
-            + "@SQ\tSN:chrY\tLN:15902555\n" + "@SQ\tSN:chrMT\tLN:16299\n";
+    String s = "@HD\tVN:1.4\n"
+        + "@SQ\tSN:chr1\tLN:197195432\n" + "@SQ\tSN:chr2\tLN:181748087\n"
+        + "@SQ\tSN:chr3\tLN:159599783\n" + "@SQ\tSN:chr4\tLN:155630120\n"
+        + "@SQ\tSN:chr5\tLN:152537259\n" + "@SQ\tSN:chr6\tLN:149517037\n"
+        + "@SQ\tSN:chr7\tLN:152524553\n" + "@SQ\tSN:chr8\tLN:131738871\n"
+        + "@SQ\tSN:chr9\tLN:124076172\n" + "@SQ\tSN:chr10\tLN:129993255\n"
+        + "@SQ\tSN:chr11\tLN:121843856\n" + "@SQ\tSN:chr12\tLN:121257530\n"
+        + "@SQ\tSN:chr13\tLN:120284312\n" + "@SQ\tSN:chr14\tLN:125194864\n"
+        + "@SQ\tSN:chr15\tLN:103494974\n" + "@SQ\tSN:chr16\tLN:98319150\n"
+        + "@SQ\tSN:chr17\tLN:95272651\n" + "@SQ\tSN:chr18\tLN:90772031\n"
+        + "@SQ\tSN:chr19\tLN:61342430\n" + "@SQ\tSN:chrX\tLN:166650296\n"
+        + "@SQ\tSN:chrY\tLN:15902555\n" + "@SQ\tSN:chrMT\tLN:16299\n";
 
     assertEquals(s, SAMUtils.readSAMHeader(is));
   }

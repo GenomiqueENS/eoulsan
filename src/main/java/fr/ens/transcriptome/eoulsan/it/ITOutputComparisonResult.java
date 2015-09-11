@@ -32,8 +32,8 @@ import fr.ens.transcriptome.eoulsan.Globals;
  * @author Sandrine Perrin
  * @since 2.0
  */
-final class ITOutputComparisonResult implements
-    Comparable<ITOutputComparisonResult> {
+final class ITOutputComparisonResult
+    implements Comparable<ITOutputComparisonResult> {
 
   private static final String TYPE_FAIL = "FAIL";
   private static final String TYPE_OK = "OK";
@@ -58,7 +58,7 @@ final class ITOutputComparisonResult implements
     if (this.statusComparison.getType().equals(TYPE_FAIL)) {
 
       txt.append(" " + this.statusComparison.getName());
-      txt.append("\n\t\tOuput file: " + this.fileTestedPath);
+      txt.append("\n\t\tOutput file: " + this.fileTestedPath);
       txt.append("\n\t\tExpected file: " + this.fileExpectedPath);
       txt.append("\n\t\tError message: " + this.message);
     }
@@ -82,7 +82,7 @@ final class ITOutputComparisonResult implements
 
   public void setResult(final StatusComparison status, final File fileExpected,
       final File fileTested, final String msg) {
-    setStatutComparison(status);
+    setStatusComparison(status);
     setMessage(msg);
 
     this.fileExpectedPath =
@@ -106,16 +106,13 @@ final class ITOutputComparisonResult implements
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result =
-        prime
-            * result + ((this.filename == null) ? 0 : this.filename.hashCode());
+    result = prime * result
+        + ((this.filename == null) ? 0 : this.filename.hashCode());
     result =
         prime * result + ((this.message == null) ? 0 : this.message.hashCode());
-    result =
-        prime
-            * result
-            + ((this.statusComparison == null) ? 0 : this.statusComparison
-                .hashCode());
+    result = prime * result
+        + ((this.statusComparison == null)
+            ? 0 : this.statusComparison.hashCode());
     return result;
   }
 
@@ -163,7 +160,7 @@ final class ITOutputComparisonResult implements
    * Gets the status comparison.
    * @return the status comparison
    */
-  public StatusComparison getStatutComparison() {
+  public StatusComparison getStatusComparison() {
     return this.statusComparison;
   }
 
@@ -185,10 +182,10 @@ final class ITOutputComparisonResult implements
 
   /**
    * Sets the status comparison.
-   * @param statutComparison the new status comparison
+   * @param statusComparison the new status comparison
    */
-  public void setStatutComparison(final StatusComparison statutComparison) {
-    this.statusComparison = statutComparison;
+  public void setStatusComparison(final StatusComparison statusComparison) {
+    this.statusComparison = statusComparison;
   }
 
   /**
@@ -204,7 +201,6 @@ final class ITOutputComparisonResult implements
   //
   /**
    * Public constructor.
-   * @param itOuput the it output instance
    * @param filename filename to compare
    * @param statusComparison status comparison object
    * @param message detail of comparison
@@ -236,11 +232,13 @@ final class ITOutputComparisonResult implements
   enum StatusComparison {
 
     NOT_EQUALS("not equals", false,
-        "Comparison failed for output result file: "), EQUALS("equals", true,
-        ""), UNEXPECTED("unexpected", false,
-        "Found unexpected file in result test directory: "), MISSING("missing",
-        false, "Missing expected file in result test directory: "), TO_COMPARE(
-        "to compare", false, "Not comparison start.");
+        "Comparison failed for output result file: "),
+    EQUALS("equals", true, ""),
+    UNEXPECTED("unexpected", false,
+        "Found unexpected file in result test directory: "),
+    MISSING("missing", false,
+        "Missing expected file in result test directory: "),
+    TO_COMPARE("to compare", false, "Not comparison start.");
 
     private final String name;
     private final String exceptionMessage;

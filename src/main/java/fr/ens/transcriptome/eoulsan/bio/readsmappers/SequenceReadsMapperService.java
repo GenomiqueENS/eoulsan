@@ -31,8 +31,8 @@ import fr.ens.transcriptome.eoulsan.util.ServiceNameLoader;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class SequenceReadsMapperService extends
-    ServiceNameLoader<SequenceReadsMapper> {
+public class SequenceReadsMapperService
+    extends ServiceNameLoader<SequenceReadsMapper> {
 
   private static SequenceReadsMapperService service;
 

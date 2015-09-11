@@ -30,12 +30,14 @@ import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputP
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.bio.readsmappers.SOAPReadsMapper;
+import fr.ens.transcriptome.eoulsan.Settings;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
@@ -63,6 +65,10 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   public static final String MAPPER_NAME_PARAMETER_NAME = "mapper";
   public static final String MAPPER_VERSION_PARAMETER_NAME = "mapper.version";
   public static final String MAPPER_FLAVOR_PARAMETER_NAME = "mapper.flavor";
+  public static final String USE_BUNDLED_BINARIES_PARAMETER_NAME =
+      "mapper.use.bundled.binares";
+  public static final String MAPPER_DOCKER_IMAGE_PARAMETER_NAME =
+      "mapper.docker.image";
 
   public static final String MAPPER_ARGUMENTS_PARAMETER_NAME =
       "mapper.arguments";
@@ -80,6 +86,8 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   private SequenceReadsMapper mapper;
   private String mapperVersion = "";
   private String mapperFlavor = "";
+  private String mapperDockerImage = "";
+  private boolean useBundledBinaries = true;
   private String mapperArguments;
 
   private int reducerTaskCount = -1;
@@ -87,6 +95,8 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   private int localThreads;
   private int maxLocalThreads;
   private int hadoopMapperRequiredMemory = DEFAULT_MAPPER_REQUIRED_MEMORY;
+
+  private URI dockerConnection;
 
   //
   // Getters
@@ -114,6 +124,22 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
    */
   protected String getMapperFlavor() {
     return this.mapperFlavor;
+  }
+
+  /**
+   * Test if the bundled binaries must be used to perform the step.
+   * @return true if the bundled binaries must be used to perform the step
+   */
+  protected boolean isUseBundledBinaries() {
+    return this.useBundledBinaries;
+  }
+
+  /**
+   * Get the mapper Docker image to use.
+   * @return the mapper Docker image to use
+   */
+  protected String getMapperDockerImage() {
+    return this.mapperDockerImage;
   }
 
   /**
@@ -170,6 +196,14 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
     return this.reducerTaskCount;
   }
 
+  /**
+   * Get Docker connection.
+   * @return an URI with the Docker connection
+   */
+  protected URI getDockerConnection() {
+    return this.dockerConnection;
+  }
+
   //
   // Step methods
   //
@@ -222,6 +256,14 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
         this.mapperFlavor = p.getStringValue();
         break;
 
+      case USE_BUNDLED_BINARIES_PARAMETER_NAME:
+        this.useBundledBinaries = p.getBooleanValue();
+        break;
+
+      case MAPPER_DOCKER_IMAGE_PARAMETER_NAME:
+        this.mapperDockerImage = p.getStringValue();
+        break;
+
       case MAPPER_ARGUMENTS_PARAMETER_NAME:
         this.mapperArguments = p.getStringValue();
         break;
@@ -249,8 +291,8 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
       default:
 
-        throw new EoulsanException("Unknown parameter for "
-            + getName() + " step: " + p.getName());
+        throw new EoulsanException(
+            "Unknown parameter for " + getName() + " step: " + p.getName());
       }
     }
 
@@ -273,23 +315,55 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
               + mapperName);
     }
 
+    // Get Docker connection URI
+    if (!this.mapperDockerImage.isEmpty()) {
+      this.dockerConnection = getCheckedDockerURI(context.getSettings());
+    }
+
     // Check if the binary for the mapper is available
     try {
+
       this.mapper.setMapperVersionToUse(this.mapperVersion);
       this.mapper.setMapperFlavorToUse(this.mapperFlavor);
+      this.mapper.setUseBundledBinaries(this.useBundledBinaries);
+      this.mapper.setMapperDockerImage(this.mapperDockerImage);
+      this.mapper.setDockerConnection(this.dockerConnection);
       this.mapper.prepareBinaries();
     } catch (IOException e) {
       throw new EoulsanException(e);
     }
 
     // Log Step parameters
-    getLogger().info(
-        "In "
-            + getName() + ", mapper=" + this.mapper.getMapperName()
-            + " (version: " + this.mapper.getMapperVersion() + ")");
-    getLogger().info(
-        "In " + getName() + ", mapperarguments=" + this.mapperArguments);
+    getLogger().info("In "
+        + getName() + ", mapper=" + this.mapper.getMapperName() + " (version: "
+        + this.mapper.getMapperVersion() + ")");
+    getLogger()
+        .info("In " + getName() + ", mapperarguments=" + this.mapperArguments);
 
+  }
+
+  /**
+   * Check Docker URI.
+   * @param settings Eoulsan settings
+   * @return the Docker URI
+   * @throws EoulsanException if the URI cannot be created
+   */
+  private static URI getCheckedDockerURI(final Settings settings)
+      throws EoulsanException {
+
+    final String dockerConnectionString = settings.getDockerConnection();
+
+    if (dockerConnectionString == null) {
+      throw new EoulsanException(
+          "Docker connection URI is not set in Eoulsan configuration");
+    }
+
+    try {
+      return new URI(dockerConnectionString);
+    } catch (URISyntaxException e) {
+      throw new EoulsanException(
+          "Invalid URI for Docker connection: " + dockerConnectionString);
+    }
   }
 
   //
@@ -321,15 +395,12 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
           + "\" parameter " + "instead");
 
     case MAPPER_NAME_PARAMETER_NAME:
+      if ("soap".equals(parameter.getLowerStringValue())) {
 
-      if (SOAPReadsMapper.MAPPER_NAME.toLowerCase().equals(
-          parameter.getLowerStringValue())) {
-        getLogger().warning(
-            stepMessage
-                + "the " + SOAPReadsMapper.MAPPER_NAME
-                + " mapper support is deprecated");
+        throw new EoulsanException(
+            "The SOAP mapper support has been removed from "
+                + Globals.APP_NAME);
       }
-
       break;
 
     default:

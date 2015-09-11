@@ -1,0 +1,11 @@
+<tool id="rmdup" name="rmdup">
+  <description>for each sequence in a file</description>
+  <command interpreter="docker" dockerimage="genomicpariscentre/picard:1.134">picard.jar MarkDuplicates REMOVE_DUPLICATES=true INPUT=$input OUTPUT=$output"</command>
+  <inputs>
+    <param format="bam" name="input" type="data" label="Source file"/>
+  </inputs>
+  <outputs>
+    <data format="bam" name="output" />
+  </outputs>
+
+</tool>

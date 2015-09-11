@@ -25,18 +25,21 @@ package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters.OUTPUT_MAPPING_ALIGNMENTS_COUNTER;
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.unDoubleQuotes;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URI;
 import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -56,7 +59,6 @@ import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.transcriptome.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 import fr.ens.transcriptome.eoulsan.util.hadoop.HadoopReporter;
@@ -73,32 +75,32 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
   private static final String HADOOP_TEMP_DIR = "mapreduce.cluster.temp.dir";
 
   // Parameter keys
-  static final String MAPPER_NAME_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.name";
-  static final String MAPPER_VERSION_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.version";
-  static final String MAPPER_FLAVOR_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.flavor";
-  static final String PAIR_END_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.pairend";
-  static final String MAPPER_ARGS_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.args";
-  static final String MAPPER_THREADS_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.nb.threads";
-  static final String FASTQ_FORMAT_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.fastq.format";
-  static final String INDEX_CHECKSUM_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.index.checksum";
-  static final String ZOOKEEPER_CONNECT_STRING_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.zookeeper.connect.string";
-  static final String ZOOKEEPER_SESSION_TIMEOUT_KEY = Globals.PARAMETER_PREFIX
-      + ".mapper.zookeeper.session.timeout";
+  static final String MAPPER_NAME_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.name";
+  static final String MAPPER_VERSION_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.version";
+  static final String MAPPER_FLAVOR_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.flavor";
+  static final String PAIR_END_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.pairend";
+  static final String MAPPER_ARGS_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.args";
+  static final String MAPPER_THREADS_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.nb.threads";
+  static final String FASTQ_FORMAT_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.fastq.format";
+  static final String INDEX_CHECKSUM_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.index.checksum";
+  static final String ZOOKEEPER_CONNECT_STRING_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.zookeeper.connect.string";
+  static final String ZOOKEEPER_SESSION_TIMEOUT_KEY =
+      Globals.PARAMETER_PREFIX + ".mapper.zookeeper.session.timeout";
 
   private static final Splitter TAB_SPLITTER = Splitter.on('\t').trimResults();
-  private static final String MAPPER_INDEX_DIR_PREFIX = Globals.APP_NAME
-      + "-mapper-index-";
-  private static final String MAPPER_LAST_USED_FILENAME = Globals.APP_NAME
-      .toUpperCase() + "_LAST_USED";
+  private static final String MAPPER_INDEX_DIR_PREFIX =
+      Globals.APP_NAME + "-mapper-index-";
+  private static final String MAPPER_LAST_USED_FILENAME =
+      Globals.APP_NAME.toUpperCase() + "_LAST_USED";
   private static final long DEFAULT_AGE_OF_UNUSED_MAPPER_INDEXES = 7;
   private static final String LOCK_SUFFIX = ".lock";
 
@@ -109,7 +111,20 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
   private SequenceReadsMapper mapper;
   private MapperProcess process;
+  private Thread samResultsParserThread;
+  private final BlockingDeque<String> queue = new LinkedBlockingDeque<>();
+  private final ExceptionWrapper exception = new ExceptionWrapper();
+  private int entriesParsed;
+  private boolean writeHeaders;
+
   private final List<String> fields = new ArrayList<>();
+
+  private final Text outKey = new Text();
+  private final Text outValue = new Text();
+
+  private static final class ExceptionWrapper {
+    private IOException exception;
+  }
 
   /**
    * 'key': offset of the beginning of the line from the beginning of the TFQ
@@ -118,7 +133,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
    */
   @Override
   protected void map(final Text key, final Text value, final Context context)
-      throws IOException {
+      throws IOException, InterruptedException {
 
     this.fields.clear();
     for (String e : TAB_SPLITTER.split(value.toString())) {
@@ -141,6 +156,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
           this.fields.get(5));
     }
 
+    writeResults(context, this.writeHeaders);
   }
 
   @Override
@@ -181,8 +197,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
     final boolean pairedEnd = Boolean.parseBoolean(conf.get(PAIR_END_KEY));
     final FastqFormat fastqFormat =
-        FastqFormat.getFormatFromName(conf.get(FASTQ_FORMAT_KEY, ""
-            + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
+        FastqFormat.getFormatFromName(conf.get(FASTQ_FORMAT_KEY,
+            "" + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
 
     // DistributedCache.purgeCache(conf);
 
@@ -202,9 +218,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     final DataFile archiveIndexFile =
         new DataFile(localCacheFiles[0].toString());
 
-    getLogger().info(
-        "Genome index compressed file (from distributed cache): "
-            + archiveIndexFile);
+    getLogger().info("Genome index compressed file (from distributed cache): "
+        + archiveIndexFile);
 
     // Set index directory
     this.mapperIndexDir =
@@ -212,47 +227,47 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
             + "/" + MAPPER_INDEX_DIR_PREFIX + this.mapper.getMapperName()
             + "-index-" + conf.get(INDEX_CHECKSUM_KEY));
 
-    getLogger().info(
-        "Genome index directory where decompressed: " + mapperIndexDir);
+    getLogger()
+        .info("Genome index directory where decompressed: " + mapperIndexDir);
 
     // Set FASTQ format
     this.mapper.setFastqFormat(fastqFormat);
 
     getLogger().info("Fastq format: " + fastqFormat);
 
-    this.lock =
-        new ZooKeeperLocker(conf.get(ZOOKEEPER_CONNECT_STRING_KEY),
-            Integer.parseInt(conf.get(ZOOKEEPER_SESSION_TIMEOUT_KEY)),
-            "/eoulsan-locks-" + InetAddress.getLocalHost().getHostName(),
-            "mapper-lock-");
+    this.lock = new ZooKeeperLocker(conf.get(ZOOKEEPER_CONNECT_STRING_KEY),
+        Integer.parseInt(conf.get(ZOOKEEPER_SESSION_TIMEOUT_KEY)),
+        "/eoulsan-locks-" + InetAddress.getLocalHost().getHostName(),
+        "mapper-lock-");
 
     // Get Mapper arguments
-    final String mapperArguments = conf.get(MAPPER_ARGS_KEY);
+    final String mapperArguments = unDoubleQuotes(conf.get(MAPPER_ARGS_KEY));
     if (mapperArguments != null) {
       this.mapper.setMapperArguments(mapperArguments);
     }
 
     // Get the number of threads to use
-    int mapperThreads =
-        Integer.parseInt(conf.get(MAPPER_THREADS_KEY, ""
-            + Runtime.getRuntime().availableProcessors()));
+    int mapperThreads = Integer.parseInt(conf.get(MAPPER_THREADS_KEY,
+        "" + Runtime.getRuntime().availableProcessors()));
 
     if (mapperThreads > Runtime.getRuntime().availableProcessors()
         || mapperThreads < 1) {
       mapperThreads = Runtime.getRuntime().availableProcessors();
     }
 
-    this.mapper.setThreadsNumber(mapperThreads);
-    getLogger().info(
-        "Use "
-            + this.mapper.getMapperName() + " with " + mapperThreads
-            + " threads option");
+    if (!this.mapper.isMultipleInstancesEnabled()) {
+      this.mapper.setThreadsNumber(mapperThreads);
+    }
+
+    getLogger().info("Use "
+        + this.mapper.getMapperName() + " with " + mapperThreads
+        + " threads option");
 
     // Create temporary directory if not exists
     final File tempDir = new File(conf.get(HADOOP_TEMP_DIR));
     if (!tempDir.exists()) {
-      getLogger().fine(
-          "Create temporary directory: " + tempDir.getAbsolutePath());
+      getLogger()
+          .fine("Create temporary directory: " + tempDir.getAbsolutePath());
       if (!tempDir.mkdirs()) {
         throw new IOException(
             "Unable to create local Hadoop temporary directory: " + tempDir);
@@ -262,78 +277,76 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     // Set mapper temporary directory
     this.mapper.setTempDirectory(tempDir);
 
+    // Enable multiple instance of the mapper, if not supported
+    // this.mapper.isMultipleInstancesEnabled() will return false
+    this.mapper.setMultipleInstancesEnabled(true);
+
     // Update last used file timestamp for the mapper indexes clean up
     updateLastUsedMapperIndex(this.mapperIndexDir);
 
-    final boolean indexMustBeUncompressed = !this.mapperIndexDir.exists();
+    context.setStatus("Wait lock");
 
-    // Lock if mapper index must be uncompressed
-    if (indexMustBeUncompressed) {
-      ProcessUtils.waitRandom(5000);
-      this.lock.lock();
-    }
+    // Lock if mapper
+    ProcessUtils.waitRandom(5000);
+    this.lock.lock();
 
     // Init mapper
     this.mapper.init(archiveIndexFile.open(), this.mapperIndexDir,
         new HadoopReporter(context), this.counterGroup);
 
-    // TODO Handle genome description
-    if (pairedEnd) {
-      this.process = this.mapper.mapPE(null);
+    // Lock if no multiple instances enabled
+    if (this.mapper.isMultipleInstancesEnabled()) {
+
+      // Unlock
+      this.lock.unlock();
     } else {
-      this.process = this.mapper.mapSE(null);
+
+      context.setStatus(
+          "Wait free JVM for running " + this.mapper.getMapperName());
+
+      // Wait free JVM
+      waitFreeJVM(context);
     }
 
-    // Unlock if mapper index had just been uncompressed
-    if (indexMustBeUncompressed) {
-      this.lock.unlock();
+    if (pairedEnd) {
+      this.process = this.mapper.mapPE();
+    } else {
+      this.process = this.mapper.mapSE();
     }
+
+    this.writeHeaders = context.getTaskAttemptID().getTaskID().getId() == 0;
+    this.samResultsParserThread = startParseSAMResultsThread(this.process);
+
+    context.setStatus("Run " + this.mapper.getMapperName());
 
     getLogger().info("End of setup()");
   }
 
   @Override
-  protected void cleanup(final Context context) throws IOException,
-      InterruptedException {
+  protected void cleanup(final Context context)
+      throws IOException, InterruptedException {
 
     getLogger().info("Start of cleanup() of the mapper.");
 
-    context.setStatus("Wait free JVM for running "
-        + this.mapper.getMapperName());
-    final long waitStartTime = System.currentTimeMillis();
+    // Close the writers
+    this.process.closeEntriesWriter();
 
-    ProcessUtils.waitRandom(5000);
-    this.lock.lock();
+    // Wait the end of the SAM parsing
+    this.samResultsParserThread.join();
 
-    try {
-      ProcessUtils.waitUntilExecutableRunning(this.mapper.getMapperName()
-          .toLowerCase());
+    this.process.waitFor();
+    this.mapper.throwMappingException();
 
-      getLogger().info(
-          "Wait "
-              + StringUtils.toTimeHumanReadable(System.currentTimeMillis()
-                  - waitStartTime) + " before running "
-              + this.mapper.getMapperName());
-
-      // Close the data file
-      this.process.closeEntriesWriter();
-
-      context.setStatus("Run " + this.mapper.getMapperName());
-
-      // Process to mapping
-      parseSAMResults(this.process.getStout(), context);
-      this.process.waitFor();
-
-    } catch (IOException e) {
-
-      getLogger().severe(
-          "Error while running "
-              + this.mapper.getMapperName() + ": " + e.getMessage());
-      throw e;
-
-    } finally {
+    // Unlock if no multiple instances enabled
+    if (!this.mapper.isMultipleInstancesEnabled()) {
       this.lock.unlock();
     }
+
+    // Write headers
+    writeResults(context, this.writeHeaders);
+
+    getLogger().info(this.entriesParsed
+        + " entries parsed in " + this.mapper.getMapperName() + " output file");
 
     // Clear old mapper indexes
     removeUnusedMapperIndexes(context.getConfiguration());
@@ -341,41 +354,84 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     getLogger().info("End of close() of the mapper.");
   }
 
+  //
+  // Other mapping methods
+  //
+
   /**
-   * Parse mapper output.
-   * @param in mapper result input stream
-   * @param context Hadoop context
-   * @throws IOException if an error occurs while parsing the mapper output
-   * @throws InterruptedException if an error occurs while parsing the mapper
-   *           output
+   * Wait a free JVM.
+   * @param context the Hadoop context
    */
-  private final void parseSAMResults(final InputStream in, final Context context)
-      throws IOException, InterruptedException {
+  private void waitFreeJVM(final Context context) {
 
-    String line;
+    final long waitStartTime = System.currentTimeMillis();
 
-    final Text outKey = new Text();
-    final Text outValue = new Text();
+    ProcessUtils
+        .waitUntilExecutableRunning(this.mapper.getMapperName().toLowerCase());
 
-    // Parse SAM result file
-    final BufferedReader readerResults = FileUtils.createBufferedReader(in);
+    getLogger().info("Wait "
+        + StringUtils
+            .toTimeHumanReadable(System.currentTimeMillis() - waitStartTime)
+        + " before running " + this.mapper.getMapperName());
 
-    final int taskId = context.getTaskAttemptID().getTaskID().getId();
+    context.setStatus("Run " + this.mapper.getMapperName());
+  }
 
-    int entriesParsed = 0;
+  /**
+   * Start SAM parser result thread.
+   * @param mp the mapper process
+   * @return the created thread
+   */
+  private Thread startParseSAMResultsThread(final MapperProcess mp) {
 
-    while ((line = readerResults.readLine()) != null) {
+    final Thread t = new Thread(new Runnable() {
 
-      final String trimmedLine = line.trim();
-      if (trimmedLine.length() == 0) {
+      @Override
+      public void run() {
+
+        // Parse SAM result file
+
+        String line;
+        try (BufferedReader readerResults =
+            new BufferedReader(new InputStreamReader(mp.getStout()))) {
+          while ((line = readerResults.readLine()) != null) {
+
+            queue.add(line);
+          }
+        } catch (IOException e) {
+          exception.exception = e;
+        }
+      }
+    });
+
+    t.start();
+
+    return t;
+  }
+
+  /**
+   * Write results.
+   * @param context the Hadoop context
+   * @param writeHeader true if SAM header must be written
+   * @throws InterruptedException if an error occurs while writing data
+   * @throws IOException if an error occurs while writing data
+   */
+  private void writeResults(final Context context, boolean writeHeader)
+      throws InterruptedException, IOException {
+
+    while (!this.queue.isEmpty()) {
+
+      final String line = this.queue.take().trim();
+
+      if (line.length() == 0) {
         continue;
       }
 
       // Test if line is an header line
-      final boolean headerLine = trimmedLine.charAt(0) == '@';
+      final boolean headerLine = line.charAt(0) == '@';
 
       // Only write header lines once (on the first output file)
-      if (headerLine && taskId > 0) {
+      if (headerLine && !writeHeader) {
         continue;
       }
 
@@ -390,33 +446,33 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
         }
 
         // Increment counters if not header
-        entriesParsed++;
+        this.entriesParsed++;
         context.getCounter(this.counterGroup,
             OUTPUT_MAPPING_ALIGNMENTS_COUNTER.counterName()).increment(1);
 
       } else {
 
         // Set empty key for headers
-        outKey.set("");
+        this.outKey.set("");
       }
 
       // Set the output value
-      outValue.set(line);
+      this.outValue.set(line);
 
       // Write the result
-      context.write(outKey, outValue);
+      context.write(this.outKey, this.outValue);
+
     }
 
-    readerResults.close();
+    // Throw reader exception if exists
+    if (this.exception.exception != null) {
+      throw this.exception.exception;
+    }
 
-    getLogger().info(
-        entriesParsed
-            + " entries parsed in " + this.mapper.getMapperName()
-            + " output file");
   }
 
   //
-  // Old mapper indexes cleanup methods
+  // Old mappers indexes cleanup methods
   //
 
   /**
@@ -425,9 +481,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
    */
   private void updateLastUsedMapperIndex(final File mapperIndexDir) {
 
-    final File lockFile =
-        new File(mapperIndexDir.getParentFile(), mapperIndexDir.getName()
-            + LOCK_SUFFIX);
+    final File lockFile = new File(mapperIndexDir.getParentFile(),
+        mapperIndexDir.getName() + LOCK_SUFFIX);
 
     try (FileOutputStream out = new FileOutputStream(lockFile)) {
 
@@ -503,9 +558,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
   private void removeUnusedMapperIndex(final File mapperIndexDir,
       final Configuration conf) {
 
-    final File lockFile =
-        new File(mapperIndexDir.getParentFile(), mapperIndexDir.getName()
-            + LOCK_SUFFIX);
+    final File lockFile = new File(mapperIndexDir.getParentFile(),
+        mapperIndexDir.getName() + LOCK_SUFFIX);
 
     try (FileOutputStream out = new FileOutputStream(lockFile)) {
 
@@ -515,8 +569,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
       // Second check with lock on the mapper index directory
       if (isMapperIndexMustBeRemoved(mapperIndexDir)) {
 
-        getLogger().info(
-            "Remove  unused mapper index directory: " + mapperIndexDir);
+        getLogger()
+            .info("Remove  unused mapper index directory: " + mapperIndexDir);
 
         // Remove the mapper index
         // TODO use Datafile.delete(true)
@@ -528,9 +582,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
       // Unlock the mapper directory
       lock.release();
     } catch (IOException e) {
-      getLogger().warning(
-          "Cannot remove unused mapper index directory ("
-              + mapperIndexDir + "): " + e.getMessage());
+      getLogger().warning("Cannot remove unused mapper index directory ("
+          + mapperIndexDir + "): " + e.getMessage());
     }
   }
 

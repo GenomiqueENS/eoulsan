@@ -53,15 +53,15 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
 public class FinalExpressionTranscriptsCreator {
 
   /* Default Charset. */
-  private static final Charset CHARSET = Charset
-      .forName(Globals.DEFAULT_FILE_ENCODING);
+  private static final Charset CHARSET =
+      Charset.forName(Globals.DEFAULT_FILE_ENCODING);
 
   private TranscriptAndExonFinder tef = new TranscriptAndExonFinder();
   private final Map<String, ExpressionTranscript> expressionResults =
       new HashMap<>();
 
-  private static final class ExpressionTranscript implements
-      Comparable<ExpressionTranscript> {
+  private static final class ExpressionTranscript
+      implements Comparable<ExpressionTranscript> {
 
     private final Transcript transcript;
     private int baseNotCovered;
@@ -182,7 +182,7 @@ public class FinalExpressionTranscriptsCreator {
   /**
    * Load pre result file
    * @param preResultFile pre-result file
-   * @param readsUsed the number of read useds
+   * @param readsUsed the number of read used
    * @throws IOException if an error occurs while reading data
    */
   public void loadPreResults(final File preResultFile, final long readsUsed)
@@ -212,11 +212,11 @@ public class FinalExpressionTranscriptsCreator {
 
       final String id = tab[0];
       final int baseNotCovered = Integer.parseInt(tab[1]);
-      final int alignementCount = Integer.parseInt(tab[2]);
+      final int alignmentCount = Integer.parseInt(tab[2]);
 
       if (this.expressionResults.containsKey(id)) {
         this.expressionResults.get(id).setExpressionResult(baseNotCovered,
-            alignementCount, readsUsed);
+            alignmentCount, readsUsed);
       }
     }
 
@@ -247,7 +247,8 @@ public class FinalExpressionTranscriptsCreator {
 
     final OutputStreamWriter osw = new OutputStreamWriter(os, CHARSET);
 
-    osw.write("Id\tType\tChromosome\tStart\tEnd\tStrand\tLength\tFullCovered\tBasesNotCovered\tRatio\tCount\n");
+    osw.write(
+        "Id\tType\tChromosome\tStart\tEnd\tStrand\tLength\tFullCovered\tBasesNotCovered\tRatio\tCount\n");
     for (ExpressionTranscript et : list) {
       osw.write(et.toString() + "\n");
     }

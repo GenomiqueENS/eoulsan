@@ -60,9 +60,8 @@ public class LocalUploadStep extends UploadStep {
         || file.getName().endsWith(".txt")) {
       filename = file.getName();
     } else {
-      filename =
-          CompressionType.removeCompressionExtension(file.getName())
-              + CompressionType.BZIP2.getExtension();
+      filename = CompressionType.removeCompressionExtension(file.getName())
+          + CompressionType.BZIP2.getExtension();
     }
 
     return new DataFile(getDest(), filename);
@@ -84,9 +83,8 @@ public class LocalUploadStep extends UploadStep {
       filename = file.getName();
     } else {
 
-      filename =
-          WorkflowStepOutputDataFile.newStandardFilename(step, portName,
-              format, sample, fileIndex, CompressionType.NONE);
+      filename = WorkflowStepOutputDataFile.newStandardFilename(step, portName,
+          format, sample, fileIndex, CompressionType.NONE);
     }
 
     // Don't compress ZIP files
@@ -94,8 +92,8 @@ public class LocalUploadStep extends UploadStep {
       return new DataFile(getDest(), filename);
     }
 
-    return new DataFile(getDest(), removeCompressionExtension(filename)
-        + BZIP2.getExtension());
+    return new DataFile(getDest(),
+        removeCompressionExtension(filename) + BZIP2.getExtension());
   }
 
   @Override

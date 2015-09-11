@@ -180,7 +180,7 @@ public class UniqueIdentifierTranslator extends BasicTranslator {
     String[] tFields = this.translator.getFields();
 
     if (tFields == null) {
-      this.fields = new String[] {this.newFieldName};
+      this.fields = new String[] { this.newFieldName };
     } else {
 
       this.fields = new String[tFields.length + 1];
@@ -215,7 +215,7 @@ public class UniqueIdentifierTranslator extends BasicTranslator {
       @Override
       public String[] getFields() {
 
-        return new String[] {UniqueIdentifierTranslator.this.newFieldName};
+        return new String[] { UniqueIdentifierTranslator.this.newFieldName };
       }
 
       @Override

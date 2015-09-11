@@ -320,9 +320,8 @@ public class DataFile implements Comparable<DataFile>, Serializable {
     final InputStream is = rawOpen();
     final DataFileMetadata md = getMetaData();
 
-    final CompressionType ct =
-        CompressionType.getCompressionTypeByContentEncoding(md
-            .getContentEncoding());
+    final CompressionType ct = CompressionType
+        .getCompressionTypeByContentEncoding(md.getContentEncoding());
 
     if (ct == null) {
       return is;
@@ -367,7 +366,7 @@ public class DataFile implements Comparable<DataFile>, Serializable {
 
   /**
    * Check if this DataFile exists.
-   * @param followinLink follow the link target if the file is a symbolic link
+   * @param followLink follow the link target if the file is a symbolic link
    * @return true if this DataFile exists
    */
   public boolean exists(final boolean followLink) {
@@ -439,9 +438,8 @@ public class DataFile implements Comparable<DataFile>, Serializable {
 
     if (relativize) {
 
-      final DataFile newTarget =
-          new DataFile(relativize(link.getParent(), this.getParent()),
-              this.getName());
+      final DataFile newTarget = new DataFile(
+          relativize(link.getParent(), this.getParent()), this.getName());
 
       getProtocol().symlink(newTarget, link);
 
@@ -456,12 +454,22 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    */
   public void delete() throws IOException {
 
+    delete(false);
+  }
+
+  /**
+   * Delete the DataFile.
+   * @param recursive recursive deletion
+   * @throws IOException if an error occurs while deleting the DataFile
+   */
+  public void delete(final boolean recursive) throws IOException {
+
     if (!getProtocol().canDelete()) {
       throw new IOException(
           "The underlying protocol does not allow deleting files");
     }
 
-    getProtocol().delete(this);
+    getProtocol().delete(this, recursive);
   }
 
   /**
@@ -477,6 +485,21 @@ public class DataFile implements Comparable<DataFile>, Serializable {
     }
 
     return getProtocol().list(this);
+  }
+
+  /**
+   * Rename the DataFile.
+   * @param dest destination DataFile
+   * @throws IOException if an error occurs while renaming the DataFile
+   */
+  public void renameTo(final DataFile dest) throws IOException {
+
+    if (!getProtocol().canRename()) {
+      throw new IOException(
+          "The underlying protocol does not allow to rename files");
+    }
+
+    getProtocol().rename(this, dest);
   }
 
   //
@@ -536,10 +559,9 @@ public class DataFile implements Comparable<DataFile>, Serializable {
     }
 
     if (this.protocol == null) {
-      getLogger().severe(
-          "Unknown protocol: \""
-              + this.protocolPrefixInSource
-              + "\", can't set protocol for DataFile.");
+      getLogger().severe("Unknown protocol: \""
+          + this.protocolPrefixInSource
+          + "\", can't set protocol for DataFile.");
       this.unknownProtocolName = this.protocolPrefixInSource;
     }
 
@@ -562,7 +584,8 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    * @param f2 second path
    * @return the relative path
    */
-  private static final DataFile relativize(final DataFile f1, final DataFile f2) {
+  private static final DataFile relativize(final DataFile f1,
+      final DataFile f2) {
 
     final URI uri1 = f1.toUri();
     final URI uri2 = f2.toUri();
@@ -627,8 +650,8 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    * @param in the object input stream
    * @throws IOException if an error occurs while deserializing the object
    */
-  private void readObject(final ObjectInputStream in) throws IOException,
-      ClassNotFoundException {
+  private void readObject(final ObjectInputStream in)
+      throws IOException, ClassNotFoundException {
 
     final String source = (String) in.readObject();
 

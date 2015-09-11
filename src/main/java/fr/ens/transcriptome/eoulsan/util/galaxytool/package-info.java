@@ -23,7 +23,8 @@
  */
 
 /**
- * This package contain classes to parsing and extract data from XML file from galaxy.
+ * This package contain classes to parsing and extract data from XML file from
+ * galaxy.
  * @since 2.0
  */
 package fr.ens.transcriptome.eoulsan.util.galaxytool;

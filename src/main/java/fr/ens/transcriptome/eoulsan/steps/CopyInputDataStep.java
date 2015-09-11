@@ -41,7 +41,7 @@ import com.google.common.base.Splitter;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.annotations.HadoopInternal;
 import fr.ens.transcriptome.eoulsan.annotations.NoLog;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
@@ -70,7 +70,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @author Laurent Jourdren
  * @since 2.0
  */
-@HadoopCompatible
+@HadoopInternal
 @ReuseStepInstance
 @NoLog
 public class CopyInputDataStep extends AbstractStep {
@@ -122,9 +122,8 @@ public class CopyInputDataStep extends AbstractStep {
       switch (p.getName()) {
 
       case FORMAT_PARAMETER:
-        this.format =
-            DataFormatRegistry.getInstance()
-                .getDataFormatFromName(p.getValue());
+        this.format = DataFormatRegistry.getInstance()
+            .getDataFormatFromName(p.getValue());
         break;
 
       case OUTPUT_COMPRESSION_PARAMETER:
@@ -141,8 +140,8 @@ public class CopyInputDataStep extends AbstractStep {
         break;
 
       default:
-        throw new EoulsanException("Unknown parameter for step "
-            + getName() + ": " + p.getName());
+        throw new EoulsanException(
+            "Unknown parameter for step " + getName() + ": " + p.getName());
       }
 
     }
@@ -158,7 +157,8 @@ public class CopyInputDataStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     try {
 
@@ -242,9 +242,8 @@ public class CopyInputDataStep extends AbstractStep {
       //
 
       // Copy the file
-      final DataFile outputFile =
-          copyFile(inData.getDataFile(), -1, outData.getName(),
-              outData.getPart(), context);
+      final DataFile outputFile = copyFile(inData.getDataFile(), -1,
+          outData.getName(), outData.getPart(), context);
 
       // Set the file in the data object
       DataUtils.setDataFile(outData, outputFile);
@@ -263,9 +262,8 @@ public class CopyInputDataStep extends AbstractStep {
       for (int i = 0; i < count; i++) {
 
         // Copy the file
-        final DataFile outputFile =
-            copyFile(inData.getDataFile(i), i, outData.getName(),
-                outData.getPart(), context);
+        final DataFile outputFile = copyFile(inData.getDataFile(i), i,
+            outData.getName(), outData.getPart(), context);
 
         dataFiles.add(outputFile);
       }
@@ -285,8 +283,8 @@ public class CopyInputDataStep extends AbstractStep {
    * @return the output file
    * @throws IOException if an error occurs while copying the data
    */
-  private final DataFile copyFile(final DataFile inputFile,
-      final int fileIndex, final String outDataName, final int outDataPart,
+  private final DataFile copyFile(final DataFile inputFile, final int fileIndex,
+      final String outDataName, final int outDataPart,
       final StepContext context) throws IOException {
 
     final String stepId = context.getCurrentStep().getId();

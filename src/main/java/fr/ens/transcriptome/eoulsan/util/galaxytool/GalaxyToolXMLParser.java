@@ -23,7 +23,7 @@
  */
 package fr.ens.transcriptome.eoulsan.util.galaxytool;
 
-import static fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.AbstractToolElement.getInstanceToolElement;
+import static fr.ens.transcriptome.eoulsan.galaxytools.elements.AbstractToolElement.getInstanceToolElement;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,8 +39,8 @@ import com.google.common.collect.Lists;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.ToolConditionalElement;
-import fr.ens.transcriptome.eoulsan.steps.galaxytool.elements.ToolElement;
+import fr.ens.transcriptome.eoulsan.galaxytools.elements.ToolConditionalElement;
+import fr.ens.transcriptome.eoulsan.galaxytools.elements.ToolElement;
 import fr.ens.transcriptome.eoulsan.util.XMLUtils;
 
 /**
@@ -68,6 +68,9 @@ public final class GalaxyToolXMLParser {
 
   /** The Constant INTERPRETER_TAG. */
   private static final String INTERPRETER_TAG = "interpreter";
+
+  /** The Constant DOCKER_IMAGE_TAG. */
+  private static final String DOCKER_IMAGE_TAG = "dockerimage";
 
   /** The Constant COMMAND_TAG. */
   private static final String COMMAND_TAG = "command";
@@ -144,7 +147,7 @@ public final class GalaxyToolXMLParser {
    */
   public static Map<String, ToolElement> extractConditionalParamElement(
       final Element parent, final Map<String, Parameter> stepParameters)
-      throws EoulsanException {
+          throws EoulsanException {
 
     final Map<String, ToolElement> results = new HashMap<>();
 
@@ -195,13 +198,13 @@ public final class GalaxyToolXMLParser {
     // Expected count available
     if (expectedCount > 0) {
       if (result.isEmpty()) {
-        throw new EoulsanException("Parsing tool XML file: no "
-            + tagName + " tag found.");
+        throw new EoulsanException(
+            "Parsing tool XML file: no " + tagName + " tag found.");
       }
 
       if (result.size() != expectedCount) {
         throw new EoulsanException("Parsing tool XML file: tag "
-            + tagName + " invalid entry coutn found (expected " + expectedCount
+            + tagName + " invalid entry count found (expected " + expectedCount
             + " founded " + result.size() + ".");
       }
     }
@@ -242,13 +245,13 @@ public final class GalaxyToolXMLParser {
     // Expected count available
     if (expectedCount > 0) {
       if (result.isEmpty()) {
-        throw new EoulsanException("Parsing tool XML file: no "
-            + tagName + " tag found.");
+        throw new EoulsanException(
+            "Parsing tool XML file: no " + tagName + " tag found.");
       }
 
       if (result.size() != expectedCount) {
         throw new EoulsanException("Parsing tool XML file: tag "
-            + tagName + " invalid entry coutn found (expected " + expectedCount
+            + tagName + " invalid entry count found (expected " + expectedCount
             + " founded " + result.size() + ".");
       }
     }
@@ -366,6 +369,15 @@ public final class GalaxyToolXMLParser {
    */
   public static String extractInterpreter(final Document doc) {
     return extractValueFromElement(doc, COMMAND_TAG, 0, INTERPRETER_TAG);
+  }
+
+  /**
+   * Extract docker image attribute in string.
+   * @param doc document represented tool xml
+   * @return the docker image name
+   */
+  public static String extractDockerImage(final Document doc) {
+    return extractValueFromElement(doc, COMMAND_TAG, 0, DOCKER_IMAGE_TAG);
   }
 
   /**

@@ -46,8 +46,8 @@ import fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAMHeaderHadoopUtils;
  * @since 1.2
  * @author Claire Wallon
  */
-public class PreTreatmentExpressionMapper extends
-    Mapper<LongWritable, Text, Text, Text> {
+public class PreTreatmentExpressionMapper
+    extends Mapper<LongWritable, Text, Text, Text> {
 
   private String counterGroup;
 
@@ -63,8 +63,8 @@ public class PreTreatmentExpressionMapper extends
   //
 
   @Override
-  protected void setup(final Context context) throws IOException,
-      InterruptedException {
+  protected void setup(final Context context)
+      throws IOException, InterruptedException {
 
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
@@ -84,7 +84,8 @@ public class PreTreatmentExpressionMapper extends
     }
 
     // SAM header writer
-    this.samHeaderWriter = new SAMHeaderHadoopUtils.SAMHeaderWriter(context.getTaskAttemptID().toString());
+    this.samHeaderWriter = new SAMHeaderHadoopUtils.SAMHeaderWriter(
+        context.getTaskAttemptID().toString());
 
     getLogger().info("End of setup()");
   }
@@ -147,8 +148,9 @@ public class PreTreatmentExpressionMapper extends
   }
 
   @Override
-  protected void cleanup(final Context context) throws IOException,
-      InterruptedException {
+
+  protected void cleanup(final Context context)
+      throws IOException, InterruptedException {
 
     this.samHeaderWriter.close(context);
   }

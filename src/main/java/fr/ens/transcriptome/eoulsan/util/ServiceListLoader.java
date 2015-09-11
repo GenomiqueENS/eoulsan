@@ -86,7 +86,7 @@ public class ServiceListLoader {
     }
 
     /**
-     * Private consctructor.
+     * Private constructor.
      * @param url URL
      * @param lineNumber line number
      * @param value value
@@ -219,7 +219,8 @@ public class ServiceListLoader {
    * @param serviceName name of the service
    * @param loader class loader to use to load resource files
    */
-  private ServiceListLoader(final String serviceName, final ClassLoader loader) {
+  private ServiceListLoader(final String serviceName,
+      final ClassLoader loader) {
 
     if (serviceName == null) {
       throw new NullPointerException("The service name is null");

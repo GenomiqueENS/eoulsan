@@ -71,7 +71,8 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
 public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Create the reporter
     final Reporter reporter = new LocalReporter();
@@ -81,9 +82,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
       // Get the read filter
       final MultiReadAlignmentsFilter filter =
           getAlignmentsFilter(reporter, COUNTER_GROUP);
-      getLogger().info(
-          "Read alignments filters to apply: "
-              + Joiner.on(", ").join(filter.getFilterNames()));
+      getLogger().info("Read alignments filters to apply: "
+          + Joiner.on(", ").join(filter.getFilterNames()));
 
       filterSample(context, reporter, status, filter);
 
@@ -126,8 +126,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
         context.getLocalTempDirectory());
 
     // Set the description of the context
-    status.setDescription("Filter SAM file ("
-        + inData.getName() + ", " + inFile.getName() + ")");
+    status.setDescription(
+        "Filter SAM file (" + inData.getName() + ", " + inFile.getName() + ")");
 
     // Add counters for this sample to log file
     status.setCounters(reporter, COUNTER_GROUP);
@@ -164,8 +164,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
     // Get Writer
     final SAMFileWriter outputSam =
-        new SAMFileWriterFactory().setTempDirectory(tmpDir).makeSAMWriter(
-            inputSam.getFileHeader(), false, outFile.create());
+        new SAMFileWriterFactory().setTempDirectory(tmpDir)
+            .makeSAMWriter(inputSam.getFileHeader(), false, outFile.create());
 
     try {
 
@@ -229,8 +229,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
       reporter.incrCounter(COUNTER_GROUP,
           ALIGNMENTS_WITH_INVALID_SAM_FORMAT.counterName(), counterInvalid / 2);
       reporter.incrCounter(COUNTER_GROUP,
-          ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(), nbInput
-              - nbOutput);
+          ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(),
+          nbInput - nbOutput);
     }
 
     // single-end mode
@@ -242,8 +242,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
       reporter.incrCounter(COUNTER_GROUP,
           ALIGNMENTS_WITH_INVALID_SAM_FORMAT.counterName(), counterInvalid);
       reporter.incrCounter(COUNTER_GROUP,
-          ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(), counterInput
-              - counterOutput);
+          ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(),
+          counterInput - counterOutput);
     }
 
     // Close files

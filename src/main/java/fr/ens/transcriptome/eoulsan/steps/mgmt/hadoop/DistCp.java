@@ -105,50 +105,45 @@ import fr.ens.transcriptome.eoulsan.Globals;
 public class DistCp implements Tool {
 
   /* Default Charset. */
-  private static final Charset CHARSET = Charset
-      .forName(Globals.DEFAULT_FILE_ENCODING);
+  private static final Charset CHARSET =
+      Charset.forName(Globals.DEFAULT_FILE_ENCODING);
 
   private static final String NAME = "distcp";
 
-  private static final String usage =
-      NAME
-          + " [OPTIONS] <srcurl>* <desturl>"
-          + "\n\nOPTIONS:"
-          + "\n-p[rbugp]              Preserve status"
-          + "\n                       r: replication number"
-          + "\n                       b: block size"
-          + "\n                       u: user"
-          + "\n                       g: group"
-          + "\n                       p: permission"
-          + "\n                       -p alone is equivalent to -prbugp"
-          + "\n-i                     Ignore failures"
-          + "\n-log <logdir>          Write logs to <logdir>"
-          + "\n-m <num_maps>          Maximum number of simultaneous copies"
-          + "\n-overwrite             Overwrite destination"
-          + "\n-update                Overwrite if src size different from dst size"
-          + "\n-f <urilist_uri>       Use list at <urilist_uri> as src list"
-          + "\n-filelimit <n>         Limit the total number of files to be <= n"
-          + "\n-sizelimit <n>         Limit the total size to be <= n bytes"
-          + "\n-delete                Delete the files existing in the dst but not in src"
-          + "\n-mapredSslConf <f>     Filename of SSL configuration for mapper task"
-          +
+  private static final String usage = NAME
+      + " [OPTIONS] <srcurl>* <desturl>" + "\n\nOPTIONS:"
+      + "\n-p[rbugp]              Preserve status"
+      + "\n                       r: replication number"
+      + "\n                       b: block size"
+      + "\n                       u: user" + "\n                       g: group"
+      + "\n                       p: permission"
+      + "\n                       -p alone is equivalent to -prbugp"
+      + "\n-i                     Ignore failures"
+      + "\n-log <logdir>          Write logs to <logdir>"
+      + "\n-m <num_maps>          Maximum number of simultaneous copies"
+      + "\n-overwrite             Overwrite destination"
+      + "\n-update                Overwrite if src size different from dst size"
+      + "\n-f <urilist_uri>       Use list at <urilist_uri> as src list"
+      + "\n-filelimit <n>         Limit the total number of files to be <= n"
+      + "\n-sizelimit <n>         Limit the total size to be <= n bytes"
+      + "\n-delete                Delete the files existing in the dst but not in src"
+      + "\n-mapredSslConf <f>     Filename of SSL configuration for mapper task"
+      +
 
-          "\n\nNOTE 1: if -overwrite or -update are set, each source URI is "
-          + "\n      interpreted as an isomorphic update to an existing directory."
-          + "\nFor example:"
-          + "\nhadoop "
-          + NAME
-          + " -p -update \"hdfs://A:8020/user/foo/bar\" "
-          + "\"hdfs://B:8020/user/foo/baz\"\n"
-          + "\n     would update all descendants of 'baz' also in 'bar'; it would "
-          + "\n     *not* update /user/foo/baz/bar" +
+  "\n\nNOTE 1: if -overwrite or -update are set, each source URI is "
+      + "\n      interpreted as an isomorphic update to an existing directory."
+      + "\nFor example:" + "\nhadoop " + NAME
+      + " -p -update \"hdfs://A:8020/user/foo/bar\" "
+      + "\"hdfs://B:8020/user/foo/baz\"\n"
+      + "\n     would update all descendants of 'baz' also in 'bar'; it would "
+      + "\n     *not* update /user/foo/baz/bar" +
 
-          "\n\nNOTE 2: The parameter <n> in -filelimit and -sizelimit can be "
-          + "\n     specified with symbolic representation.  For examples,"
-          + "\n       1230k = 1230 * 1024 = 1259520"
-          + "\n       891g = 891 * 1024^3 = 956703965184" +
+  "\n\nNOTE 2: The parameter <n> in -filelimit and -sizelimit can be "
+      + "\n     specified with symbolic representation.  For examples,"
+      + "\n       1230k = 1230 * 1024 = 1259520"
+      + "\n       891g = 891 * 1024^3 = 956703965184" +
 
-          "\n";
+  "\n";
 
   private static final long BYTES_PER_MAP = 256 * 1024 * 1024;
   private static final int MAX_MAPS_PER_NODE = 20;
@@ -159,12 +154,13 @@ public class DistCp implements Tool {
   }
 
   static enum Options {
-    DELETE("-delete", NAME + ".delete"), FILE_LIMIT("-filelimit", NAME
-        + ".limit.file"), SIZE_LIMIT("-sizelimit", NAME + ".limit.size"),
+    DELETE("-delete", NAME + ".delete"),
+    FILE_LIMIT("-filelimit", NAME + ".limit.file"),
+    SIZE_LIMIT("-sizelimit", NAME + ".limit.size"),
     IGNORE_READ_FAILURES("-i", NAME + ".ignore.read.failures"),
-    PRESERVE_STATUS("-p", NAME + ".preserve.status"), OVERWRITE("-overwrite",
-        NAME + ".overwrite.always"), UPDATE("-update", NAME
-        + ".overwrite.ifnewer");
+    PRESERVE_STATUS("-p", NAME + ".preserve.status"),
+    OVERWRITE("-overwrite", NAME + ".overwrite.always"),
+    UPDATE("-update", NAME + ".overwrite.ifnewer");
 
     final String cmd, propertyname;
 
@@ -214,8 +210,8 @@ public class DistCp implements Tool {
                 + attributes[i].symbol + "' in " + s);
           }
         } else {
-          throw new IllegalArgumentException("'"
-              + c + "' in " + s + " is undefined.");
+          throw new IllegalArgumentException(
+              "'" + c + "' in " + s + " is undefined.");
         }
       }
       return set;
@@ -360,8 +356,8 @@ public class DistCp implements Tool {
   /**
    * FSCopyFilesMapper: The mapper for copying files between FileSystems.
    */
-  static class CopyFilesMapper implements
-      Mapper<LongWritable, FilePair, WritableComparable<?>, Text> {
+  static class CopyFilesMapper
+      implements Mapper<LongWritable, FilePair, WritableComparable<?>, Text> {
     // config
     private int sizeBuf = 128 * 1024;
     private FileSystem destFileSys = null;
@@ -412,15 +408,12 @@ public class DistCp implements Tool {
         return this.destFileSys.create(f, true, this.sizeBuf, reporter);
       }
 
-      FsPermission permission =
-          this.preseved.contains(FileAttribute.PERMISSION) ? srcstat
-              .getPermission() : null;
-      short replication =
-          this.preseved.contains(FileAttribute.REPLICATION) ? srcstat
-              .getReplication() : this.destFileSys.getDefaultReplication();
-      long blockSize =
-          this.preseved.contains(FileAttribute.BLOCK_SIZE) ? srcstat
-              .getBlockSize() : this.destFileSys.getDefaultBlockSize();
+      FsPermission permission = this.preseved.contains(FileAttribute.PERMISSION)
+          ? srcstat.getPermission() : null;
+      short replication = this.preseved.contains(FileAttribute.REPLICATION)
+          ? srcstat.getReplication() : this.destFileSys.getDefaultReplication();
+      long blockSize = this.preseved.contains(FileAttribute.BLOCK_SIZE)
+          ? srcstat.getBlockSize() : this.destFileSys.getDefaultBlockSize();
       return this.destFileSys.create(f, permission, true, this.sizeBuf,
           replication, blockSize, reporter);
     }
@@ -442,7 +435,8 @@ public class DistCp implements Tool {
       if (srcstat.isDir()) {
         if (this.destFileSys.exists(absdst)) {
           if (!this.destFileSys.getFileStatus(absdst).isDir()) {
-            throw new IOException("Failed to mkdirs: " + absdst + " is a file.");
+            throw new IOException(
+                "Failed to mkdirs: " + absdst + " is a file.");
           }
         } else if (!this.destFileSys.mkdirs(absdst)) {
           throw new IOException("Failed to mkdirs " + absdst);
@@ -455,7 +449,8 @@ public class DistCp implements Tool {
       }
 
       if (this.destFileSys.exists(absdst)
-          && !this.overwrite && !needsUpdate(srcstat, this.destFileSys, absdst)) {
+          && !this.overwrite
+          && !needsUpdate(srcstat, this.destFileSys, absdst)) {
         outc.collect(null, new Text("SKIP: " + srcstat.getPath()));
         ++this.skipcount;
         reporter.incrCounter(Counter.SKIP, 1);
@@ -477,13 +472,11 @@ public class DistCp implements Tool {
         for (int cbread; (cbread = in.read(this.buffer)) >= 0;) {
           out.write(this.buffer, 0, cbread);
           cbcopied += cbread;
-          reporter.setStatus(String.format("%.2f ",
-              cbcopied * 100.0 / srcstat.getLen())
-              + absdst
-              + " [ "
-              + StringUtils.humanReadableInt(cbcopied)
-              + " / "
-              + StringUtils.humanReadableInt(srcstat.getLen()) + " ]");
+          reporter.setStatus(
+              String.format("%.2f ", cbcopied * 100.0 / srcstat.getLen())
+                  + absdst + " [ " + StringUtils.humanReadableInt(cbcopied)
+                  + " / " + StringUtils.humanReadableInt(srcstat.getLen())
+                  + " ]");
         }
       } finally {
         checkAndClose(in);
@@ -500,8 +493,8 @@ public class DistCp implements Tool {
           // Copying a single file; use dst path provided by user as destination
           // rather than destination directory, if a file
           Path dstparent = absdst.getParent();
-          if (!(this.destFileSys.exists(dstparent) && this.destFileSys
-              .getFileStatus(dstparent).isDir())) {
+          if (!(this.destFileSys.exists(dstparent)
+              && this.destFileSys.getFileStatus(dstparent).isDir())) {
             absdst = dstparent;
           }
         }
@@ -510,8 +503,8 @@ public class DistCp implements Tool {
           throw new IOException(absdst + " is a directory");
         }
         if (!this.destFileSys.mkdirs(absdst.getParent())) {
-          throw new IOException("Failed to create parent dir: "
-              + absdst.getParent());
+          throw new IOException(
+              "Failed to create parent dir: " + absdst.getParent());
         }
         rename(tmpfile, absdst);
 
@@ -674,9 +667,9 @@ public class DistCp implements Tool {
     } else {
       tmp.add(src);
     }
-    EnumSet<Options> flags =
-        ignoreReadFailures ? EnumSet.of(Options.IGNORE_READ_FAILURES) : EnumSet
-            .noneOf(Options.class);
+    EnumSet<Options> flags = ignoreReadFailures
+        ? EnumSet.of(Options.IGNORE_READ_FAILURES)
+        : EnumSet.noneOf(Options.class);
 
     final Path dst = new Path(destPath);
     copy(conf, new Arguments(tmp, dst, logPath, flags, null, Long.MAX_VALUE,
@@ -767,9 +760,8 @@ public class DistCp implements Tool {
     Path dstdirlist = new Path(jobconf.get(DST_DIR_LIST_LABEL));
     SequenceFile.Reader in = null;
     try {
-      in =
-          new SequenceFile.Reader(dstdirlist.getFileSystem(jobconf),
-              dstdirlist, jobconf);
+      in = new SequenceFile.Reader(dstdirlist.getFileSystem(jobconf),
+          dstdirlist, jobconf);
       Text dsttext = new Text();
       FilePair pair = new FilePair();
       for (; in.next(dsttext, pair);) {
@@ -804,7 +796,8 @@ public class DistCp implements Tool {
      */
     Arguments(final List<Path> srcs, final Path dst, final Path log,
         final EnumSet<Options> flags, final String preservedAttributes,
-        final long filelimit, final long sizelimit, final String mapredSslConf) {
+        final long filelimit, final long sizelimit,
+        final String mapredSslConf) {
       this.srcs = srcs;
       this.dst = dst;
       this.log = log;
@@ -871,8 +864,8 @@ public class DistCp implements Tool {
           try {
             conf.setInt(MAX_MAPS_LABEL, Integer.parseInt(args[idx]));
           } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid argument to -m: "
-                + args[idx]);
+            throw new IllegalArgumentException(
+                "Invalid argument to -m: " + args[idx]);
           }
         } else if ('-' == args[idx].codePointAt(0)) {
           throw new IllegalArgumentException("Invalid switch " + args[idx]);
@@ -884,8 +877,8 @@ public class DistCp implements Tool {
       }
       // mandatory command-line parameters
       if (srcs.isEmpty() || dst == null) {
-        throw new IllegalArgumentException("Missing "
-            + (dst == null ? "dst path" : "src"));
+        throw new IllegalArgumentException(
+            "Missing " + (dst == null ? "dst path" : "src"));
       }
       // incompatible command-line flags
       final boolean isOverwrite = flags.contains(Options.OVERWRITE);
@@ -899,8 +892,8 @@ public class DistCp implements Tool {
             + " must be specified with " + Options.OVERWRITE + " or "
             + Options.UPDATE + ".");
       }
-      return new Arguments(srcs, dst, log, flags, presevedAttributes,
-          filelimit, sizelimit, mapredSslConf);
+      return new Arguments(srcs, dst, log, flags, presevedAttributes, filelimit,
+          sizelimit, mapredSslConf);
     }
 
     /** {@inheritDoc} */
@@ -962,8 +955,8 @@ public class DistCp implements Tool {
       copy(this.conf, Arguments.valueOf(args, this.conf));
 
     } catch (IllegalArgumentException e) {
-      throw new EoulsanException(StringUtils.stringifyException(e)
-          + "\n" + usage);
+      throw new EoulsanException(
+          StringUtils.stringifyException(e) + "\n" + usage);
     } catch (DuplicationException e) {
       throw new EoulsanException(StringUtils.stringifyException(e));
     } catch (RemoteException e) {
@@ -974,8 +967,8 @@ public class DistCp implements Tool {
 
     } catch (Exception e) {
 
-      throw new EoulsanException("Copy failed: "
-          + StringUtils.stringifyException(e));
+      throw new EoulsanException(
+          "Copy failed: " + StringUtils.stringifyException(e));
 
     }
   }
@@ -986,15 +979,15 @@ public class DistCp implements Tool {
    */
   static String makeRelative(final Path root, final Path absPath) {
     if (!absPath.isAbsolute()) {
-      throw new IllegalArgumentException("!absPath.isAbsolute(), absPath="
-          + absPath);
+      throw new IllegalArgumentException(
+          "!absPath.isAbsolute(), absPath=" + absPath);
     }
     String p = absPath.toUri().getPath();
 
     StringTokenizer pathTokens = new StringTokenizer(p, "/");
     for (StringTokenizer rootTokens =
         new StringTokenizer(root.toUri().getPath(), "/"); rootTokens
-        .hasMoreTokens();) {
+            .hasMoreTokens();) {
       if (!rootTokens.nextToken().equals(pathTokens.nextToken())) {
         return null;
       }
@@ -1022,11 +1015,8 @@ public class DistCp implements Tool {
       throws IOException {
     int numMaps =
         (int) (totalBytes / job.getLong(BYTES_PER_MAP_LABEL, BYTES_PER_MAP));
-    numMaps =
-        Math.min(
-            numMaps,
-            job.getInt(MAX_MAPS_LABEL, MAX_MAPS_PER_NODE
-                * new JobClient(job).getClusterStatus().getTaskTrackers()));
+    numMaps = Math.min(numMaps, job.getInt(MAX_MAPS_LABEL, MAX_MAPS_PER_NODE
+        * new JobClient(job).getClusterStatus().getTaskTrackers()));
     job.setNumMapTasks(Math.max(numMaps, 1));
   }
 
@@ -1128,15 +1118,13 @@ public class DistCp implements Tool {
 
     Path srcfilelist = new Path(jobDirectory, "_distcp_src_files");
     jobConf.set(SRC_LIST_LABEL, srcfilelist.toString());
-    SequenceFile.Writer src_writer =
-        SequenceFile.createWriter(jobfs, jobConf, srcfilelist,
-            LongWritable.class, FilePair.class,
-            SequenceFile.CompressionType.NONE);
+    SequenceFile.Writer src_writer = SequenceFile.createWriter(jobfs, jobConf,
+        srcfilelist, LongWritable.class, FilePair.class,
+        SequenceFile.CompressionType.NONE);
 
     Path dstfilelist = new Path(jobDirectory, "_distcp_dst_files");
-    SequenceFile.Writer dst_writer =
-        SequenceFile.createWriter(jobfs, jobConf, dstfilelist, Text.class,
-            Text.class, SequenceFile.CompressionType.NONE);
+    SequenceFile.Writer dst_writer = SequenceFile.createWriter(jobfs, jobConf,
+        dstfilelist, Text.class, Text.class, SequenceFile.CompressionType.NONE);
 
     Path dstdirlist = new Path(jobDirectory, "_distcp_dst_dirs");
     jobConf.set(DST_DIR_LIST_LABEL, dstdirlist.toString());
@@ -1175,13 +1163,11 @@ public class DistCp implements Tool {
               pathstack.push(child);
             } else {
               // skip file if the src and the dst files are the same.
-              skipfile =
-                  update
-                      && sameFile(srcfs, child, dstfs, new Path(args.dst, dst));
+              skipfile = update
+                  && sameFile(srcfs, child, dstfs, new Path(args.dst, dst));
               // skip file if it exceed file limit or size limit
-              skipfile |=
-                  fileCount == args.filelimit
-                      || byteCount + child.getLen() > args.sizelimit;
+              skipfile |= fileCount == args.filelimit
+                  || byteCount + child.getLen() > args.sizelimit;
 
               if (!skipfile) {
                 ++fileCount;
@@ -1208,8 +1194,8 @@ public class DistCp implements Tool {
                   new FilePair(child, dst));
             }
 
-            dst_writer.append(new Text(dst), new Text(child.getPath()
-                .toString()));
+            dst_writer.append(new Text(dst),
+                new Text(child.getPath().toString()));
           }
 
           if (cur.isDir()) {
@@ -1274,7 +1260,7 @@ public class DistCp implements Tool {
    */
   static private boolean sameFile(final FileSystem srcfs,
       final FileStatus srcstatus, final FileSystem dstfs, final Path dstpath)
-      throws IOException {
+          throws IOException {
     FileStatus dststatus;
     try {
       dststatus = dstfs.getFileStatus(dstpath);
@@ -1318,7 +1304,7 @@ public class DistCp implements Tool {
   static private void deleteNonexisting(final FileSystem dstfs,
       final FileStatus dstroot, final Path dstsorted, final FileSystem jobfs,
       final Path jobdir, final JobConf jobconf, final Configuration conf)
-      throws IOException {
+          throws IOException {
     if (!dstroot.isDir()) {
       throw new IOException("dst must be a directory when option "
           + Options.DELETE.cmd + " is set, but dst (= " + dstroot.getPath()
@@ -1349,9 +1335,8 @@ public class DistCp implements Tool {
 
     // sort lsr results
     final Path sortedlsr = new Path(jobdir, "_distcp_dst_lsr_sorted");
-    SequenceFile.Sorter sorter =
-        new SequenceFile.Sorter(jobfs, new Text.Comparator(), Text.class,
-            FileStatus.class, jobconf);
+    SequenceFile.Sorter sorter = new SequenceFile.Sorter(jobfs,
+        new Text.Comparator(), Text.class, FileStatus.class, jobconf);
     sorter.sort(dstlsr, sortedlsr);
 
     // compare lsr list and dst list
@@ -1367,7 +1352,7 @@ public class DistCp implements Tool {
       final Text dstpath = new Text();
       final Text dstfrom = new Text();
       final FsShell shell = new FsShell(conf);
-      final String[] shellargs = {"-rmr", null};
+      final String[] shellargs = { "-rmr", null };
 
       boolean hasnext = dstin.next(dstpath, dstfrom);
       for (; lsrin.next(lsrpath, lsrstatus);) {
@@ -1419,9 +1404,8 @@ public class DistCp implements Tool {
       final Path sorted, final Configuration conf) throws IOException {
     SequenceFile.Reader in = null;
     try {
-      SequenceFile.Sorter sorter =
-          new SequenceFile.Sorter(fs, new Text.Comparator(), Text.class,
-              Text.class, conf);
+      SequenceFile.Sorter sorter = new SequenceFile.Sorter(fs,
+          new Text.Comparator(), Text.class, Text.class, conf);
       sorter.sort(file, sorted);
       in = new SequenceFile.Reader(fs, sorted, conf);
 

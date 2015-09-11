@@ -164,7 +164,8 @@ public final class XMLUtils {
 
     String result = null;
 
-    for (Element e : XMLUtils.getElementsByTagName(parentElement, elementName)) {
+    for (Element e : XMLUtils.getElementsByTagName(parentElement,
+        elementName)) {
       result = e.getTextContent();
     }
 
@@ -186,7 +187,8 @@ public final class XMLUtils {
 
     List<String> result = new ArrayList<>();
 
-    for (Element e : XMLUtils.getElementsByTagName(parentElement, elementName)) {
+    for (Element e : XMLUtils.getElementsByTagName(parentElement,
+        elementName)) {
       result.add(e.getTextContent());
     }
 
@@ -201,7 +203,8 @@ public final class XMLUtils {
    * @param value text of the element
    */
   public static void addTagValue(final Document doc,
-      final Element parentElement, final String elementName, final String value) {
+      final Element parentElement, final String elementName,
+      final String value) {
 
     if (doc == null
         || parentElement == null || elementName == null || value == null) {

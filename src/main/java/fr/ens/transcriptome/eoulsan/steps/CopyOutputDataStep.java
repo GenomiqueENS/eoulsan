@@ -32,7 +32,7 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
+import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
 import fr.ens.transcriptome.eoulsan.annotations.NoLog;
 import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
@@ -57,7 +57,7 @@ import fr.ens.transcriptome.eoulsan.util.Version;
  * @author Laurent Jourdren
  * @since 2.0
  */
-@HadoopCompatible
+@LocalOnly
 @ReuseStepInstance
 @NoLog
 public class CopyOutputDataStep extends AbstractStep {
@@ -120,14 +120,15 @@ public class CopyOutputDataStep extends AbstractStep {
         break;
 
       default:
-        throw new EoulsanException("Unknown parameter for step "
-            + getName() + ": " + p.getName());
+        throw new EoulsanException(
+            "Unknown parameter for step " + getName() + ": " + p.getName());
       }
     }
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     try {
 

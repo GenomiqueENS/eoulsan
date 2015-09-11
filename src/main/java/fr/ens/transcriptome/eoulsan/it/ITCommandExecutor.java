@@ -126,15 +126,13 @@ public class ITCommandExecutor {
     int exitValue = -1;
     final Stopwatch timer = Stopwatch.createStarted();
 
-    final ITCommandResult cmdResult =
-        new ITCommandResult(cmdLine, this.outputTestDirectory, desc,
-            durationMax);
+    final ITCommandResult cmdResult = new ITCommandResult(cmdLine,
+        this.outputTestDirectory, desc, durationMax);
 
     try {
 
-      final Process p =
-          Runtime.getRuntime().exec(cmdLine, this.environmentVariables,
-              this.outputTestDirectory);
+      final Process p = Runtime.getRuntime().exec(cmdLine,
+          this.environmentVariables, this.outputTestDirectory);
 
       // Init monitor and start
       final MonitorThread monitor = new MonitorThread(p, desc, durationMax);
@@ -163,8 +161,8 @@ public class ITCommandExecutor {
         if (monitor.isKilledProcess()) {
 
           cmdResult.asInterruptedProcess();
-          cmdResult.setException(new EoulsanException(
-              "\tKill process.\n\tCommand line: "
+          cmdResult.setException(
+              new EoulsanException("\tKill process.\n\tCommand line: "
                   + cmdLine + "\n\tDirectory: " + this.outputTestDirectory
                   + "\n\tMessage: " + monitor.getMessage()));
 
@@ -183,9 +181,10 @@ public class ITCommandExecutor {
       }
 
     } catch (IOException | InterruptedException e) {
-      cmdResult.setException(e, "\tError before execution.\n\tCommand line: "
-          + cmdLine + "\n\tDirectory: " + this.outputTestDirectory
-          + "\n\tMessage: " + e.getMessage());
+      cmdResult.setException(e,
+          "\tError before execution.\n\tCommand line: "
+              + cmdLine + "\n\tDirectory: " + this.outputTestDirectory
+              + "\n\tMessage: " + e.getMessage());
 
     } finally {
       cmdResult.setDuration(timer.elapsed(TimeUnit.MILLISECONDS));
@@ -201,8 +200,8 @@ public class ITCommandExecutor {
    * @return file
    */
   private File createSdtoutFile(final String suffixName) {
-    return new File(this.outputTestDirectory, STDOUT_FILENAME
-        + (suffixName.isEmpty() ? "" : "_" + suffixName));
+    return new File(this.outputTestDirectory,
+        STDOUT_FILENAME + (suffixName.isEmpty() ? "" : "_" + suffixName));
   }
 
   /**
@@ -211,8 +210,8 @@ public class ITCommandExecutor {
    * @return file
    */
   private File createSdterrFile(final String suffixName) {
-    return new File(this.outputTestDirectory, STDERR_FILENAME
-        + (suffixName.isEmpty() ? "" : "_" + suffixName));
+    return new File(this.outputTestDirectory,
+        STDERR_FILENAME + (suffixName.isEmpty() ? "" : "_" + suffixName));
   }
 
   //
@@ -278,7 +277,8 @@ public class ITCommandExecutor {
      * @param file the file
      * @param desc the desc
      */
-    CopyProcessOutput(final InputStream in, final File file, final String desc) {
+    CopyProcessOutput(final InputStream in, final File file,
+        final String desc) {
 
       checkNotNull(in, "in argument cannot be null");
       checkNotNull(file, "file argument cannot be null");
@@ -312,7 +312,7 @@ public class ITCommandExecutor {
     /** Duration max in minutes. */
     private final int durationMaxInMinutes;
 
-    /** Descripion on script. */
+    /** Description on script. */
     private final String desc;
 
     /** Process is killed . */
@@ -356,7 +356,7 @@ public class ITCommandExecutor {
       // // Retrieve PID on children process (corresponding to java runtime pid
       // // for Eoulsan) DON'T WORK
       // final String n =
-      // ProcessUtils.execToString("ps x -o  \"%p %r %y %x %c \" | grep \"^"
+      // ProcessUtils.execToString("ps x -o \"%p %r %y %x %c \" | grep \"^"
       // + this.pid + "\" | cut -f 2 -d ' '");
       //
       // System.out.println("CMD KILL: kill -TERM " + pid + " " + n);
@@ -416,12 +416,12 @@ public class ITCommandExecutor {
      */
     public String getMessage() {
       return "script process on "
-          + this.desc
-          + " with pid "
-          + pid
-          + " has been killed "
-          + (killByCmd ? "by command kill -TERM" : (killByMethodDestroy
-              ? "by method process.destroy" : "other mean")) + " after "
+          + this.desc + " with pid " + pid + " has been killed "
+          + (killByCmd
+              ? "by command kill -TERM"
+              : (killByMethodDestroy
+                  ? "by method process.destroy" : "other mean"))
+          + " after "
           + toTimeHumanReadable(this.durationMaxInMinutes * 60 * 1000);
     }
 

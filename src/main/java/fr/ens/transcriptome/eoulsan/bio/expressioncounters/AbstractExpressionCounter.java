@@ -45,7 +45,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
 
   private String genomicType;
   private String attributeId;
-  private boolean splitAttritubeValues;
+  private boolean splitAttributeValues;
   private StrandUsage stranded;
   private OverlapMode overlapMode;
   private boolean noAmbiguousCases;
@@ -89,7 +89,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
 
   @Override
   public boolean isSplitAttributeValues() {
-    return this.splitAttritubeValues;
+    return this.splitAttributeValues;
   }
 
   //
@@ -117,9 +117,9 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   }
 
   @Override
-  public void setRemoveAmbiguousCases(final boolean noAmbigousCases) {
+  public void setRemoveAmbiguousCases(final boolean removeAmbiguousCases) {
 
-    this.noAmbiguousCases = noAmbigousCases;
+    this.noAmbiguousCases = removeAmbiguousCases;
   }
 
   @Override
@@ -143,7 +143,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   @Override
   public void setSplitAttributeValues(final boolean splitAttributeValues) {
 
-    this.splitAttritubeValues = splitAttributeValues;
+    this.splitAttributeValues = splitAttributeValues;
   }
 
   //
@@ -153,8 +153,8 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   @Override
   public final void count(final DataFile alignmentFile,
       final DataFile annotationFile, final DataFile expressionFile,
-      final DataFile genomeDescFile) throws IOException, EoulsanException,
-      BadBioEntryException {
+      final DataFile genomeDescFile)
+          throws IOException, EoulsanException, BadBioEntryException {
 
     getLogger().fine("Counting with " + getCounterName());
 
@@ -165,8 +165,8 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
         "alignmentFile not exits or is not a standard file.");
 
     // Process to counting
-    internalCount(alignmentFile, annotationFile, expressionFile,
-        genomeDescFile, this.reporter, this.counterGroup);
+    internalCount(alignmentFile, annotationFile, expressionFile, genomeDescFile,
+        this.reporter, this.counterGroup);
   }
 
   /**
@@ -183,7 +183,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   protected abstract void internalCount(final DataFile alignmentFile,
       final DataFile annotationFile, final DataFile expressionFile,
       final DataFile genomeDescFile, Reporter reporter, String counterGroup)
-      throws IOException, EoulsanException, BadBioEntryException;
+          throws IOException, EoulsanException, BadBioEntryException;
 
   //
   // Init

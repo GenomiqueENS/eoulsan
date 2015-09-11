@@ -51,8 +51,8 @@ public abstract class ServiceNameLoader<S> {
 
   private final Class<S> service;
   private final ClassLoader loader;
-  private final ListMultimap<String, String> classNames = ArrayListMultimap
-      .create();
+  private final ListMultimap<String, String> classNames =
+      ArrayListMultimap.create();
   private final ListMultimap<String, S> cache = ArrayListMultimap.create();
   private final Set<String> classesToNotLoad = new HashSet<>();
   private boolean notYetLoaded = true;
@@ -194,8 +194,8 @@ public abstract class ServiceNameLoader<S> {
       }
 
     } catch (IOException e) {
-      throw new ServiceConfigurationError(this.service.getName()
-          + ": " + e.getMessage());
+      throw new ServiceConfigurationError(
+          this.service.getName() + ": " + e.getMessage());
     }
 
   }
@@ -333,9 +333,8 @@ public abstract class ServiceNameLoader<S> {
       reload();
     }
 
-    final String serviceNameLower =
-        isServiceNameCaseSensible() ? serviceName.trim() : serviceName
-            .toLowerCase().trim();
+    final String serviceNameLower = isServiceNameCaseSensible()
+        ? serviceName.trim() : serviceName.toLowerCase().trim();
 
     // Test if service is already in cache
     if (this.cache.containsKey(serviceNameLower)) {
@@ -431,9 +430,8 @@ public abstract class ServiceNameLoader<S> {
     }
 
     this.service = service;
-    this.loader =
-        loader == null
-            ? Thread.currentThread().getContextClassLoader() : loader;
+    this.loader = loader == null
+        ? Thread.currentThread().getContextClassLoader() : loader;
   }
 
 }

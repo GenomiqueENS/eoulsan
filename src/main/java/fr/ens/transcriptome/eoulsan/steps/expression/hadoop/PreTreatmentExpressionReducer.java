@@ -53,8 +53,8 @@ import htsjdk.samtools.SAMRecord;
  * @since 1.2
  * @author Claire Wallon
  */
-public class PreTreatmentExpressionReducer extends
-    Reducer<Text, Text, Text, Text> {
+public class PreTreatmentExpressionReducer
+    extends Reducer<Text, Text, Text, Text> {
 
   private String counterGroup;
   private final Text outKey = new Text();
@@ -64,8 +64,8 @@ public class PreTreatmentExpressionReducer extends
   private final List<SAMRecord> records = new ArrayList<>();
 
   @Override
-  protected void setup(final Context context) throws IOException,
-      InterruptedException {
+  protected void setup(final Context context)
+      throws IOException, InterruptedException {
 
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
@@ -116,9 +116,8 @@ public class PreTreatmentExpressionReducer extends
       } catch (SAMFormatException e) {
         context.getCounter(this.counterGroup,
             INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
-        getLogger().info(
-            "Invalid SAM output entry: "
-                + e.getMessage() + " line='" + stringRecord + "'");
+        getLogger().info("Invalid SAM output entry: "
+            + e.getMessage() + " line='" + stringRecord + "'");
         return;
       }
 

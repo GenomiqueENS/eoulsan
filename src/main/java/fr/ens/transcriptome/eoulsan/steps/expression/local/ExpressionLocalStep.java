@@ -57,7 +57,8 @@ import fr.ens.transcriptome.eoulsan.util.Reporter;
 public class ExpressionLocalStep extends AbstractExpressionStep {
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     try {
 
@@ -88,24 +89,18 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
       count(context, counter, annotationFile, alignmentFile, expressionFile,
           genomeDescFile, reporter);
 
-      final String htSeqArgsLog =
-          ", "
-              + getAttributeId() + ", stranded: " + getStranded()
-              + ", removeAmbiguousCases: " + isRemoveAmbiguousCases();
+      final String htSeqArgsLog = ", "
+          + getAttributeId() + ", stranded: " + getStranded()
+          + ", removeAmbiguousCases: " + isRemoveAmbiguousCases();
 
-      final String sampleCounterHeader =
-          "Expression computation with "
-              + counter.getCounterName() + " ("
-              + alignmentData.getName()
-              + ", "
-              + alignmentFile.getName()
-              + ", "
-              + annotationFile.getName()
-              + ", "
-              + getGenomicType()
-              // If counter is HTSeq-count add additional parameters to log
-              + (HTSeqCounter.COUNTER_NAME.equals(counter.getCounterName())
-                  ? htSeqArgsLog : "") + ")";
+      final String sampleCounterHeader = "Expression computation with "
+          + counter.getCounterName() + " (" + alignmentData.getName() + ", "
+          + alignmentFile.getName() + ", " + annotationFile.getName() + ", "
+          + getGenomicType()
+          // If counter is HTSeq-count add additional parameters to log
+          + (HTSeqCounter.COUNTER_NAME.equals(counter.getCounterName())
+              ? htSeqArgsLog : "")
+          + ")";
 
       status.setDescription(sampleCounterHeader);
       status.setCounters(reporter, COUNTER_GROUP);
@@ -116,8 +111,8 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
     } catch (FileNotFoundException e) {
       return status.createStepResult(e, "File not found: " + e.getMessage());
     } catch (IOException e) {
-      return status.createStepResult(e, "Error while computing expression: "
-          + e.getMessage());
+      return status.createStepResult(e,
+          "Error while computing expression: " + e.getMessage());
     } catch (EoulsanException e) {
       return status.createStepResult(e,
           "Error while reading the annotation file: " + e.getMessage());
@@ -128,26 +123,25 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
 
   }
 
-  private void count(final StepContext context,
-      final ExpressionCounter counter, final DataFile annotationFile,
-      final DataFile alignmentFile, final DataFile expressionFile,
-      final DataFile genomeDescFile, final Reporter reporter)
-      throws IOException, EoulsanException, BadBioEntryException {
+  private void count(final StepContext context, final ExpressionCounter counter,
+      final DataFile annotationFile, final DataFile alignmentFile,
+      final DataFile expressionFile, final DataFile genomeDescFile,
+      final Reporter reporter)
+          throws IOException, EoulsanException, BadBioEntryException {
 
     // Init expression counter
     counter.init(getGenomicType(), getAttributeId(), reporter, COUNTER_GROUP);
 
     // Set counter arguments
-    initCounterArguments(counter, context.getLocalTempDirectory()
-        .getAbsolutePath());
+    initCounterArguments(counter,
+        context.getLocalTempDirectory().getAbsolutePath());
 
-    getLogger().info(
-        "Expression computation in SAM file: "
-            + alignmentFile + ", use " + counter.getCounterName());
+    getLogger().info("Expression computation in SAM file: "
+        + alignmentFile + ", use " + counter.getCounterName());
 
     // Process to counting
-    counter
-        .count(alignmentFile, annotationFile, expressionFile, genomeDescFile);
+    counter.count(alignmentFile, annotationFile, expressionFile,
+        genomeDescFile);
   }
 
   private void initCounterArguments(final ExpressionCounter counter,

@@ -115,7 +115,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
 
-    final MultiReadAlignmentsFilterBuilder mrafb =
+    final MultiReadAlignmentsFilterBuilder filterBuilder =
         new MultiReadAlignmentsFilterBuilder();
 
     for (Parameter p : stepParameters) {
@@ -131,15 +131,15 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
 
       default:
 
-        mrafb.addParameter(p.getName(), p.getStringValue());
+        filterBuilder.addParameter(p.getName(), p.getStringValue());
         break;
       }
     }
 
     // Force parameter checking
-    mrafb.getAlignmentsFilter();
+    filterBuilder.getAlignmentsFilter();
 
-    this.alignmentsFiltersParameters = mrafb.getParameters();
+    this.alignmentsFiltersParameters = filterBuilder.getParameters();
   }
 
   //
@@ -167,9 +167,8 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
     case "mappingqualitythreshold":
       throw new EoulsanException(stepMessage
           + "the parameter \"" + parameter.getName()
-          + "\" is deprecated, use \""
-          + QualityReadAlignmentsFilter.FILTER_NAME + ".threshold"
-          + "\" parameter " + "instead");
+          + "\" is deprecated, use \"" + QualityReadAlignmentsFilter.FILTER_NAME
+          + ".threshold" + "\" parameter " + "instead");
 
     default:
       break;
@@ -186,14 +185,14 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
    */
   protected MultiReadAlignmentsFilter getAlignmentsFilter(
       final ReporterIncrementer incrementer, final String counterGroup)
-      throws EoulsanException {
+          throws EoulsanException {
 
     // As filters are not thread safe, create a new
     // MultiReadAlignmentsFilterBuilder
     // with a new instance of each filter
     return new MultiReadAlignmentsFilterBuilder(
         this.alignmentsFiltersParameters).getAlignmentsFilter(incrementer,
-        counterGroup);
+            counterGroup);
   }
 
 }

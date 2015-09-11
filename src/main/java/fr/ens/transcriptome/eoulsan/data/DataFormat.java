@@ -43,8 +43,7 @@ public interface DataFormat {
    * @return the name of the format
    */
   String getName();
-  
-  
+
   /**
    * Get the description of the format.
    * @return the name of the format
@@ -101,7 +100,7 @@ public interface DataFormat {
 
   /**
    * Get the extension from Galaxy tool file of the DataType.
-   * @return extension from Galaxy tool 
+   * @return extension from Galaxy tool
    */
   List<String> getGalaxyToolExtensions();
 

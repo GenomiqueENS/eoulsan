@@ -126,9 +126,8 @@ public class SAMSplitter implements Splitter {
         }
 
         // Create new writer
-        writer =
-            new SAMFileWriterFactory().makeSAMWriter(header, false,
-                outFileIterator.next().create());
+        writer = new SAMFileWriterFactory().makeSAMWriter(header, false,
+            outFileIterator.next().create());
       }
 
       writer.addAlignment(record);
@@ -159,8 +158,7 @@ public class SAMSplitter implements Splitter {
     // Get SAM header
     final SAMFileHeader header = reader.getFileHeader();
 
-    final Map<String, SAMFileWriter> writers =
-        new HashMap<String, SAMFileWriter>();
+    final Map<String, SAMFileWriter> writers = new HashMap<>();
 
     for (final SAMRecord record : reader) {
 
@@ -172,9 +170,8 @@ public class SAMSplitter implements Splitter {
       if (!writers.containsKey(chromosome)) {
 
         // Create the writer for the chromosome
-        writer =
-            new SAMFileWriterFactory().makeSAMWriter(header, false,
-                outFileIterator.next().create());
+        writer = new SAMFileWriterFactory().makeSAMWriter(header, false,
+            outFileIterator.next().create());
         writers.put(chromosome, writer);
       } else {
         writer = writers.get(chromosome);

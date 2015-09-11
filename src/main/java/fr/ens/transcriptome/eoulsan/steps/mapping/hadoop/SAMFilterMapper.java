@@ -51,10 +51,8 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
 
   // Parameters keys
-  static final String MAPPING_QUALITY_THRESOLD_KEY = Globals.PARAMETER_PREFIX
-      + ".samfilter.mapping.quality.threshold";
-  static final String GENOME_DESC_PATH_KEY = Globals.PARAMETER_PREFIX
-      + ".samfilter.genome.desc.file";
+  static final String MAPPING_QUALITY_THRESOLD_KEY =
+      Globals.PARAMETER_PREFIX + ".samfilter.mapping.quality.threshold";
 
   private static final Splitter ID_SPLITTER = Splitter.on(':').trimResults();
   private final List<String> idFields = new ArrayList<>();
@@ -66,8 +64,8 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
   private final Text outValue = new Text();
 
   @Override
-  protected void setup(final Context context) throws IOException,
-      InterruptedException {
+  protected void setup(final Context context)
+      throws IOException, InterruptedException {
 
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
@@ -87,7 +85,8 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
     }
 
     // SAM header writer
-    this.samHeaderWriter = new SAMHeaderHadoopUtils.SAMHeaderWriter(context.getTaskAttemptID().toString());
+    this.samHeaderWriter = new SAMHeaderHadoopUtils.SAMHeaderWriter(
+        context.getTaskAttemptID().toString());
 
     getLogger().info("End of setup()");
   }
@@ -108,8 +107,9 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
       return;
     }
 
-    context.getCounter(this.counterGroup,
-        INPUT_ALIGNMENTS_COUNTER.counterName()).increment(1);
+    context
+        .getCounter(this.counterGroup, INPUT_ALIGNMENTS_COUNTER.counterName())
+        .increment(1);
 
     final int indexOfFirstTab = line.indexOf("\t");
     String completeId = line.substring(0, indexOfFirstTab);
@@ -120,7 +120,7 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
       this.idFields.add(e);
     }
 
-    // Read identifiant format : before Casava 1.8 or other technologies that
+    // Read identifier format : before Casava 1.8 or other technologies that
     // Illumina
     if (this.idFields.size() < 7) {
       endReadId = completeId.indexOf('/');
@@ -136,7 +136,7 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
       }
     }
 
-    // Read identifiant format : Illumina - Casava 1.8
+    // Read identifier format : Illumina - Casava 1.8
     else {
       endReadId = completeId.indexOf(' ');
       // mapped read
@@ -155,8 +155,8 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
   }
 
   @Override
-  protected void cleanup(final Context context) throws IOException,
-      InterruptedException {
+  protected void cleanup(final Context context)
+      throws IOException, InterruptedException {
 
     // Write SAM header if there is no SAM entries
     this.samHeaderWriter.close(context);

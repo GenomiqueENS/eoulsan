@@ -31,6 +31,7 @@ import java.util.Queue;
 import com.google.common.collect.Queues;
 
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
+import fr.ens.transcriptome.eoulsan.core.workflow.TaskResult;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 
 /**
@@ -38,19 +39,20 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class MonoThreadTaskScheduler extends AbstractTaskScheduler implements
-    Runnable {
+public class MonoThreadTaskScheduler extends AbstractTaskScheduler
+    implements Runnable {
 
   private static final int SLEEP_TIME_IN_MS = 100;
   private final Queue<TaskContext> queue = Queues.newLinkedBlockingQueue();
 
   //
-  // TaskExcutor methods
+  // TaskExecutor methods
   //
 
   @Override
   public void submit(final WorkflowStep step, final TaskContext context) {
 
+    // Call to the super method
     super.submit(step, context);
 
     this.queue.add(context);
@@ -59,7 +61,9 @@ public class MonoThreadTaskScheduler extends AbstractTaskScheduler implements
   @Override
   public void start() {
 
+    // Call to the super method
     super.start();
+
     new Thread(this, "TaskScheduler_mono_thread").start();
   }
 
@@ -78,9 +82,29 @@ public class MonoThreadTaskScheduler extends AbstractTaskScheduler implements
         // Get context to execute
         final TaskContext context = this.queue.remove();
 
-        // Execute the context
+        // Do nothing if scheduler is stopped
+        if (isStopped()) {
+          return;
+        }
+
+        // Set task in running state
         beforeExecuteTask(context);
-        afterExecuteTask(context, executeTask(context));
+
+        // Do nothing if scheduler is stopped
+        if (isStopped()) {
+          return;
+        }
+
+        // Execute the context
+        final TaskResult result = executeTask(context);
+
+        // Do nothing if scheduler is stopped
+        if (isStopped()) {
+          return;
+        }
+
+        // Set task in done state
+        afterExecuteTask(context, result);
       }
 
       // Wait

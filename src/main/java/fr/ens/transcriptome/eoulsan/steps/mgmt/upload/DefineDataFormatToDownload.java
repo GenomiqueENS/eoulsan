@@ -87,8 +87,8 @@ public class DefineDataFormatToDownload extends AbstractStep {
       if ("formats".equals(p.getName())) {
         formatNames = p.getStringValue();
       } else {
-        throw new EoulsanException("Unknown parameter for "
-            + getName() + " step: " + p.getName());
+        throw new EoulsanException(
+            "Unknown parameter for " + getName() + " step: " + p.getName());
       }
     }
 
@@ -98,7 +98,7 @@ public class DefineDataFormatToDownload extends AbstractStep {
 
     final String[] fields = formatNames.split(",");
     final Set<DataFormat> formats = new HashSet<>();
-    final DataFormatRegistry registery = DataFormatRegistry.getInstance();
+    final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
     for (String format : fields) {
 
@@ -106,7 +106,7 @@ public class DefineDataFormatToDownload extends AbstractStep {
         continue;
       }
 
-      final DataFormat df = registery.getDataFormatFromName(format.trim());
+      final DataFormat df = registry.getDataFormatFromName(format.trim());
       if (df == null) {
         throw new EoulsanException("Format not found : " + format.trim());
       }
@@ -118,7 +118,8 @@ public class DefineDataFormatToDownload extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     final StringBuilder sb = new StringBuilder();
     boolean first = true;
@@ -143,7 +144,7 @@ public class DefineDataFormatToDownload extends AbstractStep {
 
     settings.setSetting(DATAFORMATS_TO_DOWNLOAD_SETTING, formats, false);
 
-    status.setMessage("Formats to download: " + formats);
+    status.setProgressMessage("Formats to download: " + formats);
     return status.createStepResult();
   }
 

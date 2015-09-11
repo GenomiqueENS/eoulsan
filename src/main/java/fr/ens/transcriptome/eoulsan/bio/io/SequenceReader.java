@@ -35,8 +35,8 @@ import fr.ens.transcriptome.eoulsan.bio.Sequence;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public interface SequenceReader extends Iterator<Sequence>, Iterable<Sequence>,
-    Closeable {
+public interface SequenceReader
+    extends Iterator<Sequence>, Iterable<Sequence>, Closeable {
 
   /**
    * Throw an exception if an exception has been caught while last hasNext()

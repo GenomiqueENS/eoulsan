@@ -36,8 +36,8 @@ import org.apache.hadoop.mapreduce.Reducer;
  * @since 1.2
  * @author Claire Wallon
  */
-public class HTSeqCountReducer extends
-    Reducer<Text, LongWritable, Text, LongWritable> {
+public class HTSeqCountReducer
+    extends Reducer<Text, LongWritable, Text, LongWritable> {
 
   final LongWritable outValue = new LongWritable();
 

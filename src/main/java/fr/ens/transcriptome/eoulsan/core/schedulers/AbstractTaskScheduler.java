@@ -61,9 +61,9 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
   private final Map<WorkflowStep, WorkflowStepStatus> status;
   private final Map<WorkflowStep, WorkflowStepResult> results;
 
-  private boolean isStarted;
-  private boolean isStopped;
-  private boolean isPaused;
+  private volatile boolean isStarted;
+  private volatile boolean isStopped;
+  private volatile boolean isPaused;
 
   //
   // Protected methods
@@ -99,8 +99,8 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
   protected WorkflowStep getStep(final int contextId) {
 
     // Test if the contextId has been submitted
-    checkState(this.contexts.containsKey(contextId), "The context ("
-        + contextId + ") has never been submitted");
+    checkState(this.contexts.containsKey(contextId),
+        "The context (" + contextId + ") has never been submitted");
 
     return this.contexts.get(contextId);
   }
@@ -126,26 +126,25 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     checkExecutionState();
 
     // Test if the contextId has been submitted
-    checkState(this.contexts.containsKey(contextId), "The context ("
-        + contextId + ") has never been submitted");
+    checkState(this.contexts.containsKey(contextId),
+        "The context (" + contextId + ") has never been submitted");
 
     // Test if the context is already running
-    checkState(!this.runningContexts.containsValue(contextId), "The context ("
-        + contextId + ") already running");
+    checkState(!this.runningContexts.containsValue(contextId),
+        "The context (" + contextId + ") already running");
 
     // Test if the context has been already done
-    checkState(!this.doneContexts.containsValue(contextId), "The context ("
-        + contextId + ") has been already done");
+    checkState(!this.doneContexts.containsValue(contextId),
+        "The context (" + contextId + ") has been already done");
 
     final WorkflowStep step = getStep(contextId);
     synchronized (this) {
       this.runningContexts.put(step, contextId);
     }
 
-    getLogger().fine(
-        "Scheduler: task #"
-            + contextId + " (step #" + step.getNumber() + " " + step.getId()
-            + ") is running");
+    getLogger().fine("Scheduler: task #"
+        + contextId + " (step #" + step.getNumber() + " " + step.getId()
+        + ") is running");
   }
 
   /**
@@ -157,7 +156,6 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     checkNotNull(context, "context argument cannot be null");
 
     addDoneContext(context.getId());
-
   }
 
   /**
@@ -170,16 +168,18 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     checkExecutionState();
 
     // Test if the contextId has been submitted
-    checkState(this.contexts.containsKey(contextId), "The context ("
-        + contextId + ") has never been submitted");
+    checkState(this.contexts.containsKey(contextId),
+        "The context (" + contextId + ") has never been submitted");
 
     // Test if the context is running
-    checkState(this.runningContexts.containsValue(contextId), "The context ("
-        + contextId + ") is not running");
+    checkState(this.runningContexts.containsValue(contextId),
+        "The context (" + contextId + ") is not running");
 
     // Test if the context has been already done
-    checkState(!this.doneContexts.containsValue(contextId), "The context ("
-        + contextId + ") has been already done");
+    checkState(!this.doneContexts.containsValue(contextId),
+        "The context (" + contextId + ") has been already done");
+
+    getLogger().finest("Start of addDoneContext for Task #" + contextId);
 
     final WorkflowStep step = getStep(contextId);
     synchronized (this) {
@@ -187,10 +187,11 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
       this.doneContexts.put(step, contextId);
     }
 
-    getLogger().fine(
-        "Scheduler: task #"
-            + contextId + " (step #" + step.getNumber() + " " + step.getId()
-            + ") is done");
+    getLogger().fine("Scheduler: task #"
+        + contextId + " (step #" + step.getNumber() + " " + step.getId()
+        + ") is done");
+
+    getLogger().finest("End of addDoneContext for Task #" + contextId);
   }
 
   /**
@@ -218,11 +219,19 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     checkNotNull(context, "context argument is null");
     checkNotNull(result, "result argument is null");
 
+    getLogger()
+        .finest("Start of afterExecuteTask for Task #" + context.getId());
+
     // Add the context result to the step result
     addResult(getStep(context.getId()), result);
 
+    getLogger().finest(
+        "In afterExecuteTask / after addResult() for Task #" + context.getId());
+
     // Update counters
     addDoneContext(context);
+
+    getLogger().finest("End of afterExecuteTask for Task #" + context.getId());
   }
 
   /**
@@ -234,6 +243,8 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
 
     checkNotNull(context, "context argument is null");
 
+    getLogger().finest("Start of executeTask() for Task #" + context.getId());
+
     // Get the step of the context
     final WorkflowStep step = getStep(context.getId());
 
@@ -244,7 +255,11 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     contextRunner.run();
 
     // Return the result
-    return contextRunner.getResult();
+    final TaskResult result = contextRunner.getResult();
+
+    getLogger().finest("End of executeTask() for Task #" + context.getId());
+
+    return result;
   }
 
   //
@@ -279,20 +294,19 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
       // If this the first context of the step
       if (!this.status.containsKey(step)) {
 
-        this.status.put(step, new WorkflowStepStatus(
-            (AbstractWorkflowStep) step));
-        this.results.put(step, new WorkflowStepResult(
-            (AbstractWorkflowStep) step));
+        this.status.put(step,
+            new WorkflowStepStatus((AbstractWorkflowStep) step));
+        this.results.put(step,
+            new WorkflowStepResult((AbstractWorkflowStep) step));
       }
 
       this.submittedContexts.put(step, context.getId());
       this.contexts.put(context.getId(), step);
     }
 
-    getLogger().fine(
-        "Scheduler: task #"
-            + context.getId() + " (step #" + step.getNumber() + " "
-            + step.getId() + ") has been submitted");
+    getLogger().fine("Scheduler: task #"
+        + context.getId() + " (step #" + step.getNumber() + " " + step.getId()
+        + ") has been submitted");
   }
 
   @Override
@@ -377,7 +391,8 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     checkExecutionState();
 
     while (!isStopped()
-        && (getTaskRunningCount(step) > 0 || getTaskSubmittedCount(step) > getTaskDoneCount(step))) {
+        && (getTaskRunningCount(step) > 0
+            || getTaskSubmittedCount(step) > getTaskDoneCount(step))) {
 
       try {
         Thread.sleep(SLEEP_TIME_IN_MS);

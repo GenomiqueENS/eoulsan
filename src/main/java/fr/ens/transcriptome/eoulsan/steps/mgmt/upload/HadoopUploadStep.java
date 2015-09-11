@@ -75,9 +75,8 @@ public class HadoopUploadStep extends UploadStep {
       filename = file.getName();
     } else {
 
-      filename =
-          WorkflowStepOutputDataFile.newStandardFilename(step, portName,
-              format, sample, fileIndex, CompressionType.NONE);
+      filename = WorkflowStepOutputDataFile.newStandardFilename(step, portName,
+          format, sample, fileIndex, CompressionType.NONE);
     }
 
     return new DataFile(getDest(), filename);
@@ -115,8 +114,8 @@ public class HadoopUploadStep extends UploadStep {
         files.remove(src);
 
       } else
-      // If the file comes from a storage
-      if (src.getProtocol() instanceof StorageDataProtocol) {
+        // If the file comes from a storage
+        if (src.getProtocol() instanceof StorageDataProtocol) {
 
         final DataFile newSrc =
             ((StorageDataProtocol) src.getProtocol()).getUnderLyingData(src);
@@ -131,9 +130,8 @@ public class HadoopUploadStep extends UploadStep {
 
     // Process to distributed copies
     if (files.size() > 0) {
-      final Path jobPath =
-          PathUtils.createTempPath(new Path(getDest().getSource()), "distcp-",
-              "", this.conf);
+      final Path jobPath = PathUtils.createTempPath(
+          new Path(getDest().getSource()), "distcp-", "", this.conf);
 
       new DataFileDistCp(this.conf, jobPath).copy(files);
     }

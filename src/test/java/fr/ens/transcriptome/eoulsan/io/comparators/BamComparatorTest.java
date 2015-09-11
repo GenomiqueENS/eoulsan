@@ -42,8 +42,8 @@ import org.junit.Test;
 
 public class BamComparatorTest {
 
-  private final File dir = new File(new File(".").getAbsolutePath()
-      + "/src/test/java/files");
+  private final File dir =
+      new File(new File(".").getAbsolutePath() + "/src/test/java/files");
 
   private InputStream isA;
   private InputStream isB;
@@ -102,16 +102,16 @@ public class BamComparatorTest {
       this.fileC.delete();
     }
 
-    try (final SamReader bamfr =
-        SamReaderFactory.makeDefault().open(this.fileA);) {
+    try (final SamReader bamReader =
+        SamReaderFactory.makeDefault().open(this.fileA)) {
 
       final SAMFileWriter samWriter =
           new SAMFileWriterFactory().setCreateIndex(false)
               .setTempDirectory(new File(System.getProperty("java.io.tmpdir")))
-              .makeBAMWriter(bamfr.getFileHeader(), false, this.fileC);
+              .makeBAMWriter(bamReader.getFileHeader(), false, this.fileC);
 
       // Get iterator on file
-      final Iterator<SAMRecord> it = bamfr.iterator();
+      final Iterator<SAMRecord> it = bamReader.iterator();
 
       // Chose no header line
       final int numberLine = 33;
@@ -129,7 +129,7 @@ public class BamComparatorTest {
           switch (typeModification) {
 
           case 0:
-            // duplicate SAMline, no header
+            // duplicate SAM line, no header
             // first time
             samWriter.addAlignment(r);
             // second time
@@ -148,8 +148,8 @@ public class BamComparatorTest {
             final SAMRecord newSAMRecord = (SAMRecord) r.clone();
             newSAMRecord
                 .setReadName("HWI-1KL110:37:C0BE6ACXX:7:1101:1426:2207");
-            newSAMRecord
-                .setBaseQualityString("##############################################EEE:E=<?5=?#BAAF=AFFEFFFDE?EEE");
+            newSAMRecord.setBaseQualityString(
+                "##############################################EEE:E=<?5=?#BAAF=AFFEFFFDE?EEE");
 
             samWriter.addAlignment(newSAMRecord);
             break;
@@ -165,8 +165,8 @@ public class BamComparatorTest {
             // add a char in header line
             final String txt = r.getReadName();
             final int pos2 = txt.length() / 2;
-            r.setReadName(txt.substring(0, pos2)
-                + "t" + txt.substring(pos2 + 1));
+            r.setReadName(
+                txt.substring(0, pos2) + "t" + txt.substring(pos2 + 1));
 
             samWriter.addAlignment(r);
             break;

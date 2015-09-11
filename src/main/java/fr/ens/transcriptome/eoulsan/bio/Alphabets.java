@@ -36,28 +36,28 @@ import java.util.Set;
 public final class Alphabets {
 
   private static final Set<Character> AMBIGUOUS_DNA_ALPHABET_LETTERS =
-      toUnmodifiableSet(new char[] {'G', 'A', 'T', 'C', 'R', 'Y', 'W', 'S',
-          'M', 'K', 'H', 'B', 'V', 'D', 'N'});
+      toUnmodifiableSet(new char[] { 'G', 'A', 'T', 'C', 'R', 'Y', 'W', 'S',
+          'M', 'K', 'H', 'B', 'V', 'D', 'N' });
 
   private static final Set<Character> UNAMBIGUOUS_DNA_ALPHABET_LETTERS =
-      toUnmodifiableSet(new char[] {'G', 'A', 'T', 'C'});
+      toUnmodifiableSet(new char[] { 'G', 'A', 'T', 'C' });
 
   private static final Set<Character> AMBIGUOUS_RNA_ALPHABET_LETTERS =
-      toUnmodifiableSet(new char[] {'G', 'A', 'U', 'C', 'R', 'Y', 'W', 'S',
-          'M', 'K', 'H', 'B', 'V', 'D', 'N'});
+      toUnmodifiableSet(new char[] { 'G', 'A', 'U', 'C', 'R', 'Y', 'W', 'S',
+          'M', 'K', 'H', 'B', 'V', 'D', 'N' });
 
   private static final Set<Character> UNAMBIGUOUS_RNA_ALPHABET_LETTERS =
-      toUnmodifiableSet(new char[] {'G', 'A', 'U', 'C'});
+      toUnmodifiableSet(new char[] { 'G', 'A', 'U', 'C' });
 
   private static final Set<Character> READ_DNA_ALPHABET_LETTERS =
-      toUnmodifiableSet(new char[] {'G', 'A', 'T', 'C', 'N'});
+      toUnmodifiableSet(new char[] { 'G', 'A', 'T', 'C', 'N' });
 
   //
   // Utility method
   //
 
   /**
-   * Transform an array of char to an unmodifable set of Characters.
+   * Transform an array of char to an unmodifiable set of Characters.
    * @param array array to transform
    * @return a unmodifiable Set with the elements of the input array
    */

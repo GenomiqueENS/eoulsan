@@ -29,9 +29,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -103,18 +106,16 @@ public class FileDataProtocol extends AbstractDataProtocol {
     result.setContentLength(f.length());
     result.setLastModified(f.lastModified());
 
-    final DataFormat format =
-        DataFormatRegistry.getInstance().getDataFormatFromFilename(
-            src.getName());
+    final DataFormat format = DataFormatRegistry.getInstance()
+        .getDataFormatFromFilename(src.getName());
 
     result.setDataFormat(format);
 
     if (format != null) {
       result.setContentType(format.getContentType());
     } else {
-      result.setContentType(StringUtils
-          .getCommonContentTypeFromExtension(StringUtils
-              .extensionWithoutCompressionExtension(src.getName())));
+      result.setContentType(StringUtils.getCommonContentTypeFromExtension(
+          StringUtils.extensionWithoutCompressionExtension(src.getName())));
     }
 
     final CompressionType ct =
@@ -137,8 +138,6 @@ public class FileDataProtocol extends AbstractDataProtocol {
 
   @Override
   public boolean exists(final DataFile src, final boolean followLink) {
-
-    // return getSourceAsFile(src).exists();
 
     final Path path = getSourceAsFile(src).toPath();
 
@@ -193,11 +192,11 @@ public class FileDataProtocol extends AbstractDataProtocol {
       throws IOException {
 
     if (target == null) {
-      throw new NullPointerException("target is null");
+      throw new NullPointerException("target argument is null");
     }
 
     if (link == null) {
-      throw new NullPointerException("link is null");
+      throw new NullPointerException("link argument is null");
     }
 
     if (link.exists()) {
@@ -227,11 +226,51 @@ public class FileDataProtocol extends AbstractDataProtocol {
   }
 
   @Override
-  public void delete(final DataFile file) throws IOException {
+  public void delete(final DataFile file, final boolean recursive)
+      throws IOException {
 
     final Path path = getSourceAsFile(file).toPath();
 
-    Files.delete(path);
+    // Check if use wants to remove /
+    if (new File("/").toPath().equals(path.normalize().toAbsolutePath())) {
+      throw new IOException("Cannot remove /: " + file);
+    }
+
+    // Non recursive deletion
+    if (!(recursive && Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS))) {
+
+      Files.delete(path);
+      return;
+    }
+
+    // Remove recursively a directory
+    Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+
+      @Override
+      public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+          throws IOException {
+
+        Files.delete(file);
+        return FileVisitResult.CONTINUE;
+      }
+
+      @Override
+      public FileVisitResult postVisitDirectory(Path dir, IOException e)
+          throws IOException {
+
+        Files.delete(dir);
+        return FileVisitResult.CONTINUE;
+      }
+
+      @Override
+      public FileVisitResult visitFileFailed(Path file, IOException e)
+          throws IOException {
+
+        throw new IOException("Cannot remove file: " + file);
+      }
+
+    });
+
   }
 
   @Override
@@ -268,6 +307,33 @@ public class FileDataProtocol extends AbstractDataProtocol {
 
   @Override
   public boolean canList() {
+
+    return true;
+  }
+
+  @Override
+  public void rename(final DataFile src, final DataFile dest)
+      throws IOException {
+
+    if (dest == null) {
+      throw new NullPointerException("dest argument is null");
+    }
+
+    if (dest.getProtocol() != this) {
+      throw new IOException("the protocol of the dest is not "
+          + getName() + " protocol: " + dest);
+    }
+
+    final File file = getSourceAsFile(src);
+    final File destFile = getSourceAsFile(dest);
+
+    if (!file.renameTo(destFile)) {
+      throw new IOException("Cannot rename " + src + " to " + dest);
+    }
+  }
+
+  @Override
+  public boolean canRename() {
 
     return true;
   }

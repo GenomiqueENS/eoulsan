@@ -37,8 +37,9 @@ import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.ZooKeeper;
 
 /**
- * This class implements a locker using Zookeeper. See
- * {@link <a href="http://altamiracorp.com/blog/employee-posts/distributed-lock-using-zookeeper">blog post</a>}
+ * This class implements a locker using Zookeeper. See {@link <a href=
+ * "http://altamiracorp.com/blog/employee-posts/distributed-lock-using-zookeeper">
+ * blog post</a>}
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -71,10 +72,9 @@ public class ZooKeeperLocker implements Locker, Watcher {
       // lockPath will be different than (lockBasePath + "/" + lockName) because
       // of the sequence number ZooKeeper appends
 
-      this.lockPath =
-          this.zk.create(this.lockBasePath + "/" + this.lockName, null,
-              Ids.OPEN_ACL_UNSAFE, this.sequentialLockName
-                  ? CreateMode.EPHEMERAL_SEQUENTIAL : CreateMode.EPHEMERAL);
+      this.lockPath = this.zk.create(this.lockBasePath + "/" + this.lockName,
+          null, Ids.OPEN_ACL_UNSAFE, this.sequentialLockName
+              ? CreateMode.EPHEMERAL_SEQUENTIAL : CreateMode.EPHEMERAL);
       final Object lock = new Object();
 
       synchronized (lock) {

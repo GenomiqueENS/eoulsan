@@ -97,9 +97,8 @@ public class EMRExecAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line =
-          parser.parse(options,
-              arguments.toArray(new String[arguments.size()]), true);
+      final CommandLine line = parser.parse(options,
+          arguments.toArray(new String[arguments.size()]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -123,9 +122,8 @@ public class EMRExecAction extends AbstractAction {
 
     final File paramFile = new File(arguments.get(argsOptions));
     final File designFile = new File(arguments.get(argsOptions + 1));
-    final DataFile s3Path =
-        new DataFile(StringUtils.replacePrefix(arguments.get(argsOptions + 2),
-            "s3:/", "s3n:/"));
+    final DataFile s3Path = new DataFile(StringUtils
+        .replacePrefix(arguments.get(argsOptions + 2), "s3:/", "s3n:/"));
 
     // Execute program in AWS mode
     run(paramFile, designFile, s3Path, jobDescription);
@@ -217,8 +215,8 @@ public class EMRExecAction extends AbstractAction {
       arguments.setJobDescription(desc);
 
       // Create the log File
-      Main.getInstance().createLogFileAndFlushLog(
-          arguments.getJobPathname() + File.separator + "eoulsan.log");
+      Main.getInstance().createLogFiles(arguments.logPath(Globals.LOG_FILENAME),
+          arguments.logPath(Globals.OTHER_LOG_FILENAME));
 
       // Create executor
       final Executor e = new Executor(arguments);

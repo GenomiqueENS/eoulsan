@@ -34,8 +34,8 @@ import fr.ens.transcriptome.eoulsan.util.Utils;
  * @author Laurent Jourdren
  * @author Claire Wallon
  */
-public class GenomicInterval implements Serializable,
-    Comparable<GenomicInterval> {
+public class GenomicInterval
+    implements Serializable, Comparable<GenomicInterval> {
 
   private static final long serialVersionUID = 1974207984076778441L;
 
@@ -124,7 +124,7 @@ public class GenomicInterval implements Serializable,
       return -1;
     }
 
-    if (!e.getChromosome().equals(e.getChromosome())) {
+    if (!getChromosome().equals(e.getChromosome())) {
       return getChromosome().compareTo(e.getChromosome());
     }
 
@@ -199,13 +199,13 @@ public class GenomicInterval implements Serializable,
     }
 
     if (start < 1) {
-      throw new IllegalArgumentException("Start position is lower than 1: "
-          + start);
+      throw new IllegalArgumentException(
+          "Start position is lower than 1: " + start);
     }
 
     if (end < start) {
-      throw new IllegalArgumentException("Start position is greater than end: "
-          + end);
+      throw new IllegalArgumentException(
+          "Start position is greater than end: " + end);
     }
 
     if (strand != '+' && strand != '-' && strand != '.') {
@@ -232,7 +232,8 @@ public class GenomicInterval implements Serializable,
    * @param gffEntry GFF entry
    * @param saveStrandInfo save the strand information
    */
-  public GenomicInterval(final GFFEntry gffEntry, final boolean saveStrandInfo) {
+  public GenomicInterval(final GFFEntry gffEntry,
+      final boolean saveStrandInfo) {
 
     this(gffEntry.getSeqId(), gffEntry.getStart(), gffEntry.getEnd(),
         saveStrandInfo ? gffEntry.getStrand() : '.');

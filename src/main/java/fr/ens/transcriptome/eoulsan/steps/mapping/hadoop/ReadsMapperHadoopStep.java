@@ -28,6 +28,7 @@ import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.createConfiguration
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_TFQ;
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.doubleQuotes;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -101,14 +102,28 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     // Check if the mapper can be used with Hadoop
     if (!getMapper().isSplitsAllowed()) {
       throw new EoulsanException(
-          "The selected mapper cannot be used in hadoop mode as "
+          "The selected mapper cannot be used in Hadoop mode as "
               + "computation cannot be parallelized: "
               + getMapper().getMapperName());
     }
+
+    // Check if user wants to use non bundled mapper binaries
+    if (!isUseBundledBinaries()) {
+      throw new EoulsanException(
+          "Non bundled mapper binaries cannot be used in Hadoop mode");
+    }
+
+    // Check if user wants to use a mapper Docker image
+    if (!getMapperDockerImage().isEmpty()) {
+      throw new EoulsanException(
+          "Cannot use a mapper Docker image in Hadoop mode");
+    }
+
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Create configuration object
     final Configuration conf = createConfiguration();
@@ -132,29 +147,27 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
       // Create the job to run
       final Job job;
 
-      // Preprocess paired-end files
+      // Pre-process paired-end files
       if (readsData.getDataFileCount() == 1) {
-        job =
-            createJobConf(conf, context, dataName, readsData.getDataFile(0),
-                false, READS_FASTQ, fastqFormat, mapperIndexFile, outFile);
+        job = createJobConf(conf, context, dataName, readsData.getDataFile(0),
+            false, READS_FASTQ, fastqFormat, mapperIndexFile, outFile);
       } else {
 
         final DataFile inFile1 = readsData.getDataFile(0);
         final DataFile inFile2 = readsData.getDataFile(1);
 
-        tfqFile =
-            new DataFile(inFile1.getParent(), inFile1.getBasename()
-                + READS_TFQ.getDefaultExtension());
+        tfqFile = new DataFile(inFile1.getParent(),
+            inFile1.getBasename() + READS_TFQ.getDefaultExtension());
 
         // Convert FASTQ files to TFQ
-        MapReduceUtils.submitAndWaitForJob(PairedEndFastqToTfq.convert(conf,
-            inFile1, inFile2, tfqFile, getReducerTaskCount()), readsData
-            .getName(), CommonHadoop.CHECK_COMPLETION_TIME, status,
+        MapReduceUtils.submitAndWaitForJob(
+            PairedEndFastqToTfq.convert(conf, inFile1, inFile2, tfqFile,
+                getReducerTaskCount()),
+            readsData.getName(), CommonHadoop.CHECK_COMPLETION_TIME, status,
             COUNTER_GROUP);
 
-        job =
-            createJobConf(conf, context, dataName, tfqFile, true, READS_TFQ,
-                fastqFormat, mapperIndexFile, outFile);
+        job = createJobConf(conf, context, dataName, tfqFile, true, READS_TFQ,
+            fastqFormat, mapperIndexFile, outFile);
       }
 
       // Launch jobs
@@ -179,21 +192,23 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
   }
 
   /**
-   * Create the JobConf object for a sample
-   * @param readsData reads data
+   * Create the JobConf object for a sample.
+   * @param parentConf Hadoop configuration
+   * @param dataName data name
+   * @param readsFile reads file
    * @param inputFormat inputFormat
    * @param fastqFormat FASTQ format
-   * @param mapperIndexData mapper index data
-   * @param outData output data
+   * @param mapperIndexFile mapper index file
+   * @param outFile output file
    * @return a new JobConf object
-   * @throws IOException
+   * @throws IOException if an error occurs while creating the job
    */
   private Job createJobConf(final Configuration parentConf,
       final StepContext context, final String dataName,
       final DataFile readsFile, final boolean pairedEnd,
       final DataFormat inputFormat, final FastqFormat fastqFormat,
       final DataFile mapperIndexFile, final DataFile outFile)
-      throws IOException {
+          throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -213,13 +228,14 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     // Set the number of threads for the mapper
     if (getMapperLocalThreads() > 0) {
-      jobConf.set(ReadsMapperMapper.MAPPER_THREADS_KEY, ""
-          + getMapperHadoopThreads());
+      jobConf.set(ReadsMapperMapper.MAPPER_THREADS_KEY,
+          "" + getMapperHadoopThreads());
     }
 
     // Set mapper arguments
     if (getMapperArguments() != null) {
-      jobConf.set(ReadsMapperMapper.MAPPER_ARGS_KEY, getMapperArguments());
+      jobConf.set(ReadsMapperMapper.MAPPER_ARGS_KEY,
+          doubleQuotes(getMapperArguments()));
     }
 
     // Set Mapper fastq format
@@ -239,15 +255,19 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     jobConf.set("mapreduce.job.jvm.numtasks", "" + 1);
 
     // Set the memory required by the reads mapper
-    jobConf
-        .set("mapreduce.map.memory.mb", "" + getMapperHadoopMemoryRequired());
+    jobConf.set("mapreduce.map.memory.mb",
+        "" + getMapperHadoopMemoryRequired());
+
+    // Set the memory required by JVM (BWA need more memory than the other
+    // mapper for buffering named pipes)
+    jobConf.set("mapreduce.map.java.opts", "-Xmx4096M");
 
     // Set ZooKeeper client configuration
     setZooKeeperJobConfiguration(jobConf, context);
 
     // Create the job and its name
-    final Job job =
-        Job.getInstance(jobConf, "Mapping reads in "
+    final Job job = Job.getInstance(jobConf,
+        "Mapping reads in "
             + fastqFormat + " with " + getMapperName() + " (" + dataName + ", "
             + readsFile.getName() + ")");
 
@@ -304,9 +324,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     if (connectString == null) {
 
-      connectString =
-          jobConf.get("yarn.resourcemanager.hostname").split(":")[0]
-              + ":" + settings.getZooKeeperDefaultPort();
+      connectString = jobConf.get("yarn.resourcemanager.hostname").split(":")[0]
+          + ":" + settings.getZooKeeperDefaultPort();
 
     }
 
@@ -317,12 +336,13 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
   /**
    * Compute the checksum of a ZIP file or use the HDFS checksum if available.
-   * @param is input stream
+   * @param file the zip input file
+   * @param conf The Hadoop configuration
    * @return the checksum as a string
    * @throws IOException if an error occurs while creating the checksum
    */
-  static String computeZipCheckSum(final DataFile file, final Configuration conf)
-      throws IOException {
+  static String computeZipCheckSum(final DataFile file,
+      final Configuration conf) throws IOException {
 
     final Path path = new Path(file.getSource());
 
@@ -358,13 +378,13 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     ZipArchiveEntry e;
 
     while ((e = zais.getNextZipEntry()) != null) {
-      map.put(e.getName(), new long[] {e.getSize(), e.getCrc()});
+      map.put(e.getName(), new long[] { e.getSize(), e.getCrc() });
     }
 
     zais.close();
 
     // Add values to hash function in an ordered manner
-    for (String filename : new TreeSet<String>(map.keySet())) {
+    for (String filename : new TreeSet<>(map.keySet())) {
 
       hs.putString(filename, StandardCharsets.UTF_8);
       for (long l : map.get(filename)) {

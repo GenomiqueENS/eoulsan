@@ -116,8 +116,8 @@ public class STARIndexGenerator extends AbstractStep {
       final Set<Parameter> stepParameters) throws EoulsanException {
 
     if (stepParameters == null) {
-      throw new EoulsanException("No parameters set in "
-          + getName() + " generator");
+      throw new EoulsanException(
+          "No parameters set in " + getName() + " generator");
     }
 
     for (Parameter p : stepParameters) {
@@ -165,8 +165,8 @@ public class STARIndexGenerator extends AbstractStep {
         break;
 
       default:
-        throw new EoulsanException("Unknown parameter for "
-            + getName() + " step: " + p.getName());
+        throw new EoulsanException(
+            "Unknown parameter for " + getName() + " step: " + p.getName());
       }
     }
   }
@@ -217,7 +217,8 @@ public class STARIndexGenerator extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     try {
 
@@ -281,8 +282,8 @@ public class STARIndexGenerator extends AbstractStep {
         DataFile chrStartEndFile = new DataFile(this.chrStartEndFilename);
 
         if (!chrStartEndFile.exists()) {
-          throw new IOException("Unable to read chromosome startend file: "
-              + chrStartEndFile);
+          throw new IOException(
+              "Unable to read chromosome startend file: " + chrStartEndFile);
         }
 
         final File chrStartEndFilePath =
@@ -315,7 +316,8 @@ public class STARIndexGenerator extends AbstractStep {
             this.genomeChrBinNbits.toString());
       }
 
-      status.setMessage(this.mapper.getMapperName() + " index creation");
+      status
+          .setProgressMessage(this.mapper.getMapperName() + " index creation");
 
       // Create the index
       GenomeMapperIndexGeneratorStep.execute(this.mapper, context,
@@ -326,8 +328,8 @@ public class STARIndexGenerator extends AbstractStep {
       for (File temporaryFile : temporaryFiles) {
 
         if (!temporaryFile.delete()) {
-          context.getLogger().warning(
-              "Cannot remove temporary file: " + temporaryFile);
+          context.getLogger()
+              .warning("Cannot remove temporary file: " + temporaryFile);
         }
 
       }
@@ -403,8 +405,8 @@ public class STARIndexGenerator extends AbstractStep {
         Files.createTempFile(context.getLocalTempDirectory().toPath(),
             STEP_NAME + "-", realFile.getExtension()).toFile();
 
-    context.getLogger().fine(
-        "Uncompress/copy " + realFile + " to " + outputFile);
+    context.getLogger()
+        .fine("Uncompress/copy " + realFile + " to " + outputFile);
 
     DataFiles.copy(realFile, new DataFile(outputFile));
 
@@ -423,7 +425,7 @@ public class STARIndexGenerator extends AbstractStep {
     try {
       md5Digest = MessageDigest.getInstance("MD5");
     } catch (NoSuchAlgorithmException e) {
-      md5Digest = null;
+      throw new IOException(e);
     }
     try (InputStream is = new FileInputStream(file)) {
       new DigestInputStream(is, md5Digest);

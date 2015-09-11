@@ -74,8 +74,8 @@ filter will not produce the same output if declared before or after the trim fil
 		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th><th>Modify reads</th></tr>
 
 		<tr><td>paircheck</td><td>none</td><td>Check if the identifiers of the two ends had the same identifier</td><td>None</td><td>No</td></tr>
-		<tr><td>pairend.accept.pairend</td><td>boolean</td><td>Remove all paired-end reads if false</td><td>Not set</td><td>No</td></tr>
-		<tr><td>pairend.accept.singlend</td><td>boolean</td><td>Remove all single-end reads if false</td><td>Not set</td><td>No</td></tr>
+		<tr><td>pairedend.accept.paired.end</td><td>boolean</td><td>Remove all paired-end reads if false</td><td>Not set</td><td>No</td></tr>
+		<tr><td>pairedend.accept.single.end</td><td>boolean</td><td>Remove all single-end reads if false</td><td>Not set</td><td>No</td></tr>
 		<tr><td>illuminaid</td><td>none</td><td>Remove all reads that not pass illumina filters</td><td>Not set</td><td>No</td></tr>
 		<tr><td>quality.threshold</td><td>float</td><td>The threshold for the mean base quality. Unit in decimal quality score</td><td>Not set</td><td>No</td></tr>
 		<tr><td>trimpolynend</td><td>none</td><td>This filter trim polyN tails of reads.</td><td>Not set</td><td>Yes</td></tr>

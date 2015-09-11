@@ -90,8 +90,8 @@ public class ReadNameStartsWithReadFilter extends AbstractReadFilter {
       }
 
     } else {
-      throw new EoulsanException("Unknown parameter for "
-          + getName() + " read filter: " + key);
+      throw new EoulsanException(
+          "Unknown parameter for " + getName() + " read filter: " + key);
     }
   }
 

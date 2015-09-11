@@ -34,7 +34,7 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
- * This class define an absract EoulsanRuntime.
+ * This class define an abstract EoulsanRuntime.
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -74,6 +74,12 @@ public abstract class AbstractEoulsanRuntime {
    * @return true if Eoulsan in on a non Hadoop cluster
    */
   public abstract boolean isClusterMode();
+
+  /**
+   * Test if Eoulsan execute a task in on a non Hadoop cluster.
+   * @return true Eoulsan execute a task in on a non Hadoop cluster
+   */
+  public abstract boolean isClusterTaskMode();
 
   /**
    * Create an InputStream to load data.

@@ -72,12 +72,14 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
 
     // paired-end mode
     else {
-      for (int counterRecord = 0; counterRecord < records.size() - 1; counterRecord +=
-          2) {
+      for (int counterRecord = 0; counterRecord < records.size()
+          - 1; counterRecord += 2) {
 
         // storage in 'result' of records that do not pass the quality filter
-        if (records.get(counterRecord).getMappingQuality() < this.qualityThreshold
-            || records.get(counterRecord + 1).getMappingQuality() < this.qualityThreshold) {
+        if (records.get(counterRecord)
+            .getMappingQuality() < this.qualityThreshold
+            || records.get(counterRecord + 1)
+                .getMappingQuality() < this.qualityThreshold) {
 
           // records are stored 2 by 2 because of the paired-end mode
           this.result.add(records.get(counterRecord));
@@ -108,12 +110,12 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
       }
 
       if (this.qualityThreshold < 0.0) {
-        throw new EoulsanException("Invalid qualityThreshold: "
-            + this.qualityThreshold);
+        throw new EoulsanException(
+            "Invalid qualityThreshold: " + this.qualityThreshold);
       }
     } else {
-      throw new EoulsanException("Unknown parameter for "
-          + getName() + " alignments filter: " + key);
+      throw new EoulsanException(
+          "Unknown parameter for " + getName() + " alignments filter: " + key);
     }
   }
 

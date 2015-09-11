@@ -123,13 +123,13 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
     result.add(bowtiePath);
 
     // Set the user options
-    if (getListMapperArguments() != null) {
-      result.addAll(getListMapperArguments());
-    }
+    result.addAll(getListMapperArguments());
 
     // Set the number of threads to use
-    result.add("-p");
-    result.add(getThreadsNumber() + "");
+    if (!isMultipleInstancesEnabled()) {
+      result.add("-p");
+      result.add(getThreadsNumber() + "");
+    }
 
     // Enable memory mapped index
     if (memoryMappedIndex) {

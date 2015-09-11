@@ -189,8 +189,8 @@ public class GenomicArray<T> {
 
       if (!(Utils.equal(this.valueCount, that.valueCount)
           && Utils.equal(this.start, that.start)
-          && Utils.equal(this.end, that.end) && Utils.equal(this.strand,
-          that.strand))) {
+          && Utils.equal(this.end, that.end)
+          && Utils.equal(this.strand, that.strand))) {
         return false;
       }
 
@@ -253,7 +253,8 @@ public class GenomicArray<T> {
    * chromosome.
    * @author Laurent Jourdren
    */
-  private static final class ChromosomeStrandedZones<T> implements Serializable {
+  private static final class ChromosomeStrandedZones<T>
+      implements Serializable {
 
     private static final long serialVersionUID = 8073207058699194059L;
 
@@ -315,7 +316,7 @@ public class GenomicArray<T> {
             return maxIndex;
           }
 
-          assert (false);
+          assert(false);
         }
 
         final Zone<T> z = get(index);
@@ -462,9 +463,8 @@ public class GenomicArray<T> {
         // Really needed ?
         if (intersect(start, stop, zone.start, zone.end)) {
 
-          final GenomicInterval iv =
-              new GenomicInterval(this.chromosomeName, zone.start, zone.end,
-                  zone.strand);
+          final GenomicInterval iv = new GenomicInterval(this.chromosomeName,
+              zone.start, zone.end, zone.strand);
 
           final Set<T> r = zone.getValues();
 
@@ -535,8 +535,8 @@ public class GenomicArray<T> {
     public String toString() {
 
       return this.getClass().getSimpleName()
-          + "{chromosomeName=" + this.chromosomeName + ", length="
-          + this.length + ", zones=" + this.zones + "}";
+          + "{chromosomeName=" + this.chromosomeName + ", length=" + this.length
+          + ", zones=" + this.zones + "}";
     }
 
     //
@@ -550,7 +550,8 @@ public class GenomicArray<T> {
     public ChromosomeStrandedZones(final String chromosomeName) {
 
       if (chromosomeName == null) {
-        throw new NullPointerException("chromosomeName argument cannot be null");
+        throw new NullPointerException(
+            "chromosomeName argument cannot be null");
       }
 
       this.chromosomeName = chromosomeName;
@@ -660,7 +661,8 @@ public class GenomicArray<T> {
     public ChromosomeZones(final String chromosomeName) {
 
       if (chromosomeName == null) {
-        throw new NullPointerException("chromosomeName argument cannot be null");
+        throw new NullPointerException(
+            "chromosomeName argument cannot be null");
       }
 
       this.plus = new ChromosomeStrandedZones<>(chromosomeName);
@@ -708,8 +710,8 @@ public class GenomicArray<T> {
       return;
     }
 
-    this.chromosomes
-        .put(chromosomeName, new ChromosomeZones<T>(chromosomeName));
+    this.chromosomes.put(chromosomeName,
+        new ChromosomeZones<T>(chromosomeName));
   }
 
   /**
@@ -732,7 +734,8 @@ public class GenomicArray<T> {
    * @param interval the genomic interval
    * @return a map with the values
    */
-  public Map<GenomicInterval, Set<T>> getEntries(final GenomicInterval interval) {
+  public Map<GenomicInterval, Set<T>> getEntries(
+      final GenomicInterval interval) {
 
     if (interval == null) {
       throw new NullPointerException("interval argument cannot be null");
@@ -845,8 +848,8 @@ public class GenomicArray<T> {
    * Save the annotation.
    * @param outputFile Output file
    */
-  public void save(final File outputFile) throws FileNotFoundException,
-      IOException {
+  public void save(final File outputFile)
+      throws FileNotFoundException, IOException {
 
     if (outputFile == null) {
       throw new NullPointerException("outputFile argument cannot be null");
@@ -884,8 +887,8 @@ public class GenomicArray<T> {
    * Load the annotation.
    * @param inputFile input file
    */
-  public void load(final File inputFile) throws FileNotFoundException,
-      IOException {
+  public void load(final File inputFile)
+      throws FileNotFoundException, IOException {
 
     if (inputFile == null) {
       throw new NullPointerException("inputFile argument cannot be null");

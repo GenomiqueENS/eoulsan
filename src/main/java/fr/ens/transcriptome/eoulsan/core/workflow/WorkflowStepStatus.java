@@ -125,9 +125,11 @@ public class WorkflowStepStatus {
 
     int result = 0;
 
-    for (double progress : this.taskProgress.values()) {
-      if (progress == 1.0) {
-        result++;
+    synchronized (this) {
+      for (double progress : this.taskProgress.values()) {
+        if (progress == 1.0) {
+          result++;
+        }
       }
     }
 
@@ -199,8 +201,8 @@ public class WorkflowStepStatus {
     if (min == max) {
       setTaskProgress(contextId, contextName, 1.0);
     } else {
-      setTaskProgress(contextId, contextName, ((double) (value - min))
-          / (max - min));
+      setTaskProgress(contextId, contextName,
+          ((double) (value - min)) / (max - min));
     }
   }
 
@@ -280,7 +282,8 @@ public class WorkflowStepStatus {
   // Check progress
   //
 
-  private static void checkContext(final int contextId, final String contextName) {
+  private static void checkContext(final int contextId,
+      final String contextName) {
 
     checkNotNull(contextName, "contextName cannot be null");
   }

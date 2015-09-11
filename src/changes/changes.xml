@@ -799,7 +799,7 @@ of reads that reject each filter like in local mode.
 
          </release>
 
-         <release version="2.0-alpha6" description="Eoulsan 2.0-alpha6 release" date="TBD">
+         <release version="2.0-alpha6" description="Eoulsan 2.0-alpha6 release" date="2015-08-25">
 
             <action dev="jourdren" type="fix">
                  A cartesian product was done when lanching the CopyOutputDataStep step (the step that copy the outputs of a step).
@@ -915,25 +915,50 @@ of reads that reject each filter like in local mode.
             </action>
             
             <action dev="sperrin" type="add">
-                 Add new step, FastQC can be launch on FASTQ or SAM file in local mode.
+                 Add a new FastQC step that can be launch on FASTQ or SAM files in local mode.
             </action>
 
             <action dev="jourdren" type="add">
-                 Now FastQC step is hadoop compatible.
+                 Now the FastQC step is hadoop compatible.
             </action>
             
             <action dev="sperrin" type="update">
                  Add several enhancements to the Eoulsan integration tests report file.
-			</action>
-			
-			<action dev="sperrin" type="update">			
-				Add new option in command line to replace output directory instead of configuration in oulsan integration tests.
-			</action>
-			
-			<action dev="sperrin" type="update">
-				Add new parameter to remove files in output test directory to spare space disk in Eoulsan integration tests
-            </action>            
-                        
+            </action>
+
+            <action dev="sperrin" type="update">
+                 Add a new option in the command line to override the output directory defined in the integration tests configuration.
+            </action>
+
+            <action dev="sperrin" type="update">
+                 Add a new IT parameter that allow to remove output files of an integration test after the end of the test to save space disk.
+            </action>
+
+         </release>
+
+
+         <release version="2.0-alpha7" description="Eoulsan 2.0-alpha7 release" date="TBD">
+
+            <action dev="jourdren" type="add">
+                 Add a new action "clusterexec" that allow to execute an Eoulsan workflow on a non Hadoop cluster. Condor is the first cluster scheduler supported by Eoulsan in this mode.
+            </action>
+
+            <action dev="jourdren" type="add">
+                 Add a new scheduler that allow to run tasks from steps that are not designed for Hadoop on an Hadoop cluster. The steps must have the @HadoopCompatible annotation and must only the DataFile API to access to the input and output files.
+            </action>
+
+            <action dev="jourdren" type="add">
+                 Add a "Counters" section in step result files that summaries counters of tasks with the same name (useful when using splitters and mergers in a workflow).
+            </action>
+
+            <action dev="jourdren" type="update">
+                 Many cleanup code, javadoc and typo fixes.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 Rename "pairend.accept.pairend" read filter parameter to "pairedend.accept.paired.end" and rename "pairend.accept.signlend" read filter parameter to "pairedend.accept.single.end".
+            </action>
+
          </release>
 
 	</body>

@@ -45,9 +45,9 @@ public class ApacheCommonCompressionCodecs {
 
   /**
    * Create a bzip2 input stream.
-   * @param is
-   * @return
-   * @throws IOException
+   * @param is input stream
+   * @return an uncompressed input stream
+   * @throws IOException if an error occurs while creating the input stream
    */
   public static InputStream createBZip2InputStream(final InputStream is)
       throws IOException {

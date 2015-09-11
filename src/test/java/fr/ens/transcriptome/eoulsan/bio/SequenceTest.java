@@ -376,8 +376,8 @@ public class SequenceTest {
   @Test
   public void testReverseComplementString() {
 
-    assertNull(Sequence.reverseComplement(null,
-        Alphabets.AMBIGUOUS_DNA_ALPHABET));
+    assertNull(
+        Sequence.reverseComplement(null, Alphabets.AMBIGUOUS_DNA_ALPHABET));
     assertNull(Sequence.reverseComplement("ATGC", null));
 
     assertEquals("GCAT",

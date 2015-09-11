@@ -54,8 +54,8 @@ public class MultiReadFilter implements ReadFilter {
       if (!rf.accept(read)) {
 
         if (this.incrementer != null) {
-          this.incrementer.incrCounter(this.counterGroup, "reads rejected by "
-              + rf.getName() + " filter", 1);
+          this.incrementer.incrCounter(this.counterGroup,
+              "reads rejected by " + rf.getName() + " filter", 1);
         }
         return false;
       }
@@ -73,8 +73,8 @@ public class MultiReadFilter implements ReadFilter {
       if (!rf.accept(read1, read2)) {
 
         if (this.incrementer != null) {
-          this.incrementer.incrCounter(this.counterGroup, "reads rejected by "
-              + rf.getName() + " filter", 1);
+          this.incrementer.incrCounter(this.counterGroup,
+              "reads rejected by " + rf.getName() + " filter", 1);
         }
         return false;
       }

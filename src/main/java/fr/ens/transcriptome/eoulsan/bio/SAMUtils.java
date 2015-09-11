@@ -69,7 +69,7 @@ public class SAMUtils {
 
   /**
    * Read the SAM header of a SAM file.
-   * @param dataFile file to reaf
+   * @param dataFile file to read
    * @return a String with the SAM header
    * @throws IOException if an error occurs while reading the file
    */
@@ -95,11 +95,12 @@ public class SAMUtils {
     }
 
     // Read SAM file header
-    final SamReader reader = SamReaderFactory.makeDefault().open(SamInputResource.of(is));
+    final SamReader reader =
+        SamReaderFactory.makeDefault().open(SamInputResource.of(is));
     final SAMFileHeader header = reader.getFileHeader();
 
     // Close reader
-    //reader.close();
+    // reader.close();
 
     final StringWriter headerTextBuffer = new StringWriter();
     new SAMTextHeaderCodec().encode(headerTextBuffer, header);
@@ -114,8 +115,8 @@ public class SAMUtils {
    *         defined in the SAM header
    * @throws FileNotFoundException if the file cannot be found
    */
-  public static GenomeDescription createGenomeDescriptionFromSAM(final File file)
-      throws FileNotFoundException {
+  public static GenomeDescription createGenomeDescriptionFromSAM(
+      final File file) throws FileNotFoundException {
 
     if (file == null) {
       throw new NullPointerException("The file is null");
@@ -206,7 +207,8 @@ public class SAMUtils {
       return desc;
     }
 
-    for (SAMSequenceRecord seq : header.getSequenceDictionary().getSequences()) {
+    for (SAMSequenceRecord seq : header.getSequenceDictionary()
+        .getSequences()) {
       desc.addSequence(seq.getSequenceName(), seq.getSequenceLength());
     }
 

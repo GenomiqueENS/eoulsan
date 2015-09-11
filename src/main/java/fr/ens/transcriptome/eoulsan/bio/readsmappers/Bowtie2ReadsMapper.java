@@ -84,8 +84,8 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
   @Override
   protected String[] getMapperExecutables() {
 
-    return new String[] { flavoredBinary(MAPPER_EXECUTABLE,
-        FIRST_FLAVORED_VERSION) };
+    return new String[] {
+        flavoredBinary(MAPPER_EXECUTABLE, FIRST_FLAVORED_VERSION) };
   }
 
   @Override
@@ -101,8 +101,8 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
     case FASTQ_SOLEXA:
       // TODO BOWTIE do not support solexa quality scores
       // return "--solexa-quals";
-      throw new Exception("Format "
-          + format.getName() + " not available with bowtie2");
+      throw new Exception(
+          "Format " + format.getName() + " not available with bowtie2");
 
     case FASTQ_ILLUMINA:
     case FASTQ_ILLUMINA_1_5:
@@ -125,9 +125,7 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
     result.add(bowtiePath);
 
     // Set the user options
-    if (getListMapperArguments() != null) {
-      result.addAll(getListMapperArguments());
-    }
+    result.addAll(getListMapperArguments());
 
     // Set the number of threads to use
     result.add("-p");

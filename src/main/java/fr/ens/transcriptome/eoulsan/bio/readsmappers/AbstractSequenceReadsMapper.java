@@ -29,15 +29,18 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.util.FileUtils.checkExistingStandardFile;
 import static fr.ens.transcriptome.eoulsan.util.Utils.checkNotNull;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.net.URI;
+import java.nio.channels.FileLock;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,11 +50,12 @@ import com.google.common.base.Strings;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
-import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.bio.ReadSequence;
+import fr.ens.transcriptome.eoulsan.bio.io.FastqReader;
+import fr.ens.transcriptome.eoulsan.bio.readsmappers.MapperExecutor.Result;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
-import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
@@ -61,11 +65,11 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  * @author Maria Bernard
  */
-public abstract class AbstractSequenceReadsMapper implements
-    SequenceReadsMapper {
+public abstract class AbstractSequenceReadsMapper
+    implements SequenceReadsMapper {
 
-  private static final String SYNC = AbstractSequenceReadsMapper.class
-      .getName();
+  private static final String SYNC =
+      AbstractSequenceReadsMapper.class.getName();
 
   static final String SHORT_INDEX_FLAVOR = "standard";
   static final String LARGE_INDEX_FLAVOR = "large-index";
@@ -79,16 +83,22 @@ public abstract class AbstractSequenceReadsMapper implements
   private String mapperVersionToUse = getDefaultPackageVersion();
   private String flavorToUse = DEFAULT_FLAVOR;
   private String flavor = DEFAULT_FLAVOR;
+  private boolean useBundledBinaries = true;
+  private String mapperDockerImage = "";
   private int threadsNumber;
   private String mapperArguments = null;
   private String indexerArguments = null;
   private File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
+  private boolean multipleInstancesEnabled;
+  private URI dockerConnection;
 
   private ReporterIncrementer incrementer;
   private String counterGroup;
 
   private boolean binariesReady;
   private boolean initialized;
+  private IOException mappingException;
+  private MapperExecutor executor;
 
   //
   // Binaries management
@@ -125,7 +135,7 @@ public abstract class AbstractSequenceReadsMapper implements
    * @return the indexer executables
    */
   protected String[] getIndexerExecutables() {
-    return new String[] { getIndexerExecutable() };
+    return new String[] {getIndexerExecutable()};
   }
 
   /**
@@ -153,6 +163,18 @@ public abstract class AbstractSequenceReadsMapper implements
 
     checkIfFlavorExists();
     return this.flavor;
+  }
+
+  @Override
+  public boolean isUseBundledBinaries() {
+
+    return this.useBundledBinaries;
+  }
+
+  @Override
+  public String getMapperDockerImage() {
+
+    return this.mapperDockerImage;
   }
 
   //
@@ -211,14 +233,41 @@ public abstract class AbstractSequenceReadsMapper implements
     return this.tempDir;
   }
 
+  @Override
+  public boolean isMultipleInstancesAllowed() {
+
+    return false;
+  }
+
+  @Override
+  public boolean isMultipleInstancesEnabled() {
+
+    return this.multipleInstancesEnabled;
+  }
+
   /**
    * Convenient method to directly get the absolute path for the temporary
    * directory.
-   * @return the absolute path to the tempory directory as a string
+   * @return the absolute path to the temporary directory as a string
    */
   protected String getTempDirectoryPath() {
 
     return getTempDirectory().getAbsolutePath();
+  }
+
+  @Override
+  public URI getDockerConnection() {
+
+    return this.dockerConnection;
+  }
+
+  /**
+   * Get mapper executor.
+   * @return the mapper executor
+   */
+  protected MapperExecutor getExecutor() {
+
+    return this.executor;
   }
 
   //
@@ -238,9 +287,28 @@ public abstract class AbstractSequenceReadsMapper implements
 
     checkState(!this.binariesReady, "Mapper has been initialized");
 
-    this.mapperVersionToUse =
-        Strings.emptyToNull(version) == null
-            ? getDefaultPackageVersion() : version;
+    this.mapperVersionToUse = Strings.emptyToNull(version) == null
+        ? getDefaultPackageVersion() : version;
+  }
+
+  @Override
+  public void setUseBundledBinaries(final boolean use) {
+
+    checkState(!this.binariesReady, "Mapper has been initialized");
+
+    this.useBundledBinaries = use;
+  }
+
+  @Override
+  public void setMapperDockerImage(final String dockerImage) {
+
+    checkState(!this.binariesReady, "Mapper has been initialized");
+
+    if (dockerImage == null) {
+      this.mapperDockerImage = "";
+    } else {
+      this.mapperDockerImage = dockerImage.trim();
+    }
   }
 
   @Override
@@ -301,10 +369,55 @@ public abstract class AbstractSequenceReadsMapper implements
    */
   protected void setFlavor(final String flavor) {
 
+    checkState(!this.initialized, "Mapper has been initialized");
+
     if (flavor != null) {
       this.flavor = flavor;
     }
   }
+
+  @Override
+  public void setMultipleInstancesEnabled(final boolean enable) {
+
+    checkState(!this.initialized, "Mapper has been initialized");
+
+    if (isMultipleInstancesAllowed() && enable == true) {
+      this.multipleInstancesEnabled = true;
+    } else {
+      this.multipleInstancesEnabled = false;
+    }
+  }
+
+  @Override
+  public void setDockerConnection(final URI uri) {
+
+    checkState(!this.initialized, "Mapper has been initialized");
+
+    this.dockerConnection = uri;
+  }
+
+  //
+  // Get mapper version
+  //
+
+  @Override
+  public final String getMapperVersion() {
+
+    // Prepare binaries
+    try {
+      prepareBinaries();
+    } catch (IOException e) {
+      return null;
+    }
+
+    return internalGetMapperVersion();
+  }
+
+  /**
+   * Get mapper version.
+   * @return a string with the version of the mapper
+   */
+  protected abstract String internalGetMapperVersion();
 
   //
   // Index creation
@@ -321,13 +434,11 @@ public abstract class AbstractSequenceReadsMapper implements
     }
 
     // Define the output filename
-    final File uncompressFile =
-        new File(outputDir,
-            StringUtils.filenameWithoutCompressionExtension(genomeFile
-                .getName()));
+    final File uncompressFile = new File(outputDir,
+        StringUtils.filenameWithoutCompressionExtension(genomeFile.getName()));
 
-    getLogger().fine(
-        "Uncompress genome " + genomeFile + " to " + uncompressFile);
+    getLogger()
+        .fine("Uncompress genome " + genomeFile + " to " + uncompressFile);
 
     // Create input stream
     final InputStream in =
@@ -349,12 +460,12 @@ public abstract class AbstractSequenceReadsMapper implements
     checkNotNull(genomeFile, "genome file is null");
     checkNotNull(outputDir, "output directory is null");
 
-    final File unCompressGenomeFile =
+    final File unCompressedGenomeFile =
         uncompressGenomeIfNecessary(genomeFile, outputDir);
 
-    getLogger().fine(
-        "Start computing "
-            + getMapperName() + " index for " + unCompressGenomeFile);
+    getLogger().fine("Start computing "
+        + getMapperName() + " index for " + unCompressedGenomeFile);
+
     final long startTime = System.currentTimeMillis();
 
     final String indexerPath;
@@ -368,21 +479,18 @@ public abstract class AbstractSequenceReadsMapper implements
     }
 
     final File tmpGenomeFile =
-        new File(outputDir, unCompressGenomeFile.getName());
+        new File(outputDir, unCompressedGenomeFile.getName());
 
     // Create temporary symbolic link for genome
-    if (!unCompressGenomeFile.equals(tmpGenomeFile)) {
+    if (!unCompressedGenomeFile.equals(tmpGenomeFile)) {
 
       try {
 
-        final Path link = tmpGenomeFile.toPath();
-        final Path target = unCompressGenomeFile.getAbsoluteFile().toPath();
-        final Path relativizedTarget = link.getParent().relativize(target);
-
-        Files.createSymbolicLink(link, relativizedTarget);
+        Files.createSymbolicLink(tmpGenomeFile.toPath(),
+            unCompressedGenomeFile.toPath());
       } catch (IOException e) {
         throw new IOException("Unable to create the symbolic link in "
-            + tmpGenomeFile + " directory for " + unCompressGenomeFile);
+            + tmpGenomeFile + " directory for " + unCompressedGenomeFile);
       }
     }
 
@@ -392,27 +500,26 @@ public abstract class AbstractSequenceReadsMapper implements
 
     getLogger().fine(cmd.toString());
 
-    final int exitValue = ProcessUtils.sh(cmd, tmpGenomeFile.getParentFile());
+    final int exitValue =
+        this.executor.execute(cmd, tmpGenomeFile.getParentFile(), false, false,
+            unCompressedGenomeFile, tmpGenomeFile).waitFor();
 
     if (exitValue != 0) {
-      throw new IOException("Bad error result for index creation execution: "
-          + exitValue);
+      throw new IOException(
+          "Bad error result for index creation execution: " + exitValue);
     }
 
     // Remove symbolic link
     if (!tmpGenomeFile.delete()) {
-      getLogger().warning(
-          "Cannot remove symbolic link while after creating "
-              + getMapperName() + " index");
+      getLogger().warning("Cannot remove symbolic link while after creating "
+          + getMapperName() + " index");
     }
 
     final long endTime = System.currentTimeMillis();
 
-    getLogger().fine(
-        "Create the "
-            + getMapperName() + " index in "
-            + StringUtils.toTimeHumanReadable(endTime - startTime));
-
+    getLogger().fine("Create the "
+        + getMapperName() + " index in "
+        + StringUtils.toTimeHumanReadable(endTime - startTime));
   }
 
   @Override
@@ -421,17 +528,15 @@ public abstract class AbstractSequenceReadsMapper implements
 
     getLogger().fine("Start index computation");
 
-    final String indexTmpDirPrefix =
-        Globals.APP_NAME_LOWER_CASE
-            + "-" + getMapperName().toLowerCase() + "-genomeindexdir-";
+    final String indexTmpDirPrefix = Globals.APP_NAME_LOWER_CASE
+        + "-" + getMapperName().toLowerCase() + "-genomeindexdir-";
 
-    getLogger().fine(
-        "Want to create a temporary directory with prefix: "
-            + indexTmpDirPrefix + " in " + getTempDirectory());
+    getLogger().fine("Want to create a temporary directory with prefix: "
+        + indexTmpDirPrefix + " in " + getTempDirectory());
 
-    final File indexTmpDir =
-        Files.createTempDirectory(getTempDirectory().toPath(),
-            indexTmpDirPrefix).toFile();
+    final File indexTmpDir = Files
+        .createTempDirectory(getTempDirectory().toPath(), indexTmpDirPrefix)
+        .toFile();
 
     makeIndex(genomeFile, indexTmpDir);
 
@@ -458,9 +563,8 @@ public abstract class AbstractSequenceReadsMapper implements
 
     getLogger().fine("Copy genome to local disk before computing index");
 
-    final File genomeTmpFile =
-        File.createTempFile(Globals.APP_NAME_LOWER_CASE + "-genome", ".fasta",
-            getTempDirectory());
+    final File genomeTmpFile = File.createTempFile(
+        Globals.APP_NAME_LOWER_CASE + "-genome", ".fasta", getTempDirectory());
     FileUtils.copy(is, FileUtils.createOutputStream(genomeTmpFile));
 
     makeArchiveIndex(genomeTmpFile, archiveOutputFile);
@@ -477,8 +581,16 @@ public abstract class AbstractSequenceReadsMapper implements
     final File[] indexFiles =
         FileUtils.listFilesByExtension(archiveIndexDir, extension);
 
-    if (indexFiles == null || indexFiles.length != 1) {
-      throw new IOException("Unable to get index file for " + getMapperName());
+    if (indexFiles == null || indexFiles.length == 0) {
+      throw new IOException("Unable to get index file for "
+          + getMapperName() + " with \"" + extension
+          + "\" extension in directory: " + archiveIndexDir);
+    }
+
+    if (indexFiles.length > 1) {
+      throw new IOException("More than one index file for "
+          + getMapperName() + " with \"" + extension
+          + "\" extension in directory: " + archiveIndexDir);
     }
 
     // Get the path to the index
@@ -490,23 +602,38 @@ public abstract class AbstractSequenceReadsMapper implements
   private void unzipArchiveIndexFile(final InputStream archiveIndexFile,
       final File archiveIndexDir) throws IOException {
 
-    // Uncompress archive if necessary
-    if (!archiveIndexDir.exists()) {
+    final File lockFile =
+        new File(archiveIndexDir.getAbsoluteFile().getParentFile(),
+            archiveIndexDir.getName() + ".lock");
 
-      if (!archiveIndexDir.mkdir()) {
-        throw new IOException("Can't create directory for "
-            + getMapperName() + " index: " + archiveIndexDir);
+    final RandomAccessFile lockIs = new RandomAccessFile(lockFile, "rw");
+
+    final FileLock lock = lockIs.getChannel().lock();
+
+    try {
+      // Uncompress archive if necessary
+      if (!archiveIndexDir.exists()) {
+
+        if (!archiveIndexDir.mkdir()) {
+          throw new IOException("Can't create directory for "
+              + getMapperName() + " index: " + archiveIndexDir);
+        }
+
+        getLogger().fine("Unzip archiveIndexFile "
+            + archiveIndexFile + " in " + archiveIndexDir);
+        FileUtils.unzip(archiveIndexFile, archiveIndexDir);
       }
+    } catch (IOException e) {
+      throw e;
+    } finally {
 
-      getLogger().fine(
-          "Unzip archiveIndexFile "
-              + archiveIndexFile + " in " + archiveIndexDir);
-      FileUtils.unzip(archiveIndexFile, archiveIndexDir);
+      lock.release();
+      lockIs.close();
+      lockFile.delete();
     }
 
-    FileUtils.checkExistingDirectoryFile(archiveIndexDir, getMapperName()
-        + " index directory");
-
+    FileUtils.checkExistingDirectoryFile(archiveIndexDir,
+        getMapperName() + " index directory");
   }
 
   //
@@ -514,24 +641,84 @@ public abstract class AbstractSequenceReadsMapper implements
   //
 
   @Override
-  public final void mapPE(final File readsFile1, final File readsFile2,
-      final GenomeDescription gd, final File samFile) throws IOException {
+  public final MapperProcess mapSE(final DataFile readsFile)
+      throws IOException {
 
-    // Check if the mapper has been initialized
-    checkState(this.initialized, "Mapper has not been initialized");
+    checkNotNull(readsFile, "readsFile is null");
 
-    FileUtils.copy(mapPE(readsFile1, readsFile2, gd), new FileOutputStream(
-        samFile));
+    if (!readsFile.exists()) {
+      throw new IOException("readsFile1 not exits");
+    }
+
+    getLogger().fine("FASTQ file to map: " + readsFile);
+
+    return mapSE(readsFile.open());
   }
 
   @Override
-  public final InputStream mapPE(final File readsFile1, final File readsFile2,
-      final GenomeDescription gd) throws IOException {
+  public final MapperProcess mapSE(final File readsFile) throws IOException {
+
+    checkNotNull(readsFile, "readsFile is null");
+    checkExistingStandardFile(readsFile,
+        "readsFile1 not exits or is not a standard file.");
+
+    getLogger().fine("FASTQ file to map: " + readsFile);
+
+    return mapSE(new FileInputStream(readsFile));
+  }
+
+  /**
+   * Map reads of FASTQ file in single end mode.
+   * @param in FASTQ input stream
+   * @return an InputStream with SAM data
+   * @throws IOException if an error occurs while mapping the reads
+   */
+  private final MapperProcess mapSE(final InputStream in) throws IOException {
+
+    checkNotNull(in, "in argument is null");
 
     // Check if the mapper has been initialized
     checkState(this.initialized, "Mapper has not been initialized");
 
-    getLogger().fine("Mapping with " + getMapperName() + " in pair-end mode");
+    getLogger().fine("Mapping with " + getMapperName() + " in single-end mode");
+
+    // Unzip archive index if necessary
+    unzipArchiveIndexFile(this.archiveIndexFileInputStream,
+        this.archiveIndexDir);
+
+    // Process to mapping
+    final MapperProcess mapperProcess = mapSE();
+
+    // Copy reads file to named pipe
+    writeFirstPairEntries(in, mapperProcess);
+
+    return mapperProcess;
+  }
+
+  @Override
+  public final MapperProcess mapPE(final DataFile readsFile1,
+      final DataFile readsFile2) throws IOException {
+
+    checkNotNull(readsFile1, "readsFile1 is null");
+    checkNotNull(readsFile2, "readsFile2 is null");
+
+    if (!readsFile1.exists()) {
+      throw new IOException("readsFile1 not exits");
+    }
+
+    if (!readsFile2.exists()) {
+      throw new IOException("readsFile1 not exits");
+    }
+
+    getLogger().fine("First pair FASTQ file to map: " + readsFile1);
+    getLogger().fine("Second pair FASTQ file to map: " + readsFile2);
+
+    return mapPE(readsFile1.open(), readsFile2.open());
+  }
+
+  @Override
+  public final MapperProcess mapPE(final File readsFile1, final File readsFile2)
+      throws IOException {
 
     checkNotNull(readsFile1, "readsFile1 is null");
     checkNotNull(readsFile2, "readsFile2 is null");
@@ -541,59 +728,135 @@ public abstract class AbstractSequenceReadsMapper implements
     checkExistingStandardFile(readsFile2,
         "readsFile2 not exits or is not a standard file.");
 
+    getLogger().fine("First pair FASTQ file: " + readsFile1);
+    getLogger().fine("Second pair FASTQ file: " + readsFile2);
+
+    return mapPE(new FileInputStream(readsFile1),
+        new FileInputStream(readsFile2));
+  }
+
+  /**
+   * Map reads of FASTQ file in paired end mode.
+   * @param in1 FASTQ input file with reads of the first end
+   * @param in2 FASTQ input file with reads of the first end mapper
+   * @return an InputStream with SAM data
+   * @throws IOException if an error occurs while mapping the reads
+   */
+  private final MapperProcess mapPE(final InputStream in1,
+      final InputStream in2) throws IOException {
+
+    checkNotNull(in1, "in1 argument is null");
+    checkNotNull(in2, "in2 argument is null");
+
+    // Check if the mapper has been initialized
+    checkState(this.initialized, "Mapper has not been initialized");
+
+    getLogger().fine("Mapping with " + getMapperName() + " in pair-end mode");
+
+    checkNotNull(in1, "readsFile1 is null");
+    checkNotNull(in2, "readsFile2 is null");
+
     // Unzip archive index if necessary
     unzipArchiveIndexFile(this.archiveIndexFileInputStream,
         this.archiveIndexDir);
 
     // Process to mapping
-    return internalMapPE(readsFile1, readsFile2, this.archiveIndexDir, gd);
+    final MapperProcess mapperProcess = mapPE();
+
+    // Copy reads files to named pipes
+    writeFirstPairEntries(in1, mapperProcess);
+    writeSecondPairEntries(in2, mapperProcess);
+
+    return mapperProcess;
+  }
+
+  /**
+   * Write first pairs entries to the mapper process
+   * @param in first pairs FASTQ file
+   * @param mp mapper process
+   * @throws FileNotFoundException if the input cannot be found
+   */
+  private void writeFirstPairEntries(final InputStream in,
+      final MapperProcess mp) throws FileNotFoundException {
+
+    checkNotNull(in, "in argument cannot be null");
+    checkNotNull(mp, "mp argument cannot be null");
+
+    final Thread t = new Thread(new Runnable() {
+
+      @Override
+      public void run() {
+
+        try {
+          final FastqReader reader = new FastqReader(in);
+
+          for (ReadSequence read : reader) {
+            mp.writeEntry1(read);
+          }
+
+          reader.close();
+          mp.closeWriter1();
+
+        } catch (IOException e) {
+          mappingException = e;
+        }
+      }
+    }, "Mapper writeFirstPairEntries thread");
+
+    t.start();
+  }
+
+  /**
+   * Write first pairs entries to the mapper process
+   * @param in first pairs FASTQ file
+   * @param mp mapper process
+   * @throws FileNotFoundException if the input cannot be found
+   */
+  private void writeSecondPairEntries(final InputStream in,
+      final MapperProcess mp) throws FileNotFoundException {
+
+    checkNotNull(in, "in argument cannot be null");
+    checkNotNull(mp, "mp argument cannot be null");
+
+    final Thread t = new Thread(new Runnable() {
+
+      @Override
+      public void run() {
+
+        try {
+
+          final FastqReader reader = new FastqReader(in);
+
+          for (ReadSequence read : reader) {
+            mp.writeEntry2(read);
+          }
+
+          reader.close();
+          mp.closeWriter2();
+
+        } catch (IOException e) {
+          mappingException = e;
+        }
+      }
+    }, "Mapper writeSecondPairEntries thread");
+
+    t.start();
   }
 
   @Override
-  public final void mapSE(final File readsFile, final GenomeDescription gd,
-      final File samFile) throws IOException {
+  public void throwMappingException() throws IOException {
 
-    // Check if the mapper has been initialized
-    checkState(this.initialized, "Mapper has not been initialized");
-
-    FileUtils.copy(mapSE(readsFile, gd), new FileOutputStream(samFile));
+    if (this.mappingException != null) {
+      throw this.mappingException;
+    }
   }
-
-  @Override
-  public final InputStream mapSE(final File readsFile,
-      final GenomeDescription gd) throws IOException {
-
-    // Check if the mapper has been initialized
-    checkState(this.initialized, "Mapper has not been initialized");
-
-    getLogger().fine("Mapping with " + getMapperName() + " in single-end mode");
-
-    checkNotNull(readsFile, "readsFile1 is null");
-    checkExistingStandardFile(readsFile,
-        "readsFile1 not exits or is not a standard file.");
-
-    // Unzip archive index if necessary
-    unzipArchiveIndexFile(this.archiveIndexFileInputStream,
-        this.archiveIndexDir);
-
-    // Process to mapping
-    return internalMapSE(readsFile, this.archiveIndexDir, gd);
-  }
-
-  protected abstract InputStream internalMapPE(final File readsFile1,
-      final File readsFile2, final File archiveIndex, final GenomeDescription gd)
-      throws IOException;
-
-  protected abstract InputStream internalMapSE(final File readsFile,
-      final File archiveIndex, final GenomeDescription gd) throws IOException;
 
   //
   // Mapping with streams
   //
 
   @Override
-  public final MapperProcess mapPE(final GenomeDescription gd)
-      throws IOException {
+  public final MapperProcess mapPE() throws IOException {
 
     // Check if the mapper has been initialized
     checkState(this.initialized, "Mapper has not been initialized");
@@ -605,7 +868,7 @@ public abstract class AbstractSequenceReadsMapper implements
         this.archiveIndexDir);
 
     // Process to mapping
-    final MapperProcess result = internalMapPE(this.archiveIndexDir, gd);
+    final MapperProcess result = internalMapPE(this.archiveIndexDir);
 
     // Set counter
     result.setIncrementer(this.incrementer, this.counterGroup);
@@ -614,8 +877,7 @@ public abstract class AbstractSequenceReadsMapper implements
   }
 
   @Override
-  public final MapperProcess mapSE(final GenomeDescription gd)
-      throws IOException {
+  public final MapperProcess mapSE() throws IOException {
 
     // Check if the mapper has been initialized
     checkState(this.initialized, "Mapper has not been initialized");
@@ -627,7 +889,7 @@ public abstract class AbstractSequenceReadsMapper implements
         this.archiveIndexDir);
 
     // Process to mapping
-    final MapperProcess result = internalMapSE(this.archiveIndexDir, gd);
+    final MapperProcess result = internalMapSE(this.archiveIndexDir);
 
     // Set counter
     result.setIncrementer(this.incrementer, this.counterGroup);
@@ -635,11 +897,11 @@ public abstract class AbstractSequenceReadsMapper implements
     return result;
   }
 
-  protected abstract MapperProcess internalMapPE(final File archiveIndex,
-      final GenomeDescription gd) throws IOException;
+  protected abstract MapperProcess internalMapPE(final File archiveIndex)
+      throws IOException;
 
-  protected abstract MapperProcess internalMapSE(final File archiveIndex,
-      final GenomeDescription gd) throws IOException;
+  protected abstract MapperProcess internalMapSE(final File archiveIndex)
+      throws IOException;
 
   //
   // Init
@@ -660,30 +922,66 @@ public abstract class AbstractSequenceReadsMapper implements
       return;
     }
 
+    // Set the executor to use
+    if (!this.mapperDockerImage.isEmpty() && this.dockerConnection != null) {
+      this.executor = new DockerMapperExecutor(getDockerConnection(),
+          getMapperDockerImage(), getTempDirectory());
+    } else if (isUseBundledBinaries()) {
+      this.executor = new BundledMapperExecutor(getSoftwarePackage(),
+          getMapperVersionToUse(), getTempDirectory());
+    } else {
+      this.executor = new PathMapperExecutor();
+    }
+
+    getLogger().fine("Use executor: " + this.executor);
+
     if (!checkIfBinaryExists(getIndexerExecutables())) {
       throw new IOException("Unable to find mapper "
           + getMapperName() + " version " + this.mapperVersionToUse
-          + " (flavor: " + this.flavorToUse == null ? "" : this.flavorToUse
+          + " (flavor: "
+          + (this.flavorToUse == null ? "not defined" : this.flavorToUse)
           + ")");
+
     }
 
     if (!checkIfFlavorExists()) {
       throw new IOException("Unable to find mapper "
-          + getMapperName() + " flavor " + this.flavorToUse + " for version "
-          + this.mapperVersionToUse);
+          + getMapperName() + " version " + this.mapperVersionToUse
+          + " (flavor: "
+          + (this.flavorToUse == null ? "not defined" : this.flavorToUse)
+          + ")");
     }
 
     this.binariesReady = true;
   }
 
   @Override
-  public void init(final File archiveIndexFile, final File archiveIndexDir,
+  public void init(final DataFile archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
-      throws IOException {
+          throws IOException {
 
     checkNotNull(archiveIndexFile, "archiveIndexFile is null");
+
+    if (!archiveIndexFile.exists()) {
+      throw new IOException("The archive index file not exits");
+    }
+
+    getLogger().fine("Mapper index archive file: " + archiveIndexFile);
+
+    init(archiveIndexFile.open(), archiveIndexDir, incrementer, counterGroup);
+  }
+
+  @Override
+  public void init(final File archiveIndexFile, final File archiveIndexDir,
+      final ReporterIncrementer incrementer, final String counterGroup)
+          throws IOException {
+
+    checkNotNull(archiveIndexFile, "archiveIndexFile is null");
+
     checkExistingStandardFile(archiveIndexFile,
-        "The archive index file not exits or is not a standard file.");
+        "The archive index file not exits or is not a standard file");
+
+    getLogger().fine("Mapper index archive file: " + archiveIndexFile);
 
     init(new FileInputStream(archiveIndexFile), archiveIndexDir, incrementer,
         counterGroup);
@@ -707,10 +1005,10 @@ public abstract class AbstractSequenceReadsMapper implements
     this.incrementer = incrementer;
     this.counterGroup = counterGroup;
 
-    this.initialized = true;
-
     // Prepare binaries
     prepareBinaries();
+
+    this.initialized = true;
   }
 
   //
@@ -748,17 +1046,16 @@ public abstract class AbstractSequenceReadsMapper implements
    */
   protected String install(final String binaryFilename) throws IOException {
 
-    return BinariesInstaller.install(getSoftwarePackage(),
-        this.mapperVersionToUse, binaryFilename, getTempDirectoryPath());
+    return this.executor.install(binaryFilename);
   }
 
   /**
    * Check if binaries bundled in the jar exists.
    * @param binaryFilenames program to check
    * @return true if the binary exists
-   * @throws IOException if an error occurs while installing binary
    */
-  protected boolean checkIfBinaryExists(final String... binaryFilenames) {
+  protected boolean checkIfBinaryExists(final String... binaryFilenames)
+      throws IOException {
 
     if (binaryFilenames == null || binaryFilenames.length == 0) {
       return false;
@@ -777,12 +1074,11 @@ public abstract class AbstractSequenceReadsMapper implements
    * Check if a binary bundled in the jar exists.
    * @param binaryFilename program to check
    * @return true if the binary exists
-   * @throws IOException if an error occurs while installing binary
    */
-  protected boolean checkIfBinaryExists(final String binaryFilename) {
+  protected boolean checkIfBinaryExists(final String binaryFilename)
+      throws IOException {
 
-    return BinariesInstaller.check(getSoftwarePackage(),
-        this.mapperVersionToUse, binaryFilename);
+    return this.executor.isExecutable(binaryFilename);
   }
 
   /**
@@ -809,6 +1105,33 @@ public abstract class AbstractSequenceReadsMapper implements
     }
 
     return result;
+  }
+
+  /**
+   * Execute a command and get its output.
+   * @param command the command to execute
+   * @return a string with the output
+   * @throws IOException if an error occurs while executing the command
+   */
+  protected String executeToString(final List<String> command)
+      throws IOException {
+
+    final Result result = this.executor.execute(command, null, true, true);
+
+    final StringBuilder sb = new StringBuilder();
+
+    try (BufferedReader reader =
+        new BufferedReader(new InputStreamReader(result.getInputStream()))) {
+
+      String line;
+
+      while ((line = reader.readLine()) != null) {
+        sb.append(line);
+        sb.append('\n');
+      }
+    }
+
+    return sb.toString();
   }
 
   //

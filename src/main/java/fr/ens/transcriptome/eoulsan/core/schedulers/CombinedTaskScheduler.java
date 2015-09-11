@@ -31,6 +31,8 @@ import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 
 import java.util.Set;
 
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.annotations.EoulsanMode;
 import fr.ens.transcriptome.eoulsan.core.ParallelizationMode;
 import fr.ens.transcriptome.eoulsan.core.workflow.AbstractWorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
@@ -51,9 +53,10 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
   private final AbstractTaskScheduler noTaskScheduler;
   private final AbstractTaskScheduler stdTaskScheduler;
   private final AbstractTaskScheduler ownTaskScheduler;
+  private final AbstractTaskScheduler hadoopCompatibleTaskScheduler;
 
-  boolean isStarted;
-  boolean isStopped;
+  private volatile boolean isStarted;
+  private volatile boolean isStopped;
 
   @Override
   public void submit(final WorkflowStep step, final Set<TaskContext> contexts) {
@@ -136,7 +139,10 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
 
     return this.noTaskScheduler.getTotalTaskSubmittedCount()
         + this.stdTaskScheduler.getTotalTaskSubmittedCount()
-        + this.ownTaskScheduler.getTotalTaskSubmittedCount();
+        + this.ownTaskScheduler.getTotalTaskSubmittedCount()
+        + (this.hadoopCompatibleTaskScheduler != null
+            ? this.hadoopCompatibleTaskScheduler.getTotalTaskRunningCount()
+            : 0);
   }
 
   @Override
@@ -144,7 +150,10 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
 
     return this.noTaskScheduler.getTotalTaskRunningCount()
         + this.stdTaskScheduler.getTotalTaskRunningCount()
-        + this.ownTaskScheduler.getTotalTaskRunningCount();
+        + this.ownTaskScheduler.getTotalTaskRunningCount()
+        + (this.hadoopCompatibleTaskScheduler != null
+            ? this.hadoopCompatibleTaskScheduler.getTotalTaskRunningCount()
+            : 0);
   }
 
   @Override
@@ -152,7 +161,9 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
 
     return this.noTaskScheduler.getTotalTaskDoneCount()
         + this.stdTaskScheduler.getTotalTaskDoneCount()
-        + this.ownTaskScheduler.getTotalTaskDoneCount();
+        + this.ownTaskScheduler.getTotalTaskDoneCount()
+        + (this.hadoopCompatibleTaskScheduler != null
+            ? this.hadoopCompatibleTaskScheduler.getTotalTaskDoneCount() : 0);
   }
 
   @Override
@@ -169,6 +180,9 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
     this.noTaskScheduler.start();
     this.stdTaskScheduler.start();
     this.ownTaskScheduler.start();
+    if (this.hadoopCompatibleTaskScheduler != null) {
+      this.hadoopCompatibleTaskScheduler.start();
+    }
 
     // Pause ownTaskScheduler
     this.ownTaskScheduler.pause();
@@ -190,6 +204,9 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
     this.noTaskScheduler.stop();
     this.stdTaskScheduler.stop();
     this.ownTaskScheduler.stop();
+    if (this.hadoopCompatibleTaskScheduler != null) {
+      this.hadoopCompatibleTaskScheduler.stop();
+    }
   }
 
   //
@@ -221,6 +238,18 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
   }
 
   /**
+   * Get the Eoulsan mode of a step.
+   * @param step the step
+   * @return the Eoulsan mode of the step
+   */
+  private static EoulsanMode getEoulsanMode(final WorkflowStep step) {
+
+    checkNotNull(step, "step argument cannot be null");
+
+    return ((AbstractWorkflowStep) step).getEoulsanMode();
+  }
+
+  /**
    * Get the task scheduler of a step.
    * @param step the step
    * @return the task scheduler that the step must use
@@ -242,7 +271,13 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
       return this.noTaskScheduler;
 
     case STANDARD:
-      return this.stdTaskScheduler;
+
+      if (this.hadoopCompatibleTaskScheduler == null) {
+        return this.stdTaskScheduler;
+      }
+
+      return getEoulsanMode(step) == EoulsanMode.HADOOP_COMPATIBLE
+          ? this.hadoopCompatibleTaskScheduler : this.stdTaskScheduler;
 
     case OWN_PARALLELIZATION:
       return this.ownTaskScheduler;
@@ -319,6 +354,11 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
     this.stdTaskScheduler = new MultiThreadTaskScheduler(threadNumber);
     this.noTaskScheduler = new MonoThreadTaskScheduler();
     this.ownTaskScheduler = new MonoThreadTaskScheduler();
+
+    this.hadoopCompatibleTaskScheduler =
+        EoulsanRuntime.getRuntime().isHadoopMode()
+            ? new HadoopCompatibleTaskScheduler() : null;
+
   }
 
 }

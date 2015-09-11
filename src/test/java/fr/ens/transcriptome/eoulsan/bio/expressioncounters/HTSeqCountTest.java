@@ -41,8 +41,8 @@ import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
 public class HTSeqCountTest {
 
   @Test
-  public void testCountReadsInFeatures() throws EoulsanException, IOException,
-      BadBioEntryException {
+  public void testCountReadsInFeatures()
+      throws EoulsanException, IOException, BadBioEntryException {
 
     // InputStream isSE =
     // this.getClass().getResourceAsStream("/mapper_results_SE.sam");
@@ -89,7 +89,7 @@ public class HTSeqCountTest {
     // File outputFilePE_strict_reverse =
     // new File(dirTest, "PE-strict-java-reverse");
 
-    // All results from HTSeqCount are compared with the HTSeq-count (pyhton
+    // All results from HTSeqCount are compared with the HTSeq-count (python
     // implementation) results
 
     // HTSeqCount.countReadsInFeatures(samFileSE, annotationFileSE,

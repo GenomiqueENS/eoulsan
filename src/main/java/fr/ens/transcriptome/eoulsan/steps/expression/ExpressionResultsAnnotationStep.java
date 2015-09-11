@@ -170,7 +170,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
         this.annotationFile = new DataFile(p.getStringValue());
       } else if ("outputformat".equals(p.getName())) {
 
-        // Set ouptut format
+        // Set output format
 
         for (String format : Splitter.on(',').trimResults().omitEmptyStrings()
             .split(p.getValue())) {
@@ -202,8 +202,8 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
 
     // Check if annotation file exists
     if (this.annotationFile != null && !this.annotationFile.exists()) {
-      throw new EoulsanException("The annotation file does not exists: "
-          + this.annotationFile);
+      throw new EoulsanException(
+          "The annotation file does not exists: " + this.annotationFile);
     }
 
     // Set the default format
@@ -214,7 +214,8 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Load translator
     final Translator translator;

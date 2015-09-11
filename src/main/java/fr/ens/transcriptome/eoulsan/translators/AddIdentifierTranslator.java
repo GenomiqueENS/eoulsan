@@ -99,7 +99,7 @@ public class AddIdentifierTranslator extends BasicTranslator {
     String[] tFields = this.translator.getFields();
 
     if (tFields == null) {
-      this.fields = new String[] {this.newFieldName};
+      this.fields = new String[] { this.newFieldName };
     } else {
 
       this.fields = new String[tFields.length + 1];
@@ -123,7 +123,7 @@ public class AddIdentifierTranslator extends BasicTranslator {
   }
 
   /**
-   * Get the available identfiers by the translator if possible.
+   * Get the available identifiers by the translator if possible.
    * @return a array of string with the identifiers
    */
   @Override

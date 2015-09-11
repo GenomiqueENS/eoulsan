@@ -59,7 +59,7 @@ public class FastqOutputFormat extends FileOutputFormat<Text, Text> {
     if (isCompressed) {
       Class<? extends CompressionCodec> codecClass =
           getOutputCompressorClass(context, GzipCodec.class);
-      codec = (CompressionCodec) ReflectionUtils.newInstance(codecClass, conf);
+      codec = ReflectionUtils.newInstance(codecClass, conf);
       extension = codec.getDefaultExtension();
     }
 
@@ -74,8 +74,8 @@ public class FastqOutputFormat extends FileOutputFormat<Text, Text> {
     } else {
 
       FSDataOutputStream fileOut = fs.create(file, false);
-      return new FastqRecordWriter(context, new DataOutputStream(
-          codec.createOutputStream(fileOut)));
+      return new FastqRecordWriter(context,
+          new DataOutputStream(codec.createOutputStream(fileOut)));
     }
   }
 

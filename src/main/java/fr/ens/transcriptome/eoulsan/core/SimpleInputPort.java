@@ -37,8 +37,8 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class SimpleInputPort extends AbstractPort implements InputPort,
-    Serializable {
+public class SimpleInputPort extends AbstractPort
+    implements InputPort, Serializable {
 
   private static final long serialVersionUID = 4663590179211976634L;
 
@@ -87,7 +87,8 @@ public class SimpleInputPort extends AbstractPort implements InputPort,
    * @param list true if a list is excepted as port value
    * @param format format of the port
    */
-  SimpleInputPort(final String name, final boolean list, final DataFormat format) {
+  SimpleInputPort(final String name, final boolean list,
+      final DataFormat format) {
 
     this(name, list, format, null);
   }
@@ -190,8 +191,9 @@ public class SimpleInputPort extends AbstractPort implements InputPort,
    */
   SimpleInputPort(final InputPort inputPort) {
 
-    this(inputPort.getName(), inputPort.getFormat(), inputPort
-        .getCompressionsAccepted(), inputPort.isRequiredInWorkingDirectory());
+    this(inputPort.getName(), inputPort.getFormat(),
+        inputPort.getCompressionsAccepted(),
+        inputPort.isRequiredInWorkingDirectory());
   }
 
 }

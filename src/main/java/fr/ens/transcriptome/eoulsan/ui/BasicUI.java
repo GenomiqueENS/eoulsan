@@ -95,7 +95,8 @@ public class BasicUI extends AbstractUI {
 
   @Override
   public void notifyStepState(final WorkflowStep step,
-      final int terminatedTasks, final int submittedTasks, final double progress) {
+      final int terminatedTasks, final int submittedTasks,
+      final double progress) {
 
     // Check if the UI has been initialized
     checkState(this.workflow != null, "The UI has not been initialized");
@@ -113,12 +114,10 @@ public class BasicUI extends AbstractUI {
       System.out.println(Globals.WELCOME_MSG);
     }
 
-    final String msg =
-        String
-            .format(
-                "%.0f%% workflow done (currently process step %s #%d, %.0f%% done)",
-                globalProgress * 100.0, step.getId(), step.getNumber(),
-                progress * 100.0);
+    final String msg = String.format(
+        "%.0f%% workflow done (currently process step %s #%d, %.0f%% done)",
+        globalProgress * 100.0, step.getId(), step.getNumber(),
+        progress * 100.0);
 
     // Clear previous message
     System.out.print(Strings.repeat("\r", this.lastMessageLength));
@@ -152,7 +151,8 @@ public class BasicUI extends AbstractUI {
   }
 
   @Override
-  public void notifyWorkflowSuccess(final boolean success, final String message) {
+  public void notifyWorkflowSuccess(final boolean success,
+      final String message) {
     // Do nothing
   }
 

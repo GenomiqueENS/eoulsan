@@ -31,6 +31,7 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType.G
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.core.ParallelizationMode;
+import fr.ens.transcriptome.eoulsan.core.schedulers.clusters.ClusterTaskScheduler;
 import fr.ens.transcriptome.eoulsan.core.workflow.AbstractWorkflowStep;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskContext;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
@@ -48,8 +49,8 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   private final AbstractTaskScheduler stdTaskScheduler;
   private final AbstractTaskScheduler clusterTaskScheduler;
 
-  boolean isStarted;
-  boolean isStopped;
+  private volatile boolean isStarted;
+  private volatile boolean isStopped;
 
   @Override
   public void submit(final WorkflowStep step, final Set<TaskContext> contexts) {
@@ -242,12 +243,16 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   /**
    * Constructor.
    * @param threadNumber number of thread to use by the task scheduler
+   * @param clusterScheduler cluster scheduler to use
    */
-  public ClusterCombinedTaskScheduler(final int threadNumber) {
+  public ClusterCombinedTaskScheduler(final int threadNumber,
+      final ClusterTaskScheduler clusterScheduler) {
+
+    checkNotNull(clusterScheduler, "clusterScheduler argument cannot be null");
 
     // Create the schedulers
     this.noTaskScheduler = new MonoThreadTaskScheduler();
     this.stdTaskScheduler = new MultiThreadTaskScheduler(threadNumber);
-    this.clusterTaskScheduler = new ClusterMultiThreadTaskScheduler();
+    this.clusterTaskScheduler = (AbstractTaskScheduler) clusterScheduler;
   }
 }

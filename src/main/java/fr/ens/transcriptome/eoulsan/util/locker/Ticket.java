@@ -153,13 +153,11 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
     final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
 
     return dateFormat.format(new Date(this.creationTime))
-        + " "
-        + dateFormat.format(new Date(this.lastActiveTime))
-        + " "
-        + dateFormat.format(new Date(System.currentTimeMillis()
-            - this.creationTime)) + " "
-        + (this.working ? "WORKING" : "NOT WORKING") + " [" + this.pid + '.'
-        + this.threadId + " "
+        + " " + dateFormat.format(new Date(this.lastActiveTime)) + " "
+        + dateFormat
+            .format(new Date(System.currentTimeMillis() - this.creationTime))
+        + " " + (this.working ? "WORKING" : "NOT WORKING") + " [" + this.pid
+        + '.' + this.threadId + " "
         + (this.description != null ? this.description : "") + "]";
   }
 
@@ -189,8 +187,8 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
   }
 
   public Ticket(final String description) {
-    this(getCurrentPid(), Thread.currentThread().getId(), System
-        .currentTimeMillis(), System.nanoTime(), description, -1, false);
+    this(getCurrentPid(), Thread.currentThread().getId(),
+        System.currentTimeMillis(), System.nanoTime(), description, -1, false);
   }
 
   public Ticket(final Ticket ticket) {

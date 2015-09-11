@@ -111,12 +111,12 @@ public interface Data {
   String getDataFilename();
 
   /**
-   * Get the pathname for the data. This method works only for a multifile
+   * Get the pathname for the data. This method works only for a multi-file
    * DataFormat.
-   * @param fileIndex file index for multifile data
+   * @param fileIndex file index for multi-file data
    * @return a String with the pathname
    * @throws fr.ens.transcriptome.eoulsan.EoulsanRuntimeException if the
-   *           DataFormat is not multifile
+   *           DataFormat is not multi-file
    */
   String getDataFilename(int fileIndex);
 
@@ -128,30 +128,30 @@ public interface Data {
 
   /**
    * Get the DataFile for an input DataType and a Sample. This method works only
-   * for a multifile DataFormat.
-   * @param fileIndex file index for multifile data
+   * for a multi-file DataFormat.
+   * @param fileIndex file index for multi-file data
    * @return a new DataFile object
    * @throws fr.ens.transcriptome.eoulsan.EoulsanRuntimeException if the
-   *           DataFormat is not multifile
+   *           DataFormat is not multi-file
    */
   DataFile getDataFile(int fileIndex);
 
   /**
-   * Count the number for DataFile available for a multifile DataFormat and a
-   * Sample. This method works only for a multifile DataFormat.
-   * @return the number of multifile for the DataFormat and the sample
+   * Count the number for DataFile available for a multi-file DataFormat and a
+   * Sample. This method works only for a multi-file DataFormat.
+   * @return the number of multi-file for the DataFormat and the sample
    * @throws fr.ens.transcriptome.eoulsan.EoulsanRuntimeException if the
-   *           DataFormat is not multifile
+   *           DataFormat is not multi-file
    */
   int getDataFileCount();
 
   /**
-   * Count the number for DataFile available for a multifile DataFormat and a
-   * Sample. This method works only for a multifile DataFormat.
+   * Count the number for DataFile available for a multi-file DataFormat and a
+   * Sample. This method works only for a multi-file DataFormat.
    * @param existingFiles if true return the number of files that really exists
-   * @return the number of multifile for the DataFormat and the sample
+   * @return the number of multi-file for the DataFormat and the sample
    * @throws fr.ens.transcriptome.eoulsan.EoulsanRuntimeException if the
-   *           DataFormat is not multifile
+   *           DataFormat is not multi-file
    */
   int getDataFileCount(boolean existingFiles);
 

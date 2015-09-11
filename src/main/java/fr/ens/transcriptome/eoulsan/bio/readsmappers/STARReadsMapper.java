@@ -27,17 +27,16 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
@@ -66,7 +65,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  public String getMapperVersion() {
+  public String internalGetMapperVersion() {
 
     try {
       final String execPath;
@@ -76,21 +75,18 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       }
 
       // Create temporary directory
-      final File tempDir =
-          File.createTempFile("STAR-get-version-", ".tmp", EoulsanRuntime
-              .getSettings().getTempDirectoryFile());
+      final File tempDir = File.createTempFile("STAR-get-version-", ".tmp",
+          EoulsanRuntime.getSettings().getTempDirectoryFile());
 
       if (!(tempDir.delete() && tempDir.mkdir())) {
-        EoulsanLogger.getLogger().warning(
-            "Cannot create temporary directory for STAR: " + tempDir);
+        EoulsanLogger.getLogger()
+            .warning("Cannot create temporary directory for STAR: " + tempDir);
         return null;
       }
 
       // Execute STAR with no argument
-      final ProcessBuilder pb = new ProcessBuilder(execPath);
-      pb.directory(tempDir);
-      final Process p = pb.start();
-      p.waitFor();
+      getExecutor().execute(Lists.newArrayList(execPath), tempDir, false, false,
+          tempDir);
 
       final File logFile = new File(tempDir, "Log.out");
 
@@ -125,9 +121,6 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
 
       e.printStackTrace();
 
-      return null;
-    } catch (InterruptedException e) {
-      e.printStackTrace();
       return null;
     }
   }
@@ -200,9 +193,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   /**
-   * Get the name of a bowtie flavored binary.
-   * @param binary the binary
-   * @param firstFlavoredVersion first version of Bowtie to be flavored
+   * Get the name of the flavored binary.
    * @return the flavored binary name
    */
   private String flavoredBinary() {
@@ -239,25 +230,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected InputStream internalMapSE(final File readsFile,
-      final File archiveIndex, final GenomeDescription gd) throws IOException {
-
-    final String starPath;
-
-    synchronized (SYNC) {
-      starPath = install(flavoredBinary());
-    }
-
-    final MapperProcess mapperProcess =
-        createMapperProcessSE(starPath, archiveIndex.getAbsolutePath(),
-            readsFile, true);
-
-    return mapperProcess.getStout();
-  }
-
-  @Override
-  protected InputStream internalMapPE(final File readsFile1,
-      final File readsFile2, final File archiveIndex, final GenomeDescription gd)
+  protected MapperProcess internalMapSE(final File archiveIndex)
       throws IOException {
 
     final String starPath;
@@ -266,16 +239,12 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       starPath = install(flavoredBinary());
     }
 
-    final MapperProcess mapperProcess =
-        createMapperProcessPE(starPath, archiveIndex.getAbsolutePath(),
-            readsFile1, readsFile2, true);
-
-    return mapperProcess.getStout();
+    return createMapperProcessSE(starPath, archiveIndex.getAbsolutePath());
   }
 
   @Override
-  protected MapperProcess internalMapSE(final File archiveIndex,
-      final GenomeDescription gd) throws IOException {
+  protected MapperProcess internalMapPE(final File archiveIndex)
+      throws IOException {
 
     final String starPath;
 
@@ -283,29 +252,13 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       starPath = install(flavoredBinary());
     }
 
-    return createMapperProcessSE(starPath, archiveIndex.getAbsolutePath(),
-        null, false);
-  }
-
-  @Override
-  protected MapperProcess internalMapPE(final File archiveIndex,
-      final GenomeDescription gd) throws IOException {
-
-    final String starPath;
-
-    synchronized (SYNC) {
-      starPath = install(flavoredBinary());
-    }
-
-    return createMapperProcessPE(starPath, archiveIndex.getAbsolutePath(),
-        null, null, false);
+    return createMapperProcessPE(starPath, archiveIndex.getAbsolutePath());
   }
 
   private MapperProcess createMapperProcessSE(final String starPath,
-      final String archivePath, final File readsPath, final boolean fileMode)
-      throws IOException {
+      final String archivePath) throws IOException {
 
-    return new MapperProcess(this, fileMode, false, false) {
+    return new MapperProcess(this, false) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -323,11 +276,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
         cmd.addAll(getListMapperArguments());
 
         cmd.add("--readFilesIn");
-        if (fileMode) {
-          cmd.add(readsPath.getAbsolutePath());
-        } else {
-          cmd.add(getTmpInputFile1().getAbsolutePath());
-        }
+        cmd.add(getNamedPipeFile1().getAbsolutePath());
 
         return Collections.singletonList(cmd);
       }
@@ -336,10 +285,9 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   private MapperProcess createMapperProcessPE(final String starPath,
-      final String archivePath, final File reads1File, final File reads2File,
-      final boolean fileMode) throws IOException {
+      final String archivePath) throws IOException {
 
-    return new MapperProcess(this, fileMode, false, false) {
+    return new MapperProcess(this, true) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -357,13 +305,8 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
         cmd.addAll(getListMapperArguments());
 
         cmd.add("--readFilesIn");
-        if (fileMode) {
-          cmd.add(reads1File.getAbsolutePath());
-          cmd.add(reads2File.getAbsolutePath());
-        } else {
-          cmd.add(getTmpInputFile1().getAbsolutePath());
-          cmd.add(getTmpInputFile2().getAbsolutePath());
-        }
+        cmd.add(getNamedPipeFile1().getAbsolutePath());
+        cmd.add(getNamedPipeFile2().getAbsolutePath());
 
         return Collections.singletonList(cmd);
       }
@@ -378,7 +321,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   public void init(final File archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
-      throws IOException {
+          throws IOException {
 
     super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }

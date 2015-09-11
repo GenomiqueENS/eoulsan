@@ -259,8 +259,8 @@ public class FileUtils {
 
     if (file.isFile()) {
       if (!file.delete()) {
-        throw new IOException("Can not remove existing file: "
-            + file.getAbsolutePath());
+        throw new IOException(
+            "Can not remove existing file: " + file.getAbsolutePath());
       }
     }
 
@@ -293,9 +293,8 @@ public class FileUtils {
    * @return a BufferedReader
    * @throws FileNotFoundException if the file is not found
    */
-  public static final BufferedReader createBufferedReader(
-      final String filename, final Charset charset)
-      throws FileNotFoundException {
+  public static final BufferedReader createBufferedReader(final String filename,
+      final Charset charset) throws FileNotFoundException {
 
     if (filename == null) {
       throw new NullPointerException("The filename is null");
@@ -332,8 +331,8 @@ public class FileUtils {
       return new BufferedReader(new InputStreamReader(is, charset));
     }
 
-    return new BufferedReader(new InputStreamReader(is,
-        FileCharsets.SYSTEM_CHARSET));
+    return new BufferedReader(
+        new InputStreamReader(is, FileCharsets.SYSTEM_CHARSET));
   }
 
   /**
@@ -341,7 +340,8 @@ public class FileUtils {
    * @param is InputStream to read
    * @return a BufferedReader
    */
-  public static final BufferedReader createBufferedReader(final InputStream is) {
+  public static final BufferedReader createBufferedReader(
+      final InputStream is) {
 
     return createBufferedReader(is, null);
   }
@@ -363,8 +363,8 @@ public class FileUtils {
       return new BufferedReader(new InputStreamReader(is, charset));
     }
 
-    return new BufferedReader(new InputStreamReader(is,
-        FileCharsets.SYSTEM_CHARSET));
+    return new BufferedReader(
+        new InputStreamReader(is, FileCharsets.SYSTEM_CHARSET));
   }
 
   /**
@@ -450,7 +450,7 @@ public class FileUtils {
    */
   public static final UnSynchronizedBufferedWriter createFastBufferedWriter(
       final OutputStream os, final Charset charset)
-      throws FileNotFoundException {
+          throws FileNotFoundException {
 
     if (os == null) {
       throw new NullPointerException("The output stream is null");
@@ -477,20 +477,19 @@ public class FileUtils {
     // Remove file if exists
     if (file.exists()) {
       if (!file.delete()) {
-        throw new IOException("Can not remove existing file: "
-            + file.getAbsolutePath());
+        throw new IOException(
+            "Can not remove existing file: " + file.getAbsolutePath());
       }
     }
 
     final FileOutputStream outFile = new FileOutputStream(file);
     final FileChannel outChannel = outFile.getChannel();
 
-    final OutputStream gzos =
-        CompressionType.createGZipOutputStream(Channels
-            .newOutputStream(outChannel));
+    final OutputStream gzos = CompressionType
+        .createGZipOutputStream(Channels.newOutputStream(outChannel));
 
-    return new UnSynchronizedBufferedWriter(new OutputStreamWriter(gzos,
-        FileCharsets.SYSTEM_CHARSET));
+    return new UnSynchronizedBufferedWriter(
+        new OutputStreamWriter(gzos, FileCharsets.SYSTEM_CHARSET));
   }
 
   /**
@@ -514,8 +513,8 @@ public class FileUtils {
    * @return a BufferedWriter
    * @throws IOException if the file is not found
    */
-  public static final BufferedWriter createBufferedWriter(
-      final String filename, final Charset charset) throws IOException {
+  public static final BufferedWriter createBufferedWriter(final String filename,
+      final Charset charset) throws IOException {
 
     if (filename == null) {
       throw new NullPointerException("The filename is null");
@@ -550,8 +549,8 @@ public class FileUtils {
 
     final OutputStream os = createOutputStream(file);
 
-    return new BufferedWriter(new OutputStreamWriter(os, charset != null
-        ? charset : FileCharsets.SYSTEM_CHARSET));
+    return new BufferedWriter(new OutputStreamWriter(os,
+        charset != null ? charset : FileCharsets.SYSTEM_CHARSET));
   }
 
   /**
@@ -575,16 +574,15 @@ public class FileUtils {
    * @return a BufferedWriter
    * @throws FileNotFoundException if the file is not found
    */
-  public static final BufferedWriter createBufferedWriter(
-      final OutputStream os, final Charset charset)
-      throws FileNotFoundException {
+  public static final BufferedWriter createBufferedWriter(final OutputStream os,
+      final Charset charset) throws FileNotFoundException {
 
     if (os == null) {
       throw new NullPointerException("The output stream is null");
     }
 
-    return new BufferedWriter(new OutputStreamWriter(os, charset != null
-        ? charset : FileCharsets.SYSTEM_CHARSET));
+    return new BufferedWriter(new OutputStreamWriter(os,
+        charset != null ? charset : FileCharsets.SYSTEM_CHARSET));
   }
 
   /**
@@ -604,20 +602,19 @@ public class FileUtils {
     // Remove file if exists
     if (file.exists()) {
       if (!file.delete()) {
-        throw new IOException("Can not remove existing file: "
-            + file.getAbsolutePath());
+        throw new IOException(
+            "Can not remove existing file: " + file.getAbsolutePath());
       }
     }
 
     final FileOutputStream outFile = new FileOutputStream(file);
     final FileChannel outChannel = outFile.getChannel();
 
-    final OutputStream gzos =
-        CompressionType.createGZipOutputStream(Channels
-            .newOutputStream(outChannel));
+    final OutputStream gzos = CompressionType
+        .createGZipOutputStream(Channels.newOutputStream(outChannel));
 
-    return new BufferedWriter(new OutputStreamWriter(gzos,
-        FileCharsets.SYSTEM_CHARSET));
+    return new BufferedWriter(
+        new OutputStreamWriter(gzos, FileCharsets.SYSTEM_CHARSET));
   }
 
   /**
@@ -636,8 +633,8 @@ public class FileUtils {
     // Remove file if exists
     if (file.exists()) {
       if (!file.delete()) {
-        throw new IOException("Can not remove existing file: "
-            + file.getAbsolutePath());
+        throw new IOException(
+            "Can not remove existing file: " + file.getAbsolutePath());
       }
     }
 
@@ -765,8 +762,8 @@ public class FileUtils {
       }
 
       if (!myDestFile.delete()) {
-        throw new IOException("Can not remove existing file: "
-            + myDestFile.getAbsolutePath());
+        throw new IOException(
+            "Can not remove existing file: " + myDestFile.getAbsolutePath());
       }
 
     }
@@ -902,8 +899,8 @@ public class FileUtils {
   /**
    * Unzip a zip file in a directory.
    * @param is input stream of the zip file
-   * @param outputDirectory
-   * @throws IOException
+   * @param outputDirectory output directory
+   * @throws IOException if an error occurs while unzipping the file
    */
   public static void unzip(final InputStream is, final File outputDirectory)
       throws IOException {
@@ -917,8 +914,8 @@ public class FileUtils {
     }
 
     if (!(outputDirectory.exists() && outputDirectory.isDirectory())) {
-      throw new IOException("The output directory is invalid ("
-          + outputDirectory + ")");
+      throw new IOException(
+          "The output directory is invalid (" + outputDirectory + ")");
     }
 
     BufferedOutputStream dest = null;
@@ -968,9 +965,9 @@ public class FileUtils {
 
   /**
    * Unzip a zip file in a directory.
-   * @param zipFile
-   * @param outputDirectory
-   * @throws IOException
+   * @param zipFile The zip file
+   * @param outputDirectory The output directory
+   * @throws IOException if an issue occurs while unzipping the file
    */
   public static void unzip(final File zipFile, final File outputDirectory)
       throws IOException {
@@ -1112,8 +1109,8 @@ public class FileUtils {
    * @return true if and only if the operation succeeded
    * @throws IOException
    */
-  public static boolean setExecutable(final File file,
-      final boolean executable, final boolean ownerOnly) throws IOException {
+  public static boolean setExecutable(final File file, final boolean executable,
+      final boolean ownerOnly) throws IOException {
 
     if (file == null) {
       return false;
@@ -1125,10 +1122,9 @@ public class FileUtils {
 
     final char op = executable ? '+' : '-';
 
-    final String cmd =
-        "chmod "
-            + (ownerOnly ? "u" + op + "x " : "ugo" + op + "x ")
-            + file.getAbsolutePath();
+    final String cmd = "chmod "
+        + (ownerOnly ? "u" + op + "x " : "ugo" + op + "x ")
+        + file.getAbsolutePath();
 
     ProcessUtils.exec(cmd, false);
 
@@ -1174,10 +1170,9 @@ public class FileUtils {
 
     final char op = readable ? '+' : '-';
 
-    final String cmd =
-        "chmod "
-            + (ownerOnly ? "u" + op + "r " : "ugo" + op + "r ")
-            + file.getAbsolutePath();
+    final String cmd = "chmod "
+        + (ownerOnly ? "u" + op + "r " : "ugo" + op + "r ")
+        + file.getAbsolutePath();
 
     ProcessUtils.exec(cmd, true);
 
@@ -1223,10 +1218,9 @@ public class FileUtils {
 
     final char op = writable ? '+' : '-';
 
-    final String cmd =
-        "chmod "
-            + (ownerOnly ? "u" + op + "w " : "ugo" + op + "w ")
-            + file.getAbsolutePath();
+    final String cmd = "chmod "
+        + (ownerOnly ? "u" + op + "w " : "ugo" + op + "w ")
+        + file.getAbsolutePath();
 
     ProcessUtils.exec(cmd, true);
 
@@ -1272,10 +1266,9 @@ public class FileUtils {
 
     final char op = writable ? '+' : '-';
 
-    final String cmd =
-        "chmod "
-            + (ownerOnly ? "u" + op + "w " : "ugo" + op + "w ")
-            + file.getAbsolutePath();
+    final String cmd = "chmod "
+        + (ownerOnly ? "u" + op + "w " : "ugo" + op + "w ")
+        + file.getAbsolutePath();
 
     ProcessUtils.exec(cmd, true);
 
@@ -1424,8 +1417,8 @@ public class FileUtils {
     } while (tempFile.exists());
 
     if (!tempFile.createNewFile()) {
-      throw new IOException("Failed to create temp file named "
-          + tempFile.getAbsolutePath());
+      throw new IOException(
+          "Failed to create temp file named " + tempFile.getAbsolutePath());
     }
 
     return tempFile;
@@ -1508,8 +1501,8 @@ public class FileUtils {
       return newTempDir;
     }
 
-    throw new IOException("Failed to create temp dir named "
-        + newTempDir.getAbsolutePath());
+    throw new IOException(
+        "Failed to create temp dir named " + newTempDir.getAbsolutePath());
 
   }
 
@@ -1554,8 +1547,8 @@ public class FileUtils {
     }
 
     if (!file.exists()) {
-      throw new IOException("The "
-          + msgFileType + " does not exists: " + file.getAbsolutePath());
+      throw new IOException(
+          "The " + msgFileType + " does not exists: " + file.getAbsolutePath());
     }
   }
 
@@ -1571,7 +1564,8 @@ public class FileUtils {
     checkExistingFile(directory, msgFileType);
     if (!directory.isDirectory()) {
       throw new IOException("The "
-          + msgFileType + " is not a directory: " + directory.getAbsolutePath());
+          + msgFileType + " is not a directory: "
+          + directory.getAbsolutePath());
     }
   }
 
@@ -1587,7 +1581,8 @@ public class FileUtils {
     checkExistingFile(file, msgFileType);
     if (!file.isFile()) {
       throw new IOException("The "
-          + msgFileType + " is  not a standard file: " + file.getAbsolutePath());
+          + msgFileType + " is  not a standard file: "
+          + file.getAbsolutePath());
     }
   }
 
@@ -1597,8 +1592,8 @@ public class FileUtils {
    * @param msgFileType message for the description of the file
    * @throws IOException if the file doesn't exists
    */
-  public static final void checkExistingStandardFileOrDirectory(
-      final File file, final String msgFileType) throws IOException {
+  public static final void checkExistingStandardFileOrDirectory(final File file,
+      final String msgFileType) throws IOException {
 
     checkExistingDirectoryFile(file, msgFileType);
     if (!file.isFile() && !file.isDirectory()) {
@@ -1614,16 +1609,16 @@ public class FileUtils {
    * @param link link file
    * @return true if the link has been successfully created
    */
-  public static final boolean createHardLink(final File target, final File link) {
+  public static final boolean createHardLink(final File target,
+      final File link) {
 
     if (target == null || link == null || !target.exists()) {
       return false;
     }
 
-    final String cmd =
-        "ln "
-            + StringUtils.bashEscaping(target.getAbsolutePath()) + " "
-            + StringUtils.bashEscaping(link.getAbsolutePath());
+    final String cmd = "ln "
+        + StringUtils.bashEscaping(target.getAbsolutePath()) + " "
+        + StringUtils.bashEscaping(link.getAbsolutePath());
     try {
 
       Process p = Runtime.getRuntime().exec(cmd);
@@ -1774,7 +1769,7 @@ public class FileUtils {
 
   /**
    * Relativize a path from a base path.
-   * @param path path to relatize
+   * @param path path to relativize
    * @param base base path (must be a directory)
    * @return a File object with the relative path
    */
@@ -1845,6 +1840,98 @@ public class FileUtils {
     }
 
     return result;
+  }
+
+  /**
+   * Create a named pipe.
+   * @param file path of the named pipe
+   * @throws IOException if an error occurs while creating the named pipe
+   */
+  public static void createNamedPipe(final File file) throws IOException {
+
+    if (file == null) {
+      throw new NullPointerException("file argument cannot be null");
+    }
+
+    if (file.exists()) {
+      throw new IOException("Named pipe to create already exists: " + file);
+    }
+
+    final Process process =
+        new ProcessBuilder("mkfifo", file.getAbsolutePath()).start();
+
+    int exitCode;
+    try {
+      exitCode = process.waitFor();
+
+      if (exitCode != 0) {
+        throw new IOException("Unable to create named pipe: " + file);
+      }
+
+    } catch (InterruptedException e) {
+      throw new IOException("Unable to create named pipe: " + file, e);
+    }
+
+  }
+
+  /**
+   * Check if an executable is in the PATH.
+   * @param executableName the name of the executable
+   * @return true if an executable is in the PATH
+   */
+  public static boolean checkIfExecutableIsInPATH(final String executableName) {
+
+    if (executableName == null) {
+      throw new NullPointerException("executableName argument cannot be null");
+    }
+
+    final String pathEnv = System.getenv("PATH");
+
+    if (pathEnv == null) {
+      return false;
+    }
+
+    final FilenameFilter filter = new FilenameFilter() {
+
+      @Override
+      public boolean accept(final File dir, final String name) {
+
+        return executableName.equals(name);
+      }
+    };
+
+    final String[] paths = pathEnv.split(":");
+
+    for (String path : paths) {
+
+      path = path.trim();
+
+      if (path.isEmpty()) {
+        continue;
+      }
+
+      File f = new File(path);
+
+      if (!f.exists()) {
+        continue;
+      }
+
+      if (f.isFile()) {
+
+        if (executableName.equals(f.getName())) {
+          return true;
+        }
+      } else {
+
+        final File[] files = f.listFiles(filter);
+
+        if (files != null && files.length > 0) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
 }

@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
@@ -56,22 +55,19 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
 
   @Override
   public boolean compareFiles(final BloomFilterUtils filter,
-      final InputStream isBAM) throws IOException {
+      final InputStream in) throws IOException {
 
     String line = null;
     this.numberElementsCompared = 0;
 
     // Create Bam reader
-    final SamReader bamfr =
-        SamReaderFactory.makeDefault().open(SamInputResource.of(isBAM));
+    final SamReader bamReader =
+        SamReaderFactory.makeDefault().open(SamInputResource.of(in));
 
     // Get iterator on file
-    final Iterator<SAMRecord> it = bamfr.iterator();
 
     // Parse file
-    while (it.hasNext()) {
-      final SAMRecord r = it.next();
-
+    for (SAMRecord r : bamReader) {
       // Convert in SAM
       line = r.getSAMString();
       this.numberElementsCompared++;
@@ -87,7 +83,7 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
             setCauseFailComparison(line);
 
             // Close reader
-            bamfr.close();
+            bamReader.close();
 
             return false;
           }
@@ -99,7 +95,7 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
           setCauseFailComparison(line);
 
           // Close reader
-          bamfr.close();
+          bamReader.close();
 
           return false;
         }
@@ -108,7 +104,7 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
     }
 
     // Close reader
-    bamfr.close();
+    bamReader.close();
 
     // Check count element is the same between two files
     if (this.numberElementsCompared != filter.getAddedNumberOfElements()) {
@@ -130,14 +126,12 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
         initBloomFilter(getExpectedNumberOfElements());
 
     // Parse BAM file
-    try (final SamReader bamfr =
+    try (final SamReader bamReader =
         SamReaderFactory.makeDefault().open(SamInputResource.of(is))) {
 
-      final Iterator<SAMRecord> it = bamfr.iterator();
-
-      while (it.hasNext()) {
+      for (SAMRecord aBamReader : bamReader) {
         // Convert in line in SAM and save in filter
-        filter.put(it.next().getSAMString());
+        filter.put(aBamReader.getSAMString());
       }
 
     } catch (final Exception e) {

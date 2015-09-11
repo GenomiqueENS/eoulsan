@@ -144,8 +144,8 @@ public class TicketLocker implements Locker {
 
     try {
       Registry registry = LocateRegistry.getRegistry(this.port);
-      return (TicketScheduler) registry.lookup(RMI_SERVICE_PREFIX
-          + this.lockerName);
+      return (TicketScheduler) registry
+          .lookup(RMI_SERVICE_PREFIX + this.lockerName);
 
     }
 
@@ -203,8 +203,8 @@ public class TicketLocker implements Locker {
       public void run() {
         try {
           LocateRegistry.createRegistry(TicketLocker.this.port);
-          TicketSchedulerServer.newServer(tickets,
-              TicketLocker.this.lockerName, TicketLocker.this.port);
+          TicketSchedulerServer.newServer(tickets, TicketLocker.this.lockerName,
+              TicketLocker.this.port);
 
           // TODO the server must be halted if no more tickets to process since
           // several minutes
@@ -258,8 +258,8 @@ public class TicketLocker implements Locker {
    * @throws RemoteException if an error occurs while inspecting tickets
    * @throws MalformedURLException
    */
-  public static final void main(final String[] args) throws RemoteException,
-      MalformedURLException {
+  public static final void main(final String[] args)
+      throws RemoteException, MalformedURLException {
 
     if (args.length < 2) {
 

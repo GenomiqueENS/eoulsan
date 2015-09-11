@@ -42,8 +42,8 @@ import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
  * @since 2.0
  * @author Sandrine Perrin
  */
-public abstract class AbstractComparatorWithBloomFilter extends
-    AbstractComparator {
+public abstract class AbstractComparatorWithBloomFilter
+    extends AbstractComparator {
 
   // Limited create serialize bloomfilter file for size file inferior to
   // size of serialize bloomfilter file 27369839 bytes with default parameters
@@ -121,7 +121,7 @@ public abstract class AbstractComparatorWithBloomFilter extends
         getCompressionTypeByFilename(file.getAbsolutePath());
 
     // Create new filter
-    try (InputStream is = new FileInputStream(file);) {
+    try (InputStream is = new FileInputStream(file)) {
       final BloomFilterUtils bloomFilter =
           buildBloomFilter(zType.createInputStream(is));
 
@@ -165,7 +165,7 @@ public abstract class AbstractComparatorWithBloomFilter extends
     return getName()
         + " compares files with extensions " + getExtensions()
         + " use Bloom filter with parameters: expected numbers elements "
-        + getExpectedNumberOfElements() + " and false positif probability "
+        + getExpectedNumberOfElements() + " and false positive probability "
         + getFalsePositiveProbability();
 
   }
@@ -212,12 +212,14 @@ public abstract class AbstractComparatorWithBloomFilter extends
     return this.expectedNumberOfElements;
   }
 
-  protected void setExpectedNumberOfElements(final int expectedNumberOfElements) {
+  protected void setExpectedNumberOfElements(
+      final int expectedNumberOfElements) {
     this.expectedNumberOfElements = expectedNumberOfElements;
   }
 
-  protected void setFalsePositiveProbability(final double falsePositiveProba) {
-    this.falsePositiveProbability = falsePositiveProba;
+  protected void setFalsePositiveProbability(
+      final double falsePositiveProbability) {
+    this.falsePositiveProbability = falsePositiveProbability;
   }
 
   protected double getFalsePositiveProbability() {

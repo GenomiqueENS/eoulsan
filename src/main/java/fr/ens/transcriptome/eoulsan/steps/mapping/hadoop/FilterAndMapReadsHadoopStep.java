@@ -99,7 +99,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     // Create configuration object
     final Configuration conf = new Configuration();// this.conf;
@@ -114,8 +115,6 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
           context.getOutputData(MAPPER_RESULTS_SAM, readsData).getDataFile();
       final DataFile mapperIndex =
           context.getInputData(MAPPER_INDEX_PORT_NAME).getDataFile();
-      final DataFile genomeDescFile =
-          context.getInputData(GENOME_DESCRIPTION_PORT_NAME).getDataFile();
 
       // Get FASTQ format
       final FastqFormat fastqFormat = readsData.getMetadata().getFastqFormat();
@@ -125,16 +124,16 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
       DataFile tfqFile = null;
 
-      // Preprocess paired-end files
+      // Pre-process paired-end files
       if (readsData.getDataFileCount() == 1) {
 
         // Define input and output files
         final DataFile inFile = readsData.getDataFile(0);
         final List<String> filenames = singletonList(inFile.getName());
 
-        job =
-            createJobConf(conf, context, dataName, inFile, filenames, false,
-                READS_FASTQ, fastqFormat, mapperIndex, genomeDescFile, samFile);
+        job = createJobConf(conf, context, dataName, inFile, filenames, false,
+            READS_FASTQ, fastqFormat, mapperIndex, samFile);
+
       } else {
 
         // Define input and output files
@@ -143,19 +142,18 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
         final List<String> filenames =
             newArrayList(inFile1.getName(), inFile2.getName());
 
-        tfqFile =
-            new DataFile(inFile1.getParent(), inFile1.getBasename()
-                + READS_TFQ.getDefaultExtension());
+        tfqFile = new DataFile(inFile1.getParent(),
+            inFile1.getBasename() + READS_TFQ.getDefaultExtension());
 
         // Convert FASTQ files to TFQ
-        MapReduceUtils.submitAndWaitForJob(PairedEndFastqToTfq.convert(conf,
-            inFile1, inFile2, tfqFile, getReducerTaskCount()), readsData
-            .getName(), CommonHadoop.CHECK_COMPLETION_TIME, status,
+        MapReduceUtils.submitAndWaitForJob(
+            PairedEndFastqToTfq.convert(conf, inFile1, inFile2, tfqFile,
+                getReducerTaskCount()),
+            readsData.getName(), CommonHadoop.CHECK_COMPLETION_TIME, status,
             getCounterGroup());
 
-        job =
-            createJobConf(conf, context, dataName, tfqFile, filenames, true,
-                READS_TFQ, fastqFormat, mapperIndex, genomeDescFile, samFile);
+        job = createJobConf(conf, context, dataName, tfqFile, filenames, true,
+            READS_TFQ, fastqFormat, mapperIndex, samFile);
       }
 
       // Submit filter and map job
@@ -175,8 +173,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
       final StepContext context, final String dataName, final DataFile inFile,
       final List<String> filenames, final boolean pairedEnd,
       final DataFormat inputFormat, final FastqFormat fastqFormat,
-      final DataFile genomeIndexFile, final DataFile genomeDescFile,
-      final DataFile outFile) throws IOException {
+      final DataFile genomeIndexFile, final DataFile outFile)
+          throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -215,8 +213,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Set the number of threads for the mapper
     if (getMapperHadoopThreads() < 0) {
-      jobConf.set(ReadsMapperMapper.MAPPER_THREADS_KEY, ""
-          + getMapperHadoopThreads());
+      jobConf.set(ReadsMapperMapper.MAPPER_THREADS_KEY,
+          "" + getMapperHadoopThreads());
     }
 
     // Set mapper arguments
@@ -238,8 +236,12 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     jobConf.set("mapreduce.job.jvm.numtasks", "" + 1);
 
     // Set the memory required by the reads mapper
-    jobConf
-        .set("mapreduce.map.memory.mb", "" + getMapperHadoopMemoryRequired());
+    jobConf.set("mapreduce.map.memory.mb",
+        "" + getMapperHadoopMemoryRequired());
+
+    // Set the memory required by JVM (BWA need more memory than the other
+    // mapper for buffering named pipes)
+    jobConf.set("mapreduce.map.java.opts", "-Xmx4096M");
 
     // Set ZooKeeper client configuration
     setZooKeeperJobConfiguration(jobConf, context);
@@ -247,10 +249,6 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     //
     // Alignment filtering
     //
-
-    // Set Genome description path
-    jobConf.set(SAMFilterMapper.GENOME_DESC_PATH_KEY,
-        genomeDescFile.getSource());
 
     // Set SAM filter parameters
     addParametersToJobConf(getAlignmentsFilterParameters(),
@@ -261,9 +259,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
     //
 
     // Create the job and its name
-    final Job job =
-        Job.getInstance(jobConf, "Filter and map reads ("
-            + dataName + ", " + Joiner.on(", ").join(filenames) + ")");
+    final Job job = Job.getInstance(jobConf, "Filter and map reads ("
+        + dataName + ", " + Joiner.on(", ").join(filenames) + ")");
 
     // Set the jar
     job.setJarByClass(ReadsFilterHadoopStep.class);

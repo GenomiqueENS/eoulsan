@@ -45,6 +45,7 @@ import com.google.common.base.Preconditions;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.core.StepResult;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.util.ClassLoaderObjectInputStream;
 
 /**
  * This class define a result for a task context.
@@ -182,17 +183,15 @@ public class TaskResult implements StepResult, Serializable {
    * @param in input stream
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskResult deserialize(final InputStream in) throws IOException {
+  public static TaskResult deserialize(final InputStream in)
+      throws IOException {
 
     checkNotNull(in, "in argument cannot be null");
 
-    try {
-      final ObjectInputStream ois = new ObjectInputStream(in);
+    try (final ObjectInputStream ois = new ClassLoaderObjectInputStream(in)) {
 
       // Read TaskContext object
       final TaskResult result = (TaskResult) ois.readObject();
-
-      ois.close();
 
       return result;
 
@@ -229,7 +228,7 @@ public class TaskResult implements StepResult, Serializable {
     this.errorMessage = null;
   }
 
-  TaskResult(final TaskContext context, final Date startTime,
+  public TaskResult(final TaskContext context, final Date startTime,
       final Date endTime, final long duration, final Throwable exception,
       final String errorMessage) {
 

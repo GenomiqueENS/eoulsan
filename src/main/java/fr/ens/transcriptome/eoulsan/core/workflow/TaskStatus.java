@@ -59,14 +59,14 @@ public class TaskStatus implements StepStatus {
 
   private Date startDate;
   private Date endDate;
-  private final Stopwatch stopwatch = Stopwatch.createUnstarted();
+  private final SerializableStopwatch stopwatch = new SerializableStopwatch();
 
   //
   // Getters
   //
 
   @Override
-  public String getMessage() {
+  public String getProgressMessage() {
 
     return this.message;
   }
@@ -94,7 +94,7 @@ public class TaskStatus implements StepStatus {
   //
 
   @Override
-  public void setMessage(final String message) {
+  public void setProgressMessage(final String message) {
 
     synchronized (this) {
       this.message = message;
@@ -209,10 +209,10 @@ public class TaskStatus implements StepStatus {
     final long duration = endOfStep();
 
     // Create the context result
-    this.result =
-        new TaskResult(this.context, this.startDate, this.endDate, duration,
-            this.message, this.taskDescription == null
-                ? "" : this.taskDescription, this.counters, success);
+    this.result = new TaskResult(this.context, this.startDate, this.endDate,
+        duration, this.message,
+        this.taskDescription == null ? "" : this.taskDescription, this.counters,
+        success);
 
     return this.result;
   }
@@ -228,9 +228,8 @@ public class TaskStatus implements StepStatus {
     final long duration = endOfStep();
 
     // Create the context result
-    this.result =
-        new TaskResult(this.context, this.startDate, this.endDate, duration,
-            exception, exceptionMessage);
+    this.result = new TaskResult(this.context, this.startDate, this.endDate,
+        duration, exception, exceptionMessage);
 
     return this.result;
   }

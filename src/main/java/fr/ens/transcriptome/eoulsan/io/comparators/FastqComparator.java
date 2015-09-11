@@ -43,8 +43,8 @@ import fr.ens.transcriptome.eoulsan.util.BloomFilterUtils;
 public class FastqComparator extends AbstractComparatorWithBloomFilter {
 
   public static final String COMPARATOR_NAME = "FastqComparator";
-  private static final Collection<String> EXTENSIONS = Sets.newHashSet(
-      ".fastq", ".fq");
+  private static final Collection<String> EXTENSIONS =
+      Sets.newHashSet(".fastq", ".fq");
 
   private int numberElementsCompared;
 

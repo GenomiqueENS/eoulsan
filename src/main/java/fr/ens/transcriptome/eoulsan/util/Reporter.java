@@ -54,6 +54,6 @@ public interface Reporter extends ReporterIncrementer {
    * @return a unmodifiable list of the name of the counter of the groups or
    *         empty list if counter doesn't exist
    */
-  public Set<String> getCounterNames(String counterGroup);
+  Set<String> getCounterNames(String counterGroup);
 
 }

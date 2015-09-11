@@ -38,8 +38,8 @@ import fr.ens.transcriptome.eoulsan.core.OutputPorts;
  * @since 2.0
  * @author Laurent Jourdren
  */
-class WorkflowOutputPorts extends AbstractPorts<WorkflowOutputPort> implements
-    Serializable {
+class WorkflowOutputPorts extends AbstractPorts<WorkflowOutputPort>
+    implements Serializable {
 
   private static final long serialVersionUID = 183816706502235237L;
 
@@ -100,7 +100,8 @@ class WorkflowOutputPorts extends AbstractPorts<WorkflowOutputPort> implements
    * @param step step related to the WorkflowOutputPort objects
    * @param ports port to convert
    */
-  WorkflowOutputPorts(final AbstractWorkflowStep step, final OutputPorts ports) {
+  WorkflowOutputPorts(final AbstractWorkflowStep step,
+      final OutputPorts ports) {
 
     super(convert(step, ports));
   }

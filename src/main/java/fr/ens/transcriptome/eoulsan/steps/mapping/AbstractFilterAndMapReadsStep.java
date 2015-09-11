@@ -27,7 +27,6 @@ package fr.ens.transcriptome.eoulsan.steps.mapping;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.HADOOP_MAPPER_REQUIRED_MEMORY_PARAMETER_NAME;
@@ -227,7 +226,6 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort(READS_PORT_NAME, READS_FASTQ);
     builder.addPort(MAPPER_INDEX_PORT_NAME, this.mapper.getArchiveFormat());
-    builder.addPort(GENOME_DESCRIPTION_PORT_NAME, GENOME_DESC_TXT);
 
     return builder.create();
   }
@@ -248,8 +246,9 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
       final Set<Parameter> stepParameters) throws EoulsanException {
 
     String mapperName = null;
-    final MultiReadFilterBuilder mrfb = new MultiReadFilterBuilder();
-    final MultiReadAlignmentsFilterBuilder mrafb =
+    final MultiReadFilterBuilder readFilterBuilder =
+        new MultiReadFilterBuilder();
+    final MultiReadAlignmentsFilterBuilder alignmentsFilterBuilder =
         new MultiReadAlignmentsFilterBuilder();
 
     for (Parameter p : stepParameters) {
@@ -296,9 +295,11 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
       default:
 
         // Add read filters parameters
-        if (!(mrfb.addParameter(p.getName(), p.getStringValue(), true) ||
-        // Add read alignments filters parameters
-        mrafb.addParameter(p.getName(), p.getStringValue(), true))) {
+        if (!(readFilterBuilder.addParameter(p.getName(), p.getStringValue(),
+            true) ||
+            // Add read alignments filters parameters
+            alignmentsFilterBuilder.addParameter(p.getName(),
+                p.getStringValue(), true))) {
 
           throw new EoulsanException("Unknown parameter: " + p.getName());
         }
@@ -306,11 +307,11 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
     }
 
     // Force parameter checking
-    mrfb.getReadFilter();
-    mrafb.getAlignmentsFilter();
+    readFilterBuilder.getReadFilter();
+    alignmentsFilterBuilder.getAlignmentsFilter();
 
-    this.readsFiltersParameters = mrfb.getParameters();
-    this.alignmentsFiltersParameters = mrafb.getParameters();
+    this.readsFiltersParameters = readFilterBuilder.getParameters();
+    this.alignmentsFiltersParameters = alignmentsFilterBuilder.getParameters();
 
     if (mapperName == null) {
       throw new EoulsanException("No mapper set.");
@@ -339,12 +340,11 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
     }
 
     // Log Step parameters
-    getLogger().info(
-        "In "
-            + getName() + ", mapper=" + this.mapper.getMapperName()
-            + " (version: " + this.mapper.getMapperVersion() + ")");
-    getLogger().info(
-        "In " + getName() + ", mapperarguments=" + this.mapperArguments);
+    getLogger().info("In "
+        + getName() + ", mapper=" + this.mapper.getMapperName() + " (version: "
+        + this.mapper.getMapperVersion() + ")");
+    getLogger()
+        .info("In " + getName() + ", mapperarguments=" + this.mapperArguments);
   }
 
 }

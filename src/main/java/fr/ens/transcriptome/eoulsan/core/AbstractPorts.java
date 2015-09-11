@@ -41,8 +41,8 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public abstract class AbstractPorts<E extends Port> implements Ports<E>,
-    Serializable {
+public abstract class AbstractPorts<E extends Port>
+    implements Ports<E>, Serializable {
 
   private static final long serialVersionUID = -5116830881426447140L;
 
@@ -129,7 +129,7 @@ public abstract class AbstractPorts<E extends Port> implements Ports<E>,
   protected AbstractPorts(final Set<E> ports) {
 
     // If ports is null
-    if (ports == null) {
+    if (ports == null || ports.isEmpty()) {
       this.ports = Collections.emptyMap();
       return;
     }

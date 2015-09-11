@@ -32,7 +32,7 @@ import org.apache.commons.lang.NullArgumentException;
 
 /**
  * This class define a filter that count the number of written bytes by an
- * InputSream.
+ * InputStream.
  * @since 1.0
  * @author Laurent Jourdren
  */

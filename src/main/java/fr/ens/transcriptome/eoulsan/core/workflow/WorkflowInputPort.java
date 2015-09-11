@@ -90,9 +90,10 @@ class WorkflowInputPort extends SimpleInputPort implements Serializable {
     checkNotNull(outputPort, "outputPort argument cannot be null");
 
     // Check the ports are not on the same step
-    checkArgument(outputPort.getStep() != this.step, "cannot link a step ("
-        + this.step.getId() + ") to itself (input port: " + getName()
-        + ", output port: " + outputPort.getName());
+    checkArgument(outputPort.getStep() != this.step,
+        "cannot link a step ("
+            + this.step.getId() + ") to itself (input port: " + getName()
+            + ", output port: " + outputPort.getName());
 
     // Check if a link already exists
     if (this.link != null) {
@@ -104,10 +105,9 @@ class WorkflowInputPort extends SimpleInputPort implements Serializable {
     // Check if format are compatible
     if (!getFormat().equals(outputPort.getFormat())) {
       throw new EoulsanRuntimeException("Incompatible format: "
-          + getStep().getId() + "." + getName() + " -> "
-          + getFormat().getName() + " and " + outputPort.getStep().getId()
-          + "." + outputPort.getName() + " <- "
-          + outputPort.getFormat().getName());
+          + getStep().getId() + "." + getName() + " -> " + getFormat().getName()
+          + " and " + outputPort.getStep().getId() + "." + outputPort.getName()
+          + " <- " + outputPort.getFormat().getName());
     }
 
     final AbstractWorkflowStep step = outputPort.getStep();

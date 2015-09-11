@@ -34,8 +34,8 @@ import java.io.InputStream;
 import org.junit.Test;
 
 public class BinaryComparatorTest {
-  private final File dir = new File(new File(".").getAbsolutePath()
-      + "/src/test/java/files");
+  private final File dir =
+      new File(new File(".").getAbsolutePath() + "/src/test/java/files");
 
   private InputStream isA;
   private InputStream isB;
@@ -63,13 +63,11 @@ public class BinaryComparatorTest {
   @Test
   public void testDifferentBinaryFiles() throws Exception {
 
-    this.isA =
-        getCompressionTypeByFilename(this.fileA.getAbsolutePath())
-            .createInputStream(new FileInputStream(this.fileA));
+    this.isA = getCompressionTypeByFilename(this.fileA.getAbsolutePath())
+        .createInputStream(new FileInputStream(this.fileA));
 
-    this.isB =
-        getCompressionTypeByFilename(this.fileB.getAbsolutePath())
-            .createInputStream(new FileInputStream(this.fileB));
+    this.isB = getCompressionTypeByFilename(this.fileB.getAbsolutePath())
+        .createInputStream(new FileInputStream(this.fileB));
 
     assertFalse("files are different",
         this.comparator.compareFiles(this.isA, this.isB));

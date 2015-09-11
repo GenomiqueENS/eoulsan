@@ -40,13 +40,14 @@ fr.ens.transcriptome.eoulsan.steps.SplitterStep
 fr.ens.transcriptome.eoulsan.steps.MergerStep
 fr.ens.transcriptome.eoulsan.steps.TechnicalReplicateMerger
 
-# Common step
+# Common steps
 fr.ens.transcriptome.eoulsan.steps.ShellStep
 
-# QC step
+# QC steps
 fr.ens.transcriptome.eoulsan.steps.fastqc.FastQCStep
 
-# Other step
+# Other steps
 fr.ens.transcriptome.eoulsan.steps.ImportStep
 fr.ens.transcriptome.eoulsan.steps.FailStep
+fr.ens.transcriptome.eoulsan.steps.RequirementInstallerStep
 

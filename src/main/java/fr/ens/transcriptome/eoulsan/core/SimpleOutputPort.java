@@ -36,8 +36,8 @@ import fr.ens.transcriptome.eoulsan.io.CompressionType;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class SimpleOutputPort extends AbstractPort implements OutputPort,
-    Serializable {
+public class SimpleOutputPort extends AbstractPort
+    implements OutputPort, Serializable {
 
   private static final long serialVersionUID = 3565485272173523695L;
 

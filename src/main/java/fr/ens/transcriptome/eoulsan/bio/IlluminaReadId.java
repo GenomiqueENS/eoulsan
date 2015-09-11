@@ -30,26 +30,24 @@ import java.util.regex.Pattern;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 
 /**
- * This class allow the easily get fields of Illimina reads ids.
+ * This class allow the easily get fields of Illumina reads ids.
  * @since 1.0
  * @author Laurent Jourdren
  */
 public final class IlluminaReadId {
 
-  private static final Pattern PATTERN_1 = Pattern
-      .compile("^([a-zA-Z0-9\\-\\_]+):(\\d+):(\\d+):(\\d+):(\\d+)$");
+  private static final Pattern PATTERN_1 =
+      Pattern.compile("^([a-zA-Z0-9\\-\\_]+):(\\d+):(\\d+):(\\d+):(\\d+)$");
 
   private static final Pattern PATTERN_2 = Pattern
       .compile("^([a-zA-Z0-9\\-\\_]+):(\\d+):(\\d+):(\\d+):(\\d+)/(\\d)$");
 
-  private static final Pattern PATTERN_1_4 =
-      Pattern
-          .compile("^([a-zA-Z0-9\\-\\_]+):(\\d+):(\\d+):(\\d+):(\\d+)#([0ATGC]+)/(\\d)$");
+  private static final Pattern PATTERN_1_4 = Pattern.compile(
+      "^([a-zA-Z0-9\\-\\_]+):(\\d+):(\\d+):(\\d+):(\\d+)#([0ATGC]+)/(\\d)$");
 
-  private static final Pattern PATTERN_1_8 =
-      Pattern
-          .compile("^([a-zA-Z0-9\\-\\_]+):(\\d+):([a-zA-Z0-9]+):(\\d+):(\\d+):(\\d+):(\\d+) "
-              + "(\\d+):([YN]):(\\d+):([NATGC]*)$");
+  private static final Pattern PATTERN_1_8 = Pattern.compile(
+      "^([a-zA-Z0-9\\-\\_]+):(\\d+):([a-zA-Z0-9]+):(\\d+):(\\d+):(\\d+):(\\d+) "
+          + "(\\d+):([YN]):(\\d+):([NATGC]*)$");
 
   private final Pattern pattern;
 

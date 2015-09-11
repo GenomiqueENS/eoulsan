@@ -82,7 +82,8 @@ public class FastaLineParser {
 
       } else if (this.seqName == null) {
         throw new IOException(
-            "No fasta header found at the beginning of the fasta file: " + line);
+            "No fasta header found at the beginning of the fasta file: "
+                + line);
       }
 
       this.sequence = trim;

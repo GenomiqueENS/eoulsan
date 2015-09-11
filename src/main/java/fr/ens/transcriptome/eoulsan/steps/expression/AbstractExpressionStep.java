@@ -35,7 +35,6 @@ import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.bio.expressioncounters.EoulsanCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounterService;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
@@ -60,10 +59,12 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
   public static final String STEP_NAME = "expression";
 
-  public static final String REMOVEAMBIGUOUSCASES_PARAMETER_NAME =
+  private static final String OLD_EOULSAN_COUNTER_NAME = "eoulsanCounter";
+
+  public static final String REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME =
       "removeambiguouscases";
 
-  public static final String OVERLAPMODE_PARAMETER_NAME = "overlapmode";
+  public static final String OVERLAP_MODE_PARAMETER_NAME = "overlapmode";
 
   public static final String STRANDED_PARAMETER_NAME = "stranded";
 
@@ -232,7 +233,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
         }
         break;
 
-      case OVERLAPMODE_PARAMETER_NAME:
+      case OVERLAP_MODE_PARAMETER_NAME:
 
         this.overlapmode =
             OverlapMode.getOverlapModeFromName(p.getStringValue());
@@ -243,7 +244,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
         }
         break;
 
-      case REMOVEAMBIGUOUSCASES_PARAMETER_NAME:
+      case REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME:
         this.removeAmbiguousCases = p.getBooleanValue();
         break;
 
@@ -252,20 +253,20 @@ public abstract class AbstractExpressionStep extends AbstractStep {
         break;
 
       default:
-        throw new EoulsanException("Unknown parameter for "
-            + getName() + " step: " + p.getName());
+        throw new EoulsanException(
+            "Unknown parameter for " + getName() + " step: " + p.getName());
       }
 
     }
 
     if (this.genomicType == null) {
-      throw new EoulsanException("Parent type not set for "
-          + getName() + " step.");
+      throw new EoulsanException(
+          "Parent type not set for " + getName() + " step.");
     }
 
     if (this.attributeId == null) {
-      throw new EoulsanException("Attribute id not set for "
-          + getName() + " step.");
+      throw new EoulsanException(
+          "Attribute id not set for " + getName() + " step.");
     }
 
     if (counterName == null) {
@@ -273,7 +274,8 @@ public abstract class AbstractExpressionStep extends AbstractStep {
     }
 
     // Test if counter engine exists
-    if (ExpressionCounterService.getInstance().newService(counterName) == null) {
+    if (ExpressionCounterService.getInstance()
+        .newService(counterName) == null) {
       throw new EoulsanException("Unknown counter: " + counterName);
     }
 
@@ -281,14 +283,15 @@ public abstract class AbstractExpressionStep extends AbstractStep {
     this.counterName = counterName;
 
     // Configure Checker
-    CheckerStep.configureChecker(ANNOTATION_GFF, stepParameters);
+    if (!context.getRuntime().isClusterTaskMode()) {
+      CheckerStep.configureChecker(ANNOTATION_GFF, stepParameters);
+    }
 
     // Log Step parameters
     getLogger().info("In " + getName() + ", counter=" + this.counterName);
-    getLogger().info(
-        "In "
-            + getName() + ", stranded=" + this.stranded + ", overlapmode="
-            + this.overlapmode);
+    getLogger().info("In "
+        + getName() + ", stranded=" + this.stranded + ", overlapmode="
+        + this.overlapmode);
   }
 
   //
@@ -311,12 +314,10 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
     case COUNTER_PARAMETER_NAME:
 
-      if (EoulsanCounter.COUNTER_NAME.toLowerCase().equals(
-          parameter.getLowerStringValue())) {
-        getLogger().warning(
-            "The "
-                + EoulsanCounter.COUNTER_NAME
-                + " counter support is deprecated");
+      if (OLD_EOULSAN_COUNTER_NAME.toLowerCase()
+          .equals(parameter.getLowerStringValue())) {
+        getLogger().warning("The "
+            + OLD_EOULSAN_COUNTER_NAME + " counter support has been removed");
       }
 
       break;

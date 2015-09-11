@@ -47,15 +47,15 @@ public class ExpressionMerger implements Merger {
       throws IOException {
 
     final Multiset<String> counts = HashMultiset.create();
-    final Set<String> emptyCounts = new HashSet<String>();
+    final Set<String> emptyCounts = new HashSet<>();
 
     while (inFileIterator.hasNext()) {
 
       // Get input file
       final DataFile inFile = inFileIterator.next();
 
-      EoulsanLogger.getLogger().info(
-          "Merge " + inFile.getName() + " to " + outFile.getName());
+      EoulsanLogger.getLogger()
+          .info("Merge " + inFile.getName() + " to " + outFile.getName());
 
       boolean first = true;
 

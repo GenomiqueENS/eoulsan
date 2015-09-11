@@ -27,10 +27,11 @@ package fr.ens.transcriptome.eoulsan.bio.readsmappers;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.List;
 
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
-import fr.ens.transcriptome.eoulsan.bio.GenomeDescription;
+import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 
@@ -72,6 +73,19 @@ public interface SequenceReadsMapper {
   String getMapperFlavorToUse();
 
   /**
+   * Test if the bundled binaries must be used to perform the mapping.
+   * @return true if the bundled binaries must be used to perform the mapping
+   */
+  boolean isUseBundledBinaries();
+
+  /**
+   * Get the mapper Docker image to use.
+   * @return the mapper Docker image to use or an empty string if no Docker
+   *         image is set
+   */
+  String getMapperDockerImage();
+
+  /**
    * Test if the mapper can only be use for generate the mapper index.
    * @return true if the mapper is a fake mapper
    */
@@ -82,6 +96,20 @@ public interface SequenceReadsMapper {
    * @return true if the mapping can be split for parallelization
    */
   boolean isSplitsAllowed();
+
+  /**
+   * Test if multiples instances of the read mapper can be used at the same
+   * time.
+   * @return true if multiples instances of the read mapper can be used at the
+   *         same time
+   */
+  boolean isMultipleInstancesAllowed();
+
+  /**
+   * Get the Docker connection URI.
+   * @return the Docker connection URI
+   */
+  URI getDockerConnection();
 
   //
   // Index creation methods
@@ -123,6 +151,18 @@ public interface SequenceReadsMapper {
    *          used
    */
   void setMapperVersionToUse(String version);
+
+  /**
+   * Set if the bundled binaries must be used to perform the mapping.
+   * @param use true if the bundled binaries must be used to perform the mapping
+   */
+  void setUseBundledBinaries(boolean use);
+
+  /**
+   * Set the mapper Docker image to use.
+   * @param dockerImage the mapper Docker image to use
+   */
+  void setMapperDockerImage(String dockerImage);
 
   /**
    * Get the number of thread to use by the mapper.
@@ -196,6 +236,28 @@ public interface SequenceReadsMapper {
    */
   FastqFormat getFastqFormat();
 
+  /**
+   * Test if multiples instances of the read mapper must be used at the same
+   * time.
+   * @return true if multiples instances of the read mapper must be used at the
+   *         same time
+   */
+  boolean isMultipleInstancesEnabled();
+
+  /**
+   * set if multiples instances of the read mapper must be used at the same
+   * time.
+   * @param enable true if multiples instances of the read mapper must be used
+   *          at the same time
+   */
+  void setMultipleInstancesEnabled(boolean enable);
+
+  /**
+   * Set the Docker connection URI.
+   * @param uri the URI to set
+   */
+  void setDockerConnection(URI uri);
+
   //
   // Mapping methods
   //
@@ -203,57 +265,55 @@ public interface SequenceReadsMapper {
   /**
    * Map reads of fastq file in single end mode.
    * @param readsFile fastq input file mapper
-   * @param gd genome description
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  InputStream mapSE(File readsFile, GenomeDescription gd) throws IOException;
+  MapperProcess mapSE(DataFile readsFile) throws IOException;
 
   /**
    * Map reads of fastq file in single end mode.
    * @param readsFile fastq input file mapper
-   * @param gd genome description
-   * @param samFile output SAM file
-   * @throws IOException if an error occurs while mapping the reads
-   */
-  void mapSE(File readsFile, GenomeDescription gd, File samFile)
-      throws IOException;
-
-  /**
-   * Map reads of fastq file in single end mode.
-   * @param gd genome description
-   * @throws IOException if an error occurs while mapping the reads
-   */
-  MapperProcess mapSE(GenomeDescription gd) throws IOException;
-
-  /**
-   * Map reads of fastq file in paired end mode.
-   * @param readsFile1 fastq input file with reads of the first end
-   * @param readsFile2 fastq input file with reads of the first end mapper
-   * @param gd genome description
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  InputStream mapPE(File readsFile1, File readsFile2, GenomeDescription gd)
+  MapperProcess mapSE(File readsFile) throws IOException;
+
+  /**
+   * Map reads of fastq file in single end mode.
+   * @throws IOException if an error occurs while mapping the reads
+   */
+  MapperProcess mapSE() throws IOException;
+
+  /**
+   * Map reads of FASTQ file in paired end mode.
+   * @param readsFile1 FASTQ input file with reads of the first end
+   * @param readsFile2 FASTQ input file with reads of the first end mapper
+   * @return an InputStream with SAM data
+   * @throws IOException if an error occurs while mapping the reads
+   */
+  MapperProcess mapPE(DataFile readsFile1, DataFile readsFile2)
       throws IOException;
 
   /**
-   * Map reads of fastq file in paired end mode.
-   * @param readsFile1 fastq input file with reads of the first end
-   * @param readsFile2 fastq input file with reads of the first end mapper
-   * @param gd genome description
-   * @param samFile output SAM file
+   * Map reads of FASTQ file in paired end mode.
+   * @param readsFile1 FASTQ input file with reads of the first end
+   * @param readsFile2 FASTQ input file with reads of the first end mapper
+   * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  void mapPE(File readsFile1, File readsFile2, GenomeDescription gd,
-      File samFile) throws IOException;
+  MapperProcess mapPE(File readsFile1, File readsFile2) throws IOException;
 
   /**
-   * Map reads of fastq file in paired end mode.
-   * @param gd genome description
+   * Map reads of FASTQ file in paired end mode.
    * @throws IOException if an error occurs while mapping the reads
    */
-  MapperProcess mapPE(GenomeDescription gd) throws IOException;
+  MapperProcess mapPE() throws IOException;
+
+  /**
+   * Throws an exception if an exception has occurred while mapping.
+   * @throws IOException if an exception has occurred while mapping
+   */
+  void throwMappingException() throws IOException;
 
   //
   // Other methods
@@ -269,7 +329,18 @@ public interface SequenceReadsMapper {
    * Initialize the mapper before the mapping.
    * @param archiveIndexFile genome index for the mapper as a ZIP file
    * @param archiveIndexDir uncompressed directory for the genome index
-   * @param incrementer the incrementer to report the processing of the fastq
+   * @param incrementer the incrementer to report the processing of the FASTQ
+   *          files
+   * @param counterGroup the group for the reporter
+   */
+  void init(DataFile archiveIndexFile, File archiveIndexDir,
+      ReporterIncrementer incrementer, String counterGroup) throws IOException;
+
+  /**
+   * Initialize the mapper before the mapping.
+   * @param archiveIndexFile genome index for the mapper as a ZIP file
+   * @param archiveIndexDir uncompressed directory for the genome index
+   * @param incrementer the incrementer to report the processing of the FASTQ
    *          files
    * @param counterGroup the group for the reporter
    */
@@ -281,7 +352,7 @@ public interface SequenceReadsMapper {
    * @param archiveIndexInputStream genome index for the mapper as a ZIP input
    *          stream
    * @param archiveIndexDir uncompressed directory for the genome index
-   * @param incrementer the incrementer to report the processing of the fastq
+   * @param incrementer the incrementer to report the processing of the FASTQ
    *          files
    * @param counterGroup the group for the reporter
    */

@@ -81,9 +81,8 @@ public class HadoopExecAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line =
-          parser.parse(options,
-              arguments.toArray(new String[arguments.size()]), true);
+      final CommandLine line = parser.parse(options,
+          arguments.toArray(new String[arguments.size()]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -157,10 +156,10 @@ public class HadoopExecAction extends AbstractAction {
   //
 
   /**
-   * Get the JVM memory arguments as a string.
-   * @return a String with the JVM memory arguments
+   * Get the JVM arguments as a string.
+   * @return a String with the JVM arguments
    */
-  private static String getJVMMemoryArgs() {
+  private static final String getJVMArgs() {
 
     final List<String> result = new ArrayList<>();
 
@@ -171,7 +170,20 @@ public class HadoopExecAction extends AbstractAction {
       }
     }
 
-    return Joiner.on('\t').join(result);
+    final Main main = Main.getInstance();
+
+    if (main.getEoulsanScriptPath() != null) {
+      result.add("-D"
+          + Main.EOULSAN_SCRIPT_PATH_JVM_ARG + "="
+          + main.getEoulsanScriptPath());
+    }
+
+    if (main.getClassPath() != null) {
+      result.add(
+          "-D" + Main.EOULSAN_CLASSPATH_JVM_ARG + "=" + main.getClassPath());
+    }
+
+    return Joiner.on(' ').join(result);
   }
 
   /**
@@ -253,7 +265,7 @@ public class HadoopExecAction extends AbstractAction {
       final ProcessBuilder builder = new ProcessBuilder(argsList).inheritIO();
 
       // Set the JVM arguments for Hadoop in the process builder
-      builder.environment().put(HADOOP_CLIENT_OPTS_ENV, getJVMMemoryArgs());
+      builder.environment().put(HADOOP_CLIENT_OPTS_ENV, getJVMArgs());
 
       // Execute the hadoop jar command
       final int exitCode = builder.start().waitFor();

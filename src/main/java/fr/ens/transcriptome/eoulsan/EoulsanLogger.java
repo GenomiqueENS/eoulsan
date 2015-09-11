@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 
 /**
  * This class allow to change the logger name for all Eoulsan classes. The
- * setLoggetName() method must be called before any other Eoulsan method.
+ * setLoggerName() method must be called before any other Eoulsan method.
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -152,6 +152,60 @@ public class EoulsanLogger {
 
     // Set the log level of the logger
     getLogger().setLevel(handler.getLevel());
+  }
+
+  /**
+   * Log an SEVERE message using <code>getLogger().severe()</code>.
+   * @param msg The string message
+   */
+  public static void logSevere(final String msg) {
+
+    getLogger().severe(msg);
+  }
+
+  /**
+   * Log an WARNING message using <code>getLogger().warning()</code>.
+   * @param msg The string message
+   */
+  public static void logWarning(final String msg) {
+
+    getLogger().warning(msg);
+  }
+
+  /**
+   * Log an INFO message using <code>getLogger().info()</code>.
+   * @param msg The string message
+   */
+  public static void logInfo(final String msg) {
+
+    getLogger().info(msg);
+  }
+
+  /**
+   * Log a CONFIG message using <code>getLogger().config()</code>.
+   * @param msg The string message
+   */
+  public static void logConfig(final String msg) {
+
+    getLogger().config(msg);
+  }
+
+  /**
+   * Log a FINER message using <code>getLogger().finer()</code>.
+   * @param msg The string message
+   */
+  public static void logFiner(final String msg) {
+
+    getLogger().finer(msg);
+  }
+
+  /**
+   * Log a FINEST message using <code>getLogger().finest()</code>.
+   * @param message The string message
+   */
+  public static void logFinest(final String message) {
+
+    getLogger().finest(message);
   }
 
 }

@@ -52,7 +52,7 @@ public class ReadSequenceTest {
       assertTrue(false);
     }
 
-    assertTrue(Modifier.isFinal(new ReadSequence().getClass().getModifiers()));
+    assertTrue(Modifier.isFinal(ReadSequence.class.getModifiers()));
   }
 
   @Test
@@ -122,7 +122,8 @@ public class ReadSequenceTest {
     ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
     assertEquals(
         "ReadSequence{id=0, name=read1, description=null, alphabet=ReadDNA, sequence=ATGC,"
-            + " fastqFormat=fastq-sanger, quality=!!!!}", s.toString());
+            + " fastqFormat=fastq-sanger, quality=!!!!}",
+        s.toString());
 
   }
 

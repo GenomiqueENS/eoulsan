@@ -40,6 +40,7 @@ import fr.ens.transcriptome.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.transcriptome.eoulsan.core.OutputPort;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
+import fr.ens.transcriptome.eoulsan.core.ParallelizationMode;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -88,6 +89,12 @@ public class DesignStep extends AbstractStep {
   public OutputPorts getOutputPorts() {
 
     return this.outputPorts;
+  }
+
+  @Override
+  public ParallelizationMode getParallelizationMode() {
+
+    return ParallelizationMode.NOT_NEEDED;
   }
 
   @Override
@@ -143,7 +150,8 @@ public class DesignStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context, final StepStatus status) {
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
 
     final Set<DataFile> files = new HashSet<>();
     final Set<String> dataNames = new HashSet<>();
@@ -207,7 +215,8 @@ public class DesignStep extends AbstractStep {
           DataUtils.setDataFiles(data, dataFiles);
 
           // Set paired-end metadata
-          if (DataFormats.READS_FASTQ.equals(port.getFormat()) && dataFiles.size()>1) {
+          if (DataFormats.READS_FASTQ.equals(port.getFormat())
+              && dataFiles.size() > 1) {
             data.getMetadata().setPairedEnd(true);
           }
 

@@ -85,11 +85,11 @@ public class GenomeDescription {
    * @param sequenceName name of the sequence
    * @param sequenceLength length of the sequence
    */
-  public void addSequence(final String sequenceName, final long sequenceLength) {
+  public void addSequence(final String sequenceName,
+      final long sequenceLength) {
 
-    getLogger().fine(
-        "Add sequence in genome description: "
-            + sequenceName + " with " + sequenceLength + " pb");
+    getLogger().fine("Add sequence in genome description: "
+        + sequenceName + " with " + sequenceLength + " pb");
 
     this.sequences.put(sequenceName, sequenceLength);
   }
@@ -211,8 +211,8 @@ public class GenomeDescription {
 
     for (String seqName : getSequencesNames()) {
 
-      writer.write(SEQUENCE_PREFIX
-          + seqName + "=" + getSequenceLength(seqName) + "\n");
+      writer.write(
+          SEQUENCE_PREFIX + seqName + "=" + getSequenceLength(seqName) + "\n");
     }
 
     writer.close();
@@ -236,7 +236,8 @@ public class GenomeDescription {
    * Load genome description.
    * @param is InputStream to use
    */
-  public static GenomeDescription load(final InputStream is) throws IOException {
+  public static GenomeDescription load(final InputStream is)
+      throws IOException {
 
     checkNotNull(is, "InputStream is null");
 
@@ -301,7 +302,8 @@ public class GenomeDescription {
     checkNotNull(genomeFastaFile, "The genome file is null");
 
     return createGenomeDescFromFasta(
-        FileUtils.createInputStream(genomeFastaFile), genomeFastaFile.getName());
+        FileUtils.createInputStream(genomeFastaFile),
+        genomeFastaFile.getName());
   }
 
   /**
@@ -311,7 +313,7 @@ public class GenomeDescription {
    */
   public static GenomeDescription createGenomeDescFromFasta(
       final InputStream genomeFastaIs, final String filename)
-      throws BadBioEntryException, IOException {
+          throws BadBioEntryException, IOException {
 
     return createGenomeDesc(genomeFastaIs, filename, false);
   }
@@ -336,7 +338,7 @@ public class GenomeDescription {
    */
   public static GenomeDescription createGenomeDescFromGFF(
       final InputStream gffFile, final String filename)
-      throws BadBioEntryException, IOException {
+          throws BadBioEntryException, IOException {
 
     return createGenomeDesc(gffFile, filename, true);
   }
@@ -380,8 +382,8 @@ public class GenomeDescription {
 
         // Check if sequence has been found more than one time
         if (result.getSequenceLength(lastSeqName) != -1) {
-          throw new BadBioEntryException("Sequence name found twice: "
-              + lastSeqName, lastSeqName);
+          throw new BadBioEntryException(
+              "Sequence name found twice: " + lastSeqName, lastSeqName);
         }
 
         // Add sequence
@@ -440,22 +442,22 @@ public class GenomeDescription {
     }
 
     if ("".equals(fastaHeader.trim())) {
-      throw new BadBioEntryException("Sequence header is empty", ">"
-          + fastaHeader);
+      throw new BadBioEntryException("Sequence header is empty",
+          ">" + fastaHeader);
     }
 
     if (fastaHeader.startsWith(" ")) {
       throw new BadBioEntryException(
-          "A whitespace was found at the beginning of the sequence name", ">"
-              + fastaHeader);
+          "A whitespace was found at the beginning of the sequence name",
+          ">" + fastaHeader);
     }
 
     final String s = fastaHeader.trim();
     String[] fields = s.split("\\s");
 
     if (fields == null || fields.length == 0) {
-      throw new BadBioEntryException("Invalid sequence header", ">"
-          + fastaHeader);
+      throw new BadBioEntryException("Invalid sequence header",
+          ">" + fastaHeader);
     }
 
     return fields[0];
@@ -463,7 +465,7 @@ public class GenomeDescription {
 
   private static long checkBases(final String sequence,
       final String sequenceName, final Alphabet alphabet)
-      throws BadBioEntryException {
+          throws BadBioEntryException {
 
     final char[] array = sequence.toCharArray();
 

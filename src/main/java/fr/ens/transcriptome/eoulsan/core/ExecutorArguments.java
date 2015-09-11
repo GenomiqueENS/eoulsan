@@ -30,6 +30,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -200,7 +201,7 @@ public class ExecutorArguments {
    * Set the job path
    * @param jobPath The log path to set
    */
-  public final void setjobPathname(final String jobPath) {
+  public final void setJobPathname(final String jobPath) {
 
     if (jobPath == null) {
       return;
@@ -324,6 +325,18 @@ public class ExecutorArguments {
     return new DataFile(getDesignPathname()).open();
   }
 
+  /**
+   * Create the log path.
+   * @param logFilename log file name
+   * @return a String with an URI for the log
+   */
+  public URI logPath(final String logFilename) {
+
+    final File logDir = new File(URI.create(getJobPathname()).getPath());
+
+    return new File(logDir, logFilename).getAbsoluteFile().toURI();
+  }
+
   @Override
   public String toString() {
 
@@ -361,11 +374,10 @@ public class ExecutorArguments {
     final Calendar cal = Calendar.getInstance(Locale.ENGLISH);
     cal.setTime(new Date(millisSinceEpoch));
 
-    final String creationDate =
-        String.format("%04d%02d%02d-%02d%02d%02d", cal.get(Calendar.YEAR),
-            cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH),
-            cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE),
-            cal.get(Calendar.SECOND));
+    final String creationDate = String.format("%04d%02d%02d-%02d%02d%02d",
+        cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1,
+        cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY),
+        cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
 
     this.creationTime = millisSinceEpoch;
     this.jobId = Globals.APP_NAME_LOWER_CASE + "-" + creationDate;
@@ -405,7 +417,7 @@ public class ExecutorArguments {
     setOutputPathname(outputDir.getAbsolutePath());
 
     // Set the job path
-    setjobPathname(jobDir.getAbsolutePath());
+    setJobPathname(jobDir.getAbsolutePath());
 
     // Set the tasks path
     setTaskPathname(taskDir.getAbsolutePath());

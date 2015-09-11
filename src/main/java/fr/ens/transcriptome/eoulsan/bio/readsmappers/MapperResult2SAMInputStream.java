@@ -71,8 +71,8 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
     }
 
     this.sb.setLength(0);
-    this.sb.append(new String(this.buffer, this.pos, this.buffer.length
-        - this.pos, Globals.DEFAULT_CHARSET));
+    this.sb.append(new String(this.buffer, this.pos,
+        this.buffer.length - this.pos, Globals.DEFAULT_CHARSET));
 
     do {
       String line = this.reader.readLine();
@@ -180,9 +180,8 @@ public class MapperResult2SAMInputStream extends FilterInputStream {
   protected MapperResult2SAMInputStream(final InputStream in) {
 
     super(in);
-    this.reader =
-        new BufferedReader(new InputStreamReader(this.in,
-            StandardCharsets.ISO_8859_1));
+    this.reader = new BufferedReader(
+        new InputStreamReader(this.in, StandardCharsets.ISO_8859_1));
 
   }
 

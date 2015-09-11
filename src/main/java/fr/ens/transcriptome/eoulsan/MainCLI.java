@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 
@@ -56,16 +57,15 @@ public final class MainCLI extends Main {
     options.addOption(OptionBuilder.withArgName("path").hasArg()
         .withDescription("JAVA_HOME path").create('j'));
 
-    options
-        .addOption(OptionBuilder
-            .withArgName("size")
-            .hasArg()
-            .withDescription(
-                "maximal memory usage for JVM in MB (2048 by default)")
-            .create('m'));
+    options.addOption(OptionBuilder.withArgName("size").hasArg()
+        .withDescription("maximal memory usage for JVM in MB (2048 by default)")
+        .create('m'));
 
     options.addOption(OptionBuilder.withArgName("args").hasArg()
         .withDescription("JVM arguments (-server by default)").create('J'));
+
+    options.addOption(OptionBuilder.withArgName("path").hasArg()
+        .withDescription("JVM working directory").create('w'));
 
     options.addOption(OptionBuilder.withArgName("classpath").hasArg()
         .withDescription("additional classpath for eoulsan plugins")
@@ -87,13 +87,14 @@ public final class MainCLI extends Main {
   }
 
   @Override
-  protected Handler getLogHandler(final String logFile) throws IOException {
+  protected Handler getLogHandler(final URI logFile) throws IOException {
 
     if (logFile == null) {
       throw new NullPointerException("The log file is null");
     }
 
-    final File parentFile = new File(logFile).getParentFile();
+    final File file = new File(logFile);
+    final File parentFile = file.getParentFile();
 
     // Create parent directory if necessary
     if (parentFile != null && !parentFile.exists()) {
@@ -103,7 +104,7 @@ public final class MainCLI extends Main {
       }
     }
 
-    return new FileHandler(logFile);
+    return new FileHandler(file.getAbsolutePath());
   }
 
   //
