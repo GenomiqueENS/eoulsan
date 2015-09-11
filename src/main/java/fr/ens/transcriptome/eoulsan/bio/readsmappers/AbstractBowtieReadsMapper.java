@@ -217,7 +217,7 @@ public abstract class AbstractBowtieReadsMapper
         final List<String> cmd = new ArrayList<>();
 
         // Add common arguments
-        cmd.addAll(createCommonArgs(bowtiePath, index, false, false));
+        cmd.addAll(createCommonArgs(bowtiePath, index));
 
         // Enable Index memory mapped in streaming mode
         if (isMultipleInstancesEnabled()) {
@@ -263,7 +263,7 @@ public abstract class AbstractBowtieReadsMapper
         final List<String> cmd = new ArrayList<>();
 
         // Add common arguments
-        cmd.addAll(createCommonArgs(bowtiePath, index, false, false));
+        cmd.addAll(createCommonArgs(bowtiePath, index));
 
         // Enable Index memory mapped in streaming mode
         if (isMultipleInstancesEnabled()) {
@@ -309,12 +309,8 @@ public abstract class AbstractBowtieReadsMapper
   protected List<String> createCommonArgs(final String bowtiePath,
       final String index) {
 
-    return createCommonArgs(bowtiePath, index, false, false);
+    return createCommonArgs(bowtiePath, index);
   }
-
-  protected abstract List<String> createCommonArgs(final String bowtiePath,
-      final String index, final boolean inputCrossbowFormat,
-      final boolean memoryMappedIndex);
 
   //
   // Init

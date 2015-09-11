@@ -116,8 +116,7 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
 
   @Override
   protected List<String> createCommonArgs(final String bowtiePath,
-      final String index, final boolean inputCrossbowFormat,
-      final boolean memoryMappedIndex) {
+      final String index) {
 
     final List<String> result = new ArrayList<>();
 
@@ -127,28 +126,22 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
     // Set the user options
     result.addAll(getListMapperArguments());
 
-    // Set the number of threads to use
-    result.add("-p");
-    result.add(getThreadsNumber() + "");
+    if (!isMultipleInstancesEnabled()) {
 
-    // Enable memory mapped index
-    if (memoryMappedIndex) {
+      // Set the number of threads to use
+      result.add("-p");
+      result.add(getThreadsNumber() + "");
+    } else {
+
+      // Enable memory mapped index
       result.add("--mm");
     }
 
-    // Input Format in FASTQ or Crossbow format
-    if (inputCrossbowFormat) {
-      result.add(("-r"));
-    } else {
-      result.add(("-q"));
-    }
+    // The input is in FASTQ
+    result.add(("-q"));
 
     // Set the quality format
     result.add(bowtieQualityArgument());
-
-    // TODO option used for specify sam file
-    // Output in SAM format
-    // result.add("-S");
 
     // Quiet mode
     result.add("--quiet");
