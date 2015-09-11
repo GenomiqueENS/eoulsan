@@ -232,10 +232,19 @@ public abstract class MapperProcess {
    */
   static class FastqWriterThread extends Thread {
 
+    // The queue can store a little more than 1,00,000 * 1000 = 100,000,000
+    // characters
+    private static final int MAX_CAPACITY = 100000;
+    private static final int MIN_LINE_SIZE = 1000;
+
     private volatile boolean closed;
-    private final BlockingDeque<String> queue = new LinkedBlockingDeque<>();
+    private final BlockingDeque<String> queue =
+        new LinkedBlockingDeque<>(MAX_CAPACITY);
     private final Writer writer;
     private Exception exception;
+
+    private int lineCount;
+    private final StringBuilder buffer = new StringBuilder();
 
     @Override
     public void run() {
@@ -253,7 +262,6 @@ public abstract class MapperProcess {
           } else {
             Thread.sleep(1000);
           }
-
         }
 
         this.writer.close();
@@ -266,23 +274,54 @@ public abstract class MapperProcess {
     }
 
     /**
-     * Write a string to the pipe.
+     * Write a string to the pipe. This method is not synchronized.
      * @param s string to write
      * @throws IOException if an error has occurred in writings
      */
     public void write(final String s) throws IOException {
 
-      this.queue.add(s);
+      if (this.closed) {
+        throw new IllegalStateException("FastqWriterThread is closed");
+      }
+
+      this.buffer.append(s);
+      this.lineCount++;
+
+      // We only add lines of about 1000 character in the queue
+      if (this.buffer.length() < MIN_LINE_SIZE || this.lineCount % 4 != 0) {
+        return;
+      }
+
+      if (this.queue.remainingCapacity() == 0) {
+
+        this.writer.flush();
+
+        while (this.queue.remainingCapacity() == 0) {
+
+          try {
+            Thread.sleep(1000);
+          } catch (InterruptedException e) {
+          }
+        }
+      }
+
+      this.queue.add(this.buffer.toString());
+      this.buffer.setLength(0);
+      this.lineCount = 0;
 
       throwExceptionIfExists();
     }
 
     /**
-     * Asynchronous close.
+     * Asynchronous close. This method is not synchronized. A call to write()
+     * just after close() may to lead to lose data.
      */
     public void close() throws IOException {
 
+      this.queue.add(buffer.toString());
+      this.buffer.setLength(0);
       this.closed = true;
+
       try {
         join();
       } catch (InterruptedException e) {
