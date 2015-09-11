@@ -350,6 +350,16 @@ public class ITResult {
           .append(Joiner.on("\n\t").join(this.exception.getStackTrace()));
     }
 
+    // Add last command result message if command has failed
+    ITCommandResult lastCommandResult =
+        this.commandsResults.get(this.commandsResults.size() - 1);
+
+    if (lastCommandResult.asErrorFileSave()) {
+      // Include message
+      msgException.append(lastCommandResult.getSTDERRMessageOnProcess());
+
+    }
+
     // Return text
     return msgException.toString();
   }
