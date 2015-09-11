@@ -85,8 +85,9 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       }
 
       // Execute STAR with no argument
-      getExecutor().execute(Lists.newArrayList(execPath), tempDir, false, false,
-          tempDir);
+      getExecutor()
+          .execute(Lists.newArrayList(execPath), tempDir, false, false, tempDir)
+          .waitFor();
 
       final File logFile = new File(tempDir, "Log.out");
 
