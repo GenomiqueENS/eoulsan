@@ -121,6 +121,7 @@ Available actions:
 
         <p>In order to avoid modify the <tt>eoulsan.sh</tt> file, you use the following  environment variable to configure Eoulsan JVM and plugins path:</p>
         <ul>
+            <li><b>EOULSAN_JAVA_HOME</b>: The path to the JDK to use with Eoulsan. If this environment variable is not set the <b>JAVA_HOME</b> environment varibale will be used. If none of this environment variables is set, the default java command will be used to launch Eoulsan.</li>
             <li><b>EOULSAN_MEMORY</b>: The maximum size in MiB of the JVM memory allocation pool. Default value is 2048.</li>
             <li><b>EOULSAN_JVM_OPTS</b>: The JVM options. Default value is "-server".</li>
             <li><b>EOULSAN_PLUGINS</b>: The path to Eoulsan plugins. No default value is set.</li>

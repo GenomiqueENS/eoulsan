@@ -73,10 +73,12 @@ do
 done
 
 # Set the path to java
-if [ -z "$JAVA_HOME" ] ; then
-	JAVA_CMD="java"
-else
+if [ -n "$EOULSAN_JAVA_HOME" ] ; then
+	JAVA_CMD="$EOULSAN_JAVA_HOME/bin/java"
+elif [ -n "$JAVA_HOME" ] ; then
 	JAVA_CMD="$JAVA_HOME/bin/java"
+else
+	JAVA_CMD="java"
 fi
 
 COMMON_LIBS=$(make_paths $LIBDIR)
