@@ -125,10 +125,15 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
           new File(Main.getInstance().getEoulsanScriptPath());
       command.add(eoulsanScriptFile.getAbsolutePath());
 
-      final String logLevel = Main.getInstance().getLogLevelArgument();
+      // Force the usage of the current JRE by the submitted task
+      command.add("-j");
+      command.add(System.getProperty("java.home"));
 
+      // Set the working directory
       command.add("-w");
       command.add(System.getProperty("user.dir"));
+
+      final String logLevel = Main.getInstance().getLogLevelArgument();
 
       if (logLevel != null) {
         command.add("-loglevel");
