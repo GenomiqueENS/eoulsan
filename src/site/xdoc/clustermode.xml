@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document> 
+
+  <properties>
+    <title>Run Eoulsan in cluster mode</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
+  </properties> 
+
+  <body>
+  
+     <section name="Eoulsan configuration for clusters">
+
+     <p>Eoulsan can work out of the box on a cluster. You must to set the <b>main.cluster.scheduler.name</b> global parameter in the <a href="./conffile.html">configuration file</a> or in the <a href="./workflowfile.html">workflow file</a> to activate this mode.
+        Then, use the <a href="./cmd-clusterexec.html"><tt>clusterexec</tt></a> command to use the cluster for executing your workflow.</p>
+
+     <p>The current supported cluster schedulers are:</p>
+     <table>
+       <tr><th>Scheduler name</th><th>main.cluster.scheduler.name value</th><th>Comment</th></tr>
+       <tr><td><a href="https://research.cs.wisc.edu/htcondor/">Condor</a></td><td>condor</td><td>Works, tested on IBENS cluster.</td></tr>
+       <!--tr><td><a href="http://www-hpc.cea.fr/fr/complexe/tgcc.htm">TGCC</a></td><td>tgcc</td><td>Under development.</td></tr-->
+     </table>     
+
+    </section>
+
+
+  </body>
+
+</document>

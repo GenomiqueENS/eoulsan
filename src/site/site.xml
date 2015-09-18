@@ -91,11 +91,13 @@
 				<item name="Create design" href="/cmd-createdesign.html" />
 				<item name="Create Hadoop jar" href="/cmd-createhadoopjar.html" />
 				<item name="Local Exec" href="/cmd-localexec.html" />
+				<item name="Cluster Exec" href="/cmd-clusterexec.html" />
 				<item name="Hadoop Exec" href="/cmd-hadoopexec.html" />
 				<item name="EMR Exec" href="/cmd-emrexec.html" />
 				<item name="S3 Upload" href="/cmd-s3upload.html" />
 			</item>
 
+			<item name="Cluster configuration" href="/clustermode.html"/>
 			<item name="Hadoop configuration" href="/hadoopmode.html"/>
 			<item name="AWS configuration" href="/awsmode.html"/>
 			<item name="Data repositories configuration" href="/datarepositories.html"/>

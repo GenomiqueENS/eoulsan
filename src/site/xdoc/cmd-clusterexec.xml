@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École Normale Supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://www.transcriptome.ens.fr/eoulsan
+ *
+ */
+-->
+<document> 
+
+  <properties>
+    <title>Launch analysis in cluster mode</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
+  </properties> 
+
+
+
+  <body>
+  
+    <section name="Launch analysis in local mode">
+
+      <p>This command launch Eoulsan in cluster mode.</p>  
+
+      <ul>
+         <li><b>Command name</b>: clusterexec</li>
+         <li><b>Mandatory parameters</b>:
+	<table>
+		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
+		<tr><td>workflow file</td><td>a path</td><td>The workflow file to use</td></tr>
+		<tr><td>design file</td><td>a path</td><td>The design file to use</td></tr>
+	</table>
+        </li>
+	<br/>
+         <li><b>Optional parameters</b>:
+	<table>
+		<tr><th>Parameter</th><th>Value</th><th>Description</th></tr>
+		<tr><td>-d, --description</td><td>a string</td><td>The description of the analysis</td></tr>
+	</table>
+        </li>
+	<br/>
+        <li><b>Usage</b>:
+<source>
+$ eoulsan.sh clusterexec -d 'my first eoulsan launch on a cluster' workflow.xml design.txt
+</source>
+
+</li>
+        
+       </ul>
+      
+    </section>
+
+
+  </body>
+  
+</document>
