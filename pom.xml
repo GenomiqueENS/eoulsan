@@ -724,12 +724,6 @@
 									<fileset dir="${basedir}/src/main/formats"/>
 								</copy>
 
-								<chmod perm="ugo+rx">
-									<fileset dir="${basedir}/target/dist/bin">
-										<include name="bpipe-*" />
-									</fileset>
-								</chmod>
-
 								<copy file="${basedir}/target/${project.artifactId}-${project.version}.jar" todir="${basedir}/target/dist/lib/" />
 								<move file="${basedir}/target/dist/" tofile="${basedir}/target/dist/${project.artifactId}-${project.version}"/>
 
@@ -762,15 +756,17 @@
 							<tasks unless="distrib.package.compression.skip">
 
 								<!-- skip this task with command: mvn -Ddistrib.package.compression.skip=true -->
-								<!-- Compress dist-src -->
-
+								<!-- Compress dist -->
+o
 								<tar longfile="gnu" destfile="${basedir}/target/${project.artifactId}-${project.version}.tar">
 									<tarfileset dir="${basedir}/target/dist"  mode="644" dirmode="755" username="nobody" group="nobody">
 										<include name="*/**"/>
 										<exclude name="${project.artifactId}-${project.version}/${project.artifactId}.sh" />
+										<exclude name="${project.artifactId}-${project.version}/bin/*" />
 									</tarfileset>
 									<tarfileset dir="${basedir}/target/dist"  mode="755" dirmode="755" username="nobody" group="nobody">
 										<include name="${project.artifactId}-${project.version}/${project.artifactId}.sh" />
+										<include name="${project.artifactId}-${project.version}/bin/*" />
 									</tarfileset>
 								</tar>
 								<gzip zipfile="${basedir}/target/${project.artifactId}-${project.version}.tar.gz"
