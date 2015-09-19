@@ -160,6 +160,7 @@ make_condor_description_file () {
    cat > $job_script_name << HERE
 Universe = vanilla
 Executable = $EXECUTABLE
+GetEnv = True
 Output = $job_script_dir/script-$JOB_SCRIPT_ID.stdout
 Error = $job_script_dir/script-$JOB_SCRIPT_ID.stderr
 Arguments = $ARGUMENTS
