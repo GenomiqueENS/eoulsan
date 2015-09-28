@@ -1,0 +1,13 @@
+<dataformat>
+  <name>text_txt</name>
+  <description>text format</description>
+  <alias>text</alias>
+  <prefix>text</prefix>
+  <extensions>
+  	<extension default="true">.txt</extension>
+  </extensions>
+
+  <toolshedgalaxy>
+  	<extension>text</extension> 	
+  </toolshedgalaxy>
+</dataformat>
