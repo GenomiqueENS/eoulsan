@@ -33,6 +33,8 @@ import static fr.ens.transcriptome.eoulsan.annotations.EoulsanAnnotationUtils.is
 import static fr.ens.transcriptome.eoulsan.annotations.EoulsanAnnotationUtils.isReuseStepInstance;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.PARTIALLY_DONE;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.stackTraceToString;
+import static fr.ens.transcriptome.eoulsan.util.StringUtils.toTimeHumanReadable;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -139,6 +141,7 @@ public class TaskRunner {
       public void run() {
 
         getLogger().info("Start of task #" + TaskRunner.this.context.getId());
+        final long startTime = System.currentTimeMillis();
 
         final Step stepInstance;
         final StepType stepType =
@@ -203,7 +206,27 @@ public class TaskRunner {
           TaskRunner.this.result = TaskRunner.this.status.createStepResult(t);
         }
 
+        final long duration = System.currentTimeMillis() - startTime;
+        final StepResult result = TaskRunner.this.result;
+        final boolean success = result.isSuccess();
+
         getLogger().info("End of task #" + TaskRunner.this.context.getId());
+        getLogger().info("Duration: " + toTimeHumanReadable(duration));
+        getLogger().info("Result: " + (success ? "Success" : "Fail"));
+
+        if (!success) {
+
+          final String errorMessage = result.getErrorMessage();
+          final Throwable exception = result.getException();
+
+          if (errorMessage != null) {
+            getLogger().severe("Error message: " + errorMessage);
+          }
+
+          if (exception != null) {
+            getLogger().severe("Exception: " + stackTraceToString(exception));
+          }
+        }
       }
 
       /**

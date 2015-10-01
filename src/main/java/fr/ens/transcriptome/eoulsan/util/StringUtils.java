@@ -25,6 +25,8 @@
 package fr.ens.transcriptome.eoulsan.util;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -1054,6 +1056,23 @@ public final class StringUtils {
     }
 
     return s;
+  }
+
+  /**
+   * Convert a stack trace of an exception into a string.
+   * @param t the throwable exception
+   * @return a string with the stack strace
+   */
+  public static String stackTraceToString(final Throwable t) {
+
+    if (t == null) {
+      return null;
+    }
+
+    final StringWriter sw = new StringWriter();
+    t.printStackTrace(new PrintWriter(sw));
+
+    return sw.toString();
   }
 
   //

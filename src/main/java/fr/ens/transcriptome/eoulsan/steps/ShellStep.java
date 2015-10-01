@@ -98,11 +98,17 @@ public class ShellStep extends AbstractStep {
 
     try {
 
+      // Define the shell interpreter to use
+      String shellInterpreter = System.getenv("SHELL");
+      if (shellInterpreter == null) {
+        shellInterpreter = "/bin/sh";
+      }
+
       getLogger().info("Execute: " + this.command);
+      getLogger().info("Shell interpreter: " + shellInterpreter);
 
       final Process p =
-          new ProcessBuilder(System.getenv("SHELL"), "-c", this.command)
-              .start();
+          new ProcessBuilder(shellInterpreter, "-c", this.command).start();
 
       final int exitCode = p.waitFor();
 
