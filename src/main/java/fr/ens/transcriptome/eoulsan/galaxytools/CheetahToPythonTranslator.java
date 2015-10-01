@@ -23,8 +23,8 @@
  */
 package fr.ens.transcriptome.eoulsan.galaxytools;
 
-import static fr.ens.transcriptome.eoulsan.galaxytools.ToolPythonInterpreter.CALL_METHOD;
-import static fr.ens.transcriptome.eoulsan.galaxytools.ToolPythonInterpreter.VAR_CMD_NAME;
+import static fr.ens.transcriptome.eoulsan.galaxytools.CheetahInterpreter.CALL_METHOD;
+import static fr.ens.transcriptome.eoulsan.galaxytools.CheetahInterpreter.VAR_CMD_NAME;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,7 +51,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
  * @author Sandrine Perrin
  * @since 2.1
  */
-class TranslatorStringToPython {
+class CheetahToPythonTranslator {
 
   /** The Constant NEW_LINE. */
   public final static Splitter NEW_LINE =
@@ -75,15 +75,13 @@ class TranslatorStringToPython {
 
   private final List<String> rawCommand;
 
-  private final String translatedCommand;
-
   /**
    * Translate content of command tag from tool XML file.
    * @return script Python to interpreter from building command line tool.
    * @throws EoulsanException an exception occurs if the translation command in
    *           Python return no script.
    */
-  private String translate() throws EoulsanException {
+  String translate() throws EoulsanException {
 
     final List<String> translatedLinesFromCommand = new ArrayList<>();
 
@@ -119,15 +117,6 @@ class TranslatorStringToPython {
     return Collections.unmodifiableSet(this.variableNames);
   }
 
-  /**
-   * Gets the translated command in Python.
-   * @return the translated command in Python
-   */
-  public String getTranslatedCommandInPython() {
-
-    return this.translatedCommand;
-  }
-
   //
   // Constructor
   //
@@ -137,7 +126,7 @@ class TranslatorStringToPython {
    * @param cmdTag the raw command tag
    * @throws EoulsanException occurs if translation fail.
    */
-  TranslatorStringToPython(final String cmdTag) throws EoulsanException {
+  CheetahToPythonTranslator(final String cmdTag) throws EoulsanException {
 
     Preconditions.checkNotNull(cmdTag, "Command tag from tool xml is empty.");
 
@@ -145,13 +134,6 @@ class TranslatorStringToPython {
 
     // Extract all variables names found in command
     this.variableNames = Sets.newHashSet();
-
-    // Translate to Python
-    this.translatedCommand = translate();
-
-    Preconditions.checkNotNull(translatedCommand,
-        "Command tag from tool xml is null, fail to translate in Python code.");
-
   }
 
   //

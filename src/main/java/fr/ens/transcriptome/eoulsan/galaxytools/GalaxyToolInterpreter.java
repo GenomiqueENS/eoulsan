@@ -354,12 +354,14 @@ public class GalaxyToolInterpreter {
         + Joiner.on("\t").withKeyValueSeparator("=").join(variables));
 
     // Create the Cheetah interpreter
-    final ToolPythonInterpreter pythonInterpreter =
-        new ToolPythonInterpreter(this.tool.getCommandScript(), variables);
+    final CheetahInterpreter cheetahInterpreter =
+        new CheetahInterpreter(this.tool.getCommandScript(), variables);
+
+    final String commandLine = cheetahInterpreter.execute();
 
     // Create the executor and interpret the command tag
-    final ToolExecutor executor = new ToolExecutor(context, this.tool,
-        pythonInterpreter.interpretScript());
+    final ToolExecutor executor =
+        new ToolExecutor(context, this.tool, commandLine);
 
     // Execute the command
     final ToolExecutorResult result = executor.execute();
