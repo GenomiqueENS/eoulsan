@@ -452,7 +452,7 @@ public class ITFactory {
               ProcessUtils.execToString(evaluateExpressions(expr, false));
 
           // remove last '\n' in the result
-          if (r.charAt(r.length() - 1) == '\n') {
+          if (!r.isEmpty() && r.charAt(r.length() - 1) == '\n') {
             result.append(r.substring(0, r.length() - 1));
           } else {
             result.append(r);
