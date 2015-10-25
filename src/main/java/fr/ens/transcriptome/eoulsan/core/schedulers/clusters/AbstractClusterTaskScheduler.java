@@ -195,8 +195,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
 
         final File taskFile =
             ((TaskContext) this.context).getTaskOutputDirectory().toFile();
-        final int requiredMemory =
-            this.context.getCurrentStep().getRequiredMemory();
+        final int requiredMemory = getRequiredMemory();
         final int requiredProcessors =
             this.context.getCurrentStep().getRequiredProcessors();
 
@@ -252,6 +251,27 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
         // Remove the thread from the queue
         AbstractClusterTaskScheduler.this.queue.remove(this);
       }
+    }
+
+    /**
+     * Get the required memory for the step
+     * @return the required memory for the step
+     */
+    private int getRequiredMemory() {
+
+      int result = this.context.getCurrentStep().getRequiredMemory();
+
+      if (result > 0) {
+        return result;
+      }
+
+      result = this.context.getSettings().getDefaultClusterMemoryRequired();
+
+      if (result > 0) {
+        return result;
+      }
+
+      return Main.getInstance().getEoulsanMemory();
     }
 
     /**

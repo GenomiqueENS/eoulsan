@@ -63,8 +63,8 @@ import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 public abstract class Main {
 
   public static final String EOULSAN_CLASSPATH_JVM_ARG = "eoulsan.classpath";
-  public static final String EOULSAN_SCRIPT_PATH_JVM_ARG =
-      "eoulsan.launch.script.path";
+  public static final String EOULSAN_SCRIPT = "eoulsan.launch.script.path";
+  public static final String EOULSAN_MEMORY = "eoulsan.memory";
 
   private static Main main;
 
@@ -128,7 +128,26 @@ public abstract class Main {
    */
   public String getEoulsanScriptPath() {
 
-    return System.getProperty(EOULSAN_SCRIPT_PATH_JVM_ARG);
+    return System.getProperty(EOULSAN_SCRIPT);
+  }
+
+  /**
+   * Get Eoulsan memory requirement.
+   * @return the Eoulsan memory requirement
+   */
+  public int getEoulsanMemory() {
+
+    String value = System.getProperty(EOULSAN_MEMORY);
+
+    if (value == null) {
+      return -1;
+    }
+
+    try {
+      return Integer.parseInt(value.trim());
+    } catch (NumberFormatException e) {
+      return -1;
+    }
   }
 
   /**
