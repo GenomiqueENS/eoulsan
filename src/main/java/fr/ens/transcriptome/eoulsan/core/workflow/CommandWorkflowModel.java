@@ -38,6 +38,8 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.P
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.PARAMETERVALUE_TAG_NAME;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.PARAMETER_TAG_NAME;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.PORT_TAG_NAME;
+import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.REQUIRED_CPU_ATTR_NAME_STEP_TAG;
+import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.REQUIRED_MEM_ATTR_NAME_STEP_TAG;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.ROOT_TAG_NAME;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.SKIP_ATTR_NAME_STEP_TAG;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.STEP_TAG_NAME;
@@ -99,6 +101,8 @@ public class CommandWorkflowModel implements Serializable {
   private final Map<String, Set<Parameter>> stepParameters = new HashMap<>();
   private final Map<String, Boolean> stepSkipped = new HashMap<>();
   private final Map<String, Boolean> stepDiscardOutput = new HashMap<>();
+  private final Map<String, Integer> stepRequiredMemory = new HashMap<>();
+  private final Map<String, Integer> stepRequiredProcessors = new HashMap<>();
   private final Set<Parameter> globalParameters = new HashSet<>();
 
   static final class StepPort implements Serializable {
@@ -208,11 +212,14 @@ public class CommandWorkflowModel implements Serializable {
    * @param parameters parameters of the step
    * @param skipStep true if the step must be skip
    * @param discardOutput true if the output of the step can be removed
+   * @param requiredMemory required memory
+   * @param requiredProcs required processors
    * @throws EoulsanException if an error occurs while adding the step
    */
   void addStep(final String stepId, final String stepName, final String version,
       final Map<String, StepOutputPort> inputs, final Set<Parameter> parameters,
-      final boolean skipStep, final boolean discardOutput)
+      final boolean skipStep, final boolean discardOutput,
+      final int requiredMemory, final int requiredProcs)
           throws EoulsanException {
 
     if (stepName == null) {
@@ -299,6 +306,8 @@ public class CommandWorkflowModel implements Serializable {
     this.stepParameters.put(stepIdLower, parameters);
     this.stepSkipped.put(stepIdLower, skipStep);
     this.stepDiscardOutput.put(stepIdLower, discardOutput);
+    this.stepRequiredMemory.put(stepIdLower, requiredMemory);
+    this.stepRequiredProcessors.put(stepIdLower, requiredProcs);
   }
 
   /**
@@ -380,6 +389,28 @@ public class CommandWorkflowModel implements Serializable {
   public boolean isStepDiscardOutput(final String stepId) {
 
     return this.stepDiscardOutput.get(stepId);
+  }
+
+  /**
+   * Get the required memory for the step.
+   * @param stepId step id
+   * @return the required memory of the step in MB or -1 if the default setting
+   *         must be used
+   */
+  public int getStepRequiredMemory(final String stepId) {
+
+    return this.stepRequiredMemory.get(stepId);
+  }
+
+  /**
+   * Get the required processors for the step.
+   * @param stepId step id
+   * @return the required processors count for the step in MB or -1 if the
+   *         default setting must be used
+   */
+  public int getStepRequiredProcessors(final String stepId) {
+
+    return this.stepRequiredProcessors.get(stepId);
   }
 
   /**
@@ -543,6 +574,19 @@ public class CommandWorkflowModel implements Serializable {
     Attr skipAttr = document.createAttribute(SKIP_ATTR_NAME_STEP_TAG);
     skipAttr.setValue("" + this.stepSkipped.get(stepId));
     stepElement.setAttributeNode(skipAttr);
+
+    // Set required memory attribute
+    Attr requiredMemoryAttr =
+        document.createAttribute(REQUIRED_MEM_ATTR_NAME_STEP_TAG);
+    requiredMemoryAttr.setValue("" + this.stepRequiredMemory.get(stepId));
+    stepElement.setAttributeNode(requiredMemoryAttr);
+
+    // Set required processors attribute
+    Attr requiredProcessorsAttr =
+        document.createAttribute(REQUIRED_CPU_ATTR_NAME_STEP_TAG);
+    requiredProcessorsAttr
+        .setValue("" + this.stepRequiredProcessors.get(stepId));
+    stepElement.setAttributeNode(requiredProcessorsAttr);
 
     // Set step name
     addElement(document, stepElement, NAME_TAG_NAME,

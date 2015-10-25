@@ -191,6 +191,20 @@ public interface WorkflowStep extends Serializable {
   Set<Parameter> getParameters();
 
   /**
+   * Get the required memory for the step.
+   * @return the required memory of the step in MB or -1 if the default setting
+   *         must be used
+   */
+  int getRequiredMemory();
+
+  /**
+   * Get the required processors for the step.
+   * @return the required processors count for the step in MB or -1 if the
+   *         default setting must be used
+   */
+  int getRequiredProcessors();
+
+  /**
    * Get the input ports of the step.
    * @return the input ports of the step
    */

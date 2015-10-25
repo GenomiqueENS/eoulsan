@@ -81,17 +81,21 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
    * @param id identifier of the step
    * @param stepName Step name
    * @param stepVersion step version
-   * @param skip true to skip execution of the step
    * @param parameters parameters of the step
+   * @param skip true to skip execution of the step
+   * @param copyResultsToOutput true to copy step results to output
+   * @param requiredMemory required memory
+   * @param requiredProcessors required processors
    * @throws EoulsanException id an error occurs while creating the step
    */
   public CommandWorkflowStep(final AbstractWorkflow workflow, final String id,
       final String stepName, final String stepVersion,
       final Set<Parameter> parameters, final boolean skip,
-      final boolean copyResultsToOutput) throws EoulsanException {
+      final boolean copyResultsToOutput, final int requiredMemory,
+      final int requiredProcessors) throws EoulsanException {
 
     super(workflow, id, stepName, stepVersion, skip, copyResultsToOutput,
-        parameters);
+        parameters, requiredMemory, requiredProcessors);
   }
 
   /**
@@ -117,6 +121,6 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
       final Set<Parameter> parameters) throws EoulsanException {
 
     this(workflow, step.getName(), step.getName(), step.getVersion().toString(),
-        parameters, false, false);
+        parameters, false, false, -1, -1);
   }
 }

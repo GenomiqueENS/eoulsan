@@ -128,11 +128,14 @@ public interface ClusterTaskScheduler extends TaskScheduler {
    * @param jobCommand job command
    * @param jobDirectory job directory
    * @param taskId task id
+   * @param requiredMemory required memory
+   * @param requiredProcessors required processors
    * @return a String with the id of the submitted job
    * @throws IOException if an error occurs while submitting job
    */
   String submitJob(final String jobName, final List<String> jobCommand,
-      final File jobDirectory, final int taskId) throws IOException;
+      final File jobDirectory, final int taskId, final int requiredMemory,
+      final int requiredProcessors) throws IOException;
 
   /**
    * Stop a job.
