@@ -134,6 +134,18 @@ make_condor_description_file () {
       JOB_SCRIPT_ID=$EOULSAN_TASK_ID
    fi
 
+   if [[ -z $MEMORY ]]; then
+      memory_request=""
+   else
+      memory_request="request_memory = ${MEMORY}G"
+   fi
+
+   if [[ -z $PROCS ]]; then
+      procs_request=""
+   else
+      procs_request="request_cpus = ${PROCS}"
+   fi
+
    # set the job directory if needed
    if [[ -n $JOBDIR ]]; then
       # check if the directory already exists
@@ -158,13 +170,15 @@ make_condor_description_file () {
    EXECUTABLE=`echo $COMMAND | cut -f 1 -d ' '`
    ARGUMENTS=`echo $COMMAND | cut -f 2- -d ' '`
    cat > $job_script_name << HERE
-Universe = vanilla
-Executable = $EXECUTABLE
-GetEnv = True
-Output = $job_script_dir/script-$JOB_SCRIPT_ID.stdout
-Error = $job_script_dir/script-$JOB_SCRIPT_ID.stderr
-Arguments = $ARGUMENTS
-Queue
+universe = vanilla
+$memory_request
+$procs_request
+executable = $EXECUTABLE
+getenv = True
+output = $job_script_dir/script-$JOB_SCRIPT_ID.stdout
+error = $job_script_dir/script-$JOB_SCRIPT_ID.stderr
+arguments = $ARGUMENTS
+queue
 HERE
 
 # TODO Handle InitialDir = <path>/test/run_1

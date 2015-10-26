@@ -93,6 +93,7 @@ $JAVA_CMD \
 		-cp $APP_CLASSPATH \
 		-Deoulsan.script.path="$0" \
 		-Deoulsan.classpath=$APP_CLASSPATH \
+		-Deoulsan.memory=$MEMORY \
 		-Deoulsan.launch.mode=local \
 		-Deoulsan.launch.script.path=$0 \
 		-Deoulsan.hadoop.libs=$COMMON_LIBS:$PLUGINS:$PLUGINS_LIB \

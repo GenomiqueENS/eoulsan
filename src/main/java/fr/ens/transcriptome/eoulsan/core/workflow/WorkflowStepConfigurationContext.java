@@ -107,6 +107,18 @@ public class WorkflowStepConfigurationContext
     }
 
     @Override
+    public int getRequiredMemory() {
+
+      return this.step.getRequiredMemory();
+    }
+
+    @Override
+    public int getRequiredProcessors() {
+
+      return this.step.getRequiredProcessors();
+    }
+
+    @Override
     public InputPorts getInputPorts() {
 
       throw new IllegalStateException(

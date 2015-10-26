@@ -38,6 +38,8 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -108,6 +110,8 @@ public class CommandWorkflowParser {
   static final String STEPNAME_TAG_NAME = "stepname";
   static final String DISCARDOUTPUT_ATTR_NAME_STEP_TAG = "discardoutput";
   static final String SKIP_ATTR_NAME_STEP_TAG = "skip";
+  static final String REQUIRED_MEM_ATTR_NAME_STEP_TAG = "requiredmemory";
+  static final String REQUIRED_CPU_ATTR_NAME_STEP_TAG = "requiredprocs";
   static final String ID_ATTR_NAME_STEP_TAG = "id";
   static final String VERSION_TAG = "version";
   static final String STEP_TAG_NAME = "step";
@@ -233,6 +237,12 @@ public class CommandWorkflowParser {
                     eStepElement.getAttribute(SKIP_ATTR_NAME_STEP_TAG).trim()
                         .toLowerCase());
 
+                final int requiredMemory = parseMemory(
+                    eStepElement.getAttribute(REQUIRED_MEM_ATTR_NAME_STEP_TAG));
+
+                final int requiredProcs = parseProcessors(
+                    eStepElement.getAttribute(REQUIRED_CPU_ATTR_NAME_STEP_TAG));
+
                 final boolean discardOutput = Boolean.parseBoolean(
                     eStepElement.getAttribute(DISCARDOUTPUT_ATTR_NAME_STEP_TAG)
                         .trim().toLowerCase());
@@ -257,7 +267,7 @@ public class CommandWorkflowParser {
                 getLogger().info("In workflow file found "
                     + stepName + " step (parameters: " + parameters + ").");
                 result.addStep(stepId, stepName, version, inputs, parameters,
-                    skip, discardOutput);
+                    skip, discardOutput, requiredMemory, requiredProcs);
 
               }
             }
@@ -642,6 +652,101 @@ public class CommandWorkflowParser {
     }
 
     return s.substring(beginIndex, endIndex);
+  }
+
+  //
+  // Parsing methods
+  //
+
+  /**
+   * Parse the required processors attribute.
+   * @param s the string to parse
+   * @return the processor count required in MB
+   * @throws EoulsanException if the string if not valid
+   */
+  private static int parseMemory(final String s) throws EoulsanException {
+
+    if (s == null) {
+      return -1;
+    }
+
+    final String value = s.replace(" ", "").trim().toLowerCase();
+
+    if (s.isEmpty()) {
+      return -1;
+    }
+
+    final Pattern pattern = Pattern.compile("^(\\d+)([a-z]*)$");
+
+    final Matcher matcher = pattern.matcher(value);
+
+    if (!matcher.matches()) {
+      throw new EoulsanException("Invalid memory value in "
+          + REQUIRED_MEM_ATTR_NAME_STEP_TAG + " attribute of tag "
+          + STEP_TAG_NAME + ": " + s);
+    }
+
+    final int groupCount = matcher.groupCount();
+
+    int result;
+
+    try {
+      result = Integer.parseInt(matcher.group(1));
+    } catch (NumberFormatException e) {
+      throw new EoulsanException("Invalid memory value in "
+          + REQUIRED_MEM_ATTR_NAME_STEP_TAG + " attribute of tag "
+          + STEP_TAG_NAME + ": " + s);
+    }
+
+    if (groupCount > 2) {
+
+      switch (matcher.group(1)) {
+
+      case "mib":
+      case "mb":
+      case "m":
+        break;
+
+      case "gib":
+      case "gb":
+      case "g":
+        result *= 1024;
+
+      default:
+        throw new EoulsanException("Invalid memory value in "
+            + REQUIRED_MEM_ATTR_NAME_STEP_TAG + " attribute of tag "
+            + STEP_TAG_NAME + ": " + s);
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Parse the required processors attribute.
+   * @param s the string to parse
+   * @return the processor count required
+   * @throws EoulsanException if the string if not valid
+   */
+  private static int parseProcessors(final String s) throws EoulsanException {
+
+    if (s == null) {
+      return -1;
+    }
+
+    final String value = s.trim();
+
+    if (value.isEmpty()) {
+      return -1;
+    }
+
+    try {
+      return Integer.parseInt(s.trim());
+    } catch (NumberFormatException e) {
+      throw new EoulsanException("Invalid processor count in "
+          + REQUIRED_CPU_ATTR_NAME_STEP_TAG + " attribute of tag "
+          + STEP_TAG_NAME + ": " + s);
+    }
   }
 
   //

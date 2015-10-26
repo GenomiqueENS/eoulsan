@@ -83,6 +83,9 @@ public final class Settings implements Serializable {
   private static final String CLUSTER_SCHEDULER_NAME_KEY =
       MAIN_PREFIX_KEY + "cluster.scheduler.name";
 
+  private static final String CLUSTER_DEFAULT_MEMORY_REQUIRED =
+      MAIN_PREFIX_KEY + "cluster.memory.required";
+
   private static final String HADOOP_LOG_LEVEL_KEY =
       MAIN_PREFIX_KEY + "hadoop.log.level";
 
@@ -145,11 +148,11 @@ public final class Settings implements Serializable {
   private static final String UI_NAME_KEY = MAIN_PREFIX_KEY + "ui.name";
 
   private static final Set<String> FORBIDDEN_KEYS = Utils.unmodifiableSet(
-      new String[] { HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY });
+      new String[] {HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY});
 
   private static final Set<String> OBFUSCATED_KEYS =
-      Utils.unmodifiableSet(new String[] { AWS_ACCESS_KEY, AWS_SECRET_KEY,
-          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY });
+      Utils.unmodifiableSet(new String[] {AWS_ACCESS_KEY, AWS_SECRET_KEY,
+          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY});
 
   //
   // Getters
@@ -222,6 +225,27 @@ public final class Settings implements Serializable {
   public String getClusterSchedulerName() {
 
     return this.properties.getProperty(CLUSTER_SCHEDULER_NAME_KEY);
+  }
+
+  /**
+   * Get the default memory required for the steps in cluster mode.
+   * @return the default memory required for the cluster mode
+   */
+  public int getDefaultClusterMemoryRequired() {
+
+    String value = this.properties.getProperty(CLUSTER_DEFAULT_MEMORY_REQUIRED);
+
+    if (value == null) {
+      return -1;
+    }
+
+    value = value.trim();
+
+    if (value.isEmpty()) {
+      return -1;
+    }
+
+    return Integer.parseInt(value);
   }
 
   /**
@@ -683,6 +707,15 @@ public final class Settings implements Serializable {
   public void setClusterSchedulerName(final String schedulerName) {
 
     this.properties.setProperty(CLUSTER_SCHEDULER_NAME_KEY, schedulerName);
+  }
+
+  /**
+   * Set the default memory required for the steps in cluster mode.
+   * @param memory the required memory
+   */
+  public void setDefaultClusterMemoryRequired(final int memory) {
+
+    this.properties.setProperty(CLUSTER_DEFAULT_MEMORY_REQUIRED, "" + memory);
   }
 
   /**

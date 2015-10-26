@@ -193,10 +193,15 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
         // Change task state
         beforeExecuteTask(this.context);
 
+        final File taskFile =
+            ((TaskContext) this.context).getTaskOutputDirectory().toFile();
+        final int requiredMemory = getRequiredMemory();
+        final int requiredProcessors =
+            this.context.getCurrentStep().getRequiredProcessors();
+
         // Submit Job
-        this.jobId = submitJob(createJobName(), createJobCommand(),
-            ((TaskContext) this.context).getTaskOutputDirectory().toFile(),
-            this.context.getId());
+        this.jobId = submitJob(createJobName(), createJobCommand(), taskFile,
+            this.context.getId(), requiredMemory, requiredProcessors);
 
         StatusResult status = null;
 
@@ -246,6 +251,27 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
         // Remove the thread from the queue
         AbstractClusterTaskScheduler.this.queue.remove(this);
       }
+    }
+
+    /**
+     * Get the required memory for the step
+     * @return the required memory for the step
+     */
+    private int getRequiredMemory() {
+
+      int result = this.context.getCurrentStep().getRequiredMemory();
+
+      if (result > 0) {
+        return result;
+      }
+
+      result = this.context.getSettings().getDefaultClusterMemoryRequired();
+
+      if (result > 0) {
+        return result;
+      }
+
+      return Main.getInstance().getEoulsanMemory();
     }
 
     /**

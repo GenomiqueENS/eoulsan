@@ -68,7 +68,8 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
 
   @Override
   public String submitJob(final String jobName, final List<String> jobCommand,
-      final File jobDirectory, final int taskId) throws IOException {
+      final File jobDirectory, final int taskId, final int requiredMemory,
+      final int requiredProcessors) throws IOException {
 
     checkNotNull(jobName, "jobName argument cannot be null");
     checkNotNull(jobCommand, "jobCommand argument cannot be null");
@@ -80,8 +81,8 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
     final String jobCommandString = Joiner.on(' ').join(jobCommand);
 
     try {
-      final Process process =
-          startJobProcess(jobName, jobCommandString, jobDirectory, taskId);
+      final Process process = startJobProcess(jobName, jobCommandString,
+          jobDirectory, taskId, requiredMemory, requiredProcessors);
 
       // Read output of the submit command
       final BufferedReader reader =
@@ -220,11 +221,14 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
    * @param jobCommand job command
    * @param jobDirectory job directory
    * @param taskId task id
+   * @param requiredMemory required memory
+   * @param requiredProcessors required processors
    * @return a Process object
    * @throws IOException if an error occurs while creating the process
    */
   private Process startJobProcess(final String jobName, final String jobCommand,
-      final File jobDirectory, final int taskId) throws IOException {
+      final File jobDirectory, final int taskId, final int requiredMemory,
+      final int requiredProcessors) throws IOException {
 
     final List<String> command = new ArrayList<>();
     command.add(getBpipeCommandWrapper().getAbsolutePath());
@@ -236,6 +240,18 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
     builder.environment().put("COMMAND", jobCommand);
     builder.environment().put("JOBDIR", jobDirectory.getAbsolutePath());
     builder.environment().put("EOULSAN_TASK_ID", "" + taskId);
+
+    if (requiredMemory > 0) {
+
+      final int memory =
+          requiredMemory / 1024 + (requiredMemory % 1024 == 0 ? 0 : 1);
+
+      builder.environment().put("MEMORY", "" + memory);
+    }
+
+    if (requiredProcessors > 0) {
+      builder.environment().put("PROCS", "" + requiredProcessors);
+    }
 
     return builder.start();
   }

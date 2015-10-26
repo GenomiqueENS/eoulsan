@@ -87,6 +87,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   private final boolean copyResultsToOutput;
   private final boolean createLogFiles;
 
+  private final int requiredMemory;
+  private final int requiredProcessors;
+
   private WorkflowOutputPorts outputPorts = WorkflowOutputPorts.noOutputPort();
   private WorkflowInputPorts inputPorts = WorkflowInputPorts.noInputPort();
 
@@ -208,6 +211,18 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   public OutputPorts getOutputPorts() {
 
     return this.outputPortsParameter;
+  }
+
+  @Override
+  public int getRequiredMemory() {
+
+    return this.requiredMemory;
+  }
+
+  @Override
+  public int getRequiredProcessors() {
+
+    return this.requiredProcessors;
   }
 
   /**
@@ -547,6 +562,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.parameters = Collections.emptySet();
     this.copyResultsToOutput = false;
     this.parallelizationMode = ParallelizationMode.NOT_NEEDED;
+    this.requiredMemory = -1;
+    this.requiredProcessors = -1;
 
     switch (type) {
     case CHECKER_STEP:
@@ -635,6 +652,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.parameters = Collections.emptySet();
     this.copyResultsToOutput = false;
     this.parallelizationMode = getParallelizationMode(generator);
+    this.requiredMemory = -1;
+    this.requiredProcessors = -1;
 
     // Define output directory
     this.outputDir =
@@ -661,7 +680,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   protected AbstractWorkflowStep(final AbstractWorkflow workflow,
       final String id, final String stepName, final String stepVersion,
       final boolean skip, final boolean copyResultsToOutput,
-      final Set<Parameter> parameters) throws EoulsanException {
+      final Set<Parameter> parameters, final int requiredMemory,
+      final int requiredrocessors) throws EoulsanException {
 
     checkNotNull(workflow, "Workflow argument cannot be null");
     checkNotNull(id, "Step id argument cannot be null");
@@ -675,6 +695,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.stepName = stepName;
     this.version = stepVersion;
     this.copyResultsToOutput = copyResultsToOutput;
+    this.requiredMemory = requiredMemory;
+    this.requiredProcessors = requiredrocessors;
 
     // Load Step instance
     final Step step =
@@ -721,6 +743,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.terminalStep = EoulsanAnnotationUtils.isTerminal(step);
     this.createLogFiles = !isNoLog(step);
     this.parallelizationMode = getParallelizationMode(step);
+    this.requiredMemory = -1;
+    this.requiredProcessors = -1;
 
     // Define output directory
     this.outputDir = defineOutputDirectory(workflow, step, copyResultsToOutput);
