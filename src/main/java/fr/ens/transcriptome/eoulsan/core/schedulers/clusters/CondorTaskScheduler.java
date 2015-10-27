@@ -35,6 +35,7 @@ import fr.ens.transcriptome.eoulsan.Main;
  */
 public class CondorTaskScheduler extends BpipeTaskScheduler {
 
+  public static final String SCHEDULER_NAME = "condor";
   private static final String COMMAND_WRAPPER_SCRIPT = "bpipe-condor";
 
   private final File commandWrapperFile;
@@ -42,7 +43,7 @@ public class CondorTaskScheduler extends BpipeTaskScheduler {
   @Override
   public String getSchedulerName() {
 
-    return "condor";
+    return SCHEDULER_NAME;
   }
 
   @Override

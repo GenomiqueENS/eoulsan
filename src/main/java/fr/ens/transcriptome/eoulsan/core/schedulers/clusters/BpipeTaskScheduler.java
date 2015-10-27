@@ -231,7 +231,7 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
       final int requiredProcessors) throws IOException {
 
     final List<String> command = new ArrayList<>();
-    command.add(getBpipeCommandWrapper().getAbsolutePath());
+    command.add(getBpipeCommandWrapperPath());
     command.add("start");
 
     final ProcessBuilder builder = new ProcessBuilder(command);
@@ -265,7 +265,7 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
   private Process stopJobProcess(final String jobId) throws IOException {
 
     final List<String> command = new ArrayList<>();
-    command.add(getBpipeCommandWrapper().getAbsolutePath());
+    command.add(getBpipeCommandWrapperPath());
     command.add("stop");
     command.add(jobId);
 
@@ -283,13 +283,45 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
   private Process statusJobProcess(final String jobId) throws IOException {
 
     final List<String> command = new ArrayList<>();
-    command.add(getBpipeCommandWrapper().getAbsolutePath());
+    command.add(getBpipeCommandWrapperPath());
     command.add("status");
     command.add(jobId);
 
     final ProcessBuilder builder = new ProcessBuilder(command);
 
     return builder.start();
+  }
+
+  //
+  // Other methods
+  //
+
+  /**
+   * This method get the absolute path of the Bpipe wrapper and check if the
+   * wrapper exists and if it is executable.
+   * @return the wrapper absolute path.
+   * @throws IOException if the wrapper does not exists or cannot be executed
+   */
+  private String getBpipeCommandWrapperPath() throws IOException {
+
+    final File f = getBpipeCommandWrapper();
+
+    if (f == null) {
+      throw new IOException("No Bpipe command wrapper defined for scheduler "
+          + getSchedulerName());
+    }
+
+    if (!f.exists()) {
+      throw new IOException("The Bpipe command wrapper defines for scheduler "
+          + getSchedulerName() + " does not exist: " + f);
+    }
+
+    if (!f.canExecute()) {
+      throw new IOException("The Bpipe command wrapper defines for scheduler "
+          + getSchedulerName() + " does not exist: " + f);
+    }
+
+    return f.getAbsolutePath();
   }
 
 }
