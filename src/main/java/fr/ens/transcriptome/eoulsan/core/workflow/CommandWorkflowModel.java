@@ -576,17 +576,22 @@ public class CommandWorkflowModel implements Serializable {
     stepElement.setAttributeNode(skipAttr);
 
     // Set required memory attribute
-    Attr requiredMemoryAttr =
-        document.createAttribute(REQUIRED_MEM_ATTR_NAME_STEP_TAG);
-    requiredMemoryAttr.setValue("" + this.stepRequiredMemory.get(stepId));
-    stepElement.setAttributeNode(requiredMemoryAttr);
+    if (this.stepRequiredMemory.get(stepId) > 0) {
+      Attr requiredMemoryAttr =
+          document.createAttribute(REQUIRED_MEM_ATTR_NAME_STEP_TAG);
+      requiredMemoryAttr
+          .setValue("" + this.stepRequiredMemory.get(stepId) + "MB");
+      stepElement.setAttributeNode(requiredMemoryAttr);
+    }
 
     // Set required processors attribute
-    Attr requiredProcessorsAttr =
-        document.createAttribute(REQUIRED_CPU_ATTR_NAME_STEP_TAG);
-    requiredProcessorsAttr
-        .setValue("" + this.stepRequiredProcessors.get(stepId));
-    stepElement.setAttributeNode(requiredProcessorsAttr);
+    if (this.stepRequiredProcessors.get(stepId) > 0) {
+      Attr requiredProcessorsAttr =
+          document.createAttribute(REQUIRED_CPU_ATTR_NAME_STEP_TAG);
+      requiredProcessorsAttr
+          .setValue("" + this.stepRequiredProcessors.get(stepId));
+      stepElement.setAttributeNode(requiredProcessorsAttr);
+    }
 
     // Set step name
     addElement(document, stepElement, NAME_TAG_NAME,

@@ -686,8 +686,6 @@ public class CommandWorkflowParser {
           + STEP_TAG_NAME + ": " + s);
     }
 
-    final int groupCount = matcher.groupCount();
-
     int result;
 
     try {
@@ -698,25 +696,24 @@ public class CommandWorkflowParser {
           + STEP_TAG_NAME + ": " + s);
     }
 
-    if (groupCount > 2) {
+    switch (matcher.group(2)) {
 
-      switch (matcher.group(1)) {
+    case "mib":
+    case "mb":
+    case "m":
+    case "":
+      break;
 
-      case "mib":
-      case "mb":
-      case "m":
-        break;
+    case "gib":
+    case "gb":
+    case "g":
+      result *= 1024;
+      break;
 
-      case "gib":
-      case "gb":
-      case "g":
-        result *= 1024;
-
-      default:
-        throw new EoulsanException("Invalid memory value in "
-            + REQUIRED_MEM_ATTR_NAME_STEP_TAG + " attribute of tag "
-            + STEP_TAG_NAME + ": " + s);
-      }
+    default:
+      throw new EoulsanException("Invalid memory value in "
+          + REQUIRED_MEM_ATTR_NAME_STEP_TAG + " attribute of tag "
+          + STEP_TAG_NAME + ": " + s);
     }
 
     return result;
