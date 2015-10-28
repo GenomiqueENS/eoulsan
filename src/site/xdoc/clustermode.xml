@@ -45,6 +45,9 @@
        <!--tr><td><a href="http://www-hpc.cea.fr/fr/complexe/tgcc.htm">TGCC</a></td><td>tgcc</td><td>Under development.</td></tr-->
      </table>     
 
+     <p>The number of processors and the amount of memory to use by the submitted tasks on the cluster can be defined using the <tt>requiredprocs</tt> and
+     <tt>requiredmemory</tt> attributes of the <tt>step</tt> tag of the <a href="./workflowfile.html#stepssection">worfklow file</a>.</p>
+
     </section>
 
 

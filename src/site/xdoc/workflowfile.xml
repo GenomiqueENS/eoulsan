@@ -197,8 +197,8 @@
 
 &lt;/analysis&gt;</source>
 
+     <a name="descsection" />
      <subsection name="Description section">
-        <a name="descsection" />
 
 	<p>The first tags of the workflow file allow to set some information about the file:</p>
 
@@ -211,8 +211,8 @@
 
      </subsection>
 
+     <a name="constantssection" />
      <subsection name="Constants section">
-        <a name="constantssection" />
 
 		<p>The constant section allow to define additional variables that can be used in the values of the parameters with the <code>${variable}</code> syntax.
 		Previously defined constants (and other variables) can be used in a new constant.</p>
@@ -233,8 +233,8 @@
 
      </subsection>
 
-     <subsection name="Steps section">
 	<a name="stepssection" />
+    <subsection name="Steps section">
 
 	<p>The steps section contains the list all the steps to execute. Each step has a name and parameters and optionnaly a version and inputs:</p>
 
@@ -243,7 +243,7 @@
           <tr><td>name</td><td>string</td><td>False</td><td>The name of the step</td></tr>
           <tr><td>version</td><td>string</td><td>True</td><td>The version of the step to use</td></tr>
           <tr><td>inputs</td><td>XML tags</td><td>True</td><td>Manually define the data sources to use by the step</td></tr>
-          <tr><td>parameterss</td><td>XML tags</td><td>True</td><td>The parameters of the step</td></tr>
+          <tr><td>parameters</td><td>XML tags</td><td>True</td><td>The parameters of the step</td></tr>
         </table>
 
         <p>The step tag can have 3 optional attributes:</p>
@@ -253,6 +253,12 @@
           <tr><td>id</td><td>string</td><td>The name of the step</td><td>This value define the identifier of the step. The id value must be unique in a workflow. The identifier is used to named output filenames of the step</td></tr>
           <tr><td>discardoutput</td><td>boolean</td><td>false</td><td>When this attribute is set to true, the output files of the step will be saved in the working directory instead of the output directory of the workflow and will be removed at the end of the workflow if successful</td></tr>
           <tr><td>skip</td><td>boolean</td><td>false</td><td>The <tt>skip</tt> attribute allow to skip a step if its value is set to true</td></tr>
+          <tr><td>requiredprocs</td><td>integer</td><td>-1</td><td>The <tt>requiredprocs</tt> attribute allow to set the number of processors to use by the step. 
+            This value is only used in <b>clusterexec</b> mode and for steps in <b>local mode</b> that handle their parallelization like the mapping step.
+            By default in <b>clusterexec</b> mode, one processor will be used to process each step.</td></tr>
+          <tr><td>requiredmemory</td><td>integer</td><td>-1</td><td>The <tt>requiredmemory</tt> attribute allow to set the amount of memory required in megabytes by the step. 
+            This value is only used in <b>clusterexec</b> mode. If not set, Eoulsan will require to the cluster scheduler the same amount of memory allocated to Eoulsan JVM.
+            Unit prefixes like MB, M, GB, G can be used for the required memory value (e.g. 8GB).</td></tr>
         </table>
 
     <p>If not set by the user, the Eoulsan workflow engine will take as data source for each input port the last previous step that generate data of the format that requested by the input port.
@@ -279,7 +285,7 @@
         &lt;/step&gt;
 
         &lt;!-- Map reads --&gt;
-        &lt;step id="mapping" skip="false"&gt;
+        &lt;step id="mapping" skip="false" requiredprocs="4" requiredmemory="8GB"&gt;
                 &lt;name&gt;mapreads&lt;/name&gt;
                 &lt;version&gt;@@@VERSION@@@&lt;/version&gt;
 
@@ -309,8 +315,8 @@
 
      </subsection>
 
+     <a name="globalsection" />
      <subsection name="Global parameter section">
-        <a name="globalsection" />
 
 	<p>The global parameter section contains parameters that are shared by all the steps. The syntax of the global parameters is the same as in the steps.</p>
 
