@@ -63,12 +63,12 @@
          <br/>
         <li><b>Mandatory parameters</b>: none</li>
         <br/>
-        
+
          <li><b>Optional parameters</b>:</li>
            <table>
                 <tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
                 <tr><td>overhang</td><td>integer</td><td>Specifies the length of the genomic sequence around the annotated junction to be used in constructing the splice junctions database</td><td>100</td></tr>
-                <tr><td>gtf.file</td><td>boolean</td><td>If true, the GFF3 annotation specified in the design file will be used by STAR to extract splice junctions. Using this option greatly improve the accuracy of the mapping. It is <b>highly</b> recommanded to use this option when feature annotation is available.</td><td>None</td></tr>
+                <tr><td>use.gtf.file</td><td>boolean</td><td>If true, the GFF3 annotation specified in the design file will be used by STAR to extract splice junctions. Using this option greatly improve the accuracy of the mapping. It is <b>highly</b> recommanded to use this option when feature annotation is available.</td><td>None</td></tr>
                 <tr><td>file.chr.start.end</td><td>String</td><td>Path to the file that contains the list of splice junctions coordinates</td><td>None</td></tr>
                 <tr><td>gtf.feature.exon</td><td>String</td><td>Feature type (3rd column in GFF file) to be used</td><td>None</td></tr>
                 <tr><td>gtf.tag.exon.parent.transcript</td><td>String</td><td>GFF attribute to be used as feature ID</td><td>None</td></tr>

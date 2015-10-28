@@ -129,6 +129,11 @@ public class STARIndexGenerator extends AbstractStep {
         break;
 
       case "gtf.file":
+        throw new EoulsanException("The parameter \""
+            + p.getName() + "\" for the step " + p.getName()
+            + " has been renamed to \"use.gtf.file\"");
+
+      case "use.gtf.file":
         this.gtfFile = p.getBooleanValue();
         break;
 
