@@ -86,7 +86,8 @@ SampleNumber    Name    Reads   Genome  Annotation      FastqFormat     Conditio
  
 		<subsection name="Repository for genomes and annotation">
 		
-			<p>To avoid duplication of genome and annotation files, Eoulsan can access to repositories dedicated to for this types of data.
+			<p>To avoid duplication of genome and annotation files (and save disk space), Eoulsan can access to central
+			repositories dedicated for this types of data.
 			To access to this repositories, Eoulsan support two protocols : <b>genome</b> and <b>annotation</b>.
 			See the <a href="datarepositories.html">data repository</a> to see how define repositories.
 			Here are few example of design file using <b>genome</b> and <b>annotation</b> protocols:</p>
