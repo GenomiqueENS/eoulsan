@@ -81,10 +81,43 @@ regardless of whether it is mapped to the same or the opposite strand as the fea
 		<tr><td>removeambiguouscases</td><td>boolean</td><td>Keep or remove ambiguous cases in the count.</td><td>true</td></tr>
 		<tr><td>splitattributevalues</td><td>boolean</td><td>Split values of the attribute field</td><td>false</td></tr>
 	 </table>
-
+        <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Expression step --&gt;
+&lt;step id="myexpressionstep" skip="false" discardoutput="false"&gt;
+	&lt;name&gt;expression&lt;/name&gt;
+	&lt;parameters&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;counter&lt;/name&gt;
+			&lt;value&gt;htseq-count&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;genomictype&lt;/name&gt;
+			&lt;value&gt;exon&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;attributeid&lt;/name&gt;
+			&lt;value&gt;Parent&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;stranded&lt;/name&gt;
+			&lt;value&gt;yes&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;overlapmode&lt;/name&gt;
+			&lt;value&gt;union&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;removeambiguouscases&lt;/name&gt;
+			&lt;value&gt;false&lt;/value&gt;
+		&lt;/parameter&gt;
+	&lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
        </ul>
 
 	<p>In local mode, use the <b>main.tmp.dir</b> global parameter to set the temporary directory if this step fails with a full disk error.</p>
+	<p><b>Note</b>:The <b>htseq-count</b> counter always filter multi-matches reads (using the <tt>NH</tt> tag of the optional fields of the SAM entries) before counting.</p>
 
     </section>
 

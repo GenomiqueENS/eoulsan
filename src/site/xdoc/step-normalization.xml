@@ -45,6 +45,14 @@
 					<b>Optional parameters</b>
 					: none.
 				</li>
+				<li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Normalization step --&gt;
+&lt;step id="mynormlizationstep" skip="false" discardoutput="false"&gt;
+	&lt;name&gt;normalization&lt;/name&gt;
+	&lt;parameters /&gt;
+&lt;/step&gt;
+</pre>
 			</ul>
 
 		</section>

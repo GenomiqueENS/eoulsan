@@ -87,6 +87,31 @@ filter will not produce the same output if declared before or after the trim fil
 		<tr><td>readnameregex.allowed.regex</td><td>string</td><td>Keep only the reads with id that matches with the regular expression</td><td>Not set</td><td>No</td></tr>
 		<tr><td>hadoop.reducer.task.count</td><td>integer</td><td>The count of Hadoop reducer tasks to use for this step. This parameter is only used in Hadoop mode</td><td>Not set</td><td>N/A</td></tr>
 	</table>
+         <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Filter reads step --&gt;
+&lt;step id="myfilterreadsstep" skip="false" discardoutput="true"&gt;
+	&lt;name&gt;filterreads&lt;/name&gt;
+	&lt;parameters&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;illuminaid&lt;/name&gt;
+			&lt;value&gt;&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;trimpolynend&lt;/name&gt;
+			&lt;value&gt;&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;length.minimal.length.threshold&lt;/name&gt;
+			&lt;value&gt;40&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;quality.threshold&lt;/name&gt;
+			&lt;value&gt;30&lt;/value&gt;
+		&lt;/parameter&gt;
+	&lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
       </ul>
 
     </section>

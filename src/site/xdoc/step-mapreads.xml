@@ -93,11 +93,31 @@
            </table>
 
          <br/>
-         <li><b>Available deprecated built-in mappers (the support of following mappers will be soon removed)</b>:</li>
-           <table>
-                <tr><th>Mapper name</th><th>Bundled versions</th><th>Default version</th><th>Flavors</th><th>Default Flavor</th><th>Default mapper arguments</th></tr>
-                <tr><td><a href="http://soap.genomics.org.cn/soapaligner.html">SOAP</a></td><td>2.20</td><td>2.20</td><td>N/A</td><td>N/A</td><td>-r 2 -l 28</td></tr>
-           </table>
+         <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Map reads step --&gt;
+&lt;step id="mymappingstep" skip="false" discardoutput="true"&gt;
+	&lt;name&gt;mapreads&lt;/name&gt;
+	&lt;parameters&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;mapper&lt;/name&gt;
+			&lt;value&gt;star&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;mapper.version&lt;/name&gt;
+			&lt;value&gt;2.4.0k&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;mapper.flavor&lt;/name&gt;
+			&lt;value&gt;standard&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;mapper.arguments&lt;/name&gt;
+			&lt;value&gt;--outSAMunmapped Within&lt;/value&gt;
+		&lt;/parameter&gt;
+	&lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
        </ul>
 
       <p><b>Note:</b> In hadoop mode, Eoulsan use the <code>mapreduce.cluster.temp.dir</code> hadoop setting as location for the mapping temporary files (mapper indexes and FASTQ temporary files). This path must be set in the Hadoop client properties.</p>

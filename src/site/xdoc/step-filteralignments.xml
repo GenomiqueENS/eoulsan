@@ -71,6 +71,23 @@
 		<tr><td>gsnapfilter</td><td>boolean</td><td>If true, remove alignments that are not supported by the expression estimation step, that is multiple alignments and those that contain a splice event.</td><td></td></tr>
 		<tr><td>hadoop.reducer.task.count</td><td>integer</td><td>The count of Hadoop reducer tasks to use for this step. This parameter is only used in Hadoop mode</td><td>Not set</td></tr>
 	</table>
+        <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- SAM filter step --&gt;
+&lt;step skip="false" discardoutput="true"&gt;	
+	&lt;name&gt;filtersam&lt;/name&gt;
+	&lt;parameters&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;removeunmapped&lt;/name&gt;
+			&lt;value&gt;true&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;removemultimatches&lt;/name&gt;
+			&lt;value&gt;true&lt;/value&gt;
+		&lt;/parameter&gt;
+	&lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
       </ul>
 
 

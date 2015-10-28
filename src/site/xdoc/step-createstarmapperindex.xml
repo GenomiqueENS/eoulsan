@@ -78,7 +78,27 @@
                 <tr><td>local.threads</td><td>integer</td><td>Define the number of threads to use in local mode.</td><td>0 (use the <b>main.local.threads</b> global property)</td></tr>
                 <tr><td>max.local.threads</td><td>integer</td><td>Define the maximum number of threads to use in local mode.</td><td>0 (no limit)</td></tr>
            </table>
-        
+         <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Create STAR index --&gt;
+&lt;step skip="false"&gt;
+	&lt;name&gt;starindexgenerator&lt;/name&gt;
+	&lt;parameters&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;overhang&lt;/name&gt;
+			&lt;value&gt;100&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;gtf.file&lt;/name&gt;
+			&lt;value&gt;true&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;use.expression.step.parameters&lt;/name&gt;
+			&lt;value&gt;true&lt;/value&gt;
+		&lt;/parameter&gt;
+	&lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
       </ul>
     </section>
 

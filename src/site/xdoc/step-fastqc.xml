@@ -42,7 +42,7 @@
 
       <ul>
          <li><b>Internal name</b>: fastqc</li>
-         <li><b>Available</b>: Local only</li>
+         <li><b>Available</b>: Both local and distributed mode</li>
 
          <br/>
          <li><b>Input port</b>:
@@ -58,7 +58,7 @@
            </ul>
          </li>
          <br/>
-         
+
          <li><b>Optional parameters</b>:</li>
            <table>
                 <tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
@@ -69,6 +69,23 @@
                 <tr><td>fastqc.casava</td><td>boolean</td><td>Use FASTQ from casava/Illumina.</td><td>false</td></tr>
                 <tr><td>fastqc.nofilter</td><td>boolean</td><td>If true, bad Illumina quality reads will not be filtered. This option is only available with fastqc.casava=true.</td><td>true</td></tr> 
           </table>
+          <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- FastQC step --&gt;
+&lt;step id="myfastqcstep" skip="false" discardoutput="false"&gt;
+        &lt;name&gt;fastqc&lt;/name&gt;
+        &lt;parameters&gt;
+                &lt;parameter&gt;
+                        &lt;name&gt;input.format&lt;/name&gt;
+                        &lt;value&gt;fastq&lt;/value&gt;
+                &lt;/parameter&gt;
+                &lt;parameter&gt;
+                        &lt;name&gt;fastqc.casava&lt;/name&gt;
+                        &lt;value&gt;true&lt;/value&gt;
+                &lt;/parameter&gt;
+        &lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
 
       </ul>
     </section>

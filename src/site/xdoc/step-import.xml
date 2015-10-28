@@ -72,6 +72,19 @@
 		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
 		<tr><td>directory</td><td>string</td><td>Directory where search the files to import</td><td>The Eoulsan execution directory</td></tr>
 	 </table>
+	 <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Import SAM step --&gt;
+&lt;step id="mysamimportstep" skip="false"&gt;
+	&lt;name&gt;import&lt;/name&gt;
+	&lt;parameters&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;files&lt;/name&gt;
+			&lt;value&gt;*.sam&lt;/value&gt;
+		&lt;/parameter&gt;
+	&lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
       </ul>
     </section>
 

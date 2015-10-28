@@ -75,6 +75,23 @@
 
         <br/>
         <li><b>Optional parameters</b>: Splitters can have <a href="#supportedformats">optional arguments</a> to set the splitting method according to the data format</li>
+        <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Split reads step (100,000,000 max entries by file) --&gt;
+&lt;step id="mysplitterstep" skip="false" discardoutput="false"&gt;
+	&lt;name&gt;splitter&lt;/name&gt;
+	&lt;parameters&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;format&lt;/name&gt;
+			&lt;value&gt;fastq&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;max.entries&lt;/name&gt;
+			&lt;value&gt;1000000&lt;/value&gt;
+		&lt;/parameter&gt;
+	&lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
       </ul>
 
 
@@ -100,8 +117,21 @@
 
         <br/>
         <li><b>Optional parameters</b>: Mergers can have <a href="#supportedformats">optional arguments</a> to set the merge method according to the data format</li>
+        <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Merge Sam files step --&gt;
+&lt;step id="mymergerstep" skip="false" discardoutput="false"&gt;
+	&lt;name&gt;merger&lt;/name&gt;
+	&lt;parameters&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;format&lt;/name&gt;
+			&lt;value&gt;sam&lt;/value&gt;
+		&lt;/parameter&gt;
+	&lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
       </ul>
-   
+
      </section>
 
     <section name="Technical merger step">
@@ -124,6 +154,19 @@
 
         <br/>
         <li><b>Optional parameters</b>: Mergers can have <a href="#supportedformats">optional arguments</a> to set the merge method according to the data format</li>
+        <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Merge technical replicates step --&gt;
+&lt;step id="mytechrepmerger" skip="false" discardoutput="false"&gt;
+	&lt;name&gt;technicalreplicatemerger&lt;/name&gt;
+	&lt;parameters&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;format&lt;/name&gt;
+			&lt;value&gt;fastq&lt;/value&gt;
+		&lt;/parameter&gt;
+	&lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
       </ul>
 
     </section>

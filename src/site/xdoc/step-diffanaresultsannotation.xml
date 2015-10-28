@@ -56,7 +56,7 @@
 
         <li><b>Mandatory parameter</b>: None</li>
         <br/>
-                
+
         <li><b>Optional parameters</b>:</li>
         <table>
                 <tr><th>Parameter</th><th>Type</th><th>Default value</th><th>Description</th></tr>
@@ -65,7 +65,19 @@
                 this option is used the additionalannotation input port does not exists. This option is <b>deprecated</b> and will be soon removed.</td></tr>
         </table>
 
-        
+        <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Additional annotation for differential analysis --&gt;
+&lt;step skip="false"&gt;
+	&lt;name&gt;diffanaresultsannotation&lt;/name&gt;
+	&lt;parameters&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;outputformat&lt;/name&gt;
+			&lt;value&gt;xlsx&lt;/value&gt;
+		&lt;/parameter&gt;
+	&lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
       </ul>
 
 

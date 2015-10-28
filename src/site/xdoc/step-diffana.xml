@@ -164,6 +164,27 @@
 							</li>
 						</ul>
 						</li>
+						<li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Differential analysis step --&gt;
+&lt;step id="mydiffanastep" skip="false" discardoutput="false"&gt;
+	&lt;name&gt;diffana&lt;/name&gt;
+	&lt;parameters&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;disp.est.method&lt;/name&gt;
+			&lt;value&gt;pooled&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;disp.est.sharing.mode&lt;/name&gt;
+			&lt;value&gt;maximum&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;disp.est.fit.type&lt;/name&gt;
+			&lt;value&gt;parametric&lt;/value&gt;
+		&lt;/parameter&gt;
+	&lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
 					</ul>
 				</li>
 			</ul>
