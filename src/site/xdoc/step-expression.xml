@@ -65,7 +65,8 @@
          <li><b>Optional parameters</b>:</li>
          <table>
 		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
-		<tr><td>counter</td><td>string</td><td>The name of the counter to use (eoulsanCounter or htseq-count). The support of eoulsanCounter will be soon removed from Eoulsan.</td><td>eoulsanCounter</td></tr>
+		<tr><td>counter</td><td>string</td><td>The name of the counter to use (eoulsanCounter or htseq-count).
+		The support of <b>eoulsanCounter</b> has been removed from Eoulsan 2.x.</td><td>htseq-count</td></tr>
 		<tr><td>genomictype</td><td>string</td><td>feature type (3rd column in GFF file) to be used, all features of other type are ignored.</td><td>exon</td></tr>
 		<tr><td>attributeid</td><td>string</td><td>GFF attribute to be used as feature ID</td><td>PARENT</td></tr>
 	 </table>
@@ -117,7 +118,7 @@ regardless of whether it is mapped to the same or the opposite strand as the fea
        </ul>
 
 	<p>In local mode, use the <b>main.tmp.dir</b> global parameter to set the temporary directory if this step fails with a full disk error.</p>
-	<p><b>Note</b>:The <b>htseq-count</b> counter always filter multi-matches reads (using the <tt>NH</tt> tag of the optional fields of the SAM entries) before counting.</p>
+	<p><b>Note</b>: The <b>htseq-count</b> counter always filter multi-matches reads (using the <tt>NH</tt> tag of the optional fields of the SAM entries) before counting.</p>
 
     </section>
 

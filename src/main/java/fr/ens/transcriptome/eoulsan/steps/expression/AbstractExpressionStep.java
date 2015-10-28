@@ -37,6 +37,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounterService;
+import fr.ens.transcriptome.eoulsan.bio.expressioncounters.HTSeqCounter;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.OverlapMode;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.StrandUsage;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
@@ -270,7 +271,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
     }
 
     if (counterName == null) {
-      counterName = "eoulsanCounter";
+      counterName = HTSeqCounter.COUNTER_NAME;
     }
 
     // Test if counter engine exists
