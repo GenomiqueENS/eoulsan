@@ -91,7 +91,11 @@
                 <tr><td><a href="http://research-pub.gene.com/gmap/">GSNAP</a></td><td>2012-07-20, 2014-12-21</td><td>2012-07-20</td><td></td><td></td><td>-N 1</td></tr>
                 <tr><td><a href="https://code.google.com/p/rna-star/">STAR</a></td><td>2.4.0k</td><td>2.4.0k</td><td>standard, large-index</td><td>standard</td><td>--outSAMunmapped Within</td></tr>
            </table>
-
+           <br/>
+         <li><b>Removed built-in mappers</b>:</li>
+         <ul>
+           <li>SOAP 2.x</li>
+         </ul>
          <br/>
          <li><b>Configuration example</b>:</li>
 <pre>
