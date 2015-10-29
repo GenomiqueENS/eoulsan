@@ -127,6 +127,7 @@ public class DockerRequirement extends AbstractRequirement {
     final DockerClient dockerClient = DockerManager.getInstance().getClient();
 
     try {
+
       dockerClient.pull(this.dockerImage, new ProgressHandler() {
 
         @Override
@@ -143,7 +144,13 @@ public class DockerRequirement extends AbstractRequirement {
         }
       });
     } catch (DockerException | InterruptedException e) {
+
       throw new EoulsanException(e);
+    }
+
+    if (!isAvailable()) {
+      throw new EoulsanException(
+          "Unable to to pull Docker image: " + this.dockerImage);
     }
 
   }
