@@ -25,8 +25,6 @@
 package fr.ens.transcriptome.eoulsan.steps.expression;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.OWN_PARALLELIZATION;
-import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.STANDARD;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ADDITIONAL_ANNOTATION_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_ODS;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_TSV;
@@ -34,7 +32,6 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -48,7 +45,6 @@ import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
-import fr.ens.transcriptome.eoulsan.core.ParallelizationMode;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -141,22 +137,6 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
     }
 
     return builder.create();
-  }
-
-  @Override
-  public ParallelizationMode getParallelizationMode() {
-
-    final Collection<DataFormat> formats = this.outputFormats.values();
-
-    // XLSX and ODS file creation require lot of memory so multithreading is
-    // disable to avoid out of memory
-    if (formats.contains(ANNOTATED_EXPRESSION_RESULTS_ODS)
-        || formats.contains(ANNOTATED_EXPRESSION_RESULTS_XLSX)) {
-      return OWN_PARALLELIZATION;
-    }
-
-    // TSV creation can be multithreaded
-    return STANDARD;
   }
 
   @Override
