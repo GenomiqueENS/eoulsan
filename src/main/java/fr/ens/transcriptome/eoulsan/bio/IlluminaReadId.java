@@ -49,6 +49,10 @@ public final class IlluminaReadId {
       "^([a-zA-Z0-9\\-\\_]+):(\\d+):([a-zA-Z0-9]+):(\\d+):(\\d+):(\\d+):(\\d+) "
           + "(\\d+):([YN]):(\\d+):([NATGC]*)$");
 
+  private static final Pattern PATTERN_3 = Pattern.compile(
+      "^([a-zA-Z0-9\\-\\_]+):(\\d+):([a-zA-Z0-9]+):(\\d+):(\\d+):(\\d+):(\\d+) "
+          + "(\\d+):([YN]):(\\d+):(\\d)$");
+
   private final Pattern pattern;
 
   private String instrumentId;
@@ -163,6 +167,10 @@ public final class IlluminaReadId {
       return PATTERN_1_8;
     }
 
+    if (PATTERN_3.matcher(readId).lookingAt()) {
+      return PATTERN_3;
+    }
+
     if (PATTERN_1_4.matcher(readId).lookingAt()) {
       return PATTERN_1_4;
     }
@@ -221,6 +229,21 @@ public final class IlluminaReadId {
       this.filtered = matcher.group(9).charAt(0) == 'Y';
       this.controlNumber = Integer.parseInt(matcher.group(10));
       this.sequenceIndex = matcher.group(11);
+
+      return;
+    } else if (this.pattern == PATTERN_3) {
+
+      this.instrumentId = matcher.group(1);
+      this.runId = Integer.parseInt(matcher.group(2));
+      this.flowCellId = matcher.group(3);
+      this.flowCellLane = Integer.parseInt(matcher.group(4));
+      this.tileNumberInFlowCellLane = Integer.parseInt(matcher.group(5));
+      this.xClusterCoordinateInTile = Integer.parseInt(matcher.group(6));
+      this.yClusterCoordinateInTile = Integer.parseInt(matcher.group(7));
+      this.pairMember = Integer.parseInt(matcher.group(8));
+      this.filtered = matcher.group(9).charAt(0) == 'Y';
+      this.controlNumber = Integer.parseInt(matcher.group(10));
+      this.sequenceIndex = "0";
 
       return;
     } else if (this.pattern == PATTERN_1_4) {
