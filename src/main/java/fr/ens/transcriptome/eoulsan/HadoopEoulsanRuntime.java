@@ -85,7 +85,7 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
   @Override
   public File getTempDirectory() {
 
-    return new File(System.getProperty("java.io.tmpdir"));
+    return getSettings().getTempDirectoryFile();
   }
 
   @Override
