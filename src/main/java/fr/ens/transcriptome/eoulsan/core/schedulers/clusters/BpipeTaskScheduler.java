@@ -67,9 +67,10 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
   }
 
   @Override
-  public String submitJob(final String jobName, final List<String> jobCommand,
-      final File jobDirectory, final int taskId, final int requiredMemory,
-      final int requiredProcessors) throws IOException {
+  public synchronized String submitJob(final String jobName,
+      final List<String> jobCommand, final File jobDirectory, final int taskId,
+      final int requiredMemory, final int requiredProcessors)
+          throws IOException {
 
     checkNotNull(jobName, "jobName argument cannot be null");
     checkNotNull(jobCommand, "jobCommand argument cannot be null");
