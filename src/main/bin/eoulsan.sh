@@ -29,21 +29,21 @@ LIBDIR=$BASEDIR/lib
 
 # Set the memory in MiB needed by Eoulsan (only Java part, not external tools)
 # By Default 2048
-if [ -v EOULSAN_MEMORY ]; then
+if [ -n "$EOULSAN_MEMORY" ]; then
 	MEMORY=$EOULSAN_MEMORY
 else
 	MEMORY=2048
 fi
 
 # Additional JVM options
-if [ -v EOULSAN_JVM_OPTS ]; then
+if [ -n "$EOULSAN_JVM_OPTS" ]; then
 	JVM_OPTS=$EOULSAN_JVM_OPTS
 else
 	JVM_OPTS="-server"
 fi
 
 # Add here your plugins and dependencies
-if [ -v EOULSAN_PLUGINS ]; then
+if [ -n "$EOULSAN_PLUGINS" ]; then
 	PLUGINS=$EOULSAN_PLUGINS
 else
 	PLUGINS=
