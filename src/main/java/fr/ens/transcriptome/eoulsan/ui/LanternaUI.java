@@ -346,7 +346,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
     final int result = putString(x, y, s);
 
     if (color != null) {
-      this.terminal.applyForegroundColor(Color.BLACK);
+      this.terminal.applyForegroundColor(Color.DEFAULT);
     }
 
     return result;
