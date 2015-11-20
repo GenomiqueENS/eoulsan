@@ -43,6 +43,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import fr.ens.transcriptome.aozan.illumina.samplesheet.SampleSheet;
+import fr.ens.transcriptome.aozan.illumina.samplesheet.io.SampleSheetCSVReader;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
@@ -54,9 +56,6 @@ import fr.ens.transcriptome.eoulsan.data.DataFileMetadata;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.illumina.CasavaDesign;
-import fr.ens.transcriptome.eoulsan.illumina.CasavaSample;
-import fr.ens.transcriptome.eoulsan.illumina.io.CasavaDesignCSVReader;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -187,7 +186,7 @@ public class DesignBuilder {
         }
       }
 
-      return new Object[] { prefix, pairMember };
+      return new Object[] {prefix, pairMember};
     }
 
     //
@@ -339,8 +338,8 @@ public class DesignBuilder {
       this.genomeFile = file;
     } else if (isDataFormatExtension(ANNOTATION_GFF, extension, md)) {
       this.gffFile = file;
-    } else
-      if (isDataFormatExtension(ADDITIONAL_ANNOTATION_TSV, extension, md)) {
+    } else if (isDataFormatExtension(ADDITIONAL_ANNOTATION_TSV, extension,
+        md)) {
       this.additionalAnnotationFile = file;
     } else {
       throw new EoulsanException("Unknown file type: " + file);
@@ -402,7 +401,7 @@ public class DesignBuilder {
    * @param casavaOutputDir the output directory of Casava demultiplexing
    * @throws EoulsanException if an error occurs while adding the casava design
    */
-  public void addCasavaDesignProject(final CasavaDesign casavaDesign,
+  public void addCasavaDesignProject(final SampleSheet casavaDesign,
       final String projectName, final File casavaOutputDir)
           throws EoulsanException {
 
@@ -415,22 +414,29 @@ public class DesignBuilder {
           "The casava output directory does not exists: " + casavaOutputDir);
     }
 
-    for (CasavaSample sample : casavaDesign) {
+    final boolean Bcl2Fastq1 =
+        new File(casavaOutputDir.getPath() + "/Project_" + projectName)
+            .isDirectory();
+
+    for (fr.ens.transcriptome.aozan.illumina.samplesheet.Sample sample : casavaDesign) {
 
       final String sampleProject = sample.getSampleProject();
       final String sampleName = sample.getSampleId();
       final String sampleDesc = sample.getDescription();
-      final String sampleOperator = sample.getOperator();
+      final String sampleOperator = sample.get("Operator");
       final int sampleLane = sample.getLane();
 
       // Select only project samples
       if (projectName != null && !projectName.equals(sampleProject)) {
         continue;
       }
-
-      final File dataDir = new File(casavaOutputDir.getPath()
-          + "/Project_" + sampleProject + "/Sample_" + sampleName);
-
+      File dataDir;
+      if (Bcl2Fastq1) {
+        dataDir = new File(casavaOutputDir.getPath()
+            + "/Project_" + sampleProject + "/Sample_" + sampleName);
+      } else {
+        dataDir = new File(casavaOutputDir.getPath() + "/" + sampleProject);
+      }
       // Test if the directory with fastq files exists
       if (!dataDir.exists() || !dataDir.isDirectory()) {
         continue;
@@ -532,7 +538,7 @@ public class DesignBuilder {
     }
 
     try {
-      CasavaDesignCSVReader reader = new CasavaDesignCSVReader(file);
+      SampleSheetCSVReader reader = new SampleSheetCSVReader(file);
       addCasavaDesignProject(reader.read(), projectName, baseDir);
     } catch (IOException e) {
       throw new EoulsanException(e);
