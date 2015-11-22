@@ -101,7 +101,7 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
    */
   public void setMode(final EoulsanExecMode mode) {
 
-    if (mode != null) {
+    if (mode == null) {
       throw new NullPointerException("mode argument cannot be null");
     }
 
@@ -150,7 +150,6 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
 
     if (!EoulsanRuntime.isRuntime()) {
       newEoulsanRuntime(new Settings(true));
-
       ((LocalEoulsanRuntime) EoulsanRuntime.getRuntime())
           .setMode(EoulsanExecMode.EXTERNAL_APP);
     }
