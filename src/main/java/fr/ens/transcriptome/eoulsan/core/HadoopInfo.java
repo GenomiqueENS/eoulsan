@@ -35,6 +35,7 @@ import org.apache.hadoop.util.VersionInfo;
 
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.HadoopEoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.transcriptome.eoulsan.util.LinuxCpuInfo;
 import fr.ens.transcriptome.eoulsan.util.LinuxMemInfo;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -52,7 +53,7 @@ public class HadoopInfo {
 
   public static void logHadoopSysInfo() {
 
-    if (!EoulsanRuntime.getRuntime().isAmazonMode()) {
+    if (EoulsanRuntime.getRuntime().getMode() != EoulsanExecMode.AMAZON) {
       return;
     }
 

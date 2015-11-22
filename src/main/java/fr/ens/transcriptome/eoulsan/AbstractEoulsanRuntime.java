@@ -40,6 +40,32 @@ import fr.ens.transcriptome.eoulsan.util.StringUtils;
  */
 public abstract class AbstractEoulsanRuntime {
 
+  /**
+   * This Enum define the Eoulsan execution mode.
+   */
+  public enum EoulsanExecMode {
+
+    LOCAL, HADOOP, HADOOP_TASK, AMAZON, CLUSTER, CLUSTER_TASK, EXTERNAL_APP;
+
+    /**
+     * Test if Eoulsan is in an Hadoop mode.
+     * @return true if Eoulsan is in an Hadoop mode
+     */
+    public boolean isHadoopMode() {
+
+      switch (this) {
+
+      case HADOOP:
+      case AMAZON:
+        return true;
+
+      default:
+        return false;
+      }
+    }
+
+  };
+
   private final Settings settings;
 
   /**
@@ -58,28 +84,10 @@ public abstract class AbstractEoulsanRuntime {
   public abstract File getTempDirectory();
 
   /**
-   * Test if Eoulsan runs in Hadoop mode.
-   * @return true if Eoulsan runs in Hadoop mode
+   * Get Eoulsan mode.
+   * @return the Eoulsan mode
    */
-  public abstract boolean isHadoopMode();
-
-  /**
-   * Test if Eoulsan runs in an Amazon MapReduce cluster.
-   * @return true if Eoulsan in an Amazon MapReduce cluster
-   */
-  public abstract boolean isAmazonMode();
-
-  /**
-   * Test if Eoulsan runs in on a non Hadoop cluster.
-   * @return true if Eoulsan in on a non Hadoop cluster
-   */
-  public abstract boolean isClusterMode();
-
-  /**
-   * Test if Eoulsan execute a task in on a non Hadoop cluster.
-   * @return true Eoulsan execute a task in on a non Hadoop cluster
-   */
-  public abstract boolean isClusterTaskMode();
+  public abstract EoulsanExecMode getMode();
 
   /**
    * Create an InputStream to load data.

@@ -41,31 +41,12 @@ import fr.ens.transcriptome.eoulsan.util.FileUtils;
  */
 public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
 
-  private boolean isClusterMode;
-  private boolean isClusterTaskMode;
+  private EoulsanExecMode mode;
 
   @Override
-  public boolean isHadoopMode() {
+  public EoulsanExecMode getMode() {
 
-    return false;
-  }
-
-  @Override
-  public boolean isAmazonMode() {
-
-    return false;
-  }
-
-  @Override
-  public boolean isClusterMode() {
-
-    return this.isClusterMode;
-  }
-
-  @Override
-  public boolean isClusterTaskMode() {
-
-    return this.isClusterTaskMode;
+    return this.mode != null ? this.mode : EoulsanExecMode.LOCAL;
   }
 
   @Override
@@ -118,18 +99,17 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
    * Set the cluster mode.
    * @param clusterMode cluster mode
    */
-  public void setClusterMode(final boolean clusterMode) {
+  public void setMode(final EoulsanExecMode mode) {
 
-    this.isClusterMode = clusterMode;
-  }
+    if (mode != null) {
+      throw new NullPointerException("mode argument cannot be null");
+    }
 
-  /**
-   * Set the cluster task mode.
-   * @param clusterTaskMode cluster task mode
-   */
-  public void setClusterTaskMode(final boolean clusterTaskMode) {
+    if (this.mode != null) {
+      throw new IllegalStateException("Eoulsan mode has been already set");
+    }
 
-    this.isClusterTaskMode = clusterTaskMode;
+    this.mode = mode;
   }
 
   //
@@ -170,6 +150,9 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
 
     if (!EoulsanRuntime.isRuntime()) {
       newEoulsanRuntime(new Settings(true));
+
+      ((LocalEoulsanRuntime) EoulsanRuntime.getRuntime())
+          .setMode(EoulsanExecMode.EXTERNAL_APP);
     }
 
     // Disable logging

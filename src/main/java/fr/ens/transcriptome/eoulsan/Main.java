@@ -654,7 +654,8 @@ public abstract class Main {
     this.actionArgs = this.args.subList(optionsCount + 1, this.args.size());
 
     // Test if is in hadoop mode
-    final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
+    final boolean hadoopMode =
+        EoulsanRuntime.getRuntime().getMode().isHadoopMode();
 
     // Search action
     this.action = ActionService.getInstance().newService(actionName);

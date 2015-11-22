@@ -110,7 +110,7 @@ public abstract class UploadStep extends AbstractStep {
       }
 
       // Repackage the jar file if necessary
-      if (!context.getRuntime().isHadoopMode()) {
+      if (!context.getRuntime().getMode().isHadoopMode()) {
         repackagedJarFile = HadoopJarRepackager.repack();
         final DataFile jarDataFile =
             new DataFile(repackagedJarFile.getAbsolutePath());
@@ -179,7 +179,7 @@ public abstract class UploadStep extends AbstractStep {
     // fullContext.setBasePathname(getDest().toString());
 
     // The path to the jar file
-    if (!context.getRuntime().isHadoopMode()) {
+    if (!context.getRuntime().getMode().isHadoopMode()) {
       fullContext.setJarFile(new DataFile(
           getDest().toString() + "/" + repackagedJarFile.getName()));
     }

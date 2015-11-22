@@ -67,8 +67,9 @@ class WorkflowInputPorts extends AbstractPorts<WorkflowInputPort>
       throw new NullPointerException("Ports is null");
     }
 
-    final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode()
-        && step.getEoulsanMode().isHadoopCompatible();
+    final boolean hadoopMode =
+        EoulsanRuntime.getRuntime().getMode().isHadoopMode()
+            && step.getEoulsanMode().isHadoopCompatible();
 
     final Set<WorkflowInputPort> result = new HashSet<>();
 

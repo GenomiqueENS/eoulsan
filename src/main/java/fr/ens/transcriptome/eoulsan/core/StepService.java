@@ -42,7 +42,7 @@ public class StepService extends ServiceNameLoader<Step> {
   @Override
   protected boolean accept(final Class<?> clazz) {
 
-    if (EoulsanRuntime.getRuntime().isHadoopMode()) {
+    if (EoulsanRuntime.getRuntime().getMode().isHadoopMode()) {
       return true;
     }
 

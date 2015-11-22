@@ -33,6 +33,7 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
 import java.util.Set;
 
+import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.bio.expressioncounters.ExpressionCounter;
@@ -284,7 +285,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
     this.counterName = counterName;
 
     // Configure Checker
-    if (!context.getRuntime().isClusterTaskMode()) {
+    if (context.getRuntime().getMode() != EoulsanExecMode.CLUSTER_TASK) {
       CheckerStep.configureChecker(ANNOTATION_GFF, stepParameters);
     }
 

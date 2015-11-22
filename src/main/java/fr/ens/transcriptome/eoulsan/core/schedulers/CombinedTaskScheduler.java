@@ -356,7 +356,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
     this.ownTaskScheduler = new MonoThreadTaskScheduler();
 
     this.hadoopCompatibleTaskScheduler =
-        EoulsanRuntime.getRuntime().isHadoopMode()
+        EoulsanRuntime.getRuntime().getMode().isHadoopMode()
             ? new HadoopCompatibleTaskScheduler() : null;
 
   }

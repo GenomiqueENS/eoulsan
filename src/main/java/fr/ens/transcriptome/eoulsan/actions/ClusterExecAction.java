@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.actions;
 
 import java.util.List;
 
+import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.LocalEoulsanRuntime;
@@ -61,8 +62,8 @@ public class ClusterExecAction extends ExecAction {
     final LocalEoulsanRuntime localRuntime =
         (LocalEoulsanRuntime) EoulsanRuntime.getRuntime();
 
-    // Set the cluster mode to true
-    localRuntime.setClusterMode(true);
+    // Set the cluster mode
+    localRuntime.setMode(EoulsanExecMode.CLUSTER);
 
     // Launch the action like a standard exec action
     super.action(arguments);

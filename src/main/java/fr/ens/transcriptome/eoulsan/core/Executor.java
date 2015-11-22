@@ -107,7 +107,7 @@ public class Executor {
     logInfo(this.arguments, this.command);
 
     // Add Hadoop info in Hadoop mode
-    if (EoulsanRuntime.getRuntime().isHadoopMode()) {
+    if (EoulsanRuntime.getRuntime().getMode().isHadoopMode()) {
       HadoopInfo.logHadoopSysInfo();
     }
 

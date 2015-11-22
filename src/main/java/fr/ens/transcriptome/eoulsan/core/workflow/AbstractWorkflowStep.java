@@ -396,7 +396,8 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     checkNotNull(workflow, "workflow argument cannot be null");
     checkNotNull(step, "step argument cannot be null");
 
-    final boolean hadoopMode = EoulsanRuntime.getRuntime().isHadoopMode();
+    final boolean hadoopMode =
+        EoulsanRuntime.getRuntime().getMode().isHadoopMode();
 
     if (!hadoopMode) {
 

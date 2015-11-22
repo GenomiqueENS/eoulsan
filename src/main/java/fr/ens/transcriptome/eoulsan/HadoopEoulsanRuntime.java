@@ -44,6 +44,7 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
 public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
 
   private final Configuration conf;
+  private final EoulsanExecMode mode;
 
   /**
    * Get Hadoop configuration.
@@ -59,27 +60,9 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
   //
 
   @Override
-  public boolean isHadoopMode() {
+  public EoulsanExecMode getMode() {
 
-    return true;
-  }
-
-  @Override
-  public boolean isAmazonMode() {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  @Override
-  public boolean isClusterMode() {
-
-    return false;
-  }
-
-  @Override
-  public boolean isClusterTaskMode() {
-
-    return false;
+    return mode;
   }
 
   @Override
@@ -143,7 +126,8 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
       throws IOException {
 
     try {
-      return newEoulsanRuntime(new Settings(false), conf);
+      return newEoulsanRuntime(new Settings(false), conf,
+          EoulsanExecMode.HADOOP_TASK);
     } catch (EoulsanException e) {
 
       throw new IOException(e);
@@ -161,7 +145,7 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
     final Configuration conf = CommonHadoop.createConfiguration(settings);
 
     // Initialize runtime
-    return newEoulsanRuntime(settings, conf);
+    return newEoulsanRuntime(settings, conf, EoulsanExecMode.HADOOP);
   }
 
   /**
@@ -170,11 +154,12 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
    * @param conf Hadoop configuration object
    */
   private static synchronized HadoopEoulsanRuntime newEoulsanRuntime(
-      final Settings settings, final Configuration conf) {
+      final Settings settings, final Configuration conf,
+      final EoulsanExecMode mode) {
 
     // Create instance
     final HadoopEoulsanRuntime instance =
-        new HadoopEoulsanRuntime(settings, conf);
+        new HadoopEoulsanRuntime(settings, conf, mode);
 
     // Set the instance
     EoulsanRuntime.setInstance(instance, true);
@@ -188,7 +173,7 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
    * @param conf Hadoop configuration object
    */
   private HadoopEoulsanRuntime(final Settings settings,
-      final Configuration conf) {
+      final Configuration conf, final EoulsanExecMode mode) {
 
     super(settings);
 
@@ -197,6 +182,7 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
     }
 
     this.conf = conf;
+    this.mode = mode;
   }
 
 }

@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.LocalEoulsanRuntime;
+import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.transcriptome.eoulsan.core.workflow.TaskSerializationUtils;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 
@@ -150,8 +151,8 @@ public class ClusterTaskAction extends AbstractAction {
     final LocalEoulsanRuntime localRuntime =
         (LocalEoulsanRuntime) EoulsanRuntime.getRuntime();
 
-    // Set the cluster task mode to true
-    localRuntime.setClusterTaskMode(true);
+    // Set the cluster task mode
+    localRuntime.setMode(EoulsanExecMode.CLUSTER_TASK);
 
     try {
 

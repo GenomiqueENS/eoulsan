@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkState;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Settings;
+import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.transcriptome.eoulsan.core.schedulers.clusters.ClusterTaskScheduler;
 import fr.ens.transcriptome.eoulsan.core.schedulers.clusters.ClusterTaskSchedulerService;
 
@@ -59,7 +60,7 @@ public class TaskSchedulerFactory {
     // Get the thread number to use by the task scheduler
     final int threadNumber = settings.getLocalThreadsNumber();
 
-    if (EoulsanRuntime.getRuntime().isClusterMode()) {
+    if (EoulsanRuntime.getRuntime().getMode() == EoulsanExecMode.CLUSTER) {
 
       final String clusterSchedulerName = settings.getClusterSchedulerName();
 
