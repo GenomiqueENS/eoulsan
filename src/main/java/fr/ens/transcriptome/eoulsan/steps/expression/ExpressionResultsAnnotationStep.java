@@ -25,6 +25,8 @@
 package fr.ens.transcriptome.eoulsan.steps.expression;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.OWN_PARALLELIZATION;
+import static fr.ens.transcriptome.eoulsan.core.ParallelizationMode.STANDARD;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ADDITIONAL_ANNOTATION_TSV;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_ODS;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_TSV;
@@ -32,6 +34,7 @@ import static fr.ens.transcriptome.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -39,12 +42,15 @@ import java.util.Set;
 import com.google.common.base.Splitter;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
+import fr.ens.transcriptome.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.transcriptome.eoulsan.annotations.HadoopCompatible;
 import fr.ens.transcriptome.eoulsan.core.InputPorts;
 import fr.ens.transcriptome.eoulsan.core.InputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
+import fr.ens.transcriptome.eoulsan.core.ParallelizationMode;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
@@ -137,6 +143,24 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
     }
 
     return builder.create();
+  }
+
+  @Override
+  public ParallelizationMode getParallelizationMode() {
+
+    final Collection<DataFormat> formats = this.outputFormats.values();
+
+    // XLSX and ODS file creation require lot of memory so multithreading is
+    // disable in local mode to avoid out of memory when several files are
+    // processing at the same time
+    if (EoulsanRuntime.getRuntime().getMode() == EoulsanExecMode.LOCAL
+        && (formats.contains(ANNOTATED_EXPRESSION_RESULTS_ODS)
+            || formats.contains(ANNOTATED_EXPRESSION_RESULTS_XLSX))) {
+      return OWN_PARALLELIZATION;
+    }
+
+    // TSV creation can be multithreaded
+    return STANDARD;
   }
 
   @Override
@@ -303,7 +327,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
       @Override
       public String[] getFields() {
 
-        return new String[] { "EnsemblGeneID" };
+        return new String[] {"EnsemblGeneID"};
       }
     };
 
