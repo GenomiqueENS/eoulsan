@@ -1,0 +1,8 @@
+<dataformat>
+  <name>gappedpeaks</name>
+  <description>gapped peak format</description>
+  <prefix>gappedpeaks</prefix>
+  <extensions>
+    <extension default="true">.gappedPeak</extension>
+  </extensions>
+</dataformat>

@@ -22,3 +22,7 @@ additional_annotation_tsv.xml
 fastqc_report_html.xml
 dummy_txt.xml
 text_txt.xml
+gappedpeaks.xml
+macs2rmodel.xml
+peaks.xml
+peaksxls.xml

@@ -345,6 +345,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>net.sourceforge.picard</groupId>
+			<artifactId>picard</artifactId>
+			<version>1.118</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.nuiton.thirdparty</groupId>
 			<artifactId>REngine</artifactId>
 			<version>0.6-1</version>

@@ -8,6 +8,8 @@ fr.ens.transcriptome.eoulsan.steps.mapping.local.ReadsMapperLocalStep
 fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.ReadsMapperHadoopStep
 fr.ens.transcriptome.eoulsan.steps.mapping.local.SAM2BAMLocalStep
 fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.SAM2BAMHadoopStep
+fr.ens.transcriptome.eoulsan.steps.mapping.local.RmDupLocalStep
+fr.ens.transcriptome.eoulsan.steps.mapping.local.MergeInputRepLocalStep
 
 # Filter and mapping steps
 fr.ens.transcriptome.eoulsan.steps.mapping.hadoop.FilterAndMapReadsHadoopStep
@@ -45,6 +47,15 @@ fr.ens.transcriptome.eoulsan.steps.ShellStep
 
 # QC steps
 fr.ens.transcriptome.eoulsan.steps.fastqc.FastQCStep
+fr.ens.transcriptome.eoulsan.steps.qc.CountSplicedReadsStep
+fr.ens.transcriptome.eoulsan.steps.qc.IDRStep
+fr.ens.transcriptome.eoulsan.steps.qc.TrimAdaptStep
+
+# Peak calling steps
+fr.ens.transcriptome.eoulsan.steps.peakcalling.BedToolsStep
+fr.ens.transcriptome.eoulsan.steps.peakcalling.DeepToolsStep
+fr.ens.transcriptome.eoulsan.steps.peakcalling.MACS2Step
+fr.ens.transcriptome.eoulsan.steps.peakcalling.MergePeaksStep
 
 # Other steps
 fr.ens.transcriptome.eoulsan.steps.ImportStep
