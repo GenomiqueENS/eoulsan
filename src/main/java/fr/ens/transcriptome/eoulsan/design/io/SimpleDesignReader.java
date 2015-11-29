@@ -38,6 +38,7 @@ import java.util.Map;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.protocols.FileDataProtocol;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignFactory;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
@@ -205,7 +206,7 @@ public class SimpleDesignReader extends InputStreamDesignReader {
     }
 
     final DataFile df = new DataFile(source);
-    if (!df.getProtocol().getName().equals("file")) {
+    if (!df.getProtocol().getName().equals(FileDataProtocol.PROTOCOL_NAME)) {
       return df;
     }
 
