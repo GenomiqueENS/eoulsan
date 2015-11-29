@@ -132,7 +132,7 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
   protected boolean accept(final Class<?> clazz) {
 
     return EoulsanMode.accept(clazz,
-        EoulsanRuntime.getRuntime().getMode().isHadoopMode());
+        EoulsanRuntime.getRuntime().getMode().isHadoopProtocolMode());
   }
 
   @Override

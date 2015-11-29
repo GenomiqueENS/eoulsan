@@ -64,6 +64,15 @@ public abstract class AbstractEoulsanRuntime {
       }
     }
 
+    /**
+     * Test if Hadoop protocols can be used in the current Eoulsan mode.
+     * @return true if Hadoop protocols can be used in the current Eoulsan mode
+     */
+    public boolean isHadoopProtocolMode() {
+
+      return isHadoopMode() || this == EoulsanExecMode.HADOOP_TASK;
+    }
+
   };
 
   private final Settings settings;

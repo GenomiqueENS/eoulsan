@@ -162,7 +162,7 @@ public abstract class PathDataProtocol extends AbstractDataProtocol {
 
     final AbstractEoulsanRuntime runtime = EoulsanRuntime.getRuntime();
 
-    if (!runtime.getMode().isHadoopMode()
+    if (!runtime.getMode().isHadoopProtocolMode()
         || !(runtime instanceof HadoopEoulsanRuntime)) {
       throw new IllegalStateException(
           "Can only create PathDataProtocol in hadoop mode.");
