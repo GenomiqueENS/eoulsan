@@ -25,11 +25,13 @@
 package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_DATA_EXTENSION;
 import static fr.ens.transcriptome.eoulsan.Globals.TASK_RESULT_EXTENSION;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Date;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.Globals;
@@ -85,15 +87,46 @@ public class TaskSerializationUtils {
     // Load context file
     final TaskContext context = TaskContext.deserialize(taskContextFile);
 
-    // Create the context runner
-    final TaskRunner runner = new TaskRunner(context);
+    // Get TaskResult
+    final TaskResult result = executeContext(context);
+
+    // Save TaskResult
+    saveTaskResult(taskContextFile, context, result);
+
+    return result;
+  }
+
+  /**
+   * Execute a context.
+   * @param context context to execute
+   * @return a TaskResult object
+   * @throws EoulsanException if an error occurs while executing the task
+   */
+  private static TaskResult executeContext(final TaskContext context)
+      throws EoulsanException {
 
     // Load step instance
     final Step step =
         StepInstances.getInstance().getStep(context.getCurrentStep());
 
+    final long startTime = System.currentTimeMillis();
+
     // Configure step
-    step.configure(context, context.getCurrentStep().getParameters());
+    try {
+      step.configure(context, context.getCurrentStep().getParameters());
+    } catch (Throwable t) {
+
+      final long endTime = System.currentTimeMillis();
+
+      // An exception has occured while configuring the step
+      getLogger().severe("Exception while configuring task: " + t.getMessage());
+
+      return new TaskResult(context, new Date(startTime), new Date(endTime),
+          endTime - startTime, t, t.getMessage());
+    }
+
+    // Create the context runner
+    final TaskRunner runner = new TaskRunner(context);
 
     // Force TaskRunner to res-use the step instance that just has been
     // created
@@ -103,7 +136,19 @@ public class TaskSerializationUtils {
     TaskSchedulerFactory.initialize();
 
     // Get the result
-    final TaskResult result = runner.run();
+    return runner.run();
+  }
+
+  /**
+   * Save a TaskResult object.
+   * @param taskContextFile the task context file
+   * @param context the Eoulsan context
+   * @param result the TaskResult to save
+   * @throws IOException if an error occurs while reading or writing serialized
+   *           files
+   */
+  private static final void saveTaskResult(final DataFile taskContextFile,
+      final TaskContext context, final TaskResult result) throws IOException {
 
     // Get the prefix for the task files and the base dir
     final String taskPrefix = context.getTaskFilePrefix();
@@ -119,8 +164,6 @@ public class TaskSerializationUtils {
     // Create done file
     new DataFile(baseDir, taskPrefix + Globals.TASK_DONE_EXTENSION).create()
         .close();
-
-    return result;
   }
 
 }
