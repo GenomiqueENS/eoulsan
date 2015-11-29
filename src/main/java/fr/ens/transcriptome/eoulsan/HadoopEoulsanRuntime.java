@@ -70,8 +70,14 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
   @Override
   public File getTempDirectory() {
 
+    // In Hadoop task mode do not use Eoulsan settings to get the temporary
+    // directory as it often does not exists
     if (this.mode == EoulsanExecMode.HADOOP_TASK) {
-      return new File(getConfiguration().get(HADOOP_TEMP_DIR));
+
+      // Use Hadoop temporary directory if defined or the default JVM
+      // temporary directory
+      return new File(
+          this.conf.get(HADOOP_TEMP_DIR, System.getProperty("java.io.tmpdir")));
     }
 
     return getSettings().getTempDirectoryFile();
