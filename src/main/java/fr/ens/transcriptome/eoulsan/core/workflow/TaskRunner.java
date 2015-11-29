@@ -452,7 +452,8 @@ public class TaskRunner {
   public static TaskResult createStepResult(final TaskContext taskContext,
       final Throwable exception) {
 
-    return createStepResult(taskContext, exception, null);
+    return createStepResult(taskContext, exception,
+        exception != null ? exception.getMessage() : null);
   }
 
   /**
