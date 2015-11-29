@@ -130,16 +130,30 @@ public class DockerRequirement extends AbstractRequirement {
 
       dockerClient.pull(this.dockerImage, new ProgressHandler() {
 
+        private Set<String> imageIds = new HashSet<>();
+
         @Override
         public void progress(final ProgressMessage msg) throws DockerException {
 
           final ProgressDetail pg = msg.progressDetail();
 
-          if (pg == null) {
-            return;
+          if (!this.imageIds.contains(msg.id())) {
+            this.imageIds.add(msg.id());
           }
 
-          progress.setProgress((double) pg.current() / pg.total());
+          final int imageCount = this.imageIds.size();
+
+          final double currentImageProgress;
+          if (pg == null || pg.total() == 0) {
+            currentImageProgress = 0;
+          } else {
+            currentImageProgress = (double) pg.current() / pg.total();
+          }
+
+          final double pullProgress =
+              (currentImageProgress + imageCount - 1.0) / (double) imageCount;
+
+          progress.setProgress(pullProgress);
 
         }
       });
