@@ -225,10 +225,18 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
             .removeHadoopJobEmergencyStopTask(this.hadoopJob);
 
         if (!this.hadoopJob.isSuccessful()) {
-          throw new EoulsanException(
-              "Error while running Hadoop job for Eoulsan task #"
-                  + this.context.getId() + "(" + this.context.getContextName()
-                  + ")");
+
+          // Try to load the task result
+          try {
+            // Load result
+            result = loadResult();
+          } catch (EoulsanException | IOException e) {
+
+            throw new EoulsanException(
+                "Error while running Hadoop job for Eoulsan task #"
+                    + this.context.getId() + "(" + this.context.getContextName()
+                    + ")");
+          }
         }
 
         // Load result
