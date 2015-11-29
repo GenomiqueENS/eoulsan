@@ -43,6 +43,8 @@ import fr.ens.transcriptome.eoulsan.core.CommonHadoop;
  */
 public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
 
+  private static final String HADOOP_TEMP_DIR = "mapreduce.cluster.temp.dir";
+
   private final Configuration conf;
   private final EoulsanExecMode mode;
 
@@ -67,6 +69,10 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
 
   @Override
   public File getTempDirectory() {
+
+    if (this.mode == EoulsanExecMode.HADOOP_TASK) {
+      return new File(getConfiguration().get(HADOOP_TEMP_DIR));
+    }
 
     return getSettings().getTempDirectoryFile();
   }

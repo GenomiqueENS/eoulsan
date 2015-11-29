@@ -72,8 +72,6 @@ import fr.ens.transcriptome.eoulsan.util.locker.ZooKeeperLocker;
  */
 public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
-  private static final String HADOOP_TEMP_DIR = "mapreduce.cluster.temp.dir";
-
   // Parameter keys
   static final String MAPPER_NAME_KEY =
       Globals.PARAMETER_PREFIX + ".mapper.name";
@@ -223,9 +221,10 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
     // Set index directory
     this.mapperIndexDir =
-        new File(context.getConfiguration().get(HADOOP_TEMP_DIR)
-            + "/" + MAPPER_INDEX_DIR_PREFIX + this.mapper.getMapperName()
-            + "-index-" + conf.get(INDEX_CHECKSUM_KEY));
+        new File(EoulsanRuntime.getRuntime().getTempDirectory(),
+            MAPPER_INDEX_DIR_PREFIX
+                + this.mapper.getMapperName() + "-index-"
+                + conf.get(INDEX_CHECKSUM_KEY));
 
     getLogger()
         .info("Genome index directory where decompressed: " + mapperIndexDir);
@@ -264,7 +263,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
         + " threads option");
 
     // Create temporary directory if not exists
-    final File tempDir = new File(conf.get(HADOOP_TEMP_DIR));
+    final File tempDir = EoulsanRuntime.getRuntime().getTempDirectory();
     if (!tempDir.exists()) {
       getLogger()
           .fine("Create temporary directory: " + tempDir.getAbsolutePath());
