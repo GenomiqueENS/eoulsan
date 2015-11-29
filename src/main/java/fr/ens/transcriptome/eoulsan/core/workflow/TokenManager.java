@@ -67,6 +67,7 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
+import fr.ens.transcriptome.eoulsan.data.protocols.HDFSPathDataProtocol;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
@@ -770,7 +771,17 @@ public class TokenManager implements Runnable {
     // Remove the file
     getLogger().fine("Remove output file: " + file);
     try {
-      file.delete();
+
+      if (HDFSPathDataProtocol.PROTOCOL_NAME
+          .equals(file.getProtocol().getName())) {
+
+        // If file is on HDFS, file removing must be recursive
+        file.delete(true);
+      } else {
+
+        // In other case, do not use recursion is more safe
+        file.delete();
+      }
     } catch (IOException e) {
       getLogger().severe("Cannot remove data to discard: "
           + file + " (" + e.getMessage() + ")");
