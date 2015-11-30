@@ -48,6 +48,7 @@ import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.CheckerStep;
+import fr.ens.transcriptome.eoulsan.steps.Steps;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -230,8 +231,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
         this.stranded = StrandUsage.getStrandUsageFromName(p.getStringValue());
 
         if (this.stranded == null) {
-          throw new EoulsanException("Unknown strand mode in "
-              + getName() + " step: " + p.getStringValue());
+          Steps.badParameterValue(context, p, "Unknown strand mode");
         }
         break;
 
@@ -241,8 +241,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
             OverlapMode.getOverlapModeFromName(p.getStringValue());
 
         if (this.overlapmode == null) {
-          throw new EoulsanException("Unknown overlap mode in "
-              + getName() + " step: " + p.getStringValue());
+          Steps.badParameterValue(context, p, "Unknown overlap mode");
         }
         break;
 
@@ -255,20 +254,17 @@ public abstract class AbstractExpressionStep extends AbstractStep {
         break;
 
       default:
-        throw new EoulsanException(
-            "Unknown parameter for " + getName() + " step: " + p.getName());
+        Steps.unknownParameter(context, p);
       }
 
     }
 
     if (this.genomicType == null) {
-      throw new EoulsanException(
-          "Parent type not set for " + getName() + " step.");
+      Steps.invalidConfiguration(context, "No parent type set");
     }
 
     if (this.attributeId == null) {
-      throw new EoulsanException(
-          "Attribute id not set for " + getName() + " step.");
+      Steps.invalidConfiguration(context, "No attribute id set");
     }
 
     if (counterName == null) {
@@ -278,7 +274,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
     // Test if counter engine exists
     if (ExpressionCounterService.getInstance()
         .newService(counterName) == null) {
-      throw new EoulsanException("Unknown counter: " + counterName);
+      Steps.invalidConfiguration(context, "Unknown counter: " + counterName);
     }
 
     // Set the counter name to use

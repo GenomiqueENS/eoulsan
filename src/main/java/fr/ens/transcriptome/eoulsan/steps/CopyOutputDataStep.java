@@ -109,7 +109,7 @@ public class CopyOutputDataStep extends AbstractStep {
         final DataFormat format = registry.getDataFormatFromName(p.getValue());
 
         if (format == null) {
-          throw new EoulsanException("Unknown format: " + p.getValue());
+          Steps.badParameterValue(context, p, "Unknown format: " + p.getValue());
         }
 
         this.format = format;
@@ -120,8 +120,7 @@ public class CopyOutputDataStep extends AbstractStep {
         break;
 
       default:
-        throw new EoulsanException(
-            "Unknown parameter for step " + getName() + ": " + p.getName());
+        Steps.unknownParameter(context, p);
       }
     }
   }

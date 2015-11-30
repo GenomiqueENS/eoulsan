@@ -89,14 +89,15 @@ public class RequirementInstallerStep extends AbstractStep {
         RequirementService.getInstance().newService(requirementName);
 
     if (this.requirement == null) {
-      throw new EoulsanException("Unknown requirement: " + requirementName);
+      Steps.invalidConfiguration(context,
+          "Unknown requirement: " + requirementName);
     }
 
     // Configure the requirement
     this.requirement.configure(stepParameters);
 
     if (!this.requirement.isInstallable()) {
-      throw new EoulsanException(
+      Steps.invalidConfiguration(context,
           "The requirement is not installable: " + requirementName);
     }
 

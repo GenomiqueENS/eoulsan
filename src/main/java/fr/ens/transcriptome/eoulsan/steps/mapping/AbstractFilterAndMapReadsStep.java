@@ -52,6 +52,7 @@ import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.Steps;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -253,13 +254,10 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      // Get step id
-      final String stepId = context.getCurrentStep().getId();
-
       // Check if the parameter is deprecated
-      AbstractReadsFilterStep.checkDeprecatedParameter(p, stepId);
-      AbstractReadsMapperStep.checkDeprecatedParameter(p, stepId);
-      AbstractSAMFilterStep.checkDeprecatedParameter(p, stepId);
+      AbstractReadsFilterStep.checkDeprecatedParameter(context, p);
+      AbstractReadsMapperStep.checkDeprecatedParameter(context, p);
+      AbstractSAMFilterStep.checkDeprecatedParameter(context, p);
 
       switch (p.getName()) {
 
@@ -301,7 +299,7 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
             alignmentsFilterBuilder.addParameter(p.getName(),
                 p.getStringValue(), true))) {
 
-          throw new EoulsanException("Unknown parameter: " + p.getName());
+          Steps.unknownParameter(context, p);
         }
       }
     }
@@ -314,18 +312,18 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
     this.alignmentsFiltersParameters = alignmentsFilterBuilder.getParameters();
 
     if (mapperName == null) {
-      throw new EoulsanException("No mapper set.");
+      Steps.invalidConfiguration(context, "No mapper set");
     }
 
     this.mapper =
         SequenceReadsMapperService.getInstance().newService(mapperName);
 
     if (this.mapper == null) {
-      throw new EoulsanException("Unknown mapper: " + mapperName);
+      Steps.invalidConfiguration(context, "Unknown mapper: " + mapperName);
     }
 
     if (this.mapper.isIndexGeneratorOnly()) {
-      throw new EoulsanException(
+      Steps.invalidConfiguration(context,
           "The selected mapper can only be used for index generation: "
               + mapperName);
     }

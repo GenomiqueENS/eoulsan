@@ -218,12 +218,13 @@ public class SplitterStep extends AbstractStep {
 
         // Check if the format exists
         if (format == null) {
-          throw new EoulsanException("Unknown format: " + p.getValue());
+          Steps.badParameterValue(context, p,
+              "Unknown format: " + p.getValue());
         }
 
         // Check if a splitter exists for the format
         if (!format.isSplitter()) {
-          throw new EoulsanException(
+          Steps.badParameterValue(context, p,
               "No splitter exists for format: " + format.getName());
         }
 
@@ -243,7 +244,7 @@ public class SplitterStep extends AbstractStep {
 
     // Check if a format has been set
     if (this.splitter == null) {
-      throw new EoulsanException("No format set for splitter");
+      Steps.invalidConfiguration(context, "No format set for splitter");
     }
 
     // Configure the splitter

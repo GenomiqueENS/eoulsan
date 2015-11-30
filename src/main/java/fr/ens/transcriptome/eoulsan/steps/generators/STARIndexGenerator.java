@@ -44,6 +44,7 @@ import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
 import fr.ens.transcriptome.eoulsan.data.protocols.StorageDataProtocol;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.Steps;
 import fr.ens.transcriptome.eoulsan.steps.expression.AbstractExpressionStep;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
@@ -129,10 +130,7 @@ public class STARIndexGenerator extends AbstractStep {
         break;
 
       case "gtf.file":
-        throw new EoulsanException("The parameter \""
-            + p.getName() + "\" for the step " + p.getName()
-            + " has been renamed to \"use.gtf.file\"");
-
+        Steps.renamedParameter(context, p, "use.gtf.file");
       case "use.gtf.file":
         this.gtfFile = p.getBooleanValue();
         break;

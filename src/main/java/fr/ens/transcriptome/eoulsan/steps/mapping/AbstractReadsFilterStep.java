@@ -24,7 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
-import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
@@ -42,6 +41,7 @@ import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.Steps;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
@@ -122,7 +122,7 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
     for (Parameter p : stepParameters) {
 
       // Check if the parameter is deprecated
-      checkDeprecatedParameter(p, context.getCurrentStep().getId());
+      checkDeprecatedParameter(context, p);
 
       switch (p.getName()) {
 
@@ -154,43 +154,31 @@ public abstract class AbstractReadsFilterStep extends AbstractStep {
    * @param stepId step id
    * @throws EoulsanException if the parameter is no more supported
    */
-  static void checkDeprecatedParameter(final Parameter parameter,
-      final String stepId) throws EoulsanException {
+  static void checkDeprecatedParameter(final StepConfigurationContext context,
+      final Parameter parameter) throws EoulsanException {
 
     if (parameter == null) {
       return;
     }
 
-    final String stepMessage =
-        stepId == null ? "" : "In the \"" + stepId + "\" step, ";
-
     switch (parameter.getName()) {
 
     case "lengthThreshold":
-      throw new EoulsanException(stepMessage
-          + "the parameter \"" + parameter.getName()
-          + "\" is deprecated, use \"trim.length.threshold\" parameter "
-          + "instead");
+      Steps.renamedParameter(context, parameter, "trim.length.threshold", true);
+
     case "qualityThreshold":
-      throw new EoulsanException(stepMessage
-          + "the parameter \"" + parameter.getName()
-          + "\" is deprecated, use \"quality.threshold\" parameter instead");
+      Steps.renamedParameter(context, parameter, "quality.threshold", true);
 
     case "pairend.accept.pairend":
-      throw new EoulsanException("The parameter \""
-          + parameter.getName()
-          + "\" is deprecated, use \"pairedend.accept.paired.end\" parameter instead");
+      Steps.renamedParameter(context, parameter, "pairedend.accept.paired.end",
+          true);
 
     case "pairend.accept.singlend":
-      throw new EoulsanException("The parameter \""
-          + parameter.getName()
-          + "\" is deprecated, use \"pairedend.accept.single.end\" parameter instead");
+      Steps.renamedParameter(context, parameter, "pairedend.accept.single.end",
+          true);
 
     case "trim.length.threshold":
-      getLogger().warning(stepMessage
-          + "the \"" + parameter.getName()
-          + "\" parameter is deprecated and will be soon removed. "
-          + "Please use \"trimpolynend\" and \"length\" filters instead");
+      Steps.renamedParameter(context, parameter, "trimpolynend\" and \"length");
       break;
 
     default:

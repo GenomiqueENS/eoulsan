@@ -87,14 +87,14 @@ public class FailStep extends AbstractStep {
         break;
 
       default:
-        throw new EoulsanException(
-            "Unknown parameter for step " + getName() + ": " + p.getName());
+        Steps.unknownParameter(context, p);
       }
     }
 
     // Check delay value
     if (this.delay < 0) {
-      throw new EoulsanException("Delay cannot be lower than 0: " + this.delay);
+      Steps.invalidConfiguration(context,
+          "Delay cannot be lower than 0: " + this.delay);
     }
 
   }

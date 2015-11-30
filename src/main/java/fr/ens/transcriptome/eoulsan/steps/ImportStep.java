@@ -123,8 +123,7 @@ public class ImportStep extends AbstractStep {
         break;
 
       default:
-        throw new EoulsanException(
-            "Unknown parameter for step " + getName() + ": " + p.getName());
+        Steps.unknownParameter(context, p);
       }
     }
 
@@ -133,7 +132,8 @@ public class ImportStep extends AbstractStep {
 
       // Check if base directory exists
       if (!(baseDir.exists() && baseDir.getMetaData().isDir())) {
-        throw new EoulsanException("The directory does not exists: " + baseDir);
+        Steps.invalidConfiguration(context,
+            "The directory does not exists: " + baseDir);
       }
 
       // Get the list of the files to import
@@ -141,7 +141,7 @@ public class ImportStep extends AbstractStep {
 
       // Check if some files has been found
       if (this.files.isEmpty()) {
-        throw new EoulsanException(
+        Steps.invalidConfiguration(context,
             "No input file found in the " + getName() + " step");
       }
 

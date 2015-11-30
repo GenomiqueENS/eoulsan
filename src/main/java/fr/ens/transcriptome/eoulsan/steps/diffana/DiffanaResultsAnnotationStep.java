@@ -59,6 +59,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.Steps;
 import fr.ens.transcriptome.eoulsan.translators.BasicTranslator;
 import fr.ens.transcriptome.eoulsan.translators.CommonLinksInfoTranslator;
 import fr.ens.transcriptome.eoulsan.translators.ConcatTranslator;
@@ -155,9 +156,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
       switch (p.getName()) {
 
       case "annotationfile":
-        throw new EoulsanException("The option \""
-            + p.getName() + "\" has been removed from "
-            + context.getCurrentStep().getStepName() + " step");
+        Steps.removedParameter(context, p);
 
       case "outputformat":
 
@@ -188,7 +187,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
 
       default:
         // Unknown option
-        throw new EoulsanException("Unknown option: " + p.getName());
+        Steps.unknownParameter(context, p);
       }
     }
 

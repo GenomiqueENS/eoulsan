@@ -53,6 +53,7 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.Steps;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractFilterAndMapReadsStep;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep;
 import fr.ens.transcriptome.eoulsan.util.Version;
@@ -108,22 +109,24 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
 
     for (Parameter p : stepParameters) {
 
-      if ("mappername".equals(p.getName().toLowerCase())) {
+      switch (p.getName()) {
+
+      // TODO replace with AbstractReadsMapperStep.MAPPER_NAME_PARAMETER_NAME ?
+      case "mappername":
         final String mapperName = p.getStringValue();
 
         this.mapper =
             SequenceReadsMapperService.getInstance().newService(mapperName);
 
         if (this.mapper == null) {
-          throw new EoulsanException(
-              "Mapper with the following name not found: " + mapperName);
+          Steps.badParameterValue(context, p, "Unknown mapper");
         }
 
-      } else {
-        throw new EoulsanException(
-            "Unknown parameter for " + getName() + " step: " + p.getName());
-      }
+        break;
 
+      default:
+        Steps.unknownParameter(context, p);
+      }
     }
 
   }

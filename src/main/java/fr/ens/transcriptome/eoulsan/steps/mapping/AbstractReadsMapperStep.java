@@ -44,6 +44,7 @@ import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.Steps;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -240,7 +241,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
     for (Parameter p : stepParameters) {
 
       // Check if the parameter is deprecated
-      checkDeprecatedParameter(p, context.getCurrentStep().getId());
+      checkDeprecatedParameter(context, p);
 
       switch (p.getName()) {
 
@@ -290,14 +291,12 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
         break;
 
       default:
-
-        throw new EoulsanException(
-            "Unknown parameter for " + getName() + " step: " + p.getName());
+        Steps.unknownParameter(context, p);
       }
     }
 
     if (mapperName == null) {
-      throw new EoulsanException("No mapper set.");
+      Steps.invalidConfiguration(context, "No mapper set");
     }
 
     this.mapper =
@@ -305,12 +304,12 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
     // Check if the mapper wrapper has been found
     if (this.mapper == null) {
-      throw new EoulsanException("Unknown mapper: " + mapperName);
+      Steps.invalidConfiguration(context, "Unknown mapper: " + mapperName);
     }
 
     // Check if the mapper is not only a generator
     if (this.mapper.isIndexGeneratorOnly()) {
-      throw new EoulsanException(
+      Steps.invalidConfiguration(context,
           "The selected mapper can only be used for index generation: "
               + mapperName);
     }
@@ -372,32 +371,27 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
   /**
    * Check deprecated parameters.
+   * @param context context
    * @param parameter the parameter to check
-   * @param stepId step id
    * @throws EoulsanException if the parameter is no more supported
    */
-  static void checkDeprecatedParameter(final Parameter parameter,
-      final String stepId) throws EoulsanException {
+  static void checkDeprecatedParameter(final StepConfigurationContext context,
+      final Parameter parameter) throws EoulsanException {
 
     if (parameter == null) {
       return;
     }
 
-    final String stepMessage =
-        stepId == null ? "" : "In the \"" + stepId + "\" step, ";
-
     switch (parameter.getName()) {
 
     case "mapperarguments":
-      throw new EoulsanException(stepMessage
-          + "the parameter \"" + parameter.getName()
-          + "\" is deprecated, use \"" + MAPPER_ARGUMENTS_PARAMETER_NAME
-          + "\" parameter " + "instead");
+      Steps.renamedParameter(context, parameter,
+          MAPPER_ARGUMENTS_PARAMETER_NAME, true);
 
     case MAPPER_NAME_PARAMETER_NAME:
       if ("soap".equals(parameter.getLowerStringValue())) {
 
-        throw new EoulsanException(
+        Steps.badParameterValue(context, parameter,
             "The SOAP mapper support has been removed from "
                 + Globals.APP_NAME);
       }

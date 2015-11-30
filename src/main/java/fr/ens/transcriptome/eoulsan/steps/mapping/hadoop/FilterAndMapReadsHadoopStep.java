@@ -66,6 +66,7 @@ import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.steps.Steps;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractFilterAndMapReadsStep;
 import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 
@@ -91,7 +92,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
 
     // Check if the mapper can be used with Hadoop
     if (!getMapper().isSplitsAllowed()) {
-      throw new EoulsanException(
+      Steps.invalidConfiguration(context,
           "The selected mapper cannot be used in hadoop mode as "
               + "computation cannot be parallelized: "
               + getMapper().getMapperName());

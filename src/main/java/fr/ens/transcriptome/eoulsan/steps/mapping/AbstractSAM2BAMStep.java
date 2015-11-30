@@ -1,6 +1,5 @@
 package fr.ens.transcriptome.eoulsan.steps.mapping;
 
-import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.singleInputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_BAM;
@@ -17,6 +16,7 @@ import fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.Steps;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
 /**
@@ -102,9 +102,7 @@ public abstract class AbstractSAM2BAMStep extends AbstractStep {
         break;
 
       case "input.format":
-
-        getLogger().warning("Deprecated parameter \""
-            + p.getName() + "\" for step " + getName());
+        Steps.deprecatedParameter(context, p, true);
         break;
 
       case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
@@ -112,8 +110,7 @@ public abstract class AbstractSAM2BAMStep extends AbstractStep {
         break;
 
       default:
-        throw new EoulsanException(
-            "Unknown parameter for " + getName() + " step: " + p.getName());
+        Steps.unknownParameter(context, p);
       }
     }
   }

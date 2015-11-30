@@ -42,6 +42,7 @@ import fr.ens.transcriptome.eoulsan.core.OutputPorts;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.core.StepConfigurationContext;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.Steps;
 import fr.ens.transcriptome.eoulsan.util.ReporterIncrementer;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
@@ -121,7 +122,7 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
     for (Parameter p : stepParameters) {
 
       // Check if the parameter is deprecated
-      checkDeprecatedParameter(p, context.getCurrentStep().getId());
+      checkDeprecatedParameter(context, p);
 
       switch (p.getName()) {
 
@@ -148,27 +149,22 @@ public abstract class AbstractSAMFilterStep extends AbstractStep {
 
   /**
    * Check deprecated parameters.
+   * @param context configuration context
    * @param parameter the parameter to check
-   * @param stepId step id
    * @throws EoulsanException if the parameter is no more supported
    */
-  static void checkDeprecatedParameter(final Parameter parameter,
-      final String stepId) throws EoulsanException {
+  static void checkDeprecatedParameter(final StepConfigurationContext context,
+      final Parameter parameter) throws EoulsanException {
 
     if (parameter == null) {
       return;
     }
 
-    final String stepMessage =
-        stepId == null ? "" : "In the \"" + stepId + "\" step, ";
-
     switch (parameter.getName()) {
 
     case "mappingqualitythreshold":
-      throw new EoulsanException(stepMessage
-          + "the parameter \"" + parameter.getName()
-          + "\" is deprecated, use \"" + QualityReadAlignmentsFilter.FILTER_NAME
-          + ".threshold" + "\" parameter " + "instead");
+      Steps.renamedParameter(context, parameter,
+          QualityReadAlignmentsFilter.FILTER_NAME + ".threshold", true);
 
     default:
       break;

@@ -82,13 +82,12 @@ public class ShellStep extends AbstractStep {
         break;
 
       default:
-        throw new EoulsanException(
-            "Unknown parameter for step " + getName() + ": " + p.getName());
+        Steps.unknownParameter(context, p);
       }
     }
 
     if (this.command == null || this.command.trim().isEmpty()) {
-      throw new EoulsanException("No command defined.");
+      Steps.invalidConfiguration(context, "No command defined");
     }
   }
 

@@ -140,18 +140,17 @@ public class CopyInputDataStep extends AbstractStep {
         break;
 
       default:
-        throw new EoulsanException(
-            "Unknown parameter for step " + getName() + ": " + p.getName());
+        Steps.unknownParameter(context, p);
       }
 
     }
 
     if (this.format == null) {
-      throw new EoulsanException("No format set.");
+      Steps.invalidConfiguration(context, "No format set");
     }
 
     if (this.outputCompression == null) {
-      throw new EoulsanException("No output compression set.");
+      Steps.invalidConfiguration(context, "No output compression set");
     }
 
   }

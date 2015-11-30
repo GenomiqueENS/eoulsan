@@ -71,6 +71,7 @@ import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
+import fr.ens.transcriptome.eoulsan.steps.Steps;
 import fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep;
 import fr.ens.transcriptome.eoulsan.util.hadoop.MapReduceUtils;
 
@@ -101,7 +102,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     // Check if the mapper can be used with Hadoop
     if (!getMapper().isSplitsAllowed()) {
-      throw new EoulsanException(
+      Steps.invalidConfiguration(context,
           "The selected mapper cannot be used in Hadoop mode as "
               + "computation cannot be parallelized: "
               + getMapper().getMapperName());
@@ -109,13 +110,13 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
 
     // Check if user wants to use non bundled mapper binaries
     if (!isUseBundledBinaries()) {
-      throw new EoulsanException(
+      Steps.invalidConfiguration(context,
           "Non bundled mapper binaries cannot be used in Hadoop mode");
     }
 
     // Check if user wants to use a mapper Docker image
     if (!getMapperDockerImage().isEmpty()) {
-      throw new EoulsanException(
+      Steps.invalidConfiguration(context,
           "Cannot use a mapper Docker image in Hadoop mode");
     }
 
@@ -378,7 +379,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
     ZipArchiveEntry e;
 
     while ((e = zais.getNextZipEntry()) != null) {
-      map.put(e.getName(), new long[] { e.getSize(), e.getCrc() });
+      map.put(e.getName(), new long[] {e.getSize(), e.getCrc()});
     }
 
     zais.close();

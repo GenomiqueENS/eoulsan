@@ -74,6 +74,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.data.DataFormats;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
+import fr.ens.transcriptome.eoulsan.steps.Steps;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Version;
 
@@ -169,9 +170,8 @@ public class FastQCStep extends AbstractStep {
 
         if (!(MAPPER_RESULTS_SAM.equals(format)
             || READS_FASTQ.equals(format))) {
-          throw new EoulsanException(
-              "Unknown or format not supported as input format for FastQC: "
-                  + p.getStringValue());
+          Steps.badParameterValue(context, p,
+              "Unknown or format not supported as input format for FastQC");
         }
 
         this.inputFormat = format;
@@ -211,6 +211,7 @@ public class FastQCStep extends AbstractStep {
         break;
 
       default:
+        Steps.unknownParameter(context, p);
       }
     }
 
