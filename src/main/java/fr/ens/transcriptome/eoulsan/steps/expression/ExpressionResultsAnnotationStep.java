@@ -89,7 +89,6 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
   private static final DataFormat DEFAULT_FORMAT =
       ANNOTATED_EXPRESSION_RESULTS_TSV;
 
-  private DataFile annotationFile;
   private final Map<String, DataFormat> outputFormats = new HashMap<>();
 
   //
@@ -122,12 +121,8 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
     // Add the port for the expression file
     builder.addPort("expressionfile", EXPRESSION_RESULTS_TSV);
 
-    // If no annotation file is set in parameter use the annotation provided by
-    // the workflow
-    if (this.annotationFile == null) {
-
-      builder.addPort("additionalannotation", ADDITIONAL_ANNOTATION_TSV);
-    }
+    // Add the port for the additional annotation
+    builder.addPort("additionalannotation", ADDITIONAL_ANNOTATION_TSV);
 
     return builder.create();
   }
@@ -169,13 +164,16 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
 
     for (final Parameter p : stepParameters) {
 
-      // Set annotation file
-      if ("annotationfile".equals(p.getName())) {
-        this.annotationFile = new DataFile(p.getStringValue());
-      } else if ("outputformat".equals(p.getName())) {
+      switch (p.getName()) {
+
+      case "annotationfile":
+        throw new EoulsanException("The option \""
+            + p.getName() + "\" has been removed from "
+            + context.getCurrentStep().getStepName() + " step");
+
+      case "outputformat":
 
         // Set output format
-
         for (String format : Splitter.on(',').trimResults().omitEmptyStrings()
             .split(p.getValue())) {
 
@@ -196,18 +194,14 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
           default:
             throw new EoulsanException("Unknown output format: " + format);
           }
-
         }
-      } else {
+
+        break;
+
+      default:
         // Unknown option
         throw new EoulsanException("Unknown option: " + p.getName());
       }
-    }
-
-    // Check if annotation file exists
-    if (this.annotationFile != null && !this.annotationFile.exists()) {
-      throw new EoulsanException(
-          "The annotation file does not exists: " + this.annotationFile);
     }
 
     // Set the default format
@@ -225,17 +219,9 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
     final Translator translator;
     try {
 
-      // TODO annotation may be shared by several threads
-
-      if (this.annotationFile == null) {
-
-        // If no annotation file parameter set
-        Data annotationData = context.getInputData(ADDITIONAL_ANNOTATION_TSV);
-        translator = loadTranslator(annotationData.getDataFile());
-      } else {
-
-        translator = loadTranslator(this.annotationFile);
-      }
+      // If no annotation file parameter set
+      Data annotationData = context.getInputData(ADDITIONAL_ANNOTATION_TSV);
+      translator = loadTranslator(annotationData.getDataFile());
 
     } catch (IOException | EoulsanIOException e) {
       return status.createStepResult(e);

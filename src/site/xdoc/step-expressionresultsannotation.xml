@@ -69,8 +69,6 @@
         <table>
                 <tr><th>Parameter</th><th>Type</th><th>Default value</th><th>Description</th></tr>
                 <tr><td>outputformat</td><td>string</td><td>tsv</td><td>One or more format name for the output separated by a comma.</td></tr>
-                <tr><td>annotationfile</td><td>string</td><td>None</td><td>Path to the additional annotation file to use. When 
-                this option is used the additionalannotation input port does not exists. This option is <b>deprecated</b> and will be soon removed.</td></tr>
         </table>
 
         <li><b>Configuration example</b>:</li>
