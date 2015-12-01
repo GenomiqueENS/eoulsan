@@ -177,6 +177,7 @@ public class DiffAnaLocalStep extends AbstractStep {
           Steps.badParameterValue(context, p,
               "Unknown dispersion estimation sharing mode");
         }
+        break;
 
       default:
         Steps.unknownParameter(context, p);
