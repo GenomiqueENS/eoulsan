@@ -31,12 +31,14 @@ import htsjdk.samtools.SamInputResource;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -69,6 +71,9 @@ public class BAMMerger implements Merger {
   public void merge(final Iterator<DataFile> inFileIterator,
       final DataFile outFile) throws IOException {
 
+    // Get temporary directory
+    final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
+
     SAMFileWriter outputSam = null;
 
     while (inFileIterator.hasNext()) {
@@ -86,7 +91,7 @@ public class BAMMerger implements Merger {
       // Get Writer
       if (outputSam == null) {
 
-        outputSam = new SAMFileWriterFactory()
+        outputSam = new SAMFileWriterFactory().setTempDirectory(tmpDir)
             .makeBAMWriter(inputSam.getFileHeader(), false, outFile.create());
       }
 

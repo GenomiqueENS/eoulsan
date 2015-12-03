@@ -32,6 +32,7 @@ import htsjdk.samtools.SamInputResource;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
@@ -105,6 +107,9 @@ public class SAMSplitter implements Splitter {
   private void splitByLineCount(final DataFile inFile,
       final Iterator<DataFile> outFileIterator) throws IOException {
 
+    // Get temporary directory
+    final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
+
     // Get reader
     final SamReader reader =
         SamReaderFactory.makeDefault().open(SamInputResource.of(inFile.open()));
@@ -126,8 +131,8 @@ public class SAMSplitter implements Splitter {
         }
 
         // Create new writer
-        writer = new SAMFileWriterFactory().makeSAMWriter(header, false,
-            outFileIterator.next().create());
+        writer = new SAMFileWriterFactory().setTempDirectory(tmpDir)
+            .makeSAMWriter(header, false, outFileIterator.next().create());
       }
 
       writer.addAlignment(record);
@@ -151,6 +156,9 @@ public class SAMSplitter implements Splitter {
   public void splitByChromosomes(final DataFile inFile,
       final Iterator<DataFile> outFileIterator) throws IOException {
 
+    // Get temporary directory
+    final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
+
     // Get reader
     final SamReader reader =
         SamReaderFactory.makeDefault().open(SamInputResource.of(inFile.open()));
@@ -170,8 +178,8 @@ public class SAMSplitter implements Splitter {
       if (!writers.containsKey(chromosome)) {
 
         // Create the writer for the chromosome
-        writer = new SAMFileWriterFactory().makeSAMWriter(header, false,
-            outFileIterator.next().create());
+        writer = new SAMFileWriterFactory().setTempDirectory(tmpDir)
+            .makeSAMWriter(header, false, outFileIterator.next().create());
         writers.put(chromosome, writer);
       } else {
         writer = writers.get(chromosome);
