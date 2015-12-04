@@ -686,7 +686,7 @@ of reads that reject each filter like in local mode.
             <action dev="sperrin" type="add">
                 Add new Eoulsan step for FastQC.
             </action>
-            
+
             <action dev="sperrin" type="add">
                 Add new Comparator class for bam file.
             </action>
@@ -755,7 +755,7 @@ of reads that reject each filter like in local mode.
             <action dev="sperrin" type="update">
                 Change a command line option for the "it" action: the "-c/-conf" option has been renamed to "-testconf".
             </action>
-            
+
             <action dev="sperrin" type="update">
                 Add new patterns for managing comparisons between expected and tested directories:
                 in the configuration of a test, add a pattern to check if a file exists.
@@ -772,7 +772,7 @@ of reads that reject each filter like in local mode.
             <action dev="jourdren" type="update">
                 Remove the "-upload" option of the hadoopexec action.
             </action>
-            
+
             <action dev="jourdren" type="update">
                 No log file is now written on the console as now a log file is always created in the job directory.
             </action>
@@ -913,7 +913,7 @@ of reads that reject each filter like in local mode.
                  Add new step, GalaxyToolStep, it can use a Toolshed XML file from Galaxy to run new tool in Eoulsan workflow.
             	 Actually, it can be manage basic toolshed syntax.
             </action>
-            
+
             <action dev="sperrin" type="add">
                  Add a new FastQC step that can be launch on FASTQ or SAM files in local mode.
             </action>
@@ -921,7 +921,7 @@ of reads that reject each filter like in local mode.
             <action dev="jourdren" type="add">
                  Now the FastQC step is hadoop compatible.
             </action>
-            
+
             <action dev="sperrin" type="update">
                  Add several enhancements to the Eoulsan integration tests report file.
             </action>
@@ -939,12 +939,99 @@ of reads that reject each filter like in local mode.
 
          <release version="2.0-alpha7" description="Eoulsan 2.0-alpha7 release" date="TBD">
 
+
+            <action dev="jourdren" type="fix">
+                 The eoulsan.sh script now works with old bash versions.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                 In SAM/BAM splitters and mergers, the JVM temporary directory was used instead of the Eoulsan temporary directory.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                 In the "shell" step, if the SHELL environment variable is not set, use /bin/sh as default shell.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 The read mapper code has been refactored and impoved to be more efficient by using named pipes.
+                 The new code avoid copying FASTQ files on Hadoop nodes in the mapping step.
+                 Mapper binaries now can be provided by the user on the filesystem or in a Docker container.
+            </action>
+
             <action dev="jourdren" type="add">
                  Add a new action "clusterexec" that allow to execute an Eoulsan workflow on a non Hadoop cluster. Condor is the first cluster scheduler supported by Eoulsan in this mode.
             </action>
 
+            <action dev="jourdren" type="update">
+                 Eoulsan now support the cluster scheduler of the TGCC.
+            </action>
+
             <action dev="jourdren" type="add">
                  Add a new scheduler that allow to run tasks from steps that are not designed for Hadoop on an Hadoop cluster. The steps must have the @HadoopCompatible annotation and must only the DataFile API to access to the input and output files.
+            </action>
+
+            <action dev="jourdren" type="add">
+                 Add "requiredprocs" and "requiredmemory" attributes for the step tag in the workflow tag. This new attributes allow to define in cluster mode in hadoop mode the required number of processors and memory to use by a step task.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 Galaxytools files can now be related to a Docker image thanks to a new "dockerimage" attribute for the "command" tag of the Galaxytool files.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 Galaxytools files can use standard interpreters (e.g. perl, python, ruby...) like in Galaxy.
+            </action>
+
+            <action dev="jourdren" type="add">
+                 For createdesign action, add support for bcl2fastq 2 output.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 Rename "pairend.accept.pairend" read filter parameter to "pairedend.accept.paired.end" and rename "pairend.accept.signlend" read filter parameter to "pairedend.accept.single.end".
+            </action>
+
+            <action dev="jourdren" type="remove">
+                 The "annotationfile" parameter has been removed from expressionresultsannotation and diffanaresultsannotation steps. User must now use the AdditionalAnnotation column in the design file.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 In the "expressionresultsannotation" step rename "gtf.file" parameter to "use.gtf.file".
+            </action>
+
+            <action dev="jourdren" type="remove">
+                 The support for the SOAP 2 mapper has been removed.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 The "htseq-count" count is now the default counter.
+            </action>
+
+            <action dev="jourdren" type="remove">
+                 Remove the old Eoulsan 1.0/1.1 expression step counter in both local and Hadoop mode.
+            </action>
+
+            <action dev="jourdren" type="remove">
+                 Remove all the 32 bits versions of the mappers.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 The workfow GraphViz file now contains an example of the command to launch to create a PNG file.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 The IlluminaReadId class now support the new Illumina FASTQ header generated by bcl2fastq 2 when no sample are indexed in a lane.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 The "expressionresultsannotation" can now be executed on an Hadoop cluster.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 Add new environment variable EOULSAN_JAVA_HOME that can be used to specify a JRE for Eoulsan that is not the default JRE or the JRE defined by the JAVA_HOME environment variable.
+            </action>
+
+            <action dev="jourdren" type="update">
+                 Now save the logs of the external libraries in a "additional.log" file in  the job directory.
             </action>
 
             <action dev="jourdren" type="add">
@@ -956,7 +1043,7 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="update">
-                 Rename "pairend.accept.pairend" read filter parameter to "pairedend.accept.paired.end" and rename "pairend.accept.signlend" read filter parameter to "pairedend.accept.single.end".
+                 Add examples for all the steps.
             </action>
 
          </release>
