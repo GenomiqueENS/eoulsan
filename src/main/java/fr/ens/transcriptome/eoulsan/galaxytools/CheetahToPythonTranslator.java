@@ -778,7 +778,12 @@ class CheetahToPythonTranslator {
         // + Joiner.on(" ").join(txt).trim());
 
         // Return string with default separator escape
-
+        if (lastToken) {
+          if (!isCurrentCode && !newToken.endsWith("\"")) {
+            // Start string
+            txt.append("\"");
+          }
+        }
         return txt.toString();
       }
 
