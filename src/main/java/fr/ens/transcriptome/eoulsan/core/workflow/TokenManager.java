@@ -50,9 +50,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanLogger;
@@ -91,6 +89,7 @@ public class TokenManager implements Runnable {
   private final Multimap<OutputPort, Data> outputTokens =
       ArrayListMultimap.create();
   private final Set<InputPort> closedPorts = new HashSet<>();
+
   private final Set<ImmutableMap<InputPort, Data>> cartesianProductsUsed =
       new HashSet<>();
 
@@ -98,19 +97,6 @@ public class TokenManager implements Runnable {
 
   private volatile boolean endOfStep;
   private boolean isStarted;
-
-  /**
-   * Class needed for cartesian product computation.
-   */
-  private static class CartesianProductEntry {
-    final WorkflowInputPort port;
-    final Data data;
-
-    CartesianProductEntry(final WorkflowInputPort port, final Data data) {
-      this.port = port;
-      this.data = data;
-    }
-  }
 
   //
   // Getters
@@ -496,50 +482,6 @@ public class TokenManager implements Runnable {
   //
 
   /**
-   * Compute the cartesian product.
-   * @return a set with the result of the cartesian product
-   */
-  private Set<ImmutableMap<InputPort, Data>> dataCartesianProduct() {
-
-    if (!checkIfAllPortsHasReceivedSomeData()
-        || !checkIfAllListPortsAreClosed()) {
-      return Collections.emptySet();
-    }
-
-    final Set<ImmutableMap<InputPort, Data>> result = new HashSet<>();
-    final List<WorkflowInputPort> portsList =
-        Lists.newArrayList(this.inputPorts.iterator());
-
-    // First create the lists for Sets.cartesianProduct()
-    final List<Set<CartesianProductEntry>> sets = new ArrayList<>();
-    for (WorkflowInputPort port : portsList) {
-      final Set<CartesianProductEntry> s = new HashSet<>();
-      for (Data d : this.inputTokens.get(port)) {
-        s.add(new CartesianProductEntry(port, d));
-      }
-      sets.add(s);
-    }
-
-    // Compute cartesian product
-    final Set<List<CartesianProductEntry>> cartesianProduct =
-        Sets.cartesianProduct(sets);
-
-    // Now convert result of cartesianProduct() to final result
-    for (List<CartesianProductEntry> l : cartesianProduct) {
-
-      final ImmutableMap.Builder<InputPort, Data> imb = ImmutableMap.builder();
-
-      for (CartesianProductEntry e : l) {
-        imb.put(e.port, e.data);
-      }
-
-      result.add(imb.build());
-    }
-
-    return result;
-  }
-
-  /**
    * Create output data for a new context.
    * @return a map with the output data
    */
@@ -580,7 +522,15 @@ public class TokenManager implements Runnable {
     // Process only the cartesian products of data that have not been converted
     // in Context
     synchronized (this.cartesianProductsUsed) {
-      cartesianProductToProcess = dataCartesianProduct();
+
+      if (!checkIfAllPortsHasReceivedSomeData()
+          || !checkIfAllListPortsAreClosed()) {
+        cartesianProductToProcess = Collections.emptySet();
+      } else {
+        cartesianProductToProcess =
+            this.step.getDataProduct().makeProduct(this.inputPorts, this.inputTokens);
+      }
+
       cartesianProductToProcess.removeAll(this.cartesianProductsUsed);
       this.cartesianProductsUsed.addAll(cartesianProductToProcess);
     }

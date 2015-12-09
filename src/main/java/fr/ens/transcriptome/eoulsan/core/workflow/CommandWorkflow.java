@@ -192,6 +192,7 @@ public class CommandWorkflow extends AbstractWorkflow {
       final boolean copyResultsToOutput = !c.isStepDiscardOutput(stepId);
       final int requiredMemory = c.getStepRequiredMemory(stepId);
       final int requiredProcessors = c.getStepRequiredProcessors(stepId);
+      final String dataProduct = c.getStepDataProduct(stepId);
 
       getLogger().info("Create "
           + (skip ? "skipped step" : "step ") + stepId + " (" + stepName
@@ -199,7 +200,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
       addStep(new CommandWorkflowStep(this, stepId, stepName, stepVersion,
           stepParameters, skip, copyResultsToOutput, requiredMemory,
-          requiredProcessors));
+          requiredProcessors, dataProduct));
     }
 
     // Check if there one or more step to execute
@@ -325,7 +326,7 @@ public class CommandWorkflow extends AbstractWorkflow {
       final CommandWorkflowStep step = new CommandWorkflowStep(this,
           r.getName() + "install" + installerCount,
           RequirementInstallerStep.STEP_NAME, Globals.APP_VERSION.toString(),
-          r.getParameters(), false, false, -1, -1);
+          r.getParameters(), false, false, -1, -1, "");
 
       // Configure the installer step
       step.configure();
@@ -485,7 +486,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
     // Create step
     CommandWorkflowStep step = new CommandWorkflowStep(workflow, stepId,
-        stepName, null, parameters, false, false, -1, -1);
+        stepName, null, parameters, false, false, -1, -1, "");
 
     // Configure step
     step.configure();
@@ -534,7 +535,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
       // Create step
       CommandWorkflowStep step = new CommandWorkflowStep(workflow, stepId,
-          stepName, null, parameters, false, true, -1, -1);
+          stepName, null, parameters, false, true, -1, -1, "");
 
       // Configure step
       step.configure();

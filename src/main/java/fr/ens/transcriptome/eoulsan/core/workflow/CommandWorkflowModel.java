@@ -40,6 +40,7 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.P
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.PORT_TAG_NAME;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.REQUIRED_CPU_ATTR_NAME_STEP_TAG;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.REQUIRED_MEM_ATTR_NAME_STEP_TAG;
+import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.DATAPRODUCT_ATTR_NAME_STEP_TAG;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.ROOT_TAG_NAME;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.SKIP_ATTR_NAME_STEP_TAG;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.STEP_TAG_NAME;
@@ -103,6 +104,7 @@ public class CommandWorkflowModel implements Serializable {
   private final Map<String, Boolean> stepDiscardOutput = new HashMap<>();
   private final Map<String, Integer> stepRequiredMemory = new HashMap<>();
   private final Map<String, Integer> stepRequiredProcessors = new HashMap<>();
+  private final Map<String, String> stepDataProduct = new HashMap<>();
   private final Set<Parameter> globalParameters = new HashSet<>();
 
   static final class StepPort implements Serializable {
@@ -219,7 +221,7 @@ public class CommandWorkflowModel implements Serializable {
   void addStep(final String stepId, final String stepName, final String version,
       final Map<String, StepOutputPort> inputs, final Set<Parameter> parameters,
       final boolean skipStep, final boolean discardOutput,
-      final int requiredMemory, final int requiredProcs)
+      final int requiredMemory, final int requiredProcs, final String dataProduct)
           throws EoulsanException {
 
     if (stepName == null) {
@@ -299,6 +301,11 @@ public class CommandWorkflowModel implements Serializable {
       inputsMap.put(toPortName, new StepPort(fromStep, fromPortName));
     }
 
+    if (dataProduct == null) {
+      throw new EoulsanException(
+          "The data product value is null for input for step \"" + stepId);
+    }
+
     this.stepIdList.add(stepIdLower);
     this.stepIdNames.put(stepIdLower, stepNameLower);
     this.stepVersions.put(stepIdLower, stepVersion);
@@ -308,6 +315,7 @@ public class CommandWorkflowModel implements Serializable {
     this.stepDiscardOutput.put(stepIdLower, discardOutput);
     this.stepRequiredMemory.put(stepIdLower, requiredMemory);
     this.stepRequiredProcessors.put(stepIdLower, requiredProcs);
+    this.stepDataProduct.put(stepIdLower, dataProduct);
   }
 
   /**
@@ -411,6 +419,16 @@ public class CommandWorkflowModel implements Serializable {
   public int getStepRequiredProcessors(final String stepId) {
 
     return this.stepRequiredProcessors.get(stepId);
+  }
+
+  /**
+   * Get the data product for the step.
+   * @param stepId step id
+   * @return the data product
+   */
+  public String getStepDataProduct(final String stepId) {
+
+    return this.stepDataProduct.get(stepId);
   }
 
   /**
@@ -591,6 +609,16 @@ public class CommandWorkflowModel implements Serializable {
       requiredProcessorsAttr
           .setValue("" + this.stepRequiredProcessors.get(stepId));
       stepElement.setAttributeNode(requiredProcessorsAttr);
+    }
+
+    // Set data product attribute
+    if (this.stepDataProduct != null
+        && !"".equals(this.stepDataProduct.get(stepId).trim())) {
+
+      Attr dataProductAttr =
+          document.createAttribute(DATAPRODUCT_ATTR_NAME_STEP_TAG);
+      dataProductAttr.setValue(this.stepDataProduct.get(stepId));
+      stepElement.setAttributeNode(dataProductAttr);
     }
 
     // Set step name

@@ -93,6 +93,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   private WorkflowOutputPorts outputPorts = WorkflowOutputPorts.noOutputPort();
   private WorkflowInputPorts inputPorts = WorkflowInputPorts.noInputPort();
 
+  private final DataProduct dataProduct = new DefaultDataProduct();
+  private final String dataProductConfiguration;
+
   private final WorkflowStepStateObserver observer;
 
   private final DataFile outputDir;
@@ -289,6 +292,14 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     return this.parallelizationMode;
   }
 
+  /**
+   * Get the data product for the step.
+   * @return the data product for the step
+   */
+  DataProduct getDataProduct() {
+    return this.dataProduct;
+  }
+
   //
   // Setters
   //
@@ -468,6 +479,12 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       registerInputAndOutputPorts(step);
     }
 
+    // Configure data product
+    this.dataProduct.configure(this.dataProductConfiguration);
+    getLogger().info("Use "
+        + this.dataProduct.getName() + " data product for " + getId()
+        + " step");
+
     setState(StepState.CONFIGURED);
   }
 
@@ -565,6 +582,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.parallelizationMode = ParallelizationMode.NOT_NEEDED;
     this.requiredMemory = -1;
     this.requiredProcessors = -1;
+    this.dataProductConfiguration = "";
 
     switch (type) {
     case CHECKER_STEP:
@@ -655,6 +673,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.parallelizationMode = getParallelizationMode(generator);
     this.requiredMemory = -1;
     this.requiredProcessors = -1;
+    this.dataProductConfiguration = "";
 
     // Define output directory
     this.outputDir =
@@ -676,18 +695,22 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * @param skip true to skip execution of the step
    * @param copyResultsToOutput copy step result to output directory
    * @param parameters parameters of the step
+   * @param requiredMemory required memory
+   * @param requiredProcessors required processors
+   * @param dataProduct data product
    * @throws EoulsanException id an error occurs while creating the step
    */
   protected AbstractWorkflowStep(final AbstractWorkflow workflow,
       final String id, final String stepName, final String stepVersion,
       final boolean skip, final boolean copyResultsToOutput,
       final Set<Parameter> parameters, final int requiredMemory,
-      final int requiredrocessors) throws EoulsanException {
+      final int requiredrocessors, final String dataProduct) throws EoulsanException {
 
     checkNotNull(workflow, "Workflow argument cannot be null");
     checkNotNull(id, "Step id argument cannot be null");
     checkNotNull(stepName, "Step name argument cannot be null");
-    checkNotNull(parameters, "Step arguments argument cannot be null");
+    checkNotNull(parameters, "parameters argument cannot be null");
+    checkNotNull(dataProduct, "dataProduct argument cannot be null");
 
     this.workflow = workflow;
     this.number = instanceCounter++;
@@ -698,6 +721,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.copyResultsToOutput = copyResultsToOutput;
     this.requiredMemory = requiredMemory;
     this.requiredProcessors = requiredrocessors;
+    this.dataProductConfiguration = dataProduct;
 
     // Load Step instance
     final Step step =
@@ -746,6 +770,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.parallelizationMode = getParallelizationMode(step);
     this.requiredMemory = -1;
     this.requiredProcessors = -1;
+    this.dataProductConfiguration = "";
 
     // Define output directory
     this.outputDir = defineOutputDirectory(workflow, step, copyResultsToOutput);

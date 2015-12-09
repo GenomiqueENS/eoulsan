@@ -112,6 +112,7 @@ public class CommandWorkflowParser {
   static final String SKIP_ATTR_NAME_STEP_TAG = "skip";
   static final String REQUIRED_MEM_ATTR_NAME_STEP_TAG = "requiredmemory";
   static final String REQUIRED_CPU_ATTR_NAME_STEP_TAG = "requiredprocs";
+  static final String DATAPRODUCT_ATTR_NAME_STEP_TAG = "dataproduct";
   static final String ID_ATTR_NAME_STEP_TAG = "id";
   static final String VERSION_TAG = "version";
   static final String STEP_TAG_NAME = "step";
@@ -247,6 +248,9 @@ public class CommandWorkflowParser {
                     eStepElement.getAttribute(DISCARDOUTPUT_ATTR_NAME_STEP_TAG)
                         .trim().toLowerCase());
 
+                final String dataProduct = eStepElement
+                    .getAttribute(DATAPRODUCT_ATTR_NAME_STEP_TAG).trim();
+
                 String stepName = getTagValue(STEPNAME_TAG_NAME, eStepElement);
                 if (stepName == null) {
                   stepName = getTagValue(NAME_TAG_NAME, eStepElement);
@@ -267,8 +271,8 @@ public class CommandWorkflowParser {
                 getLogger().info("In workflow file found "
                     + stepName + " step (parameters: " + parameters + ").");
                 result.addStep(stepId, stepName, version, inputs, parameters,
-                    skip, discardOutput, requiredMemory, requiredProcs);
-
+                    skip, discardOutput, requiredMemory, requiredProcs,
+                    dataProduct);
               }
             }
           }
