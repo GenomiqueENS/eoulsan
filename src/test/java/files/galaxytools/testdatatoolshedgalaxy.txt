@@ -66,6 +66,13 @@ param.source.ref_file=ref_file_value
 output.output1=output_value
 command.expected=sam_to_bam.py --input1=input_value --ref_file=ref_file_value --output1=output_value
 
+test_description=bam2bedgraph tool
+toolshedxml.path=bam-to-bedgraph.xml
+input.input_bam=input
+input.input_bai=index
+output.output_bedgraph=output
+command.expected=bamCoverage -b input -bai index -o output -of bedgraph
+
 test_description=rmdup
 toolshedxml.path=rmdup.xml
 input.input=input_value

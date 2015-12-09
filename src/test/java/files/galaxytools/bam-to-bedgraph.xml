@@ -1,0 +1,14 @@
+<tool id="bam2bedgraph" name="bam2bedgraph">
+  <description>for each sequence in a file</description>
+  <command interpreter="docker" dockerimage="genomicpariscentre/deeptools:1.5.12">bamCoverage -b $input_bam -bai $input_bai -o $output_bedgraph -of bedgraph</command>
+  <inputs>
+    <param format="bam" name="input_bam" type="data" label="Source file"/>
+    <param format="bai" name="input_bai" type="data" label="Source file"/>
+  </inputs>
+  <outputs>
+    <data format="bedgraph" name="output_bedgraph" />
+  </outputs>
+
+</tool>
+
+
