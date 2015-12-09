@@ -179,8 +179,6 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     checkState(!this.doneContexts.containsValue(contextId),
         "The context (" + contextId + ") has been already done");
 
-    getLogger().finest("Start of addDoneContext for Task #" + contextId);
-
     final WorkflowStep step = getStep(contextId);
     synchronized (this) {
       this.runningContexts.remove(step, contextId);
@@ -191,7 +189,6 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
         + contextId + " (step #" + step.getNumber() + " " + step.getId()
         + ") is done");
 
-    getLogger().finest("End of addDoneContext for Task #" + contextId);
   }
 
   /**
@@ -219,19 +216,11 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     checkNotNull(context, "context argument is null");
     checkNotNull(result, "result argument is null");
 
-    getLogger()
-        .finest("Start of afterExecuteTask for Task #" + context.getId());
-
     // Add the context result to the step result
     addResult(getStep(context.getId()), result);
 
-    getLogger().finest(
-        "In afterExecuteTask / after addResult() for Task #" + context.getId());
-
     // Update counters
     addDoneContext(context);
-
-    getLogger().finest("End of afterExecuteTask for Task #" + context.getId());
   }
 
   /**
@@ -242,8 +231,6 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
   protected TaskResult executeTask(final TaskContext context) {
 
     checkNotNull(context, "context argument is null");
-
-    getLogger().finest("Start of executeTask() for Task #" + context.getId());
 
     // Get the step of the context
     final WorkflowStep step = getStep(context.getId());
@@ -256,8 +243,6 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
 
     // Return the result
     final TaskResult result = contextRunner.getResult();
-
-    getLogger().finest("End of executeTask() for Task #" + context.getId());
 
     return result;
   }
