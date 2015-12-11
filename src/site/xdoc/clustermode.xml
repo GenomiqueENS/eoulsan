@@ -42,7 +42,7 @@
      <table>
        <tr><th>Scheduler name</th><th>main.cluster.scheduler.name value</th><th>Comment</th></tr>
        <tr><td><a href="https://research.cs.wisc.edu/htcondor/">Condor</a></td><td>condor</td><td>Works, tested on IBENS cluster.</td></tr>
-       <tr><td><a href="http://www-hpc.cea.fr/fr/complexe/tgcc.htm">TGCC</a></td><td>tgcc</td><td>Works, currently tested.</td></tr>
+       <tr><td><a href="http://www-hpc.cea.fr/fr/complexe/tgcc.htm">TGCC</a></td><td>tgcc</td><td>Works, tested at TGCC.</td></tr>
      </table>     
 
      <p>The number of processors and the amount of memory to use by the submitted tasks on the cluster can be defined using the <tt>requiredprocs</tt> and

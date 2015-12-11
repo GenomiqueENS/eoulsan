@@ -55,6 +55,9 @@
 					<a href="#hadoop_mode">Execute Eoulsan with a local hadoop cluster</a>
 				</li>
 				<li>
+					<a href="#cluster_mode">Execute Eoulsan on a cluster</a>
+				</li>
+				<li>
 					<a href="#aws_mode">Execute Eoulsan on Amazon Web Services cloud computing</a>
 				</li>
 			</ul>
@@ -183,14 +186,21 @@ $ eoulsan.sh exec workflow-local.xml design.txt
 <source>
 $ eoulsan.sh hadoopexec workflow-hadoop.xml design.txt hdfs://master.example.com/test
 </source>
-		
-			<p>At the start of the analysis and after the check of the input files (like 
-			in the local mode), input data are uploaded on the hadoop cluster before 
-                        launching the analysis.</p>
 
-			<p>At the end of the analysis, the results files and logs will be in a new directory name like 
-			   <b>eoulsan-20110310-101235</b> (the numbers in the directory name after eoulsan are 
-                           respectively the date and the time of the launch of the analysis).</p>
+			<p>When a step can be distributed on the Hadoop cluster, required input files are automatically copied on the HDFS filesystem before launching the step.</p>
+
+		</subsection>
+
+		<a name="cluster_mode"/>
+		<subsection name="Launch Eoulsan in cluster mode">
+
+			<p>The cluster mode works like the local mode, you just need to configure before the cluster scheduler to use (see the <a href="clustermode.html">cluster configuration page</a>). 
+			   Then, you can launch an Eoulsan analysis on a cluster with the following command:</p>
+<source>
+$ eoulsan.sh clusterexec workflow-local.xml design.txt
+</source>
+
+			<p>Step tasks will be automaticaly submitted to the scheduler of your cluster. The outputs of this mode are the same as in local mode.</p>
 
 		</subsection>
 
