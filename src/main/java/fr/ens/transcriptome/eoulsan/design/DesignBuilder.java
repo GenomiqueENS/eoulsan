@@ -447,7 +447,8 @@ public class DesignBuilder {
         continue;
       }
 
-      final String laneKey = String.format("_L%03d_", sampleLane);
+      final String laneKey =
+          sampleLane == -1 ? "_L" : String.format("_L%03d_", sampleLane);
 
       for (File fastqFile : dataDir.listFiles(new FileFilter() {
 
