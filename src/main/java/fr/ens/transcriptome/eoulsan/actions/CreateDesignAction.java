@@ -151,7 +151,7 @@ public class CreateDesignAction extends AbstractAction {
 
       // Add all the files of a Casava design if Casava design path is defined
       if (sampleSheetPath != null) {
-        db.addCasavaDesignProject(new File(sampleSheetPath),
+        db.addBcl2FastqSamplesheetProject(new File(sampleSheetPath),
             samplesProjectName);
       }
 

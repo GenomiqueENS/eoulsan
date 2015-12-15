@@ -395,13 +395,13 @@ public class DesignBuilder {
   }
 
   /**
-   * Add all the sample from a Casava design.
+   * Add all the sample from a Bclfastq samplesheet.
    * @param casavaDesign The Casava design object
    * @param projectName name of the project
    * @param casavaOutputDir the output directory of Casava demultiplexing
    * @throws EoulsanException if an error occurs while adding the casava design
    */
-  public void addCasavaDesignProject(final SampleSheet casavaDesign,
+  public void addBcl2FastqSamplesheetProject(final SampleSheet casavaDesign,
       final String projectName, final File casavaOutputDir)
           throws EoulsanException {
 
@@ -421,10 +421,15 @@ public class DesignBuilder {
     for (fr.ens.transcriptome.aozan.illumina.samplesheet.Sample sample : casavaDesign) {
 
       final String sampleProject = sample.getSampleProject();
-      final String sampleName = sample.getSampleId();
+      final String sampleId = sample.getSampleId();
       final String sampleDesc = sample.getDescription();
       final String sampleOperator = sample.get("Operator");
       final int sampleLane = sample.getLane();
+
+      // Check if sample id field exist for sample
+      if (sampleId == null) {
+        throw new EoulsanException("No sample Id field found for sample: " + sample);
+      }
 
       // Select only project samples
       if (projectName != null && !projectName.equals(sampleProject)) {
@@ -433,7 +438,7 @@ public class DesignBuilder {
       File dataDir;
       if (Bcl2Fastq1) {
         dataDir = new File(casavaOutputDir.getPath()
-            + "/Project_" + sampleProject + "/Sample_" + sampleName);
+            + "/Project_" + sampleProject + "/Sample_" + sampleId);
       } else {
         dataDir = new File(casavaOutputDir.getPath() + "/" + sampleProject);
       }
@@ -452,7 +457,7 @@ public class DesignBuilder {
           final String filename =
               StringUtils.filenameWithoutCompressionExtension(f.getName());
 
-          if (filename.startsWith(sampleName)
+          if (filename.startsWith(sampleId)
               && filename.contains(laneKey)
               && (filename.endsWith(".fastq") || filename.endsWith(".fq"))) {
             return true;
@@ -464,15 +469,15 @@ public class DesignBuilder {
 
         final List<FastqEntry> list;
 
-        if (this.fastqMap.containsKey(sampleName)) {
-          list = this.fastqMap.get(sampleName);
+        if (this.fastqMap.containsKey(sampleId)) {
+          list = this.fastqMap.get(sampleId);
         } else {
           list = new ArrayList<>();
-          this.fastqMap.put(sampleName, list);
+          this.fastqMap.put(sampleId, list);
         }
 
         try {
-          list.add(new FastqEntry(new DataFile(fastqFile), sampleName,
+          list.add(new FastqEntry(new DataFile(fastqFile), sampleId,
               sampleDesc, sampleOperator));
         } catch (EmptyFastqException e) {
           getLogger().warning(e.getMessage());
@@ -483,12 +488,12 @@ public class DesignBuilder {
   }
 
   /**
-   * Add all the sample from a Casava design.
+   * Add all the samples from a Bcl2Fastq samplesheet.
    * @param casavaDesignFile the path to the Casava design
    * @param projectName the name of the project
    * @throws EoulsanException if an error occurs while reading the Casava design
    */
-  public void addCasavaDesignProject(final File casavaDesignFile,
+  public void addBcl2FastqSamplesheetProject(final File casavaDesignFile,
       final String projectName) throws EoulsanException {
 
     if (casavaDesignFile == null) {
@@ -539,7 +544,7 @@ public class DesignBuilder {
 
     try {
       SampleSheetCSVReader reader = new SampleSheetCSVReader(file);
-      addCasavaDesignProject(reader.read(), projectName, baseDir);
+      addBcl2FastqSamplesheetProject(reader.read(), projectName, baseDir);
     } catch (IOException e) {
       throw new EoulsanException(e);
     }
