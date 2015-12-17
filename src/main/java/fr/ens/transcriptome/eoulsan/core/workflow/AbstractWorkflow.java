@@ -38,7 +38,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -637,13 +636,11 @@ public abstract class AbstractWorkflow implements Workflow {
 
     Preconditions.checkNotNull(state, "state argument is null");
 
-    final Collection<AbstractWorkflowStep> collection;
+    final List<AbstractWorkflowStep> result;
 
     synchronized (this) {
-      collection = this.states.get(state);
+      result = Lists.newArrayList(this.states.get(state));
     }
-
-    final List<AbstractWorkflowStep> result = Lists.newArrayList(collection);
 
     sortListSteps(result);
 
