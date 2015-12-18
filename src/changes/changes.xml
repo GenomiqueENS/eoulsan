@@ -986,7 +986,7 @@ of reads that reject each filter like in local mode.
                  Galaxytools files can use standard interpreters (e.g. perl, python, ruby...) like with the "real" Galaxy software.
             </action>
 
-            <action dev="jourdren" type="add">
+            <action dev="firmo" type="add">
                  The createdesign action now support bcl2fastq 2 output.
             </action>
 
