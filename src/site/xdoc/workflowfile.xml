@@ -259,8 +259,8 @@
           <tr><td>requiredmemory</td><td>integer</td><td>-1</td><td>The <tt>requiredmemory</tt> attribute allow to set the amount of memory required in megabytes by the step. 
             This value is only used in <b>clusterexec</b> mode. If not set, Eoulsan will require to the cluster scheduler the same amount of memory allocated to Eoulsan JVM.
             Unit prefixes like MB, M, GB, G can be used for the required memory value (e.g. 8GB).</td></tr>
-          <tr><td>dataproduct</td><td>string</td><td>cross</td><td>The <tt>dataproduct</tt> attribute allow to set method to use combine data before executing a step.
-            By default a <tt>cross</tt> product is used. If you need that all the input data with the same name must be executed together use <tt>match</tt> method instead.</td></tr>
+          <tr><td>dataproduct</td><td>string</td><td>cross</td><td>The <tt>dataproduct</tt> attribute allow to set the method to use for combining data before executing a step.
+            By default a <tt>cross</tt> product is used. If you need that all the input data have the same name and must be executed together use <tt>match</tt> method instead.</td></tr>
         </table>
 
     <p>If not set by the user, the Eoulsan workflow engine will take as data source for each input port the last previous step that generate data of the format that requested by the input port.
