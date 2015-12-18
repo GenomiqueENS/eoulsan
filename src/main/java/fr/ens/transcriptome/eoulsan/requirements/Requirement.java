@@ -77,7 +77,7 @@ public interface Requirement {
 
   /**
    * Install the requirement.
-   * @throw EoulsanException if the requirement cannot be installed
+   * @throws EoulsanException if the requirement cannot be installed
    */
   void install(Progress progress) throws EoulsanException;
 

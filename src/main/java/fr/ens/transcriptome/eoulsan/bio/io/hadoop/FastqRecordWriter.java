@@ -93,7 +93,7 @@ public class FastqRecordWriter extends RecordWriter<Text, Text> {
   /**
    * Public constructor.
    * @param context the context
-   * @param os output stream
+   * @param out data output stream
    */
   public FastqRecordWriter(final TaskAttemptContext context,
       final DataOutputStream out) {

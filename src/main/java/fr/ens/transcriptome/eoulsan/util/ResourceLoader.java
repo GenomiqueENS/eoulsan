@@ -35,7 +35,7 @@ public interface ResourceLoader<S> {
 
   /**
    * Load all available resources.
-   * @param a list with all the loaded resources
+   * @return a list with all the loaded resources
    */
   public List<S> loadAllResources();
 

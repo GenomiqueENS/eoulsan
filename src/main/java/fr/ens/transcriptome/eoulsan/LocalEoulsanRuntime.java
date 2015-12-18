@@ -97,7 +97,7 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
 
   /**
    * Set the cluster mode.
-   * @param clusterMode cluster mode
+   * @param mode Eoulsan execution mode
    */
   public void setMode(final EoulsanExecMode mode) {
 

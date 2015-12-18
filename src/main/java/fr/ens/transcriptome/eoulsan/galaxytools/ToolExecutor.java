@@ -114,10 +114,8 @@ public class ToolExecutor {
   /**
    * Constructor a new galaxy tool executor.
    * @param context the context
-   * @param interpreter the interpreter to use
+   * @param toolData the tool data
    * @param commandLine the command line
-   * @param toolName the tool name
-   * @param toolVersion the tool version
    */
   public ToolExecutor(final StepContext context, final ToolData toolData,
       final String commandLine) {

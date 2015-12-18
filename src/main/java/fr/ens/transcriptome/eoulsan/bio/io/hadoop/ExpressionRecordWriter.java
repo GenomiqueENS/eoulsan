@@ -94,7 +94,7 @@ public class ExpressionRecordWriter extends RecordWriter<Text, LongWritable> {
   /**
    * Public constructor.
    * @param context the context
-   * @param os output stream
+   * @param out data output stream
    */
   public ExpressionRecordWriter(final TaskAttemptContext context,
       final DataOutputStream out) {

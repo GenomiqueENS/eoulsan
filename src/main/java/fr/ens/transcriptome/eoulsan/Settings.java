@@ -529,7 +529,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the Galaxy tool path.
-   * @returnthe Galaxy tool path
+   * @return the Galaxy tool path
    */
   public String getGalaxyToolPath() {
 

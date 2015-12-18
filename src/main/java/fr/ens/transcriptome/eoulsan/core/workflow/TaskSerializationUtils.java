@@ -50,7 +50,6 @@ public class TaskSerializationUtils {
   /**
    * Execute a task context serialization file.
    * @param taskContextFile input task context file
-   * @param outputDir output directory for results file
    * @return the task result
    * @throws IOException if an error occurs while reading or writing serialized
    *           files

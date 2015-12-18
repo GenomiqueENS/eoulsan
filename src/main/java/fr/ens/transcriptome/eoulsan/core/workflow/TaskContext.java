@@ -356,7 +356,6 @@ public class TaskContext implements StepContext, Serializable {
 
   /**
    * Create the prefix of a related task file.
-   * @param context the context
    * @return a string with the prefix of the task file
    */
   public String getTaskFilePrefix() {

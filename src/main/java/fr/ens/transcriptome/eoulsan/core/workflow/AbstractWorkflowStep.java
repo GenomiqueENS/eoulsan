@@ -704,7 +704,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       final String id, final String stepName, final String stepVersion,
       final boolean skip, final boolean copyResultsToOutput,
       final Set<Parameter> parameters, final int requiredMemory,
-      final int requiredrocessors, final String dataProduct) throws EoulsanException {
+      final int requiredProcessors, final String dataProduct) throws EoulsanException {
 
     checkNotNull(workflow, "Workflow argument cannot be null");
     checkNotNull(id, "Step id argument cannot be null");
@@ -720,7 +720,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.version = stepVersion;
     this.copyResultsToOutput = copyResultsToOutput;
     this.requiredMemory = requiredMemory;
-    this.requiredProcessors = requiredrocessors;
+    this.requiredProcessors = requiredProcessors;
     this.dataProductConfiguration = dataProduct;
 
     // Load Step instance

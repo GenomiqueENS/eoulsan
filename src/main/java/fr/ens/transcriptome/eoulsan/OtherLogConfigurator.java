@@ -49,7 +49,7 @@ public class OtherLogConfigurator {
    * Configure Log4J. If no log level is provided, the INFO log level will be
    * used.
    * @param logLevel logLevel as string.
-   * @param logFile the log file
+   * @param logFilename the log filename
    */
   public static void configureLog4J(final String logLevel,
       final String logFilename) {

@@ -168,7 +168,7 @@ public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
 
   /**
    * Add a resource paths.
-   * @param resourcePath the resource path to add
+   * @param resourcePaths the resource path to add
    */
   public void addResourcePaths(final String resourcePaths) {
 

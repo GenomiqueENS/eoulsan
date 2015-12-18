@@ -88,7 +88,7 @@ public class SAMRecordWriter extends RecordWriter<Text, Text> {
   /**
    * Public constructor.
    * @param context the context
-   * @param os output stream
+   * @param out data output stream
    */
   public SAMRecordWriter(final TaskAttemptContext context,
       final DataOutputStream out) {
