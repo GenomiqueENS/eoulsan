@@ -73,8 +73,6 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
 
   public static final String MAPPER_ARGUMENTS_PARAMETER_NAME =
       "mapper.arguments";
-  public static final String HADOOP_MAPPER_REQUIRED_MEMORY_PARAMETER_NAME =
-      "hadoop.mapper.required.memory";
   public static final String HADOOP_THREADS_PARAMETER_NAME = "hadoop.threads";
 
   public static final String LOCAL_THREADS_PARAMETER_NAME = "local.threads";
@@ -281,11 +279,6 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
         this.maxLocalThreads = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
-      case HADOOP_MAPPER_REQUIRED_MEMORY_PARAMETER_NAME:
-        this.hadoopMapperRequiredMemory =
-            p.getIntValueGreaterOrEqualsTo(1) * 1024;
-        break;
-
       case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
         this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
         break;
@@ -330,6 +323,11 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
       this.mapper.prepareBinaries();
     } catch (IOException e) {
       throw new EoulsanException(e);
+    }
+
+    final int requiredMemory = context.getCurrentStep().getRequiredMemory();
+    if (requiredMemory > 0) {
+      this.hadoopMapperRequiredMemory = requiredMemory;
     }
 
     // Log Step parameters
@@ -395,6 +393,15 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
             "The SOAP mapper support has been removed from "
                 + Globals.APP_NAME);
       }
+      break;
+
+    case "hadoop.mapper.required.memory":
+      Steps.badParameterValue(context, parameter,
+          "The "
+              + parameter.getName()
+              + " parameter no more exists. Use instead the \"requiredMemory\" "
+              + "attribute of the step tag to define the amount of memory "
+              + "required by the mapper in Hadoop mode.");
       break;
 
     default:

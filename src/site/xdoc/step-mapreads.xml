@@ -77,7 +77,6 @@
                 <tr><td>max.local.threads</td><td>integer</td><td>Define the maximum number of threads to use in local mode.</td><td>0 (no limit)</td></tr>
                 <tr><td>hadoop.threads</td><td>integer</td><td>Define the maximum number of threads to use in hadoop mode.</td><td>0 (the number of available processors)</td></tr>
                 <tr><td>mapper.arguments</td><td>string</td><td>Mapper additional command line arguments</td><td>See below in the next table</td></tr>
-                <tr><td>hadoop.mapper.required.memory</td><td>integer</td><td>The amount of mapper required memory in MB. This value is only required in Hadoop mode by the Hadoop scheduler</td><td>8</td></tr>
                 <tr><td>hadoop.reducer.task.count</td><td>integer</td><td>The count of Hadoop reducer tasks to use for this step. This parameter is only used in Hadoop mode</td><td>Not set</td></tr>
            </table>
 
@@ -124,7 +123,8 @@
 </pre>
        </ul>
 
-      <p><b>Note:</b> In hadoop mode, Eoulsan use the <code>mapreduce.cluster.temp.dir</code> hadoop setting as location for the mapping temporary files (mapper indexes and FASTQ temporary files). This path must be set in the Hadoop client properties.</p>
+      <p><b>Note 1:</b> In hadoop mode, Eoulsan use the <code>mapreduce.cluster.temp.dir</code> hadoop setting as location for the mapping temporary files (mapper indexes and FASTQ temporary files). This path must be set in the Hadoop client properties.</p>
+      <p><b>Note 2:</b> In hadoop mode, use the <code>requiredMemory</code> attribute of the step tag to define the amount of memory required by the mapper in Hadoop mode. By default the value is 8 GB.</p>
 
       <p><b>Warning:</b> In hadoop mode, the results of BWA are not exactly the same as in local mode because with BWA the SAM output of splitted FASTQ files are not the same as the full FASTQ files (See <a href="https://www.biostars.org/p/44101/">this BioStar post</a> for more information).</p>
 
