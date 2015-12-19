@@ -29,7 +29,6 @@ import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.HADOOP_REDUCER_TASK
 import static fr.ens.transcriptome.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
-import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.HADOOP_MAPPER_REQUIRED_MEMORY_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.HADOOP_THREADS_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.MAPPER_ARGUMENTS_PARAMETER_NAME;
 import static fr.ens.transcriptome.eoulsan.steps.mapping.AbstractReadsMapperStep.MAPPER_FLAVOR_PARAMETER_NAME;
@@ -281,11 +280,6 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
         this.hadoopThreads = p.getIntValueGreaterOrEqualsTo(1);
         break;
 
-      case HADOOP_MAPPER_REQUIRED_MEMORY_PARAMETER_NAME:
-        this.hadoopMapperRequiredMemory =
-            p.getIntValueGreaterOrEqualsTo(1) * 1024;
-        break;
-
       case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
         this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
         break;
@@ -335,6 +329,11 @@ public abstract class AbstractFilterAndMapReadsStep extends AbstractStep {
       this.mapper.prepareBinaries();
     } catch (IOException e) {
       throw new EoulsanException(e);
+    }
+
+    final int requiredMemory = context.getCurrentStep().getRequiredMemory();
+    if (requiredMemory > 0) {
+      this.hadoopMapperRequiredMemory = requiredMemory;
     }
 
     // Log Step parameters
