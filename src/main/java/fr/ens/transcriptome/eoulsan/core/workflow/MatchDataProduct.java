@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -43,7 +44,9 @@ import fr.ens.transcriptome.eoulsan.data.Data;
  * @author Laurent Jourdren
  * @since 2.0
  */
-class MatchDataProduct implements DataProduct {
+class MatchDataProduct implements DataProduct, Serializable {
+
+  private static final long serialVersionUID = -3335375092653861359L;
 
   public static final String DATAPRODUCT_NAME = "match";
 

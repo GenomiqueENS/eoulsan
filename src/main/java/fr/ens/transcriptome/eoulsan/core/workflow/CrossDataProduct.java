@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -44,7 +45,9 @@ import fr.ens.transcriptome.eoulsan.data.Data;
  * @author Laurent Jourdren
  * @since 2.0
  */
-class CrossDataProduct implements DataProduct {
+class CrossDataProduct implements DataProduct, Serializable {
+
+  private static final long serialVersionUID = 5268549880105535524L;
 
   public static final String DATAPRODUCT_NAME = "cross";
 

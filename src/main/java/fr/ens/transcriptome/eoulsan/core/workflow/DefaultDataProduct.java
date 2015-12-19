@@ -26,6 +26,7 @@ package fr.ens.transcriptome.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import org.python.google.common.base.Strings;
@@ -42,7 +43,9 @@ import fr.ens.transcriptome.eoulsan.data.Data;
  * @author Laurent Jourdren
  * @since 2.0
  */
-class DefaultDataProduct implements DataProduct {
+class DefaultDataProduct implements DataProduct, Serializable {
+
+  private static final long serialVersionUID = -4521747867897781954L;
 
   private static final String DATAPRODUCT_NAME = "autoconf";
 
