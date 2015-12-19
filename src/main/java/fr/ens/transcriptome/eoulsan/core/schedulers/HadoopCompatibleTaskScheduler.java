@@ -89,8 +89,8 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
     private Job hadoopJob;
 
     private Job createHadoopJob(final Configuration conf,
-        final DataFile submitFile, final String jobDescription)
-            throws IOException {
+        final DataFile submitFile, final int requiredMemory,
+        final String jobDescription) throws IOException {
 
       final Configuration jobConf = new Configuration(conf);
 
@@ -123,6 +123,20 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
 
       // Set the number of reducers
       job.setNumReduceTasks(0);
+
+      if (requiredMemory > 0) {
+
+        // Set the memory required by the reads mapper
+        jobConf.set("mapreduce.map.memory.mb", "" + requiredMemory);
+
+        int jvmMemory = requiredMemory - 128;
+        if (jvmMemory <= 0) {
+          jvmMemory = requiredMemory;
+        }
+
+        // Set the memory required by JVM
+        jobConf.set("mapreduce.map.java.opts", "-Xm" + jvmMemory + "M");
+      }
 
       return job;
     }
@@ -203,6 +217,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
 
         // Submit Job
         this.hadoopJob = createHadoopJob(this.conf, sumbitFile,
+            this.context.getCurrentStep().getRequiredMemory(),
             "Eoulsan Step "
                 + this.context.getCurrentStep().getId() + " ("
                 + this.context.getCurrentStep().getStepName() + ") Task #"
