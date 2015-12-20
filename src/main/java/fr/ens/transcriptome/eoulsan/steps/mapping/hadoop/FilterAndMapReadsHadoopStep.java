@@ -24,6 +24,7 @@
 
 package fr.ens.transcriptome.eoulsan.steps.mapping.hadoop;
 
+import static fr.ens.transcriptome.eoulsan.core.CommonHadoop.createConfiguration;
 import static fr.ens.transcriptome.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.transcriptome.eoulsan.data.DataFormats.READS_FASTQ;
@@ -104,7 +105,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
       final StepStatus status) {
 
     // Create configuration object
-    final Configuration conf = new Configuration();// this.conf;
+    final Configuration conf = createConfiguration();
 
     try {
 
