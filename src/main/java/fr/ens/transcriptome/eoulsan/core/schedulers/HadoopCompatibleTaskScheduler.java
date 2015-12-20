@@ -97,6 +97,20 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
       // Set one task per map
       jobConf.set("mapreduce.input.lineinputformat.linespermap", "" + 1);
 
+      if (requiredMemory > 0) {
+
+        // Set the memory required by the reads mapper
+        jobConf.set("mapreduce.map.memory.mb", "" + requiredMemory);
+
+        int jvmMemory = requiredMemory - 128;
+        if (jvmMemory <= 0) {
+          jvmMemory = requiredMemory;
+        }
+
+        // Set the memory required by JVM
+        jobConf.set("mapreduce.map.java.opts", "-Xmx" + jvmMemory + "M");
+      }
+
       // Set Job name
       // Create the job and its name
       final Job job = Job.getInstance(jobConf, jobDescription);
@@ -123,20 +137,6 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
 
       // Set the number of reducers
       job.setNumReduceTasks(0);
-
-      if (requiredMemory > 0) {
-
-        // Set the memory required by the reads mapper
-        jobConf.set("mapreduce.map.memory.mb", "" + requiredMemory);
-
-        int jvmMemory = requiredMemory - 128;
-        if (jvmMemory <= 0) {
-          jvmMemory = requiredMemory;
-        }
-
-        // Set the memory required by JVM
-        jobConf.set("mapreduce.map.java.opts", "-Xm" + jvmMemory + "M");
-      }
 
       return job;
     }
