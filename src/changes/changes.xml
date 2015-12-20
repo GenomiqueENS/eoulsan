@@ -998,6 +998,10 @@ of reads that reject each filter like in local mode.
                  The "annotationfile" parameter has been removed from expressionresultsannotation and diffanaresultsannotation steps. User must now use the AdditionalAnnotation column in the design file.
             </action>
 
+             <action dev="jourdren" type="remove">
+                 The "hadoop.mapper.required.memory" parameter has been removed from the mapreads step. User must now use the "requiredmemory" attribute of the "step" tag in the workflow file to define the amount of memory required by the mapper in hadoop mode.
+            </action>
+
             <action dev="jourdren" type="update">
                  In the "expressionresultsannotation" step rename the "gtf.file" parameter to "use.gtf.file".
             </action>
@@ -1040,6 +1044,10 @@ of reads that reject each filter like in local mode.
 
             <action dev="jourdren" type="add">
                  Add a "Counters" section in step result files that summaries counters of tasks with the same name (useful when using splitters and mergers in a workflow).
+            </action>
+
+            <action dev="jourdren" type="update">
+                 Eoulsan now check if unknown tags or attributes exists in the XML workflow file.
             </action>
 
             <action dev="jourdren" type="update">
