@@ -34,8 +34,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -47,6 +49,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -104,7 +107,7 @@ public class CommandWorkflowParser {
   static final String FROMSTEP_TAG_NAME = "fromstep";
   static final String PORT_TAG_NAME = "port";
   static final String INPUT_TAG_NAME = "input";
-  static final String INPUTS_TAG_NAMES = "inputs";
+  static final String INPUTS_TAG_NAME = "inputs";
   static final String GLOBALS_TAG_NAME = "globals";
   static final String PARAMETERS_TAG_NAME = "parameters";
   static final String STEPNAME_TAG_NAME = "stepname";
@@ -181,6 +184,11 @@ public class CommandWorkflowParser {
 
         Element eElement = (Element) nNode;
 
+        // Check allowed child tags of the root tag
+        checkAllowedChildTags(eElement, FORMATVERSION_TAG_NAME,
+            WORKFLOWNAME_TAG_NAME, DESCRIPTION_TAG_NAME, AUTHOR_TAG_NAME,
+            CONSTANTS_TAG_NAME, STEPS_TAG_NAME, GLOBALS_TAG_NAME);
+
         //
         // Parse description elements
         //
@@ -221,6 +229,10 @@ public class CommandWorkflowParser {
           if (nodeSteps.getNodeType() == Node.ELEMENT_NODE) {
 
             final Element stepsElement = (Element) nodeSteps;
+
+            // Check allowed child tag for the "steps" tag
+            checkAllowedChildTags(stepsElement, STEP_TAG_NAME);
+
             final NodeList nStepList =
                 stepsElement.getElementsByTagName(STEP_TAG_NAME);
 
@@ -230,6 +242,19 @@ public class CommandWorkflowParser {
               if (nStepNode.getNodeType() == Node.ELEMENT_NODE) {
 
                 final Element eStepElement = (Element) nStepNode;
+
+                // Check allowed attributes for the "step" tag
+                checkAllowedAttributes(eStepElement, ID_ATTR_NAME_STEP_TAG,
+                    SKIP_ATTR_NAME_STEP_TAG, REQUIRED_MEM_ATTR_NAME_STEP_TAG,
+                    REQUIRED_CPU_ATTR_NAME_STEP_TAG,
+                    REQUIRED_CPU_ATTR_NAME_STEP_TAG,
+                    DISCARDOUTPUT_ATTR_NAME_STEP_TAG,
+                    DATAPRODUCT_ATTR_NAME_STEP_TAG);
+
+                // Check allowed child tag of the the "step" tag
+                checkAllowedChildTags(eStepElement, STEPNAME_TAG_NAME,
+                    NAME_TAG_NAME, VERSION_TAG, INPUTS_TAG_NAME,
+                    PARAMETERS_TAG_NAME);
 
                 final String stepId = eStepElement
                     .getAttribute(ID_ATTR_NAME_STEP_TAG).trim().toLowerCase();
@@ -306,7 +331,7 @@ public class CommandWorkflowParser {
 
     final Map<String, StepOutputPort> result = new HashMap<>();
 
-    final NodeList nList = root.getElementsByTagName(INPUTS_TAG_NAMES);
+    final NodeList nList = root.getElementsByTagName(INPUTS_TAG_NAME);
 
     for (int i = 0; i < nList.getLength(); i++) {
 
@@ -314,6 +339,10 @@ public class CommandWorkflowParser {
       if (node.getNodeType() == Node.ELEMENT_NODE) {
 
         Element element = (Element) node;
+
+        // Check allowed child tag for the "inputs" tag
+        checkAllowedChildTags(element, INPUT_TAG_NAME);
+
         final NodeList nParameterList =
             element.getElementsByTagName(INPUT_TAG_NAME);
 
@@ -323,10 +352,14 @@ public class CommandWorkflowParser {
 
           if (nParameterNode.getNodeType() == Node.ELEMENT_NODE) {
 
-            Element eStepElement = (Element) nParameterNode;
+            Element inputElement = (Element) nParameterNode;
+
+            // Check allowed child tag for the "input" tag
+            checkAllowedChildTags(inputElement, PORT_TAG_NAME,
+                FROMSTEP_TAG_NAME, FROMPORT_TAG_NAME);
 
             // Get and check the toInput attribute
-            final String portName = getTagValue(PORT_TAG_NAME, eStepElement);
+            final String portName = getTagValue(PORT_TAG_NAME, inputElement);
             if (portName == null) {
               throw new EoulsanException(
                   "the \"toInput\" attribute not exists in an input section of step \""
@@ -345,8 +378,8 @@ public class CommandWorkflowParser {
             }
 
             final StepOutputPort input =
-                new StepOutputPort(getTagValue(FROMSTEP_TAG_NAME, eStepElement),
-                    getTagValue(FROMPORT_TAG_NAME, eStepElement));
+                new StepOutputPort(getTagValue(FROMSTEP_TAG_NAME, inputElement),
+                    getTagValue(FROMPORT_TAG_NAME, inputElement));
 
             // Check step ID
             if (input.stepId == null) {
@@ -407,6 +440,10 @@ public class CommandWorkflowParser {
       if (node.getNodeType() == Node.ELEMENT_NODE) {
 
         Element element = (Element) node;
+
+        // Check allowed tags for the "parameter" tag
+        checkAllowedChildTags(element, PARAMETER_TAG_NAME);
+
         final NodeList nParameterList =
             element.getElementsByTagName(PARAMETER_TAG_NAME);
 
@@ -416,12 +453,15 @@ public class CommandWorkflowParser {
 
           if (nParameterNode.getNodeType() == Node.ELEMENT_NODE) {
 
-            Element eStepElement = (Element) nParameterNode;
+            Element eParameterElement = (Element) nParameterNode;
+
+            checkAllowedChildTags(eParameterElement, PARAMETERNAME_TAG_NAME,
+                PARAMETERVALUE_TAG_NAME);
 
             final String paramName =
-                getTagValue(PARAMETERNAME_TAG_NAME, eStepElement);
+                getTagValue(PARAMETERNAME_TAG_NAME, eParameterElement);
             final String paramValue =
-                getTagValue(PARAMETERVALUE_TAG_NAME, eStepElement);
+                getTagValue(PARAMETERVALUE_TAG_NAME, eParameterElement);
 
             if (paramName == null) {
               throw new EoulsanException(
@@ -467,6 +507,68 @@ public class CommandWorkflowParser {
     }
 
     return null;
+  }
+
+  /**
+   * Check if the attribute of a tag is in a list of allowed attribute names.
+   * @param element the tag element
+   * @param attributeNames the allowed attribute names
+   * @throws EoulsanException if an attribute of the tag in not in the allowed
+   *           attribute list
+   */
+  private static void checkAllowedAttributes(final Element element,
+      String... attributeNames) throws EoulsanException {
+
+    final List<String> attributeList = Arrays.asList(attributeNames);
+
+    final NamedNodeMap nnm = element.getAttributes();
+
+    for (int i = 0; i < nnm.getLength(); i++) {
+
+      final Node n = nnm.item(i);
+
+      if (n.getNodeType() == Node.ATTRIBUTE_NODE) {
+
+        final String attributeName = n.getNodeName();
+
+        if (!attributeList.contains(attributeName)) {
+          throw new EoulsanException("the \""
+              + element.getNodeName() + "\" tag contains an unknown attribute: "
+              + attributeName + ".");
+        }
+      }
+    }
+  }
+
+  /**
+   * Check if the child tags of a tag is in a list of allowed tag names.
+   * @param element the tag element
+   * @param tagNames the allowed tag names
+   * @throws EoulsanException if a child tag of the tag in not in the allowed
+   *           tag list
+   */
+  private static void checkAllowedChildTags(final Element element,
+      String... tagNames) throws EoulsanException {
+
+    final List<String> tagList = Arrays.asList(tagNames);
+
+    final NodeList nl = element.getChildNodes();
+
+    for (int i = 0; i < nl.getLength(); i++) {
+
+      final Node n = nl.item(i);
+
+      if (n.getNodeType() == Node.ELEMENT_NODE) {
+
+        final String childTagName = n.getNodeName();
+
+        if (!tagList.contains(childTagName)) {
+          throw new EoulsanException("the \""
+              + element.getNodeName() + "\" tag contains an unknown tag: "
+              + childTagName + ".");
+        }
+      }
+    }
   }
 
   //

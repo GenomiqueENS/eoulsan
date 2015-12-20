@@ -30,7 +30,7 @@ import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.D
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.FROMPORT_TAG_NAME;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.FROMSTEP_TAG_NAME;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.ID_ATTR_NAME_STEP_TAG;
-import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.INPUTS_TAG_NAMES;
+import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.INPUTS_TAG_NAME;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.INPUT_TAG_NAME;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.NAME_TAG_NAME;
 import static fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser.PARAMETERNAME_TAG_NAME;
@@ -630,7 +630,7 @@ public class CommandWorkflowModel implements Serializable {
         this.stepVersions.get(stepId));
 
     // Set step inputs
-    Element inputsElement = document.createElement(INPUTS_TAG_NAMES);
+    Element inputsElement = document.createElement(INPUTS_TAG_NAME);
     stepElement.appendChild(inputsElement);
     for (Map.Entry<String, StepPort> e : this.stepInputs.get(stepId)
         .entrySet()) {
