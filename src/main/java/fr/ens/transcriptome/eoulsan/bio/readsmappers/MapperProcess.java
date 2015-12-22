@@ -66,8 +66,8 @@ public abstract class MapperProcess {
   private final File pipeFile1;
   private final File pipeFile2;
 
-  private final Writer writer1;
-  private final FastqWriterThread writer2;
+  private final FastqWriter writer1;
+  private final FastqWriter writer2;
 
   private ReporterIncrementer incrementer;
   private String counterGroup;
@@ -228,9 +228,70 @@ public abstract class MapperProcess {
   }
 
   /**
-   * This class allow to do Asynchronous writes in a named piped.
+   * This interface define how to write read to the mapper input.
    */
-  static class FastqWriterThread extends Thread {
+  private interface FastqWriter extends AutoCloseable {
+
+    /**
+     * Write a string to the pipe.
+     * @param s string to write
+     * @throws IOException if an error has occurred in writings
+     */
+    public void write(final String s) throws IOException;
+
+    /**
+     * Close the writer.
+     */
+    public void close() throws IOException;
+
+  }
+
+  /**
+   * This class allow to do synchronous writes in a named piped.
+   */
+  static class FastqWriterNoThread implements FastqWriter {
+
+    final Writer writer;
+
+    @Override
+    public void write(final String s) throws IOException {
+
+      this.writer.write(s);
+    }
+
+    @Override
+    public void close() throws IOException {
+
+      this.writer.close();
+    }
+
+    //
+    // Constructor
+    //
+
+    /**
+     * Constructor.
+     * @param writer the writer to use to write data
+     */
+    public FastqWriterNoThread(final Writer writer) {
+
+      this.writer = writer;
+    }
+
+    /**
+     * Constructor.
+     * @param namedPipeFile the named pipe file
+     */
+    public FastqWriterNoThread(final File namedPipeFile) throws IOException {
+
+      this(createPipeWriter(namedPipeFile));
+    }
+  }
+
+  /**
+   * This class allow to do asynchronous writes in a named piped.
+   */
+  static class FastqWriterThread extends Thread implements FastqWriter {
 
     // The queue can store a little more than 1,00,000 * 1000 = 100,000,000
     // characters
@@ -278,6 +339,7 @@ public abstract class MapperProcess {
      * @param s string to write
      * @throws IOException if an error has occurred in writings
      */
+    @Override
     public void write(final String s) throws IOException {
 
       if (this.closed) {
@@ -316,6 +378,7 @@ public abstract class MapperProcess {
      * Asynchronous close. This method is not synchronized. A call to write()
      * just after close() may to lead to lose data.
      */
+    @Override
     public void close() throws IOException {
 
       this.queue.add(buffer.toString());
@@ -617,7 +680,6 @@ public abstract class MapperProcess {
     if (this.writer2 != null) {
       this.writer2.close();
     }
-
   }
 
   //
@@ -760,6 +822,19 @@ public abstract class MapperProcess {
   protected MapperProcess(final AbstractSequenceReadsMapper mapper,
       final boolean pairedEnd) throws IOException {
 
+    this(mapper, pairedEnd, false);
+  }
+
+  /**
+   * Constructor.
+   * @param mapper mapper to use
+   * @param pairedEnd paired-end mode
+   * @throws IOException if en error occurs
+   */
+  protected MapperProcess(final AbstractSequenceReadsMapper mapper,
+      final boolean pairedEnd, final boolean threadForRead1)
+          throws IOException {
+
     if (mapper == null) {
       throw new NullPointerException("The mapper is null");
     }
@@ -777,7 +852,9 @@ public abstract class MapperProcess {
       this.pipeFile1 = new File(tmpDir, "mapper-inputfile1-" + uuid + ".fq");
       this.pipeFile2 = new File(tmpDir, "mapper-inputfile2-" + uuid + ".fq");
 
-      this.writer1 = createPipeWriter(this.pipeFile1);
+      this.writer1 = threadForRead1
+          ? new FastqWriterThread(this.pipeFile1, "FastqWriterThread fastq1")
+          : new FastqWriterNoThread(this.pipeFile1);
       this.writer2 = pairedEnd
           ? new FastqWriterThread(this.pipeFile2, "FastqWriterThread fastq2")
           : null;
