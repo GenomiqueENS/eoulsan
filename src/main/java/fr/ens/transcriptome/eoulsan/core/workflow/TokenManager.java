@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.Globals.STEP_RESULT_EXTENSION;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.ABORTED;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.DONE;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.FAILED;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
@@ -853,25 +854,27 @@ public class TokenManager implements Runnable {
             // Wait end of all context
             this.scheduler.waitEndOfTasks(this.step);
 
-            // Get the result
-            final WorkflowStepResult result =
-                this.scheduler.getResult(this.step);
+            if (this.step.getState() != ABORTED) {
 
-            // Set the result immutable
-            result.setImmutable();
+              // Get the result
+              final WorkflowStepResult result =
+                  this.scheduler.getResult(this.step);
 
-            // Change Step state
-            if (result.isSuccess()) {
-              this.step.setState(DONE);
+              // Set the result immutable
+              result.setImmutable();
 
-              // Write step result
-              if (this.step.isCreateLogFiles()) {
-                writeStepResult(result);
+              // Change Step state
+              if (result.isSuccess()) {
+                this.step.setState(DONE);
+
+                // Write step result
+                if (this.step.isCreateLogFiles()) {
+                  writeStepResult(result);
+                }
+
+                // Send end of step tokens
+                sendEndOfStepTokens();
               }
-
-              // Send end of step tokens
-              sendEndOfStepTokens();
-
             } else {
               this.step.setState(FAILED);
             }
