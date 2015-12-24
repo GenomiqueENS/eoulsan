@@ -17,7 +17,8 @@ import fr.ens.transcriptome.eoulsan.Globals;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class DesignFormatFinderInputStream extends InputStream {
+public class DesignFormatFinderInputStream extends InputStream
+    implements AutoCloseable {
 
   private InputStream is;
 

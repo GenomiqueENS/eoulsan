@@ -22,12 +22,11 @@ public class DefaultDesignReader implements DesignReader {
   @Override
   public Design read() throws IOException {
 
-    final DesignFormatFinderInputStream dffis =
-        new DesignFormatFinderInputStream(is);
+    try (final DesignFormatFinderInputStream dffis =
+        new DesignFormatFinderInputStream(is)) {
 
-    DesignReader reader = dffis.getDesignReader();
-
-    return reader.read();
+      return dffis.getDesignReader().read();
+    }
   }
 
   //
