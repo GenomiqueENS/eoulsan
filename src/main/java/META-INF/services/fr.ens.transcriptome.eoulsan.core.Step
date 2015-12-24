@@ -25,6 +25,7 @@ fr.ens.transcriptome.eoulsan.steps.expression.ExpressionResultsAnnotationStep
 fr.ens.transcriptome.eoulsan.steps.diffana.local.NormalizationLocalStep
 fr.ens.transcriptome.eoulsan.steps.diffana.local.DiffAnaLocalStep
 fr.ens.transcriptome.eoulsan.steps.diffana.DiffanaResultsAnnotationStep
+fr.ens.transcriptome.eoulsan.steps.diffana.local.DESeq2Step
 
 # Management steps
 fr.ens.transcriptome.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep

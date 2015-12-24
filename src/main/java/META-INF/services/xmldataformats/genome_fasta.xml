@@ -3,7 +3,7 @@
   <description>genome fasta format</description>
   <prefix>genome</prefix>
   <onefileperanalysis>true</onefileperanalysis>
-  <designfieldname>Genome</designfieldname>
+  <designmetadatakey>GenomeFile</designmetadatakey>
   <generator>fr.ens.transcriptome.eoulsan.steps.generators.GFFFastaGeneratorStep</generator>
   <checker>fr.ens.transcriptome.eoulsan.checkers.GenomeChecker</checker>
   <extensions>

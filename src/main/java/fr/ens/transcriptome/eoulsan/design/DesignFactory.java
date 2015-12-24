@@ -24,7 +24,6 @@
 
 package fr.ens.transcriptome.eoulsan.design;
 
-import fr.ens.transcriptome.eoulsan.design.impl.DesignImpl;
 
 /**
  * This class is a factory for experimental design.
@@ -39,7 +38,7 @@ public final class DesignFactory {
    */
   public static Design createEmptyDesign() {
 
-    return new DesignImpl();
+    return new Design();
   }
 
   //

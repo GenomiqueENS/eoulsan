@@ -57,7 +57,6 @@ import fr.ens.transcriptome.eoulsan.core.StepStatus;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.Steps;
 import fr.ens.transcriptome.eoulsan.translators.BasicTranslator;
@@ -210,7 +209,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
       Data annotationData = context.getInputData(ADDITIONAL_ANNOTATION_TSV);
       translator = loadTranslator(annotationData.getDataFile());
 
-    } catch (IOException | EoulsanIOException e) {
+    } catch (IOException e) {
       return status.createStepResult(e);
     }
 
@@ -296,12 +295,16 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
    * Load translator annotation.
    * @param annotationFile the annotation file to use
    * @return a Translator object with the additional annotation
+<<<<<<< HEAD
    * @throws EoulsanIOException if an error occurs while reading additional
    *           annotation
    * @throws IOException if an error occurs while reading additional annotation
+=======
+   * @throws IOException if an error occurs while reading additionnal annotation
+>>>>>>> new_design
    */
   private Translator loadTranslator(final DataFile annotationFile)
-      throws EoulsanIOException, IOException {
+      throws IOException {
 
     checkNotNull(annotationFile, "annotationFile argument cannot be null");
 

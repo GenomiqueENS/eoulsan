@@ -24,146 +24,341 @@
 
 package fr.ens.transcriptome.eoulsan.design;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.python.google.common.base.Objects;
+
+import fr.ens.transcriptome.eoulsan.core.workflow.FileNaming;
 
 /**
- * This interface define a Design.
- * @since 1.0
- * @author Laurent Jourdren
+ * This class defines the design.
+ * @author Xavier Bauquet
+ * @since 2.0
  */
-public interface Design {
 
-  /** Sample number field. */
-  String SAMPLE_NUMBER_FIELD = "SampleNumber";
-  /** Name field. */
-  String NAME_FIELD = "Name";
+public class Design implements Serializable {
+
+  /** Serialization version UID. */
+  private static final long serialVersionUID = 7250832351983922161L;
+
+  private static int instanceCount;
+
+  private final int designNumber = ++instanceCount;
+  private String designName = "Design" + designNumber;
+  private final Map<String, Sample> samples = new LinkedHashMap<>();
+  private final Map<String, Experiment> experiments = new LinkedHashMap<>();
+  private final DesignMetadata designMetadata = new DesignMetadata();
+
+  //
+  // Getters
+  //
 
   /**
-   * Test if a sample exists.
-   * @param sampleName Name of the sample to test
+   * Set the design name.
+   * @param newDesignName the new design name
+   */
+  public void setName(String newDesignName) {
+
+    checkNotNull(newDesignName, "newDesignName argument cannot be null");
+
+    this.designName = newDesignName.trim();
+  }
+
+  /**
+   * Get the name of a sample.
+   * @param sampleId the sample id
+   * @return a sample object
+   */
+  public Sample getSample(final String sampleId) {
+
+    checkNotNull(sampleId, "sampleId argument cannot be null");
+
+    final String id = sampleId.trim();
+
+    checkArgument(this.samples.containsKey(id),
+        "The sample does not exists in the design: " + id);
+
+    return samples.get(id);
+  }
+
+  /**
+   * Get the list of the samples.
+   * @return the list of the samples
+   */
+  public List<Sample> getSamples() {
+
+    return Collections.unmodifiableList(new ArrayList<>(this.samples.values()));
+  }
+
+  /**
+   * Get the name of an experiment.
+   * @param experimentId the experiment id
+   * @return an experiment object
+   */
+  public Experiment getExperiment(String experimentId) {
+
+    checkNotNull(experimentId, "experimentId argument cannot be null");
+
+    final String id = experimentId.trim();
+
+    checkArgument(this.experiments.containsKey(id),
+        "The experiment does not exists in the design: " + id);
+
+    return experiments.get(id);
+  }
+
+  /**
+   * Get the list of the experiments.
+   * @return the list of the experiments
+   */
+  public List<Experiment> getExperiments() {
+
+    return Collections.unmodifiableList(new ArrayList<>(this.experiments
+        .values()));
+  }
+
+  /**
+   * Get the design Metadata.
+   * @return a designMetadata object
+   */
+  public DesignMetadata getMetadata() {
+
+    return this.designMetadata;
+  }
+
+  /**
+   * Get design number.
+   * @return the design number
+   */
+  public int getNumber() {
+
+    return this.designNumber;
+  }
+
+  /**
+   * Get design name.
+   * @return the design name
+   */
+  public String getName() {
+
+    return this.designName;
+  }
+
+  //
+  // Remove
+  //
+
+  /**
+   * Remove the sample.
+   * @param sampleId the sample id
+   */
+  public void removeSample(String sampleId) {
+
+    checkNotNull(sampleId, "sampleId argument cannot be null");
+    checkArgument(this.samples.containsKey(sampleId),
+        "The sample does not exists in the design: " + sampleId);
+
+    this.samples.remove(sampleId.trim());
+  }
+
+  /**
+   * Remove the experiment.
+   * @param experimentId the experiment id
+   */
+  public void removeExperiment(String experimentId) {
+
+    checkNotNull(experimentId, "experimentId argument cannot be null");
+    checkArgument(this.experiments.containsKey(experimentId.trim()),
+        "The experiment does not exists in the design: " + experimentId);
+
+    this.experiments.remove(experimentId.trim());
+  }
+
+  //
+  // Contains
+  //
+
+  /**
+   * Test if the sample exists.
+   * @param sampleId the sample id
    * @return true if the sample exists
    */
-  boolean isSample(final String sampleName);
+  public boolean containsSample(String sampleId) {
+
+    return this.samples.containsKey(sampleId.trim());
+  }
+
+  /**
+   * Test if the experiment exists.
+   * @param experimentId the experiment id
+   * @return true if the experiment exists
+   */
+  public boolean containsExperiment(String experimentId) {
+
+    return this.experiments.containsKey(experimentId.trim());
+  }
+
+  public boolean containsSampleName(final String sampleName) {
+
+    checkNotNull(sampleName, "sampleName argument cannot be null");
+
+    final String name = sampleName.trim();
+
+    for (Sample sample : this.samples.values()) {
+
+      if (name.equals(sample.getName())) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  public boolean containsExperimentName(final String experimentName) {
+
+    checkNotNull(experimentName, "sampleName argument cannot be null");
+
+    final String name = experimentName.trim();
+
+    for (Experiment experiment : this.experiments.values()) {
+
+      if (name.equals(experiment.getName())) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  //
+  // Add
+  //
 
   /**
    * Add a sample.
-   * @param sampleName Name of the sample to add
+   * @param sampleId the sample id
+   * @return the sample object
    */
-  void addSample(final String sampleName);
+  public Sample addSample(String sampleId) {
+
+    checkNotNull(sampleId, "sampleId argument cannot be null");
+
+    final String id = sampleId.trim();
+
+    checkArgument(!this.samples.containsKey(id),
+        "The sample already exists in the design: " + id);
+    checkArgument(FileNaming.isDataNameValid(sampleId),
+        "The id of a sample can only contains letters and digit: " + sampleId);
+
+    final Sample newSample = new Sample(this, id);
+
+    this.samples.put(id, newSample);
+
+    return newSample;
+  }
 
   /**
-   * Rename a sample.
-   * @param oldSampleName Old name of the sample
-   * @param newSampleName New name of the sample
+   * Add an experiment.
+   * @param experimentId the experiment id
+   * @return the experiment object
    */
-  void renameSample(final String oldSampleName, final String newSampleName);
+  public Experiment addExperiment(String experimentId) {
+
+    checkNotNull(experimentId, "experimentId argument cannot be null");
+
+    final String id = experimentId.trim();
+
+    checkArgument(!this.experiments.containsKey(id),
+        "The experiment already exists in the design: " + id);
+    checkArgument(FileNaming.isDataNameValid(experimentId),
+        "The id of an experiment can only contains letters and digit: "
+            + experimentId);
+
+    final Experiment newExperiment = new Experiment(this, id);
+
+    this.experiments.put(id, newExperiment);
+
+    return newExperiment;
+  }
+
+  //
+  // Other methods
+  //
 
   /**
-   * Get the name of the samples
-   * @return a Set with the name of the samples
+   * Get all the experiments related to a sample.
+   * @param sample the sample
+   * @return a list with the experiments that use the sample
    */
-  List<String> getSamplesNames();
+  public List<Experiment> getExperimentsUsingASample(final Sample sample) {
+
+    checkNotNull(sample, "sample argument cannot be null");
+
+    final List<Experiment> result = new ArrayList<>();
+
+    for (Experiment e : getExperiments()) {
+      if (e.containsSample(sample)) {
+        result.add(e);
+      }
+    }
+
+    return Collections.unmodifiableList(result);
+  }
+
+  //
+  // Objects methods
+  //
+
+  @Override
+  public String toString() {
+
+    return Objects.toStringHelper(this).add("designNumber", this.designNumber)
+        .add("designName", this.designName).add("samples", this.samples)
+        .add("experiments", this.experiments)
+        .add("designMetadata", this.designMetadata).toString();
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Objects.hashCode(this.designNumber, this.designName, this.samples,
+        this.experiments, this.designMetadata);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+
+    if (o == this) {
+      return true;
+    }
+
+    if (!(o instanceof Design)) {
+      return false;
+    }
+
+    final Design that = (Design) o;
+
+    return Objects.equal(this.designName, that.designName)
+        && Objects.equal(this.samples, that.samples)
+        && Objects.equal(this.experiments, that.experiments)
+        && Objects.equal(this.designMetadata, that.designMetadata);
+  }
+
+  //
+  // Constructor
+  //
 
   /**
-   * Remove a sample.
-   * @param sampleName Name of the sample to remove
+   * Default constructor
    */
-  void removeSample(final String sampleName);
-
-  /**
-   * Get the number of sample in the design.
-   * @return The number of samples in the design
-   */
-  int getSampleCount();
-
-  /**
-   * Get the metadata for a sample.
-   * @param sampleName Name of the slide
-   * @return the metadata of the sample
-   */
-  SampleMetadata getSampleMetadata(final String sampleName);
-
-  /**
-   * Extract a sample object from the design.
-   * @param index Index of the sample in the design
-   * @return a slide object
-   */
-  Sample getSample(final int index);
-
-  /**
-   * Extract a sample object from the design.
-   * @param sampleName The name of the slide to extract
-   * @return a sample object
-   */
-  Sample getSample(final String sampleName);
-
-  /**
-   * Get a list of the samples of the design
-   * @return a unmodifiable list of the samples
-   */
-  List<Sample> getSamples();
-
-  /**
-   * Test if the metadata field is already set.
-   * @param fieldName Name of the metadata field to test
-   * @return true if the field exists
-   */
-  boolean isMetadataField(final String fieldName);
-
-  /**
-   * Add a metadata field.
-   * @param fieldName Name of the label to add
-   */
-  void addMetadataField(final String fieldName);
-
-  /**
-   * Rename a metadata field.
-   * @param oldMetadataFieldName Old name of the metadata field
-   * @param newMetadataFieldName New name of the metadata field
-   */
-  void renameMetadataField(final String oldMetadataFieldName,
-      final String newMetadataFieldName);
-
-  /**
-   * Get the names of the metadata fields.
-   * @return A List with the name of the metadata fields
-   */
-  List<String> getMetadataFieldsNames();
-
-  /**
-   * Remove a metadata field.
-   * @param fieldName Name of the metadata field to remove
-   */
-  void removeMetadataField(final String fieldName);
-
-  /**
-   * Get the number of metadata fields
-   * @return The number of metadata fields
-   */
-  int getMetadataFieldCount();
-
-  /**
-   * Set a metadata field for a sample.
-   * @param sampleName Sample name
-   * @param fieldName metadata field
-   * @param value of the description to set
-   */
-  void setMetadata(final String sampleName, final String fieldName,
-      final String value);
-
-  /**
-   * Get a metadata
-   * @param sampleName Sample name
-   * @param fieldName The metadata field
-   * @return The value of the metadata
-   */
-  String getMetadata(final String sampleName, final String fieldName);
-
-  /**
-   * Test if the design contains a sample.
-   * @param sample sample to test
-   * @return true if the design contains the sample
-   */
-  boolean contains(Sample sample);
-
+  Design() {
+  }
 }

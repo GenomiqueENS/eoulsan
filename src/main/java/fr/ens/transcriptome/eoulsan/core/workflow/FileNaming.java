@@ -57,7 +57,7 @@ public class FileNaming {
   private String stepId;
   private String portName;
   private String dataName;
-  private int sampleId = -1;
+  private int sampleNumber = -1;
   private DataFormat format;
   private int fileIndex = -1;
   private int part = -1;
@@ -92,12 +92,12 @@ public class FileNaming {
   }
 
   /**
-   * Get the sample id related to the data. This value is only use when generate
-   * compatible filenames.
-   * @return the id of the sample related to the file or -1 if not known
+   * Get the sample number related to the data. This value is only use when
+   * generate compatible filenames.
+   * @return the number of the sample related to the file or -1 if not known
    */
-  public int getSampleId() {
-    return this.sampleId;
+  public int getSampleNumber() {
+    return this.sampleNumber;
   }
 
   /**
@@ -167,13 +167,14 @@ public class FileNaming {
   }
 
   /**
-   * Set the sample id related to the data. This value is only use when generate
-   * compatible filenames.
-   * @param sampleId the id of the sample related to the file or -1 if not known
+   * Set the sample number related to the data. This value is only use when
+   * generate compatible filenames.
+   * @param sampleNumber the number of the sample related to the file or -1 if
+   *          not known
    */
-  public void setSampleId(final int sampleId) {
+  public void setSampleNumber(final int sampleNumber) {
 
-    this.sampleId = sampleId;
+    this.sampleNumber = sampleNumber;
   }
 
   /**
@@ -356,7 +357,7 @@ public class FileNaming {
     if (this.format.isOneFilePerAnalysis()) {
       sb.append('1');
     } else {
-      sb.append(this.sampleId);
+      sb.append(this.sampleNumber);
     }
 
     // Set the file index if needed

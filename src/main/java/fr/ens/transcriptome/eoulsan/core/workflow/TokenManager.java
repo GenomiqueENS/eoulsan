@@ -225,10 +225,10 @@ public class TokenManager implements Runnable {
     for (Data e : data.getListElements()) {
 
       // Get the sample id from metadata
-      final int sampleId = e.getMetadata().getSampleId();
+      final int sampleNumber = e.getMetadata().getSampleNumber();
 
       // Do nothing if sample id is not set in metadata
-      if (sampleId == -1) {
+      if (sampleNumber == -1) {
         continue;
       }
 
@@ -246,7 +246,7 @@ public class TokenManager implements Runnable {
 
           // Parse the filename
           final FileNaming name = FileNaming.parse(f.getName());
-          name.setSampleId(sampleId);
+          name.setSampleNumber(sampleNumber);
 
           // Create link name
           final DataFile link =
@@ -432,7 +432,7 @@ public class TokenManager implements Runnable {
     // Create a map with the samples
     final Map<String, Sample> samples = new HashMap<>();
     for (Sample sample : this.step.getWorkflow().getDesign().getSamples()) {
-      samples.put(FileNaming.toValidName(sample.getName()), sample);
+      samples.put(FileNaming.toValidName(sample.getId()), sample);
     }
 
     for (WorkflowOutputPort port : this.outputPorts) {

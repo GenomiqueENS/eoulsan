@@ -25,45 +25,108 @@
 package fr.ens.transcriptome.eoulsan.design;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
+import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.Experiment;
+import fr.ens.transcriptome.eoulsan.design.Sample;
 
 public class DesignTest {
 
   @Test
-  public void testCompareStringString() throws EoulsanIOException {
+  public void testSample() {
+    Design d = new Design();
 
-    Design d = DesignFactory.createEmptyDesign();
+    // test addSample
+    d.addSample("1");
 
-    d.addSample("G5_1");
-    assertEquals(true, d.isSample("G5_1"));
-    assertEquals(1, d.getSample("G5_1").getId());
+    // test containsSample
+    assertTrue(d.containsSample("1"));
+    assertEquals(1, d.getSamples().size());
 
-    Sample s = d.getSample("G5_1");
-    assertNotNull(s);
-    assertTrue(d.contains(s));
-    d.addSample("G3_1");
-    assertTrue(d.contains(d.getSample("G3_1")));
-    assertTrue(d.contains(d.getSample(0)));
-    assertTrue(d.contains(d.getSample(1)));
-    assertEquals(true, d.isSample("G5_1"));
-    assertEquals(true, d.isSample("G3_1"));
-    assertEquals(1, d.getSample("G5_1").getId());
-    assertEquals(2, d.getSample("G3_1").getId());
+    // test getSample
+    assertNotNull(d.getSample("1"));
 
-    d.getSample("G5_1").setId(5);
-    assertEquals(5, d.getSample("G5_1").getId());
+    Sample s1 = d.getSample("1");
+    s1.setName("MySample1");
 
-    d.getSample("G5_1").getMetadata().setDescription("Test G5");
-    assertEquals("Test G5", d.getSample("G5_1").getMetadata().getDescription());
-    d.getSample("G3_1").getMetadata().setDescription("Test G3");
-    assertEquals("Test G5", d.getSample("G5_1").getMetadata().getDescription());
-    assertEquals("Test G3", d.getSample("G3_1").getMetadata().getDescription());
-    assertEquals(5, d.getSample("G5_1").getId());
+    // test getSamples
+    d.addSample("2");
+    assertTrue(d.containsSample("2"));
+    assertNotNull(d.getSamples());
+    assertEquals(2, d.getSamples().size());
+
+    Sample s2 = d.getSample("2");
+    s2.setName("MySample2");
+
+    // test removeSample
+    d.removeSample("2");
+
+    // test the negative response of containsSample
+    assertFalse(d.containsSample("2"));
+
+    // test containsSampleName
+    assertTrue(d.containsSampleName("MySample1"));
+    assertFalse(d.containsSampleName("MySample2"));
+  }
+
+  @Test
+  public void testExperiment() {
+    Design d = new Design();
+
+    // test addExperiment
+    d.addExperiment("1");
+
+    // test containsExperiment
+    assertTrue(d.containsExperiment("1"));
+
+    // test getExperiment
+    assertNotNull(d.getExperiment("1"));
+
+    // test getExperiments
+    d.addExperiment("2");
+    assertTrue(d.containsExperiment("2"));
+    assertNotNull(d.getExperiments());
+
+    Experiment exp2 = d.getExperiment("2");
+    exp2.setName("ExperimentName2");
+
+    // test removeExperiment
+    d.removeExperiment("2");
+
+    // test negative response of containsExperiment
+    assertFalse(d.containsExperiment("2"));
+
+    Experiment exp1 = d.getExperiment("1");
+    exp1.setName("ExperimentName1");
+
+    // test containsExperimentName
+    assertTrue(d.containsExperimentName("ExperimentName1"));
+    assertFalse(d.containsExperimentName("ExperimentName2"));
+  }
+
+  @Test
+  public void testMetadata() {
+    Design d = new Design();
+
+    // test getMetadata
+    assertNotNull(d.getMetadata());
+  }
+
+  @Test
+  public void testDesignAttribute() {
+
+    Design d = new Design();
+
+    d.setName("MyDesign");
+
+    // test getDesignNumber
+    assertEquals("MyDesign", d.getName());
 
   }
+
 }
