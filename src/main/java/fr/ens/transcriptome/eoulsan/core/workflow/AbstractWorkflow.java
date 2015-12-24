@@ -67,7 +67,7 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.DesignWriter;
-import fr.ens.transcriptome.eoulsan.design.io.Eoulsan1DesignWriter;
+import fr.ens.transcriptome.eoulsan.design.io.Eoulsan2DesignWriter;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -633,7 +633,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
       // Save design file
       DesignWriter designWriter =
-          new Eoulsan1DesignWriter(
+          new Eoulsan2DesignWriter(
               new DataFile(jobDir, DESIGN_COPY_FILENAME).create());
       designWriter.write(getDesign());
 
