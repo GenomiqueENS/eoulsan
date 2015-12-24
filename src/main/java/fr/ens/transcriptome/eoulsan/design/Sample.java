@@ -29,6 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
 
+import org.python.google.common.base.MoreObjects;
 import org.python.google.common.base.Objects;
 
 import fr.ens.transcriptome.eoulsan.core.workflow.FileNaming;
@@ -137,7 +138,7 @@ public class Sample implements Serializable {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("sampleId", this.sampleId)
+    return MoreObjects.toStringHelper(this).add("sampleId", this.sampleId)
         .add("sampleNumber", this.sampleNumber)
         .add("sampleName", this.sampleName)
         .add("sampleMetadata", this.sampleMetadata).toString();

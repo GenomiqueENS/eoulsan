@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.python.google.common.base.MoreObjects;
 import org.python.google.common.base.Objects;
 
 import fr.ens.transcriptome.eoulsan.core.workflow.FileNaming;
@@ -243,7 +244,7 @@ public class Experiment implements Serializable {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("experimentId", this.experimentId)
+    return MoreObjects.toStringHelper(this).add("experimentId", this.experimentId)
         .add("experimentNumber", this.experimentNumber)
         .add("experimentName", this.experimentName)
         .add("experimentMetadata", this.metadata)

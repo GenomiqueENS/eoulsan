@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.python.google.common.base.MoreObjects;
 import org.python.google.common.base.Objects;
 
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
@@ -190,7 +191,7 @@ public abstract class AbstractMetadata {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("metadata", this.metadata)
+    return MoreObjects.toStringHelper(this).add("metadata", this.metadata)
         .toString();
   }
 
