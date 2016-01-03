@@ -24,8 +24,8 @@
 
 package fr.ens.transcriptome.eoulsan.galaxytools;
 
-import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractInputs;
-import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractOutputs;
+import static fr.ens.transcriptome.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractInputs;
+import static fr.ens.transcriptome.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractOutputs;
 import static org.python.google.common.base.Preconditions.checkNotNull;
 import static org.python.google.common.base.Preconditions.checkState;
 

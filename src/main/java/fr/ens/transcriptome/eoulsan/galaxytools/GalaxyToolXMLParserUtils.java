@@ -21,7 +21,7 @@
  *      http://www.transcriptome.ens.fr/eoulsan
  *
  */
-package fr.ens.transcriptome.eoulsan.util.galaxytool;
+package fr.ens.transcriptome.eoulsan.galaxytools;
 
 import static fr.ens.transcriptome.eoulsan.galaxytools.elements.AbstractToolElement.getInstanceToolElement;
 
@@ -49,7 +49,7 @@ import fr.ens.transcriptome.eoulsan.util.XMLUtils;
  * @author Sandrine Perrin
  * @since 2.X
  */
-public final class GalaxyToolXMLParser {
+public final class GalaxyToolXMLParserUtils {
 
   /** The Constant ID_TAG. */
   private static final String ID_TAG = "id";
@@ -153,7 +153,7 @@ public final class GalaxyToolXMLParser {
 
     // Extract conditional element, can be empty
     final List<Element> condParams =
-        GalaxyToolXMLParser.extractChildElementsByTagName(parent, CONDITIONAL);
+        GalaxyToolXMLParserUtils.extractChildElementsByTagName(parent, CONDITIONAL);
 
     for (final Element param : condParams) {
       final ToolConditionalElement tce = new ToolConditionalElement(param);
@@ -240,7 +240,7 @@ public final class GalaxyToolXMLParser {
       final String tagName, final int expectedCount) throws EoulsanException {
 
     final List<Element> result =
-        GalaxyToolXMLParser.extractChildElementsByTagName(parent, tagName);
+        GalaxyToolXMLParserUtils.extractChildElementsByTagName(parent, tagName);
 
     // Expected count available
     if (expectedCount > 0) {
