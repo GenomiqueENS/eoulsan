@@ -25,10 +25,13 @@
 package fr.ens.transcriptome.eoulsan.util;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+
+import com.google.common.base.Splitter;
 
 import fr.ens.transcriptome.eoulsan.Globals;
 
@@ -224,10 +227,44 @@ public final class SystemUtils {
     }
   }
 
+  /**
+   * Search an executable in the system PATH.
+   * @param executableName the name of the interpreter
+   * @return a File with the interpreter path or null if the executable path has
+   *         not been defined in the system PATH
+   */
+  public static File searchExecutableInPATH(final String executableName) {
+
+    if (executableName == null) {
+      throw new NullPointerException("the executableName cannot be null");
+    }
+
+    final String pathEnv = System.getenv().get("PATH");
+
+    if (pathEnv == null) {
+      return null;
+    }
+
+    for (String dirname : Splitter.on(File.pathSeparatorChar).split(pathEnv)) {
+
+      final File dir = new File(dirname);
+
+      final File file = new File(dir, executableName);
+
+      if (dir.isDirectory() && file.exists() && file.canExecute()) {
+        return file;
+      }
+
+    }
+
+    return null;
+  }
+
   //
   // Private constructor
   //
 
   private SystemUtils() {
   }
+
 }
