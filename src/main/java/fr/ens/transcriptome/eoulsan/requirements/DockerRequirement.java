@@ -174,7 +174,7 @@ public class DockerRequirement extends AbstractRequirement {
   //
 
   /**
-   * Constructor. Define a docker image as mandatory requirement.
+   * Create a new docker image as mandatory requirement.
    * @param dockerImage the docker image name.
    * @throws EoulsanException if an error occurs while configuring the
    *           requirement
@@ -186,7 +186,7 @@ public class DockerRequirement extends AbstractRequirement {
   }
 
   /**
-   * Constructor.
+   * Create a new docker image requirement.
    * @param dockerImage the docker image
    * @param optional true if the docker image is a mandatory requirement
    * @throws EoulsanException if an error occurs while configuring the
@@ -210,6 +210,16 @@ public class DockerRequirement extends AbstractRequirement {
     result.configure(parameters);
 
     return result;
+  }
+
+  //
+  // Constructor
+  //
+
+  /**
+   * Private constructor.
+   */
+  private DockerRequirement() {
   }
 
 }
