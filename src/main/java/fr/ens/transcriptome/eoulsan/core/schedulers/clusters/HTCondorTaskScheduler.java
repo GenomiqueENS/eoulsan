@@ -29,14 +29,14 @@ import java.io.File;
 import fr.ens.transcriptome.eoulsan.Main;
 
 /**
- * This class define a Condor cluster scheduler.
+ * This class define a HTCondor cluster scheduler.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class CondorTaskScheduler extends BpipeTaskScheduler {
+public class HTCondorTaskScheduler extends BpipeTaskScheduler {
 
-  public static final String SCHEDULER_NAME = "condor";
-  private static final String COMMAND_WRAPPER_SCRIPT = "bpipe-condor";
+  public static final String SCHEDULER_NAME = "htcondor";
+  private static final String COMMAND_WRAPPER_SCRIPT = "bpipe-htcondor";
 
   private final File commandWrapperFile;
 
@@ -59,7 +59,7 @@ public class CondorTaskScheduler extends BpipeTaskScheduler {
   /**
    * Constructor.
    */
-  public CondorTaskScheduler() {
+  public HTCondorTaskScheduler() {
 
     final File eoulsanScript =
         new File(Main.getInstance().getEoulsanScriptPath());

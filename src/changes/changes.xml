@@ -959,7 +959,7 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="add">
-                 Add a new action "clusterexec" that allow to execute an Eoulsan workflow on a non Hadoop cluster. Condor is the first cluster scheduler supported by Eoulsan in this mode.
+                 Add a new action "clusterexec" that allow to execute an Eoulsan workflow on a non Hadoop cluster. HTCondor is the first cluster scheduler supported by Eoulsan in this mode.
             </action>
 
             <action dev="jourdren" type="update">

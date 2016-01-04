@@ -1,21 +1,21 @@
 #!/bin/bash
 # vim: expandtab:ts=4
 
-# Start, stop and get status of jobs running on a Condor job scheduler.
+# Start, stop and get status of jobs running on a HTCondor job scheduler.
 #
 # Usage:
 #
 # Starting a job (will print job ID on standard output):
 #
-#    COMMAND="foobar" NAME=test WALLTIME="00:01:00" PROCS=1 QUEUE=main JOBTYPE=single ./bpipe-condor.sh start
+#    COMMAND="foobar" NAME=test WALLTIME="00:01:00" PROCS=1 QUEUE=main JOBTYPE=single ./bpipe-htcondor.sh start
 #
 # Stopping a job (given some job id "my_job_id")
 #
-#    ./bpipe-condor.sh stop my_job_id
+#    ./bpipe-htcondor.sh stop my_job_id
 #
 # Getting the status of a job (given some job id "my_job_id")
 #
-#    ./bpipe-condor.sh status my_job_id
+#    ./bpipe-htcondor.sh status my_job_id
 #
 # Notes:
 #
@@ -67,7 +67,7 @@
 ################################################################################
 
 # This is what we call the program in user messages
-program_name=bpipe-condor
+program_name=bpipe-htcondor
 
 # exit codes:
 SUCCESS=0
@@ -90,7 +90,7 @@ DEFAULT_QUEUE=debug	#Queue is parition in slurm, will use this with -p
 DEFAULT_JOBTYPE=single	#Should be single, smp or mpi
 
 
-# TODO Use JOBDIR to define where put condor description file
+# TODO Use JOBDIR to define where put htcondor description file
 
 # Print a usage message
 usage () {
@@ -101,8 +101,8 @@ usage () {
 
 
 
-# Generate a Condor description file from parameters found in environment variables.
-make_condor_description_file () {
+# Generate a HTCondor description file from parameters found in environment variables.
+make_htcondor_description_file () {
    # check that all the essential environment variables are defined
    for v in $ESSENTIAL_ENV_VARS; do
       eval "k=\$$v"
@@ -158,9 +158,9 @@ make_condor_description_file () {
             exit $MKDIR_JOBDIR_FAILED
          fi
       fi
-      job_script_name="$JOBDIR/job-$JOB_SCRIPT_ID.condor"
+      job_script_name="$JOBDIR/job-$JOB_SCRIPT_ID.htcondor"
    else
-      job_script_name="job-$JOB_SCRIPT_ID.condor"
+      job_script_name="job-$JOB_SCRIPT_ID.htcondor"
    fi
 
    job_script_dir=`dirname $job_script_name`
@@ -192,7 +192,7 @@ HERE
 # Launch a job on the queue.
 start () {
    # create the job script
-   job_script_name=`make_condor_description_file`
+   job_script_name=`make_htcondor_description_file`
    # check that the job script file exists
    if [[ -f $job_script_name ]]
       then
