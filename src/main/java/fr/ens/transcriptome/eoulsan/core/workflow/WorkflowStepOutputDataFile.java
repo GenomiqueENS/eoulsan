@@ -177,17 +177,25 @@ public final class WorkflowStepOutputDataFile
       final DataFormat format, final Sample sample) {
 
     final DataFormatRegistry registry = DataFormatRegistry.getInstance();
-    final String designFieldName =
-        registry.getDesignFieldnameForDataFormat(design, format);
 
-    if (designFieldName == null) {
+    final String designMetadataKey =
+        registry.getDesignMetadataKeyForDataFormat(design, format);
+
+    if (designMetadataKey != null) {
+      return design.getMetadata().getAsList(designMetadataKey);
+    }
+
+    final String sampleMetadataKey =
+        registry.getSampleMetadataKeyForDataFormat(sample, format);
+
+    if (sampleMetadataKey == null) {
       throw new EoulsanRuntimeException("The "
           + format.getName()
           + " format was not found in the design file for sample "
           + sample.getId() + " (" + sample.getName() + ")");
     }
 
-    return sample.getMetadata().getFieldAsList(designFieldName);
+    return sample.getMetadata().getAsList(sampleMetadataKey);
   }
 
   /**

@@ -152,6 +152,40 @@ public final class Common {
   }
 
   /**
+   * Print error message to the user and halts the application.
+   * @param e Exception
+   * @param message message to show to the use
+   */
+  public static void errorHalt(final Throwable e, final String message) {
+
+    errorHalt(e, message, true);
+  }
+
+  /**
+   * Print error message to the user and halts the application.
+   * @param e Exception
+   * @param message message to show to the use
+   * @param logMessage true if message must be logged
+   */
+  public static void errorHalt(final Throwable e, final String message,
+      final boolean logMessage) {
+
+    if (logMessage) {
+      getLogger().severe(message);
+    }
+
+    System.err.println("\n=== " + Globals.APP_NAME + " Error ===");
+    System.err.println(message);
+
+    if (!EoulsanRuntime.isRuntime()
+        || EoulsanRuntime.getSettings().isPrintStackTrace()) {
+      printStackTrace(e);
+    }
+
+    halt(1);
+  }
+
+  /**
    * Print the stack trace for an exception.
    * @param e Exception
    */
@@ -169,6 +203,15 @@ public final class Common {
   public static void exit(final int exitCode) {
 
     System.exit(exitCode);
+  }
+
+  /**
+   * Exit the application.
+   * @param exitCode exit code
+   */
+  public static void halt(final int exitCode) {
+
+    Runtime.getRuntime().halt(exitCode);
   }
 
   public static void sendMail(final String subject, final String message) {

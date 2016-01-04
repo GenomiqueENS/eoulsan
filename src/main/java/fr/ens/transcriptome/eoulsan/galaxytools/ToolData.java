@@ -24,13 +24,13 @@
 package fr.ens.transcriptome.eoulsan.galaxytools;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractCommand;
-import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractDescription;
-import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractDockerImage;
-import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractInterpreter;
-import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolID;
-import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolName;
-import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractToolVersion;
+import static fr.ens.transcriptome.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractCommand;
+import static fr.ens.transcriptome.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractDescription;
+import static fr.ens.transcriptome.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractDockerImage;
+import static fr.ens.transcriptome.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractInterpreter;
+import static fr.ens.transcriptome.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractToolID;
+import static fr.ens.transcriptome.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractToolName;
+import static fr.ens.transcriptome.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractToolVersion;
 import static org.python.google.common.base.Strings.emptyToNull;
 import static org.python.google.common.base.Strings.nullToEmpty;
 

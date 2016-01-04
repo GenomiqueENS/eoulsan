@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.transcriptome.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.transcriptome.eoulsan.Globals.STEP_RESULT_EXTENSION;
+import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.ABORTED;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.DONE;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.FAILED;
 import static fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepState.READY;
@@ -224,10 +225,10 @@ public class TokenManager implements Runnable {
     for (Data e : data.getListElements()) {
 
       // Get the sample id from metadata
-      final int sampleId = e.getMetadata().getSampleId();
+      final int sampleNumber = e.getMetadata().getSampleNumber();
 
       // Do nothing if sample id is not set in metadata
-      if (sampleId == -1) {
+      if (sampleNumber == -1) {
         continue;
       }
 
@@ -245,7 +246,7 @@ public class TokenManager implements Runnable {
 
           // Parse the filename
           final FileNaming name = FileNaming.parse(f.getName());
-          name.setSampleId(sampleId);
+          name.setSampleNumber(sampleNumber);
 
           // Create link name
           final DataFile link =
@@ -431,7 +432,7 @@ public class TokenManager implements Runnable {
     // Create a map with the samples
     final Map<String, Sample> samples = new HashMap<>();
     for (Sample sample : this.step.getWorkflow().getDesign().getSamples()) {
-      samples.put(FileNaming.toValidName(sample.getName()), sample);
+      samples.put(FileNaming.toValidName(sample.getId()), sample);
     }
 
     for (WorkflowOutputPort port : this.outputPorts) {
@@ -853,25 +854,27 @@ public class TokenManager implements Runnable {
             // Wait end of all context
             this.scheduler.waitEndOfTasks(this.step);
 
-            // Get the result
-            final WorkflowStepResult result =
-                this.scheduler.getResult(this.step);
+            if (this.step.getState() != ABORTED) {
 
-            // Set the result immutable
-            result.setImmutable();
+              // Get the result
+              final WorkflowStepResult result =
+                  this.scheduler.getResult(this.step);
 
-            // Change Step state
-            if (result.isSuccess()) {
-              this.step.setState(DONE);
+              // Set the result immutable
+              result.setImmutable();
 
-              // Write step result
-              if (this.step.isCreateLogFiles()) {
-                writeStepResult(result);
+              // Change Step state
+              if (result.isSuccess()) {
+                this.step.setState(DONE);
+
+                // Write step result
+                if (this.step.isCreateLogFiles()) {
+                  writeStepResult(result);
+                }
+
+                // Send end of step tokens
+                sendEndOfStepTokens();
               }
-
-              // Send end of step tokens
-              sendEndOfStepTokens();
-
             } else {
               this.step.setState(FAILED);
             }

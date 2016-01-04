@@ -32,7 +32,7 @@ import org.w3c.dom.Element;
 
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser;
+import fr.ens.transcriptome.eoulsan.galaxytools.GalaxyToolXMLParserUtils;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -155,7 +155,7 @@ public class ToolElementSelect extends AbstractToolElement {
     super(param, nameSpace);
 
     this.optionsElement =
-        GalaxyToolXMLParser.extractChildElementsByTagName(param, "option");
+        GalaxyToolXMLParserUtils.extractChildElementsByTagName(param, "option");
     this.optionsValue = this.extractAllOptions();
 
   }

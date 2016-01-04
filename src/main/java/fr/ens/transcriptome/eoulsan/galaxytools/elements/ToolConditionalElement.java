@@ -24,9 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.galaxytools.elements;
 
+import static fr.ens.transcriptome.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractChildElementsByTagName;
 import static fr.ens.transcriptome.eoulsan.galaxytools.elements.AbstractToolElement.getInstanceToolElement;
 import static fr.ens.transcriptome.eoulsan.util.XMLUtils.getElementsByTagName;
-import static fr.ens.transcriptome.eoulsan.util.galaxytool.GalaxyToolXMLParser.extractChildElementsByTagName;
 
 import java.util.Collection;
 import java.util.Collections;

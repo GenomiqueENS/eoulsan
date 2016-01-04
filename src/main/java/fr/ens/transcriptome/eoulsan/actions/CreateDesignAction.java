@@ -45,8 +45,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignBuilder;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
 import fr.ens.transcriptome.eoulsan.design.io.DesignWriter;
-import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
+import fr.ens.transcriptome.eoulsan.design.io.Eoulsan1DesignWriter;
 
 /**
  * This class define an action to create design file.
@@ -168,7 +167,7 @@ public class CreateDesignAction extends AbstractAction {
       Common.errorExit(e, "Error: " + e.getMessage());
     }
 
-    if (design.getSampleCount() == 0) {
+    if (design.getSamples().isEmpty()) {
       Common
           .showErrorMessageAndExit("Error: Nothing to create, no file found.\n"
               + "  Use the -h option to get more information.\n" + "usage: "
@@ -179,15 +178,15 @@ public class CreateDesignAction extends AbstractAction {
     try {
 
       if (designFile.exists()) {
-        throw new EoulsanIOException(
-            "Output design file " + designFile + " already exists");
+        throw new IOException("Output design file "
+            + designFile + " already exists");
       }
 
-      DesignWriter dw = new SimpleDesignWriter(designFile.create());
+      DesignWriter dw = new Eoulsan1DesignWriter(designFile.create());
 
       dw.write(design);
 
-    } catch (EoulsanIOException | IOException e) {
+    } catch (IOException e) {
       Common.errorExit(e, "File not found: " + e.getMessage());
     }
 

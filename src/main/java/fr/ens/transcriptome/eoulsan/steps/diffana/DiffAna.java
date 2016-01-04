@@ -40,6 +40,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.core.StepContext;
 import fr.ens.transcriptome.eoulsan.data.Data;
 import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.Experiment;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 
@@ -248,7 +249,7 @@ public class DiffAna extends Normalization {
   //
 
   @Override
-  protected String generateScript(final List<Sample> experimentSamplesList,
+  protected String generateScript(final Experiment experiment,
       final StepContext context) throws EoulsanException {
 
     final Map<String, List<Integer>> conditionsMap = new HashMap<>();
@@ -260,9 +261,9 @@ public class DiffAna extends Normalization {
     int i = 0;
 
     // Get samples ids, conditions names/indexes and repTechGoups
-    for (Sample s : experimentSamplesList) {
+    for (Sample s : experiment.getSamples()) {
 
-      if (!s.getMetadata().isConditionField()) {
+      if (!s.getMetadata().containsCondition()) {
         throw new EoulsanException("No condition field found in design file.");
       }
 
@@ -288,7 +289,7 @@ public class DiffAna extends Normalization {
       }
       index.add(i);
 
-      rSampleIds.add(s.getId());
+      rSampleIds.add(s.getNumber());
       rSampleNames.add(s.getName());
       rCondNames.add(condition);
 
@@ -298,11 +299,11 @@ public class DiffAna extends Normalization {
     checkRepTechGroupCoherence(rRepTechGroup, rCondNames);
 
     // Create Rnw script stringbuilder with preamble
-    String pdfTitle = escapeUnderScore(
-        experimentSamplesList.get(0).getMetadata().getExperiment())
-        + " differential analysis";
+    String pdfTitle =
+        escapeUnderScore(experiment.getName()) + " differential analysis";
+
     final StringBuilder sb =
-        generateRnwpreamble(experimentSamplesList, pdfTitle);
+        generateRnwpreamble(experiment.getSamples(), pdfTitle);
 
     /*
      * Replace "na" values of repTechGroup by unique sample ids to avoid pooling
@@ -311,7 +312,7 @@ public class DiffAna extends Normalization {
     replaceRtgNA(rRepTechGroup, rSampleNames);
 
     // Add reference if there is one
-    writeReferenceField(experimentSamplesList, sb);
+    writeReferenceField(experiment.getSamples(), sb);
 
     // Add sampleNames vector
     generateSampleNamePart(rSampleNames, sb);
@@ -334,9 +335,7 @@ public class DiffAna extends Normalization {
     sb.append("# outPath path of the outputs\n");
     sb.append("outPath <- \"./\"\n");
     sb.append("projectName <- ");
-    sb.append("\""
-        + experimentSamplesList.get(0).getMetadata().getExperiment() + "\""
-        + "\n");
+    sb.append("\"" + experiment.getName() + "\"" + "\n");
     sb.append("@\n\n");
 
     sb.append(readStaticScript(TARGET_CREATION));
@@ -406,7 +405,7 @@ public class DiffAna extends Normalization {
 
     String anadiffPart = "";
     // check if there is a reference
-    if (isReference(experimentSamplesList)) {
+    if (isReference(experiment.getSamples())) {
       anadiffPart = readStaticScript(ANADIFF_WITH_REFERENCE);
     } else {
       anadiffPart = readStaticScript(ANADIFF_WITHOUT_REFERENCE);
@@ -421,9 +420,11 @@ public class DiffAna extends Normalization {
     // create file
     String rScript = null;
     try {
-      rScript = "diffana_"
-          + experimentSamplesList.get(0).getMetadata().getExperiment() + "_"
-          + System.currentTimeMillis() + ".Rnw";
+      rScript =
+          "diffana_"
+              + experiment.getName() + "_" + System.currentTimeMillis()
+              + ".Rnw";
+
       if (context.getSettings().isRServeServerEnabled()) {
         this.rConnection.writeStringAsFile(rScript, sb.toString());
       } else {
@@ -476,7 +477,7 @@ public class DiffAna extends Normalization {
 
     if (experiment == null
         || experiment.size() == 0
-        || !experiment.get(0).getMetadata().isReferenceField()) {
+        || !experiment.get(0).getMetadata().containsReference()) {
       return false;
     }
 
@@ -496,7 +497,7 @@ public class DiffAna extends Normalization {
   private void writeReferenceField(final List<Sample> experimentSamplesList,
       final StringBuilder sb) {
 
-    if (experimentSamplesList.get(0).getMetadata().isReferenceField()) {
+    if (experimentSamplesList.get(0).getMetadata().containsReference()) {
 
       for (Sample s : experimentSamplesList) {
 

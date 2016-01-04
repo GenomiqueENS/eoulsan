@@ -75,10 +75,18 @@ public interface DataFormat {
   boolean isDataFormatFromDesignFile();
 
   /**
-   * Get the name of the field of the design file that can provide the DataFile.
-   * @return the design field name
+   * Get the name of the design metadata key of the design file that can provide
+   * the DataFile.
+   * @return the sample metadata key name
    */
-  String getDesignFieldName();
+  String getDesignMetadataKeyName();
+
+  /**
+   * Get the name of the sample metadata key of the design file that can provide
+   * the DataFile.
+   * @return the sample metadata key name
+   */
+  String getSampleMetadataKeyName();
 
   /**
    * Get the content type.

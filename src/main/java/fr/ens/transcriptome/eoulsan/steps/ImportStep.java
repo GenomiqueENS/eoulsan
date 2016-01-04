@@ -173,7 +173,7 @@ public class ImportStep extends AbstractStep {
     // Create a map with the samples
     final Map<String, Sample> samples = new HashMap<>();
     for (Sample sample : context.getWorkflow().getDesign().getSamples()) {
-      samples.put(FileNaming.toValidName(sample.getName()), sample);
+      samples.put(FileNaming.toValidName(sample.getId()), sample);
     }
 
     try {

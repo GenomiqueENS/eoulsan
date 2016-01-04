@@ -3,7 +3,7 @@
   <description>reads in fastq format</description>
   <alias>fastq</alias>
   <prefix>reads</prefix>
-  <designfieldname>Reads</designfieldname>
+  <samplemetadatakey>Reads</samplemetadatakey>
   <maxfilescount>2</maxfilescount>
   <checker>fr.ens.transcriptome.eoulsan.checkers.ReadsChecker</checker>
   <splitter>fr.ens.transcriptome.eoulsan.splitermergers.FastqSplitter</splitter>

@@ -22,9 +22,29 @@
  *
  */
 
-/**
- * This package contain classes to parsing and extract data from XML file from
- * galaxy.
- * @since 2.0
- */
-package fr.ens.transcriptome.eoulsan.util.galaxytool;
+package fr.ens.transcriptome.eoulsan.design;
+
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.Test;
+
+import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.ExperimentSample;
+import fr.ens.transcriptome.eoulsan.design.Sample;
+
+public class ExperimentSampleTest {
+
+  @Test
+  public void test() {
+    Design d = new Design();
+    Sample s = new Sample(d, "1");
+    ExperimentSample es = new ExperimentSample(s);
+
+    // test ExperimentSampleName
+    assertNotNull(es.getSample());
+
+    // test ExperimentSampleMetadata
+    assertNotNull(es.getMetadata());
+  }
+
+}

@@ -99,27 +99,44 @@ abstract class AbstractDataMetadata implements DataMetadata, Serializable {
   }
 
   @Override
-  public int getSampleId() {
+  public String getSampleId() {
 
     if (!containsKey(SAMPLE_ID_KEY)) {
+      return null;
+    }
+
+    return get(SAMPLE_ID_KEY);
+  }
+
+  @Override
+  public void setSampleId(final String sampleId) {
+
+    checkNotNull(sampleId, "sampleId argument cannot be null");
+
+    set(SAMPLE_ID_KEY, sampleId);
+  }
+
+  @Override
+  public int getSampleNumber() {
+
+    if (!containsKey(SAMPLE_NUMBER_KEY)) {
       return -1;
     }
 
     try {
-      return Integer.parseInt(get(SAMPLE_ID_KEY));
+      return Integer.parseInt(get(SAMPLE_NUMBER_KEY));
     } catch (NumberFormatException e) {
       return -1;
     }
-
   }
 
   @Override
-  public void setSampleId(final int sampleId) {
+  public void setSampleNumber(final int sampleNumber) {
 
-    checkArgument(sampleId > 0,
-        "sampleId argument must be greater than 0: " + sampleId);
+    checkArgument(sampleNumber > 0,
+        "sampleNumber argument must be greater than 0: " + sampleNumber);
 
-    set(SAMPLE_ID_KEY, Integer.toString(sampleId));
+    set(SAMPLE_NUMBER_KEY, Integer.toString(sampleNumber));
   }
 
 }

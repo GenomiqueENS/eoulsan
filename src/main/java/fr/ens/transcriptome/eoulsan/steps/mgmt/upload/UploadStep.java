@@ -52,8 +52,7 @@ import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.DesignUtils;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.io.DesignWriter;
-import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
+import fr.ens.transcriptome.eoulsan.design.io.Eoulsan1DesignWriter;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.util.FileUtils;
 import fr.ens.transcriptome.eoulsan.util.Version;
@@ -166,9 +165,6 @@ public abstract class UploadStep extends AbstractStep {
           .setWorkflowFile(new DataFile(uploadedParamDataFile.getSource()));
 
     } catch (IOException e) {
-
-      return status.createStepResult(e);
-    } catch (EoulsanIOException e) {
 
       return status.createStepResult(e);
     }
@@ -314,8 +310,8 @@ public abstract class UploadStep extends AbstractStep {
     for (final Sample s : design.getSamples()) {
 
       if (first) {
-        for (String fieldName : s.getMetadata().getFields()) {
-          if (registry.getDataFormatForDesignField(fieldName) != null) {
+        for (String fieldName : s.getMetadata().keySet()) {
+          if (registry.getDataFormatForDesignMetadata(fieldName) != null) {
             fieldWithFiles.add(fieldName);
           }
         }
@@ -324,7 +320,7 @@ public abstract class UploadStep extends AbstractStep {
 
       for (final String field : fieldWithFiles) {
 
-        final List<String> oldValues = s.getMetadata().getFieldAsList(field);
+        final List<String> oldValues = s.getMetadata().getAsList(field);
         final List<String> newValues = new ArrayList<>();
 
         final int nValues = oldValues.size();
@@ -371,7 +367,7 @@ public abstract class UploadStep extends AbstractStep {
         }
 
         // Replace old paths with new path in design
-        s.getMetadata().setField(field, newValues);
+        s.getMetadata().set(field, newValues);
       }
 
     }
@@ -383,16 +379,15 @@ public abstract class UploadStep extends AbstractStep {
    * @param context context object
    * @param design Design object
    * @return the temporary design file
-   * @throws EoulsanIOException if an error occurs while writing the design file
    * @throws IOException if an error occurs while writing the design file
    */
   private File writeTempDesignFile(final StepContext context,
-      final Design design) throws EoulsanIOException, IOException {
+      final Design design) throws IOException {
 
     final File result = context.getRuntime().createTempFile("design-", ".txt");
 
     DesignWriter writer =
-        new SimpleDesignWriter(FileUtils.createOutputStream(result));
+        new Eoulsan1DesignWriter(FileUtils.createOutputStream(result));
     writer.write(design);
 
     return result;

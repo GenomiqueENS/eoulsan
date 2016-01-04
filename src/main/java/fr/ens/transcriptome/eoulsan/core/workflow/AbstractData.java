@@ -82,7 +82,7 @@ abstract class AbstractData implements Data, Serializable {
 
     checkNotNull(name, "The name of the data cannot be null");
     checkArgument(FileNaming.isDataNameValid(name),
-        "The name of data can only contains letters or digit: " + name);
+        "The name of data can only contains letters and digit: " + name);
 
     this.name = name;
     this.defaultName = false;

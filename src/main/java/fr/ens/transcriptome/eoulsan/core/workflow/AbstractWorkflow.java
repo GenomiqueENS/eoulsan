@@ -54,6 +54,7 @@ import com.google.common.collect.Multimap;
 
 import fr.ens.transcriptome.eoulsan.Common;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
+import fr.ens.transcriptome.eoulsan.EoulsanLogger;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.Globals;
 import fr.ens.transcriptome.eoulsan.Settings;
@@ -66,8 +67,7 @@ import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.design.Design;
 import fr.ens.transcriptome.eoulsan.design.io.DesignWriter;
-import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignWriter;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
+import fr.ens.transcriptome.eoulsan.design.io.Eoulsan2DesignWriter;
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
 
 /**
@@ -104,6 +104,8 @@ public abstract class AbstractWorkflow implements Workflow {
   private AbstractWorkflowStep designStep;
   private AbstractWorkflowStep checkerStep;
   private AbstractWorkflowStep firstStep;
+
+  private volatile boolean shutdownNow;
 
   //
   // Getters
@@ -434,6 +436,10 @@ public abstract class AbstractWorkflow implements Workflow {
       step.setState(WAITING);
     }
 
+    // Register Shutdown hook
+    final Thread shutdownThread = createShutdownHookThread();
+    Runtime.getRuntime().addShutdownHook(shutdownThread);
+
     // Start stop watch
     this.stopwatch.start();
 
@@ -445,6 +451,16 @@ public abstract class AbstractWorkflow implements Workflow {
         Thread.sleep(2000);
       } catch (InterruptedException e) {
         e.printStackTrace();
+      }
+
+      if (this.shutdownNow) {
+
+        final EoulsanException e = new EoulsanException(
+            "Shutdown of the workflow required by the user (e.g. Ctrl-C)");
+
+        emergencyStop(e, e.getMessage());
+
+        break;
       }
 
       // Get the step that had failed
@@ -482,6 +498,10 @@ public abstract class AbstractWorkflow implements Workflow {
         break;
       }
     }
+
+    // Remove shutdown hook
+    EoulsanLogger.logInfo("Remove shutdownThread");
+    Runtime.getRuntime().removeShutdownHook(shutdownThread);
 
     // Remove outputs to discard
     removeOutputsToDiscard();
@@ -553,7 +573,7 @@ public abstract class AbstractWorkflow implements Workflow {
     logEndAnalysis(false);
 
     // Exit Eoulsan
-    Common.errorExit(exception, errorMessage);
+    Common.errorHalt(exception, errorMessage);
   }
 
   /**
@@ -568,6 +588,30 @@ public abstract class AbstractWorkflow implements Workflow {
       final TokenManager tokenManager = registry.getTokenManager(step);
       tokenManager.removeOutputsToDiscard();
     }
+  }
+
+  /**
+   * Create a shutdown hook thread.
+   * @return a new thread
+   */
+  public Thread createShutdownHookThread() {
+
+    final AbstractWorkflow workflow = this;
+    final Thread mainThread = Thread.currentThread();
+
+    return new Thread() {
+
+      @Override
+      public void run() {
+
+        workflow.shutdownNow = true;
+        try {
+          mainThread.join();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+    };
   }
 
   //
@@ -588,15 +632,16 @@ public abstract class AbstractWorkflow implements Workflow {
       }
 
       // Save design file
-      DesignWriter designWriter = new SimpleDesignWriter(
-          new DataFile(jobDir, DESIGN_COPY_FILENAME).create());
+      DesignWriter designWriter =
+          new Eoulsan2DesignWriter(
+              new DataFile(jobDir, DESIGN_COPY_FILENAME).create());
       designWriter.write(getDesign());
 
       // Save the workflow as a Graphviz file
       new Workflow2Graphviz(this)
           .save(new DataFile(jobDir, WORKFLOW_GRAPHVIZ_FILENAME));
 
-    } catch (IOException | EoulsanIOException e) {
+    } catch (IOException e) {
       throw new EoulsanException(
           "Error while writing design file or Graphiviz workflow file: "
               + e.getMessage(),

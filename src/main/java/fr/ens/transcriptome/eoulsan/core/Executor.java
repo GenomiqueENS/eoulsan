@@ -40,7 +40,7 @@ import fr.ens.transcriptome.eoulsan.core.workflow.CommandWorkflowParser;
 import fr.ens.transcriptome.eoulsan.core.workflow.Workflow;
 import fr.ens.transcriptome.eoulsan.core.workflow.WorkflowStepObserverRegistry;
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.io.SimpleDesignReader;
+import fr.ens.transcriptome.eoulsan.design.io.DefaultDesignReader;
 import fr.ens.transcriptome.eoulsan.ui.UI;
 import fr.ens.transcriptome.eoulsan.ui.UIService;
 
@@ -70,13 +70,14 @@ public class Executor {
     }
 
     // Check samples count
-    if (this.design.getSampleCount() == 0) {
+    if (this.design.getSamples().isEmpty()) {
       throw new EoulsanException(
           "Nothing to do, no samples found in design file");
     }
 
     getLogger().info(
-        "Found " + this.design.getSampleCount() + " sample(s) in design file");
+        "Found "
+            + this.design.getSamples().size() + " sample(s) in design file");
   }
 
   //
@@ -213,7 +214,7 @@ public class Executor {
       checkNotNull(is, "The input stream for design file is null");
 
       // Read design file and return the design object
-      return new SimpleDesignReader(is).read();
+      return new DefaultDesignReader(is).read();
 
     } catch (IOException e) {
       throw new EoulsanException(e);

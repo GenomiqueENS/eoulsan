@@ -24,49 +24,167 @@
 
 package fr.ens.transcriptome.eoulsan.design;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.io.Serializable;
+
+import org.python.google.common.base.MoreObjects;
+import org.python.google.common.base.Objects;
+
+import fr.ens.transcriptome.eoulsan.core.workflow.FileNaming;
+
 /**
- * This interface define a slide.
- * @since 1.0
- * @author Laurent Jourdren
+ * This class defines a sample.
+ * @author Xavier Bauquet
+ * @since 2.0
  */
-public interface Sample {
+
+public class Sample implements Serializable {
+
+  /** Serialization version UID. */
+  private static final long serialVersionUID = 3674095532228721218L;
+
+  /** Sample Id field. */
+  public static final String SAMPLE_ID_FIELD = "SampleId";
+
+  /** Sample Name field. */
+  public static final String SAMPLE_NAME_FIELD = "SampleName";
+
+  /** Sample Name field. */
+  public static final String SAMPLE_NUMBER_FIELD = "SampleNumber";
+
+  private static int instanceCount;
+
+  private final Design design;
+  private final String sampleId;
+  private final int sampleNumber = ++instanceCount;
+  private String sampleName = "Sample" + sampleNumber;
+  private final SampleMetadata sampleMetadata = new SampleMetadata();
 
   //
   // Getters
   //
 
   /**
-   * Get the id of the sample
-   * @return the id of the sample
+   * Get the design related to the sample.
+   * @return the Design object related to the sample
    */
-  int getId();
+  public Design getDesign() {
+
+    return this.design;
+  }
 
   /**
-   * Get the name of the slide.
-   * @return The name of the slide
+   * Get the sample id.
+   * @return the sample id
    */
-  String getName();
+  public String getId() {
+
+    return this.sampleId;
+  }
 
   /**
-   * Get the description of the slide.
-   * @return a SlideDescriptionImpl Object
+   * Get the sample number.
+   * @return the sample number
    */
-  SampleMetadata getMetadata();
+  public int getNumber() {
+
+    return this.sampleNumber;
+  }
+
+  /**
+   * Get the sample name.
+   * @return the sample name
+   */
+  public String getName() {
+
+    return this.sampleName;
+  }
+
+  /**
+   * Get the sample metadata.
+   * @return an object SampleMetadata
+   */
+  public SampleMetadata getMetadata() {
+
+    return this.sampleMetadata;
+  }
 
   //
-  // Setters
+  // Setter
   //
 
   /**
-   * Set the id of the sample.
-   * @param id the id of the sample
+   * Set the sample name.
+   * @param newSampleName the new sample name
    */
-  void setId(final int id);
+  public void setName(String newSampleName) {
+
+    checkNotNull(newSampleName, "newSampleName argument cannot be null");
+
+    final String name = newSampleName.trim();
+
+    checkArgument(!this.design.containsSampleName(name),
+        "The sample name already exists in the design: " + name);
+
+    this.sampleName = name;
+  }
+
+  //
+  // Object methods
+  //
+
+  @Override
+  public String toString() {
+
+    return MoreObjects.toStringHelper(this).add("sampleId", this.sampleId)
+        .add("sampleNumber", this.sampleNumber)
+        .add("sampleName", this.sampleName)
+        .add("sampleMetadata", this.sampleMetadata).toString();
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Objects.hashCode(this.sampleId, this.sampleNumber, this.sampleName,
+        this.sampleMetadata);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+
+    if (o == this) {
+      return true;
+    }
+
+    if (!(o instanceof Sample)) {
+      return false;
+    }
+
+    final Sample that = (Sample) o;
+
+    return Objects.equal(this.sampleId, that.sampleId)
+        && Objects.equal(this.sampleName, that.sampleName)
+        && Objects.equal(this.sampleMetadata, that.sampleMetadata);
+  }
+
+  //
+  // Constructor
+  //
 
   /**
-   * Rename the slide.
-   * @param newName The new name of the slide.
+   * @param design the design object
+   * @param sampleId the sample id
    */
-  void setName(final String newName);
+  Sample(final Design design, final String sampleId) {
 
+    checkNotNull(design, "design argument cannot be null");
+    checkNotNull(sampleId, "sampleId argument cannot be null");
+    checkArgument(FileNaming.isDataNameValid(sampleId),
+        "The id of a sample can only contains letters and digit: " + sampleId);
+
+    this.design = design;
+    this.sampleId = sampleId.trim();
+  }
 }

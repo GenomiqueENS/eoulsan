@@ -27,7 +27,7 @@ package fr.ens.transcriptome.eoulsan.data;
 import java.util.Set;
 
 import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
-import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 
 /**
@@ -38,9 +38,10 @@ import fr.ens.transcriptome.eoulsan.design.SampleMetadata;
 public interface DataMetadata {
 
   String PAIRED_END_KEY = "pairedend";
-  String FASTQ_FORMAT_KEY = SampleMetadata.FASTQ_FORMAT_FIELD;
-  String SAMPLE_ID_KEY = Design.SAMPLE_NUMBER_FIELD;
-  String SAMPLE_NAME_KEY = Design.NAME_FIELD;
+  String FASTQ_FORMAT_KEY = SampleMetadata.FASTQ_FORMAT_KEY;
+  String SAMPLE_ID_KEY = Sample.SAMPLE_ID_FIELD;
+  String SAMPLE_NAME_KEY = Sample.SAMPLE_NAME_FIELD;
+  String SAMPLE_NUMBER_KEY = Sample.SAMPLE_NUMBER_FIELD;
 
   //
   // Low level methods
@@ -141,14 +142,26 @@ public interface DataMetadata {
 
   /**
    * Get the sample id related to the data.
-   * @return the sample id or -1 if the value is not set
+   * @return the sample id or null if the value is not set
    */
-  int getSampleId();
+  String getSampleId();
 
   /**
    * Set the sample id related to the data
    * @param sampleId the sample id
    */
-  void setSampleId(int sampleId);
+  void setSampleId(String sampleId);
+
+  /**
+   * Get the sample number related to the data.
+   * @return the sample number or -1 if the value is not set
+   */
+  int getSampleNumber();
+
+  /**
+   * Set the sample number related to the data
+   * @param sampleNumber the sample number
+   */
+  void setSampleNumber(int sampleNumber);
 
 }

@@ -59,6 +59,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.data.protocols.DataProtocol;
 import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.DesignMetadata;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 import fr.ens.transcriptome.eoulsan.io.CompressionType;
 import fr.ens.transcriptome.eoulsan.requirements.Requirement;
@@ -840,7 +841,9 @@ public class CommandWorkflow extends AbstractWorkflow {
    */
   private void convertDesignS3URLs() {
 
-    for (Sample s : getDesign().getSamples()) {
+    final Design design = getDesign();
+
+    for (Sample s : design.getSamples()) {
 
       // Convert read file URL
       final List<String> readsSources =
@@ -850,17 +853,26 @@ public class CommandWorkflow extends AbstractWorkflow {
       }
       s.getMetadata().setReads(readsSources);
 
-      // Convert genome file URL
-      if (s.getMetadata().isGenomeField()) {
-        s.getMetadata().setGenome(convertS3URL(s.getMetadata().getGenome()));
-      }
-
-      // Convert annotation file URL
-      if (s.getMetadata().isAnnotationField()) {
-        s.getMetadata()
-            .setAnnotation(convertS3URL(s.getMetadata().getAnnotation()));
-      }
     }
+
+    final DesignMetadata dmd = design.getMetadata();
+
+    // Convert genome file URL
+    if (dmd.containsGenomeFile()) {
+      dmd.setGenomeFile(convertS3URL(dmd.getGenomeFile()));
+    }
+
+    // Convert GFF file URL
+    if (dmd.containsGffFile()) {
+      dmd.setGffFile(convertS3URL(dmd.getGffFile()));
+    }
+
+    // Convert additional annotation file URL
+    if (dmd.containsAdditionnalAnnotationFile()) {
+      dmd.setAdditionnalAnnotationFile(
+          convertS3URL(dmd.getAdditionnalAnnotationFile()));
+    }
+
   }
 
   /**

@@ -47,7 +47,7 @@ public class TechnicalReplicateMerger extends MergerStep {
   @Override
   protected String getMapKey(final Data data) {
 
-    return data.getMetadata().get(SampleMetadata.REP_TECH_GROUP_FIELD);
+    return data.getMetadata().get(SampleMetadata.REP_TECH_GROUP_KEY);
   }
 
   @Override

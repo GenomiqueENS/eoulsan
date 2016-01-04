@@ -41,6 +41,8 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.data.DataFormatRegistry;
 import fr.ens.transcriptome.eoulsan.data.DataMetadata;
+import fr.ens.transcriptome.eoulsan.design.Design;
+import fr.ens.transcriptome.eoulsan.design.Experiment;
 import fr.ens.transcriptome.eoulsan.design.Sample;
 
 /**
@@ -134,9 +136,10 @@ public final class DataUtils {
 
     checkNotNull(data, "data argument cannot be null");
     checkNotNull(sample, "sample argument cannot be null");
-    checkArgument(data.getName().equals(toValidName(sample.getName())),
+    checkArgument(
+        data.getName().equals(toValidName(sample.getId())),
         "The sample name ("
-            + sample.getName() + ") does not match with data name ("
+            + sample.getId() + ") does not match with data id ("
             + data.getName() + ")");
 
     // Do no set metadata on a data list
@@ -144,11 +147,15 @@ public final class DataUtils {
       return;
     }
 
+    //
+    // Set Sample metadata
+    //
+
     // Get the fields to not use (fields related to files)
-    final Set<String> fieldsToNotUse = new HashSet<>();
+    final Set<String> sampleMetadataKeysToNotUse = new HashSet<>();
     for (DataFormat format : DataFormatRegistry.getInstance().getAllFormats()) {
-      if (format.getDesignFieldName() != null) {
-        fieldsToNotUse.add(format.getDesignFieldName());
+      if (format.getSampleMetadataKeyName() != null) {
+        sampleMetadataKeysToNotUse.add(format.getSampleMetadataKeyName());
       }
     }
 
@@ -158,15 +165,49 @@ public final class DataUtils {
 
     // Set the original sample name and sample id in the metadata
     dataMetadata.setSampleName(sample);
-    dataMetadata.setSampleId(sample.getId());
+    dataMetadata.setSampleNumber(sample.getNumber());
+
+    // TODO update reference to design data for data metadata
 
     // Set the other fields of the design file
-    for (String fieldName : sample.getMetadata().getFields()) {
+    for (String key : sample.getMetadata().keySet()) {
 
-      if (!fieldsToNotUse.contains(fieldName)) {
-        dataMetadata.setSampleField(sample, fieldName);
+      if (!sampleMetadataKeysToNotUse.contains(key)) {
+        dataMetadata.setSampleMetadata(sample, key);
       }
     }
+
+    //
+    // Set Design metadata
+    //
+
+    // Get the fields to not use (fields related to files)
+    final Set<String> designMetadataKeysToNotUse = new HashSet<>();
+    for (DataFormat format : DataFormatRegistry.getInstance().getAllFormats()) {
+      if (format.getSampleMetadataKeyName() != null) {
+        designMetadataKeysToNotUse.add(format.getDesignMetadataKeyName());
+      }
+    }
+
+    final Design design = sample.getDesign();
+    for (String key : design.getMetadata().keySet()) {
+
+      if (!designMetadataKeysToNotUse.contains(key)) {
+        dataMetadata.setDesignMetadata(design, key);
+      }
+    }
+
+    //
+    // Set Experiment metadata
+    //
+
+    for (Experiment experiment : design.getExperimentsUsingASample(sample)) {
+
+      for (String key : experiment.getMetadata().keySet()) {
+        dataMetadata.setExperimentMetadata(experiment, key);
+      }
+    }
+
   }
 
   /**

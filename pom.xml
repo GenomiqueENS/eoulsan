@@ -46,7 +46,10 @@
 				<role>Lead Developer</role>
 			</roles>
 			<timezone>1</timezone>
-			<properties />
+			<properties>
+                                <picUrl>https://avatars2.githubusercontent.com/u/3381031?s=60</picUrl>
+                        </properties>
+
 		</developer>
 		<developer>
 			<id>bernard</id>
@@ -97,7 +100,7 @@
 				<role>Developer</role>
 			</roles>
 			<timezone>1</timezone>
-			<properties />
+			<properties/>
 		</developer>
 		<developer>
 			<id>sperrin</id>
@@ -114,7 +117,27 @@
 				<role>Developer</role>
 			</roles>
 			<timezone>1</timezone>
-			<properties />
+			<properties/>
+
+		</developer>
+		<developer>
+			<id>bauquet</id>
+			<name>Xavier Bauquet</name>
+			<email>bauquet 0 biologie ens fr</email>
+			<url />
+			<organization>
+				École normale supérieure, IBENS, Genomic platform
+			</organization>
+			<organizationUrl>
+				http://transcriptome.ens.fr/sgdb/
+			</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>1</timezone>
+			<properties>
+				<picUrl>https://avatars2.githubusercontent.com/u/8179943?s=60</picUrl>
+			</properties>
 		</developer>
 		<developer>
 			<id>firmo</id>
@@ -148,7 +171,8 @@
 				<role>Project manager and documentation review</role>
 			</roles>
 			<timezone>1</timezone>
-			<properties />
+			<properties/>
+
 		</developer>
 	</developers>
 

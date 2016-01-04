@@ -8,9 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.base.Splitter;
-
 import fr.ens.transcriptome.eoulsan.util.StringUtils;
+import fr.ens.transcriptome.eoulsan.util.SystemUtils;
 
 /**
  * This class define a generic executor interpreter. The path of the executor is
@@ -73,35 +72,6 @@ public class GenericExecutorInterpreter extends AbstractExecutorInterpreter {
     return value != null ? new File(value) : null;
   }
 
-  /**
-   * Search the interpreter path in the system PATH.
-   * @param interpreterName the name of the interpreter
-   * @return a File with the interpreter path or null if the interpreter path
-   *         has not been defined in the system PATH
-   */
-  private static File searchInterpreterInPATH(final String interpreterName) {
-
-    final String pathEnv = System.getenv().get("PATH");
-
-    if (pathEnv == null) {
-      return null;
-    }
-
-    for (String dirname : Splitter.on(File.pathSeparatorChar).split(pathEnv)) {
-
-      final File dir = new File(dirname);
-
-      final File file = new File(dir, interpreterName);
-
-      if (dir.isDirectory() && file.exists() && file.canExecute()) {
-        return file;
-      }
-
-    }
-
-    return null;
-  }
-
   //
   // Constructor
   //
@@ -119,7 +89,7 @@ public class GenericExecutorInterpreter extends AbstractExecutorInterpreter {
     File path = getInterpreterPathFromConfiguration(interpreterName);
 
     if (path == null) {
-      path = searchInterpreterInPATH(interpreterName);
+      path = SystemUtils.searchExecutableInPATH(interpreterName);
     }
 
     if (path == null) {

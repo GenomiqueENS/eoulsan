@@ -24,8 +24,9 @@
 
 package fr.ens.transcriptome.eoulsan.design.io;
 
+import java.io.IOException;
+
 import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.io.EoulsanIOException;
 
 /**
  * This interface define a DesignReader.
@@ -37,7 +38,7 @@ public interface DesignReader {
   /**
    * Read the design.
    * @return a new Design object
-   * @throws EoulsanIOException if an error occurs while reading the design
+   * @throws IOException if an error occurs while reading the design
    */
-  Design read() throws EoulsanIOException;
+  Design read() throws IOException;
 }
