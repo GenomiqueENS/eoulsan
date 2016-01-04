@@ -77,6 +77,7 @@
 				<item name="Filter alignments" href="/step-filteralignments.html" />
 				<item name="Filter and map" href="step-filterandmap.html" />
 				<item name="Sam2Bam" href="step-sam2bam.html" />
+				<item name="Bam2Sam" href="step-bam2sam.html" />
 				<item name="Expression" href="/step-expression.html" />
 				<item name="Expression annotation" href="/step-expressionresultsannotation.html" />
 				<item name="Normalization" href="/step-normalization.html" />
