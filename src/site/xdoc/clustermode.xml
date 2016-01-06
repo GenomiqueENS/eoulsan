@@ -41,7 +41,7 @@
      <p>The current supported cluster schedulers are:</p>
      <table>
        <tr><th>Scheduler name</th><th>main.cluster.scheduler.name value</th><th>Comment</th></tr>
-       <tr><td><a href="https://research.cs.wisc.edu/htcondor/">Condor</a></td><td>condor</td><td>Works, tested on IBENS cluster.</td></tr>
+       <tr><td><a href="https://research.cs.wisc.edu/htcondor/">HTCondor</a></td><td>htcondor</td><td>Works, tested on IBENS cluster.</td></tr>
        <tr><td><a href="http://www-hpc.cea.fr/fr/complexe/tgcc.htm">TGCC</a></td><td>tgcc</td><td>Works, tested at TGCC.</td></tr>
      </table>     
 

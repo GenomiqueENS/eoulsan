@@ -43,8 +43,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import fr.ens.transcriptome.aozan.illumina.samplesheet.SampleSheet;
-import fr.ens.transcriptome.aozan.illumina.samplesheet.io.SampleSheetCSVReader;
+import fr.ens.biologie.genomique.aozan.illumina.samplesheet.SampleSheet;
+import fr.ens.biologie.genomique.aozan.illumina.samplesheet.io.SampleSheetCSVReader;
 import fr.ens.transcriptome.eoulsan.EoulsanException;
 import fr.ens.transcriptome.eoulsan.EoulsanRuntime;
 import fr.ens.transcriptome.eoulsan.bio.BadBioEntryException;
@@ -418,7 +418,7 @@ public class DesignBuilder {
         new File(casavaOutputDir.getPath() + "/Project_" + projectName)
             .isDirectory();
 
-    for (fr.ens.transcriptome.aozan.illumina.samplesheet.Sample sample : casavaDesign) {
+    for (fr.ens.biologie.genomique.aozan.illumina.samplesheet.Sample sample : casavaDesign) {
 
       final String sampleProject = sample.getSampleProject();
       final String sampleId = sample.getSampleId();
@@ -428,7 +428,8 @@ public class DesignBuilder {
 
       // Check if sample id field exist for sample
       if (sampleId == null) {
-        throw new EoulsanException("No sample Id field found for sample: " + sample);
+        throw new EoulsanException(
+            "No sample Id field found for sample: " + sample);
       }
 
       // Select only project samples
@@ -478,8 +479,8 @@ public class DesignBuilder {
         }
 
         try {
-          list.add(new FastqEntry(new DataFile(fastqFile), sampleId,
-              sampleDesc, sampleOperator));
+          list.add(new FastqEntry(new DataFile(fastqFile), sampleId, sampleDesc,
+              sampleOperator));
         } catch (EmptyFastqException e) {
           getLogger().warning(e.getMessage());
         }
