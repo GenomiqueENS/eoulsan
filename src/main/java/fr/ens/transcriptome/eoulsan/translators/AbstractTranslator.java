@@ -30,7 +30,7 @@ package fr.ens.transcriptome.eoulsan.translators;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public abstract class BasicTranslator implements Translator {
+public abstract class AbstractTranslator implements Translator {
 
   private String defaultField;
   private boolean originalDefaultFieldSearchDone;

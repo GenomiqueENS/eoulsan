@@ -32,7 +32,7 @@ import java.util.Map;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class ConcatTranslator extends BasicTranslator {
+public class ConcatTranslator extends AbstractTranslator {
 
   private final Map<String, Translator> translators = new LinkedHashMap<>();
 

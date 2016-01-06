@@ -33,7 +33,7 @@ import java.util.Map;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class UniqueIdentifierTranslator extends BasicTranslator {
+public class UniqueIdentifierTranslator extends AbstractTranslator {
 
   private static final String DEFAULT_FIELD = "UniqueId";
 
@@ -180,7 +180,7 @@ public class UniqueIdentifierTranslator extends BasicTranslator {
     String[] tFields = this.translator.getFields();
 
     if (tFields == null) {
-      this.fields = new String[] { this.newFieldName };
+      this.fields = new String[] {this.newFieldName};
     } else {
 
       this.fields = new String[tFields.length + 1];
@@ -210,12 +210,12 @@ public class UniqueIdentifierTranslator extends BasicTranslator {
   @Override
   public Translator getReverseTranslator() {
 
-    return new BasicTranslator() {
+    return new AbstractTranslator() {
 
       @Override
       public String[] getFields() {
 
-        return new String[] { UniqueIdentifierTranslator.this.newFieldName };
+        return new String[] {UniqueIdentifierTranslator.this.newFieldName};
       }
 
       @Override

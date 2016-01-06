@@ -29,7 +29,7 @@ package fr.ens.transcriptome.eoulsan.translators;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class DummyTranslator extends BasicTranslator {
+public class DummyTranslator extends AbstractTranslator {
 
   private final int fieldCount;
 

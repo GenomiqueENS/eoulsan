@@ -35,7 +35,7 @@ import java.util.Map;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class JoinTranslator extends BasicTranslator {
+public class JoinTranslator extends AbstractTranslator {
 
   private final Translator translator1;
   private final Translator translator2;

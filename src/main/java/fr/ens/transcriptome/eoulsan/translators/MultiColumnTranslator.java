@@ -35,7 +35,7 @@ import fr.ens.transcriptome.eoulsan.EoulsanRuntimeException;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class MultiColumnTranslator extends BasicTranslator {
+public class MultiColumnTranslator extends AbstractTranslator {
 
   private final Map<String, Map<String, String>> annotations = new HashMap<>();
   private String[] fieldNames;

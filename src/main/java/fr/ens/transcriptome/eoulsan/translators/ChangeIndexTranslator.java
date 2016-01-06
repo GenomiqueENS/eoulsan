@@ -33,7 +33,7 @@ import java.util.Map;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class ChangeIndexTranslator extends BasicTranslator {
+public class ChangeIndexTranslator extends AbstractTranslator {
 
   private final Translator translator;
   private final String field;
@@ -82,8 +82,7 @@ public class ChangeIndexTranslator extends BasicTranslator {
    */
   @Override
   public String translateField(final String id, final String field) {
-
-    return this.translator.translateField(this.index.get(id), field);
+    return this.translator.translateField(id, field);
   }
 
   private void makeIndex() {

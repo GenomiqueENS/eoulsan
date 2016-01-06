@@ -29,7 +29,7 @@ package fr.ens.transcriptome.eoulsan.translators;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class AddIdentifierTranslator extends BasicTranslator {
+public class AddIdentifierTranslator extends AbstractTranslator {
 
   private static final String DEFAULT_FIELD = "OriginalId";
 

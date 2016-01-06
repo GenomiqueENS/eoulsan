@@ -29,7 +29,7 @@ package fr.ens.transcriptome.eoulsan.translators;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class CommonLinksInfoTranslator extends BasicTranslator {
+public class CommonLinksInfoTranslator extends AbstractTranslator {
 
   private final Translator translator;
 

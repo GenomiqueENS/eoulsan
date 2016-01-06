@@ -61,7 +61,7 @@ import fr.ens.transcriptome.eoulsan.data.DataFile;
 import fr.ens.transcriptome.eoulsan.data.DataFormat;
 import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
 import fr.ens.transcriptome.eoulsan.steps.Steps;
-import fr.ens.transcriptome.eoulsan.translators.BasicTranslator;
+import fr.ens.transcriptome.eoulsan.translators.AbstractTranslator;
 import fr.ens.transcriptome.eoulsan.translators.CommonLinksInfoTranslator;
 import fr.ens.transcriptome.eoulsan.translators.ConcatTranslator;
 import fr.ens.transcriptome.eoulsan.translators.Translator;
@@ -289,7 +289,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
 
     checkNotNull(annotationFile, "annotationFile argument cannot be null");
 
-    final Translator did = new BasicTranslator() {
+    final Translator did = new AbstractTranslator() {
 
       @Override
       public String translateField(final String id, final String field) {
