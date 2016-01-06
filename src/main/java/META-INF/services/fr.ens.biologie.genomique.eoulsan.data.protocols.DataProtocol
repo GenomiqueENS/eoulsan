@@ -1,0 +1,17 @@
+# Local protocols
+fr.ens.biologie.genomique.eoulsan.data.protocols.FTPURLDataProtocol
+fr.ens.biologie.genomique.eoulsan.data.protocols.HTTPURLDataProtocol
+fr.ens.biologie.genomique.eoulsan.data.protocols.HTTPSURLDataProtocol
+fr.ens.biologie.genomique.eoulsan.data.protocols.S3DataProtocol
+fr.ens.biologie.genomique.eoulsan.data.protocols.S3NDataProtocol
+fr.ens.biologie.genomique.eoulsan.data.protocols.GenomeDataProtocol
+fr.ens.biologie.genomique.eoulsan.data.protocols.AnnotationDataProtocol
+fr.ens.biologie.genomique.eoulsan.data.protocols.AdditionalAnnotationDataProtocol
+
+# Hadoop protocols
+fr.ens.biologie.genomique.eoulsan.data.protocols.HDFSPathDataProtocol
+fr.ens.biologie.genomique.eoulsan.data.protocols.FTPPathDataProtocol
+fr.ens.biologie.genomique.eoulsan.data.protocols.HTTPPathDataProtocol
+fr.ens.biologie.genomique.eoulsan.data.protocols.HTTPSPathDataProtocol
+fr.ens.biologie.genomique.eoulsan.data.protocols.S3PathDataProtocol
+fr.ens.biologie.genomique.eoulsan.data.protocols.S3NPathDataProtocol

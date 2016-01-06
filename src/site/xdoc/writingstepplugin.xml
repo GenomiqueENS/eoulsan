@@ -20,7 +20,7 @@
  * or to join the Eoulsan Google group, visit the home page
  * at:
  *
- *      http://www.transcriptome.ens.fr/eoulsan
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
  *
  */
 -->
@@ -127,13 +127,13 @@ myeoulsanplugin
       &lt;/snapshots&gt;
       &lt;id&gt;ens&lt;/id&gt;
       &lt;name&gt;ENS repository&lt;/name&gt;
-      &lt;url&gt;http://transcriptome.ens.fr/maven2&lt;/url&gt;
+      &lt;url&gt;http://outils.genomique.biologie.ens.fr/maven2&lt;/url&gt;
     &lt;/repository&gt;
   &lt;/repositories&gt;
         
   &lt;dependencies&gt;
     &lt;dependency&gt;
-      &lt;groupId>fr.ens.transcriptome&lt;/groupId&gt;
+      &lt;groupId>fr.ens.biologie.genomique&lt;/groupId&gt;
       &lt;artifactId>eoulsan&lt;/artifactId&gt;
       &lt;version>@@@VERSION@@@&lt;/version&gt;
       &lt;scope>compile&lt;/scope&gt;
@@ -200,12 +200,12 @@ $ mvn eclipse:eclipse  -DdownloadSources=true -DdownloadJavadocs=true
 package com.example;
 
 import java.util.logging.Logger;
-import fr.ens.transcriptome.eoulsan.Globals;
-import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
-import fr.ens.transcriptome.eoulsan.core.Context;
-import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
-import fr.ens.transcriptome.eoulsan.steps.StepResult;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
+import fr.ens.biologie.genomique.eoulsan.core.Context;
+import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.steps.AbstractStep;
+import fr.ens.biologie.genomique.eoulsan.steps.StepResult;
 
 // The "@LocalOnly" annotation means that the Eoulsan workflow engine will 
 // only use this step in local mode. The two other annotations are "@HadoopOnly" 
@@ -567,7 +567,7 @@ public class GsnapExampleStep extends AbstractStep {
    <ul>
    
         <li>Create the <b>src/main/java/META-INF/services</b> directory for the metadata of the spi service.</li>
-        <li>Create a <b>fr.ens.transcriptome.eoulsan.steps.Step</b> file in this directory and add the next line
+        <li>Create a <b>fr.ens.biologie.genomique.eoulsan.steps.Step</b> file in this directory and add the next line
         to this new file:</li>
 <source>
 com.example.GsnapExampleStep

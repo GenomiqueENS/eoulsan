@@ -1,0 +1,225 @@
+package fr.ens.biologie.genomique.eoulsan.steps.mapping.local;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
+import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
+import fr.ens.biologie.genomique.eoulsan.bio.io.FastqWriter;
+import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.data.Data;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
+import fr.ens.biologie.genomique.eoulsan.steps.mapping.AbstractSAM2FASTQStep;
+import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
+import fr.ens.biologie.genomique.eoulsan.util.Reporter;
+import htsjdk.samtools.SAMFileHeader.SortOrder;
+import htsjdk.samtools.SAMFileWriter;
+import htsjdk.samtools.SAMFileWriterFactory;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
+
+/**
+ * This class define a step for converting SAM files into FASTQ.
+ * @since 2.0
+ * @author Laurent Jourdren
+ */
+@LocalOnly
+public class SAM2FASTQLocalStep extends AbstractSAM2FASTQStep {
+
+  @Override
+  public StepResult execute(final StepContext context,
+      final StepStatus status) {
+
+    try {
+
+      // Create the reporter
+      final Reporter reporter = new LocalReporter();
+
+      // Get input SAM data
+      final Data inData = context.getInputData(DataFormats.MAPPER_RESULTS_SAM);
+
+      // Get input SAM TMP data
+      File samTmpFile = File.createTempFile("samTmp", ".sam",
+          context.getLocalTempDirectory());
+
+      // Get output FASTQ data
+      final Data outData =
+          context.getOutputData(DataFormats.READS_FASTQ, inData);
+
+
+      final DataFile samFile = inData.getDataFile();
+
+
+      final int paired = sortConvert(samFile, samTmpFile, reporter,
+          context.getLocalTempDirectory());
+
+      final DataFile fastqFile1 = outData.getDataFile(0);
+      final DataFile fastqFile2 = paired == 3 ? outData.getDataFile(1) : null;
+
+      writeConvert(samTmpFile, fastqFile1, fastqFile2, reporter);
+      
+      // Set the description of the context
+      status.setDescription("Convert alignments ("
+          + inData.getName() + "," + outData.getName() + ")");
+
+      // Add counters for this sample to log file
+      status.setCounters(reporter, COUNTER_GROUP);
+
+      return status.createStepResult();
+
+    } catch (final IOException e) {
+
+      return status.createStepResult(e);
+    }
+  }
+
+  /**
+   * Convert SAM file to FASTQ
+   * @param samDataFile input SAM file
+   * @param fastqFile output FASTQ file
+   * @param reporter reporter
+   * @param tmpDir temporary directory
+   * @throws IOException if an error occurs
+   */
+
+  private static final void writeConvert(final File samDataFile,
+      final DataFile fastqDataFile1, final DataFile fastqDataFile2,
+      final Reporter reporter) throws IOException {
+
+    // Open sam file
+    final SamReader samReader = SamReaderFactory.makeDefault()
+        .open(SamInputResource.of(new FileInputStream(samDataFile)));
+
+    // Open fastq file
+    final FastqWriter fastqWriter1 = new FastqWriter(fastqDataFile1.create());
+    final FastqWriter fastqWriter2 = fastqDataFile2 == null
+        ? null : new FastqWriter(fastqDataFile2.create());
+    int id = 0;
+    String seq1 = null;
+    String seq2 = null;
+    String qual1 = null;
+    String qual2 = null;
+    String currentRecordId = null;
+
+    for (final SAMRecord samRecord : samReader) {
+      if (currentRecordId != null
+          && !currentRecordId.equals(samRecord.getReadName())) {
+
+        id++;
+        reporter.incrCounter(COUNTER_GROUP, "sorted records", 1);
+
+        writeFastq(id, fastqWriter1, fastqWriter2, currentRecordId, seq1, qual1,
+            seq2, qual2);
+        seq1 = seq2 = qual1 = qual2 = null;
+
+      }
+      if (samRecord.getReadPairedFlag() && !samRecord.getFirstOfPairFlag()) {
+        seq2 = samRecord.getReadString();
+        qual2 = samRecord.getBaseQualityString();
+      } else {
+        seq1 = samRecord.getReadString();
+        qual1 = samRecord.getBaseQualityString();
+      }
+
+      currentRecordId = samRecord.getReadName();
+    }
+
+    if (seq1 != null && seq2 != null) {
+      id++;
+      reporter.incrCounter(COUNTER_GROUP, "sorted records", 1);
+      writeFastq(id, fastqWriter1, fastqWriter2, currentRecordId, seq1, qual1,
+          seq2, qual2);
+
+    }
+    samReader.close();
+    fastqWriter1.close();
+
+    if (fastqWriter2 != null) {
+      fastqWriter2.close();
+    }
+
+  }
+
+  private static final int sortConvert(final DataFile samDataFile,
+      final File samFileTmp, final Reporter reporter, final File tmpDir)
+          throws IOException {
+
+    // Open sam file
+    final SamReader samReader = SamReaderFactory.makeDefault()
+        .open(SamInputResource.of(samDataFile.open()));
+
+    // Force sort
+    samReader.getFileHeader().setSortOrder(SortOrder.queryname);
+
+    // Open sam file
+    final SAMFileWriter samWriter = new SAMFileWriterFactory()
+        .setCreateIndex(false).setTempDirectory(tmpDir)
+        .makeSAMWriter(samReader.getFileHeader(), false, samFileTmp);
+
+    boolean firstPair = false;
+    boolean secondPair = false;
+    for (final SAMRecord samRecord : samReader) {
+      if (!firstPair
+          && samRecord.getReadPairedFlag() && samRecord.getFirstOfPairFlag()) {
+        firstPair = true;
+      }
+      if (!secondPair
+          && samRecord.getReadPairedFlag() && samRecord.getSecondOfPairFlag()) {
+        secondPair = true;
+      }
+      samRecord.setReadName(samRecord.getReadName().split(" ")[0]);
+      samWriter.addAlignment(samRecord);
+      reporter.incrCounter(COUNTER_GROUP, "converted records", 1);
+    }
+    samWriter.close();
+    samReader.close();
+
+    int result = 0;
+    if (!firstPair && !secondPair) {
+      result = 0;
+    }
+    if (firstPair && !secondPair) {
+      result = 1;
+    }
+    if (!firstPair && secondPair) {
+      result = 2;
+    }
+    if (firstPair && secondPair) {
+      result = 3;
+    }
+
+    return result;
+  }
+
+  public static final void writeFastq(int id, FastqWriter fastqWriter1,
+      FastqWriter fastqWriter2, String currentRecordId, String seq1,
+      String qual1, String seq2, String qual2) throws IOException {
+
+    ReadSequence read1 = seq1 == null
+        ? null : new ReadSequence(id, currentRecordId, seq1, qual1);
+    ReadSequence read2 = seq2 == null
+        ? null : new ReadSequence(id, currentRecordId, seq2, qual2);
+
+    if (fastqWriter2 != null) {
+      if (seq1 != null && seq2 != null) {
+        fastqWriter1.write(read1);
+        fastqWriter2.write(read2);
+      }
+    } else {
+      if (seq1 != null) {
+        fastqWriter1.write(read1);
+      } else {
+        fastqWriter1.write(read2);
+      }
+
+    }
+
+  }
+
+}

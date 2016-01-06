@@ -1,6 +1,6 @@
 package com.example;
 
-import static fr.ens.transcriptome.eoulsan.data.DataFormats.FILTERED_READS_FASTQ;
+import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.FILTERED_READS_FASTQ;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,23 +8,23 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import fr.ens.transcriptome.eoulsan.EoulsanException;
-import fr.ens.transcriptome.eoulsan.annotations.LocalOnly;
-import fr.ens.transcriptome.eoulsan.bio.FastqFormat;
-import fr.ens.transcriptome.eoulsan.core.Context;
-import fr.ens.transcriptome.eoulsan.core.Parameter;
-import fr.ens.transcriptome.eoulsan.data.DataFormat;
-import fr.ens.transcriptome.eoulsan.data.DataFormats;
-import fr.ens.transcriptome.eoulsan.design.Design;
-import fr.ens.transcriptome.eoulsan.design.Sample;
-import fr.ens.transcriptome.eoulsan.steps.AbstractStep;
-import fr.ens.transcriptome.eoulsan.steps.StepResult;
-import fr.ens.transcriptome.eoulsan.steps.mapping.MappingCounters;
-import fr.ens.transcriptome.eoulsan.util.BinariesInstaller;
-import fr.ens.transcriptome.eoulsan.util.FileUtils;
-import fr.ens.transcriptome.eoulsan.util.ProcessUtils;
-import fr.ens.transcriptome.eoulsan.util.Reporter;
-import fr.ens.transcriptome.eoulsan.util.StringUtils;
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
+import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
+import fr.ens.biologie.genomique.eoulsan.core.Context;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
+import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.design.Sample;
+import fr.ens.biologie.genomique.eoulsan.steps.AbstractStep;
+import fr.ens.biologie.genomique.eoulsan.steps.StepResult;
+import fr.ens.biologie.genomique.eoulsan.steps.mapping.MappingCounters;
+import fr.ens.biologie.genomique.eoulsan.util.BinariesInstaller;
+import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
+import fr.ens.biologie.genomique.eoulsan.util.Reporter;
+import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 
 //The "@LocalOnly" annotation means that the Eoulsan workflow engine will 
 //only use this step in local mode. The two other annotations are "@HadoopOnly" 

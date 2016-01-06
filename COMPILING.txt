@@ -21,4 +21,4 @@ see the instruction in the running section of the INSTALL file.
 
   You can download the latest version of Eoulsan on our website :
 
-    http://transcriptome.ens.fr/eoulsan
+    http://outils.genomique.biologie.ens.fr/eoulsan

@@ -20,7 +20,7 @@
  * or to join the Eoulsan Google group, visit the home page
  * at:
  *
- *      http://www.transcriptome.ens.fr/eoulsan
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
  *
  */
 -->
@@ -83,21 +83,21 @@
 			<ul>
                           <li>Read files from two different conditions</li>
 			  <ul>
-				<li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/s1.fq.bz2">Read file 1 (bzip2)</a></li>
-                                <li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/s2.fq.bz2">Read file 2 (bzip2)</a></li>
+				<li><a href="http://outils.genomique.biologie.ens.fr/leburon/downloads/eoulsan-samples/s1.fq.bz2">Read file 1 (bzip2)</a></li>
+                                <li><a href="http://outils.genomique.biologie.ens.fr/leburon/downloads/eoulsan-samples/s2.fq.bz2">Read file 2 (bzip2)</a></li>
 			  </ul>
 
 			  <br/>
 			  <li>Mouse genome file</li>
 			    <ul>
-                              <li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/genome.fasta.bz2">Genome file in fasta format (bzip2)</a></li>
+                              <li><a href="http://outils.genomique.biologie.ens.fr/leburon/downloads/eoulsan-samples/genome.fasta.bz2">Genome file in fasta format (bzip2)</a></li>
                             </ul>
 
 			  <br/>
 
 			  <li>Annotation file</li>
 			    <ul>
-                              <li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/annotation.gff.bz2">Annotation file in GFF3 format (bzip2)</a></li>
+                              <li><a href="http://outils.genomique.biologie..ens.fr/leburon/downloads/eoulsan-samples/annotation.gff.bz2">Annotation file in GFF3 format (bzip2)</a></li>
                             </ul>
 
 

@@ -20,7 +20,7 @@
  * or to join the Eoulsan Google group, visit the home page
  * at:
  *
- *      http://www.transcriptome.ens.fr/eoulsan
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
  *
  */
 -->
@@ -43,7 +43,7 @@
         <li><a href="download.html">Download Eoulsan</a> on our website.</li>
 
 <source>
-$ wget http://transcriptome.ens.fr/eoulsan/eoulsan-@@@VERSION@@@.tar.gz
+$ wget http://outils.genomique.biologie.ens.fr/eoulsan/eoulsan-@@@VERSION@@@.tar.gz
 </source>
 
         <li>Unzip the archive where you want install the software.</li>

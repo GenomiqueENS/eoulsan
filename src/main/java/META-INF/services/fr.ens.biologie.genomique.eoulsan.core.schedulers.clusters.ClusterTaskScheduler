@@ -1,0 +1,4 @@
+# Fake scheduler, only for tests
+fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters.DummyTaskScheduler
+fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters.HTCondorTaskScheduler
+fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters.TGCCTaskScheduler

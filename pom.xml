@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>fr.ens.transcriptome</groupId>
+	<groupId>fr.ens.biologie.genomique</groupId>
 	<artifactId>eoulsan</artifactId>
 	<packaging>jar</packaging>
 	<version>2.0-beta1-SNAPSHOT</version>
@@ -10,7 +10,7 @@
 	<description>
 		A pipeline for NGS analysis.
 	</description>
-	<url>http://transcriptome.ens.fr/eoulsan2</url>
+	<url>http://outils.genomique.biologie.ens.fr/eoulsan2</url>
 	<inceptionYear>2010</inceptionYear>
 
 	<properties>
@@ -27,7 +27,7 @@
 
 	<organization>
 		<name>École normale supérieure genomic platform</name>
-		<url>http://transcriptome.ens.fr/sgdb</url>
+		<url>https://genomique.biologie.ens.fr/sgdb</url>
 	</organization>
 
 	<developers>
@@ -40,7 +40,7 @@
 				École normale supérieure, IBENS, Genomic platform
 			</organization>
 			<organizationUrl>
-				http://transcriptome.ens.fr/sgdb/
+				https://genomique.biologie.ens.fr/
 			</organizationUrl>
 			<roles>
 				<role>Lead Developer</role>
@@ -60,7 +60,7 @@
 				École normale supérieure, IBENS, Genomic platform
 			</organization>
 			<organizationUrl>
-				http://transcriptome.ens.fr/sgdb/
+				https://genomique.biologie.ens.fr/
 			</organizationUrl>
 			<roles>
 				<role>Developer</role>
@@ -77,7 +77,7 @@
 				École normale supérieure, IBENS, Genomic platform
 			</organization>
 			<organizationUrl>
-				http://transcriptome.ens.fr/sgdb/
+				https://genomique.biologie.ens.fr/
 			</organizationUrl>
 			<roles>
 				<role>Developer</role>
@@ -94,7 +94,7 @@
 				École normale supérieure, IBENS, Genomic platform
 			</organization>
 			<organizationUrl>
-				http://transcriptome.ens.fr/sgdb/
+				https://genomique.biologie.ens.fr/
 			</organizationUrl>
 			<roles>
 				<role>Developer</role>
@@ -111,7 +111,7 @@
 				École normale supérieure, IBENS, Genomic platform
 			</organization>
 			<organizationUrl>
-				http://transcriptome.ens.fr/sgdb/
+				https://genomique.biologie.ens.fr/
 			</organizationUrl>
 			<roles>
 				<role>Developer</role>
@@ -129,7 +129,7 @@
 				École normale supérieure, IBENS, Genomic platform
 			</organization>
 			<organizationUrl>
-				http://transcriptome.ens.fr/sgdb/
+				https://genomique.biologie.ens.fr/
 			</organizationUrl>
 			<roles>
 				<role>Developer</role>
@@ -148,7 +148,7 @@
 				École normale supérieure, IBENS, Genomic platform
 			</organization>
 			<organizationUrl>
-				http://transcriptome.ens.fr/sgdb/
+				https://genomique.biologie.ens.fr/
 			</organizationUrl>
 			<roles>
 				<role>Developer</role>
@@ -165,7 +165,7 @@
 				École normale supérieure, IBENS, Genomic platform
 			</organization>
 			<organizationUrl>
-				http://transcriptome.ens.fr/sgdb/
+				https://genomique.biologie.ens.fr/
 			</organizationUrl>
 			<roles>
 				<role>Project manager and documentation review</role>

@@ -4,8 +4,8 @@
   <prefix>genome</prefix>
   <onefileperanalysis>true</onefileperanalysis>
   <designmetadatakey>GenomeFile</designmetadatakey>
-  <generator>fr.ens.transcriptome.eoulsan.steps.generators.GFFFastaGeneratorStep</generator>
-  <checker>fr.ens.transcriptome.eoulsan.checkers.GenomeChecker</checker>
+  <generator>fr.ens.biologie.genomique.eoulsan.steps.generators.GFFFastaGeneratorStep</generator>
+  <checker>fr.ens.biologie.genomique.eoulsan.checkers.GenomeChecker</checker>
   <extensions>
   	<extension default="true">.fasta</extension>
   	<extension>.fa</extension>

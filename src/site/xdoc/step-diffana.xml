@@ -8,7 +8,7 @@
 	Biologie de l'École Normale Supérieure and * the individual authors. These
 	should be listed in @author doc * comments. * * For more information on the
 	Eoulsan project and its aims, * or to join the Eoulsan Google group, visit
-	the home page * at: * * http://www.transcriptome.ens.fr/eoulsan * */ -->
+	the home page * at: * * http://outils.genomique.biologie.ens.fr/eoulsan * */ -->
 <document xmlns="http://maven.apache.org/XDOC/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 

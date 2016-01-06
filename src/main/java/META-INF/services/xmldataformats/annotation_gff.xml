@@ -5,7 +5,7 @@
   <onefileperanalysis>true</onefileperanalysis>
   <designmetadatakey>GffFile</designmetadatakey>
   <generator/>
-  <checker>fr.ens.transcriptome.eoulsan.checkers.AnnotationChecker</checker>
+  <checker>fr.ens.biologie.genomique.eoulsan.checkers.AnnotationChecker</checker>
   <extensions>
     <extension default="true">.gff</extension>
     <extension>.gff3</extension>

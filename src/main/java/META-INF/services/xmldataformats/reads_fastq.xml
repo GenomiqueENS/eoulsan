@@ -5,9 +5,9 @@
   <prefix>reads</prefix>
   <samplemetadatakey>Reads</samplemetadatakey>
   <maxfilescount>2</maxfilescount>
-  <checker>fr.ens.transcriptome.eoulsan.checkers.ReadsChecker</checker>
-  <splitter>fr.ens.transcriptome.eoulsan.splitermergers.FastqSplitter</splitter>
-  <merger>fr.ens.transcriptome.eoulsan.splitermergers.FastqMerger</merger>
+  <checker>fr.ens.biologie.genomique.eoulsan.checkers.ReadsChecker</checker>
+  <splitter>fr.ens.biologie.genomique.eoulsan.splitermergers.FastqSplitter</splitter>
+  <merger>fr.ens.biologie.genomique.eoulsan.splitermergers.FastqMerger</merger>
   <extensions>
   	<extension default="true">.fq</extension>
   	<extension>.fastq</extension>
