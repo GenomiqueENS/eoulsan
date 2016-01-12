@@ -29,7 +29,6 @@ public class AbstractTranslatorTest {
     transl.addRow(ARRAY_ROW_ONE);
     AddIdentifierTranslator AddIdTransl = new AddIdentifierTranslator(transl);
     String[] fields = AddIdTransl.getFields();
-    System.out.println(fields[0]);
     assertTrue(AddIdTransl.isField(fields[0]));
     assertFalse(AddIdTransl.isField("missingField"));
     assertFalse(AddIdTransl.isField(null));
