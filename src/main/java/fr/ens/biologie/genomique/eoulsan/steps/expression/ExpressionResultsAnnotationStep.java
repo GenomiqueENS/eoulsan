@@ -35,16 +35,18 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESU
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Splitter;
 
+import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
@@ -307,9 +309,9 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
       }
 
       @Override
-      public String[] getFields() {
+      public List<String> getFields() {
 
-        return new String[] {"EnsemblGeneID"};
+        return Collections.singletonList("EnsemblGeneID");
       }
     };
 

@@ -25,7 +25,9 @@
 package fr.ens.biologie.genomique.eoulsan.translators;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,7 +42,7 @@ public class JoinTranslator extends AbstractTranslator {
   private final Translator translator1;
   private final Translator translator2;
   private String joinField;
-  private final String[] fields;
+  private final List<String> fields;
   private final Map<String, Translator> mapTranslator = new HashMap<>();
   private final boolean returnTranslation1IfNoTranslation;
 
@@ -49,7 +51,7 @@ public class JoinTranslator extends AbstractTranslator {
    * @return an ordered list of the translator fields.
    */
   @Override
-  public String[] getFields() {
+  public List<String> getFields() {
 
     return this.fields;
   }
@@ -66,7 +68,7 @@ public class JoinTranslator extends AbstractTranslator {
     final Translator t = this.mapTranslator.get(field);
 
     if (t == null) {
-      return null;
+      throw new NullPointerException("Associated Translator is null.");
     }
     if (t == this.translator1) {
       return this.translator1.translateField(id, field);
@@ -187,7 +189,7 @@ public class JoinTranslator extends AbstractTranslator {
       }
     }
 
-    this.fields = fieldList.toArray(new String[fieldList.size()]);
+    this.fields = Collections.unmodifiableList(fieldList);
 
   }
 

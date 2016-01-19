@@ -24,6 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.translators;
 
+import java.util.List;
+
 /**
  * This class define a translator that add commons links information.
  * @since 2.0
@@ -38,7 +40,7 @@ public class CommonLinksInfoTranslator extends AbstractTranslator {
    * @return an ordered list of the translator fields.
    */
   @Override
-  public String[] getFields() {
+  public List<String> getFields() {
 
     return this.translator.getFields();
   }
@@ -82,7 +84,8 @@ public class CommonLinksInfoTranslator extends AbstractTranslator {
   public String getLinkInfo(final String translatedId, final String field) {
 
     if (translatedId == null || field == null) {
-      return null;
+      throw new NullPointerException(
+          "field and translateId arguments can't be null.");
     }
 
     if (field.equals("GI")) {
@@ -130,7 +133,7 @@ public class CommonLinksInfoTranslator extends AbstractTranslator {
    * @return a array of string with the identifiers
    */
   @Override
-  public String[] getIds() {
+  public List<String> getIds() {
 
     return this.translator.getIds();
   }

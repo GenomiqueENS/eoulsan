@@ -2,10 +2,11 @@ package fr.ens.biologie.genomique.eoulsan.translator;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.translators.ChangeIndexTranslator;
 import fr.ens.biologie.genomique.eoulsan.translators.ConcatTranslator;
 import fr.ens.biologie.genomique.eoulsan.translators.MultiColumnTranslator;
 
@@ -36,12 +37,12 @@ public class ConcatTranslatorTest {
   @Test
   public void testAddTranslator() {
     ConcatTranslator concatTransl = new ConcatTranslator(translA, translB);
-    String[] fields = concatTransl.getFields();
-    assertEquals("Col2", fields[0]);
-    assertEquals("Col3", fields[1]);
-    assertEquals("CommonCol", fields[2]);
-    assertEquals("Col6", fields[3]);
-    assertEquals("Col8", fields[4]);
+    List<String> fields = concatTransl.getFields();
+    assertEquals("Col2", fields.get(0));
+    assertEquals("Col3", fields.get(1));
+    assertEquals("CommonCol", fields.get(2));
+    assertEquals("Col6", fields.get(3));
+    assertEquals("Col8", fields.get(4));
   }
 
 }

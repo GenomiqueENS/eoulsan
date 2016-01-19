@@ -2,6 +2,9 @@ package fr.ens.biologie.genomique.eoulsan.translator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
@@ -45,8 +48,8 @@ public class CommonLinksInfoTranslatorTest {
 
     CommonLinksInfoTranslator cmLinkInfoTransl =
         new CommonLinksInfoTranslator(transl);
-    String[] fields = cmLinkInfoTransl.getFields();
-    assertEquals("Col2", fields[0]);
+    List<String> fields = cmLinkInfoTransl.getFields();
+    assertEquals("Col2", fields.get(0));
   }
 
   @Test
@@ -64,7 +67,6 @@ public class CommonLinksInfoTranslatorTest {
     CommonLinksInfoTranslator cmLinkInfoTransl =
         new CommonLinksInfoTranslator(transl);
     assertNull(cmLinkInfoTransl.getLinkInfo(new String(), new String()));
-
 
     assertEquals("http://www.ncbi.nlm.nih.gov/nuccore/TranslatedId",
         cmLinkInfoTransl.getLinkInfo("TranslatedId", "GI"));

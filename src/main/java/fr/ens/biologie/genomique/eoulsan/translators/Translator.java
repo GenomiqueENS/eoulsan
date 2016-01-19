@@ -24,6 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.translators;
 
+import java.util.List;
+
 /**
  * This interface define how retrieve annotation for a feature.
  * @since 2.0
@@ -47,14 +49,14 @@ public interface Translator {
    * Get an ordered list of the translator fields
    * @return an ordered list of the translator fields.
    */
-  String[] getFields();
+  List<String> getFields();
 
   /**
    * Get all the translation for a feature
    * @param id Identifier of the feature
    * @return An array with the annotation of the Feature
    */
-  String[] translate(String id);
+  List<String> translate(String id);
 
   /**
    * Get a translation for a feature
@@ -76,7 +78,7 @@ public interface Translator {
    * @param ids Identifiers of the features
    * @return An array with the annotation of the Feature
    */
-  String[][] translate(String[] ids);
+  List<List<String>> translate(List<String> ids);
 
   /**
    * Get translations for features
@@ -84,14 +86,14 @@ public interface Translator {
    * @param field the field to get
    * @return An array with the annotation of the Feature
    */
-  String[] translateField(String[] ids, String field);
+  List<String> translateField(List<String> ids, String field);
 
   /**
    * Get translations for features. The field is the default field.
    * @param ids Identifiers of the features
    * @return An array with the annotation of the Feature
    */
-  String[] translateField(String[] ids);
+  List<String> translateField(List<String> ids);
 
   /**
    * Test if the link information is available for the field
@@ -114,7 +116,7 @@ public interface Translator {
    * @param field field of the id
    * @return a array of links for the translated ids
    */
-  String[] getLinkInfo(String[] translatedIds, String field);
+  List<String> getLinkInfo(List<String> translatedIds, String field);
 
   /**
    * Test if the field exists.
@@ -133,6 +135,6 @@ public interface Translator {
    * Get the available identifiers by the translator if possible.
    * @return a array of string with the identifiers
    */
-  String[] getIds();
+  List<String> getIds();
 
 }

@@ -30,6 +30,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.translators.MultiColumnTranslator;
@@ -147,18 +149,19 @@ public class MultiColumnTranslatorReader {
         continue;
       }
 
-      String[] cols = line.split(separator);
-
+      // String[] cols = line.split(separator);
+      List<String> cols = new ArrayList<>(line.split(separator).length);
       if (removeQuotes) {
-        for (int i = 0; i < cols.length; i++) {
-          cols[i] = removeDoubleQuotesAndTrim(cols[i]);
+        for (int i = 0; i < cols.size(); i++) {
+          cols.set(i, removeDoubleQuotesAndTrim(cols.get(i)));
         }
       }
 
       if (result == null && this.noHeader) {
-        final String[] header = new String[cols.length];
-        for (int i = 0; i < header.length; i++) {
-          header[i] = "#" + i;
+        // final String[] header = new String[cols.length];
+        final List<String> header = new ArrayList<>(cols.size());
+        for (int i = 0; i < header.size(); i++) {
+          header.add("#" + i);
         }
         result = new MultiColumnTranslator(header);
       }

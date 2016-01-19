@@ -31,6 +31,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.translators.io.TranslatorOutputFormat;
@@ -73,7 +76,7 @@ public class TranslatorUtils {
       throw new NullPointerException("OutputFormat is null");
     }
 
-    String[] translatorFieldnames = translator.getFields();
+    List<String> translatorFieldnames = translator.getFields();
 
     final BufferedReader reader =
         new BufferedReader(new InputStreamReader(is, Globals.DEFAULT_CHARSET));
@@ -82,7 +85,8 @@ public class TranslatorUtils {
 
     while ((line = reader.readLine()) != null) {
 
-      final String[] fields = line.split("\t");
+      final List<String> fields =
+          new ArrayList<>(Arrays.asList(line.split("\t")));
 
       if (first) {
 
@@ -114,7 +118,8 @@ public class TranslatorUtils {
         // Write annotation
         for (final String field : translatorFieldnames) {
 
-          final String valueToTranslate = fields[fieldToTranslate];
+          final String valueToTranslate = fields.get(fieldToTranslate);
+
           final String value;
 
           if (field == null) {

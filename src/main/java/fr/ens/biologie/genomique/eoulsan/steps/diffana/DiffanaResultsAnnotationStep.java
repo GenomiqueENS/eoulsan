@@ -34,6 +34,7 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATED_EXPRE
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -294,14 +295,10 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
   /**
    * Load translator annotation.
    * @param annotationFile the annotation file to use
-   * @return a Translator object with the additional annotation
-<<<<<<< HEAD
+   * @return a Translator object with the additional annotation <<<<<<< HEAD
    * @throws EoulsanIOException if an error occurs while reading additional
    *           annotation
    * @throws IOException if an error occurs while reading additional annotation
-=======
-   * @throws IOException if an error occurs while reading additionnal annotation
->>>>>>> new_design
    */
   private Translator loadTranslator(final DataFile annotationFile)
       throws IOException {
@@ -326,9 +323,9 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
       }
 
       @Override
-      public String[] getFields() {
+      public List<String> getFields() {
 
-        return new String[] {"EnsemblGeneID"};
+        return Collections.singletonList("EnsemblGeneID");
       }
     };
 

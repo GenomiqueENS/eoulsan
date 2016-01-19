@@ -24,7 +24,11 @@
 
 package fr.ens.biologie.genomique.eoulsan.translators;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -39,7 +43,7 @@ public class UniqueIdentifierTranslator extends AbstractTranslator {
 
   private final Map<String, String> mapUniqueId = new HashMap<>();
   private final Map<String, String> reverseMapUniqueId = new HashMap<>();
-  private String[] fields;
+  private List<String> fields;
   private String newFieldName = DEFAULT_FIELD;
 
   private final Translator translator;
@@ -49,7 +53,7 @@ public class UniqueIdentifierTranslator extends AbstractTranslator {
    * @return an ordered list of the translator fields.
    */
   @Override
-  public String[] getFields() {
+  public List<String> getFields() {
 
     return this.fields;
   }
@@ -99,7 +103,7 @@ public class UniqueIdentifierTranslator extends AbstractTranslator {
   // Other methods
   //
 
-  private void translateIds(final String[] ids, final String field) {
+  private void translateIds(final List<String> ids, final String field) {
 
     final Translator translator = this.translator;
 
@@ -177,15 +181,17 @@ public class UniqueIdentifierTranslator extends AbstractTranslator {
    */
   public void updateFields() {
 
-    String[] tFields = this.translator.getFields();
+    List<String> tFields = this.translator.getFields();
 
     if (tFields == null) {
-      this.fields = new String[] {this.newFieldName};
+      this.fields = Collections.singletonList(this.newFieldName);
     } else {
 
-      this.fields = new String[tFields.length + 1];
-      this.fields[0] = this.newFieldName;
-      System.arraycopy(tFields, 0, this.fields, 1, tFields.length);
+      // this.fields = new String[tFields.length + 1];
+      this.fields = new ArrayList<>();
+      this.fields.add(this.newFieldName);
+      // System.arraycopy(tFields, 0, this.fields, 1, tFields.size());
+      this.fields.addAll(tFields);
     }
 
   }
@@ -213,9 +219,10 @@ public class UniqueIdentifierTranslator extends AbstractTranslator {
     return new AbstractTranslator() {
 
       @Override
-      public String[] getFields() {
+      public List<String> getFields() {
 
-        return new String[] {UniqueIdentifierTranslator.this.newFieldName};
+        return Collections
+            .singletonList(UniqueIdentifierTranslator.this.newFieldName);
       }
 
       @Override
@@ -241,7 +248,7 @@ public class UniqueIdentifierTranslator extends AbstractTranslator {
       final Translator translator) {
 
     if (translator == null) {
-      return null;
+      throw new NullPointerException("Translator argument can't is null.");
     }
 
     return translator.getDefaultField();
@@ -256,7 +263,7 @@ public class UniqueIdentifierTranslator extends AbstractTranslator {
    * @param ids Identifier to set unique
    * @param translator Translator to use
    */
-  public UniqueIdentifierTranslator(final String[] ids,
+  public UniqueIdentifierTranslator(final List<String> ids,
       final Translator translator) {
 
     this(ids, translator, getTranslatorDefaultField(translator), null);
@@ -268,7 +275,7 @@ public class UniqueIdentifierTranslator extends AbstractTranslator {
    * @param translator Translator to use
    * @param translatorField field of the translator to use
    */
-  public UniqueIdentifierTranslator(final String[] ids,
+  public UniqueIdentifierTranslator(final List<String> ids,
       final Translator translator, final String translatorField) {
 
     this(ids, translator, translatorField, null);
@@ -281,7 +288,7 @@ public class UniqueIdentifierTranslator extends AbstractTranslator {
    * @param translatorField field of the translator to use
    * @param newFieldName the name of new field
    */
-  public UniqueIdentifierTranslator(final String[] ids,
+  public UniqueIdentifierTranslator(final List<String> ids,
       final Translator translator, final String translatorField,
       final String newFieldName) {
 
@@ -295,10 +302,15 @@ public class UniqueIdentifierTranslator extends AbstractTranslator {
 
     this.translator = translator;
 
-    translateIds(ids.clone(), translatorField);
+    translateIds(Collections.unmodifiableList(ids), translatorField);
 
     setNewFieldName(newFieldName);
     updateFields();
+  }
+
+  public UniqueIdentifierTranslator(String[] ids, final Translator translator) {
+
+    this(Arrays.asList(ids), translator);
   }
 
 }
