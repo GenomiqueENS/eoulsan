@@ -719,7 +719,7 @@
 									<attribute name="Implementation-Version" value="build${build.number}"/>
 									<attribute name="Implementation-Vendor" value="${project.organization.name}"/>
 
-									<attribute name="Main-Class" value="fr.ens.transcriptome.eoulsan.Main" />
+									<attribute name="Main-Class" value="fr.ens.biologie.genomique.eoulsan.Main" />
 								</manifest>
 							</tasks>
 						</configuration>
