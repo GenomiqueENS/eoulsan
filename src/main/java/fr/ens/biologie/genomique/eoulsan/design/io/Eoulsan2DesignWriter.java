@@ -86,6 +86,7 @@ public class Eoulsan2DesignWriter implements DesignWriter {
       bw.append(Eoulsan2DesignReader.DESIGN_FORMAT_VERSION_METADATA_KEY);
       bw.append(EQUAL_SEPARATOR);
       bw.append(Eoulsan2DesignReader.FORMAT_VERSION);
+      bw.append(NEWLINE);
     }
 
     for (Map.Entry<String, String> e : design.getMetadata().entrySet()) {
@@ -101,7 +102,6 @@ public class Eoulsan2DesignWriter implements DesignWriter {
       bw.append(EXPERIMENT_SECTION);
       bw.append(NEWLINE);
     }
-
     for (Experiment e : design.getExperiments()) {
       final String expId = e.getId();
       bw.append(EXPERIMENT_FIELD_PREFIX
@@ -115,7 +115,8 @@ public class Eoulsan2DesignWriter implements DesignWriter {
       }
       bw.append(NEWLINE);
     }
-    bw.append(NEWLINE);
+
+    // Write column names
     bw.append(COLUMN_SECTION);
     bw.append(NEWLINE);
 
