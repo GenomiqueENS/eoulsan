@@ -396,29 +396,29 @@ public class DesignBuilder {
 
   /**
    * Add all the sample from a Bclfastq samplesheet.
-   * @param casavaDesign The Casava design object
+   * @param samplesheet The Bcl2fastq samplesheet object
    * @param projectName name of the project
-   * @param casavaOutputDir the output directory of Casava demultiplexing
-   * @throws EoulsanException if an error occurs while adding the casava design
+   * @param bcl2fastqOutputDir the output directory of Bcl2fastq demultiplexing
+   * @throws EoulsanException if an error occurs while adding the Bcl2fastq samplesheet
    */
-  public void addBcl2FastqSamplesheetProject(final SampleSheet casavaDesign,
-      final String projectName, final File casavaOutputDir)
+  public void addBcl2FastqSamplesheetProject(final SampleSheet samplesheet,
+      final String projectName, final File bcl2fastqOutputDir)
           throws EoulsanException {
 
-    if (casavaDesign == null || casavaOutputDir == null) {
+    if (samplesheet == null || bcl2fastqOutputDir == null) {
       return;
     }
 
-    if (!casavaOutputDir.exists() || !casavaOutputDir.isDirectory()) {
+    if (!bcl2fastqOutputDir.exists() || !bcl2fastqOutputDir.isDirectory()) {
       throw new EoulsanException(
-          "The casava output directory does not exists: " + casavaOutputDir);
+          "The Bcl2fastq output directory does not exists: " + bcl2fastqOutputDir);
     }
 
     final boolean Bcl2Fastq1 =
-        new File(casavaOutputDir.getPath() + "/Project_" + projectName)
+        new File(bcl2fastqOutputDir.getPath() + "/Project_" + projectName)
             .isDirectory();
 
-    for (fr.ens.biologie.genomique.aozan.illumina.samplesheet.Sample sample : casavaDesign) {
+    for (fr.ens.biologie.genomique.aozan.illumina.samplesheet.Sample sample : samplesheet) {
 
       final String sampleProject = sample.getSampleProject();
       final String sampleId = sample.getSampleId();
@@ -438,10 +438,10 @@ public class DesignBuilder {
       }
       File dataDir;
       if (Bcl2Fastq1) {
-        dataDir = new File(casavaOutputDir.getPath()
+        dataDir = new File(bcl2fastqOutputDir.getPath()
             + "/Project_" + sampleProject + "/Sample_" + sampleId);
       } else {
-        dataDir = new File(casavaOutputDir.getPath() + "/" + sampleProject);
+        dataDir = new File(bcl2fastqOutputDir.getPath() + "/" + sampleProject);
       }
       // Test if the directory with fastq files exists
       if (!dataDir.exists() || !dataDir.isDirectory()) {
@@ -491,31 +491,31 @@ public class DesignBuilder {
 
   /**
    * Add all the samples from a Bcl2Fastq samplesheet.
-   * @param casavaDesignFile the path to the Casava design
+   * @param samplesheetFile the path to the Casava design
    * @param projectName the name of the project
    * @throws EoulsanException if an error occurs while reading the Casava design
    */
-  public void addBcl2FastqSamplesheetProject(final File casavaDesignFile,
+  public void addBcl2FastqSamplesheetProject(final File samplesheetFile,
       final String projectName) throws EoulsanException {
 
-    if (casavaDesignFile == null) {
+    if (samplesheetFile == null) {
       return;
     }
 
-    getLogger().info("Add Casava design file "
-        + casavaDesignFile + " to design with " + (projectName == null
+    getLogger().info("Add Bcl2fastq samplesheet file "
+        + samplesheetFile + " to design with " + (projectName == null
             ? "no project filter." : projectName + " project filter."));
 
     final File baseDir;
     final File file;
 
-    if (!casavaDesignFile.exists()) {
+    if (!samplesheetFile.exists()) {
       throw new EoulsanException(
-          "The casava design file does not exists: " + casavaDesignFile);
+          "The Bcl2fastq samplesheet file does not exists: " + samplesheetFile);
     }
 
-    if (casavaDesignFile.isDirectory()) {
-      baseDir = casavaDesignFile;
+    if (samplesheetFile.isDirectory()) {
+      baseDir = samplesheetFile;
 
       final File[] files = baseDir.listFiles(new FilenameFilter() {
 
@@ -530,18 +530,18 @@ public class DesignBuilder {
 
       if (files == null || files.length == 0) {
         throw new EoulsanException(
-            "No Casava design file found in directory: " + baseDir);
+            "No Bcl2fastq samplesheet file found in directory: " + baseDir);
       }
 
       if (files.length > 1) {
         throw new EoulsanException(
-            "More than one Casava design file found in directory: " + baseDir);
+            "More than one Bcl2fastq samplesheet found in directory: " + baseDir);
       }
 
       file = files[0];
     } else {
-      baseDir = casavaDesignFile.getParentFile();
-      file = casavaDesignFile;
+      baseDir = samplesheetFile.getParentFile();
+      file = samplesheetFile;
     }
 
     try {
