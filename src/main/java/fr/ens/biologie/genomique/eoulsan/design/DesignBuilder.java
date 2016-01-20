@@ -311,22 +311,22 @@ public class DesignBuilder {
         return;
       }
 
-      final String sampleName;
+      final String sampleId;
 
       if (this.prefixMap.containsKey(entry.prefix)) {
-        sampleName = this.prefixMap.get(entry.prefix);
+        sampleId = this.prefixMap.get(entry.prefix);
       } else {
-        sampleName = entry.sampleName;
-        this.prefixMap.put(entry.prefix, sampleName);
+        sampleId = entry.sampleName;
+        this.prefixMap.put(entry.prefix, sampleId);
       }
 
       final List<FastqEntry> sampleEntries;
 
-      if (!this.fastqMap.containsKey(sampleName)) {
+      if (!this.fastqMap.containsKey(sampleId)) {
         sampleEntries = new ArrayList<>();
-        this.fastqMap.put(sampleName, sampleEntries);
+        this.fastqMap.put(sampleId, sampleEntries);
       } else {
-        sampleEntries = this.fastqMap.get(sampleName);
+        sampleEntries = this.fastqMap.get(sampleId);
       }
 
       // Don't add previously added file
@@ -399,7 +399,8 @@ public class DesignBuilder {
    * @param samplesheet The Bcl2fastq samplesheet object
    * @param projectName name of the project
    * @param bcl2fastqOutputDir the output directory of Bcl2fastq demultiplexing
-   * @throws EoulsanException if an error occurs while adding the Bcl2fastq samplesheet
+   * @throws EoulsanException if an error occurs while adding the Bcl2fastq
+   *           samplesheet
    */
   public void addBcl2FastqSamplesheetProject(final SampleSheet samplesheet,
       final String projectName, final File bcl2fastqOutputDir)
@@ -411,7 +412,8 @@ public class DesignBuilder {
 
     if (!bcl2fastqOutputDir.exists() || !bcl2fastqOutputDir.isDirectory()) {
       throw new EoulsanException(
-          "The Bcl2fastq output directory does not exists: " + bcl2fastqOutputDir);
+          "The Bcl2fastq output directory does not exists: "
+              + bcl2fastqOutputDir);
     }
 
     final boolean Bcl2Fastq1 =
@@ -470,12 +472,13 @@ public class DesignBuilder {
       })) {
 
         final List<FastqEntry> list;
+        final String normalizedSampleId = sampleId.replaceAll("[^A-Za-z0-9]+", "");
 
-        if (this.fastqMap.containsKey(sampleId)) {
-          list = this.fastqMap.get(sampleId);
+        if (this.fastqMap.containsKey(normalizedSampleId)) {
+          list = this.fastqMap.get(normalizedSampleId);
         } else {
           list = new ArrayList<>();
-          this.fastqMap.put(sampleId, list);
+          this.fastqMap.put(normalizedSampleId, list);
         }
 
         try {
@@ -535,7 +538,8 @@ public class DesignBuilder {
 
       if (files.length > 1) {
         throw new EoulsanException(
-            "More than one Bcl2fastq samplesheet found in directory: " + baseDir);
+            "More than one Bcl2fastq samplesheet found in directory: "
+                + baseDir);
       }
 
       file = files[0];
@@ -569,7 +573,7 @@ public class DesignBuilder {
 
     for (Map.Entry<String, List<FastqEntry>> e : this.fastqMap.entrySet()) {
 
-      final String sampleName = e.getKey();
+      final String sampleId = e.getKey();
       final List<List<FastqEntry>> files = findPairEndFiles(e.getValue());
       int count = 0;
 
@@ -578,12 +582,12 @@ public class DesignBuilder {
         final String desc = fes.get(0).sampleDesc;
         final String date = fes.get(0).sampleDate;
         final String operator = fes.get(0).sampleOperator;
-        final String condition = sampleName;
+        final String condition = sampleId;
 
         if (pairEndMode) {
 
-          final String finalSampleName = files.size() == 1
-              ? sampleName : sampleName + StringUtils.toLetter(count);
+          final String finalSampleId = files.size() == 1
+              ? sampleId : sampleId + StringUtils.toLetter(count);
 
           // Convert the list of DataFiles to a list of filenames
           final List<String> filenames = new ArrayList<>();
@@ -591,7 +595,7 @@ public class DesignBuilder {
             filenames.add(fe.path.getSource());
           }
 
-          addSample(result, finalSampleName, desc, condition, date, operator,
+          addSample(result, finalSampleId, desc, condition, date, operator,
               defaultFastqFormat, filenames, fes.get(0).path);
           count++;
 
@@ -599,10 +603,10 @@ public class DesignBuilder {
 
           for (FastqEntry fe : fes) {
 
-            final String finalSampleName = e.getValue().size() == 1
-                ? sampleName : sampleName + StringUtils.toLetter(count);
+            final String finalSampleId = e.getValue().size() == 1
+                ? sampleId : sampleId + StringUtils.toLetter(count);
 
-            addSample(result, finalSampleName, desc, condition, date, operator,
+            addSample(result, finalSampleId, desc, condition, date, operator,
                 defaultFastqFormat,
                 Collections.singletonList(fe.path.getSource()), fe.path);
             count++;
@@ -619,7 +623,7 @@ public class DesignBuilder {
   /**
    * Add a Sample to the Design object
    * @param design Design object
-   * @param sampleName name of the sample
+   * @param sampleId the id of the sample
    * @param desc description of the sample
    * @param condition condition
    * @param date date of the sample
@@ -629,7 +633,7 @@ public class DesignBuilder {
    * @param fileToCheck DataFile of the file to use to check fastq format
    * @throws EoulsanException if an error occurs while adding the sample
    */
-  private void addSample(final Design design, final String sampleName,
+  private void addSample(final Design design, final String sampleId,
       final String desc, final String condition, final String date,
       final String operator, final FastqFormat defaultFastqFormat,
       final List<String> filenames, final DataFile fileToCheck)
@@ -640,8 +644,8 @@ public class DesignBuilder {
     }
 
     // Create the sample
-    design.addSample(sampleName);
-    final Sample s = design.getSample(sampleName);
+    design.addSample(sampleId);
+    final Sample s = design.getSample(sampleId);
     final SampleMetadata smd = s.getMetadata();
 
     // Set the fastq file of the sample
