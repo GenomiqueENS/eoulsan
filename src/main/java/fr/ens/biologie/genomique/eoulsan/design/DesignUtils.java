@@ -495,11 +495,13 @@ public final class DesignUtils {
     // Sample metadata
     //
 
-    final List<String> sampleKeysToModify = new ArrayList<>();
+    final Set<String> sampleKeysToModify = new HashSet<>();
 
-    for (String field : design.getMetadata().keySet()) {
-      if (registry.getDataFormatForSampleMetadata(field) != null) {
-        sampleKeysToModify.add(field);
+    for (final Sample s : design.getSamples()) {
+      for (String field : s.getMetadata().keySet()) {
+        if (registry.getDataFormatForSampleMetadata(field) != null) {
+          sampleKeysToModify.add(field);
+        }
       }
     }
 
@@ -507,7 +509,6 @@ public final class DesignUtils {
 
       final SampleMetadata smd = s.getMetadata();
       for (final String field : sampleKeysToModify) {
-
         smd.set(field,
             replaceLocalPathBySymlinks(smd.getAsList(field), symlinksDir));
       }
@@ -516,11 +517,12 @@ public final class DesignUtils {
 
   private static List<String> replaceLocalPathBySymlinks(List<String> values,
       final DataFile symlinksDir) throws IOException {
-    final List<String> result = new ArrayList<>(values);
 
-    for (int i = 0; i < values.size(); i++) {
+    final List<String> result = new ArrayList<>();
 
-      final DataFile inFile = new DataFile(values.get(i));
+    for (String inputPath : values) {
+
+      final DataFile inFile = new DataFile(inputPath);
 
       if (inFile.isLocalFile()) {
 
@@ -541,7 +543,7 @@ public final class DesignUtils {
           throw new IOException("Cannot create symlink: " + outFile, e);
         }
 
-        values.set(i, inFile.getName());
+        result.add(inFile.getName());
       }
     }
 
