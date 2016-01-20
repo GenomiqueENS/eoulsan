@@ -46,6 +46,7 @@ import fr.ens.biologie.genomique.eoulsan.design.DesignBuilder;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.io.DesignWriter;
 import fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan1DesignWriter;
+import fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignWriter;
 
 /**
  * This class define an action to create design file.
@@ -56,6 +57,8 @@ public class CreateDesignAction extends AbstractAction {
 
   /** Name of this action. */
   public static final String ACTION_NAME = "createdesign";
+
+  private static final int DEFAULT_DESIGN_FORMAT = 2;
 
   @Override
   public String getName() {
@@ -84,6 +87,7 @@ public class CreateDesignAction extends AbstractAction {
     String sampleSheetPath = null;
     String samplesProjectName = null;
     boolean symlinks = false;
+    int formatVersion = DEFAULT_DESIGN_FORMAT;
 
     try {
 
@@ -128,6 +132,18 @@ public class CreateDesignAction extends AbstractAction {
 
         symlinks = true;
         argsOptions++;
+      }
+
+      // Eoulsan design format version option
+      if (line.hasOption("f")) {
+
+        try {
+          formatVersion = Integer.parseInt(line.getOptionValue("f").trim());
+        } catch (NumberFormatException e) {
+          Common.errorExit(e,
+              "Invalid Eoulsan design format version: " + e.getMessage());
+        }
+        argsOptions += 2;
       }
 
     } catch (ParseException e) {
@@ -178,11 +194,27 @@ public class CreateDesignAction extends AbstractAction {
     try {
 
       if (designFile.exists()) {
-        throw new IOException("Output design file "
-            + designFile + " already exists");
+        throw new IOException(
+            "Output design file " + designFile + " already exists");
       }
 
-      DesignWriter dw = new Eoulsan1DesignWriter(designFile.create());
+      final DesignWriter dw;
+
+      switch (formatVersion) {
+
+      case 1:
+        dw = new Eoulsan1DesignWriter(designFile.create());
+        break;
+
+      case 2:
+        dw = new Eoulsan2DesignWriter(designFile.create());
+        break;
+
+      default:
+        Common.showErrorMessageAndExit(
+            "Unknown Eoulsan design format version: " + formatVersion);
+        return;
+      }
 
       dw.write(design);
 
@@ -212,12 +244,12 @@ public class CreateDesignAction extends AbstractAction {
     // Help option
     options.addOption("h", "help", false, "Display this help");
 
-    // Casava design path option
+    // Bcl2fastq samplesheet path option
     options.addOption(OptionBuilder.withArgName("file").hasArg()
         .withDescription("Illumina samplesheet file").withLongOpt("samplesheet")
         .create('s'));
 
-    // Casava project option
+    // Bcl2fastq project option
     options.addOption(OptionBuilder.withArgName("name").hasArg()
         .withDescription("Illumina project name").withLongOpt("project-name")
         .create('n'));
@@ -229,6 +261,11 @@ public class CreateDesignAction extends AbstractAction {
     // Output option
     options.addOption(OptionBuilder.withArgName("file").hasArg()
         .withDescription("Output file").withLongOpt("output").create('o'));
+
+    // Eoulsan design format version
+    options.addOption(OptionBuilder.withArgName("version").hasArg()
+        .withDescription("Eoulsan design format version")
+        .withLongOpt("format-version").create('f'));
 
     return options;
   }
