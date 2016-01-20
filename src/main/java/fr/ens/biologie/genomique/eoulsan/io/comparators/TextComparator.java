@@ -32,7 +32,7 @@ import java.util.Collection;
 import com.google.common.collect.Sets;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.util.BloomFilterUtils;
+import fr.ens.biologie.genomique.eoulsan.util.EnhancedBloomFilter;
 
 /**
  * This class allow compare two text files with use BloomFilter.
@@ -48,7 +48,7 @@ public class TextComparator extends AbstractComparatorWithBloomFilter {
   private int numberElementsCompared;
 
   @Override
-  public boolean compareFiles(final BloomFilterUtils filter,
+  public boolean compareFiles(final EnhancedBloomFilter filter,
       final InputStream is) throws IOException {
 
     final BufferedReader reader =

@@ -37,7 +37,7 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 
-import fr.ens.biologie.genomique.eoulsan.util.BloomFilterUtils;
+import fr.ens.biologie.genomique.eoulsan.util.EnhancedBloomFilter;
 
 /**
  * This class allow compare two BAM file with use BloomFilter.
@@ -54,7 +54,7 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
   private int numberElementsCompared;
 
   @Override
-  public boolean compareFiles(final BloomFilterUtils filter,
+  public boolean compareFiles(final EnhancedBloomFilter filter,
       final InputStream in) throws IOException {
 
     String line = null;
@@ -118,11 +118,11 @@ public class BAMComparator extends AbstractComparatorWithBloomFilter {
   }
 
   @Override
-  protected BloomFilterUtils buildBloomFilter(final InputStream is)
+  protected EnhancedBloomFilter buildBloomFilter(final InputStream is)
       throws IOException {
 
     // Create filter
-    final BloomFilterUtils filter =
+    final EnhancedBloomFilter filter =
         initBloomFilter(getExpectedNumberOfElements());
 
     // Parse BAM file

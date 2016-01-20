@@ -35,7 +35,7 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.util.BloomFilterUtils;
+import fr.ens.biologie.genomique.eoulsan.util.EnhancedBloomFilter;
 
 /**
  * This class allow compare two SAM file with use BloomFilter.
@@ -52,7 +52,7 @@ public class SAMComparator extends AbstractComparatorWithBloomFilter {
   private int numberElementsCompared;
 
   @Override
-  public boolean compareFiles(final BloomFilterUtils filter,
+  public boolean compareFiles(final EnhancedBloomFilter filter,
       final InputStream is) throws IOException {
 
     final BufferedReader reader =

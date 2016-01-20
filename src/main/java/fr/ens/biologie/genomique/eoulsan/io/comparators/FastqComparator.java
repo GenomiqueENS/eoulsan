@@ -33,7 +33,7 @@ import com.google.common.collect.Sets;
 import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
 import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
 import fr.ens.biologie.genomique.eoulsan.bio.io.FastqReader;
-import fr.ens.biologie.genomique.eoulsan.util.BloomFilterUtils;
+import fr.ens.biologie.genomique.eoulsan.util.EnhancedBloomFilter;
 
 /**
  * This class allow compare two FastQ files with use BloomFilter.
@@ -49,7 +49,7 @@ public class FastqComparator extends AbstractComparatorWithBloomFilter {
   private int numberElementsCompared;
 
   @Override
-  public boolean compareFiles(final BloomFilterUtils filter,
+  public boolean compareFiles(final EnhancedBloomFilter filter,
       final InputStream is) throws IOException {
 
     final FastqReader fastqReader = new FastqReader(is);
@@ -80,10 +80,10 @@ public class FastqComparator extends AbstractComparatorWithBloomFilter {
   }
 
   @Override
-  protected BloomFilterUtils buildBloomFilter(final InputStream is)
+  protected EnhancedBloomFilter buildBloomFilter(final InputStream is)
       throws IOException {
 
-    final BloomFilterUtils filter =
+    final EnhancedBloomFilter filter =
         initBloomFilter(getExpectedNumberOfElements());
 
     final FastqReader fastqReader = new FastqReader(is);

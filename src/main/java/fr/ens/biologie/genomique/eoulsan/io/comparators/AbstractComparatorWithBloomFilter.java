@@ -35,7 +35,7 @@ import java.io.InputStreamReader;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
-import fr.ens.biologie.genomique.eoulsan.util.BloomFilterUtils;
+import fr.ens.biologie.genomique.eoulsan.util.EnhancedBloomFilter;
 
 /**
  * This abstract class define methods to compare files with use BloomFilter.
@@ -88,17 +88,17 @@ public abstract class AbstractComparatorWithBloomFilter
    * @return boolean true if files are same.
    * @throws IOException if an error occurs while comparing the files.
    */
-  abstract public boolean compareFiles(BloomFilterUtils filter, InputStream is)
+  abstract public boolean compareFiles(EnhancedBloomFilter filter, InputStream is)
       throws IOException;
 
   /**
    * Initialize BloomFilter with the expected number of elements.
    * @param expectedNumberOfElements expected number of elements
    */
-  protected static BloomFilterUtils initBloomFilter(
+  protected static EnhancedBloomFilter initBloomFilter(
       final int expectedNumberOfElements) {
 
-    return new BloomFilterUtils(expectedNumberOfElements);
+    return new EnhancedBloomFilter(expectedNumberOfElements);
   }
 
   /**
@@ -108,13 +108,13 @@ public abstract class AbstractComparatorWithBloomFilter
    * @param file source to create bloom filter
    * @return bloomFilter completed with the file
    */
-  public BloomFilterUtils getBloomFilter(final File file) throws IOException {
+  public EnhancedBloomFilter getBloomFilter(final File file) throws IOException {
 
     final File bloomFilterSer = new File(file.getAbsolutePath() + ".ser");
 
     if (this.useSerializeFile && bloomFilterSer.exists()) {
       // Retrieve marshalling bloom filter
-      return BloomFilterUtils.deserializationBloomFilter(bloomFilterSer);
+      return EnhancedBloomFilter.deserializationBloomFilter(bloomFilterSer);
     }
 
     final CompressionType zType =
@@ -122,12 +122,12 @@ public abstract class AbstractComparatorWithBloomFilter
 
     // Create new filter
     try (InputStream is = new FileInputStream(file)) {
-      final BloomFilterUtils bloomFilter =
+      final EnhancedBloomFilter bloomFilter =
           buildBloomFilter(zType.createInputStream(is));
 
       // If need serialize bloomFilter in file only for file
       if (isCreateSerializeFile(file, zType)) {
-        BloomFilterUtils.serializationBloomFilter(bloomFilterSer, bloomFilter);
+        EnhancedBloomFilter.serializationBloomFilter(bloomFilterSer, bloomFilter);
       }
 
       return bloomFilter;
@@ -140,9 +140,9 @@ public abstract class AbstractComparatorWithBloomFilter
    * @return BloomFilter corresponding to the input stream
    * @throws IOException
    */
-  protected BloomFilterUtils buildBloomFilter(final InputStream is)
+  protected EnhancedBloomFilter buildBloomFilter(final InputStream is)
       throws IOException {
-    final BloomFilterUtils filter =
+    final EnhancedBloomFilter filter =
         initBloomFilter(getExpectedNumberOfElements());
 
     final BufferedReader reader =

@@ -19,7 +19,7 @@ import com.google.common.hash.PrimitiveSink;
  * @author Sandrine Perrin
  * @since 2.0
  */
-public class BloomFilterUtils implements Serializable {
+public class EnhancedBloomFilter implements Serializable {
   private static final long serialVersionUID = 1L;
 
   private static final double FALSE_POSITIVE_PROBABILITY_DEFAULT = 0.03;
@@ -44,16 +44,16 @@ public class BloomFilterUtils implements Serializable {
    * @return BloomFilter completed
    * @throws IOException if an error occurs during deserialization
    */
-  public static BloomFilterUtils deserializationBloomFilter(final File fileSer)
-      throws IOException {
+  public static EnhancedBloomFilter deserializationBloomFilter(
+      final File fileSer) throws IOException {
 
     ObjectInputStream ois = null;
-    BloomFilterUtils bloomFilter = null;
+    EnhancedBloomFilter bloomFilter = null;
 
     try {
 
       ois = new ObjectInputStream(new FileInputStream(fileSer));
-      bloomFilter = (BloomFilterUtils) ois.readObject();
+      bloomFilter = (EnhancedBloomFilter) ois.readObject();
       ois.close();
 
     } catch (Exception e) {
@@ -69,7 +69,7 @@ public class BloomFilterUtils implements Serializable {
    * @throws IOException if an error occurs during serialization
    */
   public static void serializationBloomFilter(final File fileSer,
-      final BloomFilterUtils bloomFilter) throws IOException {
+      final EnhancedBloomFilter bloomFilter) throws IOException {
 
     if (bloomFilter == null) {
       throw new IOException("Bloom filter not exists");
@@ -94,7 +94,7 @@ public class BloomFilterUtils implements Serializable {
    * @param that bloom filter to compare
    * @return same parameters true else false
    */
-  public boolean sameConfigurationFilter(final BloomFilterUtils that) {
+  public boolean sameConfigurationFilter(final EnhancedBloomFilter that) {
     return getExpectedNumberOfElements() == that.getExpectedNumberOfElements()
         && getFalsePositiveProbability() == that.getFalsePositiveProbability();
   }
@@ -142,7 +142,7 @@ public class BloomFilterUtils implements Serializable {
    * Public constructor
    * @param expectedNumberOfElements parameter to create bloom filter
    */
-  public BloomFilterUtils(final int expectedNumberOfElements) {
+  public EnhancedBloomFilter(final int expectedNumberOfElements) {
     this(expectedNumberOfElements, FALSE_POSITIVE_PROBABILITY_DEFAULT);
   }
 
@@ -153,7 +153,7 @@ public class BloomFilterUtils implements Serializable {
    * @param falsePositiveProbability parameter to create bloom filter, must be
    *          between 0 and 100%
    */
-  public BloomFilterUtils(final int expectedNumberOfElements,
+  public EnhancedBloomFilter(final int expectedNumberOfElements,
       final double falsePositiveProbability) {
 
     // Check parameter
@@ -183,6 +183,30 @@ public class BloomFilterUtils implements Serializable {
       }
 
     }, expectedNumberOfElements, falsePositiveProbability);
+
+  }
+
+  /**
+   * Public constructor
+   * @param the Bloom filters
+   * @param addedNumberOfElements added number of elements
+   * @param expectedNumberOfElements parameter to create bloom filter, must be
+   *          positive
+   * @param falsePositiveProbability parameter to create bloom filter, must be
+   *          between 0 and 100%
+   */
+  public EnhancedBloomFilter(final BloomFilter<String> bf,
+      final int addedNumberOfElements, final int expectedNumberOfElements,
+      final double falsePositiveProbability) {
+
+    if (bf == null) {
+      throw new NullPointerException("bf argument cannot be null");
+    }
+
+    this.bf = bf;
+    this.addedNumberOfElements = addedNumberOfElements;
+    this.expectedNumberOfElements = expectedNumberOfElements;
+    this.falsePositiveProbability = falsePositiveProbability;
 
   }
 
