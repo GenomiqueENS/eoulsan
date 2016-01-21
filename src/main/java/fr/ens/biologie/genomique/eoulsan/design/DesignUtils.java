@@ -544,6 +544,8 @@ public final class DesignUtils {
         }
 
         result.add(inFile.getName());
+      } else {
+       result.add(inputPath);
       }
     }
 

@@ -47,6 +47,7 @@ import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSampleMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
@@ -80,14 +81,12 @@ public class Eoulsan2DesignWriter implements DesignWriter {
     checkNotNull(design, "design argument cannot be null");
 
     // Write design metadata
-    if (design.getMetadata().isEmpty()) {
-      bw.append(HEADER_SECTION);
-      bw.append(NEWLINE);
-      bw.append(Eoulsan2DesignReader.DESIGN_FORMAT_VERSION_METADATA_KEY);
-      bw.append(EQUAL_SEPARATOR);
-      bw.append(Eoulsan2DesignReader.FORMAT_VERSION);
-      bw.append(NEWLINE);
-    }
+    bw.append(HEADER_SECTION);
+    bw.append(NEWLINE);
+    bw.append(Eoulsan2DesignReader.DESIGN_FORMAT_VERSION_METADATA_KEY);
+    bw.append(EQUAL_SEPARATOR);
+    bw.append(Eoulsan2DesignReader.FORMAT_VERSION);
+    bw.append(NEWLINE);
 
     for (Map.Entry<String, String> e : design.getMetadata().entrySet()) {
       bw.append(e.getKey());
