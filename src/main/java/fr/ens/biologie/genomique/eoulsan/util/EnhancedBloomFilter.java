@@ -57,7 +57,7 @@ public class EnhancedBloomFilter implements Serializable {
       ois.close();
 
     } catch (Exception e) {
-      throw new IOException(e);
+      throw new IOException("Cannot deserialize file: " + fileSer, e);
     }
     return bloomFilter;
   }
@@ -84,7 +84,7 @@ public class EnhancedBloomFilter implements Serializable {
       oos.close();
 
     } catch (FileNotFoundException e) {
-      throw new IOException(e);
+      throw new IOException("Cannot serialize file: " + fileSer, e);
     }
 
   }
@@ -203,11 +203,10 @@ public class EnhancedBloomFilter implements Serializable {
       throw new NullPointerException("bf argument cannot be null");
     }
 
-    this.bf = bf;
+    this.bf = bf.copy();
     this.addedNumberOfElements = addedNumberOfElements;
     this.expectedNumberOfElements = expectedNumberOfElements;
     this.falsePositiveProbability = falsePositiveProbability;
-
   }
 
 }
