@@ -42,6 +42,8 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
+import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
+import fr.ens.biologie.genomique.eoulsan.design.ExperimentSampleMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
 
@@ -81,9 +83,42 @@ public class Eoulsan1DesignWriter implements DesignWriter {
       this.bw.append(SEPARATOR);
       this.bw.append(key);
     }
-    if (!design.getExperiments().isEmpty()) {
+
+    if (design.getMetadata().containsGenomeFile()) {
+      this.bw.append(SEPARATOR);
+      this.bw.append("Genome");
+    }
+    if (design.getMetadata().containsGffFile()) {
+      this.bw.append(SEPARATOR);
+      this.bw.append("Annotation");
+    }
+    if (design.getMetadata().containsAdditionnalAnnotationFile()) {
+      this.bw.append(SEPARATOR);
+      this.bw.append("AdditionalAnnotation");
+    }
+
+    final Experiment exp = design.getExperiments().isEmpty()
+        ? null : design.getExperiments().get(0);
+    final List<String> esmdk = exp == null
+        ? null : DesignUtils.getExperimentSampleAllMetadataKeys(exp);
+
+    if (exp != null) {
       this.bw.append(SEPARATOR);
       this.bw.append(EXPERIMENT_FIELD);
+
+      if (esmdk.contains(ExperimentSampleMetadata.CONDITION_KEY)) {
+        this.bw.append(SEPARATOR);
+        this.bw.append("Condition");
+      }
+      if (esmdk.contains(ExperimentSampleMetadata.REP_TECH_GROUP_KEY)) {
+        this.bw.append(SEPARATOR);
+        this.bw.append("RepTechGroup");
+      }
+      if (esmdk.contains(ExperimentSampleMetadata.REFERENCE_KEY)) {
+        this.bw.append(SEPARATOR);
+        this.bw.append("Reference");
+      }
+
     }
     this.bw.append(NEWLINE);
 
@@ -96,6 +131,7 @@ public class Eoulsan1DesignWriter implements DesignWriter {
 
       final SampleMetadata smd = sample.getMetadata();
 
+      // Sample keys
       for (String key : sampleMDKeys) {
 
         this.bw.append(SEPARATOR);
@@ -104,10 +140,49 @@ public class Eoulsan1DesignWriter implements DesignWriter {
           this.bw.append(smd.get(key));
         }
       }
-      for (Experiment experiment : design.getExperiments()) {
 
+      // GenomeFile, GffFile, AdditionnalAnnotationFile
+      if (design.getMetadata().containsGenomeFile()) {
         this.bw.append(SEPARATOR);
-        this.bw.append(experiment.getId());
+        this.bw.append(design.getMetadata().getGenomeFile());
+      }
+      if (design.getMetadata().containsGffFile()) {
+        this.bw.append(SEPARATOR);
+        this.bw.append(design.getMetadata().getGffFile());
+      }
+      if (design.getMetadata().containsAdditionnalAnnotationFile()) {
+        this.bw.append(SEPARATOR);
+        this.bw.append(design.getMetadata().getAdditionnalAnnotationFile());
+      }
+
+      // Experiment keys
+
+      // Experiment sample keys
+      if (exp != null) {
+        this.bw.append(SEPARATOR);
+        this.bw.append(exp.getId());
+
+        ExperimentSample es = exp.getExperimentSample(sample);
+
+        if (esmdk.contains(ExperimentSampleMetadata.CONDITION_KEY)) {
+          this.bw.append(SEPARATOR);
+          if (es.getMetadata().containsCondition()) {
+            this.bw.append(es.getMetadata().getCondition());
+          }
+        }
+        if (esmdk.contains(ExperimentSampleMetadata.REP_TECH_GROUP_KEY)) {
+          this.bw.append(SEPARATOR);
+          if (es.getMetadata().containsRepTechGroup()) {
+            this.bw.append(es.getMetadata().getRepTechGroup());
+          }
+        }
+        if (esmdk.contains(ExperimentSampleMetadata.REFERENCE_KEY)) {
+          this.bw.append(SEPARATOR);
+          if (es.getMetadata().containsReference()) {
+            this.bw.append("" + es.getMetadata().getReference());
+          }
+        }
+
       }
       this.bw.append(NEWLINE);
     }
