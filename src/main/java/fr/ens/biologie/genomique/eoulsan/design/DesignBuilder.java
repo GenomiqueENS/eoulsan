@@ -51,6 +51,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
 import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
 import fr.ens.biologie.genomique.eoulsan.bio.IlluminaReadId;
 import fr.ens.biologie.genomique.eoulsan.bio.io.FastqReader;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
@@ -472,7 +473,7 @@ public class DesignBuilder {
       })) {
 
         final List<FastqEntry> list;
-        final String normalizedSampleId = sampleId.replaceAll("[^A-Za-z0-9]+", "");
+        final String normalizedSampleId = FileNaming.toValidName(sampleId);
 
         if (this.fastqMap.containsKey(normalizedSampleId)) {
           list = this.fastqMap.get(normalizedSampleId);
