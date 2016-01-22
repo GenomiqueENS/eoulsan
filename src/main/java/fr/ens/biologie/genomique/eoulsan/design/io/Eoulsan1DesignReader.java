@@ -208,8 +208,10 @@ public class Eoulsan1DesignReader implements DesignReader {
             } else if (i == experimentFieldIndex) {
 
               // The Experiment field
-              if (!design.containsExperiment(value)) {
-                design.addExperiment(value);
+              final String experimentId = FileNaming.toValidName(value);
+              if (!design.containsExperiment(experimentId)) {
+                design.addExperiment(experimentId);
+                design.getExperiment(experimentId).setName(value);
               }
               design.getExperiment(value).addSample(sample);
             } else {
