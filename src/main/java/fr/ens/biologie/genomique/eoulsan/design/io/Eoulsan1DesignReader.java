@@ -205,6 +205,7 @@ public class Eoulsan1DesignReader implements DesignReader {
 
               // The Name filed
               sample = design.addSample(FileNaming.toValidName(value));
+              sample.setName(value);
             } else if (i == experimentFieldIndex) {
 
               // The Experiment field
