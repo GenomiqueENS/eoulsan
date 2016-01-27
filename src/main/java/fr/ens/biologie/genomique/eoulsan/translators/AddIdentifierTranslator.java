@@ -24,6 +24,10 @@
 
 package fr.ens.biologie.genomique.eoulsan.translators;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * This class define a translator that add the identifier to translations.
  * @since 2.0
@@ -33,7 +37,7 @@ public class AddIdentifierTranslator extends AbstractTranslator {
 
   private static final String DEFAULT_FIELD = "OriginalId";
 
-  private String[] fields;
+  private List<String> fields;
   private String newFieldName = DEFAULT_FIELD;
 
   private final Translator translator;
@@ -43,7 +47,7 @@ public class AddIdentifierTranslator extends AbstractTranslator {
    * @return an ordered list of the translator fields.
    */
   @Override
-  public String[] getFields() {
+  public List<String> getFields() {
 
     return this.fields;
   }
@@ -96,15 +100,18 @@ public class AddIdentifierTranslator extends AbstractTranslator {
    */
   public void updateFields() {
 
-    String[] tFields = this.translator.getFields();
+    List<String> tFields = this.translator.getFields();
 
     if (tFields == null) {
-      this.fields = new String[] { this.newFieldName };
+      // this.fields = new ArrayList<String>() { this.newFieldName; };
+      this.fields = Collections.singletonList(this.newFieldName);
     } else {
 
-      this.fields = new String[tFields.length + 1];
-      this.fields[0] = this.newFieldName;
-      System.arraycopy(tFields, 0, this.fields, 1, tFields.length);
+      // this.fields = new String[tFields.length + 1];
+      this.fields = new ArrayList<>();
+      this.fields.add(this.newFieldName);
+      // System.arraycopy(tFields, 0, this.fields, 1, tFields.size());
+      this.fields.addAll(tFields);
     }
 
   }
@@ -127,7 +134,7 @@ public class AddIdentifierTranslator extends AbstractTranslator {
    * @return a array of string with the identifiers
    */
   @Override
-  public String[] getIds() {
+  public List<String> getIds() {
 
     return this.translator.getIds();
   }

@@ -3,6 +3,8 @@ package fr.ens.biologie.genomique.eoulsan.translator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.translators.AddIdentifierTranslator;
@@ -26,8 +28,8 @@ public class AddIdentifierTranslatorTest {
     }
 
     AddIdentifierTranslator addIdTransl = new AddIdentifierTranslator(transl);
-    String[] fields = addIdTransl.getFields();
-    assertEquals("OriginalId", fields[0]);
+    List<String> fields = addIdTransl.getFields();
+    assertEquals("OriginalId", fields.get(0));
   }
 
   @Test
@@ -36,19 +38,19 @@ public class AddIdentifierTranslatorTest {
     AddIdentifierTranslator addIdTransl =
         new AddIdentifierTranslator(transl, "first field");
     addIdTransl.setNewFieldName("last field");
-    String[] fields = addIdTransl.getFields();
-    assertEquals("first field", fields[0]);
-    assertEquals("Col2", fields[1]);
-    assertEquals("Col3", fields[2]);
-    assertEquals("Col4", fields[3]);
+    List<String> fields = addIdTransl.getFields();
+    assertEquals("first field", fields.get(0));
+    assertEquals("Col2", fields.get(1));
+    assertEquals("Col3", fields.get(2));
+    assertEquals("Col4", fields.get(3));
 
     addIdTransl.updateFields();
 
     fields = addIdTransl.getFields();
-    assertEquals("last field", fields[0]);
-    assertEquals("Col2", fields[1]);
-    assertEquals("Col3", fields[2]);
-    assertEquals("Col4", fields[3]);
+    assertEquals("last field", fields.get(0));
+    assertEquals("Col2", fields.get(1));
+    assertEquals("Col3", fields.get(2));
+    assertEquals("Col4", fields.get(3));
 
   }
 

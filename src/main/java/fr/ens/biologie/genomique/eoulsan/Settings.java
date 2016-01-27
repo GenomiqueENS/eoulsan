@@ -122,6 +122,9 @@ public final class Settings implements Serializable {
   private static final String ADDITIONAL_ANNOTATION_STORAGE_KEY =
       MAIN_PREFIX_KEY + "additional.annotation.storage.path";
 
+  private static final String ADDITIONAL_ANNOTATION_HYPERTEXT_LINKS_KEY =
+      MAIN_PREFIX_KEY + "additional.annotation.hypertext.links.path";
+
   private static final String SEND_RESULT_MAIL_KEY =
       MAIN_PREFIX_KEY + "mail.send.result.mail";
 
@@ -409,6 +412,16 @@ public final class Settings implements Serializable {
   public String getAdditionalAnnotationStoragePath() {
 
     return this.properties.getProperty(ADDITIONAL_ANNOTATION_STORAGE_KEY);
+  }
+
+  /**
+   * Get the additional annotation hypertext links path.
+   * @return the additional annotation hypertext links path
+   */
+  public String getAdditionalAnnotationHypertextLinksPath() {
+
+    return this.properties
+        .getProperty(ADDITIONAL_ANNOTATION_HYPERTEXT_LINKS_KEY);
   }
 
   /**
@@ -871,6 +884,18 @@ public final class Settings implements Serializable {
 
     this.properties.setProperty(ADDITIONAL_ANNOTATION_STORAGE_KEY,
         additionalAnnotationStoragePath);
+  }
+
+  /**
+   * Set the additional annotation hypertext links path.
+   * @param additionalAnnotationHypertextLinksPath the path to the additional
+   *          annotation hypertext links path
+   */
+  public void setAdditionalAnnotationHypertextLinksPath(
+      final String additionalAnnotationHypertextLinksPath) {
+
+    this.properties.setProperty(ADDITIONAL_ANNOTATION_HYPERTEXT_LINKS_KEY,
+        additionalAnnotationHypertextLinksPath);
   }
 
   /**

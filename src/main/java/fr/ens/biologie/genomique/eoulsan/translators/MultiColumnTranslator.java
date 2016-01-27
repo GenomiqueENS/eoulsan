@@ -24,7 +24,11 @@
 
 package fr.ens.biologie.genomique.eoulsan.translators;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
@@ -38,22 +42,36 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 public class MultiColumnTranslator extends AbstractTranslator {
 
   private final Map<String, Map<String, String>> annotations = new HashMap<>();
-  private String[] fieldNames;
+  private List<String> fieldNames;
 
   /**
    * Add data to the translator. The first value of the array data is the unique
    * id for the translator.
    * @param rowData data to add
    */
-  public void addRow(final String[] rowData) {
+  public void addRow(final List<String> rowData) {
 
-    if (rowData == null || rowData.length == 0 || rowData.length == 1) {
+    if (rowData == null || rowData.size() == 0 || rowData.size() == 1) {
       return;
     }
 
-    final String[] dataArray = arrayWithoutFirstElement(rowData);
+    final List<String> dataArray = arrayWithoutFirstElement(rowData);
 
-    addRow(rowData[0], dataArray);
+    addRow(rowData.get(0), dataArray);
+  }
+
+  /**
+   * Add data to the translator. The first value of the array data is the unique
+   * id for the translator.
+   * @param rowData data to add
+   */
+  public void addRow(final String... rowData) {
+
+    if (rowData == null) {
+      return;
+    }
+
+    addRow(Arrays.asList(rowData));
   }
 
   /**
@@ -61,7 +79,7 @@ public class MultiColumnTranslator extends AbstractTranslator {
    * @param id id for the translator.
    * @param rowData data to add
    */
-  public void addRow(final String id, final String[] rowData) {
+  public void addRow(final String id, final List<String> rowData) {
 
     if (id == null || rowData == null) {
       return;
@@ -69,13 +87,13 @@ public class MultiColumnTranslator extends AbstractTranslator {
 
     Map<String, String> dataMap = new HashMap<>();
 
-    final int sizeData = rowData.length;
-    final int sizeFields = this.fieldNames.length;
+    final int sizeData = rowData.size();
+    final int sizeFields = this.fieldNames.size();
 
     final int size = Math.min(sizeData, sizeFields);
 
     for (int i = 0; i < size; i++) {
-      dataMap.put(this.fieldNames[i], rowData[i]);
+      dataMap.put(this.fieldNames.get(i), rowData.get(i));
     }
 
     this.annotations.put(id, dataMap);
@@ -90,15 +108,13 @@ public class MultiColumnTranslator extends AbstractTranslator {
    * @return an ordered list of the annotations fields.
    */
   @Override
-  public String[] getFields() {
+  public List<String> getFields() {
 
     if (this.fieldNames == null) {
       return null;
     }
+    return Collections.unmodifiableList(this.fieldNames);
 
-    final String[] result = this.fieldNames.clone();
-
-    return result;
   }
 
   /**
@@ -138,19 +154,19 @@ public class MultiColumnTranslator extends AbstractTranslator {
     this.annotations.clear();
   }
 
-  private String[] arrayWithoutFirstElement(final String[] data) {
+  private List<String> arrayWithoutFirstElement(final List<String> data) {
 
     if (data == null) {
       return null;
     }
 
-    final int size = data.length;
-
-    String[] result = new String[size - 1];
-
-    System.arraycopy(data, 1, result, 0, size - 1);
-
-    return result;
+    // data.remove(0);
+    // final int size = data.size();
+    // String[] result = new String[size - 1];
+    // ArrayList<String> result = new ArrayList<>();
+    return Collections.unmodifiableList(data.subList(1, data.size()));
+    // System.arraycopy(data, 1, result, 0, size - 1);
+    // return result;
   }
 
   /**
@@ -158,10 +174,9 @@ public class MultiColumnTranslator extends AbstractTranslator {
    * @return a array of string with the identifiers
    */
   @Override
-  public String[] getIds() {
+  public List<String> getIds() {
 
-    return this.annotations.keySet()
-        .toArray(new String[this.annotations.size()]);
+    return new ArrayList<>(this.annotations.keySet());
   }
 
   //
@@ -172,7 +187,7 @@ public class MultiColumnTranslator extends AbstractTranslator {
    * Public constructor.
    * @param fieldNames Field names of the annotation
    */
-  public MultiColumnTranslator(final String[] fieldNames) {
+  public MultiColumnTranslator(final List<String> fieldNames) {
 
     this(fieldNames, true);
   }
@@ -183,30 +198,38 @@ public class MultiColumnTranslator extends AbstractTranslator {
    * @param fieldNamesWithId false if the first element of the fieldname array
    *          is the key for the translator (must be ignored)
    */
-  public MultiColumnTranslator(final String[] fieldNames,
+  public MultiColumnTranslator(final List<String> fieldNames,
       final boolean fieldNamesWithId) {
 
     if (fieldNames == null) {
       throw new NullPointerException("fieldnames is null");
     }
-
-    if (fieldNamesWithId && fieldNames.length < 2) {
+//    System.out.println(fieldNamesWithId);
+//    System.out.println(fieldNames.size());
+//    System.out.println(fieldNames.get(1)+" | "+fieldNames.get(0));
+    
+    if (fieldNamesWithId && fieldNames.size() < 2) {
       throw new EoulsanRuntimeException(
           "fieldNames must have at least 2 fields");
     }
 
-    if (!fieldNamesWithId && fieldNames.length < 1) {
+    if (!fieldNamesWithId && fieldNames.size() < 1) {
       throw new EoulsanRuntimeException(
           "fieldNames must have at least one fields");
     }
 
     if (fieldNamesWithId) {
       this.fieldNames = arrayWithoutFirstElement(fieldNames);
-      setDefaultField(fieldNames[1]);
+      setDefaultField(fieldNames.get(1));
     } else {
       this.fieldNames = fieldNames;
-      setDefaultField(fieldNames[0]);
+      setDefaultField(fieldNames.get(0));
     }
+  }
+
+  public MultiColumnTranslator(String... fieldNames) {
+
+    this(Arrays.asList(fieldNames));
   }
 
 }

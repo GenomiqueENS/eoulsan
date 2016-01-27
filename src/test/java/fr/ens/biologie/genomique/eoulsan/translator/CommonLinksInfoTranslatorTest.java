@@ -2,6 +2,11 @@ package fr.ens.biologie.genomique.eoulsan.translator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
@@ -45,8 +50,8 @@ public class CommonLinksInfoTranslatorTest {
 
     CommonLinksInfoTranslator cmLinkInfoTransl =
         new CommonLinksInfoTranslator(transl);
-    String[] fields = cmLinkInfoTransl.getFields();
-    assertEquals("Col2", fields[0]);
+    List<String> fields = cmLinkInfoTransl.getFields();
+    assertEquals("Col2", fields.get(0));
   }
 
   @Test
@@ -55,32 +60,29 @@ public class CommonLinksInfoTranslatorTest {
         new CommonLinksInfoTranslator(transl);
     assertFalse(cmLinkInfoTransl.isLinkInfo(null));
     assertFalse(cmLinkInfoTransl.isLinkInfo("notLinkInfo"));
-    assertTrue(cmLinkInfoTransl.isLinkInfo("EnsemblGeneID"));
+    assertTrue(cmLinkInfoTransl.isLinkInfo("EnsemblID"));
 
   }
 
   @Test
-  public void testGetLinkInfo() {
+  public void testGetLinkInfo() throws UnsupportedEncodingException {
     CommonLinksInfoTranslator cmLinkInfoTransl =
         new CommonLinksInfoTranslator(transl);
     assertNull(cmLinkInfoTransl.getLinkInfo(new String(), new String()));
 
-
     assertEquals("http://www.ncbi.nlm.nih.gov/nuccore/TranslatedId",
         cmLinkInfoTransl.getLinkInfo("TranslatedId", "GI"));
 
-    assertEquals(
-        "http://www.ensembl.org/Multi/Search/Results?species=all;q=TranslatedId",
-        cmLinkInfoTransl.getLinkInfo("TranslatedId", "EnsemblGeneID"));
+    assertEquals("http://www.ensembl.org/id/TranslatedId",
+        cmLinkInfoTransl.getLinkInfo("TranslatedId", "EnsemblID"));
 
     assertEquals(
         "http://www.ncbi.nlm.nih.gov/sites/entrez?Db=gene&Cmd=ShowDetailView&TermToSearch=TranslatedId",
         cmLinkInfoTransl.getLinkInfo("TranslatedId", "EntrezGeneID"));
 
-    assertNull(cmLinkInfoTransl.getLinkInfo("TranslatedId", "MGI ID"));
-    assertEquals(
-        "http://www.informatics.jax.org/searches/accession_report.cgi?id=MGI%3ATranslatedId",
-        cmLinkInfoTransl.getLinkInfo("MGI:TranslatedId", "MGI ID"));
+    assertEquals("http://www.informatics.jax.org/marker/MGI%253ATranslatedId",
+        cmLinkInfoTransl.getLinkInfo(
+            URLEncoder.encode("MGI:TranslatedId", "UTF-8"), "MGI ID"));
 
     assertEquals("http://db.yeastgenome.org/cgi-bin/locus.pl?dbid=TranslatedId",
         cmLinkInfoTransl.getLinkInfo("TranslatedId", "SGDID"));

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -28,11 +27,18 @@ public class AbstractTranslatorTest {
   public void testNewTrans() {
     transl.addRow(ARRAY_ROW_ONE);
     AddIdentifierTranslator AddIdTransl = new AddIdentifierTranslator(transl);
-    String[] fields = AddIdTransl.getFields();
-    assertTrue(AddIdTransl.isField(fields[0]));
+    List<String> fields = AddIdTransl.getFields();
+    assertTrue(AddIdTransl.isField(fields.get(0)));
     assertFalse(AddIdTransl.isField("missingField"));
-    assertFalse(AddIdTransl.isField(null));
 
+    try {
+
+      AddIdTransl.isField(null);
+      assertTrue(false);
+    } catch (NullPointerException e) {
+
+      assertTrue(true);
+    }
   }
 
   @Test
@@ -56,10 +62,18 @@ public class AbstractTranslatorTest {
   @Test
   public void testIsField() {
 
-    String[] fields = transl.getFields();
-    assertTrue(transl.isField(fields[0]));
+    List<String> fields = transl.getFields();
+    assertTrue(transl.isField(fields.get(0)));
     assertFalse(transl.isField("missingField"));
-    assertFalse(transl.isField(null));
+
+    try {
+
+      transl.isField(null);
+      assertTrue(false);
+    } catch (NullPointerException e) {
+
+      assertTrue(true);
+    }
   }
 
   @Test
@@ -71,7 +85,7 @@ public class AbstractTranslatorTest {
     transl.addRow(ARRAY_ROW_FOUR);
     transl.addRow(ARRAY_ROW_FIVE);
 
-    List<String> ids = Arrays.asList(transl.getIds());
+    List<String> ids = transl.getIds();
     assertEquals(5, ids.size());
 
     for (String id : ARRAY_IDS) {
@@ -84,11 +98,29 @@ public class AbstractTranslatorTest {
   public void testTranslate() {
 
     transl.addRow(ARRAY_ROW_ONE);
-    assertEquals("1", transl.translate("A")[0]);
-    assertEquals("A1", transl.translate("A")[1]);
-    assertEquals("0", transl.translate("A")[2]);
-    assertNull(transl.translate(new String())[0]);
-    assertNull(new String(), transl.translate("B")[0]);
+    assertEquals("1", transl.translate("A").get(0));
+    assertEquals("A1", transl.translate("A").get(1));
+    assertEquals("0", transl.translate("A").get(2));
+
+    try {
+
+      transl.translate(new String()).get(3);
+      assertTrue(false);
+    } catch (NullPointerException e) {
+
+      assertTrue(true);
+    }
+
+    try {
+
+      transl.translate("B").get(3);
+
+      assertTrue(false);
+    } catch (IndexOutOfBoundsException e) {
+
+      assertTrue(true);
+    }
+
   }
 
   @Test

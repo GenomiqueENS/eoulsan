@@ -24,6 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.translators;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This abstract class implements basic methods to get several field or several
  * annotations.
@@ -44,10 +47,10 @@ public abstract class AbstractTranslator implements Translator {
 
     if (this.defaultField == null && !this.originalDefaultFieldSearchDone) {
 
-      final String[] fields = getFields();
+      final List<String> fields = getFields();
 
-      if (fields != null && fields.length > 0) {
-        this.defaultField = fields[0];
+      if (fields != null && !fields.isEmpty()) {
+        this.defaultField = fields.get(0);
       }
       this.originalDefaultFieldSearchDone = true;
     }
@@ -75,18 +78,17 @@ public abstract class AbstractTranslator implements Translator {
    * @return An array with the annotation of the Feature
    */
   @Override
-  public String[] translate(final String id) {
+  public List<String> translate(final String id) {
 
-    String[] fields = getFields();
-
-    if (fields == null) {
-      return null;
+    List<String> fields = getFields();
+    if (id == null || id.isEmpty()) {
+      throw new NullPointerException("id argument can't be null.");
     }
 
-    String[] result = new String[fields.length];
+    ArrayList<String> result = new ArrayList<>();
 
-    for (int i = 0; i < fields.length; i++) {
-      result[i] = translateField(id, fields[i]);
+    for (String field : fields) {
+      result.add(translateField(id, field));
     }
 
     return result;
@@ -98,16 +100,16 @@ public abstract class AbstractTranslator implements Translator {
    * @return An array with the annotation of the Feature
    */
   @Override
-  public String[][] translate(final String[] ids) {
+  public List<List<String>> translate(final List<String> ids) {
 
     if (ids == null) {
-      return null;
+      throw new NullPointerException("ids argument can't be null.");
     }
 
-    String[][] result = new String[ids.length][];
+    List<List<String>> result = new ArrayList<>();
 
-    for (int i = 0; i < ids.length; i++) {
-      result[i] = translate(ids[i]);
+    for (String id : ids) {
+      result.add(translate(id));
     }
 
     return result;
@@ -119,7 +121,7 @@ public abstract class AbstractTranslator implements Translator {
    * @return An array with the annotation of the Feature
    */
   @Override
-  public String[] translateField(final String[] ids) {
+  public List<String> translateField(final List<String> ids) {
 
     return translateField(ids, getDefaultField());
   }
@@ -131,10 +133,11 @@ public abstract class AbstractTranslator implements Translator {
    * @return An array with the annotation of the Feature
    */
   @Override
-  public String[] translateField(final String[] ids, final String field) {
+  public List<String> translateField(final List<String> ids,
+      final String field) {
 
     if (ids == null) {
-      return null;
+      throw new NullPointerException("ids argument can't be null.");
     }
 
     final String lField;
@@ -148,10 +151,10 @@ public abstract class AbstractTranslator implements Translator {
       return null;
     }
 
-    String[] result = new String[ids.length];
+    List<String> result = new ArrayList<>();
 
-    for (int i = 0; i < ids.length; i++) {
-      result[i] = translateField(ids[i], lField);
+    for (int i = 0; i < ids.size(); i++) {
+      result.add(translateField(ids.get(i), lField));
     }
 
     return result;
@@ -177,10 +180,10 @@ public abstract class AbstractTranslator implements Translator {
   public boolean isField(final String field) {
 
     if (field == null) {
-      return false;
+      throw new NullPointerException("field argument can't be null.");
     }
 
-    String[] fields = getFields();
+    List<String> fields = getFields();
 
     if (fields == null) {
       return false;
@@ -225,17 +228,19 @@ public abstract class AbstractTranslator implements Translator {
    * @return a array of links for the translated ids
    */
   @Override
-  public String[] getLinkInfo(final String[] translatedIds,
+  public List<String> getLinkInfo(final List<String> translatedIds,
       final String field) {
 
     if (translatedIds == null || field == null) {
-      return null;
+      throw new NullPointerException(
+          "translatedIds and field arguments can't be null.");
     }
 
-    final String[] result = new String[translatedIds.length];
+    // final String[] result = new String[translatedIds.length];
+    final List<String> result = new ArrayList<>();
 
-    for (int i = 0; i < translatedIds.length; i++) {
-      result[i] = getLinkInfo(translatedIds[i], field);
+    for (String id : translatedIds) {
+      result.add(getLinkInfo(id, field));
     }
 
     return result;
@@ -256,7 +261,7 @@ public abstract class AbstractTranslator implements Translator {
    * @return a array of string with the identifiers
    */
   @Override
-  public String[] getIds() {
+  public List<String> getIds() {
 
     return null;
   }

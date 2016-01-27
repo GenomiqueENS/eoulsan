@@ -24,7 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.translators;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,7 +39,7 @@ public class ChangeIndexTranslator extends AbstractTranslator {
 
   private final Translator translator;
   private final String field;
-  private String[] fields;
+  private List<String> fields;
 
   private final Map<String, String> index = new HashMap<>();
 
@@ -69,7 +71,7 @@ public class ChangeIndexTranslator extends AbstractTranslator {
    * @return an ordered list of the translator fields.
    */
   @Override
-  public String[] getFields() {
+  public List<String> getFields() {
 
     return this.fields;
   }
@@ -87,7 +89,7 @@ public class ChangeIndexTranslator extends AbstractTranslator {
 
   private void makeIndex() {
 
-    final String[] ids = this.translator.getIds();
+    final List<String> ids = this.translator.getIds();
 
     if (ids == null) {
       return;
@@ -102,15 +104,14 @@ public class ChangeIndexTranslator extends AbstractTranslator {
       }
     }
 
-    String[] fs = this.translator.getFields();
+    List<String> fs = this.translator.getFields();
 
-    this.fields = new String[fs.length - 1];
-
-    int count = 0;
+    // this.fields = new String[fs.length - 1];
+    this.fields = new ArrayList<>();
 
     for (String f : fs) {
       if (!this.field.equals(f)) {
-        this.fields[count++] = f;
+        this.fields.add(f);
       }
     }
 

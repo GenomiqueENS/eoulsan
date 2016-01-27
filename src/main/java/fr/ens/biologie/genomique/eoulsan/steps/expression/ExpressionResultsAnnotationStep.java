@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.steps.expression;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode.OWN_PARALLELIZATION;
 import static fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode.STANDARD;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ADDITIONAL_ANNOTATION_TSV;
@@ -32,6 +31,7 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATED_EXPRE
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_XLSX;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
+import static fr.ens.biologie.genomique.eoulsan.translators.TranslatorUtils.loadTranslator;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -41,10 +41,10 @@ import java.util.Set;
 
 import com.google.common.base.Splitter;
 
+import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
@@ -61,12 +61,8 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.steps.AbstractStep;
 import fr.ens.biologie.genomique.eoulsan.steps.Steps;
-import fr.ens.biologie.genomique.eoulsan.translators.AbstractTranslator;
-import fr.ens.biologie.genomique.eoulsan.translators.CommonLinksInfoTranslator;
-import fr.ens.biologie.genomique.eoulsan.translators.ConcatTranslator;
 import fr.ens.biologie.genomique.eoulsan.translators.Translator;
 import fr.ens.biologie.genomique.eoulsan.translators.TranslatorUtils;
-import fr.ens.biologie.genomique.eoulsan.translators.io.MultiColumnTranslatorReader;
 import fr.ens.biologie.genomique.eoulsan.translators.io.ODSTranslatorOutputFormat;
 import fr.ens.biologie.genomique.eoulsan.translators.io.TSVTranslatorOutputFormat;
 import fr.ens.biologie.genomique.eoulsan.translators.io.TranslatorOutputFormat;
@@ -219,7 +215,8 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
 
       // If no annotation file parameter set
       Data annotationData = context.getInputData(ADDITIONAL_ANNOTATION_TSV);
-      translator = loadTranslator(annotationData.getDataFile());
+      translator = loadTranslator(annotationData.getDataFile(),
+          context.getSettings().getAdditionalAnnotationHypertextLinksPath());
 
     } catch (IOException e) {
       return status.createStepResult(e);
@@ -272,50 +269,6 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
 
     // Return the result
     return status.createStepResult();
-  }
-
-  //
-  // Other methods
-  //
-
-  /**
-   * Load translator annotation.
-   * @param annotationFile the annotation file to use
-   * @return a Translator object with the additional annotation
-   * @throws IOException if an error occurs while reading additional annotation
-   */
-  private Translator loadTranslator(final DataFile annotationFile)
-      throws IOException {
-
-    checkNotNull(annotationFile, "annotationFile argument cannot be null");
-
-    final Translator did = new AbstractTranslator() {
-
-      @Override
-      public String translateField(final String id, final String field) {
-
-        if (id == null || field == null) {
-          return null;
-        }
-
-        if ("EnsemblGeneID".equals(field)
-            && id.length() == 18 && id.startsWith("ENS")) {
-          return id;
-        }
-
-        return null;
-      }
-
-      @Override
-      public String[] getFields() {
-
-        return new String[] {"EnsemblGeneID"};
-      }
-    };
-
-    return new CommonLinksInfoTranslator(new ConcatTranslator(did,
-        new MultiColumnTranslatorReader(annotationFile.open()).read()));
-
   }
 
 }

@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -51,9 +53,9 @@ public class ChangeIndexTranslatorTest {
 
     ChangeIndexTranslator ChangeIdxTransl =
         new ChangeIndexTranslator(transl, "Col3");
-    String[] fields = ChangeIdxTransl.getFields();
-    assertEquals("Col2", fields[0]);
-    assertEquals("Col4", fields[1]);
+    List<String> fields = ChangeIdxTransl.getFields();
+    assertEquals("Col2", fields.get(0));
+    assertEquals("Col4", fields.get(1));
     assertEquals("1", ChangeIdxTransl.translateField("A", "Col2"));
     assertEquals("2", ChangeIdxTransl.translateField("B", "Col2"));
     assertNull(ChangeIdxTransl.translateField("Col2", "A"));

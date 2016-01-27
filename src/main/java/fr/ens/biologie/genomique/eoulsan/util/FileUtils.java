@@ -1539,11 +1539,14 @@ public class FileUtils {
       final String msgFileType) throws IOException {
 
     if (msgFileType == null) {
-      throw new NullPointerException("Message file type for check is null");
+      throw new NullPointerException(
+          "Message file type for check isn't defined");
     }
 
     if (file == null) {
-      throw new NullPointerException("The " + msgFileType + " is null");
+      throw new NullPointerException("The "
+          + msgFileType + " is not defined. Please check and define "
+          + msgFileType + " path and/or files.");
     }
 
     if (!file.exists()) {

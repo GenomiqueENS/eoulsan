@@ -24,6 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.translators;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This translator is only for tests.
  * @since 2.0
@@ -34,12 +37,12 @@ public class DummyTranslator extends AbstractTranslator {
   private final int fieldCount;
 
   @Override
-  public String[] getFields() {
+  public List<String> getFields() {
 
-    final String array[] = new String[this.fieldCount];
-
-    for (int i = 0; i < array.length; i++) {
-      array[i] = "field#" + i;
+    // final String[] array[] = new String[this.fieldCount];
+    final List<String> array = new ArrayList<>();
+    for (int i = 0; i < this.fieldCount; i++) {
+      array.add("field#" + i);
     }
 
     return array;
@@ -49,7 +52,7 @@ public class DummyTranslator extends AbstractTranslator {
   public String translateField(final String id, final String field) {
 
     if (id == null || field == null) {
-      return null;
+      throw new NullPointerException("id and field arguments can't is null.");
     }
 
     return id + "_" + field;

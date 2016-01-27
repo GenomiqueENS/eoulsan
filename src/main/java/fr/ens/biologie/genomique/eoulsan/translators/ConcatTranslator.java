@@ -24,7 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.translators;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,10 +43,9 @@ public class ConcatTranslator extends AbstractTranslator {
    * @return an ordered list of the translator fields.
    */
   @Override
-  public String[] getFields() {
+  public List<String> getFields() {
 
-    return this.translators.keySet()
-        .toArray(new String[this.translators.size()]);
+    return new ArrayList<>(this.translators.keySet());
   }
 
   /**
@@ -59,7 +60,7 @@ public class ConcatTranslator extends AbstractTranslator {
     Translator t = this.translators.get(field);
 
     if (t == null) {
-      return null;
+      throw new NullPointerException("Associated Translator t is null.");
     }
 
     return t.translateField(id, field);
@@ -110,7 +111,7 @@ public class ConcatTranslator extends AbstractTranslator {
       return;
     }
 
-    final String[] fields = translator.getFields();
+    final List<String> fields = translator.getFields();
 
     if (fields == null) {
       return;

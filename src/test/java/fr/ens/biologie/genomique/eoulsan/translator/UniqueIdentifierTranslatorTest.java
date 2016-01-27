@@ -3,11 +3,13 @@ package fr.ens.biologie.genomique.eoulsan.translator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.translators.MultiColumnTranslator;
-import fr.ens.biologie.genomique.eoulsan.translators.Translator;
 import fr.ens.biologie.genomique.eoulsan.translators.UniqueIdentifierTranslator;
 
 public class UniqueIdentifierTranslatorTest {
@@ -31,21 +33,6 @@ public class UniqueIdentifierTranslatorTest {
 
   }
 
-//  @Test
-//  public void testGetReverseTranslatorUnique() {
-//    UniqueIdentifierTranslator uniqIdTransl =
-//        new UniqueIdentifierTranslator(ARRAY_UNIQUE_IDS, transl);
-//    uniqIdTransl.setNewFieldName("Col3");
-//    uniqIdTransl.updateFields();
-//    UniqueIdentifierTranslator reverseTransl = new UniqueIdentifierTranslator(
-//        ARRAY_UNIQUE_IDS, uniqIdTransl.getReverseTranslator());
-////    System.out.println(reverseTransl.getFields()[0]);
-////    System.out.println(reverseTransl.getIds());
-////    assertEquals("A1", reverseTransl.translateField("UniqueId"));
-////    assertEquals("0", reverseTransl.translateField("Col4", "3.0"));
-//  }
-
-
   @Test
   public void testTranslateFieldUnique() {
     UniqueIdentifierTranslator uniqIdTransl =
@@ -62,26 +49,26 @@ public class UniqueIdentifierTranslatorTest {
         new UniqueIdentifierTranslator(ARRAY_UNIQUE_IDS, transl);
 
     uniqIdTransl.setNewFieldName("last field");
-    String[] fields = uniqIdTransl.getFields();
-    assertEquals("UniqueId", fields[0]);
-    assertEquals("Col2", fields[1]);
-    assertEquals("Col3", fields[2]);
-    assertEquals("Col4", fields[3]);
+    List<String> fields = uniqIdTransl.getFields();
+    assertEquals("UniqueId", fields.get(0));
+    assertEquals("Col2", fields.get(1));
+    assertEquals("Col3", fields.get(2));
+    assertEquals("Col4", fields.get(3));
 
     uniqIdTransl.updateFields();
 
     fields = uniqIdTransl.getFields();
-    assertEquals("last field", fields[0]);
-    assertEquals("Col2", fields[1]);
-    assertEquals("Col3", fields[2]);
-    assertEquals("Col4", fields[3]);
+    assertEquals("last field", fields.get(0));
+    assertEquals("Col2", fields.get(1));
+    assertEquals("Col3", fields.get(2));
+    assertEquals("Col4", fields.get(3));
   }
 
   @Test
   public void testUniqueIdentifierTranslator() {
     try {
 
-      new UniqueIdentifierTranslator(null, null);
+      new UniqueIdentifierTranslator(new ArrayList<String>(), null);
       assertTrue(false);
     } catch (NullPointerException e) {
 
