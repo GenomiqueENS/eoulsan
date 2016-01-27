@@ -24,6 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.translators;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,9 +35,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.translators.io.MultiColumnTranslatorReader;
 import fr.ens.biologie.genomique.eoulsan.translators.io.TranslatorOutputFormat;
 
 /**
@@ -154,6 +159,63 @@ public class TranslatorUtils {
 
     reader.close();
     of.close();
+  }
+
+  /**
+   * Load translator annotation.
+   * @param annotationFile the annotation file to use
+   * @param additionalAnnotationHypertextLinksPath the additional annotation
+   *          hypertext links file to use
+   * @return a Translator object with the additional annotation
+   * @throws IOException if an error occurs while reading additional annotation
+   */
+  public static Translator loadTranslator(final DataFile annotationFile,
+      final String additionalAnnotationHypertextLinksPath) throws IOException {
+
+    checkNotNull(annotationFile, "annotationFile argument cannot be null");
+
+    final Translator did = new AbstractTranslator() {
+
+      private static final String FIELD_NAME = "EnsemblID";
+
+      @Override
+      public String translateField(final String id, final String field) {
+
+        if (id == null || field == null) {
+          return null;
+        }
+
+        if (FIELD_NAME.equals(field)
+            && id.length() == 18 && id.startsWith("ENS")) {
+          return id;
+        }
+
+        return null;
+      }
+
+      @Override
+      public List<String> getFields() {
+
+        return Collections.singletonList(FIELD_NAME);
+      }
+    };
+
+    final CommonLinksInfoTranslator translator =
+        new CommonLinksInfoTranslator(new ConcatTranslator(did,
+            new MultiColumnTranslatorReader(annotationFile.open()).read()));
+    // Add Comment
+    if (additionalAnnotationHypertextLinksPath != null) {
+
+      if (!new File(additionalAnnotationHypertextLinksPath).exists()) {
+        throw new IOException(
+            additionalAnnotationHypertextLinksPath + " doesn't exists.");
+      }
+
+      translator
+          .load(new DataFile(additionalAnnotationHypertextLinksPath).open());
+    }
+
+    return translator;
   }
 
   //

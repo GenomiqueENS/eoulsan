@@ -75,7 +75,8 @@
 		<tr><td>main.additional.annotation.storage.path</td><td>string</td><td>Not set</td><td>Path to the additional annotations repository</td></tr>
 		<tr><td>main.genome.mapper.index.storage.path</td><td>string</td><td>Not set</td><td>Path to the genome indexes repository (cannot be an URL)</td></tr>
 		<tr><td>main.genome.desc.storage.path</td><td>string</td><td>Not set</td><td>Path to the genome descriptions repository (cannot be an URL)</td></tr>
-
+		<tr><td>main.additional.annotation.hypertext.links.path</td><td>string</td><td>Not set</td><td>Path to the additional annotation hypertext links info file (cannot be an URL)</td></tr>
+		
 		<tr><td>main.docker.uri</td><td>string</td><td>Not set</td><td>The Docker server URI</td></tr>
 		<tr><td>main.mail.send.result.mail</td><td>boolean</td><td>false</td><td>Enable send mail to user at the end of analysis</td></tr>
 		<tr><td>main.mail.send.result.mail.to</td><td>string</td><td>Not set</td><td>Mail address where send result message</td></tr>

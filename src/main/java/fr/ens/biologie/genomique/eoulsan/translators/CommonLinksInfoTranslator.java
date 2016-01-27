@@ -53,7 +53,6 @@ public class CommonLinksInfoTranslator extends AbstractTranslator {
    * Get an ordered list of the translator fields
    * @return an ordered list of the translator fields.
    */
-
   @Override
   public List<String> getFields() {
 
@@ -89,7 +88,6 @@ public class CommonLinksInfoTranslator extends AbstractTranslator {
    * @param field field of the id
    * @return a link for the translated id
    */
-
   @Override
   public String getLinkInfo(final String translatedId, final String field) {
 
@@ -124,33 +122,74 @@ public class CommonLinksInfoTranslator extends AbstractTranslator {
     return this.translator.getIds();
   }
 
-  public void add(String field, String link) {
+  /**
+   * Add a new link to a field
+   * @param field to link
+   * @param link for the field
+   */
+  public void add(final String field, final String link) {
+
     if (link == null || field == null) {
       throw new NullPointerException("field and link arguments can't be null.");
     }
     this.mapLinks.put(field, link);
   }
 
-  public void remove(String field) {
+  /**
+   * Remove the link of a field
+   * @param field to remove
+   */
+  public void remove(final String field) {
+
+    if (field == null) {
+      throw new NullPointerException("field argument can't be null.");
+    }
     this.mapLinks.remove(field);
   }
 
+  /**
+   * Clear the links of all fields.
+   */
   public void clear() {
     this.mapLinks.clear();
   }
 
-  public void load(File file) throws FileNotFoundException, IOException {
-    load(new FileInputStream(file));
+  /**
+   * Load the field and links from a file
+   * @param in File to load
+   */
+  public void load(final File in) throws FileNotFoundException, IOException {
+
+    if (in == null) {
+      throw new NullPointerException("file argument can't be null.");
+    }
+    load(new FileInputStream(in));
 
   }
 
-  public void load(InputStream in) throws IOException {
+  /**
+   * Load the field and links from a file
+   * @param in File to load
+   */
+  public void load(final InputStream in) throws IOException {
+
+    if (in == null) {
+      throw new NullPointerException("in argument can't be null.");
+    }
     load(new InputStreamReader(in));
   }
 
-  public void load(Reader inputReader) throws IOException {
+  /**
+   * Load the field and links from a file
+   * @param in File to load
+   */
+  public void load(final Reader in) throws IOException {
 
-    BufferedReader reader = new BufferedReader(inputReader);
+    if (in == null) {
+      throw new NullPointerException("in argument can't be null.");
+    }
+    BufferedReader reader = new BufferedReader(in);
+
     // Iterate through properties file; An empty link is used to remove an entry
     // in map link instead of ignoring it.
     String line = "";
@@ -168,7 +207,6 @@ public class CommonLinksInfoTranslator extends AbstractTranslator {
       }
     }
 
-    // System.out.println("=======\n" + this.mapLinks);
   }
   //
   // Constructor
