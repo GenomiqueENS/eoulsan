@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -150,7 +151,8 @@ public class MultiColumnTranslatorReader {
       }
 
       // String[] cols = line.split(separator);
-      List<String> cols = new ArrayList<>(line.split(separator).length);
+      // List<String> cols = new ArrayList<>(line.split(separator).length);
+      List<String> cols = new ArrayList<>(Arrays.asList(line.split(separator)));
       if (removeQuotes) {
         for (int i = 0; i < cols.size(); i++) {
           cols.set(i, removeDoubleQuotesAndTrim(cols.get(i)));

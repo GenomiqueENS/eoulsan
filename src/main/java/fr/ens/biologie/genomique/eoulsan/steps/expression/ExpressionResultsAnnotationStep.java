@@ -293,6 +293,8 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
 
     final Translator did = new AbstractTranslator() {
 
+      private static final String FIELD_NAME = "EnsemblID";
+
       @Override
       public String translateField(final String id, final String field) {
 
@@ -300,7 +302,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
           return null;
         }
 
-        if ("EnsemblGeneID".equals(field)
+        if (FIELD_NAME.equals(field)
             && id.length() == 18 && id.startsWith("ENS")) {
           return id;
         }
@@ -311,7 +313,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
       @Override
       public List<String> getFields() {
 
-        return Collections.singletonList("EnsemblGeneID");
+        return Collections.singletonList(FIELD_NAME);
       }
     };
 

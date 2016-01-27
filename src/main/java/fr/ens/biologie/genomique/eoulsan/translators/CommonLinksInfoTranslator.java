@@ -24,7 +24,20 @@
 
 package fr.ens.biologie.genomique.eoulsan.translators;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class define a translator that add commons links information.
@@ -34,11 +47,13 @@ import java.util.List;
 public class CommonLinksInfoTranslator extends AbstractTranslator {
 
   private final Translator translator;
+  private final Map<String, String> mapLinks = new HashMap<>();
 
   /**
    * Get an ordered list of the translator fields
    * @return an ordered list of the translator fields.
    */
+
   @Override
   public List<String> getFields() {
 
@@ -65,13 +80,7 @@ public class CommonLinksInfoTranslator extends AbstractTranslator {
   @Override
   public boolean isLinkInfo(final String field) {
 
-    if (field == null) {
-      return false;
-    }
-
-    return field.equals("EnsemblGeneID")
-        || field.equals("EntrezGeneID") || field.equals("MGI ID")
-        || field.equals("SGDID") || field.equals("Phatr2 Protein HyperLink");
+    return mapLinks.containsKey(field);
   }
 
   /**
@@ -80,6 +89,7 @@ public class CommonLinksInfoTranslator extends AbstractTranslator {
    * @param field field of the id
    * @return a link for the translated id
    */
+
   @Override
   public String getLinkInfo(final String translatedId, final String field) {
 
@@ -88,44 +98,20 @@ public class CommonLinksInfoTranslator extends AbstractTranslator {
           "field and translateId arguments can't be null.");
     }
 
-    if (field.equals("GI")) {
-      return "http://www.ncbi.nlm.nih.gov/nuccore/" + translatedId;
-    }
+    if (mapLinks.containsKey(field)) {
+      String EncodedTranslatedId = translatedId;
+      try {
+        EncodedTranslatedId =
+            URLEncoder.encode(translatedId, StandardCharsets.UTF_8.toString());
+      } catch (UnsupportedEncodingException e) {
+        return null;
+      }
 
-    if (field.equals("EnsemblGeneID")) {
-      // return
-      // "http://www.ensembl.org/Homo_sapiens/Search/Summary?species=all;q="
-      return "http://www.ensembl.org/Multi/Search/Results?species=all;q="
-          + translatedId;
-    }
-
-    if (field.equals("EntrezGeneID")) {
-      return "http://www.ncbi.nlm.nih.gov/sites/entrez?Db=gene&Cmd=ShowDetailView&TermToSearch="
-          + translatedId;
-    }
-
-    if (field.equals("MGI ID") && translatedId.startsWith("MGI:")) {
-
-      final String id = translatedId.substring(4, translatedId.length());
-
-      return "http://www.informatics.jax.org/searches/accession_report.cgi?id=MGI%3A"
-          + id;
-    }
-
-    // if (field.equals("EntrezID"))
-    // return "http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?"
-    // + "db=gene&cmd=Retrieve&dopt=Graphics&list_uids=" + translatedId;
-
-    if (field.equals("SGDID")) {
-      return "http://db.yeastgenome.org/cgi-bin/locus.pl?dbid=" + translatedId;
-    }
-
-    if (field.equals("Phatr2 Protein HyperLink")) {
-      return "http://genome.jgi-psf.org/cgi-bin/dispGeneModel?db=Phatr2&tid="
-          + translatedId;
+      return mapLinks.get(field) + EncodedTranslatedId;
     }
 
     return null;
+
   }
 
   /**
@@ -138,6 +124,52 @@ public class CommonLinksInfoTranslator extends AbstractTranslator {
     return this.translator.getIds();
   }
 
+  public void add(String field, String link) {
+    if (link == null || field == null) {
+      throw new NullPointerException("field and link arguments can't be null.");
+    }
+    this.mapLinks.put(field, link);
+  }
+
+  public void remove(String field) {
+    this.mapLinks.remove(field);
+  }
+
+  public void clear() {
+    this.mapLinks.clear();
+  }
+
+  public void load(File file) throws FileNotFoundException, IOException {
+    load(new FileInputStream(file));
+
+  }
+
+  public void load(InputStream in) throws IOException {
+    load(new InputStreamReader(in));
+  }
+
+  public void load(Reader inputReader) throws IOException {
+
+    BufferedReader reader = new BufferedReader(inputReader);
+    // Iterate through properties file; An empty link is used to remove an entry
+    // in map link instead of ignoring it.
+    String line = "";
+    while ((line = reader.readLine()) != null) {
+      int pos = line.indexOf('=');
+
+      if (pos != -1) {
+        String field = line.substring(0, pos).trim();
+        String link = line.substring(pos + 1).trim();
+        if (link.isEmpty()) {
+          remove(field);
+        } else {
+          add(field, link);
+        }
+      }
+    }
+
+    // System.out.println("=======\n" + this.mapLinks);
+  }
   //
   // Constructor
   //
@@ -150,6 +182,13 @@ public class CommonLinksInfoTranslator extends AbstractTranslator {
 
     if (translator == null) {
       throw new NullPointerException("Translator can't be null");
+    }
+
+    try {
+      load(this.getClass()
+          .getResourceAsStream("/META-INF/commonlinks.properties"));
+    } catch (IOException e) {
+      // Do nothing.
     }
 
     this.translator = translator;
