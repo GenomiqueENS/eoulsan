@@ -703,13 +703,16 @@ public abstract class MapperProcess {
 
   /**
    * Start the process(es) of the mapper.
+   * @param tmpDirectory temporary directory
    * @throws IOException if an error occurs while starting the process(es)
    * @throws InterruptedException if an error occurs while starting the
    *           process(es)
    */
-  private void startProcess() throws IOException, InterruptedException {
+  private void startProcess(final File tmpDirectory) throws IOException, InterruptedException {
 
     final List<List<String>> cmds = createCommandLines();
+    final File executionDirectory =
+        executionDirectory() == null ? tmpDirectory : executionDirectory();
 
     // Launch all the commands
     for (int i = 0; i < cmds.size(); i++) {
@@ -717,7 +720,7 @@ public abstract class MapperProcess {
       final boolean last = i == cmds.size() - 1;
 
       final Result result = this.executor.execute(cmds.get(i),
-          executionDirectory(), last, false, this.pipeFile1, this.pipeFile2);
+          executionDirectory, last, false, this.pipeFile1, this.pipeFile2);
 
       this.processResults.add(result);
 
@@ -864,7 +867,7 @@ public abstract class MapperProcess {
       additionalInit();
 
       // Start mapper instance
-      startProcess();
+      startProcess(tmpDir);
 
     } catch (InterruptedException e) {
       throw new IOException(e);
