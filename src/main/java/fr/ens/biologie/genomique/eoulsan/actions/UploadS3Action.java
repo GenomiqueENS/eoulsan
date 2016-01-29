@@ -177,7 +177,7 @@ public class UploadS3Action extends AbstractAction {
 
     try {
 
-      // Test if param file exists
+      // Test if worklflow file exists
       if (!workflowFile.exists()) {
         throw new FileNotFoundException(workflowFile.toString());
       }

@@ -265,7 +265,7 @@ public class ExecJarHadoopAction extends AbstractAction {
       final String jobDescription, final String jobEnvironment,
       final long millisSinceEpoch) {
 
-    checkNotNull(workflowPathname, "paramPathname is null");
+    checkNotNull(workflowPathname, "workflowPathname is null");
     checkNotNull(designPathname, "designPathname is null");
     checkNotNull(destPathname, "destPathname is null");
 
@@ -292,11 +292,11 @@ public class ExecJarHadoopAction extends AbstractAction {
               .getConfiguration();
 
       // Define parameter URI
-      final URI paramURI;
+      final URI workflowURI;
       if (workflowPathname.contains("://")) {
-        paramURI = new URI(workflowPathname);
+        workflowURI = new URI(workflowPathname);
       } else {
-        paramURI = new File(workflowPathname).getAbsoluteFile().toURI();
+        workflowURI = new File(workflowPathname).getAbsoluteFile().toURI();
       }
 
       // Define design URI
@@ -310,14 +310,14 @@ public class ExecJarHadoopAction extends AbstractAction {
       // Define destination URI
       final URI destURI = new URI(destPathname);
 
-      final Path paramPath = new Path(paramURI.toString());
+      final Path workflowPath = new Path(workflowURI.toString());
       final Path designPath = new Path(designURI.toString());
       final Path destPath = new Path(destURI.toString());
 
-      // Test if param file exists
-      FileSystem paramFs = paramPath.getFileSystem(conf);
-      if (!paramFs.exists(paramPath)) {
-        throw new FileNotFoundException(paramPath.toString());
+      // Test if workflow file exists
+      FileSystem workflowFs = workflowPath.getFileSystem(conf);
+      if (!workflowFs.exists(workflowPath)) {
+        throw new FileNotFoundException(workflowPath.toString());
       }
 
       // Test if design file exists
@@ -328,7 +328,7 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // Create ExecutionArgument object
       final ExecutorArguments arguments = new HadoopExecutorArguments(
-          millisSinceEpoch, paramPath, designPath, destPath);
+          millisSinceEpoch, workflowPath, designPath, destPath);
       arguments.setJobDescription(desc);
       arguments.setJobEnvironment(env);
 

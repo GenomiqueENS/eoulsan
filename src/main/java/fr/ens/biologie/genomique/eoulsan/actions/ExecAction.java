@@ -183,7 +183,7 @@ public class ExecAction extends AbstractAction {
 
     try {
 
-      // Test if param file exists
+      // Test if workflow file exists
       if (!workflowFile.exists()) {
         throw new FileNotFoundException(workflowFile.toString());
       }

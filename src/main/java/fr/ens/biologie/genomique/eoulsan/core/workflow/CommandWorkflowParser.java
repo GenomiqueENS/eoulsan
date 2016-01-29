@@ -169,10 +169,10 @@ public class CommandWorkflowParser {
 
     } catch (ParserConfigurationException | SAXException e) {
       throw new EoulsanException(
-          "Error while parsing param file: " + e.getMessage(), e);
+          "Error while parsing workflow file: " + e.getMessage(), e);
     } catch (IOException e) {
       throw new EoulsanException(
-          "Error while reading param file. " + e.getMessage(), e);
+          "Error while reading workflow file. " + e.getMessage(), e);
     }
 
     final NodeList nAnalysisList = doc.getElementsByTagName(ROOT_TAG_NAME);

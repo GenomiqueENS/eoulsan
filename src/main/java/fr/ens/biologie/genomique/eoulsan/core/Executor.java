@@ -230,7 +230,7 @@ public class Executor {
       final InputStream is = arguments.openParamFile();
       checkNotNull(is, "The input stream for workflow file is null");
 
-      // Parse param file
+      // Parse workflow file
       final CommandWorkflowParser pp = new CommandWorkflowParser(is);
       pp.addConstants(arguments);
 
