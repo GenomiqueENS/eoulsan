@@ -242,6 +242,9 @@ public class ReadsMapperLocalStep extends AbstractReadsMapperStep {
     // Init mapper
     mapper.init(archiveIndexFile, indexDir, reporter, COUNTER_GROUP);
 
+    // Delete the index directory at the end of the workflow
+    context.getWorkflow().deleteOnExit(new DataFile(indexDir));
+
     return mapper;
   }
 

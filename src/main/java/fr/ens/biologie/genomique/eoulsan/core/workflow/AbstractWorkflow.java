@@ -105,6 +105,8 @@ public abstract class AbstractWorkflow implements Workflow {
   private AbstractWorkflowStep checkerStep;
   private AbstractWorkflowStep firstStep;
 
+  private Set<DataFile> deleteOnExitFiles = new HashSet<>();
+
   private volatile boolean shutdownNow;
 
   //
@@ -293,6 +295,13 @@ public abstract class AbstractWorkflow implements Workflow {
       this.states.put(newState, step);
       this.steps.put(step, newState);
     }
+  }
+
+  @Override
+  public void deleteOnExit(final DataFile file) {
+
+    Preconditions.checkNotNull(file, "file argument is null");
+    this.deleteOnExitFiles.add(file);
   }
 
   //
@@ -530,6 +539,18 @@ public abstract class AbstractWorkflow implements Workflow {
 
     // Stop scheduler
     TaskSchedulerFactory.getScheduler().stop();
+
+    // Delete files on exit
+    for (DataFile file : this.deleteOnExitFiles) {
+      try {
+        if (file.exists()) {
+          file.delete(true);
+        }
+      } catch (IOException e) {
+        EoulsanLogger
+            .logWarning("Cannot remove file " + file + " on exit: " + file);
+      }
+    }
 
     // Close Docker connections
     DockerManager.getInstance().closeConnections();
