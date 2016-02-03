@@ -24,6 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.data.protocols;
 
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 
@@ -41,7 +42,7 @@ class SimpleDataFileMetadata implements DataFileMetadata {
   private long lastModified = -1;
   private DataFormat dataFormat;
   private boolean directory;
-  private boolean symbolicLink;
+  private DataFile symbolicLinkTarget;
 
   //
   // Getters
@@ -92,7 +93,13 @@ class SimpleDataFileMetadata implements DataFileMetadata {
   @Override
   public boolean isSymbolicLink() {
 
-    return this.symbolicLink;
+    return this.symbolicLinkTarget !=null;
+  }
+
+  @Override
+  public DataFile getLinkTarget() {
+
+    return this.symbolicLinkTarget;
   }
 
   //
@@ -134,9 +141,9 @@ class SimpleDataFileMetadata implements DataFileMetadata {
     this.directory = directory;
   }
 
-  public void setSymbolicLink(final boolean symbolicLink) {
+  public void setSymbolicLink(final DataFile target) {
 
-    this.symbolicLink = symbolicLink;
+    this.symbolicLinkTarget = target;
   }
 
   @Override
@@ -147,7 +154,7 @@ class SimpleDataFileMetadata implements DataFileMetadata {
         + this.contentType + ", contentEncoding=" + this.contentEncoding
         + ", contentMD5=" + this.contentMD5 + ", lastModified="
         + this.lastModified + ", dataFormat=" + this.dataFormat + ", directory="
-        + this.directory + ", symbolicLink=" + symbolicLink + "}";
+        + this.directory + ", symbolicLinkTarget=" + symbolicLinkTarget + "}";
   }
 
   //

@@ -79,4 +79,10 @@ public interface DataFileMetadata {
    */
   DataFormat getDataFormat();
 
+  /**
+   * Get the symbolic link target.
+   * @return The target of the symbolic link as DataFile
+   */
+  DataFile getLinkTarget();
+
 }

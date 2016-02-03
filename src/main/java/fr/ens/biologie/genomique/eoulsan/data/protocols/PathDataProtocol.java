@@ -107,7 +107,7 @@ public abstract class PathDataProtocol extends AbstractDataProtocol {
     }
 
     if (status.isSymlink()) {
-      result.setSymbolicLink(true);
+      result.setSymbolicLink(new DataFile(status.getSymlink().toUri()));
     }
 
     return result;

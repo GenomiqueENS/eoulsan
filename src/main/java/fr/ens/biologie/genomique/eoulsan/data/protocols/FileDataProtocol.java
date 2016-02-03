@@ -130,7 +130,7 @@ public class FileDataProtocol extends AbstractDataProtocol {
     }
 
     if (Files.isSymbolicLink(f.toPath())) {
-      result.setSymbolicLink(true);
+      result.setSymbolicLink(new DataFile(Files.readSymbolicLink(f.toPath())));
     }
 
     return result;
