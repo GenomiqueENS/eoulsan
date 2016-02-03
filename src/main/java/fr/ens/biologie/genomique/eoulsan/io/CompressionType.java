@@ -172,7 +172,7 @@ public enum CompressionType {
     }
 
     for (CompressionType ct : CompressionType.values()) {
-      if (extension.equals(ct.extension)) {
+      if (extension.toLowerCase().equals(ct.extension)) {
         return ct;
       }
     }
