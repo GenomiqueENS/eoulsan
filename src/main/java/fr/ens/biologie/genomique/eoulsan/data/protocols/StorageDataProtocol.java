@@ -144,6 +144,15 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
           getName() + " storage base path does not exists: " + baseDir);
     }
 
+    // List the content of the directory if it can be listed
+    final List<DataFile> dirList;
+
+    if (baseDir.getProtocol().canList()) {
+      dirList = baseDir.list();
+    } else {
+      dirList = Collections.emptyList();
+    }
+
     // Add no extension to the list of allowed extensions
     final List<String> extensions = new ArrayList<>(getExtensions());
     extensions.add("");
@@ -156,14 +165,46 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
                 + getName());
       }
 
-      final String filename = src.getName().toLowerCase().trim() + extension;
+      final String filename = src.getName().trim() + extension;
 
       for (CompressionType c : CompressionType.values()) {
 
-        final DataFile f = new DataFile(baseDir, filename + c.getExtension());
+        final DataFile file =
+            new DataFile(baseDir, filename + c.getExtension());
 
-        if (f.exists()) {
-          return f;
+        // Check if the file in the right case exists
+        if (file.exists()) {
+          return file;
+        }
+
+        // Insensitive case search file in the directory list
+        if (dirList.isEmpty()) {
+
+          // Compare filename in lower case
+          final String filenameLower = file.getName().toLowerCase();
+          for (DataFile f : dirList) {
+
+            if (f.getName().toLowerCase().equals(filenameLower) && f.exists()) {
+              return f;
+            }
+          }
+        } else {
+
+          // For non browsable base directory
+
+          // Check if the directory exists in lower case
+          final DataFile fileLower =
+              new DataFile(baseDir, file.getName().toLowerCase());
+          if (fileLower.exists()) {
+            return fileLower;
+          }
+
+          // Check if the directory exists in upper case
+          final DataFile fileUpper =
+              new DataFile(baseDir, file.getName().toUpperCase());
+          if (fileUpper.exists()) {
+            return fileUpper;
+          }
         }
       }
     }
