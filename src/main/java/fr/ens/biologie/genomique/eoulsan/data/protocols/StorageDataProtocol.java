@@ -174,7 +174,7 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
 
         // Check if the file in the right case exists
         if (file.exists()) {
-          return file;
+          return canonicalize(file);
         }
 
         // Insensitive case search file in the directory list
@@ -185,7 +185,7 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
           for (DataFile f : dirList) {
 
             if (f.getName().toLowerCase().equals(filenameLower) && f.exists()) {
-              return f;
+              return canonicalize(f);
             }
           }
         } else {
@@ -196,20 +196,35 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
           final DataFile fileLower =
               new DataFile(baseDir, file.getName().toLowerCase());
           if (fileLower.exists()) {
-            return fileLower;
+            return canonicalize(fileLower);
           }
 
           // Check if the directory exists in upper case
           final DataFile fileUpper =
               new DataFile(baseDir, file.getName().toUpperCase());
           if (fileUpper.exists()) {
-            return fileUpper;
+            return canonicalize(fileUpper);
           }
         }
       }
     }
 
     throw new IOException("No " + getName() + " found for: " + src.getName());
+  }
+
+  /**
+   * Canonicalize symbolic link.
+   * @param file the file to Canonicalize.
+   * @return a canonicalized file
+   * @throws IOException if an error occurs while canonicalize the file
+   */
+  private DataFile canonicalize(final DataFile file) throws IOException {
+
+    if (!file.isLocalFile()) {
+      return file;
+    }
+
+    return new DataFile(file.toFile().getCanonicalFile());
   }
 
 }
