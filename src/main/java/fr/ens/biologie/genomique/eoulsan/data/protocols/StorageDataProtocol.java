@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -143,7 +144,11 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
           getName() + " storage base path does not exists: " + baseDir);
     }
 
-    for (String extension : getExtensions()) {
+    // Add no extension to the list of allowed extensions
+    final List<String> extensions = new ArrayList<>(getExtensions());
+    extensions.add("");
+
+    for (String extension : extensions) {
 
       if (extension == null) {
         throw new NullPointerException(
