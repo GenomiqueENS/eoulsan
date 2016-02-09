@@ -240,16 +240,16 @@ public class STARIndexGenerator extends AbstractStep {
         final Data annotationData = context.getInputData(ANNOTATION_GFF);
 
         // Get the annotation DataFile
-        final DataFile genomeFile = annotationData.getDataFile();
-        final File genomeFilePath =
-            uncompressFileIfNecessary(context, temporaryFiles, genomeFile);
+        final DataFile gffFile = annotationData.getDataFile();
+        final File gffFilePath =
+            uncompressFileIfNecessary(context, temporaryFiles, gffFile);
 
         additionalArguments.append("--sjdbGTFfile");
         additionalArguments.append(' ');
-        additionalArguments.append(genomeFilePath);
+        additionalArguments.append(gffFilePath.getAbsolutePath());
         additionalArguments.append(' ');
         additionalDescription.put("sjdbGTFfile",
-            computeMD5SumFile(genomeFilePath));
+            computeMD5SumFile(gffFilePath));
       }
 
       if (this.overhang != null) {
