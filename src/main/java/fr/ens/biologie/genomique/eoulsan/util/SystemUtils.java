@@ -175,7 +175,8 @@ public final class SystemUtils {
   public static final int uid() {
 
     try {
-      return Integer.parseInt(execToString("/usr/bin/id", "-u"));
+      return Integer
+          .parseInt(execToString("/usr/bin/id", "-u").replace("\n", "").trim());
     } catch (NumberFormatException | IOException e) {
       return -1;
     }
@@ -188,7 +189,8 @@ public final class SystemUtils {
   public static final int gid() {
 
     try {
-      return Integer.parseInt(execToString("/usr/bin/id", "-g"));
+      return Integer
+          .parseInt(execToString("/usr/bin/id", "-g").replace("\n", "").trim());
     } catch (NumberFormatException | IOException e) {
       return -1;
     }

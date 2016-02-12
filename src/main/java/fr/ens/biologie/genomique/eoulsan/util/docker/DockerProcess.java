@@ -29,7 +29,7 @@ import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.Image;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
-import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
+import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
 
 /**
  * This class define how to execute a process using Docker.
@@ -235,38 +235,6 @@ public class DockerProcess {
   }
 
   //
-  // Get user UID and GID
-  //
-
-  /**
-   * Get user UID.
-   * @return the user UID or -1 if UID cannot be found
-   */
-  private static final int uid() {
-
-    try {
-      return Integer.parseInt(
-          ProcessUtils.execToString("id -u").replace("\n", "").trim());
-    } catch (NumberFormatException | IOException e) {
-      return -1;
-    }
-  }
-
-  /**
-   * Get user GID.
-   * @return the user GID or -1 if GID cannot be found
-   */
-  private static final int gid() {
-
-    try {
-      return Integer.parseInt(
-          ProcessUtils.execToString("id -g").replace("\n", "").trim());
-    } catch (NumberFormatException | IOException e) {
-      return -1;
-    }
-  }
-
-  //
   // Object methods
   //
 
@@ -311,8 +279,8 @@ public class DockerProcess {
     this.dockerClient = dockerClient;
     this.dockerImage = dockerImage;
     this.temporaryDirectory = temporaryDirectory;
-    this.userUid = uid();
-    this.userGid = gid();
+    this.userUid = SystemUtils.uid();
+    this.userGid = SystemUtils.gid();
   }
 
 }
