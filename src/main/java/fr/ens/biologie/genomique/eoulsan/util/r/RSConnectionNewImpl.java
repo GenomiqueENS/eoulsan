@@ -363,8 +363,6 @@ public class RSConnectionNewImpl implements RSConnection {
       byte[] imgCode = new byte[imgLength];
       int imgPos = 0;
 
-      final int nbBuffers = buffers.size();
-
       for (byte[] b : buffers) {
         System.arraycopy(b, 0, imgCode, imgPos, bufSize);
         imgPos += bufSize;
@@ -430,8 +428,6 @@ public class RSConnectionNewImpl implements RSConnection {
       byte[] imgCode = new byte[imgLength];
       int imgPos = 0;
 
-      final int nbBuffers = buffers.size();
-
       for (byte[] b : buffers) {
         System.arraycopy(b, 0, imgCode, imgPos, bufSize);
         imgPos += bufSize;
@@ -470,12 +466,17 @@ public class RSConnectionNewImpl implements RSConnection {
     return file;
   }
 
-  public void getAllFiles(final String outPath)
+  public void getAllFiles(final File outPath)
       throws REngineException, REXPMismatchException {
+
+    if (outPath == null) {
+      throw new NullPointerException("outPath argument cannot be null");
+    }
+
     String[] files = getFileList();
 
     for (String file : files) {
-      getFile(file, new File(outPath + file));
+      getFile(file, new File(outPath, file));
     }
   }
 

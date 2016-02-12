@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.steps.diffana;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toTimeHumanReadable;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -56,6 +57,7 @@ import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
+import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 import fr.ens.biologie.genomique.eoulsan.util.r.RSConnectionNewImpl;
 
 /**
@@ -85,6 +87,7 @@ public class Normalization {
   protected final String expressionFilesPrefix;
   protected final String expressionFilesSuffix;
   protected RSConnectionNewImpl rConnection = null;
+  protected final RExecutor executor;
 
   //
   // Public methods
@@ -102,13 +105,15 @@ public class Normalization {
       throw new EoulsanException("Cannot normalize less than 2 input files");
     }
 
-    if (context.getSettings().isRServeServerEnabled()) {
-      getLogger().info("Normalization : Rserve mode");
-      runRserveRnwScript(context, data);
-    } else {
-      getLogger().info("Normalization : local mode");
-      runLocalRnwScript(context, data);
-    }
+    runRExecutor(context, data);
+
+    // if (context.getSettings().isRServeServerEnabled()) {
+    // getLogger().info("Normalization : Rserve mode");
+    // runRserveRnwScript(context, data);
+    // } else {
+    // getLogger().info("Normalization : local mode");
+    // runLocalRnwScript(context, data);
+    // }
   }
 
   // Getters
@@ -164,7 +169,7 @@ public class Normalization {
           this.rConnection.removeFile(rScript);
         }
 
-        this.rConnection.getAllFiles(this.outPath.toString() + "/");
+        this.rConnection.getAllFiles(this.outPath);
       }
 
     } catch (REngineException e) {
@@ -219,6 +224,65 @@ public class Normalization {
       }
 
     } catch (Exception e) {
+      throw new EoulsanException(
+          "Error while running differential analysis: " + e.getMessage(), e);
+    }
+  }
+
+  protected void runRExecutor(final StepContext context, final Data data)
+      throws EoulsanException {
+
+    final boolean saveRScript = context.getSettings().isSaveRscripts();
+
+    try {
+
+      // create an iterator on the map values
+      for (Experiment experiment : this.design.getExperiments()) {
+
+        getLogger().info("Experiment : " + experiment.getName());
+
+        // Open executor connection
+        executor.openConnection();
+
+        // Put input input files
+        for (Data d : data.getListElements()) {
+
+          final int sampleId = d.getMetadata().getSampleNumber();
+
+          // Check if the sample ID exists
+          if (sampleId == -1) {
+            throw new EoulsanException(
+                "No sample Id found for input file: " + d.getDataFile());
+          }
+
+          final String linkFilename = this.expressionFilesPrefix
+              + sampleId + this.expressionFilesSuffix;
+
+          executor.putInputFile(d.getDataFile(), linkFilename);
+        }
+
+        // Generate the R script
+        final String rScript = generateScript(experiment, context);
+
+        // Set the description of the analysis
+        final String description = context.getCurrentStep().getId()
+            + '-' + experiment.getId() + '-'
+            + toTimeHumanReadable(System.currentTimeMillis());
+
+        // Execute the R script
+        executor.executeRScript(rScript, true, saveRScript, description);
+
+        // Remove input files
+        executor.removeInputFiles();
+
+        // Retrieve output files
+        executor.getOutputFiles();
+
+        // Close executor connection
+        executor.closeClonnection();
+      }
+
+    } catch (IOException e) {
       throw new EoulsanException(
           "Error while running differential analysis: " + e.getMessage(), e);
     }
@@ -411,25 +475,25 @@ public class Normalization {
     // end document
     sb.append("\\end{document}\n");
 
-    String rScript = null;
-    try {
-
-      rScript = "normalization_" + experiment.getName() + ".Rnw";
-
-      if (context.getSettings().isRServeServerEnabled()) {
-        getLogger().info("Write script on Rserve: " + rScript);
-        this.rConnection.writeStringAsFile(rScript, sb.toString());
-      } else {
-        Writer writer = FileUtils.createFastBufferedWriter(rScript);
-        writer.write(sb.toString());
-        writer.close();
-      }
-    } catch (REngineException | IOException e) {
-      e.printStackTrace();
-    }
-
-    return rScript;
-
+//    String rScript = null;
+//    try {
+//
+//      rScript = "normalization_" + experiment.getName() + ".Rnw";
+//
+//      if (context.getSettings().isRServeServerEnabled()) {
+//        getLogger().info("Write script on Rserve: " + rScript);
+//        this.rConnection.writeStringAsFile(rScript, sb.toString());
+//      } else {
+//        Writer writer = FileUtils.createFastBufferedWriter(rScript);
+//        writer.write(sb.toString());
+//        writer.close();
+//      }
+//    } catch (REngineException | IOException e) {
+//      e.printStackTrace();
+//    }
+//
+//    return rScript;
+    return sb.toString();
   }
 
   /**
@@ -805,7 +869,8 @@ public class Normalization {
    */
   public Normalization(final Design design, final File expressionFilesDirectory,
       final String expressionFilesPrefix, final String expressionFilesSuffix,
-      final File outPath, final String rServerName, final boolean rServeEnable)
+      final File outPath, final String rServerName, final boolean rServeEnable,
+      final RExecutor executor)
           throws EoulsanException {
 
     checkNotNull(design, "design is null.");
@@ -843,6 +908,8 @@ public class Normalization {
         throw new EoulsanException("Missing Rserve server name");
       }
     }
+
+    this.executor = executor;
   }
 
 }

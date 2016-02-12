@@ -43,6 +43,7 @@ import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 
 /**
  * This class create and launch a R script to compute differential analysis.
@@ -235,13 +236,15 @@ public class DiffAna extends Normalization {
   public void run(final StepContext context, final Data data)
       throws EoulsanException {
 
-    if (context.getSettings().isRServeServerEnabled()) {
-      getLogger().info("Differential analysis : Rserve mode");
-      runRserveRnwScript(context, data);
-    } else {
-      getLogger().info("Differential analysis : local mode");
-      runLocalRnwScript(context, data);
-    }
+    runRExecutor(context, data);
+
+    // if (context.getSettings().isRServeServerEnabled()) {
+    // getLogger().info("Differential analysis : Rserve mode");
+    // runRserveRnwScript(context, data);
+    // } else {
+    // getLogger().info("Differential analysis : local mode");
+    // runLocalRnwScript(context, data);
+    // }
   }
 
   //
@@ -418,25 +421,27 @@ public class DiffAna extends Normalization {
     sb.append("\\end{document}");
 
     // create file
-    String rScript = null;
-    try {
-      rScript =
-          "diffana_"
-              + experiment.getName() + "_" + System.currentTimeMillis()
-              + ".Rnw";
+    // String rScript = null;
+    // try {
+    // rScript =
+    // "diffana_"
+    // + experiment.getName() + "_" + System.currentTimeMillis()
+    // + ".Rnw";
+    //
+    // if (context.getSettings().isRServeServerEnabled()) {
+    // this.rConnection.writeStringAsFile(rScript, sb.toString());
+    // } else {
+    // Writer writer = FileUtils.createFastBufferedWriter(rScript);
+    // writer.write(sb.toString());
+    // writer.close();
+    // }
+    // } catch (REngineException | IOException e) {
+    // e.printStackTrace();
+    // }
+    //
+    // return rScript;
 
-      if (context.getSettings().isRServeServerEnabled()) {
-        this.rConnection.writeStringAsFile(rScript, sb.toString());
-      } else {
-        Writer writer = FileUtils.createFastBufferedWriter(rScript);
-        writer.write(sb.toString());
-        writer.close();
-      }
-    } catch (REngineException | IOException e) {
-      e.printStackTrace();
-    }
-
-    return rScript;
+    return sb.toString();
   }
 
   //
@@ -530,10 +535,10 @@ public class DiffAna extends Normalization {
       final File outPath, final DispersionMethod dispEstMethod,
       final DispersionSharingMode dispEstSharingMode,
       final DispersionFitType dispEstFitType, final String rServerName,
-      final boolean rServeEnable) throws EoulsanException {
+      final boolean rServeEnable, final RExecutor executor) throws EoulsanException {
 
     super(design, expressionFilesDirectory, expressionFilesPrefix,
-        expressionFilesSuffix, outPath, rServerName, rServeEnable);
+        expressionFilesSuffix, outPath, rServerName, rServeEnable, executor);
 
     if (dispEstMethod == null
         || dispEstFitType == null || dispEstSharingMode == null) {

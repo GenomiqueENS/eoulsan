@@ -29,6 +29,7 @@ import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_S
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
@@ -51,6 +52,7 @@ import fr.ens.biologie.genomique.eoulsan.steps.diffana.DiffAna.DispersionFitType
 import fr.ens.biologie.genomique.eoulsan.steps.diffana.DiffAna.DispersionMethod;
 import fr.ens.biologie.genomique.eoulsan.steps.diffana.DiffAna.DispersionSharingMode;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
+import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 
 /**
  * This class define the step of differential analysis in local mode.
@@ -68,6 +70,8 @@ public class DiffAnaLocalStep extends AbstractStep {
   private static final String DISP_EST_SHARING_MODE_PARAMETER_NAME =
       "disp.est.sharing.mode";
 
+
+
   private static final String STEP_NAME = "diffana";
 
   // parameters and there default values
@@ -75,6 +79,8 @@ public class DiffAnaLocalStep extends AbstractStep {
   private DispersionFitType dispEstFitType = DispersionFitType.LOCAL;
   private DispersionSharingMode dispEstSharingMode =
       DispersionSharingMode.MAXIMUM;
+
+  private RExecutor executor;
 
   //
   // Step methods
@@ -123,7 +129,7 @@ public class DiffAnaLocalStep extends AbstractStep {
       final DiffAna ad = new DiffAna(design, new File("."), eDF.getPrefix(),
           eDF.getDefaultExtension(), new File("."), this.dispEstMethod,
           this.dispEstSharingMode, this.dispEstFitType, rServeName,
-          rServeEnable);
+          rServeEnable, this.executor);
 
       // Launch analysis
       ad.run(context, context.getInputData(eDF));
@@ -142,7 +148,12 @@ public class DiffAnaLocalStep extends AbstractStep {
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
 
-    for (Parameter p : stepParameters) {
+    // Parse R executor parameters
+    final Set<Parameter> parameters = new HashSet<>(stepParameters);
+    this.executor =
+        CommonConfiguration.parseRExecutorParameter(context, parameters);
+
+    for (Parameter p : parameters) {
 
       switch (p.getName()) {
 
