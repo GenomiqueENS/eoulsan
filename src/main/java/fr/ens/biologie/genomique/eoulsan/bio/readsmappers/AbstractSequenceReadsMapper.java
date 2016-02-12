@@ -38,7 +38,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.net.URI;
 import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -46,6 +45,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.common.base.Strings;
+import com.spotify.docker.client.DockerClient;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -90,7 +90,7 @@ public abstract class AbstractSequenceReadsMapper
   private String indexerArguments = null;
   private File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
   private boolean multipleInstancesEnabled;
-  private URI dockerConnection;
+  private DockerClient dockerClient;
 
   private ReporterIncrementer incrementer;
   private String counterGroup;
@@ -256,9 +256,9 @@ public abstract class AbstractSequenceReadsMapper
   }
 
   @Override
-  public URI getDockerConnection() {
+  public DockerClient getDockerClient() {
 
-    return this.dockerConnection;
+    return this.dockerClient;
   }
 
   /**
@@ -389,11 +389,11 @@ public abstract class AbstractSequenceReadsMapper
   }
 
   @Override
-  public void setDockerConnection(final URI uri) {
+  public void setDockerClient(final DockerClient dockerClient) {
 
     checkState(!this.initialized, "Mapper has been initialized");
 
-    this.dockerConnection = uri;
+    this.dockerClient = dockerClient;
   }
 
   //
@@ -923,8 +923,8 @@ public abstract class AbstractSequenceReadsMapper
     }
 
     // Set the executor to use
-    if (!this.mapperDockerImage.isEmpty() && this.dockerConnection != null) {
-      this.executor = new DockerMapperExecutor(getDockerConnection(),
+    if (!this.mapperDockerImage.isEmpty() && this.dockerClient != null) {
+      this.executor = new DockerMapperExecutor(getDockerClient(),
           getMapperDockerImage(), getTempDirectory());
     } else if (isUseBundledBinaries()) {
       this.executor = new BundledMapperExecutor(getSoftwarePackage(),

@@ -34,7 +34,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,7 +42,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.google.common.base.Objects;
-import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.DockerException;
 import com.spotify.docker.client.messages.ContainerConfig;
@@ -64,7 +62,7 @@ import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
  */
 public class DockerMapperExecutor implements MapperExecutor {
 
-  private final URI dockerConnection;
+  private final DockerClient dockerClient;
   private final String dockerImage;
   private final int userUid;
   private final int userGid;
@@ -75,6 +73,10 @@ public class DockerMapperExecutor implements MapperExecutor {
    * @author Laurent Jourdren
    */
   private class DockerResult implements Result {
+
+    /*
+     * TODO merge part of this method in DockerProcess class.
+     */
 
     private final String containerId;
     private final File stdoutFile;
@@ -88,8 +90,7 @@ public class DockerMapperExecutor implements MapperExecutor {
             "The excution command has not been configured to redirect stdout");
       }
 
-      try (DockerClient dockerClient =
-          new DefaultDockerClient(dockerConnection)) {
+      try {
 
         // Get process exit code
         final ContainerInfo info = dockerClient.inspectContainer(containerId);
@@ -128,8 +129,7 @@ public class DockerMapperExecutor implements MapperExecutor {
 
       int result;
 
-      try (DockerClient dockerClient =
-          new DefaultDockerClient(dockerConnection)) {
+      try {
 
         // Wait the end of the container
         getLogger()
@@ -179,8 +179,7 @@ public class DockerMapperExecutor implements MapperExecutor {
 
       checkNotNull(command, "command argument cannot be null");
 
-      try (DockerClient dockerClient =
-          new DefaultDockerClient(dockerConnection)) {
+      try {
 
         // Pull image if needed
         pullImageIfNotExists(dockerClient, dockerImage);
@@ -391,7 +390,7 @@ public class DockerMapperExecutor implements MapperExecutor {
   public String toString() {
 
     return Objects.toStringHelper(this)
-        .add("dockerConnection", dockerConnection)
+        .add("dockerConnection", dockerClient)
         .add("dockerImage", dockerImage)
         .add("temporaryDirectory", temporaryDirectory).toString();
   }
@@ -402,19 +401,20 @@ public class DockerMapperExecutor implements MapperExecutor {
 
   /**
    * Constructor.
-   * @param dockerConnection Docker connection URI
+   * @param dockerClient Docker client
    * @param dockerImage Docker image
    * @param temporaryDirectory temporary directory
    */
-  DockerMapperExecutor(final URI dockerConnection, final String dockerImage,
+  DockerMapperExecutor(final DockerClient
+      dockerClient, final String dockerImage,
       final File temporaryDirectory) {
 
-    checkNotNull(dockerConnection, "dockerConnection argument cannot be null");
+    checkNotNull(dockerClient, "dockerConnection argument cannot be null");
     checkNotNull(dockerImage, "dockerImage argument cannot be null");
     checkNotNull(temporaryDirectory,
         "temporaryDirectory argument cannot be null");
 
-    this.dockerConnection = dockerConnection;
+    this.dockerClient = dockerClient;
     this.dockerImage = dockerImage;
     this.temporaryDirectory = temporaryDirectory;
     this.userUid = SystemUtils.uid();
