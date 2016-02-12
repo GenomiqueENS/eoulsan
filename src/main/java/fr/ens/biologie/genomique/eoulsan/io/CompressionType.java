@@ -68,6 +68,15 @@ public enum CompressionType {
     return this.extension;
   }
 
+  /**
+   * Test if a file is compressed.
+   * @return true if the file is compressed
+   */
+  public boolean isCompressed() {
+
+    return this != NONE;
+  }
+
   //
   // Other methods
   //
