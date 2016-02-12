@@ -1,5 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.steps.diffana.local;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,18 +30,25 @@ public class CommonConfiguration {
    * Parse the step parameter and create a configured RExecutor object.
    * @param context the step context
    * @param stepParameters the step parameters. Must be a mutable object
+   * @param defaultDockerImage default docker image
    * @return a configured RExecutor object
    * @throws EoulsanException if one or more parameter is invalid
    */
   public static RExecutor parseRExecutorParameter(
       final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+      final Set<Parameter> stepParameters, final String defaultDockerImage)
+          throws EoulsanException {
+
+    checkNotNull(context, "context argument cannot be null");
+    checkNotNull(stepParameters, "stepParameters argument cannot be null");
+    checkNotNull(defaultDockerImage,
+        "defaultDockerImage argument cannot be null");
 
     final Set<Parameter> toRemove = new HashSet<>();
 
     RExecutorFactory.Mode executionMode = null;
     String rserveServer = null;
-    String dockerImage = null;
+    String dockerImage = defaultDockerImage;
 
     for (Parameter p : stepParameters) {
 

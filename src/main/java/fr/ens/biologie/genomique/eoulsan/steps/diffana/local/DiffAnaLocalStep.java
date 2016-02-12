@@ -27,6 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.steps.diffana.local;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
+import static fr.ens.biologie.genomique.eoulsan.steps.diffana.local.NormalizationLocalStep.DESEQ1_DOCKER_IMAGE;
 
 import java.io.File;
 import java.util.HashSet;
@@ -150,8 +151,8 @@ public class DiffAnaLocalStep extends AbstractStep {
 
     // Parse R executor parameters
     final Set<Parameter> parameters = new HashSet<>(stepParameters);
-    this.executor =
-        CommonConfiguration.parseRExecutorParameter(context, parameters);
+    this.executor = CommonConfiguration.parseRExecutorParameter(context,
+        parameters, DESEQ1_DOCKER_IMAGE);
 
     for (Parameter p : parameters) {
 

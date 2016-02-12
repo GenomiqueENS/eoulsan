@@ -60,6 +60,8 @@ public class NormalizationLocalStep extends AbstractStep {
 
   private static final String STEP_NAME = "normalization";
 
+  static final String DESEQ1_DOCKER_IMAGE = "genomicpariscentre/deseq:1.8.3";
+
   private RExecutor executor;
 
   //
@@ -91,15 +93,15 @@ public class NormalizationLocalStep extends AbstractStep {
         .addPort(DEFAULT_SINGLE_INPUT_PORT_NAME, true, EXPRESSION_RESULTS_TSV)
         .create();
   }
-  
+
   @Override
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
 
     // Parse R executor parameters
     final Set<Parameter> parameters = new HashSet<>(stepParameters);
-    this.executor =
-        CommonConfiguration.parseRExecutorParameter(context, parameters);
+    this.executor = CommonConfiguration.parseRExecutorParameter(context,
+        parameters, DESEQ1_DOCKER_IMAGE);
 
     if (!parameters.isEmpty()) {
       Steps.unknownParameter(context, parameters.iterator().next());
