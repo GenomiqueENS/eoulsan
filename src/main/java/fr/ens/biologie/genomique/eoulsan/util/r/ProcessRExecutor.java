@@ -14,6 +14,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
+import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
 
 /**
  * This class define a standard RExecutor using a system process.
@@ -81,16 +82,28 @@ public class ProcessRExecutor extends AbstractRExecutor {
 
     final String rCMD = sweave ? "Sweave" : "BATCH";
 
-    return Arrays.asList("/usr/bin/R", "CMD", rCMD,
-        rScriptFile.getAbsolutePath());
+    return Arrays.asList("R", "CMD", rCMD, rScriptFile.getAbsolutePath());
   }
 
   @Override
   protected void executeRScript(final File rScriptFile, final boolean sweave)
       throws IOException {
 
-    final ProcessBuilder pb =
-        new ProcessBuilder(createCommand(rScriptFile, sweave));
+    final List<String> command = createCommand(rScriptFile, sweave);
+
+    // Search the command in The PATH
+    final File executablePath =
+        SystemUtils.searchExecutableInPATH(command.get(0));
+
+    if (executablePath == null) {
+      throw new IOException(
+          "Unable to find executable in the PATH: " + command.get(0));
+    }
+
+    // Update the command with the path of the command
+    command.set(0, executablePath.getAbsolutePath());
+
+    final ProcessBuilder pb = new ProcessBuilder();
 
     // Set the temporary directory for R
     pb.environment().put("TMPDIR", getTemporaryDirectory().getAbsolutePath());
