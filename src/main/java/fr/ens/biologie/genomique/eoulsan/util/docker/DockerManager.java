@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.biologie.genomique.eoulsan.core;
+package fr.ens.biologie.genomique.eoulsan.util.docker;
 
 import java.net.URI;
 

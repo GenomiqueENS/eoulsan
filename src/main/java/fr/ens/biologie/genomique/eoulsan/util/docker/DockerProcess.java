@@ -8,7 +8,6 @@ import static java.util.Collections.singletonList;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.Objects;
-import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.DockerClient.LogsParameter;
 import com.spotify.docker.client.DockerException;
@@ -42,7 +40,7 @@ public class DockerProcess {
 
   private static final String TMP_DIR_ENV_VARIABLE = "TMPDIR";
 
-  private final URI dockerConnection;
+  private final DockerClient dockerClient;
   private final String dockerImage;
   private final int userUid;
   private final int userGid;
@@ -63,10 +61,8 @@ public class DockerProcess {
         "execution directory does not exists or is not a directory: "
             + executionDirectory.getAbsolutePath());
 
-    DockerClient dockerClient = new DefaultDockerClient(this.dockerConnection);
-
     // Pull image if needed
-    pullImageIfNotExists(dockerClient, this.dockerImage);
+    pullImageIfNotExists(this.dockerClient, this.dockerImage);
 
     // Create container configuration
     getLogger().fine("Configure container, command to execute: " + commandLine);
@@ -96,32 +92,32 @@ public class DockerProcess {
 
     // Create container
     final ContainerCreation creation =
-        dockerClient.createContainer(builder.build());
+        this.dockerClient.createContainer(builder.build());
 
     // Get container id
     final String containerId = creation.id();
 
     // Start container
     getLogger().fine("Start of the Docker container: " + containerId);
-    dockerClient.startContainer(containerId);
+    this.dockerClient.startContainer(containerId);
 
     // Redirect stdout and stderr
-    final LogStream logStream = dockerClient.logs(containerId,
+    final LogStream logStream = this.dockerClient.logs(containerId,
         LogsParameter.FOLLOW, LogsParameter.STDERR, LogsParameter.STDOUT);
     redirect(logStream, stdoutFile, stderrFile);
 
     // Wait the end of the container
     getLogger().fine("Wait the end of the Docker container: " + containerId);
-    dockerClient.waitContainer(containerId);
+    this.dockerClient.waitContainer(containerId);
 
     // Get process exit code
-    final ContainerInfo info = dockerClient.inspectContainer(containerId);
+    final ContainerInfo info = this.dockerClient.inspectContainer(containerId);
     final int exitValue = info.state().exitCode();
     getLogger().fine("Exit value: " + exitValue);
 
     // Remove container
     getLogger().fine("Remove Docker container: " + containerId);
-    dockerClient.removeContainer(containerId);
+    this.dockerClient.removeContainer(containerId);
 
     return exitValue;
   }
@@ -277,9 +273,7 @@ public class DockerProcess {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this)
-        .add("dockerConnection", dockerConnection)
-        .add("dockerImage", dockerImage)
+    return Objects.toStringHelper(this).add("dockerImage", dockerImage)
         .add("temporaryDirectory", temporaryDirectory).toString();
   }
 
@@ -289,19 +283,32 @@ public class DockerProcess {
 
   /**
    * Constructor.
-   * @param dockerConnection Docker connection URI
+   * @param dockerClient Docker connection URI
    * @param dockerImage Docker image
    * @param temporaryDirectory temporary directory
    */
-  public DockerProcess(final URI dockerConnection, final String dockerImage,
+  public DockerProcess(final String dockerImage,
       final File temporaryDirectory) {
 
-    checkNotNull(dockerConnection, "dockerConnection argument cannot be null");
+    this(DockerManager.getInstance().getClient(), dockerImage,
+        temporaryDirectory);
+  }
+
+  /**
+   * Constructor.
+   * @param dockerClient Docker connection URI
+   * @param dockerImage Docker image
+   * @param temporaryDirectory temporary directory
+   */
+  public DockerProcess(final DockerClient dockerClient,
+      final String dockerImage, final File temporaryDirectory) {
+
+    checkNotNull(dockerClient, "dockerClient argument cannot be null");
     checkNotNull(dockerImage, "dockerImage argument cannot be null");
     checkNotNull(temporaryDirectory,
         "temporaryDirectory argument cannot be null");
 
-    this.dockerConnection = dockerConnection;
+    this.dockerClient = dockerClient;
     this.dockerImage = dockerImage;
     this.temporaryDirectory = temporaryDirectory;
     this.userUid = uid();

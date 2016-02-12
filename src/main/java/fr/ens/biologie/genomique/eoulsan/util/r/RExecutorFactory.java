@@ -2,7 +2,6 @@ package fr.ens.biologie.genomique.eoulsan.util.r;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 
 /**
  * This class define a factory for creating a RExecutor object.
@@ -11,12 +10,25 @@ import java.net.URI;
  */
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 
+/**
+ * This class define a factory to create RExecutor objects.
+ * @author Laurent Jourdren
+ * @since 2.0
+ */
 public class RExecutorFactory {
 
+  /**
+   * Define a enum for the mode of RExecutor.
+   */
   public enum Mode {
 
     LOCAL, RSERVE, DOCKER;
 
+    /**
+     * Parse a mode name and returns the mode.
+     * @param name mode name
+     * @return a mode object or null if the mode is not found
+     */
     public static Mode parse(final String name) {
 
       if (name == null) {
@@ -35,6 +47,17 @@ public class RExecutorFactory {
 
   }
 
+  /**
+   * Create a new instance of RExecutor.
+   * @param mode executor mode
+   * @param rServeServer the Rserve server
+   * @param dockerImage docker image
+   * @param outputDirectory output directory
+   * @param temporaryDirectory temporary directory
+   * @return a new instance of RExecutor
+   * @throws IOException if an error occurs while creating the instance of
+   *           RExecutor
+   */
   public static RExecutor newRExecutor(final Mode mode,
       final String rServeServer, final String dockerImage,
       final File outputDirectory, final File temporaryDirectory)
@@ -42,17 +65,6 @@ public class RExecutorFactory {
 
     final String server = rServeServer == null
         ? EoulsanRuntime.getSettings().getRServeServerName() : rServeServer;
-    final URI dockerConnection =
-        EoulsanRuntime.getSettings().getDockerConnectionURI();
-
-    return newRExecutor(mode, server, dockerConnection, dockerImage,
-        outputDirectory, temporaryDirectory);
-  }
-
-  public static RExecutor newRExecutor(final Mode mode,
-      final String rServeServer, final URI dockerConnection,
-      final String dockerImage, final File outputDirectory,
-      final File temporaryDirectory) throws IOException {
 
     if (mode != null) {
 
@@ -66,21 +78,21 @@ public class RExecutorFactory {
 
       case DOCKER:
         return new DockerRExecutor(outputDirectory, temporaryDirectory,
-            dockerConnection, dockerImage);
+            dockerImage);
 
       default:
         break;
       }
     }
 
-    if (rServeServer != null) {
+    if (server != null) {
       return new RserveRExecutor(outputDirectory, temporaryDirectory,
           rServeServer);
     }
 
-    if (dockerConnection != null && dockerImage != null) {
+    if (dockerImage != null) {
       return new DockerRExecutor(outputDirectory, temporaryDirectory,
-          dockerConnection, dockerImage);
+          dockerImage);
     }
 
     return new ProcessRExecutor(outputDirectory, temporaryDirectory);

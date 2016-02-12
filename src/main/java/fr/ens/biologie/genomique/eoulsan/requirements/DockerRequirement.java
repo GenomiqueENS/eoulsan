@@ -40,9 +40,9 @@ import com.spotify.docker.client.messages.ProgressDetail;
 import com.spotify.docker.client.messages.ProgressMessage;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.core.DockerManager;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Progress;
+import fr.ens.biologie.genomique.eoulsan.util.docker.DockerManager;
 
 /**
  * This class define a Docker requirement.

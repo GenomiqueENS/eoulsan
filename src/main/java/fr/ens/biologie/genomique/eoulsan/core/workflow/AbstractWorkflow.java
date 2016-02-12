@@ -58,7 +58,6 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Settings;
-import fr.ens.biologie.genomique.eoulsan.core.DockerManager;
 import fr.ens.biologie.genomique.eoulsan.core.EmergencyStopTasks;
 import fr.ens.biologie.genomique.eoulsan.core.ExecutorArguments;
 import fr.ens.biologie.genomique.eoulsan.core.schedulers.TaskSchedulerFactory;
@@ -69,6 +68,7 @@ import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.io.DesignWriter;
 import fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignWriter;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
+import fr.ens.biologie.genomique.eoulsan.util.docker.DockerManager;
 
 /**
  * This class define a Workflow. This class must be extended by a class to be

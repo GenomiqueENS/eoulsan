@@ -2,7 +2,6 @@ package fr.ens.biologie.genomique.eoulsan.util.r;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 
 import com.google.common.base.Joiner;
@@ -19,14 +18,13 @@ import fr.ens.biologie.genomique.eoulsan.util.docker.DockerProcess;
 public class DockerRExecutor extends ProcessRExecutor {
 
   private final String dockerImage;
-  private final URI dockerConnection;
 
   @Override
   protected void executeRScript(final File rScriptFile, final boolean sweave)
       throws IOException {
 
-    final DockerProcess process = new DockerProcess(this.dockerConnection,
-        this.dockerImage, getTemporaryDirectory());
+    final DockerProcess process =
+        new DockerProcess(this.dockerImage, getTemporaryDirectory());
 
     final List<String> commandLine = createCommand(rScriptFile, sweave);
 
@@ -59,20 +57,14 @@ public class DockerRExecutor extends ProcessRExecutor {
    * @throws IOException if an error occurs while creating the object
    */
   public DockerRExecutor(final File outputDirectory,
-      final File temporaryDirectory, final URI dockerConnection,
-      final String dockerImage) throws IOException {
+      final File temporaryDirectory, final String dockerImage)
+          throws IOException {
     super(outputDirectory, temporaryDirectory);
 
     if (dockerImage == null) {
       throw new NullPointerException("dockerImage argument cannot be null");
     }
 
-    if (dockerConnection == null) {
-      throw new NullPointerException(
-          "dockerConnection argument cannot be null");
-    }
-
-    this.dockerConnection = dockerConnection;
     this.dockerImage = dockerImage;
   }
 
