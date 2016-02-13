@@ -48,7 +48,7 @@ import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
-import fr.ens.biologie.genomique.eoulsan.util.r.RSConnectionNewImpl;
+import fr.ens.biologie.genomique.eoulsan.util.r.RSConnection;
 
 /**
  * This class create and launch an R script to compute normalisation of
@@ -74,7 +74,7 @@ public class Normalization {
   protected final Design design;
   protected final String expressionFilesPrefix;
   protected final String expressionFilesSuffix;
-  protected RSConnectionNewImpl rConnection = null;
+  protected RSConnection rConnection = null;
   protected final RExecutor executor;
 
   //

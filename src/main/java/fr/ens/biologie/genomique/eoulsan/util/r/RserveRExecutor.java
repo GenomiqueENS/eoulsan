@@ -4,6 +4,7 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngineException;
@@ -19,7 +20,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 public class RserveRExecutor extends AbstractRExecutor {
 
   private final String serverName;
-  protected RSConnectionNewImpl rConnection;
+  protected RSConnection rConnection;
 
   @Override
   public void getOutputFiles() throws IOException {
@@ -27,7 +28,20 @@ public class RserveRExecutor extends AbstractRExecutor {
     checkConnection();
 
     try {
-      this.rConnection.getAllFiles(getOutputDirectory());
+
+      // Get all the filenames
+      final List<String> filenames = this.rConnection.listFiles();
+
+      for (String filename : filenames) {
+
+        // Retrieve the file
+        this.rConnection.getFile(filename,
+            new File(getOutputDirectory(), filename));
+
+        // Delete the file
+        removeFile(filename);
+      }
+
     } catch (REngineException | REXPMismatchException e) {
       throw new IOException(e);
     }
@@ -40,7 +54,7 @@ public class RserveRExecutor extends AbstractRExecutor {
   @Override
   public void openConnection() throws IOException {
 
-    this.rConnection = new RSConnectionNewImpl(serverName);
+    this.rConnection = new RSConnection(serverName);
   }
 
   @Override
