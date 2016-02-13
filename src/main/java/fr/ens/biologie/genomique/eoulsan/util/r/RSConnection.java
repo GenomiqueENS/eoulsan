@@ -131,7 +131,7 @@ public class RSConnection {
   public InputStream getFileInputStream(final String filename)
       throws REngineException {
 
-    RConnection c = getRConnection();
+    final RConnection c = getRConnection();
 
     try {
       return c.openFile(filename);
@@ -151,7 +151,7 @@ public class RSConnection {
   public OutputStream getFileOutputStream(final String filename)
       throws REngineException {
 
-    RConnection c = getRConnection();
+    final RConnection c = getRConnection();
 
     try {
       return c.createFile(filename);
@@ -177,7 +177,7 @@ public class RSConnection {
     try {
       putFile(new FileInputStream(inputFile), rServeFilename);
     } catch (FileNotFoundException e) {
-      throw new REngineException(this.rconnection,
+      throw new REngineException(getRConnection(),
           "file not found: " + e.getMessage());
     }
   }
@@ -209,10 +209,10 @@ public class RSConnection {
       os.close();
 
     } catch (REngineException e) {
-      throw new REngineException(this.rconnection,
+      throw new REngineException(getRConnection(),
           "Unable to put file: " + e.getMessage());
     } catch (IOException e) {
-      throw new REngineException(this.rconnection,
+      throw new REngineException(getRConnection(),
           "Unable to create report: " + e.getMessage());
     }
 
@@ -242,11 +242,11 @@ public class RSConnection {
       os.close();
 
     } catch (REngineException e) {
-      throw new REngineException(this.rconnection, "Unable to get file");
+      throw new REngineException(getRConnection(), "Unable to get file");
     } catch (FileNotFoundException e) {
-      throw new REngineException(this.rconnection, "file not found");
+      throw new REngineException(getRConnection(), "file not found");
     } catch (IOException e) {
-      throw new REngineException(this.rconnection, "Unable to create report.");
+      throw new REngineException(getRConnection(), "Unable to create report.");
     }
   }
 
@@ -285,11 +285,11 @@ public class RSConnection {
       out.close();
 
     } catch (REngineException e) {
-      throw new REngineException(this.rconnection, "Unable to get file");
+      throw new REngineException(getRConnection(), "Unable to get file");
     } catch (FileNotFoundException e) {
-      throw new REngineException(this.rconnection, "File not found");
+      throw new REngineException(getRConnection(), "File not found");
     } catch (IOException e) {
-      throw new REngineException(this.rconnection, "Unable to get file");
+      throw new REngineException(getRConnection(), "Unable to get file");
     }
   }
 
@@ -299,9 +299,10 @@ public class RSConnection {
    */
   public void removeFile(final String filename) throws REngineException {
 
+    // Test if the file exists
+    final RConnection c = getRConnection();
+
     try {
-      // Test if the file exists
-      RConnection c = getRConnection();
 
       REXP exists = c.eval("file.exists(\"" + filename + "\")");
       if (exists.asInteger() == 1) {
@@ -309,7 +310,7 @@ public class RSConnection {
       }
 
     } catch (RserveException | REXPMismatchException e) {
-      throw new REngineException(this.rconnection, "RServe exception: " + e);
+      throw new REngineException(c, "RServe exception: " + e);
     }
   }
 
@@ -336,16 +337,15 @@ public class RSConnection {
       return;
     }
 
-    try {
+    final RConnection c = getRConnection();
 
-      RConnection c = getRConnection();
+    try {
 
       // Execute the source
       c.voidEval("source(\"" + source + "\")");
 
     } catch (RserveException e) {
-
-      throw new REngineException(this.rconnection, "RServe exception: " + e);
+      throw new REngineException(c, "RServe exception: " + e);
     }
   }
 
@@ -360,11 +360,12 @@ public class RSConnection {
       return;
     }
 
+    final RConnection c = getRConnection();
+
     try {
-      RConnection rc = getRConnection();
-      rc.voidEval("Sweave(\"" + source + "\")");
+      c.voidEval("Sweave(\"" + source + "\")");
     } catch (RserveException e) {
-      throw new REngineException(getRConnection(), "Rserve exception: " + e);
+      throw new REngineException(c, "Rserve exception: " + e);
     }
   }
 
@@ -380,14 +381,14 @@ public class RSConnection {
       return null;
     }
 
-    final RConnection connection = getRConnection();
+    final RConnection c = getRConnection();
 
-    if (connection == null) {
+    if (c == null) {
       throw new REngineException(null, "Connection is null");
     }
 
     try {
-      RFileInputStream is = connection.openFile(filename);
+      RFileInputStream is = c.openFile(filename);
       ArrayList<byte[]> buffers = new ArrayList<>();
       int bufSize = 65536;
       byte[] buf = new byte[bufSize];
@@ -409,7 +410,7 @@ public class RSConnection {
       if (imgLength < 10) { // this shouldn't be the case actually,
         // because we did some error checking, but
         // for those paranoid ...
-        throw new REngineException(connection,
+        throw new REngineException(c,
             "Cannot load image, check R output, probably R didn't produce anything.");
 
       }
@@ -428,7 +429,7 @@ public class RSConnection {
 
       // ... and close the file ... and remove it - we have what we need :)
       is.close();
-      connection.removeFile("test.jpg");
+      c.removeFile("test.jpg");
 
       // now this is pretty boring AWT stuff, nothing to do with R ...
       Image img = Toolkit.getDefaultToolkit().createImage(imgCode);
@@ -436,10 +437,9 @@ public class RSConnection {
       return img;
 
     } catch (IOException e) {
-      throw new REngineException(connection, "Error while load image");
+      throw new REngineException(c, "Error while load image");
     } catch (RserveException e) {
-      throw new REngineException(connection,
-          "Error while removing image from server");
+      throw new REngineException(c, "Error while removing image from server");
     }
 
   }
@@ -452,14 +452,14 @@ public class RSConnection {
    */
   public byte[] getFileAsArray(final String filename) throws REngineException {
 
-    final RConnection connection = getRConnection();
+    final RConnection c = getRConnection();
 
-    if (connection == null) {
+    if (c == null) {
       throw new REngineException(null, "Connection is null");
     }
 
     try {
-      RFileInputStream is = connection.openFile(filename);
+      RFileInputStream is = c.openFile(filename);
       ArrayList<byte[]> buffers = new ArrayList<>();
 
       int bufSize = 65536;
@@ -481,7 +481,7 @@ public class RSConnection {
         }
       }
       if (imgLength < 10) {
-        throw new REngineException(connection,
+        throw new REngineException(c,
             "Cannot load files, check R output, probably R didn't produce anything.");
 
       }
@@ -502,7 +502,7 @@ public class RSConnection {
       return imgCode;
 
     } catch (IOException e) {
-      throw new REngineException(connection, "Error while loading files");
+      throw new REngineException(c, "Error while loading files");
     }
 
   }
@@ -516,12 +516,13 @@ public class RSConnection {
   public RFileInputStream openFile(final String filename)
       throws REngineException {
 
-    final RConnection connection = getRConnection();
+    final RConnection c = getRConnection();
+
     RFileInputStream file;
     try {
-      file = this.rconnection.openFile(filename);
+      file = c.openFile(filename);
     } catch (IOException e) {
-      throw new REngineException(connection, "Error while opening file");
+      throw new REngineException(c, "Error while opening file");
     }
 
     return file;
@@ -554,9 +555,9 @@ public class RSConnection {
   public List<String> listFiles()
       throws REngineException, REXPMismatchException {
 
-    final RConnection connection = getRConnection();
+    final RConnection c = getRConnection();
 
-    String[] files = connection.eval("list.files()").asStrings();
+    String[] files = c.eval("list.files()").asStrings();
 
     if (files == null) {
       return Collections.emptyList();
@@ -585,7 +586,10 @@ public class RSConnection {
    */
   public void disConnect() {
 
-    this.rconnection.close();
+    if (this.rconnection != null) {
+      this.rconnection.close();
+      this.rconnection = null;
+    }
   }
 
   //
