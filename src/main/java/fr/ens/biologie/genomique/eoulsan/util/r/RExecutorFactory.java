@@ -4,13 +4,6 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * This class define a factory for creating a RExecutor object.
- * @author Laurent Jourdren
- * @since 2.0
- */
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
-
-/**
  * This class define a factory to create RExecutor objects.
  * @author Laurent Jourdren
  * @since 2.0
@@ -63,9 +56,6 @@ public class RExecutorFactory {
       final File outputDirectory, final File temporaryDirectory)
           throws IOException {
 
-    final String server = rServeServer == null
-        ? EoulsanRuntime.getSettings().getRServeServerName() : rServeServer;
-
     if (mode != null) {
 
       switch (mode) {
@@ -73,7 +63,8 @@ public class RExecutorFactory {
         return new ProcessRExecutor(outputDirectory, temporaryDirectory);
 
       case RSERVE:
-        return new RserveRExecutor(outputDirectory, temporaryDirectory, server);
+        return new RserveRExecutor(outputDirectory, temporaryDirectory,
+            rServeServer);
 
       case DOCKER:
         return new DockerRExecutor(outputDirectory, temporaryDirectory,
@@ -84,8 +75,9 @@ public class RExecutorFactory {
       }
     }
 
-    if (server != null) {
-      return new RserveRExecutor(outputDirectory, temporaryDirectory, server);
+    if (rServeServer != null) {
+      return new RserveRExecutor(outputDirectory, temporaryDirectory,
+          rServeServer);
     }
 
     if (dockerImage != null) {

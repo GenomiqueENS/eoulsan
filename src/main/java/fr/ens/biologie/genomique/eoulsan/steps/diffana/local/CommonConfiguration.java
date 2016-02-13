@@ -8,14 +8,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
+import fr.ens.biologie.genomique.eoulsan.requirements.PathRequirement;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
+import fr.ens.biologie.genomique.eoulsan.requirements.RserveRequirement;
 import fr.ens.biologie.genomique.eoulsan.steps.Steps;
 import fr.ens.biologie.genomique.eoulsan.util.r.DockerRExecutor;
+import fr.ens.biologie.genomique.eoulsan.util.r.ProcessRExecutor;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutorFactory;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutorFactory.Mode;
+import fr.ens.biologie.genomique.eoulsan.util.r.RserveRExecutor;
 
 /**
  * This class define common methods used for the configuration of the step of
@@ -49,10 +54,12 @@ public class CommonConfiguration {
         "defaultDockerImage argument cannot be null");
 
     final Set<Parameter> toRemove = new HashSet<>();
+    final Settings settings = context.getSettings();
 
     RExecutorFactory.Mode executionMode = null;
-    String rserveServer = null;
     String dockerImage = defaultDockerImage;
+    String rserveServer = settings.isRServeServerEnabled()
+        ? settings.getRServeServerName() : null;
 
     for (Parameter p : stepParameters) {
 
@@ -99,8 +106,16 @@ public class CommonConfiguration {
     // Set the requirements
     switch (result.getName()) {
 
+    case ProcessRExecutor.REXECUTOR_NAME:
+      requirements.add(PathRequirement.newPathRequirement("R"));
+      break;
+
     case DockerRExecutor.REXECUTOR_NAME:
       requirements.add(newDockerRequirement(dockerImage));
+      break;
+
+    case RserveRExecutor.REXECUTOR_NAME:
+      requirements.add(RserveRequirement.newRserveRequirement(rserveServer));
       break;
 
     default:
