@@ -1,6 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.steps.diffana.local;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement.newDockerRequirement;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -9,7 +10,9 @@ import java.util.Set;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
+import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.steps.Steps;
+import fr.ens.biologie.genomique.eoulsan.util.r.DockerRExecutor;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutorFactory;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutorFactory.Mode;
@@ -36,11 +39,12 @@ public class CommonConfiguration {
    */
   public static RExecutor parseRExecutorParameter(
       final StepConfigurationContext context,
-      final Set<Parameter> stepParameters, final String defaultDockerImage)
-          throws EoulsanException {
+      final Set<Parameter> stepParameters, final Set<Requirement> requirements,
+      final String defaultDockerImage) throws EoulsanException {
 
     checkNotNull(context, "context argument cannot be null");
     checkNotNull(stepParameters, "stepParameters argument cannot be null");
+    checkNotNull(requirements, "requirements argument cannot be null");
     checkNotNull(defaultDockerImage,
         "defaultDockerImage argument cannot be null");
 
@@ -82,13 +86,28 @@ public class CommonConfiguration {
     // Remove parsed parameters
     stepParameters.removeAll(toRemove);
 
+    // Create the executor object
+    final RExecutor result;
     try {
-      return RExecutorFactory.newRExecutor(executionMode, rserveServer,
+      result = RExecutorFactory.newRExecutor(executionMode, rserveServer,
           dockerImage, context.getStepOutputDirectory().toFile(),
           context.getLocalTempDirectory());
     } catch (IOException e) {
       throw new EoulsanException(e);
     }
+
+    // Set the requirements
+    switch (result.getName()) {
+
+    case DockerRExecutor.REXECUTOR_NAME:
+      requirements.add(newDockerRequirement(dockerImage));
+      break;
+
+    default:
+      break;
+    }
+
+    return result;
   }
 
 }

@@ -73,8 +73,7 @@ public class RExecutorFactory {
         return new ProcessRExecutor(outputDirectory, temporaryDirectory);
 
       case RSERVE:
-        return new RserveRExecutor(outputDirectory, temporaryDirectory,
-            rServeServer);
+        return new RserveRExecutor(outputDirectory, temporaryDirectory, server);
 
       case DOCKER:
         return new DockerRExecutor(outputDirectory, temporaryDirectory,

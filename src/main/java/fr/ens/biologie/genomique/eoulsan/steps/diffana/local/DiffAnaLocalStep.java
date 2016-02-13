@@ -28,6 +28,7 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.biologie.genomique.eoulsan.steps.diffana.local.NormalizationLocalStep.DESEQ1_DOCKER_IMAGE;
+import static java.util.Collections.unmodifiableSet;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -43,6 +44,7 @@ import fr.ens.biologie.genomique.eoulsan.core.StepContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
 import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.steps.AbstractStep;
 import fr.ens.biologie.genomique.eoulsan.steps.Steps;
 import fr.ens.biologie.genomique.eoulsan.steps.diffana.DiffAna;
@@ -68,8 +70,6 @@ public class DiffAnaLocalStep extends AbstractStep {
   private static final String DISP_EST_SHARING_MODE_PARAMETER_NAME =
       "disp.est.sharing.mode";
 
-
-
   private static final String STEP_NAME = "diffana";
 
   // parameters and there default values
@@ -78,6 +78,7 @@ public class DiffAnaLocalStep extends AbstractStep {
   private DispersionSharingMode dispEstSharingMode =
       DispersionSharingMode.MAXIMUM;
 
+  private Set<Requirement> requirements = new HashSet<>();
   private RExecutor executor;
 
   //
@@ -110,6 +111,12 @@ public class DiffAnaLocalStep extends AbstractStep {
   }
 
   @Override
+  public Set<Requirement> getRequirements() {
+
+    return unmodifiableSet(this.requirements);
+  }
+
+  @Override
   public StepResult execute(final StepContext context,
       final StepStatus status) {
 
@@ -139,7 +146,7 @@ public class DiffAnaLocalStep extends AbstractStep {
     // Parse R executor parameters
     final Set<Parameter> parameters = new HashSet<>(stepParameters);
     this.executor = CommonConfiguration.parseRExecutorParameter(context,
-        parameters, DESEQ1_DOCKER_IMAGE);
+        parameters, this.requirements, DESEQ1_DOCKER_IMAGE);
 
     for (Parameter p : parameters) {
 

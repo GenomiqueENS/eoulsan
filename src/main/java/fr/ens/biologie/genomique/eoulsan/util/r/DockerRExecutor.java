@@ -17,7 +17,15 @@ import fr.ens.biologie.genomique.eoulsan.util.docker.DockerProcess;
  */
 public class DockerRExecutor extends ProcessRExecutor {
 
+  public static final String REXECUTOR_NAME = "docker";
+
   private final String dockerImage;
+
+  @Override
+  public String getName() {
+
+    return REXECUTOR_NAME;
+  }
 
   @Override
   protected void executeRScript(final File rScriptFile, final boolean sweave)

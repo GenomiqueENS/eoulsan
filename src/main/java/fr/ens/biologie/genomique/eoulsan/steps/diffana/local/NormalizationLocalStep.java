@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.steps.diffana.local;
 
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
+import static java.util.Collections.unmodifiableSet;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -41,6 +42,7 @@ import fr.ens.biologie.genomique.eoulsan.core.StepContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
 import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.steps.AbstractStep;
 import fr.ens.biologie.genomique.eoulsan.steps.Steps;
 import fr.ens.biologie.genomique.eoulsan.steps.diffana.Normalization;
@@ -59,6 +61,7 @@ public class NormalizationLocalStep extends AbstractStep {
 
   static final String DESEQ1_DOCKER_IMAGE = "genomicpariscentre/deseq:1.8.3";
 
+  private Set<Requirement> requirements = new HashSet<>();
   private RExecutor executor;
 
   //
@@ -92,13 +95,19 @@ public class NormalizationLocalStep extends AbstractStep {
   }
 
   @Override
+  public Set<Requirement> getRequirements() {
+
+    return unmodifiableSet(this.requirements);
+  }
+
+  @Override
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
 
     // Parse R executor parameters
     final Set<Parameter> parameters = new HashSet<>(stepParameters);
     this.executor = CommonConfiguration.parseRExecutorParameter(context,
-        parameters, DESEQ1_DOCKER_IMAGE);
+        parameters, this.requirements, DESEQ1_DOCKER_IMAGE);
 
     if (!parameters.isEmpty()) {
       Steps.unknownParameter(context, parameters.iterator().next());

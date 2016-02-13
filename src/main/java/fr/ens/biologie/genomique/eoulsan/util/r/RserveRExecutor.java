@@ -19,8 +19,16 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
  */
 public class RserveRExecutor extends AbstractRExecutor {
 
+  public static final String REXECUTOR_NAME = "rserve";
+
   private final String serverName;
   protected RSConnection rConnection;
+
+  @Override
+  public String getName() {
+
+    return REXECUTOR_NAME;
+  }
 
   @Override
   public void getOutputFiles() throws IOException {

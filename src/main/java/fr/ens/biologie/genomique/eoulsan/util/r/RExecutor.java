@@ -13,6 +13,12 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 public interface RExecutor {
 
   /**
+   * Get the name of the RExecutor.
+   * @return the name of the RExecutor
+   */
+  String getName();
+
+  /**
    * Open the connection.
    * @throws IOException if an error occurs while opening the connection
    */

@@ -23,7 +23,15 @@ import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
  */
 public class ProcessRExecutor extends AbstractRExecutor {
 
+  public static final String REXECUTOR_NAME = "process";
+
   private Set<String> filenamesToKeep = new HashSet<>();
+
+  @Override
+  public String getName() {
+
+    return REXECUTOR_NAME;
+  }
 
   @Override
   protected void putFile(final DataFile inputFile, final String outputFilename)
