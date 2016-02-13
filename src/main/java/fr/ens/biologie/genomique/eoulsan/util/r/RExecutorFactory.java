@@ -86,8 +86,7 @@ public class RExecutorFactory {
     }
 
     if (server != null) {
-      return new RserveRExecutor(outputDirectory, temporaryDirectory,
-          rServeServer);
+      return new RserveRExecutor(outputDirectory, temporaryDirectory, server);
     }
 
     if (dockerImage != null) {
