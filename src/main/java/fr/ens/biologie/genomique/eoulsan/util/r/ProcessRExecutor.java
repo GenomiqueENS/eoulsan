@@ -56,7 +56,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
 
         // If the output file is not in the same directory that the original
         // file or its filename is different, create a symbolic link
-        outputFile.symlink(inputFile, true);
+        inputFile.symlink(outputFile, true);
       } else {
         this.filenamesToKeep.add(outputFilename);
       }
