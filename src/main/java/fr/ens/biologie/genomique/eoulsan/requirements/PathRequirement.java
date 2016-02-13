@@ -134,14 +134,4 @@ public class PathRequirement extends AbstractRequirement {
     return result;
   }
 
-  //
-  // Constructor
-  //
-
-  /**
-   * Private constructor.
-   */
-  private PathRequirement() {
-  }
-
 }

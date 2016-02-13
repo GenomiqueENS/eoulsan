@@ -212,14 +212,4 @@ public class DockerRequirement extends AbstractRequirement {
     return result;
   }
 
-  //
-  // Constructor
-  //
-
-  /**
-   * Private constructor.
-   */
-  private DockerRequirement() {
-  }
-
 }
