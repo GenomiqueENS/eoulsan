@@ -29,7 +29,6 @@ import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_S
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.biologie.genomique.eoulsan.steps.diffana.local.NormalizationLocalStep.DESEQ1_DOCKER_IMAGE;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,8 +42,6 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
 import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.steps.AbstractStep;
 import fr.ens.biologie.genomique.eoulsan.steps.Steps;
@@ -117,23 +114,13 @@ public class DiffAnaLocalStep extends AbstractStep {
       final StepStatus status) {
 
     try {
-      final DataFormat eDF = DataFormats.EXPRESSION_RESULTS_TSV;
-
-      String rServeName = null;
-      final boolean rServeEnable =
-          context.getSettings().isRServeServerEnabled();
-      if (rServeEnable) {
-        rServeName = context.getSettings().getRServeServerName();
-      }
 
       final Design design = context.getWorkflow().getDesign();
-      final DiffAna ad = new DiffAna(design, new File("."), eDF.getPrefix(),
-          eDF.getDefaultExtension(), new File("."), this.dispEstMethod,
-          this.dispEstSharingMode, this.dispEstFitType, rServeName,
-          rServeEnable, this.executor);
 
-      // Launch analysis
-      ad.run(context, context.getInputData(eDF));
+      // Launch differential analysis
+      final DiffAna diffana = new DiffAna(this.executor, design,
+          this.dispEstMethod, this.dispEstSharingMode, this.dispEstFitType);
+      diffana.run(context, context.getInputData(EXPRESSION_RESULTS_TSV));
 
       // Write log file
       return status.createStepResult();

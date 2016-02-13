@@ -27,7 +27,6 @@ package fr.ens.biologie.genomique.eoulsan.steps.diffana.local;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,8 +40,6 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
 import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.steps.AbstractStep;
 import fr.ens.biologie.genomique.eoulsan.steps.Steps;
@@ -115,20 +112,11 @@ public class NormalizationLocalStep extends AbstractStep {
 
     try {
 
-      final DataFormat eDF = DataFormats.EXPRESSION_RESULTS_TSV;
-
-      String rServeName = null;
-      boolean rServeEnable = context.getSettings().isRServeServerEnabled();
-      if (rServeEnable) {
-        rServeName = context.getSettings().getRServeServerName();
-      }
-
       final Design design = context.getWorkflow().getDesign();
-      final Normalization norm = new Normalization(design, new File("."),
-          eDF.getPrefix(), eDF.getDefaultExtension(), new File("."), rServeName,
-          rServeEnable, this.executor);
 
-      norm.run(context, context.getInputData(eDF));
+      // Launch normalization
+      final Normalization norm = new Normalization(this.executor, design);
+      norm.run(context, context.getInputData(EXPRESSION_RESULTS_TSV));
 
       // Write log file
       return status.createStepResult();
