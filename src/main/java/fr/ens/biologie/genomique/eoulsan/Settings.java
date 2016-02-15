@@ -518,7 +518,7 @@ public final class Settings implements Serializable {
    */
   public URI getDockerConnectionURI() {
 
-    final String connectionString = this.properties.getProperty(DOCKER_URI_KEY);
+    final String connectionString = getDockerConnection();
 
     if (connectionString == null) {
       return null;
