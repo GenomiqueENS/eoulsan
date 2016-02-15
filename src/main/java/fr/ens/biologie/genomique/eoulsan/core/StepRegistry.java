@@ -90,7 +90,12 @@ public class StepRegistry {
 
       checkNotNull(in, "in argument cannot be null");
 
-      return new GalaxyToolStep(in, source);
+      try {
+        return new GalaxyToolStep(in, source);
+      } catch (EoulsanException e) {
+        throw new EoulsanException(
+            "Unable to load Galaxy tool step: " + source);
+      }
     }
 
     /**
