@@ -354,7 +354,20 @@ public class RSConnection {
    * @param source code to execute
    * @throws REngineException if an error while executing the code
    */
-  public void executeRnwCode(final String source) throws REngineException {
+  public void executeRnwCode(final String source)
+      throws REngineException {
+
+    executeRnwCode(source, null);
+  }
+
+  /**
+   * Execute a R Sweave code.
+   * @param source code to execute
+   * @param latexOutput output latex filename
+   * @throws REngineException if an error while executing the code
+   */
+  public void executeRnwCode(final String source, final String latexOutput)
+      throws REngineException {
 
     if (source == null) {
       return;
@@ -362,8 +375,20 @@ public class RSConnection {
 
     final RConnection c = getRConnection();
 
+    final StringBuilder sb = new StringBuilder();
+    sb.append("Sweave(\"");
+    sb.append(source);
+    sb.append('\"');
+
+    if (latexOutput != null) {
+      sb.append(", output=\"");
+      sb.append(latexOutput);
+      sb.append('\"');
+    }
+    sb.append(')');
+
     try {
-      c.voidEval("Sweave(\"" + source + "\")");
+      c.voidEval(sb.toString());
     } catch (RserveException e) {
       throw new REngineException(c, "Rserve exception: " + e);
     }

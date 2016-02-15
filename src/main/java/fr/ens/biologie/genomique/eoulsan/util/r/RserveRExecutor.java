@@ -106,8 +106,8 @@ public class RserveRExecutor extends AbstractRExecutor {
   }
 
   @Override
-  protected void executeRScript(final File rScriptFile, final boolean sweave)
-      throws IOException {
+  protected void executeRScript(final File rScriptFile, final boolean sweave,
+      final String sweaveOuput) throws IOException {
 
     checkConnection();
 
@@ -122,7 +122,7 @@ public class RserveRExecutor extends AbstractRExecutor {
 
         // Execute Sweave script
         getLogger().info("Execute RNW script: " + rScriptFile);
-        this.rConnection.executeRnwCode(rScriptOnRservePath);
+        this.rConnection.executeRnwCode(rScriptOnRservePath, sweaveOuput);
 
       } else {
 

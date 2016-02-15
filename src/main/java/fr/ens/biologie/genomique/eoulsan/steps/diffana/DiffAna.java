@@ -276,9 +276,10 @@ public class DiffAna extends Normalization {
     // Create Rnw script stringbuilder with preamble
     String pdfTitle =
         escapeUnderScore(experiment.getName()) + " differential analysis";
+    String filePrefix = "diffana_" + escapeUnderScore(experiment.getName());
 
     final StringBuilder sb =
-        generateRnwpreamble(experiment.getSamples(), pdfTitle);
+        generateRnwpreamble(experiment.getSamples(), pdfTitle, filePrefix);
 
     /*
      * Replace "na" values of repTechGroup by unique sample ids to avoid pooling

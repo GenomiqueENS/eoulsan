@@ -18,7 +18,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 public abstract class AbstractRExecutor implements RExecutor {
 
   private static final String R_FILE_EXTENSION = ".R";
-  private static final String SWEAVE_FILE_EXTENSION  = ".Rnw";
+  private static final String SWEAVE_FILE_EXTENSION = ".Rnw";
 
   private final List<String> inputFilenames = new ArrayList<>();
   private final File outputDirectory;
@@ -48,10 +48,11 @@ public abstract class AbstractRExecutor implements RExecutor {
    * Execute a R script.
    * @param rScriptFile The R script file
    * @param sweave execute the R using Sweave
+   * @param sweaveOuput sweave output file
    * @throws IOException if an error occurs while executing the script
    */
-  protected abstract void executeRScript(File rScriptFile, boolean sweave)
-      throws IOException;
+  protected abstract void executeRScript(File rScriptFile, boolean sweave,
+      String sweaveOuput) throws IOException;
 
   /**
    * Get the output directory of the analysis.
@@ -127,7 +128,8 @@ public abstract class AbstractRExecutor implements RExecutor {
 
   @Override
   public void executeRScript(final String rScript, final boolean sweave,
-      final boolean saveRscript, final String description) throws IOException {
+      final String sweaveOutput, final boolean saveRscript,
+      final String description) throws IOException {
 
     if (rScript == null) {
       throw new NullPointerException("rScript argument cannot be null");
@@ -146,7 +148,7 @@ public abstract class AbstractRExecutor implements RExecutor {
     writer.close();
 
     // Execute R script
-    executeRScript(rScriptFile, sweave);
+    executeRScript(rScriptFile, sweave, sweaveOutput);
 
     // Remove temporary R script
     if (!saveRscript) {

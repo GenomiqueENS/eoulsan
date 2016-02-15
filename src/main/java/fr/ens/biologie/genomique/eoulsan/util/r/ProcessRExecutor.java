@@ -2,7 +2,7 @@ package fr.ens.biologie.genomique.eoulsan.util.r;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +39,10 @@ public class ProcessRExecutor extends AbstractRExecutor {
 
     final File outputDir = getOutputDirectory().getAbsoluteFile();
     final DataFile outputFile = new DataFile(outputDir, outputFilename);
+
+    if (outputFile.exists()) {
+      throw new IOException("The output file already exists: " + outputFile);
+    }
 
     if (!inputFile.isLocalFile()
         || inputFile.getCompressionType().isCompressed()) {
@@ -86,18 +90,43 @@ public class ProcessRExecutor extends AbstractRExecutor {
    * @return the R command as a list
    */
   protected List<String> createCommand(final File rScriptFile,
-      final boolean sweave) {
+      final boolean sweave, final String sweaveOuput) {
 
-    final String rCMD = sweave ? "Sweave" : "BATCH";
+    final List<String> result = new ArrayList<>();
+    result.add("R");
 
-    return Arrays.asList("R", "CMD", rCMD, rScriptFile.getAbsolutePath());
+    if (sweave) {
+
+      result.add("-e");
+
+      final StringBuilder sb = new StringBuilder();
+      sb.append("Sweave(\"");
+      sb.append(rScriptFile.getAbsolutePath());
+      sb.append('\"');
+
+      if (sweaveOuput != null) {
+        sb.append(", output=\"");
+        sb.append(sweaveOuput);
+        sb.append('\"');
+      }
+      sb.append(')');
+
+      result.add(sb.toString());
+    } else {
+      result.add("CMD");
+      result.add("BATCH");
+      result.add(rScriptFile.getAbsolutePath());
+    }
+
+    return result;
   }
 
   @Override
-  protected void executeRScript(final File rScriptFile, final boolean sweave)
-      throws IOException {
+  protected void executeRScript(final File rScriptFile, final boolean sweave,
+      final String sweaveOuput) throws IOException {
 
-    final List<String> command = createCommand(rScriptFile, sweave);
+    final List<String> command =
+        createCommand(rScriptFile, sweave, sweaveOuput);
 
     // Search the command in The PATH
     final File executablePath =

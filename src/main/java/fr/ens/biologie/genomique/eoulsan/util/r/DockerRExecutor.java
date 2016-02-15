@@ -2,11 +2,14 @@ package fr.ens.biologie.genomique.eoulsan.util.r;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 import com.google.common.base.Joiner;
 import com.spotify.docker.client.DockerException;
 
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.util.docker.DockerProcess;
 
@@ -28,19 +31,67 @@ public class DockerRExecutor extends ProcessRExecutor {
   }
 
   @Override
-  protected void executeRScript(final File rScriptFile, final boolean sweave)
+  protected void putFile(final DataFile inputFile, final String outputFilename)
       throws IOException {
+
+    // Use default putFile implementation if the input file is not a local file
+    if (!inputFile.isLocalFile()) {
+
+      super.putFile(inputFile, outputFilename);
+      return;
+    }
+
+    final File inFile = inputFile.toFile();
+
+    // Check if the file is in the output directory (or a subdir) or in the
+    // temporary directory (or a subdir)
+    if (isInSubDir(getOutputDirectory(), inFile)
+        || isInSubDir(getTemporaryDirectory(), inFile)) {
+
+      // If not, copy files
+      final DataFile outputFile =
+          new DataFile(getOutputDirectory(), outputFilename);
+
+      if (outputFile.exists()) {
+        throw new IOException("The output file already exists: " + outputFile);
+      }
+
+      DataFiles.copy(inputFile, outputFile);
+
+    } else {
+
+      // Else use default putFile implementation
+      super.putFile(inputFile, outputFilename);
+    }
+  }
+
+  private static boolean isInSubDir(File a, File b) {
+
+    final File aAbs = a.getAbsoluteFile();
+    final File bAbs = b.getAbsoluteFile();
+
+    final URI aURI = aAbs.toURI();
+    final URI bURI = bAbs.toURI();
+
+    return !bURI.equals(aURI.relativize(bURI));
+  }
+
+  @Override
+  protected void executeRScript(final File rScriptFile, final boolean sweave,
+      final String sweaveOuput) throws IOException {
 
     final DockerProcess process =
         new DockerProcess(this.dockerImage, getTemporaryDirectory());
 
-    final List<String> commandLine = createCommand(rScriptFile, sweave);
+    final List<String> commandLine =
+        createCommand(rScriptFile, sweave, sweaveOuput);
 
     final File stdoutFile = changeFileExtension(rScriptFile, ".out");
     final File stderrFile = changeFileExtension(rScriptFile, ".err");
 
     try {
-
+      System.out.println("getOutputDirectory(): " + getOutputDirectory());
+      System.out.println("getTemporaryDirectory()" + getTemporaryDirectory());
       final int exitValue = process.execute(commandLine, getOutputDirectory(),
           getTemporaryDirectory(), stdoutFile, stderrFile);
 

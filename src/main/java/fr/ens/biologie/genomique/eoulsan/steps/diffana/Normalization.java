@@ -140,11 +140,15 @@ public class Normalization {
 
         // Set the description of the analysis
         final String description = context.getCurrentStep().getId()
-            + '-' + experiment.getId() + '-'
+            + '_' + experiment.getId() + '-'
             + toCompactTime(System.currentTimeMillis());
 
+        // Set the Sweave output
+        final String sweaveOutput = context.getCurrentStep().getId()
+            + '_' + experiment.getId() + ".tex";
+
         // Execute the R script
-        executor.executeRScript(rScript, true, saveRScript, description);
+        executor.executeRScript(rScript, true, sweaveOutput, saveRScript, description);
 
         // Remove input files
         executor.removeInputFiles();
@@ -276,9 +280,10 @@ public class Normalization {
 
     // Create Rnw script stringbuilder with preamble
     String pdfTitle = escapeUnderScore(experiment.getName()) + " normalisation";
+    String filePrefix = "normalization_" + escapeUnderScore(experiment.getName());
 
     final StringBuilder sb =
-        generateRnwpreamble(experiment.getSamples(), pdfTitle);
+        generateRnwpreamble(experiment.getSamples(), pdfTitle, filePrefix);
 
     /*
      * Replace "na" values of repTechGroup by unique sample ids to avoid pooling
@@ -345,10 +350,12 @@ public class Normalization {
    * Write Rnw preamble.
    * @param experimentSamplesList sample experiment list
    * @param title title of the document
+   * @param filePrefix Sweave file prefix
    * @return a StringBuilder with Rnw preamble
    */
   protected StringBuilder generateRnwpreamble(
-      final List<Sample> experimentSamplesList, final String title) {
+      final List<Sample> experimentSamplesList, final String title,
+      final String filePrefix) {
 
     StringBuilder sb = new StringBuilder();
     // Add packages to the LaTeX StringBuilder
@@ -359,7 +366,9 @@ public class Normalization {
     sb.append("\\usepackage{marvosym}\n");
     sb.append("\\usepackage{graphicx}\n\n");
     // Set Sweave options
-    sb.append("\\SweaveOpts{eps = FALSE, pdf = TRUE}\n");
+    sb.append("\\SweaveOpts{eps = FALSE, pdf = TRUE, prefix.string=");
+    sb.append(filePrefix);
+    sb.append("}\n\n");
     sb.append("\\setkeys{Gin}{width=0.95\textwidth}\n\n");
     // Add document title
     sb.append("\\title{" + title + "}\n\n");
