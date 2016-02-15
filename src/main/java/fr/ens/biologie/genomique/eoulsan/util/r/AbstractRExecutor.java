@@ -17,6 +17,9 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
  */
 public abstract class AbstractRExecutor implements RExecutor {
 
+  private static final String R_FILE_EXTENSION = ".R";
+  private static final String SWEAVE_FILE_EXTENSION  = ".Rnw";
+
   private final List<String> inputFilenames = new ArrayList<>();
   private final File outputDirectory;
   private final File temporaryDirectory;
@@ -134,8 +137,8 @@ public abstract class AbstractRExecutor implements RExecutor {
       throw new NullPointerException("description argument cannot be null");
     }
 
-    final File rScriptFile =
-        new File(this.outputDirectory, description + (sweave ? ".Rws" : ".R"));
+    final File rScriptFile = new File(this.outputDirectory,
+        description + (sweave ? SWEAVE_FILE_EXTENSION : R_FILE_EXTENSION));
 
     // Write R script in a File
     Writer writer = new FileWriter(rScriptFile);
