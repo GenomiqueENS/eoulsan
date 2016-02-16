@@ -166,7 +166,9 @@ public class DockerRequirement extends AbstractRequirement {
           final double pullProgress =
               (currentImageProgress + imageCount - 1.0) / (double) imageCount;
 
-          progress.setProgress(pullProgress);
+          if (pullProgress >= 0.0 && pullProgress <= 1.0) {
+            progress.setProgress(pullProgress);
+          }
 
         }
       });
