@@ -157,7 +157,7 @@ public class Normalization {
         executor.getOutputFiles();
 
         // Close executor connection
-        executor.closeClonnection();
+        executor.closeConnection();
       }
 
     } catch (IOException e) {

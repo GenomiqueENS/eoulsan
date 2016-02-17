@@ -28,7 +28,7 @@ public interface RExecutor {
    * Close the connection.
    * @throws IOException if an error occurs while closing the connection
    */
-  void closeClonnection() throws IOException;
+  void closeConnection() throws IOException;
 
   /**
    * Put a file.
@@ -38,6 +38,15 @@ public interface RExecutor {
    */
   void putInputFile(DataFile inputFile, String outputFilename)
       throws IOException;
+
+  /**
+   * Write a file.
+   * @param content the content of the file
+   * @param outputFilename
+   * @param outputFilename the output filename
+   * @throws IOException if an exception occurs while writing a file
+   */
+  void writerFile(String content, String outputFilename) throws IOException;
 
   /**
    * Execute a R script.

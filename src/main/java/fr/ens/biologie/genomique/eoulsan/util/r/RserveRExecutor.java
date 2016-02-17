@@ -4,6 +4,8 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 
@@ -67,7 +69,7 @@ public class RserveRExecutor extends AbstractRExecutor {
   }
 
   @Override
-  public void closeClonnection() throws IOException {
+  public void closeConnection() throws IOException {
 
     this.rConnection.disConnect();
     this.rConnection = null;
@@ -104,6 +106,29 @@ public class RserveRExecutor extends AbstractRExecutor {
     } catch (REngineException e) {
       throw new IOException(e);
     }
+  }
+
+  @Override
+  public void writerFile(final String content, final String outputFilename)
+      throws IOException {
+
+    checkConnection();
+
+    if (content == null) {
+      throw new NullPointerException("content argument cannot be null");
+    }
+
+    if (outputFilename == null) {
+      throw new NullPointerException("outputFilename argument cannot be null");
+    }
+
+    try (Writer writer = new OutputStreamWriter(
+        this.rConnection.getFileOutputStream(outputFilename))) {
+      writer.write(content);
+    } catch (REngineException e) {
+      throw new IOException(e);
+    }
+
   }
 
   @Override

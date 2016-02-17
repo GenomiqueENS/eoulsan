@@ -84,9 +84,9 @@ public abstract class AbstractRExecutor implements RExecutor {
   }
 
   @Override
-  public void closeClonnection() throws IOException {
+  public void closeConnection() throws IOException {
 
-    // Nothing to do for the default implementation
+    this.inputFilenames.clear();
   }
 
   @Override

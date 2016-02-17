@@ -2,6 +2,8 @@ package fr.ens.biologie.genomique.eoulsan.util.r;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -68,6 +70,30 @@ public class ProcessRExecutor extends AbstractRExecutor {
       }
     }
 
+  }
+
+  @Override
+  public void writerFile(final String content, final String outputFilename)
+      throws IOException {
+
+    if (content == null) {
+      throw new NullPointerException("content argument cannot be null");
+    }
+
+    if (outputFilename == null) {
+      throw new NullPointerException("outputFilename argument cannot be null");
+    }
+
+    final DataFile outputFile =
+        new DataFile(getOutputDirectory(), outputFilename);
+
+    if (outputFile.exists()) {
+      throw new IOException("The output file already exists: " + outputFile);
+    }
+
+    try (Writer writer = new OutputStreamWriter(outputFile.create())) {
+      writer.write(content);
+    }
   }
 
   @Override
@@ -183,6 +209,14 @@ public class ProcessRExecutor extends AbstractRExecutor {
         StringUtils.filenameWithoutExtension(file.getName()) + newExtension;
 
     return new File(file.getParent(), newFilename);
+  }
+
+  @Override
+  public void closeConnection() throws IOException {
+
+    this.filenamesToKeep.clear();
+
+    super.closeConnection();
   }
 
   //
