@@ -15,7 +15,7 @@ public class RExecutorFactory {
    */
   public enum Mode {
 
-    LOCAL, RSERVE, DOCKER;
+    PROCESS, RSERVE, DOCKER;
 
     /**
      * Parse a mode name and returns the mode.
@@ -59,7 +59,7 @@ public class RExecutorFactory {
     if (mode != null) {
 
       switch (mode) {
-      case LOCAL:
+      case PROCESS:
         return new ProcessRExecutor(outputDirectory, temporaryDirectory);
 
       case RSERVE:
