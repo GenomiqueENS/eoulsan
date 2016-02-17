@@ -2,6 +2,7 @@ package fr.ens.biologie.genomique.eoulsan.steps.diffana.local;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement.newDockerRequirement;
+import static fr.ens.biologie.genomique.eoulsan.util.r.ProcessRExecutor.RSCRIPT_EXECUTABLE;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -107,7 +108,7 @@ public class CommonConfiguration {
     switch (result.getName()) {
 
     case ProcessRExecutor.REXECUTOR_NAME:
-      requirements.add(PathRequirement.newPathRequirement("R"));
+      requirements.add(PathRequirement.newPathRequirement(RSCRIPT_EXECUTABLE));
       break;
 
     case DockerRExecutor.REXECUTOR_NAME:

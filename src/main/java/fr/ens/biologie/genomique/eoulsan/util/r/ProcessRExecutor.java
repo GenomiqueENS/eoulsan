@@ -25,6 +25,8 @@ public class ProcessRExecutor extends AbstractRExecutor {
 
   public static final String REXECUTOR_NAME = "process";
 
+  public static final String RSCRIPT_EXECUTABLE = "Rscript";
+
   private Set<String> filenamesToKeep = new HashSet<>();
 
   @Override
@@ -87,13 +89,15 @@ public class ProcessRExecutor extends AbstractRExecutor {
    * Create R command.
    * @param rScriptFile the R script file to execute
    * @param sweave true if the script is a Sweave file
+   * @param scriprArguments script arguments
    * @return the R command as a list
    */
   protected List<String> createCommand(final File rScriptFile,
-      final boolean sweave, final String sweaveOuput) {
+      final boolean sweave, final String sweaveOuput,
+      final String... scriptArguments) {
 
     final List<String> result = new ArrayList<>();
-    result.add("R");
+    result.add(RSCRIPT_EXECUTABLE);
 
     if (sweave) {
 
@@ -113,9 +117,13 @@ public class ProcessRExecutor extends AbstractRExecutor {
 
       result.add(sb.toString());
     } else {
-      result.add("CMD");
-      result.add("BATCH");
       result.add(rScriptFile.getAbsolutePath());
+    }
+
+    if (scriptArguments != null) {
+      for (String argument : scriptArguments) {
+        result.add(argument);
+      }
     }
 
     return result;
@@ -123,10 +131,11 @@ public class ProcessRExecutor extends AbstractRExecutor {
 
   @Override
   protected void executeRScript(final File rScriptFile, final boolean sweave,
-      final String sweaveOuput) throws IOException {
+      final String sweaveOuput, final String... scriptArguments)
+          throws IOException {
 
     final List<String> command =
-        createCommand(rScriptFile, sweave, sweaveOuput);
+        createCommand(rScriptFile, sweave, sweaveOuput, scriptArguments);
 
     // Search the command in The PATH
     final File executablePath =

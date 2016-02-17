@@ -4,6 +4,7 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.rosuda.REngine.REXPMismatchException;
@@ -107,7 +108,8 @@ public class RserveRExecutor extends AbstractRExecutor {
 
   @Override
   protected void executeRScript(final File rScriptFile, final boolean sweave,
-      final String sweaveOuput) throws IOException {
+      final String sweaveOuput, final String... scriptArguments)
+          throws IOException {
 
     checkConnection();
 
@@ -117,6 +119,11 @@ public class RserveRExecutor extends AbstractRExecutor {
     putFile(new DataFile(rScriptFile), rScriptOnRservePath);
 
     try {
+
+      // Set the command line arguments
+      if (scriptArguments != null) {
+        this.rConnection.setCommandArgs(Arrays.asList(scriptArguments));
+      }
 
       if (sweave) {
 

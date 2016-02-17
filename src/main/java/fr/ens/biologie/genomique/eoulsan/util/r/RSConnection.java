@@ -327,6 +327,48 @@ public class RSConnection {
   }
 
   /**
+   * Override the commandArg() R function.
+   * @param arguments the arguments
+   * @throws REngineException if an error occurs while executing R code
+   */
+  public void setCommandArgs(final List<String> arguments)
+      throws REngineException {
+
+    if (arguments == null) {
+      throw new NullPointerException("arguments argument cannot be null");
+    }
+
+    final StringBuilder sb = new StringBuilder();
+    sb.append("f <- function(trailingOnly = FALSE) { c(");
+
+    boolean first = true;
+    for (String arg : arguments) {
+
+      if (first) {
+        first = false;
+      } else {
+        sb.append(",");
+      }
+      sb.append('\'');
+      sb.append(arg);
+      sb.append('\'');
+    }
+
+    sb.append(") }");
+
+    final RConnection c = getRConnection();
+
+    try {
+
+      // Execute the source
+      c.voidEval(sb.toString());
+
+    } catch (RserveException e) {
+      throw new REngineException(c, "RServe exception: " + e);
+    }
+  }
+
+  /**
    * Execute a R code.
    * @param source code to execute
    * @throws REngineException if an error while executing the code

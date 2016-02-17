@@ -78,13 +78,14 @@ public class DockerRExecutor extends ProcessRExecutor {
 
   @Override
   protected void executeRScript(final File rScriptFile, final boolean sweave,
-      final String sweaveOuput) throws IOException {
+      final String sweaveOuput, final String... scriptArguments)
+          throws IOException {
 
     final DockerProcess process =
         new DockerProcess(this.dockerImage, getTemporaryDirectory());
 
     final List<String> commandLine =
-        createCommand(rScriptFile, sweave, sweaveOuput);
+        createCommand(rScriptFile, sweave, sweaveOuput, scriptArguments);
 
     final File stdoutFile = changeFileExtension(rScriptFile, ".out");
     final File stderrFile = changeFileExtension(rScriptFile, ".err");
