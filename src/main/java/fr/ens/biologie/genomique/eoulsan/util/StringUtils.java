@@ -262,7 +262,7 @@ public final class StringUtils {
 
   /**
    * Convert a number of milliseconds into a human reading string.
-   * @param time time in ms
+   * @param millisSinceEpoch time in ms
    * @return a string with the compact time
    */
   public static final String toCompactTime(final long millisSinceEpoch) {

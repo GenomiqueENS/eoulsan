@@ -251,7 +251,6 @@ public class DockerProcess {
 
   /**
    * Constructor.
-   * @param dockerClient Docker connection URI
    * @param dockerImage Docker image
    * @param temporaryDirectory temporary directory
    */

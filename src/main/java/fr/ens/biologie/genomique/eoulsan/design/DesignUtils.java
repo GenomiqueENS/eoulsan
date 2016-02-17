@@ -201,7 +201,7 @@ public final class DesignUtils {
 
   /**
    * Get all the experiment metadata keys of the samples of a design.
-   * @param design the design
+   * @param experiment the experiment
    * @return a list with the experiment metadata keys of the samples of a design
    */
   public static List<String> getExperimentSampleAllMetadataKeys(

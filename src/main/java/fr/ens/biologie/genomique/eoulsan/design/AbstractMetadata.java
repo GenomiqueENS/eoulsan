@@ -156,8 +156,8 @@ public abstract class AbstractMetadata {
   }
 
   /**
-   * Set the key.
-   * @return
+   * Get the keys of the metadata
+   * @return a set with the keys of the metadata
    */
   public Set<String> keySet() {
 
@@ -165,8 +165,8 @@ public abstract class AbstractMetadata {
   }
 
   /**
-   * Set the entry.
-   * @return
+   * Get an entry set of the metadata.
+   * @return a set of entries
    */
   public Set<Map.Entry<String, String>> entrySet() {
 

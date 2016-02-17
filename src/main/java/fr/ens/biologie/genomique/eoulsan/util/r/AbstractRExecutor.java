@@ -49,7 +49,7 @@ public abstract class AbstractRExecutor implements RExecutor {
    * @param rScriptFile The R script file
    * @param sweave execute the R using Sweave
    * @param sweaveOuput sweave output file
-   * @param scriprArguments script arguments
+   * @param scriptArguments script arguments
    * @throws IOException if an error occurs while executing the script
    */
   protected abstract void executeRScript(File rScriptFile, boolean sweave,

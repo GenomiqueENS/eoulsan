@@ -95,7 +95,7 @@ public class ExperimentSampleMetadata extends AbstractMetadata implements
 
   /**
    * Set the reference.
-   * @param newReptechGroup the new reference
+   * @param newReference the new reference
    */
   public void setReference(boolean newReference) {
     set(REFERENCE_KEY, "" + newReference);

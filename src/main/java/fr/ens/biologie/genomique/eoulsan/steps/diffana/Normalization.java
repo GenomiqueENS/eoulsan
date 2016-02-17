@@ -225,7 +225,8 @@ public class Normalization {
 
   /**
    * Generate the R script.
-   * @param samples list of sample experiments
+   * @param experiment the experiment
+   * @param context step context
    * @return String rScript R script to execute
    * @throws EoulsanException if an error occurs while generate the R script
    */

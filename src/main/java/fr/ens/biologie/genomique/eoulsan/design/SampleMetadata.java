@@ -166,8 +166,8 @@ public class SampleMetadata extends AbstractMetadata implements Serializable {
    * Set the reads.
    * @param newReads the new reads
    */
-  public void setReads(List<String> reads) {
-    set(READS_KEY, reads);
+  public void setReads(List<String> newReads) {
+    set(READS_KEY, newReads);
   }
 
   /**

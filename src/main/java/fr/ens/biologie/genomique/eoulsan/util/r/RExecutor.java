@@ -46,7 +46,7 @@ public interface RExecutor {
    * @param sweaveOutput Sweave output file
    * @param saveRscript true to keep the R script
    * @param description description of the R script
-   * @param scriprArguments script arguments
+   * @param scriptArguments script arguments
    * @throws IOException if an error occurs while executing the script
    */
   void executeRScript(String rScript, boolean sweave, String sweaveOutput,

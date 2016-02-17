@@ -89,7 +89,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
    * Create R command.
    * @param rScriptFile the R script file to execute
    * @param sweave true if the script is a Sweave file
-   * @param scriprArguments script arguments
+   * @param scriptArguments script arguments
    * @return the R command as a list
    */
   protected List<String> createCommand(final File rScriptFile,
