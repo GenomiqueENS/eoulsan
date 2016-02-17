@@ -44,6 +44,11 @@ public class ProcessRExecutor extends AbstractRExecutor {
     final File outputDir = getOutputDirectory().getAbsoluteFile();
     final DataFile outputFile = new DataFile(outputDir, outputFilename);
 
+    // Check if the input and output file are the same
+    if (isSameLocalPath(inputFile, outputFile)) {
+      return;
+    }
+
     if (outputFile.exists()) {
       throw new IOException("The output file already exists: " + outputFile);
     }
@@ -217,6 +222,33 @@ public class ProcessRExecutor extends AbstractRExecutor {
     this.filenamesToKeep.clear();
 
     super.closeConnection();
+  }
+
+  //
+  // Other methods
+  //
+
+  /**
+   * Check if two file have the same local path
+   * @param a first file
+   * @param b second file
+   * @return true if the file have the same local file
+   */
+  protected static boolean isSameLocalPath(final DataFile a, final DataFile b) {
+
+    if (a.equals(b)) {
+      return true;
+    }
+
+    if (a.isLocalFile()) {
+
+      final File fa = a.toFile().getAbsoluteFile();
+      final File fb = b.toFile().getAbsoluteFile();
+
+      return fa.equals(fb);
+    }
+
+    return false;
   }
 
   //

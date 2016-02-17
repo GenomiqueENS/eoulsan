@@ -34,9 +34,16 @@ public class DockerRExecutor extends ProcessRExecutor {
   protected void putFile(final DataFile inputFile, final String outputFilename)
       throws IOException {
 
-    // Use default putFile implementation if the input file is not a local file
-    if (!inputFile.isLocalFile()) {
+    final DataFile outputFile =
+        new DataFile(getOutputDirectory(), outputFilename);
 
+    // Check if the input and output file are the same
+    if (isSameLocalPath(inputFile, outputFile)) {
+      return;
+    }
+
+    // If input file is not local file use the super implementation
+    if (!inputFile.isLocalFile()) {
       super.putFile(inputFile, outputFilename);
       return;
     }
@@ -49,13 +56,9 @@ public class DockerRExecutor extends ProcessRExecutor {
         || isInSubDir(getTemporaryDirectory(), inFile)) {
 
       // If not, copy files
-      final DataFile outputFile =
-          new DataFile(getOutputDirectory(), outputFilename);
-
       if (outputFile.exists()) {
         throw new IOException("The output file already exists: " + outputFile);
       }
-
       DataFiles.copy(inputFile, outputFile);
 
     } else {
