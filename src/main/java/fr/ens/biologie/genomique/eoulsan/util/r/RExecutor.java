@@ -42,7 +42,6 @@ public interface RExecutor {
   /**
    * Write a file.
    * @param content the content of the file
-   * @param outputFilename
    * @param outputFilename the output filename
    * @throws IOException if an exception occurs while writing a file
    */
