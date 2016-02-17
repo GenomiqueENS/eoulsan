@@ -29,6 +29,9 @@ public class ProcessRExecutor extends AbstractRExecutor {
 
   public static final String RSCRIPT_EXECUTABLE = "Rscript";
 
+  protected static final String LANG_ENVIRONMENT_VARIABLE = "LANG";
+  protected static final String DEFAULT_R_LANG = "C";
+
   private Set<String> filenamesToKeep = new HashSet<>();
 
   @Override
@@ -182,12 +185,15 @@ public class ProcessRExecutor extends AbstractRExecutor {
 
     final ProcessBuilder pb = new ProcessBuilder();
 
+    // Set the LANG to C
+    pb.environment().put(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG);
+
     // Set the temporary directory for R
     pb.environment().put("TMPDIR", getTemporaryDirectory().getAbsolutePath());
 
     // Redirect stdout and stderr
     pb.redirectOutput(changeFileExtension(rScriptFile, ".out"));
-    pb.redirectError(changeFileExtension(rScriptFile, ".err"));
+    pb.redirectErrorStream(true);
 
     ProcessUtils.logEndTime(pb.start(), Joiner.on(' ').join(pb.command()),
         System.currentTimeMillis());

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Objects;
@@ -51,6 +52,17 @@ public class DockerProcess {
       final File stdoutFile, final File stderrFile)
           throws DockerException, InterruptedException {
 
+    return execute(commandLine, executionDirectory, null, temporaryDirectory,
+        stdoutFile, stderrFile, false);
+  }
+
+  public int execute(final List<String> commandLine,
+      final File executionDirectory,
+      final Map<String, String> environmentVariables,
+      final File temporaryDirectory, final File stdoutFile,
+      final File stderrFile, final boolean redirectErrorStream)
+          throws DockerException, InterruptedException {
+
     checkNotNull(commandLine, "commandLine argument cannot be null");
     checkNotNull(executionDirectory,
         "executionDirectory argument cannot be null");
@@ -60,6 +72,14 @@ public class DockerProcess {
     checkArgument(executionDirectory.isDirectory(),
         "execution directory does not exists or is not a directory: "
             + executionDirectory.getAbsolutePath());
+
+    final List<String> env = new ArrayList<>();
+
+    if (environmentVariables != null) {
+      for (Map.Entry<String, String> e : environmentVariables.entrySet()) {
+        env.add(e.getKey() + '=' + e.getValue());
+      }
+    }
 
     // Pull image if needed
     pullImageIfNotExists(this.dockerClient, this.dockerImage);
@@ -82,13 +102,16 @@ public class DockerProcess {
     final List<File> toBind;
     if (temporaryDirectory.isDirectory()) {
       toBind = singletonList(temporaryDirectory);
-      builder.env(
+      env.add(
           TMP_DIR_ENV_VARIABLE + "=" + temporaryDirectory.getAbsolutePath());
     } else {
       toBind = Collections.emptyList();
     }
 
     builder.hostConfig(createBinds(executionDirectory, toBind));
+
+    // Set environment variables
+    builder.env(env);
 
     // Create container
     final ContainerCreation creation =
@@ -104,7 +127,7 @@ public class DockerProcess {
     // Redirect stdout and stderr
     final LogStream logStream = this.dockerClient.logs(containerId,
         LogsParameter.FOLLOW, LogsParameter.STDERR, LogsParameter.STDOUT);
-    redirect(logStream, stdoutFile, stderrFile);
+    redirect(logStream, stdoutFile, stderrFile, redirectErrorStream);
 
     // Wait the end of the container
     getLogger().fine("Wait the end of the Docker container: " + containerId);
@@ -192,44 +215,81 @@ public class DockerProcess {
    * @param logStream the log stream
    * @param stdout stdout output file
    * @param stderr stderr output file
+   * @param redirectErrorStream redirect stderr in stdout
    */
   private static void redirect(final LogStream logStream, final File stdout,
-      final File stderr) {
+      final File stderr, final boolean redirectErrorStream) {
 
-    final Runnable r = new Runnable() {
+    final Runnable r;
 
-      @Override
-      public void run() {
+    if (redirectErrorStream) {
 
-        try (
-            WritableByteChannel stdoutChannel =
-                Channels.newChannel(new FileOutputStream(stderr));
-            WritableByteChannel stderrChannel =
-                Channels.newChannel(new FileOutputStream(stdout))) {
+      r = new Runnable() {
 
-          for (LogMessage message; logStream.hasNext();) {
+        @Override
+        public void run() {
 
-            message = logStream.next();
-            switch (message.stream()) {
+          try (WritableByteChannel stdoutChannel =
+              Channels.newChannel(new FileOutputStream(stderr))) {
 
-            case STDOUT:
-              stdoutChannel.write(message.content());
-              break;
+            for (LogMessage message; logStream.hasNext();) {
 
-            case STDERR:
-              stderrChannel.write(message.content());
-              break;
+              message = logStream.next();
+              switch (message.stream()) {
 
-            case STDIN:
-            default:
-              break;
+              case STDOUT:
+              case STDERR:
+                stdoutChannel.write(message.content());
+                break;
+
+              case STDIN:
+              default:
+                break;
+              }
             }
+          } catch (IOException e) {
+            EoulsanLogger.getLogger().severe(e.getMessage());
           }
-        } catch (IOException e) {
-          EoulsanLogger.getLogger().severe(e.getMessage());
         }
-      }
-    };
+      };
+
+    } else {
+
+      r = new Runnable() {
+
+        @Override
+        public void run() {
+
+          try (
+              WritableByteChannel stdoutChannel =
+                  Channels.newChannel(new FileOutputStream(stderr));
+              WritableByteChannel stderrChannel =
+                  Channels.newChannel(new FileOutputStream(stdout))) {
+
+            for (LogMessage message; logStream.hasNext();) {
+
+              message = logStream.next();
+              switch (message.stream()) {
+
+              case STDOUT:
+                stdoutChannel.write(message.content());
+                break;
+
+              case STDERR:
+                stderrChannel.write(message.content());
+                break;
+
+              case STDIN:
+              default:
+                break;
+              }
+            }
+          } catch (IOException e) {
+            EoulsanLogger.getLogger().severe(e.getMessage());
+          }
+        }
+      };
+    }
 
     new Thread(r).start();
   }

@@ -3,6 +3,7 @@ package fr.ens.biologie.genomique.eoulsan.util.r;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.common.base.Joiner;
@@ -91,13 +92,12 @@ public class DockerRExecutor extends ProcessRExecutor {
         createCommand(rScriptFile, sweave, sweaveOuput, scriptArguments);
 
     final File stdoutFile = changeFileExtension(rScriptFile, ".out");
-    final File stderrFile = changeFileExtension(rScriptFile, ".err");
 
     try {
-      System.out.println("getOutputDirectory(): " + getOutputDirectory());
-      System.out.println("getTemporaryDirectory()" + getTemporaryDirectory());
+
       final int exitValue = process.execute(commandLine, getOutputDirectory(),
-          getTemporaryDirectory(), stdoutFile, stderrFile);
+          Collections.singletonMap(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG),
+          getTemporaryDirectory(), stdoutFile, stdoutFile, true);
 
       ProcessUtils.throwExitCodeException(exitValue,
           Joiner.on(' ').join(commandLine));
