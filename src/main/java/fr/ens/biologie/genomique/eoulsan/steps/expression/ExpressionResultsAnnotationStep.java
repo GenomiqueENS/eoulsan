@@ -166,6 +166,8 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
         Steps.removedParameter(context, p);
 
       case "outputformat":
+        Steps.renamedParameter(context, p, "output.format");
+      case "output.format":
 
         // Set output format
         for (String format : Splitter.on(',').trimResults().omitEmptyStrings()
