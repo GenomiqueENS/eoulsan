@@ -79,6 +79,14 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   public static final String SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME =
       "split.attribute.values";
 
+  public static final String OLD_REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME =
+      "removeambiguouscases";
+  public static final String OLD_OVERLAP_MODE_PARAMETER_NAME = "overlapmode";
+  public static final String OLD_GENOMIC_TYPE_PARAMETER_NAME = "genomictype";
+  public static final String OLD_ATTRIBUTE_ID_PARAMETER_NAME = "attributeid";
+  public static final String OLD_SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME =
+      "splitattributevalues";
+
   protected static final String COUNTER_GROUP = "expression";
 
   private static final String DEFAULT_GENOMIC_TYPE = "exon";
@@ -215,13 +223,13 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
       switch (p.getName()) {
 
-      case "genomictype":
+      case OLD_GENOMIC_TYPE_PARAMETER_NAME:
         renamedParameter(context, p, GENOMIC_TYPE_PARAMETER_NAME);
       case GENOMIC_TYPE_PARAMETER_NAME:
         this.genomicType = p.getStringValue();
         break;
 
-      case "attributeid":
+      case OLD_ATTRIBUTE_ID_PARAMETER_NAME:
         renamedParameter(context, p, ATTRIBUTE_ID_PARAMETER_NAME);
       case ATTRIBUTE_ID_PARAMETER_NAME:
         this.attributeId = p.getStringValue();
@@ -240,7 +248,7 @@ public abstract class AbstractExpressionStep extends AbstractStep {
         }
         break;
 
-      case "overlapmode":
+      case OLD_OVERLAP_MODE_PARAMETER_NAME:
         renamedParameter(context, p, OVERLAP_MODE_PARAMETER_NAME);
       case OVERLAP_MODE_PARAMETER_NAME:
 
@@ -252,13 +260,13 @@ public abstract class AbstractExpressionStep extends AbstractStep {
         }
         break;
 
-      case "removeambiguouscases":
+      case OLD_REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME:
         renamedParameter(context, p, REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME);
       case REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME:
         this.removeAmbiguousCases = p.getBooleanValue();
         break;
 
-      case "splitattributevalues":
+      case OLD_SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME:
         renamedParameter(context, p, SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME);
       case SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME:
         this.splitAttributeValues = p.getBooleanValue();
