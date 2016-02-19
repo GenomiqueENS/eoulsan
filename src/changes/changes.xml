@@ -1148,6 +1148,10 @@ of reads that reject each filter like in local mode.
                 In the "diffanaresultsannotation" step, user can now define the pattern of the files to convert and the prefix of the output files.
             </action>
 
+            <action dev="jourdren" type="update">
+                In the "diffanaresultsannotation" and "expressionresultsannotation" steps, add an option disable the usage of an additional annotation file.
+            </action>
+
          </release>
 
 	</body>
