@@ -60,11 +60,11 @@
                                 <value>htseq-count</value>
                         </parameter>
                         <parameter>
-                                <name>genomictype</name>
+                                <name>genomic.type</name>
                                 <value>gene</value>
                         </parameter>
                         <parameter>
-                                <name>attributeid</name>
+                                <name>attribute.id</name>
                                 <value>ID</value>
                         </parameter>
                         <parameter>
@@ -72,11 +72,11 @@
                                 <value>no</value>
                         </parameter>
                         <parameter>
-                                <name>overlapmode</name>
+                                <name>overlap.mode</name>
                                 <value>union</value>
                         </parameter>
                         <parameter>
-                                <name>removeambiguouscases</name>
+                                <name>remove.ambiguous.cases</name>
                                 <value>false</value>
                         </parameter>  
                 </parameters>
