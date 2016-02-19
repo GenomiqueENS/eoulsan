@@ -45,7 +45,8 @@
          <li><b>Input ports</b>:
            <ul>
              <li><b>expressionfile</b>: expression file in TSV format (format: expression_results_tsv)</li>
-             <li><b>additionalannotation</b>: additional annotation file in TSV format (format: additional_annotation_tsv)</li>
+             <li><b>additionalannotation</b>: additional annotation file in TSV format (format: additional_annotation_tsv)
+                                              (Not required if <tt>use.additional.annotation.file</tt> is set to false)</li>
            </ul>
          </li>
 
@@ -68,6 +69,7 @@
         <li><b>Optional parameters</b>:</li>
         <table>
                 <tr><th>Parameter</th><th>Type</th><th>Default value</th><th>Description</th></tr>
+                <tr><td>use.additional.annotation.file</td><td>boolean</td><td>true</td><td>Set if an additional annotation file must be used.</td></tr>
                 <tr><td>output.format</td><td>string</td><td>tsv</td><td>One or more format name for the output separated by a comma.</td></tr>
         </table>
 

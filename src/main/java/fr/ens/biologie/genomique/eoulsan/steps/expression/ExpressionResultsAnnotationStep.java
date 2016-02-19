@@ -86,6 +86,7 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
       ANNOTATED_EXPRESSION_RESULTS_TSV;
 
   private final Map<String, DataFormat> outputFormats = new HashMap<>();
+  private boolean useAdditionalAnnotationFile = true;
 
   //
   // Step methods
@@ -118,7 +119,9 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
     builder.addPort("expressionfile", EXPRESSION_RESULTS_TSV);
 
     // Add the port for the additional annotation
-    builder.addPort("additionalannotation", ADDITIONAL_ANNOTATION_TSV);
+    if (this.useAdditionalAnnotationFile) {
+      builder.addPort("additionalannotation", ADDITIONAL_ANNOTATION_TSV);
+    }
 
     return builder.create();
   }
@@ -164,6 +167,11 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
 
       case "annotationfile":
         Steps.removedParameter(context, p);
+        break;
+
+      case "use.additional.annotation.file":
+        this.useAdditionalAnnotationFile = p.getBooleanValue();
+        break;
 
       case "outputformat":
         Steps.renamedParameter(context, p, "output.format");
@@ -211,14 +219,27 @@ public class ExpressionResultsAnnotationStep extends AbstractStep {
   public StepResult execute(final StepContext context,
       final StepStatus status) {
 
+    // Get hypertext links file
+    final DataFile linksFile =
+        TranslatorUtils.getLinksFileFromSettings(context.getSettings());
+
     // Load translator
     final Translator translator;
     try {
 
-      // If no annotation file parameter set
-      Data annotationData = context.getInputData(ADDITIONAL_ANNOTATION_TSV);
-      translator = loadTranslator(annotationData.getDataFile(),
-          context.getSettings().getAdditionalAnnotationHypertextLinksPath());
+      if (this.useAdditionalAnnotationFile) {
+
+        // If no annotation file parameter set
+        final Data additionalAnnotationData =
+            context.getInputData(ADDITIONAL_ANNOTATION_TSV);
+
+        // Create translator with additional annotation file
+        translator =
+            loadTranslator(additionalAnnotationData.getDataFile(), linksFile);
+      } else {
+        // Create translator without additional annotation file
+        translator = TranslatorUtils.loadTranslator(linksFile);
+      }
 
     } catch (IOException e) {
       return status.createStepResult(e);
