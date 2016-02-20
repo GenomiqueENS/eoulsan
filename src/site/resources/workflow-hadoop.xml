@@ -145,13 +145,6 @@
 
     <globals>
       
-	<!-- Temporary directory to use in local mode -->
-        <parameter>
-	        <name>main.tmp.dir</name>
-	        <value>/tmp</value>
-        </parameter>
-
-
 	<!-- Amazon MapReduce cluster configuration -->
 	<parameter>
 	        <name>aws.mapreduce.endpoint</name>
