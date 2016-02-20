@@ -125,6 +125,11 @@ public class Sample implements Serializable {
 
     final String name = newSampleName.trim();
 
+    // Do nothing if the new name is the old name
+    if (name.equals(this.sampleName)) {
+      return;
+    }
+
     checkArgument(!this.design.containsSampleName(name),
         "The sample name already exists in the design: " + name);
 
