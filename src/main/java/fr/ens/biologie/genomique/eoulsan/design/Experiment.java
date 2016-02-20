@@ -162,6 +162,11 @@ public class Experiment implements Serializable {
 
     final String name = newExperimentName.trim();
 
+    // Do nothing if the new name is the old name
+    if (name.equals(this.experimentName)) {
+      return;
+    }
+
     checkArgument(!this.design.containsExperimentName(name),
         "The sample name already exists in the design: " + name);
 
