@@ -100,15 +100,15 @@
                 <parameters>
                         <parameter>
                                 <name>disp.est.method</name>
-                                <value>pooled</value>
+                                <value>blind</value>
                         </parameter>
                         <parameter>                        
                                 <name>disp.est.sharing.mode</name>
-                                <value>maximum</value>
+                                <value>fit-only</value>
                         </parameter>                                 
                         <parameter>                                 
                                 <name>disp.est.fit.type</name>
-                                <value>local</value>
+                                <value>parametric</value>
                         </parameter>
                         <parameter>
                                 <name>execution.mode</name>
