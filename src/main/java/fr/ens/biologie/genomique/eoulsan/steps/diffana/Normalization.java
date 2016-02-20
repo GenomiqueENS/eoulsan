@@ -44,6 +44,7 @@ import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
@@ -244,20 +245,21 @@ public class Normalization {
     // Get samples ids, conditions names/indexes and repTechGoups
     for (Sample s : experiment.getSamples()) {
 
-      if (!s.getMetadata().containsCondition()) {
+      final String condition = DesignUtils.getCondition(experiment, s);
+
+      if (condition == null) {
         throw new EoulsanException("No condition field found in design file.");
       }
 
-      final String condition = s.getMetadata().getCondition().trim();
 
       if ("".equals(condition)) {
         throw new EoulsanException("No value for condition in sample: "
             + s.getName() + " (" + s.getId() + ")");
       }
 
-      final String repTechGroup = s.getMetadata().getRepTechGroup().trim();
+      final String repTechGroup = DesignUtils.getRepTechGroup(experiment, s);
 
-      if (!"".equals(repTechGroup)) {
+      if (repTechGroup != null && !"".equals(repTechGroup)) {
         rRepTechGroup.add(repTechGroup);
       }
 
