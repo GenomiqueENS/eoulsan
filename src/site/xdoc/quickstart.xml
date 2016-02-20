@@ -159,9 +159,10 @@ $ eoulsan.sh createdesign *.fq.bz2 genome.fasta.bz2 annotation.gff.bz2
 $ eoulsan.sh exec workflow-local.xml design.txt
 </source>
 
-            <p><b>Warning:</b> If you want to perform differential analysis (like in the sample workflow file), you must install R 
-            (or use an RServe server) and related packages (See <a href="./step-diffana.html">differential analysis step</a> 
-            for more information).</p>
+            <p><b>Warning:</b> To perform the normalization and differential analysis steps of this workflow, this demo requires Docker.
+            If you want to run this demo without Docker, you must must install R 
+            (or a RServe server) and the related packages (See <a href="./step-diffana.html">differential analysis step</a> 
+            for more information) and change the <tt>execution.mode</tt> parameter of the normalization and diffana steps.</p>
 
 			<p>Once started and before starting analysis, Eoulsan will check if:</p>
 			<ul>
