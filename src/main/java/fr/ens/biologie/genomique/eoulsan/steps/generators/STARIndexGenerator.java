@@ -193,10 +193,12 @@ public class STARIndexGenerator extends AbstractStep {
 
           switch (p.getName()) {
 
+          case AbstractExpressionStep.OLD_GENOMIC_TYPE_PARAMETER_NAME:
           case AbstractExpressionStep.GENOMIC_TYPE_PARAMETER_NAME:
             gtfFeatureExon = p.getStringValue();
             break;
 
+          case AbstractExpressionStep.OLD_ATTRIBUTE_ID_PARAMETER_NAME:
           case AbstractExpressionStep.ATTRIBUTE_ID_PARAMETER_NAME:
             gtfTagExonParentTranscript = p.getStringValue();
             break;
