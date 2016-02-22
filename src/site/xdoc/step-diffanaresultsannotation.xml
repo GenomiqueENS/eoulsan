@@ -38,7 +38,8 @@
       <p>This step allow to add additional annotations to differential analysis result files and create files in TSV, ODS or XLSX formats.
       This step works like the expression annotation step and will process all the files in output directory that matches with
       the <tt>diffana_*.tsv</tt> pattern.</p>
-
+      <p>IDs can be linked with a hypertext link with ods and xlsx outputs. For more information check the hypertext link subsection in the <a href="step-expressionresultsannotation.html#hypertextlinks" name="SubSection1">expression annotation step page</a>.</p>
+      <br/>
       <ul>
         <li><b>Internal name</b>: diffanaresultsannotation</li>
         <li><b>Available</b>: Both local and distributed mode</li>
@@ -77,7 +78,6 @@
 &lt;/step&gt;
 </pre>
       </ul>
-
 
     </section>
 

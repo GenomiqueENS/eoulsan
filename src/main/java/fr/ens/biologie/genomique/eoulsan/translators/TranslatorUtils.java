@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -177,6 +178,7 @@ public class TranslatorUtils {
     final Translator did = new AbstractTranslator() {
 
       private static final String FIELD_NAME = "EnsemblID";
+      private final Pattern pattern = Pattern.compile("ENS[A-Z]+[0-9]{11}");
 
       @Override
       public String translateField(final String id, final String field) {
@@ -185,8 +187,7 @@ public class TranslatorUtils {
           return null;
         }
 
-        if (FIELD_NAME.equals(field)
-            && id.length() == 18 && id.startsWith("ENS")) {
+        if (FIELD_NAME.equals(field) && pattern.matcher(id).matches()) {
           return id;
         }
 

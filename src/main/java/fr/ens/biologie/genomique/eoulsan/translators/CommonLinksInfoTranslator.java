@@ -105,7 +105,7 @@ public class CommonLinksInfoTranslator extends AbstractTranslator {
         return null;
       }
 
-      return mapLinks.get(field) + EncodedTranslatedId;
+      return mapLinks.get(field).replace("${ID}", EncodedTranslatedId);
     }
 
     return null;
@@ -228,7 +228,6 @@ public class CommonLinksInfoTranslator extends AbstractTranslator {
     } catch (IOException e) {
       // Do nothing.
     }
-
     this.translator = translator;
   }
 }
