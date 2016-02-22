@@ -26,37 +26,30 @@ package fr.ens.biologie.genomique.eoulsan.steps.diffana;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toCompactTime;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Writer;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import org.rosuda.REngine.REXPMismatchException;
-import org.rosuda.REngine.REngineException;
-
-import com.google.common.base.Joiner;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.StepContext;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
-import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
-import fr.ens.biologie.genomique.eoulsan.util.r.RSConnectionNewImpl;
+import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
+import fr.ens.biologie.genomique.eoulsan.util.r.RSConnection;
 
 /**
  * This class create and launch an R script to compute normalisation of
@@ -80,14 +73,13 @@ public class Normalization {
   private static final String NORMALIZATION_PART2 = "/normalizationPart2.Rnw";
 
   protected final Design design;
-  protected final File expressionFilesDirectory;
-  protected final File outPath;
   protected final String expressionFilesPrefix;
   protected final String expressionFilesSuffix;
-  protected RSConnectionNewImpl rConnection = null;
+  protected RSConnection rConnection = null;
+  protected final RExecutor executor;
 
   //
-  // Public methods
+  // Run methods
   //
 
   /**
@@ -97,21 +89,87 @@ public class Normalization {
   public void run(final StepContext context, final Data data)
       throws EoulsanException {
 
-    // Check if there more than one file to normalize
+    // Check if there more than one file to launch the analysis
     if (data.size() < 2) {
-      throw new EoulsanException("Cannot normalize less than 2 input files");
+      throw new EoulsanException(
+          "Cannot run the analysis with less than 2 input files");
     }
 
-    if (context.getSettings().isRServeServerEnabled()) {
-      getLogger().info("Normalization : Rserve mode");
-      runRserveRnwScript(context, data);
-    } else {
-      getLogger().info("Normalization : local mode");
-      runLocalRnwScript(context, data);
+    runRExecutor(context, data);
+  }
+
+  /**
+   * Execute Rnw script.
+   * @param context Step context
+   * @param data data to process
+   * @throws EoulsanException if an error occurs while executing the script
+   */
+  protected void runRExecutor(final StepContext context, final Data data)
+      throws EoulsanException {
+
+    final boolean saveRScript = context.getSettings().isSaveRscripts();
+
+    try {
+
+      // create an iterator on the map values
+      for (Experiment experiment : this.design.getExperiments()) {
+
+        getLogger().info("Experiment : " + experiment.getName());
+
+        // Open executor connection
+        executor.openConnection();
+
+        // Put input input files
+        for (Data d : data.getListElements()) {
+
+          final int sampleId = d.getMetadata().getSampleNumber();
+
+          // Check if the sample ID exists
+          if (sampleId == -1) {
+            throw new EoulsanException(
+                "No sample Id found for input file: " + d.getDataFile());
+          }
+
+          final String linkFilename = this.expressionFilesPrefix
+              + sampleId + this.expressionFilesSuffix;
+
+          executor.putInputFile(d.getDataFile(), linkFilename);
+        }
+
+        // Generate the R script
+        final String rScript = generateScript(experiment, context);
+
+        // Set the description of the analysis
+        final String description = context.getCurrentStep().getId()
+            + '_' + experiment.getId() + '-'
+            + toCompactTime(System.currentTimeMillis());
+
+        // Set the Sweave output
+        final String sweaveOutput = context.getCurrentStep().getId()
+            + '_' + experiment.getId() + ".tex";
+
+        // Execute the R script
+        executor.executeRScript(rScript, true, sweaveOutput, saveRScript, description);
+
+        // Remove input files
+        executor.removeInputFiles();
+
+        // Retrieve output files
+        executor.getOutputFiles();
+
+        // Close executor connection
+        executor.closeConnection();
+      }
+
+    } catch (IOException e) {
+      throw new EoulsanException(
+          "Error while running differential analysis: " + e.getMessage(), e);
     }
   }
 
+  //
   // Getters
+  //
 
   /**
    * Test if there is Technical replicates into rRepTechGroup field.
@@ -132,135 +190,9 @@ public class Normalization {
     return false;
   }
 
-  /**
-   * Run Rnw script on Rserve server.
-   * @param context Step context
-   * @param data data to process
-   * @throws EoulsanException if an error occurs while executing the script
-   */
-  protected void runRserveRnwScript(final StepContext context, final Data data)
-      throws EoulsanException {
-
-    try {
-
-      // print log info
-      getLogger()
-          .info("Rserve server name : " + this.rConnection.getServerName());
-
-      // create an iterator on the map values
-      for (Experiment experiment : design.getExperiments()) {
-
-        putExpressionFiles(experiment.getSamples(), data);
-
-        String rScript = generateScript(experiment, context);
-        runRnwScript(rScript, true);
-
-        if (!context.getSettings().isKeepRServeFiles()) {
-          removeExpressionFiles(experiment.getSamples());
-        }
-
-        if (!context.getSettings().isSaveRscripts()) {
-          getLogger().info("Remove R script on RServe: " + rScript);
-          this.rConnection.removeFile(rScript);
-        }
-
-        this.rConnection.getAllFiles(this.outPath.toString() + "/");
-      }
-
-    } catch (REngineException e) {
-      throw new EoulsanException(
-          "Error while running differential analysis: " + e.getMessage(), e);
-    } catch (REXPMismatchException e) {
-      throw new EoulsanException("Error while getting file : " + e.getMessage(),
-          e);
-
-    } finally {
-
-      try {
-
-        if (!context.getSettings().isKeepRServeFiles()) {
-          this.rConnection.removeAllFiles();
-        }
-
-        this.rConnection.disConnect();
-
-      } catch (Exception e) {
-        throw new EoulsanException(
-            "Error while removing files on server : " + e.getMessage(), e);
-      }
-    }
-  }
-
-  /**
-   * run Rnw script on local mode.
-   * @param context Step context
-   * @param data data to process
-   * @throws EoulsanException if an error occurs while executing the script
-   */
-  protected void runLocalRnwScript(final StepContext context, final Data data)
-      throws EoulsanException {
-
-    try {
-
-      // create an iterator on the map values
-      for (Experiment experiment : this.design.getExperiments()) {
-
-        getLogger().info("Experiment : " + experiment.getName());
-
-        createLinkExpressionFiles(experiment.getSamples(), data);
-
-        String rScript = generateScript(experiment, context);
-        runRnwScript(rScript, false);
-
-        // Remove R script if keep.rscript parameter is false
-        if (!context.getSettings().isSaveRscripts()) {
-          new File(rScript).delete();
-        }
-      }
-
-    } catch (Exception e) {
-      throw new EoulsanException(
-          "Error while running differential analysis: " + e.getMessage(), e);
-    }
-  }
-
-  /**
-   * Execute the analysis.
-   * @param rnwScript script to execute
-   * @throws REngineException if an error occurs while executing the script on
-   *           Rserve
-   * @throws EoulsanException if an error occurs while executing the script in
-   *           local mode
-   */
-  protected void runRnwScript(final String rnwScript,
-      final boolean isRserveEnable) throws REngineException, EoulsanException {
-
-    if (isRserveEnable) {
-      getLogger().info("Execute RNW script: " + rnwScript);
-      this.rConnection.executeRnwCode(rnwScript);
-
-    } else {
-
-      try {
-
-        final ProcessBuilder pb =
-            new ProcessBuilder("/usr/bin/R", "CMD", "Sweave", rnwScript);
-
-        // Set the temporary directory for R
-        pb.environment().put("TMPDIR", this.outPath.getAbsolutePath());
-
-        ProcessUtils.logEndTime(pb.start(), Joiner.on(' ').join(pb.command()),
-            System.currentTimeMillis());
-
-      } catch (IOException e) {
-
-        throw new EoulsanException(
-            "Error while executing R script in anadiff: " + e.getMessage(), e);
-      }
-
-    }
-
-  }
+  //
+  // R code generation methods
+  //
 
   /**
    * Read a static part of the generated script.
@@ -294,7 +226,8 @@ public class Normalization {
 
   /**
    * Generate the R script.
-   * @param samples list of sample experiments
+   * @param experiment the experiment
+   * @param context step context
    * @return String rScript R script to execute
    * @throws EoulsanException if an error occurs while generate the R script
    */
@@ -312,20 +245,21 @@ public class Normalization {
     // Get samples ids, conditions names/indexes and repTechGoups
     for (Sample s : experiment.getSamples()) {
 
-      if (!s.getMetadata().containsCondition()) {
+      final String condition = DesignUtils.getCondition(experiment, s);
+
+      if (condition == null) {
         throw new EoulsanException("No condition field found in design file.");
       }
 
-      final String condition = s.getMetadata().getCondition().trim();
 
       if ("".equals(condition)) {
         throw new EoulsanException("No value for condition in sample: "
             + s.getName() + " (" + s.getId() + ")");
       }
 
-      final String repTechGroup = s.getMetadata().getRepTechGroup().trim();
+      final String repTechGroup = DesignUtils.getRepTechGroup(experiment, s);
 
-      if (!"".equals(repTechGroup)) {
+      if (repTechGroup != null && !"".equals(repTechGroup)) {
         rRepTechGroup.add(repTechGroup);
       }
 
@@ -349,9 +283,10 @@ public class Normalization {
 
     // Create Rnw script stringbuilder with preamble
     String pdfTitle = escapeUnderScore(experiment.getName()) + " normalisation";
+    String filePrefix = "normalization_" + escapeUnderScore(experiment.getName());
 
     final StringBuilder sb =
-        generateRnwpreamble(experiment.getSamples(), pdfTitle);
+        generateRnwpreamble(experiment.getSamples(), pdfTitle, filePrefix);
 
     /*
      * Replace "na" values of repTechGroup by unique sample ids to avoid pooling
@@ -411,35 +346,19 @@ public class Normalization {
     // end document
     sb.append("\\end{document}\n");
 
-    String rScript = null;
-    try {
-
-      rScript = "normalization_" + experiment.getName() + ".Rnw";
-
-      if (context.getSettings().isRServeServerEnabled()) {
-        getLogger().info("Write script on Rserve: " + rScript);
-        this.rConnection.writeStringAsFile(rScript, sb.toString());
-      } else {
-        Writer writer = FileUtils.createFastBufferedWriter(rScript);
-        writer.write(sb.toString());
-        writer.close();
-      }
-    } catch (REngineException | IOException e) {
-      e.printStackTrace();
-    }
-
-    return rScript;
-
+    return sb.toString();
   }
 
   /**
    * Write Rnw preamble.
    * @param experimentSamplesList sample experiment list
    * @param title title of the document
+   * @param filePrefix Sweave file prefix
    * @return a StringBuilder with Rnw preamble
    */
   protected StringBuilder generateRnwpreamble(
-      final List<Sample> experimentSamplesList, final String title) {
+      final List<Sample> experimentSamplesList, final String title,
+      final String filePrefix) {
 
     StringBuilder sb = new StringBuilder();
     // Add packages to the LaTeX StringBuilder
@@ -450,7 +369,9 @@ public class Normalization {
     sb.append("\\usepackage{marvosym}\n");
     sb.append("\\usepackage{graphicx}\n\n");
     // Set Sweave options
-    sb.append("\\SweaveOpts{eps = FALSE, pdf = TRUE}\n");
+    sb.append("\\SweaveOpts{eps = FALSE, pdf = TRUE, prefix.string=");
+    sb.append(filePrefix);
+    sb.append("}\n\n");
     sb.append("\\setkeys{Gin}{width=0.95\textwidth}\n\n");
     // Add document title
     sb.append("\\title{" + title + "}\n\n");
@@ -580,10 +501,8 @@ public class Normalization {
       sb.append(")\n\n");
 
     } else {
-      /*
-       * Add repTechGroup vector equal to sampleNames to avoid error in R
-       * function buildTarget
-       */
+      // Add repTechGroup vector equal to sampleNames to avoid error in R
+      // function buildTarget
       sb.append("# create technical replicates groups vector\n");
       sb.append("repTechGroup <- sampleNames\n\n");
     }
@@ -615,6 +534,10 @@ public class Normalization {
     }
     sb.append(")\n\n");
   }
+
+  //
+  // Other methods
+  //
 
   /**
    * Check if there is a problem in the repTechGroup coherence.
@@ -699,150 +622,29 @@ public class Normalization {
     return false;
   }
 
-  /**
-   * Put all expression files needed for the analysis on the R server.
-   * @throws REngineException if an error occurs on RServe server
-   * @throws EoulsanException if try to overwrite an existing expression file
-   */
-  private void putExpressionFiles(final List<Sample> experiment,
-      final Data data) throws REngineException, EoulsanException {
-
-    final Set<String> outputFilenames = new HashSet<>();
-
-    for (Data d : data.getListElements()) {
-
-      final int sampleId = d.getMetadata().getSampleNumber();
-      final DataFile inputFile = d.getDataFile();
-
-      final String outputFilename =
-          this.expressionFilesPrefix + sampleId + this.expressionFilesSuffix;
-
-      // Check if the sample ID exists
-      if (sampleId == -1) {
-        throw new EoulsanException(
-            "No sample Id found for input file: " + inputFile);
-      }
-
-      // Check if try to overwrite an existing output file
-      if (outputFilenames.contains(outputFilename)) {
-        throw new EoulsanException(
-            "Cannot overwrite expression file on Rserve: " + outputFilename);
-      }
-      outputFilenames.add(outputFilename);
-
-      // Put file on rserve server
-      getLogger()
-          .info("Put file on RServe: " + inputFile + " to " + outputFilename);
-      try {
-        this.rConnection.putFile(inputFile.open(), outputFilename);
-      } catch (IOException e) {
-        throw new EoulsanException(e);
-      }
-    }
-
-  }
-
-  /**
-   * Put all expression files needed for the analysis on the R server.
-   * @throws REngineException if an error occurs on RServe server
-   */
-  private void createLinkExpressionFiles(final List<Sample> experiment,
-      final Data data) throws REngineException {
-
-    for (Data d : data.getListElements()) {
-
-      final int sampleId = d.getMetadata().getSampleNumber();
-      final File inputFile = d.getDataFile().toFile();
-      final String linkFilename =
-          this.expressionFilesPrefix + sampleId + this.expressionFilesSuffix;
-      final File linkFile = new File(inputFile.getParentFile(), linkFilename);
-
-      if (!linkFile.exists()) {
-        try {
-          Files.createSymbolicLink(linkFile.toPath(), inputFile.toPath());
-        } catch (IOException e) {
-          // Do nothing
-        }
-      }
-
-    }
-
-  }
-
-  /**
-   * Remove all expression files from the R server after analysis.
-   * @param experiment list of samples
-   * @throws REngineException if an error occurs on RServe server
-   */
-  private void removeExpressionFiles(final List<Sample> experiment)
-      throws REngineException {
-
-    int i;
-
-    for (Sample s : experiment) {
-      i = s.getNumber();
-
-      // Remove file from rserve server
-      this.rConnection.removeFile(this.expressionFilesDirectory
-          + "/" + this.expressionFilesPrefix + i + this.expressionFilesSuffix);
-    }
-  }
-
-  /*
-   * Constructor
-   */
+  //
+  // Constructor
+  //
 
   /**
    * Public constructor.
+   * @param executor executor to use to execute the normalization
    * @param design The design object
-   * @param expressionFilesDirectory the directory of expression files
-   * @param expressionFilesPrefix the prefix of expression files
-   * @param expressionFilesSuffix the suffix of expression file
-   * @param outPath the output path
-   * @param rServerName the name of the RServe server
    * @throws EoulsanException if an error occurs if connection to RServe server
    *           cannot be established
    */
-  public Normalization(final Design design, final File expressionFilesDirectory,
-      final String expressionFilesPrefix, final String expressionFilesSuffix,
-      final File outPath, final String rServerName, final boolean rServeEnable)
-          throws EoulsanException {
+  public Normalization(final RExecutor executor, final Design design)
+      throws EoulsanException {
 
     checkNotNull(design, "design is null.");
-    checkNotNull(expressionFilesDirectory,
-        "The path of the expression files is null.");
-    checkNotNull(expressionFilesPrefix,
-        "The prefix for expression files is null");
-    checkNotNull(expressionFilesSuffix,
-        "The suffix for expression files is null");
 
     this.design = design;
-    this.expressionFilesPrefix = expressionFilesPrefix;
-    this.expressionFilesSuffix = expressionFilesSuffix;
 
-    if (!(expressionFilesDirectory.isDirectory()
-        && expressionFilesDirectory.exists())) {
-      throw new NullPointerException(
-          "The path of the expression files doesn't exist or is not a directory.");
-    }
+    final DataFormat eDF = DataFormats.EXPRESSION_RESULTS_TSV;
+    this.expressionFilesPrefix = eDF.getPrefix();
+    this.expressionFilesSuffix = eDF.getDefaultExtension();
 
-    this.expressionFilesDirectory = expressionFilesDirectory;
-
-    if (!(outPath.isDirectory() && outPath.exists())) {
-      throw new NullPointerException(
-          "The output path file doesn't exist or is not a directory.");
-    }
-
-    this.outPath = outPath;
-
-    if (rServeEnable) {
-
-      if (rServerName != null) {
-        this.rConnection = new RSConnectionNewImpl(rServerName);
-      } else {
-        throw new EoulsanException("Missing Rserve server name");
-      }
-    }
+    this.executor = executor;
   }
 
 }

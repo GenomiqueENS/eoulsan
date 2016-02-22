@@ -27,8 +27,10 @@ package fr.ens.biologie.genomique.eoulsan.steps.diffana.local;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
+import static fr.ens.biologie.genomique.eoulsan.steps.diffana.local.NormalizationLocalStep.DESEQ1_DOCKER_IMAGE;
+import static java.util.Collections.unmodifiableSet;
 
-import java.io.File;
+import java.util.HashSet;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
@@ -41,9 +43,8 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
 import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.steps.AbstractStep;
 import fr.ens.biologie.genomique.eoulsan.steps.Steps;
 import fr.ens.biologie.genomique.eoulsan.steps.diffana.DiffAna;
@@ -51,6 +52,7 @@ import fr.ens.biologie.genomique.eoulsan.steps.diffana.DiffAna.DispersionFitType
 import fr.ens.biologie.genomique.eoulsan.steps.diffana.DiffAna.DispersionMethod;
 import fr.ens.biologie.genomique.eoulsan.steps.diffana.DiffAna.DispersionSharingMode;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
+import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 
 /**
  * This class define the step of differential analysis in local mode.
@@ -75,6 +77,9 @@ public class DiffAnaLocalStep extends AbstractStep {
   private DispersionFitType dispEstFitType = DispersionFitType.LOCAL;
   private DispersionSharingMode dispEstSharingMode =
       DispersionSharingMode.MAXIMUM;
+
+  private Set<Requirement> requirements = new HashSet<>();
+  private RExecutor executor;
 
   //
   // Step methods
@@ -106,27 +111,23 @@ public class DiffAnaLocalStep extends AbstractStep {
   }
 
   @Override
+  public Set<Requirement> getRequirements() {
+
+    return unmodifiableSet(this.requirements);
+  }
+
+  @Override
   public StepResult execute(final StepContext context,
       final StepStatus status) {
 
     try {
-      final DataFormat eDF = DataFormats.EXPRESSION_RESULTS_TSV;
-
-      String rServeName = null;
-      final boolean rServeEnable =
-          context.getSettings().isRServeServerEnabled();
-      if (rServeEnable) {
-        rServeName = context.getSettings().getRServeServerName();
-      }
 
       final Design design = context.getWorkflow().getDesign();
-      final DiffAna ad = new DiffAna(design, new File("."), eDF.getPrefix(),
-          eDF.getDefaultExtension(), new File("."), this.dispEstMethod,
-          this.dispEstSharingMode, this.dispEstFitType, rServeName,
-          rServeEnable);
 
-      // Launch analysis
-      ad.run(context, context.getInputData(eDF));
+      // Launch differential analysis
+      final DiffAna diffana = new DiffAna(this.executor, design,
+          this.dispEstMethod, this.dispEstSharingMode, this.dispEstFitType);
+      diffana.run(context, context.getInputData(EXPRESSION_RESULTS_TSV));
 
       // Write log file
       return status.createStepResult();
@@ -142,7 +143,12 @@ public class DiffAnaLocalStep extends AbstractStep {
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
 
-    for (Parameter p : stepParameters) {
+    // Parse R executor parameters
+    final Set<Parameter> parameters = new HashSet<>(stepParameters);
+    this.executor = CommonConfiguration.parseRExecutorParameter(context,
+        parameters, this.requirements, DESEQ1_DOCKER_IMAGE);
+
+    for (Parameter p : parameters) {
 
       switch (p.getName()) {
 

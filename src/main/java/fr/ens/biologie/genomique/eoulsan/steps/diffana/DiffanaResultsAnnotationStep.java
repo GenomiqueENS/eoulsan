@@ -31,7 +31,10 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATED_EXPRE
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_XLSX;
 import static fr.ens.biologie.genomique.eoulsan.translators.TranslatorUtils.loadTranslator;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -82,7 +85,13 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
   private static final DataFormat DEFAULT_FORMAT =
       ANNOTATED_EXPRESSION_RESULTS_TSV;
 
+  private static final String DEFAULT_FILE_INPUT_GLOB_PATTERN = "diffana_*.tsv";
+
   private final Map<String, DataFormat> outputFormats = new HashMap<>();
+
+  private PathMatcher pathMatcher;
+  private String outputPrefix;
+  private boolean useAdditionalAnnotationFile = true;
 
   //
   // Step methods
@@ -109,15 +118,12 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
   @Override
   public InputPorts getInputPorts() {
 
-    final InputPortsBuilder builder = new InputPortsBuilder();
-
-    // If no annotation file is set in parameter use the annotation provided by
-    // the workflow
-
     // Add the port for the additional annotation
-    builder.addPort("additionalannotation", ADDITIONAL_ANNOTATION_TSV);
+    if (this.useAdditionalAnnotationFile) {
+      return InputPortsBuilder.singleInputPort(ADDITIONAL_ANNOTATION_TSV);
+    }
 
-    return builder.create();
+    return InputPortsBuilder.noInputPort();
   }
 
   @Override
@@ -146,14 +152,24 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
 
+    String pattern = DEFAULT_FILE_INPUT_GLOB_PATTERN;
+    this.outputPrefix = context.getCurrentStep().getId();
+
     for (final Parameter p : stepParameters) {
 
       switch (p.getName()) {
 
       case "annotationfile":
         Steps.removedParameter(context, p);
+        break;
+
+      case "use.additional.annotation.file":
+        this.useAdditionalAnnotationFile = p.getBooleanValue();
+        break;
 
       case "outputformat":
+        Steps.renamedParameter(context, p, "output.format");
+      case "output.format":
 
         // Set output format
         for (String format : Splitter.on(',').trimResults().omitEmptyStrings()
@@ -180,9 +196,18 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
 
         break;
 
+      case "files":
+        pattern = p.getStringValue();
+        break;
+
+      case "output.prefix":
+        this.outputPrefix = p.getStringValue();
+        break;
+
       default:
         // Unknown option
         Steps.unknownParameter(context, p);
+        break;
       }
     }
 
@@ -191,20 +216,40 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
       this.outputFormats.put(DEFAULT_FORMAT.getDefaultExtension().substring(1),
           DEFAULT_FORMAT);
     }
+
+    // Set the PathMatcher
+    this.pathMatcher =
+        FileSystems.getDefault().getPathMatcher("glob:" + pattern);
   }
 
   @Override
   public StepResult execute(final StepContext context,
       final StepStatus status) {
 
+    // Get hypertext links file
+    final DataFile linksFile =
+        TranslatorUtils.getLinksFileFromSettings(context.getSettings());
+
     // Load translator
     final Translator translator;
+
     try {
 
-      // If no annotation file parameter set
-      Data annotationData = context.getInputData(ADDITIONAL_ANNOTATION_TSV);
-      translator = loadTranslator(annotationData.getDataFile(),
-          context.getSettings().getAdditionalAnnotationHypertextLinksPath());
+      if (this.useAdditionalAnnotationFile) {
+
+        // If no annotation file parameter set
+        Data additionalAnnotationData =
+            context.getInputData(ADDITIONAL_ANNOTATION_TSV);
+
+        // Create translator with additional annotation file
+        translator =
+            loadTranslator(additionalAnnotationData.getDataFile(), linksFile);
+
+      } else {
+
+        // Create translator without additional annotation file
+        translator = TranslatorUtils.loadTranslator(linksFile);
+      }
 
     } catch (IOException e) {
       return status.createStepResult(e);
@@ -221,8 +266,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
 
       // Filter files to convert
       for (DataFile f : files) {
-        if (f.getName().startsWith("diffana_")
-            && f.getName().endsWith(".tsv")) {
+        if (this.pathMatcher.matches(new File(f.getName()).toPath())) {
           filesToConvert.add(f);
         }
       }
@@ -236,7 +280,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
           // Get format
           final DataFormat format = e.getValue();
 
-          final String prefix = "annotated_"
+          final String prefix = this.outputPrefix
               + StringUtils.filenameWithoutExtension(inFile.getName());
 
           final TranslatorOutputFormat of;
@@ -247,6 +291,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
             // XLSX output
             outFile = new DataFile(outputDir, prefix
                 + ANNOTATED_EXPRESSION_RESULTS_XLSX.getDefaultExtension());
+            checkIfFileExists(outFile, context);
             of = new XLSXTranslatorOutputFormat(outFile.create());
 
           } else if (format == ANNOTATED_EXPRESSION_RESULTS_ODS) {
@@ -254,6 +299,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
             // ODS output
             outFile = new DataFile(outputDir, prefix
                 + ANNOTATED_EXPRESSION_RESULTS_ODS.getDefaultExtension());
+            checkIfFileExists(outFile, context);
             of = new ODSTranslatorOutputFormat(outFile.create());
 
           } else {
@@ -261,6 +307,7 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
             // TSV output
             outFile = new DataFile(outputDir, prefix
                 + ANNOTATED_EXPRESSION_RESULTS_TSV.getDefaultExtension());
+            checkIfFileExists(outFile, context);
             of = new TSVTranslatorOutputFormat(outFile.create());
           }
 
@@ -282,6 +329,22 @@ public class DiffanaResultsAnnotationStep extends AbstractStep {
 
     // Return the result
     return status.createStepResult();
+  }
+
+  /**
+   * Check if the output file already exists.
+   * @param file the output file
+   * @param context the step context
+   * @throws IOException if the the output file already exists
+   */
+  private static void checkIfFileExists(final DataFile file,
+      final StepContext context) throws IOException {
+
+    if (file.exists()) {
+      throw new IOException("Output file of the \""
+          + context.getCurrentStep().getId() + "\" already exists: " + file);
+    }
+
   }
 
 }

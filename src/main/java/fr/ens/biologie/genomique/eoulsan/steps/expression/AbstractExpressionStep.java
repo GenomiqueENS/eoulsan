@@ -30,6 +30,7 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
+import static fr.ens.biologie.genomique.eoulsan.steps.Steps.renamedParameter;
 
 import java.util.Set;
 
@@ -65,17 +66,25 @@ public abstract class AbstractExpressionStep extends AbstractStep {
   private static final String OLD_EOULSAN_COUNTER_NAME = "eoulsanCounter";
 
   public static final String REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME =
-      "removeambiguouscases";
+      "remove.ambiguous.cases";
 
-  public static final String OVERLAP_MODE_PARAMETER_NAME = "overlapmode";
+  public static final String OVERLAP_MODE_PARAMETER_NAME = "overlap.mode";
 
   public static final String STRANDED_PARAMETER_NAME = "stranded";
 
   public static final String COUNTER_PARAMETER_NAME = "counter";
 
-  public static final String GENOMIC_TYPE_PARAMETER_NAME = "genomictype";
-  public static final String ATTRIBUTE_ID_PARAMETER_NAME = "attributeid";
+  public static final String GENOMIC_TYPE_PARAMETER_NAME = "genomic.type";
+  public static final String ATTRIBUTE_ID_PARAMETER_NAME = "attribute.id";
   public static final String SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME =
+      "split.attribute.values";
+
+  public static final String OLD_REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME =
+      "removeambiguouscases";
+  public static final String OLD_OVERLAP_MODE_PARAMETER_NAME = "overlapmode";
+  public static final String OLD_GENOMIC_TYPE_PARAMETER_NAME = "genomictype";
+  public static final String OLD_ATTRIBUTE_ID_PARAMETER_NAME = "attributeid";
+  public static final String OLD_SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME =
       "splitattributevalues";
 
   protected static final String COUNTER_GROUP = "expression";
@@ -214,10 +223,14 @@ public abstract class AbstractExpressionStep extends AbstractStep {
 
       switch (p.getName()) {
 
+      case OLD_GENOMIC_TYPE_PARAMETER_NAME:
+        renamedParameter(context, p, GENOMIC_TYPE_PARAMETER_NAME);
       case GENOMIC_TYPE_PARAMETER_NAME:
         this.genomicType = p.getStringValue();
         break;
 
+      case OLD_ATTRIBUTE_ID_PARAMETER_NAME:
+        renamedParameter(context, p, ATTRIBUTE_ID_PARAMETER_NAME);
       case ATTRIBUTE_ID_PARAMETER_NAME:
         this.attributeId = p.getStringValue();
         break;
@@ -235,6 +248,8 @@ public abstract class AbstractExpressionStep extends AbstractStep {
         }
         break;
 
+      case OLD_OVERLAP_MODE_PARAMETER_NAME:
+        renamedParameter(context, p, OVERLAP_MODE_PARAMETER_NAME);
       case OVERLAP_MODE_PARAMETER_NAME:
 
         this.overlapmode =
@@ -245,10 +260,14 @@ public abstract class AbstractExpressionStep extends AbstractStep {
         }
         break;
 
+      case OLD_REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME:
+        renamedParameter(context, p, REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME);
       case REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME:
         this.removeAmbiguousCases = p.getBooleanValue();
         break;
 
+      case OLD_SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME:
+        renamedParameter(context, p, SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME);
       case SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME:
         this.splitAttributeValues = p.getBooleanValue();
         break;

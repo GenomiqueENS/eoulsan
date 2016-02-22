@@ -702,6 +702,26 @@ public class DataFile implements Comparable<DataFile>, Serializable {
 
   /**
    * Public constructor.
+   * @param parentFile the parent file of the DataFile
+   * @param filename the filename of the DataFile
+   */
+  public DataFile(final File parentFile, final String filename) {
+
+    this(new DataFile(parentFile), filename);
+  }
+
+  /**
+   * Public constructor.
+   * @param parentPath the parent file of the DataFile
+   * @param filename the filename of the DataFile
+   */
+  public DataFile(final Path parentPath, final String filename) {
+
+    this(new DataFile(parentPath), filename);
+  }
+
+  /**
+   * Public constructor.
    * @param file the source file of the DataFile
    */
   public DataFile(final File file) {

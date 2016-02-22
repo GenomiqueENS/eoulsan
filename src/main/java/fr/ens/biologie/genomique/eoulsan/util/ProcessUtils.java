@@ -296,7 +296,7 @@ public final class ProcessUtils {
     final long startTime = System.currentTimeMillis();
 
     final Process p =
-        Runtime.getRuntime().exec(new String[] { "/bin/sh", "-c", cmd });
+        Runtime.getRuntime().exec(new String[] {"/bin/sh", "-c", cmd});
 
     final InputStream std = p.getInputStream();
 
@@ -351,25 +351,7 @@ public final class ProcessUtils {
       final int exitValue = p.waitFor();
       final long endTime = System.currentTimeMillis();
 
-      if (exitValue == 1) {
-        throw new IOException("Error while executing: " + cmd);
-      }
-
-      if (exitValue == 126) {
-        throw new IOException("Command invoked cannot execute: " + cmd);
-      }
-
-      if (exitValue == 127) {
-        throw new IOException("Command not found: " + cmd);
-      }
-
-      if (exitValue == 134) {
-        throw new IOException("Abort: " + cmd);
-      }
-
-      if (exitValue == 139) {
-        throw new IOException("Segmentation fault: " + cmd);
-      }
+      throwExitCodeException(exitValue, cmd);
 
       getLogger().fine("Done (Thread "
           + Thread.currentThread().getId() + ", exit code: " + exitValue
@@ -379,6 +361,38 @@ public final class ProcessUtils {
       getLogger().severe("Interrupted exception: " + e.getMessage());
     }
 
+  }
+
+  /**
+   * Throw an IOException if the exit code of a process is not equals to 0.
+   * @param exitCode the exit code
+   * @param command the executed command
+   * @throws IOException if the exit code if not 0
+   */
+  public static final void throwExitCodeException(final int exitCode,
+      final String command) throws IOException {
+
+    switch (exitCode) {
+
+    case 0:
+      return;
+
+    case 126:
+      throw new IOException("Command invoked cannot execute: " + command);
+
+    case 127:
+      throw new IOException("Command not found: " + command);
+
+    case 134:
+      throw new IOException("Abort: " + command);
+
+    case 139:
+      throw new IOException("Segmentation fault: " + command);
+
+    default:
+      throw new IOException(
+          "Error while executing (exit code " + exitCode + "): " + command);
+    }
   }
 
   /**

@@ -27,8 +27,9 @@ package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.List;
+
+import com.spotify.docker.client.DockerClient;
 
 import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -109,7 +110,7 @@ public interface SequenceReadsMapper {
    * Get the Docker connection URI.
    * @return the Docker connection URI
    */
-  URI getDockerConnection();
+  DockerClient getDockerClient();
 
   //
   // Index creation methods
@@ -256,7 +257,7 @@ public interface SequenceReadsMapper {
    * Set the Docker connection URI.
    * @param uri the URI to set
    */
-  void setDockerConnection(URI uri);
+  void setDockerClient(DockerClient uri);
 
   //
   // Mapping methods

@@ -24,25 +24,18 @@
 
 package fr.ens.biologie.genomique.eoulsan.steps.diffana;
 
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.rosuda.REngine.REngineException;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.StepContext;
-import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
-import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 
 /**
  * This class create and launch a R script to compute differential analysis.
@@ -228,23 +221,6 @@ public class DiffAna extends Normalization {
   }
 
   //
-  // Public methods
-  //
-
-  @Override
-  public void run(final StepContext context, final Data data)
-      throws EoulsanException {
-
-    if (context.getSettings().isRServeServerEnabled()) {
-      getLogger().info("Differential analysis : Rserve mode");
-      runRserveRnwScript(context, data);
-    } else {
-      getLogger().info("Differential analysis : local mode");
-      runLocalRnwScript(context, data);
-    }
-  }
-
-  //
   // Protected methods
   //
 
@@ -263,20 +239,20 @@ public class DiffAna extends Normalization {
     // Get samples ids, conditions names/indexes and repTechGoups
     for (Sample s : experiment.getSamples()) {
 
-      if (!s.getMetadata().containsCondition()) {
+      final String condition = DesignUtils.getCondition(experiment, s);
+
+      if (condition == null) {
         throw new EoulsanException("No condition field found in design file.");
       }
-
-      final String condition = s.getMetadata().getCondition().trim();
 
       if ("".equals(condition)) {
         throw new EoulsanException("No value for condition in sample: "
             + s.getName() + " (" + s.getId() + ")");
       }
 
-      final String repTechGroup = s.getMetadata().getRepTechGroup().trim();
+      final String repTechGroup = DesignUtils.getRepTechGroup(experiment, s);
 
-      if (!"".equals(repTechGroup)) {
+      if (repTechGroup != null && !"".equals(repTechGroup)) {
         rRepTechGroup.add(repTechGroup);
       }
 
@@ -301,9 +277,10 @@ public class DiffAna extends Normalization {
     // Create Rnw script stringbuilder with preamble
     String pdfTitle =
         escapeUnderScore(experiment.getName()) + " differential analysis";
+    String filePrefix = "diffana_" + escapeUnderScore(experiment.getName());
 
     final StringBuilder sb =
-        generateRnwpreamble(experiment.getSamples(), pdfTitle);
+        generateRnwpreamble(experiment.getSamples(), pdfTitle, filePrefix);
 
     /*
      * Replace "na" values of repTechGroup by unique sample ids to avoid pooling
@@ -417,26 +394,7 @@ public class DiffAna extends Normalization {
     // end document
     sb.append("\\end{document}");
 
-    // create file
-    String rScript = null;
-    try {
-      rScript =
-          "diffana_"
-              + experiment.getName() + "_" + System.currentTimeMillis()
-              + ".Rnw";
-
-      if (context.getSettings().isRServeServerEnabled()) {
-        this.rConnection.writeStringAsFile(rScript, sb.toString());
-      } else {
-        Writer writer = FileUtils.createFastBufferedWriter(rScript);
-        writer.write(sb.toString());
-        writer.close();
-      }
-    } catch (REngineException | IOException e) {
-      e.printStackTrace();
-    }
-
-    return rScript;
+    return sb.toString();
   }
 
   //
@@ -511,29 +469,26 @@ public class DiffAna extends Normalization {
     }
   }
 
-  /*
-   * Constructor
-   */
+  //
+  // Constructor
+  //
 
   /**
-   * Public constructor
-   * @param design
-   * @param expressionFilesDirectory
-   * @param expressionFilesPrefix
-   * @param expressionFilesSuffix
-   * @param outPath
-   * @param rServerName
-   * @throws EoulsanException
+   * Public constructor.
+   * @param executor executor to use to execute the differential analysis
+   * @param design The design object
+   * @param dispEstMethod dispersion estimation method
+   * @param dispEstSharingMode dispersion estimation sharing mode
+   * @param dispEstFitType dispersion estimation fit type
+   * @throws EoulsanException if an error occurs if connection to RServe server
+   *           cannot be established
    */
-  public DiffAna(final Design design, final File expressionFilesDirectory,
-      final String expressionFilesPrefix, final String expressionFilesSuffix,
-      final File outPath, final DispersionMethod dispEstMethod,
+  public DiffAna(final RExecutor executor, final Design design,
+      final DispersionMethod dispEstMethod,
       final DispersionSharingMode dispEstSharingMode,
-      final DispersionFitType dispEstFitType, final String rServerName,
-      final boolean rServeEnable) throws EoulsanException {
+      final DispersionFitType dispEstFitType) throws EoulsanException {
 
-    super(design, expressionFilesDirectory, expressionFilesPrefix,
-        expressionFilesSuffix, outPath, rServerName, rServeEnable);
+    super(executor, design);
 
     if (dispEstMethod == null
         || dispEstFitType == null || dispEstSharingMode == null) {

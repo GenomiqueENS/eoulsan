@@ -26,11 +26,16 @@ package fr.ens.biologie.genomique.eoulsan.checkers;
 
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.ATTRIBUTE_ID_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.OLD_ATTRIBUTE_ID_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.COUNTER_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.GENOMIC_TYPE_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.OLD_GENOMIC_TYPE_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.OVERLAP_MODE_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.OLD_OVERLAP_MODE_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.OLD_REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.OLD_SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.STRANDED_PARAMETER_NAME;
 
 import java.io.IOException;
@@ -93,10 +98,12 @@ public class AnnotationChecker implements Checker {
 
       switch (p.getName()) {
 
+      case OLD_GENOMIC_TYPE_PARAMETER_NAME:
       case GENOMIC_TYPE_PARAMETER_NAME:
         this.genomicType = p.getStringValue();
         break;
 
+      case OLD_ATTRIBUTE_ID_PARAMETER_NAME:
       case ATTRIBUTE_ID_PARAMETER_NAME:
         this.attributeId = p.getStringValue();
         break;
@@ -111,7 +118,10 @@ public class AnnotationChecker implements Checker {
         if (!COUNTER_PARAMETER_NAME.equals(p.getName())
             && !OVERLAP_MODE_PARAMETER_NAME.equals(p.getName())
             && !REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME.equals(p.getName())
-            && !SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME.equals(p.getName())) {
+            && !SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME.equals(p.getName())
+            && !OLD_OVERLAP_MODE_PARAMETER_NAME.equals(p.getName())
+            && !OLD_REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME.equals(p.getName())
+            && !OLD_SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME.equals(p.getName())) {
           throw new EoulsanException(
               "Unknown parameter for " + getName() + " step: " + p.getName());
 

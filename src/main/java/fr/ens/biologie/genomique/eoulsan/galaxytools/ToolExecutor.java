@@ -30,7 +30,6 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import java.io.File;
 import java.util.List;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.core.StepContext;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.DefaultExecutorInterpreter;
@@ -72,10 +71,7 @@ public class ToolExecutor {
       break;
 
     case "docker":
-      ti = new DockerExecutorInterpreter(
-          EoulsanRuntime.getSettings().getDockerConnectionURI(),
-          this.toolData.getDockerImage(),
-          EoulsanRuntime.getSettings().getTempDirectoryFile());
+      ti = new DockerExecutorInterpreter(this.toolData.getDockerImage());
       break;
 
     default:

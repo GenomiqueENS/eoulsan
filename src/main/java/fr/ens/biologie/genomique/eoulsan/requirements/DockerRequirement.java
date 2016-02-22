@@ -40,9 +40,10 @@ import com.spotify.docker.client.messages.ProgressDetail;
 import com.spotify.docker.client.messages.ProgressMessage;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.core.DockerManager;
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Progress;
+import fr.ens.biologie.genomique.eoulsan.util.docker.DockerManager;
 
 /**
  * This class define a Docker requirement.
@@ -124,7 +125,19 @@ public class DockerRequirement extends AbstractRequirement {
   @Override
   public void install(final Progress progress) throws EoulsanException {
 
+    // Check if Docker URI has been set.
+    if (EoulsanRuntime.getSettings().getDockerConnection() == null) {
+      throw new EoulsanException("Docker connection URI is not set. "
+          + "Please set the \"main.docker.uri\" global parameter");
+    }
+
+    // Check if Docker connection has been created
     final DockerClient dockerClient = DockerManager.getInstance().getClient();
+
+    if (dockerClient == null) {
+      throw new EoulsanException("Unable to connect to Docker deamon: "
+          + EoulsanRuntime.getSettings().getDockerConnection());
+    }
 
     try {
 
@@ -153,7 +166,9 @@ public class DockerRequirement extends AbstractRequirement {
           final double pullProgress =
               (currentImageProgress + imageCount - 1.0) / (double) imageCount;
 
-          progress.setProgress(pullProgress);
+          if (pullProgress >= 0.0 && pullProgress <= 1.0) {
+            progress.setProgress(pullProgress);
+          }
 
         }
       });
@@ -210,16 +225,6 @@ public class DockerRequirement extends AbstractRequirement {
     result.configure(parameters);
 
     return result;
-  }
-
-  //
-  // Constructor
-  //
-
-  /**
-   * Private constructor.
-   */
-  private DockerRequirement() {
   }
 
 }

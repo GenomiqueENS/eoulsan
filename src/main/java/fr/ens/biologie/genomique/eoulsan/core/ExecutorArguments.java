@@ -26,14 +26,12 @@ package fr.ens.biologie.genomique.eoulsan.core;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toCompactTime;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 import java.util.UUID;
 
 import com.google.common.base.Objects;
@@ -371,16 +369,9 @@ public class ExecutorArguments {
    */
   public ExecutorArguments(final long millisSinceEpoch) {
 
-    final Calendar cal = Calendar.getInstance(Locale.ENGLISH);
-    cal.setTime(new Date(millisSinceEpoch));
-
-    final String creationDate = String.format("%04d%02d%02d-%02d%02d%02d",
-        cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1,
-        cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY),
-        cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
-
     this.creationTime = millisSinceEpoch;
-    this.jobId = Globals.APP_NAME_LOWER_CASE + "-" + creationDate;
+    this.jobId =
+        Globals.APP_NAME_LOWER_CASE + "-" + toCompactTime(millisSinceEpoch);
   }
 
   /**

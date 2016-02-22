@@ -30,14 +30,13 @@ import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.singleOu
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Set;
+
+import com.spotify.docker.client.DockerClient;
 
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.SequenceReadsMapper;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
@@ -46,6 +45,7 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.steps.AbstractStep;
 import fr.ens.biologie.genomique.eoulsan.steps.Steps;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
+import fr.ens.biologie.genomique.eoulsan.util.docker.DockerManager;
 
 /**
  * This class define an abstract step for read mapping.
@@ -94,8 +94,6 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   private int localThreads;
   private int maxLocalThreads;
   private int hadoopMapperRequiredMemory = DEFAULT_MAPPER_REQUIRED_MEMORY;
-
-  private URI dockerConnection;
 
   //
   // Getters
@@ -193,14 +191,6 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
   protected int getReducerTaskCount() {
 
     return this.reducerTaskCount;
-  }
-
-  /**
-   * Get Docker connection.
-   * @return an URI with the Docker connection
-   */
-  protected URI getDockerConnection() {
-    return this.dockerConnection;
   }
 
   //
@@ -307,9 +297,12 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
               + mapperName);
     }
 
-    // Get Docker connection URI
+    // Get Docker client
+    final DockerClient dockerClient;
     if (!this.mapperDockerImage.isEmpty()) {
-      this.dockerConnection = getCheckedDockerURI(context.getSettings());
+      dockerClient = DockerManager.getInstance().getClient();
+    } else {
+      dockerClient = null;
     }
 
     // Check if the binary for the mapper is available
@@ -319,7 +312,7 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
       this.mapper.setMapperFlavorToUse(this.mapperFlavor);
       this.mapper.setUseBundledBinaries(this.useBundledBinaries);
       this.mapper.setMapperDockerImage(this.mapperDockerImage);
-      this.mapper.setDockerConnection(this.dockerConnection);
+      this.mapper.setDockerClient(dockerClient);
       this.mapper.prepareBinaries();
     } catch (IOException e) {
       throw new EoulsanException(e);
@@ -337,30 +330,6 @@ public abstract class AbstractReadsMapperStep extends AbstractStep {
     getLogger()
         .info("In " + getName() + ", mapperarguments=" + this.mapperArguments);
 
-  }
-
-  /**
-   * Check Docker URI.
-   * @param settings Eoulsan settings
-   * @return the Docker URI
-   * @throws EoulsanException if the URI cannot be created
-   */
-  private static URI getCheckedDockerURI(final Settings settings)
-      throws EoulsanException {
-
-    final String dockerConnectionString = settings.getDockerConnection();
-
-    if (dockerConnectionString == null) {
-      throw new EoulsanException(
-          "Docker connection URI is not set in Eoulsan configuration");
-    }
-
-    try {
-      return new URI(dockerConnectionString);
-    } catch (URISyntaxException e) {
-      throw new EoulsanException(
-          "Invalid URI for Docker connection: " + dockerConnectionString);
-    }
   }
 
   //

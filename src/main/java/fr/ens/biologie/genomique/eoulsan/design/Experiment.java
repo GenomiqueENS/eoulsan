@@ -155,13 +155,17 @@ public class Experiment implements Serializable {
   /**
    * Set the name of the experiment.
    * @param newExperimentName the new experiment name
-   * @return the experiment name
    */
   public void setName(String newExperimentName) {
 
     checkNotNull(newExperimentName, "newExperimentName argument cannot be null");
 
     final String name = newExperimentName.trim();
+
+    // Do nothing if the new name is the old name
+    if (name.equals(this.experimentName)) {
+      return;
+    }
 
     checkArgument(!this.design.containsExperimentName(name),
         "The sample name already exists in the design: " + name);
@@ -175,8 +179,8 @@ public class Experiment implements Serializable {
 
   /**
    * Add a sample.
-   * @param sampleId the sample id
-   * @return the sample object
+   * @param sample the sample to add
+   * @return an experiment sample object
    */
   public ExperimentSample addSample(final Sample sample) {
 
@@ -200,7 +204,7 @@ public class Experiment implements Serializable {
 
   /**
    * Remove the sample.
-   * @param sampleId the sample id
+   * @param sample the sample to remove
    */
   public void removeSample(final Sample sample) {
 

@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.translators.io.MultiColumnTranslatorReader;
 import fr.ens.biologie.genomique.eoulsan.translators.io.TranslatorOutputFormat;
@@ -68,6 +69,13 @@ public class TranslatorUtils {
         translator, of);
   }
 
+  /**
+   * Create a file with additional annotation.
+   * @param is input stream of the file
+   * @param fieldToTranslate field to use with translator
+   * @param translator translator to use
+   * @throws IOException if an error occurs while creating the output file
+   */
   public static void addTranslatorFields(final InputStream is,
       final int fieldToTranslate, final Translator translator,
       final TranslatorOutputFormat of) throws IOException {
@@ -163,19 +171,13 @@ public class TranslatorUtils {
   }
 
   /**
-   * Load translator annotation.
-   * @param annotationFile the annotation file to use
-   * @param additionalAnnotationHypertextLinksPath the additional annotation
-   *          hypertext links file to use
-   * @return a Translator object with the additional annotation
-   * @throws IOException if an error occurs while reading additional annotation
+   * Create a translator that contains one column named "EnsemblID" that
+   * duplicate the Id if the the is an EnsemblID
+   * @return a new translator
    */
-  public static Translator loadTranslator(final DataFile annotationFile,
-      final String additionalAnnotationHypertextLinksPath) throws IOException {
+  private static Translator createDuplicatedEnsemblIdTranslator() {
 
-    checkNotNull(annotationFile, "annotationFile argument cannot be null");
-
-    final Translator did = new AbstractTranslator() {
+    return new AbstractTranslator() {
 
       private static final String FIELD_NAME = "EnsemblID";
       private final Pattern pattern = Pattern.compile("ENS[A-Z]+[0-9]{11}");
@@ -201,22 +203,93 @@ public class TranslatorUtils {
       }
     };
 
+  }
+
+  /**
+   * Update the links of a CommonLinksInfoTranslator from the content of a file.
+   * @param translator the translator to update
+   * @param linksFile the links file that can be null
+   * @throws IOException if an error occurs while reading the link file
+   */
+  private static void updateLinks(CommonLinksInfoTranslator translator,
+      final DataFile linksFile) throws IOException {
+
+    // Load annotation hypertext links
+    if (linksFile != null) {
+
+      // Check if the file exists
+      if (!linksFile.exists()) {
+        throw new IOException(linksFile + " doesn't exists.");
+      }
+
+      // Load the file
+      translator.load(linksFile.open());
+    }
+  }
+
+  /**
+   * Create a translator annotation from an additional annotation file and a
+   * link file.
+   * @param annotationFile the annotation file to use
+   * @param linksFile the additional annotation hypertext links file
+   * @return a Translator object with the additional annotation
+   * @throws IOException if an error occurs while reading additional annotation
+   */
+  public static Translator loadTranslator(final DataFile annotationFile,
+      final DataFile linksFile) throws IOException {
+
+    checkNotNull(annotationFile, "annotationFile argument cannot be null");
+
+    final Translator did = createDuplicatedEnsemblIdTranslator();
+
     final CommonLinksInfoTranslator translator =
         new CommonLinksInfoTranslator(new ConcatTranslator(did,
             new MultiColumnTranslatorReader(annotationFile.open()).read()));
-    // Add Comment
-    if (additionalAnnotationHypertextLinksPath != null) {
 
-      if (!new File(additionalAnnotationHypertextLinksPath).exists()) {
-        throw new IOException(
-            additionalAnnotationHypertextLinksPath + " doesn't exists.");
-      }
-
-      translator
-          .load(new DataFile(additionalAnnotationHypertextLinksPath).open());
-    }
+    // Load hypertext links
+    updateLinks(translator, linksFile);
 
     return translator;
+  }
+
+  /**
+   * Create a translator annotation from a link file.
+   * @param annotationFile the annotation file to use
+   * @param linksFile the additional annotation hypertext links file
+   * @return a Translator object with the additional annotation
+   * @throws IOException if an error occurs while reading additional annotation
+   */
+  public static Translator loadTranslator(final DataFile linksFile)
+      throws IOException {
+
+    final CommonLinksInfoTranslator translator =
+        new CommonLinksInfoTranslator(createDuplicatedEnsemblIdTranslator());
+
+    // Load hypertext links
+    updateLinks(translator, linksFile);
+
+    return translator;
+  }
+
+  /**
+   * Get the links file from the settings.
+   * @param settings the settings object
+   * @return a DataFile with the path to the link file or null if the link file
+   *         has not been defined in the settings
+   */
+  public static DataFile getLinksFileFromSettings(final Settings settings) {
+
+    if (settings == null) {
+      throw new NullPointerException("settings argument cannot be null");
+    }
+
+    final String value = settings.getAdditionalAnnotationHypertextLinksPath();
+
+    if (value == null) {
+      return null;
+    }
+
+    return new DataFile(value);
   }
 
   //

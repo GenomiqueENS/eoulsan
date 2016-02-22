@@ -26,23 +26,28 @@ package fr.ens.biologie.genomique.eoulsan.steps.diffana.local;
 
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
+import static java.util.Collections.unmodifiableSet;
 
-import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
 import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.steps.AbstractStep;
+import fr.ens.biologie.genomique.eoulsan.steps.Steps;
 import fr.ens.biologie.genomique.eoulsan.steps.diffana.Normalization;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
+import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 
 /**
  * This class define the step for normalization
@@ -53,6 +58,11 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 public class NormalizationLocalStep extends AbstractStep {
 
   private static final String STEP_NAME = "normalization";
+
+  static final String DESEQ1_DOCKER_IMAGE = "genomicpariscentre/deseq:1.8.3";
+
+  private Set<Requirement> requirements = new HashSet<>();
+  private RExecutor executor;
 
   //
   // Step methods
@@ -85,25 +95,37 @@ public class NormalizationLocalStep extends AbstractStep {
   }
 
   @Override
+  public Set<Requirement> getRequirements() {
+
+    return unmodifiableSet(this.requirements);
+  }
+
+  @Override
+  public void configure(final StepConfigurationContext context,
+      final Set<Parameter> stepParameters) throws EoulsanException {
+
+    // Parse R executor parameters
+    final Set<Parameter> parameters = new HashSet<>(stepParameters);
+    this.executor = CommonConfiguration.parseRExecutorParameter(context,
+        parameters, this.requirements, DESEQ1_DOCKER_IMAGE);
+
+    if (!parameters.isEmpty()) {
+      Steps.unknownParameter(context, parameters.iterator().next());
+    }
+
+  }
+
+  @Override
   public StepResult execute(final StepContext context,
       final StepStatus status) {
 
     try {
 
-      final DataFormat eDF = DataFormats.EXPRESSION_RESULTS_TSV;
-
-      String rServeName = null;
-      boolean rServeEnable = context.getSettings().isRServeServerEnabled();
-      if (rServeEnable) {
-        rServeName = context.getSettings().getRServeServerName();
-      }
-
       final Design design = context.getWorkflow().getDesign();
-      final Normalization norm = new Normalization(design, new File("."),
-          eDF.getPrefix(), eDF.getDefaultExtension(), new File("."), rServeName,
-          rServeEnable);
 
-      norm.run(context, context.getInputData(eDF));
+      // Launch normalization
+      final Normalization norm = new Normalization(this.executor, design);
+      norm.run(context, context.getInputData(EXPRESSION_RESULTS_TSV));
 
       // Write log file
       return status.createStepResult();

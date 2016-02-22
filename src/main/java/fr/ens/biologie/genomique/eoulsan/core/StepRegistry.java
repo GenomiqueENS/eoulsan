@@ -88,7 +88,14 @@ public class StepRegistry {
     protected GalaxyToolStep load(final InputStream in, final String source)
         throws IOException, EoulsanException {
 
-      return new GalaxyToolStep(in, source);
+      checkNotNull(in, "in argument cannot be null");
+
+      try {
+        return new GalaxyToolStep(in, source);
+      } catch (EoulsanException e) {
+        throw new EoulsanException(
+            "Unable to load Galaxy tool step: " + source);
+      }
     }
 
     /**

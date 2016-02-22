@@ -93,11 +93,11 @@
                                 <value>htseq-count</value>
                         </parameter>
                         <parameter>
-                                <name>genomictype</name>
+                                <name>genomic.type</name>
                                 <value>gene</value>
                         </parameter>
                         <parameter>
-                                <name>attributeid</name>
+                                <name>attribute.id</name>
                                 <value>ID</value>
                         </parameter>
                         <parameter>
@@ -105,11 +105,11 @@
                                 <value>no</value>
                         </parameter>
                         <parameter>
-                                <name>overlapmode</name>
+                                <name>overlap.mode</name>
                                 <value>union</value>
                         </parameter>
                         <parameter>
-                                <name>removeambiguouscases</name>
+                                <name>remove.ambiguous.cases</name>
                                 <value>false</value>
                         </parameter>                
                 </parameters>
@@ -128,14 +128,14 @@
                 <parameters>
                         <parameter>
                                 <name>disp.est.method</name>
-                                <value>pooled</value>
+                                <value>blind</value>
                         </parameter>
                         <parameter>                        
                                 <name>disp.est.sharing.mode</name>
-                                <value>maximum</value>
+                                <value>fit-only</value>
                         </parameter>                                 
                                 <name>disp.est.fit.type</name>
-                                <value>local</value>
+                                <value>parametric</value>
                         </parameter>
             <parameters/>
         </step-->
@@ -145,13 +145,6 @@
 
     <globals>
       
-	<!-- Temporary directory to use in local mode -->
-        <parameter>
-	        <name>main.tmp.dir</name>
-	        <value>/tmp</value>
-        </parameter>
-
-
 	<!-- Amazon MapReduce cluster configuration -->
 	<parameter>
 	        <name>aws.mapreduce.endpoint</name>

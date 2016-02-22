@@ -102,7 +102,7 @@ public class PathRequirement extends AbstractRequirement {
   /**
    * Create a new mandatory executable requirement.
    * @param executableName the executable name
-   * @param optional true if the executable is a mandatory requirement
+   * @return a new PathRequirement object
    * @throws EoulsanException if an error occurs while configuring the
    *           requirement
    */
@@ -115,6 +115,7 @@ public class PathRequirement extends AbstractRequirement {
    * Create a new executable requirement.
    * @param executableName the executable name
    * @param optional true if the executable is a mandatory requirement
+   * @return a new PathRequirement object
    * @throws EoulsanException if an error occurs while configuring the
    *           requirement
    */
@@ -132,16 +133,6 @@ public class PathRequirement extends AbstractRequirement {
     result.setOptionnal(optional);
 
     return result;
-  }
-
-  //
-  // Constructor
-  //
-
-  /**
-   * Private constructor.
-   */
-  private PathRequirement() {
   }
 
 }

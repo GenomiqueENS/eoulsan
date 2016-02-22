@@ -517,14 +517,14 @@ public class GalaxyToolInterpreter {
 
   /**
    * Public constructor.
-   * @param is the input stream
+   * @param in the input stream
    * @throws EoulsanException the Eoulsan exception
    */
-  public GalaxyToolInterpreter(final InputStream is) throws EoulsanException {
+  public GalaxyToolInterpreter(final InputStream in) throws EoulsanException {
 
-    checkNotNull(is, "input stream on XML file");
+    checkNotNull(in, "in argument cannot be null");
 
-    this.toolXMLis = is;
+    this.toolXMLis = in;
     this.doc = buildDOM();
     this.stepParameters = new HashMap<>();
 

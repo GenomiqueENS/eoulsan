@@ -27,6 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 import java.io.Serializable;
 import java.util.Set;
 
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 
 /**
@@ -79,5 +80,11 @@ public interface Workflow extends Serializable {
    * @return a WorkflowFile object
    */
   WorkflowFiles getWorkflowFilesAtFirstStep();
+
+  /**
+   * Delete a file on the exit of the workflow.
+   * @param file file to remove
+   */
+  public void deleteOnExit(final DataFile file);
 
 }

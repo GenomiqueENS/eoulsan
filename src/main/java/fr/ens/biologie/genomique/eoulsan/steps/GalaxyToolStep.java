@@ -218,6 +218,10 @@ public class GalaxyToolStep extends AbstractStep {
   public GalaxyToolStep(final InputStream toolXMLis, final String source)
       throws EoulsanException {
 
+    if (toolXMLis == null) {
+      throw new NullPointerException("toolXMLis argument cannot be null");
+    }
+
     this.toolInterpreter = new GalaxyToolInterpreter(toolXMLis);
     this.source = source == null ? "Undefined source" : source.trim();
 

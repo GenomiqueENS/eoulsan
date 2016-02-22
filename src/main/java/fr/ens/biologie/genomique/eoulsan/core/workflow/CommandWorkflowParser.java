@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -431,6 +432,7 @@ public class CommandWorkflowParser {
       final boolean evaluateValues) throws EoulsanException {
 
     final Set<Parameter> result = new LinkedHashSet<>();
+    final Set<String> parameterNames = new HashSet<>();
 
     final NodeList nList = root.getElementsByTagName(elementName);
 
@@ -477,6 +479,15 @@ public class CommandWorkflowParser {
                           ? "global parameters" : stepName + " step")
                       + " in workflow file.");
             }
+
+            if (parameterNames.contains(paramName)) {
+              throw new EoulsanException("The parameter \""
+                  + paramName + "\" has been already defined for "
+                  + (stepName == null
+                      ? "global parameters" : stepName + " step")
+                  + " in workflow file.");
+            }
+            parameterNames.add(paramName);
 
             result.add(new Parameter(paramName, evaluateValues
                 ? evaluateExpressions(paramValue, true) : paramValue));

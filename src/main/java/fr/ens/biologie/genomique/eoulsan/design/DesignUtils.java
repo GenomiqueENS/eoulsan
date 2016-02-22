@@ -201,7 +201,7 @@ public final class DesignUtils {
 
   /**
    * Get all the experiment metadata keys of the samples of a design.
-   * @param design the design
+   * @param experiment the experiment
    * @return a list with the experiment metadata keys of the samples of a design
    */
   public static List<String> getExperimentSampleAllMetadataKeys(
@@ -550,6 +550,84 @@ public final class DesignUtils {
     }
 
     return result;
+  }
+
+  /**
+   * Get the Condition metadata value for an experimentSample. First look in
+   * @param experiment the experiment
+   * @param sample the sample
+   * @return the Condition value
+   */
+  public static String getCondition(final Experiment experiment,
+      final Sample sample) {
+
+    checkNotNull(experiment, "experiment argument cannot be null");
+    checkNotNull(sample, "sample argument cannot be null");
+
+    final ExperimentSample es = experiment.getExperimentSample(sample);
+
+    return getCondition(es);
+  }
+
+  /**
+   * Get the Condition metadata value for an experimentSample. First look in
+   * @param experimentSample the experiment sample
+   * @return the Condition value
+   */
+  public static String getCondition(final ExperimentSample experimentSample) {
+
+    checkNotNull(experimentSample, "experimentSample argument cannot be null");
+
+    final ExperimentSampleMetadata esm = experimentSample.getMetadata();
+
+    if (esm.containsCondition()) {
+      return esm.getCondition();
+    }
+
+    final SampleMetadata sm = experimentSample.getSample().getMetadata();
+
+    final String result = sm.getCondition();
+
+    return result == null ? null : result.trim();
+  }
+
+  /**
+   * Get the RepTechGroup metadata value for an experimentSample. First look in
+   * @param experiment the experiment
+   * @param sample the sample
+   * @return the Condition value
+   */
+  public static String getRepTechGroup(final Experiment experiment,
+      final Sample sample) {
+
+    checkNotNull(experiment, "experiment argument cannot be null");
+    checkNotNull(sample, "sample argument cannot be null");
+
+    final ExperimentSample es = experiment.getExperimentSample(sample);
+
+    return getRepTechGroup(es);
+  }
+
+  /**
+   * Get the Condition metadata value for an experimentSample. First look in
+   * @param experimentSample the experiment sample
+   * @return the Condition value
+   */
+  public static String getRepTechGroup(final ExperimentSample experimentSample) {
+
+    checkNotNull(experimentSample, "experimentSample argument cannot be null");
+
+    final ExperimentSampleMetadata esm = experimentSample.getMetadata();
+
+    if (esm.containsRepTechGroup()) {
+      return esm.getRepTechGroup();
+    }
+
+    final SampleMetadata sm = experimentSample.getSample().getMetadata();
+
+    final String result = sm.getRepTechGroup();
+
+    return result == null ? null : result.trim();
   }
 
 }

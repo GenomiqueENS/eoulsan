@@ -124,13 +124,13 @@ public class ExperimentMetadata extends AbstractMetadata implements
    * Set the skip option.
    * @param newSkip the new skip option
    */
-  public void setSkip(boolean skip) {
-    set(SKIP_KEY, "" + skip);
+  public void setSkip(boolean newSkip) {
+    set(SKIP_KEY, "" + newSkip);
   }
 
   /**
    * Set the reference option.
-   * @param newReptechGroup the new reference option
+   * @param newReference the new reference option
    */
   public void setReference(String newReference) {
     set(REFERENCE_KEY, newReference);
@@ -154,7 +154,7 @@ public class ExperimentMetadata extends AbstractMetadata implements
 
   /**
    * Set the buildContrast DEseq2 option.
-   * @param newbuildContrast the new buildContrast DEseq2 option
+   * @param newBuildContrast the new buildContrast DEseq2 option
    */
   public void setBuildContrast(boolean newBuildContrast) {
     set(BUILD_CONTRAST_KEY, "" + newBuildContrast);
@@ -178,7 +178,7 @@ public class ExperimentMetadata extends AbstractMetadata implements
 
   /**
    * Set the contrastFile DEseq2 option.
-   * @param newcontrastFile the new contrastFile DEseq2 option
+   * @param newContrastFile the new contrastFile DEseq2 option
    */
   public void setContrastFile(String newContrastFile) {
     set(CONTRAST_FILE_KEY, newContrastFile);

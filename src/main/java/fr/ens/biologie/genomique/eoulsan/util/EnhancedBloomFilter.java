@@ -188,7 +188,7 @@ public class EnhancedBloomFilter implements Serializable {
 
   /**
    * Public constructor
-   * @param the Bloom filters
+   * @param bf the Bloom filters
    * @param addedNumberOfElements added number of elements
    * @param expectedNumberOfElements parameter to create bloom filter, must be
    *          positive
