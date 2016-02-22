@@ -254,7 +254,6 @@ public class TranslatorUtils {
 
   /**
    * Create a translator annotation from a link file.
-   * @param annotationFile the annotation file to use
    * @param linksFile the additional annotation hypertext links file
    * @return a Translator object with the additional annotation
    * @throws IOException if an error occurs while reading additional annotation
