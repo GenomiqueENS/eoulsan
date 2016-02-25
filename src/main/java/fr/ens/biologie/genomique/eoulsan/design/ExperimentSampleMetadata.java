@@ -52,16 +52,24 @@ public class ExperimentSampleMetadata extends AbstractMetadata implements
    * @return the RepTechGroup
    */
   public String getRepTechGroup() {
-    return get(REP_TECH_GROUP_KEY);
+    return getTrimmed(REP_TECH_GROUP_KEY);
   }
 
   /**
    * Get the reference.
    * @return the reference
    */
-  public boolean getReference() {
+  public String getReference() {
+    return getTrimmed(REFERENCE_KEY);
+  }
 
-    String value = get(REFERENCE_KEY);
+  /**
+   * Get the reference.
+   * @return the reference
+   */
+  public boolean isReference() {
+
+    String value = getReference();
 
     if (value == null) {
       return false;

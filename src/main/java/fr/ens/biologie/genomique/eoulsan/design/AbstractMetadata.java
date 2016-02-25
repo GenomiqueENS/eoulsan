@@ -64,6 +64,18 @@ public abstract class AbstractMetadata {
   }
 
   /**
+   * Get the trimmed value according the key.
+   * @param key the key
+   * @return the value
+   */
+  public String getTrimmed(final String key) {
+
+    final String value = get(key);
+
+    return value != null ? value.trim() : null;
+  }
+
+  /**
    * Set the value according the key.
    * @param key the key
    * @param value the value

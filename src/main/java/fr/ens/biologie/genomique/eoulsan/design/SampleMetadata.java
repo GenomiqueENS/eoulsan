@@ -72,7 +72,7 @@ public class SampleMetadata extends AbstractMetadata implements Serializable {
    * @return the description
    */
   public String getDescription() {
-    return get(DESCRIPTION_KEY);
+    return getTrimmed(DESCRIPTION_KEY);
   }
 
   /**
@@ -80,7 +80,7 @@ public class SampleMetadata extends AbstractMetadata implements Serializable {
    * @return the operator
    */
   public String getOperator() {
-    return get(OPERATOR_KEY);
+    return getTrimmed(OPERATOR_KEY);
   }
 
   /**
@@ -88,7 +88,7 @@ public class SampleMetadata extends AbstractMetadata implements Serializable {
    * @return the comment
    */
   public String getComment() {
-    return get(COMMENT_KEY);
+    return getTrimmed(COMMENT_KEY);
   }
 
   /**
@@ -96,7 +96,7 @@ public class SampleMetadata extends AbstractMetadata implements Serializable {
    * @return the date
    */
   public String getDate() {
-    return get(DATE_KEY);
+    return getTrimmed(DATE_KEY);
   }
 
   /**
@@ -104,7 +104,7 @@ public class SampleMetadata extends AbstractMetadata implements Serializable {
    * @return the serial number
    */
   public String getSerialNumber() {
-    return get(SERIAL_NUMBER_KEY);
+    return getTrimmed(SERIAL_NUMBER_KEY);
   }
 
   /**
@@ -112,7 +112,7 @@ public class SampleMetadata extends AbstractMetadata implements Serializable {
    * @return the UUID
    */
   public String getUUID() {
-    return get(UUID_KEY);
+    return getTrimmed(UUID_KEY);
   }
 
   /**
@@ -120,7 +120,15 @@ public class SampleMetadata extends AbstractMetadata implements Serializable {
    * @return the RepTechGroup
    */
   public String getRepTechGroup() {
-    return get(REP_TECH_GROUP_KEY);
+    return getTrimmed(REP_TECH_GROUP_KEY);
+  }
+
+  /**
+   * Get the reference.
+   * @return the reference
+   */
+  public String getReference() {
+    return getTrimmed(REFERENCE_KEY);
   }
 
   /**
@@ -129,7 +137,7 @@ public class SampleMetadata extends AbstractMetadata implements Serializable {
    */
   public boolean isReference() {
 
-    String value = get(REFERENCE_KEY);
+    String value = getReference();
 
     if (value == null) {
       return false;

@@ -642,7 +642,6 @@ public final class DesignUtils {
     final ExperimentMetadata emd = experiment.getMetadata();
 
     return emd.containsSkip() && emd.isSkip();
-
   }
 
 }

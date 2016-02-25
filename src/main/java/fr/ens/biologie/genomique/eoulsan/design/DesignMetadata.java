@@ -52,7 +52,7 @@ public class DesignMetadata extends AbstractMetadata implements Serializable {
    * @return the genome file
    */
   public String getGenomeFile() {
-    return get(GENOME_FILE_KEY);
+    return getTrimmed(GENOME_FILE_KEY);
   }
 
   /**
@@ -60,7 +60,7 @@ public class DesignMetadata extends AbstractMetadata implements Serializable {
    * @return the gff file
    */
   public String getGffFile() {
-    return get(GFF_FILE_KEY);
+    return getTrimmed(GFF_FILE_KEY);
   }
 
   /**
@@ -68,7 +68,7 @@ public class DesignMetadata extends AbstractMetadata implements Serializable {
    * @return the additionnal annotation file
    */
   public String getAdditionnalAnnotationFile() {
-    return get(ADDITIONNAL_ANNOTATION_FILE_KEY);
+    return getTrimmed(ADDITIONNAL_ANNOTATION_FILE_KEY);
   }
 
   //

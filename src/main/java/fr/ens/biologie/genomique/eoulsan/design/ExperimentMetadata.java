@@ -65,7 +65,7 @@ public class ExperimentMetadata extends AbstractMetadata implements
    * @return the reference option
    */
   public String getReference() {
-    return get(REFERENCE_KEY);
+   return getTrimmed(REFERENCE_KEY);
   }
 
   /**
@@ -73,7 +73,7 @@ public class ExperimentMetadata extends AbstractMetadata implements
    * @return the model DEseq2 option
    */
   public String getModel() {
-    return get(MODEL_KEY);
+    return getTrimmed(MODEL_KEY);
   }
 
   /**
