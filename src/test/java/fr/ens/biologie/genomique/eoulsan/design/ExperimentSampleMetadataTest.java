@@ -68,10 +68,10 @@ public class ExperimentSampleMetadataTest {
     assertTrue(esm.containsCondition());
 
     // test getReference
-    assertFalse(esm.getReference());
+    assertFalse(esm.isReference());
     // test setReference
     esm.setReference(true);
-    assertTrue(esm.getReference());
+    assertTrue(esm.isReference());
     // test containsReference
     assertTrue(esm.containsReference());
   }

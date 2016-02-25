@@ -45,7 +45,8 @@ import fr.ens.biologie.genomique.eoulsan.design.io.DesignReader;
 /**
  * Utils methods for Design.
  * @since 1.0
- * @author Laurent Jourdren & Xavier Bauquet
+ * @author Laurent Jourdren
+ * @author Xavier Bauquet
  */
 public final class DesignUtils {
 
@@ -533,8 +534,8 @@ public final class DesignUtils {
         }
 
         if (outFile.exists()) {
-          throw new IOException("The symlink to create, already exists: "
-              + outFile);
+          throw new IOException(
+              "The symlink to create, already exists: " + outFile);
         }
 
         try {
@@ -545,7 +546,7 @@ public final class DesignUtils {
 
         result.add(inFile.getName());
       } else {
-       result.add(inputPath);
+        result.add(inputPath);
       }
     }
 
@@ -613,7 +614,8 @@ public final class DesignUtils {
    * @param experimentSample the experiment sample
    * @return the Condition value
    */
-  public static String getRepTechGroup(final ExperimentSample experimentSample) {
+  public static String getRepTechGroup(
+      final ExperimentSample experimentSample) {
 
     checkNotNull(experimentSample, "experimentSample argument cannot be null");
 
@@ -642,6 +644,107 @@ public final class DesignUtils {
     final ExperimentMetadata emd = experiment.getMetadata();
 
     return emd.containsSkip() && emd.isSkip();
+  }
+
+  /**
+   * Test if an experiment contains reference fields
+   * @return true if an experiment contains reference fields
+   */
+  public static boolean containsReferenceField(final Experiment experiment) {
+
+    checkNotNull(experiment, "experiment argument cannot be null");
+
+    for (ExperimentSample es : experiment.getExperimentSamples()) {
+
+      final ExperimentSampleMetadata esmd = es.getMetadata();
+
+      if (esmd.containsReference()) {
+        return true;
+      }
+
+      final SampleMetadata smd = es.getSample().getMetadata();
+
+      if (smd.containsReference()) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Get the reference of a sample.
+   * @param experimentSample the experiment sample
+   * @return the reference of a sample
+   */
+  public static String getReference(final Experiment experiment,
+      final Sample sample) {
+
+    checkNotNull(experiment, "experiment argument cannot be null");
+    checkNotNull(sample, "sample argument cannot be null");
+
+    final ExperimentSample es = experiment.getExperimentSample(sample);
+
+    return getReference(es);
+  }
+
+  /**
+   * Get the reference of a sample.
+   * @param experimentSample the experiment sample
+   * @return the reference of a sample
+   */
+  public static String getReference(final ExperimentSample experimentSample) {
+
+    checkNotNull(experimentSample, "experimentSample argument cannot be null");
+
+    final ExperimentSampleMetadata esmd = experimentSample.getMetadata();
+
+    if (esmd.containsReference()) {
+      return esmd.getReference();
+    }
+
+    final SampleMetadata smd = experimentSample.getSample().getMetadata();
+
+    if (smd.containsReference()) {
+      return smd.getReference();
+    }
+
+    return null;
+  }
+
+  /**
+   * Convert a reference value to an integer.
+   * @param value the reference value
+   * @return an integer
+   */
+  public static int referenceValueToInt(final String value,
+      final String experiementReference) {
+
+    if (value == null) {
+      return 0;
+    }
+
+    final String s = value.trim();
+
+    if (s.equals(experiementReference)) {
+      return 1;
+    }
+
+    switch (s.toLowerCase()) {
+    case "t":
+    case "true":
+    case "y":
+    case "yes":
+      return 1;
+
+    default:
+
+      try {
+        return Integer.parseInt(s);
+      } catch (NumberFormatException e) {
+        return 0;
+      }
+    }
   }
 
 }

@@ -34,6 +34,7 @@ import fr.ens.biologie.genomique.eoulsan.core.StepContext;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
+import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 
@@ -289,7 +290,7 @@ public class DiffAna extends Normalization {
     replaceRtgNA(rRepTechGroup, rSampleNames);
 
     // Add reference if there is one
-    writeReferenceField(experiment.getSamples(), sb);
+    writeReferenceField(experiment, sb);
 
     // Add sampleNames vector
     generateSampleNamePart(rSampleNames, sb);
@@ -382,7 +383,7 @@ public class DiffAna extends Normalization {
 
     String anadiffPart = "";
     // check if there is a reference
-    if (isReference(experiment.getSamples())) {
+    if (isReference(experiment)) {
       anadiffPart = readStaticScript(ANADIFF_WITH_REFERENCE);
     } else {
       anadiffPart = readStaticScript(ANADIFF_WITHOUT_REFERENCE);
@@ -428,43 +429,73 @@ public class DiffAna extends Normalization {
 
   /**
    * Test if there is reference in an experiment
-   * @param experiment
+   * @param experiment the experiment
    * @return boolean isRef
    */
-  private boolean isReference(final List<Sample> experiment) {
+  private boolean isReference(final Experiment experiment) {
 
-    if (experiment == null
-        || experiment.size() == 0
-        || !experiment.get(0).getMetadata().containsReference()) {
+    if (experiment == null || experiment.getSamples().isEmpty()) {
       return false;
     }
 
-    for (Sample s : experiment) {
-      if (s.getMetadata().isReference()) {
-        return true;
+    if (DesignUtils.containsReferenceField(experiment)) {
+      return true;
+    }
+
+    // Get the experiment reference
+    final String refExp = experiment.getMetadata().getReference();
+
+    // Check if the sample condition equals to the experiement condition
+    if (refExp != null) {
+      for (ExperimentSample es : experiment.getExperimentSamples()) {
+
+        final String condition = DesignUtils.getCondition(es);
+
+        if (refExp.equals(condition)) {
+          return true;
+        }
+
       }
     }
+
     return false;
   }
 
   /**
    * Add the reference to R script if there is one
-   * @param experimentSamplesList
-   * @param sb
+   * @param experiment the experiment
+   * @param sb the StringBuilder to append
    */
-  private void writeReferenceField(final List<Sample> experimentSamplesList,
-      final StringBuilder sb) {
+  private void writeReferenceField(final Experiment experiment,
+      final StringBuilder sb) throws EoulsanException{
 
-    if (experimentSamplesList.get(0).getMetadata().containsReference()) {
+    // Get experiment reference if exists
+    final String refExp = experiment.getMetadata().getReference();
 
-      for (Sample s : experimentSamplesList) {
+    for (ExperimentSample es : experiment.getExperimentSamples()) {
 
-        if (s.getMetadata().isReference()) {
-          // Add reference to R script
-          sb.append(
-              "ref <- " + "\"" + s.getMetadata().getCondition() + "\"\n\n");
-          break;
-        }
+      final int ref =
+          DesignUtils.referenceValueToInt(DesignUtils.getReference(es), refExp);
+
+      switch (ref) {
+
+      case -1:
+        throw new EoulsanException(
+            "Reference value lower than 0 and not handled by the Diffana step (sample: "
+                + es.getSample().getId() + ")");
+
+      case 0:
+        break;
+
+      case 1:
+        // Add reference to R script
+        sb.append("ref <- " + "\"" + DesignUtils.getCondition(es) + "\"\n\n");
+        break;
+
+      default:
+        throw new EoulsanException(
+            "Reference value greater than 1 and not handled by the Diffana step (sample: "
+                + es.getSample().getId() + ")");
       }
     }
   }
