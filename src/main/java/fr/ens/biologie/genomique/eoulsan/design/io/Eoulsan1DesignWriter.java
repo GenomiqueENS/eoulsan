@@ -25,9 +25,11 @@
 package fr.ens.biologie.genomique.eoulsan.design.io;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.biologie.genomique.eoulsan.design.SampleMetadata.UUID_KEY;
 import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan1DesignReader.EXPERIMENT_FIELD;
 import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan1DesignReader.SAMPLE_NAME_FIELD;
 import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan1DesignReader.SAMPLE_NUMBER_FIELD;
+import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignReader.TAB_SEPARATOR;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -78,7 +80,13 @@ public class Eoulsan1DesignWriter implements DesignWriter {
 
     final List<String> sampleMDKeys =
         DesignUtils.getAllSamplesMetadataKeys(design);
+
     for (String key : sampleMDKeys) {
+
+      // The UUID must be the last field
+      if (SampleMetadata.UUID_KEY.equals(key)) {
+        continue;
+      }
 
       this.bw.append(SEPARATOR);
       this.bw.append(key);
@@ -120,6 +128,13 @@ public class Eoulsan1DesignWriter implements DesignWriter {
       }
 
     }
+
+    // The UUID if exists, must be the last field
+    if (sampleMDKeys.contains(UUID_KEY)) {
+      bw.append(TAB_SEPARATOR);
+      bw.append(UUID_KEY);
+    }
+
     this.bw.append(NEWLINE);
 
     // Insert the metadata for each sample
@@ -133,6 +148,11 @@ public class Eoulsan1DesignWriter implements DesignWriter {
 
       // Sample keys
       for (String key : sampleMDKeys) {
+
+        // The UUID must be the last field
+        if (UUID_KEY.equals(key)) {
+          continue;
+        }
 
         this.bw.append(SEPARATOR);
 
@@ -184,6 +204,13 @@ public class Eoulsan1DesignWriter implements DesignWriter {
         }
 
       }
+
+      // The UUID if exists, must be the last field
+      if (sampleMDKeys.contains(UUID_KEY)) {
+        bw.append(TAB_SEPARATOR);
+        bw.append(smd.get(UUID_KEY));
+      }
+
       this.bw.append(NEWLINE);
     }
 

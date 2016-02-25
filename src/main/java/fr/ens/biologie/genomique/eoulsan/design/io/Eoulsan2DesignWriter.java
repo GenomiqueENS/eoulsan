@@ -27,6 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.design.io;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.getAllSamplesMetadataKeys;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.getExperimentSampleAllMetadataKeys;
+import static fr.ens.biologie.genomique.eoulsan.design.SampleMetadata.UUID_KEY;
 import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignReader.DOT_SEPARATOR;
 import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignReader.EQUAL_SEPARATOR;
 import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignReader.EXPERIMENT_FIELD_PREFIX;
@@ -129,6 +130,12 @@ public class Eoulsan2DesignWriter implements DesignWriter {
 
     // Print common column names
     for (String key : sampleMDKeys) {
+
+      // The UUID must be the last field
+      if (SampleMetadata.UUID_KEY.equals(key)) {
+        continue;
+      }
+
       bw.append(TAB_SEPARATOR);
       bw.append(key);
     }
@@ -149,6 +156,12 @@ public class Eoulsan2DesignWriter implements DesignWriter {
       }
     }
 
+    // The UUID if exists, must be the last field
+    if (sampleMDKeys.contains(UUID_KEY)) {
+      bw.append(TAB_SEPARATOR);
+      bw.append(UUID_KEY);
+    }
+
     bw.append(NEWLINE);
 
     // Print samples metadata
@@ -160,9 +173,12 @@ public class Eoulsan2DesignWriter implements DesignWriter {
 
       final SampleMetadata smd = sample.getMetadata();
 
-      // System.out.println(sampleMDKeys);
-
       for (String key : sampleMDKeys) {
+
+        // The UUID must be the last field
+        if (UUID_KEY.equals(key)) {
+          continue;
+        }
 
         bw.append(TAB_SEPARATOR);
 
@@ -188,6 +204,12 @@ public class Eoulsan2DesignWriter implements DesignWriter {
           }
         }
 
+      }
+
+      // The UUID if exists, must be the last field
+      if (sampleMDKeys.contains(UUID_KEY)) {
+        bw.append(TAB_SEPARATOR);
+        bw.append(smd.get(UUID_KEY));
       }
 
       bw.append(NEWLINE);
