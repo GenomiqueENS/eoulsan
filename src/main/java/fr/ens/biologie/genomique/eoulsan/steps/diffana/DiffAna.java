@@ -229,6 +229,14 @@ public class DiffAna extends Normalization {
   protected String generateScript(final Experiment experiment,
       final StepContext context) throws EoulsanException {
 
+    final String comparison = experiment.getMetadata().getComparison();
+
+    // Check if user use the comparison property of the experiment
+    if (comparison != null && !comparison.trim().isEmpty()) {
+      throw new EoulsanException(
+          "The diffana step do not actually handle the comparison property of an experiment");
+    }
+
     final Map<String, List<Integer>> conditionsMap = new HashMap<>();
 
     final List<Integer> rSampleIds = new ArrayList<>();
