@@ -630,4 +630,19 @@ public final class DesignUtils {
     return result == null ? null : result.trim();
   }
 
+  /**
+   * Test if an experiement is skipped.
+   * @param experiment the experiment
+   * @return true if the experiment must be skipped
+   */
+  public static boolean isSkipped(final Experiment experiment) {
+
+    checkNotNull(experiment, "experiment argument cannot be null");
+
+    final ExperimentMetadata emd = experiment.getMetadata();
+
+    return emd.containsSkip() && emd.isSkip();
+
+  }
+
 }

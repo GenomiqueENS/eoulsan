@@ -114,6 +114,11 @@ public class Normalization {
       // create an iterator on the map values
       for (Experiment experiment : this.design.getExperiments()) {
 
+        // Skip experiment if required in design
+        if (DesignUtils.isSkipped(experiment)) {
+          continue;
+        }
+
         getLogger().info("Experiment : " + experiment.getName());
 
         // Open executor connection

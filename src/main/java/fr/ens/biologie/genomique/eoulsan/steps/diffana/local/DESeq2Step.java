@@ -50,8 +50,8 @@ import fr.ens.biologie.genomique.eoulsan.core.StepResult;
 import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
-import fr.ens.biologie.genomique.eoulsan.design.ExperimentMetadata;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.steps.AbstractStep;
 import fr.ens.biologie.genomique.eoulsan.steps.diffana.DEseq2;
@@ -222,8 +222,7 @@ public class DESeq2Step extends AbstractStep {
       for (Experiment e : design.getExperiments()) {
 
         // Do nothing if the experiment is skipped
-        final ExperimentMetadata emd = e.getMetadata();
-        if (emd.containsSkip() && emd.isSkip()) {
+        if (DesignUtils.isSkipped(e)) {
           continue;
         }
 
