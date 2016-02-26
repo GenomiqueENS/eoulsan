@@ -25,18 +25,18 @@
 package fr.ens.biologie.genomique.eoulsan.checkers;
 
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
-import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.ATTRIBUTE_ID_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.OLD_ATTRIBUTE_ID_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.COUNTER_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.GENOMIC_TYPE_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.OLD_GENOMIC_TYPE_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.OVERLAP_MODE_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.OLD_OVERLAP_MODE_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.OLD_REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.OLD_SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.STRANDED_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.ATTRIBUTE_ID_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.COUNTER_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.GENOMIC_TYPE_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.OLD_ATTRIBUTE_ID_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.OLD_GENOMIC_TYPE_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.OLD_OVERLAP_MODE_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.OLD_REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.OLD_SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.OVERLAP_MODE_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.STRANDED_PARAMETER_NAME;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -58,7 +58,7 @@ import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
-import fr.ens.biologie.genomique.eoulsan.steps.generators.GenomeDescriptionCreator;
+import fr.ens.biologie.genomique.eoulsan.modules.generators.GenomeDescriptionCreator;
 
 /**
  * This class define a Checker on GFF annotation.

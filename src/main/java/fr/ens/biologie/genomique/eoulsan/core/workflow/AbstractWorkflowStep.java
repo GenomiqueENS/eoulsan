@@ -51,9 +51,9 @@ import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.steps.CheckerStep;
-import fr.ens.biologie.genomique.eoulsan.steps.DesignStep;
-import fr.ens.biologie.genomique.eoulsan.steps.FakeStep;
+import fr.ens.biologie.genomique.eoulsan.modules.CheckerModule;
+import fr.ens.biologie.genomique.eoulsan.modules.DesignModule;
+import fr.ens.biologie.genomique.eoulsan.modules.FakeModule;
 
 /**
  * This class define a step of the workflow. This class must be extended by a
@@ -588,7 +588,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     case CHECKER_STEP:
 
       // Create and register checker step
-      final Module checkerStep = new CheckerStep();
+      final Module checkerStep = new CheckerModule();
       StepInstances.getInstance().registerStep(this, checkerStep);
 
       this.stepName = checkerStep.getName();
@@ -606,7 +606,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       final Module checkerStep2 =
           StepInstances.getInstance().getStep(this.workflow.getCheckerStep());
       final Module designStep =
-          new DesignStep(this.workflow.getDesign(), (CheckerStep) checkerStep2);
+          new DesignModule(this.workflow.getDesign(), (CheckerModule) checkerStep2);
       StepInstances.getInstance().registerStep(this, designStep);
 
       this.stepName = designStep.getName();
@@ -621,7 +621,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     default:
 
-      final Module fakeStep = new FakeStep();
+      final Module fakeStep = new FakeModule();
       StepInstances.getInstance().registerStep(this, fakeStep);
 
       this.stepName = type.name();

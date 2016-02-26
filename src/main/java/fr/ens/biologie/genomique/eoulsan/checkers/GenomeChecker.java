@@ -37,7 +37,7 @@ import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
-import fr.ens.biologie.genomique.eoulsan.steps.generators.GenomeDescriptionCreator;
+import fr.ens.biologie.genomique.eoulsan.modules.generators.GenomeDescriptionCreator;
 
 /**
  * This class define a Checker on genome FASTA files.

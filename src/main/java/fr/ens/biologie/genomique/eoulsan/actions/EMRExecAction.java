@@ -48,9 +48,9 @@ import fr.ens.biologie.genomique.eoulsan.core.Executor;
 import fr.ens.biologie.genomique.eoulsan.core.ExecutorArguments;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.steps.TerminalStep;
-import fr.ens.biologie.genomique.eoulsan.steps.mgmt.AWSElasticMapReduceExecStep;
-import fr.ens.biologie.genomique.eoulsan.steps.mgmt.upload.LocalUploadStep;
+import fr.ens.biologie.genomique.eoulsan.modules.TerminalModule;
+import fr.ens.biologie.genomique.eoulsan.modules.mgmt.AWSElasticMapReduceExecModule;
+import fr.ens.biologie.genomique.eoulsan.modules.mgmt.upload.LocalUploadModule;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 
 /**
@@ -222,8 +222,8 @@ public class EMRExecAction extends AbstractAction {
       final Executor e = new Executor(arguments);
 
       // Launch executor
-      e.execute(Lists.newArrayList((Module) new LocalUploadStep(s3Path),
-          new AWSElasticMapReduceExecStep(), new TerminalStep()), null);
+      e.execute(Lists.newArrayList((Module) new LocalUploadModule(s3Path),
+          new AWSElasticMapReduceExecModule(), new TerminalModule()), null);
 
     } catch (FileNotFoundException e) {
       Common.errorExit(e, "File not found: " + e.getMessage());

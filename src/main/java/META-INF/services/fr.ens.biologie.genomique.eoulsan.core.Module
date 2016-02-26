@@ -1,55 +1,55 @@
 # Filter reads steps
-fr.ens.biologie.genomique.eoulsan.steps.mapping.local.ReadsFilterLocalStep
-fr.ens.biologie.genomique.eoulsan.steps.mapping.hadoop.ReadsFilterHadoopStep
+fr.ens.biologie.genomique.eoulsan.modules.mapping.local.ReadsFilterLocalModule
+fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsFilterHadoopModule
 
 # Mapping reads steps
-fr.ens.biologie.genomique.eoulsan.steps.generators.STARIndexGenerator
-fr.ens.biologie.genomique.eoulsan.steps.mapping.local.ReadsMapperLocalStep
-fr.ens.biologie.genomique.eoulsan.steps.mapping.hadoop.ReadsMapperHadoopStep
-fr.ens.biologie.genomique.eoulsan.steps.mapping.local.SAM2BAMLocalStep
-fr.ens.biologie.genomique.eoulsan.steps.mapping.hadoop.SAM2BAMHadoopStep
-fr.ens.biologie.genomique.eoulsan.steps.mapping.local.BAM2SAMLocalStep
-fr.ens.biologie.genomique.eoulsan.steps.mapping.local.SAM2FASTQLocalStep
+fr.ens.biologie.genomique.eoulsan.modules.generators.STARIndexGeneratorModule
+fr.ens.biologie.genomique.eoulsan.modules.mapping.local.ReadsMapperLocalModule
+fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsMapperHadoopModule
+fr.ens.biologie.genomique.eoulsan.modules.mapping.local.SAM2BAMLocalModule
+fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAM2BAMHadoopModule
+fr.ens.biologie.genomique.eoulsan.modules.mapping.local.BAM2SAMLocalModule
+fr.ens.biologie.genomique.eoulsan.modules.mapping.local.SAM2FASTQLocalModule
 # Filter and mapping steps
-fr.ens.biologie.genomique.eoulsan.steps.mapping.hadoop.FilterAndMapReadsHadoopStep
+fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.FilterAndMapReadsHadoopModule
 
 # Filter SAM file steps
-fr.ens.biologie.genomique.eoulsan.steps.mapping.local.SAMFilterLocalStep
-fr.ens.biologie.genomique.eoulsan.steps.mapping.hadoop.SAMFilterHadoopStep
+fr.ens.biologie.genomique.eoulsan.modules.mapping.local.SAMFilterLocalModule
+fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAMFilterHadoopModule
 
 # Expression steps
-fr.ens.biologie.genomique.eoulsan.steps.expression.hadoop.ExpressionHadoopStep
-fr.ens.biologie.genomique.eoulsan.steps.expression.local.ExpressionLocalStep
-fr.ens.biologie.genomique.eoulsan.steps.expression.ExpressionResultsAnnotationStep
+fr.ens.biologie.genomique.eoulsan.modules.expression.hadoop.ExpressionHadoopModule
+fr.ens.biologie.genomique.eoulsan.modules.expression.local.ExpressionLocalModule
+fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionResultsAnnotationModule
 
 # Normalization and differential analysis steps
-fr.ens.biologie.genomique.eoulsan.steps.diffana.local.NormalizationLocalStep
-fr.ens.biologie.genomique.eoulsan.steps.diffana.local.DiffAnaLocalStep
-fr.ens.biologie.genomique.eoulsan.steps.diffana.DiffanaResultsAnnotationStep
-fr.ens.biologie.genomique.eoulsan.steps.diffana.local.DESeq2Step
+fr.ens.biologie.genomique.eoulsan.modules.diffana.local.NormalizationLocalModule
+fr.ens.biologie.genomique.eoulsan.modules.diffana.local.DiffAnaLocalModule
+fr.ens.biologie.genomique.eoulsan.modules.diffana.DiffanaResultsAnnotationModule
+fr.ens.biologie.genomique.eoulsan.modules.diffana.local.DESeq2Module
 
 # Management steps
-fr.ens.biologie.genomique.eoulsan.steps.mgmt.upload.HDFSDataDownloadStep
-fr.ens.biologie.genomique.eoulsan.steps.mgmt.upload.DefineDataFormatToDownload
-fr.ens.biologie.genomique.eoulsan.steps.mgmt.hadoop.CopyDesignAndWorkflowFilesToOutputStep
+fr.ens.biologie.genomique.eoulsan.modules.mgmt.upload.HDFSDataDownloadModule
+fr.ens.biologie.genomique.eoulsan.modules.mgmt.upload.DefineDataFormatToDownload
+fr.ens.biologie.genomique.eoulsan.modules.mgmt.hadoop.CopyDesignAndWorkflowFilesToOutputModule
 
 # Copy steps
-fr.ens.biologie.genomique.eoulsan.steps.CopyInputDataStep
-fr.ens.biologie.genomique.eoulsan.steps.CopyOutputDataStep
+fr.ens.biologie.genomique.eoulsan.modules.CopyInputDataModule
+fr.ens.biologie.genomique.eoulsan.modules.CopyOutputDataModule
 
 # Splitter and Merger steps
-fr.ens.biologie.genomique.eoulsan.steps.SplitterStep
-fr.ens.biologie.genomique.eoulsan.steps.MergerStep
-fr.ens.biologie.genomique.eoulsan.steps.TechnicalReplicateMerger
+fr.ens.biologie.genomique.eoulsan.modules.SplitterModule
+fr.ens.biologie.genomique.eoulsan.modules.MergerModule
+fr.ens.biologie.genomique.eoulsan.modules.TechnicalReplicateMergerModule
 
 # Common steps
-fr.ens.biologie.genomique.eoulsan.steps.ShellStep
+fr.ens.biologie.genomique.eoulsan.modules.ShellModule
 
 # QC steps
-fr.ens.biologie.genomique.eoulsan.steps.fastqc.FastQCStep
+fr.ens.biologie.genomique.eoulsan.modules.fastqc.FastQCModule
 
 # Other steps
-fr.ens.biologie.genomique.eoulsan.steps.ImportStep
-fr.ens.biologie.genomique.eoulsan.steps.FailStep
-fr.ens.biologie.genomique.eoulsan.steps.RequirementInstallerStep
+fr.ens.biologie.genomique.eoulsan.modules.ImportModule
+fr.ens.biologie.genomique.eoulsan.modules.FailModule
+fr.ens.biologie.genomique.eoulsan.modules.RequirementInstallerModule
 

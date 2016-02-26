@@ -46,7 +46,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Main;
 import fr.ens.biologie.genomique.eoulsan.annotations.EoulsanMode;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.steps.GalaxyToolStep;
+import fr.ens.biologie.genomique.eoulsan.modules.GalaxyToolModule;
 import fr.ens.biologie.genomique.eoulsan.util.ClassPathResourceLoader;
 import fr.ens.biologie.genomique.eoulsan.util.FileResourceLoader;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
@@ -76,7 +76,7 @@ public class ModuleRegistry {
    * system.
    */
   private static final class GalaxyToolStepFileResourceLoader
-      extends FileResourceLoader<GalaxyToolStep> {
+      extends FileResourceLoader<GalaxyToolModule> {
 
     @Override
     protected String getExtension() {
@@ -85,13 +85,13 @@ public class ModuleRegistry {
     }
 
     @Override
-    protected GalaxyToolStep load(final InputStream in, final String source)
+    protected GalaxyToolModule load(final InputStream in, final String source)
         throws IOException, EoulsanException {
 
       checkNotNull(in, "in argument cannot be null");
 
       try {
-        return new GalaxyToolStep(in, source);
+        return new GalaxyToolModule(in, source);
       } catch (EoulsanException e) {
         throw new EoulsanException(
             "Unable to load Galaxy tool step: " + source);
@@ -115,7 +115,7 @@ public class ModuleRegistry {
     }
 
     @Override
-    protected String getResourceName(final GalaxyToolStep resource) {
+    protected String getResourceName(final GalaxyToolModule resource) {
 
       checkNotNull(resource, "resource argument cannot be null");
 
@@ -132,7 +132,7 @@ public class ModuleRegistry {
      */
     public GalaxyToolStepFileResourceLoader(final String resourcePaths) {
 
-      super(GalaxyToolStep.class, getDefaultFormatDirectory());
+      super(GalaxyToolModule.class, getDefaultFormatDirectory());
 
       if (resourcePaths != null) {
         addResourcePaths(resourcePaths);
@@ -145,17 +145,17 @@ public class ModuleRegistry {
    * This class define a resource loader for resource defined in the class path.
    */
   private static final class GalaxyToolStepClassPathLoader
-      extends ClassPathResourceLoader<GalaxyToolStep> {
+      extends ClassPathResourceLoader<GalaxyToolModule> {
 
     @Override
-    protected GalaxyToolStep load(final InputStream in, final String source)
+    protected GalaxyToolModule load(final InputStream in, final String source)
         throws IOException, EoulsanException {
 
-      return new GalaxyToolStep(in, source);
+      return new GalaxyToolModule(in, source);
     }
 
     @Override
-    protected String getResourceName(final GalaxyToolStep resource) {
+    protected String getResourceName(final GalaxyToolModule resource) {
 
       checkNotNull(resource, "resource argument cannot be null");
 
@@ -168,7 +168,7 @@ public class ModuleRegistry {
 
     public GalaxyToolStepClassPathLoader() {
 
-      super(GalaxyToolStep.class, RESOURCE_PREFIX);
+      super(GalaxyToolModule.class, RESOURCE_PREFIX);
     }
   }
 
@@ -241,11 +241,11 @@ public class ModuleRegistry {
     }
 
     // Log Galaxy tool steps
-    final List<GalaxyToolStep> stepsFound = new ArrayList<>();
+    final List<GalaxyToolModule> stepsFound = new ArrayList<>();
     stepsFound.addAll(this.galaxyClassPathLoader.loadAllResources());
     stepsFound.addAll(this.galaxyFileLoader.loadAllResources());
 
-    for (GalaxyToolStep s : stepsFound) {
+    for (GalaxyToolModule s : stepsFound) {
 
       getLogger().config("Found step: "
           + s.getName() + " (Galaxy tool, source: " + s.getSource() + ")");

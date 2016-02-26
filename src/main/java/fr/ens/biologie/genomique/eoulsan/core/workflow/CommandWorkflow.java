@@ -64,10 +64,10 @@ import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
+import fr.ens.biologie.genomique.eoulsan.modules.CopyInputDataModule;
+import fr.ens.biologie.genomique.eoulsan.modules.CopyOutputDataModule;
+import fr.ens.biologie.genomique.eoulsan.modules.RequirementInstallerModule;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
-import fr.ens.biologie.genomique.eoulsan.steps.CopyInputDataStep;
-import fr.ens.biologie.genomique.eoulsan.steps.CopyOutputDataStep;
-import fr.ens.biologie.genomique.eoulsan.steps.RequirementInstallerStep;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.Utils;
@@ -328,7 +328,7 @@ public class CommandWorkflow extends AbstractWorkflow {
       // Create an installer step
       final CommandWorkflowStep step = new CommandWorkflowStep(this,
           r.getName() + "install" + installerCount,
-          RequirementInstallerStep.STEP_NAME, Globals.APP_VERSION.toString(),
+          RequirementInstallerModule.STEP_NAME, Globals.APP_VERSION.toString(),
           r.getParameters(), false, false, -1, -1, "");
 
       // Configure the installer step
@@ -445,7 +445,7 @@ public class CommandWorkflow extends AbstractWorkflow {
           throws EoulsanException {
 
     // Set the step name
-    final String stepName = CopyInputDataStep.STEP_NAME;
+    final String stepName = CopyInputDataModule.STEP_NAME;
 
     // Search a non used step id
     final Set<String> stepsIds = new HashSet<>();
@@ -476,15 +476,15 @@ public class CommandWorkflow extends AbstractWorkflow {
 
     // Set parameters
     final Set<Parameter> parameters = new HashSet<>();
-    parameters.add(new Parameter(CopyInputDataStep.FORMAT_PARAMETER,
+    parameters.add(new Parameter(CopyInputDataModule.FORMAT_PARAMETER,
         inputPort.getFormat().getName()));
-    parameters.add(new Parameter(CopyInputDataStep.OUTPUT_COMPRESSION_PARAMETER,
+    parameters.add(new Parameter(CopyInputDataModule.OUTPUT_COMPRESSION_PARAMETER,
         comp.name()));
-    parameters.add(new Parameter(CopyInputDataStep.DESIGN_INPUT_PARAMETER,
+    parameters.add(new Parameter(CopyInputDataModule.DESIGN_INPUT_PARAMETER,
         "" + designOutputport));
     parameters.add(
-        new Parameter(CopyInputDataStep.OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER,
-            CopyInputDataStep.encodeAllowedCompressionsParameterValue(
+        new Parameter(CopyInputDataModule.OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER,
+            CopyInputDataModule.encodeAllowedCompressionsParameterValue(
                 outputCompressionsAllowed)));
 
     // Create step
@@ -511,7 +511,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     final List<CommandWorkflowStep> result = new ArrayList<>();
 
     // Set the step name
-    final String stepName = CopyOutputDataStep.STEP_NAME;
+    final String stepName = CopyOutputDataModule.STEP_NAME;
 
     for (WorkflowOutputPort outputPort : outputPorts) {
 
@@ -531,9 +531,9 @@ public class CommandWorkflow extends AbstractWorkflow {
 
       // Set parameters
       final Set<Parameter> parameters = new HashSet<>();
-      parameters.add(new Parameter(CopyOutputDataStep.PORTS_PARAMETER,
+      parameters.add(new Parameter(CopyOutputDataModule.PORTS_PARAMETER,
           outputPort.getName()));
-      parameters.add(new Parameter(CopyOutputDataStep.FORMATS_PARAMETER,
+      parameters.add(new Parameter(CopyOutputDataModule.FORMATS_PARAMETER,
           outputPort.getFormat().getName()));
 
       // Create step
