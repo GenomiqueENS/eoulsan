@@ -674,7 +674,8 @@ public final class DesignUtils {
 
   /**
    * Get the reference of a sample.
-   * @param experimentSample the experiment sample
+   * @param experiment the experiment
+   * @param sample the sample
    * @return the reference of a sample
    */
   public static String getReference(final Experiment experiment,
