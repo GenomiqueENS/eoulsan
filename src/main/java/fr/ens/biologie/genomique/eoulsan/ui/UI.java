@@ -25,7 +25,6 @@
 package fr.ens.biologie.genomique.eoulsan.ui;
 
 import fr.ens.biologie.genomique.eoulsan.core.workflow.Workflow;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStepObserver;
 
 /**
@@ -35,22 +34,16 @@ import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStepObserver;
  */
 public interface UI extends WorkflowStepObserver {
 
+  /**
+   * Get the name of the UI.
+   * @return the name of the UI
+   */
   String getName();
 
+  /**
+   * Initialize the UI.
+   * @param workflow the worflow
+   */
   void init(Workflow workflow);
-
-  @Override
-  void notifyStepState(WorkflowStep step);
-
-  @Override
-  void notifyStepState(WorkflowStep step, int contextId, String contextName,
-      double progress);
-
-  @Override
-  void notifyStepState(WorkflowStep step, int terminatedTasks,
-      int submittedTasks, double progress);
-
-  @Override
-  void notifyStepState(WorkflowStep step, String note);
 
 }

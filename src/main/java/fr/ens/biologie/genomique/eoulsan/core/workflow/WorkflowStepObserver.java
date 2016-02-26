@@ -63,6 +63,27 @@ public interface WorkflowStepObserver {
   void notifyStepState(WorkflowStep step, String note);
 
   /**
+   * Notify that a task has been submitted.
+   * @param step the step of the submitted task
+   * @param contextId id of the context
+   */
+  void notifyTaskSubmitted(WorkflowStep step, int contextId);
+
+  /**
+   * Notify that a task is running.
+   * @param step the step of the submitted task
+   * @param contextId id of the context
+   */
+  void notifyTaskRunning(WorkflowStep step, int contextId);
+
+  /**
+   * Notify that a task has been done.
+   * @param step the step of the submitted task
+   * @param contextId id of the context
+   */
+  void notifyTaskDone(WorkflowStep step, int contextId);
+
+  /**
    * Notify the success of the workflow.
    * @param success the success of the workflow
    * @param message success message

@@ -142,6 +142,9 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
       this.runningContexts.put(step, contextId);
     }
 
+    // Update the UI
+    this.status.get(step).setTaskRunning(contextId);
+
     getLogger().fine("Scheduler: task #"
         + contextId + " (step #" + step.getNumber() + " " + step.getId()
         + ") is running");
@@ -184,6 +187,9 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
       this.runningContexts.remove(step, contextId);
       this.doneContexts.put(step, contextId);
     }
+
+    // Update the UI
+    this.status.get(step).setTaskDone(contextId);
 
     getLogger().fine("Scheduler: task #"
         + contextId + " (step #" + step.getNumber() + " " + step.getId()
@@ -288,6 +294,9 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
       this.submittedContexts.put(step, context.getId());
       this.contexts.put(context.getId(), step);
     }
+
+    // Update the UI
+    this.status.get(step).setTaskSubmitted(context.getId());
 
     getLogger().fine("Scheduler: task #"
         + context.getId() + " (step #" + step.getNumber() + " " + step.getId()

@@ -236,6 +236,42 @@ public class WorkflowStepStatus {
     progressStatusUpdated();
   }
 
+  /**
+   * Set task submitted.
+   * @param contextId id of the context
+   */
+  public void setTaskSubmitted(final int contextId) {
+
+    // Inform listeners
+    for (WorkflowStepObserver o : this.observers) {
+      o.notifyTaskSubmitted(this.step, contextId);
+    }
+  }
+
+  /**
+   * Set task running.
+   * @param contextId id of the context
+   */
+  public void setTaskRunning(final int contextId) {
+
+    // Inform listeners
+    for (WorkflowStepObserver o : this.observers) {
+      o.notifyTaskRunning(this.step, contextId);
+    }
+  }
+
+  /**
+   * Set task done.
+   * @param contextId id of the context
+   */
+  public void setTaskDone(final int contextId) {
+
+    // Inform listeners
+    for (WorkflowStepObserver o : this.observers) {
+      o.notifyTaskDone(this.step, contextId);
+    }
+  }
+
   //
   // Observers
   //

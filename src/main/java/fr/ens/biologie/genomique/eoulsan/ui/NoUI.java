@@ -74,4 +74,19 @@ public class NoUI extends AbstractUI {
     // Do nothing
   }
 
+  @Override
+  public void notifyTaskSubmitted(WorkflowStep step, int contextId) {
+    // Do nothing
+  }
+
+  @Override
+  public void notifyTaskRunning(WorkflowStep step, int contextId) {
+    // Do nothing
+  }
+
+  @Override
+  public void notifyTaskDone(WorkflowStep step, int contextId) {
+    // Do nothing
+  }
+
 }

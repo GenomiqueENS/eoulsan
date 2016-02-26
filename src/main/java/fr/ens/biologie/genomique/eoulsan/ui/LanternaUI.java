@@ -56,6 +56,12 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
 
   private Workflow workflow;
   private final Map<WorkflowStep, Double> steps = new HashMap<>();
+  private final Map<WorkflowStep, Integer> submittedTasks = new HashMap<>();
+  private final Map<WorkflowStep, Integer> runningTasks = new HashMap<>();
+  private final Map<WorkflowStep, Integer> doneTasks = new HashMap<>();
+  private final Map<WorkflowStep, Double> stepProgress = new HashMap<>();
+  private double globalProgress;
+
   private UnixTerminal terminal;
   private TerminalSize terminalSize;
 
@@ -139,12 +145,11 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
       final int terminatedTasks, final int submittedTasks,
       final double progress) {
 
-    // Do nothing if there is no terminal or if the job is completed
-    if (this.terminal == null || this.jobDone) {
-      return;
-    }
-
     synchronized (this) {
+
+      if (!check(step)) {
+        return;
+      }
 
       if (step == null
           || step.getWorkflow() != this.workflow
@@ -160,29 +165,10 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
         return;
       }
 
-      final double globalProgress = computeGlobalProgress(step, progress);
+      this.stepProgress.put(step, progress);
+      this.globalProgress = computeGlobalProgress(step, progress);
 
-      this.terminal.setCursorVisible(false);
-
-      if (!this.stepLines.containsKey(step)) {
-        this.stepLines.put(step, this.lineCount);
-        this.lineCount++;
-        this.terminal.putCharacter('\n');
-      }
-
-      final int lastLineY = this.terminalSize.getRows() - 1;
-      final int stepLineY =
-          lastLineY - this.lineCount + this.stepLines.get(step);
-
-      // Update step progress
-      showStepProgress(stepLineY, step.getId(), terminatedTasks, submittedTasks,
-          progress, state);
-
-      // Update workflow progress
-      showWorkflowProgress(lastLineY, globalProgress, null, null);
-
-      this.terminal.moveCursor(0, lastLineY);
-      this.terminal.setCursorVisible(true);
+      print(step);
     }
   }
 
@@ -216,9 +202,120 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
 
   }
 
+  @Override
+  public void notifyTaskSubmitted(final WorkflowStep step,
+      final int contextId) {
+
+    synchronized (this) {
+
+      if (!check(step)) {
+        return;
+      }
+
+      notifyTask(step, contextId, this.submittedTasks, 1);
+      print(step);
+    }
+  }
+
+  @Override
+  public void notifyTaskRunning(final WorkflowStep step, final int contextId) {
+
+    synchronized (this) {
+
+      if (!check(step)) {
+        return;
+      }
+
+      notifyTask(step, contextId, this.runningTasks, 1);
+      print(step);
+    }
+  }
+
+  @Override
+  public void notifyTaskDone(final WorkflowStep step, final int contextId) {
+
+    synchronized (this) {
+
+      if (!check(step)) {
+        return;
+      }
+
+      notifyTask(step, contextId, this.runningTasks, -1);
+      notifyTask(step, contextId, this.doneTasks, 1);
+      print(step);
+    }
+  }
+
+  private void notifyTask(final WorkflowStep step, final int contextId,
+      final Map<WorkflowStep, Integer> map, final int diff) {
+
+    if (map.containsKey(step)) {
+
+      map.put(step, map.get(step) + diff);
+    } else {
+      map.put(step, 1);
+    }
+  }
+
   //
   // Update progress
   //
+
+  private boolean check(final WorkflowStep step) {
+
+    // Do nothing if there is no terminal or if the job is completed
+    if (this.terminal == null || this.jobDone) {
+      return false;
+    }
+
+    if (step == null
+        || step.getWorkflow() != this.workflow
+        || !this.steps.containsKey(step)) {
+      return false;
+    }
+
+    final StepState state = step.getState();
+
+    if (!(state == WORKING
+        || state == PARTIALLY_DONE || state == DONE || state == FAILED
+        || state == ABORTED)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private void print(final WorkflowStep step) {
+
+    this.terminal.setCursorVisible(false);
+
+    if (!this.stepLines.containsKey(step)) {
+      this.stepLines.put(step, this.lineCount);
+      this.lineCount++;
+      this.terminal.putCharacter('\n');
+    }
+
+    final int lastLineY = this.terminalSize.getRows() - 1;
+    final int stepLineY = lastLineY - this.lineCount + this.stepLines.get(step);
+
+    final Integer submittedTasks = this.submittedTasks.get(step);
+    final Integer runningTasks = this.runningTasks.get(step);
+    final Integer doneTasks = this.doneTasks.get(step);
+    final Double stepProgress = this.stepProgress.get(step);
+
+    // Update step progress
+    showStepProgress(stepLineY, step.getId(),
+        submittedTasks == null ? 0 : submittedTasks,
+        runningTasks == null ? 0 : runningTasks,
+        doneTasks == null ? 0 : doneTasks,
+        stepProgress == null ? 0.0 : stepProgress, step.getState());
+
+    // Update workflow progress
+    showWorkflowProgress(lastLineY, globalProgress, null, null);
+
+    this.terminal.moveCursor(0, lastLineY);
+    this.terminal.setCursorVisible(true);
+  }
 
   /**
    * Show the progress of a step.
@@ -229,8 +326,8 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
    * @param progress progress of the step
    */
   private void showStepProgress(final int y, final String stepId,
-      final int terminatedTasks, final int submittedTasks,
-      final double progress, final StepState state) {
+      final int submittedTasks, final int runningTasks,
+      final int terminatedTasks, final double progress, final StepState state) {
 
     int x = 0;
     x = putString(x, y, " * Step ");
@@ -242,8 +339,10 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
     case WORKING:
     case PARTIALLY_DONE:
       final String plural = submittedTasks > 1 ? "s" : "";
-      x = putString(x, y, format("%3.0f%%    (%d/%d task%s done)",
-          progress * 100, terminatedTasks, submittedTasks, plural));
+      x = putString(x, y,
+          format("%3.0f%%    (%d/%d task%s done, %d task%s running)",
+              progress * 100, terminatedTasks, submittedTasks, plural,
+              runningTasks, plural));
       break;
 
     case DONE:

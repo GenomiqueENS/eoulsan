@@ -156,6 +156,21 @@ public class BasicUI extends AbstractUI {
     // Do nothing
   }
 
+  @Override
+  public void notifyTaskSubmitted(WorkflowStep step, int contextId) {
+    // Do nothing
+  }
+
+  @Override
+  public void notifyTaskRunning(WorkflowStep step, int contextId) {
+    // Do nothing
+  }
+
+  @Override
+  public void notifyTaskDone(WorkflowStep step, int contextId) {
+    // Do nothing
+  }
+
   //
   // Other methods
   //
@@ -211,5 +226,7 @@ public class BasicUI extends AbstractUI {
 
     return sum / this.steps.size();
   }
+
+
 
 }
