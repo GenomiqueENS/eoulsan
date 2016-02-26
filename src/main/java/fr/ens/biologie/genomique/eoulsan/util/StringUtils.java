@@ -1091,6 +1091,55 @@ public final class StringUtils {
     return sw.toString();
   }
 
+  /**
+   * Escape XML string.
+   * @param s the string to escape
+   * @return an escaped string
+   */
+  public static String xmlEscape(final String s) {
+
+    if (s == null) {
+      return null;
+    }
+
+    final StringBuilder sb = new StringBuilder();
+
+    final int len = s.length();
+
+    for (int i = 0; i < len; i++) {
+
+      final char c = s.charAt(i);
+
+      switch (c) {
+
+      case '"':
+        sb.append("&quot;");
+        break;
+
+      case '\'':
+        sb.append("&apos;");
+        break;
+
+      case '<':
+        sb.append("&lt;");
+        break;
+
+      case '>':
+        sb.append("&gt;");
+        break;
+
+      case '&':
+        sb.append("&amp;");
+        break;
+
+      default:
+        sb.append(c);
+      }
+    }
+
+    return sb.toString();
+  }
+
   //
   // Constructor
   //
