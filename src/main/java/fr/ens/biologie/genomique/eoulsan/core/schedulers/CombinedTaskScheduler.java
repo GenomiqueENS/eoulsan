@@ -319,6 +319,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
       }
 
       if (!this.ownTaskScheduler.isPaused()
+          && this.ownTaskScheduler.getTotalTaskRunningCount() == 0
           && this.ownTaskScheduler.getTotalWaitingCount() == 0) {
 
         this.ownTaskScheduler.pause();

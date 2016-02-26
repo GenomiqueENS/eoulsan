@@ -1080,6 +1080,10 @@ of reads that reject each filter like in local mode.
                 The "diffanaresultsannotation" step now depends of the previous step in the workflow, so this step cannot be executed before the previous has finished.
             </action>
 
+            <action dev="jourdren" type="fix">
+                The standard scheduler was resumed before the end of all the tasks handled by scheduler dedicated of the steps that manage their own parallelization.
+            </action>
+
             <action dev="bauquet" type="add">
                  Add a new format for the Eoulsan design file that allow to define complex design using DESeq2.
             </action>
