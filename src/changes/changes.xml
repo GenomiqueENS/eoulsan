@@ -1060,6 +1060,26 @@ of reads that reject each filter like in local mode.
 
          <release version="2.0-beta1" description="Eoulsan 2.0-beta1 release" date="TBD">
 
+            <action dev="jourdren" type="fix">
+		At the end of an analysis that use Docker, Eoulsan now properly stop the Docker connection and had not to wait several seconds the end of the connection.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                Eoulsan can now execute Sweave code using R >= 3.1.0.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                In the "diffanaresultsannotation" step, user can now define the pattern of the files to convert and the prefix of the output files.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                Fix the workflows in the quickstart guide.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                The "diffanaresultsannotation" step now depends of the previous step in the workflow, so this step cannot be executed before the previous has finished.
+            </action>
+
             <action dev="bauquet" type="add">
                  Add a new format for the Eoulsan design file that allow to define complex design using DESeq2.
             </action>
@@ -1134,18 +1154,6 @@ of reads that reject each filter like in local mode.
 
             <action dev="jourdren" type="update">
                For normalization and differential analysis (using DESeq or DESeq2), Eoulsan now check if the required R execution method is available (R executable, Docker image or Rserve server). 
-            </action>
-
-            <action dev="jourdren" type="fix">
-		At the end of an analysis that use Docker, Eoulsan now properly stop the Docker connection and had not to wait several seconds the end of the connection.
-            </action>
-
-            <action dev="jourdren" type="fix">
-                Eoulsan can now execute Sweave code using R >= 3.1.0.
-            </action>
-
-            <action dev="jourdren" type="fix">
-                In the "diffanaresultsannotation" step, user can now define the pattern of the files to convert and the prefix of the output files.
             </action>
 
             <action dev="jourdren" type="update">

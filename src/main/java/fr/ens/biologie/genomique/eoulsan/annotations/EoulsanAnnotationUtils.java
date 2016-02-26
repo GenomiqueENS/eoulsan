@@ -78,6 +78,16 @@ public class EoulsanAnnotationUtils {
   }
 
   /**
+   * Test if a step contain the @RequiresPreviousStep annotation.
+   * @param step the step to test
+   * @return true if the step contains the annotation
+   */
+  public static boolean isRequiresPreviousStep(final Step step) {
+
+    return isAnnotation(step, RequiresPreviousStep.class);
+  }
+
+  /**
    * Test if a step contains an annotation.
    * @param step the step
    * @param clazz the annotation to test

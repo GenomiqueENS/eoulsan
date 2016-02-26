@@ -47,6 +47,7 @@ import com.google.common.base.Splitter;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
+import fr.ens.biologie.genomique.eoulsan.annotations.RequiresPreviousStep;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
@@ -78,6 +79,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  * @author Laurent Jourdren
  */
 @HadoopCompatible
+@RequiresPreviousStep
 public class DiffanaResultsAnnotationStep extends AbstractStep {
 
   public static final String STEP_NAME = "diffanaresultsannotation";

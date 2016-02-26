@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUtils.isRequiresPreviousStep;
 import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
 import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
 
@@ -658,7 +659,8 @@ public class CommandWorkflow extends AbstractWorkflow {
       }
 
       // If step need no data, the step depends from the previous step
-      if (step.getWorkflowInputPorts().isEmpty() && i > 0) {
+      if (isRequiresPreviousStep(step.getStep())
+          || (step.getWorkflowInputPorts().isEmpty() && i > 0)) {
         step.addDependency(steps.get(i - 1));
       }
 
