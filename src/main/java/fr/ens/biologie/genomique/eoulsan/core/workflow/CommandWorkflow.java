@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUtils.isRequiresAllPreviousSteps;
 import static fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUtils.isRequiresPreviousStep;
 import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
 import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
@@ -612,6 +613,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
     final Map<DataFormat, CommandWorkflowStep> generatorAdded = new HashMap<>();
     searchDependencies(generatorAdded, null);
+    searchAllPreviousStepsDependencies();
   }
 
   /**
@@ -660,6 +662,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
       // If step need no data, the step depends from the previous step
       if (isRequiresPreviousStep(step.getStep())
+          || isRequiresAllPreviousSteps(step.getStep())
           || (step.getWorkflowInputPorts().isEmpty() && i > 0)) {
         step.addDependency(steps.get(i - 1));
       }
@@ -829,6 +832,62 @@ public class CommandWorkflow extends AbstractWorkflow {
               + inputPort.getFormat().getName() + " format) of step \""
               + inputPort.getStep().getId() + "\" is not linked");
         }
+      }
+    }
+  }
+
+  /**
+   * For all the steps with the @RequiresAllPreviousStep annotation add as
+   * dependencies all the previous steps that are not a dependency of another
+   * step.
+   */
+  private void searchAllPreviousStepsDependencies() {
+
+    final List<CommandWorkflowStep> steps = this.steps;
+
+    for (int i = 0; i < steps.size(); i++) {
+
+      final CommandWorkflowStep step = steps.get(i);
+
+      if (isRequiresAllPreviousSteps(step.getStep())) {
+
+        final Set<AbstractWorkflowStep> dependencies = new HashSet<>();
+
+        // Search of all indirect dependencies of the step
+        searchIndirectDependencies(step, dependencies);
+
+        // Remove indirect dependencies of the step to the set of the new
+        // dependencies
+        Set<AbstractWorkflowStep> newDependencies = new HashSet<>();
+        newDependencies.addAll(steps);
+        newDependencies.removeAll(dependencies);
+
+        // Remove steps after the current step
+        for (int j = i; j < steps.size(); j++) {
+          newDependencies.remove(steps.get(j));
+        }
+
+        for (AbstractWorkflowStep s : newDependencies) {
+          step.addDependency(s);
+        }
+      }
+    }
+  }
+
+  /**
+   * Search all the connected dependencies of a step.
+   * @param step the step
+   * @param steps a set with all the dependencies
+   */
+  private void searchIndirectDependencies(final AbstractWorkflowStep step,
+      Set<AbstractWorkflowStep> steps) {
+
+    for (AbstractWorkflowStep s : step.getStepStateObserver()
+        .getRequiredSteps()) {
+
+      if (!steps.contains(s)) {
+        steps.add(s);
+        searchIndirectDependencies(s, steps);
       }
     }
   }
