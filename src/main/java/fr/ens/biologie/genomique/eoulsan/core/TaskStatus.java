@@ -33,7 +33,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Reporter;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public interface StepStatus extends Progress {
+public interface TaskStatus extends Progress {
 
   /**
    * Get the sample counters.

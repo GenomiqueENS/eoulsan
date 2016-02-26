@@ -30,7 +30,7 @@ import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 
 /**
@@ -105,7 +105,7 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
    * @param step step object
    * @throws EoulsanException id an error occurs while creating the step
    */
-  public CommandWorkflowStep(final AbstractWorkflow workflow, final Step step)
+  public CommandWorkflowStep(final AbstractWorkflow workflow, final Module step)
       throws EoulsanException {
 
     this(workflow, step, EMPTY_PARAMETERS);
@@ -118,7 +118,7 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
    * @param parameters parameters of the step
    * @throws EoulsanException id an error occurs while creating the step
    */
-  public CommandWorkflowStep(final AbstractWorkflow workflow, final Step step,
+  public CommandWorkflowStep(final AbstractWorkflow workflow, final Module step,
       final Set<Parameter> parameters) throws EoulsanException {
 
     this(workflow, step.getName(), step.getName(), step.getVersion().toString(),

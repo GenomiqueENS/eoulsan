@@ -101,7 +101,7 @@ public class Executor {
    * @throws EoulsanException if an error occurs while creating of executing
    *           steps
    */
-  public void execute(final List<Step> firstSteps, final List<Step> lastSteps)
+  public void execute(final List<Module> firstSteps, final List<Module> lastSteps)
       throws EoulsanException {
 
     // Add general executor info

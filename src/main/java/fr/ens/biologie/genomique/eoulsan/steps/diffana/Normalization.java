@@ -39,7 +39,7 @@ import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
@@ -86,7 +86,7 @@ public class Normalization {
    * Run normalisation step
    * @throws EoulsanException
    */
-  public void run(final StepContext context, final Data data)
+  public void run(final TaskContext context, final Data data)
       throws EoulsanException {
 
     // Check if there more than one file to launch the analysis
@@ -104,7 +104,7 @@ public class Normalization {
    * @param data data to process
    * @throws EoulsanException if an error occurs while executing the script
    */
-  protected void runRExecutor(final StepContext context, final Data data)
+  protected void runRExecutor(final TaskContext context, final Data data)
       throws EoulsanException {
 
     final boolean saveRScript = context.getSettings().isSaveRscripts();
@@ -237,7 +237,7 @@ public class Normalization {
    * @throws EoulsanException if an error occurs while generate the R script
    */
   protected String generateScript(final Experiment experiment,
-      final StepContext context) throws EoulsanException {
+      final TaskContext context) throws EoulsanException {
 
     final Map<String, List<Integer>> conditionsMap = new HashMap<>();
 

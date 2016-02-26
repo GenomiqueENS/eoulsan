@@ -30,8 +30,8 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import java.io.File;
 import java.util.List;
 
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.DefaultExecutorInterpreter;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.DockerExecutorInterpreter;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.ExecutorInterpreter;
@@ -47,7 +47,7 @@ public class ToolExecutor {
   private static final String STDOUT_SUFFIX = ".galaxytool.out";
   private static final String STDERR_SUFFIX = ".galaxytool.err";
 
-  private final StepContext stepContext;
+  private final TaskContext stepContext;
   private final ToolData toolData;
   private final String commandLine;
 
@@ -82,7 +82,7 @@ public class ToolExecutor {
     // Create the command line
     final List<String> command = ti.createCommandLine(this.commandLine);
 
-    final TaskContext context = (TaskContext) this.stepContext;
+    final TaskContextImpl context = (TaskContextImpl) this.stepContext;
 
     final File executionDirectory = context.getStepOutputDirectory().toFile();
     final File logDirectory = context.getTaskOutputDirectory().toFile();
@@ -113,7 +113,7 @@ public class ToolExecutor {
    * @param toolData the tool data
    * @param commandLine the command line
    */
-  public ToolExecutor(final StepContext context, final ToolData toolData,
+  public ToolExecutor(final TaskContext context, final ToolData toolData,
       final String commandLine) {
 
     checkNotNull(commandLine, "commandLine is null.");

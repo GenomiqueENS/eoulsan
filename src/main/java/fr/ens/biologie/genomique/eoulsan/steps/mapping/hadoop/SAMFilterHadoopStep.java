@@ -45,9 +45,9 @@ import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.SAMInputFormat;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.SAMOutputFormat;
 import fr.ens.biologie.genomique.eoulsan.core.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
-import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.steps.mapping.AbstractSAMFilterStep;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.MapReduceUtils;
@@ -67,8 +67,8 @@ public class SAMFilterHadoopStep extends AbstractSAMFilterStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final TaskContext context,
+      final TaskStatus status) {
 
     // Create configuration object
     final Configuration conf = createConfiguration();

@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
-import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
 
 /**
  * This class define an abstract data format.
@@ -63,7 +63,7 @@ abstract class AbstractDataFormat implements DataFormat {
   }
 
   @Override
-  public Step getGenerator() {
+  public Module getGenerator() {
 
     return null;
   }
@@ -137,7 +137,7 @@ abstract class AbstractDataFormat implements DataFormat {
   @Override
   public String toString() {
 
-    final Step generator = getGenerator();
+    final Module generator = getGenerator();
     final Checker checker = getChecker();
 
     return com.google.common.base.Objects.toStringHelper(this)

@@ -26,7 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.core.schedulers;
 
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContext;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStepResult;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStepStatus;
@@ -43,14 +43,14 @@ public interface TaskScheduler {
    * @param step step related to the contexts
    * @param contexts contexts to execute
    */
-  void submit(WorkflowStep step, Set<TaskContext> contexts);
+  void submit(WorkflowStep step, Set<TaskContextImpl> contexts);
 
   /**
    * Submit a context to execute.
    * @param step step related to the context
    * @param context context to execute
    */
-  void submit(WorkflowStep step, TaskContext context);
+  void submit(WorkflowStep step, TaskContextImpl context);
 
   /**
    * Get the status related to a step.

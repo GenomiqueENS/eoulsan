@@ -513,10 +513,10 @@ public class TokenManager implements Runnable {
    * @param workflowContext the Workflow context
    * @return a set with the context
    */
-  private Set<TaskContext> createContexts(
+  private Set<TaskContextImpl> createContexts(
       final WorkflowContext workflowContext) {
 
-    final Set<TaskContext> result = new HashSet<>();
+    final Set<TaskContextImpl> result = new HashSet<>();
 
     final Set<ImmutableMap<InputPort, Data>> cartesianProductToProcess;
 
@@ -543,7 +543,7 @@ public class TokenManager implements Runnable {
       Map<OutputPort, AbstractData> outputData = createContextOutputData();
       // Create the context object
       result.add(
-          new TaskContext(workflowContext, this.step, inputData, outputData));
+          new TaskContextImpl(workflowContext, this.step, inputData, outputData));
     }
 
     return result;
@@ -554,7 +554,7 @@ public class TokenManager implements Runnable {
    * @param workflowContext the workflow context
    * @return a singleton set with the context
    */
-  private Set<TaskContext> createContextWhenNoInputPortExist(
+  private Set<TaskContextImpl> createContextWhenNoInputPortExist(
       final WorkflowContext workflowContext) {
 
     // Empty input Data for the context
@@ -564,7 +564,7 @@ public class TokenManager implements Runnable {
     Map<OutputPort, AbstractData> outputData = createContextOutputData();
 
     return Collections.singleton(
-        new TaskContext(workflowContext, this.step, inputData, outputData));
+        new TaskContextImpl(workflowContext, this.step, inputData, outputData));
   }
 
   //
@@ -624,7 +624,7 @@ public class TokenManager implements Runnable {
    * Add a failed task.
    * @param failedContext failed task context
    */
-  void addFailedOutputData(final TaskContext failedContext) {
+  void addFailedOutputData(final TaskContextImpl failedContext) {
 
     checkNotNull(failedContext, "failedContext cannot be null");
 
@@ -820,7 +820,7 @@ public class TokenManager implements Runnable {
         }
 
         // Create new contexts to submit
-        final Set<TaskContext> contexts;
+        final Set<TaskContextImpl> contexts;
         synchronized (this) {
 
           // Get the Workflow context

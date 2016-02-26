@@ -52,9 +52,9 @@ import fr.ens.biologie.genomique.eoulsan.bio.SAMComparator;
 import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
 import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
 import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer;
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
-import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
@@ -72,8 +72,8 @@ import fr.ens.biologie.genomique.eoulsan.util.Reporter;
 public class SAMFilterLocalStep extends AbstractSAMFilterStep {
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final TaskContext context,
+      final TaskStatus status) {
 
     // Create the reporter
     final Reporter reporter = new LocalReporter();
@@ -107,8 +107,8 @@ public class SAMFilterLocalStep extends AbstractSAMFilterStep {
    * @param filter alignments filter to use
    * @throws IOException if an error occurs while filtering reads
    */
-  private static void filterSample(final StepContext context,
-      final Reporter reporter, final StepStatus status,
+  private static void filterSample(final TaskContext context,
+      final Reporter reporter, final TaskStatus status,
       final ReadAlignmentsFilter filter) throws IOException {
 
     // Get input and output data

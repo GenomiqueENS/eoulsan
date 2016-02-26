@@ -6,9 +6,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
-import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
@@ -32,8 +32,8 @@ import htsjdk.samtools.SamReaderFactory;
 public class BAM2SAMLocalStep extends AbstractBAM2SAMStep {
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final TaskContext context,
+      final TaskStatus status) {
 
     try {
 

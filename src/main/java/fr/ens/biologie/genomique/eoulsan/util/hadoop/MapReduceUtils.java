@@ -29,7 +29,7 @@ import java.io.IOException;
 import org.apache.hadoop.mapreduce.Job;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 
 /**
  * This class contains utility method to easily manipulate the new Hadoop
@@ -52,7 +52,7 @@ public final class MapReduceUtils {
    */
   public static void submitAndWaitForJob(final Job job,
       final String jobDescription, final int waitTimeInMillis,
-      final StepStatus status, final String counterGroup)
+      final TaskStatus status, final String counterGroup)
           throws EoulsanException {
 
     if (job == null) {

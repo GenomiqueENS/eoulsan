@@ -29,9 +29,9 @@ import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
 import fr.ens.biologie.genomique.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.biologie.genomique.eoulsan.checkers.CheckStore;
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
-import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
@@ -60,8 +60,8 @@ public final class FirstStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final TaskContext context,
+      final TaskStatus status) {
 
     // Clear the CheckStore before the start of the "real" steps
     CheckStore.getCheckStore().clear();

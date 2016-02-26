@@ -61,9 +61,9 @@ import fr.ens.biologie.genomique.eoulsan.core.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
-import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
@@ -101,8 +101,8 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final TaskContext context,
+      final TaskStatus status) {
 
     // Create configuration object
     final Configuration conf = createConfiguration();
@@ -172,7 +172,7 @@ public class FilterAndMapReadsHadoopStep extends AbstractFilterAndMapReadsStep {
   }
 
   private Job createJobConf(final Configuration parentConf,
-      final StepContext context, final String dataName, final DataFile inFile,
+      final TaskContext context, final String dataName, final DataFile inFile,
       final List<String> filenames, final boolean pairedEnd,
       final DataFormat inputFormat, final FastqFormat fastqFormat,
       final DataFile genomeIndexFile, final DataFile outFile)

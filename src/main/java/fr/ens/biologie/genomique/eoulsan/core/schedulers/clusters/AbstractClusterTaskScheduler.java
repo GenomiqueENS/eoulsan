@@ -46,7 +46,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Main;
 import fr.ens.biologie.genomique.eoulsan.actions.ClusterTaskAction;
 import fr.ens.biologie.genomique.eoulsan.core.schedulers.AbstractTaskScheduler;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContext;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskRunner;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
@@ -100,7 +100,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
    */
   private final class TaskThread extends Thread {
 
-    private final TaskContext context;
+    private final TaskContextImpl context;
     private final File taskDir;
     private final String taskPrefix;
     private String jobId;
@@ -194,7 +194,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
         beforeExecuteTask(this.context);
 
         final File taskFile =
-            ((TaskContext) this.context).getTaskOutputDirectory().toFile();
+            ((TaskContextImpl) this.context).getTaskOutputDirectory().toFile();
         final int requiredMemory = getRequiredMemory();
         final int requiredProcessors =
             this.context.getCurrentStep().getRequiredProcessors();
@@ -298,7 +298,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
      * Constructor.
      * @param context context to execute
      */
-    TaskThread(final TaskContext context) {
+    TaskThread(final TaskContextImpl context) {
 
       checkNotNull(context, "context argument cannot be null");
 
@@ -313,7 +313,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
   //
 
   @Override
-  public void submit(final WorkflowStep step, final TaskContext context) {
+  public void submit(final WorkflowStep step, final TaskContextImpl context) {
 
     // Call to the super method
     super.submit(step, context);

@@ -38,9 +38,9 @@ import java.util.Set;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.annotations.Terminal;
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
-import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.AbstractWorkflow;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowContext;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
@@ -82,8 +82,8 @@ public abstract class UploadStep extends AbstractStep {
   //
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final TaskContext context,
+      final TaskStatus status) {
 
     final StringBuilder log = new StringBuilder();
 
@@ -260,7 +260,7 @@ public abstract class UploadStep extends AbstractStep {
    * @throws IOException
    */
   private Map<DataFile, DataFile> findDataFilesInWorkflow(final Sample sample,
-      final StepContext context) throws IOException {
+      final TaskContext context) throws IOException {
 
     final Map<DataFile, DataFile> result = new HashMap<>();
 
@@ -297,7 +297,7 @@ public abstract class UploadStep extends AbstractStep {
     }
   }
 
-  private void reWriteDesign(final StepContext context,
+  private void reWriteDesign(final TaskContext context,
       final Map<DataFile, DataFile> filesToCopy) throws IOException {
 
     final DataFormatRegistry registry = DataFormatRegistry.getInstance();
@@ -381,7 +381,7 @@ public abstract class UploadStep extends AbstractStep {
    * @return the temporary design file
    * @throws IOException if an error occurs while writing the design file
    */
-  private File writeTempDesignFile(final StepContext context,
+  private File writeTempDesignFile(final TaskContext context,
       final Design design) throws IOException {
 
     final File result = context.getRuntime().createTempFile("design-", ".txt");

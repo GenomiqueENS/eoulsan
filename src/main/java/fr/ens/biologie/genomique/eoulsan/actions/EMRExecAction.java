@@ -46,7 +46,7 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Main;
 import fr.ens.biologie.genomique.eoulsan.core.Executor;
 import fr.ens.biologie.genomique.eoulsan.core.ExecutorArguments;
-import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.steps.TerminalStep;
 import fr.ens.biologie.genomique.eoulsan.steps.mgmt.AWSElasticMapReduceExecStep;
@@ -222,7 +222,7 @@ public class EMRExecAction extends AbstractAction {
       final Executor e = new Executor(arguments);
 
       // Launch executor
-      e.execute(Lists.newArrayList((Step) new LocalUploadStep(s3Path),
+      e.execute(Lists.newArrayList((Module) new LocalUploadStep(s3Path),
           new AWSElasticMapReduceExecStep(), new TerminalStep()), null);
 
     } catch (FileNotFoundException e) {

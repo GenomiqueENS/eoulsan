@@ -38,9 +38,9 @@ import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
 import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter;
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
-import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep;
@@ -57,8 +57,8 @@ import fr.ens.biologie.genomique.eoulsan.util.Reporter;
 public class ExpressionLocalStep extends AbstractExpressionStep {
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final TaskContext context,
+      final TaskStatus status) {
 
     try {
 
@@ -123,7 +123,7 @@ public class ExpressionLocalStep extends AbstractExpressionStep {
 
   }
 
-  private void count(final StepContext context, final ExpressionCounter counter,
+  private void count(final TaskContext context, final ExpressionCounter counter,
       final DataFile annotationFile, final DataFile alignmentFile,
       final DataFile expressionFile, final DataFile genomeDescFile,
       final Reporter reporter)

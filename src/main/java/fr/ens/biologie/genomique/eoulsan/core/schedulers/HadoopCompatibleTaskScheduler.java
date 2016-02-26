@@ -55,7 +55,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContext;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskRunner;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskSerializationUtils;
@@ -81,7 +81,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
   private final class TaskThread extends Thread {
 
     private static final String SUBMIT_FILE_NAME = "submitfile";
-    private final TaskContext context;
+    private final TaskContextImpl context;
     private final Configuration conf;
     private final DataFile taskDir;
     private final String taskPrefix;
@@ -312,7 +312,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
      * Constructor.
      * @param context context to execute
      */
-    TaskThread(final Configuration conf, final TaskContext context) {
+    TaskThread(final Configuration conf, final TaskContextImpl context) {
 
       checkNotNull(conf, "conf argument cannot be null");
       checkNotNull(context, "context argument cannot be null");
@@ -399,7 +399,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
   //
 
   @Override
-  public void submit(final WorkflowStep step, final TaskContext context) {
+  public void submit(final WorkflowStep step, final TaskContextImpl context) {
 
     // Call to the super method
     super.submit(step, context);

@@ -56,7 +56,7 @@ public class TaskResult implements StepResult, Serializable {
 
   private static final long serialVersionUID = -1698693204391020077L;
 
-  private final TaskContext context;
+  private final TaskContextImpl context;
 
   private final Date startTime;
   private final Date endTime;
@@ -68,7 +68,7 @@ public class TaskResult implements StepResult, Serializable {
   private final String taskMessage;
   private final String taskDescription;
 
-  TaskContext getContext() {
+  TaskContextImpl getContext() {
     return this.context;
   }
 
@@ -204,7 +204,7 @@ public class TaskResult implements StepResult, Serializable {
   // Constructor
   //
 
-  TaskResult(final TaskContext context, final Date startTime,
+  TaskResult(final TaskContextImpl context, final Date startTime,
       final Date endTime, final long duration, final String contextMessage,
       final String contextDescription, final Map<String, Long> counters,
       final boolean success) {
@@ -228,7 +228,7 @@ public class TaskResult implements StepResult, Serializable {
     this.errorMessage = null;
   }
 
-  public TaskResult(final TaskContext context, final Date startTime,
+  public TaskResult(final TaskContextImpl context, final Date startTime,
       final Date endTime, final long duration, final Throwable exception,
       final String errorMessage) {
 

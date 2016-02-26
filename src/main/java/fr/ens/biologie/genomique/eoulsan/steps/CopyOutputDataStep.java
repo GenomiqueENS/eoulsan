@@ -41,9 +41,9 @@ import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
-import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.DataUtils;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -126,8 +126,8 @@ public class CopyOutputDataStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final TaskContext context,
+      final TaskStatus status) {
 
     try {
 
@@ -181,7 +181,7 @@ public class CopyOutputDataStep extends AbstractStep {
    * @param outData output data
    * @throws IOException if an error occurs while copying
    */
-  private void copyData(final StepContext context, final Data inData,
+  private void copyData(final TaskContext context, final Data inData,
       final Data outData) throws IOException {
 
     final DataFile outputDir = context.getStepOutputDirectory();

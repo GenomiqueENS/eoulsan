@@ -48,7 +48,7 @@ import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.steps.CheckerStep;
@@ -168,7 +168,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * Get the underlying Step object.
    * @return the Step object
    */
-  public Step getStep() {
+  public Module getStep() {
 
     if (this.stepName == null) {
       return null;
@@ -325,7 +325,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.skip = skipped;
   }
 
-  protected void registerInputAndOutputPorts(final Step step) {
+  protected void registerInputAndOutputPorts(final Module step) {
 
     checkNotNull(step, "step cannot be null");
 
@@ -402,7 +402,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * @return the working directory of the step
    */
   private static DataFile defineOutputDirectory(final AbstractWorkflow workflow,
-      final Step step, final boolean copyResultsToOutput) {
+      final Module step, final boolean copyResultsToOutput) {
 
     checkNotNull(workflow, "workflow argument cannot be null");
     checkNotNull(step, "step argument cannot be null");
@@ -463,7 +463,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       getLogger().info("Configure "
           + getId() + " step with step parameters: " + getParameters());
 
-      final Step step = getStep();
+      final Module step = getStep();
       if (getType() == StepType.STANDARD_STEP
           || getType() == StepType.DESIGN_STEP || isGenerator(step)) {
 
@@ -536,7 +536,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * @param step The step
    * @return a ParallelizationMode that cannot be null
    */
-  private static ParallelizationMode getParallelizationMode(final Step step) {
+  private static ParallelizationMode getParallelizationMode(final Module step) {
 
     if (step != null) {
       final ParallelizationMode mode = step.getParallelizationMode();
@@ -588,7 +588,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     case CHECKER_STEP:
 
       // Create and register checker step
-      final Step checkerStep = new CheckerStep();
+      final Module checkerStep = new CheckerStep();
       StepInstances.getInstance().registerStep(this, checkerStep);
 
       this.stepName = checkerStep.getName();
@@ -603,9 +603,9 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     case DESIGN_STEP:
 
       // Create and register checker step
-      final Step checkerStep2 =
+      final Module checkerStep2 =
           StepInstances.getInstance().getStep(this.workflow.getCheckerStep());
-      final Step designStep =
+      final Module designStep =
           new DesignStep(this.workflow.getDesign(), (CheckerStep) checkerStep2);
       StepInstances.getInstance().registerStep(this, designStep);
 
@@ -621,7 +621,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     default:
 
-      final Step fakeStep = new FakeStep();
+      final Module fakeStep = new FakeStep();
       StepInstances.getInstance().registerStep(this, fakeStep);
 
       this.stepName = type.name();
@@ -653,7 +653,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     checkNotNull(workflow, "Workflow argument cannot be null");
     checkNotNull(format, "Format argument cannot be null");
 
-    final Step generator = format.getGenerator();
+    final Module generator = format.getGenerator();
     StepInstances.getInstance().registerStep(this, generator);
 
     checkNotNull(generator, "The generator step is null");
@@ -724,7 +724,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.dataProductConfiguration = dataProduct;
 
     // Load Step instance
-    final Step step =
+    final Module step =
         StepInstances.getInstance().getStep(this, stepName, stepVersion);
     this.type = isGenerator(step) ? GENERATOR_STEP : STANDARD_STEP;
     this.mode = EoulsanMode.getEoulsanMode(step.getClass());
@@ -744,7 +744,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   }
 
   protected AbstractWorkflowStep(final AbstractWorkflow workflow,
-      final String id, final Step step, final boolean skip,
+      final String id, final Module step, final boolean skip,
       final boolean copyResultsToOutput, final Set<Parameter> parameters)
           throws EoulsanException {
 

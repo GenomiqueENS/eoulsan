@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.base.Preconditions;
 
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
-import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.util.Reporter;
 
 /**
@@ -45,9 +45,9 @@ import fr.ens.biologie.genomique.eoulsan.util.Reporter;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class TaskStatus implements StepStatus {
+public class TaskStatusImpl implements TaskStatus {
 
-  private final TaskContext context;
+  private final TaskContextImpl context;
   private final WorkflowStepStatus status;
 
   private String message;
@@ -303,7 +303,7 @@ public class TaskStatus implements StepStatus {
    * @param taskContext the task context object
    * @param status the status object
    */
-  TaskStatus(final TaskContext taskContext, final WorkflowStepStatus status) {
+  TaskStatusImpl(final TaskContextImpl taskContext, final WorkflowStepStatus status) {
 
     Preconditions.checkNotNull(taskContext, "context cannot be null");
 

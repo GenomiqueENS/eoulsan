@@ -30,7 +30,7 @@ import java.util.Queue;
 
 import com.google.common.collect.Queues;
 
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContext;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
 
@@ -43,14 +43,14 @@ public class MonoThreadTaskScheduler extends AbstractTaskScheduler
     implements Runnable {
 
   private static final int SLEEP_TIME_IN_MS = 100;
-  private final Queue<TaskContext> queue = Queues.newLinkedBlockingQueue();
+  private final Queue<TaskContextImpl> queue = Queues.newLinkedBlockingQueue();
 
   //
   // TaskExecutor methods
   //
 
   @Override
-  public void submit(final WorkflowStep step, final TaskContext context) {
+  public void submit(final WorkflowStep step, final TaskContextImpl context) {
 
     // Call to the super method
     super.submit(step, context);
@@ -80,7 +80,7 @@ public class MonoThreadTaskScheduler extends AbstractTaskScheduler
       if (!this.isPaused() && !this.queue.isEmpty()) {
 
         // Get context to execute
-        final TaskContext context = this.queue.remove();
+        final TaskContextImpl context = this.queue.remove();
 
         // Do nothing if scheduler is stopped
         if (isStopped()) {

@@ -27,7 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.data;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
-import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.splitermergers.Merger;
 import fr.ens.biologie.genomique.eoulsan.splitermergers.Splitter;
 
@@ -142,7 +142,7 @@ public interface DataFormat {
    * @return the Step needed to generated the DataType or null if no Step is
    *         available for this task
    */
-  Step getGenerator();
+  Module getGenerator();
 
   /**
    * Get the checker needed to check data of this type.

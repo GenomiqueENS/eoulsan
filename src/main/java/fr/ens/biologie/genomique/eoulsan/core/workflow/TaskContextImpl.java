@@ -49,7 +49,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.core.InputPort;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPort;
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
@@ -60,7 +60,7 @@ import fr.ens.biologie.genomique.eoulsan.util.ClassLoaderObjectInputStream;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class TaskContext implements StepContext, Serializable {
+public class TaskContextImpl implements TaskContext, Serializable {
 
   /** Serialization version UID. */
   private static final long serialVersionUID = 8288158811122533646L;
@@ -532,7 +532,7 @@ public class TaskContext implements StepContext, Serializable {
    * @param file input DataFile
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskContext deserialize(final File file) throws IOException {
+  public static TaskContextImpl deserialize(final File file) throws IOException {
 
     checkNotNull(file, "file argument cannot be null");
 
@@ -547,7 +547,7 @@ public class TaskContext implements StepContext, Serializable {
    * @param file input DataFile
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskContext deserialize(final DataFile file)
+  public static TaskContextImpl deserialize(final DataFile file)
       throws IOException {
 
     checkNotNull(file, "file argument cannot be null");
@@ -563,7 +563,7 @@ public class TaskContext implements StepContext, Serializable {
    * @param in input stream
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskContext deserialize(final InputStream in)
+  public static TaskContextImpl deserialize(final InputStream in)
       throws IOException {
 
     checkNotNull(in, "in argument cannot be null");
@@ -571,7 +571,7 @@ public class TaskContext implements StepContext, Serializable {
     try (final ObjectInputStream ois = new ClassLoaderObjectInputStream(in)) {
 
       // Read TaskContext object
-      final TaskContext result = (TaskContext) ois.readObject();
+      final TaskContextImpl result = (TaskContextImpl) ois.readObject();
 
       // Read Settings object
       final Settings settings = (Settings) ois.readObject();
@@ -684,14 +684,14 @@ public class TaskContext implements StepContext, Serializable {
    * Constructor.
    * @param step step related to the context
    */
-  TaskContext(final WorkflowContext workflowContext,
+  TaskContextImpl(final WorkflowContext workflowContext,
       final AbstractWorkflowStep step, final Map<InputPort, Data> inputData,
       final Map<OutputPort, AbstractData> outputData) {
 
     checkNotNull(workflowContext, "workflow context cannot be null");
     checkNotNull(step, "step cannot be null");
 
-    synchronized (TaskContext.class) {
+    synchronized (TaskContextImpl.class) {
       this.id = (++instanceCounter);
     }
     this.contextName = "context" + this.id;

@@ -33,7 +33,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public interface StepContext extends StepConfigurationContext {
+public interface TaskContext extends StepConfigurationContext {
 
   /**
    * Get the context name.

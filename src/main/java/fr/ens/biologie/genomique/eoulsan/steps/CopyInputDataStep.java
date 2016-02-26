@@ -49,9 +49,9 @@ import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
-import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.DataUtils;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
@@ -156,8 +156,8 @@ public class CopyInputDataStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final TaskContext context,
+      final TaskStatus status) {
 
     try {
 
@@ -232,7 +232,7 @@ public class CopyInputDataStep extends AbstractStep {
    * @throws IOException if an error occurs while copying
    */
   private void copyData(final Data inData, final Data outData,
-      final StepContext context) throws IOException {
+      final TaskContext context) throws IOException {
 
     if (inData.getFormat().getMaxFilesCount() == 1) {
 
@@ -284,7 +284,7 @@ public class CopyInputDataStep extends AbstractStep {
    */
   private final DataFile copyFile(final DataFile inputFile, final int fileIndex,
       final String outDataName, final int outDataPart,
-      final StepContext context) throws IOException {
+      final TaskContext context) throws IOException {
 
     final String stepId = context.getCurrentStep().getId();
     final DataFile outputDir = context.getStepOutputDirectory();

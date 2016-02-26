@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 
 /**
@@ -38,11 +38,11 @@ public final class ContextUtils {
    * Get the job directory.
    * @return Returns the job directory
    */
-  public static DataFile getJobDirectory(final StepContext context) {
+  public static DataFile getJobDirectory(final TaskContext context) {
 
-    if (context instanceof TaskContext) {
+    if (context instanceof TaskContextImpl) {
 
-      return ((TaskContext) context).getJobDirectory();
+      return ((TaskContextImpl) context).getJobDirectory();
     } else if (context instanceof WorkflowStepConfigurationContext) {
 
       return ((WorkflowStepConfigurationContext) context).getJobDirectory();
@@ -55,11 +55,11 @@ public final class ContextUtils {
    * Get the application jar file.
    * @return Returns the jar file
    */
-  public static DataFile getJarPathname(final StepContext context) {
+  public static DataFile getJarPathname(final TaskContext context) {
 
-    if (context instanceof TaskContext) {
+    if (context instanceof TaskContextImpl) {
 
-      return ((TaskContext) context).getJarPathname();
+      return ((TaskContextImpl) context).getJarPathname();
     } else if (context instanceof WorkflowStepConfigurationContext) {
 
       return ((WorkflowStepConfigurationContext) context).getJarPathname();
@@ -72,11 +72,11 @@ public final class ContextUtils {
    * Get the local working directory.
    * @return Returns the local working directory
    */
-  public static DataFile getLocalWorkingDirectory(final StepContext context) {
+  public static DataFile getLocalWorkingDirectory(final TaskContext context) {
 
-    if (context instanceof TaskContext) {
+    if (context instanceof TaskContextImpl) {
 
-      return ((TaskContext) context).getLocalWorkingPathname();
+      return ((TaskContextImpl) context).getLocalWorkingPathname();
     } else if (context instanceof WorkflowStepConfigurationContext) {
 
       return ((WorkflowStepConfigurationContext) context)
@@ -90,11 +90,11 @@ public final class ContextUtils {
    * Get the Hadoop working directory.
    * @return Returns the Hadoop working directory
    */
-  public static DataFile getHadoopWorkingDirectory(final StepContext context) {
+  public static DataFile getHadoopWorkingDirectory(final TaskContext context) {
 
-    if (context instanceof TaskContext) {
+    if (context instanceof TaskContextImpl) {
 
-      return ((TaskContext) context).getHadoopWorkingPathname();
+      return ((TaskContextImpl) context).getHadoopWorkingPathname();
     } else if (context instanceof WorkflowStepConfigurationContext) {
 
       return ((WorkflowStepConfigurationContext) context)
@@ -108,11 +108,11 @@ public final class ContextUtils {
    * Get the task output directory.
    * @return Returns the task output directory
    */
-  public static DataFile getTaskOutputDirectory(final StepContext context) {
+  public static DataFile getTaskOutputDirectory(final TaskContext context) {
 
-    if (context instanceof TaskContext) {
+    if (context instanceof TaskContextImpl) {
 
-      return ((TaskContext) context).getTaskOutputDirectory();
+      return ((TaskContextImpl) context).getTaskOutputDirectory();
     } else if (context instanceof WorkflowStepConfigurationContext) {
 
       return ((WorkflowStepConfigurationContext) context)

@@ -56,14 +56,14 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class StepRegistry {
+public class ModuleRegistry {
 
   private static final String RESOURCE_PREFIX =
       "META-INF/services/registrytoolshed/";
   private static final String GALAXY_TOOL_SUBDIR = "galaxytools";
 
-  private static StepRegistry instance;
-  private final StepService service;
+  private static ModuleRegistry instance;
+  private final ModuleService service;
   private final GalaxyToolStepClassPathLoader galaxyClassPathLoader;
   private final GalaxyToolStepFileResourceLoader galaxyFileLoader;
 
@@ -180,10 +180,10 @@ public class StepRegistry {
    * Retrieve the singleton static instance of StepRegistry.
    * @return A StepRegistry instance
    */
-  public static synchronized StepRegistry getInstance() {
+  public static synchronized ModuleRegistry getInstance() {
 
     if (instance == null) {
-      instance = new StepRegistry();
+      instance = new ModuleRegistry();
 
       // Load the available steps
       instance.reload();
@@ -202,9 +202,9 @@ public class StepRegistry {
    * @param version version of the required step
    * @return a step object or null if the requested step has been not found
    */
-  public Step loadStep(final String stepName, final String version) {
+  public Module loadStep(final String stepName, final String version) {
 
-    final List<Step> stepsFound = new ArrayList<>();
+    final List<Module> stepsFound = new ArrayList<>();
 
     stepsFound.addAll(this.service.newServices(stepName));
     stepsFound.addAll(this.galaxyClassPathLoader.loadResources(stepName));
@@ -257,17 +257,17 @@ public class StepRegistry {
    * @param steps steps to filter
    * @param version required version
    */
-  private void filterSteps(final List<Step> steps, final String version) {
+  private void filterSteps(final List<Module> steps, final String version) {
 
     // Do no filter if no version has been specified
     if (steps == null || "".equals(version)) {
       return;
     }
 
-    final List<Step> toRemove = new ArrayList<>();
+    final List<Module> toRemove = new ArrayList<>();
 
     // For each step
-    for (Step step : steps) {
+    for (Module step : steps) {
 
       // Get the version
       Version stepVersion = step.getVersion();
@@ -291,7 +291,7 @@ public class StepRegistry {
    * Sort the steps.
    * @param steps list of step to sort
    */
-  private void sortSteps(final List<Step> steps) {
+  private void sortSteps(final List<Module> steps) {
 
     // Do nothing if the list of step is null
     if (steps == null) {
@@ -299,10 +299,10 @@ public class StepRegistry {
     }
 
     // Sort the steps
-    Collections.sort(steps, new Comparator<Step>() {
+    Collections.sort(steps, new Comparator<Module>() {
 
       @Override
-      public int compare(final Step s1, final Step s2) {
+      public int compare(final Module s1, final Module s2) {
 
         if (s1 == null) {
           return 1;
@@ -321,7 +321,7 @@ public class StepRegistry {
         return compareStepVersions(s1, s2);
       }
 
-      private int compareStepModes(final Step s1, final Step s2) {
+      private int compareStepModes(final Module s1, final Module s2) {
 
         final EoulsanMode mode1 = EoulsanMode.getEoulsanMode(s1.getClass());
         final EoulsanMode mode2 = EoulsanMode.getEoulsanMode(s2.getClass());
@@ -355,7 +355,7 @@ public class StepRegistry {
         return 0;
       }
 
-      private int compareStepVersions(final Step s1, final Step s2) {
+      private int compareStepVersions(final Module s1, final Module s2) {
 
         final Version v1 = s1.getVersion();
         final Version v2 = s2.getVersion();
@@ -382,9 +382,9 @@ public class StepRegistry {
   /**
    * Private constructor.
    */
-  private StepRegistry() {
+  private ModuleRegistry() {
 
-    this.service = new StepService();
+    this.service = new ModuleService();
     this.galaxyClassPathLoader = new GalaxyToolStepClassPathLoader();
     this.galaxyFileLoader =
         new GalaxyToolStepFileResourceLoader(getSettings().getGalaxyToolPath());

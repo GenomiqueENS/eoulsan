@@ -55,7 +55,7 @@ import com.google.common.collect.Sets;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -120,7 +120,7 @@ public class GalaxyToolInterpreter {
      * @param context Step context
      * @return a DataFile object
      */
-    public DataFile getInputDataFile(final StepContext context) {
+    public DataFile getInputDataFile(final TaskContext context) {
 
       final Data data = context.getInputData(this.portName);
 
@@ -133,7 +133,7 @@ public class GalaxyToolInterpreter {
      * @param context Step context
      * @return a DataFile object
      */
-    public DataFile getOutputDataFile(final StepContext context,
+    public DataFile getOutputDataFile(final TaskContext context,
         final Data inData) {
 
       final Data data = context.getOutputData(this.portName, inData);
@@ -291,7 +291,7 @@ public class GalaxyToolInterpreter {
    * @return the string
    * @throws EoulsanException the Eoulsan exception
    */
-  public ToolExecutorResult execute(final StepContext context)
+  public ToolExecutorResult execute(final TaskContext context)
       throws EoulsanException {
 
     checkState(!isExecuted,
@@ -441,7 +441,7 @@ public class GalaxyToolInterpreter {
    * @return true the data name is a sample name
    */
   private boolean isDataNameInDesign(final Data data,
-      final StepContext context) {
+      final TaskContext context) {
 
     final String dataName = data.getName();
 

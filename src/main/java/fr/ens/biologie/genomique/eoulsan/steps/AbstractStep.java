@@ -36,7 +36,7 @@ import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
@@ -46,7 +46,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public abstract class AbstractStep implements Step {
+public abstract class AbstractStep implements Module {
 
   @Override
   public String getDescription() {

@@ -53,8 +53,8 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Main;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.core.Step;
-import fr.ens.biologie.genomique.eoulsan.core.StepRegistry;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
+import fr.ens.biologie.genomique.eoulsan.core.ModuleRegistry;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
@@ -68,9 +68,9 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  */
 public class TaskRunner {
 
-  private final TaskContext context;
-  private final Step step;
-  private final TaskStatus status;
+  private final TaskContextImpl context;
+  private final Module step;
+  private final TaskStatusImpl status;
   private volatile StepResult result;
   private boolean isTokensSent;
   private boolean forceStepInstanceReuse;
@@ -143,7 +143,7 @@ public class TaskRunner {
         getLogger().info("Start of task #" + TaskRunner.this.context.getId());
         final long startTime = System.currentTimeMillis();
 
-        final Step stepInstance;
+        final Module stepInstance;
         final StepType stepType =
             TaskRunner.this.context.getWorkflowStep().getType();
         final boolean reuseAnnot = isReuseStepInstance(TaskRunner.this.step);
@@ -169,7 +169,7 @@ public class TaskRunner {
             final String stepName = TaskRunner.this.step.getName();
             final Version stepVersion = TaskRunner.this.step.getVersion();
 
-            stepInstance = StepRegistry.getInstance().loadStep(stepName,
+            stepInstance = ModuleRegistry.getInstance().loadStep(stepName,
                 stepVersion.toString());
 
             // Log step parameters
@@ -449,7 +449,7 @@ public class TaskRunner {
    * @param exception exception
    * @return a new TaskResult object
    */
-  public static TaskResult createStepResult(final TaskContext taskContext,
+  public static TaskResult createStepResult(final TaskContextImpl taskContext,
       final Throwable exception) {
 
     return createStepResult(taskContext, exception,
@@ -463,7 +463,7 @@ public class TaskRunner {
    * @param errorMessage error message
    * @return a new TaskResult object
    */
-  public static TaskResult createStepResult(final TaskContext taskContext,
+  public static TaskResult createStepResult(final TaskContextImpl taskContext,
       final Throwable exception, final String errorMessage) {
 
     final TaskRunner runner = new TaskRunner(taskContext);
@@ -480,7 +480,7 @@ public class TaskRunner {
    * @param taskContext task context
    * @param taskResult task result
    */
-  public static void sendTokens(final TaskContext taskContext,
+  public static void sendTokens(final TaskContextImpl taskContext,
       final TaskResult taskResult) {
 
     new TaskRunner(taskContext, taskResult).sendTokens();
@@ -494,7 +494,7 @@ public class TaskRunner {
    * Constructor.
    * @param taskContext task context to execute
    */
-  public TaskRunner(final TaskContext taskContext) {
+  public TaskRunner(final TaskContextImpl taskContext) {
 
     this(taskContext, (WorkflowStepStatus) null);
   }
@@ -504,7 +504,7 @@ public class TaskRunner {
    * @param taskContext task context to execute
    * @param stepStatus step status
    */
-  public TaskRunner(final TaskContext taskContext,
+  public TaskRunner(final TaskContextImpl taskContext,
       final WorkflowStepStatus stepStatus) {
 
     checkNotNull(taskContext, "taskContext cannot be null");
@@ -513,7 +513,7 @@ public class TaskRunner {
     this.step =
         StepInstances.getInstance().getStep(taskContext.getCurrentStep());
 
-    this.status = new TaskStatus(taskContext, stepStatus);
+    this.status = new TaskStatusImpl(taskContext, stepStatus);
 
     // Set the task context name for the status
     this.context.setContextName(createDefaultContextName());
@@ -524,7 +524,7 @@ public class TaskRunner {
    * @param taskContext task context
    * @param taskResult task result
    */
-  private TaskRunner(final TaskContext taskContext,
+  private TaskRunner(final TaskContextImpl taskContext,
       final TaskResult taskResult) {
 
     checkNotNull(taskContext, "taskContext cannot be null");

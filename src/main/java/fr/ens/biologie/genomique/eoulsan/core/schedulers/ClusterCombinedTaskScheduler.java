@@ -33,7 +33,7 @@ import java.util.Set;
 import fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode;
 import fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters.ClusterTaskScheduler;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.AbstractWorkflowStep;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContext;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStepResult;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStepStatus;
@@ -53,20 +53,20 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   private volatile boolean isStopped;
 
   @Override
-  public void submit(final WorkflowStep step, final Set<TaskContext> contexts) {
+  public void submit(final WorkflowStep step, final Set<TaskContextImpl> contexts) {
 
     checkNotNull(contexts, "contexts argument cannot be null");
 
     // Check execution state
     checkExecutionState();
 
-    for (TaskContext context : contexts) {
+    for (TaskContextImpl context : contexts) {
       submit(step, context);
     }
   }
 
   @Override
-  public void submit(final WorkflowStep step, final TaskContext context) {
+  public void submit(final WorkflowStep step, final TaskContextImpl context) {
 
     checkNotNull(step, "step argument cannot be null");
     checkNotNull(context, "context argument cannot be null");

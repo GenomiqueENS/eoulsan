@@ -53,7 +53,7 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.core.ExecutorArguments;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.CommandWorkflowModel.StepPort;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -217,11 +217,11 @@ public class CommandWorkflow extends AbstractWorkflow {
    * @param firstSteps list of steps to add
    * @throws EoulsanException if an error occurs while adding a step
    */
-  private void addFirstSteps(final List<Step> firstSteps)
+  private void addFirstSteps(final List<Module> firstSteps)
       throws EoulsanException {
 
     if (firstSteps != null) {
-      for (Step step : Utils.listWithoutNull(firstSteps)) {
+      for (Module step : Utils.listWithoutNull(firstSteps)) {
 
         addStep(0, new CommandWorkflowStep(this, step));
       }
@@ -245,13 +245,13 @@ public class CommandWorkflow extends AbstractWorkflow {
    * @param endSteps list of steps to add
    * @throws EoulsanException if an error occurs while adding a step
    */
-  private void addEndSteps(final List<Step> endSteps) throws EoulsanException {
+  private void addEndSteps(final List<Module> endSteps) throws EoulsanException {
 
     if (endSteps == null) {
       return;
     }
 
-    for (Step step : Utils.listWithoutNull(endSteps)) {
+    for (Module step : Utils.listWithoutNull(endSteps)) {
 
       addStep(new CommandWorkflowStep(this, step));
     }
@@ -1130,8 +1130,8 @@ public class CommandWorkflow extends AbstractWorkflow {
    * @throws EoulsanException
    */
   public CommandWorkflow(final ExecutorArguments executionArguments,
-      final CommandWorkflowModel workflowCommand, final List<Step> firstSteps,
-      final List<Step> endSteps, final Design design) throws EoulsanException {
+      final CommandWorkflowModel workflowCommand, final List<Module> firstSteps,
+      final List<Module> endSteps, final Design design) throws EoulsanException {
 
     super(executionArguments, design);
 

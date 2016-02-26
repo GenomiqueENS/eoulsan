@@ -65,9 +65,9 @@ import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
-import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
@@ -123,8 +123,8 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final TaskContext context,
+      final TaskStatus status) {
 
     // Create configuration object
     final Configuration conf = createConfiguration();
@@ -205,7 +205,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
    * @throws IOException if an error occurs while creating the job
    */
   private Job createJobConf(final Configuration parentConf,
-      final StepContext context, final String dataName,
+      final TaskContext context, final String dataName,
       final DataFile readsFile, final boolean pairedEnd,
       final DataFormat inputFormat, final FastqFormat fastqFormat,
       final DataFile mapperIndexFile, final DataFile outFile)
@@ -317,7 +317,7 @@ public class ReadsMapperHadoopStep extends AbstractReadsMapperStep {
    * @param context Eoulsan context
    */
   static void setZooKeeperJobConfiguration(final Configuration jobConf,
-      final StepContext context) {
+      final TaskContext context) {
 
     final Settings settings = context.getSettings();
 

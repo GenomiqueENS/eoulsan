@@ -31,8 +31,8 @@ import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
-import fr.ens.biologie.genomique.eoulsan.core.Step;
-import fr.ens.biologie.genomique.eoulsan.core.StepRegistry;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
+import fr.ens.biologie.genomique.eoulsan.core.ModuleRegistry;
 
 /**
  * This class store step instances and avoid storing this instance in
@@ -44,7 +44,7 @@ public class StepInstances {
 
   private static StepInstances instance;
 
-  private final Map<WorkflowStep, Step> steps = new HashMap<>();
+  private final Map<WorkflowStep, Module> steps = new HashMap<>();
 
   /**
    * Get a step instance.
@@ -52,7 +52,7 @@ public class StepInstances {
    * @return a step instance
    * @throws EoulsanRuntimeException if an error occurs while loading the step
    */
-  public Step getStep(final WorkflowStep step) {
+  public Module getStep(final WorkflowStep step) {
 
     checkNotNull(step, "Step is null");
     final String stepName = step.getStepName();
@@ -72,7 +72,7 @@ public class StepInstances {
    * @return a step instance
    * @throws EoulsanException if an error occurs while loading the step
    */
-  public Step getStep(final WorkflowStep workflowStep, final String stepName,
+  public Module getStep(final WorkflowStep workflowStep, final String stepName,
       final String stepVersion) throws EoulsanException {
 
     checkNotNull(stepName, "Step name is null");
@@ -80,7 +80,7 @@ public class StepInstances {
     if (!this.steps.containsKey(workflowStep)) {
 
       // Load step
-      final Step stepInstance = loadStep(stepName, stepVersion);
+      final Module stepInstance = loadStep(stepName, stepVersion);
 
       // Register step instance
       registerStep(workflowStep, stepInstance);
@@ -98,7 +98,7 @@ public class StepInstances {
    * @param stepInstance step instance
    */
   public void registerStep(final WorkflowStep workflowStep,
-      final Step stepInstance) {
+      final Module stepInstance) {
 
     checkNotNull(workflowStep, "workflow step is null");
     checkNotNull(stepInstance, "stepInstance is null");
@@ -141,7 +141,7 @@ public class StepInstances {
    * @return a Step object
    * @throws EoulsanException if the step does not exits
    */
-  private static Step loadStep(final String stepName, final String stepVersion)
+  private static Module loadStep(final String stepName, final String stepVersion)
       throws EoulsanException {
 
     if (stepName == null) {
@@ -150,7 +150,7 @@ public class StepInstances {
 
     final String lower = stepName.trim().toLowerCase();
 
-    final Step result = StepRegistry.getInstance().loadStep(lower, stepVersion);
+    final Module result = ModuleRegistry.getInstance().loadStep(lower, stepVersion);
 
     if (result == null) {
       throw new EoulsanException("Unknown step: "

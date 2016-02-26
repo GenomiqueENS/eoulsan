@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
@@ -227,7 +227,7 @@ public class DiffAna extends Normalization {
 
   @Override
   protected String generateScript(final Experiment experiment,
-      final StepContext context) throws EoulsanException {
+      final TaskContext context) throws EoulsanException {
 
     final String comparison = experiment.getMetadata().getComparison();
 

@@ -66,9 +66,9 @@ import fr.ens.biologie.genomique.eoulsan.core.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
-import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep;
@@ -109,7 +109,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @throws EoulsanException
    */
   private static final Job createJobHTSeqCounter(final Configuration parentConf,
-      final StepContext context, final Data alignmentsData,
+      final TaskContext context, final Data alignmentsData,
       final Data featureAnnotationData, final Data genomeDescriptionData,
       final Data outData, final String genomicType, final String attributeId,
       final boolean splitAttributeValues, final StrandUsage stranded,
@@ -238,7 +238,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   }
 
   private static final Job createJobPairedEnd(final Configuration parentConf,
-      final StepContext context, final Data alignmentsData,
+      final TaskContext context, final Data alignmentsData,
       final Data featureAnnotationData, final Data genomeDescriptionData)
           throws IOException, BadBioEntryException {
 
@@ -309,7 +309,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @throws EoulsanException if an error occurs with feature types and feature
    *           identifiers
    */
-  private static final void createFeaturesIndex(final StepContext context,
+  private static final void createFeaturesIndex(final TaskContext context,
       final DataFile gffFile, final String featureType,
       final String attributeId, final boolean splitAttributeValues,
       final StrandUsage stranded, final DataFile genomeDescDataFile,
@@ -352,7 +352,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   }
 
   private static final void createFinalExpressionFeaturesFile(
-      final StepContext context, final Data featureAnnotationData,
+      final TaskContext context, final Data featureAnnotationData,
       final Data outData, final Job job, final Configuration conf)
           throws IOException {
 
@@ -412,8 +412,8 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final TaskContext context,
+      final TaskStatus status) {
 
     final Data alignmentsData = context.getInputData(MAPPER_RESULTS_SAM);
     final Data featureAnnotationData = context.getInputData(ANNOTATION_GFF);
@@ -438,10 +438,10 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @param status Eoulsan status
    * @return a StepResult object
    */
-  private StepResult executeJobHTSeqCounter(final StepContext context,
+  private StepResult executeJobHTSeqCounter(final TaskContext context,
       final Data alignmentsData, final Data featureAnnotationData,
       final Data genomeDescriptionData, final Data outData,
-      final StepStatus status) {
+      final TaskStatus status) {
 
     // Create configuration object
     final Configuration conf = createConfiguration();
@@ -514,7 +514,7 @@ public class ExpressionHadoopStep extends AbstractExpressionStep {
    * @throws IOException if an error occurs while creating the lock
    */
   private static Locker createZookeeperLock(final Configuration conf,
-      final StepContext context) throws IOException {
+      final TaskContext context) throws IOException {
 
     final Settings settings = context.getSettings();
 

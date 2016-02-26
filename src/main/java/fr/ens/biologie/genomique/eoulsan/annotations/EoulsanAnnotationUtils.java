@@ -28,7 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.lang.annotation.Annotation;
 
-import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
 
 /**
  * This class contains annotation utilities.
@@ -42,7 +42,7 @@ public class EoulsanAnnotationUtils {
    * @param step the step to test
    * @return true if the step contains the annotation
    */
-  public static boolean isGenerator(final Step step) {
+  public static boolean isGenerator(final Module step) {
 
     return isAnnotation(step, Generator.class);
   }
@@ -52,7 +52,7 @@ public class EoulsanAnnotationUtils {
    * @param step the step to test
    * @return true if the step contains the annotation
    */
-  public static boolean isReuseStepInstance(final Step step) {
+  public static boolean isReuseStepInstance(final Module step) {
 
     return isAnnotation(step, ReuseStepInstance.class);
   }
@@ -62,7 +62,7 @@ public class EoulsanAnnotationUtils {
    * @param step the step to test
    * @return true if the step contains the annotation
    */
-  public static boolean isTerminal(final Step step) {
+  public static boolean isTerminal(final Module step) {
 
     return isAnnotation(step, Terminal.class);
   }
@@ -72,7 +72,7 @@ public class EoulsanAnnotationUtils {
    * @param step the step to test
    * @return true if the step contains the annotation
    */
-  public static boolean isNoLog(final Step step) {
+  public static boolean isNoLog(final Module step) {
 
     return isAnnotation(step, NoLog.class);
   }
@@ -82,7 +82,7 @@ public class EoulsanAnnotationUtils {
    * @param step the step to test
    * @return true if the step contains the annotation
    */
-  public static boolean isRequiresPreviousStep(final Step step) {
+  public static boolean isRequiresPreviousStep(final Module step) {
 
     return isAnnotation(step, RequiresPreviousStep.class);
   }
@@ -92,7 +92,7 @@ public class EoulsanAnnotationUtils {
    * @param step the step to test
    * @return true if the step contains the annotation
    */
-  public static boolean isRequiresAllPreviousSteps(final Step step) {
+  public static boolean isRequiresAllPreviousSteps(final Module step) {
 
     return isAnnotation(step, RequiresAllPreviousSteps.class);
   }
@@ -103,7 +103,7 @@ public class EoulsanAnnotationUtils {
    * @param clazz the annotation to test
    * @return true if the step contains the annotation
    */
-  private static boolean isAnnotation(final Step step,
+  private static boolean isAnnotation(final Module step,
       Class<? extends Annotation> clazz) {
 
     checkNotNull(step, "step argument cannot be null");

@@ -38,7 +38,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import fr.ens.biologie.genomique.eoulsan.core.workflow.AbstractWorkflowStep;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContext;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskRunner;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
@@ -84,7 +84,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
    * @param context the context
    * @return the step related to the context
    */
-  protected WorkflowStep getStep(final TaskContext context) {
+  protected WorkflowStep getStep(final TaskContextImpl context) {
 
     checkNotNull(context, "context argument cannot be null");
 
@@ -109,7 +109,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
    * Set a context in the running state
    * @param context the context
    */
-  private void addRunningContext(final TaskContext context) {
+  private void addRunningContext(final TaskContextImpl context) {
 
     checkNotNull(context, "context argument cannot be null");
 
@@ -154,7 +154,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
    * Set a context in done state.
    * @param context the context
    */
-  private void addDoneContext(final TaskContext context) {
+  private void addDoneContext(final TaskContextImpl context) {
 
     checkNotNull(context, "context argument cannot be null");
 
@@ -201,7 +201,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
    * Set the state of the context before executing a task.
    * @param context the context to execute
    */
-  protected void beforeExecuteTask(final TaskContext context) {
+  protected void beforeExecuteTask(final TaskContextImpl context) {
 
     checkNotNull(context, "context argument is null");
 
@@ -216,7 +216,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
    * Set the state of the context after executing a task.
    * @param context the context to execute
    */
-  protected void afterExecuteTask(final TaskContext context,
+  protected void afterExecuteTask(final TaskContextImpl context,
       final TaskResult result) {
 
     checkNotNull(context, "context argument is null");
@@ -234,7 +234,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
    * @param context the context
    * @return a TaskResult object
    */
-  protected TaskResult executeTask(final TaskContext context) {
+  protected TaskResult executeTask(final TaskContextImpl context) {
 
     checkNotNull(context, "context argument is null");
 
@@ -258,17 +258,17 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
   //
 
   @Override
-  public void submit(final WorkflowStep step, final Set<TaskContext> contexts) {
+  public void submit(final WorkflowStep step, final Set<TaskContextImpl> contexts) {
 
     checkNotNull(contexts, "contexts argument cannot be null");
 
-    for (TaskContext context : contexts) {
+    for (TaskContextImpl context : contexts) {
       submit(step, context);
     }
   }
 
   @Override
-  public void submit(final WorkflowStep step, final TaskContext context) {
+  public void submit(final WorkflowStep step, final TaskContextImpl context) {
 
     // Check execution state
     checkExecutionState();

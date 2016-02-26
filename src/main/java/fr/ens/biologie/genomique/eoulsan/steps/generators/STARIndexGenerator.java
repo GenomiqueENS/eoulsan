@@ -33,9 +33,9 @@ import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
-import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -180,7 +180,7 @@ public class STARIndexGenerator extends AbstractStep {
    * @param context the context of the task
    * @throws EoulsanException if more than one expression step exists
    */
-  private void searchExpressionStepParameters(final StepContext context)
+  private void searchExpressionStepParameters(final TaskContext context)
       throws EoulsanException {
 
     int count = 0;
@@ -222,8 +222,8 @@ public class STARIndexGenerator extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final TaskContext context,
+      final TaskStatus status) {
 
     try {
 
@@ -359,7 +359,7 @@ public class STARIndexGenerator extends AbstractStep {
    * @return the absolute path of the file (once uncompressed or not)
    * @throws IOException if an error occurs while uncompressing the file
    */
-  private File uncompressFileIfNecessary(final StepContext context,
+  private File uncompressFileIfNecessary(final TaskContext context,
       List<File> temporaryFiles, final DataFile file) throws IOException {
 
     checkNotNull(file, "file argument cannot be null");
@@ -390,7 +390,7 @@ public class STARIndexGenerator extends AbstractStep {
    * @return the path to the uncompressed file
    * @throws IOException if an error occurs while creating the uncompressed file
    */
-  private File uncompressFile(final StepContext context, final DataFile file)
+  private File uncompressFile(final TaskContext context, final DataFile file)
       throws IOException {
 
     checkNotNull(file, "file argument cannot be null");

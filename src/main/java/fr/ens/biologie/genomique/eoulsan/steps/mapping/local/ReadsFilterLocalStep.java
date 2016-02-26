@@ -44,9 +44,9 @@ import fr.ens.biologie.genomique.eoulsan.bio.io.FastqReader;
 import fr.ens.biologie.genomique.eoulsan.bio.io.FastqWriter;
 import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.MultiReadFilter;
 import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.ReadFilter;
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
-import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.steps.mapping.AbstractReadsFilterStep;
@@ -63,8 +63,8 @@ import fr.ens.biologie.genomique.eoulsan.util.Reporter;
 public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final TaskContext context,
+      final TaskStatus status) {
 
     // Create the reporter
     final Reporter reporter = new LocalReporter();
@@ -127,7 +127,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
    */
   private static void singleEnd(final Data inData, final Data outData,
       final FastqFormat fastqFormat, final Reporter reporter,
-      final StepStatus status, final ReadFilter filter) throws IOException {
+      final TaskStatus status, final ReadFilter filter) throws IOException {
 
     // Get the source
     final DataFile inFile = inData.getDataFile(0);
@@ -157,7 +157,7 @@ public class ReadsFilterLocalStep extends AbstractReadsFilterStep {
    */
   private static void pairedEnd(final Data inData, final Data outData,
       final FastqFormat fastqFormat, final Reporter reporter,
-      final StepStatus status, final ReadFilter filter) throws IOException {
+      final TaskStatus status, final ReadFilter filter) throws IOException {
 
     // Filter reads
     filterFile(inData.getDataFile(0), inData.getDataFile(1),

@@ -46,9 +46,9 @@ import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
-import fr.ens.biologie.genomique.eoulsan.core.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -139,7 +139,7 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
    *           generator
    */
   static void searchMapperVersionAndFlavor(final SequenceReadsMapper mapper,
-      final StepContext context) throws EoulsanException {
+      final TaskContext context) throws EoulsanException {
 
     int count = 0;
     String version = null;
@@ -190,7 +190,7 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
    * @param threadCount the number of thread to use
    */
   static void execute(final SequenceReadsMapper mapper,
-      final StepContext context, final String additionalArguments,
+      final TaskContext context, final String additionalArguments,
       final Map<String, String> additionalDescription, final int threadCount)
           throws IOException, EoulsanException {
 
@@ -244,8 +244,8 @@ public class GenomeMapperIndexGeneratorStep extends AbstractStep {
   }
 
   @Override
-  public StepResult execute(final StepContext context,
-      final StepStatus status) {
+  public StepResult execute(final TaskContext context,
+      final TaskStatus status) {
 
     try {
 

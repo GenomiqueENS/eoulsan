@@ -35,7 +35,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public interface Step {
+public interface Module {
 
   /**
    * Get the name of the step.
@@ -96,7 +96,7 @@ public interface Step {
    * @param context Execution context
    * @param status of the step
    */
-  StepResult execute(StepContext context, StepStatus status);
+  StepResult execute(TaskContext context, TaskStatus status);
 
   /**
    * Get the parallelization mode of the step.

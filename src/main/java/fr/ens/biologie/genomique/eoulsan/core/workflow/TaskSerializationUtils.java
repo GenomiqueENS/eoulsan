@@ -35,7 +35,7 @@ import java.util.Date;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.schedulers.TaskSchedulerFactory;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 
@@ -84,7 +84,7 @@ public class TaskSerializationUtils {
     }
 
     // Load context file
-    final TaskContext context = TaskContext.deserialize(taskContextFile);
+    final TaskContextImpl context = TaskContextImpl.deserialize(taskContextFile);
 
     // Get TaskResult
     final TaskResult result = executeContext(context);
@@ -101,11 +101,11 @@ public class TaskSerializationUtils {
    * @return a TaskResult object
    * @throws EoulsanException if an error occurs while executing the task
    */
-  private static TaskResult executeContext(final TaskContext context)
+  private static TaskResult executeContext(final TaskContextImpl context)
       throws EoulsanException {
 
     // Load step instance
-    final Step step =
+    final Module step =
         StepInstances.getInstance().getStep(context.getCurrentStep());
 
     final long startTime = System.currentTimeMillis();
@@ -147,7 +147,7 @@ public class TaskSerializationUtils {
    *           files
    */
   private static final void saveTaskResult(final DataFile taskContextFile,
-      final TaskContext context, final TaskResult result) throws IOException {
+      final TaskContextImpl context, final TaskResult result) throws IOException {
 
     // Get the prefix for the task files and the base dir
     final String taskPrefix = context.getTaskFilePrefix();

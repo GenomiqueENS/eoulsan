@@ -45,7 +45,7 @@ import org.xml.sax.SAXException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.splitermergers.Merger;
 import fr.ens.biologie.genomique.eoulsan.splitermergers.Splitter;
@@ -166,10 +166,10 @@ public final class XMLDataFormat extends AbstractDataFormat
   }
 
   @Override
-  public Step getGenerator() {
+  public Module getGenerator() {
 
-    final Step generator =
-        (Step) loadClass(this.generatorClassName, Step.class);
+    final Module generator =
+        (Module) loadClass(this.generatorClassName, Module.class);
 
     if (generator == null) {
       return null;

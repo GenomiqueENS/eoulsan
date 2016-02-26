@@ -33,7 +33,7 @@ import fr.ens.biologie.genomique.eoulsan.util.ServiceNameLoader;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class StepService extends ServiceNameLoader<Step> {
+public class ModuleService extends ServiceNameLoader<Module> {
 
   //
   // Protected methods
@@ -63,9 +63,9 @@ public class StepService extends ServiceNameLoader<Step> {
    * Private constructor.
    */
 
-  StepService() {
+  ModuleService() {
 
-    super(Step.class);
+    super(Module.class);
   }
 
 }
