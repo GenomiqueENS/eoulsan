@@ -235,7 +235,7 @@ public class MergerModule extends AbstractModule {
   }
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

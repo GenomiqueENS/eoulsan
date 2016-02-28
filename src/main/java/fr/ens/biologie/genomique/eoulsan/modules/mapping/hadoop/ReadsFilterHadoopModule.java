@@ -80,7 +80,7 @@ public class ReadsFilterHadoopModule extends AbstractReadsFilterModule {
   private static final String TEMP_DIR_SUFFIX = ".tmp";
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

@@ -194,7 +194,7 @@ public abstract class AbstractReadsMapperModule extends AbstractModule {
   }
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

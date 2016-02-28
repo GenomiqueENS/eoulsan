@@ -82,7 +82,7 @@ public abstract class AbstractReadsFilterModule extends AbstractModule {
   }
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

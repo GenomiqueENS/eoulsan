@@ -57,7 +57,7 @@ public class TechnicalReplicateMergerModule extends MergerModule {
   }
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

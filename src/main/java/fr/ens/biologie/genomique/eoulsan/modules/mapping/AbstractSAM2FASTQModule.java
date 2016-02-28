@@ -44,7 +44,7 @@ public abstract class AbstractSAM2FASTQModule extends AbstractModule {
   }
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

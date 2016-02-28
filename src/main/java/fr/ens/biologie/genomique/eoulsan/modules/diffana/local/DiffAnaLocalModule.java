@@ -82,7 +82,7 @@ public class DiffAnaLocalModule extends AbstractModule {
   private RExecutor executor;
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

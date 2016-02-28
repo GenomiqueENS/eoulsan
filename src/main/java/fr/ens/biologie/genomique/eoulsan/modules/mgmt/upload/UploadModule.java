@@ -78,7 +78,7 @@ public abstract class UploadModule extends AbstractModule {
   }
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

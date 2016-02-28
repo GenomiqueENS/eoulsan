@@ -205,7 +205,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
   }
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

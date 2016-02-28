@@ -96,7 +96,7 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
   private boolean useAdditionalAnnotationFile = true;
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

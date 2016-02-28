@@ -172,7 +172,7 @@ public abstract class AbstractExpressionModule extends AbstractModule {
   }
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

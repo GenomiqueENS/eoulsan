@@ -394,7 +394,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
   }
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

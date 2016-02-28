@@ -80,7 +80,7 @@ public abstract class AbstractSAMFilterModule extends AbstractModule {
   }
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

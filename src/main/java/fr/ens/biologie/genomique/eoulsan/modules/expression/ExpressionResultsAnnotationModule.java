@@ -89,7 +89,7 @@ public class ExpressionResultsAnnotationModule extends AbstractModule {
   private boolean useAdditionalAnnotationFile = true;
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

@@ -70,7 +70,7 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 @LocalOnly
 public class DESeq2Module extends AbstractModule {
 
-  // Step name
+  // Module name
   private static final String STEP_NAME = "deseq2";
 
   static final String DESEQ2_DOCKER_IMAGE =
@@ -98,7 +98,7 @@ public class DESeq2Module extends AbstractModule {
   private RExecutor executor;
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

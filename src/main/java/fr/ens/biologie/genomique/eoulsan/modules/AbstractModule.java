@@ -42,7 +42,7 @@ import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class define an abstract Step.
+ * This class define an abstract Module.
  * @since 1.0
  * @author Laurent Jourdren
  */

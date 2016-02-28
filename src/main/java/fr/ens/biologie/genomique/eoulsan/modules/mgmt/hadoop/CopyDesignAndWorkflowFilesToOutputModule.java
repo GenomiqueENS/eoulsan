@@ -63,7 +63,7 @@ public class CopyDesignAndWorkflowFilesToOutputModule extends AbstractModule {
   private Configuration conf;
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

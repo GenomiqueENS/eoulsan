@@ -127,7 +127,7 @@ public class CheckerModule extends AbstractModule {
   }
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

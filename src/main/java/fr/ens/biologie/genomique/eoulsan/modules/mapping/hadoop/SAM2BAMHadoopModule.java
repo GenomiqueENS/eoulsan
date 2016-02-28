@@ -74,7 +74,7 @@ import fr.ens.biologie.genomique.eoulsan.util.hadoop.MapReduceUtils;
 public class SAM2BAMHadoopModule extends AbstractSAM2BAMModule {
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

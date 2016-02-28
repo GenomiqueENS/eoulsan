@@ -56,7 +56,7 @@ public abstract class AbstractSAM2BAMModule extends AbstractModule {
   }
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

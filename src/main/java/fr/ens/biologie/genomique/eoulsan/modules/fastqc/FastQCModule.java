@@ -108,7 +108,7 @@ public class FastQCModule extends AbstractModule {
   private DataFormat inputFormat = DataFormats.READS_FASTQ;
 
   //
-  // Step methods
+  // Module methods
   //
 
   @Override

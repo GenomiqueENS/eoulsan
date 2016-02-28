@@ -31,7 +31,7 @@ import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This interface define a Step.
+ * This interface define a Module.
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -50,14 +50,14 @@ public interface Module {
   String getDescription();
 
   /**
-   * Get version of the Step.
-   * @return a Version object with the version of the Step
+   * Get version of the Module.
+   * @return a Version object with the version of the Module
    */
   Version getVersion();
 
   /**
-   * Get the required Version of the application to run the Step.
-   * @return a Version object with the required version of the Step
+   * Get the required Version of the application to run the Module.
+   * @return a Version object with the required version of the Module
    */
   Version getRequiredEoulsanVersion();
 
