@@ -265,7 +265,8 @@ public abstract class UploadModule extends AbstractModule {
     final Map<DataFile, DataFile> result = new HashMap<>();
 
     Set<StepOutputDataFile> inFiles =
-        context.getWorkflow().getWorkflowFilesAtFirstStep().getInputFiles();
+        //context.getWorkflow().getWorkflowFilesAtFirstStep().getInputFiles();
+        new HashSet<>();
 
     for (StepOutputDataFile file : inFiles) {
       final DataFile in = file.getDataFile();

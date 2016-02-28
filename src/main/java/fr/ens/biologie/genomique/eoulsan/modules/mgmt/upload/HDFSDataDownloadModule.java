@@ -157,7 +157,8 @@ public class HDFSDataDownloadModule extends AbstractModule {
 
       // Get the output file of the workflow
       final Set<StepOutputDataFile> outFiles =
-          context.getWorkflow().getWorkflowFilesAtFirstStep().getOutputFiles();
+          //context.getWorkflow().getWorkflowFilesAtFirstStep().getOutputFiles();
+          new HashSet<>();
 
       // Add the output files of the workflow to the list of files to downloads
       for (StepOutputDataFile file : outFiles) {
