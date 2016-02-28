@@ -22,9 +22,10 @@
  *
  */
 
-package fr.ens.biologie.genomique.eoulsan.core.workflow;
+package fr.ens.biologie.genomique.eoulsan.core;
 
-import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.StepConfigurationContextImpl;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 
 /**
