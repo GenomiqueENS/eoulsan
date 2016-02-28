@@ -26,12 +26,12 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.ABORTED;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.FAILED;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.PARTIALLY_DONE;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.READY;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.ABORTED;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.FAILED;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.PARTIALLY_DONE;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.READY;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WAITING;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.io.File;
@@ -60,9 +60,11 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.core.EmergencyStopTasks;
 import fr.ens.biologie.genomique.eoulsan.core.ExecutorArguments;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Workflow;
+import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
+import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
 import fr.ens.biologie.genomique.eoulsan.core.schedulers.TaskSchedulerFactory;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.io.DesignWriter;
@@ -95,15 +97,15 @@ public abstract class AbstractWorkflow implements Workflow {
   private final Design design;
   private final WorkflowContext workflowContext;
   private final Set<String> stepIds = new HashSet<>();
-  private final Map<AbstractWorkflowStep, StepState> steps = new HashMap<>();
-  private final Multimap<StepState, AbstractWorkflowStep> states =
+  private final Map<AbstractStep, StepState> steps = new HashMap<>();
+  private final Multimap<StepState, AbstractStep> states =
       ArrayListMultimap.create();
   private final SerializableStopwatch stopwatch = new SerializableStopwatch();
 
-  private AbstractWorkflowStep rootStep;
-  private AbstractWorkflowStep designStep;
-  private AbstractWorkflowStep checkerStep;
-  private AbstractWorkflowStep firstStep;
+  private AbstractStep rootStep;
+  private AbstractStep designStep;
+  private AbstractStep checkerStep;
+  private AbstractStep firstStep;
 
   private Set<DataFile> deleteOnExitFiles = new HashSet<>();
 
@@ -160,28 +162,28 @@ public abstract class AbstractWorkflow implements Workflow {
   }
 
   @Override
-  public Set<WorkflowStep> getSteps() {
+  public Set<Step> getSteps() {
 
-    final Set<WorkflowStep> result = new HashSet<>();
+    final Set<Step> result = new HashSet<>();
     result.addAll(this.steps.keySet());
 
     return Collections.unmodifiableSet(result);
   }
 
   @Override
-  public WorkflowStep getRootStep() {
+  public Step getRootStep() {
 
     return this.rootStep;
   }
 
   @Override
-  public WorkflowStep getDesignStep() {
+  public Step getDesignStep() {
 
     return this.designStep;
   }
 
   @Override
-  public WorkflowStep getFirstStep() {
+  public Step getFirstStep() {
 
     return this.firstStep;
   }
@@ -190,7 +192,7 @@ public abstract class AbstractWorkflow implements Workflow {
    * Get checker step.
    * @return the checker step
    */
-  protected WorkflowStep getCheckerStep() {
+  protected Step getCheckerStep() {
 
     return this.checkerStep;
   }
@@ -213,7 +215,7 @@ public abstract class AbstractWorkflow implements Workflow {
    * Register a step of the workflow.
    * @param step step to register
    */
-  protected void register(final AbstractWorkflowStep step) {
+  protected void register(final AbstractStep step) {
 
     Preconditions.checkNotNull(step, "step cannot be null");
 
@@ -278,7 +280,7 @@ public abstract class AbstractWorkflow implements Workflow {
    * workflow object that the status of the step has been changed.
    * @param step Step that the status has been changed.
    */
-  void updateStepState(final AbstractWorkflowStep step) {
+  void updateStepState(final AbstractStep step) {
 
     Preconditions.checkNotNull(step, "step argument is null");
 
@@ -315,13 +317,13 @@ public abstract class AbstractWorkflow implements Workflow {
   private void checkExistingOutputFiles() throws EoulsanException {
 
     // For each step
-    for (AbstractWorkflowStep step : this.steps.keySet()) {
+    for (AbstractStep step : this.steps.keySet()) {
 
       // that is a standard step that is not skip
       if (step.getType() == StepType.STANDARD_STEP && !step.isSkip()) {
 
         // and for each port
-        for (WorkflowOutputPort port : step.getWorkflowOutputPorts()) {
+        for (StepOutputPort port : step.getWorkflowOutputPorts()) {
 
           // Check if files that can generate the port already exists
           List<DataFile> files = port.getExistingOutputFiles();
@@ -343,16 +345,16 @@ public abstract class AbstractWorkflow implements Workflow {
   private void checkExistingInputFiles() throws EoulsanException {
 
     // For each step
-    for (AbstractWorkflowStep step : this.steps.keySet()) {
+    for (AbstractStep step : this.steps.keySet()) {
 
       // that is a standard step that is not skip
       if (step.getType() == StepType.STANDARD_STEP && !step.isSkip()) {
 
         // and for each port
-        for (WorkflowInputPort port : step.getWorkflowInputPorts()) {
+        for (StepInputPort port : step.getWorkflowInputPorts()) {
 
           // Get the link
-          final WorkflowOutputPort link = port.getLink();
+          final StepOutputPort link = port.getLink();
 
           // If the step that generate the data is skip
           if (link.getStep().getType() == StepType.STANDARD_STEP
@@ -380,7 +382,7 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   private void skipGeneratorsIfNotNeeded() {
 
-    for (AbstractWorkflowStep step : this.steps.keySet()) {
+    for (AbstractStep step : this.steps.keySet()) {
 
       // Search for generator steps
       if (step.getType() == StepType.GENERATOR_STEP) {
@@ -388,7 +390,7 @@ public abstract class AbstractWorkflow implements Workflow {
         boolean allStepSkipped = true;
 
         // Check if all linked step are skipped
-        for (WorkflowOutputPort outputPort : step.getWorkflowOutputPorts()) {
+        for (StepOutputPort outputPort : step.getWorkflowOutputPorts()) {
 
           if (!outputPort.isAllLinksToSkippedSteps()) {
             allStepSkipped = false;
@@ -436,7 +438,7 @@ public abstract class AbstractWorkflow implements Workflow {
     final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
 
     // Set Steps to WAITING state
-    for (AbstractWorkflowStep step : this.steps.keySet()) {
+    for (AbstractStep step : this.steps.keySet()) {
 
       // Create Token manager of each step
       registry.getTokenManager(step);
@@ -473,17 +475,17 @@ public abstract class AbstractWorkflow implements Workflow {
       }
 
       // Get the step that had failed
-      final List<AbstractWorkflowStep> failedSteps =
+      final List<AbstractStep> failedSteps =
           getSortedStepsByState(StepState.FAILED);
 
       if (!failedSteps.isEmpty()) {
 
-        WorkflowStepResult firstResult = null;
+        StepResult firstResult = null;
 
         // Log error messages
-        for (AbstractWorkflowStep failedStep : failedSteps) {
+        for (AbstractStep failedStep : failedSteps) {
 
-          final WorkflowStepResult result =
+          final StepResult result =
               TaskSchedulerFactory.getScheduler().getResult(failedStep);
           getLogger()
               .severe("Fail of the analysis: " + result.getErrorMessage());
@@ -527,7 +529,7 @@ public abstract class AbstractWorkflow implements Workflow {
   private void stop() {
 
     final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
-    for (AbstractWorkflowStep step : this.steps.keySet()) {
+    for (AbstractStep step : this.steps.keySet()) {
 
       // Stop Token manager dedicated thread
       final TokenManager tokenManager = registry.getTokenManager(step);
@@ -564,7 +566,7 @@ public abstract class AbstractWorkflow implements Workflow {
   void emergencyStop(final Throwable exception, final String errorMessage) {
 
     // Change working step state to aborted
-    for (AbstractWorkflowStep step : getSortedStepsByState(PARTIALLY_DONE,
+    for (AbstractStep step : getSortedStepsByState(PARTIALLY_DONE,
         WORKING)) {
       step.setState(ABORTED);
     }
@@ -575,12 +577,12 @@ public abstract class AbstractWorkflow implements Workflow {
     final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
 
     // Remove all outputs of failed steps
-    for (AbstractWorkflowStep step : getSortedStepsByState(FAILED)) {
+    for (AbstractStep step : getSortedStepsByState(FAILED)) {
       registry.getTokenManager(step).removeAllOutputs();
     }
 
     // Remove all outputs of aborted steps
-    for (AbstractWorkflowStep step : getSortedStepsByState(ABORTED)) {
+    for (AbstractStep step : getSortedStepsByState(ABORTED)) {
       registry.getTokenManager(step).removeAllOutputs();
     }
 
@@ -603,7 +605,7 @@ public abstract class AbstractWorkflow implements Workflow {
   private void removeOutputsToDiscard() {
 
     final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
-    for (AbstractWorkflowStep step : this.steps.keySet()) {
+    for (AbstractStep step : this.steps.keySet()) {
 
       // Stop Token manager dedicated thread
       final TokenManager tokenManager = registry.getTokenManager(step);
@@ -675,12 +677,12 @@ public abstract class AbstractWorkflow implements Workflow {
    * @param states step status to retrieve
    * @return a sorted list with the steps
    */
-  private List<AbstractWorkflowStep> getSortedStepsByState(
+  private List<AbstractStep> getSortedStepsByState(
       final StepState... states) {
 
     Preconditions.checkNotNull(states, "states argument is null");
 
-    final List<AbstractWorkflowStep> result = new ArrayList<>();
+    final List<AbstractStep> result = new ArrayList<>();
 
     for (StepState state : states) {
       result.addAll(getSortedStepsByState(state));
@@ -697,12 +699,12 @@ public abstract class AbstractWorkflow implements Workflow {
    * @param state step status to retrieve
    * @return a sorted list with the steps
    */
-  private List<AbstractWorkflowStep> getSortedStepsByState(
+  private List<AbstractStep> getSortedStepsByState(
       final StepState state) {
 
     Preconditions.checkNotNull(state, "state argument is null");
 
-    final List<AbstractWorkflowStep> result;
+    final List<AbstractStep> result;
 
     synchronized (this) {
       result = Lists.newArrayList(this.states.get(state));
@@ -717,17 +719,17 @@ public abstract class AbstractWorkflow implements Workflow {
    * Sort a list of step by priority and then by step number.
    * @param list the list of step to sort
    */
-  private static void sortListSteps(final List<AbstractWorkflowStep> list) {
+  private static void sortListSteps(final List<AbstractStep> list) {
 
     if (list == null) {
       return;
     }
 
-    Collections.sort(list, new Comparator<AbstractWorkflowStep>() {
+    Collections.sort(list, new Comparator<AbstractStep>() {
 
       @Override
-      public int compare(final AbstractWorkflowStep a,
-          final AbstractWorkflowStep b) {
+      public int compare(final AbstractStep a,
+          final AbstractStep b) {
 
         int result = a.getType().getPriority() - b.getType().getPriority();
 
@@ -868,7 +870,7 @@ public abstract class AbstractWorkflow implements Workflow {
         + " s.");
 
     // Inform observers of the end of the analysis
-    for (WorkflowStepObserver o : WorkflowStepObserverRegistry.getInstance()
+    for (StepObserver o : StepObserverRegistry.getInstance()
         .getObservers()) {
       o.notifyWorkflowSuccess(success,
           "(Job done in "

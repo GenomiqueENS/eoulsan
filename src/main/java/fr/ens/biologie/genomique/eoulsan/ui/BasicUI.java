@@ -33,9 +33,9 @@ import java.util.Map;
 import com.google.common.base.Strings;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.Workflow;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Workflow;
+import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
 
 /**
  * This class define a basic UI for Eoulsan.
@@ -45,7 +45,7 @@ import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState;
 public class BasicUI extends AbstractUI {
 
   private Workflow workflow;
-  private final Map<WorkflowStep, Double> steps = new HashMap<>();
+  private final Map<Step, Double> steps = new HashMap<>();
 
   private int lastMessageLength = 0;
 
@@ -69,7 +69,7 @@ public class BasicUI extends AbstractUI {
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step) {
+  public void notifyStepState(final Step step) {
 
     // Check if the UI has been initialized
     checkState(this.workflow != null, "The UI has not been initialized");
@@ -84,7 +84,7 @@ public class BasicUI extends AbstractUI {
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step, final int contextId,
+  public void notifyStepState(final Step step, final int contextId,
       final String contextName, final double progress) {
 
     // Check if the UI has been initialized
@@ -94,7 +94,7 @@ public class BasicUI extends AbstractUI {
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step,
+  public void notifyStepState(final Step step,
       final int terminatedTasks, final int submittedTasks,
       final double progress) {
 
@@ -137,7 +137,7 @@ public class BasicUI extends AbstractUI {
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step, final String note) {
+  public void notifyStepState(final Step step, final String note) {
 
     // Check if the UI has been initialized
     checkState(this.workflow != null, "The UI has not been initialized");
@@ -157,17 +157,17 @@ public class BasicUI extends AbstractUI {
   }
 
   @Override
-  public void notifyTaskSubmitted(WorkflowStep step, int contextId) {
+  public void notifyTaskSubmitted(Step step, int contextId) {
     // Do nothing
   }
 
   @Override
-  public void notifyTaskRunning(WorkflowStep step, int contextId) {
+  public void notifyTaskRunning(Step step, int contextId) {
     // Do nothing
   }
 
   @Override
-  public void notifyTaskDone(WorkflowStep step, int contextId) {
+  public void notifyTaskDone(Step step, int contextId) {
     // Do nothing
   }
 
@@ -180,7 +180,7 @@ public class BasicUI extends AbstractUI {
    */
   private void searchSteps() {
 
-    for (WorkflowStep step : this.workflow.getSteps()) {
+    for (Step step : this.workflow.getSteps()) {
 
       if (step == null) {
         continue;
@@ -209,7 +209,7 @@ public class BasicUI extends AbstractUI {
    * @param progress progress value of the step
    * @return global progress as percent
    */
-  private double computeGlobalProgress(final WorkflowStep step,
+  private double computeGlobalProgress(final Step step,
       final double progress) {
 
     if (!this.steps.containsKey(step)) {

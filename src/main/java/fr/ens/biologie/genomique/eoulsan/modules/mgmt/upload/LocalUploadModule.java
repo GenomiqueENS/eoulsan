@@ -33,8 +33,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStepOutputDataFile;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.StepOutputDataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatConverter;
@@ -69,7 +69,7 @@ public class LocalUploadModule extends UploadModule {
 
   @Override
   protected DataFile getUploadedDataFile(final DataFile file,
-      final WorkflowStep step, final Sample sample, final String portName,
+      final Step step, final Sample sample, final String portName,
       final DataFormat format, final int fileIndex) throws IOException {
 
     final String filename;
@@ -83,7 +83,7 @@ public class LocalUploadModule extends UploadModule {
       filename = file.getName();
     } else {
 
-      filename = WorkflowStepOutputDataFile.newStandardFilename(step, portName,
+      filename = StepOutputDataFile.newStandardFilename(step, portName,
           format, sample, fileIndex, CompressionType.NONE);
     }
 

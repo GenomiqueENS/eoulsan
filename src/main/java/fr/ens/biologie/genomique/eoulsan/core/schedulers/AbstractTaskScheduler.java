@@ -37,13 +37,13 @@ import java.util.Set;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
-import fr.ens.biologie.genomique.eoulsan.core.workflow.AbstractWorkflowStep;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.AbstractStep;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskRunner;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStepResult;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.StepStatus;
 
 /**
  * This class define an abstract task scheduler.
@@ -54,12 +54,12 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
 
   private static final int SLEEP_TIME_IN_MS = 500;
 
-  private final Multimap<WorkflowStep, Integer> submittedContexts;
-  private final Multimap<WorkflowStep, Integer> runningContexts;
-  private final Multimap<WorkflowStep, Integer> doneContexts;
-  private final Map<Integer, WorkflowStep> contexts;
-  private final Map<WorkflowStep, WorkflowStepStatus> status;
-  private final Map<WorkflowStep, WorkflowStepResult> results;
+  private final Multimap<Step, Integer> submittedContexts;
+  private final Multimap<Step, Integer> runningContexts;
+  private final Multimap<Step, Integer> doneContexts;
+  private final Map<Integer, Step> contexts;
+  private final Map<Step, StepStatus> status;
+  private final Map<Step, StepResult> results;
 
   private volatile boolean isStarted;
   private volatile boolean isStopped;
@@ -74,7 +74,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
    * @param step the step of the result
    * @param result the result to add
    */
-  private void addResult(final WorkflowStep step, final TaskResult result) {
+  private void addResult(final Step step, final TaskResult result) {
 
     this.results.get(step).addResult(result);
   }
@@ -84,7 +84,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
    * @param context the context
    * @return the step related to the context
    */
-  protected WorkflowStep getStep(final TaskContextImpl context) {
+  protected Step getStep(final TaskContextImpl context) {
 
     checkNotNull(context, "context argument cannot be null");
 
@@ -96,7 +96,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
    * @param contextId the context id
    * @return the step related to the context
    */
-  protected WorkflowStep getStep(final int contextId) {
+  protected Step getStep(final int contextId) {
 
     // Test if the contextId has been submitted
     checkState(this.contexts.containsKey(contextId),
@@ -137,7 +137,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     checkState(!this.doneContexts.containsValue(contextId),
         "The context (" + contextId + ") has been already done");
 
-    final WorkflowStep step = getStep(contextId);
+    final Step step = getStep(contextId);
     synchronized (this) {
       this.runningContexts.put(step, contextId);
     }
@@ -182,7 +182,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     checkState(!this.doneContexts.containsValue(contextId),
         "The context (" + contextId + ") has been already done");
 
-    final WorkflowStep step = getStep(contextId);
+    final Step step = getStep(contextId);
     synchronized (this) {
       this.runningContexts.remove(step, contextId);
       this.doneContexts.put(step, contextId);
@@ -239,7 +239,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     checkNotNull(context, "context argument is null");
 
     // Get the step of the context
-    final WorkflowStep step = getStep(context.getId());
+    final Step step = getStep(context.getId());
 
     // Create context runner
     final TaskRunner contextRunner = new TaskRunner(context, getStatus(step));
@@ -258,7 +258,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
   //
 
   @Override
-  public void submit(final WorkflowStep step, final Set<TaskContextImpl> contexts) {
+  public void submit(final Step step, final Set<TaskContextImpl> contexts) {
 
     checkNotNull(contexts, "contexts argument cannot be null");
 
@@ -268,7 +268,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
   }
 
   @Override
-  public void submit(final WorkflowStep step, final TaskContextImpl context) {
+  public void submit(final Step step, final TaskContextImpl context) {
 
     // Check execution state
     checkExecutionState();
@@ -286,9 +286,9 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
       if (!this.status.containsKey(step)) {
 
         this.status.put(step,
-            new WorkflowStepStatus((AbstractWorkflowStep) step));
+            new StepStatus((AbstractStep) step));
         this.results.put(step,
-            new WorkflowStepResult((AbstractWorkflowStep) step));
+            new StepResult((AbstractStep) step));
       }
 
       this.submittedContexts.put(step, context.getId());
@@ -304,19 +304,19 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
   }
 
   @Override
-  public WorkflowStepStatus getStatus(final WorkflowStep step) {
+  public StepStatus getStatus(final Step step) {
 
     return this.status.get(step);
   }
 
   @Override
-  public WorkflowStepResult getResult(final WorkflowStep step) {
+  public StepResult getResult(final Step step) {
 
     return this.results.get(step);
   }
 
   @Override
-  public int getTaskSubmittedCount(final WorkflowStep step) {
+  public int getTaskSubmittedCount(final Step step) {
 
     checkNotNull(step, "step argument cannot be null");
 
@@ -329,7 +329,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
   }
 
   @Override
-  public int getTaskRunningCount(final WorkflowStep step) {
+  public int getTaskRunningCount(final Step step) {
 
     checkNotNull(step, "step argument cannot be null");
 
@@ -342,7 +342,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
   }
 
   @Override
-  public int getTaskDoneCount(final WorkflowStep step) {
+  public int getTaskDoneCount(final Step step) {
 
     checkNotNull(step, "step argument cannot be null");
 
@@ -379,7 +379,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
   }
 
   @Override
-  public void waitEndOfTasks(final WorkflowStep step) {
+  public void waitEndOfTasks(final Step step) {
 
     // Check execution state
     checkExecutionState();
@@ -479,17 +479,17 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
    */
   protected AbstractTaskScheduler() {
 
-    final Multimap<WorkflowStep, Integer> mm1 = HashMultimap.create();
-    final Multimap<WorkflowStep, Integer> mm2 = HashMultimap.create();
-    final Multimap<WorkflowStep, Integer> mm3 = HashMultimap.create();
+    final Multimap<Step, Integer> mm1 = HashMultimap.create();
+    final Multimap<Step, Integer> mm2 = HashMultimap.create();
+    final Multimap<Step, Integer> mm3 = HashMultimap.create();
 
     this.submittedContexts = synchronizedMultimap(mm1);
     this.runningContexts = synchronizedMultimap(mm2);
     this.doneContexts = synchronizedMultimap(mm3);
 
-    final Map<Integer, WorkflowStep> m1 = new HashMap<>();
-    final Map<WorkflowStep, WorkflowStepStatus> m2 = new HashMap<>();
-    final Map<WorkflowStep, WorkflowStepResult> m3 = new HashMap<>();
+    final Map<Integer, Step> m1 = new HashMap<>();
+    final Map<Step, StepStatus> m2 = new HashMap<>();
+    final Map<Step, StepResult> m3 = new HashMap<>();
 
     this.contexts = synchronizedMap(m1);
     this.status = synchronizedMap(m2);

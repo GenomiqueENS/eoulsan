@@ -34,17 +34,17 @@ import java.util.Set;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class WorkflowStepObserverRegistry {
+public class StepObserverRegistry {
 
-  private static WorkflowStepObserverRegistry singleton;
+  private static StepObserverRegistry singleton;
 
-  private final Set<WorkflowStepObserver> observers = new HashSet<>();
+  private final Set<StepObserver> observers = new HashSet<>();
 
   /**
    * Add a listener.
    * @param observer listener to add
    */
-  public void addObserver(final WorkflowStepObserver observer) {
+  public void addObserver(final StepObserver observer) {
 
     if (observer == null || this.observers.contains(observer)) {
       return;
@@ -57,7 +57,7 @@ public class WorkflowStepObserverRegistry {
    * Remove a listener.
    * @param observer listener to remove
    */
-  public void removeObserver(final WorkflowStepObserver observer) {
+  public void removeObserver(final StepObserver observer) {
 
     if (observer == null) {
       return;
@@ -66,7 +66,7 @@ public class WorkflowStepObserverRegistry {
     this.observers.remove(observer);
   }
 
-  public Set<WorkflowStepObserver> getObservers() {
+  public Set<StepObserver> getObservers() {
 
     return Collections.unmodifiableSet(this.observers);
   }
@@ -79,10 +79,10 @@ public class WorkflowStepObserverRegistry {
    * Get the singleton instance of WorkflowStepObserverRegistry.
    * @return the singleton instance of WorkflowStepObserverRegistry
    */
-  public static WorkflowStepObserverRegistry getInstance() {
+  public static StepObserverRegistry getInstance() {
 
     if (singleton == null) {
-      singleton = new WorkflowStepObserverRegistry();
+      singleton = new StepObserverRegistry();
     }
 
     return singleton;
@@ -95,7 +95,7 @@ public class WorkflowStepObserverRegistry {
   /**
    * Private constructor.
    */
-  private WorkflowStepObserverRegistry() {
+  private StepObserverRegistry() {
   }
 
 }

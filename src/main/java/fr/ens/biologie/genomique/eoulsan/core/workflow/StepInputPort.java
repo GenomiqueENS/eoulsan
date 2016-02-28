@@ -37,7 +37,8 @@ import com.google.common.base.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.core.SimpleInputPort;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepType;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
 
@@ -47,18 +48,18 @@ import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
  * @since 2.0
  * @author Laurent Jourdren
  */
-class WorkflowInputPort extends SimpleInputPort implements Serializable {
+class StepInputPort extends SimpleInputPort implements Serializable {
 
   private static final long serialVersionUID = -3858660424325558424L;
 
-  private final AbstractWorkflowStep step;
-  private WorkflowOutputPort link;
+  private final AbstractStep step;
+  private StepOutputPort link;
 
   /**
    * Get the step related to the port.
    * @return a step object
    */
-  public AbstractWorkflowStep getStep() {
+  public AbstractStep getStep() {
 
     return this.step;
   }
@@ -67,7 +68,7 @@ class WorkflowInputPort extends SimpleInputPort implements Serializable {
    * Get the output port linked to this input port.
    * @return the linked output port if exists or null
    */
-  public WorkflowOutputPort getLink() {
+  public StepOutputPort getLink() {
     return this.link;
   }
 
@@ -84,7 +85,7 @@ class WorkflowInputPort extends SimpleInputPort implements Serializable {
    * Set the link for the port.
    * @param outputPort the output of the link
    */
-  public void setLink(final WorkflowOutputPort outputPort) {
+  public void setLink(final StepOutputPort outputPort) {
 
     // Check if argument is null
     checkNotNull(outputPort, "outputPort argument cannot be null");
@@ -110,7 +111,7 @@ class WorkflowInputPort extends SimpleInputPort implements Serializable {
           + " <- " + outputPort.getFormat().getName());
     }
 
-    final AbstractWorkflowStep step = outputPort.getStep();
+    final AbstractStep step = outputPort.getStep();
 
     // Check if step can be linked
     if (step.getType() != StepType.DESIGN_STEP
@@ -125,13 +126,13 @@ class WorkflowInputPort extends SimpleInputPort implements Serializable {
   }
 
   @Override
-  public Set<WorkflowStep> getLinkedSteps() {
+  public Set<Step> getLinkedSteps() {
 
     if (this.link == null) {
       return emptySet();
     }
 
-    return singleton((WorkflowStep) this.link.getStep());
+    return singleton((Step) this.link.getStep());
   }
 
   @Override
@@ -155,7 +156,7 @@ class WorkflowInputPort extends SimpleInputPort implements Serializable {
    * @param compressionsAccepted compression accepted
    * @param requiredInWorkingDirectory if data is required in working directory
    */
-  public WorkflowInputPort(final AbstractWorkflowStep step, final String name,
+  public StepInputPort(final AbstractStep step, final String name,
       final boolean list, final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted,
       final boolean requiredInWorkingDirectory) {

@@ -39,12 +39,12 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.annotations.Terminal;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.AbstractWorkflow;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowContext;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStepOutputDataFile;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.StepOutputDataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
@@ -220,7 +220,7 @@ public abstract class UploadModule extends AbstractModule {
    * @throws IOException if an error occurs while creating the result DataFile
    */
   private DataFile getUploadedDataFile(final DataFile file,
-      final WorkflowStep step, final Sample sample, final String portName,
+      final Step step, final Sample sample, final String portName,
       final DataFormat format) throws IOException {
 
     return getUploadedDataFile(file, step, sample, portName, format, -1);
@@ -237,7 +237,7 @@ public abstract class UploadModule extends AbstractModule {
    * @throws IOException if an error occurs while creating the result DataFile
    */
   protected abstract DataFile getUploadedDataFile(final DataFile file,
-      final WorkflowStep step, final Sample sample, final String portName,
+      final Step step, final Sample sample, final String portName,
       final DataFormat format, final int fileIndex) throws IOException;
 
   /**
@@ -264,10 +264,10 @@ public abstract class UploadModule extends AbstractModule {
 
     final Map<DataFile, DataFile> result = new HashMap<>();
 
-    Set<WorkflowStepOutputDataFile> inFiles =
+    Set<StepOutputDataFile> inFiles =
         context.getWorkflow().getWorkflowFilesAtFirstStep().getInputFiles();
 
-    for (WorkflowStepOutputDataFile file : inFiles) {
+    for (StepOutputDataFile file : inFiles) {
       final DataFile in = file.getDataFile();
       final DataFile out =
           getUploadedDataFile(in, file.getStep(), file.getSample(),
@@ -302,7 +302,7 @@ public abstract class UploadModule extends AbstractModule {
 
     final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
-    final WorkflowStep designStep = context.getWorkflow().getDesignStep();
+    final Step designStep = context.getWorkflow().getDesignStep();
     final Design design = context.getWorkflow().getDesign();
 
     final Set<String> fieldWithFiles = new HashSet<>();

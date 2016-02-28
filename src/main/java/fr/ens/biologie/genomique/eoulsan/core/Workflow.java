@@ -22,11 +22,12 @@
  *
  */
 
-package fr.ens.biologie.genomique.eoulsan.core.workflow;
+package fr.ens.biologie.genomique.eoulsan.core;
 
 import java.io.Serializable;
 import java.util.Set;
 
+import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowFiles;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 
@@ -47,25 +48,25 @@ public interface Workflow extends Serializable {
    * Get the steps of the workflow.
    * @return a Set with the steps of the workflow.
    */
-  Set<WorkflowStep> getSteps();
+  Set<Step> getSteps();
 
   /**
    * Get the first steps of the workflow.
    * @return the root step of the workflow
    */
-  WorkflowStep getRootStep();
+  Step getRootStep();
 
   /**
    * Get the design step of the workflow.
    * @return the design step of the workflow
    */
-  WorkflowStep getDesignStep();
+  Step getDesignStep();
 
   /**
    * Get the first step of the workflow (after generator steps).
    * @return the first step of the workflow
    */
-  WorkflowStep getFirstStep();
+  Step getFirstStep();
 
   /**
    * Get the list of the files used by the workflow from the begging of the

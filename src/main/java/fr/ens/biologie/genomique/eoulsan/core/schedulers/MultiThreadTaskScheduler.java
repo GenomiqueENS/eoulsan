@@ -37,9 +37,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResult;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
 
 /**
  * This class define a muti thread scheduler.
@@ -135,7 +135,7 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
   }
 
   @Override
-  public void submit(final WorkflowStep step, final TaskContextImpl context) {
+  public void submit(final Step step, final TaskContextImpl context) {
 
     // Call to the super method
     super.submit(step, context);

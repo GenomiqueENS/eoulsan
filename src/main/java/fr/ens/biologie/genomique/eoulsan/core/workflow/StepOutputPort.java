@@ -42,6 +42,7 @@ import com.google.common.collect.Lists;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.core.SimpleOutputPort;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
@@ -54,18 +55,18 @@ import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
  * @since 2.0
  * @author Laurent Jourdren
  */
-class WorkflowOutputPort extends SimpleOutputPort {
+class StepOutputPort extends SimpleOutputPort {
 
   private static final long serialVersionUID = -7857426034202971843L;
 
-  private final AbstractWorkflowStep step;
-  private final Set<WorkflowInputPort> links = new HashSet<>();
+  private final AbstractStep step;
+  private final Set<StepInputPort> links = new HashSet<>();
 
   /**
    * Get the step related to the port.
    * @return a step object
    */
-  public AbstractWorkflowStep getStep() {
+  public AbstractStep getStep() {
 
     return this.step;
   }
@@ -74,7 +75,7 @@ class WorkflowOutputPort extends SimpleOutputPort {
    * Get the output port linked to this input port.
    * @return the linked output port if exists or null
    */
-  public Set<WorkflowInputPort> getLinks() {
+  public Set<StepInputPort> getLinks() {
     return Collections.unmodifiableSet(this.links);
   }
 
@@ -91,7 +92,7 @@ class WorkflowOutputPort extends SimpleOutputPort {
    * Set the link for the port.
    * @param inputPort the output of the link
    */
-  public void addLink(final WorkflowInputPort inputPort) {
+  public void addLink(final StepInputPort inputPort) {
 
     // Check if argument is null
     checkNotNull(inputPort, "inputPort argument cannot be null");
@@ -204,7 +205,7 @@ class WorkflowOutputPort extends SimpleOutputPort {
    */
   public boolean isAllLinksToSkippedSteps() {
 
-    for (WorkflowInputPort inPort : getLinks()) {
+    for (StepInputPort inPort : getLinks()) {
 
       if (!inPort.getStep().isSkip()) {
         return false;
@@ -215,15 +216,15 @@ class WorkflowOutputPort extends SimpleOutputPort {
   }
 
   @Override
-  public Set<WorkflowStep> getLinkedSteps() {
+  public Set<Step> getLinkedSteps() {
 
     if (this.links.isEmpty()) {
       return emptySet();
     }
 
-    final Set<WorkflowStep> result = new HashSet<>();
+    final Set<Step> result = new HashSet<>();
 
-    for (WorkflowInputPort inputPort : this.links) {
+    for (StepInputPort inputPort : this.links) {
       result.add(inputPort.getStep());
     }
 
@@ -250,7 +251,7 @@ class WorkflowOutputPort extends SimpleOutputPort {
    * @param format format of the port
    * @param compression compression of the output
    */
-  public WorkflowOutputPort(final AbstractWorkflowStep step, final String name,
+  public StepOutputPort(final AbstractStep step, final String name,
       final boolean list, final DataFormat format,
       final CompressionType compression) {
 

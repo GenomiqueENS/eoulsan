@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.core;
 
-import fr.ens.biologie.genomique.eoulsan.core.workflow.Workflow;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 

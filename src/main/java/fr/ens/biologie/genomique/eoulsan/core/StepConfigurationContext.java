@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Settings;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 
 public interface StepConfigurationContext {
@@ -128,7 +127,7 @@ public interface StepConfigurationContext {
    * Get the current step.
    * @return the current Step or null if no Step is currently running.
    */
-  WorkflowStep getCurrentStep();
+  Step getCurrentStep();
 
   /**
    * Get local temporary directory.

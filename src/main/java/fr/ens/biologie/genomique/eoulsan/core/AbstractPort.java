@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.core.workflow.FileNaming;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 
 /**
@@ -67,7 +66,7 @@ public abstract class AbstractPort implements Port, Serializable {
   }
 
   @Override
-  public Set<WorkflowStep> getLinkedSteps() {
+  public Set<Step> getLinkedSteps() {
     return Collections.emptySet();
   }
 

@@ -79,7 +79,7 @@ public class FastQCRuntimePatcher {
         // Create the new base64ForIcon method
         final CtMethod newBase64ForIconMethod =
             CtNewMethod.make("private String base64ForIcon (String path) { "
-                + " return fr.ens.biologie.genomique.eoulsan.steps.fastqc."
+                + " return fr.ens.biologie.genomique.eoulsan.modules.fastqc."
                 + "FastQCRuntimePatcher.base64ForIcon(path, this.getClass());"
                 + " } ", cc);
         cc.addMethod(newBase64ForIconMethod);

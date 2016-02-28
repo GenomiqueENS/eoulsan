@@ -38,6 +38,7 @@ import com.google.common.collect.Multimap;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 
@@ -77,7 +78,7 @@ public class Workflow2Graphviz {
         + "  ratio = auto;\n");
 
     // Create nodes
-    for (WorkflowStep step : this.workflow.getSteps()) {
+    for (Step step : this.workflow.getSteps()) {
 
       if (step == this.workflow.getFirstStep()
           || step == this.workflow.getCheckerStep()) {
@@ -107,11 +108,11 @@ public class Workflow2Graphviz {
 
     sb.append('\n');
 
-    final Multimap<AbstractWorkflowStep, AbstractWorkflowStep> linkedSteps =
+    final Multimap<AbstractStep, AbstractStep> linkedSteps =
         HashMultimap.create();
 
     // Create links from output ports
-    for (WorkflowStep step : this.workflow.getSteps()) {
+    for (Step step : this.workflow.getSteps()) {
 
       // Do not handle first and check step
       if (step == this.workflow.getFirstStep()
@@ -120,16 +121,16 @@ public class Workflow2Graphviz {
       }
 
       final int stepNumber = step.getNumber();
-      AbstractWorkflowStep abstractStep = (AbstractWorkflowStep) step;
+      AbstractStep abstractStep = (AbstractStep) step;
 
       // For each port
-      for (WorkflowOutputPort outputPort : abstractStep
+      for (StepOutputPort outputPort : abstractStep
           .getWorkflowOutputPorts()) {
 
         // For each port link
-        for (WorkflowInputPort link : outputPort.getLinks()) {
+        for (StepInputPort link : outputPort.getLinks()) {
 
-          final AbstractWorkflowStep linkedStep = link.getStep();
+          final AbstractStep linkedStep = link.getStep();
 
           // Do not handle first and check step
           if (linkedStep == this.workflow.getFirstStep()
@@ -159,7 +160,7 @@ public class Workflow2Graphviz {
     }
 
     // Create other links between steps
-    for (WorkflowStep step : this.workflow.getSteps()) {
+    for (Step step : this.workflow.getSteps()) {
 
       // Do not handle first and check step
       if (step == this.workflow.getFirstStep()
@@ -167,11 +168,11 @@ public class Workflow2Graphviz {
         continue;
       }
 
-      AbstractWorkflowStep abstractStep = (AbstractWorkflowStep) step;
+      AbstractStep abstractStep = (AbstractStep) step;
 
-      WorkflowStepStateObserver observer =
-          ((AbstractWorkflowStep) step).getStepStateObserver();
-      Set<AbstractWorkflowStep> requiredSteps =
+      StepStateObserver observer =
+          ((AbstractStep) step).getStepStateObserver();
+      Set<AbstractStep> requiredSteps =
           new HashSet<>(observer.getRequiredSteps());
 
       requiredSteps.removeAll(linkedSteps.get(abstractStep));
@@ -180,7 +181,7 @@ public class Workflow2Graphviz {
       requiredSteps.remove(this.workflow.getFirstStep());
       requiredSteps.remove(this.workflow.getCheckerStep());
 
-      for (AbstractWorkflowStep requiredStep : requiredSteps) {
+      for (AbstractStep requiredStep : requiredSteps) {
 
         sb.append("  step");
         sb.append(requiredStep.getNumber());

@@ -26,17 +26,17 @@ package fr.ens.biologie.genomique.eoulsan.core.schedulers;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.GENERATOR_STEP;
 
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters.ClusterTaskScheduler;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.AbstractWorkflowStep;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.AbstractStep;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStepResult;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.StepStatus;
 
 /**
  * This class defined a combined task scheduler for cluster mode.
@@ -53,7 +53,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   private volatile boolean isStopped;
 
   @Override
-  public void submit(final WorkflowStep step, final Set<TaskContextImpl> contexts) {
+  public void submit(final Step step, final Set<TaskContextImpl> contexts) {
 
     checkNotNull(contexts, "contexts argument cannot be null");
 
@@ -66,7 +66,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   }
 
   @Override
-  public void submit(final WorkflowStep step, final TaskContextImpl context) {
+  public void submit(final Step step, final TaskContextImpl context) {
 
     checkNotNull(step, "step argument cannot be null");
     checkNotNull(context, "context argument cannot be null");
@@ -78,7 +78,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   }
 
   @Override
-  public WorkflowStepStatus getStatus(final WorkflowStep step) {
+  public StepStatus getStatus(final Step step) {
 
     checkNotNull(step, "step argument cannot be null");
 
@@ -86,7 +86,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   }
 
   @Override
-  public WorkflowStepResult getResult(final WorkflowStep step) {
+  public StepResult getResult(final Step step) {
 
     checkNotNull(step, "step argument cannot be null");
 
@@ -94,7 +94,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   }
 
   @Override
-  public int getTaskSubmittedCount(final WorkflowStep step) {
+  public int getTaskSubmittedCount(final Step step) {
 
     checkNotNull(step, "step argument cannot be null");
 
@@ -102,7 +102,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   }
 
   @Override
-  public int getTaskRunningCount(final WorkflowStep step) {
+  public int getTaskRunningCount(final Step step) {
 
     checkNotNull(step, "step argument cannot be null");
 
@@ -110,7 +110,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   }
 
   @Override
-  public int getTaskDoneCount(final WorkflowStep step) {
+  public int getTaskDoneCount(final Step step) {
 
     checkNotNull(step, "step argument cannot be null");
 
@@ -118,7 +118,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   }
 
   @Override
-  public void waitEndOfTasks(final WorkflowStep step) {
+  public void waitEndOfTasks(final Step step) {
 
     checkNotNull(step, "step argument cannot be null");
 
@@ -204,11 +204,11 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
    * @return the parallelization mode of the step
    */
   private static ParallelizationMode getParallelizationMode(
-      final WorkflowStep step) {
+      final Step step) {
 
     checkNotNull(step, "step argument cannot be null");
 
-    return ((AbstractWorkflowStep) step).getParallelizationMode();
+    return ((AbstractStep) step).getParallelizationMode();
   }
 
   /**
@@ -216,7 +216,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
    * @param step the step
    * @return the task scheduler that the step must use
    */
-  private TaskScheduler getTaskScheduler(final WorkflowStep step) {
+  private TaskScheduler getTaskScheduler(final Step step) {
 
     if (step.getType() == GENERATOR_STEP) {
       return this.stdTaskScheduler;

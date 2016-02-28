@@ -45,11 +45,11 @@ import com.google.common.collect.Queues;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Main;
 import fr.ens.biologie.genomique.eoulsan.actions.ClusterTaskAction;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.schedulers.AbstractTaskScheduler;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskRunner;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 
 /**
@@ -313,7 +313,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
   //
 
   @Override
-  public void submit(final WorkflowStep step, final TaskContextImpl context) {
+  public void submit(final Step step, final TaskContextImpl context) {
 
     // Call to the super method
     super.submit(step, context);

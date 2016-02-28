@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStepObserverRegistry;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.StepObserverRegistry;
 
 /**
  * This class contains useful methods for writing Step classes.
@@ -202,7 +202,7 @@ public class Modules {
     }
 
     // Currently only print warning messages when no UI has been set
-    if (WorkflowStepObserverRegistry.getInstance().getObservers().isEmpty()) {
+    if (StepObserverRegistry.getInstance().getObservers().isEmpty()) {
       System.err.println(message);
     }
   }

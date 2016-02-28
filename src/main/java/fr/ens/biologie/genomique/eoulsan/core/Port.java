@@ -26,7 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.core;
 
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 
 /**
@@ -58,6 +57,6 @@ public interface Port {
    * Get the steps linked to this port.
    * @return a step with the list of linked steps
    */
-  Set<WorkflowStep> getLinkedSteps();
+  Set<Step> getLinkedSteps();
 
 }

@@ -31,8 +31,8 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_LOG_EXTENSION;
 import static fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUtils.isNoLog;
 import static fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUtils.isReuseStepInstance;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.PARTIALLY_DONE;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.PARTIALLY_DONE;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.stackTraceToString;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toTimeHumanReadable;
 
@@ -56,7 +56,7 @@ import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.ModuleRegistry;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepType;
+import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
@@ -178,7 +178,7 @@ public class TaskRunner {
             // Configure the new step instance
             getLogger().fine("Configure step instance");
             stepInstance.configure(
-                new WorkflowStepConfigurationContext(
+                new StepConfigurationContextImpl(
                     TaskRunner.this.context.getStep()),
                 TaskRunner.this.context.getCurrentStep().getParameters());
 
@@ -328,7 +328,7 @@ public class TaskRunner {
         .getPortNames()) {
 
       // Get data required for token creation
-      final WorkflowOutputPort port =
+      final StepOutputPort port =
           this.context.getStep().getWorkflowOutputPorts().getPort(portName);
       final Data data = this.context.getOutputData(port);
 
@@ -338,7 +338,7 @@ public class TaskRunner {
 
     // Change the state of the step to PARTIALY_DONE if it the end first task of
     // the step
-    final AbstractWorkflowStep step = this.context.getWorkflowStep();
+    final AbstractStep step = this.context.getWorkflowStep();
     if (step.getState() == WORKING) {
       step.setState(PARTIALLY_DONE);
     }
@@ -395,7 +395,7 @@ public class TaskRunner {
    * @param threadGroupName the name of the thread group
    * @return a Logger instance
    */
-  private Logger createStepLogger(final AbstractWorkflowStep step,
+  private Logger createStepLogger(final AbstractStep step,
       final String threadGroupName) {
 
     // Define the log file for the step
@@ -496,7 +496,7 @@ public class TaskRunner {
    */
   public TaskRunner(final TaskContextImpl taskContext) {
 
-    this(taskContext, (WorkflowStepStatus) null);
+    this(taskContext, (StepStatus) null);
   }
 
   /**
@@ -505,7 +505,7 @@ public class TaskRunner {
    * @param stepStatus step status
    */
   public TaskRunner(final TaskContextImpl taskContext,
-      final WorkflowStepStatus stepStatus) {
+      final StepStatus stepStatus) {
 
     checkNotNull(taskContext, "taskContext cannot be null");
 

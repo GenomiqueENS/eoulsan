@@ -43,9 +43,9 @@ public final class ContextUtils {
     if (context instanceof TaskContextImpl) {
 
       return ((TaskContextImpl) context).getJobDirectory();
-    } else if (context instanceof WorkflowStepConfigurationContext) {
+    } else if (context instanceof StepConfigurationContextImpl) {
 
-      return ((WorkflowStepConfigurationContext) context).getJobDirectory();
+      return ((StepConfigurationContextImpl) context).getJobDirectory();
     }
 
     return null;
@@ -60,9 +60,9 @@ public final class ContextUtils {
     if (context instanceof TaskContextImpl) {
 
       return ((TaskContextImpl) context).getJarPathname();
-    } else if (context instanceof WorkflowStepConfigurationContext) {
+    } else if (context instanceof StepConfigurationContextImpl) {
 
-      return ((WorkflowStepConfigurationContext) context).getJarPathname();
+      return ((StepConfigurationContextImpl) context).getJarPathname();
     }
 
     return null;
@@ -77,9 +77,9 @@ public final class ContextUtils {
     if (context instanceof TaskContextImpl) {
 
       return ((TaskContextImpl) context).getLocalWorkingPathname();
-    } else if (context instanceof WorkflowStepConfigurationContext) {
+    } else if (context instanceof StepConfigurationContextImpl) {
 
-      return ((WorkflowStepConfigurationContext) context)
+      return ((StepConfigurationContextImpl) context)
           .getLocalWorkingDirectory();
     }
 
@@ -95,9 +95,9 @@ public final class ContextUtils {
     if (context instanceof TaskContextImpl) {
 
       return ((TaskContextImpl) context).getHadoopWorkingPathname();
-    } else if (context instanceof WorkflowStepConfigurationContext) {
+    } else if (context instanceof StepConfigurationContextImpl) {
 
-      return ((WorkflowStepConfigurationContext) context)
+      return ((StepConfigurationContextImpl) context)
           .getLocalWorkingDirectory();
     }
 
@@ -113,9 +113,9 @@ public final class ContextUtils {
     if (context instanceof TaskContextImpl) {
 
       return ((TaskContextImpl) context).getTaskOutputDirectory();
-    } else if (context instanceof WorkflowStepConfigurationContext) {
+    } else if (context instanceof StepConfigurationContextImpl) {
 
-      return ((WorkflowStepConfigurationContext) context)
+      return ((StepConfigurationContextImpl) context)
           .getTaskOutputDirectory();
     }
 

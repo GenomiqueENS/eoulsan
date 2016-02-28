@@ -54,7 +54,7 @@ public class DataList extends AbstractData implements Serializable {
   private final Design design;
 
   // Field required for multi-files Data creation
-  private final WorkflowOutputPort port;
+  private final StepOutputPort port;
 
   @Override
   public Data addDataToList(final String name) {
@@ -153,7 +153,7 @@ public class DataList extends AbstractData implements Serializable {
    * @param port input port
    * @param design design
    */
-  DataList(final WorkflowInputPort port, final Design design) {
+  DataList(final StepInputPort port, final Design design) {
 
     super(port.getFormat());
 
@@ -168,7 +168,7 @@ public class DataList extends AbstractData implements Serializable {
    * @param port output port
    * @param design the design object
    */
-  DataList(final WorkflowOutputPort port, final Design design) {
+  DataList(final StepOutputPort port, final Design design) {
 
     super(port.getFormat());
 

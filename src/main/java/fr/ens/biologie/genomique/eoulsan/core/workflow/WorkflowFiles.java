@@ -37,15 +37,15 @@ import com.google.common.collect.Sets;
  */
 public final class WorkflowFiles {
 
-  private final Set<WorkflowStepOutputDataFile> inFiles;
-  private final Set<WorkflowStepOutputDataFile> reusedFiles;
-  private final Set<WorkflowStepOutputDataFile> outFiles;
+  private final Set<StepOutputDataFile> inFiles;
+  private final Set<StepOutputDataFile> reusedFiles;
+  private final Set<StepOutputDataFile> outFiles;
 
   /**
    * Get the input files of a workflow.
    * @return an unmodifiable set that contains the input files
    */
-  public Set<WorkflowStepOutputDataFile> getInputFiles() {
+  public Set<StepOutputDataFile> getInputFiles() {
 
     return Collections.unmodifiableSet(this.inFiles);
   }
@@ -54,7 +54,7 @@ public final class WorkflowFiles {
    * Get the reused files of a workflow.
    * @return an unmodifiable set that contains the reused files
    */
-  public Set<WorkflowStepOutputDataFile> getReusedFiles() {
+  public Set<StepOutputDataFile> getReusedFiles() {
 
     return Collections.unmodifiableSet(this.reusedFiles);
   }
@@ -63,7 +63,7 @@ public final class WorkflowFiles {
    * Get the output files of a workflow.
    * @return an unmodifiable set that contains the output files
    */
-  public Set<WorkflowStepOutputDataFile> getOutputFiles() {
+  public Set<StepOutputDataFile> getOutputFiles() {
 
     return Collections.unmodifiableSet(this.outFiles);
   }
@@ -78,9 +78,9 @@ public final class WorkflowFiles {
    * @param reusedFiles reused files of the workflow
    * @param outFiles output files of the workflow
    */
-  public WorkflowFiles(final Set<WorkflowStepOutputDataFile> inFiles,
-      final Set<WorkflowStepOutputDataFile> reusedFiles,
-      final Set<WorkflowStepOutputDataFile> outFiles) {
+  public WorkflowFiles(final Set<StepOutputDataFile> inFiles,
+      final Set<StepOutputDataFile> reusedFiles,
+      final Set<StepOutputDataFile> outFiles) {
 
     this.inFiles = Sets.newHashSet(inFiles);
     this.reusedFiles = Sets.newHashSet(reusedFiles);

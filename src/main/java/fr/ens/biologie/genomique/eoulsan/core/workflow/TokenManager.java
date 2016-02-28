@@ -28,14 +28,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.Globals.STEP_RESULT_EXTENSION;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.ABORTED;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.DONE;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.FAILED;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.READY;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepType.DESIGN_STEP;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.ABORTED;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.DONE;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.FAILED;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.READY;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.DESIGN_STEP;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.GENERATOR_STEP;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.STANDARD_STEP;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,10 +60,10 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.InputPort;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPort;
+import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
+import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
 import fr.ens.biologie.genomique.eoulsan.core.schedulers.TaskScheduler;
 import fr.ens.biologie.genomique.eoulsan.core.schedulers.TaskSchedulerFactory;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepType;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.protocols.HDFSPathDataProtocol;
@@ -79,10 +79,10 @@ public class TokenManager implements Runnable {
 
   private static final int CHECKING_DELAY_MS = 1000;
 
-  private final AbstractWorkflowStep step;
+  private final AbstractStep step;
   private final TaskScheduler scheduler;
-  private final WorkflowInputPorts inputPorts;
-  private final WorkflowOutputPorts outputPorts;
+  private final StepInputPorts inputPorts;
+  private final StepOutputPorts outputPorts;
 
   private final Set<Integer> receivedTokens = new HashSet<>();
   private final Multimap<InputPort, Data> inputTokens =
@@ -137,7 +137,7 @@ public class TokenManager implements Runnable {
    */
   private boolean checkIfAllPortsHasReceivedSomeData() {
 
-    for (WorkflowInputPort port : this.inputPorts) {
+    for (StepInputPort port : this.inputPorts) {
       if (this.inputTokens.get(port).isEmpty()) {
         return false;
       }
@@ -152,7 +152,7 @@ public class TokenManager implements Runnable {
    */
   private boolean checkIfAllListPortsAreClosed() {
 
-    for (WorkflowInputPort port : this.inputPorts) {
+    for (StepInputPort port : this.inputPorts) {
       if (!port.isList()) {
         break;
       }
@@ -174,7 +174,7 @@ public class TokenManager implements Runnable {
    * @param outputPort the output port
    * @param token the token sent
    */
-  public void logSendingToken(final WorkflowOutputPort outputPort,
+  public void logSendingToken(final StepOutputPort outputPort,
       final Token token) {
 
     checkNotNull(token);
@@ -315,7 +315,7 @@ public class TokenManager implements Runnable {
    * @param inputPort port where the token must be posted
    * @param token the token to post
    */
-  public void postToken(final WorkflowInputPort inputPort, final Token token) {
+  public void postToken(final StepInputPort inputPort, final Token token) {
 
     checkNotNull(token);
     checkNotNull(inputPort);
@@ -381,7 +381,7 @@ public class TokenManager implements Runnable {
    * @param inputPort inputPort port for the data
    * @param data the data
    */
-  private void addData(final WorkflowInputPort inputPort, final Data data) {
+  private void addData(final StepInputPort inputPort, final Data data) {
 
     if (!inputPort.isList()) {
 
@@ -419,7 +419,7 @@ public class TokenManager implements Runnable {
    */
   private void sendEndOfStepTokens() {
 
-    for (WorkflowOutputPort outputPort : this.outputPorts) {
+    for (StepOutputPort outputPort : this.outputPorts) {
       this.step.sendToken(new Token(outputPort));
     }
   }
@@ -435,7 +435,7 @@ public class TokenManager implements Runnable {
       samples.put(FileNaming.toValidName(sample.getId()), sample);
     }
 
-    for (WorkflowOutputPort port : this.outputPorts) {
+    for (StepOutputPort port : this.outputPorts) {
 
       // If port is not linked or only connected to skipped steps there is need
       // to check if output data exists
@@ -492,7 +492,7 @@ public class TokenManager implements Runnable {
     final Design design = this.step.getAbstractWorkflow().getDesign();
 
     final Map<OutputPort, AbstractData> result = new HashMap<>();
-    for (WorkflowOutputPort outputPort : this.outputPorts) {
+    for (StepOutputPort outputPort : this.outputPorts) {
 
       final AbstractData data;
 
@@ -574,7 +574,7 @@ public class TokenManager implements Runnable {
   /**
    * This method write the step result in a file.
    */
-  private void writeStepResult(final WorkflowStepResult result) {
+  private void writeStepResult(final StepResult result) {
 
     if (result == null) {
       return;
@@ -857,7 +857,7 @@ public class TokenManager implements Runnable {
             if (this.step.getState() != ABORTED) {
 
               // Get the result
-              final WorkflowStepResult result =
+              final StepResult result =
                   this.scheduler.getResult(this.step);
 
               // Set the result immutable
@@ -962,7 +962,7 @@ public class TokenManager implements Runnable {
    * Constructor.
    * @param step step that tokens must be managed by this instance
    */
-  TokenManager(final AbstractWorkflowStep step) {
+  TokenManager(final AbstractStep step) {
 
     Preconditions.checkNotNull(step, "step argument cannot be null");
 

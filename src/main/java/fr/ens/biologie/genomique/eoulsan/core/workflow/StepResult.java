@@ -27,7 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Strings.nullToEmpty;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.FAILED;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.FAILED;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toTimeHumanReadable;
 
 import java.io.BufferedWriter;
@@ -71,7 +71,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class WorkflowStepResult {
+public class StepResult {
 
   private static final String TASK_COUNTERS_TAG = "Task counters";
   private static final String TASK_MESSAGE_TAG = "Task message";
@@ -660,14 +660,14 @@ public class WorkflowStepResult {
   /**
    * Constructor.
    */
-  WorkflowStepResult() {
+  StepResult() {
   }
 
   /**
    * Constructor.
    * @param step the step
    */
-  public WorkflowStepResult(final AbstractWorkflowStep step) {
+  public StepResult(final AbstractStep step) {
 
     Preconditions.checkNotNull(step, "step is null");
 
@@ -682,9 +682,9 @@ public class WorkflowStepResult {
     this.stepId = step.getId();
     this.stepName = step.getStepName();
     this.stepClass =
-        step.getStep() == null ? null : step.getStep().getClass().getName();
+        step.getModule() == null ? null : step.getModule().getClass().getName();
     this.stepVersion =
-        step.getStep() == null ? null : step.getStep().getVersion();
+        step.getModule() == null ? null : step.getModule().getVersion();
     this.parameters = step.getParameters();
   }
 

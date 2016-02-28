@@ -30,9 +30,9 @@ import java.util.Queue;
 
 import com.google.common.collect.Queues;
 
+import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResult;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
 
 /**
  * This class define a mono thread scheduler.
@@ -50,7 +50,7 @@ public class MonoThreadTaskScheduler extends AbstractTaskScheduler
   //
 
   @Override
-  public void submit(final WorkflowStep step, final TaskContextImpl context) {
+  public void submit(final Step step, final TaskContextImpl context) {
 
     // Call to the super method
     super.submit(step, context);

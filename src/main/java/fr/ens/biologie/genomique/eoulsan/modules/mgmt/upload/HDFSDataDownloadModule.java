@@ -49,7 +49,7 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.ContextUtils;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStepOutputDataFile;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.StepOutputDataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatConverter;
 import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
@@ -156,11 +156,11 @@ public class HDFSDataDownloadModule extends AbstractModule {
       final Map<DataFile, DataFile> files = new HashMap<>();
 
       // Get the output file of the workflow
-      final Set<WorkflowStepOutputDataFile> outFiles =
+      final Set<StepOutputDataFile> outFiles =
           context.getWorkflow().getWorkflowFilesAtFirstStep().getOutputFiles();
 
       // Add the output files of the workflow to the list of files to downloads
-      for (WorkflowStepOutputDataFile file : outFiles) {
+      for (StepOutputDataFile file : outFiles) {
         final DataFile in = file.getDataFile();
 
         final DataFile out =

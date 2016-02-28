@@ -84,7 +84,7 @@ class DefaultDataProduct implements DataProduct, Serializable {
 
   @Override
   public Set<ImmutableMap<InputPort, Data>> makeProduct(
-      final WorkflowInputPorts inputPorts,
+      final StepInputPorts inputPorts,
       final Multimap<InputPort, Data> inputTokens) {
 
     checkState(dataproduct != null, "configure() has not been called");

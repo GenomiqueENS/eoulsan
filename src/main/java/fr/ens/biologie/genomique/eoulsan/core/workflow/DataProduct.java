@@ -60,7 +60,7 @@ interface DataProduct {
    * @param inputTokens input token
    * @return a set of map with the relation between the port and the data
    */
-  Set<ImmutableMap<InputPort, Data>> makeProduct(WorkflowInputPorts inputPorts,
+  Set<ImmutableMap<InputPort, Data>> makeProduct(StepInputPorts inputPorts,
       Multimap<InputPort, Data> inputTokens);
 
 }

@@ -27,9 +27,9 @@ package fr.ens.biologie.genomique.eoulsan.core.schedulers;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStepResult;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.StepStatus;
 
 /**
  * This interface define a task scheduler.
@@ -43,55 +43,55 @@ public interface TaskScheduler {
    * @param step step related to the contexts
    * @param contexts contexts to execute
    */
-  void submit(WorkflowStep step, Set<TaskContextImpl> contexts);
+  void submit(Step step, Set<TaskContextImpl> contexts);
 
   /**
    * Submit a context to execute.
    * @param step step related to the context
    * @param context context to execute
    */
-  void submit(WorkflowStep step, TaskContextImpl context);
+  void submit(Step step, TaskContextImpl context);
 
   /**
    * Get the status related to a step.
    * @param step a workflow step
    * @return the step status object related to the step
    */
-  WorkflowStepStatus getStatus(WorkflowStep step);
+  StepStatus getStatus(Step step);
 
   /**
    * Get the result related to a step.
    * @param step a workflow step
    * @return the step result object related to the step
    */
-  WorkflowStepResult getResult(WorkflowStep step);
+  StepResult getResult(Step step);
 
   /**
    * Get the count of submitted task contexts of a step.
    * @param step a workflow step
    * @return the count of submitted task contexts
    */
-  int getTaskSubmittedCount(WorkflowStep step);
+  int getTaskSubmittedCount(Step step);
 
   /**
    * Get the count of running task contexts of a step.
    * @param step a workflow step
    * @return the count of running task contexts
    */
-  int getTaskRunningCount(WorkflowStep step);
+  int getTaskRunningCount(Step step);
 
   /**
    * Get the count of done task contexts of a step.
    * @param step a workflow step
    * @return the count of done task contexts
    */
-  int getTaskDoneCount(WorkflowStep step);
+  int getTaskDoneCount(Step step);
 
   /**
    * Wait the end of the task contexts.
    * @param step a workflow step
    */
-  void waitEndOfTasks(WorkflowStep step);
+  void waitEndOfTasks(Step step);
 
   /**
    * Get the count of submitted task contexts for the workflow.

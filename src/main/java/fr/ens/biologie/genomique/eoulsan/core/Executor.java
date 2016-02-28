@@ -37,8 +37,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.CommandWorkflow;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.CommandWorkflowModel;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.CommandWorkflowParser;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.Workflow;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStepObserverRegistry;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.StepObserverRegistry;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.io.DefaultDesignReader;
 import fr.ens.biologie.genomique.eoulsan.ui.UI;
@@ -131,7 +130,7 @@ public class Executor {
     final UI ui = startUI(workflow);
 
     // Enable listen workflow events by ui
-    WorkflowStepObserverRegistry.getInstance().addObserver(ui);
+    StepObserverRegistry.getInstance().addObserver(ui);
 
     getLogger()
         .info("Start analysis at " + new Date(System.currentTimeMillis()));

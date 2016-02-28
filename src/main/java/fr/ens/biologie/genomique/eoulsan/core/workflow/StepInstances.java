@@ -33,6 +33,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.ModuleRegistry;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
 
 /**
  * This class store step instances and avoid storing this instance in
@@ -44,7 +45,7 @@ public class StepInstances {
 
   private static StepInstances instance;
 
-  private final Map<WorkflowStep, Module> steps = new HashMap<>();
+  private final Map<Step, Module> steps = new HashMap<>();
 
   /**
    * Get a step instance.
@@ -52,7 +53,7 @@ public class StepInstances {
    * @return a step instance
    * @throws EoulsanRuntimeException if an error occurs while loading the step
    */
-  public Module getStep(final WorkflowStep step) {
+  public Module getStep(final Step step) {
 
     checkNotNull(step, "Step is null");
     final String stepName = step.getStepName();
@@ -72,7 +73,7 @@ public class StepInstances {
    * @return a step instance
    * @throws EoulsanException if an error occurs while loading the step
    */
-  public Module getStep(final WorkflowStep workflowStep, final String stepName,
+  public Module getStep(final Step workflowStep, final String stepName,
       final String stepVersion) throws EoulsanException {
 
     checkNotNull(stepName, "Step name is null");
@@ -97,7 +98,7 @@ public class StepInstances {
    * @param workflowStep workflow step
    * @param stepInstance step instance
    */
-  public void registerStep(final WorkflowStep workflowStep,
+  public void registerStep(final Step workflowStep,
       final Module stepInstance) {
 
     checkNotNull(workflowStep, "workflow step is null");
@@ -110,7 +111,7 @@ public class StepInstances {
    * Remove a step instance.
    * @param workflowStep workflow step
    */
-  public void removeStep(final WorkflowStep workflowStep) {
+  public void removeStep(final Step workflowStep) {
 
     checkNotNull(workflowStep);
 

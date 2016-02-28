@@ -60,10 +60,10 @@ class CrossDataProduct implements DataProduct, Serializable {
    * Class needed for cartesian product computation.
    */
   private static class CartesianProductEntry {
-    final WorkflowInputPort port;
+    final StepInputPort port;
     final Data data;
 
-    CartesianProductEntry(final WorkflowInputPort port, final Data data) {
+    CartesianProductEntry(final StepInputPort port, final Data data) {
       this.port = port;
       this.data = data;
     }
@@ -76,19 +76,19 @@ class CrossDataProduct implements DataProduct, Serializable {
 
   @Override
   public Set<ImmutableMap<InputPort, Data>> makeProduct(
-      final WorkflowInputPorts inputPorts,
+      final StepInputPorts inputPorts,
       final Multimap<InputPort, Data> inputTokens) {
 
     checkNotNull(inputPorts, "inputPorts argument cannot be null");
     checkNotNull(inputTokens, "inputTokens argument cannot be null");
 
     final Set<ImmutableMap<InputPort, Data>> result = new HashSet<>();
-    final List<WorkflowInputPort> portsList =
+    final List<StepInputPort> portsList =
         Lists.newArrayList(inputPorts.iterator());
 
     // First create the lists for Sets.cartesianProduct()
     final List<Set<CartesianProductEntry>> sets = new ArrayList<>();
-    for (WorkflowInputPort port : portsList) {
+    for (StepInputPort port : portsList) {
       final Set<CartesianProductEntry> s = new HashSet<>();
       for (Data d : inputTokens.get(port)) {
         s.add(new CartesianProductEntry(port, d));

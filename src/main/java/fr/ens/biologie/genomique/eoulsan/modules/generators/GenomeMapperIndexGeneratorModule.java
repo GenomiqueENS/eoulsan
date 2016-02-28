@@ -45,11 +45,11 @@ import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
@@ -145,7 +145,7 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
     String version = null;
     String flavor = null;
 
-    for (WorkflowStep step : context.getWorkflow().getSteps()) {
+    for (Step step : context.getWorkflow().getSteps()) {
 
       if (AbstractReadsMapperModule.STEP_NAME.equals(step.getStepName())
           || AbstractFilterAndMapReadsModule.STEP_NAME

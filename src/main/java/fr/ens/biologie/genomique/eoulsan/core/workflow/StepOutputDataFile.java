@@ -34,6 +34,7 @@ import java.util.List;
 import com.google.common.base.Preconditions;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
@@ -47,10 +48,10 @@ import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public final class WorkflowStepOutputDataFile
-    implements Comparable<WorkflowStepOutputDataFile> {
+public final class StepOutputDataFile
+    implements Comparable<StepOutputDataFile> {
 
-  private final AbstractWorkflowStep step;
+  private final AbstractStep step;
   private final String portName;
   private final DataFormat format;
   private final Sample sample;
@@ -62,7 +63,7 @@ public final class WorkflowStepOutputDataFile
    * Get the workflow step that produced the file.
    * @return the workflow step
    */
-  public AbstractWorkflowStep getStep() {
+  public AbstractStep getStep() {
 
     return this.step;
   }
@@ -130,7 +131,7 @@ public final class WorkflowStepOutputDataFile
    * @param fileIndex file index of the file for multi-file data
    * @return a new DataFile object
    */
-  private static DataFile newDataFile(final AbstractWorkflowStep step,
+  private static DataFile newDataFile(final AbstractStep step,
       final String portName, final DataFormat format, final Sample sample,
       final int fileIndex) {
 
@@ -235,7 +236,7 @@ public final class WorkflowStepOutputDataFile
    * @param fileIndex file index of the file for multi-file data
    * @return a new DataFile object
    */
-  private static DataFile newStandardDataFile(final AbstractWorkflowStep step,
+  private static DataFile newStandardDataFile(final AbstractStep step,
       final String portName, final DataFormat format, final Sample sample,
       final int fileIndex, final CompressionType compression) {
 
@@ -299,7 +300,7 @@ public final class WorkflowStepOutputDataFile
   //
 
   @Override
-  public int compareTo(final WorkflowStepOutputDataFile o) {
+  public int compareTo(final StepOutputDataFile o) {
 
     Preconditions.checkNotNull(o, "o is null");
 
@@ -313,11 +314,11 @@ public final class WorkflowStepOutputDataFile
       return true;
     }
 
-    if (o == null || !(o instanceof WorkflowStepOutputDataFile)) {
+    if (o == null || !(o instanceof StepOutputDataFile)) {
       return false;
     }
 
-    final WorkflowStepOutputDataFile that = (WorkflowStepOutputDataFile) o;
+    final StepOutputDataFile that = (StepOutputDataFile) o;
 
     return equal(this.file, that.file);
   }
@@ -342,7 +343,7 @@ public final class WorkflowStepOutputDataFile
    * @param compression the compression of the file
    * @return a file name as a String
    */
-  public static String newStandardFilename(final WorkflowStep step,
+  public static String newStandardFilename(final Step step,
       final String portName, final DataFormat format, final Sample sample,
       final int fileIndex, final CompressionType compression) {
 
@@ -397,13 +398,13 @@ public final class WorkflowStepOutputDataFile
    *          return value will be the maximum number files
    * @return the number of files
    */
-  public static int dataFileCount(final WorkflowOutputPort outputPort,
+  public static int dataFileCount(final StepOutputPort outputPort,
       final Sample sample, final boolean existingFiles) {
 
     Preconditions.checkNotNull(outputPort, "outputPort cannot be null");
     Preconditions.checkNotNull(sample, "Sample argument cannot be null");
 
-    final AbstractWorkflowStep step = outputPort.getStep();
+    final AbstractStep step = outputPort.getStep();
     final DataFormat format = outputPort.getFormat();
     final CompressionType compression = outputPort.getCompression();
 
@@ -456,7 +457,7 @@ public final class WorkflowStepOutputDataFile
    * @param outputPort output port that create the file
    * @param sample sample of the file
    */
-  public WorkflowStepOutputDataFile(final WorkflowOutputPort outputPort,
+  public StepOutputDataFile(final StepOutputPort outputPort,
       final Sample sample) {
 
     this(outputPort, sample, -1);
@@ -468,7 +469,7 @@ public final class WorkflowStepOutputDataFile
    * @param sample sample of the file
    * @param fileIndex file index of the file for multi-file data
    */
-  public WorkflowStepOutputDataFile(final WorkflowOutputPort outputPort,
+  public StepOutputDataFile(final StepOutputPort outputPort,
       final Sample sample, final int fileIndex) {
 
     Preconditions.checkNotNull(outputPort, "outputPort cannot be null");

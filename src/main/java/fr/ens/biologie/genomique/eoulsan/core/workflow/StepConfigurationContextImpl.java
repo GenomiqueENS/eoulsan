@@ -36,7 +36,9 @@ import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
+import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 
 /**
@@ -45,17 +47,17 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class WorkflowStepConfigurationContext
+public class StepConfigurationContextImpl
     implements StepConfigurationContext {
 
   private final WorkflowContext workflowContext;
-  private final AbstractWorkflowStep step;
+  private final AbstractStep step;
 
-  private static class WorkflowStepWrapper implements WorkflowStep {
+  private static class WorkflowStepWrapper implements Step {
 
     private static final long serialVersionUID = 6362676600557016431L;
 
-    private final AbstractWorkflowStep step;
+    private final AbstractStep step;
 
     @Override
     public Workflow getWorkflow() {
@@ -146,7 +148,7 @@ public class WorkflowStepConfigurationContext
      * Constructor.
      * @param step step
      */
-    private WorkflowStepWrapper(final AbstractWorkflowStep step) {
+    private WorkflowStepWrapper(final AbstractStep step) {
 
       this.step = step;
     }
@@ -262,7 +264,7 @@ public class WorkflowStepConfigurationContext
   }
 
   @Override
-  public WorkflowStep getCurrentStep() {
+  public Step getCurrentStep() {
     return new WorkflowStepWrapper(this.step);
   }
 
@@ -302,7 +304,7 @@ public class WorkflowStepConfigurationContext
    * Constructor.
    * @param step step related to the context
    */
-  WorkflowStepConfigurationContext(final AbstractWorkflowStep step) {
+  StepConfigurationContextImpl(final AbstractStep step) {
 
     checkNotNull(step, "step cannot be null");
 

@@ -62,7 +62,7 @@ class MatchDataProduct implements DataProduct, Serializable {
 
   @Override
   public Set<ImmutableMap<InputPort, Data>> makeProduct(
-      final WorkflowInputPorts inputPorts,
+      final StepInputPorts inputPorts,
       final Multimap<InputPort, Data> inputTokens) {
 
     checkNotNull(inputPorts, "inputPorts argument cannot be null");

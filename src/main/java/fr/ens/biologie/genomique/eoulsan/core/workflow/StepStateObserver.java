@@ -26,9 +26,9 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.CREATED;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.READY;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.WAITING;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.CREATED;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.READY;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WAITING;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -39,28 +39,29 @@ import java.util.Set;
 
 import com.google.common.base.Joiner;
 
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
 
 /**
  * This class define an observer for step states.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class WorkflowStepStateObserver implements Serializable {
+public class StepStateObserver implements Serializable {
 
   private static final long serialVersionUID = -5734184849291521186L;
 
-  private final AbstractWorkflowStep step;
+  private final AbstractStep step;
   private StepState stepState = CREATED;
 
-  private final Set<AbstractWorkflowStep> requiredSteps = new HashSet<>();
-  private final Set<AbstractWorkflowStep> stepsToInform = new HashSet<>();
+  private final Set<AbstractStep> requiredSteps = new HashSet<>();
+  private final Set<AbstractStep> stepsToInform = new HashSet<>();
 
   /**
    * Add a dependency.
    * @param step the dependency
    */
-  public void addDependency(final AbstractWorkflowStep step) {
+  public void addDependency(final AbstractStep step) {
 
     this.requiredSteps.add(step);
     step.getStepStateObserver().stepsToInform.add(this.step);
@@ -70,7 +71,7 @@ public class WorkflowStepStateObserver implements Serializable {
    * Get the required steps.
    * @return a set with the required steps
    */
-  public Set<AbstractWorkflowStep> getRequiredSteps() {
+  public Set<AbstractStep> getRequiredSteps() {
 
     return Collections.unmodifiableSet(this.requiredSteps);
   }
@@ -109,7 +110,7 @@ public class WorkflowStepStateObserver implements Serializable {
     // If is the root step, there is nothing to wait
     synchronized (this) {
 
-      if (this.step.getType() == WorkflowStep.StepType.ROOT_STEP
+      if (this.step.getType() == Step.StepType.ROOT_STEP
           && state == WAITING) {
         this.stepState = READY;
       } else {
@@ -131,7 +132,7 @@ public class WorkflowStepStateObserver implements Serializable {
 
     // Inform step that depend of this step
     if (this.stepState.isDoneState()) {
-      for (AbstractWorkflowStep step : this.stepsToInform) {
+      for (AbstractStep step : this.stepsToInform) {
         step.getStepStateObserver().updateStatus();
       }
     }
@@ -145,7 +146,7 @@ public class WorkflowStepStateObserver implements Serializable {
     this.step.getAbstractWorkflow().updateStepState(this.step);
 
     // Inform listeners
-    for (WorkflowStepObserver o : WorkflowStepObserverRegistry.getInstance()
+    for (StepObserver o : StepObserverRegistry.getInstance()
         .getObservers()) {
       o.notifyStepState(this.step);
     }
@@ -162,7 +163,7 @@ public class WorkflowStepStateObserver implements Serializable {
       return;
     }
 
-    for (AbstractWorkflowStep step : this.requiredSteps) {
+    for (AbstractStep step : this.requiredSteps) {
       if (!(step.getState().isDoneState())) {
         return;
       }
@@ -183,7 +184,7 @@ public class WorkflowStepStateObserver implements Serializable {
 
     List<String> list = new ArrayList<>();
 
-    for (AbstractWorkflowStep step : this.requiredSteps) {
+    for (AbstractStep step : this.requiredSteps) {
       list.add("step #" + step.getNumber() + " " + step.getId());
     }
 
@@ -203,7 +204,7 @@ public class WorkflowStepStateObserver implements Serializable {
    * Constructor.
    * @param step the step related to the instance
    */
-  public WorkflowStepStateObserver(final AbstractWorkflowStep step) {
+  public StepStateObserver(final AbstractStep step) {
 
     checkNotNull(step, "step cannot be null");
 

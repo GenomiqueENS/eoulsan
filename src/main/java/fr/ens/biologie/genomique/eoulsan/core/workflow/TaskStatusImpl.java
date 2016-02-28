@@ -48,7 +48,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Reporter;
 public class TaskStatusImpl implements TaskStatus {
 
   private final TaskContextImpl context;
-  private final WorkflowStepStatus status;
+  private final StepStatus status;
 
   private String message;
   private final Map<String, Long> counters = new HashMap<>();
@@ -303,7 +303,7 @@ public class TaskStatusImpl implements TaskStatus {
    * @param taskContext the task context object
    * @param status the status object
    */
-  TaskStatusImpl(final TaskContextImpl taskContext, final WorkflowStepStatus status) {
+  TaskStatusImpl(final TaskContextImpl taskContext, final StepStatus status) {
 
     Preconditions.checkNotNull(taskContext, "context cannot be null");
 

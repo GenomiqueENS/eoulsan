@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.ui;
 
-import fr.ens.biologie.genomique.eoulsan.core.workflow.Workflow;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 
 /**
  * This class define an UI that do nothing.
@@ -46,25 +46,25 @@ public class NoUI extends AbstractUI {
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step) {
+  public void notifyStepState(final Step step) {
     // Do nothing
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step, final int contextId,
+  public void notifyStepState(final Step step, final int contextId,
       final String contextName, final double progress) {
     // Do nothing
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step,
+  public void notifyStepState(final Step step,
       final int terminatedTasks, final int submittedTasks,
       final double progress) {
     // Do nothing
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step, final String note) {
+  public void notifyStepState(final Step step, final String note) {
     // Do nothing
   }
 
@@ -75,17 +75,17 @@ public class NoUI extends AbstractUI {
   }
 
   @Override
-  public void notifyTaskSubmitted(WorkflowStep step, int contextId) {
+  public void notifyTaskSubmitted(Step step, int contextId) {
     // Do nothing
   }
 
   @Override
-  public void notifyTaskRunning(WorkflowStep step, int contextId) {
+  public void notifyTaskRunning(Step step, int contextId) {
     // Do nothing
   }
 
   @Override
-  public void notifyTaskDone(WorkflowStep step, int contextId) {
+  public void notifyTaskDone(Step step, int contextId) {
     // Do nothing
   }
 

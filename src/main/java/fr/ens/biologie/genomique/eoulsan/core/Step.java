@@ -22,22 +22,18 @@
  *
  */
 
-package fr.ens.biologie.genomique.eoulsan.core.workflow;
+package fr.ens.biologie.genomique.eoulsan.core;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-
-import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
-import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 
 /**
  * This interface define a step of the workflow.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public interface WorkflowStep extends Serializable {
+public interface Step extends Serializable {
 
   /**
    * This enum define the type of step.

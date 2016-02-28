@@ -38,14 +38,14 @@ public class TokenManagerRegistry {
 
   private static TokenManagerRegistry singleton;
 
-  private final Map<AbstractWorkflowStep, TokenManager> map = new HashMap<>();
+  private final Map<AbstractStep, TokenManager> map = new HashMap<>();
 
   /**
    * Get the requested TokenManager.
    * @param step step which TokenManager is requested
    * @return a TokenManager instance
    */
-  TokenManager getTokenManager(final AbstractWorkflowStep step) {
+  TokenManager getTokenManager(final AbstractStep step) {
 
     Preconditions.checkNotNull(step, "step cannot be null");
 

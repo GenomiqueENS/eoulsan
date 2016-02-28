@@ -38,17 +38,17 @@ import com.google.common.base.Preconditions;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class WorkflowStepStatus {
+public class StepStatus {
 
-  private final AbstractWorkflowStep step;
+  private final AbstractStep step;
 
   private final Map<Integer, Double> taskProgress = new HashMap<>();
   private final Map<Integer, String> taskNames = new HashMap<>();
   private double progress = Double.NaN;
   private String note;
 
-  private final Set<WorkflowStepObserver> observers =
-      WorkflowStepObserverRegistry.getInstance().getObservers();
+  private final Set<StepObserver> observers =
+      StepObserverRegistry.getInstance().getObservers();
 
   //
   // Progress Methods
@@ -243,7 +243,7 @@ public class WorkflowStepStatus {
   public void setTaskSubmitted(final int contextId) {
 
     // Inform listeners
-    for (WorkflowStepObserver o : this.observers) {
+    for (StepObserver o : this.observers) {
       o.notifyTaskSubmitted(this.step, contextId);
     }
   }
@@ -255,7 +255,7 @@ public class WorkflowStepStatus {
   public void setTaskRunning(final int contextId) {
 
     // Inform listeners
-    for (WorkflowStepObserver o : this.observers) {
+    for (StepObserver o : this.observers) {
       o.notifyTaskRunning(this.step, contextId);
     }
   }
@@ -267,7 +267,7 @@ public class WorkflowStepStatus {
   public void setTaskDone(final int contextId) {
 
     // Inform listeners
-    for (WorkflowStepObserver o : this.observers) {
+    for (StepObserver o : this.observers) {
       o.notifyTaskDone(this.step, contextId);
     }
   }
@@ -286,7 +286,7 @@ public class WorkflowStepStatus {
       final String contextName, final double progress) {
 
     // Inform listeners
-    for (WorkflowStepObserver o : this.observers) {
+    for (StepObserver o : this.observers) {
       o.notifyStepState(this.step, contextId, contextName, progress);
     }
   }
@@ -297,7 +297,7 @@ public class WorkflowStepStatus {
   private void progressStatusUpdated() {
 
     // Inform listeners
-    for (WorkflowStepObserver o : this.observers) {
+    for (StepObserver o : this.observers) {
       o.notifyStepState(this.step, getTerminatedTasks(), getSubmittedTasks(),
           getProgress());
     }
@@ -309,7 +309,7 @@ public class WorkflowStepStatus {
   private void noteStatusUpdated() {
 
     // Inform listeners
-    for (WorkflowStepObserver o : this.observers) {
+    for (StepObserver o : this.observers) {
       o.notifyStepState(this.step, this.note);
     }
   }
@@ -344,7 +344,7 @@ public class WorkflowStepStatus {
   // Constructor
   //
 
-  public WorkflowStepStatus(final AbstractWorkflowStep step) {
+  public StepStatus(final AbstractStep step) {
 
     Preconditions.checkNotNull(step, "Step is null");
 

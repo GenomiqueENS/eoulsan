@@ -49,7 +49,9 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.core.InputPort;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPort;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
+import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
@@ -70,7 +72,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
   private final int id;
   private final WorkflowContext workflowContext;
   private String contextName;
-  private final AbstractWorkflowStep step;
+  private final AbstractStep step;
 
   private final Map<String, Data> inputData = new HashMap<>();
   private final Map<String, AbstractData> outputData = new HashMap<>();
@@ -206,7 +208,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
   }
 
   @Override
-  public WorkflowStep getCurrentStep() {
+  public Step getCurrentStep() {
     return this.step;
   }
 
@@ -214,7 +216,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    * Get the AbstractWorkflowStep object.
    * @return a AbstractWorkflowStep object
    */
-  AbstractWorkflowStep getStep() {
+  AbstractStep getStep() {
 
     return this.step;
   }
@@ -401,7 +403,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
     return this.outputData.get(port.getName());
   }
 
-  AbstractWorkflowStep getWorkflowStep() {
+  AbstractStep getWorkflowStep() {
 
     return this.step;
   }
@@ -419,7 +421,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
     checkNotNull(format, "The format is null");
 
-    final List<WorkflowInputPort> ports =
+    final List<StepInputPort> ports =
         this.step.getWorkflowInputPorts().getPortsWithDataFormat(format);
 
     switch (ports.size()) {
@@ -447,7 +449,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
     checkNotNull(format, "The format is null");
 
-    final List<WorkflowOutputPort> ports =
+    final List<StepOutputPort> ports =
         this.step.getWorkflowOutputPorts().getPortsWithDataFormat(format);
 
     switch (ports.size()) {
@@ -685,7 +687,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    * @param step step related to the context
    */
   TaskContextImpl(final WorkflowContext workflowContext,
-      final AbstractWorkflowStep step, final Map<InputPort, Data> inputData,
+      final AbstractStep step, final Map<InputPort, Data> inputData,
       final Map<OutputPort, AbstractData> outputData) {
 
     checkNotNull(workflowContext, "workflow context cannot be null");

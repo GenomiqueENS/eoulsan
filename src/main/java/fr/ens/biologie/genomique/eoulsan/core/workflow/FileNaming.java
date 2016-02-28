@@ -219,7 +219,7 @@ public class FileNaming {
    * Set several field of the object from a workflow output port.
    * @param port the workflow output port
    */
-  private void set(final WorkflowOutputPort port) {
+  private void set(final StepOutputPort port) {
 
     checkNotNull(port, "port argument cannot be null");
 
@@ -398,7 +398,7 @@ public class FileNaming {
    * @param port output port that generate the file
    * @return a String with the prefix of the file
    */
-  public static String filePrefix(final WorkflowOutputPort port) {
+  public static String filePrefix(final StepOutputPort port) {
 
     final FileNaming f = new FileNaming();
     f.set(port);
@@ -445,7 +445,7 @@ public class FileNaming {
    * Create the glob for the port.
    * @return a glob in a string
    */
-  public static String glob(final WorkflowOutputPort port) {
+  public static String glob(final StepOutputPort port) {
 
     final FileNaming f = new FileNaming();
     f.set(port);
@@ -464,7 +464,7 @@ public class FileNaming {
    * @param fileIndex file index
    * @return a String with the suffix of a file
    */
-  public static String fileMiddle(final WorkflowOutputPort port,
+  public static String fileMiddle(final StepOutputPort port,
       final DataElement data, final int fileIndex) {
 
     final FileNaming f = new FileNaming();
@@ -482,7 +482,7 @@ public class FileNaming {
    * @param part file part
    * @return a String with the suffix of a file
    */
-  public static String fileMiddle(final WorkflowOutputPort port,
+  public static String fileMiddle(final StepOutputPort port,
       final String dataName, final int fileIndex, final int part) {
 
     final FileNaming f = new FileNaming();
@@ -536,7 +536,7 @@ public class FileNaming {
    * @param port a workflow port
    * @return a string with the suffix that correspond to the filename
    */
-  public static String fileSuffix(final WorkflowOutputPort port) {
+  public static String fileSuffix(final StepOutputPort port) {
 
     final FileNaming f = new FileNaming();
     f.set(port);
@@ -616,7 +616,7 @@ public class FileNaming {
    * @param fileIndex file index
    * @return a String with the name of the file
    */
-  public static String filename(final WorkflowOutputPort port,
+  public static String filename(final StepOutputPort port,
       final DataElement data, final int fileIndex) {
 
     FileNaming f = new FileNaming();
@@ -768,7 +768,7 @@ public class FileNaming {
    * @param fileIndex file index
    * @return a DataFile object
    */
-  public static DataFile file(final WorkflowOutputPort port,
+  public static DataFile file(final StepOutputPort port,
       final DataElement data, final int fileIndex) {
 
     return new DataFile(port.getStep().getStepOutputDirectory(),

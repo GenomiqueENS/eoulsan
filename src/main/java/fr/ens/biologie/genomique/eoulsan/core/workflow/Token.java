@@ -39,7 +39,7 @@ class Token {
   private static int count;
 
   private final int id = ++count;
-  private final WorkflowOutputPort fromPort;
+  private final StepOutputPort fromPort;
   private final boolean endOfStepToken;
   private final Data data;
 
@@ -55,7 +55,7 @@ class Token {
    * Get the output port at the origin of the token.
    * @return a WorkflowOutputPort object
    */
-  public WorkflowOutputPort getOrigin() {
+  public StepOutputPort getOrigin() {
 
     return this.fromPort;
   }
@@ -98,7 +98,7 @@ class Token {
    * Constructor for an end of step token.
    * @param fromPort origin of the token
    */
-  Token(final WorkflowOutputPort fromPort) {
+  Token(final StepOutputPort fromPort) {
 
     Preconditions.checkNotNull(fromPort);
 
@@ -112,7 +112,7 @@ class Token {
    * @param fromPort origin of the token
    * @param data data embedded in the token
    */
-  Token(final WorkflowOutputPort fromPort, final Data data) {
+  Token(final StepOutputPort fromPort, final Data data) {
 
     Preconditions.checkNotNull(fromPort);
     Preconditions.checkNotNull(data);

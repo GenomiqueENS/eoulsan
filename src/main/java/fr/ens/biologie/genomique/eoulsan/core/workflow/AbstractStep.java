@@ -31,8 +31,8 @@ import static fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUti
 import static fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUtils.isNoLog;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.noInputPort;
 import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.noOutputPort;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepType.GENERATOR_STEP;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepType.STANDARD_STEP;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.GENERATOR_STEP;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.STANDARD_STEP;
 
 import java.util.Collections;
 import java.util.Set;
@@ -48,6 +48,8 @@ import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
@@ -61,7 +63,7 @@ import fr.ens.biologie.genomique.eoulsan.modules.FakeModule;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public abstract class AbstractWorkflowStep implements WorkflowStep {
+public abstract class AbstractStep implements Step {
 
   /** Serialization version UID. */
   private static final long serialVersionUID = 2040628014465126384L;
@@ -90,13 +92,13 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   private final int requiredMemory;
   private final int requiredProcessors;
 
-  private WorkflowOutputPorts outputPorts = WorkflowOutputPorts.noOutputPort();
-  private WorkflowInputPorts inputPorts = WorkflowInputPorts.noInputPort();
+  private StepOutputPorts outputPorts = StepOutputPorts.noOutputPort();
+  private StepInputPorts inputPorts = StepInputPorts.noInputPort();
 
   private final DataProduct dataProduct = new DefaultDataProduct();
   private final String dataProductConfiguration;
 
-  private final WorkflowStepStateObserver observer;
+  private final StepStateObserver observer;
 
   private final DataFile outputDir;
 
@@ -165,10 +167,10 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
   }
 
   /**
-   * Get the underlying Step object.
-   * @return the Step object
+   * Get the underlying Module object.
+   * @return the Module object
    */
-  public Module getStep() {
+  public Module getModule() {
 
     if (this.stepName == null) {
       return null;
@@ -232,7 +234,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * Get the input ports.
    * @return the InputPorts object
    */
-  WorkflowInputPorts getWorkflowInputPorts() {
+  StepInputPorts getWorkflowInputPorts() {
 
     return this.inputPorts;
   }
@@ -241,7 +243,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * Get the output ports.
    * @return the OutputPorts object
    */
-  WorkflowOutputPorts getWorkflowOutputPorts() {
+  StepOutputPorts getWorkflowOutputPorts() {
 
     return this.outputPorts;
   }
@@ -278,7 +280,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * Get the state observer object related to this step.
    * @return a WorkflowStepStateObserver
    */
-  WorkflowStepStateObserver getStepStateObserver() {
+  StepStateObserver getStepStateObserver() {
 
     return this.observer;
   }
@@ -333,13 +335,13 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.outputPortsParameter = step.getOutputPorts();
     if (this.outputPorts != null) {
       this.outputPorts =
-          new WorkflowOutputPorts(this, this.outputPortsParameter);
+          new StepOutputPorts(this, this.outputPortsParameter);
     }
 
     // Get input ports
     this.inputPortsParameter = step.getInputPorts();
     if (this.inputPorts != null) {
-      this.inputPorts = new WorkflowInputPorts(this, this.inputPortsParameter);
+      this.inputPorts = new StepInputPorts(this, this.inputPortsParameter);
     }
   }
 
@@ -348,15 +350,15 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * @param inputPort the input port provided by the dependency
    * @param dependencyOutputPort the output port of the step
    */
-  protected void addDependency(final WorkflowInputPort inputPort,
-      final WorkflowOutputPort dependencyOutputPort) {
+  protected void addDependency(final StepInputPort inputPort,
+      final StepOutputPort dependencyOutputPort) {
 
     checkNotNull(inputPort, "inputPort argument cannot be null");
     checkNotNull(dependencyOutputPort,
         "dependencyOutputPort argument cannot be null");
 
-    final AbstractWorkflowStep step = inputPort.getStep();
-    final AbstractWorkflowStep dependencyStep = dependencyOutputPort.getStep();
+    final AbstractStep step = inputPort.getStep();
+    final AbstractStep dependencyStep = dependencyOutputPort.getStep();
 
     checkArgument(step == this,
         "input port ("
@@ -375,7 +377,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * Add a dependency for this step.
    * @param step the dependency
    */
-  protected void addDependency(final AbstractWorkflowStep step) {
+  protected void addDependency(final AbstractStep step) {
 
     checkNotNull(step, "step argument cannot be null");
 
@@ -463,12 +465,12 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
       getLogger().info("Configure "
           + getId() + " step with step parameters: " + getParameters());
 
-      final Module step = getStep();
+      final Module step = getModule();
       if (getType() == StepType.STANDARD_STEP
           || getType() == StepType.DESIGN_STEP || isGenerator(step)) {
 
         // Configure step
-        step.configure(new WorkflowStepConfigurationContext(this),
+        step.configure(new StepConfigurationContextImpl(this),
             getParameters());
 
         // Update parallelization mode if step configuration requires it
@@ -502,7 +504,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
 
     final String outputPortName = token.getOrigin().getName();
 
-    for (WorkflowInputPort inputPort : this.outputPorts.getPort(outputPortName)
+    for (StepInputPort inputPort : this.outputPorts.getPort(outputPortName)
         .getLinks()) {
 
       inputPort.getStep().postToken(inputPort, token);
@@ -518,7 +520,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * @param inputPort destination of the token
    * @param token the token
    */
-  private void postToken(final WorkflowInputPort inputPort, final Token token) {
+  private void postToken(final StepInputPort inputPort, final Token token) {
 
     checkNotNull(inputPort, "inputPort cannot be null");
     checkNotNull(token, "token cannot be null");
@@ -559,7 +561,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * @param workflow the workflow of the step
    * @param type the type of the step
    */
-  public AbstractWorkflowStep(final AbstractWorkflow workflow,
+  public AbstractStep(final AbstractWorkflow workflow,
       final StepType type) {
 
     checkArgument(type != StepType.STANDARD_STEP,
@@ -635,7 +637,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     }
 
     // Set state observer
-    this.observer = new WorkflowStepStateObserver(this);
+    this.observer = new StepStateObserver(this);
 
     // Register this step in the workflow
     this.workflow.register(this);
@@ -647,7 +649,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * @param format DataFormat
    * @throws EoulsanException if an error occurs while configuring the generator
    */
-  public AbstractWorkflowStep(final AbstractWorkflow workflow,
+  public AbstractStep(final AbstractWorkflow workflow,
       final DataFormat format) throws EoulsanException {
 
     checkNotNull(workflow, "Workflow argument cannot be null");
@@ -680,7 +682,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
         defineOutputDirectory(workflow, generator, this.copyResultsToOutput);
 
     // Set state observer
-    this.observer = new WorkflowStepStateObserver(this);
+    this.observer = new StepStateObserver(this);
 
     // Register this step in the workflow
     this.workflow.register(this);
@@ -700,7 +702,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
    * @param dataProduct data product
    * @throws EoulsanException id an error occurs while creating the step
    */
-  protected AbstractWorkflowStep(final AbstractWorkflow workflow,
+  protected AbstractStep(final AbstractWorkflow workflow,
       final String id, final String stepName, final String stepVersion,
       final boolean skip, final boolean copyResultsToOutput,
       final Set<Parameter> parameters, final int requiredMemory,
@@ -737,13 +739,13 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.outputDir = defineOutputDirectory(workflow, step, copyResultsToOutput);
 
     // Set state observer
-    this.observer = new WorkflowStepStateObserver(this);
+    this.observer = new StepStateObserver(this);
 
     // Register this step in the workflow
     this.workflow.register(this);
   }
 
-  protected AbstractWorkflowStep(final AbstractWorkflow workflow,
+  protected AbstractStep(final AbstractWorkflow workflow,
       final String id, final Module step, final boolean skip,
       final boolean copyResultsToOutput, final Set<Parameter> parameters)
           throws EoulsanException {
@@ -776,7 +778,7 @@ public abstract class AbstractWorkflowStep implements WorkflowStep {
     this.outputDir = defineOutputDirectory(workflow, step, copyResultsToOutput);
 
     // Set state observer
-    this.observer = new WorkflowStepStateObserver(this);
+    this.observer = new StepStateObserver(this);
 
     // Register this step in the workflow
     this.workflow.register(this);

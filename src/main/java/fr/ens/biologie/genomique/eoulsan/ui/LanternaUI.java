@@ -25,11 +25,11 @@
 package fr.ens.biologie.genomique.eoulsan.ui;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.ABORTED;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.DONE;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.FAILED;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.PARTIALLY_DONE;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState.WORKING;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.ABORTED;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.DONE;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.FAILED;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.PARTIALLY_DONE;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
 import static java.lang.String.format;
 
 import java.util.HashMap;
@@ -43,9 +43,9 @@ import com.googlecode.lanterna.terminal.TerminalSize;
 import com.googlecode.lanterna.terminal.text.UnixTerminal;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.Workflow;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Workflow;
+import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
 
 /**
  * This class define an UI using Lanterna library.
@@ -55,17 +55,17 @@ import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepState;
 public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
 
   private Workflow workflow;
-  private final Map<WorkflowStep, Double> steps = new HashMap<>();
-  private final Map<WorkflowStep, Integer> submittedTasks = new HashMap<>();
-  private final Map<WorkflowStep, Integer> runningTasks = new HashMap<>();
-  private final Map<WorkflowStep, Integer> doneTasks = new HashMap<>();
-  private final Map<WorkflowStep, Double> stepProgress = new HashMap<>();
+  private final Map<Step, Double> steps = new HashMap<>();
+  private final Map<Step, Integer> submittedTasks = new HashMap<>();
+  private final Map<Step, Integer> runningTasks = new HashMap<>();
+  private final Map<Step, Integer> doneTasks = new HashMap<>();
+  private final Map<Step, Double> stepProgress = new HashMap<>();
   private double globalProgress;
 
   private UnixTerminal terminal;
   private TerminalSize terminalSize;
 
-  private final Map<WorkflowStep, Integer> stepLines = new HashMap<>();
+  private final Map<Step, Integer> stepLines = new HashMap<>();
   private int lineCount;
 
   private boolean jobDone;
@@ -109,7 +109,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step) {
+  public void notifyStepState(final Step step) {
 
     if (step == null || step.getWorkflow() != this.workflow) {
       return;
@@ -134,14 +134,14 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step, final int contextId,
+  public void notifyStepState(final Step step, final int contextId,
       final String contextName, final double progress) {
 
     // Do nothing
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step,
+  public void notifyStepState(final Step step,
       final int terminatedTasks, final int submittedTasks,
       final double progress) {
 
@@ -173,7 +173,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   }
 
   @Override
-  public void notifyStepState(final WorkflowStep step, final String note) {
+  public void notifyStepState(final Step step, final String note) {
 
     // Do nothing
   }
@@ -203,7 +203,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   }
 
   @Override
-  public void notifyTaskSubmitted(final WorkflowStep step,
+  public void notifyTaskSubmitted(final Step step,
       final int contextId) {
 
     synchronized (this) {
@@ -218,7 +218,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   }
 
   @Override
-  public void notifyTaskRunning(final WorkflowStep step, final int contextId) {
+  public void notifyTaskRunning(final Step step, final int contextId) {
 
     synchronized (this) {
 
@@ -232,7 +232,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   }
 
   @Override
-  public void notifyTaskDone(final WorkflowStep step, final int contextId) {
+  public void notifyTaskDone(final Step step, final int contextId) {
 
     synchronized (this) {
 
@@ -246,8 +246,8 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
     }
   }
 
-  private void notifyTask(final WorkflowStep step, final int contextId,
-      final Map<WorkflowStep, Integer> map, final int diff) {
+  private void notifyTask(final Step step, final int contextId,
+      final Map<Step, Integer> map, final int diff) {
 
     if (map.containsKey(step)) {
 
@@ -261,7 +261,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   // Update progress
   //
 
-  private boolean check(final WorkflowStep step) {
+  private boolean check(final Step step) {
 
     // Do nothing if there is no terminal or if the job is completed
     if (this.terminal == null || this.jobDone) {
@@ -285,7 +285,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
     return true;
   }
 
-  private void print(final WorkflowStep step) {
+  private void print(final Step step) {
 
     this.terminal.setCursorVisible(false);
 
@@ -523,7 +523,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
    */
   private void searchSteps() {
 
-    for (WorkflowStep step : this.workflow.getSteps()) {
+    for (Step step : this.workflow.getSteps()) {
 
       if (step == null) {
         continue;
@@ -552,7 +552,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
    * @param progress progress value of the step
    * @return global progress as percent
    */
-  private double computeGlobalProgress(final WorkflowStep step,
+  private double computeGlobalProgress(final Step step,
       final double progress) {
 
     if (!this.steps.containsKey(step)) {

@@ -78,8 +78,8 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.CommandWorkflowParser.StepOutputPort;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowStep.StepType;
 
 /**
  * This class define the workflow model object of Eoulsan.

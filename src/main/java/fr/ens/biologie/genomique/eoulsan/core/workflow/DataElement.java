@@ -54,7 +54,7 @@ class DataElement extends AbstractData implements Serializable {
   protected final List<DataFile> files;
 
   // Field required for multi-files Data creation
-  private final WorkflowOutputPort port;
+  private final StepOutputPort port;
 
   private boolean canRename = true;
 
@@ -310,7 +310,7 @@ class DataElement extends AbstractData implements Serializable {
     this(format, Collections.singletonList(file), design);
   }
 
-  DataElement(final WorkflowOutputPort port, final Design design) {
+  DataElement(final StepOutputPort port, final Design design) {
 
     super(port.getFormat());
 

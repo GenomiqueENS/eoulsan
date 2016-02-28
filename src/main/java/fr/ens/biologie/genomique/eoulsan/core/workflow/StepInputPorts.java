@@ -29,32 +29,29 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.core.AbstractPorts;
-import fr.ens.biologie.genomique.eoulsan.core.OutputPort;
-import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
+import fr.ens.biologie.genomique.eoulsan.core.InputPort;
+import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 
 /**
- * This class define a group of Workflow output ports.
+ * This class define a group of Workflow input ports.
  * @since 2.0
  * @author Laurent Jourdren
  */
-class WorkflowOutputPorts extends AbstractPorts<WorkflowOutputPort>
+class StepInputPorts extends AbstractPorts<StepInputPort>
     implements Serializable {
 
-  private static final long serialVersionUID = 183816706502235237L;
+  private static final long serialVersionUID = -746211786359434112L;
 
   //
   // Static methods
   //
 
-  /**
-   * Return a WorkflowOutputPorts with no ports.
-   * @return a WorkflowOutputPorts with no ports
-   */
-  static WorkflowOutputPorts noOutputPort() {
+  static StepInputPorts noInputPort() {
 
-    final Set<WorkflowOutputPort> ports = Collections.emptySet();
-    return new WorkflowOutputPorts(ports);
+    final Set<StepInputPort> ports = Collections.emptySet();
+    return new StepInputPorts(ports);
   }
 
   /**
@@ -63,19 +60,24 @@ class WorkflowOutputPorts extends AbstractPorts<WorkflowOutputPort>
    * @param ports ports to convert
    * @return a new set
    */
-  private static Set<WorkflowOutputPort> convert(
-      final AbstractWorkflowStep step, final OutputPorts ports) {
+  private static Set<StepInputPort> convert(final AbstractStep step,
+      final InputPorts ports) {
 
     if (ports == null) {
       throw new NullPointerException("Ports is null");
     }
 
-    final Set<WorkflowOutputPort> result = new HashSet<>();
+    final boolean hadoopMode =
+        EoulsanRuntime.getRuntime().getMode().isHadoopMode()
+            && step.getEoulsanMode().isHadoopCompatible();
 
-    for (OutputPort port : ports) {
+    final Set<StepInputPort> result = new HashSet<>();
+
+    for (InputPort port : ports) {
       if (port != null) {
-        result.add(new WorkflowOutputPort(step, port.getName(), port.isList(),
-            port.getFormat(), port.getCompression()));
+        result.add(new StepInputPort(step, port.getName(), port.isList(),
+            port.getFormat(), port.getCompressionsAccepted(),
+            hadoopMode ? true : port.isRequiredInWorkingDirectory()));
       }
 
     }
@@ -91,7 +93,7 @@ class WorkflowOutputPorts extends AbstractPorts<WorkflowOutputPort>
    * Constructor.
    * @param ports ports to add.
    */
-  WorkflowOutputPorts(final Set<WorkflowOutputPort> ports) {
+  StepInputPorts(final Set<StepInputPort> ports) {
     super(ports);
   }
 
@@ -100,8 +102,7 @@ class WorkflowOutputPorts extends AbstractPorts<WorkflowOutputPort>
    * @param step step related to the WorkflowOutputPort objects
    * @param ports port to convert
    */
-  WorkflowOutputPorts(final AbstractWorkflowStep step,
-      final OutputPorts ports) {
+  StepInputPorts(final AbstractStep step, final InputPorts ports) {
 
     super(convert(step, ports));
   }

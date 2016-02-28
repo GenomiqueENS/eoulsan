@@ -24,18 +24,20 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
+import fr.ens.biologie.genomique.eoulsan.core.Step;
+
 /**
  * This interface define workflow step events
  * @author Laurent Jourdren
  * @since 2.0
  */
-public interface WorkflowStepObserver {
+public interface StepObserver {
 
   /**
    * The status of the step has been changed.
    * @param step step that the status has been changed
    */
-  void notifyStepState(WorkflowStep step);
+  void notifyStepState(Step step);
 
   /**
    * The progress of the step for a sample has been changed.
@@ -43,7 +45,7 @@ public interface WorkflowStepObserver {
    * @param contextId id of the context
    * @param contextName name of the context that has been changed
    */
-  void notifyStepState(WorkflowStep step, int contextId, String contextName,
+  void notifyStepState(Step step, int contextId, String contextName,
       double progress);
 
   /**
@@ -53,35 +55,35 @@ public interface WorkflowStepObserver {
    * @param submittedTasks the submitted tasks count
    * @param progress the progress of the step
    */
-  void notifyStepState(WorkflowStep step, int terminatedTasks,
+  void notifyStepState(Step step, int terminatedTasks,
       int submittedTasks, double progress);
 
   /**
    * The note of the step has been changed.
    * @param step step that the note has been changed
    */
-  void notifyStepState(WorkflowStep step, String note);
+  void notifyStepState(Step step, String note);
 
   /**
    * Notify that a task has been submitted.
    * @param step the step of the submitted task
    * @param contextId id of the context
    */
-  void notifyTaskSubmitted(WorkflowStep step, int contextId);
+  void notifyTaskSubmitted(Step step, int contextId);
 
   /**
    * Notify that a task is running.
    * @param step the step of the submitted task
    * @param contextId id of the context
    */
-  void notifyTaskRunning(WorkflowStep step, int contextId);
+  void notifyTaskRunning(Step step, int contextId);
 
   /**
    * Notify that a task has been done.
    * @param step the step of the submitted task
    * @param contextId id of the context
    */
-  void notifyTaskDone(WorkflowStep step, int contextId);
+  void notifyTaskDone(Step step, int contextId);
 
   /**
    * Notify the success of the workflow.

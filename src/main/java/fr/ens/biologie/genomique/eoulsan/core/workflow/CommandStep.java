@@ -38,7 +38,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class CommandWorkflowStep extends AbstractWorkflowStep {
+public class CommandStep extends AbstractStep {
 
   /** Serialization version UID. */
   private static final long serialVersionUID = -1736197317540226070L;
@@ -57,7 +57,7 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
    * @param workflow the workflow of the step
    * @param type the type of the step
    */
-  public CommandWorkflowStep(final AbstractWorkflow workflow,
+  public CommandStep(final AbstractWorkflow workflow,
       final StepType type) {
 
     super(workflow, type);
@@ -69,7 +69,7 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
    * @param format DataFormat
    * @throws EoulsanException if an error occurs while configuring the generator
    */
-  public CommandWorkflowStep(final AbstractWorkflow workflow,
+  public CommandStep(final AbstractWorkflow workflow,
       final DataFormat format) throws EoulsanException {
 
     super(workflow, format);
@@ -89,7 +89,7 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
    * @param dataProduct data product
    * @throws EoulsanException id an error occurs while creating the step
    */
-  public CommandWorkflowStep(final AbstractWorkflow workflow, final String id,
+  public CommandStep(final AbstractWorkflow workflow, final String id,
       final String stepName, final String stepVersion,
       final Set<Parameter> parameters, final boolean skip,
       final boolean copyResultsToOutput, final int requiredMemory,
@@ -105,7 +105,7 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
    * @param step step object
    * @throws EoulsanException id an error occurs while creating the step
    */
-  public CommandWorkflowStep(final AbstractWorkflow workflow, final Module step)
+  public CommandStep(final AbstractWorkflow workflow, final Module step)
       throws EoulsanException {
 
     this(workflow, step, EMPTY_PARAMETERS);
@@ -118,7 +118,7 @@ public class CommandWorkflowStep extends AbstractWorkflowStep {
    * @param parameters parameters of the step
    * @throws EoulsanException id an error occurs while creating the step
    */
-  public CommandWorkflowStep(final AbstractWorkflow workflow, final Module step,
+  public CommandStep(final AbstractWorkflow workflow, final Module step,
       final Set<Parameter> parameters) throws EoulsanException {
 
     this(workflow, step.getName(), step.getName(), step.getVersion().toString(),
