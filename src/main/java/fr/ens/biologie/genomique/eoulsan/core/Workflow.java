@@ -27,7 +27,6 @@ package fr.ens.biologie.genomique.eoulsan.core;
 import java.io.Serializable;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowFiles;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 
@@ -67,20 +66,6 @@ public interface Workflow extends Serializable {
    * @return the first step of the workflow
    */
   Step getFirstStep();
-
-  /**
-   * Get the list of the files used by the workflow from the begging of the
-   * workflow.
-   * @return a WorkflowFile object
-   */
-  WorkflowFiles getWorkflowFilesAtRootStep();
-
-  /**
-   * Get the list of the files used by the workflow from the first real step of
-   * the workflow (after the generators).
-   * @return a WorkflowFile object
-   */
-  WorkflowFiles getWorkflowFilesAtFirstStep();
 
   /**
    * Delete a file on the exit of the workflow.

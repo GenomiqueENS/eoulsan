@@ -51,10 +51,10 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Settings;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
-import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.CommandWorkflowModel.StepPort;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
@@ -946,119 +946,6 @@ public class CommandWorkflow extends AbstractWorkflow {
     return StringUtils.replacePrefix(url, "s3:/", "s3n:/");
   }
 
-  /**
-   * List the files (input files, output files and resused files) of the
-   * workflow from a given step.
-   * @param originStep origin step from which files must be searched
-   * @return a WorkflowFile object
-   */
-  private WorkflowFiles listStepsFiles(final Step originStep) {
-
-    // final Set<WorkflowStepOutputDataFile> inFiles = new HashSet<>();
-    // final Set<WorkflowStepOutputDataFile> reusedFiles = new HashSet<>();
-    // final Set<WorkflowStepOutputDataFile> outFiles = new HashSet<>();
-    //
-    // boolean firstStepFound = false;
-    //
-    // for (CommandWorkflowStep step : this.steps) {
-    //
-    // if (!firstStepFound) {
-    //
-    // if (step == originStep)
-    // firstStepFound = true;
-    // else
-    // continue;
-    // }
-    //
-    // if (step.getType() == STANDARD_STEP && !step.isSkip()) {
-    //
-    // // If a terminal step exist don't go further
-    // if (step.getStep().isTerminalStep())
-    // return new WorkflowFiles(inFiles, reusedFiles, outFiles);
-    // }
-    //
-    // for (Sample sample : getDesign().getSamples()) {
-    // for (WorkflowInputPort inputPort : step.getWorkflowInputPorts()) {
-    //
-    // // Nothing to do if port is not linked
-    // if (!inputPort.isLinked())
-    // continue;
-    //
-    // final DataFormat format = inputPort.getFormat();
-    //
-    // final List<WorkflowStepOutputDataFile> files;
-    //
-    // if (format.getMaxFilesCount() == 1) {
-    //
-    // WorkflowStepOutputDataFile f =
-    // new WorkflowStepOutputDataFile(inputPort.getLink(), sample);
-    //
-    // files = Collections.singletonList(f);
-    // } else {
-    // files = new ArrayList<>();
-    // final int count =
-    // step.getInputPortData(inputPort.getName()).getDataFileCount(false);
-    //
-    // for (int i = 0; i < count; i++) {
-    //
-    // WorkflowStepOutputDataFile f =
-    // new WorkflowStepOutputDataFile(inputPort.getLink(), sample, i);
-    //
-    // files.add(f);
-    // }
-    // }
-    //
-    // for (WorkflowStepOutputDataFile file : files) {
-    //
-    // if (reusedFiles.contains(file))
-    // continue;
-    //
-    // if (outFiles.contains(file)) {
-    // outFiles.remove(file);
-    // reusedFiles.add(file);
-    // continue;
-    // }
-    //
-    // inFiles.add(file);
-    // }
-    // }
-    // }
-    //
-    // // Add output files of the step
-    // if (!step.isSkip()) {
-    // for (Sample sample : getDesign().getSamples()) {
-    // for (WorkflowOutputPort outputPort : step.getWorkflowOutputPorts()) {
-    // // for (DataFormat format : step.getWorkflowOutputPorts()) {
-    //
-    // final DataFormat format = outputPort.getFormat();
-    //
-    // if (format.getMaxFilesCount() == 1) {
-    //
-    // WorkflowStepOutputDataFile f =
-    // new WorkflowStepOutputDataFile(outputPort, sample);
-    //
-    // outFiles.add(f);
-    // } else {
-    // final int count =
-    // WorkflowStepOutputDataFile.dataFileCount(outputPort, sample,
-    // false);
-    //
-    // for (int i = 0; i < count; i++) {
-    // WorkflowStepOutputDataFile f =
-    // new WorkflowStepOutputDataFile(outputPort, sample, i);
-    // outFiles.add(f);
-    // }
-    // }
-    // }
-    // }
-    // }
-    // }
-    //
-    // return new WorkflowFiles(inFiles, reusedFiles, outFiles);
-
-    return null;
-  }
-
   @Override
   protected void saveConfigurationFiles() throws EoulsanException {
 
@@ -1097,22 +984,6 @@ public class CommandWorkflow extends AbstractWorkflow {
           "Error while writing workflow file: " + e.getMessage(), e);
     }
 
-  }
-
-  //
-  // Workflow methods
-  //
-
-  @Override
-  public WorkflowFiles getWorkflowFilesAtRootStep() {
-
-    return listStepsFiles(getRootStep());
-  }
-
-  @Override
-  public WorkflowFiles getWorkflowFilesAtFirstStep() {
-
-    return listStepsFiles(getFirstStep());
   }
 
   //
