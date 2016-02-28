@@ -79,7 +79,7 @@ public class HDFSDataDownloadModule extends AbstractModule {
    */
   public static final String NO_HDFS_DOWNLOAD = "no.hdfs.download";
 
-  /** Step name. */
+  /** Module name. */
   public static final String MODULE_NAME = "_download";
 
   private Configuration conf;

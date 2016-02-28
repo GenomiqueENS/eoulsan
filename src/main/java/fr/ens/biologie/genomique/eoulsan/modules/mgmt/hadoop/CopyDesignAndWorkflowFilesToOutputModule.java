@@ -57,7 +57,7 @@ import fr.ens.biologie.genomique.eoulsan.util.hadoop.PathUtils;
 @HadoopOnly
 public class CopyDesignAndWorkflowFilesToOutputModule extends AbstractModule {
 
-  /** Step name. */
+  /** Module name. */
   public static final String MODULE_NAME = "_copy_design_params_to_output";
 
   private Configuration conf;

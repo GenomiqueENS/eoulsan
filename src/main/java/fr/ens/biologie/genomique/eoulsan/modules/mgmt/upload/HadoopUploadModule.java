@@ -43,7 +43,7 @@ import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.PathUtils;
 
 /**
- * This class define a Step for Hadoop file uploading.
+ * This class define a module for Hadoop file uploading.
  * @since 1.0
  * @author Laurent Jourdren
  */

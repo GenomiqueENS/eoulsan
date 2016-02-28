@@ -69,7 +69,7 @@ public class GalaxyToolModule extends AbstractModule {
   private Requirement requirement;
 
   //
-  // Steps methods
+  // Module methods
   //
 
   @Override

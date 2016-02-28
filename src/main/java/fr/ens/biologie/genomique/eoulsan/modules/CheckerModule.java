@@ -121,7 +121,7 @@ public class CheckerModule extends AbstractModule {
     checkArgument(format.isChecker(),
         "No checker exists for format: " + format.getName());
     checkState(instance != null,
-        "Instance of CheckerStep has not been yet created");
+        "Instance of CheckerModule has not been yet created");
 
     instance.checkerConfiguration.put(format, Sets.newHashSet(parameters));
   }
@@ -277,7 +277,7 @@ public class CheckerModule extends AbstractModule {
   public CheckerModule() {
 
     checkState(instance == null,
-        "Instance of CheckerStep has been already created");
+        "Instance of CheckerModule has been already created");
     instance = this;
   }
 

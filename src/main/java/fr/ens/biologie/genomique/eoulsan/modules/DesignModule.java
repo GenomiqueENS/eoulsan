@@ -71,7 +71,7 @@ public class DesignModule extends AbstractModule {
   public static final String MODULE_NAME = "design";
 
   private final Design design;
-  private final CheckerModule checkerStep;
+  private final CheckerModule checkerModule;
   private OutputPorts outputPorts;
   private Set<String> designPortNames = new HashSet<>();
   private Set<String> samplePortNames = new HashSet<>();
@@ -141,7 +141,7 @@ public class DesignModule extends AbstractModule {
     this.outputPorts = builder.create();
 
     // Configure Checker input ports
-    this.checkerStep.configureInputPorts(this.outputPorts);
+    this.checkerModule.configureInputPorts(this.outputPorts);
   }
 
   /**
@@ -374,15 +374,15 @@ public class DesignModule extends AbstractModule {
   /**
    * Constructor.
    * @param design design
-   * @param checkerStep the checker step instance
+   * @param checkeModule the checker module instance
    */
-  public DesignModule(final Design design, final CheckerModule checkerStep) {
+  public DesignModule(final Design design, final CheckerModule checkeModule) {
 
     checkNotNull(design, "design argument cannot be null");
-    checkNotNull(checkerStep, "checkerStep argument cannot be null");
+    checkNotNull(checkeModule, "checkerModule argument cannot be null");
 
     this.design = design;
-    this.checkerStep = checkerStep;
+    this.checkerModule = checkeModule;
   }
 
 }
