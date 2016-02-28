@@ -47,7 +47,7 @@ import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class define an abstract step for alignments filtering.
+ * This class define an abstract module for alignments filtering.
  * @since 1.0
  * @author Laurent Jourdren
  * @author Claire Wallon
@@ -92,7 +92,7 @@ public abstract class AbstractSAMFilterModule extends AbstractModule {
   @Override
   public String getDescription() {
 
-    return "This step filters sam files.";
+    return "This module filters sam files.";
   }
 
   @Override

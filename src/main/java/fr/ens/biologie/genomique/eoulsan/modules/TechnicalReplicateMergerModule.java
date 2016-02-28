@@ -30,7 +30,7 @@ import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
 
 /**
- * This class define a merger step for technical replicates.
+ * This class define a merger module for technical replicates.
  * @author Laurent Jourdren
  * @since 2.0
  */

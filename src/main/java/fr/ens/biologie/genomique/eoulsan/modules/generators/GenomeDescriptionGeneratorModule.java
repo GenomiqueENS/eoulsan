@@ -49,7 +49,7 @@ import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class implements a genome description generator step.
+ * This class implements a genome description generator module.
  * @since 1.0
  * @author Laurent Jourdren
  */

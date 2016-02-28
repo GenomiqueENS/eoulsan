@@ -70,7 +70,7 @@ import fr.ens.biologie.genomique.eoulsan.translators.io.XLSXTranslatorOutputForm
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class define a step that create annotated expression files in TSV, ODS
+ * This class define a module that create annotated expression files in TSV, ODS
  * or XLSX format.
  * @since 2.0
  * @author Laurent Jourdren
@@ -101,7 +101,7 @@ public class ExpressionResultsAnnotationModule extends AbstractModule {
   @Override
   public String getDescription() {
 
-    return "This step add annotation to expression files";
+    return "This module add annotation to expression files";
   }
 
   @Override

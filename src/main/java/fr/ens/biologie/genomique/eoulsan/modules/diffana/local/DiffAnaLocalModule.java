@@ -55,7 +55,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 
 /**
- * This class define the step of differential analysis in local mode.
+ * This class define the module of differential analysis in local mode.
  * @since 1.0
  * @author Laurent Jourdren
  * @author Vivien Deshaies

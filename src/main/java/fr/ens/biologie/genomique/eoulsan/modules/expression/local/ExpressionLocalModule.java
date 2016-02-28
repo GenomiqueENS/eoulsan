@@ -48,7 +48,7 @@ import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
 import fr.ens.biologie.genomique.eoulsan.util.Reporter;
 
 /**
- * This class is the step to compute expression in local mode
+ * This class is the module to compute expression in local mode
  * @since 1.0
  * @author Laurent Jourdren
  * @author Claire Wallon

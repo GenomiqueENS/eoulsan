@@ -48,7 +48,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 import fr.ens.biologie.genomique.eoulsan.util.docker.DockerManager;
 
 /**
- * This class define an abstract step for read mapping.
+ * This class define an abstract module for read mapping.
  * @since 1.0
  * @author Laurent Jourdren
  */

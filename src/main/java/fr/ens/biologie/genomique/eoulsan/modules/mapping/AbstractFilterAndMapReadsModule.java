@@ -55,7 +55,7 @@ import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class define an abstract step for read filtering, mapping and alignments
+ * This class define an abstract module for read filtering, mapping and alignments
  * filtering.
  * @since 1.0
  * @author Laurent Jourdren
@@ -94,8 +94,8 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
   //
 
   /**
-   * Get the counter group to use for this step.
-   * @return the counter group of this step
+   * Get the counter group to use for this module.
+   * @return the counter group of this module
    */
   protected String getCounterGroup() {
     return COUNTER_GROUP;

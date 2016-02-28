@@ -25,7 +25,7 @@ import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
 
 /**
- * This class define a step for converting SAM files into FASTQ.
+ * This class define a module for converting SAM files into FASTQ.
  * @since 2.0
  * @author Laurent Jourdren
  */

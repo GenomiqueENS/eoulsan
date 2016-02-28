@@ -53,7 +53,7 @@ import fr.ens.biologie.genomique.eoulsan.modules.CheckerModule;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This abstract class define and parse arguments for the expression step.
+ * This abstract class define and parse arguments for the expression module.
  * @since 1.0
  * @author Laurent Jourdren
  * @author Maria Bernard
@@ -184,7 +184,7 @@ public abstract class AbstractExpressionModule extends AbstractModule {
   @Override
   public String getDescription() {
 
-    return "This step compute the expression.";
+    return "This module compute the expression.";
   }
 
   @Override

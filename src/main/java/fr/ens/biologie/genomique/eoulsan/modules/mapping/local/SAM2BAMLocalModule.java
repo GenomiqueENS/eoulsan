@@ -24,7 +24,7 @@ import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
 import fr.ens.biologie.genomique.eoulsan.util.Reporter;
 
 /**
- * This class define a step for converting SAM files into BAM.
+ * This class define a module for converting SAM files into BAM.
  * @since 2.0
  * @author Laurent Jourdren
  */

@@ -79,17 +79,17 @@ import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class define a step that compute QC report using FastQC.
+ * This class define a module that compute QC report using FastQC.
  * @author Sandrine Perrin
  * @since 2.0
  */
 @HadoopCompatible
 public class FastQCModule extends AbstractModule {
 
-  /** Name step. */
+  /** Module name */
   private static final String MODULE_NAME = "fastqc";
 
-  /** Input format key in step parameters. */
+  /** Input format key in parameters. */
   private static final String INPUT_FORMAT_PARAMETER_NAME = "input.format";
 
   /** Collector FastQC kmer size */
@@ -119,7 +119,7 @@ public class FastQCModule extends AbstractModule {
   @Override
   public String getDescription() {
 
-    return "This step launch FastQC on FASTQ or SAM files and generate an html report";
+    return "This module launch FastQC on FASTQ or SAM files and generate an html report";
   }
 
   @Override
@@ -157,7 +157,7 @@ public class FastQCModule extends AbstractModule {
     System.setProperty("java.awt.headless", "true");
     System.setProperty("fastqc.unzip", "true");
 
-    // Parse step parameters to initialize step
+    // Parse step parameters to initialize module
     for (final Parameter p : stepParameters) {
 
       switch (p.getName()) {

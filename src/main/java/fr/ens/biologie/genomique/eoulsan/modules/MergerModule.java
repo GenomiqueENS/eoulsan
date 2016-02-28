@@ -64,7 +64,7 @@ import fr.ens.biologie.genomique.eoulsan.splitermergers.Merger;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class define a generic merger step.
+ * This class define a generic merger module.
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -365,11 +365,11 @@ public class MergerModule extends AbstractModule {
       return status.createTaskResult();
     } catch (IOException e) {
 
-      // Fail of the step
+      // Fail of the task
       return status.createTaskResult(e);
     } catch (EoulsanException e) {
 
-      // Fail of the step
+      // Fail of the task
       return status.createTaskResult(e);
     }
   }

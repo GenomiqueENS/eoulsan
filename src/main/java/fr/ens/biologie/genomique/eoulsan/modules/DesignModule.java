@@ -60,7 +60,7 @@ import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class define a design step.
+ * This class define a design module.
  * @since 2.0
  * @author Laurent Jourdren
  */

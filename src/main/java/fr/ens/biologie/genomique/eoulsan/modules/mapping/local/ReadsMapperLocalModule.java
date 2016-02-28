@@ -59,7 +59,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Reporter;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 
 /**
- * This class define a step for reads mapping.
+ * This class define a module for reads mapping.
  * @since 1.0
  * @author Laurent Jourdren
  * @author Maria Bernard

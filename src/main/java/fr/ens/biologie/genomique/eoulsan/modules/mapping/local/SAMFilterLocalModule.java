@@ -103,7 +103,7 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
    * Filter a sample data in single-end mode and in paired-end mode.
    * @param context Eoulsan context
    * @param reporter reporter to use
-   * @param status step status
+   * @param status task status
    * @param filter alignments filter to use
    * @throws IOException if an error occurs while filtering reads
    */

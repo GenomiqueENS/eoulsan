@@ -62,7 +62,7 @@ import fr.ens.biologie.genomique.eoulsan.splitermergers.Splitter;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class define a generic splitter step
+ * This class define a generic splitter module.
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -297,11 +297,11 @@ public class SplitterModule extends AbstractModule {
       return status.createTaskResult();
     } catch (IOException e) {
 
-      // Fail of the step
+      // Fail of the task
       return status.createTaskResult(e);
     } catch (EoulsanException e) {
 
-      // Fail of the step
+      // Fail of the task
       return status.createTaskResult(e);
     }
   }

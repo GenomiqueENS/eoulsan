@@ -49,7 +49,7 @@ import fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionMo
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class define a step that generate a STAR mapper index.
+ * This class define a module that generate a STAR mapper index.
  * @since 2.0
  * @author Laurent Jourdren
  */

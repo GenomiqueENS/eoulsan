@@ -51,7 +51,7 @@ public abstract class AbstractModule implements Module {
   @Override
   public String getDescription() {
 
-    return "No description for " + getName() + " step";
+    return "No description for " + getName() + " module";
   }
 
   @Override

@@ -76,7 +76,7 @@ import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsMapperModu
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.MapReduceUtils;
 
 /**
- * This class define an mapper step in Hadoop mode.
+ * This class define an mapper module in Hadoop mode.
  * @since 1.0
  * @author Laurent Jourdren
  */

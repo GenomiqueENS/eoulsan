@@ -19,7 +19,7 @@ import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class define a step for converting BAM files into SAM.
+ * This class define a module for converting BAM files into SAM.
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -56,7 +56,7 @@ public abstract class AbstractBAM2SAMModule extends AbstractModule {
   @Override
   public String getDescription() {
 
-    return "This step sam convert BAM files to SAM files.";
+    return "This module sam convert BAM files to SAM files.";
   }
 
   @Override

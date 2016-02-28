@@ -143,7 +143,7 @@ public class GalaxyToolModule extends AbstractModule {
       final TaskStatus status) {
 
     // TODO check in data and out data corresponding to tool.xml
-    // Check DataFormat expected corresponding from stepContext
+    // Check DataFormat expected corresponding from taskContext
 
     final ToolExecutorResult result;
 
