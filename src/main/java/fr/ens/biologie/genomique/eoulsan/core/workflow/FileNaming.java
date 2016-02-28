@@ -24,15 +24,13 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.CharMatcher.inRange;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.ens.biologie.genomique.eoulsan.core.Naming.ASCII_LETTER_OR_DIGIT;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toLetter;
 
 import java.io.File;
 import java.util.Objects;
-
-import com.google.common.base.CharMatcher;
 
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -50,9 +48,6 @@ public class FileNaming {
   private static final char SEPARATOR = '_';
   private static final String FILE_INDEX_PREFIX = "file";
   private static final String PART_INDEX_PREFIX = "part";
-
-  private static final CharMatcher ASCII_LETTER_OR_DIGIT =
-      inRange('a', 'z').or(inRange('A', 'Z')).or(inRange('0', '9'));
 
   private String stepId;
   private String portName;
@@ -1012,34 +1007,6 @@ public class FileNaming {
     checkArgument(ASCII_LETTER_OR_DIGIT.matchesAllOf(compression.substring(1)),
         "The compression of the file name can only contains letters or digit: "
             + compression);
-  }
-
-  //
-  // Other static methods
-  //
-
-  /**
-   * Convert a string to a valid name string that can be used for step id or
-   * data name.
-   * @param name the name to convert
-   * @return a string with only the name characters argument that are allowed by
-   *         the file naming convention
-   */
-  public static final String toValidName(final String name) {
-
-    checkNotNull(name, "name argument cannot be null");
-
-    StringBuilder sb = new StringBuilder();
-
-    for (int i = 0; i < name.length(); i++) {
-
-      final char c = name.charAt(i);
-      if (ASCII_LETTER_OR_DIGIT.matches(c)) {
-        sb.append(c);
-      }
-    }
-
-    return sb.toString();
   }
 
   //

@@ -54,9 +54,9 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.Sets;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.core.Naming;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
@@ -448,7 +448,7 @@ public class GalaxyToolInterpreter {
     for (Sample sample : context.getWorkflow().getDesign().getSamples()) {
 
       // TODO Change sample.getName() to sample.getId() with the new Design API
-      if (FileNaming.toValidName(sample.getName()).equals(dataName)) {
+      if (Naming.toValidName(sample.getName()).equals(dataName)) {
         return true;
       }
     }

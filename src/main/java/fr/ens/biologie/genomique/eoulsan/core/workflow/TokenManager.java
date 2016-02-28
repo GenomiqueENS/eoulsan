@@ -59,6 +59,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.InputPort;
+import fr.ens.biologie.genomique.eoulsan.core.Naming;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPort;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
@@ -432,7 +433,7 @@ public class TokenManager implements Runnable {
     // Create a map with the samples
     final Map<String, Sample> samples = new HashMap<>();
     for (Sample sample : this.step.getWorkflow().getDesign().getSamples()) {
-      samples.put(FileNaming.toValidName(sample.getId()), sample);
+      samples.put(Naming.toValidName(sample.getId()), sample);
     }
 
     for (StepOutputPort port : this.outputPorts) {

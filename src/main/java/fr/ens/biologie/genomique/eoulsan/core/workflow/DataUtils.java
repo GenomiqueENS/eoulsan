@@ -26,7 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static fr.ens.biologie.genomique.eoulsan.core.workflow.FileNaming.toValidName;
+import static fr.ens.biologie.genomique.eoulsan.core.Naming.toValidName;
 
 import java.util.Collection;
 import java.util.Collections;

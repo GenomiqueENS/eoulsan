@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.FileNaming;
+import fr.ens.biologie.genomique.eoulsan.core.Naming;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignFactory;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
@@ -204,12 +204,12 @@ public class Eoulsan1DesignReader implements DesignReader {
             } else if (i == nameFieldIndex) {
 
               // The Name filed
-              sample = design.addSample(FileNaming.toValidName(value));
+              sample = design.addSample(Naming.toValidName(value));
               sample.setName(value);
             } else if (i == experimentFieldIndex) {
 
               // The Experiment field
-              final String experimentId = FileNaming.toValidName(value);
+              final String experimentId = Naming.toValidName(value);
               if (!design.containsExperiment(experimentId)) {
                 design.addExperiment(experimentId);
                 design.getExperiment(experimentId).setName(value);

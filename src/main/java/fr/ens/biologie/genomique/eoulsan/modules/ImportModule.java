@@ -44,6 +44,7 @@ import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
 import fr.ens.biologie.genomique.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
+import fr.ens.biologie.genomique.eoulsan.core.Naming;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
@@ -174,7 +175,7 @@ public class ImportModule extends AbstractModule {
     // Create a map with the samples
     final Map<String, Sample> samples = new HashMap<>();
     for (Sample sample : context.getWorkflow().getDesign().getSamples()) {
-      samples.put(FileNaming.toValidName(sample.getId()), sample);
+      samples.put(Naming.toValidName(sample.getId()), sample);
     }
 
     try {
@@ -222,7 +223,7 @@ public class ImportModule extends AbstractModule {
 
               // Define the data name
               final String dataName =
-                  FileNaming.toValidName(inputFile.getBasename());
+                  Naming.toValidName(inputFile.getBasename());
 
               data = context.getOutputData(format, format.getPrefix())
                   .addDataToList(dataName);

@@ -37,6 +37,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
 import fr.ens.biologie.genomique.eoulsan.annotations.ReuseStepInstance;
+import fr.ens.biologie.genomique.eoulsan.core.Naming;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPort;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder;
@@ -47,7 +48,6 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.DataUtils;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
@@ -248,7 +248,7 @@ public class DesignModule extends AbstractModule {
         if (port.isList() || port.getFormat().getMaxFilesCount() > 1) {
           dataListName = port.getName();
         } else {
-          dataListName = FileNaming.toValidName(f.getBasename());
+          dataListName = Naming.toValidName(f.getBasename());
         }
 
         // Get the data object
@@ -259,7 +259,7 @@ public class DesignModule extends AbstractModule {
         // Set metadata
         if (port.isList()) {
 
-          final String dataName = FileNaming.toValidName(sample.getId());
+          final String dataName = Naming.toValidName(sample.getId());
 
           // Check if the data name has already used
           if (dataNames.contains(dataName)) {

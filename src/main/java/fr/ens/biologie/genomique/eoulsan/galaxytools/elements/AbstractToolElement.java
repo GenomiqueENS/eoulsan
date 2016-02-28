@@ -32,8 +32,8 @@ import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.core.Naming;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 
 // TODO: Auto-generated Javadoc
@@ -180,7 +180,7 @@ public abstract class AbstractToolElement implements ToolElement {
 
   @Override
   public String getValidatedName() {
-    return FileNaming.toValidName(this.name);
+    return Naming.toValidName(this.name);
   }
 
   /**
