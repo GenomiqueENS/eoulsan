@@ -338,11 +338,12 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
 
     case WORKING:
     case PARTIALLY_DONE:
-      final String plural = submittedTasks > 1 ? "s" : "";
+      final String plural1 = submittedTasks > 1 ? "s" : "";
+      final String plural2 = runningTasks > 1 ? "s" : "";
       x = putString(x, y,
           format("%3.0f%%    (%d/%d task%s done, %d task%s running)",
-              progress * 100, terminatedTasks, submittedTasks, plural,
-              runningTasks, plural));
+              progress * 100, terminatedTasks, submittedTasks, plural1,
+              runningTasks, plural2));
       break;
 
     case DONE:
