@@ -22,10 +22,11 @@
  *
  */
 
-package fr.ens.biologie.genomique.eoulsan.core;
+package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.annotations.EoulsanMode;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.util.ServiceNameLoader;
 
 /**

@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.biologie.genomique.eoulsan.core;
+package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
@@ -45,6 +45,7 @@ import com.google.common.base.Strings;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Main;
 import fr.ens.biologie.genomique.eoulsan.annotations.EoulsanMode;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.modules.GalaxyToolModule;
 import fr.ens.biologie.genomique.eoulsan.util.ClassPathResourceLoader;

@@ -32,7 +32,6 @@ import java.util.Map;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
-import fr.ens.biologie.genomique.eoulsan.core.ModuleRegistry;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 
 /**
