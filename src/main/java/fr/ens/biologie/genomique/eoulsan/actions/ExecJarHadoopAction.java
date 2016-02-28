@@ -49,8 +49,8 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Main;
-import fr.ens.biologie.genomique.eoulsan.core.Executor;
-import fr.ens.biologie.genomique.eoulsan.core.ExecutorArguments;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.Executor;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.ExecutorArguments;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 
 /**

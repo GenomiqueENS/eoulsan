@@ -42,8 +42,8 @@ import org.apache.commons.cli.ParseException;
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Main;
-import fr.ens.biologie.genomique.eoulsan.core.Executor;
-import fr.ens.biologie.genomique.eoulsan.core.ExecutorArguments;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.Executor;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.ExecutorArguments;
 import fr.ens.biologie.genomique.eoulsan.util.LinuxCpuInfo;
 import fr.ens.biologie.genomique.eoulsan.util.LinuxMemInfo;
 

@@ -6,8 +6,8 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import java.io.IOException;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
-import fr.ens.biologie.genomique.eoulsan.core.EmergencyStopTask;
-import fr.ens.biologie.genomique.eoulsan.core.EmergencyStopTasks;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.EmergencyStopTask;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.EmergencyStopTasks;
 
 /**
  * This class define an EmergencyStopTask for cluster Jobs.

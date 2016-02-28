@@ -12,8 +12,8 @@ import org.apache.hadoop.mapred.JobID;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapreduce.Job;
 
-import fr.ens.biologie.genomique.eoulsan.core.EmergencyStopTask;
-import fr.ens.biologie.genomique.eoulsan.core.EmergencyStopTasks;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.EmergencyStopTask;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.EmergencyStopTasks;
 
 /**
  * This class define an EmergencyStopTask for Hadoop Jobs.

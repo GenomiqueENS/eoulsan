@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.biologie.genomique.eoulsan.core;
+package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
@@ -34,10 +34,9 @@ import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.CommandWorkflow;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.CommandWorkflowModel;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.CommandWorkflowParser;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.StepObserverRegistry;
+import fr.ens.biologie.genomique.eoulsan.core.HadoopInfo;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
+import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.io.DefaultDesignReader;
 import fr.ens.biologie.genomique.eoulsan.ui.UI;
