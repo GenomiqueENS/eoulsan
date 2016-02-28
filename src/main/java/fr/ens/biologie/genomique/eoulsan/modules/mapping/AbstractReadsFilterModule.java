@@ -37,11 +37,11 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.MultiReadFilter;
 import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
+import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
-import fr.ens.biologie.genomique.eoulsan.modules.Modules;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 

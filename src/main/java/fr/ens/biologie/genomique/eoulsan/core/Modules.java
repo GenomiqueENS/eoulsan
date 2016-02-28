@@ -22,13 +22,11 @@
  *
  */
 
-package fr.ens.biologie.genomique.eoulsan.modules;
+package fr.ens.biologie.genomique.eoulsan.core;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepObserverRegistry;
 
 /**
