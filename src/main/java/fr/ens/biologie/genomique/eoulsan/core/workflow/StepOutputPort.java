@@ -41,6 +41,7 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
+import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.core.SimpleOutputPort;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
@@ -133,8 +134,8 @@ class StepOutputPort extends SimpleOutputPort {
       final List<DataFile> dirFiles = this.step.getStepOutputDirectory().list();
 
       // Get the output file prefix and suffix
-      final String filePrefix = FileNaming.filePrefix(this);
-      final String fileSuffix = FileNaming.fileSuffix(this);
+      final String filePrefix = WorkflowFileNaming.filePrefix(this);
+      final String fileSuffix = WorkflowFileNaming.fileSuffix(this);
 
       // Check if files of the directory matches with the prefix and the suffix
       for (DataFile f : dirFiles) {

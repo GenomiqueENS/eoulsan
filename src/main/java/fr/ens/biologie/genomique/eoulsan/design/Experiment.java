@@ -35,7 +35,7 @@ import java.util.List;
 import org.python.google.common.base.MoreObjects;
 import org.python.google.common.base.Objects;
 
-import fr.ens.biologie.genomique.eoulsan.core.workflow.FileNaming;
+import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 
 /**
  * This class defines an experiment.

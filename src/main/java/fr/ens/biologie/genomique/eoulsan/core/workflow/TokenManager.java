@@ -58,6 +58,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.core.InputPort;
 import fr.ens.biologie.genomique.eoulsan.core.Naming;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPort;
@@ -448,8 +449,8 @@ public class TokenManager implements Runnable {
 
       if (existingData.size() == 0) {
         throw new EoulsanRuntimeException("No output files of the step \""
-            + this.step.getId() + "\" matching with " + FileNaming.glob(port)
-            + " found");
+            + this.step.getId() + "\" matching with "
+            + WorkflowFileNaming.glob(port) + " found");
       }
 
       for (Data data : existingData) {

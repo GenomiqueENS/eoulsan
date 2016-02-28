@@ -1,4 +1,4 @@
-package fr.ens.biologie.genomique.eoulsan.core.workflow;
+package fr.ens.biologie.genomique.eoulsan.core;
 
 /**
  * This class define a runtime exception for filename parsing errors.

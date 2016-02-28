@@ -31,7 +31,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.core.workflow.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 
 /**

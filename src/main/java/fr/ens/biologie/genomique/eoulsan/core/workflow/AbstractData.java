@@ -29,6 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
 
+import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 

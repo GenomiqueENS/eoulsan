@@ -248,7 +248,7 @@ class DataElement extends AbstractData implements Serializable {
 
   private DataFile createDataFile(final int fileIndex) {
 
-    return FileNaming.file(this.port, this, fileIndex);
+    return WorkflowFileNaming.file(this.port, this, fileIndex);
   }
 
   private void updateDataFiles() {
