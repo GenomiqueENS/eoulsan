@@ -111,6 +111,7 @@ public class CommandWorkflowParser {
   static final String GLOBALS_TAG_NAME = "globals";
   static final String PARAMETERS_TAG_NAME = "parameters";
   static final String STEPNAME_TAG_NAME = "stepname";
+  static final String MODULE_TAG_NAME = "module";
   static final String DISCARDOUTPUT_ATTR_NAME_STEP_TAG = "discardoutput";
   static final String SKIP_ATTR_NAME_STEP_TAG = "skip";
   static final String REQUIRED_MEM_ATTR_NAME_STEP_TAG = "requiredmemory";
@@ -252,9 +253,9 @@ public class CommandWorkflowParser {
                     DATAPRODUCT_ATTR_NAME_STEP_TAG);
 
                 // Check allowed child tag of the the "step" tag
-                checkAllowedChildTags(eStepElement, STEPNAME_TAG_NAME,
-                    NAME_TAG_NAME, VERSION_TAG, INPUTS_TAG_NAME,
-                    PARAMETERS_TAG_NAME);
+                checkAllowedChildTags(eStepElement, MODULE_TAG_NAME,
+                    STEPNAME_TAG_NAME, NAME_TAG_NAME, VERSION_TAG,
+                    INPUTS_TAG_NAME, PARAMETERS_TAG_NAME);
 
                 final String stepId = eStepElement
                     .getAttribute(ID_ATTR_NAME_STEP_TAG).trim().toLowerCase();
@@ -276,13 +277,17 @@ public class CommandWorkflowParser {
                 final String dataProduct = eStepElement
                     .getAttribute(DATAPRODUCT_ATTR_NAME_STEP_TAG).trim();
 
-                String module = getTagValue(STEPNAME_TAG_NAME, eStepElement);
+                // Parse the module tags
+                String module = getTagValue(MODULE_TAG_NAME, eStepElement);
+                if (module == null) {
+                  module = getTagValue(STEPNAME_TAG_NAME, eStepElement);
+                }
                 if (module == null) {
                   module = getTagValue(NAME_TAG_NAME, eStepElement);
                 }
                 if (module == null) {
                   throw new EoulsanException(
-                      "Step name not found in workflow file.");
+                      "Module name not found in workflow file.");
                 }
 
                 final String version = getTagValue(VERSION_TAG, eStepElement);
