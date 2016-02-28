@@ -3,7 +3,7 @@
   <description>dummy format</description>
   <prefix>dummy</prefix>
   <onefileperanalysis>false</onefileperanalysis>
-  <generator>fr.ens.biologie.genomique.eoulsan.steps.generators.DummyGeneratorStep</generator>
+  <generator>fr.ens.biologie.genomique.eoulsan.modules.generators.DummyGeneratorModule</generator>
   <extensions>
   	<extension default="true">.dummy</extension>
   </extensions>

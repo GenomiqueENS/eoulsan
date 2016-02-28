@@ -4,7 +4,7 @@
   <prefix>genome</prefix>
   <onefileperanalysis>true</onefileperanalysis>
   <designmetadatakey>GenomeFile</designmetadatakey>
-  <generator>fr.ens.biologie.genomique.eoulsan.steps.generators.GFFFastaGeneratorStep</generator>
+  <generator>fr.ens.biologie.genomique.eoulsan.modules.generators.GFFFastaGeneratorModule</generator>
   <checker>fr.ens.biologie.genomique.eoulsan.checkers.GenomeChecker</checker>
   <extensions>
   	<extension default="true">.fasta</extension>

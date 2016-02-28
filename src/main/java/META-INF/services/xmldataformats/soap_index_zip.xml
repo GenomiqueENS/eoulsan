@@ -4,7 +4,7 @@
   <prefix>soapindex</prefix>
   <onefileperanalysis>true</onefileperanalysis>
   <content-type>application/zip</content-type>
-  <generator mapperName="soap" >fr.ens.biologie.genomique.eoulsan.steps.generators.GenomeMapperIndexGeneratorStep</generator>
+  <generator mapperName="soap" >fr.ens.biologie.genomique.eoulsan.modules.generators.GenomeMapperIndexGeneratorModule</generator>
   <extensions>
   	<extension default="true">.zip</extension>
   </extensions>

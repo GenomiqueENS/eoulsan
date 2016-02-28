@@ -4,7 +4,7 @@
   <prefix>bwaindex</prefix>
   <onefileperanalysis>true</onefileperanalysis>
   <content-type>application/zip</content-type>
-  <generator mapperName="bwa">fr.ens.biologie.genomique.eoulsan.steps.generators.GenomeMapperIndexGeneratorStep</generator>
+  <generator mapperName="bwa">fr.ens.biologie.genomique.eoulsan.modules.generators.GenomeMapperIndexGeneratorModule</generator>
 
   <extensions>
   	<extension default="true">.zip</extension>
