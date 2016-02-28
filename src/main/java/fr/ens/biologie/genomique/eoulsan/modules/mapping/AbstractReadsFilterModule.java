@@ -46,7 +46,7 @@ import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class define an abstract step for read filtering.
+ * This class define an abstract module for read filtering.
  * @since 1.0
  * @author Laurent Jourdren
  */

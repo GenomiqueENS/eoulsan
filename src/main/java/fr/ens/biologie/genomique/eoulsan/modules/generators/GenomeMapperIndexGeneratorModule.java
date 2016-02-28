@@ -59,7 +59,7 @@ import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsMapperModu
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class define a step that generate a genome mapper index.
+ * This class define a module that generate a genome mapper index.
  * @since 1.0
  * @author Laurent Jourdren
  */

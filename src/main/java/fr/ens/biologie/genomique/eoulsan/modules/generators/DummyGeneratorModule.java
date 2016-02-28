@@ -15,7 +15,7 @@ import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class implements a dummy generator step that create an empty file.
+ * This class implements a dummy generator module that create an empty file.
  * @since 2.0
  * @author Laurent Jourdren
  */

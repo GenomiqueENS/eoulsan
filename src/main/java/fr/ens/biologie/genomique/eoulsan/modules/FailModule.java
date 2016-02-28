@@ -43,7 +43,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This step is a step that always fail. This step is only used for debugging
+ * This module is a module that always fails. This module is only used for debugging
  * purpose.
  * @since 2.0
  * @author Laurent Jourdren

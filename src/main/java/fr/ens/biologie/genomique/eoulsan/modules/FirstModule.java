@@ -35,7 +35,7 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class define a first step that do nothing. All generator steps must be
+ * This class define a first module that do nothing. All generator steps must be
  * added before this step.
  * @since 1.1
  * @author Laurent Jourdren

@@ -19,7 +19,7 @@ import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class define a step for converting SAM files into BAM.
+ * This class define a module for converting SAM files into BAM.
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -56,7 +56,7 @@ public abstract class AbstractSAM2FASTQModule extends AbstractModule {
   @Override
   public String getDescription() {
 
-    return "This step sam convert SAM files to FASTQ files.";
+    return "This module sam convert SAM files to FASTQ files.";
   }
 
   @Override

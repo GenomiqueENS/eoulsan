@@ -50,7 +50,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 
 /**
- * This class define the step for normalization
+ * This class define the module for normalization
  * @author deshaies
  * @since 1.2
  */

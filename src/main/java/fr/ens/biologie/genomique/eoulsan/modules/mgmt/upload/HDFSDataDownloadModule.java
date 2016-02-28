@@ -59,7 +59,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.PathUtils;
 
 /**
- * This class define a download step that retrieve data from HDFS at the end of
+ * This class define a download module that retrieve data from HDFS at the end of
  * an analysis.
  * @since 1.0
  * @author Laurent Jourdren

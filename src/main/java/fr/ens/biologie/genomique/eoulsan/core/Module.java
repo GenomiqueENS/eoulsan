@@ -38,14 +38,14 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 public interface Module {
 
   /**
-   * Get the name of the step.
-   * @return the name of the step
+   * Get the name of the module.
+   * @return the name of the module
    */
   String getName();
 
   /**
-   * Get the description of the step
-   * @return the description of the step
+   * Get the description of the module
+   * @return the description of the module
    */
   String getDescription();
 
@@ -63,26 +63,26 @@ public interface Module {
 
   /**
    * Get the input data format.
-   * @return a set with DataFormat or null if the step does not any need input
+   * @return a set with DataFormat or null if the module does not any need input
    *         format
    */
   InputPorts getInputPorts();
 
   /**
    * Get the output data format.
-   * @return an set with DataFormat or null if the step does not produce any
+   * @return an set with DataFormat or null if the module does not produce any
    *         output data
    */
   OutputPorts getOutputPorts();
 
   /**
-   * Get the requirements of the step.
-   * @return a set with the requirements of the step
+   * Get the requirements of the module.
+   * @return a set with the requirements of the module
    */
   Set<Requirement> getRequirements();
 
   /**
-   * Set the parameters of the step to configure the step.
+   * Set the parameters of the step to configure the module.
    * @param context configuration context. The context can be null for generator
    *          steps
    * @param stepParameters parameters of the step
@@ -92,14 +92,14 @@ public interface Module {
       Set<Parameter> stepParameters) throws EoulsanException;
 
   /**
-   * Execute the step.
+   * Execute a task step.
    * @param context Execution context
-   * @param status of the step
+   * @param status of the task
    */
   TaskResult execute(TaskContext context, TaskStatus status);
 
   /**
-   * Get the parallelization mode of the step.
+   * Get the parallelization mode of the module.
    * @return a ParallelizationMode enum
    */
   ParallelizationMode getParallelizationMode();

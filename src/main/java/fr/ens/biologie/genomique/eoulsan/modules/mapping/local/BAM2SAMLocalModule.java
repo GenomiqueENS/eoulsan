@@ -24,7 +24,7 @@ import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
 
 /**
- * This class define a step for converting BAM files into SAM.
+ * This class define a module for converting BAM files into SAM.
  * @since 2.0
  * @author Laurent Jourdren
  */

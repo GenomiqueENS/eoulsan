@@ -73,7 +73,7 @@ import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class define a step that create annotated expression files in TSV, ODS
+ * This class define a module that create annotated expression files in TSV, ODS
  * or XLSX format.
  * @since 2.0
  * @author Laurent Jourdren
@@ -108,7 +108,7 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
   @Override
   public String getDescription() {
 
-    return "This step add annotation to diffana files.";
+    return "This module add annotation to diffana files.";
   }
 
   @Override

@@ -50,7 +50,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.PathUtils;
 
 /**
- * This step copy design and workflow file to output directory.
+ * This module copy design and workflow file to output directory.
  * @since 1.0
  * @author Laurent Jourdren
  */

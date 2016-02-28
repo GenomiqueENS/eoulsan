@@ -40,7 +40,7 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This step is a fake step.
+ * This module is a fake module.
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -49,7 +49,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 @NoLog
 public class FakeModule extends AbstractModule {
 
-  public static final String MODULE_NAME = "fakestep";
+  public static final String MODULE_NAME = "fake";
 
   @Override
   public String getName() {

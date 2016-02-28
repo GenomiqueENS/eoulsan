@@ -58,7 +58,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class is a step that launch checkers.
+ * This class is a module that launch checkers.
  * @author Laurent Jourdren
  * @since 2.0
  */

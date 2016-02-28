@@ -42,7 +42,7 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
- * This class define a step that execute a shell command. It use the user shell
+ * This class define a module that execute a shell command. It use the user shell
  * to execute the command. The launched command is : $SHELL -c "command"
  * @author Laurent Jourdren
  */
@@ -63,7 +63,7 @@ public class ShellModule extends AbstractModule {
   @Override
   public String getDescription() {
 
-    return "This step allow to execute shell commands";
+    return "This module allow to execute shell commands";
   }
 
   @Override

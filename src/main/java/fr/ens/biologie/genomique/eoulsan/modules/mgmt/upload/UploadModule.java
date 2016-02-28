@@ -59,7 +59,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopJarRepackager;
 
 /**
- * This class define a abstract step class for files uploading.
+ * This class define a abstract module class for files uploading.
  * @since 1.0
  * @author Laurent Jourdren
  */

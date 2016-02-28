@@ -54,7 +54,7 @@ import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
 import fr.ens.biologie.genomique.eoulsan.util.Reporter;
 
 /**
- * This class define a step for reads filtering.
+ * This class define a module for reads filtering.
  * @since 1.0
  * @author Laurent Jourdren
  * @author Maria Bernard
