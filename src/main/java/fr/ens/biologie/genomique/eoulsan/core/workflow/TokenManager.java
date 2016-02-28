@@ -235,7 +235,7 @@ public class TokenManager implements Runnable {
       }
 
       // For all data
-      for (DataFile f : DataUtils.getDataFiles(e)) {
+      for (DataFile f : WorkflowDataUtils.getDataFiles(e)) {
 
         try {
 
@@ -286,7 +286,7 @@ public class TokenManager implements Runnable {
     }
 
     for (Data dataElement : data.getListElements()) {
-      for (DataFile file : DataUtils.getDataFiles(dataElement)) {
+      for (DataFile file : WorkflowDataUtils.getDataFiles(dataElement)) {
 
         final DataFile link = new DataFile(outputDir, file.getName());
 
@@ -467,7 +467,8 @@ public class TokenManager implements Runnable {
 
           // Set the metadata from sample metadata
           if (samples.containsKey(data.getName())) {
-            DataUtils.setDataMetaData(data, samples.get(data.getName()));
+            WorkflowDataUtils.setDataMetaData(data,
+                samples.get(data.getName()));
           }
 
         }

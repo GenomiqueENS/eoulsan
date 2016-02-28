@@ -368,7 +368,7 @@ public class TaskRunner {
           namedData.add(data.getName());
         } else {
 
-          for (DataFile file : DataUtils.getDataFiles(data)) {
+          for (DataFile file : WorkflowDataUtils.getDataFiles(data)) {
             fileNames.add(file.getName());
           }
         }

@@ -221,7 +221,7 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
 
     checkNotNull(metadata, "metadata argument cannot be null");
 
-    final SimpleDataMetadata md = DataUtils.getSimpleMetadata(metadata);
+    final SimpleDataMetadata md = WorkflowDataUtils.getSimpleMetadata(metadata);
 
     if (md != null) {
 

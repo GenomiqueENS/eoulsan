@@ -45,7 +45,7 @@ public class DataMetadataStorage {
 
     checkNotNull(data, "data argument cannot be null");
 
-    return loadMetadata(data, DataUtils.getDataFiles(data));
+    return loadMetadata(data, WorkflowDataUtils.getDataFiles(data));
   }
 
   /**
@@ -61,7 +61,7 @@ public class DataMetadataStorage {
     checkNotNull(files, "files argument cannot be null");
 
     final SimpleDataMetadata metadata =
-        DataUtils.getSimpleMetadata(data.getMetadata());
+        WorkflowDataUtils.getSimpleMetadata(data.getMetadata());
 
     // Do nothing if metadata cannot be set
     if (metadata == null) {
@@ -109,14 +109,14 @@ public class DataMetadataStorage {
     }
 
     final SimpleDataMetadata metadata =
-        DataUtils.getSimpleMetadata(data.getMetadata());
+        WorkflowDataUtils.getSimpleMetadata(data.getMetadata());
 
     // Do nothing if metadata cannot be set
     if (metadata == null) {
       return;
     }
 
-    final List<DataFile> files = DataUtils.getDataFiles(data);
+    final List<DataFile> files = WorkflowDataUtils.getDataFiles(data);
 
     // For each file of the data
     for (DataFile file : files) {
