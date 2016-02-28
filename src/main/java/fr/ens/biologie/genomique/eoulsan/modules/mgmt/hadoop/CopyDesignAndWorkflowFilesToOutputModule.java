@@ -33,11 +33,11 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
+import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
-import fr.ens.biologie.genomique.eoulsan.core.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;

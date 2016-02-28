@@ -44,6 +44,7 @@ import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
+import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -53,7 +54,6 @@ import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
 import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
 import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.MultiReadFilter;
 import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
-import fr.ens.biologie.genomique.eoulsan.core.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopReporterIncrementer;
 
 /**

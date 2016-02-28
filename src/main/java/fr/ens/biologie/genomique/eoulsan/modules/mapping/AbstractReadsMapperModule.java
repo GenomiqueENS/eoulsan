@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.mapping;
 
+import static fr.ens.biologie.genomique.eoulsan.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.core.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 

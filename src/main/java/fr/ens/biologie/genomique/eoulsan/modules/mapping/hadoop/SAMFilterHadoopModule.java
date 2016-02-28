@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop;
 
-import static fr.ens.biologie.genomique.eoulsan.core.CommonHadoop.createConfiguration;
+import static fr.ens.biologie.genomique.eoulsan.CommonHadoop.createConfiguration;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
@@ -39,11 +39,11 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.SAMInputFormat;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.SAMOutputFormat;
-import fr.ens.biologie.genomique.eoulsan.core.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.StepResult;

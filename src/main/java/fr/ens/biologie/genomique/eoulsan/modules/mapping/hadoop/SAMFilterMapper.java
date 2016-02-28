@@ -37,11 +37,11 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import com.google.common.base.Splitter;
 
+import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.core.CommonHadoop;
 
 /**
  * This class defines a mapper for alignment filtering.

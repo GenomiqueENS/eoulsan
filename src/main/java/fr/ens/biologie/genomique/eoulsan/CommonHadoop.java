@@ -22,13 +22,9 @@
  *
  */
 
-package fr.ens.biologie.genomique.eoulsan.core;
+package fr.ens.biologie.genomique.eoulsan;
 
 import org.apache.hadoop.conf.Configuration;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.Settings;
 
 /**
  * This class define common constants and other methods specific to Hadoop mode.

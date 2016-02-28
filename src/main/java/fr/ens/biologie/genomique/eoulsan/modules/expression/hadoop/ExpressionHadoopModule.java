@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.expression.hadoop;
 
+import static fr.ens.biologie.genomique.eoulsan.CommonHadoop.createConfiguration;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.core.CommonHadoop.createConfiguration;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
@@ -48,6 +48,7 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -62,7 +63,6 @@ import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.OverlapMode;
 import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.StrandUsage;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.ExpressionOutputFormat;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.SAMInputFormat;
-import fr.ens.biologie.genomique.eoulsan.core.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;

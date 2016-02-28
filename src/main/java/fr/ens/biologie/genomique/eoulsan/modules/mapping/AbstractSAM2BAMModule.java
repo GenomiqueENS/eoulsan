@@ -1,6 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.modules.mapping;
 
-import static fr.ens.biologie.genomique.eoulsan.core.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.singleInputPort;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_BAM;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_INDEX_BAI;

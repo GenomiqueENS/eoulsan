@@ -51,6 +51,7 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
+import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -61,7 +62,6 @@ import fr.ens.biologie.genomique.eoulsan.bio.SAMUtils;
 import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqUtils;
 import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.OverlapMode;
 import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.StrandUsage;
-import fr.ens.biologie.genomique.eoulsan.core.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.PathUtils;
 import htsjdk.samtools.SAMFileHeader;
