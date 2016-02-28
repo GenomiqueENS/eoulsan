@@ -42,7 +42,7 @@ import java.util.Set;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
-import fr.ens.biologie.genomique.eoulsan.annotations.ReuseStepInstance;
+import fr.ens.biologie.genomique.eoulsan.annotations.ReuseModuleInstance;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
@@ -67,7 +67,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  * @since 2.0
  */
 @LocalOnly
-@ReuseStepInstance
+@ReuseModuleInstance
 public class SplitterModule extends AbstractModule {
 
   public static final String MODULE_NAME = "splitter";

@@ -30,7 +30,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
-import fr.ens.biologie.genomique.eoulsan.annotations.ReuseStepInstance;
+import fr.ens.biologie.genomique.eoulsan.annotations.ReuseModuleInstance;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
@@ -49,7 +49,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  * @author Laurent Jourdren
  */
 @LocalOnly
-@ReuseStepInstance
+@ReuseModuleInstance
 @NoLog
 public class FailModule extends AbstractModule {
 

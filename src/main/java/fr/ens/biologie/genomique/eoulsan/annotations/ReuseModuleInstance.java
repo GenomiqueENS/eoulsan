@@ -28,11 +28,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * This annotation is used to mark a step class that can reuse a step instance
+ * This annotation is used to mark a module class that can reuse a module instance
  * for each task.
  * @since 2.0
  * @author Laurent Jourdren
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ReuseStepInstance {
+public @interface ReuseModuleInstance {
 }

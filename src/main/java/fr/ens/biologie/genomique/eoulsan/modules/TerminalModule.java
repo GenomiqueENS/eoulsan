@@ -27,7 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.modules;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
-import fr.ens.biologie.genomique.eoulsan.annotations.ReuseStepInstance;
+import fr.ens.biologie.genomique.eoulsan.annotations.ReuseModuleInstance;
 import fr.ens.biologie.genomique.eoulsan.annotations.Terminal;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
@@ -41,7 +41,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  * @author Laurent Jourdren
  */
 @LocalOnly
-@ReuseStepInstance
+@ReuseModuleInstance
 @Terminal
 @NoLog
 public class TerminalModule extends AbstractModule {

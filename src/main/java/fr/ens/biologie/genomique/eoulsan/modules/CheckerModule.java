@@ -41,7 +41,7 @@ import com.google.common.collect.Sets;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
-import fr.ens.biologie.genomique.eoulsan.annotations.ReuseStepInstance;
+import fr.ens.biologie.genomique.eoulsan.annotations.ReuseModuleInstance;
 import fr.ens.biologie.genomique.eoulsan.checkers.CheckStore;
 import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
 import fr.ens.biologie.genomique.eoulsan.core.DataUtils;
@@ -63,7 +63,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  * @since 2.0
  */
 @LocalOnly
-@ReuseStepInstance
+@ReuseModuleInstance
 public class CheckerModule extends AbstractModule {
 
   public static final String MODULE_NAME = "checker";

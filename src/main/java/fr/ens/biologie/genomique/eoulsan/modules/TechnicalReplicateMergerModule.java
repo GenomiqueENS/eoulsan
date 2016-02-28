@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.modules;
 
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
-import fr.ens.biologie.genomique.eoulsan.annotations.ReuseStepInstance;
+import fr.ens.biologie.genomique.eoulsan.annotations.ReuseModuleInstance;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
 
@@ -35,7 +35,7 @@ import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
  * @since 2.0
  */
 @LocalOnly
-@ReuseStepInstance
+@ReuseModuleInstance
 public class TechnicalReplicateMergerModule extends MergerModule {
 
   public static final String MODULE_NAME = "technicalreplicatemerger";

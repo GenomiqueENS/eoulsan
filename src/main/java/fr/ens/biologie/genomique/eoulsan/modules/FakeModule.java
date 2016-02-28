@@ -31,7 +31,7 @@ import java.util.Set;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
-import fr.ens.biologie.genomique.eoulsan.annotations.ReuseStepInstance;
+import fr.ens.biologie.genomique.eoulsan.annotations.ReuseModuleInstance;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
@@ -45,7 +45,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  * @author Laurent Jourdren
  */
 @LocalOnly
-@ReuseStepInstance
+@ReuseModuleInstance
 @NoLog
 public class FakeModule extends AbstractModule {
 

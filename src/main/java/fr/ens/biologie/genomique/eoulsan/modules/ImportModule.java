@@ -42,7 +42,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
-import fr.ens.biologie.genomique.eoulsan.annotations.ReuseStepInstance;
+import fr.ens.biologie.genomique.eoulsan.annotations.ReuseModuleInstance;
 import fr.ens.biologie.genomique.eoulsan.core.DataUtils;
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.core.FileNamingParsingRuntimeException;
@@ -71,7 +71,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  * @author Laurent Jourdren
  */
 @LocalOnly
-@ReuseStepInstance
+@ReuseModuleInstance
 @NoLog
 public class ImportModule extends AbstractModule {
 

@@ -54,7 +54,7 @@ public class EoulsanAnnotationUtils {
    */
   public static boolean isReuseStepInstance(final Module module) {
 
-    return isAnnotation(module, ReuseStepInstance.class);
+    return isAnnotation(module, ReuseModuleInstance.class);
   }
 
   /**

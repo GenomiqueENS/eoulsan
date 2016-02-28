@@ -36,7 +36,7 @@ import com.google.common.collect.Sets;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
-import fr.ens.biologie.genomique.eoulsan.annotations.ReuseStepInstance;
+import fr.ens.biologie.genomique.eoulsan.annotations.ReuseModuleInstance;
 import fr.ens.biologie.genomique.eoulsan.core.DataUtils;
 import fr.ens.biologie.genomique.eoulsan.core.Naming;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPort;
@@ -64,7 +64,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  * @since 2.0
  * @author Laurent Jourdren
  */
-@ReuseStepInstance
+@ReuseModuleInstance
 @NoLog
 public class DesignModule extends AbstractModule {
 

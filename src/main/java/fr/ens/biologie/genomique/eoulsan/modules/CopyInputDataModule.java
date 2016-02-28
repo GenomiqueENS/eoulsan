@@ -43,7 +43,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopInternal;
 import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
-import fr.ens.biologie.genomique.eoulsan.annotations.ReuseStepInstance;
+import fr.ens.biologie.genomique.eoulsan.annotations.ReuseModuleInstance;
 import fr.ens.biologie.genomique.eoulsan.core.DataUtils;
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
@@ -72,7 +72,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  * @since 2.0
  */
 @HadoopInternal
-@ReuseStepInstance
+@ReuseModuleInstance
 @NoLog
 public class CopyInputDataModule extends AbstractModule {
 
