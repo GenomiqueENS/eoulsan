@@ -45,12 +45,12 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 @NoLog
 public final class FirstModule extends AbstractModule {
 
-  public static final String STEP_NAME = "first";
+  public static final String MODULE_NAME = "first";
 
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

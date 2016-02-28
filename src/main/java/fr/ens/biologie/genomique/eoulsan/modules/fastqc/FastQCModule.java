@@ -87,7 +87,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 public class FastQCModule extends AbstractModule {
 
   /** Name step. */
-  private static final String STEP_NAME = "fastqc";
+  private static final String MODULE_NAME = "fastqc";
 
   /** Input format key in step parameters. */
   private static final String INPUT_FORMAT_PARAMETER_NAME = "input.format";
@@ -113,7 +113,7 @@ public class FastQCModule extends AbstractModule {
 
   @Override
   public String getName() {
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

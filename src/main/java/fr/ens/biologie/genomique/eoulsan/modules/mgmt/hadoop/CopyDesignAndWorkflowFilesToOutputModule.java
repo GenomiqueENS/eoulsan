@@ -58,7 +58,7 @@ import fr.ens.biologie.genomique.eoulsan.util.hadoop.PathUtils;
 public class CopyDesignAndWorkflowFilesToOutputModule extends AbstractModule {
 
   /** Step name. */
-  public static final String STEP_NAME = "_copy_design_params_to_output";
+  public static final String MODULE_NAME = "_copy_design_params_to_output";
 
   private Configuration conf;
 
@@ -69,7 +69,7 @@ public class CopyDesignAndWorkflowFilesToOutputModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

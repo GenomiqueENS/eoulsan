@@ -57,7 +57,7 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 @LocalOnly
 public class NormalizationLocalModule extends AbstractModule {
 
-  private static final String STEP_NAME = "normalization";
+  private static final String MODULE_NAME = "normalization";
 
   static final String DESEQ1_DOCKER_IMAGE = "genomicpariscentre/deseq:1.8.3";
 
@@ -71,7 +71,7 @@ public class NormalizationLocalModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

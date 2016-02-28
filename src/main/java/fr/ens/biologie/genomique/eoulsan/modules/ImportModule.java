@@ -75,7 +75,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 @NoLog
 public class ImportModule extends AbstractModule {
 
-  public static final String STEP_NAME = "import";
+  public static final String MODULE_NAME = "import";
 
   private static final Splitter SPACE_SPLITTER =
       Splitter.on(' ').trimResults().omitEmptyStrings();
@@ -86,7 +86,7 @@ public class ImportModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

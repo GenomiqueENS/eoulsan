@@ -68,7 +68,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 @NoLog
 public class DesignModule extends AbstractModule {
 
-  public static final String STEP_NAME = "design";
+  public static final String MODULE_NAME = "design";
 
   private final Design design;
   private final CheckerModule checkerStep;
@@ -79,7 +79,7 @@ public class DesignModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

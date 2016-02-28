@@ -76,7 +76,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 @NoLog
 public class CopyInputDataModule extends AbstractModule {
 
-  public static final String STEP_NAME = "_copyinputformat";
+  public static final String MODULE_NAME = "_copyinputformat";
   public static final String FORMAT_PARAMETER = "format";
   public static final String OUTPUT_COMPRESSION_PARAMETER =
       "output.compression";
@@ -92,7 +92,7 @@ public class CopyInputDataModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

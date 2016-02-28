@@ -80,14 +80,14 @@ public class HDFSDataDownloadModule extends AbstractModule {
   public static final String NO_HDFS_DOWNLOAD = "no.hdfs.download";
 
   /** Step name. */
-  public static final String STEP_NAME = "_download";
+  public static final String MODULE_NAME = "_download";
 
   private Configuration conf;
 
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

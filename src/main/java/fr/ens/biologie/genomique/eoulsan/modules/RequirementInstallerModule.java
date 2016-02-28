@@ -49,14 +49,14 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 @LocalOnly
 public class RequirementInstallerModule extends AbstractModule {
 
-  public static final String STEP_NAME = "requirementinstaller";
+  public static final String MODULE_NAME = "requirementinstaller";
 
   private Requirement requirement;
 
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

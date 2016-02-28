@@ -38,7 +38,7 @@ import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
 @ReuseStepInstance
 public class TechnicalReplicateMergerModule extends MergerModule {
 
-  public static final String STEP_NAME = "technicalreplicatemerger";
+  public static final String MODULE_NAME = "technicalreplicatemerger";
 
   //
   // Protected method
@@ -63,7 +63,7 @@ public class TechnicalReplicateMergerModule extends MergerModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
 }

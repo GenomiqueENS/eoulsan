@@ -52,7 +52,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  */
 public abstract class AbstractReadsFilterModule extends AbstractModule {
 
-  protected static final String STEP_NAME = "filterreads";
+  protected static final String MODULE_NAME = "filterreads";
 
   protected static final String COUNTER_GROUP = "reads_filtering";
 
@@ -88,7 +88,7 @@ public abstract class AbstractReadsFilterModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

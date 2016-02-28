@@ -70,7 +70,7 @@ public class DiffAnaLocalModule extends AbstractModule {
   private static final String DISP_EST_SHARING_MODE_PARAMETER_NAME =
       "disp.est.sharing.mode";
 
-  private static final String STEP_NAME = "diffana";
+  private static final String MODULE_NAME = "diffana";
 
   // parameters and there default values
   private DispersionMethod dispEstMethod = DispersionMethod.POOLED;
@@ -88,7 +88,7 @@ public class DiffAnaLocalModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

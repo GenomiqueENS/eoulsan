@@ -54,7 +54,7 @@ import fr.ens.biologie.genomique.eoulsan.util.docker.DockerManager;
  */
 public abstract class AbstractReadsMapperModule extends AbstractModule {
 
-  public static final String STEP_NAME = "mapreads";
+  public static final String MODULE_NAME = "mapreads";
 
   protected static final String COUNTER_GROUP = "reads_mapping";
 
@@ -200,7 +200,7 @@ public abstract class AbstractReadsMapperModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

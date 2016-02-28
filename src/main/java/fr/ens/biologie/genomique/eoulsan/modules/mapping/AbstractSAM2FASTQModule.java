@@ -25,7 +25,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  */
 public abstract class AbstractSAM2FASTQModule extends AbstractModule {
 
-  private static final String STEP_NAME = "sam2fastq";
+  private static final String MODULE_NAME = "sam2fastq";
   protected static final String COUNTER_GROUP = "sam2fastq";
 
   private int reducerTaskCount = -1;
@@ -50,7 +50,7 @@ public abstract class AbstractSAM2FASTQModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

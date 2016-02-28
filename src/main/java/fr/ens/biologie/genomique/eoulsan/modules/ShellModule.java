@@ -50,14 +50,14 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 @RequiresAllPreviousSteps
 public class ShellModule extends AbstractModule {
 
-  private static final String STEP_NAME = "shell";
+  private static final String MODULE_NAME = "shell";
 
   private String command;
 
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

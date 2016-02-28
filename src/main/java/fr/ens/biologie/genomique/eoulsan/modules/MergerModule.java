@@ -72,7 +72,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 @ReuseStepInstance
 public class MergerModule extends AbstractModule {
 
-  public static final String STEP_NAME = "merger";
+  public static final String MODULE_NAME = "merger";
 
   private Merger merger;
   private CompressionType compression = NONE;
@@ -241,7 +241,7 @@ public class MergerModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

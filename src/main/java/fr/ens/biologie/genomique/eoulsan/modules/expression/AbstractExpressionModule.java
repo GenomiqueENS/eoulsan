@@ -61,7 +61,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  */
 public abstract class AbstractExpressionModule extends AbstractModule {
 
-  public static final String STEP_NAME = "expression";
+  public static final String MODULE_NAME = "expression";
 
   private static final String OLD_EOULSAN_COUNTER_NAME = "eoulsanCounter";
 
@@ -178,7 +178,7 @@ public abstract class AbstractExpressionModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

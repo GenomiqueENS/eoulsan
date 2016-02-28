@@ -53,14 +53,14 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 @NoLog
 public class FailModule extends AbstractModule {
 
-  public static final String STEP_NAME = "fail";
+  public static final String MODULE_NAME = "fail";
 
   private int delay = 0;
 
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

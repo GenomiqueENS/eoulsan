@@ -63,7 +63,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 @NoLog
 public class CopyOutputDataModule extends AbstractModule {
 
-  public static final String STEP_NAME = "_copyoutputformat";
+  public static final String MODULE_NAME = "_copyoutputformat";
   public static final String PORTS_PARAMETER = "ports";
   public static final String FORMATS_PARAMETER = "formats";
 
@@ -73,7 +73,7 @@ public class CopyOutputDataModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

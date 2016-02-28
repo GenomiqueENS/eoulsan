@@ -54,7 +54,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  */
 public abstract class AbstractSAMFilterModule extends AbstractModule {
 
-  private static final String STEP_NAME = "filtersam";
+  private static final String MODULE_NAME = "filtersam";
 
   protected static final String COUNTER_GROUP = "sam_filtering";
 
@@ -86,7 +86,7 @@ public abstract class AbstractSAMFilterModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

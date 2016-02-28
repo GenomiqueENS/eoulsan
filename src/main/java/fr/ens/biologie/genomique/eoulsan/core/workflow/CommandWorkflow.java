@@ -328,7 +328,7 @@ public class CommandWorkflow extends AbstractWorkflow {
       // Create an installer step
       final CommandStep step = new CommandStep(this,
           r.getName() + "install" + installerCount,
-          RequirementInstallerModule.STEP_NAME, Globals.APP_VERSION.toString(),
+          RequirementInstallerModule.MODULE_NAME, Globals.APP_VERSION.toString(),
           r.getParameters(), false, false, -1, -1, "");
 
       // Configure the installer step
@@ -445,7 +445,7 @@ public class CommandWorkflow extends AbstractWorkflow {
           throws EoulsanException {
 
     // Set the step name
-    final String stepName = CopyInputDataModule.STEP_NAME;
+    final String stepName = CopyInputDataModule.MODULE_NAME;
 
     // Search a non used step id
     final Set<String> stepsIds = new HashSet<>();
@@ -511,7 +511,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     final List<CommandStep> result = new ArrayList<>();
 
     // Set the step name
-    final String stepName = CopyOutputDataModule.STEP_NAME;
+    final String stepName = CopyOutputDataModule.MODULE_NAME;
 
     for (StepOutputPort outputPort : outputPorts) {
 

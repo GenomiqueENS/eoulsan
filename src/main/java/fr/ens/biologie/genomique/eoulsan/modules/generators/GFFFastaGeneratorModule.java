@@ -56,7 +56,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  */
 public class GFFFastaGeneratorModule extends AbstractModule {
 
-  public static final String STEP_NAME = "gfffastagenerator";
+  public static final String MODULE_NAME = "gfffastagenerator";
 
   @Override
   public String getName() {

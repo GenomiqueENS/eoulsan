@@ -57,7 +57,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 @Generator
 public class STARIndexGeneratorModule extends AbstractModule {
 
-  public static final String STEP_NAME = "starindexgenerator";
+  public static final String MODULE_NAME = "starindexgenerator";
 
   private static final int OVERHANG_DEFAULT = 100;
 
@@ -78,7 +78,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override
@@ -187,7 +187,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
 
     for (Step step : context.getWorkflow().getSteps()) {
 
-      if (AbstractExpressionModule.STEP_NAME.equals(step.getModuleName())) {
+      if (AbstractExpressionModule.MODULE_NAME.equals(step.getModuleName())) {
 
         for (Parameter p : step.getParameters()) {
 
@@ -408,7 +408,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
 
     final File outputFile =
         Files.createTempFile(context.getLocalTempDirectory().toPath(),
-            STEP_NAME + "-", realFile.getExtension()).toFile();
+            MODULE_NAME + "-", realFile.getExtension()).toFile();
 
     context.getLogger()
         .fine("Uncompress/copy " + realFile + " to " + outputFile);

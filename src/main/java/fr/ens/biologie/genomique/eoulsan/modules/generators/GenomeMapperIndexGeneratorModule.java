@@ -65,14 +65,14 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  */
 public class GenomeMapperIndexGeneratorModule extends AbstractModule {
 
-  public static final String STEP_NAME = "genericindexgenerator";
+  public static final String MODULE_NAME = "genericindexgenerator";
 
   private SequenceReadsMapper mapper;
 
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override
@@ -147,8 +147,8 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
 
     for (Step step : context.getWorkflow().getSteps()) {
 
-      if (AbstractReadsMapperModule.STEP_NAME.equals(step.getModuleName())
-          || AbstractFilterAndMapReadsModule.STEP_NAME
+      if (AbstractReadsMapperModule.MODULE_NAME.equals(step.getModuleName())
+          || AbstractFilterAndMapReadsModule.MODULE_NAME
               .equals(step.getModuleName())) {
 
         for (Parameter p : step.getParameters()) {

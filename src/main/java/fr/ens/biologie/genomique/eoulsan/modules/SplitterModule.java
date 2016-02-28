@@ -70,7 +70,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 @ReuseStepInstance
 public class SplitterModule extends AbstractModule {
 
-  public static final String STEP_NAME = "splitter";
+  public static final String MODULE_NAME = "splitter";
 
   private Splitter splitter;
   private CompressionType compression = NONE;
@@ -179,7 +179,7 @@ public class SplitterModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

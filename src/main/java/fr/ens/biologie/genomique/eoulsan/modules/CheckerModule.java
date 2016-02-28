@@ -66,7 +66,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 @ReuseStepInstance
 public class CheckerModule extends AbstractModule {
 
-  public static final String STEP_NAME = "checker";
+  public static final String MODULE_NAME = "checker";
 
   private static CheckerModule instance;
 
@@ -133,7 +133,7 @@ public class CheckerModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

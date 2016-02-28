@@ -55,12 +55,12 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  */
 public class GenomeDescriptionGeneratorModule extends AbstractModule {
 
-  public static final String STEP_NAME = "genomedescgenerator";
+  public static final String MODULE_NAME = "genomedescgenerator";
 
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

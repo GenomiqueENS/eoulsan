@@ -78,7 +78,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 @HadoopCompatible
 public class ExpressionResultsAnnotationModule extends AbstractModule {
 
-  public static final String STEP_NAME = "expressionresultsannotation";
+  public static final String MODULE_NAME = "expressionresultsannotation";
 
   public static final String COUNTER_GROUP = "expressionresultsannotation";
 
@@ -95,7 +95,7 @@ public class ExpressionResultsAnnotationModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

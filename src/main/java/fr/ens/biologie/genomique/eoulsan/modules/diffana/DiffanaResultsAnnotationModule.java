@@ -82,7 +82,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 @RequiresAllPreviousSteps
 public class DiffanaResultsAnnotationModule extends AbstractModule {
 
-  public static final String STEP_NAME = "diffanaresultsannotation";
+  public static final String MODULE_NAME = "diffanaresultsannotation";
 
   private static final DataFormat DEFAULT_FORMAT =
       ANNOTATED_EXPRESSION_RESULTS_TSV;
@@ -102,7 +102,7 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

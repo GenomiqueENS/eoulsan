@@ -49,12 +49,12 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 @NoLog
 public class FakeModule extends AbstractModule {
 
-  public static final String STEP_NAME = "fakestep";
+  public static final String MODULE_NAME = "fakestep";
 
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

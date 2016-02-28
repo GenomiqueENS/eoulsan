@@ -62,7 +62,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  */
 public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
-  public static final String STEP_NAME = "filterandmap";
+  public static final String MODULE_NAME = "filterandmap";
   private static final String COUNTER_GROUP = "filter_map_reads";
 
   protected static final String READS_PORT_NAME = "reads";
@@ -211,7 +211,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

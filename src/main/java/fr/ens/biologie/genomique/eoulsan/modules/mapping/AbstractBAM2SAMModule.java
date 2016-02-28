@@ -25,7 +25,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
  */
 public abstract class AbstractBAM2SAMModule extends AbstractModule {
 
-  private static final String STEP_NAME = "bam2sam";
+  private static final String MODULE_NAME = "bam2sam";
   protected static final String COUNTER_GROUP = "bam2sam";
 
   private int reducerTaskCount = -1;
@@ -50,7 +50,7 @@ public abstract class AbstractBAM2SAMModule extends AbstractModule {
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override

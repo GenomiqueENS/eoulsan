@@ -46,12 +46,12 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 @NoLog
 public class TerminalModule extends AbstractModule {
 
-  public static final String STEP_NAME = "terminal";
+  public static final String MODULE_NAME = "terminal";
 
   @Override
   public String getName() {
 
-    return STEP_NAME;
+    return MODULE_NAME;
   }
 
   @Override
