@@ -56,7 +56,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -84,7 +84,7 @@ public class SAM2BAMHadoopModule extends AbstractSAM2BAMModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     // Create configuration object
@@ -118,14 +118,14 @@ public class SAM2BAMHadoopModule extends AbstractSAM2BAMModule {
           CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
     } catch (IOException | ClassNotFoundException | InterruptedException
         | EoulsanException e) {
-      return status.createStepResult(e);
+      return status.createTaskResult(e);
     }
 
     try {
       HadoopBamUtils.mergeSAMInto(bamPath, workPath, "", "", SAMFormat.BAM,
           job.getConfiguration(), "sort");
     } catch (IOException e) {
-      return status.createStepResult(e);
+      return status.createTaskResult(e);
     }
 
     // Create Indexing Hadoop job
@@ -160,10 +160,10 @@ public class SAM2BAMHadoopModule extends AbstractSAM2BAMModule {
       indexerSubmitFile.delete();
 
     } catch (IOException | ClassNotFoundException | InterruptedException e) {
-      return status.createStepResult(e);
+      return status.createTaskResult(e);
     }
 
-    return status.createStepResult();
+    return status.createTaskResult();
   }
 
   /**

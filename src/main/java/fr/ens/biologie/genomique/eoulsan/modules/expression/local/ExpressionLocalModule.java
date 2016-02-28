@@ -39,7 +39,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
 import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -57,7 +57,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Reporter;
 public class ExpressionLocalModule extends AbstractExpressionModule {
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     try {
@@ -106,18 +106,18 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
       status.setCounters(reporter, COUNTER_GROUP);
 
       // Write log file
-      return status.createStepResult();
+      return status.createTaskResult();
 
     } catch (FileNotFoundException e) {
-      return status.createStepResult(e, "File not found: " + e.getMessage());
+      return status.createTaskResult(e, "File not found: " + e.getMessage());
     } catch (IOException e) {
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Error while computing expression: " + e.getMessage());
     } catch (EoulsanException e) {
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Error while reading the annotation file: " + e.getMessage());
     } catch (BadBioEntryException e) {
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Error while reading the annotation file: " + e.getMessage());
     }
 

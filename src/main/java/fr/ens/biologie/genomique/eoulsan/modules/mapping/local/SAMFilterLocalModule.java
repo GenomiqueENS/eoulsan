@@ -53,7 +53,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.MultiReadAlignmen
 import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
 import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -72,7 +72,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Reporter;
 public class SAMFilterLocalModule extends AbstractSAMFilterModule {
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     // Create the reporter
@@ -89,14 +89,14 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
       filterSample(context, reporter, status, filter);
 
     } catch (IOException e) {
-      status.createStepResult(e,
+      status.createTaskResult(e,
           "Error while filtering alignments: " + e.getMessage());
     } catch (EoulsanException e) {
-      status.createStepResult(e,
+      status.createTaskResult(e,
           "Error while initializing filter: " + e.getMessage());
     }
 
-    return status.createStepResult();
+    return status.createTaskResult();
   }
 
   /**

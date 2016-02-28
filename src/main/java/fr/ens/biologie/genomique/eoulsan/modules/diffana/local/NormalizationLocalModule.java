@@ -40,7 +40,7 @@ import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
@@ -116,7 +116,7 @@ public class NormalizationLocalModule extends AbstractModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     try {
@@ -128,11 +128,11 @@ public class NormalizationLocalModule extends AbstractModule {
       norm.run(context, context.getInputData(EXPRESSION_RESULTS_TSV));
 
       // Write log file
-      return status.createStepResult();
+      return status.createTaskResult();
 
     } catch (EoulsanException e) {
 
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Error while normalizing expression data: " + e.getMessage());
     }
 

@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Preconditions;
 
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.util.Reporter;
 
@@ -55,7 +55,7 @@ public class TaskStatusImpl implements TaskStatus {
   private String taskDescription;
   private double progress;
 
-  private TaskResult result;
+  private TaskResultImpl result;
 
   private Date startDate;
   private Date endDate;
@@ -194,13 +194,13 @@ public class TaskStatusImpl implements TaskStatus {
   }
 
   @Override
-  public StepResult createStepResult() {
+  public TaskResult createTaskResult() {
 
-    return createStepResult(true);
+    return createTaskResult(true);
   }
 
   @Override
-  public StepResult createStepResult(final boolean success) {
+  public TaskResult createTaskResult(final boolean success) {
 
     // Check result state
     checkResultState();
@@ -209,7 +209,7 @@ public class TaskStatusImpl implements TaskStatus {
     final long duration = endOfStep();
 
     // Create the context result
-    this.result = new TaskResult(this.context, this.startDate, this.endDate,
+    this.result = new TaskResultImpl(this.context, this.startDate, this.endDate,
         duration, this.message,
         this.taskDescription == null ? "" : this.taskDescription, this.counters,
         success);
@@ -218,7 +218,7 @@ public class TaskStatusImpl implements TaskStatus {
   }
 
   @Override
-  public StepResult createStepResult(final Throwable exception,
+  public TaskResult createTaskResult(final Throwable exception,
       final String exceptionMessage) {
 
     // Check result state
@@ -228,16 +228,16 @@ public class TaskStatusImpl implements TaskStatus {
     final long duration = endOfStep();
 
     // Create the context result
-    this.result = new TaskResult(this.context, this.startDate, this.endDate,
+    this.result = new TaskResultImpl(this.context, this.startDate, this.endDate,
         duration, exception, exceptionMessage);
 
     return this.result;
   }
 
   @Override
-  public StepResult createStepResult(final Throwable exception) {
+  public TaskResult createTaskResult(final Throwable exception) {
 
-    return createStepResult(exception, exception.getMessage());
+    return createTaskResult(exception, exception.getMessage());
   }
 
   //

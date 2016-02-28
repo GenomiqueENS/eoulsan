@@ -32,7 +32,7 @@ import com.google.common.collect.Queues;
 
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResult;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResultImpl;
 
 /**
  * This class define a mono thread scheduler.
@@ -96,7 +96,7 @@ public class MonoThreadTaskScheduler extends AbstractTaskScheduler
         }
 
         // Execute the context
-        final TaskResult result = executeTask(context);
+        final TaskResultImpl result = executeTask(context);
 
         // Do nothing if scheduler is stopped
         if (isStopped()) {

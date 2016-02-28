@@ -38,7 +38,7 @@ import fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolInterpreter;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolData;
@@ -139,7 +139,7 @@ public class GalaxyToolModule extends AbstractModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     // TODO check in data and out data corresponding to tool.xml
@@ -151,7 +151,7 @@ public class GalaxyToolModule extends AbstractModule {
 
       result = this.toolInterpreter.execute(context);
     } catch (EoulsanException e) {
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Error execution tool interpreter from building tool command line : "
               + e.getMessage());
     }
@@ -166,19 +166,19 @@ public class GalaxyToolModule extends AbstractModule {
     if (!result.isException()) {
       final Throwable e = result.getException();
 
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Error execution interrupted: " + e.getMessage());
     }
 
     if (result.getExitValue() != 0) {
 
-      return status.createStepResult(null,
+      return status.createTaskResult(null,
           "Fail execution tool galaxy with command "
               + result.getCommandLine() + ". Exit value: "
               + result.getExitValue());
     }
 
-    return status.createStepResult();
+    return status.createTaskResult();
 
   }
 

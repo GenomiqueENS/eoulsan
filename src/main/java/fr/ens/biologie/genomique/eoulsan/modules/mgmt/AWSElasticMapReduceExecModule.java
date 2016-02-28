@@ -42,7 +42,7 @@ import fr.ens.biologie.genomique.eoulsan.core.ContextUtils;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
@@ -169,7 +169,7 @@ public class AWSElasticMapReduceExecModule extends AbstractModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     // Environment argument
@@ -254,19 +254,19 @@ public class AWSElasticMapReduceExecModule extends AbstractModule {
 
         status.setProgressMessage("End of Amazon MapReduce Job "
             + jobFlowId + " with " + jobStatus + " status.");
-        return status.createStepResult(false);
+        return status.createTaskResult(false);
 
       }
 
       status.setProgressMessage("End of Amazon Elastic MapReduce Job "
           + jobFlowId + " with " + jobStatus + " status.");
 
-      return status.createStepResult();
+      return status.createTaskResult();
     }
 
     status.setProgressMessage(
         "Launch of Amazon Elastic MapReduce Job " + jobFlowId + ".");
-    return status.createStepResult();
+    return status.createTaskResult();
   }
 
   @Override

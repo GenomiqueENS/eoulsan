@@ -41,7 +41,7 @@ import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan1DesignWriter;
@@ -92,7 +92,7 @@ public class CopyDesignAndWorkflowFilesToOutputModule extends AbstractModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     final Configuration conf = this.conf;
@@ -128,7 +128,7 @@ public class CopyDesignAndWorkflowFilesToOutputModule extends AbstractModule {
       getLogger().severe("Unable to copy design file to output path.");
     }
 
-    return status.createStepResult();
+    return status.createTaskResult();
   }
 
 }

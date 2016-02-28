@@ -46,7 +46,7 @@ import fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -193,7 +193,7 @@ public class DesignModule extends AbstractModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     final Set<DataFile> files = new HashSet<>();
@@ -263,7 +263,7 @@ public class DesignModule extends AbstractModule {
 
           // Check if the data name has already used
           if (dataNames.contains(dataName)) {
-            return status.createStepResult(new EoulsanException(
+            return status.createTaskResult(new EoulsanException(
                 "The design contains two or more sample with the same name after renaming: "
                     + dataName + " ( original sample name: " + sample.getId()
                     + ")"));
@@ -298,7 +298,7 @@ public class DesignModule extends AbstractModule {
 
     }
 
-    return status.createStepResult();
+    return status.createTaskResult();
   }
 
   /**

@@ -55,7 +55,7 @@ public class TaskSerializationUtils {
    *           files
    * @throws EoulsanException if an error occurs while executing the task
    */
-  public static final TaskResult execute(final DataFile taskContextFile)
+  public static final TaskResultImpl execute(final DataFile taskContextFile)
       throws IOException, EoulsanException {
 
     checkNotNull(taskContextFile, "contextFile argument cannot be null");
@@ -72,7 +72,7 @@ public class TaskSerializationUtils {
    *           files
    * @throws EoulsanException if an error occurs while executing the task
    */
-  public static final TaskResult execute(final DataFile taskContextFile,
+  public static final TaskResultImpl execute(final DataFile taskContextFile,
       final DataFile outputDir) throws IOException, EoulsanException {
 
     checkNotNull(taskContextFile, "contextFile argument cannot be null");
@@ -87,7 +87,7 @@ public class TaskSerializationUtils {
     final TaskContextImpl context = TaskContextImpl.deserialize(taskContextFile);
 
     // Get TaskResult
-    final TaskResult result = executeContext(context);
+    final TaskResultImpl result = executeContext(context);
 
     // Save TaskResult
     saveTaskResult(taskContextFile, context, result);
@@ -101,7 +101,7 @@ public class TaskSerializationUtils {
    * @return a TaskResult object
    * @throws EoulsanException if an error occurs while executing the task
    */
-  private static TaskResult executeContext(final TaskContextImpl context)
+  private static TaskResultImpl executeContext(final TaskContextImpl context)
       throws EoulsanException {
 
     // Load module instance
@@ -120,7 +120,7 @@ public class TaskSerializationUtils {
       // An exception has occured while configuring the step
       getLogger().severe("Exception while configuring task: " + t.getMessage());
 
-      return new TaskResult(context, new Date(startTime), new Date(endTime),
+      return new TaskResultImpl(context, new Date(startTime), new Date(endTime),
           endTime - startTime, t, t.getMessage());
     }
 
@@ -147,7 +147,7 @@ public class TaskSerializationUtils {
    *           files
    */
   private static final void saveTaskResult(final DataFile taskContextFile,
-      final TaskContextImpl context, final TaskResult result) throws IOException {
+      final TaskContextImpl context, final TaskResultImpl result) throws IOException {
 
     // Get the prefix for the task files and the base dir
     final String taskPrefix = context.getTaskFilePrefix();

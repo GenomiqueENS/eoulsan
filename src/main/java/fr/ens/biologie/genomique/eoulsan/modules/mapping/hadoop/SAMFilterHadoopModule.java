@@ -46,7 +46,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.SAMInputFormat;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.SAMOutputFormat;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractSAMFilterModule;
@@ -67,7 +67,7 @@ public class SAMFilterHadoopModule extends AbstractSAMFilterModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     // Create configuration object
@@ -85,10 +85,10 @@ public class SAMFilterHadoopModule extends AbstractSAMFilterModule {
       MapReduceUtils.submitAndWaitForJob(job, inData.getName(),
           CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
 
-      return status.createStepResult();
+      return status.createTaskResult();
     } catch (IOException | EoulsanException e) {
 
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Error while running job: " + e.getMessage());
     }
 

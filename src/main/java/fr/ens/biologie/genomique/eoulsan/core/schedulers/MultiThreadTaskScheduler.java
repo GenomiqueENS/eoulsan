@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResult;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResultImpl;
 
 /**
  * This class define a muti thread scheduler.
@@ -81,7 +81,7 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
         beforeExecuteTask(this.context);
 
         // Execute the context
-        final TaskResult result = executeTask(this.context);
+        final TaskResultImpl result = executeTask(this.context);
 
         // Do nothing if scheduler is stopped
         if (isStopped()) {
@@ -111,7 +111,7 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
               + context.getId() + "has failed without exception, cancel="
               + cancel);
 
-      final TaskResult result = new TaskResult(this.context,
+      final TaskResultImpl result = new TaskResultImpl(this.context,
           new Date(this.submissionTime), new Date(endTime),
           endTime - this.submissionTime, exception, exception.getMessage());
 

@@ -66,7 +66,7 @@ import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -218,14 +218,14 @@ public class FastQCModule extends AbstractModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     // Patch FastQC code on sequenceFile to make hadoop compatible
     try {
       FastQCRuntimePatcher.patchFastQC();
     } catch (EoulsanException e1) {
-      return status.createStepResult(e1);
+      return status.createTaskResult(e1);
     }
 
     // Get input data
@@ -282,18 +282,18 @@ public class FastQCModule extends AbstractModule {
       // Keep module data is now unnecessary
       modules.clear();
 
-      return status.createStepResult();
+      return status.createTaskResult();
 
     } catch (final SequenceFormatException e) {
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Error with sequence file format: " + e.getMessage());
 
     } catch (final IOException e) {
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Error while parsing file: " + e.getMessage());
 
     } catch (final XMLStreamException e) {
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Error while writing final report: " + e.getMessage());
     }
 

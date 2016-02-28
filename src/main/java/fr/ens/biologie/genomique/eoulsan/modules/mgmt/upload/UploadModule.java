@@ -40,7 +40,7 @@ import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.annotations.Terminal;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.AbstractWorkflow;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowContext;
@@ -82,7 +82,7 @@ public abstract class UploadModule extends AbstractModule {
   //
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     final StringBuilder log = new StringBuilder();
@@ -166,7 +166,7 @@ public abstract class UploadModule extends AbstractModule {
 
     } catch (IOException e) {
 
-      return status.createStepResult(e);
+      return status.createTaskResult(e);
     }
 
     // The base path is now the place where files where uploaded.
@@ -181,7 +181,7 @@ public abstract class UploadModule extends AbstractModule {
     }
 
     status.setProgressMessage(log.toString());
-    return status.createStepResult();
+    return status.createTaskResult();
   }
 
   @Override

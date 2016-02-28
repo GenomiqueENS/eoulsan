@@ -67,7 +67,7 @@ import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -123,7 +123,7 @@ public class ReadsMapperHadoopModule extends AbstractReadsMapperModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     // Create configuration object
@@ -182,11 +182,11 @@ public class ReadsMapperHadoopModule extends AbstractReadsMapperModule {
         fs.delete(new Path(tfqFile.getSource()), true);
       }
 
-      return status.createStepResult();
+      return status.createTaskResult();
 
     } catch (IOException | EoulsanException e) {
 
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Error while running job: " + e.getMessage());
     }
 

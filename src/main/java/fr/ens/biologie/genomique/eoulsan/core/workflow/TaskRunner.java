@@ -54,7 +54,7 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Main;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -70,7 +70,7 @@ public class TaskRunner {
   private final TaskContextImpl context;
   private final Module module;
   private final TaskStatusImpl status;
-  private volatile StepResult result;
+  private volatile TaskResult result;
   private boolean isTokensSent;
   private boolean forceStepInstanceReuse;
 
@@ -82,11 +82,11 @@ public class TaskRunner {
    * Get the context result.
    * @return a TaskResult object
    */
-  public TaskResult getResult() {
+  public TaskResultImpl getResult() {
 
     checkState(this.result != null, "The context has not been run");
 
-    return (TaskResult) this.result;
+    return (TaskResultImpl) this.result;
   }
 
   //
@@ -111,7 +111,7 @@ public class TaskRunner {
    * Run the task context.
    * @return a task result object
    */
-  public TaskResult run() {
+  public TaskResultImpl run() {
 
     // Check if task has been already executed
     checkState(this.result == null, "task has been already executed");
@@ -202,11 +202,11 @@ public class TaskRunner {
               .severe("Exception while executing task: " + t.getMessage());
 
           // Handle exception not catch by step code
-          TaskRunner.this.result = TaskRunner.this.status.createStepResult(t);
+          TaskRunner.this.result = TaskRunner.this.status.createTaskResult(t);
         }
 
         final long duration = System.currentTimeMillis() - startTime;
-        final StepResult result = TaskRunner.this.result;
+        final TaskResult result = TaskRunner.this.result;
         final boolean success = result.isSuccess();
 
         getLogger().info("End of task #" + TaskRunner.this.context.getId());
@@ -293,7 +293,7 @@ public class TaskRunner {
     if (this.result == null) {
 
       this.result =
-          this.status.createStepResult(new EoulsanException("The step "
+          this.status.createTaskResult(new EoulsanException("The step "
               + this.context.getStep().getId()
               + " has not generate a result object"));
     }
@@ -301,7 +301,7 @@ public class TaskRunner {
     // Send the tokens
     sendTokens();
 
-    return (TaskResult) this.result;
+    return (TaskResultImpl) this.result;
   }
 
   /**
@@ -448,7 +448,7 @@ public class TaskRunner {
    * @param exception exception
    * @return a new TaskResult object
    */
-  public static TaskResult createStepResult(final TaskContextImpl taskContext,
+  public static TaskResultImpl createStepResult(final TaskContextImpl taskContext,
       final Throwable exception) {
 
     return createStepResult(taskContext, exception,
@@ -462,7 +462,7 @@ public class TaskRunner {
    * @param errorMessage error message
    * @return a new TaskResult object
    */
-  public static TaskResult createStepResult(final TaskContextImpl taskContext,
+  public static TaskResultImpl createStepResult(final TaskContextImpl taskContext,
       final Throwable exception, final String errorMessage) {
 
     final TaskRunner runner = new TaskRunner(taskContext);
@@ -471,7 +471,7 @@ public class TaskRunner {
     runner.status.durationStart();
 
     // Create the result object
-    return (TaskResult) runner.status.createStepResult(exception, errorMessage);
+    return (TaskResultImpl) runner.status.createTaskResult(exception, errorMessage);
   }
 
   /**
@@ -480,7 +480,7 @@ public class TaskRunner {
    * @param taskResult task result
    */
   public static void sendTokens(final TaskContextImpl taskContext,
-      final TaskResult taskResult) {
+      final TaskResultImpl taskResult) {
 
     new TaskRunner(taskContext, taskResult).sendTokens();
   }
@@ -524,7 +524,7 @@ public class TaskRunner {
    * @param taskResult task result
    */
   private TaskRunner(final TaskContextImpl taskContext,
-      final TaskResult taskResult) {
+      final TaskResultImpl taskResult) {
 
     checkNotNull(taskContext, "taskContext cannot be null");
     checkNotNull(taskResult, "taskResult cannot be null");

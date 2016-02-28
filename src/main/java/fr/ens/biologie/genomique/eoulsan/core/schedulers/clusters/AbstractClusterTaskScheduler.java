@@ -48,7 +48,7 @@ import fr.ens.biologie.genomique.eoulsan.actions.ClusterTaskAction;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.schedulers.AbstractTaskScheduler;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResult;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResultImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskRunner;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 
@@ -161,7 +161,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
      * @throws EoulsanException if the done task is not found
      * @throws IOException if an error occurs while reading the result file
      */
-    private TaskResult loadResult() throws EoulsanException, IOException {
+    private TaskResultImpl loadResult() throws EoulsanException, IOException {
 
       // Define the file for the task done
       final File taskDoneFile =
@@ -180,13 +180,13 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
       this.context.deserializeOutputData(
           new File(this.taskDir, this.taskPrefix + TASK_DATA_EXTENSION));
 
-      return TaskResult.deserialize(taskResultFile);
+      return TaskResultImpl.deserialize(taskResultFile);
     }
 
     @Override
     public void run() {
 
-      TaskResult result = null;
+      TaskResultImpl result = null;
 
       try {
 

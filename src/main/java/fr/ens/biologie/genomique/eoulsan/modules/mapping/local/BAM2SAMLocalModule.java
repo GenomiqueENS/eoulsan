@@ -7,7 +7,7 @@ import java.io.OutputStream;
 
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -32,7 +32,7 @@ import htsjdk.samtools.SamReaderFactory;
 public class BAM2SAMLocalModule extends AbstractBAM2SAMModule {
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     try {
@@ -60,11 +60,11 @@ public class BAM2SAMLocalModule extends AbstractBAM2SAMModule {
       // Add counters for this sample to log file
       status.setCounters(reporter, COUNTER_GROUP);
 
-      return status.createStepResult();
+      return status.createTaskResult();
 
     } catch (final IOException e) {
 
-      return status.createStepResult(e);
+      return status.createTaskResult(e);
     }
   }
 

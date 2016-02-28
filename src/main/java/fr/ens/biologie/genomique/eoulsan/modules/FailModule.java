@@ -37,7 +37,7 @@ import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
@@ -101,7 +101,7 @@ public class FailModule extends AbstractModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     try {
@@ -111,7 +111,7 @@ public class FailModule extends AbstractModule {
           .warning("Thread.sleep() interrupted: " + e.getMessage());
     }
 
-    return status.createStepResult(
+    return status.createTaskResult(
         new EoulsanException("Fail of the step required by user"));
   }
 

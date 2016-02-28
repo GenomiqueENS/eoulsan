@@ -7,7 +7,7 @@ import java.io.IOException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
@@ -47,7 +47,7 @@ public class DummyGeneratorModule extends AbstractModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     // Get input and output data
@@ -57,10 +57,10 @@ public class DummyGeneratorModule extends AbstractModule {
       // Create empty file
       outData.getDataFile().create().close();
     } catch (IOException e) {
-      return status.createStepResult(e);
+      return status.createTaskResult(e);
     }
 
-    return status.createStepResult();
+    return status.createTaskResult();
   }
 
 }

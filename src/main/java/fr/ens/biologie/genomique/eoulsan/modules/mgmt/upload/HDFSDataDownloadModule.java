@@ -47,7 +47,7 @@ import fr.ens.biologie.genomique.eoulsan.core.ContextUtils;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepOutputDataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -110,7 +110,7 @@ public class HDFSDataDownloadModule extends AbstractModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     // Skip the step if the global parameter NO_HDFS_DOWNLOAD is set
@@ -120,7 +120,7 @@ public class HDFSDataDownloadModule extends AbstractModule {
         && "true".equals(noDownloadValue.trim().toLowerCase())) {
 
       status.setProgressMessage("Download step skipped in settings.");
-      return status.createStepResult();
+      return status.createTaskResult();
     }
 
     final String hadoopWorkingPathname =
@@ -236,15 +236,15 @@ public class HDFSDataDownloadModule extends AbstractModule {
       }
 
       status.setProgressMessage(logMsg.toString());
-      return status.createStepResult();
+      return status.createTaskResult();
 
     } catch (EoulsanException e) {
 
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Error while download results: " + e.getMessage());
     } catch (IOException e) {
 
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Error while download results: " + e.getMessage());
     }
   }

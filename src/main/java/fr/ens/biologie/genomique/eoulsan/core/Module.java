@@ -96,7 +96,7 @@ public interface Module {
    * @param context Execution context
    * @param status of the step
    */
-  StepResult execute(TaskContext context, TaskStatus status);
+  TaskResult execute(TaskContext context, TaskStatus status);
 
   /**
    * Get the parallelization mode of the step.

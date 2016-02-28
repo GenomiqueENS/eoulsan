@@ -57,7 +57,7 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResult;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResultImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskRunner;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskSerializationUtils;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -166,7 +166,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
      * @throws EoulsanException if the done task is not found
      * @throws IOException if an error occurs while reading the result file
      */
-    private TaskResult loadResult() throws EoulsanException, IOException {
+    private TaskResultImpl loadResult() throws EoulsanException, IOException {
 
       // Define the file for the task done
       final DataFile taskDoneFile =
@@ -185,13 +185,13 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
       this.context.deserializeOutputData(
           new DataFile(this.taskDir, this.taskPrefix + TASK_DATA_EXTENSION));
 
-      return TaskResult.deserialize(taskResultFile);
+      return TaskResultImpl.deserialize(taskResultFile);
     }
 
     @Override
     public void run() {
 
-      TaskResult result = null;
+      TaskResultImpl result = null;
 
       try {
 
@@ -363,7 +363,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
       try {
 
         // Execute the task
-        final TaskResult result =
+        final TaskResultImpl result =
             TaskSerializationUtils.execute(new DataFile(value.toString()));
 
         // Log task result informations

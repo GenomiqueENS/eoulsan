@@ -234,7 +234,7 @@ public class StepResult {
     this.immutable = true;
   }
 
-  public void addResult(final TaskResult result) {
+  public void addResult(final TaskResultImpl result) {
 
     checkNotNull(result, "result cannot be null");
 

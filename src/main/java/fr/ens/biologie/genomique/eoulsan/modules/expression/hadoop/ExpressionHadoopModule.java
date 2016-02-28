@@ -67,7 +67,7 @@ import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -412,7 +412,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     final Data alignmentsData = context.getInputData(MAPPER_RESULTS_SAM);
@@ -426,7 +426,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
           featureAnnotationData, genomeDescriptionData, outData, status);
     }
 
-    return status.createStepResult(
+    return status.createTaskResult(
         new EoulsanException(
             "Unknown counter: " + getCounter().getCounterName()),
         "Unknown counter: " + getCounter().getCounterName());
@@ -438,7 +438,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
    * @param status Eoulsan status
    * @return a StepResult object
    */
-  private StepResult executeJobHTSeqCounter(final TaskContext context,
+  private TaskResult executeJobHTSeqCounter(final TaskContext context,
       final Data alignmentsData, final Data featureAnnotationData,
       final Data genomeDescriptionData, final Data outData,
       final TaskStatus status) {
@@ -489,19 +489,19 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
           + ((System.currentTimeMillis() - mapReduceEndTime) / 1000)
           + " seconds.");
 
-      return status.createStepResult();
+      return status.createTaskResult();
 
     } catch (IOException e) {
 
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Error while running job: " + e.getMessage());
     } catch (BadBioEntryException e) {
 
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Invalid annotation entry: " + e.getEntry());
     } catch (EoulsanException e) {
 
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Error while reading the annotation file: " + e.getMessage());
     }
   }

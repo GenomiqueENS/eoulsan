@@ -51,7 +51,7 @@ import fr.ens.biologie.genomique.eoulsan.core.OutputPort;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
@@ -149,7 +149,7 @@ public class CheckerModule extends AbstractModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     // Get the CheckStore
@@ -194,7 +194,7 @@ public class CheckerModule extends AbstractModule {
 
     } catch (EoulsanException e) {
 
-      return status.createStepResult(e);
+      return status.createTaskResult(e);
     } finally {
 
       // Clear the checker
@@ -202,7 +202,7 @@ public class CheckerModule extends AbstractModule {
       this.checkerConfiguration.clear();
     }
 
-    return status.createStepResult();
+    return status.createTaskResult();
   }
 
   /**

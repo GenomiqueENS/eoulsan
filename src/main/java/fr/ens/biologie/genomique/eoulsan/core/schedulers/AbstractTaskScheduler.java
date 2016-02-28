@@ -40,7 +40,7 @@ import com.google.common.collect.Multimap;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.AbstractStep;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResult;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResultImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskRunner;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepResult;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepStatus;
@@ -74,7 +74,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
    * @param step the step of the result
    * @param result the result to add
    */
-  private void addResult(final Step step, final TaskResult result) {
+  private void addResult(final Step step, final TaskResultImpl result) {
 
     this.results.get(step).addResult(result);
   }
@@ -217,7 +217,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
    * @param context the context to execute
    */
   protected void afterExecuteTask(final TaskContextImpl context,
-      final TaskResult result) {
+      final TaskResultImpl result) {
 
     checkNotNull(context, "context argument is null");
     checkNotNull(result, "result argument is null");
@@ -234,7 +234,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
    * @param context the context
    * @return a TaskResult object
    */
-  protected TaskResult executeTask(final TaskContextImpl context) {
+  protected TaskResultImpl executeTask(final TaskContextImpl context) {
 
     checkNotNull(context, "context argument is null");
 
@@ -248,7 +248,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     contextRunner.run();
 
     // Return the result
-    final TaskResult result = contextRunner.getResult();
+    final TaskResultImpl result = contextRunner.getResult();
 
     return result;
   }

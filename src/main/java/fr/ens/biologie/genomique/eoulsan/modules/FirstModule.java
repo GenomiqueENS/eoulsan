@@ -30,7 +30,7 @@ import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
 import fr.ens.biologie.genomique.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.biologie.genomique.eoulsan.checkers.CheckStore;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
@@ -60,13 +60,13 @@ public final class FirstModule extends AbstractModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     // Clear the CheckStore before the start of the "real" steps
     CheckStore.getCheckStore().clear();
 
-    return status.createStepResult();
+    return status.createTaskResult();
   }
 
 }

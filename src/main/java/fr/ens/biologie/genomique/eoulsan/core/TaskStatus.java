@@ -61,27 +61,27 @@ public interface TaskStatus extends Progress {
   void setCounters(Reporter reporter, String counterGroup);
 
   /**
-   * Create a StepResult object for a successful result.
+   * Create a TaskResult object for a successful result.
    */
-  StepResult createStepResult();
+  TaskResult createTaskResult();
 
   /**
-   * Create a StepResult object.
-   * @param success true if the step is successful
+   * Create a TaskResult object.
+   * @param success true if the task is successful
    */
-  StepResult createStepResult(boolean success);
+  TaskResult createTaskResult(boolean success);
 
   /**
-   * Create a StepResult object.
+   * Create a TaskResult object.
    * @param exception exception of the error
    * @param exceptionMessage Error message
    */
-  StepResult createStepResult(Throwable exception, String exceptionMessage);
+  TaskResult createTaskResult(Throwable exception, String exceptionMessage);
 
   /**
-   * Create a StepResult object.
+   * Create a TaskResult object.
    * @param exception exception of the error
    */
-  StepResult createStepResult(Throwable exception);
+  TaskResult createTaskResult(Throwable exception);
 
 }

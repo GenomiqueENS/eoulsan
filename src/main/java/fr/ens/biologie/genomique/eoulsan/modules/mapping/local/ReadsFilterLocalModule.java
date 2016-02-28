@@ -45,7 +45,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.io.FastqWriter;
 import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.MultiReadFilter;
 import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.ReadFilter;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -63,7 +63,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Reporter;
 public class ReadsFilterLocalModule extends AbstractReadsFilterModule {
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     // Create the reporter
@@ -103,16 +103,16 @@ public class ReadsFilterLocalModule extends AbstractReadsFilterModule {
       }
 
     } catch (FileNotFoundException e) {
-      return status.createStepResult(e, "File not found: " + e.getMessage());
+      return status.createTaskResult(e, "File not found: " + e.getMessage());
     } catch (IOException e) {
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Error while filtering reads: " + e.getMessage());
     } catch (EoulsanException e) {
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Error while initializing filter: " + e.getMessage());
     }
 
-    return status.createStepResult();
+    return status.createTaskResult();
   }
 
   /**

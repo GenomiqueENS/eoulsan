@@ -30,7 +30,7 @@ import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
 import fr.ens.biologie.genomique.eoulsan.annotations.ReuseStepInstance;
 import fr.ens.biologie.genomique.eoulsan.annotations.Terminal;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 
@@ -61,10 +61,10 @@ public class TerminalModule extends AbstractModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
-    return status.createStepResult();
+    return status.createTaskResult();
   }
 
 }

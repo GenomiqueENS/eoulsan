@@ -39,7 +39,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -86,7 +86,7 @@ public class GenomeDescriptionGeneratorModule extends AbstractModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     // Get input and output data
@@ -116,14 +116,14 @@ public class GenomeDescriptionGeneratorModule extends AbstractModule {
 
     } catch (BadBioEntryException e) {
 
-      return status.createStepResult(e);
+      return status.createTaskResult(e);
     } catch (IOException e) {
 
-      return status.createStepResult(e);
+      return status.createTaskResult(e);
     }
 
     status.setProgressMessage("Genome description creation");
-    return status.createStepResult();
+    return status.createTaskResult();
   }
 
   /**

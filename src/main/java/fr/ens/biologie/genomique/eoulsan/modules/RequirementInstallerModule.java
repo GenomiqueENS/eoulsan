@@ -34,7 +34,7 @@ import fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.requirements.AbstractRequirement;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
@@ -105,7 +105,7 @@ public class RequirementInstallerModule extends AbstractModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     try {
@@ -114,10 +114,10 @@ public class RequirementInstallerModule extends AbstractModule {
       this.requirement.install(status);
 
     } catch (EoulsanException e) {
-      return status.createStepResult(e);
+      return status.createTaskResult(e);
     }
 
-    return status.createStepResult();
+    return status.createTaskResult();
   }
 
 }

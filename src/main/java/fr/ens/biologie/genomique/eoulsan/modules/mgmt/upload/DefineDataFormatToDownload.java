@@ -37,7 +37,7 @@ import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
@@ -118,7 +118,7 @@ public class DefineDataFormatToDownload extends AbstractModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     final StringBuilder sb = new StringBuilder();
@@ -145,7 +145,7 @@ public class DefineDataFormatToDownload extends AbstractModule {
     settings.setSetting(DATAFORMATS_TO_DOWNLOAD_SETTING, formats, false);
 
     status.setProgressMessage("Formats to download: " + formats);
-    return status.createStepResult();
+    return status.createTaskResult();
   }
 
 }

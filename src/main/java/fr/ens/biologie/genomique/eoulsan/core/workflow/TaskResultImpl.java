@@ -43,7 +43,7 @@ import java.util.Map;
 import com.google.common.base.Preconditions;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.util.ClassLoaderObjectInputStream;
 
@@ -52,7 +52,7 @@ import fr.ens.biologie.genomique.eoulsan.util.ClassLoaderObjectInputStream;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class TaskResult implements StepResult, Serializable {
+public class TaskResultImpl implements TaskResult, Serializable {
 
   private static final long serialVersionUID = -1698693204391020077L;
 
@@ -159,7 +159,7 @@ public class TaskResult implements StepResult, Serializable {
    * @param file input DataFile
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskResult deserialize(final File file) throws IOException {
+  public static TaskResultImpl deserialize(final File file) throws IOException {
 
     checkNotNull(file, "file argument cannot be null");
 
@@ -171,7 +171,7 @@ public class TaskResult implements StepResult, Serializable {
    * @param file input DataFile
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskResult deserialize(final DataFile file) throws IOException {
+  public static TaskResultImpl deserialize(final DataFile file) throws IOException {
 
     checkNotNull(file, "file argument cannot be null");
 
@@ -183,7 +183,7 @@ public class TaskResult implements StepResult, Serializable {
    * @param in input stream
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskResult deserialize(final InputStream in)
+  public static TaskResultImpl deserialize(final InputStream in)
       throws IOException {
 
     checkNotNull(in, "in argument cannot be null");
@@ -191,7 +191,7 @@ public class TaskResult implements StepResult, Serializable {
     try (final ObjectInputStream ois = new ClassLoaderObjectInputStream(in)) {
 
       // Read TaskContext object
-      final TaskResult result = (TaskResult) ois.readObject();
+      final TaskResultImpl result = (TaskResultImpl) ois.readObject();
 
       return result;
 
@@ -204,7 +204,7 @@ public class TaskResult implements StepResult, Serializable {
   // Constructor
   //
 
-  TaskResult(final TaskContextImpl context, final Date startTime,
+  TaskResultImpl(final TaskContextImpl context, final Date startTime,
       final Date endTime, final long duration, final String contextMessage,
       final String contextDescription, final Map<String, Long> counters,
       final boolean success) {
@@ -228,7 +228,7 @@ public class TaskResult implements StepResult, Serializable {
     this.errorMessage = null;
   }
 
-  public TaskResult(final TaskContextImpl context, final Date startTime,
+  public TaskResultImpl(final TaskContextImpl context, final Date startTime,
       final Date endTime, final long duration, final Throwable exception,
       final String errorMessage) {
 

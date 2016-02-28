@@ -47,7 +47,7 @@ import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -84,7 +84,7 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     try {
@@ -193,14 +193,14 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
 
     } catch (FileNotFoundException e) {
 
-      return status.createStepResult(e, "File not found: " + e.getMessage());
+      return status.createTaskResult(e, "File not found: " + e.getMessage());
     } catch (IOException e) {
 
-      return status.createStepResult(e,
+      return status.createTaskResult(e,
           "Error while mapping reads: " + e.getMessage());
     }
 
-    return status.createStepResult();
+    return status.createTaskResult();
   }
 
   /**

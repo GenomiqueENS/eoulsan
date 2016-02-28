@@ -55,7 +55,7 @@ import fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -216,7 +216,7 @@ public class ExpressionResultsAnnotationModule extends AbstractModule {
   }
 
   @Override
-  public StepResult execute(final TaskContext context,
+  public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     // Get hypertext links file
@@ -242,7 +242,7 @@ public class ExpressionResultsAnnotationModule extends AbstractModule {
       }
 
     } catch (IOException e) {
-      return status.createStepResult(e);
+      return status.createTaskResult(e);
     }
 
     // Define Result
@@ -284,14 +284,14 @@ public class ExpressionResultsAnnotationModule extends AbstractModule {
       }
 
     } catch (IOException e) {
-      return status.createStepResult(e);
+      return status.createTaskResult(e);
     }
 
     // Set the description of the context
     status.setDescription(resultString.toString());
 
     // Return the result
-    return status.createStepResult();
+    return status.createTaskResult();
   }
 
 }
