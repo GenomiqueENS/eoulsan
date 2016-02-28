@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.biologie.genomique.eoulsan.core;
+package fr.ens.biologie.genomique.eoulsan.util.hadoop;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 

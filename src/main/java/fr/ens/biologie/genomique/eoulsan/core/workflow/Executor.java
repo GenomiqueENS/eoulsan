@@ -34,13 +34,13 @@ import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.core.HadoopInfo;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.io.DefaultDesignReader;
 import fr.ens.biologie.genomique.eoulsan.ui.UI;
 import fr.ens.biologie.genomique.eoulsan.ui.UIService;
+import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopInfo;
 
 /**
  * This class is the executor for running all the steps of an analysis.
