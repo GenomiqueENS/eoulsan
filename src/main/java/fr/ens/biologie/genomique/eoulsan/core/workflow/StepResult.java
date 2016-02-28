@@ -680,7 +680,7 @@ public class StepResult {
     this.jobEnvironment = workflowContext.getJobEnvironment();
 
     this.stepId = step.getId();
-    this.stepName = step.getStepName();
+    this.stepName = step.getModuleName();
     this.stepClass =
         step.getModule() == null ? null : step.getModule().getClass().getName();
     this.stepVersion =

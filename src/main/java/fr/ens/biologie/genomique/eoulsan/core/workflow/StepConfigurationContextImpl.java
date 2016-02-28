@@ -91,9 +91,9 @@ public class StepConfigurationContextImpl
     }
 
     @Override
-    public String getStepName() {
+    public String getModuleName() {
 
-      return this.step.getStepName();
+      return this.step.getModuleName();
     }
 
     @Override

@@ -97,7 +97,7 @@ public class CommandWorkflowModel implements Serializable {
   private String author = "";
 
   private final List<String> stepIdList = new ArrayList<>();
-  private final Map<String, String> stepIdNames = new HashMap<>();
+  private final Map<String, String> moduleNames = new HashMap<>();
   private final Map<String, String> stepVersions = new HashMap<>();
   private final Map<String, Map<String, StepPort>> stepInputs = new HashMap<>();
   private final Map<String, Set<Parameter>> stepParameters = new HashMap<>();
@@ -209,7 +209,7 @@ public class CommandWorkflowModel implements Serializable {
   /**
    * Add a step to the analysis
    * @param stepId id of the step
-   * @param stepName name of the step to add
+   * @param module name of the module to add
    * @param version version of the step to add
    * @param inputs where find step inputs
    * @param parameters parameters of the step
@@ -219,25 +219,25 @@ public class CommandWorkflowModel implements Serializable {
    * @param requiredProcs required processors
    * @throws EoulsanException if an error occurs while adding the step
    */
-  void addStep(final String stepId, final String stepName, final String version,
+  void addStep(final String stepId, final String module, final String version,
       final Map<String, StepOutputPort> inputs, final Set<Parameter> parameters,
       final boolean skipStep, final boolean discardOutput,
       final int requiredMemory, final int requiredProcs, final String dataProduct)
           throws EoulsanException {
 
-    if (stepName == null) {
-      throw new EoulsanException("The name of the step is null.");
+    if (module == null) {
+      throw new EoulsanException("The module of the step is null.");
     }
 
-    final String stepNameLower = stepName.toLowerCase().trim();
+    final String moduleLower = module.toLowerCase().trim();
 
-    if ("".equals(stepNameLower)) {
+    if ("".equals(moduleLower)) {
       throw new EoulsanException("The name of the step is empty.");
     }
 
     final String stepIdLower;
     if (stepId == null || "".equals(stepId.trim())) {
-      stepIdLower = stepNameLower;
+      stepIdLower = moduleLower;
     } else {
       stepIdLower = stepId.toLowerCase().trim();
     }
@@ -293,7 +293,7 @@ public class CommandWorkflowModel implements Serializable {
       fromPortName = fromPortName.trim().toLowerCase();
 
       if (!StepType.DESIGN_STEP.getDefaultStepId().equals(fromStep)
-          && !this.stepIdNames.containsKey(fromStep)) {
+          && !this.moduleNames.containsKey(fromStep)) {
         throw new EoulsanException("The step that generate \""
             + toPortName + "\" for step \"" + stepId
             + "\" has not been yet declared");
@@ -308,7 +308,7 @@ public class CommandWorkflowModel implements Serializable {
     }
 
     this.stepIdList.add(stepIdLower);
-    this.stepIdNames.put(stepIdLower, stepNameLower);
+    this.moduleNames.put(stepIdLower, moduleLower);
     this.stepVersions.put(stepIdLower, stepVersion);
     this.stepInputs.put(stepIdLower, inputsMap);
     this.stepParameters.put(stepIdLower, parameters);
@@ -329,13 +329,13 @@ public class CommandWorkflowModel implements Serializable {
   }
 
   /**
-   * Get the name of the step.
+   * Get the module name of the step.
    * @param stepId step id
    * @return the name of the step
    */
-  public String getStepName(final String stepId) {
+  public String getModuleName(final String stepId) {
 
-    return this.stepIdNames.get(stepId);
+    return this.moduleNames.get(stepId);
   }
 
   /**
@@ -624,7 +624,7 @@ public class CommandWorkflowModel implements Serializable {
 
     // Set step name
     addElement(document, stepElement, NAME_TAG_NAME,
-        this.stepIdNames.get(stepId));
+        this.moduleNames.get(stepId));
 
     // Set version name
     addElement(document, stepElement, VERSION_TAG,

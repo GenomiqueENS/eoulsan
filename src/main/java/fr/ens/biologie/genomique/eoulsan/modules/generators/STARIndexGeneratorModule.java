@@ -187,7 +187,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
 
     for (Step step : context.getWorkflow().getSteps()) {
 
-      if (AbstractExpressionModule.STEP_NAME.equals(step.getStepName())) {
+      if (AbstractExpressionModule.STEP_NAME.equals(step.getModuleName())) {
 
         for (Parameter p : step.getParameters()) {
 

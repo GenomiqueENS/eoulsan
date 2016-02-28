@@ -220,7 +220,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
             this.context.getCurrentStep().getRequiredMemory(),
             "Eoulsan Step "
                 + this.context.getCurrentStep().getId() + " ("
-                + this.context.getCurrentStep().getStepName() + ") Task #"
+                + this.context.getCurrentStep().getModuleName() + ") Task #"
                 + this.context.getId() + " (" + this.context.getContextName()
                 + ")");
 

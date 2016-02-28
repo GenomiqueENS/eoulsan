@@ -147,9 +147,9 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
 
     for (Step step : context.getWorkflow().getSteps()) {
 
-      if (AbstractReadsMapperModule.STEP_NAME.equals(step.getStepName())
+      if (AbstractReadsMapperModule.STEP_NAME.equals(step.getModuleName())
           || AbstractFilterAndMapReadsModule.STEP_NAME
-              .equals(step.getStepName())) {
+              .equals(step.getModuleName())) {
 
         for (Parameter p : step.getParameters()) {
 

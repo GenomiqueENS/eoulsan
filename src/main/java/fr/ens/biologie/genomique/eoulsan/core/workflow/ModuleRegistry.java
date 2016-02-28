@@ -66,7 +66,7 @@ public class ModuleRegistry {
   private static ModuleRegistry instance;
   private final ModuleService service;
   private final GalaxyToolStepClassPathLoader galaxyClassPathLoader;
-  private final GalaxyToolStepFileResourceLoader galaxyFileLoader;
+  private final GalaxyToolModuleFileResourceLoader galaxyFileLoader;
 
   //
   // Inner classes
@@ -76,7 +76,7 @@ public class ModuleRegistry {
    * This class define a resource loader for resource defined in the file
    * system.
    */
-  private static final class GalaxyToolStepFileResourceLoader
+  private static final class GalaxyToolModuleFileResourceLoader
       extends FileResourceLoader<GalaxyToolModule> {
 
     @Override
@@ -95,7 +95,7 @@ public class ModuleRegistry {
         return new GalaxyToolModule(in, source);
       } catch (EoulsanException e) {
         throw new EoulsanException(
-            "Unable to load Galaxy tool step: " + source);
+            "Unable to load Galaxy tool module: " + source);
       }
     }
 
@@ -131,7 +131,7 @@ public class ModuleRegistry {
      * Constructor.
      * @param resourcePaths paths where searching for the resources.
      */
-    public GalaxyToolStepFileResourceLoader(final String resourcePaths) {
+    public GalaxyToolModuleFileResourceLoader(final String resourcePaths) {
 
       super(GalaxyToolModule.class, getDefaultFormatDirectory());
 
@@ -186,7 +186,7 @@ public class ModuleRegistry {
     if (instance == null) {
       instance = new ModuleRegistry();
 
-      // Load the available steps
+      // Load the available modules
       instance.reload();
     }
 
@@ -198,24 +198,24 @@ public class ModuleRegistry {
   //
 
   /**
-   * Load a step.
-   * @param stepName name of the required step
-   * @param version version of the required step
-   * @return a step object or null if the requested step has been not found
+   * Load a module.
+   * @param moduleName name of the required module
+   * @param version version of the required module
+   * @return a step object or null if the requested module has been not found
    */
-  public Module loadStep(final String stepName, final String version) {
+  public Module loadModule(final String moduleName, final String version) {
 
     final List<Module> stepsFound = new ArrayList<>();
 
-    stepsFound.addAll(this.service.newServices(stepName));
-    stepsFound.addAll(this.galaxyClassPathLoader.loadResources(stepName));
-    stepsFound.addAll(this.galaxyFileLoader.loadResources(stepName));
+    stepsFound.addAll(this.service.newServices(moduleName));
+    stepsFound.addAll(this.galaxyClassPathLoader.loadResources(moduleName));
+    stepsFound.addAll(this.galaxyFileLoader.loadResources(moduleName));
 
     // Filter steps
-    filterSteps(stepsFound, Strings.nullToEmpty(version).trim());
+    filterModules(stepsFound, Strings.nullToEmpty(version).trim());
 
     // Sort steps
-    sortSteps(stepsFound);
+    sortModules(stepsFound);
 
     if (stepsFound.isEmpty()) {
       return null;
@@ -254,24 +254,24 @@ public class ModuleRegistry {
   }
 
   /**
-   * Filter the steps on their version.
-   * @param steps steps to filter
+   * Filter the modules on their version.
+   * @param modules steps to filter
    * @param version required version
    */
-  private void filterSteps(final List<Module> steps, final String version) {
+  private void filterModules(final List<Module> modules, final String version) {
 
     // Do no filter if no version has been specified
-    if (steps == null || "".equals(version)) {
+    if (modules == null || "".equals(version)) {
       return;
     }
 
     final List<Module> toRemove = new ArrayList<>();
 
-    // For each step
-    for (Module step : steps) {
+    // For each module
+    for (Module module : modules) {
 
       // Get the version
-      Version stepVersion = step.getVersion();
+      Version stepVersion = module.getVersion();
 
       // Discard null version
       if (stepVersion == null) {
@@ -280,52 +280,52 @@ public class ModuleRegistry {
 
       // Keep only the step with the right version
       if (!stepVersion.toString().equals(version)) {
-        toRemove.add(step);
+        toRemove.add(module);
       }
     }
 
     // Remove all the entries
-    steps.removeAll(toRemove);
+    modules.removeAll(toRemove);
   }
 
   /**
-   * Sort the steps.
-   * @param steps list of step to sort
+   * Sort the modules.
+   * @param modules list of module to sort
    */
-  private void sortSteps(final List<Module> steps) {
+  private void sortModules(final List<Module> modules) {
 
-    // Do nothing if the list of step is null
-    if (steps == null) {
+    // Do nothing if the list of module is null
+    if (modules == null) {
       return;
     }
 
     // Sort the steps
-    Collections.sort(steps, new Comparator<Module>() {
+    Collections.sort(modules, new Comparator<Module>() {
 
       @Override
-      public int compare(final Module s1, final Module s2) {
+      public int compare(final Module m1, final Module m2) {
 
-        if (s1 == null) {
+        if (m1 == null) {
           return 1;
         }
 
-        if (s2 == null) {
+        if (m2 == null) {
           return -1;
         }
 
-        int result = compareStepModes(s1, s2);
+        int result = compareStepModes(m1, m2);
 
         if (result != 0) {
           return result;
         }
 
-        return compareStepVersions(s1, s2);
+        return compareStepVersions(m1, m2);
       }
 
-      private int compareStepModes(final Module s1, final Module s2) {
+      private int compareStepModes(final Module m1, final Module m2) {
 
-        final EoulsanMode mode1 = EoulsanMode.getEoulsanMode(s1.getClass());
-        final EoulsanMode mode2 = EoulsanMode.getEoulsanMode(s2.getClass());
+        final EoulsanMode mode1 = EoulsanMode.getEoulsanMode(m1.getClass());
+        final EoulsanMode mode2 = EoulsanMode.getEoulsanMode(m2.getClass());
 
         int result = compareModes(mode1, mode2, HADOOP_ONLY);
 
@@ -388,7 +388,7 @@ public class ModuleRegistry {
     this.service = new ModuleService();
     this.galaxyClassPathLoader = new GalaxyToolStepClassPathLoader();
     this.galaxyFileLoader =
-        new GalaxyToolStepFileResourceLoader(getSettings().getGalaxyToolPath());
+        new GalaxyToolModuleFileResourceLoader(getSettings().getGalaxyToolPath());
   }
 
 }

@@ -38,78 +38,78 @@ import fr.ens.biologie.genomique.eoulsan.core.Module;
 public class EoulsanAnnotationUtils {
 
   /**
-   * Test if a step contain the @Generator annotation.
-   * @param step the step to test
-   * @return true if the step contains the annotation
+   * Test if a module contain the @Generator annotation.
+   * @param module the module to test
+   * @return true if the module contains the annotation
    */
-  public static boolean isGenerator(final Module step) {
+  public static boolean isGenerator(final Module module) {
 
-    return isAnnotation(step, Generator.class);
+    return isAnnotation(module, Generator.class);
   }
 
   /**
-   * Test if a step contain the @ReuseStepInstance annotation.
-   * @param step the step to test
-   * @return true if the step contains the annotation
+   * Test if a module contain the @ReuseStepInstance annotation.
+   * @param module the module to test
+   * @return true if the module contains the annotation
    */
-  public static boolean isReuseStepInstance(final Module step) {
+  public static boolean isReuseStepInstance(final Module module) {
 
-    return isAnnotation(step, ReuseStepInstance.class);
+    return isAnnotation(module, ReuseStepInstance.class);
   }
 
   /**
    * Test if a step contain the @Terminal annotation.
-   * @param step the step to test
-   * @return true if the step contains the annotation
+   * @param module the module to test
+   * @return true if the module contains the annotation
    */
-  public static boolean isTerminal(final Module step) {
+  public static boolean isTerminal(final Module module) {
 
-    return isAnnotation(step, Terminal.class);
+    return isAnnotation(module, Terminal.class);
   }
 
   /**
-   * Test if a step contain the @NoLog annotation.
-   * @param step the step to test
-   * @return true if the step contains the annotation
+   * Test if a module contain the @NoLog annotation.
+   * @param module the module to test
+   * @return true if the module contains the annotation
    */
-  public static boolean isNoLog(final Module step) {
+  public static boolean isNoLog(final Module module) {
 
-    return isAnnotation(step, NoLog.class);
+    return isAnnotation(module, NoLog.class);
   }
 
   /**
-   * Test if a step contain the @RequiresPreviousStep annotation.
-   * @param step the step to test
-   * @return true if the step contains the annotation
+   * Test if a module contain the @RequiresPreviousStep annotation.
+   * @param module the module to test
+   * @return true if the module contains the annotation
    */
-  public static boolean isRequiresPreviousStep(final Module step) {
+  public static boolean isRequiresPreviousStep(final Module module) {
 
-    return isAnnotation(step, RequiresPreviousStep.class);
+    return isAnnotation(module, RequiresPreviousStep.class);
   }
 
   /**
-   * Test if a step contain the @RequiresPreviousStep annotation.
-   * @param step the step to test
-   * @return true if the step contains the annotation
+   * Test if a module contain the @RequiresPreviousStep annotation.
+   * @param module the module to test
+   * @return true if the module contains the annotation
    */
-  public static boolean isRequiresAllPreviousSteps(final Module step) {
+  public static boolean isRequiresAllPreviousSteps(final Module module) {
 
-    return isAnnotation(step, RequiresAllPreviousSteps.class);
+    return isAnnotation(module, RequiresAllPreviousSteps.class);
   }
 
   /**
-   * Test if a step contains an annotation.
-   * @param step the step
+   * Test if a module contains an annotation.
+   * @param module the module
    * @param clazz the annotation to test
-   * @return true if the step contains the annotation
+   * @return true if the module contains the annotation
    */
-  private static boolean isAnnotation(final Module step,
+  private static boolean isAnnotation(final Module module,
       Class<? extends Annotation> clazz) {
 
-    checkNotNull(step, "step argument cannot be null");
+    checkNotNull(module, "module argument cannot be null");
     checkNotNull(clazz, "clazz argument cannot be null");
 
-    return step.getClass().getAnnotation(clazz) != null;
+    return module.getClass().getAnnotation(clazz) != null;
   }
 
   //

@@ -276,11 +276,11 @@ public class CommandWorkflowParser {
                 final String dataProduct = eStepElement
                     .getAttribute(DATAPRODUCT_ATTR_NAME_STEP_TAG).trim();
 
-                String stepName = getTagValue(STEPNAME_TAG_NAME, eStepElement);
-                if (stepName == null) {
-                  stepName = getTagValue(NAME_TAG_NAME, eStepElement);
+                String module = getTagValue(STEPNAME_TAG_NAME, eStepElement);
+                if (module == null) {
+                  module = getTagValue(NAME_TAG_NAME, eStepElement);
                 }
-                if (stepName == null) {
+                if (module == null) {
                   throw new EoulsanException(
                       "Step name not found in workflow file.");
                 }
@@ -288,14 +288,14 @@ public class CommandWorkflowParser {
                 final String version = getTagValue(VERSION_TAG, eStepElement);
 
                 final Map<String, StepOutputPort> inputs = parseInputs(
-                    eStepElement, "".equals(stepId) ? stepName : stepId);
+                    eStepElement, "".equals(stepId) ? module : stepId);
 
                 final Set<Parameter> parameters = parseParameters(eStepElement,
-                    PARAMETERS_TAG_NAME, stepName, true);
+                    PARAMETERS_TAG_NAME, module, true);
 
                 getLogger().info("In workflow file found "
-                    + stepName + " step (parameters: " + parameters + ").");
-                result.addStep(stepId, stepName, version, inputs, parameters,
+                    + module + " step (parameters: " + parameters + ").");
+                result.addStep(stepId, module, version, inputs, parameters,
                     skip, discardOutput, requiredMemory, requiredProcs,
                     dataProduct);
               }

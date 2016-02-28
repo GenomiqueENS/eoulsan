@@ -169,10 +169,10 @@ public interface Step extends Serializable {
   StepType getType();
 
   /**
-   * Get the step name.
-   * @return the step object
+   * Get the module name.
+   * @return the module object
    */
-  String getStepName();
+  String getModuleName();
 
   /**
    * Get the step version required by user.

@@ -35,8 +35,8 @@ import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 
 /**
- * This class store step instances and avoid storing this instance in
- * WorkflowStep objects that are serialized.
+ * This class store module instances and avoid storing this instance in Step
+ * objects that are serialized.
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -47,19 +47,19 @@ public class StepInstances {
   private final Map<Step, Module> steps = new HashMap<>();
 
   /**
-   * Get a step instance.
-   * @param step workflow step
-   * @return a step instance
-   * @throws EoulsanRuntimeException if an error occurs while loading the step
+   * Get a module instance.
+   * @param step the step
+   * @return a module instance
+   * @throws EoulsanRuntimeException if an error occurs while loading the module
    */
-  public Module getStep(final Step step) {
+  public Module getModule(final Step step) {
 
     checkNotNull(step, "Step is null");
-    final String stepName = step.getStepName();
+    final String stepName = step.getModuleName();
     final String stepVersion = step.getStepVersion();
 
     try {
-      return getStep(step, stepName, stepVersion);
+      return getModule(step, stepName, stepVersion);
     } catch (EoulsanException e) {
       throw new EoulsanRuntimeException(e);
     }
@@ -67,60 +67,63 @@ public class StepInstances {
 
   /**
    * Get a step instance.
-   * @param workflowStep workflow step
-   * @param stepVersion step version
+   * @param step workflow step
+   * @param moduleVersion step version
    * @return a step instance
    * @throws EoulsanException if an error occurs while loading the step
    */
-  public Module getStep(final Step workflowStep, final String stepName,
-      final String stepVersion) throws EoulsanException {
+  public Module getModule(final Step step, final String moduleName,
+      final String moduleVersion) throws EoulsanException {
 
-    checkNotNull(stepName, "Step name is null");
+    checkNotNull(moduleName, "Step name is null");
 
-    if (!this.steps.containsKey(workflowStep)) {
+    if (!this.steps.containsKey(step)) {
 
-      // Load step
-      final Module stepInstance = loadStep(stepName, stepVersion);
+      // Load module
+      final Module moduleInstance = loadModule(moduleName, moduleVersion);
 
-      // Register step instance
-      registerStep(workflowStep, stepInstance);
+      // Register module instance
+      registerStep(step, moduleInstance);
 
-      // return step instance
-      return stepInstance;
+      // return module instance
+      return moduleInstance;
     }
 
-    return this.steps.get(workflowStep);
+    return this.steps.get(step);
   }
 
   /**
    * Register a step instance.
-   * @param workflowStep workflow step
-   * @param stepInstance step instance
+   * @param step the step
+   * @param module module instance
    */
-  public void registerStep(final Step workflowStep,
-      final Module stepInstance) {
+  public void registerStep(final Step step, final Module module) {
 
-    checkNotNull(workflowStep, "workflow step is null");
-    checkNotNull(stepInstance, "stepInstance is null");
+    checkNotNull(step, "workflow step is null");
+    checkNotNull(module, "module is null");
 
-    this.steps.put(workflowStep, stepInstance);
+    this.steps.put(step, module);
   }
 
   /**
    * Remove a step instance.
-   * @param workflowStep workflow step
+   * @param step workflow step
    */
-  public void removeStep(final Step workflowStep) {
+  public void removeStep(final Step step) {
 
-    checkNotNull(workflowStep);
+    checkNotNull(step);
 
-    this.steps.remove(workflowStep);
+    this.steps.remove(step);
   }
 
   //
   // Static methods
   //
 
+  /**
+   * Singleton method.
+   * @return the singleton
+   */
   public static StepInstances getInstance() {
 
     if (instance == null) {
@@ -135,27 +138,28 @@ public class StepInstances {
   //
 
   /**
-   * Get a Step object from its name.
-   * @param stepName name of the step
-   * @param stepVersion version of the step
-   * @return a Step object
-   * @throws EoulsanException if the step does not exits
+   * Get a Module object from its name.
+   * @param moduleName name of the step
+   * @param moduleVersion version of the step
+   * @return a Module object
+   * @throws EoulsanException if the module does not exits
    */
-  private static Module loadStep(final String stepName, final String stepVersion)
-      throws EoulsanException {
+  private static Module loadModule(final String moduleName,
+      final String moduleVersion) throws EoulsanException {
 
-    if (stepName == null) {
+    if (moduleName == null) {
       throw new EoulsanException("Step name is null");
     }
 
-    final String lower = stepName.trim().toLowerCase();
+    final String lower = moduleName.trim().toLowerCase();
 
-    final Module result = ModuleRegistry.getInstance().loadStep(lower, stepVersion);
+    final Module result =
+        ModuleRegistry.getInstance().loadModule(lower, moduleVersion);
 
     if (result == null) {
-      throw new EoulsanException("Unknown step: "
-          + lower + ("".equals(stepVersion)
-              ? "" : " (version required: " + stepVersion + ")"));
+      throw new EoulsanException("Unknown module: "
+          + lower + ("".equals(moduleVersion)
+              ? "" : " (version required: " + moduleVersion + ")"));
     }
 
     return result;

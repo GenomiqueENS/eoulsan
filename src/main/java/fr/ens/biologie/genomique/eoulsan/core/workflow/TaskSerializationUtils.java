@@ -104,15 +104,15 @@ public class TaskSerializationUtils {
   private static TaskResult executeContext(final TaskContextImpl context)
       throws EoulsanException {
 
-    // Load step instance
-    final Module step =
-        StepInstances.getInstance().getStep(context.getCurrentStep());
+    // Load module instance
+    final Module module =
+        StepInstances.getInstance().getModule(context.getCurrentStep());
 
     final long startTime = System.currentTimeMillis();
 
     // Configure step
     try {
-      step.configure(context, context.getCurrentStep().getParameters());
+      module.configure(context, context.getCurrentStep().getParameters());
     } catch (Throwable t) {
 
       final long endTime = System.currentTimeMillis();

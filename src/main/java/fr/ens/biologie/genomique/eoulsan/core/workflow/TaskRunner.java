@@ -68,7 +68,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Version;
 public class TaskRunner {
 
   private final TaskContextImpl context;
-  private final Module step;
+  private final Module module;
   private final TaskStatusImpl status;
   private volatile StepResult result;
   private boolean isTokensSent;
@@ -124,7 +124,7 @@ public class TaskRunner {
     final ThreadGroup threadGroup = new ThreadGroup(threadGroupName);
 
     // Create Log handler and register it
-    final Logger logger = isNoLog(this.step)
+    final Logger logger = isNoLog(this.module)
         ? null : createStepLogger(this.context.getStep(), threadGroupName);
 
     // Register the logger
@@ -142,16 +142,16 @@ public class TaskRunner {
         getLogger().info("Start of task #" + TaskRunner.this.context.getId());
         final long startTime = System.currentTimeMillis();
 
-        final Module stepInstance;
+        final Module module;
         final StepType stepType =
             TaskRunner.this.context.getWorkflowStep().getType();
-        final boolean reuseAnnot = isReuseStepInstance(TaskRunner.this.step);
+        final boolean reuseAnnot = isReuseStepInstance(TaskRunner.this.module);
 
         final String stepDescLog =
             String.format("step (id: %s, name: %s, class: %s) for task #%d",
                 TaskRunner.this.context.getWorkflowStep().getId(),
-                TaskRunner.this.step.getName(),
-                TaskRunner.this.step.getClass().getName(),
+                TaskRunner.this.module.getName(),
+                TaskRunner.this.module.getClass().getName(),
                 TaskRunner.this.context.getId());
 
         try {
@@ -165,10 +165,10 @@ public class TaskRunner {
             // Create the new instance of the step
             getLogger().fine("Create new instance of " + stepDescLog);
 
-            final String stepName = TaskRunner.this.step.getName();
-            final Version stepVersion = TaskRunner.this.step.getVersion();
+            final String stepName = TaskRunner.this.module.getName();
+            final Version stepVersion = TaskRunner.this.module.getVersion();
 
-            stepInstance = ModuleRegistry.getInstance().loadStep(stepName,
+            module = ModuleRegistry.getInstance().loadModule(stepName,
                 stepVersion.toString());
 
             // Log step parameters
@@ -176,7 +176,7 @@ public class TaskRunner {
 
             // Configure the new step instance
             getLogger().fine("Configure step instance");
-            stepInstance.configure(
+            module.configure(
                 new StepConfigurationContextImpl(
                     TaskRunner.this.context.getStep()),
                 TaskRunner.this.context.getCurrentStep().getParameters());
@@ -185,7 +185,7 @@ public class TaskRunner {
 
             // Use the original step instance for the task
             getLogger().fine("Reuse original instance of " + stepDescLog);
-            stepInstance = TaskRunner.this.step;
+            module = TaskRunner.this.module;
 
             // Log step parameters
             logStepParameters();
@@ -193,7 +193,7 @@ public class TaskRunner {
 
           // Execute task
           getLogger().info("Execute task");
-          TaskRunner.this.result = stepInstance.execute(TaskRunner.this.context,
+          TaskRunner.this.result = module.execute(TaskRunner.this.context,
               TaskRunner.this.status);
 
         } catch (Throwable t) {
@@ -509,8 +509,8 @@ public class TaskRunner {
     checkNotNull(taskContext, "taskContext cannot be null");
 
     this.context = taskContext;
-    this.step =
-        StepInstances.getInstance().getStep(taskContext.getCurrentStep());
+    this.module =
+        StepInstances.getInstance().getModule(taskContext.getCurrentStep());
 
     this.status = new TaskStatusImpl(taskContext, stepStatus);
 
@@ -536,7 +536,7 @@ public class TaskRunner {
     this.result = taskResult;
 
     // Step object and status are not necessary in this case
-    this.step = null;
+    this.module = null;
     this.status = null;
   }
 

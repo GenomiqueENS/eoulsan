@@ -187,7 +187,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     // Add the steps
     for (String stepId : stepIds) {
 
-      final String stepName = c.getStepName(stepId);
+      final String moduleName = c.getModuleName(stepId);
       final String stepVersion = c.getStepVersion(stepId);
 
       final Set<Parameter> stepParameters = c.getStepParameters(stepId);
@@ -198,10 +198,10 @@ public class CommandWorkflow extends AbstractWorkflow {
       final String dataProduct = c.getStepDataProduct(stepId);
 
       getLogger().info("Create "
-          + (skip ? "skipped step" : "step ") + stepId + " (" + stepName
+          + (skip ? "skipped step" : "step ") + stepId + " (" + moduleName
           + ") step.");
 
-      addStep(new CommandStep(this, stepId, stepName, stepVersion,
+      addStep(new CommandStep(this, stepId, moduleName, stepVersion,
           stepParameters, skip, copyResultsToOutput, requiredMemory,
           requiredProcessors, dataProduct));
     }
@@ -214,16 +214,16 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   /**
    * Add some steps at the start of the Workflow.
-   * @param firstSteps list of steps to add
+   * @param firstModules list of modules to add
    * @throws EoulsanException if an error occurs while adding a step
    */
-  private void addFirstSteps(final List<Module> firstSteps)
+  private void addFirstSteps(final List<Module> firstModules)
       throws EoulsanException {
 
-    if (firstSteps != null) {
-      for (Module step : Utils.listWithoutNull(firstSteps)) {
+    if (firstModules != null) {
+      for (Module module : Utils.listWithoutNull(firstModules)) {
 
-        addStep(0, new CommandStep(this, step));
+        addStep(0, new CommandStep(this, module));
       }
     }
 
@@ -242,18 +242,18 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   /**
    * Add some steps at the end of the Workflow.
-   * @param endSteps list of steps to add
+   * @param endModules list of modules to add
    * @throws EoulsanException if an error occurs while adding a step
    */
-  private void addEndSteps(final List<Module> endSteps) throws EoulsanException {
+  private void addEndSteps(final List<Module> endModules) throws EoulsanException {
 
-    if (endSteps == null) {
+    if (endModules == null) {
       return;
     }
 
-    for (Module step : Utils.listWithoutNull(endSteps)) {
+    for (Module module : Utils.listWithoutNull(endModules)) {
 
-      addStep(new CommandStep(this, step));
+      addStep(new CommandStep(this, module));
     }
   }
 

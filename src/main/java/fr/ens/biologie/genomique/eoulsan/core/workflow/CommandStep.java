@@ -79,7 +79,7 @@ public class CommandStep extends AbstractStep {
    * Create a step for a standard step.
    * @param workflow workflow of the step
    * @param id identifier of the step
-   * @param stepName Step name
+   * @param moduleName module name
    * @param stepVersion step version
    * @param parameters parameters of the step
    * @param skip true to skip execution of the step
@@ -90,38 +90,38 @@ public class CommandStep extends AbstractStep {
    * @throws EoulsanException id an error occurs while creating the step
    */
   public CommandStep(final AbstractWorkflow workflow, final String id,
-      final String stepName, final String stepVersion,
+      final String moduleName, final String stepVersion,
       final Set<Parameter> parameters, final boolean skip,
       final boolean copyResultsToOutput, final int requiredMemory,
       final int requiredProcessors, final String dataProduct) throws EoulsanException {
 
-    super(workflow, id, stepName, stepVersion, skip, copyResultsToOutput,
+    super(workflow, id, moduleName, stepVersion, skip, copyResultsToOutput,
         parameters, requiredMemory, requiredProcessors, dataProduct);
   }
 
   /**
    * Create a step for a standard step from an existing step object.
    * @param workflow workflow of the step
-   * @param step step object
+   * @param module module object
    * @throws EoulsanException id an error occurs while creating the step
    */
-  public CommandStep(final AbstractWorkflow workflow, final Module step)
+  public CommandStep(final AbstractWorkflow workflow, final Module module)
       throws EoulsanException {
 
-    this(workflow, step, EMPTY_PARAMETERS);
+    this(workflow, module, EMPTY_PARAMETERS);
   }
 
   /**
    * Create a step for a standard step from an existing step object.
    * @param workflow workflow of the step
-   * @param step step object
+   * @param module module object
    * @param parameters parameters of the step
    * @throws EoulsanException id an error occurs while creating the step
    */
-  public CommandStep(final AbstractWorkflow workflow, final Module step,
+  public CommandStep(final AbstractWorkflow workflow, final Module module,
       final Set<Parameter> parameters) throws EoulsanException {
 
-    this(workflow, step.getName(), step.getName(), step.getVersion().toString(),
+    this(workflow, module.getName(), module.getName(), module.getVersion().toString(),
         parameters, false, false, -1, -1, "");
   }
 }

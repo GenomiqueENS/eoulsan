@@ -98,7 +98,7 @@ public class Workflow2Graphviz {
       sb.append(step.getId());
       sb.append("</font></td></tr>");
 
-      addRow(sb, step.getStepName() + " " + step.getStepVersion());
+      addRow(sb, step.getModuleName() + " " + step.getStepVersion());
       for (Parameter p : step.getParameters()) {
         addRow(sb, xmlEscape(p.getName()) + " = " + xmlEscape(p.getValue()));
       }
