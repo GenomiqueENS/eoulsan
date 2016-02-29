@@ -82,9 +82,13 @@ public class DataFormats {
   public static final DataFormat EXPRESSION_RESULTS_TSV =
       registry.getDataFormatFromName("expression_results_tsv");
 
-  /** Annotation data format. */
+  /** GFF data format. */
   public static final DataFormat ANNOTATION_GFF =
       registry.getDataFormatFromName("annotation_gff");
+
+  /** GTF data format. */
+  public static final DataFormat ANNOTATION_GTF =
+      registry.getDataFormatFromName("annotation_gtf");
 
   /** Diffana results data format. */
   public static final DataFormat DIFFANA_RESULTS_TSV =
