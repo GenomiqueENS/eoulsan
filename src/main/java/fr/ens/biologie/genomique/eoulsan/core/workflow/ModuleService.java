@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.annotations.EoulsanMode;
+import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.util.ServiceNameLoader;
 
@@ -47,7 +47,7 @@ public class ModuleService extends ServiceNameLoader<Module> {
       return true;
     }
 
-    return EoulsanMode.accept(clazz, false);
+    return ExecutionMode.accept(clazz, false);
   }
 
   @Override

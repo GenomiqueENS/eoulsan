@@ -27,9 +27,9 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanRuntime.getSettings;
-import static fr.ens.biologie.genomique.eoulsan.annotations.EoulsanMode.HADOOP_COMPATIBLE;
-import static fr.ens.biologie.genomique.eoulsan.annotations.EoulsanMode.HADOOP_ONLY;
-import static fr.ens.biologie.genomique.eoulsan.annotations.EoulsanMode.LOCAL_ONLY;
+import static fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode.HADOOP_COMPATIBLE;
+import static fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode.HADOOP_ONLY;
+import static fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode.LOCAL_ONLY;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +44,7 @@ import com.google.common.base.Strings;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Main;
-import fr.ens.biologie.genomique.eoulsan.annotations.EoulsanMode;
+import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.modules.GalaxyToolModule;
@@ -324,8 +324,8 @@ public class ModuleRegistry {
 
       private int compareStepModes(final Module m1, final Module m2) {
 
-        final EoulsanMode mode1 = EoulsanMode.getEoulsanMode(m1.getClass());
-        final EoulsanMode mode2 = EoulsanMode.getEoulsanMode(m2.getClass());
+        final ExecutionMode mode1 = ExecutionMode.getExecutionMode(m1.getClass());
+        final ExecutionMode mode2 = ExecutionMode.getExecutionMode(m2.getClass());
 
         int result = compareModes(mode1, mode2, HADOOP_ONLY);
 
@@ -342,8 +342,8 @@ public class ModuleRegistry {
         return compareModes(mode1, mode2, LOCAL_ONLY);
       }
 
-      private int compareModes(EoulsanMode mode1, EoulsanMode mode2,
-          EoulsanMode modeToCompare) {
+      private int compareModes(ExecutionMode mode1, ExecutionMode mode2,
+          ExecutionMode modeToCompare) {
 
         if (mode1 == modeToCompare && mode2 != modeToCompare) {
           return 1;

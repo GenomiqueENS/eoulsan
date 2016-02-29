@@ -43,7 +43,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUtils;
-import fr.ens.biologie.genomique.eoulsan.annotations.EoulsanMode;
+import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode;
@@ -83,7 +83,7 @@ public abstract class AbstractStep implements Step {
   private OutputPorts outputPortsParameter = noOutputPort();
 
   private final String moduleName;
-  private final EoulsanMode mode;
+  private final ExecutionMode mode;
   private boolean skip;
   private final boolean terminalStep;
   private final boolean copyResultsToOutput;
@@ -183,7 +183,7 @@ public abstract class AbstractStep implements Step {
    * Get the Eoulsan mode of the step.
    * @return an EoulsanMode enum
    */
-  public EoulsanMode getEoulsanMode() {
+  public ExecutionMode getEoulsanMode() {
 
     return this.mode;
   }
@@ -420,7 +420,7 @@ public abstract class AbstractStep implements Step {
       return workflow.getLocalWorkingDirectory();
     }
 
-    switch (EoulsanMode.getEoulsanMode(module.getClass())) {
+    switch (ExecutionMode.getExecutionMode(module.getClass())) {
 
     case HADOOP_COMPATIBLE:
     case HADOOP_INTERNAL:
@@ -594,7 +594,7 @@ public abstract class AbstractStep implements Step {
 
       this.moduleName = checkerModule.getName();
       this.version = checkerModule.getVersion().toString();
-      this.mode = EoulsanMode.getEoulsanMode(checkerModule.getClass());
+      this.mode = ExecutionMode.getExecutionMode(checkerModule.getClass());
 
       // Define output directory
       this.outputDir = defineOutputDirectory(workflow, checkerModule,
@@ -612,7 +612,7 @@ public abstract class AbstractStep implements Step {
 
       this.moduleName = designModule.getName();
       this.version = checkerModule2.getVersion().toString();
-      this.mode = EoulsanMode.getEoulsanMode(designModule.getClass());
+      this.mode = ExecutionMode.getExecutionMode(designModule.getClass());
 
       // Define output directory
       this.outputDir = defineOutputDirectory(workflow, designModule,
@@ -627,7 +627,7 @@ public abstract class AbstractStep implements Step {
 
       this.moduleName = type.name();
       this.version = fakeModule.getVersion().toString();
-      this.mode = EoulsanMode.NONE;
+      this.mode = ExecutionMode.NONE;
 
       // Define output directory
       this.outputDir =
@@ -668,7 +668,7 @@ public abstract class AbstractStep implements Step {
     this.type = StepType.GENERATOR_STEP;
     this.moduleName = generatorModule.getName();
     this.version = generatorModule.getVersion().toString();
-    this.mode = EoulsanMode.getEoulsanMode(generatorModule.getClass());
+    this.mode = ExecutionMode.getExecutionMode(generatorModule.getClass());
     this.parameters = Collections.emptySet();
     this.copyResultsToOutput = false;
     this.parallelizationMode = getParallelizationMode(generatorModule);
@@ -728,7 +728,7 @@ public abstract class AbstractStep implements Step {
     final Module module =
         StepInstances.getInstance().getModule(this, moduleName, stepVersion);
     this.type = isGenerator(module) ? GENERATOR_STEP : STANDARD_STEP;
-    this.mode = EoulsanMode.getEoulsanMode(module.getClass());
+    this.mode = ExecutionMode.getExecutionMode(module.getClass());
     this.parameters = Sets.newLinkedHashSet(parameters);
     this.terminalStep = EoulsanAnnotationUtils.isTerminal(module);
     this.createLogFiles = !isNoLog(module);
@@ -775,7 +775,7 @@ public abstract class AbstractStep implements Step {
     this.copyResultsToOutput = copyResultsToOutput;
 
     this.type = isGenerator(module) ? GENERATOR_STEP : STANDARD_STEP;
-    this.mode = EoulsanMode.getEoulsanMode(module.getClass());
+    this.mode = ExecutionMode.getExecutionMode(module.getClass());
     this.parameters = Sets.newLinkedHashSet(parameters);
     this.terminalStep = EoulsanAnnotationUtils.isTerminal(module);
     this.createLogFiles = !isNoLog(module);

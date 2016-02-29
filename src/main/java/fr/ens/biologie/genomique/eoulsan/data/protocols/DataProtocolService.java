@@ -29,7 +29,7 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.annotations.EoulsanMode;
+import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
 import fr.ens.biologie.genomique.eoulsan.util.ServiceNameLoader;
 
 /**
@@ -131,7 +131,7 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
   @Override
   protected boolean accept(final Class<?> clazz) {
 
-    return EoulsanMode.accept(clazz,
+    return ExecutionMode.accept(clazz,
         EoulsanRuntime.getRuntime().getMode().isHadoopProtocolMode());
   }
 

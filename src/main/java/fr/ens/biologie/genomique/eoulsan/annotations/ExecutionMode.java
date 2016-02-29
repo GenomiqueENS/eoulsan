@@ -27,11 +27,11 @@ package fr.ens.biologie.genomique.eoulsan.annotations;
 import java.lang.annotation.Annotation;
 
 /**
- * This class define an enum for the mode of Eoulsan.
+ * This class define an enum for the execution mode of Eoulsan.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public enum EoulsanMode {
+public enum ExecutionMode {
 
   NONE, HADOOP_INTERNAL, LOCAL_ONLY, HADOOP_COMPATIBLE, HADOOP_ONLY;
 
@@ -63,7 +63,7 @@ public enum EoulsanMode {
   }
 
   /**
-   * Test if the mode is compatible with local mode.
+   * Test if the excution mode is compatible with local mode.
    * @return true if the mode is compatible with local mode
    */
   public boolean isLocalCompatible() {
@@ -83,7 +83,7 @@ public enum EoulsanMode {
   }
 
   /**
-   * Test if the mode is compatible with Hadoop mode.
+   * Test if the execution mode is compatible with Hadoop mode.
    * @return true if the mode is compatible with Hadoop mode
    */
   public boolean isHadoopCompatible() {
@@ -120,7 +120,7 @@ public enum EoulsanMode {
       return false;
     }
 
-    final EoulsanMode mode = getEoulsanMode(clazz);
+    final ExecutionMode mode = getExecutionMode(clazz);
 
     switch (mode) {
 
@@ -142,27 +142,28 @@ public enum EoulsanMode {
   }
 
   /**
-   * Get the Eoulsan mode of a class.
-   * @param clazz class to test
+   * Get the execution mode related to an annotation class.
+   * @param annotationClazz class to test
    * @return an EoulsanMode object
    */
-  public static EoulsanMode getEoulsanMode(final Class<?> clazz) {
+  public static ExecutionMode getExecutionMode(final Class<?> annotationClazz) {
 
-    if (clazz == null) {
+    if (annotationClazz == null) {
       return null;
     }
 
-    EoulsanMode result = null;
+    ExecutionMode result = null;
 
-    for (EoulsanMode mode : EoulsanMode.values()) {
+    for (ExecutionMode mode : ExecutionMode.values()) {
 
       final Class<? extends Annotation> annotation = mode.getAnnotationClass();
-      if (annotation != null && clazz.getAnnotation(annotation) != null) {
+      if (annotation != null
+          && annotationClazz.getAnnotation(annotation) != null) {
 
         if (result != null) {
           throw new IllegalStateException(
               "A class can not have more than one Eoulsan mode: "
-                  + clazz.getName());
+                  + annotationClazz.getName());
         }
 
         result = mode;

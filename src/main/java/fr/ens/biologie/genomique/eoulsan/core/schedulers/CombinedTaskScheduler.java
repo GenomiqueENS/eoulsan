@@ -32,7 +32,7 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.annotations.EoulsanMode;
+import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
 import fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.AbstractStep;
@@ -242,7 +242,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
    * @param step the step
    * @return the Eoulsan mode of the step
    */
-  private static EoulsanMode getEoulsanMode(final Step step) {
+  private static ExecutionMode getEoulsanMode(final Step step) {
 
     checkNotNull(step, "step argument cannot be null");
 
@@ -276,7 +276,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
         return this.stdTaskScheduler;
       }
 
-      return getEoulsanMode(step) == EoulsanMode.HADOOP_COMPATIBLE
+      return getEoulsanMode(step) == ExecutionMode.HADOOP_COMPATIBLE
           ? this.hadoopCompatibleTaskScheduler : this.stdTaskScheduler;
 
     case OWN_PARALLELIZATION:
