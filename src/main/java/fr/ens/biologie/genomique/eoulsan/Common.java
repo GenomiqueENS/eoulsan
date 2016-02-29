@@ -41,6 +41,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import fr.ens.biologie.genomique.eoulsan.core.workflow.StepObserverRegistry;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 
@@ -295,6 +296,22 @@ public final class Common {
     return threads;
   }
 
+  /**
+   * Print warning.
+   * @param message message to print
+   */
+  public static void printWarning(final String message) {
+
+    if (message == null) {
+      return;
+    }
+
+    // Currently only print warning messages when no UI has been set
+    if (StepObserverRegistry.getInstance().getObservers().isEmpty()) {
+      System.err.println(message);
+    }
+  }
+
   //
   // Constructor
   //
@@ -303,5 +320,7 @@ public final class Common {
 
     throw new IllegalStateException();
   }
+
+
 
 }

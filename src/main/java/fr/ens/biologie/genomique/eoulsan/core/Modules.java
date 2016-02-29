@@ -26,8 +26,8 @@ package fr.ens.biologie.genomique.eoulsan.core;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.StepObserverRegistry;
 
 /**
  * This class contains useful methods for writing Step classes.
@@ -72,7 +72,7 @@ public class Modules {
       throw new EoulsanException(message);
     }
 
-    printWarning(message);
+    Common.printWarning(message);
   }
 
   /**
@@ -119,7 +119,7 @@ public class Modules {
       throw new EoulsanException(message);
     }
 
-    printWarning(message);
+    Common.printWarning(message);
   }
 
   /**
@@ -189,21 +189,6 @@ public class Modules {
         + context.getCurrentStep().getId() + "\" step: " + message);
   }
 
-  /**
-   * Print warning.
-   * @param message message to print
-   */
-  private static void printWarning(final String message) {
-
-    if (message == null) {
-      return;
-    }
-
-    // Currently only print warning messages when no UI has been set
-    if (StepObserverRegistry.getInstance().getObservers().isEmpty()) {
-      System.err.println(message);
-    }
-  }
 
   //
   // Constructor

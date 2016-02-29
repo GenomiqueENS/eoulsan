@@ -31,7 +31,7 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RserveRExecutor;
  */
 public class CommonConfiguration {
 
-  private static final String EXECUTION_MODE = "execution.mode";
+  private static final String EXECUTION_MODE = "r.execution.mode";
   private static final String RSERVE_SERVER = "rserve.servername";
   private static final String DOCKER_IMAGE = "docker.image";
 

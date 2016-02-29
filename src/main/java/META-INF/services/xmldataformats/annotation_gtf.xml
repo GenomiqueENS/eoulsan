@@ -1,0 +1,11 @@
+<dataformat>
+  <name>annotation_gtf</name>
+  <description>gtf annotation format</description>
+  <prefix>gtf</prefix>
+  <onefileperanalysis>true</onefileperanalysis>
+  <designmetadatakey>GtfFile</designmetadatakey>
+  <generator/>
+  <extensions>
+    <extension default="true">.gtf</extension>
+  </extensions>
+</dataformat>
