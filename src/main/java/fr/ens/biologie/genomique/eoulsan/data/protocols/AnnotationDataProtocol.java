@@ -24,11 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.data.protocols;
 
-import java.util.List;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 
 /**
  * This class define a annotation protocol.
@@ -36,24 +32,23 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
  * @author Laurent Jourdren
  */
 @HadoopCompatible
-public class AnnotationDataProtocol extends StorageDataProtocol {
+public class AnnotationDataProtocol extends DeprecatedDataProtocol {
+
+  public static final String PROTOCOL_NAME = "annotation";
 
   @Override
   public String getName() {
 
-    return "annotation";
+    return PROTOCOL_NAME;
   }
 
-  @Override
-  protected List<String> getExtensions() {
+  //
+  // Constructor
+  //
 
-    return DataFormats.ANNOTATION_GFF.getExtensions();
-  }
+  public AnnotationDataProtocol() {
 
-  @Override
-  protected String getBasePath() {
-
-    return EoulsanRuntime.getSettings().getAnnotationStoragePath();
+    super(GFFDataProtocol.PROTOCOL_NAME);
   }
 
 }

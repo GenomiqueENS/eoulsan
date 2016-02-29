@@ -116,8 +116,11 @@ public final class Settings implements Serializable {
   private static final String GENOME_STORAGE_KEY =
       MAIN_PREFIX_KEY + "genome.storage.path";
 
-  private static final String ANNOTATION_STORAGE_KEY =
-      MAIN_PREFIX_KEY + "annotation.storage.path";
+  private static final String GFF_STORAGE_KEY =
+      MAIN_PREFIX_KEY + "gff.storage.path";
+
+  private static final String GTF_STORAGE_KEY =
+      MAIN_PREFIX_KEY + "gtf.storage.path";
 
   private static final String ADDITIONAL_ANNOTATION_STORAGE_KEY =
       MAIN_PREFIX_KEY + "additional.annotation.storage.path";
@@ -397,12 +400,21 @@ public final class Settings implements Serializable {
   }
 
   /**
-   * Get the annotation storage path.
-   * @return the path to annotation storage path
+   * Get the GFF storage path.
+   * @return the path to GFF storage path
    */
-  public String getAnnotationStoragePath() {
+  public String getGFFStoragePath() {
 
-    return this.properties.getProperty(ANNOTATION_STORAGE_KEY);
+    return this.properties.getProperty(GFF_STORAGE_KEY);
+  }
+
+  /**
+   * Get the GTF storage path.
+   * @return the path to GTF storage path
+   */
+  public String getGTFStoragePath() {
+
+    return this.properties.getProperty(GTF_STORAGE_KEY);
   }
 
   /**
@@ -866,12 +878,21 @@ public final class Settings implements Serializable {
   }
 
   /**
-   * Set the annotation storage path.
-   * @param annotationStoragePath the path to annotation index storage path
+   * Set the GFF storage path.
+   * @param gffStoragePath the path to GFF index storage path
    */
-  public void setAnnotationStoragePath(final String annotationStoragePath) {
+  public void setGFFStoragePath(final String gffStoragePath) {
 
-    this.properties.setProperty(ANNOTATION_STORAGE_KEY, annotationStoragePath);
+    this.properties.setProperty(GFF_STORAGE_KEY, gffStoragePath);
+  }
+
+  /**
+   * Set the GTF storage path.
+   * @param gtfStoragePath the path to GTF index storage path
+   */
+  public void setGTFStoragePath(final String gtfStoragePath) {
+
+    this.properties.setProperty(GTF_STORAGE_KEY, gtfStoragePath);
   }
 
   /**
@@ -1031,17 +1052,8 @@ public final class Settings implements Serializable {
       return;
     }
 
-    if ("main.accesskey".equals(key)) {
-      setSetting(AWS_ACCESS_KEY, settingValue, logChange);
-      return;
-    }
-
-    if ("main.awssecretkey".equals(key)) {
-      setSetting(AWS_SECRET_KEY, settingValue, logChange);
-      return;
-    }
-
-    this.properties.setProperty(key, settingValue);
+    // Set the property with the current setting name
+    this.properties.setProperty(checkDeprecatedKey(key), settingValue);
     if (logChange) {
       logSetting(key);
     }
@@ -1145,27 +1157,23 @@ public final class Settings implements Serializable {
     getLogger().info("Load configuration file: " + file.getAbsolutePath());
     final InputStream is = FileUtils.createInputStream(file);
 
-    this.properties.load(FileUtils.createInputStream(file));
+    // Load properties in a temporary object
+    final Properties tmpProperties = new Properties();
+    tmpProperties.load(FileUtils.createInputStream(file));
     is.close();
 
-    for (String key : this.properties.stringPropertyNames()) {
+    for (String key : tmpProperties.stringPropertyNames()) {
+
+      // Check for forbidden settings
       if (FORBIDDEN_KEYS.contains(key)) {
         throw new EoulsanException(
             "Forbiden key found in configuration file: " + key);
       }
 
-      if ("main.accesskey".equals(key.toLowerCase())) {
-        throw new EoulsanException("main.accesskey key in now invalid. Use "
-            + AWS_ACCESS_KEY + " key instead.");
-      }
-
-      if ("main.awssecretkey".equals(key.toLowerCase())) {
-        throw new EoulsanException("main.awssecretkey key in now invalid. Use "
-            + AWS_SECRET_KEY + " key instead.");
-      }
-
+      // Set the property with the current setting name
+      this.properties.setProperty(checkDeprecatedKey(key),
+          tmpProperties.getProperty(key));
     }
-
   }
 
   /**
@@ -1220,6 +1228,50 @@ public final class Settings implements Serializable {
   public Set<String> getSettingsKeyToObfuscated() {
 
     return OBFUSCATED_KEYS;
+  }
+
+  /**
+   * Check deprecated setting key.
+   * @param key the key to check
+   * @return the new name of the key if exists or the current key name
+   */
+  private static String checkDeprecatedKey(final String key) {
+
+    if (key == null) {
+      return null;
+    }
+
+    final String trimmedKey = key.trim().toLowerCase();
+
+    switch (trimmedKey) {
+
+    case "main.accesskey":
+      printWarningRenamedSetting(trimmedKey, AWS_ACCESS_KEY);
+
+    case "main.awssecretkey":
+      printWarningRenamedSetting(trimmedKey, AWS_SECRET_KEY);
+
+    case "main.annotation.storage.path":
+      printWarningRenamedSetting(trimmedKey, GFF_STORAGE_KEY);
+      return GFF_STORAGE_KEY;
+
+    default:
+      return key;
+
+    }
+  }
+
+  /**
+   * Print a warning message to inform user that a setting key has been renamed.
+   * @param oldName the old setting key
+   * @param newName the new setting key
+   */
+  private static void printWarningRenamedSetting(final String oldName,
+      final String newName) {
+
+    Common.printWarning("The global/configuration parameter \""
+        + oldName + "\" is now deprecated. Please use the \"" + newName
+        + "\" parameter instead");
   }
 
   //

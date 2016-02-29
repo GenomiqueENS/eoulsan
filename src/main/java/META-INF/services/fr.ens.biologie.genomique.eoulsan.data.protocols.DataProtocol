@@ -6,6 +6,8 @@ fr.ens.biologie.genomique.eoulsan.data.protocols.S3DataProtocol
 fr.ens.biologie.genomique.eoulsan.data.protocols.S3NDataProtocol
 fr.ens.biologie.genomique.eoulsan.data.protocols.GenomeDataProtocol
 fr.ens.biologie.genomique.eoulsan.data.protocols.AnnotationDataProtocol
+fr.ens.biologie.genomique.eoulsan.data.protocols.GFFDataProtocol
+fr.ens.biologie.genomique.eoulsan.data.protocols.GTFDataProtocol
 fr.ens.biologie.genomique.eoulsan.data.protocols.AdditionalAnnotationDataProtocol
 
 # Hadoop protocols
