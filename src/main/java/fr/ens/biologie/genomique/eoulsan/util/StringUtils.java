@@ -669,43 +669,42 @@ public final class StringUtils {
       return null;
     }
 
-    final String lower = extension.toLowerCase();
+    switch (extension.toLowerCase()) {
 
-    if (".htm".equals(lower) || ".html".equals(lower)) {
+    case ".htm":
+    case ".html":
       return "text/html";
-    }
 
-    if (".xml".equals(lower)) {
+    case ".xml":
       return "text/xml";
-    }
 
-    if (".txt".equals(lower)
-        || ".pl".equals(lower) || ".pm".equals(lower) || ".py".equals(lower)
-        || ".r".equals(lower) || ".rb".equals(lower) || ".java".equals(lower)) {
+    case ".txt":
+    case ".pl":
+    case ".pm":
+    case ".py":
+    case ".r":
+    case ".rb":
+    case ".java":
       return "text/plain";
-    }
 
-    if (".jpeg".equals(lower) || ".jpg".equals(lower) || ".jpe".equals(lower)) {
+    case ".jpeg":
+    case ".jpg":
+    case ".jpe":
       return "image/jpeg";
-    }
 
-    if (".jpeg".equals(lower) || ".jpg".equals(lower) || ".jpe".equals(lower)) {
-      return "image/jpeg";
-    }
-
-    if (".tif".equals(lower) || ".tiff".equals(lower)) {
+    case ".tif":
+    case ".tiff":
       return "image/tiff";
-    }
 
-    if (".png".equals(lower)) {
+    case ".png":
       return "image/png";
-    }
 
-    if (".pdf".equals(lower)) {
+    case ".pdf":
       return "application/pdf";
-    }
 
-    return "";
+    default:
+      return "";
+    }
   }
 
   /**
