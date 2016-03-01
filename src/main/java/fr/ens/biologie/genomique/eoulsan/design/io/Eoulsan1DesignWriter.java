@@ -100,6 +100,10 @@ public class Eoulsan1DesignWriter implements DesignWriter {
       this.bw.append(SEPARATOR);
       this.bw.append("Annotation");
     }
+    if (design.getMetadata().containsGtfFile()) {
+      this.bw.append(SEPARATOR);
+      this.bw.append("Gtffile");
+    }
     if (design.getMetadata().containsAdditionnalAnnotationFile()) {
       this.bw.append(SEPARATOR);
       this.bw.append("AdditionalAnnotation");
@@ -169,6 +173,10 @@ public class Eoulsan1DesignWriter implements DesignWriter {
       if (design.getMetadata().containsGffFile()) {
         this.bw.append(SEPARATOR);
         this.bw.append(design.getMetadata().getGffFile());
+      }
+      if (design.getMetadata().containsGtfFile()) {
+        this.bw.append(SEPARATOR);
+        this.bw.append(design.getMetadata().getGtfFile());
       }
       if (design.getMetadata().containsAdditionnalAnnotationFile()) {
         this.bw.append(SEPARATOR);
@@ -276,4 +284,5 @@ public class Eoulsan1DesignWriter implements DesignWriter {
 
     this.out = new FileOutputStream(filename);
   }
+
 }

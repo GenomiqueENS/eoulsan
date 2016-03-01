@@ -40,6 +40,7 @@ public class DesignMetadata extends AbstractMetadata implements Serializable {
   // constants
   public static final String GENOME_FILE_KEY = "GenomeFile";
   public static final String GFF_FILE_KEY = "GffFile";
+  public static final String GTF_FILE_KEY = "GtfFile";
   public static final String ADDITIONNAL_ANNOTATION_FILE_KEY =
       "AdditionnalAnnotationFile";
 
@@ -56,11 +57,19 @@ public class DesignMetadata extends AbstractMetadata implements Serializable {
   }
 
   /**
-   * Get the gff file.
-   * @return the gff file
+   * Get the GFF file.
+   * @return the GFF file
    */
   public String getGffFile() {
     return getTrimmed(GFF_FILE_KEY);
+  }
+
+  /**
+   * Get the GTF file.
+   * @return the GTF file
+   */
+  public String getGtfFile() {
+    return getTrimmed(GTF_FILE_KEY);
   }
 
   /**
@@ -85,10 +94,18 @@ public class DesignMetadata extends AbstractMetadata implements Serializable {
 
   /**
    * Set the gff file.
-   * @param newGffFile the new gff file
+   * @param newGffFile the new GFF file
    */
   public void setGffFile(String newGffFile) {
     set(GFF_FILE_KEY, newGffFile);
+  }
+
+  /**
+   * Set the gff file.
+   * @param newGtfFile the new GTF file
+   */
+  public void setGtfFile(String newGtfFile) {
+    set(GTF_FILE_KEY, newGtfFile);
   }
 
   /**
@@ -117,6 +134,14 @@ public class DesignMetadata extends AbstractMetadata implements Serializable {
    */
   public boolean containsGffFile() {
     return contains(GFF_FILE_KEY);
+  }
+
+  /**
+   * Test if the gtfFile field exists.
+   * @return the gtfFile field exists
+   */
+  public boolean containsGtfFile() {
+    return contains(GTF_FILE_KEY);
   }
 
   /**

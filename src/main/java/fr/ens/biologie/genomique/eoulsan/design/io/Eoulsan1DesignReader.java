@@ -27,6 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.design.io;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignMetadata.ADDITIONNAL_ANNOTATION_FILE_KEY;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignMetadata.GENOME_FILE_KEY;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignMetadata.GFF_FILE_KEY;
+import static fr.ens.biologie.genomique.eoulsan.design.DesignMetadata.GTF_FILE_KEY;
 import static java.util.Collections.unmodifiableMap;
 import static org.python.google.common.base.Preconditions.checkNotNull;
 
@@ -73,6 +74,8 @@ public class Eoulsan1DesignReader implements DesignReader {
     map.put("Genome", GENOME_FILE_KEY);
     map.put("Annotation", GFF_FILE_KEY);
     map.put("AdditionalAnnotation", ADDITIONNAL_ANNOTATION_FILE_KEY);
+    map.put(GFF_FILE_KEY, GFF_FILE_KEY);
+    map.put(GTF_FILE_KEY, GTF_FILE_KEY);
 
     return unmodifiableMap(map);
   }
