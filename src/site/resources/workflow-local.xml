@@ -111,7 +111,7 @@
                                 <value>parametric</value>
                         </parameter>
                         <parameter>
-                                <name>execution.mode</name>
+                                <name>r.execution.mode</name>
                                 <value>docker</value>
                         </parameter>
                 </parameters>
