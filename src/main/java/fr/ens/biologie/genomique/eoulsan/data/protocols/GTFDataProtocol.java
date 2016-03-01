@@ -31,7 +31,7 @@ public class GTFDataProtocol extends StorageDataProtocol {
   @Override
   protected String getBasePath() {
 
-    return EoulsanRuntime.getSettings().getGFFStoragePath();
+    return EoulsanRuntime.getSettings().getGTFStoragePath();
   }
 
 }
