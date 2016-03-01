@@ -60,17 +60,17 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RSConnection;
 
 public class Normalization {
 
-  protected static final String TARGET_CREATION = "/targetCreation.Rnw";
+  protected static final String TARGET_CREATION = "/DESeq1/targetCreation.Rnw";
   protected static final String NORMALIZATION_FUNCTIONS =
-      "/normalization_anaDiff_RNAseq_Functions.R";
+      "/DESeq1/normalization_anaDiff_RNAseq_Functions.R";
 
   private static final String NORMALISATION_PART1_WHITH_TECHREP =
-      "/normalisationPart1WithTechRep.Rnw";
+      "/DESeq1/normalisationPart1WithTechRep.Rnw";
   private static final String NORMALIZATION_PART1_WHITHOUT_TECHREP =
-      "/normalisationPart1WithoutTechRep.Rnw";
-  private static final String CLUSTERING_PCA_RAW = "/clusteringAndPCARaw.Rnw";
-  private static final String CLUSTERING_PCA_NORM = "/clusteringAndPCANorm.Rnw";
-  private static final String NORMALIZATION_PART2 = "/normalizationPart2.Rnw";
+      "/DESeq1/normalisationPart1WithoutTechRep.Rnw";
+  private static final String CLUSTERING_PCA_RAW = "/DESeq1/clusteringAndPCARaw.Rnw";
+  private static final String CLUSTERING_PCA_NORM = "/DESeq1/clusteringAndPCANorm.Rnw";
+  private static final String NORMALIZATION_PART2 = "/DESeq1/normalizationPart2.Rnw";
 
   protected final Design design;
   protected final String expressionFilesPrefix;

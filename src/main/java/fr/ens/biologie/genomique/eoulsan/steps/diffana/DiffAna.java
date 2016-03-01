@@ -47,11 +47,11 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 public class DiffAna extends Normalization {
 
   private static final String DISPERSION_ESTIMATION =
-      "/dispersionEstimation.Rnw";
+      "/DESeq1/dispersionEstimation.Rnw";
   private static final String ANADIFF_WITH_REFERENCE =
-      "/anadiffWithReference.Rnw";
+      "/DESeq1/anadiffWithReference.Rnw";
   private static final String ANADIFF_WITHOUT_REFERENCE =
-      "/anadiffWithoutReference.Rnw";
+      "/DESeq1/anadiffWithoutReference.Rnw";
 
   // dispersion estimation parameters
   private DispersionMethod dispEstMethod;
