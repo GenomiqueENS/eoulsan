@@ -37,7 +37,8 @@
   
     <section name="Launch analysis in local mode">
 
-      <p>This command launch Eoulsan in cluster mode.</p>  
+      <p>This command launch Eoulsan in cluster mode. See the <a href="./clustermode.html">cluster mode configuration page</a>
+         to see how to configure Eoulsan to handle the job scheduler of your cluster.</p>
 
       <ul>
          <li><b>Command name</b>: clusterexec</li>

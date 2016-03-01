@@ -43,10 +43,15 @@
        <tr><th>Scheduler name</th><th>main.cluster.scheduler.name value</th><th>Comment</th></tr>
        <tr><td><a href="https://research.cs.wisc.edu/htcondor/">HTCondor</a></td><td>htcondor</td><td>Works, tested on IBENS cluster.</td></tr>
        <tr><td><a href="http://www-hpc.cea.fr/fr/complexe/tgcc.htm">TGCC</a></td><td>tgcc</td><td>Works, tested at TGCC.</td></tr>
+       <tr><td><a href="http://www.pbsworks.com/Product.aspx?id=1">PBSPro</a></td><td>pbspro</td><td>Not tested.</td></tr>
+       <tr><td><a href="https://computing.llnl.gov/linux/slurm/">SLURM</a></td><td>slurm</td><td>Not tested.</td></tr>
+       <tr><td><a href="http://www.adaptivecomputing.com/products/open-source/torque/">TORQUE</a></td><td>torque</td><td>Not tested.</td></tr>
      </table>     
 
      <p>The number of processors and the amount of memory to use by the submitted tasks on the cluster can be defined using the <tt>requiredprocs</tt> and
      <tt>requiredmemory</tt> attributes of the <tt>step</tt> tag of the <a href="./workflowfile.html#stepssection">worfklow file</a>.</p>
+
+     <p><b>Note</b>: The command wrapper scripts to submit tasks to PBSPro, SLURM and TORQUE schedulers comes from the <a href="http://bpipe.org">Bpipe project</a> source code.</p>
 
     </section>
 
