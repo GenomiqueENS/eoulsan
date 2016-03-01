@@ -74,8 +74,11 @@ public class Eoulsan1DesignReader implements DesignReader {
     map.put("Genome", GENOME_FILE_KEY);
     map.put("Annotation", GFF_FILE_KEY);
     map.put("AdditionalAnnotation", ADDITIONNAL_ANNOTATION_FILE_KEY);
+
+    map.put(GENOME_FILE_KEY, GENOME_FILE_KEY);
     map.put(GFF_FILE_KEY, GFF_FILE_KEY);
     map.put(GTF_FILE_KEY, GTF_FILE_KEY);
+    map.put(ADDITIONNAL_ANNOTATION_FILE_KEY, ADDITIONNAL_ANNOTATION_FILE_KEY);
 
     return unmodifiableMap(map);
   }
