@@ -24,33 +24,15 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters;
 
-import java.io.File;
-
-import fr.ens.biologie.genomique.eoulsan.Main;
-
 /**
- * This class define a HTCondor cluster scheduler.
+ * This class define a HTCondor cluster scheduler using a Bpipe script.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class HTCondorTaskScheduler extends BpipeTaskScheduler {
+public class HTCondorTaskScheduler extends BundledScriptBpipeTaskScheduler {
 
   public static final String SCHEDULER_NAME = "htcondor";
-  private static final String COMMAND_WRAPPER_SCRIPT = "bpipe-htcondor";
-
-  private final File commandWrapperFile;
-
-  @Override
-  public String getSchedulerName() {
-
-    return SCHEDULER_NAME;
-  }
-
-  @Override
-  protected File getBpipeCommandWrapper() {
-
-    return this.commandWrapperFile;
-  }
+  private static final String COMMAND_WRAPPER_SCRIPT = "bpipe-htcondor.sh";
 
   //
   // Constructor
@@ -60,13 +42,7 @@ public class HTCondorTaskScheduler extends BpipeTaskScheduler {
    * Constructor.
    */
   public HTCondorTaskScheduler() {
-
-    final File eoulsanScript =
-        new File(Main.getInstance().getEoulsanScriptPath());
-
-    final File binDir = new File(eoulsanScript.getParent(), "bin");
-
-    this.commandWrapperFile = new File(binDir, COMMAND_WRAPPER_SCRIPT);
+    super(SCHEDULER_NAME, COMMAND_WRAPPER_SCRIPT);
   }
 
 }

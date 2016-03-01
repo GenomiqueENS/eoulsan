@@ -71,7 +71,8 @@
 		<tr><td>main.save.r.scripts</td><td>boolean</td><td>false</td><td>Save or not r scripts</td></tr>
 
 		<tr><td>main.genome.storage.path</td><td>string</td><td>Not set</td><td>Path to the genomes repository</td></tr>
-		<tr><td>main.annotation.storage.path</td><td>string</td><td>Not set</td><td>Path to the annotations repository</td></tr>
+		<tr><td>main.gff.storage.path</td><td>string</td><td>Not set</td><td>Path to the GFF annotations repository</td></tr>
+		<tr><td>main.gtf.storage.path</td><td>string</td><td>Not set</td><td>Path to the GTF annotations repository</td></tr>
 		<tr><td>main.additional.annotation.storage.path</td><td>string</td><td>Not set</td><td>Path to the additional annotations repository</td></tr>
 		<tr><td>main.genome.mapper.index.storage.path</td><td>string</td><td>Not set</td><td>Path to the genome indexes repository (cannot be an URL)</td></tr>
 		<tr><td>main.genome.desc.storage.path</td><td>string</td><td>Not set</td><td>Path to the genome descriptions repository (cannot be an URL)</td></tr>

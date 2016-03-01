@@ -42,6 +42,7 @@ import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.design.DesignMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
@@ -99,6 +100,10 @@ public class Eoulsan1DesignWriter implements DesignWriter {
     if (design.getMetadata().containsGffFile()) {
       this.bw.append(SEPARATOR);
       this.bw.append("Annotation");
+    }
+    if (design.getMetadata().containsGtfFile()) {
+      this.bw.append(SEPARATOR);
+      this.bw.append(DesignMetadata.GFF_FILE_KEY);
     }
     if (design.getMetadata().containsAdditionnalAnnotationFile()) {
       this.bw.append(SEPARATOR);
@@ -169,6 +174,10 @@ public class Eoulsan1DesignWriter implements DesignWriter {
       if (design.getMetadata().containsGffFile()) {
         this.bw.append(SEPARATOR);
         this.bw.append(design.getMetadata().getGffFile());
+      }
+      if (design.getMetadata().containsGtfFile()) {
+        this.bw.append(SEPARATOR);
+        this.bw.append(design.getMetadata().getGtfFile());
       }
       if (design.getMetadata().containsAdditionnalAnnotationFile()) {
         this.bw.append(SEPARATOR);
@@ -276,4 +285,5 @@ public class Eoulsan1DesignWriter implements DesignWriter {
 
     this.out = new FileOutputStream(filename);
   }
+
 }

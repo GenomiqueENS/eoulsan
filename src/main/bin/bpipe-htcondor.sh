@@ -28,43 +28,9 @@
 # We are not guaranteed to know the exit status of a job command, for example if the
 # job was killed before the command was run.
 #
-# Authors: Bernie Pope, Simon Sadedin, Alicia Oshlack
-# Copyright 2011.
-
-################################################################################
-# Modified 2013
-# Andrew Lonsdale
-
-# Modified from bpipe-torque.sh
-# Called from SlurmCommandExecutor.groovy, based on TorqueCommandExecutor.groovy
-#
-# Approach is mimic the wrapper and shell script relationship, and replace
-# Torque commands with Slurm equivalents
-
-################################################################################
-################################################################################
-# Modified 2014
-# Simon Gladman
-#
-# Added support for modules in Slurm. (Give the config file a space separated
-# list of required modules using the modules="module1 module2 ..." directive.)
-#
-# Example of required format in config file:
-#
-#   commands {
-#
-#       //quick jobs 10 min and 4GB
-#       small {
-#           walltime="0:10:00"
-#           memory="4"
-#           modules="python-gcc/2.7.5 qiime-gcc/1.8.0"
-#       }
-#   }
-#
-#   The modifications then alter the Slurm script produced by bpipe to add the
-#   correct "module load XXXX/x.x.x" directives at the appropriate place.
-#
-################################################################################
+# Inspired by bpipe-slurm.sh from: Bernie Pope, Simon Sadedin, Alicia Oshlack
+# Author: Laurent Jourdren
+# Copyright 2015.
 
 # This is what we call the program in user messages
 program_name=bpipe-htcondor
