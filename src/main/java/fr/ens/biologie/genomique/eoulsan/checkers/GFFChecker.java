@@ -65,7 +65,7 @@ import fr.ens.biologie.genomique.eoulsan.steps.generators.GenomeDescriptionCreat
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class AnnotationChecker implements Checker {
+public class GFFChecker implements Checker {
 
   private String genomicType;
   private String attributeId;
@@ -74,7 +74,7 @@ public class AnnotationChecker implements Checker {
   @Override
   public String getName() {
 
-    return "annotation_checker";
+    return "gff_checker";
   }
 
   @Override
