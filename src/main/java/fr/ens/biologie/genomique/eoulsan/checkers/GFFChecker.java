@@ -39,6 +39,7 @@ import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpress
 import static fr.ens.biologie.genomique.eoulsan.steps.expression.AbstractExpressionStep.STRANDED_PARAMETER_NAME;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -144,9 +145,18 @@ public class GFFChecker implements Checker {
     }
 
     try {
-      final DataFile annotationFile = data.getDataFile();
+      final DataFile gffFile = data.getDataFile();
 
-      if (!annotationFile.exists()) {
+      if (!gffFile.exists()) {
+
+        // Check if the protocol is deprecated
+        if (!gffFile.getProtocol().canRead()) {
+
+          // Force exception
+          try (InputStream in = gffFile.open()) {
+          }
+        }
+
         return true;
       }
 
@@ -155,9 +165,9 @@ public class GFFChecker implements Checker {
       }
 
       final GenomeDescription desc =
-          getGenomeDescription(annotationFile, checkInfo);
+          getGenomeDescription(gffFile, checkInfo);
 
-      validationAnnotation(annotationFile, desc, this.genomicType,
+      validationAnnotation(gffFile, desc, this.genomicType,
           this.attributeId, this.stranded);
 
     } catch (IOException e) {
