@@ -39,6 +39,7 @@ import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpre
 import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.STRANDED_PARAMETER_NAME;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +66,7 @@ import fr.ens.biologie.genomique.eoulsan.modules.generators.GenomeDescriptionCre
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class AnnotationChecker implements Checker {
+public class GFFChecker implements Checker {
 
   private String genomicType;
   private String attributeId;
@@ -74,7 +75,7 @@ public class AnnotationChecker implements Checker {
   @Override
   public String getName() {
 
-    return "annotation_checker";
+    return "gff_checker";
   }
 
   @Override
@@ -144,9 +145,18 @@ public class AnnotationChecker implements Checker {
     }
 
     try {
-      final DataFile annotationFile = data.getDataFile();
+      final DataFile gffFile = data.getDataFile();
 
-      if (!annotationFile.exists()) {
+      if (!gffFile.exists()) {
+
+        // Check if the protocol is deprecated
+        if (!gffFile.getProtocol().canRead()) {
+
+          // Force exception
+          try (InputStream in = gffFile.open()) {
+          }
+        }
+
         return true;
       }
 
@@ -155,9 +165,9 @@ public class AnnotationChecker implements Checker {
       }
 
       final GenomeDescription desc =
-          getGenomeDescription(annotationFile, checkInfo);
+          getGenomeDescription(gffFile, checkInfo);
 
-      validationAnnotation(annotationFile, desc, this.genomicType,
+      validationAnnotation(gffFile, desc, this.genomicType,
           this.attributeId, this.stranded);
 
     } catch (IOException e) {
