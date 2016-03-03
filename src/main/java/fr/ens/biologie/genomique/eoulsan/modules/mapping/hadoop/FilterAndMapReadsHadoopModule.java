@@ -77,7 +77,8 @@ import fr.ens.biologie.genomique.eoulsan.util.hadoop.MapReduceUtils;
  * @author Laurent Jourdren
  */
 @HadoopOnly
-public class FilterAndMapReadsHadoopModule extends AbstractFilterAndMapReadsModule {
+public class FilterAndMapReadsHadoopModule
+    extends AbstractFilterAndMapReadsModule {
 
   @Override
   public InputPorts getInputPorts() {
@@ -176,7 +177,7 @@ public class FilterAndMapReadsHadoopModule extends AbstractFilterAndMapReadsModu
       final List<String> filenames, final boolean pairedEnd,
       final DataFormat inputFormat, final FastqFormat fastqFormat,
       final DataFile genomeIndexFile, final DataFile outFile)
-          throws IOException {
+      throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 

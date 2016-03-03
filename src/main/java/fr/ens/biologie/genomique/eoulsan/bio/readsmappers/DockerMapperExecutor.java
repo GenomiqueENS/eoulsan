@@ -271,7 +271,7 @@ public class DockerMapperExecutor implements MapperExecutor {
   public Result execute(final List<String> command,
       final File executionDirectory, final boolean stdout,
       final boolean redirectStderr, final File... filesUsed)
-          throws IOException {
+      throws IOException {
 
     checkNotNull(command, "executable argument cannot be null");
 
@@ -293,7 +293,7 @@ public class DockerMapperExecutor implements MapperExecutor {
    */
   private static void pullImageIfNotExists(DockerClient dockerClient,
       final String dockerImageName)
-          throws DockerException, InterruptedException {
+      throws DockerException, InterruptedException {
 
     checkNotNull(dockerClient, "dockerClient argument cannot be null");
     checkNotNull(dockerImageName, "dockerImageName argument cannot be null");
@@ -389,8 +389,7 @@ public class DockerMapperExecutor implements MapperExecutor {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this)
-        .add("dockerConnection", dockerClient)
+    return Objects.toStringHelper(this).add("dockerConnection", dockerClient)
         .add("dockerImage", dockerImage)
         .add("temporaryDirectory", temporaryDirectory).toString();
   }
@@ -405,9 +404,8 @@ public class DockerMapperExecutor implements MapperExecutor {
    * @param dockerImage Docker image
    * @param temporaryDirectory temporary directory
    */
-  DockerMapperExecutor(final DockerClient
-      dockerClient, final String dockerImage,
-      final File temporaryDirectory) {
+  DockerMapperExecutor(final DockerClient dockerClient,
+      final String dockerImage, final File temporaryDirectory) {
 
     checkNotNull(dockerClient, "dockerConnection argument cannot be null");
     checkNotNull(dockerImage, "dockerImage argument cannot be null");

@@ -337,7 +337,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
     @Override
     protected void setup(
         Mapper<LongWritable, Text, NullWritable, NullWritable>.Context context)
-            throws IOException, InterruptedException {
+        throws IOException, InterruptedException {
 
       EoulsanLogger.initConsoleHandler();
       getLogger().info("Start of setup()");

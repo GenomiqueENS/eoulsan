@@ -73,9 +73,8 @@ public class Executor {
           "Nothing to do, no samples found in design file");
     }
 
-    getLogger().info(
-        "Found "
-            + this.design.getSamples().size() + " sample(s) in design file");
+    getLogger().info("Found "
+        + this.design.getSamples().size() + " sample(s) in design file");
   }
 
   //
@@ -99,8 +98,8 @@ public class Executor {
    * @throws EoulsanException if an error occurs while creating of executing
    *           steps
    */
-  public void execute(final List<Module> firstSteps, final List<Module> lastSteps)
-      throws EoulsanException {
+  public void execute(final List<Module> firstSteps,
+      final List<Module> lastSteps) throws EoulsanException {
 
     // Add general executor info
     logInfo(this.arguments, this.command);

@@ -124,8 +124,7 @@ public class Workflow2Graphviz {
       AbstractStep abstractStep = (AbstractStep) step;
 
       // For each port
-      for (StepOutputPort outputPort : abstractStep
-          .getWorkflowOutputPorts()) {
+      for (StepOutputPort outputPort : abstractStep.getWorkflowOutputPorts()) {
 
         // For each port link
         for (StepInputPort link : outputPort.getLinks()) {
@@ -170,8 +169,7 @@ public class Workflow2Graphviz {
 
       AbstractStep abstractStep = (AbstractStep) step;
 
-      StepStateObserver observer =
-          ((AbstractStep) step).getStepStateObserver();
+      StepStateObserver observer = ((AbstractStep) step).getStepStateObserver();
       Set<AbstractStep> requiredSteps =
           new HashSet<>(observer.getRequiredSteps());
 

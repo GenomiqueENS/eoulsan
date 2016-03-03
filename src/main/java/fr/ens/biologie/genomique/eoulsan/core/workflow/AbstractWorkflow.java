@@ -564,8 +564,7 @@ public abstract class AbstractWorkflow implements Workflow {
   void emergencyStop(final Throwable exception, final String errorMessage) {
 
     // Change working step state to aborted
-    for (AbstractStep step : getSortedStepsByState(PARTIALLY_DONE,
-        WORKING)) {
+    for (AbstractStep step : getSortedStepsByState(PARTIALLY_DONE, WORKING)) {
       step.setState(ABORTED);
     }
 
@@ -653,9 +652,8 @@ public abstract class AbstractWorkflow implements Workflow {
       }
 
       // Save design file
-      DesignWriter designWriter =
-          new Eoulsan2DesignWriter(
-              new DataFile(jobDir, DESIGN_COPY_FILENAME).create());
+      DesignWriter designWriter = new Eoulsan2DesignWriter(
+          new DataFile(jobDir, DESIGN_COPY_FILENAME).create());
       designWriter.write(getDesign());
 
       // Save the workflow as a Graphviz file
@@ -675,8 +673,7 @@ public abstract class AbstractWorkflow implements Workflow {
    * @param states step status to retrieve
    * @return a sorted list with the steps
    */
-  private List<AbstractStep> getSortedStepsByState(
-      final StepState... states) {
+  private List<AbstractStep> getSortedStepsByState(final StepState... states) {
 
     Preconditions.checkNotNull(states, "states argument is null");
 
@@ -697,8 +694,7 @@ public abstract class AbstractWorkflow implements Workflow {
    * @param state step status to retrieve
    * @return a sorted list with the steps
    */
-  private List<AbstractStep> getSortedStepsByState(
-      final StepState state) {
+  private List<AbstractStep> getSortedStepsByState(final StepState state) {
 
     Preconditions.checkNotNull(state, "state argument is null");
 
@@ -726,8 +722,7 @@ public abstract class AbstractWorkflow implements Workflow {
     Collections.sort(list, new Comparator<AbstractStep>() {
 
       @Override
-      public int compare(final AbstractStep a,
-          final AbstractStep b) {
+      public int compare(final AbstractStep a, final AbstractStep b) {
 
         int result = a.getType().getPriority() - b.getType().getPriority();
 
@@ -868,8 +863,7 @@ public abstract class AbstractWorkflow implements Workflow {
         + " s.");
 
     // Inform observers of the end of the analysis
-    for (StepObserver o : StepObserverRegistry.getInstance()
-        .getObservers()) {
+    for (StepObserver o : StepObserverRegistry.getInstance().getObservers()) {
       o.notifyWorkflowSuccess(success,
           "(Job done in "
               + StringUtils.toTimeHumanReadable(

@@ -115,7 +115,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       final boolean splitAttributeValues, final StrandUsage stranded,
       final OverlapMode overlapMode, final boolean removeAmbiguousCases,
       final boolean tsamFormat)
-          throws IOException, BadBioEntryException, EoulsanException {
+      throws IOException, BadBioEntryException, EoulsanException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -240,7 +240,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
   private static final Job createJobPairedEnd(final Configuration parentConf,
       final TaskContext context, final Data alignmentsData,
       final Data featureAnnotationData, final Data genomeDescriptionData)
-          throws IOException, BadBioEntryException {
+      throws IOException, BadBioEntryException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -314,7 +314,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       final String attributeId, final boolean splitAttributeValues,
       final StrandUsage stranded, final DataFile genomeDescDataFile,
       final Path featuresIndexPath, final Configuration conf)
-          throws IOException, BadBioEntryException, EoulsanException {
+      throws IOException, BadBioEntryException, EoulsanException {
 
     // Do nothing if the file already exists
     if (PathUtils.isFile(featuresIndexPath, conf)) {
@@ -354,7 +354,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
   private static final void createFinalExpressionFeaturesFile(
       final TaskContext context, final Data featureAnnotationData,
       final Data outData, final Job job, final Configuration conf)
-          throws IOException {
+      throws IOException {
 
     FinalExpressionFeaturesCreator fefc = null;
 

@@ -55,8 +55,8 @@ import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 
 /**
- * This class define an abstract module for read filtering, mapping and alignments
- * filtering.
+ * This class define an abstract module for read filtering, mapping and
+ * alignments filtering.
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -289,7 +289,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
         // Add read filters parameters
         if (!(readFilterBuilder.addParameter(p.getName(), p.getStringValue(),
             true) ||
-            // Add read alignments filters parameters
+        // Add read alignments filters parameters
             alignmentsFilterBuilder.addParameter(p.getName(),
                 p.getStringValue(), true))) {
 

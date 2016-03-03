@@ -203,8 +203,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
    * @param step the step
    * @return the parallelization mode of the step
    */
-  private static ParallelizationMode getParallelizationMode(
-      final Step step) {
+  private static ParallelizationMode getParallelizationMode(final Step step) {
 
     checkNotNull(step, "step argument cannot be null");
 

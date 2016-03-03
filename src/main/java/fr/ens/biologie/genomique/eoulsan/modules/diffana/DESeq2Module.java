@@ -164,8 +164,7 @@ public class DESeq2Module extends AbstractModule {
         break;
 
       case STATISTIC_TEST:
-        this.statisticTest =
-            DEseq2.StatisticTest.get(p.getStringValue());
+        this.statisticTest = DEseq2.StatisticTest.get(p.getStringValue());
         break;
 
       default:
@@ -226,8 +225,8 @@ public class DESeq2Module extends AbstractModule {
         }
 
         // run DEseq2
-        new DEseq2(this.executor, stepId, design, e, sampleFiles,
-            this.normFig, this.diffanaFig, this.normDiffana, this.diffana,
+        new DEseq2(this.executor, stepId, design, e, sampleFiles, this.normFig,
+            this.diffanaFig, this.normDiffana, this.diffana,
             this.sizeFactorsType, this.fitType, this.statisticTest,
             context.getSettings().isSaveRscripts()).runDEseq2();
 

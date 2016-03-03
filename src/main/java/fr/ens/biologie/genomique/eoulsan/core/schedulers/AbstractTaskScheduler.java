@@ -285,10 +285,8 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
       // If this the first context of the step
       if (!this.status.containsKey(step)) {
 
-        this.status.put(step,
-            new StepStatus((AbstractStep) step));
-        this.results.put(step,
-            new StepResult((AbstractStep) step));
+        this.status.put(step, new StepStatus((AbstractStep) step));
+        this.results.put(step, new StepResult((AbstractStep) step));
       }
 
       this.submittedContexts.put(step, context.getId());

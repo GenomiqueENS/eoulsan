@@ -141,9 +141,8 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   }
 
   @Override
-  public void notifyStepState(final Step step,
-      final int terminatedTasks, final int submittedTasks,
-      final double progress) {
+  public void notifyStepState(final Step step, final int terminatedTasks,
+      final int submittedTasks, final double progress) {
 
     synchronized (this) {
 
@@ -203,8 +202,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   }
 
   @Override
-  public void notifyTaskSubmitted(final Step step,
-      final int contextId) {
+  public void notifyTaskSubmitted(final Step step, final int contextId) {
 
     synchronized (this) {
 
@@ -553,8 +551,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
    * @param progress progress value of the step
    * @return global progress as percent
    */
-  private double computeGlobalProgress(final Step step,
-      final double progress) {
+  private double computeGlobalProgress(final Step step, final double progress) {
 
     if (!this.steps.containsKey(step)) {
       return -1;

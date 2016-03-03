@@ -396,8 +396,7 @@ public class RSConnection {
    * @param source code to execute
    * @throws REngineException if an error while executing the code
    */
-  public void executeRnwCode(final String source)
-      throws REngineException {
+  public void executeRnwCode(final String source) throws REngineException {
 
     executeRnwCode(source, null);
   }

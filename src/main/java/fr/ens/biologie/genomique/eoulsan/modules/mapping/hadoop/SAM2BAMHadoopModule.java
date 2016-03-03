@@ -182,7 +182,7 @@ public class SAM2BAMHadoopModule extends AbstractSAM2BAMModule {
   private Job createJobConf(final Configuration conf, final TaskContext context,
       final String sampleName, final DataFile samFile, final DataFile bamFile,
       final Path workPath)
-          throws IOException, ClassNotFoundException, InterruptedException {
+      throws IOException, ClassNotFoundException, InterruptedException {
 
     final ValidationStringency stringency =
         ValidationStringency.DEFAULT_STRINGENCY;
@@ -296,7 +296,7 @@ public class SAM2BAMHadoopModule extends AbstractSAM2BAMModule {
    */
   private Job createIndexJob(final Configuration conf,
       final DataFile submitFile, final String jobDescription)
-          throws IOException {
+      throws IOException {
 
     final Configuration jobConf = new Configuration(conf);
 
@@ -374,7 +374,7 @@ final class SortReducer extends
   protected void reduce(LongWritable ignored,
       Iterable<SAMRecordWritable> records,
       Reducer<LongWritable, SAMRecordWritable, NullWritable, SAMRecordWritable>.Context ctx)
-          throws IOException, InterruptedException {
+      throws IOException, InterruptedException {
     for (SAMRecordWritable rec : records)
       ctx.write(NullWritable.get(), rec);
   }
@@ -395,7 +395,7 @@ final class SortInputFormat
   @Override
   public RecordReader<LongWritable, SAMRecordWritable> createRecordReader(
       InputSplit split, TaskAttemptContext ctx)
-          throws InterruptedException, IOException {
+      throws InterruptedException, IOException {
     initBaseIF(ContextUtil.getConfiguration(ctx));
 
     final RecordReader<LongWritable, SAMRecordWritable> rr =

@@ -164,21 +164,23 @@ public abstract class AbstractReadsFilterModule extends AbstractModule {
     switch (parameter.getName()) {
 
     case "lengthThreshold":
-      Modules.renamedParameter(context, parameter, "trim.length.threshold", true);
+      Modules.renamedParameter(context, parameter, "trim.length.threshold",
+          true);
 
     case "qualityThreshold":
       Modules.renamedParameter(context, parameter, "quality.threshold", true);
 
     case "pairend.accept.pairend":
-      Modules.renamedParameter(context, parameter, "pairedend.accept.paired.end",
-          true);
+      Modules.renamedParameter(context, parameter,
+          "pairedend.accept.paired.end", true);
 
     case "pairend.accept.singlend":
-      Modules.renamedParameter(context, parameter, "pairedend.accept.single.end",
-          true);
+      Modules.renamedParameter(context, parameter,
+          "pairedend.accept.single.end", true);
 
     case "trim.length.threshold":
-      Modules.renamedParameter(context, parameter, "trimpolynend\" and \"length");
+      Modules.renamedParameter(context, parameter,
+          "trimpolynend\" and \"length");
       break;
 
     default:

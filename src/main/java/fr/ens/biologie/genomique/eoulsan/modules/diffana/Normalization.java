@@ -68,9 +68,12 @@ public class Normalization {
       "/DESeq1/normalisationPart1WithTechRep.Rnw";
   private static final String NORMALIZATION_PART1_WHITHOUT_TECHREP =
       "/DESeq1/normalisationPart1WithoutTechRep.Rnw";
-  private static final String CLUSTERING_PCA_RAW = "/DESeq1/clusteringAndPCARaw.Rnw";
-  private static final String CLUSTERING_PCA_NORM = "/DESeq1/clusteringAndPCANorm.Rnw";
-  private static final String NORMALIZATION_PART2 = "/DESeq1/normalizationPart2.Rnw";
+  private static final String CLUSTERING_PCA_RAW =
+      "/DESeq1/clusteringAndPCARaw.Rnw";
+  private static final String CLUSTERING_PCA_NORM =
+      "/DESeq1/clusteringAndPCANorm.Rnw";
+  private static final String NORMALIZATION_PART2 =
+      "/DESeq1/normalizationPart2.Rnw";
 
   protected final Design design;
   protected final String expressionFilesPrefix;
@@ -154,7 +157,8 @@ public class Normalization {
             + '_' + experiment.getId() + ".tex";
 
         // Execute the R script
-        executor.executeRScript(rScript, true, sweaveOutput, saveRScript, description);
+        executor.executeRScript(rScript, true, sweaveOutput, saveRScript,
+            description);
 
         // Remove input files
         executor.removeInputFiles();
@@ -256,7 +260,6 @@ public class Normalization {
         throw new EoulsanException("No condition field found in design file.");
       }
 
-
       if ("".equals(condition)) {
         throw new EoulsanException("No value for condition in sample: "
             + s.getName() + " (" + s.getId() + ")");
@@ -288,7 +291,8 @@ public class Normalization {
 
     // Create Rnw script stringbuilder with preamble
     String pdfTitle = escapeUnderScore(experiment.getName()) + " normalisation";
-    String filePrefix = "normalization_" + escapeUnderScore(experiment.getName());
+    String filePrefix =
+        "normalization_" + escapeUnderScore(experiment.getName());
 
     final StringBuilder sb =
         generateRnwpreamble(experiment.getSamples(), pdfTitle, filePrefix);

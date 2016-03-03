@@ -531,8 +531,8 @@ public class TokenManager implements Runnable {
           || !checkIfAllListPortsAreClosed()) {
         cartesianProductToProcess = Collections.emptySet();
       } else {
-        cartesianProductToProcess =
-            this.step.getDataProduct().makeProduct(this.inputPorts, this.inputTokens);
+        cartesianProductToProcess = this.step.getDataProduct()
+            .makeProduct(this.inputPorts, this.inputTokens);
       }
 
       cartesianProductToProcess.removeAll(this.cartesianProductsUsed);
@@ -545,8 +545,8 @@ public class TokenManager implements Runnable {
       // Create the Data object for the output port
       Map<OutputPort, AbstractData> outputData = createContextOutputData();
       // Create the context object
-      result.add(
-          new TaskContextImpl(workflowContext, this.step, inputData, outputData));
+      result.add(new TaskContextImpl(workflowContext, this.step, inputData,
+          outputData));
     }
 
     return result;
@@ -860,8 +860,7 @@ public class TokenManager implements Runnable {
             if (this.step.getState() != ABORTED) {
 
               // Get the result
-              final StepResult result =
-                  this.scheduler.getResult(this.step);
+              final StepResult result = this.scheduler.getResult(this.step);
 
               // Set the result immutable
               result.setImmutable();

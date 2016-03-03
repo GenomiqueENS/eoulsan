@@ -110,7 +110,8 @@ public class CopyOutputDataModule extends AbstractModule {
         final DataFormat format = registry.getDataFormatFromName(p.getValue());
 
         if (format == null) {
-          Modules.badParameterValue(context, p, "Unknown format: " + p.getValue());
+          Modules.badParameterValue(context, p,
+              "Unknown format: " + p.getValue());
         }
 
         this.format = format;

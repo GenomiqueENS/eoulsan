@@ -63,8 +63,8 @@ class StepOutputPorts extends AbstractPorts<StepOutputPort>
    * @param ports ports to convert
    * @return a new set
    */
-  private static Set<StepOutputPort> convert(
-      final AbstractStep step, final OutputPorts ports) {
+  private static Set<StepOutputPort> convert(final AbstractStep step,
+      final OutputPorts ports) {
 
     if (ports == null) {
       throw new NullPointerException("Ports is null");
@@ -100,8 +100,7 @@ class StepOutputPorts extends AbstractPorts<StepOutputPort>
    * @param step step related to the WorkflowOutputPort objects
    * @param ports port to convert
    */
-  StepOutputPorts(final AbstractStep step,
-      final OutputPorts ports) {
+  StepOutputPorts(final AbstractStep step, final OutputPorts ports) {
 
     super(convert(step, ports));
   }

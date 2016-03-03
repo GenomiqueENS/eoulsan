@@ -65,7 +65,7 @@ public class HTSeqUtils {
       final InputStream gffIs, final String featureType,
       final StrandUsage stranded, final String attributeId,
       final boolean splitAttributeValues, final Map<String, Integer> counts)
-          throws IOException, EoulsanException, BadBioEntryException {
+      throws IOException, EoulsanException, BadBioEntryException {
 
     final Splitter splitter = Splitter.on(',').omitEmptyStrings().trimResults();
 
@@ -232,7 +232,7 @@ public class HTSeqUtils {
   public static Set<String> featuresOverlapped(
       final List<GenomicInterval> ivList, final GenomicArray<String> features,
       final OverlapMode mode, final StrandUsage stranded)
-          throws EoulsanException, IOException {
+      throws EoulsanException, IOException {
 
     Set<String> fs = null;
 

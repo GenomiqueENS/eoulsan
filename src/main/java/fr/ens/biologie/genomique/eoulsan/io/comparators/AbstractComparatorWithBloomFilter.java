@@ -88,8 +88,8 @@ public abstract class AbstractComparatorWithBloomFilter
    * @return boolean true if files are same.
    * @throws IOException if an error occurs while comparing the files.
    */
-  abstract public boolean compareFiles(EnhancedBloomFilter filter, InputStream is)
-      throws IOException;
+  abstract public boolean compareFiles(EnhancedBloomFilter filter,
+      InputStream is) throws IOException;
 
   /**
    * Initialize BloomFilter with the expected number of elements.
@@ -108,7 +108,8 @@ public abstract class AbstractComparatorWithBloomFilter
    * @param file source to create bloom filter
    * @return bloomFilter completed with the file
    */
-  public EnhancedBloomFilter getBloomFilter(final File file) throws IOException {
+  public EnhancedBloomFilter getBloomFilter(final File file)
+      throws IOException {
 
     final File bloomFilterSer = new File(file.getAbsolutePath() + ".ser");
 
@@ -127,7 +128,8 @@ public abstract class AbstractComparatorWithBloomFilter
 
       // If need serialize bloomFilter in file only for file
       if (isCreateSerializeFile(file, zType)) {
-        EnhancedBloomFilter.serializationBloomFilter(bloomFilterSer, bloomFilter);
+        EnhancedBloomFilter.serializationBloomFilter(bloomFilterSer,
+            bloomFilter);
       }
 
       return bloomFilter;

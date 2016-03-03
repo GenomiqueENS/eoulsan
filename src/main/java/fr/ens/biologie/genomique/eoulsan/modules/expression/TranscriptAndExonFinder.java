@@ -677,7 +677,7 @@ public class TranscriptAndExonFinder {
             return maxIndex;
           }
 
-          assert(false);
+          assert (false);
         }
 
         final Zone z = get(index);
@@ -817,7 +817,7 @@ public class TranscriptAndExonFinder {
 
   private void populateMapsFromGFFFile(final InputStream is,
       final String expressionType, final String attributeId)
-          throws IOException, BadBioEntryException {
+      throws IOException, BadBioEntryException {
 
     getLogger().info("Expression Type: " + expressionType);
 
@@ -1044,7 +1044,7 @@ public class TranscriptAndExonFinder {
    */
   public TranscriptAndExonFinder(final File annotationFile,
       final String expressionType, final String attributeId)
-          throws IOException, BadBioEntryException {
+      throws IOException, BadBioEntryException {
 
     this(FileUtils.createInputStream(annotationFile), expressionType,
         attributeId);
@@ -1061,7 +1061,7 @@ public class TranscriptAndExonFinder {
    */
   public TranscriptAndExonFinder(final InputStream is,
       final String expressionType, final String attributeId)
-          throws IOException, BadBioEntryException {
+      throws IOException, BadBioEntryException {
 
     populateMapsFromGFFFile(is, expressionType, attributeId);
   }

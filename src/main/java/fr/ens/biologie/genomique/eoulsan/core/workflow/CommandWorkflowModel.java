@@ -222,8 +222,8 @@ public class CommandWorkflowModel implements Serializable {
   void addStep(final String stepId, final String module, final String version,
       final Map<String, StepOutputPort> inputs, final Set<Parameter> parameters,
       final boolean skipStep, final boolean discardOutput,
-      final int requiredMemory, final int requiredProcs, final String dataProduct)
-          throws EoulsanException {
+      final int requiredMemory, final int requiredProcs,
+      final String dataProduct) throws EoulsanException {
 
     if (module == null) {
       throw new EoulsanException("The module of the step is null.");

@@ -46,12 +46,12 @@ public class ReadNameStartsWithReadFilterTest {
     // Null case
     assertFalse(filter.accept(null));
 
-    final String[] ids = { "AEGIR:25:B0866ABXX:8:1101:1193:2125",
+    final String[] ids = {"AEGIR:25:B0866ABXX:8:1101:1193:2125",
         "TOTO:25:B0866ABXX:8:1101:1176:2126",
         "TOTO:25:B0866ABXX:8:1102:1111:4444",
         "TOTO:25:B0866ABXX:8:1202:5555:6666",
         "TOTO:25:B0866ABXX:7:2202:1176:2126",
-        "TOTO:25:B0866ABXX:8:1301:2222:3333" };
+        "TOTO:25:B0866ABXX:8:1301:2222:3333"};
 
     // Not illumina id case
     ReadSequence read = new ReadSequence(0, "read1", "ATG", "wxy");

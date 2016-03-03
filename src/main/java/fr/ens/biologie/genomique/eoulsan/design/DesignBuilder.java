@@ -260,7 +260,7 @@ public class DesignBuilder {
 
     public FastqEntry(final DataFile path, final String sampleName,
         final String sampleDesc, final String sampleOperator)
-            throws EoulsanException {
+        throws EoulsanException {
 
       this.path = path;
       this.sampleName = sampleName;
@@ -405,7 +405,7 @@ public class DesignBuilder {
    */
   public void addBcl2FastqSamplesheetProject(final SampleSheet samplesheet,
       final String projectName, final File bcl2fastqOutputDir)
-          throws EoulsanException {
+      throws EoulsanException {
 
     if (samplesheet == null || bcl2fastqOutputDir == null) {
       return;
@@ -638,7 +638,7 @@ public class DesignBuilder {
       final String desc, final String condition, final String date,
       final String operator, final FastqFormat defaultFastqFormat,
       final List<String> filenames, final DataFile fileToCheck)
-          throws EoulsanException {
+      throws EoulsanException {
 
     if (design == null) {
       return;

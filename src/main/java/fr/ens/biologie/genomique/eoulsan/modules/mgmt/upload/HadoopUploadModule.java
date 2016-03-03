@@ -60,9 +60,9 @@ public class HadoopUploadModule extends UploadModule {
   }
 
   @Override
-  protected DataFile getUploadedDataFile(final DataFile file,
-      final Step step, final Sample sample, final String portName,
-      final DataFormat format, final int fileIndex) throws IOException {
+  protected DataFile getUploadedDataFile(final DataFile file, final Step step,
+      final Sample sample, final String portName, final DataFormat format,
+      final int fileIndex) throws IOException {
 
     final String filename;
 
@@ -75,8 +75,8 @@ public class HadoopUploadModule extends UploadModule {
       filename = file.getName();
     } else {
 
-      filename = StepOutputDataFile.newStandardFilename(step, portName,
-          format, sample, fileIndex, CompressionType.NONE);
+      filename = StepOutputDataFile.newStandardFilename(step, portName, format,
+          sample, fileIndex, CompressionType.NONE);
     }
 
     return new DataFile(getDest(), filename);
@@ -114,8 +114,8 @@ public class HadoopUploadModule extends UploadModule {
         files.remove(src);
 
       } else
-        // If the file comes from a storage
-        if (src.getProtocol() instanceof StorageDataProtocol) {
+      // If the file comes from a storage
+      if (src.getProtocol() instanceof StorageDataProtocol) {
 
         final DataFile newSrc =
             ((StorageDataProtocol) src.getProtocol()).getUnderLyingData(src);

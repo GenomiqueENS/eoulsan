@@ -50,7 +50,7 @@ public class DockerProcess {
   public int execute(final List<String> commandLine,
       final File executionDirectory, final File temporaryDirectory,
       final File stdoutFile, final File stderrFile)
-          throws DockerException, InterruptedException {
+      throws DockerException, InterruptedException {
 
     return execute(commandLine, executionDirectory, null, temporaryDirectory,
         stdoutFile, stderrFile, false);
@@ -61,7 +61,7 @@ public class DockerProcess {
       final Map<String, String> environmentVariables,
       final File temporaryDirectory, final File stdoutFile,
       final File stderrFile, final boolean redirectErrorStream)
-          throws DockerException, InterruptedException {
+      throws DockerException, InterruptedException {
 
     checkNotNull(commandLine, "commandLine argument cannot be null");
     checkNotNull(executionDirectory,
@@ -159,7 +159,7 @@ public class DockerProcess {
    */
   private static void pullImageIfNotExists(DockerClient dockerClient,
       final String dockerImageName)
-          throws DockerException, InterruptedException {
+      throws DockerException, InterruptedException {
 
     checkNotNull(dockerClient, "dockerClient argument cannot be null");
     checkNotNull(dockerImageName, "dockerImageName argument cannot be null");

@@ -92,8 +92,8 @@ public class Eoulsan2ReaderWriterTest {
     SampleMetadata sample1MD = sample1.getMetadata();
     SampleMetadata sample2MD = sample2.getMetadata();
 
-    sample1MD.setReads(Arrays.asList(new String[] { "read_sample1.fasta" }));
-    sample2MD.setReads(Arrays.asList(new String[] { "read_sample2.fasta" }));
+    sample1MD.setReads(Arrays.asList(new String[] {"read_sample1.fasta"}));
+    sample2MD.setReads(Arrays.asList(new String[] {"read_sample2.fasta"}));
 
     sample1MD.setDate("06.10.2015");
     sample2MD.setDate("06.10.2015");

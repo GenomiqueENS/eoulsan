@@ -204,10 +204,10 @@ public class MultiColumnTranslator extends AbstractTranslator {
     if (fieldNames == null) {
       throw new NullPointerException("fieldnames is null");
     }
-//    System.out.println(fieldNamesWithId);
-//    System.out.println(fieldNames.size());
-//    System.out.println(fieldNames.get(1)+" | "+fieldNames.get(0));
-    
+    // System.out.println(fieldNamesWithId);
+    // System.out.println(fieldNames.size());
+    // System.out.println(fieldNames.get(1)+" | "+fieldNames.get(0));
+
     if (fieldNamesWithId && fieldNames.size() < 2) {
       throw new EoulsanRuntimeException(
           "fieldNames must have at least 2 fields");

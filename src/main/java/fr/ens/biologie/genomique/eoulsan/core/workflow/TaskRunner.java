@@ -193,8 +193,8 @@ public class TaskRunner {
 
           // Execute task
           getLogger().info("Execute task");
-          TaskRunner.this.result = module.execute(TaskRunner.this.context,
-              TaskRunner.this.status);
+          TaskRunner.this.result =
+              module.execute(TaskRunner.this.context, TaskRunner.this.status);
 
         } catch (Throwable t) {
 
@@ -448,8 +448,8 @@ public class TaskRunner {
    * @param exception exception
    * @return a new TaskResult object
    */
-  public static TaskResultImpl createStepResult(final TaskContextImpl taskContext,
-      final Throwable exception) {
+  public static TaskResultImpl createStepResult(
+      final TaskContextImpl taskContext, final Throwable exception) {
 
     return createStepResult(taskContext, exception,
         exception != null ? exception.getMessage() : null);
@@ -462,8 +462,9 @@ public class TaskRunner {
    * @param errorMessage error message
    * @return a new TaskResult object
    */
-  public static TaskResultImpl createStepResult(final TaskContextImpl taskContext,
-      final Throwable exception, final String errorMessage) {
+  public static TaskResultImpl createStepResult(
+      final TaskContextImpl taskContext, final Throwable exception,
+      final String errorMessage) {
 
     final TaskRunner runner = new TaskRunner(taskContext);
 
@@ -471,7 +472,8 @@ public class TaskRunner {
     runner.status.durationStart();
 
     // Create the result object
-    return (TaskResultImpl) runner.status.createTaskResult(exception, errorMessage);
+    return (TaskResultImpl) runner.status.createTaskResult(exception,
+        errorMessage);
   }
 
   /**

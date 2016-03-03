@@ -42,8 +42,8 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
 
 /**
- * This class define a module that execute a shell command. It use the user shell
- * to execute the command. The launched command is : $SHELL -c "command"
+ * This class define a module that execute a shell command. It use the user
+ * shell to execute the command. The launched command is : $SHELL -c "command"
  * @author Laurent Jourdren
  */
 @LocalOnly

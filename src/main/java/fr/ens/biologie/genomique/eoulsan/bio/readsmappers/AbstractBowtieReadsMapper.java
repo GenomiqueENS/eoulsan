@@ -319,7 +319,7 @@ public abstract class AbstractBowtieReadsMapper
   @Override
   public void init(final File archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
-          throws IOException {
+      throws IOException {
 
     super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }

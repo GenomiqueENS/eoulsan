@@ -113,7 +113,7 @@ public class ITSuite {
    */
   public static ITSuite getInstance(final Map<String, File> tests,
       final Properties globalsConf, final File applicationPath)
-          throws IOException, EoulsanException {
+      throws IOException, EoulsanException {
 
     if (itSuite == null) {
 

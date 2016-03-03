@@ -68,9 +68,9 @@ public class LocalUploadModule extends UploadModule {
   }
 
   @Override
-  protected DataFile getUploadedDataFile(final DataFile file,
-      final Step step, final Sample sample, final String portName,
-      final DataFormat format, final int fileIndex) throws IOException {
+  protected DataFile getUploadedDataFile(final DataFile file, final Step step,
+      final Sample sample, final String portName, final DataFormat format,
+      final int fileIndex) throws IOException {
 
     final String filename;
 
@@ -83,8 +83,8 @@ public class LocalUploadModule extends UploadModule {
       filename = file.getName();
     } else {
 
-      filename = StepOutputDataFile.newStandardFilename(step, portName,
-          format, sample, fileIndex, CompressionType.NONE);
+      filename = StepOutputDataFile.newStandardFilename(step, portName, format,
+          sample, fileIndex, CompressionType.NONE);
     }
 
     // Don't compress ZIP files

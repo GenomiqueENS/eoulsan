@@ -859,7 +859,7 @@ public class IT {
   public IT(final ITSuite itSuite, final Properties globalsConf,
       final File applicationPath, final File testsDataDirectory,
       final File outputTestsDirectory, final String testName)
-          throws IOException, EoulsanException {
+      throws IOException, EoulsanException {
 
     checkExistingDirectoryFile(testsDataDirectory, "tests data directory");
     checkExistingDirectoryFile(outputTestsDirectory, "output tests directory");

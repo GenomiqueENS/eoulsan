@@ -116,8 +116,7 @@ public final class ContextUtils {
       return ((TaskContextImpl) context).getTaskOutputDirectory();
     } else if (context instanceof StepConfigurationContextImpl) {
 
-      return ((StepConfigurationContextImpl) context)
-          .getTaskOutputDirectory();
+      return ((StepConfigurationContextImpl) context).getTaskOutputDirectory();
     }
 
     return null;

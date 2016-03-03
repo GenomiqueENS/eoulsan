@@ -234,7 +234,7 @@ public class ReadsFilterLocalModule extends AbstractReadsFilterModule {
   private static void filterFile(final DataFile inFile1, final DataFile inFile2,
       final DataFile outFile1, final DataFile outFile2, final Reporter reporter,
       final ReadFilter filter, final FastqFormat fastqFormat)
-          throws IOException {
+      throws IOException {
 
     getLogger().info("Filter files: "
         + inFile1 + ", " + inFile2 + ", Fastq format: " + fastqFormat);

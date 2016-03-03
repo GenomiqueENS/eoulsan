@@ -93,7 +93,7 @@ class SimpleDataFileMetadata implements DataFileMetadata {
   @Override
   public boolean isSymbolicLink() {
 
-    return this.symbolicLinkTarget !=null;
+    return this.symbolicLinkTarget != null;
   }
 
   @Override

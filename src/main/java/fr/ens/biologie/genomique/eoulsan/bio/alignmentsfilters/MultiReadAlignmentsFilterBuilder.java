@@ -183,7 +183,7 @@ public class MultiReadAlignmentsFilterBuilder {
    */
   public MultiReadAlignmentsFilter getAlignmentsFilter(
       final ReporterIncrementer incrementer, final String counterGroup)
-          throws EoulsanException {
+      throws EoulsanException {
 
     for (ReadAlignmentsFilter f : this.listFilter) {
       f.init();

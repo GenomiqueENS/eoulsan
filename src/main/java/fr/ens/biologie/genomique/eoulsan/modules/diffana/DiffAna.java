@@ -475,7 +475,7 @@ public class DiffAna extends Normalization {
    * @param sb the StringBuilder to append
    */
   private void writeReferenceField(final Experiment experiment,
-      final StringBuilder sb) throws EoulsanException{
+      final StringBuilder sb) throws EoulsanException {
 
     // Get experiment reference if exists
     final String refExp = experiment.getMetadata().getReference();

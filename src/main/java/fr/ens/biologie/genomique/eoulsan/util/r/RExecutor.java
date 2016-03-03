@@ -59,7 +59,7 @@ public interface RExecutor {
    */
   void executeRScript(String rScript, boolean sweave, String sweaveOutput,
       boolean saveRscript, String description, String... scriptArguments)
-          throws IOException;
+      throws IOException;
 
   /**
    * Remove input files.

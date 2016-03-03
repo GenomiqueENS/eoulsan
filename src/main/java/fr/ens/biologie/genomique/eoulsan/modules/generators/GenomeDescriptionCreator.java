@@ -58,7 +58,7 @@ public class GenomeDescriptionCreator {
    */
   public GenomeDescription createGenomeDescriptionFromAnnotation(
       final DataFile annotationDataFile)
-          throws BadBioEntryException, IOException {
+      throws BadBioEntryException, IOException {
 
     return createGenomeDescription(annotationDataFile, true);
   }
@@ -92,7 +92,7 @@ public class GenomeDescriptionCreator {
    */
   private GenomeDescription createGenomeDescription(
       final DataFile genomeDataFile, final boolean gffFormat)
-          throws BadBioEntryException, IOException {
+      throws BadBioEntryException, IOException {
 
     // Check if the genome description has been already put in the CheckStore
     GenomeDescription desc =

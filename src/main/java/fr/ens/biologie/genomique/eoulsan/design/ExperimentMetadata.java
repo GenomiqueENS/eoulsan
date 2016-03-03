@@ -32,8 +32,8 @@ import java.io.Serializable;
  * @since 2.0
  */
 
-public class ExperimentMetadata extends AbstractMetadata implements
-    Serializable {
+public class ExperimentMetadata extends AbstractMetadata
+    implements Serializable {
 
   /** Serialization version UID. */
   private static final long serialVersionUID = -625223839967520050L;
@@ -65,7 +65,7 @@ public class ExperimentMetadata extends AbstractMetadata implements
    * @return the reference option
    */
   public String getReference() {
-   return getTrimmed(REFERENCE_KEY);
+    return getTrimmed(REFERENCE_KEY);
   }
 
   /**

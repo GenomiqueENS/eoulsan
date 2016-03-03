@@ -97,7 +97,7 @@ public class ITCommandResult {
     this.message.append("\n");
 
     isReportCreated = true;
-    
+
     return this.message.toString();
   }
 

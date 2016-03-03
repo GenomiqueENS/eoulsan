@@ -158,7 +158,8 @@ public class Experiment implements Serializable {
    */
   public void setName(String newExperimentName) {
 
-    checkNotNull(newExperimentName, "newExperimentName argument cannot be null");
+    checkNotNull(newExperimentName,
+        "newExperimentName argument cannot be null");
 
     final String name = newExperimentName.trim();
 
@@ -248,7 +249,8 @@ public class Experiment implements Serializable {
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this).add("experimentId", this.experimentId)
+    return MoreObjects.toStringHelper(this)
+        .add("experimentId", this.experimentId)
         .add("experimentNumber", this.experimentNumber)
         .add("experimentName", this.experimentName)
         .add("experimentMetadata", this.metadata)

@@ -181,7 +181,7 @@ public abstract class AbstractSAMFilterModule extends AbstractModule {
    */
   protected MultiReadAlignmentsFilter getAlignmentsFilter(
       final ReporterIncrementer incrementer, final String counterGroup)
-          throws EoulsanException {
+      throws EoulsanException {
 
     // As filters are not thread safe, create a new
     // MultiReadAlignmentsFilterBuilder

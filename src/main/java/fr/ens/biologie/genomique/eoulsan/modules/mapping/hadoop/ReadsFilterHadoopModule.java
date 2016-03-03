@@ -194,7 +194,7 @@ public class ReadsFilterHadoopModule extends AbstractReadsFilterModule {
       final String dataName, final DataFile inFile,
       final List<String> filenames, final DataFormat inputFormat,
       final FastqFormat fastqFormat, final DataFile... outFiles)
-          throws IOException {
+      throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 

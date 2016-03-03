@@ -219,9 +219,9 @@ public abstract class UploadModule extends AbstractModule {
    * @return a new DataFile object with the path to the upload DataFile
    * @throws IOException if an error occurs while creating the result DataFile
    */
-  private DataFile getUploadedDataFile(final DataFile file,
-      final Step step, final Sample sample, final String portName,
-      final DataFormat format) throws IOException {
+  private DataFile getUploadedDataFile(final DataFile file, final Step step,
+      final Sample sample, final String portName, final DataFormat format)
+      throws IOException {
 
     return getUploadedDataFile(file, step, sample, portName, format, -1);
   }
@@ -265,7 +265,7 @@ public abstract class UploadModule extends AbstractModule {
     final Map<DataFile, DataFile> result = new HashMap<>();
 
     Set<StepOutputDataFile> inFiles =
-        //context.getWorkflow().getWorkflowFilesAtFirstStep().getInputFiles();
+        // context.getWorkflow().getWorkflowFilesAtFirstStep().getInputFiles();
         new HashSet<>();
 
     for (StepOutputDataFile file : inFiles) {

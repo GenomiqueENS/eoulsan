@@ -48,7 +48,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   private static final String DEFAULT_PACKAGE_VERSION = "2012-07-20";
   private static final String MAPPER_EXECUTABLE = "gsnap";
   private static final String[] INDEXER_EXECUTABLES =
-      new String[] { "fa_coords", "gmap_process", "gmapindex", "gmap_build" };
+      new String[] {"fa_coords", "gmap_process", "gmapindex", "gmap_build"};
 
   public static final String DEFAULT_ARGUMENTS = "-N 1";
 
@@ -271,7 +271,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   public void init(final File archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
-          throws IOException {
+      throws IOException {
 
     super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }

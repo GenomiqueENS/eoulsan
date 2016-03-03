@@ -110,8 +110,7 @@ public class StepStateObserver implements Serializable {
     // If is the root step, there is nothing to wait
     synchronized (this) {
 
-      if (this.step.getType() == Step.StepType.ROOT_STEP
-          && state == WAITING) {
+      if (this.step.getType() == Step.StepType.ROOT_STEP && state == WAITING) {
         this.stepState = READY;
       } else {
 
@@ -146,8 +145,7 @@ public class StepStateObserver implements Serializable {
     this.step.getAbstractWorkflow().updateStepState(this.step);
 
     // Inform listeners
-    for (StepObserver o : StepObserverRegistry.getInstance()
-        .getObservers()) {
+    for (StepObserver o : StepObserverRegistry.getInstance().getObservers()) {
       o.notifyStepState(this.step);
     }
   }

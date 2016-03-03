@@ -313,7 +313,7 @@ public class GenomeDescription {
    */
   public static GenomeDescription createGenomeDescFromFasta(
       final InputStream genomeFastaIs, final String filename)
-          throws BadBioEntryException, IOException {
+      throws BadBioEntryException, IOException {
 
     return createGenomeDesc(genomeFastaIs, filename, false);
   }
@@ -338,7 +338,7 @@ public class GenomeDescription {
    */
   public static GenomeDescription createGenomeDescFromGFF(
       final InputStream gffFile, final String filename)
-          throws BadBioEntryException, IOException {
+      throws BadBioEntryException, IOException {
 
     return createGenomeDesc(gffFile, filename, true);
   }
@@ -465,7 +465,7 @@ public class GenomeDescription {
 
   private static long checkBases(final String sequence,
       final String sequenceName, final Alphabet alphabet)
-          throws BadBioEntryException {
+      throws BadBioEntryException {
 
     final char[] array = sequence.toCharArray();
 

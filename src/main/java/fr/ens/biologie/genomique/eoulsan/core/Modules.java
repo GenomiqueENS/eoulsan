@@ -59,7 +59,7 @@ public class Modules {
    */
   public static void deprecatedParameter(final StepConfigurationContext context,
       final Parameter parameter, final boolean throwException)
-          throws EoulsanException {
+      throws EoulsanException {
 
     checkNotNull(context, "context argument cannot be null");
     checkNotNull(parameter, "parameter argument cannot be null");
@@ -180,7 +180,7 @@ public class Modules {
    */
   public static void invalidConfiguration(
       final StepConfigurationContext context, final String message)
-          throws EoulsanException {
+      throws EoulsanException {
 
     checkNotNull(context, "context argument cannot be null");
     checkNotNull(message, "message argument cannot be null");
@@ -188,7 +188,6 @@ public class Modules {
     throw new EoulsanException("The invalid configuration for the \""
         + context.getCurrentStep().getId() + "\" step: " + message);
   }
-
 
   //
   // Constructor

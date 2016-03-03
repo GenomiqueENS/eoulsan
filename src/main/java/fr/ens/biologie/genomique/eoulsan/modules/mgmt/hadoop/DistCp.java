@@ -130,7 +130,7 @@ public class DistCp implements Tool {
       + "\n-mapredSslConf <f>     Filename of SSL configuration for mapper task"
       +
 
-  "\n\nNOTE 1: if -overwrite or -update are set, each source URI is "
+      "\n\nNOTE 1: if -overwrite or -update are set, each source URI is "
       + "\n      interpreted as an isomorphic update to an existing directory."
       + "\nFor example:" + "\nhadoop " + NAME
       + " -p -update \"hdfs://A:8020/user/foo/bar\" "
@@ -138,12 +138,12 @@ public class DistCp implements Tool {
       + "\n     would update all descendants of 'baz' also in 'bar'; it would "
       + "\n     *not* update /user/foo/baz/bar" +
 
-  "\n\nNOTE 2: The parameter <n> in -filelimit and -sizelimit can be "
+      "\n\nNOTE 2: The parameter <n> in -filelimit and -sizelimit can be "
       + "\n     specified with symbolic representation.  For examples,"
       + "\n       1230k = 1230 * 1024 = 1259520"
       + "\n       891g = 891 * 1024^3 = 956703965184" +
 
-  "\n";
+      "\n";
 
   private static final long BYTES_PER_MAP = 256 * 1024 * 1024;
   private static final int MAX_MAPS_PER_NODE = 20;
@@ -159,8 +159,8 @@ public class DistCp implements Tool {
     SIZE_LIMIT("-sizelimit", NAME + ".limit.size"),
     IGNORE_READ_FAILURES("-i", NAME + ".ignore.read.failures"),
     PRESERVE_STATUS("-p", NAME + ".preserve.status"),
-    OVERWRITE("-overwrite", NAME + ".overwrite.always"),
-    UPDATE("-update", NAME + ".overwrite.ifnewer");
+    OVERWRITE("-overwrite", NAME + ".overwrite.always"), UPDATE("-update", NAME
+        + ".overwrite.ifnewer");
 
     final String cmd, propertyname;
 
@@ -1260,7 +1260,7 @@ public class DistCp implements Tool {
    */
   static private boolean sameFile(final FileSystem srcfs,
       final FileStatus srcstatus, final FileSystem dstfs, final Path dstpath)
-          throws IOException {
+      throws IOException {
     FileStatus dststatus;
     try {
       dststatus = dstfs.getFileStatus(dstpath);
@@ -1304,7 +1304,7 @@ public class DistCp implements Tool {
   static private void deleteNonexisting(final FileSystem dstfs,
       final FileStatus dstroot, final Path dstsorted, final FileSystem jobfs,
       final Path jobdir, final JobConf jobconf, final Configuration conf)
-          throws IOException {
+      throws IOException {
     if (!dstroot.isDir()) {
       throw new IOException("dst must be a directory when option "
           + Options.DELETE.cmd + " is set, but dst (= " + dstroot.getPath()
@@ -1352,7 +1352,7 @@ public class DistCp implements Tool {
       final Text dstpath = new Text();
       final Text dstfrom = new Text();
       final FsShell shell = new FsShell(conf);
-      final String[] shellargs = { "-rmr", null };
+      final String[] shellargs = {"-rmr", null};
 
       boolean hasnext = dstin.next(dstpath, dstfrom);
       for (; lsrin.next(lsrpath, lsrstatus);) {

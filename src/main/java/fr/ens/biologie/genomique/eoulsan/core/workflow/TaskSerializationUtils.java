@@ -84,7 +84,8 @@ public class TaskSerializationUtils {
     }
 
     // Load context file
-    final TaskContextImpl context = TaskContextImpl.deserialize(taskContextFile);
+    final TaskContextImpl context =
+        TaskContextImpl.deserialize(taskContextFile);
 
     // Get TaskResult
     final TaskResultImpl result = executeContext(context);
@@ -147,7 +148,8 @@ public class TaskSerializationUtils {
    *           files
    */
   private static final void saveTaskResult(final DataFile taskContextFile,
-      final TaskContextImpl context, final TaskResultImpl result) throws IOException {
+      final TaskContextImpl context, final TaskResultImpl result)
+      throws IOException {
 
     // Get the prefix for the task files and the base dir
     final String taskPrefix = context.getTaskFilePrefix();

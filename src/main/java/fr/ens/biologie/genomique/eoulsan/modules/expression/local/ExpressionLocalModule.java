@@ -127,7 +127,7 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
       final DataFile annotationFile, final DataFile alignmentFile,
       final DataFile expressionFile, final DataFile genomeDescFile,
       final Reporter reporter)
-          throws IOException, EoulsanException, BadBioEntryException {
+      throws IOException, EoulsanException, BadBioEntryException {
 
     // Init expression counter
     counter.init(getGenomicType(), getAttributeId(), reporter, COUNTER_GROUP);

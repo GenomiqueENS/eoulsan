@@ -71,8 +71,8 @@ public class Eoulsan2DesignReader implements DesignReader {
 
   private final InputStream is;
 
-  private final Splitter trimTabSplitter = Splitter.on(TAB_SEPARATOR)
-      .omitEmptyStrings();
+  private final Splitter trimTabSplitter =
+      Splitter.on(TAB_SEPARATOR).omitEmptyStrings();
   private final Splitter tabSplitter = Splitter.on(TAB_SEPARATOR).trimResults();
   private final Splitter dotSplitter = Splitter.on(DOT_SEPARATOR).trimResults();
 
@@ -107,7 +107,8 @@ public class Eoulsan2DesignReader implements DesignReader {
     }
     // if the value is empty
     if ("".equals(value)) {
-      throw new IOException("Found an empty field value in design file header.");
+      throw new IOException(
+          "Found an empty field value in design file header.");
     }
 
     // If it is an experiment field or a design field
@@ -183,9 +184,8 @@ public class Eoulsan2DesignReader implements DesignReader {
 
     // If the field name already exist
     if (design.getMetadata().contains(key)) {
-      throw new IOException(
-          "There is two or more metadata with the same key \""
-              + key + "\" in design file header.");
+      throw new IOException("There is two or more metadata with the same key \""
+          + key + "\" in design file header.");
     }
     design.getMetadata().set(key, value);
   }
@@ -201,9 +201,8 @@ public class Eoulsan2DesignReader implements DesignReader {
    * @param line the line read from your design file
    * @throws IOException
    */
-  private void parseColumns(final Design design,
-      final List<String> columnNames, final String line, final boolean firstLine)
-      throws IOException {
+  private void parseColumns(final Design design, final List<String> columnNames,
+      final String line, final boolean firstLine) throws IOException {
 
     final List<String> splitLine = splitToList(this.tabSplitter, line);
     // System.out.print(splitLine);
@@ -300,9 +299,8 @@ public class Eoulsan2DesignReader implements DesignReader {
     if (sample.getMetadata().contains(columnName)) {
 
       // If the field name already exist
-      throw new IOException(
-          "There is two or more metadata with the same key \""
-              + columnName + "\" in design file header.");
+      throw new IOException("There is two or more metadata with the same key \""
+          + columnName + "\" in design file header.");
     }
     sample.getMetadata().set(columnName, columnValue);
 
@@ -354,9 +352,8 @@ public class Eoulsan2DesignReader implements DesignReader {
     if (experimentSampleMetadata.contains(expKey)) {
 
       // If the field name already exist
-      throw new IOException(
-          "There is two or more metadata with the same key \""
-              + expKey + "\" in design file header.");
+      throw new IOException("There is two or more metadata with the same key \""
+          + expKey + "\" in design file header.");
     }
 
     // Add the experiment sample metadata
@@ -377,9 +374,8 @@ public class Eoulsan2DesignReader implements DesignReader {
 
     final List<String> columnNames = new ArrayList<>();
 
-    final BufferedReader br =
-        new BufferedReader(new InputStreamReader(this.is,
-            Globals.DEFAULT_CHARSET));
+    final BufferedReader br = new BufferedReader(
+        new InputStreamReader(this.is, Globals.DEFAULT_CHARSET));
 
     final StringBuilder lineBuffer = new StringBuilder();
 
@@ -508,8 +504,8 @@ public class Eoulsan2DesignReader implements DesignReader {
    * @throws IOException if the stream is null
    * @throws FileNotFoundException if the file doesn't exist
    */
-  public Eoulsan2DesignReader(final String filename) throws IOException,
-      FileNotFoundException {
+  public Eoulsan2DesignReader(final String filename)
+      throws IOException, FileNotFoundException {
 
     checkNotNull(filename, "the filename argument cannot be null");
 

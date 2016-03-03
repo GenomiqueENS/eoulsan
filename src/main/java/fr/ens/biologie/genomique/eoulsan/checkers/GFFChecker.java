@@ -164,11 +164,10 @@ public class GFFChecker implements Checker {
         return true;
       }
 
-      final GenomeDescription desc =
-          getGenomeDescription(gffFile, checkInfo);
+      final GenomeDescription desc = getGenomeDescription(gffFile, checkInfo);
 
-      validationAnnotation(gffFile, desc, this.genomicType,
-          this.attributeId, this.stranded);
+      validationAnnotation(gffFile, desc, this.genomicType, this.attributeId,
+          this.stranded);
 
     } catch (IOException e) {
       throw new EoulsanException(
@@ -185,7 +184,7 @@ public class GFFChecker implements Checker {
   private static void validationAnnotation(final DataFile file,
       final GenomeDescription desc, final String featureType,
       final String attributeId, final boolean stranded)
-          throws IOException, BadBioEntryException, EoulsanException {
+      throws IOException, BadBioEntryException, EoulsanException {
 
     final GenomicArray<String> features = new GenomicArray<>();
     Map<String, long[]> sequenceRegions = null;
@@ -347,7 +346,7 @@ public class GFFChecker implements Checker {
         final long start = Integer.parseInt(fields[1]);
         final long end = Integer.parseInt(fields[2]);
 
-        result.put(sequenceName, new long[] { start, end });
+        result.put(sequenceName, new long[] {start, end});
         final long len = desc.getSequenceLength(sequenceName);
 
         if (len == -1) {
@@ -379,7 +378,7 @@ public class GFFChecker implements Checker {
 
   private GenomeDescription getGenomeDescription(final DataFile annotationFile,
       final CheckStore checkInfo)
-          throws EoulsanException, BadBioEntryException, IOException {
+      throws EoulsanException, BadBioEntryException, IOException {
 
     GenomeDescription result =
         (GenomeDescription) checkInfo.get(GenomeChecker.GENOME_DESCRIPTION);

@@ -28,8 +28,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * This annotation is used to mark a module class that can reuse a module instance
- * for each task.
+ * This annotation is used to mark a module class that can reuse a module
+ * instance for each task.
  * @since 2.0
  * @author Laurent Jourdren
  */

@@ -316,7 +316,7 @@ public class GenomicArray<T> {
             return maxIndex;
           }
 
-          assert(false);
+          assert (false);
         }
 
         final Zone<T> z = get(index);

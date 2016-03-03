@@ -450,7 +450,7 @@ public class FileUtils {
    */
   public static final UnSynchronizedBufferedWriter createFastBufferedWriter(
       final OutputStream os, final Charset charset)
-          throws FileNotFoundException {
+      throws FileNotFoundException {
 
     if (os == null) {
       throw new NullPointerException("The output stream is null");

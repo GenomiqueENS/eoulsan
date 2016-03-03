@@ -192,7 +192,7 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
   static void execute(final SequenceReadsMapper mapper,
       final TaskContext context, final String additionalArguments,
       final Map<String, String> additionalDescription, final int threadCount)
-          throws IOException, EoulsanException {
+      throws IOException, EoulsanException {
 
     checkNotNull(mapper, "mapper argument cannot be null");
     checkNotNull(context, "context argument cannot be null");

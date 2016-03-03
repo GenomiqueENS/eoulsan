@@ -715,7 +715,7 @@ public class ITOutput {
       final String checkLengthFilePatterns,
       final String checkExistenceFilePatterns,
 
-  final String checkAbsenceFilePatterns, final String fileToRemovePatterns)
+      final String checkAbsenceFilePatterns, final String fileToRemovePatterns)
       throws IOException, EoulsanException {
 
     this.directory = outputTestDirectory;

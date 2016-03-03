@@ -171,7 +171,8 @@ public class TaskResultImpl implements TaskResult, Serializable {
    * @param file input DataFile
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskResultImpl deserialize(final DataFile file) throws IOException {
+  public static TaskResultImpl deserialize(final DataFile file)
+      throws IOException {
 
     checkNotNull(file, "file argument cannot be null");
 

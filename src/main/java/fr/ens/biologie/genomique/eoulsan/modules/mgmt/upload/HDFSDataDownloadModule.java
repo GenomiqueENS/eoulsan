@@ -59,8 +59,8 @@ import fr.ens.biologie.genomique.eoulsan.modules.mgmt.hadoop.DistCp;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.PathUtils;
 
 /**
- * This class define a download module that retrieve data from HDFS at the end of
- * an analysis.
+ * This class define a download module that retrieve data from HDFS at the end
+ * of an analysis.
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -157,7 +157,7 @@ public class HDFSDataDownloadModule extends AbstractModule {
 
       // Get the output file of the workflow
       final Set<StepOutputDataFile> outFiles =
-          //context.getWorkflow().getWorkflowFilesAtFirstStep().getOutputFiles();
+          // context.getWorkflow().getWorkflowFilesAtFirstStep().getOutputFiles();
           new HashSet<>();
 
       // Add the output files of the workflow to the list of files to downloads
@@ -166,8 +166,8 @@ public class HDFSDataDownloadModule extends AbstractModule {
 
         final DataFile out =
 
-        new DataFile(outputDir,
-            in.getName() + CompressionType.BZIP2.getExtension());
+            new DataFile(outputDir,
+                in.getName() + CompressionType.BZIP2.getExtension());
 
         files.put(in, out);
       }

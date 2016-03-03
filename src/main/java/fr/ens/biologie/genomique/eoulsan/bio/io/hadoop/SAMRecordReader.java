@@ -52,7 +52,7 @@ public class SAMRecordReader extends RecordReader<Text, Text> {
   @Override
   public void initialize(final InputSplit inputSplit,
       final TaskAttemptContext taskAttemptContext)
-          throws IOException, InterruptedException {
+      throws IOException, InterruptedException {
 
     this.lrr.initialize(inputSplit, taskAttemptContext);
   }

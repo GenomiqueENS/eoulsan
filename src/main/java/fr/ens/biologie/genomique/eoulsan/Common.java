@@ -249,7 +249,7 @@ public final class Common {
 
       // Set message attributes
       msg.setFrom(new InternetAddress(userMail));
-      InternetAddress[] address = { new InternetAddress(userMail) };
+      InternetAddress[] address = {new InternetAddress(userMail)};
       msg.setRecipients(Message.RecipientType.TO, address);
       msg.setSubject(subject);
       msg.setSentDate(new Date());
@@ -320,7 +320,5 @@ public final class Common {
 
     throw new IllegalStateException();
   }
-
-
 
 }

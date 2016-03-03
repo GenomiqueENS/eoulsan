@@ -83,7 +83,7 @@ public class DockerRExecutor extends ProcessRExecutor {
   @Override
   protected void executeRScript(final File rScriptFile, final boolean sweave,
       final String sweaveOuput, final String... scriptArguments)
-          throws IOException {
+      throws IOException {
 
     final DockerProcess process =
         new DockerProcess(this.dockerImage, getTemporaryDirectory());
@@ -121,7 +121,7 @@ public class DockerRExecutor extends ProcessRExecutor {
    */
   public DockerRExecutor(final File outputDirectory,
       final File temporaryDirectory, final String dockerImage)
-          throws IOException {
+      throws IOException {
     super(outputDirectory, temporaryDirectory);
 
     if (dockerImage == null) {

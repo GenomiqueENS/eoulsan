@@ -122,7 +122,7 @@ public class ReadsChecker implements Checker {
 
   private void checkReadFile(final DataFile file, final FastqFormat format,
       final boolean checkPairMember, final int pairMember)
-          throws EoulsanException {
+      throws EoulsanException {
 
     // If the file does not exists do nothing
     if (!file.exists()) {

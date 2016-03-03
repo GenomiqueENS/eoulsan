@@ -55,8 +55,8 @@ public interface StepObserver {
    * @param submittedTasks the submitted tasks count
    * @param progress the progress of the step
    */
-  void notifyStepState(Step step, int terminatedTasks,
-      int submittedTasks, double progress);
+  void notifyStepState(Step step, int terminatedTasks, int submittedTasks,
+      double progress);
 
   /**
    * The note of the step has been changed.

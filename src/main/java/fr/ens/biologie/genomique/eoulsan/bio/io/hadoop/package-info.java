@@ -24,8 +24,8 @@
 
 /**
  * This package contains I/O classes for reading objects of the
- * <code>fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters</code> package from
- * Hadoop.
+ * <code>fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters</code> package
+ * from Hadoop.
  * @since 1.0
  */
 package fr.ens.biologie.genomique.eoulsan.bio.io.hadoop;

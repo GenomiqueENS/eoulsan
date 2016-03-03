@@ -91,7 +91,7 @@ public class PairedEndFastqToTfq {
   public static Job convert(final Configuration parentConf,
       final DataFile fastqFile1, final DataFile fastqFile2,
       final DataFile outputFile, final int reducerTaskCount)
-          throws IOException {
+      throws IOException {
 
     checkNotNull(parentConf, "parentConf argument cannot be null");
     checkNotNull(fastqFile1, "fastqFile1 argument cannot be null");

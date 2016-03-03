@@ -122,8 +122,8 @@ public class Design implements Serializable {
    */
   public List<Experiment> getExperiments() {
 
-    return Collections.unmodifiableList(new ArrayList<>(this.experiments
-        .values()));
+    return Collections
+        .unmodifiableList(new ArrayList<>(this.experiments.values()));
   }
 
   /**
@@ -321,7 +321,8 @@ public class Design implements Serializable {
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this).add("designNumber", this.designNumber)
+    return MoreObjects.toStringHelper(this)
+        .add("designNumber", this.designNumber)
         .add("designName", this.designName).add("samples", this.samples)
         .add("experiments", this.experiments)
         .add("designMetadata", this.designMetadata).toString();

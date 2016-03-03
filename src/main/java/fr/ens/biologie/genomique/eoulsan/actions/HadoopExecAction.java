@@ -173,14 +173,13 @@ public class HadoopExecAction extends AbstractAction {
     final Main main = Main.getInstance();
 
     if (main.getEoulsanScriptPath() != null) {
-      result.add("-D"
-          + Main.EOULSAN_SCRIPT + "="
-          + main.getEoulsanScriptPath());
+      result
+          .add("-D" + Main.EOULSAN_SCRIPT + "=" + main.getEoulsanScriptPath());
     }
 
     if (main.getClassPath() != null) {
-      result.add(
-          "-D" + Main.EOULSAN_CLASSPATH_JVM_ARG + "=" + main.getClassPath());
+      result.add("-D"
+          + Main.EOULSAN_CLASSPATH_JVM_ARG + "=" + main.getClassPath());
     }
 
     return Joiner.on(' ').join(result);

@@ -174,7 +174,7 @@ public class MeltingTemp {
     final float dhL = dh + deltah;
     final float dsL = ds + deltas;
 
-    return new float[] { dsL, dhL };
+    return new float[] {dsL, dhL};
 
   }
 
@@ -207,7 +207,7 @@ public class MeltingTemp {
     final float dhL = dh + deltah;
     final float dsL = ds + deltas;
 
-    return new float[] { dsL, dhL };
+    return new float[] {dsL, dhL};
   }
 
   /**

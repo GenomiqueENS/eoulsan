@@ -87,7 +87,7 @@ public class SAM2BAMLocalModule extends AbstractSAM2BAMModule {
   private static final void convert(final DataFile samDataFile,
       final DataFile bamDataFile, final DataFile bamIndexDataFile,
       final int compressionLevel, final Reporter reporter, final File tmpDir)
-          throws IOException {
+      throws IOException {
 
     checkArgument(compressionLevel >= 0 && compressionLevel <= 9,
         "Invalid compression level [0-9]: " + compressionLevel);

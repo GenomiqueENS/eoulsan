@@ -54,7 +54,7 @@ public class RExecutorFactory {
   public static RExecutor newRExecutor(final Mode mode,
       final String rServeServer, final String dockerImage,
       final File outputDirectory, final File temporaryDirectory)
-          throws IOException {
+      throws IOException {
 
     if (mode != null) {
 

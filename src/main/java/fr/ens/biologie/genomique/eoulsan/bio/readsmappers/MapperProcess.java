@@ -708,7 +708,8 @@ public abstract class MapperProcess {
    * @throws InterruptedException if an error occurs while starting the
    *           process(es)
    */
-  private void startProcess(final File tmpDirectory) throws IOException, InterruptedException {
+  private void startProcess(final File tmpDirectory)
+      throws IOException, InterruptedException {
 
     final List<List<String>> cmds = createCommandLines();
     final File executionDirectory =
@@ -836,7 +837,7 @@ public abstract class MapperProcess {
    */
   protected MapperProcess(final AbstractSequenceReadsMapper mapper,
       final boolean pairedEnd, final boolean threadForRead1)
-          throws IOException {
+      throws IOException {
 
     if (mapper == null) {
       throw new NullPointerException("The mapper is null");

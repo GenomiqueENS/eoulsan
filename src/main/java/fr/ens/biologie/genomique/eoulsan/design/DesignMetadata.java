@@ -112,7 +112,8 @@ public class DesignMetadata extends AbstractMetadata implements Serializable {
    * Set the additionnal annotation file.
    * @param newAdditionnalAnnotationFile the new additionnal annotation file
    */
-  public void setAdditionnalAnnotationFile(String newAdditionnalAnnotationFile) {
+  public void setAdditionnalAnnotationFile(
+      String newAdditionnalAnnotationFile) {
     set(ADDITIONNAL_ANNOTATION_FILE_KEY, newAdditionnalAnnotationFile);
   }
 

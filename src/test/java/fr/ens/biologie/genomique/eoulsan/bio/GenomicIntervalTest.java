@@ -103,7 +103,8 @@ public class GenomicIntervalTest {
   //
   // /**
   // * Test method for
-  // * {fr.ens.biologie.genomique.eoulsan.bio.GenomicInterval#include(int, int)}.
+  // * {fr.ens.biologie.genomique.eoulsan.bio.GenomicInterval#include(int,
+  // int)}.
   // */
   // @Test
   // public void testInclude() {
@@ -123,7 +124,8 @@ public class GenomicIntervalTest {
   //
   // /**
   // * Test method for
-  // * {fr.ens.biologie.genomique.eoulsan.bio.GenomicInterval#intersect(int, int)}.
+  // * {fr.ens.biologie.genomique.eoulsan.bio.GenomicInterval#intersect(int,
+  // int)}.
   // */
   // @Test
   // public void testIntersect() {

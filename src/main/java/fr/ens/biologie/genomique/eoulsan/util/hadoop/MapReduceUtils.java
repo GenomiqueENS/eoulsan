@@ -53,7 +53,7 @@ public final class MapReduceUtils {
   public static void submitAndWaitForJob(final Job job,
       final String jobDescription, final int waitTimeInMillis,
       final TaskStatus status, final String counterGroup)
-          throws EoulsanException {
+      throws EoulsanException {
 
     if (job == null) {
       throw new NullPointerException("The job is null");

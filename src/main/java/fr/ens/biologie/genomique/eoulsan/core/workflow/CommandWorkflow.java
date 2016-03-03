@@ -245,7 +245,8 @@ public class CommandWorkflow extends AbstractWorkflow {
    * @param endModules list of modules to add
    * @throws EoulsanException if an error occurs while adding a step
    */
-  private void addEndSteps(final List<Module> endModules) throws EoulsanException {
+  private void addEndSteps(final List<Module> endModules)
+      throws EoulsanException {
 
     if (endModules == null) {
       return;
@@ -304,8 +305,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     }
 
     int installerCount = 0;
-    for (Map.Entry<CommandStep, Requirement> e : requirements
-        .entries()) {
+    for (Map.Entry<CommandStep, Requirement> e : requirements.entries()) {
 
       final Requirement r = e.getValue();
 
@@ -326,10 +326,11 @@ public class CommandWorkflow extends AbstractWorkflow {
       installerCount++;
 
       // Create an installer step
-      final CommandStep step = new CommandStep(this,
-          r.getName() + "install" + installerCount,
-          RequirementInstallerModule.MODULE_NAME, Globals.APP_VERSION.toString(),
-          r.getParameters(), false, false, -1, -1, "");
+      final CommandStep step =
+          new CommandStep(this, r.getName() + "install" + installerCount,
+              RequirementInstallerModule.MODULE_NAME,
+              Globals.APP_VERSION.toString(), r.getParameters(), false, false,
+              -1, -1, "");
 
       // Configure the installer step
       step.configure();
@@ -352,8 +353,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     try {
 
       final AbstractStep step = inputPort.getStep();
-      final AbstractStep dependencyStep =
-          dependencyOutputPort.getStep();
+      final AbstractStep dependencyStep = dependencyOutputPort.getStep();
 
       final DataFile stepDir = inputPort.getStep().getStepOutputDirectory();
       final DataFile depDir =
@@ -439,10 +439,9 @@ public class CommandWorkflow extends AbstractWorkflow {
    */
   private static CommandStep newInputFormatCopyStep(
       final CommandWorkflow workflow, final StepInputPort inputPort,
-      final StepOutputPort outputPort,
-      final CompressionType inputCompression,
+      final StepOutputPort outputPort, final CompressionType inputCompression,
       final EnumSet<CompressionType> outputCompressionsAllowed)
-          throws EoulsanException {
+      throws EoulsanException {
 
     // Set the step name
     final String stepName = CopyInputDataModule.MODULE_NAME;
@@ -478,8 +477,8 @@ public class CommandWorkflow extends AbstractWorkflow {
     final Set<Parameter> parameters = new HashSet<>();
     parameters.add(new Parameter(CopyInputDataModule.FORMAT_PARAMETER,
         inputPort.getFormat().getName()));
-    parameters.add(new Parameter(CopyInputDataModule.OUTPUT_COMPRESSION_PARAMETER,
-        comp.name()));
+    parameters.add(new Parameter(
+        CopyInputDataModule.OUTPUT_COMPRESSION_PARAMETER, comp.name()));
     parameters.add(new Parameter(CopyInputDataModule.DESIGN_INPUT_PARAMETER,
         "" + designOutputport));
     parameters.add(
@@ -488,8 +487,8 @@ public class CommandWorkflow extends AbstractWorkflow {
                 outputCompressionsAllowed)));
 
     // Create step
-    CommandStep step = new CommandStep(workflow, stepId,
-        stepName, null, parameters, false, false, -1, -1, "");
+    CommandStep step = new CommandStep(workflow, stepId, stepName, null,
+        parameters, false, false, -1, -1, "");
 
     // Configure step
     step.configure();
@@ -506,7 +505,7 @@ public class CommandWorkflow extends AbstractWorkflow {
    */
   private static List<CommandStep> newOutputFormatCopyStep(
       final CommandWorkflow workflow, final StepOutputPorts outputPorts)
-          throws EoulsanException {
+      throws EoulsanException {
 
     final List<CommandStep> result = new ArrayList<>();
 
@@ -537,8 +536,8 @@ public class CommandWorkflow extends AbstractWorkflow {
           outputPort.getFormat().getName()));
 
       // Create step
-      CommandStep step = new CommandStep(workflow, stepId,
-          stepName, null, parameters, false, true, -1, -1, "");
+      CommandStep step = new CommandStep(workflow, stepId, stepName, null,
+          parameters, false, true, -1, -1, "");
 
       // Configure step
       step.configure();
@@ -718,8 +717,8 @@ public class CommandWorkflow extends AbstractWorkflow {
           final CommandStep stepTested = steps.get(j);
 
           // Test each port
-          for (StepOutputPort outputPort : stepTested
-              .getWorkflowOutputPorts().getPortsWithDataFormat(format)) {
+          for (StepOutputPort outputPort : stepTested.getWorkflowOutputPorts()
+              .getPortsWithDataFormat(format)) {
 
             // The tested step is a standard/generator step
             if (stepTested.getType() == StepType.STANDARD_STEP
@@ -753,8 +752,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
             if (!generatorAdded.containsKey(format)) {
 
-              final CommandStep generatorStep =
-                  new CommandStep(this, format);
+              final CommandStep generatorStep = new CommandStep(this, format);
 
               generatorStep.configure();
 
@@ -882,8 +880,7 @@ public class CommandWorkflow extends AbstractWorkflow {
   private void searchIndirectDependencies(final AbstractStep step,
       Set<AbstractStep> steps) {
 
-    for (AbstractStep s : step.getStepStateObserver()
-        .getRequiredSteps()) {
+    for (AbstractStep s : step.getStepStateObserver().getRequiredSteps()) {
 
       if (!steps.contains(s)) {
         steps.add(s);
@@ -1002,7 +999,8 @@ public class CommandWorkflow extends AbstractWorkflow {
    */
   public CommandWorkflow(final ExecutorArguments executionArguments,
       final CommandWorkflowModel workflowCommand, final List<Module> firstSteps,
-      final List<Module> endSteps, final Design design) throws EoulsanException {
+      final List<Module> endSteps, final Design design)
+      throws EoulsanException {
 
     super(executionArguments, design);
 

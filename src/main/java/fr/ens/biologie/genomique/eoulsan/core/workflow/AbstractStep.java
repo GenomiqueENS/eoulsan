@@ -758,7 +758,7 @@ public abstract class AbstractStep implements Step {
   protected AbstractStep(final AbstractWorkflow workflow, final String id,
       final Module module, final boolean skip,
       final boolean copyResultsToOutput, final Set<Parameter> parameters)
-          throws EoulsanException {
+      throws EoulsanException {
 
     checkNotNull(workflow, "Workflow argument cannot be null");
     checkNotNull(id, "Step id argument cannot be null");

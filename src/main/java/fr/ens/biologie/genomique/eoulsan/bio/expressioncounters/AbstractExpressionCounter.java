@@ -154,7 +154,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   public final void count(final DataFile alignmentFile,
       final DataFile annotationFile, final DataFile expressionFile,
       final DataFile genomeDescFile)
-          throws IOException, EoulsanException, BadBioEntryException {
+      throws IOException, EoulsanException, BadBioEntryException {
 
     getLogger().fine("Counting with " + getCounterName());
 
@@ -183,7 +183,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   protected abstract void internalCount(final DataFile alignmentFile,
       final DataFile annotationFile, final DataFile expressionFile,
       final DataFile genomeDescFile, Reporter reporter, String counterGroup)
-          throws IOException, EoulsanException, BadBioEntryException;
+      throws IOException, EoulsanException, BadBioEntryException;
 
   //
   // Init

@@ -147,13 +147,13 @@ public final class GalaxyToolXMLParserUtils {
    */
   public static Map<String, ToolElement> extractConditionalParamElement(
       final Element parent, final Map<String, Parameter> stepParameters)
-          throws EoulsanException {
+      throws EoulsanException {
 
     final Map<String, ToolElement> results = new HashMap<>();
 
     // Extract conditional element, can be empty
-    final List<Element> condParams =
-        GalaxyToolXMLParserUtils.extractChildElementsByTagName(parent, CONDITIONAL);
+    final List<Element> condParams = GalaxyToolXMLParserUtils
+        .extractChildElementsByTagName(parent, CONDITIONAL);
 
     for (final Element param : condParams) {
       final ToolConditionalElement tce = new ToolConditionalElement(param);

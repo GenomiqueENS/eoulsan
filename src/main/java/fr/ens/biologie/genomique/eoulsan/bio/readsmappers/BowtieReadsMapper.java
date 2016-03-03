@@ -85,8 +85,8 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
   @Override
   protected String[] getMapperExecutables() {
 
-    return new String[] { flavoredBinary(MAPPER_EXECUTABLE,
-        MAPPER_NEW_EXECUTABLE, FIRST_FLAVORED_VERSION) };
+    return new String[] {flavoredBinary(MAPPER_EXECUTABLE,
+        MAPPER_NEW_EXECUTABLE, FIRST_FLAVORED_VERSION)};
   }
 
   protected static final String getBowtieQualityArgument(

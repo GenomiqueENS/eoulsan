@@ -534,7 +534,8 @@ public class TaskContextImpl implements TaskContext, Serializable {
    * @param file input DataFile
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskContextImpl deserialize(final File file) throws IOException {
+  public static TaskContextImpl deserialize(final File file)
+      throws IOException {
 
     checkNotNull(file, "file argument cannot be null");
 

@@ -209,7 +209,7 @@ public class ReadsMapperHadoopModule extends AbstractReadsMapperModule {
       final DataFile readsFile, final boolean pairedEnd,
       final DataFormat inputFormat, final FastqFormat fastqFormat,
       final DataFile mapperIndexFile, final DataFile outFile)
-          throws IOException {
+      throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 

@@ -74,9 +74,8 @@ public class Eoulsan2DesignWriter implements DesignWriter {
 
     checkNotNull(design, "Design argument cannot be null");
 
-    final BufferedWriter bw =
-        new BufferedWriter(new OutputStreamWriter(this.out,
-            Globals.DEFAULT_CHARSET));
+    final BufferedWriter bw = new BufferedWriter(
+        new OutputStreamWriter(this.out, Globals.DEFAULT_CHARSET));
 
     checkNotNull(design, "design argument cannot be null");
 
@@ -253,8 +252,8 @@ public class Eoulsan2DesignWriter implements DesignWriter {
    * @throws IOException if the stream is null
    * @throws FileNotFoundException if the file doesn't exist
    */
-  public Eoulsan2DesignWriter(final String filename) throws IOException,
-      FileNotFoundException {
+  public Eoulsan2DesignWriter(final String filename)
+      throws IOException, FileNotFoundException {
 
     checkNotNull(filename, "filename argument cannot be null");
 

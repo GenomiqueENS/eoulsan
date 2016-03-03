@@ -166,7 +166,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
   @Override
   protected void executeRScript(final File rScriptFile, final boolean sweave,
       final String sweaveOuput, final String... scriptArguments)
-          throws IOException {
+      throws IOException {
 
     final List<String> command =
         createCommand(rScriptFile, sweave, sweaveOuput, scriptArguments);

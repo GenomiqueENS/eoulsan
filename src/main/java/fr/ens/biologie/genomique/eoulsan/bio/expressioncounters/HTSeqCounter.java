@@ -71,7 +71,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
       final DataFile annotationFile, final DataFile expressionFile,
       final DataFile genomeDescFile, final Reporter reporter,
       final String counterGroup)
-          throws IOException, EoulsanException, BadBioEntryException {
+      throws IOException, EoulsanException, BadBioEntryException {
 
     countReadsInFeatures(alignmentFile, annotationFile, expressionFile,
         getStranded(), getOverlapMode(), isRemoveAmbiguousCases(),
@@ -129,7 +129,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
       final boolean quiet, final int minAverageQual, final DataFile samOutFile,
       final DataFile genomeDescFile, final Reporter reporter,
       final String counterGroup)
-          throws EoulsanException, IOException, BadBioEntryException {
+      throws EoulsanException, IOException, BadBioEntryException {
 
     final GenomicArray<String> features =
         new GenomicArray<>(GenomeDescription.load(genomeDescFile.open()));

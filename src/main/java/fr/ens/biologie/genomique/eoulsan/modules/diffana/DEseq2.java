@@ -591,8 +591,7 @@ public class DEseq2 {
   private static String readFromJar(final String filePathInJar)
       throws IOException {
 
-    final InputStream is =
-        DEseq2.class.getResourceAsStream(filePathInJar);
+    final InputStream is = DEseq2.class.getResourceAsStream(filePathInJar);
 
     final StringBuilder sb = new StringBuilder();
     String line = null;
@@ -632,10 +631,9 @@ public class DEseq2 {
       final Design design, final Experiment experiment,
       final Map<String, File> sampleFiles, final boolean normFig,
       final boolean diffanaFig, final boolean normDiffana,
-      final boolean diffana,
-      final DEseq2.SizeFactorsType sizeFactorsType,
-      final DEseq2.FitType fitType,
-      final DEseq2.StatisticTest statisticTest, boolean saveRScripts) {
+      final boolean diffana, final DEseq2.SizeFactorsType sizeFactorsType,
+      final DEseq2.FitType fitType, final DEseq2.StatisticTest statisticTest,
+      boolean saveRScripts) {
 
     checkNotNull(executor, "executor argument cannot be null");
     checkNotNull(design, "design argument cannot be null");

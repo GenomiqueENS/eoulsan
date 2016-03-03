@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-
 /**
  * This class is a factory for experimental design.
  * @since 1.0

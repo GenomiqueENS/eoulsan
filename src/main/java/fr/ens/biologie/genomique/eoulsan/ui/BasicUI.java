@@ -94,9 +94,8 @@ public class BasicUI extends AbstractUI {
   }
 
   @Override
-  public void notifyStepState(final Step step,
-      final int terminatedTasks, final int submittedTasks,
-      final double progress) {
+  public void notifyStepState(final Step step, final int terminatedTasks,
+      final int submittedTasks, final double progress) {
 
     // Check if the UI has been initialized
     checkState(this.workflow != null, "The UI has not been initialized");
@@ -209,8 +208,7 @@ public class BasicUI extends AbstractUI {
    * @param progress progress value of the step
    * @return global progress as percent
    */
-  private double computeGlobalProgress(final Step step,
-      final double progress) {
+  private double computeGlobalProgress(final Step step, final double progress) {
 
     if (!this.steps.containsKey(step)) {
       return -1;
@@ -226,7 +224,5 @@ public class BasicUI extends AbstractUI {
 
     return sum / this.steps.size();
   }
-
-
 
 }

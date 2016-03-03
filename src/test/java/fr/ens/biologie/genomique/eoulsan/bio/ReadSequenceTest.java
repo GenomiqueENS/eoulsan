@@ -193,7 +193,7 @@ public class ReadSequenceTest {
     assertNull(new ReadSequence().qualityScores());
 
     ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
-    assertArrayEquals(new int[] { 0, 0, 0, 0 }, s.qualityScores());
+    assertArrayEquals(new int[] {0, 0, 0, 0}, s.qualityScores());
 
   }
 

@@ -57,8 +57,7 @@ public class CommandStep extends AbstractStep {
    * @param workflow the workflow of the step
    * @param type the type of the step
    */
-  public CommandStep(final AbstractWorkflow workflow,
-      final StepType type) {
+  public CommandStep(final AbstractWorkflow workflow, final StepType type) {
 
     super(workflow, type);
   }
@@ -69,8 +68,8 @@ public class CommandStep extends AbstractStep {
    * @param format DataFormat
    * @throws EoulsanException if an error occurs while configuring the generator
    */
-  public CommandStep(final AbstractWorkflow workflow,
-      final DataFormat format) throws EoulsanException {
+  public CommandStep(final AbstractWorkflow workflow, final DataFormat format)
+      throws EoulsanException {
 
     super(workflow, format);
   }
@@ -93,7 +92,8 @@ public class CommandStep extends AbstractStep {
       final String moduleName, final String stepVersion,
       final Set<Parameter> parameters, final boolean skip,
       final boolean copyResultsToOutput, final int requiredMemory,
-      final int requiredProcessors, final String dataProduct) throws EoulsanException {
+      final int requiredProcessors, final String dataProduct)
+      throws EoulsanException {
 
     super(workflow, id, moduleName, stepVersion, skip, copyResultsToOutput,
         parameters, requiredMemory, requiredProcessors, dataProduct);
@@ -121,7 +121,7 @@ public class CommandStep extends AbstractStep {
   public CommandStep(final AbstractWorkflow workflow, final Module module,
       final Set<Parameter> parameters) throws EoulsanException {
 
-    this(workflow, module.getName(), module.getName(), module.getVersion().toString(),
-        parameters, false, false, -1, -1, "");
+    this(workflow, module.getName(), module.getName(),
+        module.getVersion().toString(), parameters, false, false, -1, -1, "");
   }
 }

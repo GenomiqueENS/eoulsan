@@ -958,7 +958,7 @@ public abstract class AbstractSequenceReadsMapper
   @Override
   public void init(final DataFile archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
-          throws IOException {
+      throws IOException {
 
     checkNotNull(archiveIndexFile, "archiveIndexFile is null");
 
@@ -974,7 +974,7 @@ public abstract class AbstractSequenceReadsMapper
   @Override
   public void init(final File archiveIndexFile, final File archiveIndexDir,
       final ReporterIncrementer incrementer, final String counterGroup)
-          throws IOException {
+      throws IOException {
 
     checkNotNull(archiveIndexFile, "archiveIndexFile is null");
 

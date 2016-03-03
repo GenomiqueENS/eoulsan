@@ -52,9 +52,7 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
       final Data outData =
           context.getOutputData(DataFormats.READS_FASTQ, inData);
 
-
       final DataFile samFile = inData.getDataFile();
-
 
       final int paired = sortConvert(samFile, samTmpFile, reporter,
           context.getLocalTempDirectory());
@@ -63,7 +61,7 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
       final DataFile fastqFile2 = paired == 3 ? outData.getDataFile(1) : null;
 
       writeConvert(samTmpFile, fastqFile1, fastqFile2, reporter);
-      
+
       // Set the description of the context
       status.setDescription("Convert alignments ("
           + inData.getName() + "," + outData.getName() + ")");
@@ -148,7 +146,7 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
 
   private static final int sortConvert(final DataFile samDataFile,
       final File samFileTmp, final Reporter reporter, final File tmpDir)
-          throws IOException {
+      throws IOException {
 
     // Open sam file
     final SamReader samReader = SamReaderFactory.makeDefault()

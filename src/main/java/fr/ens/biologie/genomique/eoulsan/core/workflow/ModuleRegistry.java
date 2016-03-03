@@ -324,8 +324,10 @@ public class ModuleRegistry {
 
       private int compareStepModes(final Module m1, final Module m2) {
 
-        final ExecutionMode mode1 = ExecutionMode.getExecutionMode(m1.getClass());
-        final ExecutionMode mode2 = ExecutionMode.getExecutionMode(m2.getClass());
+        final ExecutionMode mode1 =
+            ExecutionMode.getExecutionMode(m1.getClass());
+        final ExecutionMode mode2 =
+            ExecutionMode.getExecutionMode(m2.getClass());
 
         int result = compareModes(mode1, mode2, HADOOP_ONLY);
 
@@ -387,8 +389,8 @@ public class ModuleRegistry {
 
     this.service = new ModuleService();
     this.galaxyClassPathLoader = new GalaxyToolStepClassPathLoader();
-    this.galaxyFileLoader =
-        new GalaxyToolModuleFileResourceLoader(getSettings().getGalaxyToolPath());
+    this.galaxyFileLoader = new GalaxyToolModuleFileResourceLoader(
+        getSettings().getGalaxyToolPath());
   }
 
 }

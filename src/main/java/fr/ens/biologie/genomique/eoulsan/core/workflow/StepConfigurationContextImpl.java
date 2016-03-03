@@ -47,8 +47,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class StepConfigurationContextImpl
-    implements StepConfigurationContext {
+public class StepConfigurationContextImpl implements StepConfigurationContext {
 
   private final WorkflowContext workflowContext;
   private final AbstractStep step;
