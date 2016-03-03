@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.biologie.genomique.eoulsan.modules.diffana.local;
+package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
@@ -44,7 +44,6 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
-import fr.ens.biologie.genomique.eoulsan.modules.diffana.Normalization;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.util.Version;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
@@ -55,7 +54,7 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
  * @since 1.2
  */
 @LocalOnly
-public class NormalizationLocalModule extends AbstractModule {
+public class NormalizationModule extends AbstractModule {
 
   private static final String MODULE_NAME = "normalization";
 
@@ -106,7 +105,7 @@ public class NormalizationLocalModule extends AbstractModule {
 
     // Parse R executor parameters
     final Set<Parameter> parameters = new HashSet<>(stepParameters);
-    this.executor = CommonConfiguration.parseRExecutorParameter(context,
+    this.executor = RModuleCommonConfiguration.parseRExecutorParameter(context,
         parameters, this.requirements, DESEQ1_DOCKER_IMAGE);
 
     if (!parameters.isEmpty()) {

@@ -1,4 +1,4 @@
-package fr.ens.biologie.genomique.eoulsan.modules.diffana.local;
+package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement.newDockerRequirement;
@@ -29,7 +29,7 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RserveRExecutor;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class CommonConfiguration {
+public class RModuleCommonConfiguration {
 
   private static final String EXECUTION_MODE = "r.execution.mode";
   private static final String RSERVE_SERVER = "rserve.servername";

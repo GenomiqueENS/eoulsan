@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.biologie.genomique.eoulsan.modules.diffana.local;
+package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
@@ -53,7 +53,6 @@ import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
-import fr.ens.biologie.genomique.eoulsan.modules.diffana.DEseq2;
 import fr.ens.biologie.genomique.eoulsan.modules.diffana.DEseq2.FitType;
 import fr.ens.biologie.genomique.eoulsan.modules.diffana.DEseq2.SizeFactorsType;
 import fr.ens.biologie.genomique.eoulsan.modules.diffana.DEseq2.StatisticTest;
@@ -133,7 +132,7 @@ public class DESeq2Module extends AbstractModule {
 
     // Parse R executor parameters
     final Set<Parameter> parameters = new HashSet<>(stepParameters);
-    this.executor = CommonConfiguration.parseRExecutorParameter(context,
+    this.executor = RModuleCommonConfiguration.parseRExecutorParameter(context,
         parameters, this.requirements, DESEQ2_DOCKER_IMAGE);
 
     for (Parameter p : parameters) {

@@ -10,6 +10,7 @@ fr.ens.biologie.genomique.eoulsan.modules.mapping.local.SAM2BAMLocalModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAM2BAMHadoopModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.local.BAM2SAMLocalModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.local.SAM2FASTQLocalModule
+
 # Filter and mapping steps
 fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.FilterAndMapReadsHadoopModule
 
@@ -23,10 +24,10 @@ fr.ens.biologie.genomique.eoulsan.modules.expression.local.ExpressionLocalModule
 fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionResultsAnnotationModule
 
 # Normalization and differential analysis steps
-fr.ens.biologie.genomique.eoulsan.modules.diffana.local.NormalizationLocalModule
-fr.ens.biologie.genomique.eoulsan.modules.diffana.local.DiffAnaLocalModule
+fr.ens.biologie.genomique.eoulsan.modules.diffana.NormalizationModule
+fr.ens.biologie.genomique.eoulsan.modules.diffana.DiffAnaModule
 fr.ens.biologie.genomique.eoulsan.modules.diffana.DiffanaResultsAnnotationModule
-fr.ens.biologie.genomique.eoulsan.modules.diffana.local.DESeq2Module
+fr.ens.biologie.genomique.eoulsan.modules.diffana.DESeq2Module
 
 # Management steps
 fr.ens.biologie.genomique.eoulsan.modules.mgmt.upload.HDFSDataDownloadModule

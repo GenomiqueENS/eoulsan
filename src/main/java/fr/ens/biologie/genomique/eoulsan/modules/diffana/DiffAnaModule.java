@@ -22,12 +22,12 @@
  *
  */
 
-package fr.ens.biologie.genomique.eoulsan.modules.diffana.local;
+package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
-import static fr.ens.biologie.genomique.eoulsan.modules.diffana.local.NormalizationLocalModule.DESEQ1_DOCKER_IMAGE;
+import static fr.ens.biologie.genomique.eoulsan.modules.diffana.NormalizationModule.DESEQ1_DOCKER_IMAGE;
 import static java.util.Collections.unmodifiableSet;
 
 import java.util.HashSet;
@@ -46,7 +46,6 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
-import fr.ens.biologie.genomique.eoulsan.modules.diffana.DiffAna;
 import fr.ens.biologie.genomique.eoulsan.modules.diffana.DiffAna.DispersionFitType;
 import fr.ens.biologie.genomique.eoulsan.modules.diffana.DiffAna.DispersionMethod;
 import fr.ens.biologie.genomique.eoulsan.modules.diffana.DiffAna.DispersionSharingMode;
@@ -61,7 +60,7 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
  * @author Vivien Deshaies
  */
 @LocalOnly
-public class DiffAnaLocalModule extends AbstractModule {
+public class DiffAnaModule extends AbstractModule {
 
   private static final String DISP_EST_METHOD_PARAMETER_NAME =
       "disp.est.method";
@@ -145,7 +144,7 @@ public class DiffAnaLocalModule extends AbstractModule {
 
     // Parse R executor parameters
     final Set<Parameter> parameters = new HashSet<>(stepParameters);
-    this.executor = CommonConfiguration.parseRExecutorParameter(context,
+    this.executor = RModuleCommonConfiguration.parseRExecutorParameter(context,
         parameters, this.requirements, DESEQ1_DOCKER_IMAGE);
 
     for (Parameter p : parameters) {
