@@ -185,7 +185,7 @@
 				You can install DESeq2 and FactoMineR R packages on your
 				computer or on a Rserve server, or you can use the docker containing
 				all the packages needed to run deseq2:
-				<a href="https://registry.hub.docker.com/u/genomicpariscentre/deseq2/">DESeq2 docker</a>.
+				<a href="https://hub.docker.com/r/bioconductor/release_sequencing/">bioconductor/release_sequencing:3.1 docker image</a>.
 
 				These packages are also present on the Eoulsan docker:
 				<a href="https://registry.hub.docker.com/u/genomicpariscentre/eoulsan/">Eoulsan docker</a>.
