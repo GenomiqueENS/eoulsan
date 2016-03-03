@@ -27,7 +27,7 @@
 <document>
 
   <properties>
-    <title>FastQC step</title>
+    <title>FastQC module</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
   </properties>
 
@@ -35,9 +35,9 @@
 
   <body>
 
-    <section name="FastQC step">
+    <section name="FastQC module">
 
-      <p>This step allow to run <a href="http://www.bioinformatics.babraham.ac.uk/projects/fastqc/">FastQC v0.11.2</a> 
+      <p>This module allow to run <a href="http://www.bioinformatics.babraham.ac.uk/projects/fastqc/">FastQC v0.11.2</a>
       		on fastq or sam files to generate a quality control report in HTML.</p>
 
       <ul>
@@ -67,13 +67,13 @@
                 <tr><td>fastqc.nogroup</td><td>boolean</td><td>Enable or disable  the grouping of bases for reads >50bp.</td><td>false</td></tr>
                 <tr><td>fastqc.expgroup</td><td>boolean</td><td>Enable or disable the use exponential base groups in graph.</td><td>false</td></tr>
                 <tr><td>fastqc.casava</td><td>boolean</td><td>Use FASTQ from casava/Illumina.</td><td>false</td></tr>
-                <tr><td>fastqc.nofilter</td><td>boolean</td><td>If true, bad Illumina quality reads will not be filtered. This option is only available with fastqc.casava=true.</td><td>true</td></tr> 
+                <tr><td>fastqc.nofilter</td><td>boolean</td><td>If true, bad Illumina quality reads will not be filtered. This option is only available with fastqc.casava=true.</td><td>true</td></tr>
           </table>
           <li><b>Configuration example</b>:</li>
 <pre>
 &lt;!-- FastQC step --&gt;
 &lt;step id="myfastqcstep" skip="false" discardoutput="false"&gt;
-        &lt;name&gt;fastqc&lt;/name&gt;
+        &lt;module&gt;fastqc&lt;/module&gt;
         &lt;parameters&gt;
                 &lt;parameter&gt;
                         &lt;name&gt;input.format&lt;/name&gt;

@@ -64,30 +64,30 @@
 
 			<item name="Quickstart Guide" href="/quickstart.html"/>
 			<item name="Design file v1" href="/designfile.html"/>
-			<item name="Design file v2" href="/Eoulsan2designfile.html"/>
+			<item name="Design file v2" href="/designfile-v2.html"/>
 			<item name="Workflow file" href="/workflowfile.html"/>
 			<item name="Configuration file" href="/conffile.html"/>
 
-			<item name="Built-in steps" href="/steps.html" collapse="true">
-				<item name="Create mapper index" href="/step-createmapperindex.html" />
-				<item name="Create STAR mapper index" href="/step-createstarmapperindex.html" />
-				<item name="FastQC" href="/step-fastqc.html" />
-				<item name="Filter reads" href="/step-filterreads.html" />
-				<item name="Map reads" href="/step-mapreads.html" />
-				<item name="Filter alignments" href="/step-filteralignments.html" />
-				<item name="Filter and map" href="step-filterandmap.html" />
-				<item name="Sam2Bam" href="step-sam2bam.html" />
-				<item name="Bam2Sam" href="step-bam2sam.html" />
-				<item name="Sam2Fastq" href="step-sam2fastq.html" />
-				<item name="Expression" href="/step-expression.html" />
-				<item name="Expression annotation" href="/step-expressionresultsannotation.html" />
-				<item name="Normalization" href="/step-normalization.html" />
-				<item name="Differential analysis" href="/step-diffana.html" />
-				<item name="Differential analysis annotation" href="/step-diffanaresultsannotation.html" />
-				<item name="Differential analysis with DESeq2" href="/step-DESeq2.html" />
-				<item name="Splitters and mergers" href="/step-splitters-mergers.html" />
-				<item name="Shell" href="step-shell.html" />
-				<item name="Import" href="step-import.html" />
+			<item name="Built-in modules" href="/modules.html" collapse="true">
+				<item name="Create mapper index" href="/module-createmapperindex.html" />
+				<item name="Create STAR mapper index" href="/module-createstarmapperindex.html" />
+				<item name="FastQC" href="/module-fastqc.html" />
+				<item name="Filter reads" href="/module-filterreads.html" />
+				<item name="Map reads" href="/module-mapreads.html" />
+				<item name="Filter alignments" href="/module-filteralignments.html" />
+				<item name="Filter and map" href="module-filterandmap.html" />
+				<item name="Sam2Bam" href="module-sam2bam.html" />
+				<item name="Bam2Sam" href="module-bam2sam.html" />
+				<item name="Sam2Fastq" href="module-sam2fastq.html" />
+				<item name="Expression" href="/module-expression.html" />
+				<item name="Expression annotation" href="/module-expressionresultsannotation.html" />
+				<item name="Normalization" href="/module-normalization.html" />
+				<item name="Differential analysis" href="/module-diffana.html" />
+				<item name="Differential analysis annotation" href="/module-diffanaresultsannotation.html" />
+				<item name="Differential analysis with DESeq2" href="/module-DESeq2.html" />
+				<item name="Splitters and mergers" href="/module-splitters-mergers.html" />
+				<item name="Shell" href="module-shell.html" />
+				<item name="Import" href="module-import.html" />
 			</item>
 
 			<item name="Command line" href="/command_line.html" collapse="true">
@@ -111,7 +111,7 @@
 
 		<menu name="Development">
 		    <item name="How to contribute" href="/contribute.html"/>
-		    <item name="Writing a Step plugin" href="/writingstepplugin.html" />
+		    <item name="Writing a Module plugin" href="/writing-module-plugin.html" />
 			<item name="Downloading sources" href="/download-src.html" />
 			<item name="Compiling" href="/compiling.html"/>
 			<item name="Developer Wiki" href="https://github.com/GenomicParisCentre/eoulsan/wiki" />

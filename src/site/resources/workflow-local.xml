@@ -8,7 +8,7 @@
 
         <!-- Filter reads -->
         <step skip="false">
-                <name>filterreads</name>
+                <module>filterreads</module>
                 <parameters>
                         <parameter>
                                 <name>trim.length.threshold</name>
@@ -23,7 +23,7 @@
 
         <!-- Map reads -->
         <step skip="false">
-                <name>mapreads</name>
+                <module>mapreads</module>
                 <parameters>
                         <parameter>
                                 <name>mapper</name>
@@ -32,13 +32,13 @@
                         <parameter>
                                 <name>mapper.arguments</name>
                                 <value>-k 2 --best</value>
-                        </parameter>                          
+                        </parameter>
                 </parameters>
         </step>
 
         <!-- SAM filter -->
         <step skip="false">
-                <name>filtersam</name>
+                <module>filtersam</module>
                 <parameters>
                         <parameter>
                                 <name>removeunmapped</name>
@@ -49,11 +49,11 @@
                                 <value></value>
                         </parameter>
                 </parameters>
-        </step> 
+        </step>
 
         <!-- Expression -->
         <step skip="false">
-                <name>expression</name>
+                <module>expression</module>
                 <parameters>
                         <parameter>
                                 <name>counter</name>
@@ -78,16 +78,16 @@
                         <parameter>
                                 <name>remove.ambiguous.cases</name>
                                 <value>false</value>
-                        </parameter>  
+                        </parameter>
                 </parameters>
         </step>
 
         <!-- Normalization -->
         <step skip="false">
-                <name>normalization</name>
+                <module>normalization</module>
                 <parameters>
                         <parameter>
-                                <name>execution.mode</name>
+                                <name>r.execution.mode</name>
                                 <value>docker</value>
                         </parameter>
                  </parameters>
@@ -95,18 +95,17 @@
 
         <!-- Diffana -->
         <step skip="false">
-                <name>diffana</name>
-                
+                <module>diffana</module>
                 <parameters>
                         <parameter>
                                 <name>disp.est.method</name>
                                 <value>blind</value>
                         </parameter>
-                        <parameter>                        
+                        <parameter>
                                 <name>disp.est.sharing.mode</name>
                                 <value>fit-only</value>
-                        </parameter>                                 
-                        <parameter>                                 
+                        </parameter>
+                        <parameter>
                                 <name>disp.est.fit.type</name>
                                 <value>parametric</value>
                         </parameter>
@@ -121,8 +120,8 @@
 
     <globals>
         <parameter>
-	        <name>main.docker.uri</name>
-	        <value>unix:///var/run/docker.sock</value>
+                <name>main.docker.uri</name>
+                <value>unix:///var/run/docker.sock</value>
         </parameter>
     </globals>
 

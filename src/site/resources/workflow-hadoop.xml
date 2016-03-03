@@ -8,7 +8,7 @@
 
         <!-- Filter reads -->
         <!--step skip="false">
-                <name>filterreads</name>
+                <module>filterreads</module>
                 <parameters>
                         <parameter>
                                 <name>trim.length.threshold</name>
@@ -23,7 +23,7 @@
 
         <!-- Map reads -->
         <!--step skip="false">
-                <name>mapreads</name>
+                <module>mapreads</module>
                 <parameters>
                         <parameter>
                                 <name>mapper</name>
@@ -31,16 +31,16 @@
                         </parameter>
                         <parameter>
                                 <name>mapperarguments</name>
-				WARNING: If enable this step, DON'T
-				FORGET to add double '-' before the bowtie best argument 
+                                WARNING: If enable this step, DON'T
+                                FORGET to add double '-' before the bowtie best argument
                                 <value>best -k 2</value>
-                        </parameter>                        
+                        </parameter>
                 </parameters>
         </step-->
 
         <!-- SAM filter -->
         <!--step skip="false">
-                <name>filtersam</name>
+                <module>filtersam</module>
                 <parameters>
                         <parameter>
                                 <name>removeunmapped</name>
@@ -51,42 +51,42 @@
                                 <value></value>
                         </parameter>
                 </parameters>
-        </step--> 
+        </step-->
 
-	<!-- Filter reads, Map and filter SAM in one step in hadoop mode-->
-	<step skip="false">
-		<name>filterandmap</name>
-		<parameters>
-			<parameter>
-				<name>trim.length.threshold</name>
-				<value>11</value>
-			</parameter>
-			<parameter>
-				<name>quality.threshold</name>
-				<value>12</value>
-			</parameter>
-			<parameter>
-				<name>mapper</name>
-				<value>bowtie</value>
-			</parameter>
-			<parameter>
-                <name>mapper.arguments</name>
-                <value>-k 2 --best</value>
-            </parameter>
-			<parameter>
-                <name>removeunmapped</name>
-                <value></value>
-            </parameter>
-            <parameter>
-                <name>removemultimatches</name>
-                <value></value>
-            </parameter>
-		</parameters>
-	</step>
+        <!-- Filter reads, Map and filter SAM in one step in hadoop mode-->
+        <step skip="false">
+                <module>filterandmap</module>
+                <parameters>
+                        <parameter>
+                                <name>trim.length.threshold</name>
+                                <value>11</value>
+                        </parameter>
+                        <parameter>
+                                <name>quality.threshold</name>
+                                <value>12</value>
+                        </parameter>
+                        <parameter>
+                                <name>mapper</name>
+                                <value>bowtie</value>
+                        </parameter>
+                        <parameter>
+                                <name>mapper.arguments</name>
+                                <value>-k 2 --best</value>
+                        </parameter>
+                        <parameter>
+                                <name>removeunmapped</name>
+                                <value></value>
+                        </parameter>
+                        <parameter>
+                                <name>removemultimatches</name>
+                                <value></value>
+                        </parameter>
+                        </parameters>
+        </step>
 
         <!-- Expression -->
         <step skip="false">
-                <name>expression</name>
+                <module>expression</module>
                 <parameters>
                         <parameter>
                                 <name>counter</name>
@@ -111,29 +111,29 @@
                         <parameter>
                                 <name>remove.ambiguous.cases</name>
                                 <value>false</value>
-                        </parameter>                
+                        </parameter>
                 </parameters>
         </step>
 
         <!-- Normalization -->
         <!--step skip="false">
-                <name>normalization</name>
+                <module>normalization</module>
                 <parameters/>
         </step-->
 
         <!-- Diffana -->
         <!--step skip="false">
-                <name>diffana</name>
-                
+                <module>diffana</module>
+
                 <parameters>
                         <parameter>
                                 <name>disp.est.method</name>
                                 <value>blind</value>
                         </parameter>
-                        <parameter>                        
+                        <parameter>
                                 <name>disp.est.sharing.mode</name>
                                 <value>fit-only</value>
-                        </parameter>                                 
+                        </parameter>
                                 <name>disp.est.fit.type</name>
                                 <value>parametric</value>
                         </parameter>
@@ -144,23 +144,23 @@
     </steps>
 
     <globals>
-      
-	<!-- Amazon MapReduce cluster configuration -->
-	<parameter>
-	        <name>aws.mapreduce.endpoint</name>
-	        <value>eu-west-1.elasticmapreduce.amazonaws.com</value>
+
+        <!-- Amazon MapReduce cluster configuration -->
+        <parameter>
+                <name>aws.mapreduce.endpoint</name>
+                <value>eu-west-1.elasticmapreduce.amazonaws.com</value>
         </parameter>
-	<parameter>
-	        <name>aws.mapreduce.hadoop.version</name>
-	        <value>1.0.3</value>
-        </parameter>	
-	<parameter>
-	        <name>aws.mapreduce.instances.type</name>
-	        <value>m1.xlarge</value>
+        <parameter>
+                <name>aws.mapreduce.hadoop.version</name>
+                <value>1.0.3</value>
         </parameter>
-	<parameter>
-	        <name>aws.mapreduce.instances.number</name>
-	        <value>5</value>
+        <parameter>
+                <name>aws.mapreduce.instances.type</name>
+                <value>m1.xlarge</value>
+        </parameter>
+        <parameter>
+                <name>aws.mapreduce.instances.number</name>
+                <value>5</value>
         </parameter>
 
     </globals>

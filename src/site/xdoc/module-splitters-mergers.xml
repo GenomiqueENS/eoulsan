@@ -27,7 +27,7 @@
 <document>
 
   <properties>
-    <title>Splitter and Merger steps</title>
+    <title>Splitter and Merger modules</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
   </properties>
 
@@ -45,7 +45,7 @@
 
     <section name="Spliter step">
 
-      <p>This step allow to split data in small chucks.</p>
+      <p>This module allow to split data in small chucks.</p>
 
       <ul>
         <li><b>Internal name</b>: splitter</li>
@@ -79,7 +79,7 @@
 <pre>
 &lt;!-- Split reads step (100,000,000 max entries by file) --&gt;
 &lt;step id="mysplitterstep" skip="false" discardoutput="false"&gt;
-	&lt;name&gt;splitter&lt;/name&gt;
+	&lt;module&gt;splitter&lt;/module&gt;
 	&lt;parameters&gt;
 		&lt;parameter&gt;
 			&lt;name&gt;format&lt;/name&gt;
@@ -97,9 +97,9 @@
 
     </section>
 
-    <section name="Merger step">
+    <section name="Merger module">
 
-      <p>This step allow to merge small chucks of data in a large file.</p>
+      <p>This module allow to merge small chucks of data in a large file.</p>
 
       <ul>
         <li><b>Internal name</b>: merger</li>
@@ -121,7 +121,7 @@
 <pre>
 &lt;!-- Merge Sam files step --&gt;
 &lt;step id="mymergerstep" skip="false" discardoutput="false"&gt;
-	&lt;name&gt;merger&lt;/name&gt;
+	&lt;module&gt;merger&lt;/module&gt;
 	&lt;parameters&gt;
 		&lt;parameter&gt;
 			&lt;name&gt;format&lt;/name&gt;
@@ -134,9 +134,9 @@
 
      </section>
 
-    <section name="Technical merger step">
+    <section name="Technical merger module">
 
-      <p>This step allow to merge all the data related to the same technical replicates. This step use the RepTechGroup column of the design to define the data to merge.</p>
+      <p>This module allow to merge all the data related to the same technical replicates. This module use the RepTechGroup column of the design to define the data to merge.</p>
 
       <ul>
         <li><b>Internal name</b>: technicalreplicatemerger</li>
@@ -158,7 +158,7 @@
 <pre>
 &lt;!-- Merge technical replicates step --&gt;
 &lt;step id="mytechrepmerger" skip="false" discardoutput="false"&gt;
-	&lt;name&gt;technicalreplicatemerger&lt;/name&gt;
+	&lt;module&gt;technicalreplicatemerger&lt;/module&gt;
 	&lt;parameters&gt;
 		&lt;parameter&gt;
 			&lt;name&gt;format&lt;/name&gt;
@@ -205,7 +205,7 @@
         <table>
                 <tr><th>Parameter</th><th>Type</th><th>Default value</th><th>Description</th></tr>
                 <tr><td>max.entries</td><td>integer</td><td>1000000</td><td>The maximal number of entries in splitter output files</td></tr>
-                <tr><td>chromosomes</td><td>boolean</td><td>false</td><td>Split the origin SAM file in files that only contains entries that map on the same chromosome. 
+                <tr><td>chromosomes</td><td>boolean</td><td>false</td><td>Split the origin SAM file in files that only contains entries that map on the same chromosome.
 This option cannot be used with the max.line option</td></tr>
         </table>
 
@@ -226,7 +226,7 @@ This option cannot be used with the max.line option</td></tr>
         <table>
                 <tr><th>Parameter</th><th>Type</th><th>Default value</th><th>Description</th></tr>
                 <tr><td>max.entries</td><td>integer</td><td>1000000</td><td>The maximal number of entries in splitter output files</td></tr>
-                <tr><td>chromosomes</td><td>boolean</td><td>false</td><td>Split the origin BAM file in files that only contains entries that map on the same chromosome. 
+                <tr><td>chromosomes</td><td>boolean</td><td>false</td><td>Split the origin BAM file in files that only contains entries that map on the same chromosome.
 This option cannot be used with the max.line option</td></tr>
         </table>
 

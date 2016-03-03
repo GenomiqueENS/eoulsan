@@ -27,7 +27,7 @@
 <document>
 
   <properties>
-    <title>Filter alignements step</title>
+    <title>Filter alignements module</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
   </properties>
 
@@ -35,10 +35,10 @@
 
   <body>
 
-    <section name="Filter alignments step">
+    <section name="Filter alignments module">
 
-      <p>This step allow to filter the output alignments in SAM format.</p>
-      <p>WARNING : the filters order in the workflow file is not trivial. The output file of this step is the same, regardless the filters order. Nevertheless, informations in the log file depend of the filters order. </p>
+      <p>This module allow to filter the output alignments in SAM format.</p>
+      <p>WARNING : the filters order in the workflow file is not trivial. The output file of this module is the same, regardless the filters order. Nevertheless, informations in the log file depend of the filters order. </p>
 
       <ul>
 	<li><b>Internal name</b>: filtersam</li>
@@ -67,14 +67,14 @@
 		<tr><td>keeponematch</td><td>boolean</td><td>If true, keep only the first alignment of a multi-matches read.</td><td></td></tr>
 		<tr><td>keepnumbermatch.threshold</td><td>int</td><td>Keep the given number of the first alignments for a read.</td><td></td></tr>
 		<tr><td>distancefromreference.threshold</td><td>int</td><td>Keep alignments of a read according to the distance of the read from the reference sequence on the genome. This filter is useful to detect SNP and indel.</td><td></td></tr>
-		<tr><td>gsnapfilter</td><td>boolean</td><td>If true, remove alignments that are not supported by the expression estimation step, that is multiple alignments and those that contain a splice event.</td><td></td></tr>
+		<tr><td>gsnapfilter</td><td>boolean</td><td>If true, remove alignments that are not supported by the expression estimation module, that is multiple alignments and those that contain a splice event.</td><td></td></tr>
 		<tr><td>hadoop.reducer.task.count</td><td>integer</td><td>The count of Hadoop reducer tasks to use for this step. This parameter is only used in Hadoop mode</td><td>Not set</td></tr>
 	</table>
         <li><b>Configuration example</b>:</li>
 <pre>
 &lt;!-- SAM filter step --&gt;
-&lt;step skip="false" discardoutput="true"&gt;	
-	&lt;name&gt;filtersam&lt;/name&gt;
+&lt;step skip="false" discardoutput="true"&gt;
+	&lt;module&gt;filtersam&lt;/module&gt;
 	&lt;parameters&gt;
 		&lt;parameter&gt;
 			&lt;name&gt;removeunmapped&lt;/name&gt;

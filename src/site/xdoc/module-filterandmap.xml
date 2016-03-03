@@ -27,7 +27,7 @@
 <document>
 
   <properties>
-    <title>Create mapper index step</title>
+    <title>Filter and map reads module</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
   </properties>
 
@@ -35,19 +35,20 @@
 
   <body>
 
-    <section name="Create mapper index step">
+    <section name="Filter and map reads module">
 
-      <p>This step allow to create index for all the mappers available in Eoulsan. This step is <b>automatically called when needed</b>
-         and <b>must not be added to the workflow file</b>.</p>
+      <p>This module combine in one module in Hadoop mode the filtering of the reads, the mapping and the filtering of the alignments.
+      This module only is available in hadoop mode is more efficient than using the 3 steps successively.</p>
 
       <ul>
-        <li><b>Internal name</b>: genericindexgenerator</li>
-        <li><b>Available</b>: Both local and distributed mode</li>
+         <li><b>Internal name</b>: filterandmap</li>
+         <li><b>Available</b>: Distributed mode only</li>
 
-        <br/>
-        <li><b>Input ports</b>:
+         <br/>
+         <li><b>Input ports</b>:
            <ul>
-             <li><b>genome</b>: genome sequence file (format: genome_fasta)</li>
+             <li><b>reads</b>: reads in FASTQ format (format: reads_fastq)</li>
+             <li><b>mapperindex</b>: mapper index for the genome (automatically generated from genome sequence file)</li>
              <li><b>genomedescription</b>: genome description (automatically generated from genome sequence file)</li>
            </ul>
          </li>
@@ -55,13 +56,17 @@
          <br/>
          <li><b>Output port</b>:
            <ul>
-             <li><b>output</b>: genome mapper index</li>
+             <li><b>output</b>: alignments in FASTQ format (format: mapper_results_sam)</li>
            </ul>
-         </li>
+        </li>
 
          <br/>
-        <li><b>Optional parameters</b>: none</li>
-      </ul>
+    <li><b>Optional parameters</b>: This module use all the optional parameters of the <a href="./module-filterreads.html">filterreads step</a>,
+                                    <a href="./module-mapreads.html">mapreads step</a>
+                                    and <a href="./module-filteralignments.html">filtersam step</a>.
+                                    For more information, see the documentation of this steps.</li>
+
+	</ul>
     </section>
 
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 /*
  *                  Eoulsan development code
  *
@@ -138,10 +138,11 @@ $ eoulsan.sh createdesign *.fq.bz2 genome.fasta.bz2 annotation.gff.bz2
 			to your needs.</p>
 
 			<p>The workflow file contains the list of the steps that will be executed 
-			by Eoulsan. Some step are only available in local mode (like 
-                        differential analysis) or in distributed mode, see the <a href="steps.html">steps page</a>
+			by Eoulsan. Each step have parameters and it is related to a module to execute.
+                        Some step modules are only available in local mode (like 
+                        differential analysis) or in distributed mode, see the <a href="modules.html">modules page</a>
 			for more details. For each step you can change, add or remove parameters. 
-			Parameters are specific to a step, consult the <a href="steps.html">documentation</a> 
+			Parameters are specific to a module, consult the <a href="modules.html">documentation</a> 
 			of the built-in steps for the list of available parameters of each step.</p>
 
 
@@ -161,13 +162,13 @@ $ eoulsan.sh exec workflow-local.xml design.txt
 
             <p><b>Warning:</b> To perform the normalization and differential analysis steps of this workflow, this demo requires Docker.
             If you want to run this demo without Docker, you must must install R 
-            (or a RServe server) and the related packages (See <a href="./step-diffana.html">differential analysis step</a> 
+            (or a RServe server) and the related packages (See <a href="./module-diffana.html">differential analysis step</a> 
             for more information) and change the <tt>execution.mode</tt> parameter of the normalization and diffana steps.</p>
 
 			<p>Once started and before starting analysis, Eoulsan will check if:</p>
 			<ul>
 			  <li>The design file and workflow file are valid</li>
-			  <li>All the steps exit</li>
+			  <li>All the modules related to the steps exist</li>
 			  <li>The workflow of all the steps are valid</li>
 			  <li>The order of the steps is correct (a step can not use data generated after its end)</li>
 			  <li>The input files are valid (fasta and annotation files)</li>

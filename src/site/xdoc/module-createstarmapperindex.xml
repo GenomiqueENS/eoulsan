@@ -27,7 +27,7 @@
 <document>
 
   <properties>
-    <title>Create STAR mapper index step</title>
+    <title>Create STAR mapper index module</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
   </properties>
 
@@ -35,9 +35,9 @@
 
   <body>
 
-    <section name="Create mapper index step">
+    <section name="Create STAR mapper index module">
 
-      <p>This step allow to create a STAR mapper index with custom options. If this step is not declared in the workflow file, the default 
+      <p>This module allow to create a STAR mapper index with custom options. If this module is not declared in the workflow file, the default
        mapper index generator will be used if you want to use STAR as mapper.</p>
 
       <ul>
@@ -74,7 +74,7 @@
                 <tr><td>gtf.tag.exon.parent.transcript</td><td>String</td><td>GFF attribute to be used as feature ID</td><td>None</td></tr>
                 <tr><td>genome.sa.index.nbases</td><td>Integer</td><td>See <a href="https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf">STAR documentation</a> for more information</td><td>None</td></tr>
                 <tr><td>genome.chr.bin.nbits</td><td>Integer</td><td>See <a href="https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf">STAR documentation</a> for more information</td><td>None</td></tr>
-                <tr><td>use.expression.step.parameters</td><td>Boolean</td><td>Use the <b>genomictype</b> and <b>attributeid</b> parameters values from an <a href="./step-expression.html">expression step</a> to set the values of the <b>gtf.feature.exon</b> and <b>gtf.tag.exon.parent.transcript</b> parameters of this step</td><td>False</td></tr>
+                <tr><td>use.expression.step.parameters</td><td>Boolean</td><td>Use the <b>genomictype</b> and <b>attributeid</b> parameters values from an <a href="./module-expression.html">expression step</a> to set the values of the <b>gtf.feature.exon</b> and <b>gtf.tag.exon.parent.transcript</b> parameters of this step</td><td>False</td></tr>
                 <tr><td>local.threads</td><td>integer</td><td>Define the number of threads to use in local mode.</td><td>0 (use the <b>main.local.threads</b> global property)</td></tr>
                 <tr><td>max.local.threads</td><td>integer</td><td>Define the maximum number of threads to use in local mode.</td><td>0 (no limit)</td></tr>
            </table>
@@ -82,7 +82,7 @@
 <pre>
 &lt;!-- Create STAR index --&gt;
 &lt;step skip="false"&gt;
-	&lt;name&gt;starindexgenerator&lt;/name&gt;
+	&lt;module&gt;starindexgenerator&lt;/module&gt;
 	&lt;parameters&gt;
 		&lt;parameter&gt;
 			&lt;name&gt;overhang&lt;/name&gt;

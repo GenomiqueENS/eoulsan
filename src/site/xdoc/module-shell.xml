@@ -27,46 +27,48 @@
 <document>
 
   <properties>
-    <title>SAM to BAM step</title>
-    <author email="firmo@biologie.ens.fr">Cyril Firmo</author>
+    <title>Shell module</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
   </properties>
 
   <body>
 
-    <section name="Bam2sam step">
+    <section name="Shell module">
 
-      <p>This step allow to convert a BAM file into a SAM file.</p>
+      <p>This module allow to execute an external shell command. The command is executed used the following arguments : <code>$SHELL -c "command"</code>.</p>
 
       <ul>
-        <li><b>Internal name</b>: bam2sam</li>
+        <li><b>Internal name</b>: shell</li>
         <li><b>Available</b>: Both local and distributed mode</li>
 
         <br/>
-         <li><b>Input port</b>:
-           <ul>
-             <li><b>input</b>: data to convert (in BAM format)</li>
-           </ul>
-         </li>
-
+         <li><b>Input port</b>: None</li>
          <br/>
-        <li><b>Output ports</b>:
-           <ul>
-             <li><b>bam</b>: converted data (in SAM format)</li>
-           </ul>
-        </li>
+          <li><b>Output port</b>: None</li>
 	    <br/>
 
-        <br/>
-        <li><b>Mandatory parameter</b>: None</li>
-        <br/>
-                
-        <li><b>Optional parameter</b>:</li>
+        <li><b>Mandatory parameter</b>:</li>
         <table>
-                <tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
-                <tr><td>hadoop.reducer.task.count</td><td>integer</td><td>The count of Hadoop reducer tasks to use for this step. This parameter is only used in Hadoop mode</td><td>Not set</td></tr>
+                <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                <tr><td>command</td><td>string</td><td>The shell command to execute.</td></tr>
         </table>
-
-        
+        <br/>
+        <br/>
+        <li><b>Optional parameter</b>: None</li>
+        <br/>
+        <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Shell command step --&gt;
+&lt;step skip="false"&gt;
+	&lt;module&gt;shell&lt;/module&gt;
+	&lt;parameters&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;command&lt;/name&gt;
+			&lt;value&gt;touch foo.txt&lt;/value&gt;
+		&lt;/parameter&gt;
+	&lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
       </ul>
 
 

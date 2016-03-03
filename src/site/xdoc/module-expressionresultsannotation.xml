@@ -27,15 +27,15 @@
 <document>
 
   <properties>
-    <title>Expression results annotation step</title>
+    <title>Expression results annotation module</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
   </properties>
 
   <body>
 
-    <section name="Expression results annotation step">
+    <section name="Expression results annotation module">
 
-      <p>This step allow to add additional annotations to expression files and create files in TSV, ODS or XLSX formats.</p>
+      <p>This module allow to add additional annotations to expression files and create files in TSV, ODS or XLSX formats.</p>
       <p>IDs can be linked with a hypertext link with ods and xlsx outputs. For more information check the <a href="#hypertextlinks" name="SubSection1">hypertext link subsection</a>.</p>
 	<br/>
       <ul>
@@ -54,11 +54,11 @@
          <br/>
         <li><b>Output ports</b>:
            <ul>
-             <li><b>tsvoutput</b>: expression file with additionnal annotation in TSV format if 
+             <li><b>tsvoutput</b>: expression file with additionnal annotation in TSV format if
              requested by user in the parameters of the step (format: annotated_expression_results_tsv)</li>
              <li><b>odsoutput</b>: expression file with additionnal annotation in ODS format if
              requested by user in the parameters of the step (format: annotated_expression_results_tsv)</li>
-             <li><b>xlsxoutput</b>: expression file with additionnal annotation in XLSX format if 
+             <li><b>xlsxoutput</b>: expression file with additionnal annotation in XLSX format if
              requested by user in the parameters of the step (format: annotated_expression_results_tsv)</li>
            </ul>
         </li>
@@ -78,7 +78,7 @@
 <pre>
 &lt;!-- Additional annotation for expression files --&gt;
 &lt;step skip="false"&gt;
-	&lt;name&gt;expressionresultsannotation&lt;/name&gt;
+	&lt;module&gt;expressionresultsannotation&lt;/module&gt;
 	&lt;parameters&gt;
 		&lt;parameter&gt;
 			&lt;name&gt;outputformat&lt;/name&gt;
@@ -90,7 +90,7 @@
 <br/>
 		<subsection id="hypertextlinks" name="Hypertext links">
 		<br/>
-		<p> IDs can be linked with a hypertext link. Use the <b>main.additional.annotation.hypertext.links.path</b> global parameter to set a personal additional annotation hypertext links info file which has the following format:</p>	
+		<p> IDs can be linked with a hypertext link. Use the <b>main.additional.annotation.hypertext.links.path</b> global parameter to set a personal additional annotation hypertext links info file which has the following format:</p>
 <br/>
 <source>
 &nbsp;&nbsp;EnsemblID=http://www.ensembl.org/id/${ID}
@@ -98,9 +98,9 @@
 <br/>
 <p>For example, a gene named <tt>ENSMUST00000013797</tt> in the <tt>EnsemblID</tt> column will be replaced by a <tt>http://www.ensembl.org/id/ENSMUST00000013797</tt> hypertext link.</p>
 <br/>
-        <li><b>Default links</b>:</li> 
+        <li><b>Default links</b>:</li>
         <table>
-                <tr> <th> Field Name </th> <th> Link associated </th> </tr> 
+                <tr> <th> Field Name </th> <th> Link associated </th> </tr>
                 <tr> <td> GI </td> <td> http://www.ncbi.nlm.nih.gov/nuccore/${ID} </td> </tr>
 				<tr> <td> EnsemblID </td> <td> http://www.ensembl.org/id/${ID} </td> </tr>
 				<tr> <td> Ensembl Gene ID </td> <td> http://www.ensembl.org/id/${ID} </td> </tr>

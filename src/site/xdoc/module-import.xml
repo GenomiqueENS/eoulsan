@@ -27,7 +27,7 @@
 <document>
 
   <properties>
-    <title>Import step</title>
+    <title>Import module</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
   </properties>
 
@@ -35,9 +35,9 @@
 
   <body>
 
-    <section name="Import step">
+    <section name="Import module">
 
-      <p>This step allow to import files in the workflow without the need to declare all the steps that has been used to create the files. This step can also be used to import files that are not related to the design file.</p>
+      <p>This module allow to import files in the workflow without the need to declare all the steps that has been used to create the files. This module can also be used to import files that are not related to the design file.</p>
 
       <p>If the files to import use the Eoulsan naming convention, the data name and the data format of the file will be directly extrated from the filename. In the other cases, the extension of the file will be used to guess the data format and the filename without the file extension will be the data name.</p>
 
@@ -76,7 +76,7 @@
 <pre>
 &lt;!-- Import SAM step --&gt;
 &lt;step id="mysamimportstep" skip="false"&gt;
-	&lt;name&gt;import&lt;/name&gt;
+	&lt;module&gt;import&lt;/module&gt;
 	&lt;parameters&gt;
 		&lt;parameter&gt;
 			&lt;name&gt;files&lt;/name&gt;

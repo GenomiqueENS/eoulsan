@@ -27,7 +27,7 @@
 <document>
 
   <properties>
-    <title>Expression step</title>
+    <title>Expression module</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
   </properties>
 
@@ -35,9 +35,9 @@
 
   <body>
 
-    <section name="Expression step">
+    <section name="Expression module">
 
-      <p>This step allow to compute expression using the filtered alignments and a annotation file that contains genomic elements to count.
+      <p>This module allow to compute expression using the filtered alignments and a annotation file that contains genomic elements to count.
       Eoulsan currently provide two counting methods : the original Eoulsan counting method and htseq-count. The second method is a fast the
       implementation of htseq-count. For more information about this method see <a href="http://www-huber.embl.de/users/anders/HTSeq/doc/count.html">HTSeq website</a>.</p>
 
@@ -86,7 +86,7 @@ regardless of whether it is mapped to the same or the opposite strand as the fea
 <pre>
 &lt;!-- Expression step --&gt;
 &lt;step id="myexpressionstep" skip="false" discardoutput="false"&gt;
-	&lt;name&gt;expression&lt;/name&gt;
+	&lt;module&gt;expression&lt;/module&gt;
 	&lt;parameters&gt;
 		&lt;parameter&gt;
 			&lt;name&gt;counter&lt;/name&gt;

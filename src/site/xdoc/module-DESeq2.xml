@@ -1,29 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- /* * Eoulsan development code * * This code may be freely distributed
-	and modified under the * terms of the GNU Lesser General Public License version
-	2.1 or * later and CeCILL-C. This should be distributed with the code. *
-	If you do not have a copy, see: * * http://www.gnu.org/licenses/lgpl-2.1.txt
-	* http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt * * Copyright
-	for this code is held jointly by the Genomic platform * of the Institut de
-	Biologie de l'École normale supérieure and * the individual authors. These
-	should be listed in @author doc * comments. * * For more information on the
-	Eoulsan project and its aims, * or to join the Eoulsan Google group, visit
-	the home page * at: * * http://outils.genomique.biologie.ens.fr/eoulsan * */ -->
+<!--
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École normale supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
+ *
+ */
+-->
 <document xmlns="http://maven.apache.org/XDOC/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
 
 	<properties>
-		<title>DESeq2</title>
+		<title>DESeq2 module</title>
 		<author email="bauquet@biologie.ens.fr">Xavier Bauquet</author>
 	</properties>
-	
+
 	<body>
 
 		<section name="DESeq2 generalities">
-		<p>This step allows to perform the normalization and the differential expression analysis on expression step results. 
-		This step is based on the <a href="http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html">DESeq2 package</a> of <a href="http://bioconductor.org/">Bioconductor</a>.
+		<p>This module allows to perform the normalization and the differential expression analysis on expression step results.
+		This module is based on the <a href="http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html">DESeq2 package</a> of <a href="http://bioconductor.org/">Bioconductor</a>.
 		</p>
-		
+
 		<ul>
 				<li><b>Name</b>: DESeq2</li>
 
@@ -35,7 +50,7 @@
                 </li>
 
 				<br/>
-				<li><b>Output</b>: 
+				<li><b>Output</b>:
 					<ul>
 						<li><b>Graphs for the normalization:</b>
 						<ul>
@@ -73,10 +88,10 @@
 
 				</li>
 				<br/>
-				
+
 				</ul>
 			</section>
-				
+
 			<section name="Workflow parameters for DESeq2">
 			<ul>
 				<li>
@@ -111,7 +126,7 @@
 							<td>boolean</td>
 							<td>
 								Allow to skip the normalization and the differential analysis. This option
-								is used to produce the contrast matrix without doing the normalization and 
+								is used to produce the contrast matrix without doing the normalization and
 								the differential analysis.
 							</td>
 							<td>true</td>
@@ -120,7 +135,7 @@
 							<td>diffana</td>
 							<td>boolean</td>
 							<td>
-								Allow to skip the differential analysis. 
+								Allow to skip the differential analysis.
 							</td>
 							<td>true</td>
 						</tr>
@@ -128,7 +143,7 @@
 							<td>size.factors.type</td>
 							<td>string</td>
 							<td>
-								Determination of the size factors type to use during the differential 
+								Determination of the size factors type to use during the differential
 								analysis (value: ratio or iterate).
 							</td>
 							<td>ratio</td>
@@ -137,7 +152,7 @@
 							<td>fit.type</td>
 							<td>string</td>
 							<td>
-								Determination of the fit type for the distance estimation to use during the differential 
+								Determination of the fit type for the distance estimation to use during the differential
 								analysis (value: parametric, local or mean).
 							</td>
 							<td>parametric</td>
@@ -154,85 +169,85 @@
                                                 <tr><td>rserve.servername</td><td>string</td><td>The Rserve server name to use in rserve execution mode</td><td>not set</td></tr>
                                                 <tr><td>docker.image</td><td>string</td><td>The Docker image to use in Docker execution mode.</td><td>bioconductor/release_sequencing:3.1</td></tr>
 					</table>
-					
-					
+
+
 					<br />
 				</li>
 			</ul>
 
 		</section>
-		
+
 		<section name="Required R packages installation">
 
 			<p>Eoulsan differential expression analysis module use R with the package DESeq2
 				as statistical backend and FactoMineR. Differential analysis module was tested with
 				R 3.2.0, DESeq2 1.8.1 and FactoMineR 1.28.
 				You can install DESeq2 and FactoMineR R packages on your
-				computer or on a Rserve server, or you can use the docker containing 
+				computer or on a Rserve server, or you can use the docker containing
 				all the packages needed to run deseq2:
 				<a href="https://registry.hub.docker.com/u/genomicpariscentre/deseq2/">DESeq2 docker</a>.
-				
-				These packages are also present on the Eoulsan docker: 
+
+				These packages are also present on the Eoulsan docker:
 				<a href="https://registry.hub.docker.com/u/genomicpariscentre/eoulsan/">Eoulsan docker</a>.
 			</p>
 		</section>
-		
+
 		<section name="How to use DESeq2?">
 			<p>DESeq2 can be used in 2 different modes: classic mode or contrast mode.</p>
-			
-			<subsection name="Classic mode"> 
+
+			<subsection name="Classic mode">
 				<p>
-					The classic mode performs the differential analysis on the "Condition" column of the design file. 
-					During the differential expression analysis each condition is compared to the others. 
+					The classic mode performs the differential analysis on the "Condition" column of the design file.
+					During the differential expression analysis each condition is compared to the others.
 					The "Reference" column can be used to specify references for the comparison.
-					
+
 					<ul>
-						<li><b>In the design file:</b> To design an experiment with a classical mode differential expression analysis you can 
+						<li><b>In the design file:</b> To design an experiment with a classical mode differential expression analysis you can
 						use the following example in the design file:
 							<source>
-Exp.1.name=exp1							
-Exp.1.skip=false														
-Exp.1.reference=WT-day1		
+Exp.1.name=exp1
+Exp.1.skip=false
+Exp.1.reference=WT-day1
 							</source>
 							<p>
 								The keys "reference" is optional and can be replaced by a "Reference" column in the design file.
 							</p>
 						</li>
 					</ul>
-				
+
 				</p>
 			</subsection>
-			
-			<subsection name="Contrast mode"> 
+
+			<subsection name="Contrast mode">
 				<p>
 					The contrast mode performs the differential analysis using contrast vector.
-					
+
 					<ul>
-						<li><b>In the design file:</b> To design an experiment with a contrast mode differential analysis you can 
+						<li><b>In the design file:</b> To design an experiment with a contrast mode differential analysis you can
 						use the following example in the design file:
 							<source>
-Exp.2.name=exp2							
-Exp.2.skip=false							
-Exp.2.contrast=true	
-Exp.2.buildContrast=true						
-Exp.2.model=~type+day+type:day							
+Exp.2.name=exp2
+Exp.2.skip=false
+Exp.2.contrast=true
+Exp.2.buildContrast=true
+Exp.2.model=~type+day+type:day
 Exp.2.comparisons=WT1_vs_KO1:typeWT%dayday1_vs_typeKO%dayday1;\
-WT2_vs_KO2:typeWT%dayday2_vs_typeKO%dayday2	
+WT2_vs_KO2:typeWT%dayday2_vs_typeKO%dayday2
 							</source>
 							<p>
 								<ul>
 									<li>You need to set the options contrast and buildContrast at true.</li>
 									<li>You need to set the DESeq2 model including the the column needed for the contrast.</li>
 									<li>You need the comparisons options where you specify the comparison to be done according the contrasts.
-									The contrast vectors will be generated from this option. 
-									See the <a href="Eoulsan2designfile.html">Design file v2</a> section for more information on this option.</li>
+									The contrast vectors will be generated from this option.
+									See the <a href="designfile-v2.html">Design file v2</a> section for more information on this option.</li>
 								</ul>
 							</p>
 						</li>
 					</ul>
-					
+
 				</p>
 			</subsection>
-		</section>	
+		</section>
 	</body>
 </document>

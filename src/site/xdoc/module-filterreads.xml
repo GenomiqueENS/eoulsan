@@ -27,7 +27,7 @@
 <document>
 
   <properties>
-    <title>Filter reads step</title>
+    <title>Filter reads module</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
   </properties>
 
@@ -35,9 +35,9 @@
 
   <body>
 
-    <section name="Filter reads step">
+    <section name="Filter reads module">
 
-      <p>This step allow to filter input reads. Currently, this step can trim polyN read tails, remove reads with a short length
+      <p>This module allow to filter input reads. Currently, this module can trim polyN read tails, remove reads with a short length
 and discard reads with bad base quality mean. Eoulsan provides a plugin system for reads filters.
 To enable a filter, a parameter for this filter must be set. If the filter takes no option, add a parameter with the name
 of the filter as the key and an empty string for the value.</p>
@@ -91,7 +91,7 @@ filter will not produce the same output if declared before or after the trim fil
 <pre>
 &lt;!-- Filter reads step --&gt;
 &lt;step id="myfilterreadsstep" skip="false" discardoutput="true"&gt;
-	&lt;name&gt;filterreads&lt;/name&gt;
+	&lt;module&gt;filterreads&lt;/module&gt;
 	&lt;parameters&gt;
 		&lt;parameter&gt;
 			&lt;name&gt;illuminaid&lt;/name&gt;

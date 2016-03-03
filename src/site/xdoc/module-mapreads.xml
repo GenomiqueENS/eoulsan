@@ -27,7 +27,7 @@
 <document>
 
   <properties>
-    <title>Map reads step</title>
+    <title>Map reads module</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
   </properties>
 
@@ -35,9 +35,9 @@
 
   <body>
 
-    <section name="Map reads step">
+    <section name="Map reads module">
 
-      <p>This step allow to map reads with a mapper program.</p>
+      <p>This module allow to map reads with a mapper program.</p>
 
       <ul>
          <li><b>Internal name</b>: mapreads</li>
@@ -100,7 +100,7 @@
 <pre>
 &lt;!-- Map reads step --&gt;
 &lt;step id="mymappingstep" skip="false" discardoutput="true"&gt;
-	&lt;name&gt;mapreads&lt;/name&gt;
+	&lt;module&gt;mapreads&lt;/module&gt;
 	&lt;parameters&gt;
 		&lt;parameter&gt;
 			&lt;name&gt;mapper&lt;/name&gt;
