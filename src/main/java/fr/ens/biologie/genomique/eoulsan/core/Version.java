@@ -22,9 +22,11 @@
  *
  */
 
-package fr.ens.biologie.genomique.eoulsan.util;
+package fr.ens.biologie.genomique.eoulsan.core;
 
 import java.util.List;
+
+import fr.ens.biologie.genomique.eoulsan.util.Utils;
 
 /**
  * Describe a version of a software.

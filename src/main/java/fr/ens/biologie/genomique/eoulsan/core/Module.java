@@ -28,7 +28,6 @@ import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
-import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
  * This interface define a Module.

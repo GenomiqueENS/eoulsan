@@ -32,7 +32,7 @@ import fr.ens.biologie.genomique.eoulsan.annotations.Terminal;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.eoulsan.util.Version;
+import fr.ens.biologie.genomique.eoulsan.core.Version;
 
 /**
  * This class define a terminal task that do nothing. After this execution the

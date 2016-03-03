@@ -46,11 +46,11 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Main;
 import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
+import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.modules.GalaxyToolModule;
 import fr.ens.biologie.genomique.eoulsan.util.ClassPathResourceLoader;
 import fr.ens.biologie.genomique.eoulsan.util.FileResourceLoader;
-import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
  * This class define a registry for steps.

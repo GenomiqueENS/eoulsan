@@ -34,8 +34,8 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
-import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
  * This class define a wrapper on the Bowtie mapper.

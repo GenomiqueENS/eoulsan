@@ -52,6 +52,7 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
+import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
@@ -59,7 +60,6 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.data.DataMetadata;
 import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.splitermergers.Splitter;
-import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
  * This class define a generic splitter module.

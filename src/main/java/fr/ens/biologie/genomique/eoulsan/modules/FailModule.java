@@ -39,8 +39,8 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
+import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
-import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
  * This module is a module that always fails. This module is only used for debugging

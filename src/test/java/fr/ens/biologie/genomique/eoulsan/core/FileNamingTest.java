@@ -22,7 +22,7 @@
  *
  */
 
-package fr.ens.biologie.genomique.eoulsan.core.workflow;
+package fr.ens.biologie.genomique.eoulsan.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

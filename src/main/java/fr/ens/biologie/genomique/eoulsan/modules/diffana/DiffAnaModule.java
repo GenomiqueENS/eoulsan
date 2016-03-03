@@ -44,13 +44,13 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
+import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.modules.diffana.DiffAna.DispersionFitType;
 import fr.ens.biologie.genomique.eoulsan.modules.diffana.DiffAna.DispersionMethod;
 import fr.ens.biologie.genomique.eoulsan.modules.diffana.DiffAna.DispersionSharingMode;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
-import fr.ens.biologie.genomique.eoulsan.util.Version;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 
 /**

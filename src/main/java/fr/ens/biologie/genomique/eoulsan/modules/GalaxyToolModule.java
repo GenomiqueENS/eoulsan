@@ -40,13 +40,13 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
+import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolInterpreter;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolData;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolExecutorResult;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElement;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.DockerExecutorInterpreter;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
-import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
  * The Class GalaxyToolStep.

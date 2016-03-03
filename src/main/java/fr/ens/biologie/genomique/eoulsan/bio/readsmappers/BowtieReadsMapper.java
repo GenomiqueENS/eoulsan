@@ -28,9 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
+import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
-import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
  * This class define a wrapper on the Bowtie mapper. Includes only specific

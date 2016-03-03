@@ -42,6 +42,7 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
+import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.AbstractWorkflow;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowContext;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepOutputDataFile;
@@ -55,7 +56,6 @@ import fr.ens.biologie.genomique.eoulsan.design.io.DesignWriter;
 import fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan1DesignWriter;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
-import fr.ens.biologie.genomique.eoulsan.util.Version;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopJarRepackager;
 
 /**

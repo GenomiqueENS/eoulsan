@@ -61,10 +61,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
-import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
  * This class define a step result.

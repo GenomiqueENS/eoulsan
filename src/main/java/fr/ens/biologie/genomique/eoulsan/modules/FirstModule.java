@@ -32,7 +32,7 @@ import fr.ens.biologie.genomique.eoulsan.checkers.CheckStore;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.eoulsan.util.Version;
+import fr.ens.biologie.genomique.eoulsan.core.Version;
 
 /**
  * This class define a first module that do nothing. All generator steps must be

@@ -57,6 +57,7 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
+import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
@@ -67,7 +68,6 @@ import fr.ens.biologie.genomique.eoulsan.translators.io.ODSTranslatorOutputForma
 import fr.ens.biologie.genomique.eoulsan.translators.io.TSVTranslatorOutputFormat;
 import fr.ens.biologie.genomique.eoulsan.translators.io.TranslatorOutputFormat;
 import fr.ens.biologie.genomique.eoulsan.translators.io.XLSXTranslatorOutputFormat;
-import fr.ens.biologie.genomique.eoulsan.util.Version;
 
 /**
  * This class define a module that create annotated expression files in TSV, ODS

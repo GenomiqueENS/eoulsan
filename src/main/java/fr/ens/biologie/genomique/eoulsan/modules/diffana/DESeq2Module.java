@@ -48,6 +48,7 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
+import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
@@ -57,7 +58,6 @@ import fr.ens.biologie.genomique.eoulsan.modules.diffana.DEseq2.FitType;
 import fr.ens.biologie.genomique.eoulsan.modules.diffana.DEseq2.SizeFactorsType;
 import fr.ens.biologie.genomique.eoulsan.modules.diffana.DEseq2.StatisticTest;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
-import fr.ens.biologie.genomique.eoulsan.util.Version;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 
 /**

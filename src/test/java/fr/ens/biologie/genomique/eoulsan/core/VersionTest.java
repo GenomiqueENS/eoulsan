@@ -1,4 +1,4 @@
-package fr.ens.biologie.genomique.eoulsan.util;
+package fr.ens.biologie.genomique.eoulsan.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 
-import fr.ens.biologie.genomique.eoulsan.util.Version;
+import fr.ens.biologie.genomique.eoulsan.core.Version;
 
 public class VersionTest {
 
