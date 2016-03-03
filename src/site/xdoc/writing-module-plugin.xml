@@ -547,7 +547,7 @@ public class GsnapExampleModule extends AbstractModule {
 
       if (!archiveIndexDir.mkdir())
         throw new IOException(
-            "Can't create directory for gmap index: " + archiveIndexDir);
+            "Can't create directory for gsnap index: " + archiveIndexDir);
 
       EoulsanLogger.getLogger().fine("Unzip archiveIndexFile "
           + archiveIndexFile + " in " + archiveIndexDir);
@@ -556,7 +556,7 @@ public class GsnapExampleModule extends AbstractModule {
 
     // Test if extracted directory exists
     FileUtils.checkExistingDirectoryFile(archiveIndexDir,
-        "gmaps index directory");
+        "gsnap index directory");
   }
 
   // Count the number of alignment in a SAM file and save the result in the
