@@ -70,7 +70,6 @@ public abstract class DeprecatedDataProtocol extends AbstractDataProtocol {
 
   /**
    * Constructor.
-   * @param newName new protocol name.
    */
   protected DeprecatedDataProtocol() {
 
