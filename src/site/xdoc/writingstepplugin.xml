@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 /*
  *                  Eoulsan development code
  *
@@ -30,21 +30,21 @@
     <title>Eoulsan community</title>
     <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
   </properties>
-  
-  
+
+
   <body>
 
-   <section name="Writing an Eoulsan step plug-in">
+   <section name="Writing an Eoulsan module plug-in">
 
-	<p>More informations about writing 
-	plug-ins (e.g. steps, reads filters, mapper wrapper, NGS data handling...) are available 
+	<p>More informations about writing
+	plug-ins (e.g. modules, reads filters, mapper wrapper, NGS data handling...) are available
 	on the <a href="https://github.com/GenomicParisCentre/eoulsan/wiki">Eoulsan developer Wiki</a>.</p>
-	<p>This page show how writing a step plug-in for Eoulsan. The sample code here is a step for mapping 
-	reads with the <a href="http://research-pub.gene.com/gmap/">Gsnap</a> mapper in local mode. 
-	The executable of Gsnap is already bundled in Eoulsan 
-	(in <b>src/main/java/files/linux/amd64</b> source folder), 
+	<p>This page show how writing a module plug-in for Eoulsan. The sample code here is a module for mapping
+	reads with the <a href="http://research-pub.gene.com/gmap/">Gsnap</a> mapper in local mode.
+	The executable of Gsnap is already bundled in Eoulsan
+	(in <b>src/main/java/files/linux/amd64</b> source folder),
 	so we don't talk here about gsnap compilation.</p>
-	
+
     <ul>
       <li><a href="#requirements">Requirements</a></li>
       <li><a href="#createproject">Create the project</a></li>
@@ -56,36 +56,36 @@
 
 	<a name="requirements"/>
     <subsection name="Requirements">
-   
+
 	  <p>To develop an Eoulsan plugin, you need:</p>
 	  <ul>
-	  	<li>A Linux 64 bit (x86-64) distribution (e.g. <a href="http://www.ubuntu.com/">Ubuntu</a>, 
-	  	<a href="http://www.debian.org/">Debian</a>, 
-	  	<a href="http://fedoraproject.org/">Fedora</a>...). 
-	  	You can develop on other system but your system will not run Eoulsan</li>
-	    <li>A <a href="http://www.oracle.com/technetwork/java/index.html">Java 6</a> SDK (Oracle JDK or openJDK are recommended)</li>
-	    <li><a href="http://maven.apache.org/">Maven 3.x</a></li>
-	    <li>An IDE like <a href="http://www.eclipse.org/">Eclipse</a> (Optional)</li>
+	  	<li>A Linux 64 bit (x86-64) distribution (e.g. <a href="http://www.ubuntu.com/">Ubuntu</a>,
+	  	<a href="http://www.debian.org/">Debian</a>,
+	  	<a href="http://fedoraproject.org/">Fedora</a>...).
+	  	You can develop on other system (e.g. Windows or OS X) but your system will not run Eoulsan</li>
+	    <li>A <a href="http://www.oracle.com/technetwork/java/index.html">Java 7</a> SDK (Oracle JDK or openJDK are recommended)</li>
+	    <li><a href="http://maven.apache.org/">Maven 3.2.x or later</a></li>
+	    <li>An IDE like <a href="http://www.eclipse.org/">Eclipse</a> or <a href="https://www.jetbrains.com/idea/">Intellij IDEA</a> (Optional)</li>
 	    <li>An Internet connection</li>
 	  </ul>
-	  
-	  <p>If you use Ubuntu 11.10 (Oneiric Ocelot), you can install all the 
+
+	  <p>If you use Ubuntu Ubuntu 14.04 (Trusty Tahr), you can install all the
 	  requirements with the next command line:</p>
 <source>
-$ sudo apt-get install openjdk-6-jdk maven eclipse-jdt
+$ sudo apt-get install openjdk-7-jdk maven eclipse-jdt
 </source>
-   
+
     </subsection>
-    
+
     <a name="createproject"/>
     <subsection name="Creation of the project">
-    
-      <p>Maven simplify the management of project dependencies, that's why in this example we use Maven 
+
+      <p>Maven simplify the management of project dependencies, that's why in this example we use Maven
       to build our project. It is not mandatory to use Maven but it is quite harder without.</p>
-    
+
       <ul>
         <li>First we generate the skeleton of our plugin with Maven.</li>
-    
+
 <source>
 $ mvn archetype:generate \
   -DarchetypeGroupId=org.apache.maven.archetypes \
@@ -97,9 +97,9 @@ $ mvn archetype:generate \
   -DinteractiveMode=false
 </source>
 
-        <li>You will obtain the following files. 
-        Samples <b>App.java</b> and <b>AppTest.java</b> 
-        files will not be used in your plug-in. You can remove them but 
+        <li>You will obtain the following files.
+        Samples <b>App.java</b> and <b>AppTest.java</b>
+        files will not be used in your plug-in. You can remove them but
         keep the <code>com.example</code> package folders.</li>
  <source>
 myeoulsanplugin
@@ -116,9 +116,9 @@ myeoulsanplugin
                 `-- example
                     `-- AppTest.java
  </source>
-    
-        <li>Next edit the <b>pom.xml</b> at the root of the project to add the Eoulsan 
-        dependency and the ENS repository where Eoulsan dependency is available:</li> 
+
+        <li>Next edit the <b>pom.xml</b> at the root of the project to add the Eoulsan
+        dependency and the ENS repository where Eoulsan dependency is available:</li>
 <source>
   &lt;repositories&gt;
     &lt;repository&gt;
@@ -130,7 +130,7 @@ myeoulsanplugin
       &lt;url&gt;http://outils.genomique.biologie.ens.fr/maven2&lt;/url&gt;
     &lt;/repository&gt;
   &lt;/repositories&gt;
-        
+
   &lt;dependencies&gt;
     &lt;dependency&gt;
       &lt;groupId>fr.ens.biologie.genomique&lt;/groupId&gt;
@@ -139,18 +139,18 @@ myeoulsanplugin
       &lt;scope>compile&lt;/scope&gt;
     &lt;/dependency&gt;
     &lt;dependency&gt;
-      &lt;groupId>junit&lt;/groupId&gt;
-      &lt;artifactId>junit&lt;/artifactId&gt;
-      &lt;version>3.8.1&lt;/version&gt;
-      &lt;scope>test&lt;/scope&gt;
+      &lt;groupId&gt;junit&lt;/groupId&gt;
+      &lt;artifactId&gt;junit&lt;/artifactId&gt;
+      &lt;version&gt;4.11&lt;/version&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
     &lt;/dependency&gt;
   &lt;/dependencies&gt;
 </source>
 
-        <li>In the <b>pom.xml</b> add also a build section to set the compilation 
-        mode to java 1.6 and set the path of the java resources.
-        The <b>src/main/java/files</b> folder is where the developer put resource files 
-        (e.g. binaries, R script...) and the <b>src/main/java/META-INF</b> directory is 
+        <li>In the <b>pom.xml</b> add also a build section to set the compilation
+        mode to java 7 and set the path of the java resources.
+        The <b>src/main/java/files</b> folder is where the developer put resource files
+        (e.g. binaries, R script...) and the <b>src/main/java/META-INF</b> directory is
         for the metadata of your plug-in.</li>
 <source>
   &lt;build&gt;
@@ -168,8 +168,8 @@ myeoulsanplugin
         &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
         &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
         &lt;configuration&gt;
-          &lt;source&gt;1.6&lt;/source&gt;
-          &lt;target&gt;1.6&lt;/target&gt;
+          &lt;source&gt;1.7&lt;/source&gt;
+          &lt;target&gt;1.7&lt;/target&gt;
         &lt;/configuration&gt;
       &lt;/plugin&gt;
     &lt;/plugins&gt;
@@ -181,56 +181,51 @@ myeoulsanplugin
 $ mvn eclipse:eclipse  -DdownloadSources=true -DdownloadJavadocs=true
 </source>
 		<li>A warning message may appear if some source or javadoc dependencies cannot be found.</li>
-		<li>To import the project in Eclipse, go to <b>File</b> &gt; <b>Import...</b> &gt; 
-		<b>General</b> &gt; <b>Existing projects into Workspace</b> 
-		and select the root directory of the myeoulsanplugin project. By clicking on the finish button, 
+		<li>To import the project in Eclipse, go to <b>File</b> &gt; <b>Import...</b> &gt;
+		<b>General</b> &gt; <b>Existing projects into Workspace</b>
+		and select the root directory of the myeoulsanplugin project. By clicking on the finish button,
 		myeoulsanlugin will be imported into Eclipse workspace. </li>
       </ul>
-    
+
     </subsection>
-    
+
     <a name="coding"/>
     <subsection name="Coding the plug-in">
-    
+
       <ul>
-      	<li>In the package <code>com.example</code> create a class name <code>GsnapExampleStep</code> that extends 
-      	<code>AbstractStep</code>. All the code of the step is in this source file. 
-      	You can download it <a href="./GsnapExampleStep.java">here</a>.</li>
+      	<li>In the package <code>com.example</code> create a class name <code>GsnapExampleModule</code> that extends
+      	<code>AbstractModule</code>. All the code of the step is in this source file.
+      	You can download it <a href="./GsnapExampleModule.java">here</a>.</li>
 <source>
 package com.example;
 
-import java.util.logging.Logger;
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
-import fr.ens.biologie.genomique.eoulsan.core.Context;
-import fr.ens.biologie.genomique.eoulsan.design.Design;
-import fr.ens.biologie.genomique.eoulsan.steps.AbstractStep;
-import fr.ens.biologie.genomique.eoulsan.steps.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
+import fr.ens.biologie.genomique.eoulsan.core.Version;
+import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 
-// The "@LocalOnly" annotation means that the Eoulsan workflow engine will 
-// only use this step in local mode. The two other annotations are "@HadoopOnly" 
+// The "@LocalOnly" annotation means that the Eoulsan workflow engine will
+// only use this step in local mode. The two other annotations are "@HadoopOnly"
 // and "@HadoopCompatible" when a step can be executed in local or Hadoop mode.
 @LocalOnly
-public class GsnapExampleStep extends AbstractStep {
-
-  /** Logger */
-  private static final Logger LOGGER = Logger.getLogger(Globals.APP_NAME);
+public class GsnapExampleModule extends AbstractModule {
 
   @Override
   public String getName() {
     // This method return the name of the step
-    // We don't use gsnap as step name as it already exists in Eoulsan
+    // We don't use gsnap as module name as it already exists in Eoulsan
     return "gsnapexample";
-  }
-  
-  @Override
-  public String getDescription() {
-    // This method return a description of the step. This method is optional
-    return "This step map reads using gsnap";
   }
 
   @Override
-  public StepResult execute(final Design design, final Context context) {
+  public Version getVersion() {
+    // This method return the version of the module
+    return new Version(0, 1, 0);
+  }
+
+  @Override
+  public TaskResult execute(TaskContext context, TaskStatus status) {
     // TODO Auto-generated method stub
     // We will write the code of this method later
     return null;
@@ -239,210 +234,249 @@ public class GsnapExampleStep extends AbstractStep {
 }
 </source>
 
-	    <li>Now we add the input and output formats of this step with the following methods. 
-	    The input and output formats of the step allow to the Eoulsan workflow engine 
-	    to test if all the necessary files for the analysis exists before 
+	    <li>Now we add the input and output formats of this module with the following methods.
+	    The input and output formats of the module allow to the Eoulsan workflow engine
+	    to test if all the necessary files for the analysis exists before
 	    the launch of an analysis.</li>
 <source>
   @Override
-  public DataFormat[] getInputFormats() {
-    return new DataFormat[] {DataFormats.FILTERED_READS_FASTQ,
-        DataFormats.GMAP_INDEX_ZIP, DataFormats.GENOME_DESC_TXT};
+  public InputPorts getInputPorts() {
+
+    // This method define the 3 input ports of the module
+    // This method is called by the workflow after the configure() method. So
+    // the number and type of the input port can change against the
+    // configuration of the module
+
+    final InputPortsBuilder builder = new InputPortsBuilder();
+
+    builder.addPort("reads", DataFormats.READS_FASTQ);
+    builder.addPort("gsnapindex", DataFormats.GSNAP_INDEX_ZIP);
+    builder.addPort("genomedesc", DataFormats.GENOME_DESC_TXT);
+
+    return builder.create();
   }
-  
+
   @Override
-  public DataFormat[] getOutputFormats() {
-    return new DataFormat[] {DataFormats.MAPPER_RESULTS_SAM};
+  public OutputPorts getOutputPorts() {
+
+    // This method define the output ports of the module
+    // This method is called by the workflow after the configure() method. So
+    // the number and type of the output port can change against the
+    // configuration of the module
+
+    return OutputPortsBuilder.singleOutputPort(DataFormats.MAPPER_RESULTS_SAM);
   }
 </source>
-        <li>This step can be configured with the configure() method. For our example,
-        we define a <b>mapperarguments</b> parameter for setting additional parameters 
+        <li>This module can be configured with the configure() method. For our example,
+        we define a <b>mapperarguments</b> parameter for setting additional parameters
         for gsnap.</li>
 <source>
   private String mapperArguments = "-N 1";
 
   @Override
-  public void configure(final Set&lt;Parameter&gt; stepParameters)
-      throws EoulsanException {
+  public void configure(final StepConfigurationContext context,
+      final Set&lt;Parameter&gt; stepParameters) throws EoulsanException {
 
+    // This method allow to configure the module
     for (Parameter p : stepParameters) {
 
-      if ("mapperarguments".equals(p.getName()))
-        this.mapperArguments = p.getStringValue();
-      else
-        throw new EoulsanException("Unknown parameter for "
-            + getName() + " step: " + p.getName());
+      switch (p.getName()) {
 
+      case "mapper.arguments":
+        this.mapperArguments = p.getStringValue();
+        break;
+
+      default:
+        Modules.unknownParameter(context, p);
+        break;
+      }
     }
+  }
+</source>
+
+        <li>As gsnap handle its own parallelization using multithread, we
+        override the default getParallelizationMode() method to avoid running
+        other steps when a gsnap mapping task is running.</li>
+
+<source>
+  @Override
+  public ParallelizationMode getParallelizationMode() {
+    // The mapper programs can use multithreading, so we don't let here Eoulsan
+    // run several mapping at the same time by using OWN_PARALLELIZATION mode
+    // instead of STANDARD parallelization mode
+    return ParallelizationMode.OWN_PARALLELIZATION;
   }
 </source>
 
 		<li>Now we add the execute() method that is called for data processing:</li>
 <source>
   @Override
-  public StepResult execute(final Design design, final Context context) {
+  public TaskResult execute(final TaskContext context,
+      final TaskStatus status) {
 
-    // The design object contain the list of all the sample to process. This
-    // object contains all the information of the design file
+    // The context object had many useful method for writing a Module
+    // (e.g. access to file to process, the workflow description, the
+    // logger...).
 
-    // The context object had many useful method for writing a Step
-    // (e.g. access to file to process, the workflow description, the logger...)
+    // The status object contains methods to inform the workflow about the
+    // progress of the task. The status object is also used to create the
+    // TaskResult objects.
 
     try {
-      // Save the start time
-      final long startTime = System.currentTimeMillis();
 
-      // Log message to write at the end of the step
-      final StringBuilder log = new StringBuilder();
+      // Create the reporter. The reporter collect information about the
+      // process of the data (e.g. the number of reads, the number of
+      // alignments generated...)
+      final Reporter reporter = new LocalReporter();
 
-      // For each sample of the analysis
-      for (final Sample sample : design.getSamples()) {
+      // Each input port of a module are filled by a Data object when executing
+      // a task.
 
-        // Create the reporter. The reporter collect information about the
-        // process of the data (e.g. the number of reads, the number of
-        // alignments
-        // generated...)
-        final Reporter reporter = new Reporter();
+      // To get an input file, you need first the get the data of the requested
+      // port. To do this use the TaskContext.getInputData() and the name of the
+      // port as argument (you can use the format of the port as argument if no
+      // other input port use the same format).
+      // Here we get the data related to the archive that contains the GSNAP
+      // genome index
+      final Data indexData = context.getInputData(DataFormats.GSNAP_INDEX_ZIP);
 
-        // Get the path to the archive that contains the GMAP genome index
-        // In Eoulsan, to get the path of a file, you just have to call the
-        // context.getDataFile() with the data type and sample object as
-        // argument
-        final File archiveIndexFile =
-            context.getInputDataFile(DataFormats.GMAP_INDEX_ZIP, sample)
-                .toFile();
+      // A Data object contains one or more file and metadata (e.g. FASTQ
+      // format, sample name...).
+      // To get a file we use Data.getDatFile(). This method return a DataFile
+      // object.
+      // The DataFile object allow to support file on the local filesystem and
+      // file on the network (e.g. http, ftp, hdfs...)
+      // If you are sure that the DataFile is local file, you can use the
+      // toFile() method to get a Java File object..
+      final File archiveIndexFile = indexData.getDataFile().toFile();
 
-        // Get input file count for the sample
-        // It could have one or two fastq files by sample (single end or
-        // paired-end data)
-        final int inFileCount =
-            context.getDataFileCount(DataFormats.READS_FASTQ, sample);
+      // Get input file count for the sample
+      // It could have one or two fastq files by sample (single end or
+      // paired-end data)
+      final Data readData = context.getInputData(DataFormats.READS_FASTQ);
+      final int inFileCount = readData.getDataFileCount();
 
-        // Throw error if no reads file found.
-        if (inFileCount &lt; 1)
-          throw new IOException("No reads file found.");
+      // Throw error if no reads file found.
+      if (inFileCount &lt; 1)
+        throw new IOException("No reads file found.");
 
-        // Throw error if more that 2 reads files found.
-        if (inFileCount &gt; 2)
-          throw new IOException(
-              "Cannot handle more than 2 reads files at the same time.");
+      // Throw error if more that 2 reads files found.
+      if (inFileCount &gt; 2)
+        throw new IOException(
+            "Cannot handle more than 2 reads files at the same time.");
 
-        // Get the path to the output SAM file
-        final File outSamFile =
-            context.getOutputDataFile(DataFormats.MAPPER_RESULTS_SAM, sample)
-                .toFile();
+      // Get the path to the output SAM file
+      final File outSamFile =
+          context.getOutputData(DataFormats.MAPPER_RESULTS_SAM, readData)
+              .getDataFile().toFile();
 
-        // Log message for this sample
-        String logMsg = "";
+      // Single end mode
+      if (inFileCount == 1) {
 
-        // Single end mode
-        if (inFileCount == 1) {
+        // Get the source
+        // For data format with more that one file (e.g. FASTQ format),
+        // You must must add an argument to Data.getDataFile() method with the
+        // number of the requested file. With single end fastq the value is
+        // always 0.
+        // In paired-end mode, the number of the second end is 1.
+        final File inFile = readData.getDataFile(0).toFile();
 
-          // Get the source
-          // For data format with more that one file (e.g. fastq file in
-          // paired-end),
-          // You must must add a third argument to context.getDataFile with the
-          // number
-          // of the requested file. With single end fastq the value is always 0.
-          // In paired-end mode, the number of the second end is 1.
-          final File inFile =
-              context.getInputDataFile(FILTERED_READS_FASTQ, sample, 0)
-                  .toFile();
-
-          // Single read mapping
-          mapSingleEnd(context, inFile, sample.getMetadata().getFastqFormat(),
-              archiveIndexFile, outSamFile, reporter);
-
-          logMsg =
-              "Mapping reads in "
-                  + sample.getMetadata().getFastqFormat() + " with Gsnap ("
-                  + sample.getName() + ", " + inFile.getName() + ")";
-        }
-
-        // Paired end mode
-        if (inFileCount == 2) {
-
-          // Get the path of the first end
-          // The third argument of context.getDataFile is 0 like in single end
-          // mode.
-          final File inFile1 =
-              context.getInputDataFile(FILTERED_READS_FASTQ, sample, 0)
-                  .toFile();
-
-          // Get the path of the second end
-          // The third argument of context.getDataFile is 1.
-          final File inFile2 =
-              context.getInputDataFile(FILTERED_READS_FASTQ, sample, 1)
-                  .toFile();
-
-          // Single read mapping
-          mapPairedEnd(context, inFile1, inFile2, sample.getMetadata()
-              .getFastqFormat(), archiveIndexFile, outSamFile, reporter);
-
-          logMsg =
-              "Mapping reads in "
-                  + sample.getMetadata().getFastqFormat() + " with Gsnap ("
-                  + sample.getName() + ", " + inFile1.getName() + ","
-                  + inFile2.getName() + ")";
-        }
-
-        // Add the log message of the process of the sample to the step log
-        log.append(reporter.countersValuesToString(COUNTER_GROUP, logMsg));
+        // Single read mapping
+        mapSingleEnd(context, inFile, readData.getMetadata().getFastqFormat(),
+            archiveIndexFile, outSamFile, reporter);
       }
 
-      // Write log file
-      return new StepResult(context, startTime, log.toString());
+      // Paired end mode
+      if (inFileCount == 2) {
 
-    } catch (IOException e) {
+        // Get the path of the first end
+        // The argument of Data.getDataFile() is 0 like in single end mode.
+        final File inFile1 = readData.getDataFile(0).toFile();
 
-      return new StepResult(context, e, "Error while mapping: "
-          + e.getMessage());
+        // Get the path of the second end
+        // The third argument of Data.getDataFile() is 1.
+        final File inFile2 = readData.getDataFile(1).toFile();
+
+        // Single read mapping
+        mapPairedEnd(context, inFile1, inFile2,
+            readData.getMetadata().getFastqFormat(), archiveIndexFile,
+            outSamFile, reporter);
+      }
+
+      // Add counters for this sample to step result file
+      status.setCounters(reporter, COUNTER_GROUP);
+
+      // Create a success TaskResult object and return this object to the
+      // workflow
+      return status.createTaskResult();
+
+    } catch (IOException | InterruptedException e) {
+
+      // If an exception occurs while running Gsnap, return a error TaskResult
+      // object with the exception that cause the error
+      return status.createTaskResult(e);
     }
   }
-
 </source>
 
 		<li>The <code>execute()</code> method call other methods to process data:</li>
 <source>
   // This method launch the computation in single end mode.
-  private void mapSingleEnd(final Context context, final File inFile,
+  private void mapSingleEnd(final TaskContext context, final File inFile,
       final FastqFormat format, final File archiveIndexFile,
-      final File outSamFile, final Reporter reporter) throws IOException {
+      final File outSamFile, final Reporter reporter)
+      throws IOException, InterruptedException {
 
     // Build the command line
-    final String cmdArgs =
-        this.mapperArguments + " " + inFile.getAbsolutePath();
+    final List&lt;String&gt; cmdArgs = new ArrayList&lt;&gt;();
+
+    for (String s : this.mapperArguments.split(" ")) {
+      if (!s.isEmpty()) {
+        cmdArgs.add(s);
+      }
+    }
+
+    // Path to the FASTQ file
+    cmdArgs.add(inFile.getAbsolutePath());
 
     map(context, cmdArgs, format, archiveIndexFile, outSamFile, reporter);
   }
 
   // This method launch the computation in paired-end mode
-  private void mapPairedEnd(final Context context, final File inFile1,
-      final File inFile2, final FastqFormat format,
-      final File archiveIndexFile, final File outSamFile,
-      final Reporter reporter) throws IOException {
+  private void mapPairedEnd(final TaskContext context, final File inFile1,
+      final File inFile2, final FastqFormat format, final File archiveIndexFile,
+      final File outSamFile, final Reporter reporter)
+      throws IOException, InterruptedException {
 
     // Build the command line
-    final String cmdArgs =
-        this.mapperArguments
-            + " " + inFile1.getAbsolutePath() + " " + inFile2.getAbsolutePath();
+    final List&lt;String> cmdArgs = new ArrayList&lt;&gt;();
+
+    for (String s : this.mapperArguments.split(" ")) {
+      if (!s.isEmpty()) {
+        cmdArgs.add(s);
+      }
+    }
+
+    // Path to the FASTQ files
+    cmdArgs.add(inFile1.getAbsolutePath());
+    cmdArgs.add(inFile2.getAbsolutePath());
 
     map(context, cmdArgs, format, archiveIndexFile, outSamFile, reporter);
   }
 
-  private void map(final Context context, final String cmdArg,
+  // This method execute the mapping
+  private void map(final TaskContext context, final List&lt;String&gt; cmdArgs,
       final FastqFormat format, final File archiveIndexFile,
-      final File outSamFile, final Reporter reporter) throws IOException {
+      final File outSamFile, final Reporter reporter)
+      throws IOException, InterruptedException {
 
     // Extract and install the gsnap binary for eoulsan jar archive
-    final String gsnapPath =
-        BinariesInstaller.install("gsnap", context.getSettings()
-            .getTempDirectory());
+    final String gsnapPath = BinariesInstaller.install("gsnap", "2012-07-20",
+        "gsnap", context.getSettings().getTempDirectory());
 
     // Get the path to the uncommpressed genome index
-    final File archiveIndexDir =
-        new File(archiveIndexFile.getParent(),
-            StringUtils.filenameWithoutExtension(archiveIndexFile.getName()));
+    final File archiveIndexDir = new File(archiveIndexFile.getParent(),
+        StringUtils.filenameWithoutExtension(archiveIndexFile.getName()));
 
     // Unzip archive index if necessary
     unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
@@ -467,23 +501,32 @@ public class GsnapExampleStep extends AbstractStep {
     }
 
     // Build the command line
-    final String cmd =
-        gsnapPath
-            + " -A sam " + formatArg + " -t "
-            + context.getSettings().getLocalThreadsNumber() + " -D "
-            + archiveIndexDir.getAbsolutePath() + " -d genome " + cmdArg
-            + " > " + outSamFile.getAbsolutePath() + " 2> /dev/null";
+    List&lt;String&gt; cmd =
+        new ArrayList&lt;String>(Arrays.asList(gsnapPath, "-A", "sam", formatArg,
+            "-t", "" + context.getSettings().getLocalThreadsNumber(), "-D",
+            archiveIndexDir.getAbsolutePath(), "-d", "genome"));
+
+    // Add user arguments
+    cmd.addAll(cmdArgs);
 
     // Log the command line to execute
-    LOGGER.info(cmd);
+    EoulsanLogger.getLogger().info(cmd.toString());
 
+    // Create process builder
+    final ProcessBuilder pb = new ProcessBuilder(cmd);
+
+    // Redirect the output of the process to the SAM file
+    pb.redirectOutput(outSamFile.getAbsoluteFile());
+    // pb.redirectError(new File("/home/jourdren/toto.err"));
+
+    EoulsanLogger.getLogger().info("pb: " + pb);
     // Execute the command line and save the exit value
-    final int exitValue = ProcessUtils.sh(cmd);
+    final int exitValue = pb.start().waitFor();
 
     // if the exit value is not success (0) throw an exception
     if (exitValue != 0) {
-      throw new IOException("Bad error result for gsnap execution: "
-          + exitValue);
+      throw new IOException(
+          "Bad error result for gsnap execution: " + exitValue);
     }
 
     // Count the number of alignment generated for the sample
@@ -496,17 +539,17 @@ public class GsnapExampleStep extends AbstractStep {
 
     // Test if genome index file exists
     if (!archiveIndexFile.exists())
-      throw new IOException("No index for the mapper found: "
-          + archiveIndexFile);
+      throw new IOException(
+          "No index for the mapper found: " + archiveIndexFile);
 
     // Uncompress archive if necessary
     if (!archiveIndexDir.exists()) {
 
       if (!archiveIndexDir.mkdir())
-        throw new IOException("Can't create directory for gmap index: "
-            + archiveIndexDir);
+        throw new IOException(
+            "Can't create directory for gmap index: " + archiveIndexDir);
 
-      LOGGER.fine("Unzip archiveIndexFile "
+      EoulsanLogger.getLogger().fine("Unzip archiveIndexFile "
           + archiveIndexFile + " in " + archiveIndexDir);
       FileUtils.unzip(archiveIndexFile, archiveIndexDir);
     }
@@ -548,55 +591,55 @@ public class GsnapExampleStep extends AbstractStep {
 
     readerResults.close();
 
-    LOGGER.info(entriesParsed + " entries parsed in gsnap output file");
-
+    EoulsanLogger.getLogger()
+        .info(entriesParsed + " entries parsed in gsnap output file");
   }
 </source>
      </ul>
    </subsection>
-   
+
    <a name="register"/>
    <subsection name="Register the plug-in">
-   
-   <p>Like many java components (JDBC, JCE, JNDI...), Eoulsan use the Service provider Interface (spi) 
-   system for its plugin system. To get a functional spi plug-in, you need a class that implements an 
-   interface (here <code>GsnapStep</code> implements the <code>Step</code> interface throw 
-   <code>AbstractStep</code>) and a declaration of your implementation of the interface in 
+
+   <p>Like many java components (JDBC, JCE, JNDI...), Eoulsan use the Service provider Interface (spi)
+   system for its plugin system. To get a functional spi plug-in, you need a class that implements an
+   interface (here <code>GsnapExampleModule</code> implements the <code>Module</code> interface throw
+   <code>AbstractModule</code>) and a declaration of your implementation of the interface in
    the metadata. To register your step in the metadata:</p>
-   
+
    <ul>
-   
+
         <li>Create the <b>src/main/java/META-INF/services</b> directory for the metadata of the spi service.</li>
-        <li>Create a <b>fr.ens.biologie.genomique.eoulsan.steps.Step</b> file in this directory and add the next line
+        <li>Create a <b>fr.ens.biologie.genomique.eoulsan.core.Module</b> file in this directory and add the next line
         to this new file:</li>
 <source>
-com.example.GsnapExampleStep
+com.example.GsnapExampleModule
 </source>
-		<li>If you have more than one step to register, add the other full class names of your steps in the next 
+		<li>If you have more than one step to register, add the other full class names of your steps in the next
 		lines of the file.</li>
    </ul>
-    
+
     </subsection>
-    
+
     <a name="compile"/>
     <subsection name="Compile the plug-in">
-    
+
     <p>The compilation is quite simple, at the root of your project launch:</p>
 <source>
 $ mvn clean install
 </source>
     </subsection>
-    <p>This command line will clean the <b>target</b> directory before lauching the compilation. You will obtain a 
+    <p>This command line will clean the <b>target</b> directory before lauching the compilation. You will obtain a
     <b>myeoulsanplugin-0.1-alpha-1.jar</b> jar archive that contains your plug-in in the <b>target</b> directory.</p>
-    
+
     <a name="install"/>
     <subsection name="Install the plugin-in">
-    
-    <p>To install an Eoulsan plugin, you just have to copy the generated jar file from the <b>target</b> directory of your project 
-    to the <b>lib</b> directory of your Eoulsan installation. Your plug-in is now ready to use like the built-in steps of Eoulsan.</p> 
-    
+
+    <p>To install an Eoulsan plugin, you just have to copy the generated jar file from the <b>target</b> directory of your project
+    to the <b>lib</b> directory of your Eoulsan installation. Your plug-in is now ready to use like the built-in steps of Eoulsan.</p>
+
     </subsection>
   </section>
-   
+
   </body>
 </document>
