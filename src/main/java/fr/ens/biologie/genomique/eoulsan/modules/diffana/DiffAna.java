@@ -447,7 +447,18 @@ public class DiffAna extends Normalization {
     }
 
     if (DesignUtils.containsReferenceField(experiment)) {
-      return true;
+
+      // Check if one ore more value of the reference field enable a reference
+      for (ExperimentSample es : experiment.getExperimentSamples()) {
+
+        final String ref = es.getMetadata().getReference();
+
+        if (DesignUtils.referenceValueToInt(ref, null) == 1) {
+          return true;
+        }
+      }
+
+      return false;
     }
 
     // Get the experiment reference
@@ -462,7 +473,6 @@ public class DiffAna extends Normalization {
         if (refExp.equals(condition)) {
           return true;
         }
-
       }
     }
 
