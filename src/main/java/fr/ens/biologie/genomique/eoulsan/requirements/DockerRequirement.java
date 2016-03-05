@@ -28,8 +28,10 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.spotify.docker.client.DockerClient;
@@ -143,34 +145,53 @@ public class DockerRequirement extends AbstractRequirement {
 
       dockerClient.pull(this.dockerImage, new ProgressHandler() {
 
-        private Set<String> imageIds = new HashSet<>();
+        private Map<String, Double> imagesProgress = new HashMap<>();
 
         @Override
         public void progress(final ProgressMessage msg) throws DockerException {
 
-          final ProgressDetail pg = msg.progressDetail();
+          final String id = msg.id();
+          final ProgressDetail pgd = msg.progressDetail();
 
-          if (!this.imageIds.contains(msg.id())) {
-            this.imageIds.add(msg.id());
+          // Image id must be set
+          if (id == null) {
+            return;
           }
 
-          final int imageCount = this.imageIds.size();
-
-          final double currentImageProgress;
-          if (pg == null || pg.total() == 0) {
-            currentImageProgress = 0;
-          } else {
-            currentImageProgress = (double) pg.current() / pg.total();
+          // Register all the images to download
+          if (!this.imagesProgress.containsKey(id)) {
+            this.imagesProgress.put(id, 0.0);
           }
 
-          final double pullProgress =
-              (currentImageProgress + imageCount - 1.0) / (double) imageCount;
-
-          if (pullProgress >= 0.0 && pullProgress <= 1.0) {
-            progress.setProgress(pullProgress);
+          // Only show download progress
+          if (!"Downloading".equals(msg.status())) {
+            return;
           }
 
+          // ProgressDetail must be currently set
+          if (pgd != null && pgd.total() > 0) {
+
+            // Compute the progress of the current image
+            final double imageProgress = (double) pgd.current() / pgd.total();
+
+            // Update the map
+            this.imagesProgress.put(id, imageProgress);
+
+            // Compute downloading progress
+            double sum = 0;
+            for (double d : this.imagesProgress.values()) {
+              sum += d;
+            }
+            final double downloadProgress =
+                sum / (this.imagesProgress.size() - 1);
+
+            // Update the progress message
+            if (downloadProgress >= 0.0 && downloadProgress <= 1.0) {
+              progress.setProgress(downloadProgress);
+            }
+          }
         }
+
       });
     } catch (DockerException | InterruptedException e) {
 
