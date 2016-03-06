@@ -390,6 +390,7 @@ public class DiffAna extends Normalization {
     }
 
     String anadiffPart = "";
+
     // check if there is a reference
     if (isReference(experiment)) {
       anadiffPart = readStaticScript(ANADIFF_WITH_REFERENCE);
@@ -451,7 +452,8 @@ public class DiffAna extends Normalization {
       // Check if one ore more value of the reference field enable a reference
       for (ExperimentSample es : experiment.getExperimentSamples()) {
 
-        final String ref = es.getMetadata().getReference();
+        // Search the reference value is all the possible fields
+        final String ref = DesignUtils.getReference(es);
 
         if (DesignUtils.referenceValueToInt(ref, null) == 1) {
           return true;
