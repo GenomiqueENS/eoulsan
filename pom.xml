@@ -858,28 +858,28 @@ o
 						<configuration>
 							<tasks>
 								<copy file="${basedir}/src/main/bin/eoulsan-docker-installer.sh" todir="${basedir}/target/site/" />
-								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${project.url}">
+								<replace encoding="UTF-8" dir="${basedir}/target/site" value="${project.url}">
 									<include name="**/*.jnlp"/>
 									<include name="**/*.html"/>
 									<include name="**/*.rss"/>
 									<include name="**/*.sh"/>
 									<replacetoken>@@@WEBSITE@@@</replacetoken>
 								</replace>
-								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${project.version}">
+								<replace encoding="UTF-8" dir="${basedir}/target/site" value="${project.version}">
 									<include name="**/*.jnlp"/>
 									<include name="**/*.html"/>
 									<include name="**/*.rss"/>
 									<include name="**/*.sh"/>
 									<replacetoken>@@@VERSION@@@</replacetoken>
 								</replace>
-								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${project.name}">
+								<replace encoding="UTF-8" dir="${basedir}/target/site" value="${project.name}">
 									<include name="**/*.jnlp"/>
 									<include name="**/*.html"/>
 									<include name="**/*.rss"/>
 									<include name="**/*.sh"/>
 									<replacetoken>@@@APPNAME@@@</replacetoken>
 								</replace>
-								<replace encoding="iso-8859-1" dir="${basedir}/target/site" value="${project.artifactId}">
+								<replace encoding="UTF-8" dir="${basedir}/target/site" value="${project.artifactId}">
 									<include name="**/*.jnlp"/>
 									<include name="**/*.html"/>
 									<include name="**/*.rss"/>
@@ -892,7 +892,7 @@ o
 										locale="en,UK" />
 								</tstamp>
 
-								<replace encoding="iso-8859-1" dir="${basedir}/target/site"
+								<replace encoding="UTF-8" dir="${basedir}/target/site"
 									value="${TODAY_UK}">
 									<include name="**/*.jnlp" />
 									<include name="**/*.html" />
@@ -993,7 +993,7 @@ o
 				<version>3.4</version>
 				<configuration>
 					<templateFile>${basedir}/src/site/site.vm</templateFile>
-					<outputEncoding>iso-8859-1</outputEncoding>
+					<outputEncoding>UTF-8</outputEncoding>
 				</configuration>
 				<executions>
 					<execution>
