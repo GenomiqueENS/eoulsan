@@ -10,8 +10,8 @@ fr.ens.biologie.genomique.eoulsan.modules.mapping.local.SAM2BAMLocalModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAM2BAMHadoopModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.local.BAM2SAMLocalModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.local.SAM2FASTQLocalModule
-fr.ens.biologie.genomique.eoulsan.modules.mapping.local.RmDupLocalStep
-fr.ens.biologie.genomique.eoulsan.modules.mapping.local.MergeInputRepLocalStep
+fr.ens.biologie.genomique.eoulsan.modules.mapping.local.RmDupLocalModule
+fr.ens.biologie.genomique.eoulsan.modules.mapping.local.MergeInputRepLocalModule
 
 # Filter and mapping steps
 fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.FilterAndMapReadsHadoopModule
@@ -50,9 +50,9 @@ fr.ens.biologie.genomique.eoulsan.modules.ShellModule
 
 # QC steps
 fr.ens.biologie.genomique.eoulsan.modules.fastqc.FastQCModule
-fr.ens.biologie.genomique.eoulsan.modules.qc.CountSplicedReadsStep
-fr.ens.biologie.genomique.eoulsan.modules.qc.IDRStep
-fr.ens.biologie.genomique.eoulsan.modules.qc.TrimAdaptStep
+fr.ens.biologie.genomique.eoulsan.modules.qc.CountSplicedReadsModule
+fr.ens.biologie.genomique.eoulsan.modules.qc.IDRModule
+fr.ens.biologie.genomique.eoulsan.modules.qc.TrimAdaptModule
 
 # Other steps
 fr.ens.biologie.genomique.eoulsan.modules.ImportModule
@@ -60,7 +60,7 @@ fr.ens.biologie.genomique.eoulsan.modules.FailModule
 fr.ens.biologie.genomique.eoulsan.modules.RequirementInstallerModule
 
 # Peak calling steps
-fr.ens.biologie.genomique.eoulsan.modules.peakcalling.BedToolsStep
-fr.ens.biologie.genomique.eoulsan.modules.peakcalling.DeepToolsStep
-fr.ens.biologie.genomique.eoulsan.modules.peakcalling.MACS2Step
-fr.ens.biologie.genomique.eoulsan.modules.peakcalling.MergePeaksStep
+fr.ens.biologie.genomique.eoulsan.modules.peakcalling.BedToolsModule
+fr.ens.biologie.genomique.eoulsan.modules.peakcalling.DeepToolsModule
+fr.ens.biologie.genomique.eoulsan.modules.peakcalling.MACS2Module
+fr.ens.biologie.genomique.eoulsan.modules.peakcalling.MergePeaksModule
