@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 /*
  *                  Eoulsan development code
  *
@@ -12,7 +12,7 @@
  *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
  *
  * Copyright for this code is held jointly by the Genomic platform
- * of the Institut de Biologie de l'École Normale Supérieure and
+ * of the Institut de Biologie de l'École normale supérieure and
  * the individual authors. These should be listed in @author doc
  * comments.
  *
@@ -20,7 +20,7 @@
  * or to join the Eoulsan Google group, visit the home page
  * at:
  *
- *      http://www.transcriptome.ens.fr/eoulsan
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
  *
  */
 -->
@@ -37,7 +37,8 @@
   
     <section name="Launch analysis in local mode">
 
-      <p>This command launch Eoulsan in cluster mode.</p>  
+      <p>This command launch Eoulsan in cluster mode. See the <a href="./clustermode.html">cluster mode configuration page</a>
+         to see how to configure Eoulsan to handle the job scheduler of your cluster.</p>
 
       <ul>
          <li><b>Command name</b>: clusterexec</li>

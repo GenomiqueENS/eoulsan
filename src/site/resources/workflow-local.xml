@@ -8,7 +8,7 @@
 
         <!-- Filter reads -->
         <step skip="false">
-                <name>filterreads</name>
+                <module>filterreads</module>
                 <parameters>
                         <parameter>
                                 <name>trim.length.threshold</name>
@@ -23,7 +23,7 @@
 
         <!-- Map reads -->
         <step skip="false">
-                <name>mapreads</name>
+                <module>mapreads</module>
                 <parameters>
                         <parameter>
                                 <name>mapper</name>
@@ -32,13 +32,13 @@
                         <parameter>
                                 <name>mapper.arguments</name>
                                 <value>-k 2 --best</value>
-                        </parameter>                          
+                        </parameter>
                 </parameters>
         </step>
 
         <!-- SAM filter -->
         <step skip="false">
-                <name>filtersam</name>
+                <module>filtersam</module>
                 <parameters>
                         <parameter>
                                 <name>removeunmapped</name>
@@ -49,22 +49,22 @@
                                 <value></value>
                         </parameter>
                 </parameters>
-        </step> 
+        </step>
 
         <!-- Expression -->
         <step skip="false">
-                <name>expression</name>
+                <module>expression</module>
                 <parameters>
                         <parameter>
                                 <name>counter</name>
                                 <value>htseq-count</value>
                         </parameter>
                         <parameter>
-                                <name>genomictype</name>
+                                <name>genomic.type</name>
                                 <value>gene</value>
                         </parameter>
                         <parameter>
-                                <name>attributeid</name>
+                                <name>attribute.id</name>
                                 <value>ID</value>
                         </parameter>
                         <parameter>
@@ -72,38 +72,46 @@
                                 <value>no</value>
                         </parameter>
                         <parameter>
-                                <name>overlapmode</name>
+                                <name>overlap.mode</name>
                                 <value>union</value>
                         </parameter>
                         <parameter>
-                                <name>removeambiguouscases</name>
+                                <name>remove.ambiguous.cases</name>
                                 <value>false</value>
-                        </parameter>  
+                        </parameter>
                 </parameters>
         </step>
 
         <!-- Normalization -->
         <step skip="false">
-                <name>normalization</name>
-                <parameters/>
+                <module>normalization</module>
+                <parameters>
+                        <parameter>
+                                <name>r.execution.mode</name>
+                                <value>docker</value>
+                        </parameter>
+                 </parameters>
         </step>
 
         <!-- Diffana -->
         <step skip="false">
-                <name>diffana</name>
-                
+                <module>diffana</module>
                 <parameters>
                         <parameter>
                                 <name>disp.est.method</name>
-                                <value>pooled</value>
+                                <value>blind</value>
                         </parameter>
-                        <parameter>                        
+                        <parameter>
                                 <name>disp.est.sharing.mode</name>
-                                <value>maximum</value>
-                        </parameter>                                 
-                        <parameter>                                 
+                                <value>fit-only</value>
+                        </parameter>
+                        <parameter>
                                 <name>disp.est.fit.type</name>
-                                <value>local</value>
+                                <value>parametric</value>
+                        </parameter>
+                        <parameter>
+                                <name>r.execution.mode</name>
+                                <value>docker</value>
                         </parameter>
                 </parameters>
         </step>
@@ -112,8 +120,8 @@
 
     <globals>
         <parameter>
-	        <name>main.tmp.dir</name>
-	        <value>/tmp</value>
+                <name>main.docker.uri</name>
+                <value>unix:///var/run/docker.sock</value>
         </parameter>
     </globals>
 

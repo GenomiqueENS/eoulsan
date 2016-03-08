@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École normale supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
+ *
+ */
+-->
+<document>
+
+  <properties>
+    <title>Expression results annotation module</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
+
+  <body>
+
+    <section name="Expression results annotation module">
+
+      <p>This module allow to add additional annotations to expression files and create files in TSV, ODS or XLSX formats.</p>
+      <p>IDs can be linked with a hypertext link with ods and xlsx outputs. For more information check the <a href="#hypertextlinks" name="SubSection1">hypertext link subsection</a>.</p>
+	<br/>
+      <ul>
+        <li><b>Internal name</b>: expressionresultsannotation</li>
+        <li><b>Available</b>: Both local and distributed mode</li>
+
+        <br/>
+         <li><b>Input ports</b>:
+           <ul>
+             <li><b>expressionfile</b>: expression file in TSV format (format: expression_results_tsv)</li>
+             <li><b>additionalannotation</b>: additional annotation file in TSV format (format: additional_annotation_tsv)
+                                              (Not required if <tt>use.additional.annotation.file</tt> is set to false)</li>
+           </ul>
+         </li>
+
+         <br/>
+        <li><b>Output ports</b>:
+           <ul>
+             <li><b>tsvoutput</b>: expression file with additionnal annotation in TSV format if
+             requested by user in the parameters of the step (format: annotated_expression_results_tsv)</li>
+             <li><b>odsoutput</b>: expression file with additionnal annotation in ODS format if
+             requested by user in the parameters of the step (format: annotated_expression_results_tsv)</li>
+             <li><b>xlsxoutput</b>: expression file with additionnal annotation in XLSX format if
+             requested by user in the parameters of the step (format: annotated_expression_results_tsv)</li>
+           </ul>
+        </li>
+	    <br/>
+
+        <li><b>Mandatory parameter</b>: None</li>
+        <br/>
+
+        <li><b>Optional parameters</b>:</li>
+        <table>
+                <tr><th>Parameter</th><th>Type</th><th>Default value</th><th>Description</th></tr>
+                <tr><td>use.additional.annotation.file</td><td>boolean</td><td>true</td><td>Set if an additional annotation file must be used.</td></tr>
+                <tr><td>output.format</td><td>string</td><td>tsv</td><td>One or more format name for the output separated by a comma.</td></tr>
+        </table>
+<br/>
+        <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Additional annotation for expression files --&gt;
+&lt;step skip="false"&gt;
+	&lt;module&gt;expressionresultsannotation&lt;/module&gt;
+	&lt;parameters&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;outputformat&lt;/name&gt;
+			&lt;value&gt;xlsx,ods&lt;/value&gt;
+		&lt;/parameter&gt;
+	&lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
+<br/>
+		<subsection id="hypertextlinks" name="Hypertext links">
+		<br/>
+		<p> IDs can be linked with a hypertext link. Use the <b>main.additional.annotation.hypertext.links.path</b> global parameter to set a personal additional annotation hypertext links info file which has the following format:</p>
+<br/>
+<source>
+&nbsp;&nbsp;EnsemblID=http://www.ensembl.org/id/${ID}
+</source>
+<br/>
+<p>For example, a gene named <tt>ENSMUST00000013797</tt> in the <tt>EnsemblID</tt> column will be replaced by a <tt>http://www.ensembl.org/id/ENSMUST00000013797</tt> hypertext link.</p>
+<br/>
+        <li><b>Default links</b>:</li>
+        <table>
+                <tr> <th> Field Name </th> <th> Link associated </th> </tr>
+                <tr> <td> GI </td> <td> http://www.ncbi.nlm.nih.gov/nuccore/${ID} </td> </tr>
+				<tr> <td> EnsemblID </td> <td> http://www.ensembl.org/id/${ID} </td> </tr>
+				<tr> <td> Ensembl Gene ID </td> <td> http://www.ensembl.org/id/${ID} </td> </tr>
+				<tr> <td> Ensembl Transcript ID </td> <td> http://www.ensembl.org/id/${ID} </td> </tr>
+				<tr> <td> EntrezGeneID </td> <td> http://www.ncbi.nlm.nih.gov/sites/entrez?Db=gene&amp;Cmd=ShowDetailView&amp;TermToSearch=${ID} </td> </tr>
+				<tr> <td> EntrezGene ID </td> <td> http://www.ncbi.nlm.nih.gov/sites/entrez?Db=gene&amp;Cmd=ShowDetailView&amp;TermToSearch=${ID} </td> </tr>
+				<tr> <td> MGI ID </td> <td> http://www.informatics.jax.org/marker/${ID} </td> </tr>
+				<tr> <td> SGDID </td> <td> http://db.yeastgenome.org/cgi-bin/locus.pl?dbid=${ID} </td> </tr>
+				<tr> <td> Phatr2 Protein HyperLink </td> <td> http://genome.jgi-psf.org/cgi-bin/dispGeneModel?db=Phatr2&amp;tid=${ID} </td> </tr>
+				<tr> <td> UCSC ID </td> <td> https://genome.ucsc.edu/cgi-bin/hgGene?org=&amp;db=hg19&amp;hgg_gene=${ID} </td> </tr>
+				<tr> <td> SGD Gene </td> <td> http://www.yeastgenome.org/locus/${ID}/overview </td> </tr>
+				<tr> <td> ZFIN ID </td> <td> https://zfin.org/${ID} </td> </tr>
+        </table>
+        <br/>
+
+<p><b>Note:</b> The following entry in file defined by <b>main.additional.annotation.hypertext.links.path</b> global parameter, will prevent to set hypertext links in the associated field of the output.</p>
+<source>
+&nbsp;&nbsp;EnsemblID=
+</source>
+      </subsection>
+      </ul>
+
+    </section>
+
+  </body>
+
+</document>

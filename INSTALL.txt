@@ -3,4 +3,4 @@ INSTALLING Eoulsan
 
   To install Eoulsan, see the documentation on our website :
 
-    http://transcriptome.ens.fr/eoulsan
+    http://outils.genomique.biologie.ens.fr/eoulsan

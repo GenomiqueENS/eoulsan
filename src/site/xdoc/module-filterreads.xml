@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École normale supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
+ *
+ */
+-->
+<document>
+
+  <properties>
+    <title>Filter reads module</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
+
+
+
+  <body>
+
+    <section name="Filter reads module">
+
+      <p>This module allow to filter input reads. Currently, this module can trim polyN read tails, remove reads with a short length
+and discard reads with bad base quality mean. Eoulsan provides a plugin system for reads filters.
+To enable a filter, a parameter for this filter must be set. If the filter takes no option, add a parameter with the name
+of the filter as the key and an empty string for the value.</p>
+
+      <p>The filters order that will be applied on the reads is the same order of the filters parameters in the workflow file.
+         So the count of the filtered reads by each filter in the log will be different according to the filter parameters order in the workflow file.</p>
+
+      <p>When the parameter type is none, the value of the parameter is not read by the filter and it can be left empty.</p>
+
+      <p><b>Warning:</b> Some filters can modify the output reads (e.g. the <code>trimpolynend</code> filter remove the polyN tails of the reads). So a filter like the quality
+filter will not produce the same output if declared before or after the trim filter.</p>
+
+      <ul>
+         <li><b>Internal name</b>: filterreads</li>
+         <li><b>Available</b>: Both local and distributed mode</li>
+
+         <br/>
+         <li><b>Input port</b>:
+           <ul>
+             <li><b>input</b>: reads in FASTQ format (format: reads_fastq)</li>
+           </ul>
+         </li>
+
+         <br/>
+         <li><b>Output port</b>:
+           <ul>
+             <li><b>output</b>: reads in FASTQ format (format: reads_fastq)</li>
+           </ul>
+         </li>
+
+         <br/>
+         <li><b>Optional parameters</b>:</li>
+         <table>
+		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th><th>Modify reads</th></tr>
+
+		<tr><td>paircheck</td><td>none</td><td>Check if the identifiers of the two ends had the same identifier</td><td>None</td><td>No</td></tr>
+		<tr><td>pairedend.accept.paired.end</td><td>boolean</td><td>Remove all paired-end reads if false</td><td>Not set</td><td>No</td></tr>
+		<tr><td>pairedend.accept.single.end</td><td>boolean</td><td>Remove all single-end reads if false</td><td>Not set</td><td>No</td></tr>
+		<tr><td>illuminaid</td><td>none</td><td>Remove all reads that not pass illumina filters</td><td>Not set</td><td>No</td></tr>
+		<tr><td>quality.threshold</td><td>float</td><td>The threshold for the mean base quality. Unit in decimal quality score</td><td>Not set</td><td>No</td></tr>
+		<tr><td>trimpolynend</td><td>none</td><td>This filter trim polyN tails of reads.</td><td>Not set</td><td>Yes</td></tr>
+		<tr><td>length.minimal.length.threshold</td><td>integer</td><td>The minimal threshold for the reads length. Unit in bases.</td><td>Not set</td><td>No</td></tr>
+		<tr><td>trim.length.threshold</td><td>integer</td><td>The threshold for the length of the reads. Unit in bases. This filter trim polyN tails of reads. This filter is <b>deprecated</b>, use instead <code>trimpolyn</code> and <code>length.minimal.length.threshold</code>.</td><td>Not set</td><td>Yes</td></tr>
+		<tr><td>readnamestartwith.forbidden.prefixes</td><td>string</td><td>Remove all reads with id that starts with one of prefixes separated by comma</td><td>Not set</td><td>No</td></tr>
+		<tr><td>readnamestartwith.allowed.prefixes</td><td>string</td><td>Keep only the reads with id that starts with one of prefixes separated by comma</td><td>Not set</td><td>No</td></tr>
+		<tr><td>readnameregex.forbidden.regex</td><td>string</td><td>Remove all the reads with id that matches with the regular expression</td><td>Not set</td><td>No</td></tr>
+		<tr><td>readnameregex.allowed.regex</td><td>string</td><td>Keep only the reads with id that matches with the regular expression</td><td>Not set</td><td>No</td></tr>
+		<tr><td>hadoop.reducer.task.count</td><td>integer</td><td>The count of Hadoop reducer tasks to use for this step. This parameter is only used in Hadoop mode</td><td>Not set</td><td>N/A</td></tr>
+	</table>
+         <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Filter reads step --&gt;
+&lt;step id="myfilterreadsstep" skip="false" discardoutput="true"&gt;
+	&lt;module&gt;filterreads&lt;/module&gt;
+	&lt;parameters&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;illuminaid&lt;/name&gt;
+			&lt;value&gt;&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;trimpolynend&lt;/name&gt;
+			&lt;value&gt;&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;length.minimal.length.threshold&lt;/name&gt;
+			&lt;value&gt;40&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;quality.threshold&lt;/name&gt;
+			&lt;value&gt;30&lt;/value&gt;
+		&lt;/parameter&gt;
+	&lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
+      </ul>
+
+    </section>
+
+
+  </body>
+
+</document>

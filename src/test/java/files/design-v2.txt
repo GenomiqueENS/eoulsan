@@ -1,0 +1,35 @@
+[Header]
+DesignFormatVersion=2
+Project=testDEseq2	
+ProjectDescription=testDEseq2	
+Owner=Xavier Bauquet	
+
+[Genome]
+GenomeFile=genome://mm10	
+GenomeAnnotationFile=annotation://mm10
+FunctionnalAnnotationFile=additionalannotation://mm10_ens75_transcript	
+
+[Experiences]	
+Exp.1.projectName=exp1	
+Exp.1.skip=False	
+Exp.1.contrast=False	
+Exp.1.model=~Condition
+Exp.1.Reference=sample1	
+
+Exp.2.projectName=exp2	
+Exp.2.skip=False	
+Exp.2.contrast=True	
+Exp.2.model=~type+day+type:day	
+Exp.2.comparisons=<WT1_vs_KO1=typeWTday1_vs_typeKOday1;WT2_vs_KO2=typeWTday2_vs_typeKOday2>	
+
+[Columns]	
+SampleId	SampleName	Reads	Exp.1.Condition	Exp.1.RepTechGroup	Exp.2.type	Exp.2.day	Exp.2.RepTechGroup
+1	sample1	sample1.fastq	WT-day1a	WT-day1	WT	1	WT-day1
+2	sample2	sample2.fastq	WT-day1b	WT-day1	WT	1	WT-day1
+3	sample3	sample3.fastq	KO-day1a	KO-day1	KO	1	KO-day1
+4	sample4	sample4.fastq	KO-day1b	KO-day1	KO	1	KO-day1
+5	sample5	sample5.fastq	WT-day2a	WT-day2	WT	2	WT-day2
+6	sample6	sample6.fastq	WT-day2b	WT-day2	WT	2	WT-day2
+7	sample7	sample7.fastq	KO-day2a	KO-day2	KO	2	KO-day2
+8	sample8	sample8.fastq	KO-day2b	KO-day2	KO	2	KO-day2
+

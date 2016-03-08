@@ -3,8 +3,8 @@
   <description>sam filtered alignments format</description>
   <alias>sam</alias>
   <prefix>alignments</prefix>
-  <splitter>fr.ens.transcriptome.eoulsan.splitermergers.SAMSplitter</splitter>
-  <merger>fr.ens.transcriptome.eoulsan.splitermergers.SAMMerger</merger>
+  <splitter>fr.ens.biologie.genomique.eoulsan.splitermergers.SAMSplitter</splitter>
+  <merger>fr.ens.biologie.genomique.eoulsan.splitermergers.SAMMerger</merger>
   <extensions>
   	<extension default="true">.sam</extension>
   </extensions>

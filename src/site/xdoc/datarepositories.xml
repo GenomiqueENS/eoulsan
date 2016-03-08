@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 /*
  *                  Eoulsan development code
  *
@@ -12,7 +12,7 @@
  *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
  *
  * Copyright for this code is held jointly by the Genomic platform
- * of the Institut de Biologie de l'École Normale Supérieure and
+ * of the Institut de Biologie de l'École normale supérieure and
  * the individual authors. These should be listed in @author doc
  * comments.
  *
@@ -20,44 +20,45 @@
  * or to join the Eoulsan Google group, visit the home page
  * at:
  *
- *      http://www.transcriptome.ens.fr/eoulsan
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
  *
  */
 -->
-<document> 
+<document>
 
   <properties>
     <title>Data repositories</title>
-    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author> 
-  </properties> 
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
 
 
 
   <body>
-  
+
     <section name="Data repositories">
 
 	<p>To avoid duplication of genome, annotation, additional annotation and genome index files, Eoulsan handles data repositories.
-	It is very useful for genome indexes used in the mapping step witch computation is quite long for large genomes. 
+	It is very useful for genome indexes used in the mapping step witch computation is quite long for large genomes.
 	The genome index repository store the result an index computation for the next analysis using this genome.</p>
 
 	<subsection name="Genome, annotation and additional annotation repositories">
-	
-		<p>The configuration of this repositories are quite the same. You must define the path of the root 
-		of the repository by setting the following global parameters (In <a href="conffile.html">configuration file</a> or in the 
+
+		<p>The configuration of this repositories are quite the same. You must define the path of the root
+		of the repository by setting the following global parameters (In <a href="conffile.html">configuration file</a> or in the
 		<a href="workflowfile.html#Global_parameter_section">globals section of the workflow file</a>) :</p>
-	
+
 		<table>
 		  <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
 		  <tr><td>main.genome.storage.path</td><td>string</td><td>Path to the genomes repository</td></tr>
-		  <tr><td>main.annotation.storage.path</td><td>string</td><td>Path to the annotations repository</td></tr>
+		  <tr><td>main.gff.storage.path</td><td>string</td><td>Path to the GFF annotations repository</td></tr>
+		  <tr><td>main.gtf.storage.path</td><td>string</td><td>Path to the GTF annotations repository</td></tr>
 		  <tr><td>main.additional.annotation.storage.path</td><td>string</td><td>Path to the additional annotations repository</td></tr>
 		</table>
-		
+
 		<p>The path of the repositories can be URL (e.g. on webserver or on ftp server).</p>
-		<p>In following example, we can see the content of a genome repository. Using symbolic links allow to 
+		<p>In following example, we can see the content of a genome repository. Using symbolic links allow to
 		define several alias to the same genome.</p>
-		 
+
 <source>
 -rw-r--r-- 1 nobody nobody   4123941 2010-02-15 15:45 mouse-37.fasta.bz2
 lrwxrwxrwx 1 nobody nobody        16 2011-12-25 17:42 mouse -> mouse-37.fasta.bz2
@@ -66,61 +67,62 @@ lrwxrwxrwx 1 nobody nobody 513422555 2012-01-09 17:04 hg19.fasta.bz2
 </source>
 
 		<p>To access repositories from design file, user must use dedicated protocols:</p>
-	
+
 		<table>
 		  <tr><th>Repository type</th><th>Protocol</th><th>Protocol usage</th></tr>
 		  <tr><td>genome</td><td>genome</td><td>genome://&lt;genome name&gt; (e.g. genome://mouse-37)</td></tr>
-		  <tr><td>annotation</td><td>annotation</td><td>annotation://&lt;annotation name&gt; (e.g. annotation://mouse-37)</td></tr>
+		  <tr><td>GFF annotation</td><td>gff</td><td>gff://&lt;annotation name&gt; (e.g. gff://mouse-37)</td></tr>
+		  <tr><td>GTF annotation</td><td>gtf</td><td>gtf://&lt;annotation name&gt; (e.g. gtf://mouse-37)</td></tr>
 		  <tr><td>additional annotation</td><td>additionalannotation</td><td>additionalannotation://&lt;annotation name&gt; (e.g. additionalannotation://mouse-37)</td></tr>
 		</table>
-	
-		<p>File extension (e.g. .fasta, .gff) and file compression extensions must be avoided in the genome and annotation URL. 
+
+		<p>File extension (e.g. .fasta, .gff) and file compression extensions must be avoided in the genome and annotation URL.
 		Eoulsan automatically add the file extension and check if a compressed file exists in the repository.</p>
-	
+
 	</subsection>
 
 	<subsection name="Genome index repository">
-	
-		<p>Unlike previous repositories, the genome index repository have no dedicated protocol. 
+
+		<p>Unlike previous repositories, the genome index repository have no dedicated protocol.
 		The only user of this repository is the genome index creation step. When a genome index must be computed,
-		this step check if a genome index has been already computed for this genome and mapper. 
+		this step check if a genome index has been already computed for this genome and mapper.
 		If true, the previous computed genome is used, if false, the genome index is computed and then stored for a next usage.</p>
-	
+
 		<p>To use genome index repository, user must only define the following global parameter (In <a href="conffile.html">configuration file</a>
 		or in the <a href="workflowfile.html#Global_parameter_section">globals section of the workflow file</a>) :</p>
-			
+
 		<table>
 		  <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
 		  <tr><td>main.genome.mapper.index.storage.path</td><td>string</td><td>Path to the genome indexes repository</td></tr>
 		</table>
-	
+
 		<p><b>Note</b>: The path to the genome indexes cannot be an URL. The path must be writtable for the user to allow Eoulsan storing genome indexes.</p>
-	
+
 	</subsection>
-	
+
 	<subsection name="Genome description repository">
-	
-		<p>The genome description file contains some basic informations about the genome like the chromosome lengths. This file is useful for creation of 
-		valid SAM/BAM files and using the genome index repository. This file is created from the genome file at each new analysis. 
-		However creating this file is quite long for large genome (like mouse or human genome) when compressed. The genome description repository allow 
+
+		<p>The genome description file contains some basic informations about the genome like the chromosome lengths. This file is useful for creation of
+		valid SAM/BAM files and using the genome index repository. This file is created from the genome file at each new analysis.
+		However creating this file is quite long for large genome (like mouse or human genome) when compressed. The genome description repository allow
 		to avoid useless genome sequence parsing once it has been already parsed in a previous analysis.</p>
-	
-	
+
+
 		<p>To use genome description repository, user must only define the following global parameter (In <a href="conffile.html">configuration file</a>
 		or in the <a href="workflowfile.html#Global_parameter_section">globals section of the workflow file</a>) :</p>
-			
+
 		<table>
 		  <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
 		  <tr><td>main.genome.desc.storage.path</td><td>string</td><td>Path to the genome descriptions repository</td></tr>
 		</table>
-	
+
 		<p><b>Note</b>: The path to the genome description cannot be an URL. The path must be writtable for the user to allow Eoulsan storing genome descriptions.</p>
-	
-	
+
+
 	</subsection>
 
     </section>
 
   </body>
-  
+
 </document>

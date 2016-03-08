@@ -1,0 +1,10 @@
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.PairCheckReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.PairedEndReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.QualityReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.TrimReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.ValidReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.IlluminaFilterFlagReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.ReadNameStartsWithReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.ReadNameRegexReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.TrimPolyNEndReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.LengthReadFilter

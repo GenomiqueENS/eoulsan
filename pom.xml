@@ -2,15 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>fr.ens.transcriptome</groupId>
+	<groupId>fr.ens.biologie.genomique</groupId>
 	<artifactId>eoulsan</artifactId>
 	<packaging>jar</packaging>
-	<version>2.0-alpha7-SNAPSHOT</version>
+	<version>2.0-beta1-SNAPSHOT</version>
 	<name>Eoulsan</name>
 	<description>
 		A pipeline for NGS analysis.
 	</description>
-	<url>http://transcriptome.ens.fr/eoulsan2</url>
+	<url>http://outils.genomique.biologie.ens.fr/eoulsan2</url>
 	<inceptionYear>2010</inceptionYear>
 
 	<properties>
@@ -27,7 +27,7 @@
 
 	<organization>
 		<name>École normale supérieure genomic platform</name>
-		<url>http://transcriptome.ens.fr/sgdb</url>
+		<url>https://genomique.biologie.ens.fr/sgdb</url>
 	</organization>
 
 	<developers>
@@ -40,13 +40,16 @@
 				École normale supérieure, IBENS, Genomic platform
 			</organization>
 			<organizationUrl>
-				http://transcriptome.ens.fr/sgdb/
+				https://genomique.biologie.ens.fr/
 			</organizationUrl>
 			<roles>
 				<role>Lead Developer</role>
 			</roles>
 			<timezone>1</timezone>
-			<properties />
+			<properties>
+                                <picUrl>https://avatars2.githubusercontent.com/u/3381031?s=60</picUrl>
+                        </properties>
+
 		</developer>
 		<developer>
 			<id>bernard</id>
@@ -57,7 +60,7 @@
 				École normale supérieure, IBENS, Genomic platform
 			</organization>
 			<organizationUrl>
-				http://transcriptome.ens.fr/sgdb/
+				https://genomique.biologie.ens.fr/
 			</organizationUrl>
 			<roles>
 				<role>Developer</role>
@@ -74,7 +77,7 @@
 				École normale supérieure, IBENS, Genomic platform
 			</organization>
 			<organizationUrl>
-				http://transcriptome.ens.fr/sgdb/
+				https://genomique.biologie.ens.fr/
 			</organizationUrl>
 			<roles>
 				<role>Developer</role>
@@ -91,13 +94,13 @@
 				École normale supérieure, IBENS, Genomic platform
 			</organization>
 			<organizationUrl>
-				http://transcriptome.ens.fr/sgdb/
+				https://genomique.biologie.ens.fr/
 			</organizationUrl>
 			<roles>
 				<role>Developer</role>
 			</roles>
 			<timezone>1</timezone>
-			<properties />
+			<properties/>
 		</developer>
 		<developer>
 			<id>sperrin</id>
@@ -108,13 +111,33 @@
 				École normale supérieure, IBENS, Genomic platform
 			</organization>
 			<organizationUrl>
-				http://transcriptome.ens.fr/sgdb/
+				https://genomique.biologie.ens.fr/
 			</organizationUrl>
 			<roles>
 				<role>Developer</role>
 			</roles>
 			<timezone>1</timezone>
-			<properties />
+			<properties/>
+
+		</developer>
+		<developer>
+			<id>bauquet</id>
+			<name>Xavier Bauquet</name>
+			<email>bauquet 0 biologie ens fr</email>
+			<url />
+			<organization>
+				École normale supérieure, IBENS, Genomic platform
+			</organization>
+			<organizationUrl>
+				https://genomique.biologie.ens.fr/
+			</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>1</timezone>
+			<properties>
+				<picUrl>https://avatars2.githubusercontent.com/u/8179943?s=60</picUrl>
+			</properties>
 		</developer>
 		<developer>
 			<id>firmo</id>
@@ -125,7 +148,7 @@
 				École normale supérieure, IBENS, Genomic platform
 			</organization>
 			<organizationUrl>
-				http://transcriptome.ens.fr/sgdb/
+				https://genomique.biologie.ens.fr/
 			</organizationUrl>
 			<roles>
 				<role>Developer</role>
@@ -142,13 +165,14 @@
 				École normale supérieure, IBENS, Genomic platform
 			</organization>
 			<organizationUrl>
-				http://transcriptome.ens.fr/sgdb/
+				https://genomique.biologie.ens.fr/
 			</organizationUrl>
 			<roles>
 				<role>Project manager and documentation review</role>
 			</roles>
 			<timezone>1</timezone>
-			<properties />
+			<properties/>
+
 		</developer>
 	</developers>
 
@@ -262,7 +286,7 @@
 	</scm>
 	<issueManagement>
 		<system>GitHub Issues</system>
-		<url>https://github.com/GenomicParisCentre/aozan/issues</url>
+		<url>https://github.com/GenomicParisCentre/eoulsan/issues</url>
 	</issueManagement>
 
 
@@ -566,9 +590,14 @@
 			<version>1.2.17</version>
 		</dependency>
 		<dependency>
-			<groupId>fr.ens.transcriptome</groupId>
+			<groupId>fr.ens.biologie.genomique</groupId>
 			<artifactId>aozan</artifactId>
-			<version>2.0-rc9</version>
+			<version>2.0-rc11</version>
+		</dependency>
+		<dependency>
+			<groupId>org.xerial.snappy</groupId>
+			<artifactId>snappy-java</artifactId>
+			<version>1.0.3-rc3</version>
 		</dependency>
 
 	</dependencies>
@@ -696,7 +725,7 @@
 									<attribute name="Implementation-Version" value="build${build.number}"/>
 									<attribute name="Implementation-Vendor" value="${project.organization.name}"/>
 
-									<attribute name="Main-Class" value="fr.ens.transcriptome.eoulsan.Main" />
+									<attribute name="Main-Class" value="fr.ens.biologie.genomique.eoulsan.Main" />
 								</manifest>
 							</tasks>
 						</configuration>

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École normale supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
+ *
+ */
+-->
+
+
+<document>
+
+  <properties>
+    <title>Design file v2</title>
+    <author email="bauquet@biologie.ens.fr">Xavier Bauquet</author>
+  </properties>
+
+  <body>
+
+    <section name="Design file v2">
+
+        <p>The design file is the main element of the pipeline. It contains all informations and descriptions of the experiments and the samples.
+        Two versions of the design file are available in Eoulsan, here the v2 is presented.
+        Usually the design file is named <b>design.txt</b>, but you can specify another name. Here is an example of design file:</p>
+
+<source>
+[Header]
+FormatVersion=2
+Project=finalDesignExample
+ProjectDescription=Example of the final version of the new design for Eoulsan
+Owner=Xavier Bauquet
+
+GenomeFile=genome://mm10
+GffFile=gff://mm10
+AdditionalAnnotationFile=additionalannotation://mm10_ens75_transcript
+
+[Experiments]
+Exp.1.name=exp1
+Exp.1.skip=False
+Exp.1.reference=WT-day1
+
+Exp.2.name=exp2
+Exp.2.skip=false
+Exp.2.contrast=true
+Exp.2.buildContrast=true
+Exp.2.model=~type+day+type:day
+Exp.2.comparisons=WT1_vs_KO1:typeWT%dayday1_vs_typeKO%dayday1;\
+WT2_vs_KO2:typeWT%dayday2_vs_typeKO%dayday2
+
+Exp.3.name=exp3
+Exp.3.skip=false
+
+[Columns]
+SampleId	SampleName	Reads			Condition	Reference	Exp.1.RepTechGroup	Exp.2.type		Exp.2.day	Exp.2.RepTechGroup	Exp.3.Condition	Exp.3.RepTechGroup
+1			sample1a	sample1a.fastq	WT-day1		1			WT-day1				WT				day1		WT-day1				WT				WT-day1
+2			sample1b	sample1a.fastq	WT-day1		0			WT-day1				WT				day1		WT-day1				WT				WT-day1
+3			sample2a	sample2a.fastq	WT-day2		2			WT-day2				WT				day2		WT-day2				WT				WT-day2
+4			sample2b	sample2b.fastq	WT-day2		0			WT-day2				WT				day2		WT-day2				WT				WT-day2
+5			sample3a	sample3a.fastq	KO-day1		3			KO-day1				KO				day1		KO-day1				KO				KO-day1
+6			sample3b	sample3b.fastq	KO-day1		0			KO-day1				KO				day1		KO-day1				KO				KO-day1
+7			sample4a	sample4a.fastq	KO-day2		0			KO-day2				KO				day2		KO-day2				KO				KO-day2
+8			sample4b	sample4b.fastq	KO-day2		0			KO-day2				KO				day2		KO-day2				KO				KO-day2
+</source>
+
+    <p>This version of the design file include 3 sections:</p>
+    <ul>
+		<li>Header</li>
+		<li>Experiments</li>
+		<li>Columns</li>
+	</ul>
+	<p>The <b>Header</b> and <b>Experiments</b> sections use key, value entries separated by "=". The <b>Columns</b> section
+	is tabulated. This section is comparable to the first version of the design file.</p>
+	<p>You can always use "\" to write your Header and Experiments options on several lines:
+<source>
+Exp.2.comparisons=WT1_vs_KO1:typeWT%dayday1_vs_typeKO%dayday1;\
+WT2_vs_KO2:typeWT%dayday2_vs_typeKO%dayday2
+</source>
+	</p>
+
+	<subsection name="Important informations">
+		<p>
+			<ul>
+				<p><li><b>Column overload:</b> The experiment column have always priority on the common column. For example on the design above the column Condition of the Exp.3 overload the common column Condition. </li></p>
+				<p><li><b>Column for contrast with DESeq2:</b> The columns type and day of the Exp.2 are column made for DESeq2. The values of these column cannot begin by a number, <b>a letter is required at the beginning of each value</b>.</li></p>
+				<p><li><b>Reference column:</b>
+					This column accepts only integers:
+					<ul>
+						<li><b>-1:</b> ignore the sample for the differential expression analysis, but this sample is still used to perform the normalization.</li>
+						<li><b>0:</b> sample used during the differential expression analysis but not as a reference.</li>
+						<li><b>>0:</b> the samples are used as reference by priority according the value of the integer. For example on the design above WT-day1 is the first reference, WT-day2 is the second ...
+						The comparisons performed by the differential expression analysis will be the following ones:
+							<ul>
+								<br/>
+								<li>WT-day2 vs WT-day1</li>
+								<li>KO-day1 vs WT-day1</li>
+								<li>KO-day2 vs WT-day1</li>
+								<br/>
+								<li>KO-day1 vs WT-day2</li>
+								<li>KO-day2 vs WT-day2</li>
+								<br/>
+								<li>KO-day2 vs KO-day1</li>
+							</ul>
+						</li>
+					</ul>
+				</li></p>
+			</ul>
+		</p>
+	</subsection>
+
+	<subsection name="Header">
+		<p>This section contains general informations about the design and the project.
+		Optional key:
+			<ul>
+				<li><b>GenomeFile:</b> The genome file to be used for the mapping.</li>
+				<li><b>GffFile:</b> The Gff file including the annotations for the count step.</li>
+				<li><b>AdditionalAnnotationFile:</b> The file including additional information and annotations about the features.</li>
+			</ul>
+
+		You can add any other keys. Here are some examples:
+			<ul>
+				<li><b>FormatVersion</b></li>
+				<li><b>Project</b></li>
+				<li><b>ProjectDescription</b></li>
+				<li><b>Owner</b></li>
+			</ul>
+		</p>
+	</subsection>
+	<subsection name="Experiments">
+		<p>This section allow to specify several differential expression analysis, called experiments. This represents the main enhancement bring by this design.
+		An experiment is defined by the following pattern: Exp."id"."key", with id = the experiment id (integer >0) and key = the key of the option.
+
+<source>
+Exp.2.name=exp2
+Exp.2.skip=false
+Exp.2.contrast=true
+Exp.2.buildContrast=true
+Exp.2.model=~type+day+type:day
+Exp.2.comparisons=WT1_vs_KO1:typeWT%dayday1_vs_typeKO%dayday1;\
+WT2_vs_KO2:typeWT%dayday2_vs_typeKO%dayday2
+</source>
+
+		One keys is mandatory:
+			<ul>
+				<li><b>name:</b> The name of the experiment.</li>
+			</ul>
+
+		Optional key:
+			<ul>
+				<li><b>skip:</b> true/false. True to skip the experiment.</li>
+				<li><b>reference:</b> To define the reference condition for the differential analysis.</li>
+			</ul>
+
+		You can add any other keys. To use DEseq2 for the differential expression analysis you need to add some DESeq2 options as keys:
+			<ul>
+				<li><b>contrast:</b> true/false. true to use DEseq2 in contrast mode.</li>
+				<li><b>model:</b> The DEseq2 model. example: "~Condition".</li>
+				<li><b>buildContrast:</b> true/false. true if DEseq2 need to create the contrast matrix.</li>
+			</ul>
+
+		Particular case:
+			<ul>
+				<li><b>comparisons:</b> This key corresponds to the comparisons to do with DEseq2 when used in contrast mode.
+				You have to use the following pattern: <b>comparisonName:comparisonFormula</b> for each comparison. The comparison are
+				separated by ";".</li>
+			</ul>
+
+		Comparison formula:
+			<p>
+<source>
+Exp.2.comparisons=WT1_vs_KO1:typeWT%dayday1_vs_typeKO%dayday1;\
+WT2_vs_KO2:typeWT%dayday2_vs_typeKO%dayday2
+</source>
+				The comparison formula is constructed with the name of the column on the design file (example: type) followed by the value (example: WT).
+				Each "columnvalue"should be separated by the "%" symbol to notify an association (example: typeWT<b>%</b>dayday1)
+				and separated by the "_vs_" symbol to notify a comparison (example: typeWT%dayday1<b>_vs_</b>typeKO%dayday1).
+			</p>
+		</p>
+
+	</subsection>
+	<subsection name="Columns">
+		<p>This section correspond to the information about the samples. Mandatory columns:
+		<ul>
+			<li><b>SampleId</b>: Numeric, must be unique and >0.</li>
+			<li><b>SampleName</b>: Name of the sample. Must be unique.</li>
+
+		</ul>
+
+		You can add any other keys. Here are some examples:
+		<ul>
+			<li><b>Reads</b>: Path to the reads data file (Mandatory for mapping step). </li>
+			<li><b>Condition</b>: This column include the biological replicates, several sample that are biological replicates need the same "Condition" value (Mandatory for differential expression analysis step).</li>
+			<li><b>RepTechGroup</b>: Technical replicates group. Use to pool reads counts between technical replicates in differential analysis step (Mandatory for differential expression analysis step).</li>
+			<li><b>FastqFormat</b>: Fastq format. Currently Eoulsan handle 4 formats: fastq-sanger (default), fastq-solexa, fastq-illumina and fastq-illumina-1.5. See <a href="http://www.ncbi.nlm.nih.gov/pubmed/20015970">Cock et al</a> for more information about the various fastq formats.</li>
+			<li><b>Reference</b>: The value from the "Condition" column for the sample to be used as reference for the differential expression analysis (Mandatory for differential expression analysis step).</li>
+			<li><b>UUID</b>: Universal Unique Identifier of the sample. This field is generated by Eouslan createdesign command. In obfuscated design files, this value does not change.</li>
+		</ul>
+
+		To create columns specific to an experiment, you should add Exp."id". before the column name.This allow to create several columns with the same name but with different values for each experiment.
+
+		</p>
+	</subsection>
+
+    </section>
+
+  </body>
+
+</document>

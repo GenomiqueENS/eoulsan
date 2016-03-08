@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 /*
  *                  Eoulsan development code
  *
@@ -12,7 +12,7 @@
  *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
  *
  * Copyright for this code is held jointly by the Genomic platform
- * of the Institut de Biologie de l'École Normale Supérieure and
+ * of the Institut de Biologie de l'École normale supérieure and
  * the individual authors. These should be listed in @author doc
  * comments.
  *
@@ -20,7 +20,7 @@
  * or to join the Eoulsan Google group, visit the home page
  * at:
  *
- *      http://www.transcriptome.ens.fr/eoulsan
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
  *
  */
 -->
@@ -55,6 +55,9 @@
 					<a href="#hadoop_mode">Execute Eoulsan with a local hadoop cluster</a>
 				</li>
 				<li>
+					<a href="#cluster_mode">Execute Eoulsan on a cluster</a>
+				</li>
+				<li>
 					<a href="#aws_mode">Execute Eoulsan on Amazon Web Services cloud computing</a>
 				</li>
 			</ul>
@@ -80,21 +83,21 @@
 			<ul>
                           <li>Read files from two different conditions</li>
 			  <ul>
-				<li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/s1.fq.bz2">Read file 1 (bzip2)</a></li>
-                                <li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/s2.fq.bz2">Read file 2 (bzip2)</a></li>
+				<li><a href="http://outils.genomique.biologie.ens.fr/leburon/downloads/eoulsan-samples/s1.fq.bz2">Read file 1 (bzip2)</a></li>
+                                <li><a href="http://outils.genomique.biologie.ens.fr/leburon/downloads/eoulsan-samples/s2.fq.bz2">Read file 2 (bzip2)</a></li>
 			  </ul>
 
 			  <br/>
 			  <li>Mouse genome file</li>
 			    <ul>
-                              <li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/genome.fasta.bz2">Genome file in fasta format (bzip2)</a></li>
+                              <li><a href="http://outils.genomique.biologie.ens.fr/leburon/downloads/eoulsan-samples/genome.fasta.bz2">Genome file in fasta format (bzip2)</a></li>
                             </ul>
 
 			  <br/>
 
 			  <li>Annotation file</li>
 			    <ul>
-                              <li><a href="http://transcriptome.ens.fr/leburon/downloads/eoulsan-samples/annotation.gff.bz2">Annotation file in GFF3 format (bzip2)</a></li>
+                              <li><a href="http://outils.genomique.biologie.ens.fr/leburon/downloads/eoulsan-samples/annotation.gff.bz2">Annotation file in GFF3 format (bzip2)</a></li>
                             </ul>
 
 
@@ -135,10 +138,11 @@ $ eoulsan.sh createdesign *.fq.bz2 genome.fasta.bz2 annotation.gff.bz2
 			to your needs.</p>
 
 			<p>The workflow file contains the list of the steps that will be executed 
-			by Eoulsan. Some step are only available in local mode (like 
-                        differential analysis) or in distributed mode, see the <a href="steps.html">steps page</a>
+			by Eoulsan. Each step have parameters and it is related to a module to execute.
+                        Some step modules are only available in local mode (like 
+                        differential analysis) or in distributed mode, see the <a href="modules.html">modules page</a>
 			for more details. For each step you can change, add or remove parameters. 
-			Parameters are specific to a step, consult the <a href="steps.html">documentation</a> 
+			Parameters are specific to a module, consult the <a href="modules.html">documentation</a> 
 			of the built-in steps for the list of available parameters of each step.</p>
 
 
@@ -156,14 +160,15 @@ $ eoulsan.sh createdesign *.fq.bz2 genome.fasta.bz2 annotation.gff.bz2
 $ eoulsan.sh exec workflow-local.xml design.txt
 </source>
 
-            <p><b>Warning:</b> If you want to perform differential analysis (like in the sample workflow file), you must install R 
-            (or use an RServe server) and related packages (See <a href="./step-diffana.html">differential analysis step</a> 
-            for more information).</p>
+            <p><b>Warning:</b> To perform the normalization and differential analysis steps of this workflow, this demo requires Docker.
+            If you want to run this demo without Docker, you must must install R 
+            (or a RServe server) and the related packages (See <a href="./module-diffana.html">differential analysis step</a> 
+            for more information) and change the <tt>execution.mode</tt> parameter of the normalization and diffana steps.</p>
 
 			<p>Once started and before starting analysis, Eoulsan will check if:</p>
 			<ul>
 			  <li>The design file and workflow file are valid</li>
-			  <li>All the steps exit</li>
+			  <li>All the modules related to the steps exist</li>
 			  <li>The workflow of all the steps are valid</li>
 			  <li>The order of the steps is correct (a step can not use data generated after its end)</li>
 			  <li>The input files are valid (fasta and annotation files)</li>
@@ -183,14 +188,21 @@ $ eoulsan.sh exec workflow-local.xml design.txt
 <source>
 $ eoulsan.sh hadoopexec workflow-hadoop.xml design.txt hdfs://master.example.com/test
 </source>
-		
-			<p>At the start of the analysis and after the check of the input files (like 
-			in the local mode), input data are uploaded on the hadoop cluster before 
-                        launching the analysis.</p>
 
-			<p>At the end of the analysis, the results files and logs will be in a new directory name like 
-			   <b>eoulsan-20110310-101235</b> (the numbers in the directory name after eoulsan are 
-                           respectively the date and the time of the launch of the analysis).</p>
+			<p>When a step can be distributed on the Hadoop cluster, required input files are automatically copied on the HDFS filesystem before launching the step.</p>
+
+		</subsection>
+
+		<a name="cluster_mode"/>
+		<subsection name="Launch Eoulsan in cluster mode">
+
+			<p>The cluster mode works like the local mode, you just need to configure before the cluster scheduler to use (see the <a href="clustermode.html">cluster configuration page</a>). 
+			   Then, you can launch an Eoulsan analysis on a cluster with the following command:</p>
+<source>
+$ eoulsan.sh clusterexec workflow-local.xml design.txt
+</source>
+
+			<p>Step tasks will be automaticaly submitted to the scheduler of your cluster. The outputs of this mode are the same as in local mode.</p>
 
 		</subsection>
 

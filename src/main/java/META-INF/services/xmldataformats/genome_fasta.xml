@@ -3,9 +3,9 @@
   <description>genome fasta format</description>
   <prefix>genome</prefix>
   <onefileperanalysis>true</onefileperanalysis>
-  <designfieldname>Genome</designfieldname>
-  <generator>fr.ens.transcriptome.eoulsan.steps.generators.GFFFastaGeneratorStep</generator>
-  <checker>fr.ens.transcriptome.eoulsan.checkers.GenomeChecker</checker>
+  <designmetadatakey>GenomeFile</designmetadatakey>
+  <generator>fr.ens.biologie.genomique.eoulsan.modules.generators.GFFFastaGeneratorModule</generator>
+  <checker>fr.ens.biologie.genomique.eoulsan.checkers.GenomeChecker</checker>
   <extensions>
   	<extension default="true">.fasta</extension>
   	<extension>.fa</extension>

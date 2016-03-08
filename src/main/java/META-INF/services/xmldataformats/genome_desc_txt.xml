@@ -3,7 +3,7 @@
   <description>genome description in text format</description>
   <prefix>genomedesc</prefix>
   <onefileperanalysis>true</onefileperanalysis>
-  <generator>fr.ens.transcriptome.eoulsan.steps.generators.GenomeDescriptionGeneratorStep</generator>
+  <generator>fr.ens.biologie.genomique.eoulsan.modules.generators.GenomeDescriptionGeneratorModule</generator>
   <extensions>
   	<extension default="true">.txt</extension>
   </extensions>

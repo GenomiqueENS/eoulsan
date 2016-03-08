@@ -12,7 +12,7 @@
  *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
  *
  * Copyright for this code is held jointly by the Genomic platform
- * of the Institut de Biologie de l'École Normale Supérieure and
+ * of the Institut de Biologie de l'École normale supérieure and
  * the individual authors. These should be listed in @author doc
  * comments.
  *
@@ -20,7 +20,7 @@
  * or to join the Eoulsan Google group, visit the home page
  * at:
  *
- *      http://www.transcriptome.ens.fr/eoulsan
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
  *
  */
 -->
@@ -43,7 +43,7 @@
       <ul>
         <li>The <a href="#descsection">description section</a> that contains information about the name, the description and the author of the workflow file.</li>
         <li>The <a href="#constantssection">constants section</a> that contains constants that can be used in parameters values.</li>
-        <li>The <a href="#stepssection">steps section</a> that contain the list of the steps to execute and theirs parameters. The parameters of the built-in steps are described in the <a href="./steps.html">Built-in steps</a> section.</li>
+        <li>The <a href="#stepssection">steps section</a> that contain the list of the steps to execute and theirs parameters. The parameters of the built-in steps are described in the <a href="./modules.html">Built-in steps</a> section.</li>
         <li>The <a href="#globalsection">global section</a> that contains global parameters (override configuration settings) that can be use in all the steps of the analysis.</li>
      </ul>
 
@@ -100,7 +100,7 @@
 
         &lt;!-- Map reads --&gt;
         &lt;step id="mapreads" skip="false"&gt;
-                &lt;name&gt;mapreads&lt;/name&gt;
+                &lt;module&gt;mapreads&lt;/module&gt;
                 &lt;parameters&gt;
                         &lt;parameter&gt;
                                 &lt;name&gt;mapper&lt;/name&gt;
@@ -115,7 +115,7 @@
 
         &lt;!-- SAM filter --&gt;
         &lt;step id="filtersam"  skip="false"&gt;
-                &lt;name&gt;filtersam&lt;/name&gt;
+                &lt;module&gt;filtersam&lt;/module&gt;
                 &lt;parameters&gt;
                         &lt;parameter&gt;
                                 &lt;name&gt;removeunmapped&lt;/name&gt;
@@ -130,7 +130,7 @@
 
         &lt;!-- Expression --&gt;
         &lt;step id="expression" skip="false"&gt;
-                &lt;name&gt;expression&lt;/name&gt;
+                &lt;module&gt;expression&lt;/module&gt;
                 &lt;parameters&gt;
                         &lt;parameter&gt;
                                 &lt;name&gt;counter&lt;/name&gt;
@@ -161,13 +161,13 @@
 
         &lt;!-- Normalization --&gt;
         &lt;step id="normalization" skip="false"&gt;
-                &lt;name&gt;normalization&lt;/name&gt;
+                &lt;module&gt;normalization&lt;/module&gt;
                 &lt;parameters/&gt;
         &lt;/step&gt;
 
         &lt;!-- Diffana --&gt;
         &lt;step id="diffana" skip="false"&gt;
-                &lt;name&gt;diffana&lt;/name&gt;
+                &lt;module&gt;diffana&lt;/module&gt;
 
                 &lt;parameters&gt;
                         &lt;parameter&gt;
@@ -240,7 +240,7 @@
 
         <table>
           <tr><th>Tag</th><th>Type</th><th>Optional</th><th>Description</th></tr>
-          <tr><td>name</td><td>string</td><td>False</td><td>The name of the step</td></tr>
+          <tr><td>module</td><td>string</td><td>False</td><td>The name of the module to execute by the step</td></tr>
           <tr><td>version</td><td>string</td><td>True</td><td>The version of the step to use</td></tr>
           <tr><td>inputs</td><td>XML tags</td><td>True</td><td>Manually define the data sources to use by the step</td></tr>
           <tr><td>parameters</td><td>XML tags</td><td>True</td><td>The parameters of the step</td></tr>
@@ -250,7 +250,7 @@
 
         <table>
           <tr><th>Attribute</th><th>Type</th><th>Default value</th><th>Description</th></tr>
-          <tr><td>id</td><td>string</td><td>The name of the step</td><td>This value define the identifier of the step. The id value must be unique in a workflow. The identifier is used to named output filenames of the step</td></tr>
+          <tr><td>id</td><td>string</td><td>The name of the module to execute</td><td>This value define the identifier of the step. The id value must be unique in a workflow. The identifier is used to named output filenames of the step</td></tr>
           <tr><td>discardoutput</td><td>boolean</td><td>false</td><td>When this attribute is set to true, the output files of the step will be saved in the working directory instead of the output directory of the workflow and will be removed at the end of the workflow if successful</td></tr>
           <tr><td>skip</td><td>boolean</td><td>false</td><td>The <tt>skip</tt> attribute allow to skip a step if its value is set to true</td></tr>
           <tr><td>requiredprocs</td><td>integer</td><td>-1</td><td>The <tt>requiredprocs</tt> attribute allow to set the number of processors to use by the step. 
@@ -259,6 +259,8 @@
           <tr><td>requiredmemory</td><td>integer</td><td>-1</td><td>The <tt>requiredmemory</tt> attribute allow to set the amount of memory required in megabytes by the step. 
             This value is only used in <b>clusterexec</b> mode. If not set, Eoulsan will require to the cluster scheduler the same amount of memory allocated to Eoulsan JVM.
             Unit prefixes like MB, M, GB, G can be used for the required memory value (e.g. 8GB).</td></tr>
+          <tr><td>dataproduct</td><td>string</td><td>cross</td><td>The <tt>dataproduct</tt> attribute allow to set the method to use for combining data before executing a step.
+            By default a <tt>cross</tt> product is used. If you need that all the input data have the same name and must be executed together use <tt>match</tt> method instead.</td></tr>
         </table>
 
     <p>If not set by the user, the Eoulsan workflow engine will take as data source for each input port the last previous step that generate data of the format that requested by the input port.
@@ -269,8 +271,8 @@
     &lt;steps&gt;
 
         &lt;!-- Filter reads --&gt;
-        &lt;step id="myfilterreadstep" discardoutput="true"  skip="false"&gt;
-                &lt;name&gt;filterreads&lt;/name&gt;
+        &lt;step id="myfilterreadstep" discardoutput="true"  skip="false" dataproduct="cross"&gt;
+                &lt;module&gt;filterreads&lt;/module&gt;
                 &lt;version&gt;@@@VERSION@@@&lt;/version&gt;
                 &lt;parameters&gt;
                         &lt;parameter&gt;
@@ -285,8 +287,8 @@
         &lt;/step&gt;
 
         &lt;!-- Map reads --&gt;
-        &lt;step id="mapping" skip="false" requiredprocs="4" requiredmemory="8GB"&gt;
-                &lt;name&gt;mapreads&lt;/name&gt;
+        &lt;step id="mapping" skip="false" requiredprocs="4" requiredmemory="8GB" dataproduct="cross"&gt;
+                &lt;module&gt;mapreads&lt;/module&gt;
                 &lt;version&gt;@@@VERSION@@@&lt;/version&gt;
 
                 &lt;inputs&gt;

@@ -1,0 +1,3 @@
+fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement
+fr.ens.biologie.genomique.eoulsan.requirements.PathRequirement
+fr.ens.biologie.genomique.eoulsan.requirements.RserveRequirement

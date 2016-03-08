@@ -12,7 +12,7 @@
  *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
  *
  * Copyright for this code is held jointly by the Genomic platform
- * of the Institut de Biologie de l'École Normale Supérieure and
+ * of the Institut de Biologie de l'École normale supérieure and
  * the individual authors. These should be listed in @author doc
  * comments.
  *
@@ -20,7 +20,7 @@
  * or to join the Eoulsan Google group, visit the home page
  * at:
  *
- *      http://www.transcriptome.ens.fr/eoulsan
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
  *
  */
 -->
@@ -95,15 +95,28 @@
 
         <section name="What's new in Eoulsan @@@VERSION@@@? ">
 
-		<p>Eoulsan 2.0 is currently <u><b>under development</b></u> and <u><b>should not be used for production</b></u>.
-		However this version has successfully passed our integration tests and will generate the same outputs obtained with Eoulsan 1.2.2.</p>
+		<p>Eoulsan 2.0 is currently <u><b>under development</b></u>,
+		however this version has successfully passed our integration tests and will generate the same outputs obtained with Eoulsan 1.2.2.</p>
 
 		<p><b>Warning:</b> this documentation may not be up to date for the latest features of Eoulsan 2.0.</p>
 
 		<p>The main new features in this version of Eoulsan are:</p>
 		<ul>
 		  <li>New workflow engine</li>
-		  <li>New steps: sam2bam, shell, expression additional annotation, diffana additional annotation, import, technicalreplicatemerger</li>
+		  <li>New steps:
+                    <ul>
+                      <li>DESeq2</li>
+                      <li>FastQC</li>
+                      <li>sam2bam</li>
+                      <li>bam2sam</li>
+                      <li>sam2fastq</li>
+                      <li>shell</li>
+                      <li>expression additional annotation</li>
+                      <li>diffana additional annotation</li>
+                      <li>import</li>
+                      <li>technicalreplicatemerger</li>
+                    </ul>
+                  </li>
 		  <li>Separate log file for each step</li>
 		  <li>Integration tests engine</li>
 		  <li>Support for multiple versions of a mapper</li>
@@ -115,6 +128,11 @@
 		  <li>Update of the bundled versions of the mappers: Bowtie (1.1.1), Bowtie2 (2.2.4), BWA (0.7.12) and GSNAP (2014-12-21)</li>
 		  <li>New FastQC step</li>
 		  <li>Hadoop 2.x support</li>
+		  <li>Support of many job schedulers: HT-Condor, SLURM, TORQUE, PBS Pro and TGCC</li>
+		  <li>Galaxy tool XML file can be interpreted as an Eoulsan step</li>
+		  <li>New enhanced design file format</li>
+		  <li>New step for normalization and differential analysis using DESeq2</li>
+		  <li>R code can be executed on local system, on a Rserve server or in a Docker container</li>
 		  <li>And many other enhancements,  see the <a href="changes-report.html#@@@VERSION@@@">full changelog</a> for more information</li>
 		</ul>
 		
@@ -131,9 +149,9 @@ $ curl @@@WEBSITE@@@/eoulsan-docker-installer.sh | bash</source>
 			<tr><th>Eoulsan Mode</th><th>Action name</th><th>Status</th></tr>
 			<tr><td>Local mode</td><td>exec</td><td>Working</td></tr>
 			<tr><td>Hadoop mode</td><td>hadoopexec</td><td>Working, Hadoop 2.x is required</td></tr>
+			<tr><td>Cluster mode</td><td>clusterexec</td><td>Working</td></tr>
 			<tr><td>Grid mode</td><td>gridexec</td><td>Planned, prototype works, waiting the Hadoop mode achievement</td></tr>
-			<tr><td>Amazon EMR mode</td><td>emrexec</td><td>Not working, waiting the Hadoop mode achievement</td></tr>
-			<tr><td>Cluster mode</td><td>clusterexec</td><td>Planned, partially implemented</td></tr>
+			<tr><td>Amazon EMR mode</td><td>emrexec</td><td>Not working, dedicated code must be rewritten for the new workflow engine</td></tr>
 			<tr><td>Other cloud mode</td><td>not defined</td><td>Planned, implementation not started</td></tr>
 		</table>
 

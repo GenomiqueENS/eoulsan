@@ -1,0 +1,268 @@
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École normale supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
+ *
+ */
+
+package fr.ens.biologie.genomique.eoulsan.core.workflow;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Collections.emptySet;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import com.google.common.base.Objects;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
+
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
+import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
+import fr.ens.biologie.genomique.eoulsan.core.SimpleOutputPort;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.data.Data;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
+
+/**
+ * This class define a workflow output port. It is like a standard OutputPort
+ * but it contains also the step of the port.
+ * @since 2.0
+ * @author Laurent Jourdren
+ */
+class StepOutputPort extends SimpleOutputPort {
+
+  private static final long serialVersionUID = -7857426034202971843L;
+
+  private final AbstractStep step;
+  private final Set<StepInputPort> links = new HashSet<>();
+
+  /**
+   * Get the step related to the port.
+   * @return a step object
+   */
+  public AbstractStep getStep() {
+
+    return this.step;
+  }
+
+  /**
+   * Get the output port linked to this input port.
+   * @return the linked output port if exists or null
+   */
+  public Set<StepInputPort> getLinks() {
+    return Collections.unmodifiableSet(this.links);
+  }
+
+  /**
+   * Test if the port is linked.
+   * @return true if the port is linked
+   */
+  public boolean isLinked() {
+
+    return this.links.size() > 0;
+  }
+
+  /**
+   * Set the link for the port.
+   * @param inputPort the output of the link
+   */
+  public void addLink(final StepInputPort inputPort) {
+
+    // Check if argument is null
+    checkNotNull(inputPort, "inputPort argument cannot be null");
+
+    // Check the ports are not on the same step
+    checkArgument(inputPort.getStep() != this.step,
+        "cannot link a step ("
+            + this.step.getId() + ") to itself (input port: "
+            + inputPort.getName() + ", output port: " + getName());
+
+    // Check if a link already exists
+    if (this.links.contains(inputPort)) {
+      return;
+    }
+
+    // Check if format are compatible
+    if (!getFormat().equals(inputPort.getFormat())) {
+      throw new EoulsanRuntimeException("Incompatible format: "
+          + inputPort.getStep().getId() + "." + inputPort.getName() + " -> "
+          + inputPort.getFormat().getName() + " and " + getStep().getId() + "."
+          + getName() + " <- " + getFormat().getName());
+    }
+
+    this.links.add(inputPort);
+  }
+
+  /**
+   * Test if output files of the port exists.
+   * @return true if output files of the port exists
+   */
+  public List<DataFile> getExistingOutputFiles() {
+
+    final List<DataFile> result = new ArrayList<>();
+
+    try {
+
+      // List the files of the working directory of the step
+      final List<DataFile> dirFiles = this.step.getStepOutputDirectory().list();
+
+      // Get the output file prefix and suffix
+      final String filePrefix = WorkflowFileNaming.filePrefix(this);
+      final String fileSuffix = WorkflowFileNaming.fileSuffix(this);
+
+      // Check if files of the directory matches with the prefix and the suffix
+      for (DataFile f : dirFiles) {
+        if (FileNaming.isFilenameValid(f)
+            && f.getName().startsWith(filePrefix)
+            && f.getName().endsWith(fileSuffix)) {
+          result.add(f);
+        }
+      }
+
+    } catch (IOException e) {
+      return Collections.emptyList();
+    }
+
+    return Collections.unmodifiableList(result);
+  }
+
+  /**
+   * Get Existing Data.
+   * @return a set with Data elements
+   */
+  public Set<Data> getExistingData() {
+
+    // List the existing files generated by the port and sort it
+    final List<DataFile> files = Lists.newArrayList(getExistingOutputFiles());
+
+    // Do nothing if there is no file
+    if (files.isEmpty()) {
+      return Collections.emptySet();
+    }
+
+    // Create the result object
+    final Set<Data> result = new HashSet<>();
+
+    // Sort the file
+    Collections.sort(files);
+
+    final ListMultimap<String, DataFile> map = ArrayListMultimap.create();
+
+    for (DataFile file : files) {
+
+      // Parse the fields of the filename
+      FileNaming fields = FileNaming.parse(file);
+
+      map.put(fields.getDataName() + "\t" + fields.getPart(), file);
+    }
+
+    // Get the design for metadata of the data
+    final Design design = this.step.getAbstractWorkflow().getDesign();
+
+    // Fill the result
+    for (String key : map.keySet()) {
+
+      // Set the data name
+      final DataElement data =
+          new DataElement(getFormat(), map.get(key), design);
+      data.setName(key.substring(0, key.indexOf('\t')));
+
+      result.add(data);
+    }
+
+    return result;
+  }
+
+  /**
+   * Test if all the links of the port had target on skipped steps.
+   * @return true if all the links of the port had target on skipped steps
+   */
+  public boolean isAllLinksToSkippedSteps() {
+
+    for (StepInputPort inPort : getLinks()) {
+
+      if (!inPort.getStep().isSkip()) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  @Override
+  public Set<Step> getLinkedSteps() {
+
+    if (this.links.isEmpty()) {
+      return emptySet();
+    }
+
+    final Set<Step> result = new HashSet<>();
+
+    for (StepInputPort inputPort : this.links) {
+      result.add(inputPort.getStep());
+    }
+
+    return Collections.unmodifiableSet(result);
+  }
+
+  @Override
+  public String toString() {
+
+    return Objects.toStringHelper(this).add("name", getName())
+        .add("format", getFormat().getName())
+        .add("compression", getCompression()).add("step", getStep().getId())
+        .toString();
+  }
+
+  //
+  // Constructor
+  //
+
+  /**
+   * Constructor.
+   * @param step the step related to the port
+   * @param name name of the port
+   * @param format format of the port
+   * @param compression compression of the output
+   */
+  public StepOutputPort(final AbstractStep step, final String name,
+      final boolean list, final DataFormat format,
+      final CompressionType compression) {
+
+    super(name, list, format, compression);
+
+    if (step == null) {
+      throw new NullPointerException("Step is null");
+    }
+
+    this.step = step;
+  }
+
+}

@@ -7,4 +7,7 @@
   <extensions>
   	<extension default="true">.bai</extension>
   </extensions>
+  <toolshedgalaxy>
+    <extension>bai</extension>    	
+  </toolshedgalaxy>
 </dataformat>

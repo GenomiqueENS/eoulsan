@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École normale supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
+ *
+ */
+-->
+<document>
+
+  <properties>
+    <title>Differential analysis results annotation module</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
+
+  <body>
+
+    <section name="Differential analysis results annotation module">
+
+      <p>This module allow to add additional annotations to differential analysis result files and create files in TSV, ODS or XLSX formats.
+      This module works like the expression annotation module and will process all the files in output directory that matches with
+      the <tt>diffana_*.tsv</tt> pattern.</p>
+      <p>IDs can be linked with a hypertext link with ods and xlsx outputs. For more information check the hypertext link subsection in the <a href="module-expressionresultsannotation.html#hypertextlinks" name="SubSection1">expression annotation module page</a>.</p>
+      <br/>
+      <ul>
+        <li><b>Internal name</b>: diffanaresultsannotation</li>
+        <li><b>Available</b>: Both local and distributed mode</li>
+
+        <br/>
+         <li><b>Input ports</b>:
+           <ul>
+             <li><b>additionalannotation</b>: additional annotation file in TSV format (format: additional_annotation_tsv)
+                                              (Not required if <tt>use.additional.annotation.file</tt> is set to false)</li>
+           </ul>
+         </li>
+
+         <br/>
+        <li><b>Output port</b>: None</li>
+	    <br/>
+
+        <li><b>Mandatory parameter</b>: None</li>
+        <br/>
+
+        <li><b>Optional parameters</b>:</li>
+        <table>
+                <tr><th>Parameter</th><th>Type</th><th>Default value</th><th>Description</th></tr>
+                <tr><td>use.additional.annotation.file</td><td>boolean</td><td>true</td><td>Set if an additional annotation file must be used.</td></tr>
+                <tr><td>output.format</td><td>string</td><td>tsv</td><td>One or more format name for the output separated by a comma.</td></tr>
+                <tr><td>files</td><td>string</td><td>diffana_*.tsv</td><td>A Glob expression to select the files to convert.</td></tr>
+                <tr><td>output.prefix</td><td>string</td><td>step Id</td><td>The prefix of the output files.</td></tr>
+        </table>
+
+        <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Additional annotation for differential analysis --&gt;
+&lt;step skip="false"&gt;
+	&lt;module&gt;diffanaresultsannotation&lt;/module&gt;
+	&lt;parameters&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;outputformat&lt;/name&gt;
+			&lt;value&gt;xlsx&lt;/value&gt;
+		&lt;/parameter&gt;
+	&lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
+      </ul>
+
+    </section>
+
+  </body>
+
+</document>

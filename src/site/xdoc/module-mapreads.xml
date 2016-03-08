@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École normale supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
+ *
+ */
+-->
+<document>
+
+  <properties>
+    <title>Map reads module</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
+
+
+
+  <body>
+
+    <section name="Map reads module">
+
+      <p>This module allow to map reads with a mapper program.</p>
+
+      <ul>
+         <li><b>Internal name</b>: mapreads</li>
+         <li><b>Available</b>: Both local and distributed mode</li>
+
+         <br/>
+         <li><b>Input ports</b>:
+           <ul>
+             <li><b>reads</b>: reads in FASTQ format (format: reads_fastq)</li>
+             <li><b>mapperindex</b>: mapper index for the genome (automatically generated from genome sequence file)</li>
+             <li><b>genomedescription</b>: genome description (automatically generated from genome sequence file)</li>
+           </ul>
+         </li>
+
+         <br/>
+         <li><b>Output port</b>:
+           <ul>
+             <li><b>output</b>: alignments in FASTQ format (format: mapper_results_sam)</li>
+           </ul>
+         </li>
+         <br/>
+
+          <li><b>Optional parameters</b>:</li>
+           <table>
+                <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+                <tr><td>mapper</td><td>string</td><td>The name of the mapper to use (e.g. bowtie, bwa, soap, gsnap)</td></tr>
+           </table>
+           <br/>
+
+         <li><b>Optional parameters</b>:</li>
+           <table>
+                <tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
+                <tr><td>mapper.version</td><td>string</td><td>Define the version of the mapper to use</td><td>See below in the next table</td></tr>
+                <tr><td>mapper.flavor</td><td>string</td><td>Define the flavor of the mapper to use (e.g. standard version or large index version)</td><td>See below in the next table</td></tr>
+                <tr><td>mapper.use.bundled.binares</td><td>boolean</td><td>Use the mapper bundled binaries in Eouslan to perform the mapping. If the value is false, the mapper will be search in the PATH environnment variable</td><td>True</td></tr>
+                <tr><td>local.threads</td><td>integer</td><td>Define the number of threads to use in local mode.</td><td>0 (use the <b>main.local.threads</b> global property)</td></tr>
+                <tr><td>max.local.threads</td><td>integer</td><td>Define the maximum number of threads to use in local mode.</td><td>0 (no limit)</td></tr>
+                <tr><td>hadoop.threads</td><td>integer</td><td>Define the maximum number of threads to use in hadoop mode.</td><td>0 (the number of available processors)</td></tr>
+                <tr><td>mapper.arguments</td><td>string</td><td>Mapper additional command line arguments</td><td>See below in the next table</td></tr>
+                <tr><td>hadoop.reducer.task.count</td><td>integer</td><td>The count of Hadoop reducer tasks to use for this step. This parameter is only used in Hadoop mode</td><td>Not set</td></tr>
+           </table>
+
+         <br/>
+         <li><b>Available built-in mappers</b>:</li>
+           <table>
+                <tr><th>Mapper name</th><th>Bundled versions</th><th>Default version</th><th>Flavors</th><th>Default Flavor</th><th>Default mapper arguments</th></tr>
+                <tr><td><a href="http://bowtie-bio.sourceforge.net/index.shtml">Bowtie</a></td><td>0.12.9, 1.1.1</td><td>0.12.9</td><td>standard, large-index</td><td>standard</td><td>--best -k 2</td></tr>
+                <tr><td><a href="http://bowtie-bio.sourceforge.net/index.shtml">Bowtie2</a></td><td>2.0.6, 2.2.4</td><td>2.0.6</td><td>standard, large-index</td><td>standard</td><td></td></tr>
+                <tr><td><a href="http://bio-bwa.sourceforge.net/">BWA</a></td><td>0.6.2, 0.7.12</td><td>0.6.2</td><td>N/A</td><td>N/A</td><td>-l 28</td></tr>
+                <tr><td><a href="http://research-pub.gene.com/gmap/">GSNAP</a></td><td>2012-07-20, 2014-12-21</td><td>2012-07-20</td><td></td><td></td><td>-N 1</td></tr>
+                <tr><td><a href="https://code.google.com/p/rna-star/">STAR</a></td><td>2.4.0k</td><td>2.4.0k</td><td>standard, large-index</td><td>standard</td><td>--outSAMunmapped Within</td></tr>
+           </table>
+           <br/>
+         <li><b>Removed built-in mappers</b>:</li>
+         <ul>
+           <li>SOAP 2.x</li>
+         </ul>
+         <br/>
+         <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Map reads step --&gt;
+&lt;step id="mymappingstep" skip="false" discardoutput="true"&gt;
+	&lt;module&gt;mapreads&lt;/module&gt;
+	&lt;parameters&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;mapper&lt;/name&gt;
+			&lt;value&gt;star&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;mapper.version&lt;/name&gt;
+			&lt;value&gt;2.4.0k&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;mapper.flavor&lt;/name&gt;
+			&lt;value&gt;standard&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;mapper.arguments&lt;/name&gt;
+			&lt;value&gt;--outSAMunmapped Within&lt;/value&gt;
+		&lt;/parameter&gt;
+	&lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
+       </ul>
+
+      <p><b>Note 1:</b> In hadoop mode, Eoulsan use the <code>mapreduce.cluster.temp.dir</code> hadoop setting as location for the mapping temporary files (mapper indexes and FASTQ temporary files). This path must be set in the Hadoop client properties.</p>
+      <p><b>Note 2:</b> In hadoop mode, use the <code>requiredMemory</code> attribute of the step tag to define the amount of memory required by the mapper in Hadoop mode. By default the value is 8 GB.</p>
+
+      <p><b>Warning:</b> In hadoop mode, the results of BWA are not exactly the same as in local mode because with BWA the SAM output of splitted FASTQ files are not the same as the full FASTQ files (See <a href="https://www.biostars.org/p/44101/">this BioStar post</a> for more information).</p>
+
+    </section>
+
+  </body>
+
+</document>
