@@ -36,7 +36,7 @@ import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
  * @author Celine Hernandez - CSB lab - ENS - Paris
  */
 @LocalOnly
-public class BedToolsStep extends AbstractModule {
+public class BedToolsModule extends AbstractModule {
 
   private static final String SOFTWARE_LABEL = "bedtools";
   private static final String SHIPPED_PACKAGE_VERSION = "2.24.0";

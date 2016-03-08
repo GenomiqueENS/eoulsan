@@ -31,7 +31,7 @@ import picard.sam.MergeSamFiles;
  * @author Celine Hernandez - CSB lab - ENS - Paris
  */
 @LocalOnly
-public class MergeInputRepLocalStep extends AbstractModule {
+public class MergeInputRepLocalModule extends AbstractModule {
 
   private static final String STEP_NAME = "mergeinput";
 

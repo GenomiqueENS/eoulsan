@@ -33,7 +33,7 @@ import htsjdk.samtools.SAMRecord;
  * @author Celine Hernandez - CSB lab - ENS - Paris
  */
 @LocalOnly
-public class CountSplicedReadsStep extends AbstractModule {
+public class CountSplicedReadsModule extends AbstractModule {
 
   /**
    *

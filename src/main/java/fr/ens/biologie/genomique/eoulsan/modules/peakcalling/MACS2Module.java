@@ -37,7 +37,7 @@ import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
  * @author Celine Hernandez - CSB lab - ENS - Paris
  */
 @LocalOnly
-public class MACS2Step extends AbstractModule {
+public class MACS2Module extends AbstractModule {
 
   private static final String CALLER_NAME = "MACS2";
   private static final String SHIPPED_PACKAGE_VERSION = "2.0.10.20131216";

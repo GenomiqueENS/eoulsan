@@ -37,7 +37,7 @@ import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
  * @author Celine Hernandez - CSB lab - ENS - Paris
  */
 @LocalOnly
-public class DeepToolsStep extends AbstractModule {
+public class DeepToolsModule extends AbstractModule {
 
   private static final String SOFTWARE_LABEL = "deeptools";
   private static final String SHIPPED_PACKAGE_VERSION = "1.5.11";

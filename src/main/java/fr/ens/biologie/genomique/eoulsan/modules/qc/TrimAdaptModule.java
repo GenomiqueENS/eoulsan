@@ -33,7 +33,7 @@ import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
  * @author Celine Hernandez - CSB lab - ENS - Paris
  */
 @LocalOnly
-public class TrimAdaptStep extends AbstractModule {
+public class TrimAdaptModule extends AbstractModule {
 
   private static final String SOFTWARE_LABEL_CA = "cutadapt";
   private static final String SHIPPED_PACKAGE_VERSION_CA = "1.8.1";

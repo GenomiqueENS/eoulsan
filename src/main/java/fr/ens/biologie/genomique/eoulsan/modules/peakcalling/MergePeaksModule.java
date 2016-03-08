@@ -31,7 +31,7 @@ import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
  * @author Celine Hernandez - CSB lab - ENS - Paris
  */
 @LocalOnly
-public class MergePeaksStep extends AbstractModule {
+public class MergePeaksModule extends AbstractModule {
 
   /**
    * Settings for MergePeaks

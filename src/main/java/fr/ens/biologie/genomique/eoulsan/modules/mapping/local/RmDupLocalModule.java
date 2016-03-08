@@ -32,7 +32,7 @@ import picard.sam.MarkDuplicates;
  * @author Celine Hernandez - CSB lab - ENS - Paris
  */
 @LocalOnly
-public class RmDupLocalStep extends AbstractModule {
+public class RmDupLocalModule extends AbstractModule {
 
   /**
    *

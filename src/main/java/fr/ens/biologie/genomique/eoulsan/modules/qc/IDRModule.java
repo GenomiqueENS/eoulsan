@@ -37,7 +37,7 @@ import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
  * @author Celine Hernandez - CSB lab - ENS - Paris
  */
 @LocalOnly
-public class IDRStep extends AbstractModule {
+public class IDRModule extends AbstractModule {
 
   /**
    *
