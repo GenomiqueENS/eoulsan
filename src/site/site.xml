@@ -31,7 +31,7 @@
 	<bannerLeft>
 		<name>Genomic Paris Centre</name>
 		<src>images/logo_genomicpariscentre-90pxh.png</src>
-		<href>https://genomique.biologie.ens.fr/</href>
+		<href>https://www.genomique.biologie.ens.fr/</href>
 	</bannerLeft>
 	<bannerRight>
 		<name>Eoulsan</name>
@@ -41,7 +41,7 @@
 	<body>
 		<links>
 			<item name="IBENS genomic platform"
-				href="https://genomique.biologie.ens.fr" />
+				href="https://www.genomique.biologie.ens.fr" />
 			<item name="École normale supérieure"
 				href="http://www.ens.fr" />
 		</links>
