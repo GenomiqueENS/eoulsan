@@ -79,8 +79,8 @@ SampleNumber	Name	Reads	Genome	Annotation	FastqFormat	Condition	RepTechGroup	Exp
 			<p>Paired-end files of a sample can be set between bracket and must be separated by a coma. The following design file show a example of design file with paired-end files:</p>
 <source>
 SampleNumber    Name    Reads   Genome  Annotation      FastqFormat     Condition       ReplicateType   UUID
-1	s1	[s1a.fq.bz2,s1b.fq.bz2]	genome.fasta	annotation_only.gff	fastq-sanger	s1	B	705d190c-de47-4c4f-8ddf-881c9b89ca66
-2	s2	[s2a.fq.bz2,s2b.fq.bz2]	genome.fasta	annotation_only.gff	fastq-sanger	s2	B	54c8833f-77e1-4e4f-90c2-742e459df7a7
+1	s1	[s1a.fq.bz2,s1b.fq.bz2]	mouse_build37.fasta	mouse_build37.gff	fastq-sanger	s1	B	705d190c-de47-4c4f-8ddf-881c9b89ca66
+2	s2	[s2a.fq.bz2,s2b.fq.bz2]	mouse_build37.fasta	mouse_build37.gff	fastq-sanger	s2	B	54c8833f-77e1-4e4f-90c2-742e459df7a7
 </source>
 
 		</subsection>
@@ -96,14 +96,14 @@ SampleNumber    Name    Reads   Genome  Annotation      FastqFormat     Conditio
 
 <source>
 SampleNumber	Name	Reads	Genome	Annotation	FastqFormat	Condition	RepTechGroup	Experiment
-1	s1	s1.fq	genome://mouse	gff://mouse	fastq-illumina	c1	repT1	project1
-12	s2	s2.fq	genome://mouse	gff://mouse	fastq-illumina	c1	repT1	project1
-3	s3	s3.fq	genome://mouse	gff://mouse	fastq-illumina	c1	repT2	project1
-54	s4	s4.fq	genome://mouse	gff://mouse	fastq-illumina	c1	repT2	project1
-15	s1	s1.fq	genome://mouse	gff://mouse	fastq-illumina	c2	repT3	project1
-5	s2	s2.fq	genome://mouse	gff://mouse	fastq-illumina	c2	repT4	project1
-25	s3	s3.fq	genome://mouse	gff://mouse	fastq-illumina	c2	repT3	project1
-13	s4	s4.fq	genome://mouse	gff://mouse	fastq-illumina	c2	repT3	project1
+1	s1	s1.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c1	repT1	project1
+12	s2	s2.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c1	repT1	project1
+3	s3	s3.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c1	repT2	project1
+54	s4	s4.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c1	repT2	project1
+15	s1	s1.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c2	repT3	project1
+5	s2	s2.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c2	repT4	project1
+25	s3	s3.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c2	repT3	project1
+13	s4	s4.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c2	repT3	project1
 </source>
 
 		</subsection>
@@ -116,14 +116,14 @@ SampleNumber	Name	Reads	Genome	Annotation	FastqFormat	Condition	RepTechGroup	Exp
 
 <source>
 SampleNumber	Name	Reads	Genome	Annotation	FastqFormat	Condition	RepTechGroup	Experiment
-1	s1	s1.fq	genome://mouse	gff://mouse	fastq-illumina	c1	repT1	project1
-12	s2	s2.fq	genome://mouse	gff://mouse	fastq-illumina	c1	repT1	project1
-3	s3	s3.fq	genome://mouse	gff://mouse	fastq-illumina	c1	repT2	project1
-54	s4	s4.fq	genome://mouse	gff://mouse	fastq-illumina	c1	repT2	project1
-15	s1	s1.fq	genome://mouse	gff://mouse	fastq-illumina	c2	na	project1
-5	s2	s2.fq	genome://mouse	gff://mouse	fastq-illumina	c2	NA	project1
-25	s3	s3.fq	genome://mouse	gff://mouse	fastq-illumina	c2	repT3	project1
-13	s4	s4.fq	genome://mouse	gff://mouse	fastq-illumina	c2	repT3	project1
+1	s1	s1.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c1	repT1	project1
+12	s2	s2.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c1	repT1	project1
+3	s3	s3.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c1	repT2	project1
+54	s4	s4.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c1	repT2	project1
+15	s1	s1.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c2	na	project1
+5	s2	s2.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c2	NA	project1
+25	s3	s3.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c2	repT3	project1
+13	s4	s4.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c2	repT3	project1
 </source>
 			<p>In this example below there is three technical replicates groups. For
 			all sample with the same RepTechGroup value, reads counts are pooled.
@@ -134,14 +134,14 @@ SampleNumber	Name	Reads	Genome	Annotation	FastqFormat	Condition	RepTechGroup	Exp
 
 <source>
 SampleNumber	Name	Reads	Genome	Annotation	FastqFormat	Condition	RepTechGroup	Experiment
-1	s1	s1.fq	genome://mouse	gff://mouse	fastq-illumina	c1	na	project1
-12	s2	s2.fq	genome://mouse	gff://mouse	fastq-illumina	c1	Na	project1
-3	s3	s3.fq	genome://mouse	gff://mouse	fastq-illumina	c1	na	project1
-54	s4	s4.fq	genome://mouse	gff://mouse	fastq-illumina	c1	NA	project1
-15	s1	s1.fq	genome://mouse	gff://mouse	fastq-illumina	c2	na	project1
-5	s2	s2.fq	genome://mouse	gff://mouse	fastq-illumina	c2	NA	project1
-25	s3	s3.fq	genome://mouse	gff://mouse	fastq-illumina	c2	na	project1
-13	s4	s4.fq	genome://mouse	gff://mouse	fastq-illumina	c2	NA	project1
+1	s1	s1.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c1	na	project1
+12	s2	s2.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c1	Na	project1
+3	s3	s3.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c1	na	project1
+54	s4	s4.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c1	NA	project1
+15	s1	s1.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c2	na	project1
+5	s2	s2.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c2	NA	project1
+25	s3	s3.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c2	na	project1
+13	s4	s4.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c2	NA	project1
 </source>
 
 		</subsection>
@@ -156,14 +156,14 @@ SampleNumber	Name	Reads	Genome	Annotation	FastqFormat	Condition	RepTechGroup	Exp
 
 <source>
 SampleNumber	Name	Reads	Genome	Annotation	FastqFormat	Condition	RepTechGroup	Experiment
-1	s1	s1.fq	genome://mouse	gff://mouse	fastq-illumina	c1	repT1	project1
-12	s2	s2.fq	genome://mouse	gff://mouse	fastq-illumina	c1	repT1	project1
-3	s3	s3.fq	genome://mouse	gff://mouse	fastq-illumina	c2	repT2	project1
-54	s4	s4.fq	genome://mouse	gff://mouse	fastq-illumina	c2	repT2	project1
-15	s1	s1.fq	genome://mouse	gff://mouse	fastq-illumina	c3	repT3	project2
-5	s2	s2.fq	genome://mouse	gff://mouse	fastq-illumina	c3	repT3	project2
-25	s3	s3.fq	genome://mouse	gff://mouse	fastq-illumina	c4	repT4	project2
-13	s4	s4.fq	genome://mouse	gff://mouse	fastq-illumina	c4	repT4	project2
+1	s1	s1.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c1	repT1	project1
+12	s2	s2.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c1	repT1	project1
+3	s3	s3.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c2	repT2	project1
+54	s4	s4.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c2	repT2	project1
+15	s1	s1.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c3	repT3	project2
+5	s2	s2.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c3	repT3	project2
+25	s3	s3.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c4	repT4	project2
+13	s4	s4.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c4	repT4	project2
 </source>
 
 		</subsection>
@@ -179,14 +179,14 @@ SampleNumber	Name	Reads	Genome	Annotation	FastqFormat	Condition	RepTechGroup	Exp
 
 <source>
 SampleNumber	Name	Reads	Genome	Annotation	FastqFormat	Condition	RepTechGroup	Experiment	Reference
-1	s1	s1.fq	genome://mouse	gff://mouse	fastq-illumina	c1	repT1	project1	true
-12	s2	s2.fq	genome://mouse	gff://mouse	fastq-illumina	c1	repT1	project1	false
-3	s3	s3.fq	genome://mouse	gff://mouse	fastq-illumina	c2	repT2	project1	false
-54	s4	s4.fq	genome://mouse	gff://mouse	fastq-illumina	c2	repT2	project1	false
-15	s1	s1.fq	genome://mouse	gff://mouse	fastq-illumina	c3	repT3	project2	false
-5	s2	s2.fq	genome://mouse	gff://mouse	fastq-illumina	c3	repT3	project2	false
-25	s3	s3.fq	genome://mouse	gff://mouse	fastq-illumina	c4	repT4	project2	false
-13	s4	s4.fq	genome://mouse	gff://mouse	fastq-illumina	c4	repT4	project2	false
+1	s1	s1.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c1	repT1	project1	true
+12	s2	s2.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c1	repT1	project1	false
+3	s3	s3.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c2	repT2	project1	false
+54	s4	s4.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c2	repT2	project1	false
+15	s1	s1.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c3	repT3	project2	false
+5	s2	s2.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c3	repT3	project2	false
+25	s3	s3.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c4	repT4	project2	false
+13	s4	s4.fq	genome://mouse_build37	gff://mouse_build37	fastq-illumina	c4	repT4	project2	false
 </source>
 
 As you can see it is possible to describe kinetic and no kinetic experiements in the sams design.
