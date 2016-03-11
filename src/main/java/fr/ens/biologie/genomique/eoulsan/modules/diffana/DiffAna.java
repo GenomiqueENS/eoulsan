@@ -492,6 +492,8 @@ public class DiffAna extends Normalization {
     // Get experiment reference if exists
     final String refExp = experiment.getMetadata().getReference();
 
+    String refValue = null;
+
     for (ExperimentSample es : experiment.getExperimentSamples()) {
 
       final int ref =
@@ -508,8 +510,21 @@ public class DiffAna extends Normalization {
         break;
 
       case 1:
-        // Add reference to R script
-        sb.append("ref <- " + "\"" + DesignUtils.getCondition(es) + "\"\n\n");
+        String newRefValue = DesignUtils.getCondition(es);
+
+        if (newRefValue != null) {
+          newRefValue = newRefValue.trim();
+
+          if (refValue != null && !refValue.equals(newRefValue)) {
+            throw new EoulsanException("Found a reference value ("
+                + newRefValue + ") that is not the current reference value ("
+                + refValue + ") in the Diffana step (sample: "
+                + es.getSample().getId() + ")");
+          }
+
+          refValue = newRefValue;
+        }
+
         break;
 
       default:
@@ -517,6 +532,13 @@ public class DiffAna extends Normalization {
             "Reference value greater than 1 and not handled by the Diffana step (sample: "
                 + es.getSample().getId() + ")");
       }
+    }
+
+    // Add reference to R script if found
+    if (refValue != null) {
+      sb.append("ref <- \"");
+      sb.append(refValue);
+      sb.append("\"\n\n");
     }
   }
 
