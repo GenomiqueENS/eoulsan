@@ -82,7 +82,7 @@ public class DESeq2Module extends AbstractModule {
   private static final String DIFFANA = "diffana";
   private static final String SIZE_FACTORS_TYPE = "size.factors.type";
   private static final String FIT_TYPE = "fit.type";
-  private static final String STATISTIC_TEST = "statistic.test";
+  private static final String STATISTIC_TEST = "statistical.test";
 
   // Default value for DEseq options
   private boolean normFig = true;
