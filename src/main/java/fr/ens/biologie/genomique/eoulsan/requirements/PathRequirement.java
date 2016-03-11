@@ -135,4 +135,13 @@ public class PathRequirement extends AbstractRequirement {
     return result;
   }
 
+  //
+  // Object method
+  //
+
+  @Override
+  public String toString() {
+    return "Executable in PATH: " + this.executableName;
+  }
+
 }

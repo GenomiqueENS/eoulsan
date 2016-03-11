@@ -248,4 +248,13 @@ public class DockerRequirement extends AbstractRequirement {
     return result;
   }
 
+  //
+  // Object method
+  //
+
+  @Override
+  public String toString() {
+    return "Docker image: " + this.dockerImage;
+  }
+
 }

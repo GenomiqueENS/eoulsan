@@ -120,4 +120,13 @@ public class RserveRequirement extends AbstractRequirement {
     return result;
   }
 
+  //
+  // Object method
+  //
+
+  @Override
+  public String toString() {
+    return "Rserve server: " + this.serverName;
+  }
+
 }

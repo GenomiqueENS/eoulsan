@@ -307,11 +307,17 @@ public class CommandWorkflow extends AbstractWorkflow {
     int installerCount = 0;
     for (Map.Entry<CommandStep, Requirement> e : requirements.entries()) {
 
+      final String stepId = e.getKey().getId();
       final Requirement r = e.getValue();
 
       if (r.isAvailable()) {
+        getLogger()
+            .fine("Requierement found for step \"" + stepId + "\": " + r);
         continue;
       }
+
+      getLogger()
+          .fine("Requierement not found for step \"" + stepId + "\": " + r);
 
       if (!r.isInstallable()) {
 
