@@ -32,6 +32,7 @@ import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.PARTIALLY_DO
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.READY;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WAITING;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
+import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.stackTraceToString;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.io.File;
@@ -59,9 +60,9 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
-import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
+import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 import fr.ens.biologie.genomique.eoulsan.core.schedulers.TaskSchedulerFactory;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
@@ -500,6 +501,10 @@ public abstract class AbstractWorkflow implements Workflow {
         } else {
           exception = new EoulsanException("Fail of the analysis.");
         }
+
+        // Log exception stacktrace
+        EoulsanLogger.logSevere("Cause of the fail of the analysis: "
+            + stackTraceToString(exception));
 
         // Stop the analysis
         emergencyStop(exception, firstResult.getErrorMessage());
