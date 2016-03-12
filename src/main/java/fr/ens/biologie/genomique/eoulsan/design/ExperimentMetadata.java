@@ -40,7 +40,7 @@ public class ExperimentMetadata extends AbstractMetadata
 
   // constants
   public static final String SKIP_KEY = "skip";
-  public static final String REFERENCE_KEY = "Reference";
+  public static final String REFERENCE_KEY = "reference";
   public static final String MODEL_KEY = "model";
   public static final String CONTRAST_KEY = "contrast";
   public static final String BUILD_CONTRAST_KEY = "buildContrast";
