@@ -27,6 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.getAllSamplesMetadataKeys;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.getExperimentSampleAllMetadataKeys;
+import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.referenceValueToInt;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toCompactTime;
 import static java.util.Arrays.asList;
 
@@ -44,8 +45,10 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentMetadata;
+import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSampleMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
@@ -60,7 +63,6 @@ public class DEseq2 {
 
   private static final String CONDITION_COLUMN = "Condition";
   private static final String REFERENCE_COLUMN_NAME = "Reference";
-  private static final String REFERENCE_EXP_MD_KEY = "reference";
 
   // R scripts path in JAR file
   private static final String SCRIPTS_PATH_IN_JAR_FILE = "/DESeq2/";
@@ -285,8 +287,6 @@ public class DEseq2 {
 
     final StringBuilder sb = new StringBuilder();
 
-    final ExperimentMetadata expMetadata = experiment.getMetadata();
-
     //
     // Print column names
     //
@@ -303,15 +303,19 @@ public class DEseq2 {
     final List<String> experimentMDKeys =
         getExperimentSampleAllMetadataKeys(experiment);
 
+    // Get Experiment reference
+    final String experimentReference = experiment.getMetadata().getReference();
+
+    final boolean referenceColumn = experimentReference != null
+        || sampleMDKeys.contains(SampleMetadata.REFERENCE_KEY)
+        || experimentMDKeys.contains(ExperimentSampleMetadata.REFERENCE_KEY);
+
     // Print common column names
     for (String key : sampleMDKeys) {
       if (!experimentMDKeys.contains(key)) {
 
-        // if the reference option on the experiment metadata exist, the
-        // column Reference from the common column is not added
-        if (expMetadata.contains(REFERENCE_EXP_MD_KEY)
-            && key == REFERENCE_COLUMN_NAME) {
-
+        // The reference column will be the last column
+        if (SampleMetadata.REFERENCE_KEY.equals(key)) {
           continue;
         }
 
@@ -323,13 +327,18 @@ public class DEseq2 {
     // Print experiment column names
     for (String key : experimentMDKeys) {
 
+      // The reference column will be the last column
+      if (ExperimentSampleMetadata.REFERENCE_KEY.equals(key)) {
+        continue;
+      }
+
       sb.append(TAB_SEPARATOR);
       sb.append(key);
     }
 
     // Add the column reference when the reference option is on the experiment
     // metadata
-    if (expMetadata.contains(REFERENCE_EXP_MD_KEY)) {
+    if (referenceColumn) {
 
       sb.append(TAB_SEPARATOR);
       sb.append(REFERENCE_COLUMN_NAME);
@@ -356,11 +365,8 @@ public class DEseq2 {
       for (String key : sampleMDKeys) {
         if (!experimentMDKeys.contains(key)) {
 
-          // if the reference option on the experiment metadata exist, the
-          // column Reference from the common column is not added
-          if (expMetadata.contains(REFERENCE_EXP_MD_KEY)
-              && key == REFERENCE_COLUMN_NAME) {
-
+          // The reference column will be the last column
+          if (SampleMetadata.REFERENCE_KEY.equals(key)) {
             continue;
           }
 
@@ -373,10 +379,15 @@ public class DEseq2 {
       }
 
       // print experiment sample metadata
-      final ExperimentSampleMetadata expSampleMetadata =
-          experiment.getExperimentSample(sample).getMetadata();
+      final ExperimentSample es = experiment.getExperimentSample(sample);
+      final ExperimentSampleMetadata expSampleMetadata = es.getMetadata();
 
       for (String key : experimentMDKeys) {
+
+        // The reference column will be the last column
+        if (ExperimentSampleMetadata.REFERENCE_KEY.equals(key)) {
+          continue;
+        }
 
         sb.append(TAB_SEPARATOR);
 
@@ -385,14 +396,12 @@ public class DEseq2 {
         }
       }
 
-      if (expMetadata.contains(REFERENCE_EXP_MD_KEY)) {
-        sb.append(TAB_SEPARATOR);
-        if (sample.getName() == expMetadata.getReference()) {
-          sb.append("1");
-        } else {
-          sb.append("0");
-        }
+      // Add reference column
+      if (referenceColumn) {
 
+        sb.append(TAB_SEPARATOR);
+        sb.append(referenceValueToInt(DesignUtils.getReference(es),
+            experimentReference));
       }
 
       sb.append(NEWLINE);
