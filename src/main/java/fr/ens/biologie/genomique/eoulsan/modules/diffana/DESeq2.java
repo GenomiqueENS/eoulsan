@@ -59,7 +59,7 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
  * @author Xavier Bauquet
  * @since 2.0
  */
-public class DEseq2 {
+public class DESeq2 {
 
   private static final String CONDITION_COLUMN = "Condition";
   private static final String REFERENCE_COLUMN_NAME = "Reference";
@@ -96,9 +96,9 @@ public class DEseq2 {
   private final boolean diffanaFig;
   private final boolean normDiffana;
   private final boolean diffana;
-  private final DEseq2.SizeFactorsType sizeFactorsType;
-  private final DEseq2.FitType fitType;
-  private final DEseq2.StatisticTest statisticTest;
+  private final DESeq2.SizeFactorsType sizeFactorsType;
+  private final DESeq2.FitType fitType;
+  private final DESeq2.StatisticTest statisticTest;
 
   // Design options for DEseq2
   private final String model;
@@ -600,7 +600,7 @@ public class DEseq2 {
   private static String readFromJar(final String filePathInJar)
       throws IOException {
 
-    final InputStream is = DEseq2.class.getResourceAsStream(filePathInJar);
+    final InputStream is = DESeq2.class.getResourceAsStream(filePathInJar);
 
     final StringBuilder sb = new StringBuilder();
     String line = null;
@@ -636,12 +636,12 @@ public class DEseq2 {
    * @param fitType fitType DESeq2 option
    * @param statisticTest statisticTest DESeq2 option
    */
-  public DEseq2(final RExecutor executor, final String stepId,
+  public DESeq2(final RExecutor executor, final String stepId,
       final Design design, final Experiment experiment,
       final Map<String, File> sampleFiles, final boolean normFig,
       final boolean diffanaFig, final boolean normDiffana,
-      final boolean diffana, final DEseq2.SizeFactorsType sizeFactorsType,
-      final DEseq2.FitType fitType, final DEseq2.StatisticTest statisticTest,
+      final boolean diffana, final DESeq2.SizeFactorsType sizeFactorsType,
+      final DESeq2.FitType fitType, final DESeq2.StatisticTest statisticTest,
       boolean saveRScripts) {
 
     checkNotNull(executor, "executor argument cannot be null");
