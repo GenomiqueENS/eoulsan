@@ -68,7 +68,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
           inputFile.toFile().getParentFile().getAbsoluteFile();
 
       if (!parentDir.equals(outputDir)
-          || !inputFile.getName().equals(inputFile)) {
+          || !inputFile.getName().equals(outputFilename)) {
 
         // If the output file is not in the same directory that the original
         // file or its filename is different, create a symbolic link

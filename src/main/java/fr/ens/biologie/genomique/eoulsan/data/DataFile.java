@@ -600,6 +600,10 @@ public class DataFile implements Comparable<DataFile>, Serializable {
   @Override
   public int compareTo(final DataFile o) {
 
+    if (o == null) {
+      throw new NullPointerException("argument cannot be null");
+    }
+
     return this.src.compareTo(o.src);
   }
 

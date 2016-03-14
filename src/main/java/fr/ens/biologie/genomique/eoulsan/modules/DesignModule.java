@@ -268,6 +268,7 @@ public class DesignModule extends AbstractModule {
                     + dataName + " ( original sample name: " + sample.getId()
                     + ")"));
           }
+          dataNames.add(dataName);
 
           // Add a new data to the list
           data = dataList.addDataToList(dataName);
@@ -336,7 +337,7 @@ public class DesignModule extends AbstractModule {
 
   /**
    * Create a list of data files from a sample and a port
-   * @param sample the sample
+   * @param design the design
    * @param port the port
    * @return a list with the data files
    */

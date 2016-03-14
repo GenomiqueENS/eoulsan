@@ -306,11 +306,8 @@ public abstract class AbstractBowtieReadsMapper
         extensionIndexFile.length())).getName();
   }
 
-  protected List<String> createCommonArgs(final String bowtiePath,
-      final String index) {
-
-    return createCommonArgs(bowtiePath, index);
-  }
+  protected abstract List<String> createCommonArgs(final String bowtiePath,
+      final String index);
 
   //
   // Init

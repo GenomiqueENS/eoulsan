@@ -479,7 +479,7 @@ public class SequenceTest {
 
     assertTrue(s1.equals(s1));
     assertFalse(s1.equals(null));
-    assertFalse(s1.equals("titit"));
+    assertFalse(s1.getSequence().equals("titit"));
 
     assertTrue(s1.equals(s1));
     assertEquals(s1, s2);

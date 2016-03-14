@@ -269,6 +269,7 @@ public abstract class AbstractWorkflow implements Workflow {
     }
 
     synchronized (this) {
+      this.stepIds.add(step.getId());
       this.steps.put(step, step.getState());
       this.states.put(step.getState(), step);
     }
