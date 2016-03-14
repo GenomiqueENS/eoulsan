@@ -97,7 +97,7 @@ public class ExperimentSampleMetadata extends AbstractMetadata
    * Set the ReptechGroup.
    * @param newReptechGroup the new ReptechGroup
    */
-  public void setRepTechGroup(String newReptechGroup) {
+  public void setRepTechGroup(final String newReptechGroup) {
     set(REP_TECH_GROUP_KEY, newReptechGroup);
   }
 
@@ -105,15 +105,23 @@ public class ExperimentSampleMetadata extends AbstractMetadata
    * Set the reference.
    * @param newReference the new reference
    */
-  public void setReference(boolean newReference) {
-    set(REFERENCE_KEY, "" + newReference);
+  public void setReference(final boolean newReference) {
+    setReference(Boolean.toString(newReference));
+  }
+
+  /**
+   * Set the reference.
+   * @param newReference the new reference
+   */
+  public void setReference(final String newReference) {
+    set(REFERENCE_KEY, newReference);
   }
 
   /**
    * Set the condition.
    * @param newCondition the new condition
    */
-  public void setCondition(String newCondition) {
+  public void setCondition(final String newCondition) {
     set(CONDITION_KEY, newCondition);
   }
 
