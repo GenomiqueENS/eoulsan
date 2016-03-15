@@ -190,7 +190,6 @@ public class GFFChecker implements Checker {
     Map<String, long[]> sequenceRegions = null;
     final Map<String, Long> sequenceLengths = getSequencesLengths(desc);
     boolean featuresFound = false;
-    boolean first = true;
 
     long[] interval = null;
     long sequenceLength = -1;
@@ -198,12 +197,11 @@ public class GFFChecker implements Checker {
 
     try (final GFFReader gffReader = new GFFReader(file.open())) {
 
+      GFFEntry lastEntry = null;
+
       for (final GFFEntry e : gffReader) {
 
-        if (first) {
-          sequenceRegions = checkSequenceRegions(e, desc);
-          first = false;
-        }
+        lastEntry = e;
 
         if (!featureType.equals(e.getType())) {
           continue;
@@ -286,6 +284,11 @@ public class GFFChecker implements Checker {
       }
 
       gffReader.throwException();
+
+      // Check the sequence regions described in the GFF file
+      if (lastEntry != null) {
+        sequenceRegions = checkSequenceRegions(lastEntry, desc);
+      }
 
       if (featureType != null && !featuresFound) {
         throw new EoulsanException("No feature \""
