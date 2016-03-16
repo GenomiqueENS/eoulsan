@@ -85,7 +85,6 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
       Globals.PARAMETER_PREFIX + ".expression.no.ambiguous.cases";
 
   private final GenomicArray<String> features = new GenomicArray<>();
-  private final Map<String, Integer> counts = new HashMap<>();
 
   private String counterGroup;
   private StrandUsage stranded;
@@ -269,7 +268,6 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
   public void cleanup(final Context context) throws IOException {
 
     this.features.clear();
-    this.counts.clear();
   }
 
   //

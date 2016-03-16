@@ -176,8 +176,12 @@ public class ITCommandExecutor {
 
       } else if (exitValue == 0 && !isApplicationCmdLine) {
         // Success execution, remove standard and error output file
-        stdoutFile.delete();
-        stderrFile.delete();
+        if (!stdoutFile.delete()) {
+          getLogger().warning("Unable to deleted stdout file: " + stdoutFile);
+        }
+        if (!stderrFile.delete()) {
+          getLogger().warning("Unable to deleted stderr file: " + stdoutFile);
+        }
       }
 
     } catch (IOException | InterruptedException e) {

@@ -624,8 +624,6 @@ public abstract class AbstractSequenceReadsMapper
             + archiveIndexFile + " in " + archiveIndexDir);
         FileUtils.unzip(archiveIndexFile, archiveIndexDir);
       }
-    } catch (IOException e) {
-      throw e;
     } finally {
 
       lock.release();

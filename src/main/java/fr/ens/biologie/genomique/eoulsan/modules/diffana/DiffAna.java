@@ -383,7 +383,6 @@ public class DiffAna extends Normalization {
           sb.append("@\n");
 
           passedConditionName.add(cond);
-        } else {
         }
       }
     } else {

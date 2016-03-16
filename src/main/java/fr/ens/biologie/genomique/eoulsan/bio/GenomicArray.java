@@ -370,8 +370,6 @@ public class GenomicArray<T> {
       // Create an empty zone if the interval is after the end of the
       // last chromosome zone
       if (intervalEnd > this.length) {
-        final Set<T> val = new TreeSet<>();
-        val.add(value);
         add(new Zone<T>(this.length + 1, intervalEnd, interval.getStrand()));
         this.length = intervalEnd;
       }

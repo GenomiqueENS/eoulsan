@@ -194,7 +194,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
         beforeExecuteTask(this.context);
 
         final File taskFile =
-            ((TaskContextImpl) this.context).getTaskOutputDirectory().toFile();
+            this.context.getTaskOutputDirectory().toFile();
         final int requiredMemory = getRequiredMemory();
         final int requiredProcessors =
             this.context.getCurrentStep().getRequiredProcessors();

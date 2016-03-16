@@ -702,9 +702,6 @@ class CheetahToPythonTranslator {
             // Close string
             txt += "\"";
           }
-        } else {
-          // Add space
-          // txt += " ";
         }
 
         if (currentPos >= this.getModifiedString().length()) {
