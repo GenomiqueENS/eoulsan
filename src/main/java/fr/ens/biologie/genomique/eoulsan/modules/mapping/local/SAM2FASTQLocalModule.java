@@ -80,9 +80,9 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
   /**
    * Convert SAM file to FASTQ
    * @param samDataFile input SAM file
-   * @param fastqFile output FASTQ file
+   * @param fastqDataFile1 output FASTQ file 1
+   * @param fastqDataFile2 output FASTQ file 2
    * @param reporter reporter
-   * @param tmpDir temporary directory
    * @throws IOException if an error occurs
    */
 

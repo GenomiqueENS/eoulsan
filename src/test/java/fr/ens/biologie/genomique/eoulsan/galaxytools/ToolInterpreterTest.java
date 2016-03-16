@@ -233,7 +233,7 @@ public class ToolInterpreterTest {
     /**
      * Launch test.
      * @throws FileNotFoundException the XML file is not found
-     * @throws Exception if an error occurs during setting or execution on a
+     * @throws EoulsanException if an error occurs during setting or execution on a
      *           test
      */
     public void launchTest() throws FileNotFoundException, EoulsanException {

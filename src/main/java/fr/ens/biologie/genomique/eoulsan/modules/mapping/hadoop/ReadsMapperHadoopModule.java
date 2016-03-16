@@ -361,7 +361,7 @@ public class ReadsMapperHadoopModule extends AbstractReadsMapperModule {
 
   /**
    * Compute the checksum of a ZIP file.
-   * @param is input stream
+   * @param in input stream
    * @return the checksum as a string
    * @throws IOException if an error occurs while creating the checksum
    */

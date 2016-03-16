@@ -384,7 +384,6 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
    * Increment an expression counter with a value of 1.
    * @param context the Hadoop context
    * @param counter the expression counter
-   * @param increment the increment
    */
   private void incrementCounter(final Context context,
                                 final ExpressionCounters counter) {

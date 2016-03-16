@@ -81,7 +81,6 @@ public class Modules {
    * @param context the step configuration context
    * @param parameter the deprecated parameter
    * @param newParameterName the new parameter name
-   * @throws EoulsanException throw an exception if required
    */
   public static void renamedParameter(final StepConfigurationContext context,
       final Parameter parameter, final String newParameterName) {

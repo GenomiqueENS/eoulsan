@@ -420,8 +420,8 @@ public class DistCp implements Tool {
     /**
      * Copy a file to a destination.
      * @param srcstat src path and metadata
-     * @param dstpath dst path
-     * @param reporter
+     * @param relativedst dst path
+     * @param reporter Hadoop reporter
      */
     private void copy(final FileStatus srcstat, final Path relativedst,
         final OutputCollector<WritableComparable<?>, Text> outc,
@@ -584,7 +584,7 @@ public class DistCp implements Tool {
      * @param key src len
      * @param value FilePair (FileStatus src, Path dst)
      * @param out Log of failed copies
-     * @param reporter
+     * @param reporter Hadoop reporter
      */
     @Override
     public void map(final LongWritable key, final FilePair value,
@@ -1007,7 +1007,6 @@ public class DistCp implements Tool {
    * default MAX_MAPS_PER_NODE * nodes in the cluster).
    * @param totalBytes Count of total bytes for job
    * @param job The job to configure
-   * @return Count of maps to run.
    */
   private static void setMapCount(final long totalBytes, final JobConf job)
       throws IOException {

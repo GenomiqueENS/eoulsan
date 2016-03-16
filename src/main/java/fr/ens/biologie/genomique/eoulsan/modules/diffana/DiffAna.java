@@ -413,9 +413,9 @@ public class DiffAna extends Normalization {
 
   /**
    * Determine if there is biological replicates in an experiment
-   * @param conditionsMap
-   * @param rCondNames
-   * @param rRepTechGroup
+   * @param conditionsMap map of the conditions
+   * @param rCondNames r condition names
+   * @param rRepTechGroup replicate tech group
    * @return a boolean
    */
   private boolean isBiologicalReplicates(

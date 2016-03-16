@@ -521,7 +521,6 @@ public class StepResult {
   /**
    * Read a step result file.
    * @param in the input stream to read
-   * @throws IOException if an error occurs while reading the file
    */
   public void read(final InputStream in) {
 

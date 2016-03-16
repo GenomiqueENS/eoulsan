@@ -150,8 +150,8 @@ public abstract class AbstractReadsFilterModule extends AbstractModule {
 
   /**
    * Check deprecated parameters.
+   * @param context step configuration context
    * @param parameter the parameter to check
-   * @param stepId step id
    * @throws EoulsanException if the parameter is no more supported
    */
   static void checkDeprecatedParameter(final StepConfigurationContext context,

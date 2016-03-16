@@ -738,8 +738,6 @@ public abstract class MapperProcess {
 
   /**
    * Wait the end of the main process.
-   * @throws InterruptedException if an error occurs while waiting the end of
-   *           the process
    * @throws IOException if an error occurs while waiting the end of the process
    */
   public void waitFor() throws IOException {

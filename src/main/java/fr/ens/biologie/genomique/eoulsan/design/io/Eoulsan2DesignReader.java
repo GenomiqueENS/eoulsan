@@ -290,7 +290,7 @@ public class Eoulsan2DesignReader implements DesignReader {
    * @param columnName the column name
    * @param columnValue the value
    * @param design the design object
-   * @param sampleId the sample id
+   * @param sample the sample
    * @throws IOException
    */
   private void readSampleMetadata(String columnName, String columnValue,
@@ -311,7 +311,7 @@ public class Eoulsan2DesignReader implements DesignReader {
    * @param columnName the column name
    * @param columnValue the value
    * @param design the design object
-   * @param sampleId the sample id
+   * @param sample the sample
    * @throws IOException
    */
   private void readExperimentSampleMetadata(String columnName,
@@ -476,8 +476,6 @@ public class Eoulsan2DesignReader implements DesignReader {
    * Public constructor.
    * @param file file to read
    * @throws FileNotFoundException if the file cannot be found
-   * @throws IOException if an error occurs while reading the file or if the
-   *           file is null.
    */
   public Eoulsan2DesignReader(final File file) throws FileNotFoundException {
 

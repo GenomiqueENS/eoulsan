@@ -265,8 +265,6 @@ public class Eoulsan1DesignReader implements DesignReader {
    * Public constructor.
    * @param file file to read
    * @throws FileNotFoundException if the file cannot be found
-   * @throws IOException if an error occurs while reading the file or if the
-   *           file is null.
    */
   public Eoulsan1DesignReader(final File file) throws FileNotFoundException {
 
@@ -290,7 +288,6 @@ public class Eoulsan1DesignReader implements DesignReader {
   /**
    * Public constructor
    * @param filename File to read
-   * @throws IOException if the stream is null
    * @throws FileNotFoundException if the file doesn't exist
    */
   public Eoulsan1DesignReader(final String filename)
