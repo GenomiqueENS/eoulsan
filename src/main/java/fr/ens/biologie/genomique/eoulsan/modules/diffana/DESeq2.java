@@ -125,7 +125,7 @@ public class DESeq2 {
    * Enum for the sizeFactorsType option in DESeq2 related to the estimation of
    * the size factor.
    */
-  public static enum SizeFactorsType {
+  public enum SizeFactorsType {
 
     RATIO, ITERATE;
 
@@ -168,7 +168,7 @@ public class DESeq2 {
   /**
    * Enum for the fitType option in DESeq2 related to the dispersion estimation.
    */
-  public static enum FitType {
+  public enum FitType {
 
     PARAMETRIC, LOCAL, MEAN;
 
@@ -210,7 +210,7 @@ public class DESeq2 {
    * Enum for the statisticTest option in DESeq2 related to the statistic test
    * to be used during the differential expression analysis
    */
-  public static enum StatisticTest {
+  public enum StatisticTest {
 
     WALD("Wald"), LRT("LRT");
 

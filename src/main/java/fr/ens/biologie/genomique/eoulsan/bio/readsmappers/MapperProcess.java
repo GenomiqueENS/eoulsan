@@ -237,12 +237,12 @@ public abstract class MapperProcess {
      * @param s string to write
      * @throws IOException if an error has occurred in writings
      */
-    public void write(final String s) throws IOException;
+    void write(final String s) throws IOException;
 
     /**
      * Close the writer.
      */
-    public void close() throws IOException;
+    void close() throws IOException;
 
   }
 

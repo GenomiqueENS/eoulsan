@@ -71,6 +71,6 @@ public interface Workflow extends Serializable {
    * Delete a file on the exit of the workflow.
    * @param file file to remove
    */
-  public void deleteOnExit(final DataFile file);
+  void deleteOnExit(final DataFile file);
 
 }

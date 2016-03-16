@@ -37,18 +37,18 @@ public interface ResourceLoader<S> {
    * Load all available resources.
    * @return a list with all the loaded resources
    */
-  public List<S> loadAllResources();
+  List<S> loadAllResources();
 
   /**
    * Load a resource.
    * @param name name of the resource to load
    * @return a list the loaded resources that had the requested name
    */
-  public List<S> loadResources(String name);
+  List<S> loadResources(String name);
 
   /**
    * Reload the list of available resources.
    */
-  public void reload();
+  void reload();
 
 }
