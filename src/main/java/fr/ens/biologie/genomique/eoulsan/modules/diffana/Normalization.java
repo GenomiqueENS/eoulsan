@@ -323,9 +323,9 @@ public class Normalization {
     sb.append("projectPath <- \"\"\n");
     sb.append("# outPath path of the outputs\n");
     sb.append("outPath <- \"./\"\n");
-    sb.append("projectName <- ");
-    sb.append("\"" + experiment.getName() + "\"" + "\n");
-    sb.append("@\n\n");
+    sb.append("projectName <- \"");
+    sb.append(experiment.getName());
+    sb.append("\"\n@\n\n");
 
     // Add target creation
     sb.append(readStaticScript(TARGET_CREATION));
@@ -383,7 +383,9 @@ public class Normalization {
     sb.append("}\n\n");
     sb.append("\\setkeys{Gin}{width=0.95\textwidth}\n\n");
     // Add document title
-    sb.append("\\title{" + title + "}\n\n");
+    sb.append("\\title{");
+    sb.append(title);
+    sb.append("}\n\n");
 
     // Begin document...
     sb.append("\\begin{document}\n");
@@ -457,7 +459,7 @@ public class Normalization {
     int i = 0;
     for (int id : rSampleIds) {
       i++;
-      sb.append("" + id);
+      sb.append(id);
       if (i < rSampleIds.size()) {
         sb.append(",");
       }
@@ -473,11 +475,11 @@ public class Normalization {
 
     // Add file names vector
     sb.append("#create file names vector\n");
-    sb.append(
-        "fileNames <- paste(\"" + this.expressionFilesPrefix + '\"' + ',');
-    sb.append("sampleIds"
-        + ',' + '\"' + this.expressionFilesSuffix + '\"' + ',' + "sep=\"\""
-        + ")" + "\n\n");
+    sb.append("fileNames <- paste(\"");
+    sb.append(this.expressionFilesPrefix);
+    sb.append("\",sampleIds" + ',' + '\"');
+    sb.append(this.expressionFilesSuffix);
+    sb.append("\",sep=\"\")\n\n");
   }
 
   /**

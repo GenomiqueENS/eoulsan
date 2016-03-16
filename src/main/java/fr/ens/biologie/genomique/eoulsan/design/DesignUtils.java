@@ -84,7 +84,10 @@ public final class DesignUtils {
       final String expId = e.getId();
       for (Map.Entry<String, String> m : e.getMetadata().entrySet()) {
         sb.append('\t');
-        sb.append("Exp." + expId + "." + m.getKey());
+        sb.append("Exp.");
+        sb.append(expId);
+        sb.append(".");
+        sb.append(m.getKey());
         sb.append('=');
         sb.append(m.getValue());
         sb.append('\n');

@@ -51,6 +51,7 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
  * @author Sandrine Perrin
  * @since 2.0
  */
+@SuppressWarnings("StringConcatenationInsideStringBufferAppend")
 public class ITResult {
 
   private final IT it;
@@ -176,62 +177,71 @@ public class ITResult {
       final String duration) {
 
     final StringBuilder report = new StringBuilder();
-    report.append(
-        (isSuccess() ? "SUCCESS" : "FAIL") + ": " + this.it.getTestName());
+    report.append(isSuccess() ? "SUCCESS" : "FAIL");
+    report.append(": ");
+    report.append(this.it.getTestName());
     report.append(isGeneratedData()
         ? ": generate expected data"
         : ": test execution and output files comparison.");
     // TODO add stop here
 
-    report.append("\n\nDate: " + getCurrentFormatedDate());
+    report.append("\n\nDate: ");
+    report.append(getCurrentFormatedDate());
     report.append('\n');
 
     report.append("\n\nDirectories:");
 
-    report.append(
-        "\n\tExpected:" + this.it.getExpectedTestDirectory().getAbsolutePath());
-    report.append(
-        "\n\tOuput:" + this.it.getOutputTestDirectory().getAbsolutePath());
+    report.append("\n\tExpected:");
+    report.append(this.it.getExpectedTestDirectory().getAbsolutePath());
+    report.append("\n\tOuput:");
+    report.append(this.it.getOutputTestDirectory().getAbsolutePath());
 
     report.append("\n\nPatterns:");
 
     // Result for comparison files
-    report.append("\n\tFile count to compare from pattern(s): "
-        + this.it.getFileToComparePatterns());
+    report.append("\n\tFile count to compare from pattern(s): ");
+    report.append(this.it.getFileToComparePatterns());
 
     if (!this.it.getFileToComparePatterns().equals("none")) {
-      report.append(": " + this.it.getCountFilesToCheckContent() + " file(s)");
+      report.append(": ");
+      report.append(this.it.getCountFilesToCheckContent());
+      report.append(" file(s)");
     }
 
     // Result for checking length files
-    report.append("\n\tFile lengths count to check from pattern(s): "
-        + this.it.getCheckLengthFilePatterns());
+    report.append("\n\tFile lengths count to check from pattern(s): ");
+    report.append(this.it.getCheckLengthFilePatterns());
 
     if (!this.it.getCheckLengthFilePatterns().equals("none")) {
-      report.append(": " + this.it.getCountFilesToCheckLength() + " file(s)");
+      report.append(": ");
+      report.append(this.it.getCountFilesToCheckLength());
+      report.append(" file(s)");
     }
 
     // Result to check if files exist
-    report.append("\n\tFile count to check if it exists from pattern(s): "
-        + this.it.getCheckExistenceFilePatterns());
+    report.append("\n\tFile count to check if it exists from pattern(s): ");
+    report.append(this.it.getCheckExistenceFilePatterns());
     if (!this.it.getCheckExistenceFilePatterns().equals("none")) {
-      report
-          .append(": " + this.it.getCountFilesToCheckExistence() + " file(s)");
+      report.append(": ");
+      report.append(this.it.getCountFilesToCheckExistence());
+      report.append(" file(s)");
     }
 
     // List patterns to exclude files on comparison
-    report.append("\n\tPatterns files to exclude comparisons:\t"
-        + this.it.getExcludeToComparePatterns());
+    report.append("\n\tPatterns files to exclude comparisons:\t");
+    report.append(this.it.getExcludeToComparePatterns());
 
     // Result to check if files exist
-    report.append("\n\tFile count to remove from pattern(s) if test successed: "
-        + this.it.getFileToRemovePatterns());
+    report.append("\n\tFile count to remove from pattern(s) if test succeeded: ");
+    report.append(this.it.getFileToRemovePatterns());
     if (!this.it.getFileToRemovePatterns().equals("none")) {
-      report.append(": " + this.it.getCountFilesToRemove() + " file(s)");
+      report.append(": ");
+      report.append(this.it.getCountFilesToRemove());
+      report.append(" file(s)");
     }
 
-    report.append("\n\nDuration one script maximum: "
-        + toTimeHumanReadable(this.it.getDurationMaxInMinutes() * 60 * 1000));
+    report.append("\n\nDuration one script maximum: ");
+    report.append(toTimeHumanReadable(this.it.getDurationMaxInMinutes() * 60 * 1000));
     report.append('\n');
 
     // Add synthesis on executions scripts
@@ -242,8 +252,9 @@ public class ITResult {
     }
 
     if (isGeneratedData()) {
-      report.append(
-          "\nSUCCESS: copy files " + this.it.getCountFilesToCompare() + " to ");
+      report.append("\nSUCCESS: copy files ");
+      report.append(this.it.getCountFilesToCompare());
+      report.append(" to ");
       report.append(this.it.getExpectedTestDirectory().getAbsolutePath());
     }
 
@@ -275,7 +286,8 @@ public class ITResult {
     }
 
     // Add duration on integrated test
-    report.append("\n\nTest duration: " + duration);
+    report.append("\n\nTest duration: ");
+    report.append(duration);
 
     // Return text
     return report.toString();
@@ -317,7 +329,8 @@ public class ITResult {
         // Compile exception message
         msg.append("\t");
         msg.append(ocr.getStatusComparison().getExceptionMessage());
-        msg.append("\t" + ocr.getFilename());
+        msg.append("\t");
+        msg.append(ocr.getFilename());
 
         setException(new EoulsanException(msg.toString()));
       }
@@ -338,10 +351,11 @@ public class ITResult {
     final StringBuilder msgException = new StringBuilder();
 
     msgException.append("\n=== Execution Test Error ===");
-    msgException.append(
-        "\nFrom class: \n\t" + this.exception.getClass().getName() + "");
-    msgException
-        .append("\nException message: \n" + this.exception.getMessage() + "\n");
+    msgException.append("\nFrom class: \n\t");
+    msgException.append(this.exception.getClass().getName());
+    msgException.append("\nException message: \n");
+    msgException.append(this.exception.getMessage());
+    msgException.append("\n");
 
     if (ITSuite.getInstance().isDebugModeEnabled() && withStackTrace) {
       // Add the stack trace

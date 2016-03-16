@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import com.google.common.base.Joiner;
 
@@ -155,9 +152,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
     }
 
     if (scriptArguments != null) {
-      for (String argument : scriptArguments) {
-        result.add(argument);
-      }
+      Collections.addAll(result, scriptArguments);
     }
 
     return result;

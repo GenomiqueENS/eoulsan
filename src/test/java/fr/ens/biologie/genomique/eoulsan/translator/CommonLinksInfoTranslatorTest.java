@@ -68,7 +68,7 @@ public class CommonLinksInfoTranslatorTest {
   public void testGetLinkInfo() throws UnsupportedEncodingException {
     CommonLinksInfoTranslator cmLinkInfoTransl =
         new CommonLinksInfoTranslator(transl);
-    assertNull(cmLinkInfoTransl.getLinkInfo(new String(), new String()));
+    assertNull(cmLinkInfoTransl.getLinkInfo("", ""));
 
     assertEquals("http://www.ncbi.nlm.nih.gov/nuccore/TranslatedId",
         cmLinkInfoTransl.getLinkInfo("TranslatedId", "GI"));

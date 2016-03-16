@@ -35,11 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import com.google.common.base.Objects;
 import com.spotify.docker.client.DockerClient;
@@ -185,9 +181,7 @@ public class DockerMapperExecutor implements MapperExecutor {
 
         List<File> newFilesUsed = new ArrayList<>();
         if (filesUsed != null) {
-          for (File f : filesUsed) {
-            newFilesUsed.add(f);
-          }
+          Collections.addAll(newFilesUsed, filesUsed);
         }
 
         if (stdout) {

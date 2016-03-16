@@ -662,12 +662,8 @@ class CheetahToPythonTranslator {
       @Override
       String buildLineScript(final String line) {
 
-        final StringBuilder txt = new StringBuilder();
-        txt.append(this.tab(currentTabCount));
-
-        txt.append(line);
-
-        return txt.toString();
+        return this.tab(currentTabCount) +
+                line;
       }
 
       //
@@ -790,19 +786,11 @@ class CheetahToPythonTranslator {
       @Override
       String buildLineScript(final String line) {
 
-        final StringBuilder txt = new StringBuilder();
-        txt.append(this.tab(currentTabCount));
-
-        // txt.append(VAR_CMD_NAME + " += \" \" + ");
-        txt.append(VAR_CMD_NAME);
-        txt.append(" += ");
-        txt.append(line);
-        txt.append(" + \" \"");
-
-        // if (!line.endsWith("\""))
-        // txt.append("\"");
-
-        return txt.toString();
+        return this.tab(currentTabCount) +
+                VAR_CMD_NAME +
+                " += " +
+                line +
+                " + \" \"";
       }
 
       //

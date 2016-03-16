@@ -37,6 +37,7 @@ import java.io.Writer;
 import java.nio.channels.Channels;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingDeque;
@@ -802,9 +803,7 @@ public abstract class MapperProcess {
       return;
     }
 
-    for (File f : files) {
-      this.filesToRemove.add(f);
-    }
+    Collections.addAll(this.filesToRemove, files);
   }
 
   protected void additionalInit() throws IOException {

@@ -320,9 +320,9 @@ public class DiffAna extends Normalization {
     sb.append("projectPath <- \"\"\n");
     sb.append("# outPath path of the outputs\n");
     sb.append("outPath <- \"./\"\n");
-    sb.append("projectName <- ");
-    sb.append("\"" + experiment.getName() + "\"" + "\n");
-    sb.append("@\n\n");
+    sb.append("projectName <- \"");
+    sb.append(experiment.getName());
+    sb.append("\"\n@\n\n");
 
     sb.append(readStaticScript(TARGET_CREATION));
 
@@ -371,10 +371,15 @@ public class DiffAna extends Normalization {
       for (String cond : rCondNames) {
 
         if (passedConditionName.indexOf(cond) == -1) {
-          sb.append("<<dispersionPlot_" + cond + ", fig=TRUE>>=\n");
-          sb.append(
-              "fitInfo <- fitInfo(countDataSet, name = \"" + cond + "\")\n");
-          sb.append("plotDispEsts(countDataSet, fitInfo, \"" + cond + "\")\n");
+          sb.append("<<dispersionPlot_");
+          sb.append(cond);
+          sb.append(", fig=TRUE>>=\n");
+          sb.append("fitInfo <- fitInfo(countDataSet, name = \"");
+          sb.append(cond);
+          sb.append("\")\n");
+          sb.append("plotDispEsts(countDataSet, fitInfo, \"");
+          sb.append(cond);
+          sb.append("\")\n");
           sb.append("@\n");
 
           passedConditionName.add(cond);
