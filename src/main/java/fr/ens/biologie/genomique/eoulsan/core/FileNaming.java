@@ -694,7 +694,7 @@ public class FileNaming {
    * @param name the name to test
    * @return true if the name is valid
    */
-  private static final boolean isNameValid(final String name) {
+  private static boolean isNameValid(final String name) {
 
     return !(name == null
         || name.isEmpty() || !ASCII_LETTER_OR_DIGIT.matchesAllOf(name));

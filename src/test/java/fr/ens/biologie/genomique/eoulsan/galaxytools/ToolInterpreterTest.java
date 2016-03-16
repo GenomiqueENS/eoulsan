@@ -355,7 +355,7 @@ public class ToolInterpreterTest {
     ToolTest(final String description) {
       this.description = description;
 
-      this.setStepParameters = new HashSet<Parameter>();
+      this.setStepParameters = new HashSet<>();
       this.variablesCommand = new HashMap<>();
     }
   }

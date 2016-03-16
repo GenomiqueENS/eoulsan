@@ -179,7 +179,7 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
   // Other methods
   //
 
-  private final String createKey(final DataFile genomeFile) {
+  private String createKey(final DataFile genomeFile) {
 
     try {
       final DataFileMetadata md = genomeFile.getMetaData();
@@ -192,8 +192,8 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
     }
   }
 
-  private static final String createKey(final long genomeFileLength,
-      final String genomeFileMD5Sum) {
+  private static String createKey(final long genomeFileLength,
+                                  final String genomeFileMD5Sum) {
 
     return genomeFileMD5Sum + '\t' + genomeFileLength;
   }

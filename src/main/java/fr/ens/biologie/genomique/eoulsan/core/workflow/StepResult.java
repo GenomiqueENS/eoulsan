@@ -303,7 +303,7 @@ public class StepResult {
 
     if (!this.counters.containsKey(counterGroup)) {
 
-      map = new LinkedHashMap<String, Long>();
+      map = new LinkedHashMap<>();
       this.counters.put(counterGroup, map);
     } else {
 
@@ -640,7 +640,7 @@ public class StepResult {
    * @param s the string to parse
    * @return a Date object or null if the date cannot be parsed
    */
-  private final Date parseDate(final String s) {
+  private Date parseDate(final String s) {
 
     if (s == null) {
       return null;

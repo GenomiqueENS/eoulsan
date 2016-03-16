@@ -123,7 +123,7 @@ public class ExecAction extends AbstractAction {
    * @return an Options object
    */
   @SuppressWarnings("static-access")
-  private static final Options makeOptions() {
+  private static Options makeOptions() {
 
     // create Options object
     final Options options = new Options();
@@ -142,7 +142,7 @@ public class ExecAction extends AbstractAction {
    * Show command line help.
    * @param options Options of the software
    */
-  private static final void help(final Options options) {
+  private static void help(final Options options) {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
@@ -164,8 +164,8 @@ public class ExecAction extends AbstractAction {
    * @param designFile design file
    * @param jobDescription job description
    */
-  private static final void run(final File workflowFile, final File designFile,
-      final String jobDescription) {
+  private static void run(final File workflowFile, final File designFile,
+                          final String jobDescription) {
 
     checkNotNull(workflowFile, "paramFile is null");
     checkNotNull(designFile, "designFile is null");

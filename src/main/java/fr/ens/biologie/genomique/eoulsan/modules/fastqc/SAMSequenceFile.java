@@ -67,7 +67,7 @@ public class SAMSequenceFile implements SequenceFile {
 
     final boolean result = this.iterator.hasNext();
 
-    if (result == false) {
+    if (!result) {
       try {
         reader.close();
       } catch (IOException e) {

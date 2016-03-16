@@ -168,8 +168,8 @@ public class DataFileDistCp {
      *           current thread
      * @throws IOException if an error occurs while copying data
      */
-    private static final void copyFile(final DataFile src, final DataFile dest,
-        final Context context) throws InterruptedException, IOException {
+    private static void copyFile(final DataFile src, final DataFile dest,
+                                 final Context context) throws InterruptedException, IOException {
 
       // Define a wrapper object to store exception if needed
       final MyIOExceptionWrapper exp = new MyIOExceptionWrapper();

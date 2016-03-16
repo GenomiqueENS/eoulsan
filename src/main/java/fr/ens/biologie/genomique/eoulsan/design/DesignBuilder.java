@@ -111,7 +111,7 @@ public class DesignBuilder {
     private final String prefix;
     private final int pairMember;
 
-    private static final String getDate(final DataFile file) {
+    private static String getDate(final DataFile file) {
 
       try {
         long last = file.getMetaData().getLastModified();

@@ -261,8 +261,6 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
       incrementCounter(context, INVALID_SAM_ENTRIES_COUNTER);
       getLogger().info("Invalid SAM output entry: "
           + e.getMessage() + " line='" + line + "'");
-
-      return;
     }
 
   }
@@ -283,7 +281,7 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
    * @param context Hadoop context
    * @param record the SAM record
    */
-  private final List<GenomicInterval> createSingleEndIntervals(
+  private List<GenomicInterval> createSingleEndIntervals(
       final Context context, final String record) {
 
     final List<GenomicInterval> ivSeq = new ArrayList<>();
@@ -328,7 +326,7 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
    * @param record1 the SAM record of the first end
    * @param record2 the SAM record of the second end
    */
-  private final List<GenomicInterval> addPairedEndIntervals(
+  private List<GenomicInterval> addPairedEndIntervals(
       final Context context, final String record1, final String record2) {
 
     final List<GenomicInterval> ivSeq = new ArrayList<>();
@@ -388,8 +386,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
    * @param counter the expression counter
    * @param increment the increment
    */
-  private final void incrementCounter(final Context context,
-      final ExpressionCounters counter) {
+  private void incrementCounter(final Context context,
+                                final ExpressionCounters counter) {
 
     incrementCounter(context, counter, 1);
   }
@@ -400,8 +398,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
    * @param counter the expression counter
    * @param increment the increment
    */
-  private final void incrementCounter(final Context context,
-      final ExpressionCounters counter, final int increment) {
+  private void incrementCounter(final Context context,
+                                final ExpressionCounters counter, final int increment) {
 
     context.getCounter(this.counterGroup, counter.counterName())
         .increment(increment);
@@ -412,7 +410,7 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
    * @param set the set
    * @return an empty set if the parameter is null or the original set
    */
-  private static final <E> Set<E> null2empty(final Set<E> set) {
+  private static <E> Set<E> null2empty(final Set<E> set) {
 
     if (set == null) {
       return Collections.emptySet();

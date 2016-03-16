@@ -147,8 +147,8 @@ public class TaskSerializationUtils {
    * @throws IOException if an error occurs while reading or writing serialized
    *           files
    */
-  private static final void saveTaskResult(final DataFile taskContextFile,
-      final TaskContextImpl context, final TaskResultImpl result)
+  private static void saveTaskResult(final DataFile taskContextFile,
+                                     final TaskContextImpl context, final TaskResultImpl result)
       throws IOException {
 
     // Get the prefix for the task files and the base dir

@@ -244,7 +244,7 @@ public class UniqueIdentifierTranslator extends AbstractTranslator {
    * @return the default field or null if the translator is null or if there is
    *         no default field for the translator
    */
-  private static final String getTranslatorDefaultField(
+  private static String getTranslatorDefaultField(
       final Translator translator) {
 
     if (translator == null) {

@@ -283,9 +283,9 @@ public class CopyInputDataModule extends AbstractModule {
    * @return the output file
    * @throws IOException if an error occurs while copying the data
    */
-  private final DataFile copyFile(final DataFile inputFile, final int fileIndex,
-      final String outDataName, final int outDataPart,
-      final TaskContext context) throws IOException {
+  private DataFile copyFile(final DataFile inputFile, final int fileIndex,
+                            final String outDataName, final int outDataPart,
+                            final TaskContext context) throws IOException {
 
     final String stepId = context.getCurrentStep().getId();
     final DataFile outputDir = context.getStepOutputDirectory();
@@ -351,7 +351,7 @@ public class CopyInputDataModule extends AbstractModule {
    * @param value the parameter value as a string
    * @return the parameter value as an EnumSet
    */
-  private static final EnumSet<CompressionType> decodeAllowedCompressionsParameterValue(
+  private static EnumSet<CompressionType> decodeAllowedCompressionsParameterValue(
       final String value) {
 
     if (value == null) {

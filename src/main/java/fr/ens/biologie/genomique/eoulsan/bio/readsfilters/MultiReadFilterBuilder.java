@@ -166,9 +166,7 @@ public class MultiReadFilterBuilder {
       f.init();
     }
 
-    final MultiReadFilter mrf = new MultiReadFilter(this.listFilter);
-
-    return mrf;
+    return new MultiReadFilter(this.listFilter);
   }
 
   /**
@@ -186,10 +184,7 @@ public class MultiReadFilterBuilder {
       f.init();
     }
 
-    final MultiReadFilter mrf =
-        new MultiReadFilter(incrementer, counterGroup, this.listFilter);
-
-    return mrf;
+    return new MultiReadFilter(incrementer, counterGroup, this.listFilter);
   }
 
   /**

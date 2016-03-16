@@ -147,8 +147,8 @@ public class MeltingTemp {
 
   }
 
-  private static final float[] tercorrDNA(final String stri, final float ds,
-      final float dh) {
+  private static float[] tercorrDNA(final String stri, final float ds,
+                                    final float dh) {
 
     float deltah = 0;
     float deltas = 0;
@@ -178,8 +178,8 @@ public class MeltingTemp {
 
   }
 
-  private static final float[] tercorrRNA(final String stri, final float ds,
-      final float dh) {
+  private static float[] tercorrRNA(final String stri, final float ds,
+                                    final float dh) {
 
     float deltah = 0;
     float deltas = 0;
@@ -213,7 +213,7 @@ public class MeltingTemp {
   /**
    * Returns how many p are on st, works even for overlapping.
    */
-  private static final int overcount(final String st, final String p) {
+  private static int overcount(final String st, final String p) {
 
     int ocu = 0;
 

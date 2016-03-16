@@ -248,9 +248,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     contextRunner.run();
 
     // Return the result
-    final TaskResultImpl result = contextRunner.getResult();
-
-    return result;
+    return contextRunner.getResult();
   }
 
   //

@@ -386,11 +386,8 @@ public class ITCommandExecutor {
 
         Field f = p.getClass().getDeclaredField("pid");
         f.setAccessible(true);
-        int pid = (int) f.get(p);
 
-        // System.out.println("script process pid : " + pid);
-
-        return pid;
+        return (int) f.get(p);
 
       } catch (Throwable e) {
         e.printStackTrace();

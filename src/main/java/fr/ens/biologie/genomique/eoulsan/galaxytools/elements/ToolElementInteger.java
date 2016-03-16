@@ -122,11 +122,9 @@ public class ToolElementInteger extends AbstractToolElement {
     super(param, nameSpace);
 
     try {
-      final int defaultValue =
-          Integer.parseInt(param.getAttribute(ATT_DEFAULT_KEY));
 
       // Set value
-      this.value = defaultValue;
+      this.value = Integer.parseInt(param.getAttribute(ATT_DEFAULT_KEY));
 
     } catch (final NumberFormatException e) {
       throw new EoulsanException(

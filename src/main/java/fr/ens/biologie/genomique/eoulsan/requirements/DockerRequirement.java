@@ -237,7 +237,7 @@ public class DockerRequirement extends AbstractRequirement {
 
     final Requirement result = new DockerRequirement();
 
-    final Set<Parameter> parameters = new HashSet<Parameter>();
+    final Set<Parameter> parameters = new HashSet<>();
 
     parameters.add(new Parameter(OPTIONAL_PARAMETER, "" + optional));
     parameters.add(new Parameter(INSTALLABLE_PARAMETER, "" + true));

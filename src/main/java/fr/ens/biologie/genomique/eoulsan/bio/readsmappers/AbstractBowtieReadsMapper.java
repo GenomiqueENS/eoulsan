@@ -63,7 +63,7 @@ public abstract class AbstractBowtieReadsMapper
   @Override
   public boolean isMultipleInstancesAllowed() {
     return true;
-  };
+  }
 
   @Override
   protected boolean checkIfFlavorExists() {

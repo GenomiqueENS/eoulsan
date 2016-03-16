@@ -123,10 +123,8 @@ public class ToolElementFloat extends AbstractToolElement {
     super(param, nameSpace);
 
     try {
-      final double defaultValue =
-          Double.parseDouble(param.getAttribute(ATT_DEFAULT_KEY));
 
-      this.value = defaultValue;
+      this.value = Double.parseDouble(param.getAttribute(ATT_DEFAULT_KEY));
 
     } catch (final NumberFormatException e) {
       throw new EoulsanException(

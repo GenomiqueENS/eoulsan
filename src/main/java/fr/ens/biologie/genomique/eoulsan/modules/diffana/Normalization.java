@@ -584,9 +584,7 @@ public class Normalization {
    */
   protected String escapeUnderScore(final String s) {
 
-    String s2 = s.replace("_", "\\_");
-
-    return s2;
+    return s.replace("_", "\\_");
   }
 
   /**

@@ -192,9 +192,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
     try (final ObjectInputStream ois = new ClassLoaderObjectInputStream(in)) {
 
       // Read TaskContext object
-      final TaskResultImpl result = (TaskResultImpl) ois.readObject();
-
-      return result;
+      return (TaskResultImpl) ois.readObject();
 
     } catch (ClassNotFoundException e) {
       throw new EoulsanRuntimeException(e);

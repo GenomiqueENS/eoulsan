@@ -108,13 +108,13 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
    * @throws BadBioEntryException if an entry of the annotation file is invalid
    * @throws EoulsanException
    */
-  private static final Job createJobHTSeqCounter(final Configuration parentConf,
-      final TaskContext context, final Data alignmentsData,
-      final Data featureAnnotationData, final Data genomeDescriptionData,
-      final Data outData, final String genomicType, final String attributeId,
-      final boolean splitAttributeValues, final StrandUsage stranded,
-      final OverlapMode overlapMode, final boolean removeAmbiguousCases,
-      final boolean tsamFormat)
+  private static Job createJobHTSeqCounter(final Configuration parentConf,
+                                           final TaskContext context, final Data alignmentsData,
+                                           final Data featureAnnotationData, final Data genomeDescriptionData,
+                                           final Data outData, final String genomicType, final String attributeId,
+                                           final boolean splitAttributeValues, final StrandUsage stranded,
+                                           final OverlapMode overlapMode, final boolean removeAmbiguousCases,
+                                           final boolean tsamFormat)
       throws IOException, BadBioEntryException, EoulsanException {
 
     final Configuration jobConf = new Configuration(parentConf);
@@ -237,9 +237,9 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
     return job;
   }
 
-  private static final Job createJobPairedEnd(final Configuration parentConf,
-      final TaskContext context, final Data alignmentsData,
-      final Data featureAnnotationData, final Data genomeDescriptionData)
+  private static Job createJobPairedEnd(final Configuration parentConf,
+                                        final TaskContext context, final Data alignmentsData,
+                                        final Data featureAnnotationData, final Data genomeDescriptionData)
       throws IOException, BadBioEntryException {
 
     final Configuration jobConf = new Configuration(parentConf);
@@ -309,11 +309,11 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
    * @throws EoulsanException if an error occurs with feature types and feature
    *           identifiers
    */
-  private static final void createFeaturesIndex(final TaskContext context,
-      final DataFile gffFile, final String featureType,
-      final String attributeId, final boolean splitAttributeValues,
-      final StrandUsage stranded, final DataFile genomeDescDataFile,
-      final Path featuresIndexPath, final Configuration conf)
+  private static void createFeaturesIndex(final TaskContext context,
+                                          final DataFile gffFile, final String featureType,
+                                          final String attributeId, final boolean splitAttributeValues,
+                                          final StrandUsage stranded, final DataFile genomeDescDataFile,
+                                          final Path featuresIndexPath, final Configuration conf)
       throws IOException, BadBioEntryException, EoulsanException {
 
     // Do nothing if the file already exists
@@ -351,7 +351,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
     }
   }
 
-  private static final void createFinalExpressionFeaturesFile(
+  private static void createFinalExpressionFeaturesFile(
       final TaskContext context, final Data featureAnnotationData,
       final Data outData, final Job job, final Configuration conf)
       throws IOException {
@@ -465,13 +465,11 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
       // Create the list of jobs to run
 
-      final boolean tsamFormat = pairedEnd;
-
       final Job job = createJobHTSeqCounter(conf, context, alignmentsData,
           featureAnnotationData, genomeDescriptionData, outData,
           getGenomicType(), getAttributeId(), isSplitAttributeValues(),
           getStranded(), getOverlapMode(), isRemoveAmbiguousCases(),
-          tsamFormat);
+              pairedEnd);
 
       // Compute map-reduce part of the expression computation
       MapReduceUtils.submitAndWaitForJob(job, alignmentsData.getName(),

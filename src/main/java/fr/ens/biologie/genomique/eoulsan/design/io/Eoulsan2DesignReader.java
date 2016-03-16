@@ -453,13 +453,13 @@ public class Eoulsan2DesignReader implements DesignReader {
    * @param sequence the sequence to split
    * @return a list of String
    */
-  private static final List<String> splitToList(final Splitter splitter,
-      final CharSequence sequence) {
+  private static List<String> splitToList(final Splitter splitter,
+                                          final CharSequence sequence) {
 
     checkNotNull(splitter, "splitter argument cannot be null");
     checkNotNull(sequence, "sequence argument cannot be null");
 
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
 
     for (String s : splitter.split(sequence)) {
       result.add(s);

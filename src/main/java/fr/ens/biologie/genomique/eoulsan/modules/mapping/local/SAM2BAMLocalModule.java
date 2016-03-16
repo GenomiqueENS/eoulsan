@@ -84,9 +84,9 @@ public class SAM2BAMLocalModule extends AbstractSAM2BAMModule {
    * @param tmpDir temporary directory
    * @throws IOException if an error occurs
    */
-  private static final void convert(final DataFile samDataFile,
-      final DataFile bamDataFile, final DataFile bamIndexDataFile,
-      final int compressionLevel, final Reporter reporter, final File tmpDir)
+  private static void convert(final DataFile samDataFile,
+                              final DataFile bamDataFile, final DataFile bamIndexDataFile,
+                              final int compressionLevel, final Reporter reporter, final File tmpDir)
       throws IOException {
 
     checkArgument(compressionLevel >= 0 && compressionLevel <= 9,

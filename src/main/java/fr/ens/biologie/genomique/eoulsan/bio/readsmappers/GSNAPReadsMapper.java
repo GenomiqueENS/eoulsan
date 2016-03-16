@@ -244,7 +244,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
     };
   }
 
-  private static final String getGSNAPQualityArgument(final FastqFormat format)
+  private static String getGSNAPQualityArgument(final FastqFormat format)
       throws IOException {
 
     switch (format) {

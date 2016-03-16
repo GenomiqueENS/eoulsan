@@ -140,7 +140,7 @@ public class TicketLocker implements Locker {
    * Get the stub of TicketScheduler.
    * @return a TicketScheduler object
    */
-  private final TicketScheduler getStub() {
+  private TicketScheduler getStub() {
 
     try {
       Registry registry = LocateRegistry.getRegistry(this.port);
@@ -195,7 +195,7 @@ public class TicketLocker implements Locker {
    * @param tickets a set with tickets to populate the TicketScheduler at
    *          startup
    */
-  private final void startRMIServer(final Set<Ticket> tickets) {
+  private void startRMIServer(final Set<Ticket> tickets) {
 
     new Thread(new Runnable() {
 

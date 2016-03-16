@@ -209,8 +209,8 @@ public class TranscriptAndExonFinder {
     // Other methods
     //
 
-    private static final boolean stringEquals(final String s1,
-        final String s2) {
+    private static boolean stringEquals(final String s1,
+                                        final String s2) {
 
       if (s1 == null && s2 == null) {
         return true;
@@ -638,17 +638,17 @@ public class TranscriptAndExonFinder {
     private int length = 0;
     private final List<Zone> zones = new ArrayList<>();
 
-    private final Zone get(final int pos) {
+    private Zone get(final int pos) {
 
       return this.zones.get(pos);
     }
 
-    private final void add(final Zone z) {
+    private void add(final Zone z) {
 
       this.zones.add(z);
     }
 
-    private final void add(final int pos, final Zone z) {
+    private void add(final int pos, final Zone z) {
 
       this.zones.add(pos, z);
     }

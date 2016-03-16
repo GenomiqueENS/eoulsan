@@ -133,7 +133,7 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
 
   }
 
-  private final TableTableCellElement getCell() {
+  private TableTableCellElement getCell() {
 
     final TableTableCellElement aCell =
         (TableTableCellElement) OdfXMLFactory.newOdfElement(this.dom,

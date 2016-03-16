@@ -200,7 +200,6 @@ public class DistCp implements Tool {
       for (char c : s.toCharArray()) {
         int i = 0;
         for (; i < attributes.length && c != attributes[i].symbol; i++) {
-          ;
         }
         if (i < attributes.length) {
           if (!set.contains(attributes[i])) {
@@ -827,7 +826,6 @@ public class DistCp implements Tool {
         Options[] opt = Options.values();
         int i = 0;
         for (; i < opt.length && !args[idx].startsWith(opt[i].cmd); i++) {
-          ;
         }
 
         if (i < opt.length) {

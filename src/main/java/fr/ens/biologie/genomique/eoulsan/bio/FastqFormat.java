@@ -246,10 +246,8 @@ public enum FastqFormat {
    */
   public double convertScoreToProbability(final int score) {
 
-    final double s = score;
-
     if (this.phredScore) {
-      return pow(10.0, s / -10.0);
+      return pow(10.0, (double) score / -10.0);
     }
 
     return 1.0 / ((1.0 / pow(10.0, -score / 10.0)) + 1.0);

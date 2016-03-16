@@ -137,8 +137,7 @@ public final class StatUtils {
     if (length == 1) {
       return values[begin]; // always return single value for n = 1
     }
-    double n = length;
-    double pos = p * (n + 1) / 100;
+    double pos = p * ((double) length + 1) / 100;
     double fpos = Math.floor(pos);
     int intPos = (int) fpos;
     double dif = pos - fpos;
@@ -149,7 +148,7 @@ public final class StatUtils {
     if (pos < 1) {
       return sorted[0];
     }
-    if (pos >= n) {
+    if (pos >= (double) length) {
       return sorted[length - 1];
     }
     double lower = sorted[intPos - 1];
@@ -171,8 +170,7 @@ public final class StatUtils {
     if (length == 1) {
       return values[begin]; // always return single value for n = 1
     }
-    double n = length;
-    double pos = p * (n + 1) / 100;
+    double pos = p * ((double) length + 1) / 100;
     double fpos = Math.floor(pos);
     int intPos = (int) fpos;
     double dif = pos - fpos;
@@ -183,7 +181,7 @@ public final class StatUtils {
     if (pos < 1) {
       return sorted[0];
     }
-    if (pos >= n) {
+    if (pos >= (double) length) {
       return sorted[length - 1];
     }
     double lower = sorted[intPos - 1];

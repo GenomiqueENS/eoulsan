@@ -82,15 +82,14 @@ public class FastqComparatorTest {
         switch (modification) {
         case 0:
           // duplicate read
-          String header = line;
           String seq = br.readLine();
           String plus = br.readLine();
           String quality = br.readLine();
 
           // Read first time
-          bw.write(header + "\n" + seq + "\n" + plus + "\n" + quality + "\n");
+          bw.write(line + "\n" + seq + "\n" + plus + "\n" + quality + "\n");
           // Read second time
-          bw.write(header + "\n" + seq + "\n" + plus + "\n" + quality + "\n");
+          bw.write(line + "\n" + seq + "\n" + plus + "\n" + quality + "\n");
           break;
 
         case 1:

@@ -100,9 +100,7 @@ public class DockerMapperExecutor implements MapperExecutor {
               "Error while executing container, container pid is 0");
         }
 
-      } catch (DockerException e) {
-        throw new IOException(e);
-      } catch (InterruptedException e) {
+      } catch (DockerException | InterruptedException e) {
         throw new IOException(e);
       }
 
@@ -149,9 +147,7 @@ public class DockerMapperExecutor implements MapperExecutor {
           this.stdoutFile.delete();
         }
 
-      } catch (DockerException e) {
-        throw new IOException(e);
-      } catch (InterruptedException e) {
+      } catch (DockerException | InterruptedException e) {
         throw new IOException(e);
       }
 
@@ -233,9 +229,7 @@ public class DockerMapperExecutor implements MapperExecutor {
         getLogger().fine("Start of the Docker container: " + containerId);
         dockerClient.startContainer(containerId);
 
-      } catch (DockerException e) {
-        throw new IOException(e);
-      } catch (InterruptedException e) {
+      } catch (DockerException | InterruptedException e) {
         throw new IOException(e);
       }
     }

@@ -50,8 +50,7 @@ public class ReadSequenceTest {
 
     try {
 
-      ReadSequence read = new ReadSequence();
-      Sequence sequence = read;
+      Sequence sequence = new ReadSequence();
       assertTrue(true);
     } catch (ClassCastException e) {
       assertTrue(false);

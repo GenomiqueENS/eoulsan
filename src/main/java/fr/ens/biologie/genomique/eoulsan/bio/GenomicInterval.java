@@ -134,9 +134,7 @@ public class GenomicInterval
       return startComp;
     }
 
-    final int endComp = ((Integer) this.end).compareTo(e.getEnd());
-
-    return endComp;
+    return ((Integer) this.end).compareTo(e.getEnd());
   }
 
   //

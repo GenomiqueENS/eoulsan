@@ -56,7 +56,7 @@ public class Experiment implements Serializable {
   private String experimentName = "Experiment" + experimentNumber;
   private final ExperimentMetadata metadata = new ExperimentMetadata();
   private final List<ExperimentSample> samples =
-      new ArrayList<ExperimentSample>();
+          new ArrayList<>();
 
   //
   // Getters

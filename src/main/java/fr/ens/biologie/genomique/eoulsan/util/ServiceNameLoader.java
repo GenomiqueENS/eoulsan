@@ -275,7 +275,7 @@ public abstract class ServiceNameLoader<S> {
    * @param className class name to test
    * @return true if the class name is valid
    */
-  private static final boolean checkClassName(final String className) {
+  private static boolean checkClassName(final String className) {
 
     if (className == null) {
       return false;

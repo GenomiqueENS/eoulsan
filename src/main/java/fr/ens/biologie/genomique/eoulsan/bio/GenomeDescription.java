@@ -479,7 +479,7 @@ public class GenomeDescription {
     return sequence.length();
   }
 
-  private static final String digestToString(final MessageDigest md) {
+  private static String digestToString(final MessageDigest md) {
 
     if (md == null) {
       return null;

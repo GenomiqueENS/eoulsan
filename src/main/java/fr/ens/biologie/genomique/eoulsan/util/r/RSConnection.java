@@ -498,10 +498,7 @@ public class RSConnection {
       c.removeFile("test.jpg");
 
       // now this is pretty boring AWT stuff, nothing to do with R ...
-      Image img = Toolkit.getDefaultToolkit().createImage(imgCode);
-
-      return img;
-
+      return Toolkit.getDefaultToolkit().createImage(imgCode);
     } catch (IOException e) {
       throw new REngineException(c, "Error while load image");
     } catch (RserveException e) {

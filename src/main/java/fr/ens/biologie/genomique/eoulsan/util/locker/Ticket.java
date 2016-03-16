@@ -169,7 +169,7 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
     return Arrays.hashCode(objects);
   }
 
-  private static final int getCurrentPid() {
+  private static int getCurrentPid() {
 
     final String beanName = ManagementFactory.getRuntimeMXBean().getName();
 
