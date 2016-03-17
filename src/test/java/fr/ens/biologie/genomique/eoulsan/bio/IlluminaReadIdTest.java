@@ -40,32 +40,41 @@ public class IlluminaReadIdTest {
   public void testGetInstrumentId() throws EoulsanException {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
+    assertTrue(ii.isInstrumentIdField());
     assertEquals("HWUSI-EAS100R", ii.getInstrumentId());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertTrue(ii.isInstrumentIdField());
     assertEquals("HWUSI-EAS100R", ii.getInstrumentId());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertTrue(ii.isInstrumentIdField());
     assertEquals("HWUSI-EAS100R", ii.getInstrumentId());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertTrue(ii.isInstrumentIdField());
     assertEquals("SOLEXA3_162", ii.getInstrumentId());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertTrue(ii.isInstrumentIdField());
     assertEquals("SOLEXA3_162", ii.getInstrumentId());
 
     ii = new IlluminaReadId(
         "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
+    assertTrue(ii.isInstrumentIdField());
     assertEquals("HWI-1KL110", ii.getInstrumentId());
 
     ii = new IlluminaReadId(
         "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
+    assertTrue(ii.isInstrumentIdField());
     assertEquals("HWI-1KL110", ii.getInstrumentId());
 
     ii = new IlluminaReadId("HWI-1KL110:25:B0866ABXX:1:1101:1167:2098 1:N:0:");
+    assertTrue(ii.isInstrumentIdField());
     assertEquals("HWI-1KL110", ii.getInstrumentId());
 
     ii = new IlluminaReadId("NB500892:10:H3YL2AFXX:1:11101:1108:1044 1:Y:0:1");
+    assertTrue(ii.isInstrumentIdField());
     assertEquals("NB500892", ii.getInstrumentId());
   }
 
@@ -73,25 +82,32 @@ public class IlluminaReadIdTest {
   public void testGetRunId() throws EoulsanException {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
+    assertFalse(ii.isRunIdField());
     assertEquals(-1, ii.getRunId());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertFalse(ii.isRunIdField());
     assertEquals(-1, ii.getRunId());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertFalse(ii.isRunIdField());
     assertEquals(-1, ii.getRunId());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertFalse(ii.isRunIdField());
     assertEquals(-1, ii.getRunId());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertFalse(ii.isRunIdField());
     assertEquals(-1, ii.getRunId());
 
     ii = new IlluminaReadId(
         "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
+    assertTrue(ii.isRunIdField());
     assertEquals(24, ii.getRunId());
 
     ii = new IlluminaReadId("NB500892:10:H3YL2AFXX:1:11101:1108:1044 1:Y:0:1");
+    assertTrue(ii.isRunIdField());
     assertEquals(10, ii.getRunId());
   }
 
@@ -99,25 +115,32 @@ public class IlluminaReadIdTest {
   public void testGetFlowCellId() throws EoulsanException {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
+    assertFalse(ii.isFlowCellIdField());
     assertEquals(null, ii.getFlowCellId());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertFalse(ii.isFlowCellIdField());
     assertEquals(null, ii.getFlowCellId());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertFalse(ii.isFlowCellIdField());
     assertEquals(null, ii.getFlowCellId());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertFalse(ii.isFlowCellIdField());
     assertEquals(null, ii.getFlowCellId());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertFalse(ii.isFlowCellIdField());
     assertEquals(null, ii.getFlowCellId());
 
     ii = new IlluminaReadId(
         "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
+    assertTrue(ii.isFlowCellIdField());
     assertEquals("AB0868ABXX", ii.getFlowCellId());
 
     ii = new IlluminaReadId("NB500892:10:H3YL2AFXX:1:11101:1108:1044 1:Y:0:1");
+    assertTrue(ii.isFlowCellIdField());
     assertEquals("H3YL2AFXX", ii.getFlowCellId());
   }
 
@@ -125,25 +148,32 @@ public class IlluminaReadIdTest {
   public void testGetFlowCellLane() throws EoulsanException {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
+    assertTrue(ii.isFlowCellLaneField());
     assertEquals(6, ii.getFlowCellLane());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertTrue(ii.isFlowCellLaneField());
     assertEquals(6, ii.getFlowCellLane());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertTrue(ii.isFlowCellLaneField());
     assertEquals(6, ii.getFlowCellLane());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertTrue(ii.isFlowCellLaneField());
     assertEquals(7, ii.getFlowCellLane());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertTrue(ii.isFlowCellLaneField());
     assertEquals(7, ii.getFlowCellLane());
 
     ii = new IlluminaReadId(
         "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
+    assertTrue(ii.isFlowCellLaneField());
     assertEquals(3, ii.getFlowCellLane());
 
     ii = new IlluminaReadId("NB500892:10:H3YL2AFXX:1:11101:1108:1044 1:Y:0:1");
+    assertTrue(ii.isFlowCellLaneField());
     assertEquals(1, ii.getFlowCellLane());
   }
 
@@ -151,25 +181,32 @@ public class IlluminaReadIdTest {
   public void testGetTileNumberInFlowCellLane() throws EoulsanException {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
+    assertTrue(ii.isTileNumberInFlowCellLaneField());
     assertEquals(73, ii.getTileNumberInFlowCellLane());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertTrue(ii.isTileNumberInFlowCellLaneField());
     assertEquals(73, ii.getTileNumberInFlowCellLane());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertTrue(ii.isTileNumberInFlowCellLaneField());
     assertEquals(73, ii.getTileNumberInFlowCellLane());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertTrue(ii.isTileNumberInFlowCellLaneField());
     assertEquals(100, ii.getTileNumberInFlowCellLane());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertTrue(ii.isTileNumberInFlowCellLaneField());
     assertEquals(100, ii.getTileNumberInFlowCellLane());
 
     ii = new IlluminaReadId(
         "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
+    assertTrue(ii.isTileNumberInFlowCellLaneField());
     assertEquals(1101, ii.getTileNumberInFlowCellLane());
 
     ii = new IlluminaReadId("NB500892:10:H3YL2AFXX:1:11101:1108:1044 1:Y:0:1");
+    assertTrue(ii.isTileNumberInFlowCellLaneField());
     assertEquals(11101, ii.getTileNumberInFlowCellLane());
   }
 
@@ -177,25 +214,32 @@ public class IlluminaReadIdTest {
   public void testGetxClusterCoordinateInTile() throws EoulsanException {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
+    assertTrue(ii.isXClusterCoordinateInTileField());
     assertEquals(941, ii.getXClusterCoordinateInTile());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertTrue(ii.isXClusterCoordinateInTileField());
     assertEquals(941, ii.getXClusterCoordinateInTile());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertTrue(ii.isXClusterCoordinateInTileField());
     assertEquals(941, ii.getXClusterCoordinateInTile());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertTrue(ii.isXClusterCoordinateInTileField());
     assertEquals(10000, ii.getXClusterCoordinateInTile());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertTrue(ii.isXClusterCoordinateInTileField());
     assertEquals(10000, ii.getXClusterCoordinateInTile());
 
     ii = new IlluminaReadId(
         "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
+    assertTrue(ii.isXClusterCoordinateInTileField());
     assertEquals(1492, ii.getXClusterCoordinateInTile());
 
     ii = new IlluminaReadId("NB500892:10:H3YL2AFXX:1:11101:1108:1044 1:Y:0:1");
+    assertTrue(ii.isXClusterCoordinateInTileField());
     assertEquals(1108, ii.getXClusterCoordinateInTile());
   }
 
@@ -203,25 +247,32 @@ public class IlluminaReadIdTest {
   public void testGetyClusterCoordinateInTile() throws EoulsanException {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
+    assertTrue(ii.isYClusterCoordinateInTileField());
     assertEquals(1973, ii.getYClusterCoordinateInTile());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertTrue(ii.isYClusterCoordinateInTileField());
     assertEquals(1973, ii.getYClusterCoordinateInTile());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertTrue(ii.isYClusterCoordinateInTileField());
     assertEquals(1973, ii.getYClusterCoordinateInTile());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertTrue(ii.isYClusterCoordinateInTileField());
     assertEquals(1220, ii.getYClusterCoordinateInTile());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertTrue(ii.isYClusterCoordinateInTileField());
     assertEquals(1220, ii.getYClusterCoordinateInTile());
 
     ii = new IlluminaReadId(
         "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
+    assertTrue(ii.isYClusterCoordinateInTileField());
     assertEquals(2178, ii.getYClusterCoordinateInTile());
 
     ii = new IlluminaReadId("NB500892:10:H3YL2AFXX:1:11101:1108:1044 1:Y:0:1");
+    assertTrue(ii.isYClusterCoordinateInTileField());
     assertEquals(1044, ii.getYClusterCoordinateInTile());
   }
 
@@ -229,28 +280,36 @@ public class IlluminaReadIdTest {
   public void testGetMultiplexedSample() throws EoulsanException {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
+    assertTrue(ii.isSequenceIndexField());
     assertEquals("0", ii.getSequenceIndex());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#ATCACG/1");
+    assertTrue(ii.isSequenceIndexField());
     assertEquals("ATCACG", ii.getSequenceIndex());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertFalse(ii.isSequenceIndexField());
     assertEquals("0", ii.getSequenceIndex());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertFalse(ii.isSequenceIndexField());
     assertEquals("0", ii.getSequenceIndex());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertFalse(ii.isSequenceIndexField());
     assertEquals("0", ii.getSequenceIndex());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertFalse(ii.isSequenceIndexField());
     assertEquals("0", ii.getSequenceIndex());
 
     ii = new IlluminaReadId(
         "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
+    assertTrue(ii.isSequenceIndexField());
     assertEquals("ATCACG", ii.getSequenceIndex());
 
     ii = new IlluminaReadId("NB500892:10:H3YL2AFXX:1:11101:1108:1044 1:Y:0:1");
+    assertFalse(ii.isSequenceIndexField());
     assertEquals("0", ii.getSequenceIndex());
   }
 
@@ -258,25 +317,31 @@ public class IlluminaReadIdTest {
   public void testGetPairMember() throws EoulsanException {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
+    assertTrue(ii.isPairMemberField());
     assertEquals(1, ii.getPairMember());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertTrue(ii.isPairMemberField());
     assertEquals(1, ii.getPairMember());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertFalse(ii.isPairMemberField());
     assertEquals(-1, ii.getPairMember());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
     assertEquals(1, ii.getPairMember());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertFalse(ii.isPairMemberField());
     assertEquals(-1, ii.getPairMember());
 
     ii = new IlluminaReadId(
         "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
+    assertTrue(ii.isPairMemberField());
     assertEquals(1, ii.getPairMember());
 
     ii = new IlluminaReadId("NB500892:10:H3YL2AFXX:1:11101:1108:1044 1:Y:0:1");
+    assertTrue(ii.isPairMemberField());
     assertEquals(1, ii.getPairMember());
   }
 
@@ -284,29 +349,37 @@ public class IlluminaReadIdTest {
   public void testisFiltered() throws EoulsanException {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
+    assertFalse(ii.isFilteredField());
     assertFalse(ii.isFiltered());
 
     ii = new IlluminaReadId(
         "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
+    assertTrue(ii.isFilteredField());
     assertFalse(ii.isFiltered());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertFalse(ii.isFilteredField());
     assertFalse(ii.isFiltered());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertFalse(ii.isFilteredField());
     assertFalse(ii.isFiltered());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertFalse(ii.isFilteredField());
     assertFalse(ii.isFiltered());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertFalse(ii.isFilteredField());
     assertFalse(ii.isFiltered());
 
     ii = new IlluminaReadId(
         "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:Y:0:ATCACG");
+    assertTrue(ii.isFilteredField());
     assertTrue(ii.isFiltered());
 
     ii = new IlluminaReadId("NB500892:10:H3YL2AFXX:1:11101:1108:1044 1:Y:0:1");
+    assertTrue(ii.isFilteredField());
     assertTrue(ii.isFiltered());
   }
 
@@ -314,25 +387,32 @@ public class IlluminaReadIdTest {
   public void testGetControlNumber() throws EoulsanException {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
+    assertFalse(ii.isControlNumberField());
     assertEquals(-1, ii.getControlNumber());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
+    assertFalse(ii.isControlNumberField());
     assertEquals(-1, ii.getControlNumber());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
+    assertFalse(ii.isControlNumberField());
     assertEquals(-1, ii.getControlNumber());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
+    assertFalse(ii.isControlNumberField());
     assertEquals(-1, ii.getControlNumber());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
+    assertFalse(ii.isControlNumberField());
     assertEquals(-1, ii.getControlNumber());
 
     ii = new IlluminaReadId(
         "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
+    assertTrue(ii.isControlNumberField());
     assertEquals(0, ii.getControlNumber());
 
     ii = new IlluminaReadId("NB500892:10:H3YL2AFXX:1:11101:1108:1044 1:Y:0:1");
+    assertTrue(ii.isControlNumberField());
     assertEquals(0, ii.getControlNumber());
   }
 

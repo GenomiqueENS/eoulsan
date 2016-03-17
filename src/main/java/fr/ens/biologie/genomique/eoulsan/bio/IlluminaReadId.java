@@ -67,6 +67,10 @@ public final class IlluminaReadId {
   private boolean filtered;
   private int controlNumber;
 
+  //
+  // Getters
+  //
+
   /**
    * Get instrument id.
    * @return a String with the instrument id
@@ -154,6 +158,134 @@ public final class IlluminaReadId {
    */
   public final int getControlNumber() {
     return this.controlNumber;
+  }
+
+  //
+  // Test if the fields exists
+  //
+
+  /**
+   * Test if instrument id field exists.
+   * @return true if instrument id field exists
+   */
+  public final boolean isInstrumentIdField() {
+    return true;
+  }
+
+  /**
+   * Test if the Run id field exists.
+   * @return true if the Run id field exists
+   */
+  public final boolean isRunIdField() {
+
+    if (this.pattern == PATTERN_1_4
+        || this.pattern == PATTERN_2 || this.pattern == PATTERN_1) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Test if the flow cell id field exist.
+   * @return true if the flow cell id field exist
+   */
+  public final boolean isFlowCellIdField() {
+
+    if (this.pattern == PATTERN_1_4
+        || this.pattern == PATTERN_2 || this.pattern == PATTERN_1) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Test if the flowcell lane field exists.
+   * @return true if the flowcell lane field exists
+   */
+  public final boolean isFlowCellLaneField() {
+    return true;
+  }
+
+  /**
+   * Test if the tile number within the flowcell lane field exists.
+   * @return true if the tile number within the flowcell lane field exists
+   */
+  public final boolean isTileNumberInFlowCellLaneField() {
+    return true;
+  }
+
+  /**
+   * Test if 'x'-coordinate of the cluster within the tile field exists.
+   * @return true if the the 'x'-coordinate of the cluster within the tile field
+   *         exists
+   */
+  public final boolean isXClusterCoordinateInTileField() {
+    return true;
+  }
+
+  /**
+   * Test if the 'y'-coordinate of the cluster within the tile exists.
+   * @return true if the 'y'-coordinate of the cluster within the tile exists
+   */
+  public final boolean isYClusterCoordinateInTileField() {
+    return true;
+  }
+
+  /**
+   * Test if the sequence index for a multiplexed sample exist.
+   * @return true if the sequence index for a multiplexed sample exist
+   */
+  public final boolean isSequenceIndexField() {
+
+    if (this.pattern == PATTERN_3
+        || this.pattern == PATTERN_2 || this.pattern == PATTERN_1) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Test if the member of a pair field exists.
+   * @return true if the member of a pair field exists
+   */
+  public final boolean isPairMemberField() {
+
+    if (this.pattern == PATTERN_1) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Test if the read filtered field exists.
+   * @return true if the read filtered field exist
+   */
+  public final boolean isFilteredField() {
+
+    if (this.pattern == PATTERN_1_4
+        || this.pattern == PATTERN_2 || this.pattern == PATTERN_1) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Test if the control number field exists.
+   * @return true if the control number field exists
+   */
+  public final boolean isControlNumberField() {
+
+    if (this.pattern == PATTERN_1_4
+        || this.pattern == PATTERN_2 || this.pattern == PATTERN_1) {
+      return false;
+    }
+
+    return true;
   }
 
   //
