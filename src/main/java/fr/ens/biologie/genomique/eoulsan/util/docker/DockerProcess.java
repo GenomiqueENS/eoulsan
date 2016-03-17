@@ -262,9 +262,9 @@ public class DockerProcess {
 
           try (
               WritableByteChannel stdoutChannel =
-                  Channels.newChannel(new FileOutputStream(stderr));
+                  Channels.newChannel(new FileOutputStream(stdout));
               WritableByteChannel stderrChannel =
-                  Channels.newChannel(new FileOutputStream(stdout))) {
+                  Channels.newChannel(new FileOutputStream(stderr))) {
 
             for (LogMessage message; logStream.hasNext();) {
 
