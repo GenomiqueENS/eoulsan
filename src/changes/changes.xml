@@ -1232,6 +1232,10 @@ of reads that reject each filter like in local mode.
 		When using Docker, the content of the stdout and stderr files were inverted.
             </action>
 
+            <action dev="jourdren" type="fix">
+		The illuminaid read filter, do not remove now reads that not contain the Illumina filter flag.
+            </action>
+
             <action dev="jourdren" type="update">
 		When an error occurs in a workflow, the exception is now log in the Eoulsan log file.
             </action>
