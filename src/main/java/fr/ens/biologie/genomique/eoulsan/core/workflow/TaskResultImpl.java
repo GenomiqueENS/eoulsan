@@ -234,8 +234,8 @@ public class TaskResultImpl implements TaskResult, Serializable {
     Preconditions.checkNotNull(context, "context argument cannot be null");
 
     this.context = context;
-    this.startTime = startTime;
-    this.endTime = endTime;
+    this.startTime = startTime == null ? null : new Date(startTime.getTime());
+    this.endTime = endTime == null ? null : new Date(endTime.getTime());
     this.duration = duration;
     this.success = false;
     this.taskMessage = null;

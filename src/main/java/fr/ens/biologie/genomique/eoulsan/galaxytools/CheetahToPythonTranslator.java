@@ -442,14 +442,14 @@ class CheetahToPythonTranslator {
        */
       protected String tab(final int n) {
 
-        String str = "";
+        final StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < tabulations + n; i++) {
-          str += TAB;
+          sb.append(TAB);
         }
         tabulations += n;
 
-        return str;
+        return sb.toString();
       }
 
       /**

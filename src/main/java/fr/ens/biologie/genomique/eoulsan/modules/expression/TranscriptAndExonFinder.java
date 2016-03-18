@@ -397,7 +397,7 @@ public class TranscriptAndExonFinder {
         return getChromosome().compareTo(e.getChromosome());
       }
 
-      final int startComp = ((Integer) this.start).compareTo(e.getStart());
+      final int startComp = Integer.compare(this.start, e.getStart());
 
       if (startComp != 0) {
         return startComp;

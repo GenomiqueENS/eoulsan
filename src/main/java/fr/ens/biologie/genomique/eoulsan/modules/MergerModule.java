@@ -121,7 +121,7 @@ public class MergerModule extends AbstractModule {
         @Override
         public int compare(final Data a, final Data b) {
 
-          return Integer.valueOf(a.getPart()).compareTo(b.getPart());
+          return Integer.compare(a.getPart(), b.getPart());
         }
       });
 

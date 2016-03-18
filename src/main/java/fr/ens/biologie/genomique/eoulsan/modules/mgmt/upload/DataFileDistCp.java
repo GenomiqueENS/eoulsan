@@ -310,7 +310,7 @@ public class DataFileDistCp {
           size2 = -1;
         }
 
-        return ((Long) size1).compareTo(size2) * -1;
+        return Long.compare(size1, size2) * -1;
       }
 
     });

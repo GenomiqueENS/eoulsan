@@ -281,8 +281,8 @@ public final class Version implements Comparable<Version> {
       return 1;
     }
 
-    final int compMajor =
-        Integer.valueOf(getMajor()).compareTo(version.getMajor());
+    final int compMajor = Integer.compare(getMajor(), version.getMajor());
+
     if (compMajor != 0) {
       return compMajor;
     }

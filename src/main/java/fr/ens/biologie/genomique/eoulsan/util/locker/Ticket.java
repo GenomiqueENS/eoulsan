@@ -125,8 +125,8 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
     }
 
     // Compare creation time
-    final int comp1 =
-        Long.valueOf(this.creationTime).compareTo(ticket.creationTime);
+    final int comp1 = Long.compare(this.creationTime, ticket.creationTime);
+
     if (comp1 != 0) {
       return comp1;
     }
@@ -139,7 +139,7 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
     }
 
     // Compare PID
-    final int comp3 = Integer.valueOf(this.pid).compareTo(ticket.pid);
+    final int comp3 = Integer.compare(this.pid, ticket.pid);
     if (comp3 != 0) {
       return comp3;
     }
