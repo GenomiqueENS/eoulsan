@@ -53,6 +53,10 @@ public final class IlluminaReadId {
       "^([a-zA-Z0-9\\-\\_]+):(\\d+):([a-zA-Z0-9]+):(\\d+):(\\d+):(\\d+):(\\d+) "
           + "(\\d+):([YN]):(\\d+):(\\d)$");
 
+  private static final Pattern PATTERN_SRA = Pattern.compile(
+      "^[a-zA-Z0-9\\.]+ ([a-zA-Z0-9\\-\\_]+):(\\d+):([a-zA-Z0-9]+):(\\d+):(\\d+):(\\d+):(\\d+) "
+          + ".*$");
+
   private final Pattern pattern;
 
   private String instrumentId;
@@ -240,7 +244,8 @@ public final class IlluminaReadId {
   public final boolean isSequenceIndexField() {
 
     if (this.pattern == PATTERN_3
-        || this.pattern == PATTERN_2 || this.pattern == PATTERN_1) {
+        || this.pattern == PATTERN_2 || this.pattern == PATTERN_1
+        || this.pattern == PATTERN_SRA) {
       return false;
     }
 
@@ -253,7 +258,7 @@ public final class IlluminaReadId {
    */
   public final boolean isPairMemberField() {
 
-    if (this.pattern == PATTERN_1) {
+    if (this.pattern == PATTERN_1 || this.pattern == PATTERN_SRA) {
       return false;
     }
 
@@ -267,7 +272,8 @@ public final class IlluminaReadId {
   public final boolean isFilteredField() {
 
     if (this.pattern == PATTERN_1_4
-        || this.pattern == PATTERN_2 || this.pattern == PATTERN_1) {
+        || this.pattern == PATTERN_2 || this.pattern == PATTERN_1
+        || this.pattern == PATTERN_SRA) {
       return false;
     }
 
@@ -281,7 +287,8 @@ public final class IlluminaReadId {
   public final boolean isControlNumberField() {
 
     if (this.pattern == PATTERN_1_4
-        || this.pattern == PATTERN_2 || this.pattern == PATTERN_1) {
+        || this.pattern == PATTERN_2 || this.pattern == PATTERN_1
+        || this.pattern == PATTERN_SRA) {
       return false;
     }
 
@@ -313,6 +320,10 @@ public final class IlluminaReadId {
 
     if (PATTERN_1.matcher(readId).lookingAt()) {
       return PATTERN_1;
+    }
+
+    if (PATTERN_SRA.matcher(readId).lookingAt()) {
+      return PATTERN_SRA;
     }
 
     throw new EoulsanException("Invalid illumina id: " + readId);
@@ -404,6 +415,21 @@ public final class IlluminaReadId {
       this.yClusterCoordinateInTile = Integer.parseInt(matcher.group(5));
       this.sequenceIndex = "0";
       this.pairMember = Integer.parseInt(matcher.group(6));
+      this.filtered = false;
+      this.controlNumber = -1;
+
+      return;
+    } else if (this.pattern == PATTERN_SRA) {
+
+      this.instrumentId = matcher.group(1);
+      this.runId = Integer.parseInt(matcher.group(2));
+      this.flowCellId = matcher.group(3);
+      this.flowCellLane = Integer.parseInt(matcher.group(4));
+      this.tileNumberInFlowCellLane = Integer.parseInt(matcher.group(5));
+      this.xClusterCoordinateInTile = Integer.parseInt(matcher.group(6));
+      this.yClusterCoordinateInTile = Integer.parseInt(matcher.group(7));
+      this.sequenceIndex = "0";
+      this.pairMember = -1;
       this.filtered = false;
       this.controlNumber = -1;
 
