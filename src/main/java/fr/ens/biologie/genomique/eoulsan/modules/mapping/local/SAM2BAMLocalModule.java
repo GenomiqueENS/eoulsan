@@ -87,8 +87,8 @@ public class SAM2BAMLocalModule extends AbstractSAM2BAMModule {
    * @throws IOException if an error occurs
    */
   private static void convert(final DataFile samDataFile,
-                              final DataFile bamDataFile, final DataFile bamIndexDataFile,
-                              final int compressionLevel, final Reporter reporter, final File tmpDir)
+      final DataFile bamDataFile, final DataFile bamIndexDataFile,
+      final int compressionLevel, final Reporter reporter, final File tmpDir)
       throws IOException {
 
     checkArgument(compressionLevel >= 0 && compressionLevel <= 9,
@@ -121,8 +121,8 @@ public class SAM2BAMLocalModule extends AbstractSAM2BAMModule {
     final File bamIndexFile =
         new File(bamDataFile.toFile().getParentFile(), bamIndexFilename);
     if (!bamIndexFile.renameTo(bamIndexDataFile.toFile())) {
-      EoulsanLogger.getLogger().warning("Unable to rename the BAI file " +bamIndexFile + " to "
-              + bamIndexDataFile.toFile());
+      EoulsanLogger.getLogger().warning("Unable to rename the BAI file "
+          + bamIndexFile + " to " + bamIndexDataFile.toFile());
     }
 
     // Create a symbolic link

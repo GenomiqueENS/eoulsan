@@ -166,7 +166,7 @@ public class UploadS3Action extends AbstractAction {
    * @param jobDescription job description
    */
   private static void run(final File workflowFile, final File designFile,
-                          final DataFile s3Path, final String jobDescription) {
+      final DataFile s3Path, final String jobDescription) {
 
     checkNotNull(workflowFile, "paramFile is null");
     checkNotNull(designFile, "designFile is null");

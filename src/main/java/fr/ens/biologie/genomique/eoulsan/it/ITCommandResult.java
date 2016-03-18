@@ -82,7 +82,8 @@ public class ITCommandResult {
     this.message.append(this.directory.getAbsolutePath());
 
     this.message.append("\n\tDuration: ");
-    this.message.append(this.duration == -1 ? "none" : toTimeHumanReadable(this.duration));
+    this.message.append(
+        this.duration == -1 ? "none" : toTimeHumanReadable(this.duration));
 
     this.message.append("\n\tMessage: exit value ");
     this.message.append(this.exitValue);

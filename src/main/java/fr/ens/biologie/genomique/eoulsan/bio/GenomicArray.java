@@ -498,7 +498,7 @@ public class GenomicArray<T> {
      * @return true if the interval intersect a zone
      */
     private static boolean intersect(final int start, final int end,
-                                     final int startZone, final int endZone) {
+        final int startZone, final int endZone) {
 
       return (start >= startZone && start <= endZone)
           || (end >= startZone && end <= endZone)

@@ -423,7 +423,7 @@ public final class DesignUtils {
   }
 
   private static void removeSampleMedataIfExists(final Design design,
-                                                 final String fieldName) {
+      final String fieldName) {
 
     if (design == null || fieldName == null) {
       return;
@@ -440,8 +440,8 @@ public final class DesignUtils {
 
   }
 
-  private static void removeExperimentSampleMedataIfExists(
-      final Design design, final String fieldName) {
+  private static void removeExperimentSampleMedataIfExists(final Design design,
+      final String fieldName) {
 
     if (design == null || fieldName == null) {
       return;

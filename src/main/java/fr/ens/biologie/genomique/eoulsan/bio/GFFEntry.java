@@ -563,8 +563,7 @@ public class GFFEntry {
     }
   }
 
-  private static double parseDouble(final String s,
-                                    final double defaultValue) {
+  private static double parseDouble(final String s, final double defaultValue) {
 
     if (s == null) {
       return defaultValue;

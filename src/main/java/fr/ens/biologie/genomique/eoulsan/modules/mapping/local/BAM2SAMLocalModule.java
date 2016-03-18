@@ -79,7 +79,7 @@ public class BAM2SAMLocalModule extends AbstractBAM2SAMModule {
 
   // private static final void convert(final File in, final File out)
   private static void convert(final DataFile bamDataFile,
-                              final DataFile samDataFile, final Reporter reporter, final File tmpDir)
+      final DataFile samDataFile, final Reporter reporter, final File tmpDir)
       throws IOException {
 
     InputStream in = bamDataFile.open();

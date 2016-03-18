@@ -284,8 +284,8 @@ public class CopyInputDataModule extends AbstractModule {
    * @throws IOException if an error occurs while copying the data
    */
   private DataFile copyFile(final DataFile inputFile, final int fileIndex,
-                            final String outDataName, final int outDataPart,
-                            final TaskContext context) throws IOException {
+      final String outDataName, final int outDataPart,
+      final TaskContext context) throws IOException {
 
     final String stepId = context.getCurrentStep().getId();
     final DataFile outputDir = context.getStepOutputDirectory();

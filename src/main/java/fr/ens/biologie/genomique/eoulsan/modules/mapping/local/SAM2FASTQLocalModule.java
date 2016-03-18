@@ -87,8 +87,8 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
    */
 
   private static void writeConvert(final File samDataFile,
-                                   final DataFile fastqDataFile1, final DataFile fastqDataFile2,
-                                   final Reporter reporter) throws IOException {
+      final DataFile fastqDataFile1, final DataFile fastqDataFile2,
+      final Reporter reporter) throws IOException {
 
     // Open sam file
     final SamReader samReader = SamReaderFactory.makeDefault()
@@ -145,7 +145,7 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
   }
 
   private static int sortConvert(final DataFile samDataFile,
-                                 final File samFileTmp, final Reporter reporter, final File tmpDir)
+      final File samFileTmp, final Reporter reporter, final File tmpDir)
       throws IOException {
 
     // Open sam file

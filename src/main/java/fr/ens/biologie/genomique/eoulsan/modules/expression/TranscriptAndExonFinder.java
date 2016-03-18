@@ -209,8 +209,7 @@ public class TranscriptAndExonFinder {
     // Other methods
     //
 
-    private static boolean stringEquals(final String s1,
-                                        final String s2) {
+    private static boolean stringEquals(final String s1, final String s2) {
 
       if (s1 == null && s2 == null) {
         return true;

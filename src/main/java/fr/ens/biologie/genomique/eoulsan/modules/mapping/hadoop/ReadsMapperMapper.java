@@ -493,7 +493,9 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
       if (lastMapperUsedFile.exists()) {
         if (!lastMapperUsedFile.setLastModified(System.currentTimeMillis())) {
-          getLogger().warning("Unable to set the modification time of the file: " + lastMapperUsedFile);
+          getLogger()
+              .warning("Unable to set the modification time of the file: "
+                  + lastMapperUsedFile);
         }
       }
 

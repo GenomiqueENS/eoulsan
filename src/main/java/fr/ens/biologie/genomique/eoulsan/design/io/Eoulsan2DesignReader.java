@@ -454,7 +454,7 @@ public class Eoulsan2DesignReader implements DesignReader {
    * @return a list of String
    */
   private static List<String> splitToList(final Splitter splitter,
-                                          final CharSequence sequence) {
+      final CharSequence sequence) {
 
     checkNotNull(splitter, "splitter argument cannot be null");
     checkNotNull(sequence, "sequence argument cannot be null");

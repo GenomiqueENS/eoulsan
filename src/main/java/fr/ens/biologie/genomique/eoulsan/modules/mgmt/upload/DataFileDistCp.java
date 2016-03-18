@@ -169,7 +169,7 @@ public class DataFileDistCp {
      * @throws IOException if an error occurs while copying data
      */
     private static void copyFile(final DataFile src, final DataFile dest,
-                                 final Context context) throws InterruptedException, IOException {
+        final Context context) throws InterruptedException, IOException {
 
       // Define a wrapper object to store exception if needed
       final MyIOExceptionWrapper exp = new MyIOExceptionWrapper();

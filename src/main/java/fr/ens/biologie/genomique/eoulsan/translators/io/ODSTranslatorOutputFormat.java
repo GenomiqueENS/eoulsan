@@ -112,7 +112,8 @@ public class ODSTranslatorOutputFormat implements TranslatorOutputFormat {
         c.setStringValue(h);
       }
 
-      for (Node n : new DomNodeList(this.table.getOdfElement().getChildNodes())) {
+      for (Node n : new DomNodeList(
+          this.table.getOdfElement().getChildNodes())) {
         if (n instanceof TableTableRowElement) {
           this.rowElement = (TableTableRowElement) n;
         }

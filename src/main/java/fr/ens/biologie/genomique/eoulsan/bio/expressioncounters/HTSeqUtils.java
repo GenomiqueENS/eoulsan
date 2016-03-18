@@ -359,7 +359,7 @@ public class HTSeqUtils {
    * @return an immutable list
    */
   private static List<String> splitToList(final Splitter splitter,
-                                          final String s) {
+      final String s) {
 
     final Iterator<String> it = splitter.split(s).iterator();
     final List<String> result = new ArrayList<>();

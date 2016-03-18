@@ -193,8 +193,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
         // Change task state
         beforeExecuteTask(this.context);
 
-        final File taskFile =
-            this.context.getTaskOutputDirectory().toFile();
+        final File taskFile = this.context.getTaskOutputDirectory().toFile();
         final int requiredMemory = getRequiredMemory();
         final int requiredProcessors =
             this.context.getCurrentStep().getRequiredProcessors();

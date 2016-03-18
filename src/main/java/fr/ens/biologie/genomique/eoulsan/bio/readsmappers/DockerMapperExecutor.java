@@ -141,7 +141,8 @@ public class DockerMapperExecutor implements MapperExecutor {
         // Remove named pipe
         if (this.stdoutFile != null) {
           if (!this.stdoutFile.delete()) {
-            getLogger().warning("Unable to delete stdout file: " + this.stdoutFile);
+            getLogger()
+                .warning("Unable to delete stdout file: " + this.stdoutFile);
           }
         }
 

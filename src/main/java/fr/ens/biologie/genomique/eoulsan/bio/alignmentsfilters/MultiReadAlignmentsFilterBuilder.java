@@ -186,8 +186,8 @@ public class MultiReadAlignmentsFilterBuilder {
       f.init();
     }
 
-    return new MultiReadAlignmentsFilter(
-        incrementer, counterGroup, this.listFilter);
+    return new MultiReadAlignmentsFilter(incrementer, counterGroup,
+        this.listFilter);
   }
 
   /**

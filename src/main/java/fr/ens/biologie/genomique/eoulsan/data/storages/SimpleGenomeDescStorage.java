@@ -193,7 +193,7 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
   }
 
   private static String createKey(final long genomeFileLength,
-                                  final String genomeFileMD5Sum) {
+      final String genomeFileMD5Sum) {
 
     return genomeFileMD5Sum + '\t' + genomeFileLength;
   }

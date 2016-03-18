@@ -662,8 +662,7 @@ class CheetahToPythonTranslator {
       @Override
       String buildLineScript(final String line) {
 
-        return this.tab(currentTabCount) +
-                line;
+        return this.tab(currentTabCount) + line;
       }
 
       //
@@ -783,11 +782,8 @@ class CheetahToPythonTranslator {
       @Override
       String buildLineScript(final String line) {
 
-        return this.tab(currentTabCount) +
-                VAR_CMD_NAME +
-                " += " +
-                line +
-                " + \" \"";
+        return this.tab(currentTabCount)
+            + VAR_CMD_NAME + " += " + line + " + \" \"";
       }
 
       //

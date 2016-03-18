@@ -338,15 +338,15 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
   //
 
   private static String createKey(final SequenceReadsMapper mapper,
-                                  final GenomeDescription genome,
-                                  final Map<String, String> additionalDescription) {
+      final GenomeDescription genome,
+      final Map<String, String> additionalDescription) {
 
     return createKey(mapper.getMapperName(),
         createMD5Sum(createMD5SumMap(mapper, genome, additionalDescription)));
   }
 
   private static String createKey(final String mapperName,
-                                  final String genomeMD5) {
+      final String genomeMD5) {
 
     return mapperName.toLowerCase().trim() + '\t' + genomeMD5;
   }

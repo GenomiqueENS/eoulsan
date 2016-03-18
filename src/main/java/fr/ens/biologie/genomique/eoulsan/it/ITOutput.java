@@ -241,8 +241,8 @@ public class ITOutput {
 
     if (!itResult.isSuccess()) {
       msg.append(isDeleteFileRequired
-              ? "\tConfiguration required to delete files, but test fail. Files still exist in "
-              : "\tConfiguration required always to keep files in ");
+          ? "\tConfiguration required to delete files, but test fail. Files still exist in "
+          : "\tConfiguration required always to keep files in ");
       msg.append(this.directory.getAbsolutePath());
     }
 

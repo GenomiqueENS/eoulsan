@@ -53,8 +53,7 @@ public class Experiment implements Serializable {
   private final int experimentNumber = ++instanceCount;
   private String experimentName = "Experiment" + experimentNumber;
   private final ExperimentMetadata metadata = new ExperimentMetadata();
-  private final List<ExperimentSample> samples =
-          new ArrayList<>();
+  private final List<ExperimentSample> samples = new ArrayList<>();
   private final Set<String> sampleNames = new HashSet<>();
 
   //

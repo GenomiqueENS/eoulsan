@@ -273,8 +273,7 @@ public class FastQCModule extends AbstractModule {
 
       // If no entries in the input file use a dedicated module
       final List<AbstractQCModule> reportModules = seqFile.getCount() > 0
-          ? modules
-          : singletonList((AbstractQCModule) new EmptyFileQC(inFile));
+          ? modules : singletonList((AbstractQCModule) new EmptyFileQC(inFile));
 
       // Create the report
       createReport(reportModules, seqFile, reportFile,

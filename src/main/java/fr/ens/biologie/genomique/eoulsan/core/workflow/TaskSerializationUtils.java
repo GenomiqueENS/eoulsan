@@ -148,7 +148,7 @@ public class TaskSerializationUtils {
    *           files
    */
   private static void saveTaskResult(final DataFile taskContextFile,
-                                     final TaskContextImpl context, final TaskResultImpl result)
+      final TaskContextImpl context, final TaskResultImpl result)
       throws IOException {
 
     // Get the prefix for the task files and the base dir

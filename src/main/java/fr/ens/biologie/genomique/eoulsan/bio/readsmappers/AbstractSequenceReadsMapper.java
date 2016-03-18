@@ -741,8 +741,8 @@ public abstract class AbstractSequenceReadsMapper
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  private MapperProcess mapPE(final InputStream in1,
-                              final InputStream in2) throws IOException {
+  private MapperProcess mapPE(final InputStream in1, final InputStream in2)
+      throws IOException {
 
     checkNotNull(in1, "in1 argument is null");
     checkNotNull(in2, "in2 argument is null");

@@ -148,7 +148,7 @@ public class MeltingTemp {
   }
 
   private static float[] tercorrDNA(final String stri, final float ds,
-                                    final float dh) {
+      final float dh) {
 
     float deltah = 0;
     float deltas = 0;
@@ -179,7 +179,7 @@ public class MeltingTemp {
   }
 
   private static float[] tercorrRNA(final String stri, final float ds,
-                                    final float dh) {
+      final float dh) {
 
     float deltah = 0;
     float deltas = 0;

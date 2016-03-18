@@ -232,7 +232,8 @@ public class ITResult {
     report.append(this.it.getExcludeToComparePatterns());
 
     // Result to check if files exist
-    report.append("\n\tFile count to remove from pattern(s) if test succeeded: ");
+    report
+        .append("\n\tFile count to remove from pattern(s) if test succeeded: ");
     report.append(this.it.getFileToRemovePatterns());
     if (!this.it.getFileToRemovePatterns().equals("none")) {
       report.append(": ");
@@ -241,7 +242,8 @@ public class ITResult {
     }
 
     report.append("\n\nDuration one script maximum: ");
-    report.append(toTimeHumanReadable(this.it.getDurationMaxInMinutes() * 60 * 1000));
+    report.append(
+        toTimeHumanReadable(this.it.getDurationMaxInMinutes() * 60 * 1000));
     report.append('\n');
 
     // Add synthesis on executions scripts

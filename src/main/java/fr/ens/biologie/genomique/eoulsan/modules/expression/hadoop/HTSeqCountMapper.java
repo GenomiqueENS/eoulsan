@@ -277,8 +277,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
    * @param context Hadoop context
    * @param record the SAM record
    */
-  private List<GenomicInterval> createSingleEndIntervals(
-      final Context context, final String record) {
+  private List<GenomicInterval> createSingleEndIntervals(final Context context,
+      final String record) {
 
     final List<GenomicInterval> ivSeq = new ArrayList<>();
     final SAMRecord samRecord = this.parser.parseLine(record);
@@ -322,8 +322,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
    * @param record1 the SAM record of the first end
    * @param record2 the SAM record of the second end
    */
-  private List<GenomicInterval> addPairedEndIntervals(
-      final Context context, final String record1, final String record2) {
+  private List<GenomicInterval> addPairedEndIntervals(final Context context,
+      final String record1, final String record2) {
 
     final List<GenomicInterval> ivSeq = new ArrayList<>();
 
@@ -382,7 +382,7 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
    * @param counter the expression counter
    */
   private void incrementCounter(final Context context,
-                                final ExpressionCounters counter) {
+      final ExpressionCounters counter) {
 
     incrementCounter(context, counter, 1);
   }
@@ -394,7 +394,7 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
    * @param increment the increment
    */
   private void incrementCounter(final Context context,
-                                final ExpressionCounters counter, final int increment) {
+      final ExpressionCounters counter, final int increment) {
 
     context.getCounter(this.counterGroup, counter.counterName())
         .increment(increment);
