@@ -47,7 +47,7 @@ public class IlluminaFilterFlagReadFilterTest {
 
     // Not illumina id case
     ReadSequence read = new ReadSequence(0, "read1", "ATG", "wxy");
-    assertFalse(filter.accept(read));
+    assertTrue(filter.accept(read));
 
     // Good id
     read =
@@ -59,10 +59,17 @@ public class IlluminaFilterFlagReadFilterTest {
 
     // Bad id
     read =
-        new ReadSequence(0, "@AEGIR:25:B0866ABXX:8:1101:1176:2126 1:Y:0:CGATGT",
+        new ReadSequence(0, "AEGIR:25:B0866ABXX:8:1101:1176:2126 1:Y:0:CGATGT",
             "TGGAGNCAGGAGTCTGGGGGGGGGGGGGGTGGTGCAAAACTGGGGGGACGC",
             "###################################################");
     assertFalse(filter.accept(read));
+
+    // Read without the filter flag
+    read = new ReadSequence(0,
+        "SRR1577083.1 HWI-ST1160:266:D0H3RACXX:6:1315:4634:59858 length=50",
+        "TGGAGNCAGGAGTCTGGGGGGGGGGGGGGTGGTGCAAAACTGGGGGGACGC",
+        "###################################################");
+    assertTrue(filter.accept(read));
 
   }
 

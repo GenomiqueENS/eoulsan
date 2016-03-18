@@ -55,10 +55,15 @@ public class IlluminaFilterFlagReadFilter extends AbstractReadFilter {
         this.irid.parse(read.getName());
       }
 
+      // Do no not filter reads without the filter flag
+      if (!this.irid.isFilteredField()) {
+        return true;
+      }
+
       return !this.irid.isFiltered();
 
     } catch (EoulsanException e) {
-      return false;
+      return true;
     }
   }
 
