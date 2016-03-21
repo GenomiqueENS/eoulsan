@@ -1202,7 +1202,7 @@ of reads that reject each filter like in local mode.
 
          </release>
 
-         <release version="2.0-beta2" description="Eoulsan 2.0-beta2 release" date="TBD">
+         <release version="2.0-beta2" description="Eoulsan 2.0-beta2 release" date="2016-03-21">
 
             <action dev="jourdren" type="fix">
 		In DESeq2Module, rename the "statistic.test" parameter to "statistical.test" like in Eoulsan documentation.
@@ -1225,7 +1225,7 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="fix">
-		The FastQC module can now handle input files without entry.
+		The FastQC module can now handle input files without any entry.
             </action>
 
             <action dev="jourdren" type="fix">
@@ -1241,7 +1241,7 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="update">
-		Many small code and Javadoc fixes using IDEA inspect tool.
+		Many small code and Javadoc fixes using IDEA inspect tool and Findbugs.
             </action>
 
          </release>
