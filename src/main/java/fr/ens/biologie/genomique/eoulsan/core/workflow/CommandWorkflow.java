@@ -466,9 +466,6 @@ public class CommandWorkflow extends AbstractWorkflow {
 
     } while (stepsIds.contains(stepId));
 
-    final boolean designOutputport =
-        outputPort.getStep().getType() == StepType.DESIGN_STEP;
-
     // Find output compression
     final CompressionType comp;
     if (outputCompressionsAllowed.contains(inputCompression)) {
@@ -485,8 +482,6 @@ public class CommandWorkflow extends AbstractWorkflow {
         inputPort.getFormat().getName()));
     parameters.add(new Parameter(
         CopyInputDataModule.OUTPUT_COMPRESSION_PARAMETER, comp.name()));
-    parameters.add(new Parameter(CopyInputDataModule.DESIGN_INPUT_PARAMETER,
-        "" + designOutputport));
     parameters.add(
         new Parameter(CopyInputDataModule.OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER,
             CopyInputDataModule.encodeAllowedCompressionsParameterValue(
