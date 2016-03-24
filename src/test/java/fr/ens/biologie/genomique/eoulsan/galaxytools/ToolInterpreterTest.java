@@ -47,9 +47,7 @@ import com.google.common.base.Splitter;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeDebug;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.CheetahInterpreter;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolInterpreter;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolData;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.cheetah.CheetahInterpreter;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElement;
 
 /**

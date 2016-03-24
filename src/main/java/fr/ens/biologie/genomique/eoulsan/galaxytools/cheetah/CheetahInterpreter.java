@@ -21,7 +21,7 @@
  *      http://outils.genomique.biologie.ens.fr/eoulsan
  *
  */
-package fr.ens.biologie.genomique.eoulsan.galaxytools;
+package fr.ens.biologie.genomique.eoulsan.galaxytools.cheetah;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
