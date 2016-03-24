@@ -322,21 +322,21 @@ class CheetahToPythonTranslator {
       //
 
       /**
-       * Adds the code java.
+       * Adds the Python code.
        * @param variableName the variable name
        * @param isPreviousTextCode the is previous text code
        * @param firstToken the first token
        * @param lastToken the last token
        * @return the string
        */
-      private String addCodeJava(final String variableName,
+      private String addPythonCode(final String variableName,
           final boolean isPreviousTextCode, final boolean firstToken,
           final boolean lastToken) {
 
-        final String codeJava =
-            this.replaceVariableNameByCodeJava(variableName);
+        final String pythonCode =
+            this.createPythonCodeVariableCaller(variableName);
 
-        return this.addToken(codeJava, isPreviousTextCode, true, firstToken,
+        return this.addToken(pythonCode, isPreviousTextCode, true, firstToken,
             lastToken);
       }
 
@@ -357,30 +357,23 @@ class CheetahToPythonTranslator {
 
         final StringBuilder modifiedLine = new StringBuilder();
 
-        String variableName = "";
+        String variableName;
 
         while (matcher.find()) {
-          // System.out.println("found "
-          // + matcher.group() + "\n\tstart: " + matcher.start() + "-"
-          // + matcher.end() + "\tcurrent pos: " + currentPos + "\tend txt: "
-          // + (rawLine.length() - 1));
+
           variableName = matcher.group();
           final int start = matcher.start();
           final int end = matcher.end();
 
           if (currentPos < start) {
+
             // Extract text before variable
             final String txt = this.modifiedLine.substring(currentPos, start);
-
-            // Remove double quote
-            // txt = txt.replaceAll("\"", "'");
 
             // Add syntax
             if (!txt.trim().isEmpty()) {
               isCurrentTextCode = false;
 
-              // TODO
-              // System.out.println("add txt " + txt);
               modifiedLine.append(this.addToken(txt, isPreviousTextCode,
                   isCurrentTextCode, firstToken, lastToken));
               firstToken = false;
@@ -390,8 +383,8 @@ class CheetahToPythonTranslator {
           isPreviousTextCode = isCurrentTextCode;
 
           // Add motif matched
-          modifiedLine.append(this.addCodeJava(variableName, isPreviousTextCode,
-              firstToken, lastToken));
+          modifiedLine.append(this.addPythonCode(variableName,
+              isPreviousTextCode, firstToken, lastToken));
           isCurrentTextCode = true;
 
           // Update current position
@@ -416,13 +409,14 @@ class CheetahToPythonTranslator {
       }
 
       /**
-       * Replace variable name by code java.
+       * Replace variable name by Python.
        * @param variableName the variable name
-       * @return the string
+       * @return a string
        */
-      private String replaceVariableNameByCodeJava(final String variableName) {
+      private String createPythonCodeVariableCaller(final String variableName) {
 
         int n = 0;
+
         // Check presence accolade
         if (variableName.contains("{")) {
           n = 1;
@@ -430,11 +424,6 @@ class CheetahToPythonTranslator {
 
         final String variableNameTrimmed =
             variableName.substring(1 + n, variableName.length() - n);
-
-        // TODO
-        // System.out.println("VAR before\t"
-        // + variableName + "\tafter\t" + CALL_METHOD + "(\""
-        // + variableNameTrimmed + "\")");
 
         // Update list variable name
         TranslatorLineToPython.this.variableNames.add(variableNameTrimmed);
@@ -457,22 +446,6 @@ class CheetahToPythonTranslator {
         tabulations += n;
 
         return sb.toString();
-      }
-
-      /**
-       * Adds the prefix.
-       * @param prefix the prefix
-       */
-      void addPrefix(final String prefix) {
-        this.modifiedLine = prefix + this.modifiedLine;
-      }
-
-      /**
-       * Adds the suffix.
-       * @param suffix the suffix
-       */
-      void addSuffix(final String suffix) {
-        this.modifiedLine = this.modifiedLine + suffix;
       }
 
       /**
@@ -701,35 +674,35 @@ class CheetahToPythonTranslator {
       String endLine(final boolean isCurrentTextCode, final boolean firstToken,
           final int currentPos) {
 
-        String txt = "";
+        final StringBuilder sb = new StringBuilder();
 
         if (!isCurrentTextCode) {
           if (!this.getModifiedString().endsWith("\"")) {
             // Close string
-            txt += "\"";
+            sb.append('\"');
           }
         }
 
         if (currentPos >= this.getModifiedString().length()) {
-          return txt;
+          return sb.toString();
         }
 
         // Extract last token from string
-        String lastToken = this.getModifiedString().substring(currentPos);
+        final String lastToken = this.getModifiedString().substring(currentPos);
 
         if (lastToken.trim().isEmpty()) {
-          return txt;
+          return sb.toString();
         }
 
         // Skip token equals single or double quote
         if (lastToken.equals("\"") || lastToken.equals("\'")) {
-          return txt;
+          return sb.toString();
         }
 
-        lastToken += txt;
+        sb.insert(0, lastToken);
 
-        return this.addToken(lastToken, isCurrentTextCode, false, firstToken,
-            true);
+        return this.addToken(sb.toString(), isCurrentTextCode, false,
+            firstToken, true);
       }
 
       @Override
@@ -737,53 +710,42 @@ class CheetahToPythonTranslator {
           final boolean isCurrentCode, final boolean firstToken,
           final boolean lastToken) {
 
-        final StringBuilder txt = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         if (firstToken) {
           if (!isCurrentCode && !newToken.startsWith("\"")) {
             // Start string
-            txt.append("\"");
+            sb.append("\"");
           }
         } else {
+
           // Add in middle string
           if (!isPreviousCode && isCurrentCode) {
             // Concatenate text with code
-            txt.append("\"+");
+            sb.append("\"+");
 
           } else if (isPreviousCode) {
             if (isCurrentCode) {
               // Concatenate code with code
-              txt.append("+\" \"+");
+              sb.append("+\" \"+");
             } else {
               // Concatenate code with text
-              txt.append("+\"");
+              sb.append("+\"");
             }
           }
         }
+
         // Add text
-        // if (!isCurrentCode)
-        // newToken = newToken.replaceAll("\"", "'");
-        txt.append(newToken);
-
-        // // TODO
-        // System.out.println("before \t"
-        // + newToken + "\tafter\t" + Joiner.on(" ").join(txt));
-
-        // TODO
-        // System.out.println("newtoken \t"
-        // + newToken + "\t isPrevCode: " + isPreviousCode
-        // + "\t isCurrentCode: " + isCurrentCode + "\tfirst: " + firstToken
-        // + "\tlast: " + lastToken + "\n\t----------" + newToken + " ====> "
-        // + Joiner.on(" ").join(txt).trim());
+        sb.append(newToken);
 
         // Return string with default separator escape
         if (lastToken) {
           if (!isCurrentCode && !newToken.endsWith("\"")) {
             // Start string
-            txt.append("\"");
+            sb.append("\"");
           }
         }
-        return txt.toString();
+        return sb.toString();
       }
 
       @Override
