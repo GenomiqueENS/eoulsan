@@ -330,7 +330,7 @@ public class HTSeqUtils {
    * @param intervals intervals to filter
    * @param strand strand to keep
    */
-  private static final void filterIntervalsStrands(
+  private static void filterIntervalsStrands(
       final Map<GenomicInterval, Set<String>> intervals, final char strand) {
 
     if (intervals == null) {
@@ -358,7 +358,7 @@ public class HTSeqUtils {
    * @param s the string to split
    * @return an immutable list
    */
-  private static final List<String> splitToList(final Splitter splitter,
+  private static List<String> splitToList(final Splitter splitter,
       final String s) {
 
     final Iterator<String> it = splitter.split(s).iterator();

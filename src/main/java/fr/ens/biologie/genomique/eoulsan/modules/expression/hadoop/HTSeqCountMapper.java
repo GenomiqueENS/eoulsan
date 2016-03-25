@@ -39,9 +39,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -85,7 +83,6 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
       Globals.PARAMETER_PREFIX + ".expression.no.ambiguous.cases";
 
   private final GenomicArray<String> features = new GenomicArray<>();
-  private final Map<String, Integer> counts = new HashMap<>();
 
   private String counterGroup;
   private StrandUsage stranded;
@@ -261,8 +258,6 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
       incrementCounter(context, INVALID_SAM_ENTRIES_COUNTER);
       getLogger().info("Invalid SAM output entry: "
           + e.getMessage() + " line='" + line + "'");
-
-      return;
     }
 
   }
@@ -271,7 +266,6 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
   public void cleanup(final Context context) throws IOException {
 
     this.features.clear();
-    this.counts.clear();
   }
 
   //
@@ -283,8 +277,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
    * @param context Hadoop context
    * @param record the SAM record
    */
-  private final List<GenomicInterval> createSingleEndIntervals(
-      final Context context, final String record) {
+  private List<GenomicInterval> createSingleEndIntervals(final Context context,
+      final String record) {
 
     final List<GenomicInterval> ivSeq = new ArrayList<>();
     final SAMRecord samRecord = this.parser.parseLine(record);
@@ -328,8 +322,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
    * @param record1 the SAM record of the first end
    * @param record2 the SAM record of the second end
    */
-  private final List<GenomicInterval> addPairedEndIntervals(
-      final Context context, final String record1, final String record2) {
+  private List<GenomicInterval> addPairedEndIntervals(final Context context,
+      final String record1, final String record2) {
 
     final List<GenomicInterval> ivSeq = new ArrayList<>();
 
@@ -386,9 +380,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
    * Increment an expression counter with a value of 1.
    * @param context the Hadoop context
    * @param counter the expression counter
-   * @param increment the increment
    */
-  private final void incrementCounter(final Context context,
+  private void incrementCounter(final Context context,
       final ExpressionCounters counter) {
 
     incrementCounter(context, counter, 1);
@@ -400,7 +393,7 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
    * @param counter the expression counter
    * @param increment the increment
    */
-  private final void incrementCounter(final Context context,
+  private void incrementCounter(final Context context,
       final ExpressionCounters counter, final int increment) {
 
     context.getCounter(this.counterGroup, counter.counterName())
@@ -412,7 +405,7 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
    * @param set the set
    * @return an empty set if the parameter is null or the original set
    */
-  private static final <E> Set<E> null2empty(final Set<E> set) {
+  private static <E> Set<E> null2empty(final Set<E> set) {
 
     if (set == null) {
       return Collections.emptySet();

@@ -153,8 +153,8 @@ public abstract class AbstractTranslator implements Translator {
 
     List<String> result = new ArrayList<>();
 
-    for (int i = 0; i < ids.size(); i++) {
-      result.add(translateField(ids.get(i), lField));
+    for (String id : ids) {
+      result.add(translateField(id, lField));
     }
 
     return result;

@@ -492,7 +492,11 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
           new File(mapperIndexDir, MAPPER_LAST_USED_FILENAME);
 
       if (lastMapperUsedFile.exists()) {
-        lastMapperUsedFile.setLastModified(System.currentTimeMillis());
+        if (!lastMapperUsedFile.setLastModified(System.currentTimeMillis())) {
+          getLogger()
+              .warning("Unable to set the modification time of the file: "
+                  + lastMapperUsedFile);
+        }
       }
 
       // Unlock the mapper directory

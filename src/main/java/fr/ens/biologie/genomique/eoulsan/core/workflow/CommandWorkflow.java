@@ -307,11 +307,17 @@ public class CommandWorkflow extends AbstractWorkflow {
     int installerCount = 0;
     for (Map.Entry<CommandStep, Requirement> e : requirements.entries()) {
 
+      final String stepId = e.getKey().getId();
       final Requirement r = e.getValue();
 
       if (r.isAvailable()) {
+        getLogger()
+            .fine("Requierement found for step \"" + stepId + "\": " + r);
         continue;
       }
+
+      getLogger()
+          .fine("Requierement not found for step \"" + stepId + "\": " + r);
 
       if (!r.isInstallable()) {
 
@@ -460,9 +466,6 @@ public class CommandWorkflow extends AbstractWorkflow {
 
     } while (stepsIds.contains(stepId));
 
-    final boolean designOutputport =
-        outputPort.getStep().getType() == StepType.DESIGN_STEP;
-
     // Find output compression
     final CompressionType comp;
     if (outputCompressionsAllowed.contains(inputCompression)) {
@@ -479,8 +482,6 @@ public class CommandWorkflow extends AbstractWorkflow {
         inputPort.getFormat().getName()));
     parameters.add(new Parameter(
         CopyInputDataModule.OUTPUT_COMPRESSION_PARAMETER, comp.name()));
-    parameters.add(new Parameter(CopyInputDataModule.DESIGN_INPUT_PARAMETER,
-        "" + designOutputport));
     parameters.add(
         new Parameter(CopyInputDataModule.OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER,
             CopyInputDataModule.encodeAllowedCompressionsParameterValue(

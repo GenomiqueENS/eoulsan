@@ -181,12 +181,13 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   public void notifyWorkflowSuccess(final boolean success,
       final String message) {
 
-    // Do nothing if there is no terminal or if the job is completed
-    if (this.terminal == null || this.jobDone) {
-      return;
-    }
-
     synchronized (this) {
+
+      // Do nothing if there is no terminal or if the job is completed
+      if (this.terminal == null || this.jobDone) {
+        return;
+      }
+
 
       this.terminal.setCursorVisible(false);
       final int lastLineY = this.terminalSize.getRows() - 1;

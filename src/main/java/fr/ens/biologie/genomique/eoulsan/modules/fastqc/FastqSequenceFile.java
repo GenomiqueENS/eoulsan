@@ -33,7 +33,6 @@ import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
 import fr.ens.biologie.genomique.eoulsan.bio.io.FastqReader;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import uk.ac.babraham.FastQC.Sequence.Sequence;
-import uk.ac.babraham.FastQC.Sequence.SequenceFile;
 import uk.ac.babraham.FastQC.Sequence.SequenceFormatException;
 
 /**
@@ -41,10 +40,11 @@ import uk.ac.babraham.FastQC.Sequence.SequenceFormatException;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class FastqSequenceFile implements SequenceFile {
+public class FastqSequenceFile implements CounterSequenceFile {
 
   private final DataFile file;
   private final FastqReader reader;
+  private long count;
 
   @Override
   public File getFile() {
@@ -80,9 +80,16 @@ public class FastqSequenceFile implements SequenceFile {
   public Sequence next() throws SequenceFormatException {
 
     final ReadSequence read = this.reader.next();
+    this.count++;
 
     return new Sequence(this, read.getSequence(), read.getQuality(),
         read.getName());
+  }
+
+  @Override
+  public long getCount() {
+
+    return count;
   }
 
   //

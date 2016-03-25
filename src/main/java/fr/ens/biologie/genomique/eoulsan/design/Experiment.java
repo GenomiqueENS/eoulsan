@@ -28,9 +28,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.python.google.common.base.MoreObjects;
 import org.python.google.common.base.Objects;
@@ -55,8 +53,8 @@ public class Experiment implements Serializable {
   private final int experimentNumber = ++instanceCount;
   private String experimentName = "Experiment" + experimentNumber;
   private final ExperimentMetadata metadata = new ExperimentMetadata();
-  private final List<ExperimentSample> samples =
-      new ArrayList<ExperimentSample>();
+  private final List<ExperimentSample> samples = new ArrayList<>();
+  private final Set<String> sampleNames = new HashSet<>();
 
   //
   // Getters
@@ -186,7 +184,7 @@ public class Experiment implements Serializable {
   public ExperimentSample addSample(final Sample sample) {
 
     checkNotNull(sample, "sample argument cannot be null");
-    checkArgument(!this.samples.contains(sample),
+    checkArgument(!this.sampleNames.contains(sample.getId()),
         "The sample already exists in the experiment: " + sample.getId());
     checkArgument(sample.getDesign() == this.design,
         "The sample to add to the experiment is not a sample of the design: "
@@ -195,6 +193,7 @@ public class Experiment implements Serializable {
     final ExperimentSample newExperimentSample = new ExperimentSample(sample);
 
     this.samples.add(newExperimentSample);
+    this.sampleNames.add(sample.getId());
 
     return newExperimentSample;
   }
@@ -210,13 +209,14 @@ public class Experiment implements Serializable {
   public void removeSample(final Sample sample) {
 
     checkNotNull(sample, "sample argument cannot be null");
-    checkArgument(this.samples.contains(sample),
+    checkArgument(this.sampleNames.contains(sample.getId()),
         "The sample does not exists in the experiment: " + sample.getId());
     checkArgument(sample.getDesign() == this.design,
         "The sample to remove to the experiment is not a sample of the design: "
             + sample.getId());
 
-    this.samples.remove(sample);
+    this.samples.remove(getExperimentSample(sample));
+    this.sampleNames.remove(sample.getId());
   }
 
   //
@@ -232,14 +232,7 @@ public class Experiment implements Serializable {
 
     checkNotNull(sample, "sample argument cannot be null");
 
-    for (ExperimentSample eSample : this.samples) {
-
-      if (eSample.getSample() == sample) {
-        return true;
-      }
-    }
-
-    return false;
+    return this.sampleNames.contains(sample.getId());
   }
 
   //

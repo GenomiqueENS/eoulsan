@@ -48,7 +48,17 @@ public class ClusterJobEmergencyStopTask implements EmergencyStopTask {
   @Override
   public boolean equals(final Object obj) {
 
-    return this.jobId.equals(obj);
+    if (obj == this) {
+      return true;
+    }
+
+    if (!(obj instanceof ClusterJobEmergencyStopTask)) {
+      return false;
+    }
+
+    final ClusterJobEmergencyStopTask that = (ClusterJobEmergencyStopTask) obj;
+
+    return this.jobId.equals(that.jobId);
   }
 
   //

@@ -125,7 +125,7 @@ public class S3DataProtocol implements DataProtocol {
      * @return a String with the bucket name
      * @throws IOException if the s3 URL is invalid
      */
-    private final String getBucket(final String source) throws IOException {
+    private String getBucket(final String source) throws IOException {
 
       final String protocolPrefix = getProtocolPrefix();
 
@@ -144,7 +144,7 @@ public class S3DataProtocol implements DataProtocol {
      * @return a String with the path
      * @throws IOException if the s3 URL is invalid
      */
-    private final String getS3FilePath(final String source) throws IOException {
+    private String getS3FilePath(final String source) throws IOException {
 
       final String protocolPrefix = getProtocolPrefix();
 

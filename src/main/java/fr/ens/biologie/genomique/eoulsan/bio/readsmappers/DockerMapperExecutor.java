@@ -35,11 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import com.google.common.base.Objects;
 import com.spotify.docker.client.DockerClient;
@@ -100,9 +96,7 @@ public class DockerMapperExecutor implements MapperExecutor {
               "Error while executing container, container pid is 0");
         }
 
-      } catch (DockerException e) {
-        throw new IOException(e);
-      } catch (InterruptedException e) {
+      } catch (DockerException | InterruptedException e) {
         throw new IOException(e);
       }
 
@@ -146,12 +140,13 @@ public class DockerMapperExecutor implements MapperExecutor {
 
         // Remove named pipe
         if (this.stdoutFile != null) {
-          this.stdoutFile.delete();
+          if (!this.stdoutFile.delete()) {
+            getLogger()
+                .warning("Unable to delete stdout file: " + this.stdoutFile);
+          }
         }
 
-      } catch (DockerException e) {
-        throw new IOException(e);
-      } catch (InterruptedException e) {
+      } catch (DockerException | InterruptedException e) {
         throw new IOException(e);
       }
 
@@ -189,9 +184,7 @@ public class DockerMapperExecutor implements MapperExecutor {
 
         List<File> newFilesUsed = new ArrayList<>();
         if (filesUsed != null) {
-          for (File f : filesUsed) {
-            newFilesUsed.add(f);
-          }
+          Collections.addAll(newFilesUsed, filesUsed);
         }
 
         if (stdout) {
@@ -233,9 +226,7 @@ public class DockerMapperExecutor implements MapperExecutor {
         getLogger().fine("Start of the Docker container: " + containerId);
         dockerClient.startContainer(containerId);
 
-      } catch (DockerException e) {
-        throw new IOException(e);
-      } catch (InterruptedException e) {
+      } catch (DockerException | InterruptedException e) {
         throw new IOException(e);
       }
     }

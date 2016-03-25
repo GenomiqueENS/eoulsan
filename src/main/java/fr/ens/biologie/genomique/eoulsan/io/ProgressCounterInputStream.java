@@ -73,7 +73,7 @@ public final class ProgressCounterInputStream extends FilterInputStream {
   // Other methods
   //
 
-  private final int incrementCounter(final int bytes) {
+  private int incrementCounter(final int bytes) {
 
     this.sum += bytes;
 

@@ -149,11 +149,11 @@ public class DistCp implements Tool {
   private static final int MAX_MAPS_PER_NODE = 20;
   private static final int SYNC_FILE_MAX = 10;
 
-  static enum Counter {
+  enum Counter {
     COPY, SKIP, FAIL, BYTESCOPIED, BYTESEXPECTED
   }
 
-  static enum Options {
+  enum Options {
     DELETE("-delete", NAME + ".delete"),
     FILE_LIMIT("-filelimit", NAME + ".limit.file"),
     SIZE_LIMIT("-sizelimit", NAME + ".limit.size"),
@@ -164,7 +164,7 @@ public class DistCp implements Tool {
 
     final String cmd, propertyname;
 
-    private Options(final String cmd, final String propertyname) {
+    Options(final String cmd, final String propertyname) {
       this.cmd = cmd;
       this.propertyname = propertyname;
     }
@@ -181,12 +181,12 @@ public class DistCp implements Tool {
     }
   }
 
-  static enum FileAttribute {
+  enum FileAttribute {
     BLOCK_SIZE, REPLICATION, USER, GROUP, PERMISSION;
 
     final char symbol;
 
-    private FileAttribute() {
+    FileAttribute() {
       this.symbol = toString().toLowerCase().charAt(0);
     }
 
@@ -200,7 +200,6 @@ public class DistCp implements Tool {
       for (char c : s.toCharArray()) {
         int i = 0;
         for (; i < attributes.length && c != attributes[i].symbol; i++) {
-          ;
         }
         if (i < attributes.length) {
           if (!set.contains(attributes[i])) {
@@ -421,8 +420,8 @@ public class DistCp implements Tool {
     /**
      * Copy a file to a destination.
      * @param srcstat src path and metadata
-     * @param dstpath dst path
-     * @param reporter
+     * @param relativedst dst path
+     * @param reporter Hadoop reporter
      */
     private void copy(final FileStatus srcstat, final Path relativedst,
         final OutputCollector<WritableComparable<?>, Text> outc,
@@ -585,7 +584,7 @@ public class DistCp implements Tool {
      * @param key src len
      * @param value FilePair (FileStatus src, Path dst)
      * @param out Log of failed copies
-     * @param reporter
+     * @param reporter Hadoop reporter
      */
     @Override
     public void map(final LongWritable key, final FilePair value,
@@ -827,7 +826,6 @@ public class DistCp implements Tool {
         Options[] opt = Options.values();
         int i = 0;
         for (; i < opt.length && !args[idx].startsWith(opt[i].cmd); i++) {
-          ;
         }
 
         if (i < opt.length) {
@@ -1009,7 +1007,6 @@ public class DistCp implements Tool {
    * default MAX_MAPS_PER_NODE * nodes in the cluster).
    * @param totalBytes Count of total bytes for job
    * @param job The job to configure
-   * @return Count of maps to run.
    */
   private static void setMapCount(final long totalBytes, final JobConf job)
       throws IOException {

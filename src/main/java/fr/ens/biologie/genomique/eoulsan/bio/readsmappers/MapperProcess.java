@@ -37,6 +37,7 @@ import java.io.Writer;
 import java.nio.channels.Channels;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingDeque;
@@ -237,12 +238,12 @@ public abstract class MapperProcess {
      * @param s string to write
      * @throws IOException if an error has occurred in writings
      */
-    public void write(final String s) throws IOException;
+    void write(final String s) throws IOException;
 
     /**
      * Close the writer.
      */
-    public void close() throws IOException;
+    void close() throws IOException;
 
   }
 
@@ -738,8 +739,6 @@ public abstract class MapperProcess {
 
   /**
    * Wait the end of the main process.
-   * @throws InterruptedException if an error occurs while waiting the end of
-   *           the process
    * @throws IOException if an error occurs while waiting the end of the process
    */
   public void waitFor() throws IOException {
@@ -804,9 +803,7 @@ public abstract class MapperProcess {
       return;
     }
 
-    for (File f : files) {
-      this.filesToRemove.add(f);
-    }
+    Collections.addAll(this.filesToRemove, files);
   }
 
   protected void additionalInit() throws IOException {

@@ -26,9 +26,9 @@ package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
-import static fr.ens.biologie.genomique.eoulsan.modules.diffana.DEseq2.FitType.PARAMETRIC;
-import static fr.ens.biologie.genomique.eoulsan.modules.diffana.DEseq2.SizeFactorsType.RATIO;
-import static fr.ens.biologie.genomique.eoulsan.modules.diffana.DEseq2.StatisticTest.WALD;
+import static fr.ens.biologie.genomique.eoulsan.modules.diffana.DESeq2.FitType.PARAMETRIC;
+import static fr.ens.biologie.genomique.eoulsan.modules.diffana.DESeq2.SizeFactorsType.RATIO;
+import static fr.ens.biologie.genomique.eoulsan.modules.diffana.DESeq2.StatisticTest.WALD;
 import static java.util.Collections.unmodifiableSet;
 
 import java.io.File;
@@ -54,9 +54,9 @@ import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
-import fr.ens.biologie.genomique.eoulsan.modules.diffana.DEseq2.FitType;
-import fr.ens.biologie.genomique.eoulsan.modules.diffana.DEseq2.SizeFactorsType;
-import fr.ens.biologie.genomique.eoulsan.modules.diffana.DEseq2.StatisticTest;
+import fr.ens.biologie.genomique.eoulsan.modules.diffana.DESeq2.FitType;
+import fr.ens.biologie.genomique.eoulsan.modules.diffana.DESeq2.SizeFactorsType;
+import fr.ens.biologie.genomique.eoulsan.modules.diffana.DESeq2.StatisticTest;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 
@@ -82,7 +82,7 @@ public class DESeq2Module extends AbstractModule {
   private static final String DIFFANA = "diffana";
   private static final String SIZE_FACTORS_TYPE = "size.factors.type";
   private static final String FIT_TYPE = "fit.type";
-  private static final String STATISTIC_TEST = "statistic.test";
+  private static final String STATISTIC_TEST = "statistical.test";
 
   // Default value for DEseq options
   private boolean normFig = true;
@@ -156,15 +156,15 @@ public class DESeq2Module extends AbstractModule {
         break;
 
       case SIZE_FACTORS_TYPE:
-        this.sizeFactorsType = DEseq2.SizeFactorsType.get(p);
+        this.sizeFactorsType = DESeq2.SizeFactorsType.get(p);
         break;
 
       case FIT_TYPE:
-        this.fitType = DEseq2.FitType.get(p.getStringValue());
+        this.fitType = DESeq2.FitType.get(p.getStringValue());
         break;
 
       case STATISTIC_TEST:
-        this.statisticTest = DEseq2.StatisticTest.get(p.getStringValue());
+        this.statisticTest = DESeq2.StatisticTest.get(p.getStringValue());
         break;
 
       default:
@@ -225,7 +225,7 @@ public class DESeq2Module extends AbstractModule {
         }
 
         // run DEseq2
-        new DEseq2(this.executor, stepId, design, e, sampleFiles, this.normFig,
+        new DESeq2(this.executor, stepId, design, e, sampleFiles, this.normFig,
             this.diffanaFig, this.normDiffana, this.diffana,
             this.sizeFactorsType, this.fitType, this.statisticTest,
             context.getSettings().isSaveRscripts()).runDEseq2();

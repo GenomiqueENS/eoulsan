@@ -28,6 +28,7 @@ import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_S
 import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_FASTQ;
+import static java.util.Collections.singletonList;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,24 +36,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
-
-import uk.ac.babraham.FastQC.Modules.AbstractQCModule;
-import uk.ac.babraham.FastQC.Modules.AdapterContent;
-import uk.ac.babraham.FastQC.Modules.BasicStats;
-import uk.ac.babraham.FastQC.Modules.KmerContent;
-import uk.ac.babraham.FastQC.Modules.NContent;
-import uk.ac.babraham.FastQC.Modules.OverRepresentedSeqs;
-import uk.ac.babraham.FastQC.Modules.PerBaseQualityScores;
-import uk.ac.babraham.FastQC.Modules.PerBaseSequenceContent;
-import uk.ac.babraham.FastQC.Modules.PerSequenceGCContent;
-import uk.ac.babraham.FastQC.Modules.PerSequenceQualityScores;
-import uk.ac.babraham.FastQC.Modules.PerTileQualityScores;
-import uk.ac.babraham.FastQC.Modules.QCModule;
-import uk.ac.babraham.FastQC.Modules.SequenceLengthDistribution;
-import uk.ac.babraham.FastQC.Report.HTMLReportArchive;
-import uk.ac.babraham.FastQC.Sequence.Sequence;
-import uk.ac.babraham.FastQC.Sequence.SequenceFile;
-import uk.ac.babraham.FastQC.Sequence.SequenceFormatException;
 
 import com.google.common.collect.Lists;
 
@@ -77,6 +60,23 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import uk.ac.babraham.FastQC.Modules.AbstractQCModule;
+import uk.ac.babraham.FastQC.Modules.AdapterContent;
+import uk.ac.babraham.FastQC.Modules.BasicStats;
+import uk.ac.babraham.FastQC.Modules.KmerContent;
+import uk.ac.babraham.FastQC.Modules.NContent;
+import uk.ac.babraham.FastQC.Modules.OverRepresentedSeqs;
+import uk.ac.babraham.FastQC.Modules.PerBaseQualityScores;
+import uk.ac.babraham.FastQC.Modules.PerBaseSequenceContent;
+import uk.ac.babraham.FastQC.Modules.PerSequenceGCContent;
+import uk.ac.babraham.FastQC.Modules.PerSequenceQualityScores;
+import uk.ac.babraham.FastQC.Modules.PerTileQualityScores;
+import uk.ac.babraham.FastQC.Modules.QCModule;
+import uk.ac.babraham.FastQC.Modules.SequenceLengthDistribution;
+import uk.ac.babraham.FastQC.Report.HTMLReportArchive;
+import uk.ac.babraham.FastQC.Sequence.Sequence;
+import uk.ac.babraham.FastQC.Sequence.SequenceFile;
+import uk.ac.babraham.FastQC.Sequence.SequenceFormatException;
 
 /**
  * This class define a module that compute QC report using FastQC.
@@ -248,7 +248,7 @@ public class FastQCModule extends AbstractModule {
     try {
 
       // Get the SequenceFile object
-      final SequenceFile seqFile;
+      final CounterSequenceFile seqFile;
       if (this.inputFormat == READS_FASTQ) {
 
         seqFile = new FastqSequenceFile(inFile);
@@ -271,8 +271,12 @@ public class FastQCModule extends AbstractModule {
       // Process sequences
       processSequences(modules, seqFile);
 
+      // If no entries in the input file use a dedicated module
+      final List<AbstractQCModule> reportModules = seqFile.getCount() > 0
+          ? modules : singletonList((AbstractQCModule) new EmptyFileQC(inFile));
+
       // Create the report
-      createReport(modules, seqFile, reportFile,
+      createReport(reportModules, seqFile, reportFile,
           context.getLocalTempDirectory());
 
       // Set the description of the context
@@ -342,8 +346,8 @@ public class FastQCModule extends AbstractModule {
         File.createTempFile("reportfile-", reportExtension, tempDirectory);
 
     // Create the output report
-    new HTMLReportArchive(seqFile, modules.toArray(new QCModule[] {}),
-        reportTempFile);
+    new HTMLReportArchive(seqFile,
+        modules.toArray(new QCModule[modules.size()]), reportTempFile);
 
     // Report zip filename
     final String baseFilename = reportFile.getName().substring(0,
@@ -376,4 +380,5 @@ public class FastQCModule extends AbstractModule {
     }
 
   }
+
 }

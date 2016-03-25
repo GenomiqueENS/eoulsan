@@ -115,7 +115,7 @@ public class CreateHadoopJarAction extends AbstractAction {
    * Create options for command line
    * @return an Options object
    */
-  private static final Options makeOptions() {
+  private static Options makeOptions() {
 
     // create Options object
     final Options options = new Options();
@@ -130,7 +130,7 @@ public class CreateHadoopJarAction extends AbstractAction {
    * Show command line help.
    * @param options Options of the software
    */
-  private static final void help(final Options options) {
+  private static void help(final Options options) {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();

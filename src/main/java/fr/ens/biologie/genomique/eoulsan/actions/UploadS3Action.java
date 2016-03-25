@@ -128,7 +128,7 @@ public class UploadS3Action extends AbstractAction {
    * Create options for command line
    * @return an Options object
    */
-  private static final Options makeOptions() {
+  private static Options makeOptions() {
 
     // create Options object
     final Options options = new Options();
@@ -143,7 +143,7 @@ public class UploadS3Action extends AbstractAction {
    * Show command line help.
    * @param options Options of the software
    */
-  private static final void help(final Options options) {
+  private static void help(final Options options) {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
@@ -165,7 +165,7 @@ public class UploadS3Action extends AbstractAction {
    * @param s3Path path of data on S3 file system
    * @param jobDescription job description
    */
-  private static final void run(final File workflowFile, final File designFile,
+  private static void run(final File workflowFile, final File designFile,
       final DataFile s3Path, final String jobDescription) {
 
     checkNotNull(workflowFile, "paramFile is null");

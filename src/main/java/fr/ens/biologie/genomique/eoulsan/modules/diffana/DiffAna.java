@@ -320,9 +320,9 @@ public class DiffAna extends Normalization {
     sb.append("projectPath <- \"\"\n");
     sb.append("# outPath path of the outputs\n");
     sb.append("outPath <- \"./\"\n");
-    sb.append("projectName <- ");
-    sb.append("\"" + experiment.getName() + "\"" + "\n");
-    sb.append("@\n\n");
+    sb.append("projectName <- \"");
+    sb.append(experiment.getName());
+    sb.append("\"\n@\n\n");
 
     sb.append(readStaticScript(TARGET_CREATION));
 
@@ -371,14 +371,18 @@ public class DiffAna extends Normalization {
       for (String cond : rCondNames) {
 
         if (passedConditionName.indexOf(cond) == -1) {
-          sb.append("<<dispersionPlot_" + cond + ", fig=TRUE>>=\n");
-          sb.append(
-              "fitInfo <- fitInfo(countDataSet, name = \"" + cond + "\")\n");
-          sb.append("plotDispEsts(countDataSet, fitInfo, \"" + cond + "\")\n");
+          sb.append("<<dispersionPlot_");
+          sb.append(cond);
+          sb.append(", fig=TRUE>>=\n");
+          sb.append("fitInfo <- fitInfo(countDataSet, name = \"");
+          sb.append(cond);
+          sb.append("\")\n");
+          sb.append("plotDispEsts(countDataSet, fitInfo, \"");
+          sb.append(cond);
+          sb.append("\")\n");
           sb.append("@\n");
 
           passedConditionName.add(cond);
-        } else {
         }
       }
     } else {
@@ -413,9 +417,9 @@ public class DiffAna extends Normalization {
 
   /**
    * Determine if there is biological replicates in an experiment
-   * @param conditionsMap
-   * @param rCondNames
-   * @param rRepTechGroup
+   * @param conditionsMap map of the conditions
+   * @param rCondNames r condition names
+   * @param rRepTechGroup replicate tech group
    * @return a boolean
    */
   private boolean isBiologicalReplicates(
@@ -492,6 +496,8 @@ public class DiffAna extends Normalization {
     // Get experiment reference if exists
     final String refExp = experiment.getMetadata().getReference();
 
+    String refValue = null;
+
     for (ExperimentSample es : experiment.getExperimentSamples()) {
 
       final int ref =
@@ -508,8 +514,21 @@ public class DiffAna extends Normalization {
         break;
 
       case 1:
-        // Add reference to R script
-        sb.append("ref <- " + "\"" + DesignUtils.getCondition(es) + "\"\n\n");
+        String newRefValue = DesignUtils.getCondition(es);
+
+        if (newRefValue != null) {
+          newRefValue = newRefValue.trim();
+
+          if (refValue != null && !refValue.equals(newRefValue)) {
+            throw new EoulsanException("Found a reference value ("
+                + newRefValue + ") that is not the current reference value ("
+                + refValue + ") in the Diffana step (sample: "
+                + es.getSample().getId() + ")");
+          }
+
+          refValue = newRefValue;
+        }
+
         break;
 
       default:
@@ -517,6 +536,13 @@ public class DiffAna extends Normalization {
             "Reference value greater than 1 and not handled by the Diffana step (sample: "
                 + es.getSample().getId() + ")");
       }
+    }
+
+    // Add reference to R script if found
+    if (refValue != null) {
+      sb.append("ref <- \"");
+      sb.append(refValue);
+      sb.append("\"\n\n");
     }
   }
 

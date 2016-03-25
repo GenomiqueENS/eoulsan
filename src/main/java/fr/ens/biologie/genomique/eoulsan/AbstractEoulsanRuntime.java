@@ -73,7 +73,7 @@ public abstract class AbstractEoulsanRuntime {
       return isHadoopMode() || this == EoulsanExecMode.HADOOP_TASK;
     }
 
-  };
+  }
 
   private final Settings settings;
 

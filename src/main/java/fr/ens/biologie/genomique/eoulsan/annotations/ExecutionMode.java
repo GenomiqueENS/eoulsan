@@ -125,14 +125,14 @@ public enum ExecutionMode {
     switch (mode) {
 
     case LOCAL_ONLY:
-      return hadoopMode == false;
+      return !hadoopMode;
 
     case HADOOP_COMPATIBLE:
     case HADOOP_INTERNAL:
       return true;
 
     case HADOOP_ONLY:
-      return hadoopMode == true;
+      return hadoopMode;
 
     case NONE:
     default:

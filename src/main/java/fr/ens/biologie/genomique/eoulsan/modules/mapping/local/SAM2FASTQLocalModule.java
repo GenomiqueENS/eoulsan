@@ -80,13 +80,13 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
   /**
    * Convert SAM file to FASTQ
    * @param samDataFile input SAM file
-   * @param fastqFile output FASTQ file
+   * @param fastqDataFile1 output FASTQ file 1
+   * @param fastqDataFile2 output FASTQ file 2
    * @param reporter reporter
-   * @param tmpDir temporary directory
    * @throws IOException if an error occurs
    */
 
-  private static final void writeConvert(final File samDataFile,
+  private static void writeConvert(final File samDataFile,
       final DataFile fastqDataFile1, final DataFile fastqDataFile2,
       final Reporter reporter) throws IOException {
 
@@ -144,7 +144,7 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
 
   }
 
-  private static final int sortConvert(final DataFile samDataFile,
+  private static int sortConvert(final DataFile samDataFile,
       final File samFileTmp, final Reporter reporter, final File tmpDir)
       throws IOException {
 

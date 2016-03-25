@@ -111,7 +111,7 @@ public class DesignBuilder {
     private final String prefix;
     private final int pairMember;
 
-    private static final String getDate(final DataFile file) {
+    private static String getDate(final DataFile file) {
 
       try {
         long last = file.getMetaData().getLastModified();
@@ -697,17 +697,23 @@ public class DesignBuilder {
     } catch (IOException | BadBioEntryException e) {
       throw new EoulsanException(e);
     }
-
     smd.setFastqFormat(format == null ? defaultFastqFormat : format);
 
-    Experiment exp = design.getExperiments().get(0);
-    ExperimentSample es = exp.addSample(s);
+    // Set replicate technical group
+    smd.setRepTechGroup(condition);
 
-    es.getMetadata().setCondition(condition);
-    es.getMetadata().setRepTechGroup(condition);
-    es.getMetadata().setReference(false);
+    // Set UUID for the sample
     smd.setUUID(UUID.randomUUID().toString());
 
+    // Get the experiement sample of the unique experiment of the design
+    final Experiment exp = design.getExperiments().get(0);
+    final ExperimentSample es = exp.addSample(s);
+
+    // Set the condition
+    es.getMetadata().setCondition(condition);
+
+    // Set the default reference
+    es.getMetadata().setReference(false);
   }
 
   private boolean isDataFormatExtension(final DataFormat dataFormat,

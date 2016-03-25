@@ -233,7 +233,7 @@ public class CreateDesignAction extends AbstractAction {
    * @return an Options object
    */
   @SuppressWarnings("static-access")
-  private static final Options makeOptions() {
+  private static Options makeOptions() {
 
     // create Options object
     final Options options = new Options();
@@ -274,7 +274,7 @@ public class CreateDesignAction extends AbstractAction {
    * Show command line help.
    * @param options Options of the software
    */
-  private static final void help(final Options options) {
+  private static void help(final Options options) {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();

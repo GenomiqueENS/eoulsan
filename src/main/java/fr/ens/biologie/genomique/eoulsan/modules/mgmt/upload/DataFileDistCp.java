@@ -168,7 +168,7 @@ public class DataFileDistCp {
      *           current thread
      * @throws IOException if an error occurs while copying data
      */
-    private static final void copyFile(final DataFile src, final DataFile dest,
+    private static void copyFile(final DataFile src, final DataFile dest,
         final Context context) throws InterruptedException, IOException {
 
       // Define a wrapper object to store exception if needed
@@ -310,7 +310,7 @@ public class DataFileDistCp {
           size2 = -1;
         }
 
-        return ((Long) size1).compareTo(size2) * -1;
+        return Long.compare(size1, size2) * -1;
       }
 
     });

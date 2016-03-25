@@ -59,7 +59,7 @@ public class ChangeIndexTranslatorTest {
     assertEquals("1", ChangeIdxTransl.translateField("A", "Col2"));
     assertEquals("2", ChangeIdxTransl.translateField("B", "Col2"));
     assertNull(ChangeIdxTransl.translateField("Col2", "A"));
-    assertNull(ChangeIdxTransl.translateField(new String(), new String()));
+    assertNull(ChangeIdxTransl.translateField("", ""));
   }
 
 }

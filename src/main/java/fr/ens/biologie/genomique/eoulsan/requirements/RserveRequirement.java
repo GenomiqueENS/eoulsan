@@ -88,8 +88,6 @@ public class RserveRequirement extends AbstractRequirement {
   /**
    * Create a new mandatory Rserve requirement.
    * @param rserveServerName the Rserve server name
-   * @throws EoulsanException if an error occurs while configuring the
-   *           requirement
    */
   public static Requirement newRserveRequirement(
       final String rserveServerName) {
@@ -101,8 +99,6 @@ public class RserveRequirement extends AbstractRequirement {
    * Create a new Rserve requirement.
    * @param rserveServerName the Rserve server name
    * @param optional true if the Rserve server is a mandatory requirement
-   * @throws EoulsanException if an error occurs while configuring the
-   *           requirement
    */
   public static Requirement newRserveRequirement(final String rserveServerName,
       final boolean optional) {
@@ -118,6 +114,15 @@ public class RserveRequirement extends AbstractRequirement {
     result.setOptionnal(optional);
 
     return result;
+  }
+
+  //
+  // Object method
+  //
+
+  @Override
+  public String toString() {
+    return "Rserve server: " + this.serverName;
   }
 
 }

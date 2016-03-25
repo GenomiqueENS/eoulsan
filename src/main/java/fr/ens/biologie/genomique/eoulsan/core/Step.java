@@ -105,7 +105,7 @@ public interface Step extends Serializable {
    * @author Laurent Jourdren
    * @since 2.0
    */
-  public static enum StepState {
+  enum StepState {
     CREATED, CONFIGURED, WAITING, READY, WORKING, PARTIALLY_DONE, DONE, FAILED,
     ABORTED;
 

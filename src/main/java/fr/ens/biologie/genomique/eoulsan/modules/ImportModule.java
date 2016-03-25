@@ -441,7 +441,7 @@ public class ImportModule extends AbstractModule {
     DataFile previous = null;
 
     // Sort files
-    List<DataFile> sortedFiles = new ArrayList<DataFile>();
+    List<DataFile> sortedFiles = new ArrayList<>();
     sortedFiles.addAll(files);
     Collections.sort(sortedFiles);
 

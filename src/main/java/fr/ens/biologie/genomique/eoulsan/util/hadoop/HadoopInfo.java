@@ -101,7 +101,7 @@ public class HadoopInfo {
     }
   }
 
-  private static final void parseCpuinfo() throws IOException {
+  private static void parseCpuinfo() throws IOException {
 
     final LinuxCpuInfo cpuinfo = new LinuxCpuInfo();
 
@@ -123,7 +123,7 @@ public class HadoopInfo {
         .info("SYSINFO Bogomips: " + (bogomips == null ? "NA" : bogomips));
   }
 
-  private static final void parseMeminfo() throws IOException {
+  private static void parseMeminfo() throws IOException {
 
     final LinuxMemInfo meminfo = new LinuxMemInfo();
     final String memTotal = meminfo.getMemTotal();
@@ -132,7 +132,7 @@ public class HadoopInfo {
         .info("SYSINFO Mem Total: " + (memTotal == null ? "NA" : memTotal));
   }
 
-  private static final void df(final File f, final Configuration conf)
+  private static void df(final File f, final Configuration conf)
       throws IOException {
 
     DF df = new DF(f, conf);
@@ -145,7 +145,7 @@ public class HadoopInfo {
 
   }
 
-  private static final void logHadoopVersionInfo() {
+  private static void logHadoopVersionInfo() {
 
     getLogger().info("SYSINFO Hadoop version: " + VersionInfo.getVersion());
     getLogger().info("SYSINFO Hadoop revision: " + VersionInfo.getRevision());

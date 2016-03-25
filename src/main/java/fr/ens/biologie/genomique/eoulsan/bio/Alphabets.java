@@ -61,7 +61,7 @@ public final class Alphabets {
    * @param array array to transform
    * @return a unmodifiable Set with the elements of the input array
    */
-  private static final Set<Character> toUnmodifiableSet(final char[] array) {
+  private static Set<Character> toUnmodifiableSet(final char[] array) {
 
     if (array == null) {
       return null;

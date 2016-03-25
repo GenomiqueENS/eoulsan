@@ -240,18 +240,18 @@ public class ITOutput {
     boolean success = true;
 
     if (!itResult.isSuccess()) {
-      msg.append((isDeleteFileRequired
+      msg.append(isDeleteFileRequired
           ? "\tConfiguration required to delete files, but test fail. Files still exist in "
-          : "\tConfiguration required always to keep files in ")
-          + this.directory.getAbsolutePath());
+          : "\tConfiguration required always to keep files in ");
+      msg.append(this.directory.getAbsolutePath());
     }
 
     // Case to delete files
     if (itResult.isSuccess() && isDeleteFileRequired) {
 
       msg.append("\tTest succeeded.");
-      msg.append("\n\tConfiguration required to delete files from directory "
-          + this.directory.getAbsolutePath());
+      msg.append("\n\tConfiguration required to delete files from directory ");
+      msg.append(this.directory.getAbsolutePath());
 
       for (File f : getFilesToRemove()) {
 
@@ -265,7 +265,8 @@ public class ITOutput {
         // Delete file
         if (!f.delete()) {
           success = false;
-          msg.append("\n\tFail to delete file " + f.getAbsolutePath());
+          msg.append("\n\tFail to delete file ");
+          msg.append(f.getAbsolutePath());
         }
       }
 
@@ -318,8 +319,8 @@ public class ITOutput {
 
         // TODO
         if (link.delete()) {
-          msg.append(
-              "\n\tFail to delete broken symbolic link file " + link.getName());
+          msg.append("\n\tFail to delete broken symbolic link file ");
+          msg.append(link.getName());
         }
       }
     }

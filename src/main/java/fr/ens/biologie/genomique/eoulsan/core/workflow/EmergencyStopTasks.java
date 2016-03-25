@@ -62,7 +62,7 @@ public class EmergencyStopTasks {
    * Get the singleton instance of the class.
    * @return the singleton instance of the class
    */
-  public static EmergencyStopTasks getInstance() {
+  public static synchronized EmergencyStopTasks getInstance() {
 
     if (instance == null) {
       instance = new EmergencyStopTasks();

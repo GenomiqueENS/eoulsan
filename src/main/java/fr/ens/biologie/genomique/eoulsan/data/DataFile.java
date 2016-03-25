@@ -438,8 +438,11 @@ public class DataFile implements Comparable<DataFile>, Serializable {
 
     if (relativize) {
 
+      final DataFile parent = isLocalFile()
+          ? new DataFile(getParent().toFile().getAbsoluteFile()) : getParent();
+
       final DataFile newTarget = new DataFile(
-          relativize(link.getParent(), this.getParent()), this.getName());
+          relativize(link.getParent(), parent), this.getName());
 
       getProtocol().symlink(newTarget, link);
 
@@ -584,8 +587,7 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    * @param f2 second path
    * @return the relative path
    */
-  private static final DataFile relativize(final DataFile f1,
-      final DataFile f2) {
+  private static DataFile relativize(final DataFile f1, final DataFile f2) {
 
     final URI uri1 = f1.toUri();
     final URI uri2 = f2.toUri();
@@ -599,6 +601,10 @@ public class DataFile implements Comparable<DataFile>, Serializable {
 
   @Override
   public int compareTo(final DataFile o) {
+
+    if (o == null) {
+      throw new NullPointerException("argument cannot be null");
+    }
 
     return this.src.compareTo(o.src);
   }

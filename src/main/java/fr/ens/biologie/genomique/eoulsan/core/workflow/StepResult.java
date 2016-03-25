@@ -303,7 +303,7 @@ public class StepResult {
 
     if (!this.counters.containsKey(counterGroup)) {
 
-      map = new LinkedHashMap<String, Long>();
+      map = new LinkedHashMap<>();
       this.counters.put(counterGroup, map);
     } else {
 
@@ -521,7 +521,6 @@ public class StepResult {
   /**
    * Read a step result file.
    * @param in the input stream to read
-   * @throws IOException if an error occurs while reading the file
    */
   public void read(final InputStream in) {
 
@@ -640,7 +639,7 @@ public class StepResult {
    * @param s the string to parse
    * @return a Date object or null if the date cannot be parsed
    */
-  private final Date parseDate(final String s) {
+  private Date parseDate(final String s) {
 
     if (s == null) {
       return null;

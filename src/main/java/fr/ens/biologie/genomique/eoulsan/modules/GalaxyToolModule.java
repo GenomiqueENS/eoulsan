@@ -27,6 +27,7 @@ import static fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement.n
 
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
@@ -46,6 +47,7 @@ import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolData;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolExecutorResult;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElement;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.DockerExecutorInterpreter;
+import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 
 /**
@@ -91,7 +93,7 @@ public class GalaxyToolModule extends AbstractModule {
         .getInputDataElements()) {
 
       builder.addPort(element.getValidatedName(), element.getDataFormat(),
-          true);
+          EnumSet.of(CompressionType.NONE), true);
     }
 
     return builder.create();

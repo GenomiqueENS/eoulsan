@@ -135,7 +135,7 @@ public final class MainHadoop extends Main {
    * Parse information from /etc/cpuinfo
    * @throws IOException if an error occurs while parsing information
    */
-  private static final void parseCpuinfo() throws IOException {
+  private static void parseCpuinfo() throws IOException {
 
     final LinuxCpuInfo cpuinfo = new LinuxCpuInfo();
 
@@ -161,7 +161,7 @@ public final class MainHadoop extends Main {
    * Parse information from /etc/meminfo
    * @throws IOException if an error occurs while parsing information
    */
-  private static final void parseMeminfo() throws IOException {
+  private static void parseMeminfo() throws IOException {
 
     final LinuxMemInfo meminfo = new LinuxMemInfo();
     final String memTotal = meminfo.getMemTotal();
@@ -176,7 +176,7 @@ public final class MainHadoop extends Main {
    * @param conf Hadoop configuration
    * @throws IOException if an error occurs
    */
-  private static final void df(final File f, final Configuration conf)
+  private static void df(final File f, final Configuration conf)
       throws IOException {
 
     DF df = new DF(f, conf);
@@ -192,7 +192,7 @@ public final class MainHadoop extends Main {
   /**
    * Log some Hadoop information.
    */
-  private static final void HadoopInfo() {
+  private static void HadoopInfo() {
 
     getLogger().info("SYSINFO Hadoop version: " + VersionInfo.getVersion());
     getLogger().info("SYSINFO Hadoop revision: " + VersionInfo.getRevision());

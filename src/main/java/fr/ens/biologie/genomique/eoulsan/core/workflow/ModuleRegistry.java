@@ -95,7 +95,7 @@ public class ModuleRegistry {
         return new GalaxyToolModule(in, source);
       } catch (EoulsanException e) {
         throw new EoulsanException(
-            "Unable to load Galaxy tool module: " + source);
+            "Unable to load Galaxy tool module: " + source, e);
       }
     }
 

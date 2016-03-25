@@ -208,7 +208,7 @@ public class Eoulsan1DesignWriter implements DesignWriter {
         if (esmdk.contains(ExperimentSampleMetadata.REFERENCE_KEY)) {
           this.bw.append(SEPARATOR);
           if (es.getMetadata().containsReference()) {
-            this.bw.append("" + es.getMetadata().getReference());
+            this.bw.append(es.getMetadata().getReference());
           }
         }
 

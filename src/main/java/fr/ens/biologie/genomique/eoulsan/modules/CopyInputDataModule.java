@@ -80,14 +80,13 @@ public class CopyInputDataModule extends AbstractModule {
   public static final String FORMAT_PARAMETER = "format";
   public static final String OUTPUT_COMPRESSION_PARAMETER =
       "output.compression";
-  public static final String DESIGN_INPUT_PARAMETER = "design.input";
   public static final String OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER =
       "output.compressions.allowed";
 
   private DataFormat format;
   private CompressionType outputCompression;
-  private boolean designInput;
-  private EnumSet<CompressionType> outputCompressionsAllowed;
+  private EnumSet<CompressionType> outputCompressionsAllowed =
+      EnumSet.allOf(CompressionType.class);
 
   @Override
   public String getName() {
@@ -131,10 +130,6 @@ public class CopyInputDataModule extends AbstractModule {
         this.outputCompression = CompressionType.valueOf(p.getValue());
         break;
 
-      case DESIGN_INPUT_PARAMETER:
-        this.designInput = p.getBooleanValue();
-        break;
-
       case OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER:
         this.outputCompressionsAllowed =
             decodeAllowedCompressionsParameterValue(p.getValue());
@@ -152,6 +147,11 @@ public class CopyInputDataModule extends AbstractModule {
 
     if (this.outputCompression == null) {
       Modules.invalidConfiguration(context, "No output compression set");
+    }
+
+    if (this.outputCompressionsAllowed.isEmpty()) {
+      throw new EoulsanException(OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER
+          + " parameter value cannot be empty");
     }
 
   }
@@ -283,7 +283,7 @@ public class CopyInputDataModule extends AbstractModule {
    * @return the output file
    * @throws IOException if an error occurs while copying the data
    */
-  private final DataFile copyFile(final DataFile inputFile, final int fileIndex,
+  private DataFile copyFile(final DataFile inputFile, final int fileIndex,
       final String outDataName, final int outDataPart,
       final TaskContext context) throws IOException {
 
@@ -322,12 +322,16 @@ public class CopyInputDataModule extends AbstractModule {
 
     final CompressionType inCompression = inputFile.getCompressionType();
 
-    if (this.designInput
-        && this.outputCompressionsAllowed.contains(inCompression)) {
+    if (this.outputCompressionsAllowed.contains(inCompression)) {
       return inCompression;
     }
 
-    return inCompression;
+    if (this.outputCompressionsAllowed.contains(CompressionType.NONE)) {
+      return CompressionType.NONE;
+    }
+
+    // Get the first allowed compression
+    return this.outputCompressionsAllowed.iterator().next();
   }
 
   /**
@@ -350,12 +354,14 @@ public class CopyInputDataModule extends AbstractModule {
    * Method to decode the allowed compressions parameter.
    * @param value the parameter value as a string
    * @return the parameter value as an EnumSet
+   * @throws EoulsanException
    */
-  private static final EnumSet<CompressionType> decodeAllowedCompressionsParameterValue(
-      final String value) {
+  private static EnumSet<CompressionType> decodeAllowedCompressionsParameterValue(
+      final String value) throws EoulsanException {
 
     if (value == null) {
-      return null;
+      throw new EoulsanException(
+          OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER + " parameter cannot be null");
     }
 
     final Set<CompressionType> result = new HashSet<>();

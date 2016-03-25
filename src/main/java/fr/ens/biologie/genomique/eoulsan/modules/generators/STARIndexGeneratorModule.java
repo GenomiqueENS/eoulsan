@@ -424,7 +424,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
    * @return a string with the md5sum of a file
    * @throws IOException if an error occurs while computing the md5sum
    */
-  private static final String computeMD5SumFile(File file) throws IOException {
+  private static String computeMD5SumFile(File file) throws IOException {
 
     MessageDigest md5Digest;
     try {

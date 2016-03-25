@@ -84,7 +84,10 @@ public final class DesignUtils {
       final String expId = e.getId();
       for (Map.Entry<String, String> m : e.getMetadata().entrySet()) {
         sb.append('\t');
-        sb.append("Exp." + expId + "." + m.getKey());
+        sb.append("Exp.");
+        sb.append(expId);
+        sb.append(".");
+        sb.append(m.getKey());
         sb.append('=');
         sb.append(m.getValue());
         sb.append('\n');
@@ -419,7 +422,7 @@ public final class DesignUtils {
 
   }
 
-  private static final void removeSampleMedataIfExists(final Design design,
+  private static void removeSampleMedataIfExists(final Design design,
       final String fieldName) {
 
     if (design == null || fieldName == null) {
@@ -437,8 +440,8 @@ public final class DesignUtils {
 
   }
 
-  private static final void removeExperimentSampleMedataIfExists(
-      final Design design, final String fieldName) {
+  private static void removeExperimentSampleMedataIfExists(final Design design,
+      final String fieldName) {
 
     if (design == null || fieldName == null) {
       return;

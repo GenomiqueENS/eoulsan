@@ -25,18 +25,17 @@
 package fr.ens.biologie.genomique.eoulsan.modules.fastqc;
 
 import static org.python.google.common.base.Preconditions.checkNotNull;
-import htsjdk.samtools.SAMRecord;
-import htsjdk.samtools.SAMRecordIterator;
-import htsjdk.samtools.SamInputResource;
-import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
 
 import java.io.File;
 import java.io.IOException;
 
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMRecordIterator;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 import uk.ac.babraham.FastQC.Sequence.Sequence;
-import uk.ac.babraham.FastQC.Sequence.SequenceFile;
 import uk.ac.babraham.FastQC.Sequence.SequenceFormatException;
 
 /**
@@ -44,11 +43,12 @@ import uk.ac.babraham.FastQC.Sequence.SequenceFormatException;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class SAMSequenceFile implements SequenceFile {
+public class SAMSequenceFile implements CounterSequenceFile {
 
   private final DataFile file;
   private final SamReader reader;
   private final SAMRecordIterator iterator;
+  private long count;
 
   @Override
   public File getFile() {
@@ -67,7 +67,7 @@ public class SAMSequenceFile implements SequenceFile {
 
     final boolean result = this.iterator.hasNext();
 
-    if (result == false) {
+    if (!result) {
       try {
         reader.close();
       } catch (IOException e) {
@@ -93,9 +93,16 @@ public class SAMSequenceFile implements SequenceFile {
   public Sequence next() throws SequenceFormatException {
 
     final SAMRecord record = this.iterator.next();
+    this.count++;
 
     return new Sequence(this, record.getReadString(),
         record.getBaseQualityString(), record.getReadName());
+  }
+
+  @Override
+  public long getCount() {
+
+    return count;
   }
 
   //
@@ -116,4 +123,5 @@ public class SAMSequenceFile implements SequenceFile {
         SamReaderFactory.makeDefault().open(SamInputResource.of(inFile.open()));
     this.iterator = reader.iterator();
   }
+
 }

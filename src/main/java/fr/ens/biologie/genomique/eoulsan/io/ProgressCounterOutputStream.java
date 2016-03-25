@@ -88,7 +88,7 @@ public final class ProgressCounterOutputStream extends OutputStream {
   // Other methods
   //
 
-  private final void incrementCounter(final int bytes) {
+  private void incrementCounter(final int bytes) {
 
     this.sum += bytes;
 

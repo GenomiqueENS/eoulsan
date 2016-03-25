@@ -190,7 +190,7 @@ public class ExecJarHadoopAction extends AbstractAction {
    * @param url input URL
    * @return converted URL
    */
-  private static final String convertS3URL(final String url) {
+  private static String convertS3URL(final String url) {
 
     return StringUtils.replacePrefix(url, "s3:/", "s3n:/");
   }
@@ -204,7 +204,7 @@ public class ExecJarHadoopAction extends AbstractAction {
    * @return an Options object
    */
   @SuppressWarnings("static-access")
-  private static final Options makeOptions() {
+  private static Options makeOptions() {
 
     // create Options object
     final Options options = new Options();
@@ -236,7 +236,7 @@ public class ExecJarHadoopAction extends AbstractAction {
    * Show command line help.
    * @param options Options of the software
    */
-  private static final void help(final Options options) {
+  private static void help(final Options options) {
 
     // Show help message
     final HelpFormatter formatter = new HelpFormatter();
@@ -260,7 +260,7 @@ public class ExecJarHadoopAction extends AbstractAction {
    * @param jobEnvironment job environment
    * @param millisSinceEpoch milliseconds since epoch
    */
-  private static final void run(final String workflowPathname,
+  private static void run(final String workflowPathname,
       final String designPathname, final String destPathname,
       final String jobDescription, final String jobEnvironment,
       final long millisSinceEpoch) {

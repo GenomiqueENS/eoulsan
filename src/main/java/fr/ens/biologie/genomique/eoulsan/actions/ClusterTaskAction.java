@@ -143,7 +143,7 @@ public class ClusterTaskAction extends AbstractAction {
    * Execute the task.
    * @param taskContextFile context file
    */
-  private static final void run(final DataFile taskContextFile) {
+  private static void run(final DataFile taskContextFile) {
 
     checkNotNull(taskContextFile, "contextFile is null");
 

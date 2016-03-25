@@ -983,7 +983,7 @@ public final class Settings implements Serializable {
   public void setUseOldEoulsanResultFormat(
       final boolean useOldEoulsanResultFormat) {
 
-    this.properties.getProperty(USE_OLD_EOULSAN_RESULT_FORMAT_KEY,
+    this.properties.setProperty(USE_OLD_EOULSAN_RESULT_FORMAT_KEY,
         Boolean.toString(useOldEoulsanResultFormat));
   }
 
@@ -1247,9 +1247,11 @@ public final class Settings implements Serializable {
 
     case "main.accesskey":
       printWarningRenamedSetting(trimmedKey, AWS_ACCESS_KEY);
+      break;
 
     case "main.awssecretkey":
       printWarningRenamedSetting(trimmedKey, AWS_SECRET_KEY);
+      break;
 
     case "main.annotation.storage.path":
       printWarningRenamedSetting(trimmedKey, GFF_STORAGE_KEY);
@@ -1257,8 +1259,9 @@ public final class Settings implements Serializable {
 
     default:
       return key;
-
     }
+
+    return key;
   }
 
   /**

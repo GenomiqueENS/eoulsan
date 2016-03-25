@@ -104,7 +104,7 @@ public class AbstractTranslatorTest {
 
     try {
 
-      transl.translate(new String()).get(3);
+      transl.translate("").get(3);
       assertTrue(false);
     } catch (NullPointerException e) {
 
@@ -129,7 +129,7 @@ public class AbstractTranslatorTest {
     transl.addRow(ARRAY_ROW_ONE);
     assertEquals("1", transl.translateField("A", "Col2"));
     assertNull(transl.translateField("Col2", "A"));
-    assertNull(transl.translateField(new String(), new String()));
+    assertNull(transl.translateField("", ""));
 
   }
 

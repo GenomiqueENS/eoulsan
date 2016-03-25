@@ -563,8 +563,7 @@ public class GFFEntry {
     }
   }
 
-  private static final double parseDouble(final String s,
-      final double defaultValue) {
+  private static double parseDouble(final String s, final double defaultValue) {
 
     if (s == null) {
       return defaultValue;
@@ -577,7 +576,7 @@ public class GFFEntry {
     }
   }
 
-  private final void parseAttributes(final String attributesField) {
+  private void parseAttributes(final String attributesField) {
 
     if (this.attributes != null) {
       this.attributes.clear();

@@ -103,8 +103,6 @@ public class PathRequirement extends AbstractRequirement {
    * Create a new mandatory executable requirement.
    * @param executableName the executable name
    * @return a new PathRequirement object
-   * @throws EoulsanException if an error occurs while configuring the
-   *           requirement
    */
   public static Requirement newPathRequirement(final String executableName) {
 
@@ -116,8 +114,6 @@ public class PathRequirement extends AbstractRequirement {
    * @param executableName the executable name
    * @param optional true if the executable is a mandatory requirement
    * @return a new PathRequirement object
-   * @throws EoulsanException if an error occurs while configuring the
-   *           requirement
    */
   public static Requirement newPathRequirement(final String executableName,
       final boolean optional) {
@@ -133,6 +129,15 @@ public class PathRequirement extends AbstractRequirement {
     result.setOptionnal(optional);
 
     return result;
+  }
+
+  //
+  // Object method
+  //
+
+  @Override
+  public String toString() {
+    return "Executable in PATH: " + this.executableName;
   }
 
 }

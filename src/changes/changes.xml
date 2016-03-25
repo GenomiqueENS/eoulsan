@@ -1058,7 +1058,7 @@ of reads that reject each filter like in local mode.
 
         </release>
 
-         <release version="2.0-beta1" description="Eoulsan 2.0-beta1 release" date="TBD">
+         <release version="2.0-beta1" description="Eoulsan 2.0-beta1 release" date="2016-03-08">
 
             <action dev="jourdren" type="fix">
 		At the end of an analysis that use Docker, Eoulsan now properly stop the Docker connection and had not to wait several seconds the end of the connection.
@@ -1194,6 +1194,54 @@ of reads that reject each filter like in local mode.
 
             <action dev="jourdren" type="update">
                 Reorganize Eoulsan code, many classes name related to the workflow engine has been renamed. The step package has been renamed to module, and the *Step classes to *Module.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                The writing module documentation page has been updated with Eoulsan 2 API.
+            </action>
+
+         </release>
+
+         <release version="2.0-beta2" description="Eoulsan 2.0-beta2 release" date="2016-03-21">
+
+            <action dev="jourdren" type="fix">
+		In DESeq2Module, rename the "statistic.test" parameter to "statistical.test" like in Eoulsan documentation.
+            </action>
+
+            <action dev="jourdren" type="fix">
+		In DESeq2 module, now correctly handle all the cases to define the references of a design.
+            </action>
+
+            <action dev="jourdren" type="fix">
+		In the design format v2, the reference value of the "[Experiment]" section is now "reference" instead of "Reference" like in documentation.
+            </action>
+
+            <action dev="jourdren" type="fix">
+		In the createdesign action, the "RepTechGroup" field is now created for all the experiments and not only for the default experiement.
+            </action>
+
+            <action dev="jourdren" type="fix">
+		In the GFFChecker, now check sequence regions described in GFF3 files once all the GFF3 file has been parsed because the "##sequence-region" pragmas can be anywhere in the file and not only at the beginning of the file.
+            </action>
+
+            <action dev="jourdren" type="fix">
+		The FastQC module can now handle input files without any entry.
+            </action>
+
+            <action dev="jourdren" type="fix">
+		When using Docker, the content of the stdout and stderr files were inverted.
+            </action>
+
+            <action dev="jourdren" type="fix">
+		The illuminaid read filter, do not remove now reads that not contain the Illumina filter flag.
+            </action>
+
+            <action dev="jourdren" type="update">
+		When an error occurs in a workflow, the exception is now log in the Eoulsan log file.
+            </action>
+
+            <action dev="jourdren" type="update">
+		Many small code and Javadoc fixes using IDEA inspect tool and Findbugs.
             </action>
 
          </release>

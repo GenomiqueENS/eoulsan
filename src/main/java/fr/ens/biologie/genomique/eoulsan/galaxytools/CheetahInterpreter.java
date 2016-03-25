@@ -56,11 +56,7 @@ public class CheetahInterpreter {
   /** The Constant DEFAULT_VALUE_NULL. */
   static final String DEFAULT_VALUE_NULL = "no_authorized";
 
-  /** The python script with java code. */
-  private String pythonCode = null;
-
-  private final CheetahToPythonTranslator translator;
-
+  private final String cheetahScript;
   private final Map<String, String> variables;
 
   /**
@@ -70,17 +66,32 @@ public class CheetahInterpreter {
    */
   public String execute() throws EoulsanException {
 
+    // Initialize translator
+    CheetahToPythonTranslator translator =
+        new CheetahToPythonTranslator(this.cheetahScript);
+
     // Translate command in Cheetah syntax in Python script
-    this.pythonCode = translator.translate();
+    final String pythonCode = translator.getPythonScript();
+
+    final Map<String, String> pythonVariables = Maps.newHashMap(this.variables);
+
+    // Parsing variable name found in command tag
+    for (final String variableName : translator.getVariableNames()) {
+
+      // Check exist
+      if (!this.variables.containsKey(variableName)) {
+        pythonVariables.put(variableName, DEFAULT_VALUE_NULL);
+      }
+    }
 
     try (final PythonInterpreter interpreter = new PythonInterpreter()) {
 
-      // Init variable cmd
+      // Initialize variable command
       interpreter.set(VAR_CMD_NAME, "");
-      interpreter.set(PYTHON_VARIABLES_DICT_NAME, createVariablesDict());
+      interpreter.set(PYTHON_VARIABLES_DICT_NAME, pythonVariables);
 
       // Add script
-      interpreter.exec(this.pythonCode);
+      interpreter.exec(pythonCode);
 
       // Retrieve standard output
       final PyObject cmd = interpreter.get(VAR_CMD_NAME);
@@ -89,39 +100,17 @@ public class CheetahInterpreter {
     }
   }
 
-  /**
-   * Adds the missing variable from command line, this can be extract from
-   * parsing XML, which can be fail python interpreter execution.
-   * @return the map all variable needed to interpreter python script.
-   * @throws EoulsanException the Eoulsan exception
-   */
-  private Map<String, String> createVariablesDict() throws EoulsanException {
-
-    final Map<String, String> result = Maps.newHashMap(this.variables);
-
-    // Parsing variable name found in command tag
-    for (final String variableName : this.translator.getVariableNames()) {
-
-      // Check exist
-      if (this.variables.get(variableName) == null) {
-        result.put(variableName, DEFAULT_VALUE_NULL);
-      }
-    }
-
-    return result;
-  }
-
   //
   // Constructor
   //
 
   /**
    * Instantiates a new tool Cheetah script interpreter.
-   * @param script the Cheetah script to execute
+   * @param cheetahScript the Cheetah script to execute
    * @param variables the variables of the script
    * @throws EoulsanException
    */
-  public CheetahInterpreter(final String script,
+  public CheetahInterpreter(final String cheetahScript,
       final Map<String, String> variables) throws EoulsanException {
 
     checkNotNull(variables, "No variable set for Cheetah interpreter");
@@ -129,11 +118,8 @@ public class CheetahInterpreter {
     checkState(!variables.isEmpty(),
         "Tool instance from Galaxy Tool not found variables for interpretation");
 
-    // this.tool = tool;
+    this.cheetahScript = cheetahScript;
     this.variables = new HashMap<>(variables);
-
-    // Init translator
-    this.translator = new CheetahToPythonTranslator(script);
   }
 
 }

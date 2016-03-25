@@ -128,15 +128,13 @@ public class GenomicInterval
       return getChromosome().compareTo(e.getChromosome());
     }
 
-    final int startComp = ((Integer) this.start).compareTo(e.getStart());
+    final int startComp = Integer.compare(this.start, e.getStart());
 
     if (startComp != 0) {
       return startComp;
     }
 
-    final int endComp = ((Integer) this.end).compareTo(e.getEnd());
-
-    return endComp;
+    return ((Integer) this.end).compareTo(e.getEnd());
   }
 
   //

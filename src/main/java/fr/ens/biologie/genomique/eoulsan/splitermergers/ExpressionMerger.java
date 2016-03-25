@@ -91,9 +91,7 @@ public class ExpressionMerger implements Merger {
             counts.add(id, count);
 
           } catch (NumberFormatException e) {
-
             // Do not handle parsing errors
-            continue;
           }
         }
       }

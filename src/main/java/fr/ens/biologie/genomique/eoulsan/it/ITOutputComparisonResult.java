@@ -53,14 +53,19 @@ final class ITOutputComparisonResult
 
     final StringBuilder txt = new StringBuilder();
 
-    txt.append("\t" + this.statusComparison.getType() + " : " + this.filename);
+    txt.append("\t").append(this.statusComparison.getType()).append(" : ");
+    txt.append(this.filename);
 
     if (this.statusComparison.getType().equals(TYPE_FAIL)) {
 
-      txt.append(" " + this.statusComparison.getName());
-      txt.append("\n\t\tOutput file: " + this.fileTestedPath);
-      txt.append("\n\t\tExpected file: " + this.fileExpectedPath);
-      txt.append("\n\t\tError message: " + this.message);
+      txt.append(" ");
+      txt.append(this.statusComparison.getName());
+      txt.append("\n\t\tOutput file: ");
+      txt.append(this.fileTestedPath);
+      txt.append("\n\t\tExpected file: ");
+      txt.append(this.fileExpectedPath);
+      txt.append("\n\t\tError message: ");
+      txt.append(this.message);
     }
 
     return txt.toString();

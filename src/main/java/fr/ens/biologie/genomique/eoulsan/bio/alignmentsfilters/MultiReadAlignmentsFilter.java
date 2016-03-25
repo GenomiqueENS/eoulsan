@@ -82,8 +82,6 @@ public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
         return;
       }
     }
-
-    return;
   }
 
   /**

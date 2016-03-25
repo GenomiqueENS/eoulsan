@@ -35,8 +35,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.testng.collections.Sets;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
@@ -70,10 +68,11 @@ class CheetahToPythonTranslator {
   /** The next tab count. */
   private int nextTabCount = 0;
 
-  /** The variable names. */
-  private final Set<String> variableNames;
+  /** The output Python script. */
+  private final String pythonScript;
 
-  private final List<String> rawCommand;
+  /** The variable names. */
+  private final Set<String> variableNames = new HashSet<>();
 
   /**
    * Translate content of command tag from tool XML file.
@@ -81,12 +80,12 @@ class CheetahToPythonTranslator {
    * @throws EoulsanException an exception occurs if the translation command in
    *           Python return no script.
    */
-  String translate() throws EoulsanException {
+  private String translate(final String cheetahScript) throws EoulsanException {
 
     final List<String> translatedLinesFromCommand = new ArrayList<>();
 
     // Build line script python
-    for (final String line : this.rawCommand) {
+    for (final String line : NEW_LINE.splitToList(cheetahScript)) {
 
       final TranslatorLineToPython newLine = new TranslatorLineToPython(line);
 
@@ -112,6 +111,15 @@ class CheetahToPythonTranslator {
    * Gets all variable names from command.
    * @return the variable names
    */
+  public String getPythonScript() {
+
+    return this.pythonScript;
+  }
+
+  /**
+   * Gets all variable names from command.
+   * @return the variable names
+   */
   public Set<String> getVariableNames() {
 
     return Collections.unmodifiableSet(this.variableNames);
@@ -123,17 +131,16 @@ class CheetahToPythonTranslator {
 
   /**
    * Instantiates a new translator string to script Python.
-   * @param cmdTag the raw command tag
+   * @param cheetahScript the raw command tag
    * @throws EoulsanException occurs if translation fail.
    */
-  CheetahToPythonTranslator(final String cmdTag) throws EoulsanException {
+  CheetahToPythonTranslator(final String cheetahScript)
+      throws EoulsanException {
 
-    Preconditions.checkNotNull(cmdTag, "Command tag from tool xml is empty.");
+    Preconditions.checkNotNull(cheetahScript,
+        "Command tag from tool xml is empty.");
 
-    this.rawCommand = NEW_LINE.splitToList(cmdTag);
-
-    // Extract all variables names found in command
-    this.variableNames = Sets.newHashSet();
+    this.pythonScript = translate(cheetahScript);
   }
 
   //
@@ -442,14 +449,14 @@ class CheetahToPythonTranslator {
        */
       protected String tab(final int n) {
 
-        String str = "";
+        final StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < tabulations + n; i++) {
-          str += TAB;
+          sb.append(TAB);
         }
         tabulations += n;
 
-        return str;
+        return sb.toString();
       }
 
       /**
@@ -662,12 +669,7 @@ class CheetahToPythonTranslator {
       @Override
       String buildLineScript(final String line) {
 
-        final StringBuilder txt = new StringBuilder();
-        txt.append(this.tab(currentTabCount));
-
-        txt.append(line);
-
-        return txt.toString();
+        return this.tab(currentTabCount) + line;
       }
 
       //
@@ -706,9 +708,6 @@ class CheetahToPythonTranslator {
             // Close string
             txt += "\"";
           }
-        } else {
-          // Add space
-          // txt += " ";
         }
 
         if (currentPos >= this.getModifiedString().length()) {
@@ -790,19 +789,8 @@ class CheetahToPythonTranslator {
       @Override
       String buildLineScript(final String line) {
 
-        final StringBuilder txt = new StringBuilder();
-        txt.append(this.tab(currentTabCount));
-
-        // txt.append(VAR_CMD_NAME + " += \" \" + ");
-        txt.append(VAR_CMD_NAME);
-        txt.append(" += ");
-        txt.append(line);
-        txt.append(" + \" \"");
-
-        // if (!line.endsWith("\""))
-        // txt.append("\"");
-
-        return txt.toString();
+        return this.tab(currentTabCount)
+            + VAR_CMD_NAME + " += " + line + " + \" \"";
       }
 
       //

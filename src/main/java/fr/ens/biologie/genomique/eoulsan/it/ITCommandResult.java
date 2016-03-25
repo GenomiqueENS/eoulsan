@@ -71,16 +71,22 @@ public class ITCommandResult {
       return this.message.toString();
     }
 
-    this.message.append("\nExecute " + this.desc + ":");
+    this.message.append("\nExecute ");
+    this.message.append(this.desc);
+    this.message.append(":");
 
-    this.message.append("\n\tCommand line: " + this.commandLine);
+    this.message.append("\n\tCommand line: ");
+    this.message.append(this.commandLine);
 
-    this.message.append("\n\tDirectory: " + this.directory.getAbsolutePath());
+    this.message.append("\n\tDirectory: ");
+    this.message.append(this.directory.getAbsolutePath());
 
-    this.message.append("\n\tDuration: "
-        + (this.duration == -1 ? "none" : toTimeHumanReadable(this.duration)));
+    this.message.append("\n\tDuration: ");
+    this.message.append(
+        this.duration == -1 ? "none" : toTimeHumanReadable(this.duration));
 
-    this.message.append("\n\tMessage: exit value " + this.exitValue);
+    this.message.append("\n\tMessage: exit value ");
+    this.message.append(this.exitValue);
 
     // Add standard error on script save un stderr file
     this.message.append(getSTDERRMessageOnProcess());
@@ -90,8 +96,8 @@ public class ITCommandResult {
     // isInterruptedProcess());
 
     if (isInterruptedProcess()) {
-      this.message.append("\n\tInterrupt process after: "
-          + toTimeHumanReadable(durationMaxToInterruptProcess));
+      this.message.append("\n\tInterrupt process after: ");
+      this.message.append(toTimeHumanReadable(durationMaxToInterruptProcess));
     }
 
     this.message.append("\n");
@@ -112,8 +118,9 @@ public class ITCommandResult {
     }
 
     final StringBuilder sb = new StringBuilder();
-    sb.append("\n\tCopy content of standard error file from: "
-        + this.stderrFile.getAbsolutePath() + "\n");
+    sb.append("\n\tCopy content of standard error file from: ");
+    sb.append(this.stderrFile.getAbsolutePath());
+    sb.append('\n');
 
     // Read error file
     try (BufferedReader br = Files.newReader(stderrFile, DEFAULT_CHARSET)) {
@@ -122,15 +129,17 @@ public class ITCommandResult {
 
       // Add all lines
       while ((line = br.readLine()) != null) {
-        sb.append("\n\t\t" + line);
+        sb.append("\n\t\t");
+        sb.append(line);
       }
 
       sb.append("\nEnd file\n\n");
 
     } catch (IOException e) {
       // Add warning message in report file
-      sb.append("\nAn error occurs during read file "
-          + stderrFile.getAbsolutePath() + "\n\n");
+      sb.append("\nAn error occurs during read file ");
+      sb.append(stderrFile.getAbsolutePath());
+      sb.append("\n\n");
     }
 
     return sb.toString();

@@ -233,8 +233,8 @@ public class ToolInterpreterTest {
     /**
      * Launch test.
      * @throws FileNotFoundException the XML file is not found
-     * @throws Exception if an error occurs during setting or execution on a
-     *           test
+     * @throws EoulsanException if an error occurs during setting or execution
+     *           on a test
      */
     public void launchTest() throws FileNotFoundException, EoulsanException {
 
@@ -355,7 +355,7 @@ public class ToolInterpreterTest {
     ToolTest(final String description) {
       this.description = description;
 
-      this.setStepParameters = new HashSet<Parameter>();
+      this.setStepParameters = new HashSet<>();
       this.variablesCommand = new HashMap<>();
     }
   }

@@ -262,7 +262,7 @@ public class GenomicArray<T> {
     private int length = 0;
     private final List<Zone<T>> zones = new ArrayList<>();
 
-    private final Zone<T> get(final int index) {
+    private Zone<T> get(final int index) {
 
       return this.zones.get(index);
     }
@@ -271,7 +271,7 @@ public class GenomicArray<T> {
      * Add a zone.
      * @param zone zone to add
      */
-    private final void add(final Zone<T> zone) {
+    private void add(final Zone<T> zone) {
 
       this.zones.add(zone);
     }
@@ -281,7 +281,7 @@ public class GenomicArray<T> {
      * @param index index where add the zone
      * @param zone the zone to add
      */
-    private final void add(final int index, final Zone<T> zone) {
+    private void add(final int index, final Zone<T> zone) {
 
       this.zones.add(index, zone);
     }
@@ -370,8 +370,6 @@ public class GenomicArray<T> {
       // Create an empty zone if the interval is after the end of the
       // last chromosome zone
       if (intervalEnd > this.length) {
-        final Set<T> val = new TreeSet<>();
-        val.add(value);
         add(new Zone<T>(this.length + 1, intervalEnd, interval.getStrand()));
         this.length = intervalEnd;
       }
@@ -499,7 +497,7 @@ public class GenomicArray<T> {
      * @param endZone end of the zone
      * @return true if the interval intersect a zone
      */
-    private static final boolean intersect(final int start, final int end,
+    private static boolean intersect(final int start, final int end,
         final int startZone, final int endZone) {
 
       return (start >= startZone && start <= endZone)

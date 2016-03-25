@@ -65,6 +65,7 @@ import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  * @author Maria Bernard
  */
+@SuppressWarnings("FinalPrivateMethod")
 public abstract class AbstractSequenceReadsMapper
     implements SequenceReadsMapper {
 
@@ -381,7 +382,7 @@ public abstract class AbstractSequenceReadsMapper
 
     checkState(!this.initialized, "Mapper has been initialized");
 
-    if (isMultipleInstancesAllowed() && enable == true) {
+    if (isMultipleInstancesAllowed() && enable) {
       this.multipleInstancesEnabled = true;
     } else {
       this.multipleInstancesEnabled = false;
@@ -623,8 +624,6 @@ public abstract class AbstractSequenceReadsMapper
             + archiveIndexFile + " in " + archiveIndexDir);
         FileUtils.unzip(archiveIndexFile, archiveIndexDir);
       }
-    } catch (IOException e) {
-      throw e;
     } finally {
 
       lock.release();
@@ -673,7 +672,7 @@ public abstract class AbstractSequenceReadsMapper
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  private final MapperProcess mapSE(final InputStream in) throws IOException {
+  private MapperProcess mapSE(final InputStream in) throws IOException {
 
     checkNotNull(in, "in argument is null");
 
@@ -742,8 +741,8 @@ public abstract class AbstractSequenceReadsMapper
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  private final MapperProcess mapPE(final InputStream in1,
-      final InputStream in2) throws IOException {
+  private MapperProcess mapPE(final InputStream in1, final InputStream in2)
+      throws IOException {
 
     checkNotNull(in1, "in1 argument is null");
     checkNotNull(in2, "in2 argument is null");
@@ -1086,7 +1085,7 @@ public abstract class AbstractSequenceReadsMapper
    * @param s the string to convert
    * @return a list of string
    */
-  private static final List<String> getListArguments(final String s) {
+  private static List<String> getListArguments(final String s) {
 
     if (s == null) {
       return Collections.emptyList();

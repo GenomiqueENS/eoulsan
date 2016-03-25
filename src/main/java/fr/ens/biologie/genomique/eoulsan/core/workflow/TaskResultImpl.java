@@ -192,9 +192,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
     try (final ObjectInputStream ois = new ClassLoaderObjectInputStream(in)) {
 
       // Read TaskContext object
-      final TaskResultImpl result = (TaskResultImpl) ois.readObject();
-
-      return result;
+      return (TaskResultImpl) ois.readObject();
 
     } catch (ClassNotFoundException e) {
       throw new EoulsanRuntimeException(e);
@@ -236,8 +234,8 @@ public class TaskResultImpl implements TaskResult, Serializable {
     Preconditions.checkNotNull(context, "context argument cannot be null");
 
     this.context = context;
-    this.startTime = startTime;
-    this.endTime = endTime;
+    this.startTime = startTime == null ? null : new Date(startTime.getTime());
+    this.endTime = endTime == null ? null : new Date(endTime.getTime());
     this.duration = duration;
     this.success = false;
     this.taskMessage = null;

@@ -50,8 +50,7 @@ public class ReadSequenceTest {
 
     try {
 
-      ReadSequence read = new ReadSequence();
-      Sequence sequence = read;
+      Sequence sequence = new ReadSequence();
       assertTrue(true);
     } catch (ClassCastException e) {
       assertTrue(false);
@@ -100,7 +99,7 @@ public class ReadSequenceTest {
     assertFalse(s1.equals(s3));
 
     assertFalse(s1.equals(null));
-    assertFalse(s1.equals(""));
+    assertFalse(s1.getSequence().equals(""));
     assertTrue(s1.equals(s1));
   }
 

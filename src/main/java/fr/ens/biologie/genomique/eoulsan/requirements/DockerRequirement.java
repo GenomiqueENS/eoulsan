@@ -237,7 +237,7 @@ public class DockerRequirement extends AbstractRequirement {
 
     final Requirement result = new DockerRequirement();
 
-    final Set<Parameter> parameters = new HashSet<Parameter>();
+    final Set<Parameter> parameters = new HashSet<>();
 
     parameters.add(new Parameter(OPTIONAL_PARAMETER, "" + optional));
     parameters.add(new Parameter(INSTALLABLE_PARAMETER, "" + true));
@@ -246,6 +246,15 @@ public class DockerRequirement extends AbstractRequirement {
     result.configure(parameters);
 
     return result;
+  }
+
+  //
+  // Object method
+  //
+
+  @Override
+  public String toString() {
+    return "Docker image: " + this.dockerImage;
   }
 
 }

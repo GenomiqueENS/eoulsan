@@ -64,7 +64,17 @@ public class HadoopJobEmergencyStopTask implements EmergencyStopTask {
   @Override
   public boolean equals(final Object obj) {
 
-    return this.jobId.equals(obj);
+    if (obj == this) {
+      return true;
+    }
+
+    if (!(obj instanceof HadoopJobEmergencyStopTask)) {
+      return false;
+    }
+
+    final HadoopJobEmergencyStopTask that = (HadoopJobEmergencyStopTask) obj;
+
+    return this.jobId.equals(that.jobId);
   }
 
   //

@@ -206,8 +206,7 @@ public final class SystemUtils {
    * @return a String with the stdout of the command
    * @throws IOException if an error occurs while executing the command
    */
-  private static final String execToString(final String... args)
-      throws IOException {
+  private static String execToString(final String... args) throws IOException {
 
     ProcessBuilder pb = new ProcessBuilder(args);
     Process p = pb.start();

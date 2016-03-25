@@ -219,8 +219,7 @@ public final class XMLDataFormat extends AbstractDataFormat
   // Other methods
   //
 
-  private final Object loadClass(final String className,
-      final Class<?> interf) {
+  private Object loadClass(final String className, final Class<?> interf) {
 
     if (className == null) {
       return null;

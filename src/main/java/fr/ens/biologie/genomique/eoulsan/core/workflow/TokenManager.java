@@ -346,6 +346,10 @@ public class TokenManager implements Runnable {
         "The input port is closed for the step "
             + this.step.getId() + ": " + inputPort.getName());
 
+    synchronized (this.receivedTokens) {
+      this.receivedTokens.add(token.getId());
+    }
+
     // Test if the token is an end token
     if (token.isEndOfStepToken()) {
 

@@ -176,8 +176,12 @@ public class ITCommandExecutor {
 
       } else if (exitValue == 0 && !isApplicationCmdLine) {
         // Success execution, remove standard and error output file
-        stdoutFile.delete();
-        stderrFile.delete();
+        if (!stdoutFile.delete()) {
+          getLogger().warning("Unable to deleted stdout file: " + stdoutFile);
+        }
+        if (!stderrFile.delete()) {
+          getLogger().warning("Unable to deleted stderr file: " + stdoutFile);
+        }
       }
 
     } catch (IOException | InterruptedException e) {
@@ -386,11 +390,8 @@ public class ITCommandExecutor {
 
         Field f = p.getClass().getDeclaredField("pid");
         f.setAccessible(true);
-        int pid = (int) f.get(p);
 
-        // System.out.println("script process pid : " + pid);
-
-        return pid;
+        return (int) f.get(p);
 
       } catch (Throwable e) {
         e.printStackTrace();
