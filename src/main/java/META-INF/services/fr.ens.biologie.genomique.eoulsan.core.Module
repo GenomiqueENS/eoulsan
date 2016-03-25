@@ -52,7 +52,6 @@ fr.ens.biologie.genomique.eoulsan.modules.ShellModule
 fr.ens.biologie.genomique.eoulsan.modules.fastqc.FastQCModule
 fr.ens.biologie.genomique.eoulsan.modules.qc.CountSplicedReadsModule
 fr.ens.biologie.genomique.eoulsan.modules.qc.IDRModule
-fr.ens.biologie.genomique.eoulsan.modules.qc.TrimAdaptModule
 
 # Other steps
 fr.ens.biologie.genomique.eoulsan.modules.ImportModule
