@@ -594,6 +594,13 @@
 			<version>1.0.3-rc3</version>
 		</dependency>
 
+                <!-- Cheetah Python module -->
+		<dependency>
+			<groupId>org.cheetahtemplate</groupId>
+			<artifactId>cheetah</artifactId>
+			<version>2.4.4</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.junit.Before;
@@ -47,7 +48,6 @@ import com.google.common.base.Splitter;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeDebug;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.cheetah.CheetahInterpreter;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElement;
 
 /**
@@ -320,12 +320,10 @@ public class ToolInterpreterTest {
           length == commandBuildByInterpreter.size());
 
       // Compare word by word
-      for (int i = 0; i < length; i++) {
-        assertEquals("Word not same, expected "
-            + commandExpected.get(i) + " vs " + commandBuildByInterpreter.get(i)
-            + ": " + commandBuildByInterpreter, commandExpected.get(i),
-            commandBuildByInterpreter.get(i));
-      }
+      assertTrue(
+          "Expected: "
+              + commandExpected + " but got " + commandBuildByInterpreter,
+          Objects.deepEquals(commandExpected, commandBuildByInterpreter));
     }
 
     /**
