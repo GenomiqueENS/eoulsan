@@ -41,6 +41,7 @@ import java.util.List;
 import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignFactory;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
@@ -485,9 +486,21 @@ public class Eoulsan2DesignReader implements DesignReader {
   }
 
   /**
-   * Public constructor
+   * Public constructor.
+   * @param file file to read
+   * @throws IOException if the stream cannot be opened
+   */
+  public Eoulsan2DesignReader(final DataFile file) throws IOException {
+
+    checkNotNull(file, "the file argument cannot be null");
+
+    this.is = file.open();
+  }
+
+  /**
+   * Public constructor.
    * @param is Input stream to read
-   * @throws IOException if the stream is null
+   * @throws IOException if the stream cannot be opened
    */
   public Eoulsan2DesignReader(final InputStream is) throws IOException {
 
@@ -497,13 +510,12 @@ public class Eoulsan2DesignReader implements DesignReader {
   }
 
   /**
-   * Public constructor
+   * Public constructor.
    * @param filename File to read
-   * @throws IOException if the stream is null
    * @throws FileNotFoundException if the file doesn't exist
    */
   public Eoulsan2DesignReader(final String filename)
-      throws IOException, FileNotFoundException {
+      throws FileNotFoundException {
 
     checkNotNull(filename, "the filename argument cannot be null");
 

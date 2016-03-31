@@ -41,6 +41,7 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
@@ -261,8 +262,21 @@ public class Eoulsan1DesignWriter implements DesignWriter {
   }
 
   /**
-   * Public constructor
-   * @param out Input stream to read
+   * Public constructor.
+   * @param file file to read
+   * @throws IOException if an error occurs while reading the file or if the
+   *           file is null.
+   */
+  public Eoulsan1DesignWriter(final DataFile file) throws IOException {
+
+    checkNotNull(file, "file argument cannot be null");
+
+    this.out = file.create();
+  }
+
+  /**
+   * Public constructor.
+   * @param out Output stream to read
    * @throws IOException if the stream is null
    */
   public Eoulsan1DesignWriter(final OutputStream out) throws IOException {
@@ -273,13 +287,12 @@ public class Eoulsan1DesignWriter implements DesignWriter {
   }
 
   /**
-   * Public constructor
+   * Public constructor.
    * @param filename File to write
-   * @throws IOException if the stream is null
    * @throws FileNotFoundException if the file doesn't exist
    */
   public Eoulsan1DesignWriter(final String filename)
-      throws IOException, FileNotFoundException {
+      throws FileNotFoundException {
 
     checkNotNull(filename, "filename argument cannot be null");
 

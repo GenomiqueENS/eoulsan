@@ -45,6 +45,7 @@ import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Naming;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignFactory;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
@@ -274,9 +275,9 @@ public class Eoulsan1DesignReader implements DesignReader {
   }
 
   /**
-   * Public constructor
+   * Public constructor.
    * @param is Input stream to read
-   * @throws IOException if the stream is null
+   * @throws IOException if an error occurs while opening the file
    */
   public Eoulsan1DesignReader(final InputStream is) throws IOException {
 
@@ -286,7 +287,19 @@ public class Eoulsan1DesignReader implements DesignReader {
   }
 
   /**
-   * Public constructor
+   * Public constructor.
+   * @param is Input stream to read
+   * @throws IOException if an error occurs while opening the file
+   */
+  public Eoulsan1DesignReader(final DataFile file) throws IOException {
+
+    checkNotNull(file, "the file argument cannot be null");
+
+    this.is = file.open();
+  }
+
+  /**
+   * Public constructor.
    * @param filename File to read
    * @throws FileNotFoundException if the file doesn't exist
    */
