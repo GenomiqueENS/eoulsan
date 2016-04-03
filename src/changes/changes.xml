@@ -1246,5 +1246,17 @@ of reads that reject each filter like in local mode.
 
          </release>
 
+         <release version="2.0-beta3" description="Eoulsan 2.0-beta3 release" date="2016-04-03">
+
+            <action dev="jourdren" type="fix">
+                The Illumina read header parser can now parse headers from reads created using several indexes for the demultiplexing.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Replace homemade Cheetah interpreter implementation by the original implementation using Jython.
+            </action>
+
+         </release>
+
 	</body>
 </document>
