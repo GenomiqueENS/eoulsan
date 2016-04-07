@@ -81,7 +81,7 @@
 	&lt;module&gt;expressionresultsannotation&lt;/module&gt;
 	&lt;parameters&gt;
 		&lt;parameter&gt;
-			&lt;name&gt;outputformat&lt;/name&gt;
+			&lt;name&gt;output.format&lt;/name&gt;
 			&lt;value&gt;xlsx,ods&lt;/value&gt;
 		&lt;/parameter&gt;
 	&lt;/parameters&gt;

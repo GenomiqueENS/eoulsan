@@ -93,11 +93,11 @@ regardless of whether it is mapped to the same or the opposite strand as the fea
 			&lt;value&gt;htseq-count&lt;/value&gt;
 		&lt;/parameter&gt;
 		&lt;parameter&gt;
-			&lt;name&gt;genomictype&lt;/name&gt;
+			&lt;name&gt;genomic.type&lt;/name&gt;
 			&lt;value&gt;exon&lt;/value&gt;
 		&lt;/parameter&gt;
 		&lt;parameter&gt;
-			&lt;name&gt;attributeid&lt;/name&gt;
+			&lt;name&gt;attribute.id&lt;/name&gt;
 			&lt;value&gt;Parent&lt;/value&gt;
 		&lt;/parameter&gt;
 		&lt;parameter&gt;
@@ -105,11 +105,11 @@ regardless of whether it is mapped to the same or the opposite strand as the fea
 			&lt;value&gt;yes&lt;/value&gt;
 		&lt;/parameter&gt;
 		&lt;parameter&gt;
-			&lt;name&gt;overlapmode&lt;/name&gt;
+			&lt;name&gt;overlap.mode&lt;/name&gt;
 			&lt;value&gt;union&lt;/value&gt;
 		&lt;/parameter&gt;
 		&lt;parameter&gt;
-			&lt;name&gt;removeambiguouscases&lt;/name&gt;
+			&lt;name&gt;remove.ambiguous.cases&lt;/name&gt;
 			&lt;value&gt;false&lt;/value&gt;
 		&lt;/parameter&gt;
 	&lt;/parameters&gt;

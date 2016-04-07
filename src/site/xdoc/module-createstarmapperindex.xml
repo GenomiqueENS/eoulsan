@@ -89,7 +89,7 @@
 			&lt;value&gt;100&lt;/value&gt;
 		&lt;/parameter&gt;
 		&lt;parameter&gt;
-			&lt;name&gt;gtf.file&lt;/name&gt;
+			&lt;name&gt;use.gtf.file&lt;/name&gt;
 			&lt;value&gt;true&lt;/value&gt;
 		&lt;/parameter&gt;
 		&lt;parameter&gt;
