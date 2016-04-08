@@ -139,7 +139,7 @@ public class EmptyFileQC extends AbstractQCModule {
 
   /**
    * Constructor.
-   * @param filename The file name
+   * @param file The file
    */
   public EmptyFileQC(final DataFile file) {
     this.filename = file.getName();

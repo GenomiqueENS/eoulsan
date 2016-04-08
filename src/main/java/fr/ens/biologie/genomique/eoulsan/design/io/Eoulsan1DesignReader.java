@@ -288,7 +288,7 @@ public class Eoulsan1DesignReader implements DesignReader {
 
   /**
    * Public constructor.
-   * @param is Input stream to read
+   * @param file file to read
    * @throws IOException if an error occurs while opening the file
    */
   public Eoulsan1DesignReader(final DataFile file) throws IOException {
