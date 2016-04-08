@@ -35,7 +35,7 @@ import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsMapp
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsMapperHadoopModule.setZooKeeperJobConfiguration;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX;
 import static java.util.Collections.singletonList;
-import static org.python.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.newArrayList;
 
 import java.io.IOException;
 import java.util.List;

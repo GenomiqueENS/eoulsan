@@ -26,8 +26,8 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools;
 
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractInputs;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractOutputs;
-import static org.python.google.common.base.Preconditions.checkNotNull;
-import static org.python.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.io.IOException;
 import java.io.InputStream;

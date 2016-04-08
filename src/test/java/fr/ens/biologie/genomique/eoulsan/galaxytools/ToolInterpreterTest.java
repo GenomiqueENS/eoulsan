@@ -40,7 +40,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.python.google.common.base.Preconditions;
+import com.google.common.base.Preconditions;
 
 import com.google.common.base.Splitter;
 

@@ -31,8 +31,8 @@ import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserU
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractToolID;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractToolName;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractToolVersion;
-import static org.python.google.common.base.Strings.emptyToNull;
-import static org.python.google.common.base.Strings.nullToEmpty;
+import static com.google.common.base.Strings.emptyToNull;
+import static com.google.common.base.Strings.nullToEmpty;
 
 import org.w3c.dom.Document;
 

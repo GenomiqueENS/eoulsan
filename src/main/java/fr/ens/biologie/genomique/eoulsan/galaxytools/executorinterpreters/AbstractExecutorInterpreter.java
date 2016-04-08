@@ -1,7 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.python.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import java.io.File;
 import java.io.IOException;

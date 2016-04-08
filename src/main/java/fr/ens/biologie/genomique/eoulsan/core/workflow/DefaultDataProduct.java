@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkState;
 import java.io.Serializable;
 import java.util.Set;
 
-import org.python.google.common.base.Strings;
+import com.google.common.base.Strings;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;

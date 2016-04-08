@@ -1,6 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.util;
 
-import static org.python.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -28,8 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
 
-import org.python.google.common.base.MoreObjects;
-import org.python.google.common.base.Objects;
+import com.google.common.base.Objects;
 
 /**
  * This class defines the experiment sample.
@@ -73,7 +72,7 @@ public class ExperimentSample implements Serializable {
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this)
+    return Objects.toStringHelper(this)
         .add("experimentSampleName", this.sample)
         .add("experimentSampleMetadata", this.metadata).toString();
   }

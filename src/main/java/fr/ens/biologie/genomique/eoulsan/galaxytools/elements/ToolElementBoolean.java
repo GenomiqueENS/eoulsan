@@ -25,7 +25,7 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
 import java.util.List;
 
-import org.python.google.common.collect.Lists;
+import com.google.common.collect.Lists;
 import org.w3c.dom.Element;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
