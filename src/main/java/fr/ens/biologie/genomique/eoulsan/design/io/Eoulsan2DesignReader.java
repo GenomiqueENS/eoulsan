@@ -132,7 +132,8 @@ public class Eoulsan2DesignReader implements DesignReader {
       throws IOException {
 
     // split the experiment key to extract the
-    final List<String> expField = GuavaCompatibility.splitToList(this.dotSplitter, key);
+    final List<String> expField =
+        GuavaCompatibility.splitToList(this.dotSplitter, key);
 
     if (expField.size() != 3) {
       throw new IOException("The experiment key is invalid.");
@@ -205,9 +206,8 @@ public class Eoulsan2DesignReader implements DesignReader {
   private void parseColumns(final Design design, final List<String> columnNames,
       final String line, final boolean firstLine) throws IOException {
 
-    final List<String> splitLine = GuavaCompatibility.splitToList(this.tabSplitter, line);
-    // System.out.print(splitLine);
-    // System.out.print('\n');
+    final List<String> splitLine =
+        GuavaCompatibility.splitToList(this.tabSplitter, line);
 
     if (firstLine) {
 
@@ -257,6 +257,11 @@ public class Eoulsan2DesignReader implements DesignReader {
       final String sampleName = splitLine.get(1);
       final Sample sample = design.addSample(sampleId);
       sample.setName(sampleName);
+
+      // Add the sample to all the experiments
+      for (Experiment e : design.getExperiments()) {
+        e.addSample(sample);
+      }
 
       final Iterator<String> nameIterator = columnNames.iterator();
       final Iterator<String> valueIterator = splitLine.iterator();
@@ -319,7 +324,8 @@ public class Eoulsan2DesignReader implements DesignReader {
       String columnValue, Design design, Sample sample) throws IOException {
 
     // split the column name
-    final List<String> expField = GuavaCompatibility.splitToList(this.dotSplitter, columnName);
+    final List<String> expField =
+        GuavaCompatibility.splitToList(this.dotSplitter, columnName);
 
     if (expField.size() != 3) {
 
@@ -387,9 +393,10 @@ public class Eoulsan2DesignReader implements DesignReader {
       // Trim trailing tabular
       if (header) {
 
-        final List<String> fields = GuavaCompatibility.splitToList(this.trimTabSplitter, line);
+        final List<String> fields =
+            GuavaCompatibility.splitToList(this.trimTabSplitter, line);
 
-        if (fields.size() > 1) {
+        if (fields.size() == 1) {
           line = fields.get(0);
         }
       }
