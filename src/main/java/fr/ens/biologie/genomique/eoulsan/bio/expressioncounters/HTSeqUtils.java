@@ -48,6 +48,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.GFFEntry;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomicArray;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomicInterval;
 import fr.ens.biologie.genomique.eoulsan.bio.io.GFFReader;
+import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 import htsjdk.samtools.Cigar;
 import htsjdk.samtools.CigarElement;
 import htsjdk.samtools.CigarOperator;
@@ -100,7 +101,7 @@ public class HTSeqUtils {
           final List<String> featureIds;
 
           if (splitAttributeValues) {
-            featureIds = splitToList(splitter, featureId);
+            featureIds = GuavaCompatibility.splitToList(splitter, featureId);
           } else {
             featureIds = Collections.singletonList(featureId);
           }
@@ -348,27 +349,6 @@ public class HTSeqUtils {
     for (GenomicInterval iv : toRemove) {
       intervals.remove(iv);
     }
-  }
-
-  /**
-   * This method allow to split a string to a list. This method exists because
-   * Guava 14 is bundled with Hadoop 2.x and the splitToList method exists only
-   * since Guava 15.
-   * @param splitter the splitter to use
-   * @param s the string to split
-   * @return an immutable list
-   */
-  private static List<String> splitToList(final Splitter splitter,
-      final String s) {
-
-    final Iterator<String> it = splitter.split(s).iterator();
-    final List<String> result = new ArrayList<>();
-
-    while (it.hasNext()) {
-      result.add(it.next());
-    }
-
-    return Collections.unmodifiableList(result);
   }
 
 }

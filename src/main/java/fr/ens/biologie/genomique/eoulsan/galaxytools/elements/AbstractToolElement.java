@@ -45,7 +45,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 public abstract class AbstractToolElement implements ToolElement {
 
   /** SPLITTER. */
-  final static Splitter COMMA =
+  protected final static Splitter COMMA =
       Splitter.on(',').trimResults().omitEmptyStrings();
 
   /** Data from attribute param tag. */

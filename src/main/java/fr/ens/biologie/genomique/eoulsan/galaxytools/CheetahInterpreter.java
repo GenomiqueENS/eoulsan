@@ -33,10 +33,12 @@ import java.util.Map;
 import org.python.core.PyDictionary;
 import org.python.core.PyObject;
 import org.python.core.PyString;
-import org.python.google.common.base.Splitter;
 import org.python.util.PythonInterpreter;
 
+import com.google.common.base.Splitter;
+
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 
 /**
  * This class create a Cheetah interpreter, it can build a command line tool
@@ -155,7 +157,7 @@ public class CheetahInterpreter {
 
       for (Map.Entry<String, String> e : plateholders.entrySet()) {
 
-        List<String> fields = Splitter.on('.').splitToList(e.getKey());
+        List<String> fields = GuavaCompatibility.splitToList(Splitter.on('.'), e.getKey());
 
         PyStrDictionary dict = result;
 

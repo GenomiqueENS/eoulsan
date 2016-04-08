@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -48,6 +47,7 @@ import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSampleMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
+import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 
 /**
  * This class define a design reader for Eoulsan 2 design file.
@@ -132,7 +132,7 @@ public class Eoulsan2DesignReader implements DesignReader {
       throws IOException {
 
     // split the experiment key to extract the
-    final List<String> expField = splitToList(this.dotSplitter, key);
+    final List<String> expField = GuavaCompatibility.splitToList(this.dotSplitter, key);
 
     if (expField.size() != 3) {
       throw new IOException("The experiment key is invalid.");
@@ -205,7 +205,7 @@ public class Eoulsan2DesignReader implements DesignReader {
   private void parseColumns(final Design design, final List<String> columnNames,
       final String line, final boolean firstLine) throws IOException {
 
-    final List<String> splitLine = splitToList(this.tabSplitter, line);
+    final List<String> splitLine = GuavaCompatibility.splitToList(this.tabSplitter, line);
     // System.out.print(splitLine);
     // System.out.print('\n');
 
@@ -319,7 +319,7 @@ public class Eoulsan2DesignReader implements DesignReader {
       String columnValue, Design design, Sample sample) throws IOException {
 
     // split the column name
-    final List<String> expField = splitToList(this.dotSplitter, columnName);
+    final List<String> expField = GuavaCompatibility.splitToList(this.dotSplitter, columnName);
 
     if (expField.size() != 3) {
 
@@ -387,9 +387,9 @@ public class Eoulsan2DesignReader implements DesignReader {
       // Trim trailing tabular
       if (header) {
 
-        final List<String> fields = splitToList(this.trimTabSplitter, line);
+        final List<String> fields = GuavaCompatibility.splitToList(this.trimTabSplitter, line);
 
-        if (fields.size() == 1) {
+        if (fields.size() > 1) {
           line = fields.get(0);
         }
       }
@@ -439,34 +439,6 @@ public class Eoulsan2DesignReader implements DesignReader {
     br.close();
 
     return design;
-  }
-
-  //
-  // Other methods
-  //
-
-  /**
-   * This method allow to split a charSequence into a list of String. This
-   * method avoid using Splitter.splitToList() that is not available in the
-   * embedded version of Guava in Hadoop. TODO Remove this method once the
-   * embedded version of Guava will be changed
-   * @param splitter the splitter
-   * @param sequence the sequence to split
-   * @return a list of String
-   */
-  private static List<String> splitToList(final Splitter splitter,
-      final CharSequence sequence) {
-
-    checkNotNull(splitter, "splitter argument cannot be null");
-    checkNotNull(sequence, "sequence argument cannot be null");
-
-    List<String> result = new ArrayList<>();
-
-    for (String s : splitter.split(sequence)) {
-      result.add(s);
-    }
-
-    return Collections.unmodifiableList(result);
   }
 
   //

@@ -23,7 +23,6 @@
  */
 package fr.ens.biologie.genomique.eoulsan.galaxytools;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -49,6 +48,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeDebug;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElement;
+import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 
 /**
  * The class define unit tests on GalaxyToolStep, it check if the command line
@@ -196,7 +196,8 @@ public class ToolInterpreterTest {
     public void addData(final String key, final String value)
         throws EoulsanException {
 
-      final String keyPrefix = SPLITTER_KEY.splitToList(key).get(0);
+      final String keyPrefix =
+          GuavaCompatibility.splitToList(SPLITTER_KEY, key).get(0);
       final String nameVariable = key.substring(key.indexOf('.') + 1);
 
       switch (keyPrefix) {
@@ -306,10 +307,10 @@ public class ToolInterpreterTest {
 
       // Compare command
       final List<String> commandBuildByInterpreter =
-          SPLITTER_SPACE.splitToList(commandLine);
+          GuavaCompatibility.splitToList(SPLITTER_SPACE, commandLine);
 
       final List<String> commandExpected =
-          SPLITTER_SPACE.splitToList(this.command);
+          GuavaCompatibility.splitToList(SPLITTER_SPACE, this.command);
 
       int length = commandExpected.size();
 

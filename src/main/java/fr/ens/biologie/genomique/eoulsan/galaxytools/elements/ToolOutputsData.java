@@ -32,6 +32,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
+import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -116,7 +117,8 @@ public class ToolOutputsData extends AbstractToolElement {
       throws EoulsanException {
     super(param, nameSpace);
 
-    this.formats = COMMA.splitToList(param.getAttribute("format"));
+    this.formats =
+        GuavaCompatibility.splitToList(COMMA, param.getAttribute("format"));
 
     // Check count format found
     if (this.formats.size() > 1) {
