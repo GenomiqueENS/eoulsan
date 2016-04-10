@@ -708,6 +708,7 @@ public class GFFEntry {
    * @param s String to parse
    * @deprecated
    */
+  @Deprecated
   public void parse(final String s) throws BadBioEntryException {
 
     parseGFF3(s);
