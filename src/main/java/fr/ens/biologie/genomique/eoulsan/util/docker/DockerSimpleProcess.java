@@ -29,7 +29,9 @@ import com.spotify.docker.client.messages.ContainerInfo;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.Image;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
+import fr.ens.biologie.genomique.eoulsan.util.AbstractSimpleProcess;
 import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
 
 /**
@@ -37,31 +39,20 @@ import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class DockerProcess {
-
-  private static final String TMP_DIR_ENV_VARIABLE = "TMPDIR";
+public class DockerSimpleProcess extends AbstractSimpleProcess {
 
   private final DockerClient dockerClient;
   private final String dockerImage;
   private final int userUid;
   private final int userGid;
-  private final File temporaryDirectory;
 
-  public int execute(final List<String> commandLine,
-      final File executionDirectory, final File temporaryDirectory,
-      final File stdoutFile, final File stderrFile)
-      throws DockerException, InterruptedException {
-
-    return execute(commandLine, executionDirectory, null, temporaryDirectory,
-        stdoutFile, stderrFile, false);
-  }
-
+  @Override
   public int execute(final List<String> commandLine,
       final File executionDirectory,
       final Map<String, String> environmentVariables,
       final File temporaryDirectory, final File stdoutFile,
       final File stderrFile, final boolean redirectErrorStream)
-      throws DockerException, InterruptedException {
+      throws EoulsanException {
 
     checkNotNull(commandLine, "commandLine argument cannot be null");
     checkNotNull(executionDirectory,
@@ -73,76 +64,83 @@ public class DockerProcess {
         "execution directory does not exists or is not a directory: "
             + executionDirectory.getAbsolutePath());
 
-    final List<String> env = new ArrayList<>();
+    try {
 
-    if (environmentVariables != null) {
-      for (Map.Entry<String, String> e : environmentVariables.entrySet()) {
-        env.add(e.getKey() + '=' + e.getValue());
+      final List<String> env = new ArrayList<>();
+
+      if (environmentVariables != null) {
+        for (Map.Entry<String, String> e : environmentVariables.entrySet()) {
+          env.add(e.getKey() + '=' + e.getValue());
+        }
       }
+
+      // Pull image if needed
+      pullImageIfNotExists(this.dockerClient, this.dockerImage);
+
+      // Create container configuration
+      getLogger()
+          .fine("Configure container, command to execute: " + commandLine);
+
+      final ContainerConfig.Builder builder =
+          ContainerConfig.builder().image(dockerImage).cmd(commandLine);
+
+      // Set the working directory
+      builder.workingDir(executionDirectory.getAbsolutePath());
+
+      // Set the UID and GID of the docker process
+      if (this.userUid >= 0 && this.userGid >= 0) {
+        builder.user(this.userUid + ":" + this.userGid);
+      }
+
+      // Define temporary directory
+      final List<File> toBind;
+      if (temporaryDirectory.isDirectory()) {
+        toBind = singletonList(temporaryDirectory);
+        env.add(
+            TMP_DIR_ENV_VARIABLE + "=" + temporaryDirectory.getAbsolutePath());
+      } else {
+        toBind = Collections.emptyList();
+      }
+
+      builder.hostConfig(createBinds(executionDirectory, toBind));
+
+      // Set environment variables
+      builder.env(env);
+
+      // Create container
+      final ContainerCreation creation =
+          this.dockerClient.createContainer(builder.build());
+
+      // Get container id
+      final String containerId = creation.id();
+
+      // Start container
+      getLogger().fine("Start of the Docker container: " + containerId);
+      this.dockerClient.startContainer(containerId);
+
+      // Redirect stdout and stderr
+      final LogStream logStream = this.dockerClient.logs(containerId,
+          LogsParameter.FOLLOW, LogsParameter.STDERR, LogsParameter.STDOUT);
+      redirect(logStream, stdoutFile, stderrFile, redirectErrorStream);
+
+      // Wait the end of the container
+      getLogger().fine("Wait the end of the Docker container: " + containerId);
+      this.dockerClient.waitContainer(containerId);
+
+      // Get process exit code
+      final ContainerInfo info =
+          this.dockerClient.inspectContainer(containerId);
+      final int exitValue = info.state().exitCode();
+      getLogger().fine("Exit value: " + exitValue);
+
+      // Remove container
+      getLogger().fine("Remove Docker container: " + containerId);
+      this.dockerClient.removeContainer(containerId);
+
+      return exitValue;
+    } catch (DockerException | InterruptedException e) {
+      throw new EoulsanException(e);
     }
-
-    // Pull image if needed
-    pullImageIfNotExists(this.dockerClient, this.dockerImage);
-
-    // Create container configuration
-    getLogger().fine("Configure container, command to execute: " + commandLine);
-
-    final ContainerConfig.Builder builder =
-        ContainerConfig.builder().image(dockerImage).cmd(commandLine);
-
-    // Set the working directory
-    builder.workingDir(executionDirectory.getAbsolutePath());
-
-    // Set the UID and GID of the docker process
-    if (this.userUid >= 0 && this.userGid >= 0) {
-      builder.user(this.userUid + ":" + this.userGid);
-    }
-
-    // Define temporary directory
-    final List<File> toBind;
-    if (temporaryDirectory.isDirectory()) {
-      toBind = singletonList(temporaryDirectory);
-      env.add(
-          TMP_DIR_ENV_VARIABLE + "=" + temporaryDirectory.getAbsolutePath());
-    } else {
-      toBind = Collections.emptyList();
-    }
-
-    builder.hostConfig(createBinds(executionDirectory, toBind));
-
-    // Set environment variables
-    builder.env(env);
-
-    // Create container
-    final ContainerCreation creation =
-        this.dockerClient.createContainer(builder.build());
-
-    // Get container id
-    final String containerId = creation.id();
-
-    // Start container
-    getLogger().fine("Start of the Docker container: " + containerId);
-    this.dockerClient.startContainer(containerId);
-
-    // Redirect stdout and stderr
-    final LogStream logStream = this.dockerClient.logs(containerId,
-        LogsParameter.FOLLOW, LogsParameter.STDERR, LogsParameter.STDOUT);
-    redirect(logStream, stdoutFile, stderrFile, redirectErrorStream);
-
-    // Wait the end of the container
-    getLogger().fine("Wait the end of the Docker container: " + containerId);
-    this.dockerClient.waitContainer(containerId);
-
-    // Get process exit code
-    final ContainerInfo info = this.dockerClient.inspectContainer(containerId);
-    final int exitValue = info.state().exitCode();
-    getLogger().fine("Exit value: " + exitValue);
-
-    // Remove container
-    getLogger().fine("Remove Docker container: " + containerId);
-    this.dockerClient.removeContainer(containerId);
-
-    return exitValue;
   }
 
   //
@@ -302,7 +300,7 @@ public class DockerProcess {
   public String toString() {
 
     return Objects.toStringHelper(this).add("dockerImage", dockerImage)
-        .add("temporaryDirectory", temporaryDirectory).toString();
+        .toString();
   }
 
   //
@@ -314,11 +312,9 @@ public class DockerProcess {
    * @param dockerImage Docker image
    * @param temporaryDirectory temporary directory
    */
-  public DockerProcess(final String dockerImage,
-      final File temporaryDirectory) {
+  public DockerSimpleProcess(final String dockerImage) {
 
-    this(DockerManager.getInstance().getClient(), dockerImage,
-        temporaryDirectory);
+    this(DockerManager.getInstance().getClient(), dockerImage);
   }
 
   /**
@@ -327,17 +323,14 @@ public class DockerProcess {
    * @param dockerImage Docker image
    * @param temporaryDirectory temporary directory
    */
-  public DockerProcess(final DockerClient dockerClient,
-      final String dockerImage, final File temporaryDirectory) {
+  public DockerSimpleProcess(final DockerClient dockerClient,
+      final String dockerImage) {
 
     checkNotNull(dockerClient, "dockerClient argument cannot be null");
     checkNotNull(dockerImage, "dockerImage argument cannot be null");
-    checkNotNull(temporaryDirectory,
-        "temporaryDirectory argument cannot be null");
 
     this.dockerClient = dockerClient;
     this.dockerImage = dockerImage;
-    this.temporaryDirectory = temporaryDirectory;
     this.userUid = SystemUtils.uid();
     this.userGid = SystemUtils.gid();
   }

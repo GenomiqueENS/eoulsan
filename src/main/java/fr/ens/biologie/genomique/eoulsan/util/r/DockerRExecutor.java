@@ -7,12 +7,13 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.common.base.Joiner;
-import com.spotify.docker.client.DockerException;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
-import fr.ens.biologie.genomique.eoulsan.util.docker.DockerProcess;
+import fr.ens.biologie.genomique.eoulsan.util.SimpleProcess;
+import fr.ens.biologie.genomique.eoulsan.util.docker.DockerSimpleProcess;
 
 /**
  * This class define a Docker RExecutor.
@@ -85,8 +86,7 @@ public class DockerRExecutor extends ProcessRExecutor {
       final String sweaveOuput, final String... scriptArguments)
       throws IOException {
 
-    final DockerProcess process =
-        new DockerProcess(this.dockerImage, getTemporaryDirectory());
+    final SimpleProcess process = new DockerSimpleProcess(this.dockerImage);
 
     final List<String> commandLine =
         createCommand(rScriptFile, sweave, sweaveOuput, scriptArguments);
@@ -102,7 +102,7 @@ public class DockerRExecutor extends ProcessRExecutor {
       ProcessUtils.throwExitCodeException(exitValue,
           Joiner.on(' ').join(commandLine));
 
-    } catch (DockerException | InterruptedException e) {
+    } catch (EoulsanException e) {
       throw new IOException(e);
     }
 

@@ -10,8 +10,9 @@ import com.google.common.base.Objects;
 import com.spotify.docker.client.DockerException;
 
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolExecutorResult;
+import fr.ens.biologie.genomique.eoulsan.util.SimpleProcess;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
-import fr.ens.biologie.genomique.eoulsan.util.docker.DockerProcess;
+import fr.ens.biologie.genomique.eoulsan.util.docker.DockerSimpleProcess;
 
 /**
  * This class define a Docker executor interpreter.
@@ -55,8 +56,7 @@ public class DockerExecutorInterpreter implements ExecutorInterpreter {
 
     try {
 
-      DockerProcess process =
-          new DockerProcess(this.dockerImage, temporaryDirectory);
+      SimpleProcess process = new DockerSimpleProcess(this.dockerImage);
       final int exitValue = process.execute(commandLine, executionDirectory,
           temporaryDirectory, stdoutFile, stderrFile);
 
