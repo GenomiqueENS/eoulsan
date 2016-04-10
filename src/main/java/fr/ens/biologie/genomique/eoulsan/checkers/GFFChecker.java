@@ -220,7 +220,7 @@ public class GFFChecker implements Checker {
               throw new BadBioEntryException(
                   "GFF entry with id ("
                       + sequenceName + ") not found in sequence region",
-                  e.toString());
+                  e.toGFF3());
             }
           }
 
@@ -228,14 +228,14 @@ public class GFFChecker implements Checker {
             throw new BadBioEntryException("GFF entry with start position ("
                 + Math.min(start, end)
                 + ") lower than the start of sequence region" + sequenceName
-                + " (" + interval[0] + ")", e.toString());
+                + " (" + interval[0] + ")", e.toGFF3());
           }
 
           if (Math.max(start, end) > interval[1]) {
             throw new BadBioEntryException("GFF entry with end position ("
                 + Math.max(start, end)
                 + ") greater than the end of sequence region " + sequenceName
-                + " (" + interval[1] + ")", e.toString());
+                + " (" + interval[1] + ")", e.toGFF3());
           }
         }
 
@@ -245,7 +245,7 @@ public class GFFChecker implements Checker {
 
             if (!sequenceLengths.containsKey(sequenceName)) {
               throw new BadBioEntryException("GFF entry with id ("
-                  + sequenceName + ") not found in genome", e.toString());
+                  + sequenceName + ") not found in genome", e.toGFF3());
             }
 
             sequenceLength = sequenceLengths.get(sequenceName);
@@ -254,7 +254,7 @@ public class GFFChecker implements Checker {
           if (Math.min(start, end) < 1) {
             throw new BadBioEntryException("GFF entry with start position ("
                 + Math.min(start, end) + ") lower than 1 in sequence "
-                + sequenceName, e.toString());
+                + sequenceName, e.toGFF3());
           }
 
           if (Math.max(start, end) - 1 > sequenceLength) {
@@ -262,7 +262,7 @@ public class GFFChecker implements Checker {
             throw new BadBioEntryException("GFF entry with end position ("
                 + Math.max(start, end)
                 + ") greater than the the length of sequence " + sequenceName
-                + " (" + sequenceLength + ")", e.toString());
+                + " (" + sequenceLength + ")", e.toGFF3());
           }
         }
 
@@ -271,7 +271,7 @@ public class GFFChecker implements Checker {
         if (attributeId != null && featureId == null) {
           throw new BadBioEntryException("Feature "
               + featureType + " does not contain a " + attributeId
-              + " attribute", e.toString());
+              + " attribute", e.toGFF3());
         }
 
         if (featureId != null) {
