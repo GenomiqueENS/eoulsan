@@ -245,7 +245,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
   private static Job createJobPairedEnd(final Configuration parentConf,
       final TaskContext context, final Data alignmentsData,
-      final Data featureAnnotationData, final Data genomeDescriptionData)
+      final Data genomeDescriptionData)
       throws IOException, BadBioEntryException {
 
     final Configuration jobConf = new Configuration(parentConf);
@@ -468,7 +468,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       if (pairedEnd) {
         MapReduceUtils.submitAndWaitForJob(
             createJobPairedEnd(conf, context, alignmentsData,
-                featureAnnotationData, genomeDescriptionData),
+                genomeDescriptionData),
             alignmentsData.getName(), CommonHadoop.CHECK_COMPLETION_TIME,
             status, COUNTER_GROUP);
       }
