@@ -143,14 +143,15 @@ public interface ExpressionCounter {
 
   /**
    * This method runs the ExpressionCounter.
-   * @param alignmentFile : file containing SAM alignments
-   * @param annotationFile : file containing the reference genome annotation
-   * @param expressionFile : output file for the expression step
-   * @param genomeDescFile : file containing the genome description
+   * @param alignmentFile file containing SAM alignments
+   * @param annotationFile file containing the reference genome annotation
+   * @param gtfFormat true if the annotation is in GTF format
+   * @param expressionFile output file for the expression step
+   * @param genomeDescFile file containing the genome description
    * @throws IOException
    */
   void count(DataFile alignmentFile, DataFile annotationFile,
-      DataFile expressionFile, DataFile genomeDescFile)
+      final boolean gtfFormat, DataFile expressionFile, DataFile genomeDescFile)
       throws IOException, EoulsanException, BadBioEntryException;
 
   //

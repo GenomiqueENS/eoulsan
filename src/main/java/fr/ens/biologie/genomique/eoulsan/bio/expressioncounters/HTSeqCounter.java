@@ -68,15 +68,16 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
   @Override
   protected void internalCount(final DataFile alignmentFile,
-      final DataFile annotationFile, final DataFile expressionFile,
-      final DataFile genomeDescFile, final Reporter reporter,
-      final String counterGroup)
+      final DataFile annotationFile, final boolean gtfFormat,
+      final DataFile expressionFile, final DataFile genomeDescFile,
+      final Reporter reporter, final String counterGroup)
       throws IOException, EoulsanException, BadBioEntryException {
 
-    countReadsInFeatures(alignmentFile, annotationFile, expressionFile,
-        getStranded(), getOverlapMode(), isRemoveAmbiguousCases(),
-        getGenomicType(), getAttributeId(), isSplitAttributeValues(), false, 0,
-        null, genomeDescFile, reporter, counterGroup);
+    countReadsInFeatures(alignmentFile, annotationFile, gtfFormat,
+        expressionFile, getStranded(), getOverlapMode(),
+        isRemoveAmbiguousCases(), getGenomicType(), getAttributeId(),
+        isSplitAttributeValues(), false, 0, null, genomeDescFile, reporter,
+        counterGroup);
 
   }
 
@@ -102,7 +103,8 @@ public class HTSeqCounter extends AbstractExpressionCounter {
   /**
    * Count the number of alignments for all the features of the annotation file.
    * @param samFile SAM file that contains alignments
-   * @param gffFile annotation file
+   * @param annotationFile annotation file
+   * @param gtfFormat true if the the annotation file is in GTF format
    * @param outFile output file
    * @param stranded strand to consider
    * @param overlapMode overlap mode to consider
@@ -122,11 +124,12 @@ public class HTSeqCounter extends AbstractExpressionCounter {
    * @throws BadBioEntryException
    */
   private static void countReadsInFeatures(final DataFile samFile,
-      final DataFile gffFile, final DataFile outFile,
-      final StrandUsage stranded, final OverlapMode overlapMode,
-      final boolean removeAmbiguousCases, final String featureType,
-      final String attributeId, final boolean splitAttributeValues,
-      final boolean quiet, final int minAverageQual, final DataFile samOutFile,
+      final DataFile annotationFile, final boolean gtfFormat,
+      final DataFile outFile, final StrandUsage stranded,
+      final OverlapMode overlapMode, final boolean removeAmbiguousCases,
+      final String featureType, final String attributeId,
+      final boolean splitAttributeValues, final boolean quiet,
+      final int minAverageQual, final DataFile samOutFile,
       final DataFile genomeDescFile, final Reporter reporter,
       final String counterGroup)
       throws EoulsanException, IOException, BadBioEntryException {
@@ -141,8 +144,8 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     boolean pairedEnd = false;
 
     // read and store in 'features' the annotation file
-    HTSeqUtils.storeAnnotation(features, gffFile.open(), featureType, stranded,
-        attributeId, splitAttributeValues, counts);
+    HTSeqUtils.storeAnnotation(features, annotationFile.open(), gtfFormat,
+        featureType, stranded, attributeId, splitAttributeValues, counts);
 
     if (counts.size() == 0) {
       writer.close();

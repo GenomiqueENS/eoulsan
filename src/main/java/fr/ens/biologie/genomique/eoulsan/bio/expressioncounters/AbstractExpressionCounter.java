@@ -152,8 +152,8 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
 
   @Override
   public final void count(final DataFile alignmentFile,
-      final DataFile annotationFile, final DataFile expressionFile,
-      final DataFile genomeDescFile)
+      final DataFile annotationFile, final boolean gtfFormat,
+      final DataFile expressionFile, final DataFile genomeDescFile)
       throws IOException, EoulsanException, BadBioEntryException {
 
     getLogger().fine("Counting with " + getCounterName());
@@ -165,24 +165,26 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
         "alignmentFile not exits or is not a standard file.");
 
     // Process to counting
-    internalCount(alignmentFile, annotationFile, expressionFile, genomeDescFile,
-        this.reporter, this.counterGroup);
+    internalCount(alignmentFile, annotationFile, gtfFormat, expressionFile,
+        genomeDescFile, this.reporter, this.counterGroup);
   }
 
   /**
    * This method runs the ExpressionCounter.
-   * @param alignmentFile : file containing SAM alignments
-   * @param annotationFile : file containing the reference genome annotation
-   * @param expressionFile : output file for the expression step
-   * @param genomeDescFile : file containing the genome description
-   * @param reporter : the Reporter object of the Eoulsan run
-   * @param counterGroup : string with the counter name group for the expression
+   * @param alignmentFile file containing SAM alignments
+   * @param annotationFile file containing the reference genome annotation
+   * @param gtfFormat true if the annotation is in GTF format
+   * @param expressionFile output file for the expression step
+   * @param genomeDescFile file containing the genome description
+   * @param reporter the Reporter object of the Eoulsan run
+   * @param counterGroup string with the counter name group for the expression
    *          step
    * @throws IOException
    */
   protected abstract void internalCount(final DataFile alignmentFile,
-      final DataFile annotationFile, final DataFile expressionFile,
-      final DataFile genomeDescFile, Reporter reporter, String counterGroup)
+      final DataFile annotationFile, final boolean gtfFormat,
+      final DataFile expressionFile, final DataFile genomeDescFile,
+      Reporter reporter, String counterGroup)
       throws IOException, EoulsanException, BadBioEntryException;
 
   //

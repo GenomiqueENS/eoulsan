@@ -35,7 +35,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,6 +47,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.GFFEntry;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomicArray;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomicInterval;
 import fr.ens.biologie.genomique.eoulsan.bio.io.GFFReader;
+import fr.ens.biologie.genomique.eoulsan.bio.io.GTFReader;
 import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 import htsjdk.samtools.Cigar;
 import htsjdk.samtools.CigarElement;
@@ -63,15 +63,17 @@ import htsjdk.samtools.SAMRecord;
 public class HTSeqUtils {
 
   public static void storeAnnotation(final GenomicArray<String> features,
-      final InputStream gffIs, final String featureType,
-      final StrandUsage stranded, final String attributeId,
-      final boolean splitAttributeValues, final Map<String, Integer> counts)
+      final InputStream annotationIs, final boolean gtfFormat,
+      final String featureType, final StrandUsage stranded,
+      final String attributeId, final boolean splitAttributeValues,
+      final Map<String, Integer> counts)
       throws IOException, EoulsanException, BadBioEntryException {
 
     final Splitter splitter = Splitter.on(',').omitEmptyStrings().trimResults();
 
     // Splitter for parents string
-    try (final GFFReader gffReader = new GFFReader(gffIs)) {
+    try (final GFFReader gffReader =
+        gtfFormat ? new GTFReader(annotationIs) : new GFFReader(annotationIs)) {
 
       // Read the annotation file
       for (final GFFEntry gff : gffReader) {
