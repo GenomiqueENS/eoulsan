@@ -414,7 +414,7 @@ public class DESeq2 {
 
     final StringBuilder sb = new StringBuilder();
 
-    for (String c : experiment.getMetadata().getComparison().split(";")) {
+    for (String c : experiment.getMetadata().getComparisons().split(";")) {
       String[] splitC = c.split(":");
       sb.append(splitC[0]);
       sb.append(TAB_SEPARATOR);
@@ -471,10 +471,10 @@ public class DESeq2 {
 
     final ExperimentMetadata emd = experiment.getMetadata();
 
-    if (emd.containsComparison()) {
+    if (emd.containsComparisons()) {
 
       // Check if the comparison value is correct
-      for (String c : emd.getComparison().split(";")) {
+      for (String c : emd.getComparisons().split(";")) {
         String[] splitC = c.split(":");
         if (splitC.length != 2) {
           throw new EoulsanException("Error in "
@@ -531,7 +531,7 @@ public class DESeq2 {
     // Build the contrast file
     if (this.buildContrast) {
 
-      if (!this.experiment.getMetadata().containsComparison()) {
+      if (!this.experiment.getMetadata().containsComparisons()) {
         throw new EoulsanException(
             "No comparison defined to build the constrasts in experiment: "
                 + expName);

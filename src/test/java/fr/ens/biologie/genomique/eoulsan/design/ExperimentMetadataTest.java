@@ -96,10 +96,10 @@ public class ExperimentMetadataTest {
     // test getComparisonFile
     assertNull(em.getComparison());
     // test setComparisonFile
-    em.setComparison("toto");
+    em.setComparisons("toto");
     assertEquals("toto", em.getComparison());
     // test containsComparisonFile
-    assertTrue(em.containsComparison());
+    assertTrue(em.containsComparisons());
 
     // test getContrastFile
     assertNull(em.getContrastFile());

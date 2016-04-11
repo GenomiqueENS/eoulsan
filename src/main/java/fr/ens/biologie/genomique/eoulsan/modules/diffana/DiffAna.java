@@ -229,7 +229,7 @@ public class DiffAna extends Normalization {
   protected String generateScript(final Experiment experiment,
       final TaskContext context) throws EoulsanException {
 
-    final String comparison = experiment.getMetadata().getComparison();
+    final String comparison = experiment.getMetadata().getComparisons();
 
     // Check if user use the comparison property of the experiment
     if (comparison != null && !comparison.trim().isEmpty()) {
