@@ -336,7 +336,8 @@ public abstract class AbstractExpressionModule extends AbstractModule {
 
     // Configure Checker
     if (context.getRuntime().getMode() != EoulsanExecMode.CLUSTER_TASK) {
-      CheckerModule.configureChecker(ANNOTATION_GFF, stepParameters);
+      CheckerModule.configureChecker(
+          this.gtfFormat ? ANNOTATION_GTF : ANNOTATION_GFF, stepParameters);
     }
 
     // Log Step parameters
