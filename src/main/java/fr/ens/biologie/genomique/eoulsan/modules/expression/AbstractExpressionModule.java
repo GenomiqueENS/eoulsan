@@ -302,6 +302,7 @@ public abstract class AbstractExpressionModule extends AbstractModule {
         default:
           Modules.badParameterValue(context, p,
               "Unknown annotation file format");
+          break;
         }
 
         break;

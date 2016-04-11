@@ -49,7 +49,7 @@
            <ul>
              <li><b>genome</b>: genome sequence file (format: genome_fasta)</li>
              <li><b>genomedescription</b>: genome description (automatically generated from genome sequence file)</li>
-             <li><b>annotation</b>: genome annotation in GFF3 (if required in parameters)</li>
+             <li><b>annotation</b>: genome annotation in GFF3 or GTF format (if required in parameters)</li>
            </ul>
          </li>
 

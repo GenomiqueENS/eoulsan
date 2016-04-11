@@ -50,7 +50,9 @@
          <br/>
          <li><b>Input port</b>:
            <ul>
-             <li><b>input</b>: alignments in SAM format (format: mapper_results_sam)</li>
+             <li><b>alignments</b>: alignments in SAM format (format: mapper_results_sam)</li>
+             <li><b>featuresannotation</b>: genome annotation in GFF3 or GTF format</li>
+             <li><b>genomedescription</b>: genome description (automatically generated from genome sequence file)</li>
            </ul>
          </li>
 
