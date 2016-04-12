@@ -35,7 +35,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.GFFEntry;
 
 public class GFFEntryTest {
 
-  private final String[] TEST_STRINGS = {
+  private final String[] TEST_GFF3_STRINGS = {
 
       "ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN",
       "ctg123\t.\tTF_binding_site\t1000\t1012\t.\t+\t.\tID=tfbs00001;Parent=gene00001",
@@ -76,11 +76,11 @@ public class GFFEntryTest {
       "1\thavana\texon\t13453\t13670\t.\t+\t.\tgene_id \"ENSG00000223972\"; gene_version \"5\"; transcript_id \"ENST00000450305\"; transcript_version \"2\"; exon_number \"6\"; gene_name \"DDX11L1\"; gene_source \"havana\"; gene_biotype \"transcribed_unprocessed_pseudogene\"; havana_gene \"OTTHUMG00000000961\"; havana_gene_version \"2\"; transcript_name \"DDX11L1-001\"; transcript_source \"havana\"; transcript_biotype \"transcribed_unprocessed_pseudogene\"; havana_transcript \"OTTHUMT00000002844\"; havana_transcript_version \"2\"; exon_id \"ENSE00001863096\"; exon_version \"1\"; tag \"basic\"; transcript_support_level \"NA\""};
 
   @Test
-  public void testParse() {
+  public void testParseGFF3() {
 
     GFFEntry e = new GFFEntry();
 
-    for (String s : this.TEST_STRINGS) {
+    for (String s : this.TEST_GFF3_STRINGS) {
 
       try {
         e.parseGFF3(s);
@@ -94,7 +94,7 @@ public class GFFEntryTest {
   }
 
   @Test
-  public void testParseGTFLine() {
+  public void testParseGTF() {
 
     GFFEntry e = new GFFEntry();
 
@@ -135,7 +135,8 @@ public class GFFEntryTest {
 
       assertEquals(2, e.getAttributesNames().size());
       assertEquals("3q12.1", e.getAttributeValue("Band"));
-      assertEquals("Marfan's syndrome,dystrophic dysplasia", e.getAttributeValue("Note"));
+      assertEquals("Marfan's syndrome,dystrophic dysplasia",
+          e.getAttributeValue("Note"));
 
       e.parseGTF(
           "Chr3\tgiemsa\theterochromatin\t4500000\t6000000\t.\t.\t.\tBand 3q12.1 ; Alias MFX");
