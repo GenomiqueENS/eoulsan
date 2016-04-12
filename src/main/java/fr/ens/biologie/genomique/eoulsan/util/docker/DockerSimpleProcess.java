@@ -41,6 +41,8 @@ import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
  */
 public class DockerSimpleProcess extends AbstractSimpleProcess {
 
+  private static final int SECOND_TO_WAIT_BEFORE_KILLING_CONTAINER = 10;
+
   private final DockerClient dockerClient;
   private final String dockerImage;
   private final int userUid;
@@ -133,9 +135,18 @@ public class DockerSimpleProcess extends AbstractSimpleProcess {
       final int exitValue = info.state().exitCode();
       getLogger().fine("Exit value: " + exitValue);
 
+      // Stop container before removing it
+      this.dockerClient.stopContainer(containerId,
+          SECOND_TO_WAIT_BEFORE_KILLING_CONTAINER);
+
       // Remove container
       getLogger().fine("Remove Docker container: " + containerId);
-      this.dockerClient.removeContainer(containerId);
+      try {
+        this.dockerClient.removeContainer(containerId);
+      } catch (DockerException | InterruptedException e) {
+        EoulsanLogger.getLogger()
+            .severe("Unable to remove Docker container: " + containerId);
+      }
 
       return exitValue;
     } catch (DockerException | InterruptedException e) {
