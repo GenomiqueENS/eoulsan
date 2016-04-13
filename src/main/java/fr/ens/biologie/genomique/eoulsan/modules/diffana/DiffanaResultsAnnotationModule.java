@@ -87,7 +87,8 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
   private static final DataFormat DEFAULT_FORMAT =
       ANNOTATED_EXPRESSION_RESULTS_TSV;
 
-  private static final String DEFAULT_FILE_INPUT_GLOB_PATTERN = "diffana_*.tsv";
+  private static final String DEFAULT_FILE_INPUT_GLOB_PATTERN =
+      "{diffana_*.tsv,deseq2_*.tsv}";
 
   private final Map<String, DataFormat> outputFormats = new HashMap<>();
 
