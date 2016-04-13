@@ -106,7 +106,7 @@ public class Eoulsan1DesignWriter implements DesignWriter {
       this.bw.append(SEPARATOR);
       this.bw.append(DesignMetadata.GFF_FILE_KEY);
     }
-    if (design.getMetadata().containsAdditionnalAnnotationFile()) {
+    if (design.getMetadata().containsAdditionalAnnotationFile()) {
       this.bw.append(SEPARATOR);
       this.bw.append("AdditionalAnnotation");
     }
@@ -167,7 +167,7 @@ public class Eoulsan1DesignWriter implements DesignWriter {
         }
       }
 
-      // GenomeFile, GffFile, AdditionnalAnnotationFile
+      // GenomeFile, GffFile, AdditionalAnnotationFile
       if (design.getMetadata().containsGenomeFile()) {
         this.bw.append(SEPARATOR);
         this.bw.append(design.getMetadata().getGenomeFile());
@@ -180,9 +180,9 @@ public class Eoulsan1DesignWriter implements DesignWriter {
         this.bw.append(SEPARATOR);
         this.bw.append(design.getMetadata().getGtfFile());
       }
-      if (design.getMetadata().containsAdditionnalAnnotationFile()) {
+      if (design.getMetadata().containsAdditionalAnnotationFile()) {
         this.bw.append(SEPARATOR);
-        this.bw.append(design.getMetadata().getAdditionnalAnnotationFile());
+        this.bw.append(design.getMetadata().getAdditionalAnnotationFile());
       }
 
       // Experiment keys

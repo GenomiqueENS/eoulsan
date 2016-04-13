@@ -61,7 +61,7 @@ SampleNumber	Name	Reads	Genome	Annotation	FastqFormat	Condition	RepTechGroup	Exp
 		<li><b>Genome</b> or <b>GenomeFile</b>: Path to genome file in fasta format</li>
 		<li><b>Annotation</b> or <b>GffFile</b>: Path to annotation file of the genome in GFF3 format</li>
 		<li><b>GtfFile</b>: Path to annotation file of the genome in GTF format</li>
-		<li><b>AdditionalAnnotation</b> or <b>AdditionnalAnnotationFile</b>: Path to additional annotations file of the genome in TSV format</li>
+		<li><b>AdditionalAnnotation</b> or <b>AdditionalAnnotationFile</b>: Path to additional annotations file of the genome in TSV format</li>
 		<li><b>Condition</b>: Condition for the sample in the experiment</li>
 		<li><b>FastqFormat</b>: Fastq format. Currently Eoulsan 4 formats: fastq-sanger (default), fastq-solexa, fastq-illumina and fastq-illumina-1.5. See <a href="http://www.ncbi.nlm.nih.gov/pubmed/20015970">Cock et al</a> for more information about the various fastq formats.</li>
 		<li><b>RepTechGroup</b>: Technical replicates group. Use to pool reads counts between technical replicates in differential analysis step.</li>

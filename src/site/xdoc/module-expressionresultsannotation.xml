@@ -54,11 +54,11 @@
          <br/>
         <li><b>Output ports</b>:
            <ul>
-             <li><b>tsvoutput</b>: expression file with additionnal annotation in TSV format if
+             <li><b>tsvoutput</b>: expression file with additional annotation in TSV format if
              requested by user in the parameters of the step (format: annotated_expression_results_tsv)</li>
-             <li><b>odsoutput</b>: expression file with additionnal annotation in ODS format if
+             <li><b>odsoutput</b>: expression file with additional annotation in ODS format if
              requested by user in the parameters of the step (format: annotated_expression_results_tsv)</li>
-             <li><b>xlsxoutput</b>: expression file with additionnal annotation in XLSX format if
+             <li><b>xlsxoutput</b>: expression file with additional annotation in XLSX format if
              requested by user in the parameters of the step (format: annotated_expression_results_tsv)</li>
            </ul>
         </li>

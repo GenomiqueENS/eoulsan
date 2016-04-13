@@ -589,7 +589,7 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="add">
-                Add a new storage protocol for additionnal annotations.
+                Add a new storage protocol for additional annotations.
             </action>
 
             <action dev="jourdren" type="update">
@@ -1141,11 +1141,11 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="update">
-                Now file searching with no extension is allowed for genome://, annotation:// and additionnalannotation:// protocols.
+                Now file searching with no extension is allowed for genome://, annotation:// and additionalannotation:// protocols.
             </action>
 
             <action dev="jourdren" type="update">
-                The search of a file is now case insensitive for genome://, annotation:// and additionnalannotation:// protocols when the underlying protocols support directory listing.
+                The search of a file is now case insensitive for genome://, annotation:// and additionalannotation:// protocols when the underlying protocols support directory listing.
             </action>
 
             <action dev="jourdren" type="fix">
