@@ -409,15 +409,27 @@ public class DESeq2 {
     return sb.toString();
   }
 
-  private String generateComparisonFile() {
+  /**
+   * Generate comparison file content.
+   * @return a String with the comparison file content
+   * @throws EoulsanException if the format of one of the comparison entries of
+   *           the design file is invalid
+   */
+  private String generateComparisonFileContent() throws EoulsanException {
 
     final StringBuilder sb = new StringBuilder();
 
     for (String c : experiment.getMetadata().getComparisons().split(";")) {
-      String[] splitC = c.split(":");
-      sb.append(splitC[0]);
+
+      final String[] splitC = c.split(":");
+
+      if (splitC.length != 2) {
+        throw new EoulsanException("Invalid comparison entry format: " + c);
+      }
+
+      sb.append(splitC[0].trim());
       sb.append(TAB_SEPARATOR);
-      sb.append(splitC[1]);
+      sb.append(splitC[1].trim());
       sb.append(NEWLINE);
     }
 
@@ -538,7 +550,8 @@ public class DESeq2 {
       }
 
       // Write the comparison file from the Eoulsan design (experiment metadata)
-      this.executor.writerFile(generateComparisonFile(), comparisonFileName);
+      this.executor.writerFile(generateComparisonFileContent(),
+          comparisonFileName);
 
       // Read build contrast R script
       final String buildContrastScript =
