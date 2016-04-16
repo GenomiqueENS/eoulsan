@@ -74,7 +74,9 @@ public class ToolElementSelect extends AbstractToolElement {
   public void setValue(final Parameter stepParameter) throws EoulsanException {
     super.setValue(stepParameter);
 
-    this.setValue(stepParameter.getStringValue());
+    if (stepParameter != null) {
+      this.setValue(stepParameter.getStringValue());
+    }
   }
 
   @Override
