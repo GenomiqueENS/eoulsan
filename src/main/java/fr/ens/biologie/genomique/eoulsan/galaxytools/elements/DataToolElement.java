@@ -25,6 +25,7 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
 import java.util.List;
 
+import com.google.common.base.Joiner;
 import org.w3c.dom.Element;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
@@ -33,13 +34,15 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class ToolParameterData.
+ * The Class ToolOutputsData.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
-public class ToolElementData extends AbstractToolElement {
+public class DataToolElement extends AbstractToolElement {
+
+  /** The Constant TAG_NAME. */
+  public static final String TAG_NAME = "data";
 
   /** The formats. */
   private final List<String> formats;
@@ -51,32 +54,28 @@ public class ToolElementData extends AbstractToolElement {
   private String value = "";
 
   @Override
+  public void setDefaultValue() {
+  }
+
+  @Override
   boolean isValueParameterValid() {
     return true;
+  }
+
+  @Override
+  public String getValue() {
+    return this.value;
   }
 
   @Override
   public void setValue(final Parameter stepParameter) throws EoulsanException {
     super.setValue(stepParameter);
 
-    if (stepParameter != null)
-      this.setValue(stepParameter.getValue());
-
+    this.setValue(stepParameter.getValue());
   }
 
-  @Override
-  public void setValue(final String value) throws EoulsanException {
-
+  private void setValue(final String value) {
     this.value = value;
-  }
-
-  @Override
-  public void setValue() {
-  }
-
-  @Override
-  public String getValue() {
-    return this.value;
   }
 
   @Override
@@ -98,34 +97,37 @@ public class ToolElementData extends AbstractToolElement {
   //
 
   /**
-   * Instantiates a new tool parameter data.
+   * Instantiates a new tool outputs data.
    * @param param the param
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolElementData(final Element param) throws EoulsanException {
+  public DataToolElement(final Element param) throws EoulsanException {
     this(param, null);
   }
 
   /**
-   * Instantiates a new tool parameter data.
+   * Instantiates a new tool outputs data.
    * @param param the param
    * @param nameSpace the name space
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolElementData(final Element param, final String nameSpace)
+  public DataToolElement(final Element param, final String nameSpace)
       throws EoulsanException {
     super(param, nameSpace);
-    this.isSetting = true;
 
     this.formats =
         GuavaCompatibility.splitToList(COMMA, param.getAttribute("format"));
 
     // Check count format found
+    if (this.formats.size() > 1) {
+      throw new EoulsanException("Parsing tool xml: more one format data found,"
+          + Joiner.on(",").join(this.formats) + " invalid.");
+    }
+
     if (this.formats.isEmpty()) {
       this.dataFormat = null;
     } else {
       // Convert format in DataFormat
-
       this.dataFormat = DataFormatRegistry.getInstance()
           .getDataFormatFromToolshedExtension(this.formats.get(0));
     }

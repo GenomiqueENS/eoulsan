@@ -43,7 +43,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 /**
  * The class define a tool data which contains all data extracted from XML file.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
 public class ToolData {
 

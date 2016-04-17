@@ -5,12 +5,20 @@ output.output1=output_value
 param.bam_paired_end_type.bam_paired_end_type_selector=SE
 command.expected=samtools rmdup -s "input_value" "output_value" 2>&1 || echo "Error running samtools rmdup." >&2
 
+test_description=samtools method rumdup in PE mode force SE
+toolshedxml.path=samtools_rmdup.xml
+input.input1=input_value
+output.output1=output_value
+param.bam_paired_end_type.bam_paired_end_type_selector=PE
+param.bam_paired_end_type.force_se=true
+command.expected=samtools rmdup -S "input_value" "output_value" 2>&1 || echo "Error running samtools rmdup." >&2
+
 test_description=samtools method rumdup in PE mode
 toolshedxml.path=samtools_rmdup.xml
 input.input1=input_value
 output.output1=output_value
 param.bam_paired_end_type.bam_paired_end_type_selector=PE
-command.expected=samtools rmdup -S "input_value" "output_value" 2>&1 || echo "Error running samtools rmdup." >&2
+command.expected=samtools rmdup "input_value" "output_value" 2>&1 || echo "Error running samtools rmdup." >&2
 
 
 

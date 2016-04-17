@@ -34,13 +34,12 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ToolParameterSelect.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
-public class ToolElementSelect extends AbstractToolElement {
+public class SelectParameterToolElement extends AbstractToolElement {
 
   /** The Constant TYPE. */
   public final static String TYPE = "select";
@@ -67,7 +66,7 @@ public class ToolElementSelect extends AbstractToolElement {
   }
 
   @Override
-  public void setValue() {
+  public void setDefaultValue() {
   }
 
   @Override
@@ -79,9 +78,8 @@ public class ToolElementSelect extends AbstractToolElement {
     }
   }
 
-  @Override
-  public void setValue(final String value) throws EoulsanException {
-    this.isSetting = true;
+  private void setValue(final String value) throws EoulsanException {
+    this.set = true;
 
     this.value = value;
 
@@ -109,7 +107,7 @@ public class ToolElementSelect extends AbstractToolElement {
       final String attributeSelected = e.getAttribute(ATT_SELECTED_KEY);
       if (!attributeSelected.isEmpty()) {
         this.value = e.getAttribute(ATT_VALUE_KEY);
-        this.isSetting = true;
+        this.set = true;
       }
     }
 
@@ -142,7 +140,7 @@ public class ToolElementSelect extends AbstractToolElement {
    * @param param the param
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolElementSelect(final Element param) throws EoulsanException {
+  public SelectParameterToolElement(final Element param) throws EoulsanException {
     this(param, null);
   }
 
@@ -152,7 +150,7 @@ public class ToolElementSelect extends AbstractToolElement {
    * @param nameSpace the name space
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolElementSelect(final Element param, final String nameSpace)
+  public SelectParameterToolElement(final Element param, final String nameSpace)
       throws EoulsanException {
     super(param, nameSpace);
 

@@ -30,11 +30,10 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface ToolElement.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
 public interface ToolElement {
 
@@ -57,7 +56,7 @@ public interface ToolElement {
    * Checks if is setting.
    * @return true, if is setting
    */
-  boolean isSetting();
+  boolean isSet();
 
   /**
    * Gets the value.
@@ -68,7 +67,7 @@ public interface ToolElement {
   /**
    * Sets the parameter eoulsan.
    */
-  void setValue();
+  void setDefaultValue() throws EoulsanException;
 
   /**
    * Sets the parameter eoulsan.
@@ -96,13 +95,6 @@ public interface ToolElement {
    * @return the data format
    */
   DataFormat getDataFormat();
-
-  /**
-   * Sets the value.
-   * @param value the new value
-   * @throws EoulsanException
-   */
-  void setValue(final String value) throws EoulsanException;
 
   /**
    * Extract parameter by name.

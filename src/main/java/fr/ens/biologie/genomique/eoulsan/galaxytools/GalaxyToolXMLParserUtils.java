@@ -23,7 +23,7 @@
  */
 package fr.ens.biologie.genomique.eoulsan.galaxytools;
 
-import static fr.ens.biologie.genomique.eoulsan.galaxytools.elements.AbstractToolElement.getInstanceToolElement;
+import static fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElementFactory.newToolElement;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,7 +39,7 @@ import com.google.common.collect.Lists;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolConditionalElement;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ConditionalToolElement;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElement;
 import fr.ens.biologie.genomique.eoulsan.util.XMLUtils;
 
@@ -47,7 +47,7 @@ import fr.ens.biologie.genomique.eoulsan.util.XMLUtils;
  * This class define static utils methods to extract data in Galaxy tool XML
  * file.
  * @author Sandrine Perrin
- * @since 2.X
+ * @since 2.0
  */
 public final class GalaxyToolXMLParserUtils {
 
@@ -114,9 +114,9 @@ public final class GalaxyToolXMLParserUtils {
         extractChildElementsByTagName(parent, elementName);
 
     for (final Element param : simpleParams) {
-      final ToolElement ptg = getInstanceToolElement(param);
+      final ToolElement ptg = newToolElement(param);
 
-      if (!stepParameters.isEmpty() && !ptg.isFile()) {
+      if (!ptg.isFile()) {
         ptg.setValues(stepParameters);
       }
 
@@ -156,7 +156,7 @@ public final class GalaxyToolXMLParserUtils {
         .extractChildElementsByTagName(parent, CONDITIONAL);
 
     for (final Element param : condParams) {
-      final ToolConditionalElement tce = new ToolConditionalElement(param);
+      final ConditionalToolElement tce = new ConditionalToolElement(param);
 
       final ToolElement parameterSelect = tce.getToolElementSelect();
       results.put(parameterSelect.getName(), parameterSelect);

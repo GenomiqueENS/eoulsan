@@ -28,16 +28,15 @@ import org.w3c.dom.Element;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class ToolParameterInteger.
+ * The Class ToolParameterFloat.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
-public class ToolElementInteger extends AbstractToolElement {
+public class FloatParameterToolElement extends AbstractToolElement {
 
   /** The Constant TYPE. */
-  public final static String TYPE = "integer";
+  public final static String TYPE = "float";
 
   /** The Constant ATT_DEFAULT_KEY. */
   private final static String ATT_DEFAULT_KEY = "value";
@@ -49,21 +48,25 @@ public class ToolElementInteger extends AbstractToolElement {
   private final static String ATT_MAX_KEY = "max";
 
   /** The min. */
-  private final int min;
+  private final double min;
 
   /** The max. */
-  private final int max;
+  private final double max;
+
+  private String defaultValue;
 
   /** The value. */
-  private int value;
+  private double value;
+
+  @Override
+  public void setDefaultValue() throws EoulsanException {
+
+    setValue(this.defaultValue);
+  }
 
   @Override
   public boolean isValueParameterValid() {
     return this.value >= this.min && this.value <= this.max;
-  }
-
-  @Override
-  public void setValue() {
   }
 
   @Override
@@ -74,11 +77,11 @@ public class ToolElementInteger extends AbstractToolElement {
 
   }
 
-  @Override
-  public void setValue(final String value) throws EoulsanException {
-    this.value = Integer.parseInt(value);
+  private void setValue(final String value) throws EoulsanException {
 
-    this.isSetting = true;
+    this.value = Double.parseDouble(value);
+
+    this.set = true;
 
     if (!this.isValueParameterValid()) {
       throw new EoulsanException("ToolGalaxy step: parameter "
@@ -94,7 +97,7 @@ public class ToolElementInteger extends AbstractToolElement {
 
   @Override
   public String toString() {
-    return "ToolParameterInteger [min="
+    return "ToolParameterFloat [min="
         + this.min + ", max=" + this.max + ", value=" + this.value + "]";
   }
 
@@ -103,40 +106,32 @@ public class ToolElementInteger extends AbstractToolElement {
   //
 
   /**
-   * Instantiates a new tool parameter integer.
+   * Instantiates a new tool parameter float.
    * @param param the param
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolElementInteger(final Element param) throws EoulsanException {
+  public FloatParameterToolElement(final Element param) throws EoulsanException {
     this(param, null);
   }
 
   /**
-   * Instantiates a new tool parameter integer.
+   * Instantiates a new tool parameter float.
    * @param param the param
    * @param nameSpace the name space
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolElementInteger(final Element param, final String nameSpace)
+  public FloatParameterToolElement(final Element param, final String nameSpace)
       throws EoulsanException {
     super(param, nameSpace);
 
-    try {
-
-      // Set value
-      this.value = Integer.parseInt(param.getAttribute(ATT_DEFAULT_KEY));
-
-    } catch (final NumberFormatException e) {
-      throw new EoulsanException(
-          "No found default value for parameter " + this.getName(), e);
-    }
+    this.defaultValue = param.getAttribute(ATT_DEFAULT_KEY);
 
     try {
       String value = param.getAttribute(ATT_MIN_KEY);
-      this.min = value.isEmpty() ? Integer.MIN_VALUE : Integer.parseInt(value);
+      this.min = value.isEmpty() ? Double.MIN_VALUE : Double.parseDouble(value);
 
       value = param.getAttribute(ATT_MAX_KEY);
-      this.max = value.isEmpty() ? Integer.MAX_VALUE : Integer.parseInt(value);
+      this.max = value.isEmpty() ? Double.MAX_VALUE : Double.parseDouble(value);
 
     } catch (final NumberFormatException e) {
       throw new EoulsanException("Fail extract value " + e.getMessage());
