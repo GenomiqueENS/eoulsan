@@ -27,6 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractChildElementsByTagName;
 import static fr.ens.biologie.genomique.eoulsan.util.XMLUtils.getElementsByTagName;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -117,7 +118,6 @@ public class ConditionalToolElement implements ToolElement {
       }
       // Save map result
       this.toolElementSelected.put(toolParameter.getName(), toolParameter);
-
     }
 
     // Save setting parameter
@@ -143,7 +143,9 @@ public class ConditionalToolElement implements ToolElement {
     for (final Element e : whenElement) {
       final String whenName = e.getAttribute("value");
 
-      final List<Element> paramElement = getElementsByTagName(e, "param");
+      final List<Element> paramElement = new ArrayList<>();
+      paramElement.addAll(getElementsByTagName(e, "param"));
+      paramElement.addAll(getElementsByTagName(e, "data"));
 
       // Can be empty, nothing to do
       if (paramElement == null || paramElement.isEmpty()) {
@@ -271,7 +273,6 @@ public class ConditionalToolElement implements ToolElement {
     // Extract all case available
     this.actionsRelatedOptions = this.parseActionsRelatedOptions(element);
     this.toolElementSelected = new HashMap<>();
-
   }
 
 }

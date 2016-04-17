@@ -1,0 +1,47 @@
+<tool id="trimadapt" name="trimadapt">
+    	<description>QC : Trim galore, if necessary (see QC reads)</description>
+    	<!--command interpreter="docker" dockerimage="genomicpariscentre/trim_galore:latest"-->
+    	<command interpreter="docker" dockerimage="ubuntu:14.04">
+trim_galore --path_to_cutadapt /tmp/cutadapt-1.8.1/bin/cutadapt --quality ${quality} -e ${error} --stringency ${stringency} --length ${length} 
+	#if $is.paired == "no"
+$input1 ;
+/RenameOutput.sh $input1 $output1
+	#else:
+--paired $input1 $input2 ;
+/RenameOutput2.sh $input1 $output1 ;
+/RenameOutput3.sh $input2 $output2
+	#end if
+	</command>
+    	<inputs>
+		<param name="quality" type="integer" value="20" label="Quality parameter" />
+		<param name="error" type="float" value="0.1" label="Error parameter" />
+		<param name="stringency" type="integer" value="1" label="Stringency parameter" />
+		<param name="length" type="integer" value="20" label="Length parameter" />
+
+		<param format="fastq" name="input1" type="data" label="Source file"/>
+
+        	<conditional name="is">
+                        <param name="paired" type="select" label="Paired end selection">
+                                <option value="no" selected="true">Single end</option>
+                                <option value="yes">Paired end</option>
+                        </param>
+			<when value="yes">
+				<param format="fastq" name="input2" type="data" label="Source file"/>
+			</when>
+                </conditional>
+	</inputs>
+
+    	<outputs>
+		<data format="fastq" name="output1"/>
+
+		<conditional name="is">
+			<param name="paired" type="select" label="Paired end selection">
+				<option value="no" selected="true">Single end</option>
+				<option value="yes">Paired end</option>
+			</param>
+			<when value="yes">
+				<data format="fastq" name="output2"/>
+			</when>
+		</conditional>
+	</outputs>
+</tool>

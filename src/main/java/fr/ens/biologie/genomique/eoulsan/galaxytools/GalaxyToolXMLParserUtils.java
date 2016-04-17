@@ -310,20 +310,23 @@ public final class GalaxyToolXMLParserUtils {
   /**
    * Extract all output parameters define in document.
    * @param doc document represented tool xml
+   * @param stepParameters parameters for analysis
    * @return all output parameters
    * @throws EoulsanException if none output parameter found
    */
-  public static Map<String, ToolElement> extractOutputs(final Document doc)
-      throws EoulsanException {
+  public static Map<String, ToolElement> extractOutputs(final Document doc,
+      final Map<String, Parameter> stepParameters) throws EoulsanException {
 
     final Map<String, ToolElement> results = new HashMap<>();
 
     final Element outputElement =
         extractElementsByTagName(doc, OUTPUTS_TAG, 1).get(0);
 
-    results.putAll(extractParamElement(outputElement, DATA_TAG));
+    results
+        .putAll(extractParamElement(outputElement, DATA_TAG, stepParameters));
 
-    results.putAll(extractConditionalParamElement(outputElement));
+    results
+        .putAll(extractConditionalParamElement(outputElement, stepParameters));
 
     return results;
   }

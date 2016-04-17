@@ -6,7 +6,8 @@
     <param format="bai" name="input_bai" type="data" label="Source file"/>
   </inputs>
   <outputs>
-    <data format="bedgraph" name="output_bedgraph" />
+    <!--data format="bedgraph" name="output_bedgraph" /-->
+    <data format="bam" name="output_bedgraph" />
   </outputs>
 
 </tool>

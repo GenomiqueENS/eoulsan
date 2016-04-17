@@ -142,6 +142,13 @@ public class GalaxyToolInterpreter {
           ? data.getDataFile() : data.getDataFile(this.fileIndex);
     }
 
+    @Override
+    public String toString() {
+      return "ElementPort{element="
+          + element.getName() + ", portName=" + portName + ", fileIndex="
+          + fileIndex + "}";
+    }
+
     /**
      * Constructor.
      * @param element Tool element
@@ -214,6 +221,11 @@ public class GalaxyToolInterpreter {
       return Collections.unmodifiableList(elementsSorted);
     }
 
+    @Override
+    public String toString() {
+      return this.ports.toString();
+    }
+
     /**
      * Constructor.
      * @param elements the element
@@ -261,22 +273,25 @@ public class GalaxyToolInterpreter {
 
   /**
    * Parse tool file to extract useful data to run tool.
-   * @param setStepParameters the set step parameters
+   * @param parameters the set step parameters
    * @throws EoulsanException if an data missing
    */
-  public void configure(final Set<Parameter> setStepParameters)
+  public void configure(final Set<Parameter> parameters)
       throws EoulsanException {
 
     checkState(!isConfigured,
         "GalaxyToolStep, this instance has been already configured");
 
-    this.initStepParameters(setStepParameters);
+    // Convert Set in Map
+    for (final Parameter p : parameters) {
+      this.stepParameters.put(p.getName(), p);
+    }
 
     final Document localDoc = this.doc;
 
     // Extract variable settings
     this.inputs = extractInputs(localDoc, this.stepParameters);
-    this.outputs = extractOutputs(localDoc);
+    this.outputs = extractOutputs(localDoc, this.stepParameters);
 
     this.inputPorts = new ElementPorts(this.inputs);
     this.outputPorts = new ElementPorts(this.outputs);
@@ -322,6 +337,8 @@ public class GalaxyToolInterpreter {
 
         final DataFile inFile = inPort.getInputDataFile(context);
         variables.put(ptg.getName(), inFile.toFile().getAbsolutePath());
+        variables.put(removeNamespace(ptg.getName()),
+            inFile.toFile().getAbsolutePath());
 
       } else {
         // Variables setting with parameters file
@@ -340,6 +357,8 @@ public class GalaxyToolInterpreter {
         // Extract value from context from DataFormat
         final DataFile outFile = outPort.getOutputDataFile(context, inData);
         variables.put(ptg.getName(), outFile.toFile().getAbsolutePath());
+        variables.put(removeNamespace(ptg.getName()),
+            outFile.toFile().getAbsolutePath());
       } else {
         // Variables setting with parameters file
         variables.put(ptg.getName(), ptg.getValue());
@@ -382,18 +401,6 @@ public class GalaxyToolInterpreter {
   //
   // Private methods
   //
-
-  /**
-   * Convert set parameters in map with name parameter related parameter.
-   * @param setStepParameters the set step parameters
-   */
-  private void initStepParameters(final Set<Parameter> setStepParameters) {
-
-    // Convert Set in Map
-    for (final Parameter p : setStepParameters) {
-      this.stepParameters.put(p.getName(), p);
-    }
-  }
 
   /**
    * Create DOM instance from tool xml file.
@@ -509,6 +516,26 @@ public class GalaxyToolInterpreter {
         + ", \noutputs="
         + Joiner.on("\n").withKeyValueSeparator("=").join(this.outputs)
         + ", \ntool=" + this.tool + "]";
+  }
+
+  /**
+   * Remove the namespace from the name of a variable.
+   * @param variableName variable name
+   * @return the variable name without the namespace
+   */
+  public static String removeNamespace(final String variableName) {
+
+    if (variableName == null) {
+      return null;
+    }
+
+    final int dotIndex = variableName.lastIndexOf('.');
+
+    if (dotIndex == -1) {
+      return variableName;
+    }
+
+    return variableName.substring(dotIndex + 1);
   }
 
   //

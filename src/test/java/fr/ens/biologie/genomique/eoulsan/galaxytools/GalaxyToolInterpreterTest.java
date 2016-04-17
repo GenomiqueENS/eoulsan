@@ -23,6 +23,7 @@
  */
 package fr.ens.biologie.genomique.eoulsan.galaxytools;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -40,8 +41,8 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import com.google.common.base.Preconditions;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
@@ -64,7 +65,7 @@ import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
  * @author Sandrine Perrin
  * @since 2.0
  */
-public class ToolInterpreterTest {
+public class GalaxyToolInterpreterTest {
 
   public final static Splitter SPLITTER =
       Splitter.on("=").trimResults().omitEmptyStrings();
@@ -134,6 +135,7 @@ public class ToolInterpreterTest {
         if (key.equals(NEW_TEST_KEY)) {
 
           if (tt != null) {
+
             // Execute current test
             tt.launchTest();
           }
@@ -178,14 +180,17 @@ public class ToolInterpreterTest {
     private static final String INPUT_KEY = "input";
     private static final String OUTPUT_KEY = "output";
     private static final String PARAM_KEY = "param";
+    private static final String OTHER_KEY = "other";
 
     private final String description;
     private String toolXMLPath;
     private String executableToolPath;
 
     private String command;
-    private Set<Parameter> setStepParameters;
-    private Map<String, String> variablesCommand;
+    private final Set<Parameter> setStepParameters = new HashSet<>();
+    private final Map<String, String> inputCommandVariables = new HashMap<>();
+    private final Map<String, String> outputCommandVariables = new HashMap<>();
+    private final Map<String, String> otherCommandVariables = new HashMap<>();
 
     /**
      * Adds the data from extra file in test instance.
@@ -216,12 +221,19 @@ public class ToolInterpreterTest {
         break;
 
       case INPUT_KEY:
+        this.inputCommandVariables.put(nameVariable, value);
+        break;
+
       case OUTPUT_KEY:
-        this.variablesCommand.put(nameVariable, value);
+        this.outputCommandVariables.put(nameVariable, value);
         break;
 
       case PARAM_KEY:
         addParam(nameVariable, value);
+        break;
+
+      case OTHER_KEY:
+        this.otherCommandVariables.put(nameVariable, value);
         break;
 
       default:
@@ -258,14 +270,44 @@ public class ToolInterpreterTest {
       // file
       final ToolData toolData = interpreter.getToolData();
 
-      // TODO
-      // System.out.println("Step parameters "
-      // + Joiner.on(" - ").join(setStepParameters));
-      // System.out.println("=> tool data generated \n\t" + toolData);
+      // Check input data names
+      int inputCount = 0;
+      for (Map.Entry<String, ToolElement> e : interpreter.getInputs()
+          .entrySet()) {
+
+        if (e.getValue().isFile()) {
+
+          inputCount++;
+          assertTrue(this.inputCommandVariables.containsKey(e.getKey())
+              || this.inputCommandVariables.containsKey(
+                  GalaxyToolInterpreter.removeNamespace(e.getKey())));
+        }
+      }
+      assertEquals(this.inputCommandVariables.size(), inputCount);
+
+      // Check output data names
+      int outputCount = 0;
+      for (Map.Entry<String, ToolElement> e : interpreter.getOutputs()
+          .entrySet()) {
+
+        if (e.getValue().isFile()) {
+
+          outputCount++;
+          assertTrue(this.outputCommandVariables.containsKey(e.getKey())
+              || this.outputCommandVariables.containsKey(
+                  GalaxyToolInterpreter.removeNamespace(e.getKey())));
+        }
+      }
+      assertEquals(this.outputCommandVariables.size(), outputCount);
+
+      final Map<String, String> variables = new HashMap<>();
+      variables.putAll(this.otherCommandVariables);
+      variables.putAll(this.inputCommandVariables);
+      variables.putAll(this.outputCommandVariables);
 
       // Init Tool python interpreter
-      final CheetahInterpreter tpi = new CheetahInterpreter(
-          toolData.getCommandScript(), this.variablesCommand);
+      final CheetahInterpreter tpi =
+          new CheetahInterpreter(toolData.getCommandScript(), variables);
 
       // Create command line and compare with command expected
       compareCommandLine(tpi.execute());
@@ -286,9 +328,8 @@ public class ToolInterpreterTest {
         if (!ptg.isFile()) {
 
           // Update list variables needed to build command line
-          if (!this.variablesCommand.containsKey(ptg.getName())) {
-
-            this.variablesCommand.put(ptg.getName(), ptg.getValue());
+          if (!this.otherCommandVariables.containsKey(ptg.getName())) {
+            this.otherCommandVariables.put(ptg.getName(), ptg.getValue());
           }
         }
       }
@@ -300,10 +341,6 @@ public class ToolInterpreterTest {
      * @param commandLine the command line to compare
      */
     private void compareCommandLine(final String commandLine) {
-
-      // TODO
-      // System.out.println("Compare expected \t"
-      // + this.command + "\nwith generate command \t" + commandLine);
 
       // Compare command
       final List<String> commandBuildByInterpreter =
@@ -351,9 +388,6 @@ public class ToolInterpreterTest {
      */
     ToolTest(final String description) {
       this.description = description;
-
-      this.setStepParameters = new HashSet<>();
-      this.variablesCommand = new HashMap<>();
     }
   }
 
