@@ -60,7 +60,7 @@ public class BinariesInstaller {
             "Can't create directory for binaries installation: "
                 + outputDir.getAbsolutePath());
       }
-      FileUtils.setDirectoryWritable(outputDir, true, false);
+      outputDir.setWritable(true, false);
     }
 
     final String resourcePath = inputPath.toLowerCase() + "/" + file;
@@ -85,8 +85,8 @@ public class BinariesInstaller {
     is.close();
     fos.close();
 
-    FileUtils.setExecutable(outputFile, true, false);
-    FileUtils.setReadable(outputFile, true, false);
+    outputFile.setExecutable(true, false);
+    outputFile.setReadable(true, false);
   }
 
   /**
