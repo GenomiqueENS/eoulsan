@@ -69,15 +69,15 @@ Exp.3.name=exp3
 Exp.3.skip=false
 
 [Columns]
-SampleId	SampleName	Reads			Condition	Reference	Exp.1.RepTechGroup	Exp.2.type		Exp.2.day	Exp.2.RepTechGroup	Exp.3.Condition	Exp.3.RepTechGroup
-1			sample1a	sample1a.fastq	WT-day1		1			WT-day1				WT				day1		WT-day1				WT				WT-day1
-2			sample1b	sample1a.fastq	WT-day1		0			WT-day1				WT				day1		WT-day1				WT				WT-day1
-3			sample2a	sample2a.fastq	WT-day2		2			WT-day2				WT				day2		WT-day2				WT				WT-day2
-4			sample2b	sample2b.fastq	WT-day2		0			WT-day2				WT				day2		WT-day2				WT				WT-day2
-5			sample3a	sample3a.fastq	KO-day1		3			KO-day1				KO				day1		KO-day1				KO				KO-day1
-6			sample3b	sample3b.fastq	KO-day1		0			KO-day1				KO				day1		KO-day1				KO				KO-day1
-7			sample4a	sample4a.fastq	KO-day2		0			KO-day2				KO				day2		KO-day2				KO				KO-day2
-8			sample4b	sample4b.fastq	KO-day2		0			KO-day2				KO				day2		KO-day2				KO				KO-day2
+SampleId	SampleName	Reads		Condition	Reference	Exp.1.RepTechGroup	Exp.2.type		Exp.2.day	Exp.2.RepTechGroup	Exp.3.Condition	Exp.3.RepTechGroup
+s1a		Sample1a	sample1a.fastq	WT-day1		1		WT-day1			WT			day1		WT-day1			WT		WT-day1
+s1b		Sample1b	sample1a.fastq	WT-day1		0		WT-day1			WT			day1		WT-day1			WT		WT-day1
+s2a		Sample2a	sample2a.fastq	WT-day2		2		WT-day2			WT			day2		WT-day2			WT		WT-day2
+s2b		Sample2b	sample2b.fastq	WT-day2		0		WT-day2			WT			day2		WT-day2			WT		WT-day2
+s3a		Sample3a	sample3a.fastq	KO-day1		3		KO-day1			KO			day1		KO-day1			KO		KO-day1
+s3b		Sample3b	sample3b.fastq	KO-day1		0		KO-day1			KO			day1		KO-day1			KO		KO-day1
+s4a		Sample4a	sample4a.fastq	KO-day2		0		KO-day2			KO			day2		KO-day2			KO		KO-day2
+s4b		Sample4b	sample4b.fastq	KO-day2		0		KO-day2			KO			day2		KO-day2			KO		KO-day2
 </source>
 
     <p>This version of the design file include 3 sections:</p>
