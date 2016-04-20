@@ -42,10 +42,6 @@ public class DataFormats {
   public static final DataFormat READS_TFQ =
       registry.getDataFormatFromName("reads_tfq");
 
-  /** SOAP index data format. */
-  public static final DataFormat SOAP_INDEX_ZIP =
-      registry.getDataFormatFromName("soap_index_zip");
-
   /** BWA index data format. */
   public static final DataFormat BWA_INDEX_ZIP =
       registry.getDataFormatFromName("bwa_index_zip");
