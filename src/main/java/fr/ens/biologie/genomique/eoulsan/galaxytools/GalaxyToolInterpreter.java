@@ -74,9 +74,10 @@ public class GalaxyToolInterpreter {
   /** The tool xm lis. */
   private final InputStream toolXMLis;
 
-  // Throw an exception if tag exist in tool file
   /** The Constant TAG_FORBIDDEN. */
   private final static Set<String> TAG_FORBIDDEN = Sets.newHashSet("repeat");
+
+  private static final String TMP_DIR_ENVIRONMENT_VARIABLE_NAME = "TMPDIR";
 
   // Set DOM related to the tool XML file
   /** The doc. */
@@ -317,6 +318,10 @@ public class GalaxyToolInterpreter {
 
     final int variablesCount = this.inputs.size() + this.outputs.size();
     final Map<String, String> variables = new HashMap<>(variablesCount);
+
+    // Set a TMPDIR variable that contain the path to the temporary directory
+    variables.put(TMP_DIR_ENVIRONMENT_VARIABLE_NAME,
+        context.getLocalTempDirectory().getAbsolutePath());
 
     Data inData = null;
 
