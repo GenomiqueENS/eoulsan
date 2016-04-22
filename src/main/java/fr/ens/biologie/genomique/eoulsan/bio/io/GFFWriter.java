@@ -37,21 +37,21 @@ import fr.ens.biologie.genomique.eoulsan.bio.GFFEntry;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 
 /**
- * This class define a GFF writer.
+ * This class define a GFF3 writer.
  * @since 1.0
  * @author Laurent Jourdren
  */
 public class GFFWriter implements Closeable {
 
   private final Writer writer;
-
+  private boolean gff3Format = true;
   private boolean first = true;
 
   private void writeMetadata(final GFFEntry entry) throws IOException {
 
     final StringBuilder sb = new StringBuilder();
 
-    if (!entry.isMetaDataEntry("gff-version")) {
+    if (this.gff3Format && !entry.isMetaDataEntry("gff-version")) {
       sb.append("##gff-version 3\n");
     }
 
@@ -83,7 +83,11 @@ public class GFFWriter implements Closeable {
       this.first = false;
     }
 
-    this.writer.write(entry.toString() + '\n');
+    if (this.gff3Format) {
+      this.writer.write(entry.toGFF3() + '\n');
+    } else {
+      this.writer.write(entry.toGTF() + '\n');
+    }
   }
 
   /**
@@ -94,6 +98,28 @@ public class GFFWriter implements Closeable {
   public void close() throws IOException {
 
     this.writer.close();
+  }
+
+  //
+  // Protected methods
+  //
+
+  /**
+   * Get the format of the data to write.
+   * @return true if the data to write is in GFF format
+   */
+  protected boolean isGFF3Format() {
+
+    return this.gff3Format;
+  }
+
+  /**
+   * Set the format of the data to write.
+   * @param gffFormat true if the data to write is in GFF3 format
+   */
+  protected void setGFF3Format(final boolean gffFormat) {
+
+    this.gff3Format = gffFormat;
   }
 
   //

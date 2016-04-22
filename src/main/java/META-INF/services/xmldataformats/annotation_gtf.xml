@@ -5,6 +5,7 @@
   <onefileperanalysis>true</onefileperanalysis>
   <designmetadatakey>GtfFile</designmetadatakey>
   <generator/>
+    <checker>fr.ens.biologie.genomique.eoulsan.checkers.GTFChecker</checker>
   <extensions>
     <extension default="true">.gtf</extension>
   </extensions>

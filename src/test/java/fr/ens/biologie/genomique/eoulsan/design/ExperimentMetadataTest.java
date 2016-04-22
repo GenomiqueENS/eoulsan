@@ -94,12 +94,12 @@ public class ExperimentMetadataTest {
     assertTrue(em.containsDesignFile());
 
     // test getComparisonFile
-    assertNull(em.getComparison());
+    assertNull(em.getComparisons());
     // test setComparisonFile
-    em.setComparison("toto");
-    assertEquals("toto", em.getComparison());
+    em.setComparisons("toto");
+    assertEquals("toto", em.getComparisons());
     // test containsComparisonFile
-    assertTrue(em.containsComparison());
+    assertTrue(em.containsComparisons());
 
     // test getContrastFile
     assertNull(em.getContrastFile());

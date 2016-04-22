@@ -1,6 +1,5 @@
 reads_fastq.xml
 reads_tfq.xml
-soap_index_zip.xml
 bwa_index_zip.xml
 bowtie_index_zip.xml
 bowtie2_index_zip.xml

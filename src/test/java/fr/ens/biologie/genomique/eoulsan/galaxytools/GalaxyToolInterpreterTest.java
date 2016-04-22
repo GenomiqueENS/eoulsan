@@ -36,21 +36,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.python.google.common.base.Preconditions;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeDebug;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.CheetahInterpreter;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolInterpreter;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolData;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElement;
+import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 
 /**
  * The class define unit tests on GalaxyToolStep, it check if the command line
@@ -66,7 +65,7 @@ import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElement;
  * @author Sandrine Perrin
  * @since 2.0
  */
-public class ToolInterpreterTest {
+public class GalaxyToolInterpreterTest {
 
   public final static Splitter SPLITTER =
       Splitter.on("=").trimResults().omitEmptyStrings();
@@ -136,6 +135,7 @@ public class ToolInterpreterTest {
         if (key.equals(NEW_TEST_KEY)) {
 
           if (tt != null) {
+
             // Execute current test
             tt.launchTest();
           }
@@ -180,14 +180,17 @@ public class ToolInterpreterTest {
     private static final String INPUT_KEY = "input";
     private static final String OUTPUT_KEY = "output";
     private static final String PARAM_KEY = "param";
+    private static final String OTHER_KEY = "other";
 
     private final String description;
     private String toolXMLPath;
     private String executableToolPath;
 
     private String command;
-    private Set<Parameter> setStepParameters;
-    private Map<String, String> variablesCommand;
+    private final Set<Parameter> setStepParameters = new HashSet<>();
+    private final Map<String, String> inputCommandVariables = new HashMap<>();
+    private final Map<String, String> outputCommandVariables = new HashMap<>();
+    private final Map<String, String> otherCommandVariables = new HashMap<>();
 
     /**
      * Adds the data from extra file in test instance.
@@ -198,7 +201,8 @@ public class ToolInterpreterTest {
     public void addData(final String key, final String value)
         throws EoulsanException {
 
-      final String keyPrefix = SPLITTER_KEY.splitToList(key).get(0);
+      final String keyPrefix =
+          GuavaCompatibility.splitToList(SPLITTER_KEY, key).get(0);
       final String nameVariable = key.substring(key.indexOf('.') + 1);
 
       switch (keyPrefix) {
@@ -217,12 +221,19 @@ public class ToolInterpreterTest {
         break;
 
       case INPUT_KEY:
+        this.inputCommandVariables.put(nameVariable, value);
+        break;
+
       case OUTPUT_KEY:
-        this.variablesCommand.put(nameVariable, value);
+        this.outputCommandVariables.put(nameVariable, value);
         break;
 
       case PARAM_KEY:
         addParam(nameVariable, value);
+        break;
+
+      case OTHER_KEY:
+        this.otherCommandVariables.put(nameVariable, value);
         break;
 
       default:
@@ -259,14 +270,44 @@ public class ToolInterpreterTest {
       // file
       final ToolData toolData = interpreter.getToolData();
 
-      // TODO
-      // System.out.println("Step parameters "
-      // + Joiner.on(" - ").join(setStepParameters));
-      // System.out.println("=> tool data generated \n\t" + toolData);
+      // Check input data names
+      int inputCount = 0;
+      for (Map.Entry<String, ToolElement> e : interpreter.getInputs()
+          .entrySet()) {
+
+        if (e.getValue().isFile()) {
+
+          inputCount++;
+          assertTrue(this.inputCommandVariables.containsKey(e.getKey())
+              || this.inputCommandVariables.containsKey(
+                  GalaxyToolInterpreter.removeNamespace(e.getKey())));
+        }
+      }
+      assertEquals(this.inputCommandVariables.size(), inputCount);
+
+      // Check output data names
+      int outputCount = 0;
+      for (Map.Entry<String, ToolElement> e : interpreter.getOutputs()
+          .entrySet()) {
+
+        if (e.getValue().isFile()) {
+
+          outputCount++;
+          assertTrue(this.outputCommandVariables.containsKey(e.getKey())
+              || this.outputCommandVariables.containsKey(
+                  GalaxyToolInterpreter.removeNamespace(e.getKey())));
+        }
+      }
+      assertEquals(this.outputCommandVariables.size(), outputCount);
+
+      final Map<String, String> variables = new HashMap<>();
+      variables.putAll(this.otherCommandVariables);
+      variables.putAll(this.inputCommandVariables);
+      variables.putAll(this.outputCommandVariables);
 
       // Init Tool python interpreter
-      final CheetahInterpreter tpi = new CheetahInterpreter(
-          toolData.getCommandScript(), this.variablesCommand);
+      final CheetahInterpreter tpi =
+          new CheetahInterpreter(toolData.getCommandScript(), variables);
 
       // Create command line and compare with command expected
       compareCommandLine(tpi.execute());
@@ -287,9 +328,8 @@ public class ToolInterpreterTest {
         if (!ptg.isFile()) {
 
           // Update list variables needed to build command line
-          if (!this.variablesCommand.containsKey(ptg.getName())) {
-
-            this.variablesCommand.put(ptg.getName(), ptg.getValue());
+          if (!this.otherCommandVariables.containsKey(ptg.getName())) {
+            this.otherCommandVariables.put(ptg.getName(), ptg.getValue());
           }
         }
       }
@@ -302,16 +342,12 @@ public class ToolInterpreterTest {
      */
     private void compareCommandLine(final String commandLine) {
 
-      // TODO
-      // System.out.println("Compare expected \t"
-      // + this.command + "\nwith generate command \t" + commandLine);
-
       // Compare command
       final List<String> commandBuildByInterpreter =
-          SPLITTER_SPACE.splitToList(commandLine);
+          GuavaCompatibility.splitToList(SPLITTER_SPACE, commandLine);
 
       final List<String> commandExpected =
-          SPLITTER_SPACE.splitToList(this.command);
+          GuavaCompatibility.splitToList(SPLITTER_SPACE, this.command);
 
       int length = commandExpected.size();
 
@@ -322,12 +358,10 @@ public class ToolInterpreterTest {
           length == commandBuildByInterpreter.size());
 
       // Compare word by word
-      for (int i = 0; i < length; i++) {
-        assertEquals("Word not same, expected "
-            + commandExpected.get(i) + " vs " + commandBuildByInterpreter.get(i)
-            + ": " + commandBuildByInterpreter, commandExpected.get(i),
-            commandBuildByInterpreter.get(i));
-      }
+      assertTrue(
+          "Expected: "
+              + commandExpected + " but got " + commandBuildByInterpreter,
+          Objects.deepEquals(commandExpected, commandBuildByInterpreter));
     }
 
     /**
@@ -354,9 +388,6 @@ public class ToolInterpreterTest {
      */
     ToolTest(final String description) {
       this.description = description;
-
-      this.setStepParameters = new HashSet<>();
-      this.variablesCommand = new HashMap<>();
     }
   }
 

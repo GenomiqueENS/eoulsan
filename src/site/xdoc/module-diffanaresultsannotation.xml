@@ -75,7 +75,7 @@
 	&lt;module&gt;diffanaresultsannotation&lt;/module&gt;
 	&lt;parameters&gt;
 		&lt;parameter&gt;
-			&lt;name&gt;outputformat&lt;/name&gt;
+			&lt;name&gt;output.format&lt;/name&gt;
 			&lt;value&gt;xlsx&lt;/value&gt;
 		&lt;/parameter&gt;
 	&lt;/parameters&gt;

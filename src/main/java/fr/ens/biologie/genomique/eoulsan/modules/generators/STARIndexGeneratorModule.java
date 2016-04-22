@@ -2,6 +2,7 @@ package fr.ens.biologie.genomique.eoulsan.modules.generators;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
+import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GTF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_FASTA;
 
@@ -64,7 +65,8 @@ public class STARIndexGeneratorModule extends AbstractModule {
   private final SequenceReadsMapper mapper = new STARReadsMapper();
 
   private Integer overhang = OVERHANG_DEFAULT;
-  private boolean gtfFile = false;
+  private boolean gtfFile;
+  private boolean gtfFormat;
   private String chrStartEndFilename;
   private String gtfFeatureExon;
   private String gtfTagExonParentTranscript;
@@ -101,7 +103,8 @@ public class STARIndexGeneratorModule extends AbstractModule {
         GENOME_DESC_TXT);
 
     if (this.gtfFile) {
-      builder.addPort("annotation", ANNOTATION_GFF);
+      builder.addPort("annotation",
+          this.gtfFormat ? ANNOTATION_GTF : ANNOTATION_GFF);
     }
 
     return builder.create();
@@ -165,6 +168,27 @@ public class STARIndexGeneratorModule extends AbstractModule {
 
       case "max.local.threads":
         this.maxLocalThreads = p.getIntValueGreaterOrEqualsTo(1);
+        break;
+
+      case "features.file.format":
+
+        switch (p.getLowerStringValue()) {
+
+        case "gtf":
+          this.gtfFormat = true;
+          break;
+
+        case "gff":
+        case "gff3":
+          this.gtfFormat = false;
+          break;
+
+        default:
+          Modules.badParameterValue(context, p,
+              "Unknown annotation file format");
+          break;
+        }
+
         break;
 
       default:

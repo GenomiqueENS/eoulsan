@@ -158,6 +158,11 @@ public class DataFormatRegistry {
     protected XMLDataFormat load(final InputStream in, final String source)
         throws IOException, EoulsanException {
 
+      if (in == null) {
+        throw new NullPointerException(
+            "The input stream of the XML DataFormat source is null: " + source);
+      }
+
       return new XMLDataFormat(in);
     }
 

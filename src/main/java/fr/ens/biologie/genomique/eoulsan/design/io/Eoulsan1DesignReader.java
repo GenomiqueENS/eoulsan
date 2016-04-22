@@ -24,12 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.design.io;
 
-import static fr.ens.biologie.genomique.eoulsan.design.DesignMetadata.ADDITIONNAL_ANNOTATION_FILE_KEY;
+import static fr.ens.biologie.genomique.eoulsan.design.DesignMetadata.ADDITIONAL_ANNOTATION_FILE_KEY;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignMetadata.GENOME_FILE_KEY;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignMetadata.GFF_FILE_KEY;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignMetadata.GTF_FILE_KEY;
 import static java.util.Collections.unmodifiableMap;
-import static org.python.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -45,6 +45,7 @@ import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Naming;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignFactory;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
@@ -73,12 +74,12 @@ public class Eoulsan1DesignReader implements DesignReader {
     final Map<String, String> map = new HashMap<>();
     map.put("Genome", GENOME_FILE_KEY);
     map.put("Annotation", GFF_FILE_KEY);
-    map.put("AdditionalAnnotation", ADDITIONNAL_ANNOTATION_FILE_KEY);
+    map.put("AdditionalAnnotation", ADDITIONAL_ANNOTATION_FILE_KEY);
 
     map.put(GENOME_FILE_KEY, GENOME_FILE_KEY);
     map.put(GFF_FILE_KEY, GFF_FILE_KEY);
     map.put(GTF_FILE_KEY, GTF_FILE_KEY);
-    map.put(ADDITIONNAL_ANNOTATION_FILE_KEY, ADDITIONNAL_ANNOTATION_FILE_KEY);
+    map.put(ADDITIONAL_ANNOTATION_FILE_KEY, ADDITIONAL_ANNOTATION_FILE_KEY);
 
     return unmodifiableMap(map);
   }
@@ -274,9 +275,9 @@ public class Eoulsan1DesignReader implements DesignReader {
   }
 
   /**
-   * Public constructor
+   * Public constructor.
    * @param is Input stream to read
-   * @throws IOException if the stream is null
+   * @throws IOException if an error occurs while opening the file
    */
   public Eoulsan1DesignReader(final InputStream is) throws IOException {
 
@@ -286,7 +287,19 @@ public class Eoulsan1DesignReader implements DesignReader {
   }
 
   /**
-   * Public constructor
+   * Public constructor.
+   * @param file file to read
+   * @throws IOException if an error occurs while opening the file
+   */
+  public Eoulsan1DesignReader(final DataFile file) throws IOException {
+
+    checkNotNull(file, "the file argument cannot be null");
+
+    this.is = file.open();
+  }
+
+  /**
+   * Public constructor.
    * @param filename File to read
    * @throws FileNotFoundException if the file doesn't exist
    */

@@ -31,7 +31,7 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_TFQ;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX;
 import static java.util.Collections.singletonList;
-import static org.python.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.newArrayList;
 
 import java.io.IOException;
 import java.util.List;

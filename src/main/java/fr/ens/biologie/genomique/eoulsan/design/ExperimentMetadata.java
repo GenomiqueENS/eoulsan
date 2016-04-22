@@ -45,7 +45,7 @@ public class ExperimentMetadata extends AbstractMetadata
   public static final String CONTRAST_KEY = "contrast";
   public static final String BUILD_CONTRAST_KEY = "buildContrast";
   public static final String DESIGN_FILE_KEY = "designFile";
-  public static final String COMPARISON_KEY = "comparison";
+  public static final String COMPARISONS_KEY = "comparisons";
   public static final String CONTRAST_FILE_KEY = "contrastFile";
 
   //
@@ -101,11 +101,11 @@ public class ExperimentMetadata extends AbstractMetadata
   }
 
   /**
-   * Get the comparisonFile DEseq2 option.
-   * @return the comparisonFile DEseq2 option
+   * Get the comparisons DEseq2 option.
+   * @return the comparisons DEseq2 option
    */
-  public String getComparison() {
-    return get(COMPARISON_KEY);
+  public String getComparisons() {
+    return get(COMPARISONS_KEY);
   }
 
   /**
@@ -169,11 +169,11 @@ public class ExperimentMetadata extends AbstractMetadata
   }
 
   /**
-   * Set the comparisonFile DEseq2 option.
-   * @param newComparisonFile the new comparisonFile DEseq2 option
+   * Set the comparisons DEseq2 option.
+   * @param newComparisons the new comparisons DEseq2 option
    */
-  public void setComparison(String newComparisonFile) {
-    set(COMPARISON_KEY, newComparisonFile);
+  public void setComparisons(String newComparisons) {
+    set(COMPARISONS_KEY, newComparisons);
   }
 
   /**
@@ -237,11 +237,11 @@ public class ExperimentMetadata extends AbstractMetadata
   }
 
   /**
-   * Test if the comparisonFile option exists.
-   * @return true if the comparisonFile option exists
+   * Test if the comparisons option exists.
+   * @return true if the comparisons option exists
    */
-  public boolean containsComparison() {
-    return contains(COMPARISON_KEY);
+  public boolean containsComparisons() {
+    return contains(COMPARISONS_KEY);
   }
 
   /**

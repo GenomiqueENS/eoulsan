@@ -25,21 +25,21 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
 import java.util.List;
 
-import org.python.google.common.base.Joiner;
+import com.google.common.base.Joiner;
 import org.w3c.dom.Element;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
+import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ToolOutputsData.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
-public class ToolOutputsData extends AbstractToolElement {
+public class DataToolElement extends AbstractToolElement {
 
   /** The Constant TAG_NAME. */
   public static final String TAG_NAME = "data";
@@ -54,7 +54,7 @@ public class ToolOutputsData extends AbstractToolElement {
   private String value = "";
 
   @Override
-  public void setValue() {
+  public void setDefaultValue() {
   }
 
   @Override
@@ -74,8 +74,7 @@ public class ToolOutputsData extends AbstractToolElement {
     this.setValue(stepParameter.getValue());
   }
 
-  @Override
-  public void setValue(final String value) {
+  private void setValue(final String value) {
     this.value = value;
   }
 
@@ -102,7 +101,7 @@ public class ToolOutputsData extends AbstractToolElement {
    * @param param the param
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolOutputsData(final Element param) throws EoulsanException {
+  public DataToolElement(final Element param) throws EoulsanException {
     this(param, null);
   }
 
@@ -112,11 +111,12 @@ public class ToolOutputsData extends AbstractToolElement {
    * @param nameSpace the name space
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolOutputsData(final Element param, final String nameSpace)
+  public DataToolElement(final Element param, final String nameSpace)
       throws EoulsanException {
     super(param, nameSpace);
 
-    this.formats = COMMA.splitToList(param.getAttribute("format"));
+    this.formats =
+        GuavaCompatibility.splitToList(COMMA, param.getAttribute("format"));
 
     // Check count format found
     if (this.formats.size() > 1) {

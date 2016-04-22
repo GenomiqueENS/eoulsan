@@ -31,17 +31,14 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
+import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ToolParameterData.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
-public class ToolElementData extends AbstractToolElement {
-
-  /** The formats. */
-  private final List<String> formats;
+public class DataParameterToolElement extends AbstractToolElement {
 
   /** The data format. */
   private final DataFormat dataFormat;
@@ -56,21 +53,21 @@ public class ToolElementData extends AbstractToolElement {
 
   @Override
   public void setValue(final Parameter stepParameter) throws EoulsanException {
+
     super.setValue(stepParameter);
 
     if (stepParameter != null)
-      this.setValue(stepParameter.getValue());
+      setValue(stepParameter.getValue());
 
   }
 
-  @Override
-  public void setValue(final String value) throws EoulsanException {
+  private void setValue(final String value) throws EoulsanException {
 
     this.value = value;
   }
 
   @Override
-  public void setValue() {
+  public void setDefaultValue() {
   }
 
   @Override
@@ -80,16 +77,18 @@ public class ToolElementData extends AbstractToolElement {
 
   @Override
   public boolean isFile() {
+
     return this.dataFormat != null;
   }
 
   @Override
   public DataFormat getDataFormat() {
-    if (this.isFile()) {
-      return this.dataFormat;
+
+    if (this.dataFormat == null) {
+      throw new UnsupportedOperationException();
     }
 
-    throw new UnsupportedOperationException();
+    return this.dataFormat;
   }
 
   //
@@ -101,7 +100,7 @@ public class ToolElementData extends AbstractToolElement {
    * @param param the param
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolElementData(final Element param) throws EoulsanException {
+  public DataParameterToolElement(final Element param) throws EoulsanException {
     this(param, null);
   }
 
@@ -111,21 +110,23 @@ public class ToolElementData extends AbstractToolElement {
    * @param nameSpace the name space
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolElementData(final Element param, final String nameSpace)
+  public DataParameterToolElement(final Element param, final String nameSpace)
       throws EoulsanException {
-    super(param, nameSpace);
-    this.isSetting = true;
 
-    this.formats = COMMA.splitToList(param.getAttribute("format"));
+    super(param, nameSpace);
+
+    this.set = true;
+
+    final List<String> formats =
+        GuavaCompatibility.splitToList(COMMA, param.getAttribute("format"));
 
     // Check count format found
-    if (this.formats.isEmpty()) {
+    if (formats.isEmpty()) {
       this.dataFormat = null;
     } else {
       // Convert format in DataFormat
-
       this.dataFormat = DataFormatRegistry.getInstance()
-          .getDataFormatFromToolshedExtension(this.formats.get(0));
+          .getDataFormatFromToolshedExtension(formats.get(0));
     }
   }
 

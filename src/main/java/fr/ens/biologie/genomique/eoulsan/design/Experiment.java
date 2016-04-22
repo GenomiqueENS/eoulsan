@@ -30,8 +30,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.Serializable;
 import java.util.*;
 
-import org.python.google.common.base.MoreObjects;
-import org.python.google.common.base.Objects;
+import com.google.common.base.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 
@@ -242,8 +241,7 @@ public class Experiment implements Serializable {
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this)
-        .add("experimentId", this.experimentId)
+    return Objects.toStringHelper(this).add("experimentId", this.experimentId)
         .add("experimentNumber", this.experimentNumber)
         .add("experimentName", this.experimentName)
         .add("experimentMetadata", this.metadata)

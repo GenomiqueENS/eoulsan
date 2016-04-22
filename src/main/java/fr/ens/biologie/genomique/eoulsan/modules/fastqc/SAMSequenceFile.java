@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.fastqc;
 
-import static org.python.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.IOException;

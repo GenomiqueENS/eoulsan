@@ -1,13 +1,15 @@
 package fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.python.google.common.base.Preconditions.checkArgument;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolExecutorResult;
+import fr.ens.biologie.genomique.eoulsan.util.SimpleProcess;
+import fr.ens.biologie.genomique.eoulsan.util.SystemSimpleProcess;
 
 /**
  * This class define an abstract executor interpreter that contains the default
@@ -19,7 +21,14 @@ import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolExecutorResult;
 public abstract class AbstractExecutorInterpreter
     implements ExecutorInterpreter {
 
-  static final String TMP_DIR_ENV_VARIABLE = "TMPDIR";
+  /**
+   * Create a new SimpleProcess that will be use to launch the command.
+   * @return a new SimpleProcess object
+   */
+  protected SimpleProcess newSimpleProcess() {
+
+    return new SystemSimpleProcess();
+  }
 
   @Override
   public ToolExecutorResult execute(final List<String> commandLine,
@@ -40,26 +49,12 @@ public abstract class AbstractExecutorInterpreter
 
     try {
 
-      ProcessBuilder builder = new ProcessBuilder(commandLine);
-      builder.directory(executionDirectory);
-      builder.redirectOutput(stdoutFile);
-      builder.redirectError(stderrFile);
-
-      // Set the temporary directory if exists
-      if (executionDirectory.isDirectory()) {
-        builder.environment().put(TMP_DIR_ENV_VARIABLE,
-            executionDirectory.getAbsolutePath());
-      }
-
-      // Execute command
-      final Process p = builder.start();
-
-      // Wait the end of the process
-      final int exitValue = p.waitFor();
+      final int exitValue = newSimpleProcess().execute(commandLine,
+          executionDirectory, temporaryDirectory, stdoutFile, stderrFile);
 
       return new ToolExecutorResult(commandLine, exitValue);
 
-    } catch (InterruptedException | IOException e) {
+    } catch (EoulsanException e) {
       return new ToolExecutorResult(commandLine, e);
     }
   }

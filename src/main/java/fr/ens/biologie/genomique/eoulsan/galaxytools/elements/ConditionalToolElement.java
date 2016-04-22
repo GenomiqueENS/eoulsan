@@ -25,9 +25,9 @@
 package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractChildElementsByTagName;
-import static fr.ens.biologie.genomique.eoulsan.galaxytools.elements.AbstractToolElement.getInstanceToolElement;
 import static fr.ens.biologie.genomique.eoulsan.util.XMLUtils.getElementsByTagName;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,13 +44,12 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ToolConditionalElement.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
-public class ToolConditionalElement implements ToolElement {
+public class ConditionalToolElement implements ToolElement {
 
   /** The Constant TYPE. */
   public final static String TYPE = "boolean";
@@ -76,7 +75,7 @@ public class ToolConditionalElement implements ToolElement {
   private boolean isSettings = false;
 
   @Override
-  public void setValue() {
+  public void setDefaultValue() {
     // TODO Auto-generated method stub
   }
 
@@ -87,11 +86,6 @@ public class ToolConditionalElement implements ToolElement {
 
   @Override
   public DataFormat getDataFormat() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void setValue(final String value) {
     throw new UnsupportedOperationException();
   }
 
@@ -115,7 +109,7 @@ public class ToolConditionalElement implements ToolElement {
 
       if (parameter == null) {
         // No parameters found, call default settings
-        toolParameter.setValue();
+        toolParameter.setDefaultValue();
 
       } else {
         // Set param
@@ -124,7 +118,6 @@ public class ToolConditionalElement implements ToolElement {
       }
       // Save map result
       this.toolElementSelected.put(toolParameter.getName(), toolParameter);
-
     }
 
     // Save setting parameter
@@ -150,11 +143,13 @@ public class ToolConditionalElement implements ToolElement {
     for (final Element e : whenElement) {
       final String whenName = e.getAttribute("value");
 
-      final List<Element> paramElement = getElementsByTagName(e, "param");
+      final List<Element> paramElement = new ArrayList<>();
+      paramElement.addAll(getElementsByTagName(e, "param"));
+      paramElement.addAll(getElementsByTagName(e, "data"));
 
       // Can be empty, nothing to do
       if (paramElement == null || paramElement.isEmpty()) {
-        result.put(whenName, new ToolElementEmpty());
+        result.put(whenName, new EmptyToolElement());
         continue;
       }
 
@@ -162,7 +157,7 @@ public class ToolConditionalElement implements ToolElement {
       for (final Element elem : paramElement) {
         // Initialize tool parameter related to the choice
         final ToolElement toolParameter =
-            getInstanceToolElement(elem, this.nameSpace);
+            ToolElementFactory.newToolElement(elem, this.nameSpace);
 
         if (toolParameter != null) {
           // Add tool parameter in result
@@ -216,7 +211,7 @@ public class ToolConditionalElement implements ToolElement {
   }
 
   @Override
-  public boolean isSetting() {
+  public boolean isSet() {
     return this.isSettings;
   }
 
@@ -247,7 +242,7 @@ public class ToolConditionalElement implements ToolElement {
    * @param element the element
    * @throws EoulsanException the eoulsan exception
    */
-  public ToolConditionalElement(final Element element) throws EoulsanException {
+  public ConditionalToolElement(final Element element) throws EoulsanException {
 
     this.nameSpace = element.getAttribute("name");
 
@@ -268,17 +263,16 @@ public class ToolConditionalElement implements ToolElement {
 
     // Init parameter select
     this.toolElementSelect =
-        new ToolElementSelect(param.get(0), this.nameSpace);
+        new SelectParameterToolElement(param.get(0), this.nameSpace);
 
     // Init default value
-    if (this.toolElementSelect.isSetting()) {
+    if (this.toolElementSelect.isSet()) {
       this.value = this.toolElementSelect.getValue();
     }
 
     // Extract all case available
     this.actionsRelatedOptions = this.parseActionsRelatedOptions(element);
     this.toolElementSelected = new HashMap<>();
-
   }
 
 }

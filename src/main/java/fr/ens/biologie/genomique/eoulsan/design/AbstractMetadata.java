@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-import static org.python.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -32,8 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.python.google.common.base.MoreObjects;
-import org.python.google.common.base.Objects;
+import com.google.common.base.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 
@@ -203,7 +202,7 @@ public abstract class AbstractMetadata {
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this).add("metadata", this.metadata)
+    return Objects.toStringHelper(this).add("metadata", this.metadata)
         .toString();
   }
 

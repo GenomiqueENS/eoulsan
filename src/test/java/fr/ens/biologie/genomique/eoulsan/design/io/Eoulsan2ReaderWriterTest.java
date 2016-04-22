@@ -57,7 +57,7 @@ public class Eoulsan2ReaderWriterTest {
     // design metadata
     designMetadata.setGenomeFile("mm10.fasta");
     designMetadata.setGffFile("mm10.gff");
-    designMetadata.setAdditionnalAnnotationFile("additional_mm10.txt");
+    designMetadata.setAdditionalAnnotationFile("additional_mm10.txt");
 
     // create experiments
     design.addExperiment("1");

@@ -23,22 +23,17 @@
  */
 package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
-import java.util.List;
-
-import org.python.google.common.collect.Lists;
 import org.w3c.dom.Element;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ToolParameterBoolean.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
-public class ToolElementBoolean extends AbstractToolElement {
+public class BooleanParameterToolElement extends AbstractToolElement {
 
   /** The Constant TYPE. */
   public final static String TYPE = "boolean";
@@ -52,12 +47,8 @@ public class ToolElementBoolean extends AbstractToolElement {
   /** The Constant ATT_FALSEVALUE_KEY. */
   private final static String ATT_FALSEVALUE_KEY = "falsevalue";
 
-  /** The Constant CHECKED_VALUES. */
-  private final static List<String> CHECKED_VALUES =
-      Lists.newArrayList("yes", "on", "true");
-
   /** The checked_lowered. */
-  private final String checked_lowered;
+  private final String checked;
 
   /** The true value. */
   private final String trueValue;
@@ -66,7 +57,7 @@ public class ToolElementBoolean extends AbstractToolElement {
   private final String falseValue;
 
   /** The value. */
-  private String value = "";
+  private String value;
 
   @Override
   public boolean isValueParameterValid() {
@@ -79,13 +70,9 @@ public class ToolElementBoolean extends AbstractToolElement {
   }
 
   @Override
-  public void setValue() {
-    // Set value to the default value
-    if (this.value.isEmpty()) {
-      this.value = this.trueValue;
-    }
+  public void setDefaultValue() throws EoulsanException {
 
-    this.isSetting = true;
+    setValue(this.checked == null ? null : this.checked.toLowerCase());
   }
 
   @Override
@@ -93,30 +80,32 @@ public class ToolElementBoolean extends AbstractToolElement {
 
     super.setValue(stepParameter);
 
-    final boolean valueParameter = stepParameter.getBooleanValue();
-    this.value = valueParameter ? this.trueValue : this.falseValue;
-
-    this.isSetting = true;
-
+    setValue(stepParameter.getLowerStringValue());
   }
 
-  @Override
-  public void setValue(final String value) throws EoulsanException {
+  private void setValue(final String value) throws EoulsanException {
 
-    if (CHECKED_VALUES.contains(value)) {
+    switch (value) {
+
+    case "yes":
+    case "on":
+    case "true":
       this.value = this.trueValue;
-    } else {
+      break;
+
+    default:
       this.value = this.falseValue;
+      break;
     }
 
-    this.isSetting = true;
+    this.set = true;
   }
 
   @Override
   public String toString() {
     return "ToolParameterBoolean [checked="
-        + this.checked_lowered + ", trueValue=" + this.trueValue
-        + ", falseValue=" + this.falseValue + ", value=" + this.value + "]";
+        + this.checked + ", trueValue=" + this.trueValue + ", falseValue="
+        + this.falseValue + ", value=" + this.value + "]";
   }
 
   //
@@ -127,7 +116,7 @@ public class ToolElementBoolean extends AbstractToolElement {
    * Instantiates a new tool parameter boolean.
    * @param param the param
    */
-  public ToolElementBoolean(final Element param) {
+  public BooleanParameterToolElement(final Element param) {
     this(param, null);
   }
 
@@ -136,21 +125,14 @@ public class ToolElementBoolean extends AbstractToolElement {
    * @param param the param
    * @param nameSpace the name space
    */
-  public ToolElementBoolean(final Element param, final String nameSpace) {
+  public BooleanParameterToolElement(final Element param, final String nameSpace) {
     super(param, nameSpace);
 
-    this.checked_lowered =
-        param.getAttribute(ATT_CHECKED_KEY).toLowerCase(Globals.DEFAULT_LOCALE);
+    this.checked = param.getAttribute(ATT_CHECKED_KEY);
 
     this.trueValue = param.getAttribute(ATT_TRUEVALUE_KEY);
 
     this.falseValue = param.getAttribute(ATT_FALSEVALUE_KEY);
-
-    // Set default if define
-    if (CHECKED_VALUES.contains(this.checked_lowered)) {
-      this.value = this.trueValue;
-    }
-
   }
 
 }

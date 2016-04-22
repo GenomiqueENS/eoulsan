@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.python.google.common.collect.Lists;
+import com.google.common.collect.Lists;
 
 import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;

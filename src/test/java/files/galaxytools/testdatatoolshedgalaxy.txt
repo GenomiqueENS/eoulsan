@@ -3,64 +3,75 @@ toolshedxml.path=samtools_rmdup.xml
 input.input1=input_value
 output.output1=output_value
 param.bam_paired_end_type.bam_paired_end_type_selector=SE
-command.expected=samtools rmdup -s input_value output_value 2>&1 || echo 'Error running samtools rmdup.' >&2
+command.expected=samtools rmdup -s "input_value" "output_value" 2>&1 || echo "Error running samtools rmdup." >&2
+
+test_description=samtools method rumdup in PE mode force SE
+toolshedxml.path=samtools_rmdup.xml
+input.input1=input_value
+output.output1=output_value
+param.bam_paired_end_type.bam_paired_end_type_selector=PE
+param.bam_paired_end_type.force_se=true
+command.expected=samtools rmdup -S "input_value" "output_value" 2>&1 || echo "Error running samtools rmdup." >&2
 
 test_description=samtools method rumdup in PE mode
 toolshedxml.path=samtools_rmdup.xml
 input.input1=input_value
 output.output1=output_value
 param.bam_paired_end_type.bam_paired_end_type_selector=PE
-command.expected=samtools rmdup -S input_value output_value 2>&1 || echo 'Error running samtools rmdup.' >&2
+command.expected=samtools rmdup "input_value" "output_value" 2>&1 || echo "Error running samtools rmdup." >&2
 
 
 
-test_description=grep python script
+test_description=grep python script 1
 toolshedxml.path=grep.xml
 param.input=input_value
 param.pattern=[a-z]
 param.invert=true
 output.out_file1=output_value
-command.expected=grep.py -i input_value -o output_value -pattern [a-z] -v true
+command.expected=grep.py -i input_value -o output_value -pattern '[a-z]' -v true
 
 
-test_description=grep python script
+test_description=grep python script 2
 toolshedxml.path=grep.xml
 param.input=input_value
 param.pattern=[a-z]
 param.invert=false
 output.out_file1=output_value
-command.expected=grep.py -i input_value -o output_value -pattern [a-z] -v false
+command.expected=grep.py -i input_value -o output_value -pattern '[a-z]' -v false
 
 
 
-test_description=trimmer from fastx
+test_description=trimmer from fastx 1
 toolshedxml.path=fastx_trimmer.xml
 input.input=input_value
 param.first=2
 param.last=12
+other.input.ext=
 output.output=output_value
-command.expected=zcat -f input_value | fastx_trimmer -v -f 2 -l 12 -o output_value
+command.expected=zcat -f 'input_value' | fastx_trimmer -v -f 2 -l 12 -o output_value
 
-test_description=trimmer from fastx
+test_description=trimmer from fastx 2
 toolshedxml.path=fastx_trimmer.xml
 input.input=input_value
 output.output=output_value
-command.expected=zcat -f input_value | fastx_trimmer -v -f 1 -l 21 -o output_value
+other.input.ext=
+command.expected=zcat -f 'input_value' | fastx_trimmer -v -f 1 -l 21 -o output_value
 
 
-test_description=sam2bam tool
+test_description=sam2bam tool 1
 toolshedxml.path=sam_to_bam.xml
 input.source.input1=input_value
 param.source.index_source=cached
 param.source.ref_file=ref_file_value
 output.output1=output_value
+other.source.index.fields.path=no_authorized
 command.expected=sam_to_bam.py --input1=input_value --index=no_authorized --output1=output_value
 
 
-test_description=sam2bam tool
+test_description=sam2bam tool 2
 toolshedxml.path=sam_to_bam.xml
 input.source.input1=input_value
-input.source.index.fields.path=index_fields_value
+other.source.index.fields.path=index_fields_value
 param.source.index_source=history
 param.source.ref_file=ref_file_value
 output.output1=output_value
@@ -78,3 +89,21 @@ toolshedxml.path=rmdup.xml
 input.input=input_value
 output.output=output_value
 command.expected=picard.jar MarkDuplicates REMOVE_DUPLICATES=true INPUT=input_value OUTPUT=output_value
+
+test_description=trim galore SR
+toolshedxml.path=trim_galore.xml
+param.is.paired=no
+param.quality=30
+input.input1=in1.fq
+output.output1=out1.fq
+command.expected=trim_galore --path_to_cutadapt /tmp/cutadapt-1.8.1/bin/cutadapt --quality 30 -e 0.1 --stringency 1 --length 20 in1.fq ; /RenameOutput.sh in1.fq out1.fq
+
+test_description=trim galore PE
+toolshedxml.path=trim_galore.xml
+param.is.paired=yes
+param.quality=30
+input.input1=in1.fq
+input.input2=in2.fq
+output.output1=out1.fq
+output.output2=out2.fq
+command.expected=trim_galore --path_to_cutadapt /tmp/cutadapt-1.8.1/bin/cutadapt --quality 30 -e 0.1 --stringency 1 --length 20 --paired in1.fq in2.fq ; /RenameOutput2.sh in1.fq out1.fq ; /RenameOutput3.sh in2.fq out2.fq

@@ -25,17 +25,15 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
 import java.util.Map;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ToolParameterEmpty.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
-public class ToolElementEmpty implements ToolElement {
+public class EmptyToolElement implements ToolElement {
 
   private final String shortName;
   private final String name;
@@ -59,7 +57,7 @@ public class ToolElementEmpty implements ToolElement {
   }
 
   @Override
-  public boolean isSetting() {
+  public boolean isSet() {
     return false;
   }
 
@@ -69,7 +67,7 @@ public class ToolElementEmpty implements ToolElement {
   }
 
   @Override
-  public void setValue() {
+  public void setDefaultValue() {
   }
 
   @Override
@@ -78,11 +76,6 @@ public class ToolElementEmpty implements ToolElement {
 
   @Override
   public void setValues(final Map<String, Parameter> stepParameters) {
-
-  }
-
-  @Override
-  public void setValue(final String value) throws EoulsanException {
 
   }
 
@@ -112,15 +105,15 @@ public class ToolElementEmpty implements ToolElement {
   // Constructors
   //
 
-  public ToolElementEmpty() {
+  public EmptyToolElement() {
     this("noName");
   }
 
-  public ToolElementEmpty(final String nameToolElement) {
+  public EmptyToolElement(final String nameToolElement) {
     this(nameToolElement, null);
   }
 
-  public ToolElementEmpty(final String nameToolElement,
+  public EmptyToolElement(final String nameToolElement,
       final String nameSpace) {
     this.shortName = nameToolElement;
 

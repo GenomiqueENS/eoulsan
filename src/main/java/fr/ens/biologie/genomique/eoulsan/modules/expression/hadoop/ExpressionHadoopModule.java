@@ -98,6 +98,11 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
   /**
    * Create JobConf object for HTSeq-count.
+   * @param context the task context
+   * @param alignmentsData alignment data
+   * @param featureAnnotationData feature annotations data
+   * @param gtfFormat true if the annotation file is in GTF format
+   * @param genomeDescriptionData genome description data
    * @param genomicType genomic type
    * @param attributeId attributeId
    * @param splitAttributeValues split attribute values
@@ -110,8 +115,9 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
    */
   private static Job createJobHTSeqCounter(final Configuration parentConf,
       final TaskContext context, final Data alignmentsData,
-      final Data featureAnnotationData, final Data genomeDescriptionData,
-      final Data outData, final String genomicType, final String attributeId,
+      final Data featureAnnotationData, final boolean gtfFormat,
+      final Data genomeDescriptionData, final Data outData,
+      final String genomicType, final String attributeId,
       final boolean splitAttributeValues, final StrandUsage stranded,
       final OverlapMode overlapMode, final boolean removeAmbiguousCases,
       final boolean tsamFormat)
@@ -186,9 +192,9 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
       lock.lock();
 
-      createFeaturesIndex(context, annotationDataFile, genomicType, attributeId,
-          splitAttributeValues, stranded, genomeDescDataFile, featuresIndexPath,
-          jobConf);
+      createFeaturesIndex(context, annotationDataFile, gtfFormat, genomicType,
+          attributeId, splitAttributeValues, stranded, genomeDescDataFile,
+          featuresIndexPath, jobConf);
 
       lock.unlock();
     }
@@ -239,7 +245,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
   private static Job createJobPairedEnd(final Configuration parentConf,
       final TaskContext context, final Data alignmentsData,
-      final Data featureAnnotationData, final Data genomeDescriptionData)
+      final Data genomeDescriptionData)
       throws IOException, BadBioEntryException {
 
     final Configuration jobConf = new Configuration(parentConf);
@@ -295,7 +301,8 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
   /**
    * @param context Eoulsan context
-   * @param gffFile GFF annotation file path
+   * @param annotationFile GFF annotation file path
+   * @param gtfFormat true if the annotation file is in GTF format
    * @param featureType feature type to use
    * @param attributeId attribute id
    * @param splitAttributeValues split attribute values
@@ -310,10 +317,11 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
    *           identifiers
    */
   private static void createFeaturesIndex(final TaskContext context,
-      final DataFile gffFile, final String featureType,
-      final String attributeId, final boolean splitAttributeValues,
-      final StrandUsage stranded, final DataFile genomeDescDataFile,
-      final Path featuresIndexPath, final Configuration conf)
+      final DataFile annotationFile, final boolean gtfFormat,
+      final String featureType, final String attributeId,
+      final boolean splitAttributeValues, final StrandUsage stranded,
+      final DataFile genomeDescDataFile, final Path featuresIndexPath,
+      final Configuration conf)
       throws IOException, BadBioEntryException, EoulsanException {
 
     // Do nothing if the file already exists
@@ -326,16 +334,17 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
         GenomeDescription.load(genomeDescDataFile.open());
     final Map<String, Integer> counts = new HashMap<>();
 
-    HTSeqUtils.storeAnnotation(features, gffFile.open(), featureType, stranded,
-        attributeId, splitAttributeValues, counts);
+    HTSeqUtils.storeAnnotation(features, annotationFile.open(), gtfFormat,
+        featureType, stranded, attributeId, splitAttributeValues, counts);
 
     if (counts.size() == 0) {
       throw new EoulsanException(
           "Warning: No features of type '" + featureType + "' found.\n");
     }
 
-    final File featuresIndexFile = context.getRuntime().createFileInTempDir(
-        StringUtils.basename(gffFile.getName()) + SERIALIZATION_EXTENSION);
+    final File featuresIndexFile = context.getRuntime()
+        .createFileInTempDir(StringUtils.basename(annotationFile.getName())
+            + SERIALIZATION_EXTENSION);
 
     // Add all chromosomes even without annotations to the feature object
     features.addChromosomes(genomeDescription);
@@ -416,7 +425,8 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       final TaskStatus status) {
 
     final Data alignmentsData = context.getInputData(MAPPER_RESULTS_SAM);
-    final Data featureAnnotationData = context.getInputData(ANNOTATION_GFF);
+    final Data featureAnnotationData =
+        context.getInputData(isGTFFormat() ? ANNOTATION_GFF : ANNOTATION_GFF);
     final Data genomeDescriptionData = context.getInputData(GENOME_DESC_TXT);
     final Data outData =
         context.getOutputData(EXPRESSION_RESULTS_TSV, alignmentsData);
@@ -458,7 +468,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       if (pairedEnd) {
         MapReduceUtils.submitAndWaitForJob(
             createJobPairedEnd(conf, context, alignmentsData,
-                featureAnnotationData, genomeDescriptionData),
+                genomeDescriptionData),
             alignmentsData.getName(), CommonHadoop.CHECK_COMPLETION_TIME,
             status, COUNTER_GROUP);
       }
@@ -466,7 +476,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       // Create the list of jobs to run
 
       final Job job = createJobHTSeqCounter(conf, context, alignmentsData,
-          featureAnnotationData, genomeDescriptionData, outData,
+          featureAnnotationData, isGTFFormat(), genomeDescriptionData, outData,
           getGenomicType(), getAttributeId(), isSplitAttributeValues(),
           getStranded(), getOverlapMode(), isRemoveAmbiguousCases(), pairedEnd);
 

@@ -58,13 +58,13 @@ public class DesignMetadataTest {
     // test containsGffFile
     assertTrue(dm.containsGffFile());
 
-    // test getAdditionnalAnnotationFile
-    assertNull(dm.getAdditionnalAnnotationFile());
-    // test setAdditionnalAnnotationFile
-    dm.setAdditionnalAnnotationFile("/home/toto/titi.txt");
-    assertEquals("/home/toto/titi.txt", dm.getAdditionnalAnnotationFile());
-    // test containsAdditionnalAnnotationFile
-    assertTrue(dm.containsAdditionnalAnnotationFile());
+    // test getAdditionalAnnotationFile
+    assertNull(dm.getAdditionalAnnotationFile());
+    // test setAdditionalAnnotationFile
+    dm.setAdditionalAnnotationFile("/home/toto/titi.txt");
+    assertEquals("/home/toto/titi.txt", dm.getAdditionalAnnotationFile());
+    // test containsAdditionalAnnotationFile
+    assertTrue(dm.containsAdditionalAnnotationFile());
 
   }
 

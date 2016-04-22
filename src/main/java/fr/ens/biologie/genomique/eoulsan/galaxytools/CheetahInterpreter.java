@@ -27,14 +27,18 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.python.core.PyDictionary;
 import org.python.core.PyObject;
+import org.python.core.PyString;
 import org.python.util.PythonInterpreter;
 
-import com.google.common.collect.Maps;
+import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 
 /**
  * This class create a Cheetah interpreter, it can build a command line tool
@@ -59,6 +63,59 @@ public class CheetahInterpreter {
   private final String cheetahScript;
   private final Map<String, String> variables;
 
+  //
+  // Inner class
+  //
+
+  /**
+   * This class define a Python dictionary that __str__() returns can be
+   * defined.
+   */
+  private static class PyStrDictionary extends PyDictionary {
+
+    private static final long serialVersionUID = 1L;
+
+    private PyString value;
+
+    /**
+     * The the value.
+     * @param value the value
+     */
+    public void setValue(final String value) {
+
+      this.value = new PyString(value);
+    }
+
+    @Override
+    public PyString __str__() {
+
+      if (this.value != null) {
+        return this.value;
+      }
+
+      return super.__str__();
+    }
+
+    //
+    // Constructor
+    //
+
+    /**
+     * Default constructor.
+     */
+    public PyStrDictionary() {
+    }
+
+    /**
+     * Constructor.
+     * @param value the value of the returns of __str___
+     */
+    public PyStrDictionary(final String value) {
+      setValue(value);
+    }
+
+  }
+
   /**
    * Execute script by Python interpreter and replace variable name by value.
    * @return final command line
@@ -66,38 +123,76 @@ public class CheetahInterpreter {
    */
   public String execute() throws EoulsanException {
 
-    // Initialize translator
-    CheetahToPythonTranslator translator =
-        new CheetahToPythonTranslator(this.cheetahScript);
+    try (final PythonInterpreter interpreter = new PythonInterpreter()) {
 
-    // Translate command in Cheetah syntax in Python script
-    final String pythonCode = translator.getPythonScript();
+      final PyObject nameSpace = createNameSpace(this.variables);
+      final String template = this.cheetahScript;
 
-    final Map<String, String> pythonVariables = Maps.newHashMap(this.variables);
+      interpreter.set("template", template);
+      interpreter.set("nameSpace", nameSpace);
 
-    // Parsing variable name found in command tag
-    for (final String variableName : translator.getVariableNames()) {
+      final String pythonScript = "from Cheetah.Template import Template\n"
+          + "result = str(Template(template, searchList=[nameSpace]))";
 
-      // Check exist
-      if (!this.variables.containsKey(variableName)) {
-        pythonVariables.put(variableName, DEFAULT_VALUE_NULL);
+      interpreter.exec(pythonScript);
+
+      // Retrieve standard output
+      final PyObject cmd = interpreter.get("result");
+
+      return cmd.asString().replace('\n', ' ').trim();
+    }
+  }
+
+  /**
+   * Create the dictionary that contains all the placeholders for Cheetah.
+   * @param plateholders the placeholders
+   * @return a modified Python dictionnary
+   */
+  private static PyStrDictionary createNameSpace(
+      final Map<String, String> plateholders) {
+
+    final PyStrDictionary result = new PyStrDictionary();
+
+    if (plateholders != null) {
+
+      for (Map.Entry<String, String> e : plateholders.entrySet()) {
+
+        List<String> fields = GuavaCompatibility.splitToList(Splitter.on('.'), e.getKey());
+
+        PyStrDictionary dict = result;
+
+        for (int i = 0; i < fields.size() - 1; i++) {
+
+          final String f = fields.get(i);
+
+          if (dict.containsKey(f)) {
+
+            Object o = dict.get(f);
+            if (o instanceof String) {
+              final PyStrDictionary newDict = new PyStrDictionary((String) o);
+              dict.put(f, newDict);
+              dict = newDict;
+            } else {
+              dict = (PyStrDictionary) dict.get(f);
+            }
+          } else {
+            final PyStrDictionary newDict = new PyStrDictionary();
+            dict.put(f, newDict);
+            dict = newDict;
+          }
+        }
+
+        final String key = fields.get(fields.size() - 1);
+
+        if (dict.containsKey(key)) {
+          ((PyStrDictionary) dict.get(key)).setValue(e.getValue());
+        } else {
+          dict.put(key, e.getValue());
+        }
       }
     }
 
-    try (final PythonInterpreter interpreter = new PythonInterpreter()) {
-
-      // Initialize variable command
-      interpreter.set(VAR_CMD_NAME, "");
-      interpreter.set(PYTHON_VARIABLES_DICT_NAME, pythonVariables);
-
-      // Add script
-      interpreter.exec(pythonCode);
-
-      // Retrieve standard output
-      final PyObject cmd = interpreter.get(VAR_CMD_NAME);
-
-      return cmd.asString().trim();
-    }
+    return result;
   }
 
   //

@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSampleMetadata;
@@ -224,14 +225,13 @@ public class Eoulsan2DesignWriter implements DesignWriter {
   }
 
   //
-  // Construtors
+  // Constructors
   //
 
   /**
    * Public constructor.
    * @param file file to read
-   * @throws IOException if an error occurs while reading the file or if the
-   *           file is null.
+   * @throws IOException if an error occurs while creating the file
    */
   public Eoulsan2DesignWriter(final File file) throws IOException {
 
@@ -241,9 +241,21 @@ public class Eoulsan2DesignWriter implements DesignWriter {
   }
 
   /**
-   * Public constructor
-   * @param out Input stream to read
-   * @throws IOException if the stream is null
+   * Public constructor.
+   * @param file file to read
+   * @throws IOException if an error occurs while creating the file
+   */
+  public Eoulsan2DesignWriter(final DataFile file) throws IOException {
+
+    checkNotNull(file, "file argument cannot be null");
+
+    this.out = file.create();
+  }
+
+  /**
+   * Public constructor.
+   * @param out Output stream to read
+   * @throws IOException if the stream cannot be created
    */
   public Eoulsan2DesignWriter(final OutputStream out) throws IOException {
 
@@ -253,13 +265,12 @@ public class Eoulsan2DesignWriter implements DesignWriter {
   }
 
   /**
-   * Public constructor
+   * Public constructor.
    * @param filename File to write
-   * @throws IOException if the stream is null
    * @throws FileNotFoundException if the file doesn't exist
    */
   public Eoulsan2DesignWriter(final String filename)
-      throws IOException, FileNotFoundException {
+      throws FileNotFoundException {
 
     checkNotNull(filename, "filename argument cannot be null");
 

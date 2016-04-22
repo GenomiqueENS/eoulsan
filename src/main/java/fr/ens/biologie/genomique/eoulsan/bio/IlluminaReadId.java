@@ -24,6 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,7 +50,7 @@ public final class IlluminaReadId {
 
   private static final Pattern PATTERN_1_8 = Pattern.compile(
       "^([a-zA-Z0-9\\-\\_]+):(\\d+):([a-zA-Z0-9]+):(\\d+):(\\d+):(\\d+):(\\d+) "
-          + "(\\d+):([YN]):(\\d+):([NATGC]*)$");
+          + "(\\d+):([YN]):(\\d+):([NATGC\\+]*)$");
 
   private static final Pattern PATTERN_3 = Pattern.compile(
       "^([a-zA-Z0-9\\-\\_]+):(\\d+):([a-zA-Z0-9]+):(\\d+):(\\d+):(\\d+):(\\d+) "
@@ -56,6 +59,11 @@ public final class IlluminaReadId {
   private static final Pattern PATTERN_SRA = Pattern.compile(
       "^[a-zA-Z0-9\\.]+ ([a-zA-Z0-9\\-\\_]+):(\\d+):([a-zA-Z0-9]+):(\\d+):(\\d+):(\\d+):(\\d+) "
           + ".*$");
+
+  private static final Pattern SEQUENCE_INDEX_SPLITTER_PATTERN =
+      Pattern.compile("\\+");
+
+  private static final String NO_SEQUENCE_INDEX = "0";
 
   private final Pattern pattern;
 
@@ -137,6 +145,20 @@ public final class IlluminaReadId {
    */
   public final String getSequenceIndex() {
     return this.sequenceIndex;
+  }
+
+  /**
+   * Get the sequence index for a multiplexed sample.
+   * @return the sequence index for a multiplexed sample, "0" for no indexing
+   */
+  public final List<String> getSequenceIndexList() {
+
+    if (NO_SEQUENCE_INDEX.equals(this.sequenceIndex)) {
+      return Collections.emptyList();
+    }
+
+    return Collections.unmodifiableList(Arrays
+        .asList(SEQUENCE_INDEX_SPLITTER_PATTERN.split(this.sequenceIndex)));
   }
 
   /**
@@ -386,7 +408,7 @@ public final class IlluminaReadId {
       this.pairMember = Integer.parseInt(matcher.group(8));
       this.filtered = matcher.group(9).charAt(0) == 'Y';
       this.controlNumber = Integer.parseInt(matcher.group(10));
-      this.sequenceIndex = "0";
+      this.sequenceIndex = NO_SEQUENCE_INDEX;
 
       return;
     } else if (this.pattern == PATTERN_1_4) {
@@ -413,7 +435,7 @@ public final class IlluminaReadId {
       this.tileNumberInFlowCellLane = Integer.parseInt(matcher.group(3));
       this.xClusterCoordinateInTile = Integer.parseInt(matcher.group(4));
       this.yClusterCoordinateInTile = Integer.parseInt(matcher.group(5));
-      this.sequenceIndex = "0";
+      this.sequenceIndex = NO_SEQUENCE_INDEX;
       this.pairMember = Integer.parseInt(matcher.group(6));
       this.filtered = false;
       this.controlNumber = -1;
@@ -428,7 +450,7 @@ public final class IlluminaReadId {
       this.tileNumberInFlowCellLane = Integer.parseInt(matcher.group(5));
       this.xClusterCoordinateInTile = Integer.parseInt(matcher.group(6));
       this.yClusterCoordinateInTile = Integer.parseInt(matcher.group(7));
-      this.sequenceIndex = "0";
+      this.sequenceIndex = NO_SEQUENCE_INDEX;
       this.pairMember = -1;
       this.filtered = false;
       this.controlNumber = -1;
@@ -444,7 +466,7 @@ public final class IlluminaReadId {
     this.tileNumberInFlowCellLane = Integer.parseInt(matcher.group(3));
     this.xClusterCoordinateInTile = Integer.parseInt(matcher.group(4));
     this.yClusterCoordinateInTile = Integer.parseInt(matcher.group(5));
-    this.sequenceIndex = "0";
+    this.sequenceIndex = NO_SEQUENCE_INDEX;
     this.pairMember = -1;
     this.filtered = false;
     this.controlNumber = -1;

@@ -24,9 +24,11 @@
 
 package fr.ens.biologie.genomique.eoulsan.checkers;
 
+import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GTF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.ATTRIBUTE_ID_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.COUNTER_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.FEATURES_FILE_FORMAT;
 import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.GENOMIC_TYPE_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.OLD_ATTRIBUTE_ID_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.OLD_GENOMIC_TYPE_PARAMETER_NAME;
@@ -54,6 +56,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomicArray;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomicInterval;
 import fr.ens.biologie.genomique.eoulsan.bio.io.GFFReader;
+import fr.ens.biologie.genomique.eoulsan.bio.io.GTFReader;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -71,6 +74,7 @@ public class GFFChecker implements Checker {
   private String genomicType;
   private String attributeId;
   private boolean stranded = true;
+  private final boolean gtfFormat;
 
   @Override
   public String getName() {
@@ -80,7 +84,7 @@ public class GFFChecker implements Checker {
 
   @Override
   public DataFormat getFormat() {
-    return ANNOTATION_GFF;
+    return this.gtfFormat ? ANNOTATION_GTF : ANNOTATION_GFF;
   }
 
   @Override
@@ -116,7 +120,8 @@ public class GFFChecker implements Checker {
 
       default:
 
-        if (!COUNTER_PARAMETER_NAME.equals(p.getName())
+        if (!FEATURES_FILE_FORMAT.equals(p.getName())
+            && !COUNTER_PARAMETER_NAME.equals(p.getName())
             && !OVERLAP_MODE_PARAMETER_NAME.equals(p.getName())
             && !REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME.equals(p.getName())
             && !SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME.equals(p.getName())
@@ -145,15 +150,15 @@ public class GFFChecker implements Checker {
     }
 
     try {
-      final DataFile gffFile = data.getDataFile();
+      final DataFile featureFile = data.getDataFile();
 
-      if (!gffFile.exists()) {
+      if (!featureFile.exists()) {
 
         // Check if the protocol is deprecated
-        if (!gffFile.getProtocol().canRead()) {
+        if (!featureFile.getProtocol().canRead()) {
 
           // Force exception
-          try (InputStream in = gffFile.open()) {
+          try (InputStream in = featureFile.open()) {
           }
         }
 
@@ -164,10 +169,11 @@ public class GFFChecker implements Checker {
         return true;
       }
 
-      final GenomeDescription desc = getGenomeDescription(gffFile, checkInfo);
+      final GenomeDescription desc =
+          getGenomeDescription(featureFile, checkInfo);
 
-      validationAnnotation(gffFile, desc, this.genomicType, this.attributeId,
-          this.stranded);
+      validationAnnotation(featureFile, this.gtfFormat, desc, this.genomicType,
+          this.attributeId, this.stranded);
 
     } catch (IOException e) {
       throw new EoulsanException(
@@ -182,8 +188,9 @@ public class GFFChecker implements Checker {
   }
 
   private static void validationAnnotation(final DataFile file,
-      final GenomeDescription desc, final String featureType,
-      final String attributeId, final boolean stranded)
+      final boolean gtfFormat, final GenomeDescription desc,
+      final String featureType, final String attributeId,
+      final boolean stranded)
       throws IOException, BadBioEntryException, EoulsanException {
 
     final GenomicArray<String> features = new GenomicArray<>();
@@ -195,7 +202,8 @@ public class GFFChecker implements Checker {
     long sequenceLength = -1;
     String lastSequenceName = null;
 
-    try (final GFFReader gffReader = new GFFReader(file.open())) {
+    try (final GFFReader gffReader =
+        gtfFormat ? new GTFReader(file.open()) : new GFFReader(file.open())) {
 
       GFFEntry lastEntry = null;
 
@@ -220,7 +228,7 @@ public class GFFChecker implements Checker {
               throw new BadBioEntryException(
                   "GFF entry with id ("
                       + sequenceName + ") not found in sequence region",
-                  e.toString());
+                  formatEntry(e, gtfFormat));
             }
           }
 
@@ -228,14 +236,16 @@ public class GFFChecker implements Checker {
             throw new BadBioEntryException("GFF entry with start position ("
                 + Math.min(start, end)
                 + ") lower than the start of sequence region" + sequenceName
-                + " (" + interval[0] + ")", e.toString());
+                + " (" + interval[0] + ")", formatEntry(e, gtfFormat));
           }
 
           if (Math.max(start, end) > interval[1]) {
-            throw new BadBioEntryException("GFF entry with end position ("
-                + Math.max(start, end)
-                + ") greater than the end of sequence region " + sequenceName
-                + " (" + interval[1] + ")", e.toString());
+            throw new BadBioEntryException(
+                "GFF entry with end position ("
+                    + Math.max(start, end)
+                    + ") greater than the end of sequence region "
+                    + sequenceName + " (" + interval[1] + ")",
+                formatEntry(e, gtfFormat));
           }
         }
 
@@ -244,8 +254,10 @@ public class GFFChecker implements Checker {
           if (!sequenceName.equals(lastSequenceName)) {
 
             if (!sequenceLengths.containsKey(sequenceName)) {
-              throw new BadBioEntryException("GFF entry with id ("
-                  + sequenceName + ") not found in genome", e.toString());
+              throw new BadBioEntryException(
+                  "GFF entry with id ("
+                      + sequenceName + ") not found in genome",
+                  formatEntry(e, gtfFormat));
             }
 
             sequenceLength = sequenceLengths.get(sequenceName);
@@ -254,15 +266,17 @@ public class GFFChecker implements Checker {
           if (Math.min(start, end) < 1) {
             throw new BadBioEntryException("GFF entry with start position ("
                 + Math.min(start, end) + ") lower than 1 in sequence "
-                + sequenceName, e.toString());
+                + sequenceName, formatEntry(e, gtfFormat));
           }
 
           if (Math.max(start, end) - 1 > sequenceLength) {
             gffReader.close();
-            throw new BadBioEntryException("GFF entry with end position ("
-                + Math.max(start, end)
-                + ") greater than the the length of sequence " + sequenceName
-                + " (" + sequenceLength + ")", e.toString());
+            throw new BadBioEntryException(
+                "GFF entry with end position ("
+                    + Math.max(start, end)
+                    + ") greater than the the length of sequence "
+                    + sequenceName + " (" + sequenceLength + ")",
+                formatEntry(e, gtfFormat));
           }
         }
 
@@ -271,7 +285,7 @@ public class GFFChecker implements Checker {
         if (attributeId != null && featureId == null) {
           throw new BadBioEntryException("Feature "
               + featureType + " does not contain a " + attributeId
-              + " attribute", e.toString());
+              + " attribute", formatEntry(e, gtfFormat));
         }
 
         if (featureId != null) {
@@ -297,6 +311,22 @@ public class GFFChecker implements Checker {
       }
 
     }
+  }
+
+  /**
+   * Format a GFFEntry in GFF3 or GTF format.
+   * @param e the entry
+   * @param gtfFormat true if the entry is in GTF format
+   * @return the entry in the correct format
+   */
+  private static final String formatEntry(final GFFEntry e,
+      final boolean gtfFormat) {
+
+    if (gtfFormat) {
+      return e.toGTF();
+    }
+
+    return e.toGFF3();
   }
 
   private static Map<String, Long> getSequencesLengths(
@@ -394,6 +424,25 @@ public class GFFChecker implements Checker {
         .createGenomeDescriptionFromAnnotation(annotationFile);
 
     return result;
+  }
+
+  //
+  // Constructors
+  //
+
+  /**
+   * Protected constructor.
+   * @param gtfFormat true if the format the file is GTF
+   */
+  protected GFFChecker(final boolean gtfFormat) {
+    this.gtfFormat = gtfFormat;
+  }
+
+  /**
+   * Public constructor.
+   */
+  public GFFChecker() {
+    this(false);
   }
 
 }

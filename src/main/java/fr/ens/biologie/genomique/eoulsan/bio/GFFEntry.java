@@ -55,6 +55,7 @@ public class GFFEntry {
   private Map<String, String> attributes;
   private String[] parsedFields;
   private static final Pattern SEMI_COMA_SPLIT_PATTERN = Pattern.compile(";");
+  private static final Pattern COMA_SPLIT_PATTERN = Pattern.compile(",");
 
   //
   // Getters
@@ -576,43 +577,13 @@ public class GFFEntry {
     }
   }
 
-  private void parseAttributes(final String attributesField) {
-
-    if (this.attributes != null) {
-      this.attributes.clear();
-    }
-
-    if (attributesField == null) {
-      return;
-    }
-
-    if ("".equals(attributesField) || ".".equals(attributesField)) {
-      return;
-    }
-
-    final String s = attributesField.trim();
-
-    final String[] fields = SEMI_COMA_SPLIT_PATTERN.split(s);
-    for (String f : fields) {
-
-      final int indexEquals = f.indexOf('=');
-      if (indexEquals == -1) {
-        continue;
-      }
-
-      final String key = f.substring(0, indexEquals).trim();
-      final String value = f.substring(indexEquals + 1).trim();
-
-      setAttributeValue(key, value);
-    }
-
-  }
-
   /**
-   * Parse a GFF entry.
-   * @param s String to parse
+   * Parse the first fields of a GFF/GTF string.
+   * @param s the string to parse
+   * @return the last non parsed field
+   * @throws BadBioEntryException if an error occurs while parsing the string
    */
-  public void parse(final String s) throws BadBioEntryException {
+  private String parseCommon(final String s) throws BadBioEntryException {
 
     if (s == null) {
       throw new IllegalArgumentException("String to parse is null");
@@ -646,10 +617,128 @@ public class GFFEntry {
     setStrand(fields[6] == null || fields[6].length() == 0
         ? '.' : fields[6].charAt(0));
     setPhase(parseInt(fields[7], -1));
-    parseAttributes(fields[8]);
+
+    return fields[8];
   }
 
-  private String attributesToString() {
+  /**
+   * Parse the attribute field in GFF3 format.
+   * @param attributesField the attribute field
+   */
+  private void parseGFF3Attributes(final String attributesField) {
+
+    if (this.attributes != null) {
+      this.attributes.clear();
+    }
+
+    if (attributesField == null) {
+      return;
+    }
+
+    if ("".equals(attributesField) || ".".equals(attributesField)) {
+      return;
+    }
+
+    final String s = attributesField.trim();
+
+    final String[] fields = SEMI_COMA_SPLIT_PATTERN.split(s);
+    for (String f : fields) {
+
+      final int indexEquals = f.indexOf('=');
+      if (indexEquals == -1) {
+        continue;
+      }
+
+      final String key = f.substring(0, indexEquals).trim();
+      final String value = f.substring(indexEquals + 1).trim();
+
+      setAttributeValue(key, value);
+    }
+  }
+
+  /**
+   * Parse the attribute field in GTF format.
+   * @param attributesField the attribute field
+   */
+  private void parseGTFAttributes(final String attributesField) {
+
+    if (this.attributes != null) {
+      this.attributes.clear();
+    }
+
+    if (attributesField == null) {
+      return;
+    }
+
+    if ("".equals(attributesField) || ".".equals(attributesField)) {
+      return;
+    }
+
+    final String s = attributesField.trim();
+
+    final String[] fields = SEMI_COMA_SPLIT_PATTERN.split(s);
+    for (String f : fields) {
+
+      f = f.trim();
+
+      if (f.isEmpty()) {
+        continue;
+      }
+
+      final int indexEquals = f.indexOf(' ');
+      if (indexEquals == -1) {
+        continue;
+      }
+
+      final String key = f.substring(0, indexEquals).trim();
+      final String value = StringUtils
+          .unDoubleQuotes(f.substring(indexEquals + 1).trim()).trim();
+
+      if (getAttributesNames().contains(key)) {
+        setAttributeValue(key, getAttributeValue(key) + ',' + value);
+      } else {
+        setAttributeValue(key, value);
+      }
+    }
+  }
+
+  /**
+   * Parse a GFF entry. This method is deprecated, use <tt>parseGFF3()</tt>
+   * instead.
+   * @param s String to parse
+   * @deprecated
+   */
+  @Deprecated
+  public void parse(final String s) throws BadBioEntryException {
+
+    parseGFF3(s);
+  }
+
+  /**
+   * Parse a GFF3 entry.
+   * @param s String to parse
+   */
+  public void parseGFF3(final String s) throws BadBioEntryException {
+
+    final String attributeField = parseCommon(s);
+    parseGFF3Attributes(attributeField);
+  }
+
+  /**
+   * Parse a GTF entry.
+   * @param s String to parse
+   */
+  public void parseGTF(final String s) throws BadBioEntryException {
+
+    final String attributeField = parseCommon(s);
+    parseGTFAttributes(attributeField);
+  }
+
+  /**
+   * Convert the attributes to a GFF3 string.
+   * @return a the attribute in the GFF3 format
+   */
+  private String attributesToGFF3String() {
 
     if (this.attributes == null || this.attributes.size() == 0) {
       return ".";
@@ -676,11 +765,47 @@ public class GFFEntry {
   }
 
   /**
+   * Convert the attributes to a GTF string.
+   * @return a the attribute in the GTF format
+   */
+  private String attributesToGTFString() {
+
+    if (this.attributes == null || this.attributes.size() == 0) {
+      return ".";
+    }
+
+    final StringBuilder sb = new StringBuilder();
+
+    boolean first = true;
+
+    for (Map.Entry<String, String> e : this.attributes.entrySet()) {
+
+      final String key = e.getKey();
+
+      for (String value : COMA_SPLIT_PATTERN.split(e.getValue())) {
+
+        if (first) {
+          first = false;
+        } else {
+          sb.append("; ");
+        }
+
+        sb.append(key);
+        sb.append(" \"");
+
+        sb.append(value);
+        sb.append('\"');
+      }
+    }
+
+    return sb.toString();
+  }
+
+  /**
    * Override toString().
    * @return the GFF entry in GFF3 format
    */
-  @Override
-  public String toString() {
+  public String toGFF3() {
 
     final String seqId = getSeqId();
     final String source = getSource();
@@ -693,7 +818,37 @@ public class GFFEntry {
         + (getEnd() == -1 ? "." : getEnd()) + '\t'
         + (Double.isNaN(getScore()) ? "." : getScore()) + '\t' + getStrand()
         + '\t' + (getPhase() == -1 ? "." : getPhase()) + '\t'
-        + attributesToString();
+        + attributesToGFF3String();
+  }
+
+  /**
+   * Override toString().
+   * @return the GFF entry in GTF format
+   */
+  public String toGTF() {
+
+    final String seqId = getSeqId();
+    final String source = getSource();
+    final String type = getType();
+
+    return ("".equals(seqId) ? "." : StringUtils.protectGFF(seqId))
+        + '\t' + ("".equals(source) ? "." : StringUtils.protectGFF(source))
+        + '\t' + ("".equals(type) ? "." : StringUtils.protectGFF(type)) + '\t'
+        + (getStart() == -1 ? "." : getStart()) + '\t'
+        + (getEnd() == -1 ? "." : getEnd()) + '\t'
+        + (Double.isNaN(getScore()) ? "." : getScore()) + '\t' + getStrand()
+        + '\t' + (getPhase() == -1 ? "." : getPhase()) + '\t'
+        + attributesToGTFString();
+  }
+
+  /**
+   * Override toString().
+   * @return the GFF entry in GFF3 format
+   */
+  @Override
+  public String toString() {
+
+    return toGFF3();
   }
 
   //

@@ -589,7 +589,7 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="add">
-                Add a new storage protocol for additionnal annotations.
+                Add a new storage protocol for additional annotations.
             </action>
 
             <action dev="jourdren" type="update">
@@ -1141,11 +1141,11 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="update">
-                Now file searching with no extension is allowed for genome://, annotation:// and additionnalannotation:// protocols.
+                Now file searching with no extension is allowed for genome://, annotation:// and additionalannotation:// protocols.
             </action>
 
             <action dev="jourdren" type="update">
-                The search of a file is now case insensitive for genome://, annotation:// and additionnalannotation:// protocols when the underlying protocols support directory listing.
+                The search of a file is now case insensitive for genome://, annotation:// and additionalannotation:// protocols when the underlying protocols support directory listing.
             </action>
 
             <action dev="jourdren" type="fix">
@@ -1242,6 +1242,18 @@ of reads that reject each filter like in local mode.
 
             <action dev="jourdren" type="update">
 		Many small code and Javadoc fixes using IDEA inspect tool and Findbugs.
+            </action>
+
+         </release>
+
+         <release version="2.0-beta3" description="Eoulsan 2.0-beta3 release" date="2016-04-03">
+
+            <action dev="jourdren" type="fix">
+                The Illumina read header parser can now parse headers from reads created using several indexes for the demultiplexing.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Replace homemade Cheetah interpreter implementation by the original implementation using Jython.
             </action>
 
          </release>

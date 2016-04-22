@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-import static org.python.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
 import java.util.List;

@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 
 /**
@@ -36,20 +37,31 @@ public class DefaultDesignReader implements DesignReader {
   /**
    * Public constructor.
    * @param file file to read
-   * @throws FileNotFoundException
+   * @throws FileNotFoundException if the file cannot be found
    */
   public DefaultDesignReader(final File file) throws FileNotFoundException {
 
     checkNotNull(file, "file argument cannot be null");
 
     this.is = new FileInputStream(file);
+  }
 
+  /**
+   * Public constructor.
+   * @param file file to read
+   * @throws IOException if an error occurs while opening the file
+   */
+  public DefaultDesignReader(final DataFile file) throws IOException {
+
+    checkNotNull(file, "file argument cannot be null");
+
+    this.is = file.open();
   }
 
   /**
    * Public constructor
    * @param is Input stream to read
-   * @throws IOException if the stream is null
+   * @throws IOException if an error occurs while reading the file
    */
   public DefaultDesignReader(final InputStream is) throws IOException {
 
@@ -61,11 +73,10 @@ public class DefaultDesignReader implements DesignReader {
   /**
    * Public constructor
    * @param filename File to read
-   * @throws IOException if the stream is null
    * @throws FileNotFoundException if the file doesn't exist
    */
   public DefaultDesignReader(final String filename)
-      throws IOException, FileNotFoundException {
+      throws FileNotFoundException {
 
     checkNotNull(filename, "filename argument cannot be null");
 

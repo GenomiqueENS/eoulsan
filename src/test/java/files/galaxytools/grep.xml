@@ -19,7 +19,8 @@
     </param>
   </inputs>
   <outputs>
-    <data format="input" name="out_file1" metadata_source="input"/>
+    <!--data format="input" name="out_file1" metadata_source="input"/-->
+    <data format="bam" name="out_file1" metadata_source="input" />
   </outputs>
   <tests>
     <test>

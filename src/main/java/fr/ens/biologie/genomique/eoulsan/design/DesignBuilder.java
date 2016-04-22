@@ -683,7 +683,7 @@ public class DesignBuilder {
 
     // Set additional annotation file
     if (this.additionalAnnotationFile != null) {
-      design.getMetadata().setAdditionnalAnnotationFile(
+      design.getMetadata().setAdditionalAnnotationFile(
           this.additionalAnnotationFile.toString());
     }
 

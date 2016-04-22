@@ -927,9 +927,9 @@ public class CommandWorkflow extends AbstractWorkflow {
     }
 
     // Convert additional annotation file URL
-    if (dmd.containsAdditionnalAnnotationFile()) {
-      dmd.setAdditionnalAnnotationFile(
-          convertS3URL(dmd.getAdditionnalAnnotationFile()));
+    if (dmd.containsAdditionalAnnotationFile()) {
+      dmd.setAdditionalAnnotationFile(
+          convertS3URL(dmd.getAdditionalAnnotationFile()));
     }
 
   }

@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.modules.expression.local;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
+import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GTF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
@@ -62,7 +63,8 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
 
     try {
 
-      final Data featuresAnnotationData = context.getInputData(ANNOTATION_GFF);
+      final Data featuresAnnotationData =
+          context.getInputData(isGTFFormat() ? ANNOTATION_GTF : ANNOTATION_GFF);
       final Data alignmentData = context.getInputData(MAPPER_RESULTS_SAM);
       final Data genomeDescriptionData = context.getInputData(GENOME_DESC_TXT);
       final Data expressionData =
@@ -86,8 +88,8 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
       final DataFile expressionFile = expressionData.getDataFile();
 
       // Expression counting
-      count(context, counter, annotationFile, alignmentFile, expressionFile,
-          genomeDescFile, reporter);
+      count(context, counter, annotationFile, isGTFFormat(), alignmentFile,
+          expressionFile, genomeDescFile, reporter);
 
       final String htSeqArgsLog = ", "
           + getAttributeId() + ", stranded: " + getStranded()
@@ -124,9 +126,9 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
   }
 
   private void count(final TaskContext context, final ExpressionCounter counter,
-      final DataFile annotationFile, final DataFile alignmentFile,
-      final DataFile expressionFile, final DataFile genomeDescFile,
-      final Reporter reporter)
+      final DataFile annotationFile, final boolean gtfFormat,
+      final DataFile alignmentFile, final DataFile expressionFile,
+      final DataFile genomeDescFile, final Reporter reporter)
       throws IOException, EoulsanException, BadBioEntryException {
 
     // Init expression counter
@@ -140,7 +142,7 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
         + alignmentFile + ", use " + counter.getCounterName());
 
     // Process to counting
-    counter.count(alignmentFile, annotationFile, expressionFile,
+    counter.count(alignmentFile, annotationFile, gtfFormat, expressionFile,
         genomeDescFile);
   }
 

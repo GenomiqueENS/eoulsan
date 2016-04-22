@@ -32,6 +32,7 @@ import static java.util.Collections.singletonList;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -235,56 +236,30 @@ public class FastQCModule extends AbstractModule {
     final Data outData =
         context.getOutputData(DataFormats.FASTQC_REPORT_HTML, inData);
 
-    // Extract data file
-    final DataFile inFile;
+    // Define the list of input files
+    final List<DataFile> inputFiles = new ArrayList<>();
     if (inData.getFormat().getMaxFilesCount() > 1) {
-      inFile = inData.getDataFile(0);
+
+      for (int i = 0; i < inData.getDataFileCount(); i++) {
+        inputFiles.add(inData.getDataFile(i));
+      }
     } else {
-      inFile = inData.getDataFile();
+      inputFiles.add(inData.getDataFile());
     }
 
-    final DataFile reportFile = outData.getDataFile();
-
+    // Process input files
     try {
 
-      // Get the SequenceFile object
-      final CounterSequenceFile seqFile;
-      if (this.inputFormat == READS_FASTQ) {
+      int i = 0;
+      for (DataFile inputFile : inputFiles) {
 
-        seqFile = new FastqSequenceFile(inFile);
-      } else {
+        // Define the report output file
+        final DataFile reportFile = outData.getDataFile(i++);
 
-        seqFile = new SAMSequenceFile(inFile);
+        // Launch FastQC analysis
+        processFile(inputFile, this.inputFormat == READS_FASTQ, reportFile,
+            context.getLocalTempDirectory(), status);
       }
-
-      // Define modules list
-      final OverRepresentedSeqs os = new OverRepresentedSeqs();
-
-      final List<AbstractQCModule> modules =
-          Lists.newArrayList(new BasicStats(), new PerBaseQualityScores(),
-              new PerTileQualityScores(), new PerSequenceQualityScores(),
-              new PerBaseSequenceContent(), new PerSequenceGCContent(),
-              new NContent(), new SequenceLengthDistribution(),
-              os.duplicationLevelModule(), os, new AdapterContent(),
-              new KmerContent());
-
-      // Process sequences
-      processSequences(modules, seqFile);
-
-      // If no entries in the input file use a dedicated module
-      final List<AbstractQCModule> reportModules = seqFile.getCount() > 0
-          ? modules : singletonList((AbstractQCModule) new EmptyFileQC(inFile));
-
-      // Create the report
-      createReport(reportModules, seqFile, reportFile,
-          context.getLocalTempDirectory());
-
-      // Set the description of the context
-      status.setDescription("Create FastQC report on "
-          + inFile + " in " + reportFile.getName() + ")");
-
-      // Keep module data is now unnecessary
-      modules.clear();
 
       return status.createTaskResult();
 
@@ -301,6 +276,64 @@ public class FastQCModule extends AbstractModule {
           "Error while writing final report: " + e.getMessage());
     }
 
+  }
+
+  /**
+   * Process an input file by FastQC.
+   * @param inputFile the input file
+   * @param fastqFormat true if the format of the input file is FASTQ
+   * @param outputFile the report output file
+   * @param tmpDir the temporary directory
+   * @param status the task status
+   * @throws SequenceFormatException if an error occurs while processing
+   *           sequences
+   * @throws IOException if an error occurs while processing sequences
+   * @throws XMLStreamException if an error occurs while creating report
+   */
+  private void processFile(DataFile inputFile, final boolean fastqFormat,
+      final DataFile outputFile, final File tmpDir, final TaskStatus status)
+      throws SequenceFormatException, IOException, XMLStreamException {
+
+    // Set the description of the context
+    status.setDescription("Process sequence of " + inputFile + " for FastQC");
+
+    // Get the SequenceFile object
+    final CounterSequenceFile seqFile;
+    if (fastqFormat) {
+
+      seqFile = new FastqSequenceFile(inputFile);
+    } else {
+
+      seqFile = new SAMSequenceFile(inputFile);
+    }
+
+    // Define modules list
+    final OverRepresentedSeqs os = new OverRepresentedSeqs();
+
+    final List<AbstractQCModule> modules = Lists.newArrayList(new BasicStats(),
+        new PerBaseQualityScores(), new PerTileQualityScores(),
+        new PerSequenceQualityScores(), new PerBaseSequenceContent(),
+        new PerSequenceGCContent(), new NContent(),
+        new SequenceLengthDistribution(), os.duplicationLevelModule(), os,
+        new AdapterContent(), new KmerContent());
+
+    // Process sequences
+    processSequences(modules, seqFile);
+
+    // If no entries in the input file use a dedicated module
+    final List<AbstractQCModule> reportModules = seqFile.getCount() > 0
+        ? modules
+        : singletonList((AbstractQCModule) new EmptyFileQC(inputFile));
+
+    // Set the description of the context
+    status.setDescription(
+        "Create FastQC report on " + inputFile + " in " + outputFile.getName());
+
+    // Create the report
+    createReport(reportModules, seqFile, outputFile, tmpDir);
+
+    // Keep module data is now unnecessary
+    modules.clear();
   }
 
   /**

@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.design.io;
 
-import static org.python.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,19 +34,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignFactory;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSampleMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
+import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 
 /**
  * This class define a design reader for Eoulsan 2 design file.
@@ -131,7 +132,8 @@ public class Eoulsan2DesignReader implements DesignReader {
       throws IOException {
 
     // split the experiment key to extract the
-    final List<String> expField = splitToList(this.dotSplitter, key);
+    final List<String> expField =
+        GuavaCompatibility.splitToList(this.dotSplitter, key);
 
     if (expField.size() != 3) {
       throw new IOException("The experiment key is invalid.");
@@ -204,9 +206,8 @@ public class Eoulsan2DesignReader implements DesignReader {
   private void parseColumns(final Design design, final List<String> columnNames,
       final String line, final boolean firstLine) throws IOException {
 
-    final List<String> splitLine = splitToList(this.tabSplitter, line);
-    // System.out.print(splitLine);
-    // System.out.print('\n');
+    final List<String> splitLine =
+        GuavaCompatibility.splitToList(this.tabSplitter, line);
 
     if (firstLine) {
 
@@ -256,6 +257,11 @@ public class Eoulsan2DesignReader implements DesignReader {
       final String sampleName = splitLine.get(1);
       final Sample sample = design.addSample(sampleId);
       sample.setName(sampleName);
+
+      // Add the sample to all the experiments
+      for (Experiment e : design.getExperiments()) {
+        e.addSample(sample);
+      }
 
       final Iterator<String> nameIterator = columnNames.iterator();
       final Iterator<String> valueIterator = splitLine.iterator();
@@ -318,7 +324,8 @@ public class Eoulsan2DesignReader implements DesignReader {
       String columnValue, Design design, Sample sample) throws IOException {
 
     // split the column name
-    final List<String> expField = splitToList(this.dotSplitter, columnName);
+    final List<String> expField =
+        GuavaCompatibility.splitToList(this.dotSplitter, columnName);
 
     if (expField.size() != 3) {
 
@@ -386,7 +393,8 @@ public class Eoulsan2DesignReader implements DesignReader {
       // Trim trailing tabular
       if (header) {
 
-        final List<String> fields = splitToList(this.trimTabSplitter, line);
+        final List<String> fields =
+            GuavaCompatibility.splitToList(this.trimTabSplitter, line);
 
         if (fields.size() == 1) {
           line = fields.get(0);
@@ -441,34 +449,6 @@ public class Eoulsan2DesignReader implements DesignReader {
   }
 
   //
-  // Other methods
-  //
-
-  /**
-   * This method allow to split a charSequence into a list of String. This
-   * method avoid using Splitter.splitToList() that is not available in the
-   * embedded version of Guava in Hadoop. TODO Remove this method once the
-   * embedded version of Guava will be changed
-   * @param splitter the splitter
-   * @param sequence the sequence to split
-   * @return a list of String
-   */
-  private static List<String> splitToList(final Splitter splitter,
-      final CharSequence sequence) {
-
-    checkNotNull(splitter, "splitter argument cannot be null");
-    checkNotNull(sequence, "sequence argument cannot be null");
-
-    List<String> result = new ArrayList<>();
-
-    for (String s : splitter.split(sequence)) {
-      result.add(s);
-    }
-
-    return Collections.unmodifiableList(result);
-  }
-
-  //
   // Constructors
   //
 
@@ -485,9 +465,21 @@ public class Eoulsan2DesignReader implements DesignReader {
   }
 
   /**
-   * Public constructor
+   * Public constructor.
+   * @param file file to read
+   * @throws IOException if the stream cannot be opened
+   */
+  public Eoulsan2DesignReader(final DataFile file) throws IOException {
+
+    checkNotNull(file, "the file argument cannot be null");
+
+    this.is = file.open();
+  }
+
+  /**
+   * Public constructor.
    * @param is Input stream to read
-   * @throws IOException if the stream is null
+   * @throws IOException if the stream cannot be opened
    */
   public Eoulsan2DesignReader(final InputStream is) throws IOException {
 
@@ -497,13 +489,12 @@ public class Eoulsan2DesignReader implements DesignReader {
   }
 
   /**
-   * Public constructor
+   * Public constructor.
    * @param filename File to read
-   * @throws IOException if the stream is null
    * @throws FileNotFoundException if the file doesn't exist
    */
   public Eoulsan2DesignReader(final String filename)
-      throws IOException, FileNotFoundException {
+      throws FileNotFoundException {
 
     checkNotNull(filename, "the filename argument cannot be null");
 

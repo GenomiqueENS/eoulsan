@@ -28,15 +28,16 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.core.Modules.renamedParameter;
 import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
+import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GTF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
 import java.util.Set;
 
+import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.ExpressionCounterService;
 import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter;
@@ -78,6 +79,7 @@ public abstract class AbstractExpressionModule extends AbstractModule {
   public static final String ATTRIBUTE_ID_PARAMETER_NAME = "attribute.id";
   public static final String SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME =
       "split.attribute.values";
+  public static final String FEATURES_FILE_FORMAT = "features.file.format";
 
   public static final String OLD_REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME =
       "removeambiguouscases";
@@ -100,6 +102,7 @@ public abstract class AbstractExpressionModule extends AbstractModule {
   private OverlapMode overlapmode = OverlapMode.UNION;
   private boolean removeAmbiguousCases = true;
   private boolean splitAttributeValues = false;
+  private boolean gtfFormat;
 
   //
   // Getters
@@ -171,6 +174,15 @@ public abstract class AbstractExpressionModule extends AbstractModule {
     return ExpressionCounterService.getInstance().newService(this.counterName);
   }
 
+  /**
+   * Test if the annotation file format is GTF.
+   * @return true if the annotation file format is GTF
+   */
+  protected boolean isGTFFormat() {
+
+    return this.gtfFormat;
+  }
+
   //
   // Module methods
   //
@@ -199,7 +211,8 @@ public abstract class AbstractExpressionModule extends AbstractModule {
     final InputPortsBuilder builder = new InputPortsBuilder();
 
     builder.addPort("alignments", MAPPER_RESULTS_SAM);
-    builder.addPort("featuresannotation", ANNOTATION_GFF);
+    builder.addPort("featuresannotation",
+        this.gtfFormat ? ANNOTATION_GTF : ANNOTATION_GFF);
     builder.addPort("genomedescription", GENOME_DESC_TXT);
 
     return builder.create();
@@ -268,8 +281,30 @@ public abstract class AbstractExpressionModule extends AbstractModule {
 
       case OLD_SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME:
         renamedParameter(context, p, SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME);
+
       case SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME:
         this.splitAttributeValues = p.getBooleanValue();
+        break;
+
+      case FEATURES_FILE_FORMAT:
+
+        switch (p.getLowerStringValue()) {
+
+        case "gtf":
+          this.gtfFormat = true;
+          break;
+
+        case "gff":
+        case "gff3":
+          this.gtfFormat = false;
+          break;
+
+        default:
+          Modules.badParameterValue(context, p,
+              "Unknown annotation file format");
+          break;
+        }
+
         break;
 
       default:
@@ -301,7 +336,8 @@ public abstract class AbstractExpressionModule extends AbstractModule {
 
     // Configure Checker
     if (context.getRuntime().getMode() != EoulsanExecMode.CLUSTER_TASK) {
-      CheckerModule.configureChecker(ANNOTATION_GFF, stepParameters);
+      CheckerModule.configureChecker(
+          this.gtfFormat ? ANNOTATION_GTF : ANNOTATION_GFF, stepParameters);
     }
 
     // Log Step parameters

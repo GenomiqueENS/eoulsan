@@ -34,8 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.python.google.common.base.MoreObjects;
-import org.python.google.common.base.Objects;
+import com.google.common.base.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 
@@ -321,7 +320,7 @@ public class Design implements Serializable {
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this)
+    return Objects.toStringHelper(this)
         .add("designNumber", this.designNumber)
         .add("designName", this.designName).add("samples", this.samples)
         .add("experiments", this.experiments)

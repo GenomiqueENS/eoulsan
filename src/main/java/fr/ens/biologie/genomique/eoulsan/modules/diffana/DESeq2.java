@@ -83,7 +83,6 @@ public class DESeq2 {
 
   // The experiment
   private final Experiment experiment;
-  private final String expName;
 
   // List of expression files
   final Map<String, File> sampleFiles;
@@ -410,15 +409,27 @@ public class DESeq2 {
     return sb.toString();
   }
 
-  private String generateComparisonFile() {
+  /**
+   * Generate comparison file content.
+   * @return a String with the comparison file content
+   * @throws EoulsanException if the format of one of the comparison entries of
+   *           the design file is invalid
+   */
+  private String generateComparisonFileContent() throws EoulsanException {
 
     final StringBuilder sb = new StringBuilder();
 
-    for (String c : experiment.getMetadata().getComparison().split(";")) {
-      String[] splitC = c.split(":");
-      sb.append(splitC[0]);
+    for (String c : experiment.getMetadata().getComparisons().split(";")) {
+
+      final String[] splitC = c.split(":");
+
+      if (splitC.length != 2) {
+        throw new EoulsanException("Invalid comparison entry format: " + c);
+      }
+
+      sb.append(splitC[0].trim());
       sb.append(TAB_SEPARATOR);
-      sb.append(splitC[1]);
+      sb.append(splitC[1].trim());
       sb.append(NEWLINE);
     }
 
@@ -445,10 +456,11 @@ public class DESeq2 {
       command.add(booleanParameter(false));
     }
 
-    command.addAll(asList(deseq2DesignFileName, this.model, this.expName,
-        booleanParameter(this.expHeader), this.sizeFactorsType.toDESeq2Value(),
-        this.fitType.toDESeq2Value(), this.statisticTest.toDESeq2Value(),
-        contrastFilename, this.stepId + "_"));
+    command.addAll(asList(deseq2DesignFileName, this.model,
+        this.experiment.getName(), booleanParameter(this.expHeader),
+        this.sizeFactorsType.toDESeq2Value(), this.fitType.toDESeq2Value(),
+        this.statisticTest.toDESeq2Value(), contrastFilename,
+        this.stepId + "_"));
 
     return command.toArray(new String[command.size()]);
   }
@@ -471,10 +483,10 @@ public class DESeq2 {
 
     final ExperimentMetadata emd = experiment.getMetadata();
 
-    if (emd.containsComparison()) {
+    if (emd.containsComparisons()) {
 
       // Check if the comparison value is correct
-      for (String c : emd.getComparison().split(";")) {
+      for (String c : emd.getComparisons().split(";")) {
         String[] splitC = c.split(":");
         if (splitC.length != 2) {
           throw new EoulsanException("Error in "
@@ -488,8 +500,8 @@ public class DESeq2 {
     if (!getExperimentSampleAllMetadataKeys(experiment)
         .contains(CONDITION_COLUMN)
         && !getAllSamplesMetadataKeys(design).contains(CONDITION_COLUMN)) {
-      throw new EoulsanException(
-          "Condition column missing for experiment: " + expName);
+      throw new EoulsanException("Condition column missing for experiment: "
+          + this.experiment.getName());
     }
   }
 
@@ -500,7 +512,7 @@ public class DESeq2 {
    */
   public void runDEseq2() throws IOException, EoulsanException {
 
-    final String prefix = this.stepId + "_" + expName;
+    final String prefix = this.stepId + "_" + this.experiment.getName();
 
     // Define design filename
     final String deseq2DesignFileName = prefix + DESEQ_DESIGN_FILE_SUFFIX;
@@ -531,14 +543,15 @@ public class DESeq2 {
     // Build the contrast file
     if (this.buildContrast) {
 
-      if (!this.experiment.getMetadata().containsComparison()) {
+      if (!this.experiment.getMetadata().containsComparisons()) {
         throw new EoulsanException(
             "No comparison defined to build the constrasts in experiment: "
-                + expName);
+                + this.experiment.getName());
       }
 
       // Write the comparison file from the Eoulsan design (experiment metadata)
-      this.executor.writerFile(generateComparisonFile(), comparisonFileName);
+      this.executor.writerFile(generateComparisonFileContent(),
+          comparisonFileName);
 
       // Read build contrast R script
       final String buildContrastScript =
@@ -546,13 +559,13 @@ public class DESeq2 {
 
       // Set the description of the analysis
       final String description = this.stepId
-          + "-buildcontrasts-" + experiment.getId() + '-'
+          + "_" + this.experiment.getName() + "-buildcontrasts-"
           + toCompactTime(System.currentTimeMillis());
 
       // Run buildContrast.R
       this.executor.executeRScript(buildContrastScript, false, null,
           this.saveRScripts, description, deseq2DesignFileName, this.model,
-          comparisonFileName, this.expName + CONTRAST_FILE_SUFFIX,
+          comparisonFileName, this.experiment.getName() + CONTRAST_FILE_SUFFIX,
           this.stepId + "_");
     }
 
@@ -565,7 +578,7 @@ public class DESeq2 {
 
       // Set the description of the analysis
       final String description = this.stepId
-          + "-normdiffana-" + this.experiment.getId() + '-'
+          + "_" + this.experiment.getName() + "-normdiffana-"
           + toCompactTime(System.currentTimeMillis());
 
       // TODO Do not handle custom contrast files with
@@ -640,10 +653,11 @@ public class DESeq2 {
       final Design design, final Experiment experiment,
       final Map<String, File> sampleFiles, final boolean normFig,
       final boolean diffanaFig, final boolean normDiffana,
-      final boolean diffana, final DESeq2.SizeFactorsType sizeFactorsType,
-      final DESeq2.FitType fitType, final DESeq2.StatisticTest statisticTest,
+      final boolean diffana, final SizeFactorsType sizeFactorsType,
+      final FitType fitType, final StatisticTest statisticTest,
       boolean saveRScripts) {
 
+    checkNotNull(stepId, "stepId argument cannot be null");
     checkNotNull(executor, "executor argument cannot be null");
     checkNotNull(design, "design argument cannot be null");
     checkNotNull(experiment, "experiment argument cannot be null");
@@ -653,14 +667,13 @@ public class DESeq2 {
     checkNotNull(fitType, "fitType argument cannot be null");
     checkNotNull(statisticTest, "statisticTest argument cannot be null");
 
+    this.stepId = stepId;
+
     this.executor = executor;
     this.saveRScripts = saveRScripts;
     this.design = design;
     this.experiment = experiment;
-    this.expName = experiment.getName();
     this.sampleFiles = sampleFiles;
-
-    this.stepId = stepId;
 
     ExperimentMetadata expMD = experiment.getMetadata();
 

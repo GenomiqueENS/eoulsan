@@ -45,7 +45,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.GFFEntry;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 
 /**
- * This class defines a GFF reader.
+ * This class defines a GFF3 reader.
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -62,6 +62,8 @@ public class GFFReader
   private boolean nextCallDone = true;
   protected IOException ioException;
   protected BadBioEntryException bbeException;
+
+  private boolean gff3Format = true;
 
   @Override
   public Iterator<GFFEntry> iterator() {
@@ -126,7 +128,11 @@ public class GFFReader
           continue;
         } else {
 
-          this.result.parse(line.trim());
+          if (this.gff3Format) {
+            this.result.parseGFF3(line.trim());
+          } else {
+            this.result.parseGTF(line.trim());
+          }
           this.result.setId(this.count++);
 
           // Add metadata if not reuse result object
@@ -194,7 +200,29 @@ public class GFFReader
   }
 
   //
-  // Constructor
+  // Protected methods
+  //
+
+  /**
+   * Get the format of the data to read.
+   * @return true if the data to read is in GFF format
+   */
+  protected boolean isGFF3Format() {
+
+    return this.gff3Format;
+  }
+
+  /**
+   * Set the format of the data to read.
+   * @param gffFormat true if the data to read is in GFF3 format
+   */
+  protected void setGFF3Format(final boolean gffFormat) {
+
+    this.gff3Format = gffFormat;
+  }
+
+  //
+  // Constructors
   //
 
   /**

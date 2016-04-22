@@ -41,8 +41,8 @@ public class DesignMetadata extends AbstractMetadata implements Serializable {
   public static final String GENOME_FILE_KEY = "GenomeFile";
   public static final String GFF_FILE_KEY = "GffFile";
   public static final String GTF_FILE_KEY = "GtfFile";
-  public static final String ADDITIONNAL_ANNOTATION_FILE_KEY =
-      "AdditionnalAnnotationFile";
+  public static final String ADDITIONAL_ANNOTATION_FILE_KEY =
+      "AdditionalAnnotationFile";
 
   //
   // Getters
@@ -73,11 +73,11 @@ public class DesignMetadata extends AbstractMetadata implements Serializable {
   }
 
   /**
-   * Get the additionnal annotation file.
-   * @return the additionnal annotation file
+   * Get the additional annotation file.
+   * @return the additional annotation file
    */
-  public String getAdditionnalAnnotationFile() {
-    return getTrimmed(ADDITIONNAL_ANNOTATION_FILE_KEY);
+  public String getAdditionalAnnotationFile() {
+    return getTrimmed(ADDITIONAL_ANNOTATION_FILE_KEY);
   }
 
   //
@@ -109,12 +109,11 @@ public class DesignMetadata extends AbstractMetadata implements Serializable {
   }
 
   /**
-   * Set the additionnal annotation file.
-   * @param newAdditionnalAnnotationFile the new additionnal annotation file
+   * Set the additional annotation file.
+   * @param newAdditionalAnotationFile the new additional annotation file
    */
-  public void setAdditionnalAnnotationFile(
-      String newAdditionnalAnnotationFile) {
-    set(ADDITIONNAL_ANNOTATION_FILE_KEY, newAdditionnalAnnotationFile);
+  public void setAdditionalAnnotationFile(String newAdditionalAnotationFile) {
+    set(ADDITIONAL_ANNOTATION_FILE_KEY, newAdditionalAnotationFile);
   }
 
   //
@@ -146,11 +145,11 @@ public class DesignMetadata extends AbstractMetadata implements Serializable {
   }
 
   /**
-   * Test if the additionnal annotation file field exists.
-   * @return the additionnal annotation file field exists
+   * Test if the additional annotation file field exists.
+   * @return the additional annotation file field exists
    */
-  public boolean containsAdditionnalAnnotationFile() {
-    return contains(ADDITIONNAL_ANNOTATION_FILE_KEY);
+  public boolean containsAdditionalAnnotationFile() {
+    return contains(ADDITIONAL_ANNOTATION_FILE_KEY);
   }
 
   //

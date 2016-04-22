@@ -31,21 +31,19 @@ import org.w3c.dom.Element;
 import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Naming;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class AbstractToolElement.
  * @author Sandrine Perrin
- * @since 2.1
+ * @since 2.0
  */
 public abstract class AbstractToolElement implements ToolElement {
 
   /** SPLITTER. */
-  final static Splitter COMMA =
+  protected final static Splitter COMMA =
       Splitter.on(',').trimResults().omitEmptyStrings();
 
   /** Data from attribute param tag. */
@@ -70,13 +68,7 @@ public abstract class AbstractToolElement implements ToolElement {
   private String help = "";
 
   /** The is setting. */
-  protected boolean isSetting = false;
-
-  // private String parameterEoulsan;
-
-  // public boolean isParameterEoulsanValid(final String paramEoulsan) {
-  // return true;
-  // }
+  protected boolean set = false;
 
   /**
    * Checks if is value parameter valid.
@@ -89,9 +81,13 @@ public abstract class AbstractToolElement implements ToolElement {
       throws EoulsanException {
 
     // Extract parameter
-    Parameter parameter = extractParameterByName(stepParameters);
+    final Parameter parameter = extractParameterByName(stepParameters);
 
-    setValue(parameter);
+    if (parameter == null) {
+      setDefaultValue();
+    } else {
+      setValue(parameter);
+    }
   }
 
   @Override
@@ -125,8 +121,8 @@ public abstract class AbstractToolElement implements ToolElement {
   //
 
   @Override
-  public boolean isSetting() {
-    return this.isSetting;
+  public boolean isSet() {
+    return this.set;
   }
 
   @Override
@@ -135,7 +131,7 @@ public abstract class AbstractToolElement implements ToolElement {
   @Override
   public void setValue(final Parameter stepParameter) throws EoulsanException {
     // TODO
-    if (stepParameter == null && !isSetting())
+    if (stepParameter == null && !isSet())
       throw new EoulsanException(
           "GalaxyTool parameter missing to set " + getName());
 
@@ -262,67 +258,6 @@ public abstract class AbstractToolElement implements ToolElement {
       return false;
     }
     return true;
-  }
-
-  //
-  /**
-   * Gets the instance tool element.
-   * @param param the param
-   * @return the instance tool element
-   * @throws EoulsanException the eoulsan exception
-   */
-  public static ToolElement getInstanceToolElement(final Element param)
-      throws EoulsanException {
-    return getInstanceToolElement(param, null);
-  }
-
-  /**
-   * Gets the instance tool element.
-   * @param param the param
-   * @param nameSpace the name space
-   * @return the instance tool element
-   * @throws EoulsanException the eoulsan exception
-   */
-  public static ToolElement getInstanceToolElement(final Element param,
-      final String nameSpace) throws EoulsanException {
-
-    if (param == null) {
-      throw new EoulsanException(
-          "Parsing xml: no element param found to instantiate a tool element.");
-    }
-
-    // Instantiate a tool parameter according to attribute type value
-    final String type =
-        param.getAttribute("type").toLowerCase(Globals.DEFAULT_LOCALE);
-
-    final String paramName = param.getTagName();
-    if (paramName.equals(ToolOutputsData.TAG_NAME)) {
-      return new ToolOutputsData(param, nameSpace);
-    }
-
-    ToolElement toolElement = null;
-
-    switch (type) {
-
-    case ToolElementBoolean.TYPE:
-      toolElement = new ToolElementBoolean(param, nameSpace);
-      break;
-    case ToolElementInteger.TYPE:
-      toolElement = new ToolElementInteger(param, nameSpace);
-      break;
-    case ToolElementFloat.TYPE:
-      toolElement = new ToolElementFloat(param, nameSpace);
-      break;
-    case ToolElementSelect.TYPE:
-      toolElement = new ToolElementSelect(param, nameSpace);
-      break;
-
-    default:
-      toolElement = new ToolElementData(param, nameSpace);
-      break;
-    }
-
-    return toolElement;
   }
 
   //
