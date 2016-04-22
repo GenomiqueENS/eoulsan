@@ -90,6 +90,8 @@ public abstract class AbstractSequenceReadsMapper
   private String mapperArguments = null;
   private String indexerArguments = null;
   private File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
+  private File executablesTempDir =
+      EoulsanRuntime.getSettings().getExecutablesTempDirectoryFile();
   private boolean multipleInstancesEnabled;
   private DockerClient dockerClient;
 
@@ -235,6 +237,12 @@ public abstract class AbstractSequenceReadsMapper
   }
 
   @Override
+  public File getExecutablesTempDirectory() {
+
+    return this.executablesTempDir;
+  }
+
+  @Override
   public boolean isMultipleInstancesAllowed() {
 
     return false;
@@ -350,6 +358,14 @@ public abstract class AbstractSequenceReadsMapper
     checkState(!this.initialized, "Mapper has been initialized");
 
     this.tempDir = tempDirectory;
+  }
+
+  @Override
+  public void setExecutablesTempDirectory(final File executablesTempDirectory) {
+
+    checkState(!this.initialized, "Mapper has been initialized");
+
+    this.tempDir = executablesTempDirectory;
   }
 
   @Override
@@ -927,7 +943,7 @@ public abstract class AbstractSequenceReadsMapper
           getMapperDockerImage(), getTempDirectory());
     } else if (isUseBundledBinaries()) {
       this.executor = new BundledMapperExecutor(getSoftwarePackage(),
-          getMapperVersionToUse(), getTempDirectory());
+          getMapperVersionToUse(), getExecutablesTempDirectory());
     } else {
       this.executor = new PathMapperExecutor();
     }

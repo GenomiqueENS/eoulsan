@@ -276,6 +276,9 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     // Set mapper temporary directory
     this.mapper.setTempDirectory(tempDir);
 
+    // Set mapper executable temporary directory
+    this.mapper.setExecutablesTempDirectory(tempDir);
+
     // Enable multiple instance of the mapper, if not supported
     // this.mapper.isMultipleInstancesEnabled() will return false
     this.mapper.setMultipleInstancesEnabled(true);

@@ -220,10 +220,23 @@ public interface SequenceReadsMapper {
   File getTempDirectory();
 
   /**
+   * Get the temporary directory for executables.
+   * @return the temporary directory for executables
+   */
+  File getExecutablesTempDirectory();
+
+  /**
    * Set the temporary directory to use by the mapper.
    * @param tempDirectory the temporary directory to use
    */
   void setTempDirectory(File tempDirectory);
+
+  /**
+   * Set the temporary directory to store executables.
+   * @param executableTempDirectory the temporary directory for executables to
+   *          use
+   */
+  void setExecutablesTempDirectory(File executableTempDirectory);
 
   /**
    * Set the FASTQ format.

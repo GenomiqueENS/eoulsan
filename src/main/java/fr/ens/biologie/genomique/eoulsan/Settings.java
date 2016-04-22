@@ -66,6 +66,9 @@ public final class Settings implements Serializable {
 
   private static final String TMP_DIR_KEY = MAIN_PREFIX_KEY + "tmp.dir";
 
+  private static final String EXECUTABLES_TMP_DIR_KEY =
+      MAIN_PREFIX_KEY + "executables.tmp.dir";
+
   private static final String LOCAL_THREADS_NUMBER =
       MAIN_PREFIX_KEY + "local.threads";
 
@@ -318,6 +321,25 @@ public final class Settings implements Serializable {
   public boolean isUserDefinedTempDirectory() {
 
     return this.properties.containsKey(TMP_DIR_KEY);
+  }
+
+  /**
+   * Get the temporary directory for executables.
+   * @return The temporary directory for executables
+   */
+  public String getExecutablesTempDirectory() {
+
+    return this.properties.getProperty(EXECUTABLES_TMP_DIR_KEY,
+        getTempDirectory());
+  }
+
+  /**
+   * Get the temporary directory File for executables.
+   * @return The temporary directory for executables as a File object
+   */
+  public File getExecutablesTempDirectoryFile() {
+
+    return new File(getExecutablesTempDirectory());
   }
 
   /**
@@ -788,6 +810,20 @@ public final class Settings implements Serializable {
 
     if (tempDirectory != null) {
       this.properties.setProperty(TMP_DIR_KEY, tempDirectory);
+    }
+  }
+
+  /**
+   * Set the temporary directory for executables.
+   * @param executablesTempDirectory The path to the temporary directory for
+   *          executables
+   */
+  public void setExecutablesTempDirectory(
+      final String executablesTempDirectory) {
+
+    if (executablesTempDirectory != null) {
+      this.properties.setProperty(EXECUTABLES_TMP_DIR_KEY,
+          executablesTempDirectory);
     }
   }
 

@@ -230,6 +230,10 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
     // Set mapper temporary directory
     mapper.setTempDirectory(context.getLocalTempDirectory());
 
+    // Set mapper executable temporary directory
+    mapper.setExecutablesTempDirectory(
+        context.getSettings().getExecutablesTempDirectoryFile());
+
     // Set the number of thread to use
     final int threads = threadCount < 1
         ? Runtime.getRuntime().availableProcessors() : threadCount;
