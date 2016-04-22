@@ -60,6 +60,13 @@ public class ToolExecutor {
     checkArgument(!this.commandLine.isEmpty(),
         "Command line for Galaxy tool is empty");
 
+    // Get internal context object
+    final TaskContextImpl context = (TaskContextImpl) this.stepContext;
+
+    final int requiredMemory = context.getCurrentStep().getRequiredMemory();
+    final int requiredProcessors =
+        context.getCurrentStep().getRequiredProcessors();
+
     final String interpreter = this.toolData.getInterpreter();
 
     // Define the interpreter to use
@@ -71,7 +78,8 @@ public class ToolExecutor {
       break;
 
     case "docker":
-      ti = new DockerExecutorInterpreter(this.toolData.getDockerImage());
+      ti = new DockerExecutorInterpreter(this.toolData.getDockerImage(),
+          requiredProcessors, requiredMemory);
       break;
 
     default:
@@ -81,8 +89,6 @@ public class ToolExecutor {
 
     // Create the command line
     final List<String> command = ti.createCommandLine(this.commandLine);
-
-    final TaskContextImpl context = (TaskContextImpl) this.stepContext;
 
     final File executionDirectory = context.getStepOutputDirectory().toFile();
     final File logDirectory = context.getTaskOutputDirectory().toFile();

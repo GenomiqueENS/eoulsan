@@ -19,7 +19,7 @@ import java.util.Set;
 
 import com.google.common.base.Objects;
 import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.DockerClient.LogsParameter;
+import com.spotify.docker.client.DockerClient.LogsParam;
 import com.spotify.docker.client.DockerException;
 import com.spotify.docker.client.LogMessage;
 import com.spotify.docker.client.LogStream;
@@ -47,6 +47,8 @@ public class DockerSimpleProcess extends AbstractSimpleProcess {
   private final String dockerImage;
   private final int userUid;
   private final int userGid;
+  private final int requiredProcessors;
+  private final int requiredMemory;
 
   @Override
   public int execute(final List<String> commandLine,
@@ -104,7 +106,14 @@ public class DockerSimpleProcess extends AbstractSimpleProcess {
         toBind = Collections.emptyList();
       }
 
-      builder.hostConfig(createBinds(executionDirectory, toBind));
+      // Configure host
+      final HostConfig.Builder hostBuilder = HostConfig.builder();
+      setHostRequirements(hostBuilder, this.requiredProcessors,
+          this.requiredMemory);
+      setHostBinds(hostBuilder, executionDirectory, toBind);
+
+      // Create host configuration
+      builder.hostConfig(hostBuilder.build());
 
       // Set environment variables
       builder.env(env);
@@ -121,8 +130,9 @@ public class DockerSimpleProcess extends AbstractSimpleProcess {
       this.dockerClient.startContainer(containerId);
 
       // Redirect stdout and stderr
-      final LogStream logStream = this.dockerClient.logs(containerId,
-          LogsParameter.FOLLOW, LogsParameter.STDERR, LogsParameter.STDOUT);
+      final LogStream logStream =
+          this.dockerClient.logs(containerId, LogsParam.follow(true),
+              LogsParam.stderr(true), LogsParam.stdout(true));
       redirect(logStream, stdoutFile, stderrFile, redirectErrorStream);
 
       // Wait the end of the container
@@ -140,13 +150,13 @@ public class DockerSimpleProcess extends AbstractSimpleProcess {
           SECOND_TO_WAIT_BEFORE_KILLING_CONTAINER);
 
       // Remove container
-      getLogger().fine("Remove Docker container: " + containerId);
-      try {
-        this.dockerClient.removeContainer(containerId);
-      } catch (DockerException | InterruptedException e) {
-        EoulsanLogger.getLogger()
-            .severe("Unable to remove Docker container: " + containerId);
-      }
+      // getLogger().fine("Remove Docker container: " + containerId);
+      // try {
+      // this.dockerClient.removeContainer(containerId);
+      // } catch (DockerException | InterruptedException e) {
+      // EoulsanLogger.getLogger()
+      // .severe("Unable to remove Docker container: " + containerId);
+      // }
 
       return exitValue;
     } catch (DockerException | InterruptedException e) {
@@ -188,15 +198,13 @@ public class DockerSimpleProcess extends AbstractSimpleProcess {
   }
 
   /**
-   * Create Docker binds.
+   * Set Host binds.
    * @param executionDirectory execution directory
    * @param files files to binds
-   * @return an HostConfig object
    */
-  private static HostConfig createBinds(final File executionDirectory,
-      List<File> files) {
+  private static void setHostBinds(final HostConfig.Builder builder,
+      final File executionDirectory, final List<File> files) {
 
-    HostConfig.Builder builder = HostConfig.builder();
     Set<String> binds = new HashSet<>();
 
     if (executionDirectory != null) {
@@ -215,8 +223,29 @@ public class DockerSimpleProcess extends AbstractSimpleProcess {
     }
 
     builder.binds(new ArrayList<>(binds));
+  }
 
-    return builder.build();
+  /**
+   * Set Host requirements.
+   * @param builder
+   * @param requiredProcessors
+   * @param requiredMemory
+   * @param requiredProcessors required processors
+   * @param requiredMemory required memory
+   */
+  private static void setHostRequirements(final HostConfig.Builder builder,
+      final int requiredProcessors, final int requiredMemory) {
+
+    if (requiredProcessors > 0 && requiredProcessors <= 1024) {
+
+      long shares = 1024
+          / Runtime.getRuntime().availableProcessors() * requiredProcessors;
+      builder.cpuShares(shares);
+    }
+
+    if (requiredMemory > 0) {
+      builder.memory((long) requiredMemory * 1024 * 1024);
+    }
   }
 
   /**
@@ -325,7 +354,7 @@ public class DockerSimpleProcess extends AbstractSimpleProcess {
    */
   public DockerSimpleProcess(final String dockerImage) {
 
-    this(DockerManager.getInstance().getClient(), dockerImage);
+    this(DockerManager.getInstance().getClient(), dockerImage, -1, -1);
   }
 
   /**
@@ -337,6 +366,36 @@ public class DockerSimpleProcess extends AbstractSimpleProcess {
   public DockerSimpleProcess(final DockerClient dockerClient,
       final String dockerImage) {
 
+    this(dockerClient, dockerImage, -1, -1);
+  }
+
+  /**
+   * Constructor.
+   * @param dockerClient Docker connection URI
+   * @param dockerImage Docker image
+   * @param temporaryDirectory temporary directory
+   * @param requiredProcessors required processors
+   * @param requiredMemory required memory
+   */
+  public DockerSimpleProcess(final String dockerImage,
+      final int requiredProcessors, final int requiredMemory) {
+
+    this(DockerManager.getInstance().getClient(), dockerImage,
+        requiredProcessors, requiredMemory);
+  }
+
+  /**
+   * Constructor.
+   * @param dockerClient Docker connection URI
+   * @param dockerImage Docker image
+   * @param temporaryDirectory temporary directory
+   * @param requiredProcessors required processors
+   * @param requiredMemory required memory
+   */
+  public DockerSimpleProcess(final DockerClient dockerClient,
+      final String dockerImage, final int requiredProcessors,
+      final int requiredMemory) {
+
     checkNotNull(dockerClient, "dockerClient argument cannot be null");
     checkNotNull(dockerImage, "dockerImage argument cannot be null");
 
@@ -344,6 +403,8 @@ public class DockerSimpleProcess extends AbstractSimpleProcess {
     this.dockerImage = dockerImage;
     this.userUid = SystemUtils.uid();
     this.userGid = SystemUtils.gid();
+    this.requiredProcessors = requiredProcessors;
+    this.requiredMemory = requiredMemory;
   }
 
 }

@@ -20,6 +20,8 @@ public class DockerExecutorInterpreter extends AbstractExecutorInterpreter {
   public static final String INTERPRETER_NAME = "docker";
 
   private final String dockerImage;
+  private final int requiredMemory;
+  private final int requiredProcessors;
 
   @Override
   public String getName() {
@@ -38,7 +40,8 @@ public class DockerExecutorInterpreter extends AbstractExecutorInterpreter {
   @Override
   protected SimpleProcess newSimpleProcess() {
 
-    return new DockerSimpleProcess(this.dockerImage);
+    return new DockerSimpleProcess(this.dockerImage, this.requiredProcessors,
+        this.requiredMemory);
   }
 
   //
@@ -59,12 +62,17 @@ public class DockerExecutorInterpreter extends AbstractExecutorInterpreter {
   /**
    * Constructor.
    * @param dockerImage Docker image
+   * @param requiredProcessors required processors
+   * @param requiredMemory required memory
    */
-  public DockerExecutorInterpreter(final String dockerImage) {
+  public DockerExecutorInterpreter(final String dockerImage,
+      final int requiredProcessors, final int requiredMemory) {
 
     checkNotNull(dockerImage, "dockerImage argument cannot be null");
 
     this.dockerImage = dockerImage;
+    this.requiredMemory = requiredMemory;
+    this.requiredProcessors = requiredProcessors;
   }
 
 }
