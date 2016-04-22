@@ -1258,5 +1258,57 @@ of reads that reject each filter like in local mode.
 
          </release>
 
+         <release version="2.0-beta4" description="Eoulsan 2.0-beta4 release" date="TBD">
+
+            <action dev="jourdren" type="fix">
+                No Eoulsan class now use Spliter.splitToList() method to avoid exception when using Hadoop and its bundled version of Guava.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                In Eoulsan2DesignReader, The samples were not added to the experiements if no column dedicated to the experiment has been created.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                In the design v2, the comparisons value of the [Experiment] section is now "comparisons" like in documentation instead of "comparison".
+            </action>
+
+            <action dev="jourdren" type="fix">
+                The step parameters are now evalued when parsing the &lt;outputs&gt; subtags in Galaxy tool files.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                In the DESeq2 module the comparison entries strings were not trimmed.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Add GTF format support in the GFFEntry class and add a GTFReader and a GTFWriter classes to read and write GTF files.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Add support of the GTF format for feature annotation files in the expression step.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Add a checker for GTF format.
+            </action>
+
+            <action dev="jourdren" type="update">
+                The FastQC module can now process the two read files in paired-end.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Add a TMPDIR variable that contains the path to the local temporary directory when interprets the &lt;command&gt; tag of the Galaxy tool files.
+            </action>
+
+            <action dev="jourdren" type="update">
+                In eoulsan.sh, now set the value of $TMPDIR environment variable as the JVM temporary directory if defined.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Add a new "main.executables.tmp.dir" configuration parameter that allow to define the temporary directory where executables are extracted from the Eoulsan jar.
+            </action>
+
+         </release>
+
 	</body>
 </document>
