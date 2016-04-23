@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -57,6 +58,9 @@ public class HadoopExecAction extends AbstractAction {
   public static final String ACTION_NAME = "hadoopexec";
 
   private static final String HADOOP_CLIENT_OPTS_ENV = "HADOOP_CLIENT_OPTS";
+  private static final String HADOOP_CLASSPATH_ENV = "HADOOP_CLASSPATH";
+  private static final String HADOOP_USER_CLASSPATH_FIRST_ENV =
+      "HADOOP_USER_CLASSPATH_FIRST";
 
   @Override
   public String getName() {
@@ -263,8 +267,18 @@ public class HadoopExecAction extends AbstractAction {
       // Create the process builder the the command line
       final ProcessBuilder builder = new ProcessBuilder(argsList).inheritIO();
 
+      final Map<String, String> environment = builder.environment();
+
       // Set the JVM arguments for Hadoop in the process builder
-      builder.environment().put(HADOOP_CLIENT_OPTS_ENV, getJVMArgs());
+      environment.put(HADOOP_CLIENT_OPTS_ENV, getJVMArgs());
+
+      // Configure execution classpath
+      final String hadoopClasspath =
+          environment.containsKey(HADOOP_CLASSPATH_ENV)
+              ? ":" + environment.get(HADOOP_CLASSPATH_ENV) : "";
+      environment.put(HADOOP_USER_CLASSPATH_FIRST_ENV, "true");
+      environment.put(HADOOP_CLASSPATH_ENV,
+          Main.getInstance().getClassPath() + hadoopClasspath);
 
       // Execute the hadoop jar command
       final int exitCode = builder.start().waitFor();
