@@ -83,7 +83,7 @@ public class CreateDesignAction extends AbstractAction {
     final CommandLineParser parser = new GnuParser();
     String filename = "design.txt";
     int argsOptions = 0;
-    boolean pairEndMode = false;
+    boolean pairedEndMode = false;
     String sampleSheetPath = null;
     String samplesProjectName = null;
     boolean symlinks = false;
@@ -97,7 +97,7 @@ public class CreateDesignAction extends AbstractAction {
 
       // Pair-end option
       if (line.hasOption("paired-end")) {
-        pairEndMode = true;
+        pairedEndMode = true;
         argsOptions += 1;
       }
 
@@ -173,7 +173,7 @@ public class CreateDesignAction extends AbstractAction {
       // Add files in the command line
       db.addFiles(newArgs);
 
-      design = db.getDesign(pairEndMode);
+      design = db.getDesign(pairedEndMode);
 
       if (symlinks) {
         DesignUtils.replaceLocalPathBySymlinks(design, designFile.getParent());

@@ -35,6 +35,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -454,7 +455,8 @@ public class DesignBuilder {
       final String laneKey =
           sampleLane == -1 ? "_L" : String.format("_L%03d_", sampleLane);
 
-      for (File fastqFile : dataDir.listFiles(new FileFilter() {
+      // List the input FASTQ files
+      final File[] files = dataDir.listFiles(new FileFilter() {
 
         @Override
         public boolean accept(final File f) {
@@ -470,7 +472,12 @@ public class DesignBuilder {
 
           return false;
         }
-      })) {
+      });
+
+      // Sort the list of input FASTQ files
+      Arrays.sort(files);
+
+      for (File fastqFile : files) {
 
         final List<FastqEntry> list;
         final String normalizedSampleId = Naming.toValidName(sampleId);
@@ -560,11 +567,11 @@ public class DesignBuilder {
 
   /**
    * Create design object.
-   * @param pairEndMode true if the pair end mode is enabled
+   * @param pairedEndMode true if the paired end mode is enabled
    * @return a new Design object
    * @throws EoulsanException if an error occurs while analyzing input files
    */
-  public Design getDesign(final boolean pairEndMode) throws EoulsanException {
+  public Design getDesign(final boolean pairedEndMode) throws EoulsanException {
 
     final Design result = DesignFactory.createEmptyDesign();
     result.addExperiment("exp1");
@@ -575,7 +582,7 @@ public class DesignBuilder {
     for (Map.Entry<String, List<FastqEntry>> e : this.fastqMap.entrySet()) {
 
       final String sampleId = e.getKey();
-      final List<List<FastqEntry>> files = findPairEndFiles(e.getValue());
+      final List<List<FastqEntry>> files = findPairedEndFiles(e.getValue());
       int count = 0;
 
       for (List<FastqEntry> fes : files) {
@@ -585,7 +592,7 @@ public class DesignBuilder {
         final String operator = fes.get(0).sampleOperator;
         final String condition = fes.get(0).sampleName;
 
-        if (pairEndMode) {
+        if (pairedEndMode) {
 
           final String finalSampleId = files.size() == 1
               ? sampleId : sampleId + StringUtils.toLetter(count);
@@ -734,21 +741,21 @@ public class DesignBuilder {
   }
 
   /**
-   * Group pair end files.
-   * @return a list of 1-2 pair end files
+   * Group paired end files.
+   * @return a list of 1-2 paired end files
    * @throws EoulsanException if an error occurs while getting the id of first
    *           read of the fastq files
    */
-  private List<List<FastqEntry>> findPairEndFiles(final List<FastqEntry> files)
-      throws EoulsanException {
+  private List<List<FastqEntry>> findPairedEndFiles(
+      final List<FastqEntry> files) throws EoulsanException {
 
     final Map<String, List<FastqEntry>> mapPrefix = new HashMap<>();
-    final Map<FastqEntry, Integer> mapPair = new HashMap<>();
+    final Map<FastqEntry, Integer> mapPaired = new HashMap<>();
     final List<List<FastqEntry>> result = new ArrayList<>();
 
     for (FastqEntry fe : files) {
 
-      mapPair.put(fe, fe.pairMember);
+      mapPaired.put(fe, fe.pairMember);
 
       final List<FastqEntry> list;
 
@@ -763,19 +770,19 @@ public class DesignBuilder {
       list.add(fe);
     }
 
-    // Order the pair end files
+    // Order the paired end files
     for (List<FastqEntry> list : result) {
 
       // Check invalid number of files
       if (list.size() > 2) {
         throw new EoulsanException(
-            "Found more than 2 files for a sample in pair-end mode: " + list);
+            "Found more than 2 files for a sample in paired-end mode: " + list);
       }
 
       if (list.size() == 2) {
 
-        final int member1 = mapPair.get(list.get(0));
-        final int member2 = mapPair.get(list.get(1));
+        final int member1 = mapPaired.get(list.get(0));
+        final int member2 = mapPaired.get(list.get(1));
 
         if (member1 == member2) {
           throw new EoulsanException(
