@@ -80,7 +80,18 @@ public abstract class AbstractRExecutor implements RExecutor {
   @Override
   public void openConnection() throws IOException {
 
-    // Nothing to do for the default implementation
+    if (!outputDirectory.isDirectory()) {
+      throw new IOException(
+          "The output directory does not exist or is not a directory: "
+              + outputDirectory);
+    }
+
+    if (!temporaryDirectory.isDirectory()) {
+      throw new IOException(
+          "The output directory does not exist or is not a directory: "
+              + outputDirectory);
+    }
+
   }
 
   @Override
@@ -178,20 +189,8 @@ public abstract class AbstractRExecutor implements RExecutor {
       throw new NullPointerException("outputDirectory argument cannot be null");
     }
 
-    if (!outputDirectory.isDirectory()) {
-      throw new IOException(
-          "The output directory does not exist or is not a directory: "
-              + outputDirectory);
-    }
-
     if (temporaryDirectory == null) {
       throw new NullPointerException("outputDirectory argument cannot be null");
-    }
-
-    if (!temporaryDirectory.isDirectory()) {
-      throw new IOException(
-          "The output directory does not exist or is not a directory: "
-              + outputDirectory);
     }
 
     this.outputDirectory = outputDirectory;
