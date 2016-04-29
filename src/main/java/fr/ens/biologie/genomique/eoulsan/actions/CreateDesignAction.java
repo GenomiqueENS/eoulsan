@@ -26,6 +26,8 @@ package fr.ens.biologie.genomique.eoulsan.actions;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -84,7 +86,7 @@ public class CreateDesignAction extends AbstractAction {
     String filename = "design.txt";
     int argsOptions = 0;
     boolean pairedEndMode = false;
-    String sampleSheetPath = null;
+    final List<String> sampleSheetPaths = new ArrayList<>();
     String samplesProjectName = null;
     boolean symlinks = false;
     int formatVersion = DEFAULT_DESIGN_FORMAT;
@@ -109,21 +111,22 @@ public class CreateDesignAction extends AbstractAction {
       // Output option
       if (line.hasOption("o")) {
 
-        filename = line.getOptionValue("o").trim();
+        filename = line.getOptionValue("o");
         argsOptions += 2;
       }
 
       // Casava design option
       if (line.hasOption("s")) {
 
-        sampleSheetPath = line.getOptionValue("s").trim();
-        argsOptions += 2;
+        String[] sampleSheets = line.getOptionValues("s");
+        sampleSheetPaths.addAll(Arrays.asList(sampleSheets));
+        argsOptions += sampleSheets.length * 2;
       }
 
       // Casava project option
       if (line.hasOption("n")) {
 
-        samplesProjectName = line.getOptionValue("n").trim();
+        samplesProjectName = line.getOptionValue("n");
         argsOptions += 2;
       }
 
@@ -165,7 +168,7 @@ public class CreateDesignAction extends AbstractAction {
       final DesignBuilder db = new DesignBuilder();
 
       // Add all the files of a Casava design if Casava design path is defined
-      if (sampleSheetPath != null) {
+      for (String sampleSheetPath : sampleSheetPaths) {
         db.addBcl2FastqSamplesheetProject(new File(sampleSheetPath),
             samplesProjectName);
       }
