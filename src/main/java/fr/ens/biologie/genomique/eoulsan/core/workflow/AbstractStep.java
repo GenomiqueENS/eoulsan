@@ -40,7 +40,6 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUtils;
 import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
@@ -396,50 +395,6 @@ public abstract class AbstractStep implements Step {
     this.observer.addDependency(step);
   }
 
-  /**
-   * Define the working directory of the step.
-   * @param workflow the workflow
-   * @param module module instance
-   * @return the working directory of the step
-   */
-  private static DataFile defineOutputDirectory(final AbstractWorkflow workflow,
-      final Module module, final boolean copyResultsToOutput) {
-
-    checkNotNull(workflow, "workflow argument cannot be null");
-    checkNotNull(module, "module argument cannot be null");
-
-    final boolean hadoopMode =
-        EoulsanRuntime.getRuntime().getMode().isHadoopMode();
-
-    if (!hadoopMode) {
-
-      if (copyResultsToOutput) {
-        return workflow.getOutputDirectory();
-      }
-
-      return workflow.getLocalWorkingDirectory();
-    }
-
-    switch (ExecutionMode.getExecutionMode(module.getClass())) {
-
-    case HADOOP_COMPATIBLE:
-    case HADOOP_INTERNAL:
-    case HADOOP_ONLY:
-      return workflow.getHadoopWorkingDirectory();
-
-    case LOCAL_ONLY:
-      if (copyResultsToOutput) {
-        return workflow.getOutputDirectory();
-      }
-
-      return workflow.getLocalWorkingDirectory();
-
-    default:
-      return workflow.getLocalWorkingDirectory();
-    }
-
-  }
-
   //
   // Step lifetime methods
   //
@@ -597,8 +552,8 @@ public abstract class AbstractStep implements Step {
       this.mode = ExecutionMode.getExecutionMode(checkerModule.getClass());
 
       // Define output directory
-      this.outputDir = defineOutputDirectory(workflow, checkerModule,
-          this.copyResultsToOutput);
+      this.outputDir = StepOutputDirectoryDispatcher.defineOutputDirectory(
+          workflow, this, checkerModule, this.copyResultsToOutput);
       break;
 
     case DESIGN_STEP:
@@ -615,8 +570,8 @@ public abstract class AbstractStep implements Step {
       this.mode = ExecutionMode.getExecutionMode(designModule.getClass());
 
       // Define output directory
-      this.outputDir = defineOutputDirectory(workflow, designModule,
-          this.copyResultsToOutput);
+      this.outputDir = StepOutputDirectoryDispatcher.defineOutputDirectory(
+          workflow, this, designModule, this.copyResultsToOutput);
 
       break;
 
@@ -630,8 +585,8 @@ public abstract class AbstractStep implements Step {
       this.mode = ExecutionMode.NONE;
 
       // Define output directory
-      this.outputDir =
-          defineOutputDirectory(workflow, fakeModule, this.copyResultsToOutput);
+      this.outputDir = StepOutputDirectoryDispatcher.defineOutputDirectory(
+          workflow, this, fakeModule, this.copyResultsToOutput);
       break;
     }
 
@@ -677,8 +632,8 @@ public abstract class AbstractStep implements Step {
     this.dataProductConfiguration = "";
 
     // Define output directory
-    this.outputDir = defineOutputDirectory(workflow, generatorModule,
-        this.copyResultsToOutput);
+    this.outputDir = StepOutputDirectoryDispatcher.defineOutputDirectory(
+        workflow, this, generatorModule, this.copyResultsToOutput);
 
     // Set state observer
     this.observer = new StepStateObserver(this);
@@ -735,8 +690,8 @@ public abstract class AbstractStep implements Step {
     this.parallelizationMode = getParallelizationMode(module);
 
     // Define output directory
-    this.outputDir =
-        defineOutputDirectory(workflow, module, copyResultsToOutput);
+    this.outputDir = StepOutputDirectoryDispatcher
+        .defineOutputDirectory(workflow, this, module, copyResultsToOutput);
 
     // Set state observer
     this.observer = new StepStateObserver(this);
@@ -785,8 +740,8 @@ public abstract class AbstractStep implements Step {
     this.dataProductConfiguration = "";
 
     // Define output directory
-    this.outputDir =
-        defineOutputDirectory(workflow, module, copyResultsToOutput);
+    this.outputDir = StepOutputDirectoryDispatcher
+        .defineOutputDirectory(workflow, this, module, copyResultsToOutput);
 
     // Set state observer
     this.observer = new StepStateObserver(this);

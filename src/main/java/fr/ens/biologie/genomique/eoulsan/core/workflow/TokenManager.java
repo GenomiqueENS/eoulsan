@@ -807,6 +807,8 @@ public class TokenManager implements Runnable {
 
     try {
 
+      boolean firstSubmission = true;
+
       do {
 
         try {
@@ -847,6 +849,18 @@ public class TokenManager implements Runnable {
 
         // Submit execution of the available contexts
         if (!this.step.isSkip()) {
+
+          // Create the step output directory if this is the first submission
+          if (firstSubmission) {
+
+            final DataFile outputDirectory = this.step.getStepOutputDirectory();
+
+            if (!outputDirectory.exists()) {
+              outputDirectory.mkdirs();
+            }
+            firstSubmission = false;
+          }
+
           this.scheduler.submit(this.step, contexts);
         }
 
