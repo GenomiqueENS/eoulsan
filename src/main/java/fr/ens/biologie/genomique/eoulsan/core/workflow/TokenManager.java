@@ -651,13 +651,22 @@ public class TokenManager implements Runnable {
     }
 
     final DataFile outputStepDir = this.step.getStepOutputDirectory();
-    final DataFile outputWorkflowDir =
+
+    final DataFile expectedOutputStepDir =
         StepOutputDirectory.getInstance().workflowDirectory(
             this.step.getAbstractWorkflow(), this.step, this.step.getModule());
-    this.step.getAbstractWorkflow().getOutputDirectory();
 
-    // Do nothing if the output of the step is the output of the workflow
-    if (outputWorkflowDir.equals(outputStepDir)) {
+    final DataFile outputWorkflowDir =
+        this.step.getAbstractWorkflow().getOutputDirectory();
+
+    // Only remove symbolic links if the output directory of the step is not the
+    // expected output directory
+    final boolean remove = !expectedOutputStepDir.equals(outputStepDir);
+
+    // In debug mode do not remove links
+    if (!remove
+        && EoulsanRuntime.getSettings()
+            .getBooleanSetting("debug.keep.step.output.links")) {
       return;
     }
 
@@ -668,13 +677,21 @@ public class TokenManager implements Runnable {
         // Standard data file
         if (data.getFormat().getMaxFilesCount() < 2) {
 
-          removeFileAndSymLink(data.getDataFile(), outputWorkflowDir);
+          if (remove) {
+            removeFileAndSymLink(data.getDataFile(), outputWorkflowDir);
+          } else {
+            removeSymLink(data.getDataFile(), outputWorkflowDir);
+          }
         }
         // Multi file data file
         else {
 
           for (int i = 0; i < data.getDataFileCount(); i++) {
-            removeFileAndSymLink(data.getDataFile(i), outputWorkflowDir);
+            if (remove) {
+              removeFileAndSymLink(data.getDataFile(i), outputWorkflowDir);
+            } else {
+              removeSymLink(data.getDataFile(i), outputWorkflowDir);
+            }
           }
         }
       }
@@ -748,6 +765,16 @@ public class TokenManager implements Runnable {
     }
 
     // Remove the symbolic link
+    removeSymLink(file, symlinkDir);
+  }
+
+  /**
+   * Remove the symbolic link of a file.
+   * @param file file to remove
+   * @param symlinkDir the directory where is the symbolic link to remove
+   */
+  private void removeSymLink(final DataFile file, final DataFile symlinkDir) {
+
     final DataFile link = new DataFile(symlinkDir, file.getName());
     try {
 
@@ -760,7 +787,6 @@ public class TokenManager implements Runnable {
       getLogger().severe("Cannot remove data symbolic link to discard: "
           + link + " (" + e.getMessage() + ")");
     }
-
   }
 
   //
