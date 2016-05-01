@@ -652,7 +652,9 @@ public class TokenManager implements Runnable {
 
     final DataFile outputStepDir = this.step.getStepOutputDirectory();
     final DataFile outputWorkflowDir =
-        this.step.getAbstractWorkflow().getOutputDirectory();
+        StepOutputDirectory.getInstance().workflowDirectory(
+            this.step.getAbstractWorkflow(), this.step, this.step.getModule());
+    this.step.getAbstractWorkflow().getOutputDirectory();
 
     // Do nothing if the output of the step is the output of the workflow
     if (outputWorkflowDir.equals(outputStepDir)) {

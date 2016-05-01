@@ -31,6 +31,7 @@ import java.util.Set;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 
 /**
@@ -86,6 +87,7 @@ public class CommandStep extends AbstractStep {
    * @param requiredMemory required memory
    * @param requiredProcessors required processors
    * @param dataProduct data product
+   * @param outputDirectory output directory
    * @throws EoulsanException id an error occurs while creating the step
    */
   public CommandStep(final AbstractWorkflow workflow, final String id,
@@ -97,6 +99,33 @@ public class CommandStep extends AbstractStep {
 
     super(workflow, id, moduleName, stepVersion, skip, copyResultsToOutput,
         parameters, requiredMemory, requiredProcessors, dataProduct);
+  }
+
+  /**
+   * Create a step for a standard step.
+   * @param workflow workflow of the step
+   * @param id identifier of the step
+   * @param moduleName module name
+   * @param stepVersion step version
+   * @param parameters parameters of the step
+   * @param skip true to skip execution of the step
+   * @param copyResultsToOutput true to copy step results to output
+   * @param requiredMemory required memory
+   * @param requiredProcessors required processors
+   * @param dataProduct data product
+   * @param outputDirectory output directory
+   * @throws EoulsanException id an error occurs while creating the step
+   */
+  public CommandStep(final AbstractWorkflow workflow, final String id,
+      final String moduleName, final String stepVersion,
+      final Set<Parameter> parameters, final boolean skip,
+      final boolean copyResultsToOutput, final int requiredMemory,
+      final int requiredProcessors, final String dataProduct,
+      final DataFile outputDirectory) throws EoulsanException {
+
+    super(workflow, id, moduleName, stepVersion, skip, copyResultsToOutput,
+        parameters, requiredMemory, requiredProcessors, dataProduct,
+        outputDirectory);
   }
 
   /**
