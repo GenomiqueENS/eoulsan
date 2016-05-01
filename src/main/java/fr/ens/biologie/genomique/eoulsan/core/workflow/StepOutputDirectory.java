@@ -5,6 +5,7 @@ import static fr.ens.biologie.genomique.eoulsan.Globals.STEP_OUTPUT_DIRECTORY_SU
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUtils;
 import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -118,6 +119,10 @@ class StepOutputDirectory {
     checkNotNull(workflow, "workflow argument cannot be null");
     checkNotNull(step, "step argument cannot be null");
     checkNotNull(module, "module argument cannot be null");
+
+    if (EoulsanAnnotationUtils.isNoOutputDirectory(module)) {
+      return workflow.getOutputDirectory();
+    }
 
     switch (this.outputTree) {
     case STEP:

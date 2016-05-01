@@ -43,6 +43,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
 import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
+import fr.ens.biologie.genomique.eoulsan.annotations.NoOutputDirectory;
 import fr.ens.biologie.genomique.eoulsan.annotations.ReuseModuleInstance;
 import fr.ens.biologie.genomique.eoulsan.core.DataUtils;
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
@@ -74,6 +75,7 @@ import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
 @HadoopCompatible
 @ReuseModuleInstance
 @NoLog
+@NoOutputDirectory
 public class CopyInputDataModule extends AbstractModule {
 
   public static final String MODULE_NAME = "_copyinputformat";

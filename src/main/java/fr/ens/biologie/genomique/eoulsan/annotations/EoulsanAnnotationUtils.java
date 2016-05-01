@@ -98,6 +98,16 @@ public class EoulsanAnnotationUtils {
   }
 
   /**
+   * Test if a module contain the @NoOutputDirectory annotation.
+   * @param module the module to test
+   * @return true if the module contains the annotation
+   */
+  public static boolean isNoOutputDirectory(final Module module) {
+
+    return isAnnotation(module, NoOutputDirectory.class);
+  }
+
+  /**
    * Test if a module contains an annotation.
    * @param module the module
    * @param clazz the annotation to test
