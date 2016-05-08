@@ -587,4 +587,43 @@ public final class ProcessUtils {
   private ProcessUtils() {
   }
 
+  /**
+   * Get the executable of a command (the first element).
+   * @param command the command
+   * @return the first element of the command
+   */
+  public static final String getExecutableFromCommand(
+      final List<String> command) {
+
+    if (command == null) {
+      throw new NullPointerException("command argument cannot be null");
+    }
+
+    if (command.isEmpty()) {
+      throw new IllegalArgumentException("command argument cannot be empty");
+    }
+
+    return command.get(0);
+  }
+
+  /**
+   * Get the argument of a command (all the element except the first element of
+   * the command.
+   * @param command the command
+   * @return the arguments of the command
+   */
+  public static final List<String> getArgumentsFromCommand(
+      final List<String> command) {
+
+    if (command == null) {
+      throw new NullPointerException("command argument cannot be null");
+    }
+
+    if (command.isEmpty()) {
+      throw new IllegalArgumentException("command argument cannot be empty");
+    }
+
+    return command.subList(1, command.size());
+  }
+
 }
