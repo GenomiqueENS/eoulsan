@@ -56,7 +56,6 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   private static final int MIN_BWTSW_GENOME_SIZE = 1024 * 1024 * 1024;
   public static final String DEFAULT_ARGUMENTS = "-l 28";
 
-  private static final String SYNC = BWAReadsMapper.class.getName();
   private static final String PREFIX_FILES = "bwa";
   private static final String SAI_EXTENSION = ".sai";
   private static final String FASTQ_EXTENSION = ".fq";
@@ -83,13 +82,8 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   public String internalGetMapperVersion() {
 
     try {
-      final String execPath;
 
-      synchronized (SYNC) {
-        execPath = install(MAPPER_EXECUTABLE);
-      }
-
-      final List<String> cmd = Lists.newArrayList(execPath);
+      final List<String> cmd = Lists.newArrayList(MAPPER_EXECUTABLE);
 
       final String s = executeToString(cmd);
       final String[] lines = s.split("\n");
@@ -166,32 +160,20 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   protected MapperProcess internalMapSE(final File archiveIndex)
       throws IOException {
 
-    final String bwaPath;
-
-    synchronized (SYNC) {
-      bwaPath = install(MAPPER_EXECUTABLE);
-    }
-
     // Path to index
     final String indexPath = getIndexPath(archiveIndex);
 
-    return createMapperProcessSE(bwaPath, indexPath);
+    return createMapperProcessSE(MAPPER_EXECUTABLE, indexPath);
   }
 
   @Override
   protected MapperProcess internalMapPE(final File archiveIndex)
       throws IOException {
 
-    final String bwaPath;
-
-    synchronized (SYNC) {
-      bwaPath = install(MAPPER_EXECUTABLE);
-    }
-
     // Path to index
     final String indexPath = getIndexPath(archiveIndex);
 
-    return createMapperProcessPE(bwaPath, indexPath);
+    return createMapperProcessPE(MAPPER_EXECUTABLE, indexPath);
   }
 
   private MapperProcess createMapperProcessSE(final String bwaPath,

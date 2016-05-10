@@ -25,6 +25,8 @@
 package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.util.ProcessUtils.getArgumentsFromCommand;
+import static fr.ens.biologie.genomique.eoulsan.util.ProcessUtils.getExecutableFromCommand;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,9 +46,10 @@ import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperExecutor.Result;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
+import fr.ens.biologie.genomique.eoulsan.util.process.RunningProcess;
 
 /**
  * This class define an abstract class that is returned by a mapper.
@@ -57,10 +60,11 @@ public abstract class MapperProcess {
 
   private final String mapperName;
   private final String uuid;
-  private final MapperExecutor executor;
+  // private final ProcessCommandBuilder executor;
+  private final AbstractSequenceReadsMapper mapper;
   private final boolean pairedEnd;
 
-  private List<Result> processResults = new ArrayList<>();
+  private List<RunningProcess> processResults = new ArrayList<>();
 
   private InputStream stdout;
 
@@ -133,8 +137,8 @@ public abstract class MapperProcess {
      * @param os output stream
      * @throws IOException if an error occurs while creating the input stream
      */
-    public ProcessThreadStdOut(final Result process, final OutputStream os)
-        throws IOException {
+    public ProcessThreadStdOut(final RunningProcess process,
+        final OutputStream os) throws IOException {
 
       if (process == null) {
         throw new NullPointerException("The Process parameter is null");
@@ -691,7 +695,7 @@ public abstract class MapperProcess {
    * Get the process result object which stdout is used to the SAM output.
    * @return a Result object
    */
-  private Result getStdoutProcessResult() {
+  private RunningProcess getStdoutProcessResult() {
 
     final int index = this.processResults.size() - 1;
 
@@ -721,10 +725,18 @@ public abstract class MapperProcess {
 
       final boolean last = i == cmds.size() - 1;
 
-      final Result result = this.executor.execute(cmds.get(i),
-          executionDirectory, last, false, this.pipeFile1, this.pipeFile2);
+      // final Result result = this.executor.execute(cmds.get(i),
+      // executionDirectory, last, false, this.pipeFile1, this.pipeFile2);
 
-      this.processResults.add(result);
+      final List<String> command = cmds.get(i);
+
+      final RunningProcess runningProcess = this.mapper
+          .getProcessCommandBuilder(getExecutableFromCommand(command))
+          .arguments(getArgumentsFromCommand(command))
+          .directory(executionDirectory).addMountDirectory(this.pipeFile1)
+          .addMountDirectory(this.pipeFile2).create().execute();
+
+      this.processResults.add(runningProcess);
 
       if (!last) {
 
@@ -732,7 +744,7 @@ public abstract class MapperProcess {
       } else {
 
         this.stdout = new InputStreamWrapper(
-            createCustomInputStream(result.getInputStream()));
+            createCustomInputStream(runningProcess.getInputStream()));
       }
     }
   }
@@ -743,7 +755,7 @@ public abstract class MapperProcess {
    */
   public void waitFor() throws IOException {
 
-    for (Result result : this.processResults) {
+    for (RunningProcess result : this.processResults) {
 
       final int exitValue = result.waitFor();
       getLogger().fine("End of process with " + exitValue + " exit value");
@@ -841,10 +853,10 @@ public abstract class MapperProcess {
     }
 
     try {
+      this.mapper = mapper;
       this.mapperName = mapper.getMapperName();
       this.uuid = UUID.randomUUID().toString();
 
-      this.executor = mapper.getExecutor();
       this.pairedEnd = pairedEnd;
 
       // Define temporary files

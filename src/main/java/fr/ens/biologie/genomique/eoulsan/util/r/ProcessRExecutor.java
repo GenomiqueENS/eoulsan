@@ -1,10 +1,16 @@
 package fr.ens.biologie.genomique.eoulsan.util.r;
 
+import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import com.google.common.base.Joiner;
 
@@ -13,7 +19,9 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
-import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
+import fr.ens.biologie.genomique.eoulsan.util.process.PathProcess;
+import fr.ens.biologie.genomique.eoulsan.util.process.ProcessCommandBuilder;
+import fr.ens.biologie.genomique.eoulsan.util.process.RunningProcess;
 
 /**
  * This class define a standard RExecutor using a system process.
@@ -158,40 +166,37 @@ public class ProcessRExecutor extends AbstractRExecutor {
     return result;
   }
 
+  protected void execute(final ProcessCommandBuilder commandBuilder,
+      final List<String> commandLine, File rScriptFile) throws IOException {
+
+    final File stdoutFile = changeFileExtension(rScriptFile, ".out");
+    final List<String> arguments = ProcessUtils.getArgumentsFromCommand(commandLine);
+
+    final RunningProcess rp = commandBuilder.arguments(arguments)
+        .directory(getOutputDirectory())
+        .addEnvironmentVariable(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG)
+        .temporaryDirectory(getTemporaryDirectory()).redirectOutput(stdoutFile)
+        .redirectErrorStream(true).create().execute();
+
+    final int exitValue = rp.exitCode();
+
+    ProcessUtils.throwExitCodeException(exitValue,
+        Joiner.on(' ').join(commandLine));
+
+    getLogger().fine("Done (Thread "
+        + Thread.currentThread().getId() + ", exit code: " + exitValue + ") in "
+        + rp.duration() + " ms.");
+  }
+
   @Override
   protected void executeRScript(final File rScriptFile, final boolean sweave,
       final String sweaveOuput, final String... scriptArguments)
       throws IOException {
 
-    final List<String> command =
+    final List<String> commandLine =
         createCommand(rScriptFile, sweave, sweaveOuput, scriptArguments);
 
-    // Search the command in The PATH
-    final File executablePath =
-        SystemUtils.searchExecutableInPATH(command.get(0));
-
-    if (executablePath == null) {
-      throw new IOException(
-          "Unable to find executable in the PATH: " + command.get(0));
-    }
-
-    // Update the command with the path of the command
-    command.set(0, executablePath.getAbsolutePath());
-
-    final ProcessBuilder pb = new ProcessBuilder();
-
-    // Set the LANG to C
-    pb.environment().put(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG);
-
-    // Set the temporary directory for R
-    pb.environment().put("TMPDIR", getTemporaryDirectory().getAbsolutePath());
-
-    // Redirect stdout and stderr
-    pb.redirectOutput(changeFileExtension(rScriptFile, ".out"));
-    pb.redirectErrorStream(true);
-
-    ProcessUtils.logEndTime(pb.start(), Joiner.on(' ').join(pb.command()),
-        System.currentTimeMillis());
+    execute(new PathProcess(commandLine.get(0)), commandLine, rScriptFile);
   }
 
   /**

@@ -52,8 +52,6 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
 
   public static final String DEFAULT_ARGUMENTS = "-N 1";
 
-  private static final String SYNC = GSNAPReadsMapper.class.getName();
-
   @Override
   public String getMapperName() {
 
@@ -70,13 +68,9 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   public String internalGetMapperVersion() {
 
     try {
-      final String gsnapPath;
 
-      synchronized (SYNC) {
-        gsnapPath = install(MAPPER_EXECUTABLE);
-      }
-
-      final List<String> cmd = Lists.newArrayList(gsnapPath, " --version");
+      final List<String> cmd =
+          Lists.newArrayList(MAPPER_EXECUTABLE, " --version");
 
       final String s = executeToString(cmd);
 
@@ -154,13 +148,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   protected MapperProcess internalMapSE(final File archiveIndexDir)
       throws IOException {
 
-    final String gsnapPath;
-
-    synchronized (SYNC) {
-      gsnapPath = install(MAPPER_EXECUTABLE);
-    }
-
-    return createMapperProcessSE(gsnapPath,
+    return createMapperProcessSE(MAPPER_EXECUTABLE,
         getGSNAPQualityArgument(getFastqFormat()),
         archiveIndexDir.getAbsolutePath());
   }
@@ -168,13 +156,8 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   protected MapperProcess internalMapPE(final File archiveIndexDir)
       throws IOException {
-    final String gsnapPath;
 
-    synchronized (SYNC) {
-      gsnapPath = install(MAPPER_EXECUTABLE);
-    }
-
-    return createMapperProcessPE(gsnapPath,
+    return createMapperProcessPE(MAPPER_EXECUTABLE,
         getGSNAPQualityArgument(getFastqFormat()),
         archiveIndexDir.getAbsolutePath());
   }

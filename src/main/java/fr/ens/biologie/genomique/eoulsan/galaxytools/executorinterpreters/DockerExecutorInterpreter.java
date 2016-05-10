@@ -6,9 +6,9 @@ import java.util.List;
 
 import com.google.common.base.Objects;
 
-import fr.ens.biologie.genomique.eoulsan.util.SimpleProcess;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
-import fr.ens.biologie.genomique.eoulsan.util.docker.DockerSimpleProcess;
+import fr.ens.biologie.genomique.eoulsan.util.process.DockerProcess;
+import fr.ens.biologie.genomique.eoulsan.util.process.ProcessCommandBuilder;
 
 /**
  * This class define a Docker executor interpreter.
@@ -36,9 +36,10 @@ public class DockerExecutorInterpreter extends AbstractExecutorInterpreter {
   }
 
   @Override
-  protected SimpleProcess newSimpleProcess() {
+  protected ProcessCommandBuilder newProcessCommandBuilder(
+      final String executable) {
 
-    return new DockerSimpleProcess(this.dockerImage);
+    return new DockerProcess(this.dockerImage, executable);
   }
 
   //

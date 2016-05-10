@@ -50,7 +50,7 @@ public abstract class AbstractBowtieReadsMapper
 
   abstract protected String getExtensionIndexFile();
 
-  abstract protected String[] getMapperExecutables();
+  abstract protected String getMapperExecutable();
 
   @Override
   abstract protected String getIndexerExecutable();
@@ -147,13 +147,9 @@ public abstract class AbstractBowtieReadsMapper
   protected String internalGetMapperVersion() {
 
     try {
-      final String bowtiePath;
 
-      synchronized (SYNC) {
-        bowtiePath = install(getMapperExecutables());
-      }
-
-      final List<String> cmd = Lists.newArrayList(bowtiePath, " --version");
+      final List<String> cmd =
+          Lists.newArrayList(getMapperExecutable(), " --version");
 
       final String s = executeToString(cmd);
       final String[] lines = s.split("\n");
@@ -199,12 +195,6 @@ public abstract class AbstractBowtieReadsMapper
   protected MapperProcess internalMapSE(final File archiveIndexDir)
       throws IOException {
 
-    final String bowtiePath;
-
-    synchronized (SYNC) {
-      bowtiePath = install(getMapperExecutables());
-    }
-
     // Get index argument
     final String index = getIndexArgument(archiveIndexDir);
 
@@ -217,7 +207,7 @@ public abstract class AbstractBowtieReadsMapper
         final List<String> cmd = new ArrayList<>();
 
         // Add common arguments
-        cmd.addAll(createCommonArgs(bowtiePath, index));
+        cmd.addAll(createCommonArgs(getMapperExecutable(), index));
 
         // Enable Index memory mapped in streaming mode
         if (isMultipleInstancesEnabled()) {
@@ -245,12 +235,6 @@ public abstract class AbstractBowtieReadsMapper
   protected MapperProcess internalMapPE(final File archiveIndexDir)
       throws IOException {
 
-    final String bowtiePath;
-
-    synchronized (SYNC) {
-      bowtiePath = install(getMapperExecutables());
-    }
-
     // Get index argument
     final String index = getIndexArgument(archiveIndexDir);
 
@@ -263,7 +247,7 @@ public abstract class AbstractBowtieReadsMapper
         final List<String> cmd = new ArrayList<>();
 
         // Add common arguments
-        cmd.addAll(createCommonArgs(bowtiePath, index));
+        cmd.addAll(createCommonArgs(getMapperExecutable(), index));
 
         // Enable Index memory mapped in streaming mode
         if (isMultipleInstancesEnabled()) {

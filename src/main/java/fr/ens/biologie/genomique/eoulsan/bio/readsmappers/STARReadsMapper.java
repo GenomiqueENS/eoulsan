@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
@@ -56,8 +55,6 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
 
   public static final String DEFAULT_ARGUMENTS = "--outSAMunmapped Within";
 
-  private static final String SYNC = STARReadsMapper.class.getName();
-
   @Override
   public String getMapperName() {
 
@@ -68,11 +65,6 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   public String internalGetMapperVersion() {
 
     try {
-      final String execPath;
-
-      synchronized (SYNC) {
-        execPath = install(flavoredBinary());
-      }
 
       // Create temporary directory
       final File tempDir = File.createTempFile("STAR-get-version-", ".tmp",
@@ -85,9 +77,8 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       }
 
       // Execute STAR with no argument
-      getExecutor()
-          .execute(Lists.newArrayList(execPath), tempDir, false, false, tempDir)
-          .waitFor();
+      getProcessCommandBuilder(flavoredBinary()).temporaryDirectory(tempDir)
+          .create().execute().waitFor();
 
       final File logFile = new File(tempDir, "Log.out");
 
@@ -234,26 +225,16 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   protected MapperProcess internalMapSE(final File archiveIndex)
       throws IOException {
 
-    final String starPath;
-
-    synchronized (SYNC) {
-      starPath = install(flavoredBinary());
-    }
-
-    return createMapperProcessSE(starPath, archiveIndex.getAbsolutePath());
+    return createMapperProcessSE(flavoredBinary(),
+        archiveIndex.getAbsolutePath());
   }
 
   @Override
   protected MapperProcess internalMapPE(final File archiveIndex)
       throws IOException {
 
-    final String starPath;
-
-    synchronized (SYNC) {
-      starPath = install(flavoredBinary());
-    }
-
-    return createMapperProcessPE(starPath, archiveIndex.getAbsolutePath());
+    return createMapperProcessPE(flavoredBinary(),
+        archiveIndex.getAbsolutePath());
   }
 
   private MapperProcess createMapperProcessSE(final String starPath,

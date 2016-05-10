@@ -27,15 +27,15 @@ package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.util.FileUtils.checkExistingStandardFile;
+import static fr.ens.biologie.genomique.eoulsan.util.ProcessUtils.getArgumentsFromCommand;
+import static fr.ens.biologie.genomique.eoulsan.util.ProcessUtils.getExecutableFromCommand;
 import static fr.ens.biologie.genomique.eoulsan.util.Utils.checkNotNull;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileLock;
@@ -52,12 +52,15 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
 import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
 import fr.ens.biologie.genomique.eoulsan.bio.io.FastqReader;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperExecutor.Result;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
+import fr.ens.biologie.genomique.eoulsan.util.process.BundledProcess;
+import fr.ens.biologie.genomique.eoulsan.util.process.DockerProcess;
+import fr.ens.biologie.genomique.eoulsan.util.process.PathProcess;
+import fr.ens.biologie.genomique.eoulsan.util.process.ProcessCommandBuilder;
 
 /**
  * This class abstract implements a generic Mapper.
@@ -101,7 +104,6 @@ public abstract class AbstractSequenceReadsMapper
   private boolean binariesReady;
   private boolean initialized;
   private IOException mappingException;
-  private MapperExecutor executor;
 
   //
   // Binaries management
@@ -270,14 +272,14 @@ public abstract class AbstractSequenceReadsMapper
     return this.dockerClient;
   }
 
-  /**
-   * Get mapper executor.
-   * @return the mapper executor
-   */
-  protected MapperExecutor getExecutor() {
-
-    return this.executor;
-  }
+  // /**
+  // * Get mapper executor.
+  // * @return the mapper executor
+  // */
+  // protected MapperExecutor getExecutor() {
+  //
+  // return this.executor;
+  // }
 
   //
   // Setters
@@ -517,9 +519,16 @@ public abstract class AbstractSequenceReadsMapper
 
     getLogger().fine(cmd.toString());
 
+    // final int exitValue =
+    // this.executor.execute(cmd, tmpGenomeFile.getParentFile(), false, false,
+    // unCompressedGenomeFile, tmpGenomeFile).waitFor();
+
     final int exitValue =
-        this.executor.execute(cmd, tmpGenomeFile.getParentFile(), false, false,
-            unCompressedGenomeFile, tmpGenomeFile).waitFor();
+        getProcessCommandBuilder(getExecutableFromCommand(cmd))
+            .arguments(getArgumentsFromCommand(cmd))
+            .directory(tmpGenomeFile.getParentFile())
+            .addMountDirectory(unCompressedGenomeFile)
+            .addMountDirectory(tmpGenomeFile).create().execute().waitFor();
 
     if (exitValue != 0) {
       throw new IOException(
@@ -929,6 +938,22 @@ public abstract class AbstractSequenceReadsMapper
     return true;
   }
 
+  protected ProcessCommandBuilder getProcessCommandBuilder(
+      final String executable) {
+
+    if (!this.mapperDockerImage.isEmpty() && this.dockerClient != null) {
+      return new DockerProcess(getDockerClient(), getMapperDockerImage(),
+          executable);
+    } else if (isUseBundledBinaries()) {
+      return new BundledProcess(getSoftwarePackage(), executable,
+          getMapperVersionToUse(), getExecutablesTempDirectory());
+
+    } else {
+      return new PathProcess(executable);
+    }
+
+  }
+
   @Override
   public void prepareBinaries() throws IOException {
 
@@ -937,26 +962,25 @@ public abstract class AbstractSequenceReadsMapper
       return;
     }
 
-    // Set the executor to use
-    if (!this.mapperDockerImage.isEmpty() && this.dockerClient != null) {
-      this.executor = new DockerMapperExecutor(getDockerClient(),
-          getMapperDockerImage(), getTempDirectory());
-    } else if (isUseBundledBinaries()) {
-      this.executor = new BundledMapperExecutor(getSoftwarePackage(),
-          getMapperVersionToUse(), getExecutablesTempDirectory());
-    } else {
-      this.executor = new PathMapperExecutor();
-    }
+    // // Set the executor to use
+    // if (!this.mapperDockerImage.isEmpty() && this.dockerClient != null) {
+    // this.executor = new DockerMapperExecutor(getDockerClient(),
+    // getMapperDockerImage(), getTempDirectory());
+    // } else if (isUseBundledBinaries()) {
+    // this.executor = new BundledMapperExecutor(getSoftwarePackage(),
+    // getMapperVersionToUse(), getExecutablesTempDirectory());
+    // } else {
+    // this.executor = new PathMapperExecutor();
+    // }
 
-    getLogger().fine("Use executor: " + this.executor);
+    // getLogger().fine("Use executor: " + this.executor);
 
-    if (!checkIfBinaryExists(getIndexerExecutables())) {
+    if (!checkIfBinaryIsAvailable(getIndexerExecutables())) {
       throw new IOException("Unable to find mapper "
           + getMapperName() + " version " + this.mapperVersionToUse
           + " (flavor: "
           + (this.flavorToUse == null ? "not defined" : this.flavorToUse)
           + ")");
-
     }
 
     if (!checkIfFlavorExists()) {
@@ -1061,7 +1085,7 @@ public abstract class AbstractSequenceReadsMapper
    */
   protected String install(final String binaryFilename) throws IOException {
 
-    return this.executor.install(binaryFilename);
+    return getProcessCommandBuilder(binaryFilename).create().install();
   }
 
   /**
@@ -1069,7 +1093,7 @@ public abstract class AbstractSequenceReadsMapper
    * @param binaryFilenames program to check
    * @return true if the binary exists
    */
-  protected boolean checkIfBinaryExists(final String... binaryFilenames)
+  protected boolean checkIfBinaryIsAvailable(final String... binaryFilenames)
       throws IOException {
 
     if (binaryFilenames == null || binaryFilenames.length == 0) {
@@ -1077,7 +1101,7 @@ public abstract class AbstractSequenceReadsMapper
     }
 
     for (String binaryFilename : binaryFilenames) {
-      if (!checkIfBinaryExists(binaryFilename)) {
+      if (!checkIfBinaryIsAvailable(binaryFilename)) {
         return false;
       }
     }
@@ -1090,10 +1114,10 @@ public abstract class AbstractSequenceReadsMapper
    * @param binaryFilename program to check
    * @return true if the binary exists
    */
-  protected boolean checkIfBinaryExists(final String binaryFilename)
+  protected boolean checkIfBinaryIsAvailable(final String binaryFilename)
       throws IOException {
 
-    return this.executor.isExecutable(binaryFilename);
+    return getProcessCommandBuilder(binaryFilename).create().isAvailable();
   }
 
   /**
@@ -1131,22 +1155,9 @@ public abstract class AbstractSequenceReadsMapper
   protected String executeToString(final List<String> command)
       throws IOException {
 
-    final Result result = this.executor.execute(command, null, true, true);
-
-    final StringBuilder sb = new StringBuilder();
-
-    try (BufferedReader reader =
-        new BufferedReader(new InputStreamReader(result.getInputStream()))) {
-
-      String line;
-
-      while ((line = reader.readLine()) != null) {
-        sb.append(line);
-        sb.append('\n');
-      }
-    }
-
-    return sb.toString();
+    return getProcessCommandBuilder(getExecutableFromCommand(command))
+        .arguments(getArgumentsFromCommand(command)).create().execute()
+        .getOutput();
   }
 
   //

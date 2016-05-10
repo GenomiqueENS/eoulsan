@@ -4,12 +4,14 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolExecutorResult;
-import fr.ens.biologie.genomique.eoulsan.util.SimpleProcess;
-import fr.ens.biologie.genomique.eoulsan.util.SystemSimpleProcess;
+import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
+import fr.ens.biologie.genomique.eoulsan.util.process.PathProcess;
+import fr.ens.biologie.genomique.eoulsan.util.process.ProcessCommand;
+import fr.ens.biologie.genomique.eoulsan.util.process.ProcessCommandBuilder;
 
 /**
  * This class define an abstract executor interpreter that contains the default
@@ -22,12 +24,13 @@ public abstract class AbstractExecutorInterpreter
     implements ExecutorInterpreter {
 
   /**
-   * Create a new SimpleProcess that will be use to launch the command.
-   * @return a new SimpleProcess object
+   * Create a new ProcessCommandBuilder that will be use to launch the command.
+   * @return a new ProcessCommandBuilder object
    */
-  protected SimpleProcess newSimpleProcess() {
+  protected ProcessCommandBuilder newProcessCommandBuilder(
+      final String executable) {
 
-    return new SystemSimpleProcess();
+    return new PathProcess(executable);
   }
 
   @Override
@@ -49,12 +52,19 @@ public abstract class AbstractExecutorInterpreter
 
     try {
 
-      final int exitValue = newSimpleProcess().execute(commandLine,
-          executionDirectory, temporaryDirectory, stdoutFile, stderrFile);
+      final String executable = ProcessUtils.getExecutableFromCommand(commandLine);
+      final List<String> arguments = ProcessUtils.getArgumentsFromCommand(commandLine);
+
+      final ProcessCommand processCommand = newProcessCommandBuilder(executable)
+          .arguments(arguments).directory(executionDirectory)
+          .temporaryDirectory(temporaryDirectory).redirectOutput(stdoutFile)
+          .redirectError(stderrFile).create();
+
+      final int exitValue = processCommand.execute().exitCode();
 
       return new ToolExecutorResult(commandLine, exitValue);
 
-    } catch (EoulsanException e) {
+    } catch (IOException e) {
       return new ToolExecutorResult(commandLine, e);
     }
   }
