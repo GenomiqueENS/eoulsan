@@ -130,7 +130,8 @@ WT2_vs_KO2:typeWT%dayday2_vs_typeKO%dayday2
 		Optional key:
 			<ul>
 				<li><b>GenomeFile:</b> The genome file to be used for the mapping.</li>
-				<li><b>GffFile:</b> The Gff file including the annotations for the count step.</li>
+				<li><b>GffFile:</b> The GFF3 file including the annotations for the count step.</li>
+				<li><b>GtfFile:</b> The GTF file including the annotations for the count step.</li>
 				<li><b>AdditionalAnnotationFile:</b> The file including additional information and annotations about the features.</li>
 			</ul>
 
