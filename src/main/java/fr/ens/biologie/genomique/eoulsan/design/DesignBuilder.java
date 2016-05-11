@@ -27,6 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.design;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ADDITIONAL_ANNOTATION_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
+import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GTF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_FASTA;
 
 import java.io.File;
@@ -74,6 +75,7 @@ public class DesignBuilder {
   private final Map<String, String> prefixMap = new HashMap<>();
   private DataFile genomeFile;
   private DataFile gffFile;
+  private DataFile gtfFile;
   private DataFile additionalAnnotationFile;
 
   /**
@@ -340,6 +342,8 @@ public class DesignBuilder {
       this.genomeFile = file;
     } else if (isDataFormatExtension(ANNOTATION_GFF, extension, md)) {
       this.gffFile = file;
+    } else if (isDataFormatExtension(ANNOTATION_GTF, extension, md)) {
+      this.gtfFile = file;
     } else if (isDataFormatExtension(ADDITIONAL_ANNOTATION_TSV, extension,
         md)) {
       this.additionalAnnotationFile = file;
@@ -683,9 +687,14 @@ public class DesignBuilder {
       design.getMetadata().setGenomeFile(this.genomeFile.toString());
     }
 
-    // Set the Annotation file
+    // Set the GFF Annotation file
     if (this.gffFile != null) {
       design.getMetadata().setGffFile(this.gffFile.toString());
+    }
+
+    // Set the GTF Annotation file
+    if (this.gtfFile != null) {
+      design.getMetadata().setGtfFile(this.gtfFile.toString());
     }
 
     // Set additional annotation file
