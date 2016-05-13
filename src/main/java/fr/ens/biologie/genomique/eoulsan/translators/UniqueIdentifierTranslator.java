@@ -134,13 +134,10 @@ public class UniqueIdentifierTranslator extends AbstractTranslator {
 
     Map<String, Integer> translationCurrentCount = new HashMap<>();
 
-    // for (String row : translation.keySet()) {
     for (Map.Entry<String, String> e : translation.entrySet()) {
 
-      // String t = translation.get(row);
       final String row = e.getKey();
       final String t = e.getValue();
-      // System.out.println(row+"\t"+t);
       int count = translationCount.get(t);
 
       if (count > 1) {
@@ -167,11 +164,8 @@ public class UniqueIdentifierTranslator extends AbstractTranslator {
 
       final String newId = translation.get(id);
 
-      // System.out.println(id + "\t" + newId);
-
       this.mapUniqueId.put(newId, id);
       this.reverseMapUniqueId.put(id, newId);
-
     }
 
   }

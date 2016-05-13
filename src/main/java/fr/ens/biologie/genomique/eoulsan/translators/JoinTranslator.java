@@ -114,9 +114,6 @@ public class JoinTranslator extends AbstractTranslator {
   @Override
   public String getLinkInfo(final String translatedId, final String field) {
 
-    System.out.println(this.getClass().getName()
-        + "\ttranslateId=" + translatedId + "\tfield=" + field);
-
     final Translator t = this.mapTranslator.get(field);
 
     if (t == null) {
