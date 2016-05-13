@@ -146,7 +146,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
 
     synchronized (this) {
 
-      if (!check(step)) {
+      if (!checkStep(step)) {
         return;
       }
 
@@ -167,7 +167,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
       this.stepProgress.put(step, progress);
       this.globalProgress = computeGlobalProgress(step, progress);
 
-      print(step);
+      print(step, false, false, null);
     }
   }
 
@@ -187,17 +187,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
       if (this.terminal == null || this.jobDone) {
         return;
       }
-
-
-      this.terminal.setCursorVisible(false);
-      final int lastLineY = this.terminalSize.getRows() - 1;
-
-      // Update workflow progress
-      showWorkflowProgress(lastLineY, 1.0, success, message);
-
-      this.terminal.moveCursor(0, lastLineY);
-      this.terminal.setCursorVisible(true);
-      this.jobDone = true;
+      print(null, true, success, message);
     }
 
   }
@@ -207,12 +197,12 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
 
     synchronized (this) {
 
-      if (!check(step)) {
+      if (!checkStep(step)) {
         return;
       }
 
       notifyTask(step, contextId, this.submittedTasks, 1);
-      print(step);
+      print(step, false, false, null);
     }
   }
 
@@ -221,12 +211,12 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
 
     synchronized (this) {
 
-      if (!check(step)) {
+      if (!checkStep(step)) {
         return;
       }
 
       notifyTask(step, contextId, this.runningTasks, 1);
-      print(step);
+      print(step, false, false, null);
     }
   }
 
@@ -235,13 +225,13 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
 
     synchronized (this) {
 
-      if (!check(step)) {
+      if (!checkStep(step)) {
         return;
       }
 
       notifyTask(step, contextId, this.runningTasks, -1);
       notifyTask(step, contextId, this.doneTasks, 1);
-      print(step);
+      print(step, false, false, null);
     }
   }
 
@@ -260,7 +250,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   // Update progress
   //
 
-  private boolean check(final Step step) {
+  private boolean checkStep(final Step step) {
 
     // Do nothing if there is no terminal or if the job is completed
     if (this.terminal == null || this.jobDone) {
@@ -284,9 +274,27 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
     return true;
   }
 
-  private void print(final Step step) {
+  private synchronized void print(final Step step, final boolean endWorkflow,
+      final boolean success, final String successMessage) {
 
     this.terminal.setCursorVisible(false);
+
+    if (endWorkflow) {
+
+      if (this.jobDone) {
+        return;
+      }
+
+      final int lastLineY = this.terminalSize.getRows() - 1;
+
+      // Update workflow progress
+      showWorkflowProgress(lastLineY, 1.0, success, successMessage);
+
+      this.terminal.moveCursor(0, lastLineY);
+      this.terminal.setCursorVisible(true);
+      this.jobDone = true;
+      return;
+    }
 
     if (!this.stepLines.containsKey(step)) {
       this.stepLines.put(step, this.lineCount);
