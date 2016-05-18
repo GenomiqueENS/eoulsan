@@ -29,6 +29,7 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ADDITIONAL_ANNO
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GTF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_FASTA;
+import static java.util.regex.Pattern.compile;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -44,6 +45,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import fr.ens.biologie.genomique.aozan.illumina.samplesheet.SampleSheet;
 import fr.ens.biologie.genomique.aozan.illumina.samplesheet.io.SampleSheetCSVReader;
@@ -69,6 +72,8 @@ import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 public class DesignBuilder {
 
   private static final int MAX_FASTQ_ENTRIES_TO_READ = 10000;
+  private static final Pattern ILLUMINA_FASTQ_FILENAME_PATTERN =
+      compile("^(.+)_\\w+_L\\d\\d\\d_R\\d_\\d\\d\\d$");
 
   private final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
   private final Map<String, List<FastqEntry>> fastqMap = new LinkedHashMap<>();
@@ -106,7 +111,7 @@ public class DesignBuilder {
     private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     private final DataFile path;
-    private final String sampleName;
+    private final String sampleId;
     private final String sampleDesc;
     private final String sampleOperator;
     private final String sampleDate;
@@ -225,7 +230,7 @@ public class DesignBuilder {
       final StringBuilder sb = new StringBuilder();
 
       sb.append("FastqEntry(Sample: ");
-      sb.append(this.sampleName);
+      sb.append(this.sampleId);
 
       if (this.sampleDesc != null) {
         sb.append(", Description: ");
@@ -244,6 +249,20 @@ public class DesignBuilder {
       return sb.toString();
     }
 
+    private static String defineSampleName(DataFile path) {
+
+      String basename = StringUtils.basename(path.getName());
+
+      // Check if filename is a Bcl2fastq output file
+      final Matcher matcher = ILLUMINA_FASTQ_FILENAME_PATTERN.matcher(basename);
+
+      if (matcher.matches()) {
+        basename = matcher.group(1);
+      }
+
+      return Naming.toValidName(basename);
+    }
+
     //
     // Constructors
     //
@@ -251,7 +270,7 @@ public class DesignBuilder {
     public FastqEntry(final DataFile path) throws EoulsanException {
 
       this.path = path;
-      this.sampleName = StringUtils.basename(path.getName());
+      this.sampleId = defineSampleName(path);
       this.sampleDesc = null;
       this.sampleOperator = null;
       this.sampleDate = getDate(path);
@@ -266,7 +285,7 @@ public class DesignBuilder {
         throws EoulsanException {
 
       this.path = path;
-      this.sampleName = sampleName;
+      this.sampleId = sampleName;
       this.sampleDesc = sampleDesc;
       this.sampleOperator = sampleOperator;
       this.sampleDate = getDate(path);
@@ -320,7 +339,7 @@ public class DesignBuilder {
       if (this.prefixMap.containsKey(entry.prefix)) {
         sampleId = this.prefixMap.get(entry.prefix);
       } else {
-        sampleId = entry.sampleName;
+        sampleId = entry.sampleId;
         this.prefixMap.put(entry.prefix, sampleId);
       }
 
@@ -594,7 +613,7 @@ public class DesignBuilder {
         final String desc = fes.get(0).sampleDesc;
         final String date = fes.get(0).sampleDate;
         final String operator = fes.get(0).sampleOperator;
-        final String condition = fes.get(0).sampleName;
+        final String condition = fes.get(0).sampleId;
 
         if (pairedEndMode) {
 
