@@ -491,7 +491,7 @@ public class DESeq2 {
         if (splitC.length != 2) {
           throw new EoulsanException("Error in "
               + experiment.getName()
-              + " experiment, comparison cannot have more than 1 value.");
+              + " experiment, comparison cannot have more than 1 value: " + c);
         }
       }
     }

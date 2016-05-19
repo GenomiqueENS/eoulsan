@@ -156,7 +156,7 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
       final Set<Parameter> stepParameters) throws EoulsanException {
 
     String pattern = DEFAULT_FILE_INPUT_GLOB_PATTERN;
-    this.outputPrefix = context.getCurrentStep().getId();
+    this.outputPrefix = context.getCurrentStep().getId() + '_';
 
     for (final Parameter p : stepParameters) {
 

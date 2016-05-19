@@ -65,6 +65,9 @@ public class RserveRExecutor extends AbstractRExecutor {
   @Override
   public void openConnection() throws IOException {
 
+    // Check if temporary and output directories exists
+    super.openConnection();
+
     this.rConnection = new RSConnection(serverName);
   }
 

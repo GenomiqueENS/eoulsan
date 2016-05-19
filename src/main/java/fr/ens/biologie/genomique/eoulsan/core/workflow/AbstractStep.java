@@ -40,7 +40,6 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUtils;
 import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
@@ -396,50 +395,6 @@ public abstract class AbstractStep implements Step {
     this.observer.addDependency(step);
   }
 
-  /**
-   * Define the working directory of the step.
-   * @param workflow the workflow
-   * @param module module instance
-   * @return the working directory of the step
-   */
-  private static DataFile defineOutputDirectory(final AbstractWorkflow workflow,
-      final Module module, final boolean copyResultsToOutput) {
-
-    checkNotNull(workflow, "workflow argument cannot be null");
-    checkNotNull(module, "module argument cannot be null");
-
-    final boolean hadoopMode =
-        EoulsanRuntime.getRuntime().getMode().isHadoopMode();
-
-    if (!hadoopMode) {
-
-      if (copyResultsToOutput) {
-        return workflow.getOutputDirectory();
-      }
-
-      return workflow.getLocalWorkingDirectory();
-    }
-
-    switch (ExecutionMode.getExecutionMode(module.getClass())) {
-
-    case HADOOP_COMPATIBLE:
-    case HADOOP_INTERNAL:
-    case HADOOP_ONLY:
-      return workflow.getHadoopWorkingDirectory();
-
-    case LOCAL_ONLY:
-      if (copyResultsToOutput) {
-        return workflow.getOutputDirectory();
-      }
-
-      return workflow.getLocalWorkingDirectory();
-
-    default:
-      return workflow.getLocalWorkingDirectory();
-    }
-
-  }
-
   //
   // Step lifetime methods
   //
@@ -561,7 +516,7 @@ public abstract class AbstractStep implements Step {
    * @param workflow the workflow of the step
    * @param type the type of the step
    */
-  public AbstractStep(final AbstractWorkflow workflow, final StepType type) {
+  AbstractStep(final AbstractWorkflow workflow, final StepType type) {
 
     checkArgument(type != StepType.STANDARD_STEP,
         "This constructor cannot be used for standard steps");
@@ -597,8 +552,8 @@ public abstract class AbstractStep implements Step {
       this.mode = ExecutionMode.getExecutionMode(checkerModule.getClass());
 
       // Define output directory
-      this.outputDir = defineOutputDirectory(workflow, checkerModule,
-          this.copyResultsToOutput);
+      this.outputDir = StepOutputDirectory.getInstance().defaultDirectory(workflow,
+          this, checkerModule, this.copyResultsToOutput);
       break;
 
     case DESIGN_STEP:
@@ -615,8 +570,8 @@ public abstract class AbstractStep implements Step {
       this.mode = ExecutionMode.getExecutionMode(designModule.getClass());
 
       // Define output directory
-      this.outputDir = defineOutputDirectory(workflow, designModule,
-          this.copyResultsToOutput);
+      this.outputDir = StepOutputDirectory.getInstance().defaultDirectory(workflow,
+          this, designModule, this.copyResultsToOutput);
 
       break;
 
@@ -630,8 +585,8 @@ public abstract class AbstractStep implements Step {
       this.mode = ExecutionMode.NONE;
 
       // Define output directory
-      this.outputDir =
-          defineOutputDirectory(workflow, fakeModule, this.copyResultsToOutput);
+      this.outputDir = StepOutputDirectory.getInstance().defaultDirectory(workflow,
+          this, fakeModule, this.copyResultsToOutput);
       break;
     }
 
@@ -648,7 +603,7 @@ public abstract class AbstractStep implements Step {
    * @param format DataFormat
    * @throws EoulsanException if an error occurs while configuring the generator
    */
-  public AbstractStep(final AbstractWorkflow workflow, final DataFormat format)
+  AbstractStep(final AbstractWorkflow workflow, final DataFormat format)
       throws EoulsanException {
 
     checkNotNull(workflow, "Workflow argument cannot be null");
@@ -677,8 +632,8 @@ public abstract class AbstractStep implements Step {
     this.dataProductConfiguration = "";
 
     // Define output directory
-    this.outputDir = defineOutputDirectory(workflow, generatorModule,
-        this.copyResultsToOutput);
+    this.outputDir = StepOutputDirectory.getInstance().defaultDirectory(workflow, this,
+        generatorModule, this.copyResultsToOutput);
 
     // Set state observer
     this.observer = new StepStateObserver(this);
@@ -701,11 +656,37 @@ public abstract class AbstractStep implements Step {
    * @param dataProduct data product
    * @throws EoulsanException id an error occurs while creating the step
    */
-  protected AbstractStep(final AbstractWorkflow workflow, final String id,
+  AbstractStep(final AbstractWorkflow workflow, final String id,
       final String moduleName, final String stepVersion, final boolean skip,
       final boolean copyResultsToOutput, final Set<Parameter> parameters,
       final int requiredMemory, final int requiredProcessors,
       final String dataProduct) throws EoulsanException {
+
+    this(workflow, id, moduleName, stepVersion, skip, copyResultsToOutput,
+        parameters, requiredMemory, requiredProcessors, dataProduct, null);
+  }
+
+  /**
+   * Create a step for a standard step.
+   * @param workflow workflow of the step
+   * @param id identifier of the step
+   * @param moduleName module name
+   * @param stepVersion step version
+   * @param skip true to skip execution of the step
+   * @param copyResultsToOutput copy step result to output directory
+   * @param parameters parameters of the step
+   * @param requiredMemory required memory
+   * @param requiredProcessors required processors
+   * @param dataProduct data product
+   * @param outputDirectory output directory
+   * @throws EoulsanException id an error occurs while creating the step
+   */
+  AbstractStep(final AbstractWorkflow workflow, final String id,
+      final String moduleName, final String stepVersion, final boolean skip,
+      final boolean copyResultsToOutput, final Set<Parameter> parameters,
+      final int requiredMemory, final int requiredProcessors,
+      final String dataProduct, final DataFile outputDirectory)
+      throws EoulsanException {
 
     checkNotNull(workflow, "Workflow argument cannot be null");
     checkNotNull(id, "Step id argument cannot be null");
@@ -735,58 +716,9 @@ public abstract class AbstractStep implements Step {
     this.parallelizationMode = getParallelizationMode(module);
 
     // Define output directory
-    this.outputDir =
-        defineOutputDirectory(workflow, module, copyResultsToOutput);
-
-    // Set state observer
-    this.observer = new StepStateObserver(this);
-
-    // Register this step in the workflow
-    this.workflow.register(this);
-  }
-
-  /**
-   * Create a step for a standard step.
-   * @param workflow workflow of the step
-   * @param id identifier of the step
-   * @param module the module
-   * @param skip true to skip execution of the step
-   * @param copyResultsToOutput copy step result to output directory
-   * @param parameters parameters of the step
-   * @throws EoulsanException id an error occurs while creating the step
-   */
-  protected AbstractStep(final AbstractWorkflow workflow, final String id,
-      final Module module, final boolean skip,
-      final boolean copyResultsToOutput, final Set<Parameter> parameters)
-      throws EoulsanException {
-
-    checkNotNull(workflow, "Workflow argument cannot be null");
-    checkNotNull(id, "Step id argument cannot be null");
-    checkNotNull(module, "module argument cannot be null");
-    checkNotNull(parameters, "Step arguments argument cannot be null");
-
-    this.workflow = workflow;
-    this.number = instanceCounter++;
-    this.id = id;
-    this.skip = skip;
-    this.moduleName = module.getName();
-    this.version =
-        module.getVersion() == null ? null : module.getVersion().toString();
-    this.copyResultsToOutput = copyResultsToOutput;
-
-    this.type = isGenerator(module) ? GENERATOR_STEP : STANDARD_STEP;
-    this.mode = ExecutionMode.getExecutionMode(module.getClass());
-    this.parameters = Sets.newLinkedHashSet(parameters);
-    this.terminalStep = EoulsanAnnotationUtils.isTerminal(module);
-    this.createLogFiles = !isNoLog(module);
-    this.parallelizationMode = getParallelizationMode(module);
-    this.requiredMemory = -1;
-    this.requiredProcessors = -1;
-    this.dataProductConfiguration = "";
-
-    // Define output directory
-    this.outputDir =
-        defineOutputDirectory(workflow, module, copyResultsToOutput);
+    this.outputDir = outputDirectory != null
+        ? outputDirectory : StepOutputDirectory.getInstance().defaultDirectory(workflow,
+            this, module, copyResultsToOutput);
 
     // Set state observer
     this.observer = new StepStateObserver(this);

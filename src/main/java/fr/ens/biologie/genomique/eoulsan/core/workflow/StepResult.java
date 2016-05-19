@@ -544,8 +544,6 @@ public class StepResult {
     this.success = obj.getBoolean(SUCCESS_TAG);
     this.stepMessage = obj.getString(STEP_MESSAGE_TAG);
 
-    System.out.println(this.startTime);
-
     // Parse parameters
     this.parameters = new LinkedHashSet<>();
     final JsonObject parametersObj = obj.getJsonObject(STEP_PARAMETERS_TAG);

@@ -487,9 +487,14 @@ public class CommandWorkflow extends AbstractWorkflow {
             CopyInputDataModule.encodeAllowedCompressionsParameterValue(
                 outputCompressionsAllowed)));
 
+    // Get outputDirectory
+    final DataFile outputDirectory =
+        StepOutputDirectory.getInstance().workingDirectory(workflow,
+            outputPort.getStep(), outputPort.getStep().getModule());
+
     // Create step
     CommandStep step = new CommandStep(workflow, stepId, stepName, null,
-        parameters, false, false, -1, -1, "");
+        parameters, false, false, -1, -1, "", outputDirectory);
 
     // Configure step
     step.configure();
@@ -536,9 +541,14 @@ public class CommandWorkflow extends AbstractWorkflow {
       parameters.add(new Parameter(CopyOutputDataModule.FORMATS_PARAMETER,
           outputPort.getFormat().getName()));
 
+      // Get outputDirectory
+      final DataFile outputDirectory =
+          StepOutputDirectory.getInstance().workflowDirectory(
+              workflow, outputPort.getStep(), outputPort.getStep().getModule());
+
       // Create step
       CommandStep step = new CommandStep(workflow, stepId, stepName, null,
-          parameters, false, true, -1, -1, "");
+          parameters, false, true, -1, -1, "", outputDirectory);
 
       // Configure step
       step.configure();
@@ -795,12 +805,16 @@ public class CommandWorkflow extends AbstractWorkflow {
       }
     }
 
+    final StepOutputDirectory dispatcher =
+        StepOutputDirectory.getInstance();
+
     // Add steps to copy output data from steps to output directory if
     // necessary
     for (CommandStep step : Lists.newArrayList(this.steps)) {
 
       if (step.isCopyResultsToOutput()
-          && !step.getStepOutputDirectory().equals(getOutputDirectory())
+          && !step.getStepOutputDirectory().equals(
+              dispatcher.workflowDirectory(this, step, step.getModule()))
           && !step.getWorkflowOutputPorts().isEmpty()) {
 
         final List<CommandStep> newSteps =

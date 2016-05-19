@@ -222,6 +222,9 @@ public final class Globals {
   /** Other log filename. */
   public static final String OTHER_LOG_FILENAME = "additional.log";
 
+  /** Output tree type. */
+  public static final String OUTPUT_TREE_TYPE_DEFAULT = "flat";
+
   //
   // Files encoding
   //
@@ -270,6 +273,9 @@ public final class Globals {
 
   /** Task stderr extension. */
   public static final String TASK_STDERR_EXTENSION = ".task.err";
+
+  /** Step output directory suffix. */
+  public static final String STEP_OUTPUT_DIRECTORY_SUFFIX = "_output";
 
   //
   // Private constants

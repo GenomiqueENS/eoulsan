@@ -1,4 +1,6 @@
 /*
+
+
  *                  Eoulsan development code
  *
  * This code may be freely distributed and modified under the
@@ -71,6 +73,9 @@ public final class Settings implements Serializable {
 
   private static final String LOCAL_THREADS_NUMBER =
       MAIN_PREFIX_KEY + "local.threads";
+
+  private static final String OUTPUT_TREE_TYPE =
+      MAIN_PREFIX_KEY + "output.tree.type";
 
   private static final String DATA_FORMAT_PATH =
       MAIN_PREFIX_KEY + "format.path";
@@ -584,6 +589,16 @@ public final class Settings implements Serializable {
   }
 
   /**
+   * Get the output tree type.
+   * @return the output tree type
+   */
+  public String getOutputTreeType() {
+
+    return this.properties.getProperty(OUTPUT_TREE_TYPE,
+        Globals.OUTPUT_TREE_TYPE_DEFAULT);
+  }
+
+  /**
    * Get a setting value.
    * @return settingName value as a String
    */
@@ -1057,6 +1072,15 @@ public final class Settings implements Serializable {
   public void setGalaxyToolPath(final String path) {
 
     this.properties.setProperty(DATA_FORMAT_PATH, path);
+  }
+
+  /**
+   * Set the output tree type.
+   * @param outputTreeType the output tree type
+   */
+  public void setOutputTreeType(final String outputTreeType) {
+
+    this.properties.getProperty(OUTPUT_TREE_TYPE, outputTreeType);
   }
 
   /**

@@ -141,8 +141,6 @@ public final class DesignUtils {
 
       final SampleMetadata smd = sample.getMetadata();
 
-      // System.out.println(sampleMDKeys);
-
       for (String key : sampleMDKeys) {
 
         sb.append('\t');
