@@ -559,7 +559,7 @@ public final class Settings implements Serializable {
 
     final String connectionString = getDockerConnection();
 
-    if (connectionString == null) {
+    if (connectionString == null || connectionString.trim().isEmpty()) {
       return null;
     }
 
