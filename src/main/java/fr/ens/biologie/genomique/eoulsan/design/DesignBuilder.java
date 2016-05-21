@@ -112,6 +112,7 @@ public class DesignBuilder {
 
     private final DataFile path;
     private final String sampleId;
+    private final String sampleName;
     private final String sampleDesc;
     private final String sampleOperator;
     private final String sampleDate;
@@ -260,7 +261,7 @@ public class DesignBuilder {
         basename = matcher.group(1);
       }
 
-      return Naming.toValidName(basename);
+      return basename;
     }
 
     //
@@ -270,7 +271,8 @@ public class DesignBuilder {
     public FastqEntry(final DataFile path) throws EoulsanException {
 
       this.path = path;
-      this.sampleId = defineSampleName(path);
+      this.sampleName = defineSampleName(path);
+      this.sampleId = Naming.toValidName(this.sampleName);
       this.sampleDesc = null;
       this.sampleOperator = null;
       this.sampleDate = getDate(path);
@@ -280,12 +282,13 @@ public class DesignBuilder {
       this.pairMember = (Integer) array[1];
     }
 
-    public FastqEntry(final DataFile path, final String sampleName,
-        final String sampleDesc, final String sampleOperator)
-        throws EoulsanException {
+    public FastqEntry(final DataFile path, final String sampleId,
+        final String sampleName, final String sampleDesc,
+        final String sampleOperator) throws EoulsanException {
 
       this.path = path;
-      this.sampleId = sampleName;
+      this.sampleId = sampleId;
+      this.sampleName = sampleName;
       this.sampleDesc = sampleDesc;
       this.sampleOperator = sampleOperator;
       this.sampleDate = getDate(path);
@@ -449,6 +452,7 @@ public class DesignBuilder {
 
       final String sampleProject = sample.getSampleProject();
       final String sampleId = sample.getSampleId();
+      final String sampleName = sample.getSampleName();
       final String sampleDesc = sample.getDescription();
       final String sampleOperator = sample.get("Operator");
       final int sampleLane = sample.getLane();
@@ -513,7 +517,8 @@ public class DesignBuilder {
         }
 
         try {
-          list.add(new FastqEntry(new DataFile(fastqFile), sampleId, sampleDesc,
+          list.add(new FastqEntry(new DataFile(fastqFile), normalizedSampleId,
+              sampleName == null ? sampleId : sampleName, sampleDesc,
               sampleOperator));
         } catch (EmptyFastqException e) {
           getLogger().warning(e.getMessage());
@@ -610,6 +615,7 @@ public class DesignBuilder {
 
       for (List<FastqEntry> fes : files) {
 
+        final String sampleName = fes.get(0).sampleName;
         final String desc = fes.get(0).sampleDesc;
         final String date = fes.get(0).sampleDate;
         final String operator = fes.get(0).sampleOperator;
@@ -619,6 +625,8 @@ public class DesignBuilder {
 
           final String finalSampleId = files.size() == 1
               ? sampleId : sampleId + StringUtils.toLetter(count);
+          final String finalSampleName = files.size() == 1
+              ? sampleName : sampleName + StringUtils.toLetter(count);
 
           // Convert the list of DataFiles to a list of filenames
           final List<String> filenames = new ArrayList<>();
@@ -626,8 +634,8 @@ public class DesignBuilder {
             filenames.add(fe.path.getSource());
           }
 
-          addSample(result, finalSampleId, desc, condition, date, operator,
-              defaultFastqFormat, filenames, fes.get(0).path);
+          addSample(result, finalSampleId, finalSampleName, desc, condition,
+              date, operator, defaultFastqFormat, filenames, fes.get(0).path);
           count++;
 
         } else {
@@ -636,9 +644,11 @@ public class DesignBuilder {
 
             final String finalSampleId = e.getValue().size() == 1
                 ? sampleId : sampleId + StringUtils.toLetter(count);
+            final String finalSampleName = e.getValue().size() == 1
+                ? sampleName : sampleName + StringUtils.toLetter(count);
 
-            addSample(result, finalSampleId, desc, condition, date, operator,
-                defaultFastqFormat,
+            addSample(result, finalSampleId, finalSampleName, desc, condition,
+                date, operator, defaultFastqFormat,
                 Collections.singletonList(fe.path.getSource()), fe.path);
             count++;
           }
@@ -655,6 +665,7 @@ public class DesignBuilder {
    * Add a Sample to the Design object
    * @param design Design object
    * @param sampleId the id of the sample
+   * @param sampleName the name of the sample
    * @param desc description of the sample
    * @param condition condition
    * @param date date of the sample
@@ -665,10 +676,10 @@ public class DesignBuilder {
    * @throws EoulsanException if an error occurs while adding the sample
    */
   private void addSample(final Design design, final String sampleId,
-      final String desc, final String condition, final String date,
-      final String operator, final FastqFormat defaultFastqFormat,
-      final List<String> filenames, final DataFile fileToCheck)
-      throws EoulsanException {
+      final String sampleName, final String desc, final String condition,
+      final String date, final String operator,
+      final FastqFormat defaultFastqFormat, final List<String> filenames,
+      final DataFile fileToCheck) throws EoulsanException {
 
     if (design == null) {
       return;
@@ -677,6 +688,10 @@ public class DesignBuilder {
     // Create the sample
     design.addSample(sampleId);
     final Sample s = design.getSample(sampleId);
+    if (sampleName != null) {
+      s.setName(sampleName);
+    }
+
     final SampleMetadata smd = s.getMetadata();
 
     // Set the fastq file of the sample
