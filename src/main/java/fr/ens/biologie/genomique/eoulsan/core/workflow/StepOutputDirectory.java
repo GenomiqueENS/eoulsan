@@ -76,6 +76,12 @@ class StepOutputDirectory {
     checkNotNull(step, "step argument cannot be null");
     checkNotNull(module, "module argument cannot be null");
 
+    if (this.hadoopMode
+        && ExecutionMode
+            .getExecutionMode(module.getClass()) == ExecutionMode.HADOOP_ONLY) {
+      return workflow.getHadoopWorkingDirectory();
+    }
+
     if (copyResultsToOutput) {
       return workflowDirectory(workflow, step, module);
     }

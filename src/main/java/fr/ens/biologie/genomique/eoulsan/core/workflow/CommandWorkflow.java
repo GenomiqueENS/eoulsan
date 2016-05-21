@@ -490,7 +490,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     // Get outputDirectory
     final DataFile outputDirectory =
         StepOutputDirectory.getInstance().workingDirectory(workflow,
-            outputPort.getStep(), outputPort.getStep().getModule());
+            inputPort.getStep(), inputPort.getStep().getModule());
 
     // Create step
     CommandStep step = new CommandStep(workflow, stepId, stepName, null,

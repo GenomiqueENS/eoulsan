@@ -32,7 +32,7 @@ import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
+import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
 import fr.ens.biologie.genomique.eoulsan.annotations.NoOutputDirectory;
 import fr.ens.biologie.genomique.eoulsan.annotations.ReuseModuleInstance;
@@ -59,7 +59,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
  * @author Laurent Jourdren
  * @since 2.0
  */
-@HadoopCompatible
+@LocalOnly
 @ReuseModuleInstance
 @NoLog
 @NoOutputDirectory
