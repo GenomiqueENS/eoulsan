@@ -619,7 +619,7 @@ public class DesignBuilder {
         final String desc = fes.get(0).sampleDesc;
         final String date = fes.get(0).sampleDate;
         final String operator = fes.get(0).sampleOperator;
-        final String condition = fes.get(0).sampleId;
+        final String condition = fes.get(0).sampleName;
 
         if (pairedEndMode) {
 
