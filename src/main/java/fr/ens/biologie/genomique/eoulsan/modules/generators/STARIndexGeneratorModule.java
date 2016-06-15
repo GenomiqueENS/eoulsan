@@ -263,7 +263,8 @@ public class STARIndexGeneratorModule extends AbstractModule {
       if (this.gtfFile) {
 
         // Get the annotation data
-        final Data annotationData = context.getInputData(ANNOTATION_GFF);
+        final Data annotationData = context
+            .getInputData(this.gtfFormat ? ANNOTATION_GTF : ANNOTATION_GFF);
 
         // Get the annotation DataFile
         final DataFile gffFile = annotationData.getDataFile();
