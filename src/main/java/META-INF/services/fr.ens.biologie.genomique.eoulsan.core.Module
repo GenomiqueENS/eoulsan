@@ -57,7 +57,7 @@ fr.ens.biologie.genomique.eoulsan.modules.qc.IDRModule
 fr.ens.biologie.genomique.eoulsan.modules.ImportModule
 fr.ens.biologie.genomique.eoulsan.modules.FailModule
 fr.ens.biologie.genomique.eoulsan.modules.RequirementInstallerModule
-fr.ens.biologie.genomique.eoulsan.modules.TrackHubModule.java
+fr.ens.biologie.genomique.eoulsan.modules.TrackHubModule
 
 # Peak calling steps
 fr.ens.biologie.genomique.eoulsan.modules.peakcalling.BedToolsModule
