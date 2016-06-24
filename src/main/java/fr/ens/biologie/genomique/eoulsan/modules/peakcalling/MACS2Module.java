@@ -5,6 +5,14 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_
 
 import java.util.HashMap;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
+import com.google.common.base.Joiner;
+import java.util.Collections;
+import java.io.File;
+import java.io.IOException;
+import com.spotify.docker.client.DockerException;
+import com.spotify.docker.client.DockerClient;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -29,19 +37,28 @@ import fr.ens.biologie.genomique.eoulsan.data.DataMetadata;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.BinariesInstaller;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
+import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.design.Sample;
+import fr.ens.biologie.genomique.eoulsan.design.Experiment;
+import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
+import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
+import fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement;
+import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
+import fr.ens.biologie.genomique.eoulsan.util.docker.DockerSimpleProcess;
+import fr.ens.biologie.genomique.eoulsan.util.docker.DockerManager;
+
 
 /**
  * This class defines the macs2 peak-calling step. Handle multiple experiments
  * with one control per experiment.
  * @author Pierre-Marie Chiaroni - CSB lab - ENS - Paris
  * @author Celine Hernandez - CSB lab - ENS - Paris
+ * @author Cedric Michaud - CSB lab - ENS - Paris
  */
 @LocalOnly
 public class MACS2Module extends AbstractModule {
 
   private static final String CALLER_NAME = "MACS2";
-  private static final String SHIPPED_PACKAGE_VERSION = "2.0.10.20131216";
-  private static final String PACKAGE_ARCHIVE = "MACS2-2.0.10.20131216.tar.gz";
   private static final String CALLER_EXECUTABLE = "macs2";
 
   // Group for Hadoop counters.
@@ -58,10 +75,9 @@ public class MACS2Module extends AbstractModule {
   private double pvalue = 0;
   private boolean makeBdg = false;
   private String extraArgs = "";
+  private boolean isPairedEnd = false;
 
-  private boolean isMACS2installed = false;
-  private String macs2BinPath = "";
-  private String macs2LibPath = "";
+  private Requirement requirement;
 
   private static DataFormat MACS2_RMODEL =
       DataFormatRegistry.getInstance().getDataFormatFromName("macs2rmodel");
@@ -72,6 +88,8 @@ public class MACS2Module extends AbstractModule {
   private static DataFormat PEAK =
       DataFormatRegistry.getInstance().getDataFormatFromName("peaks");
 
+  final String dockerImage = "genomicpariscentre/macs2:latest";
+  
   @Override
   public String getName() {
     return CALLER_EXECUTABLE;
@@ -130,6 +148,8 @@ public class MACS2Module extends AbstractModule {
         this.makeBdg = p.getBooleanValue();
       } else if ("extra.args".equals(p.getName())) {
         this.extraArgs = p.getStringValue();
+      } else if ("is.paired.end".equals(p.getName())) {
+	this.isPairedEnd = p.getBooleanValue();
       } else
         throw new EoulsanException(
             "Unknown parameter for " + getName() + " step: " + p.getName());
@@ -141,104 +161,22 @@ public class MACS2Module extends AbstractModule {
           "As p-value threshold is provided, q-value threshold will be ignored by macs2.");
     }
     if (this.pvalue == 0 && this.qvalue == 0) {
-      getLogger().warning(
+	getLogger().warning(
           "Neither p-value nor q-value threshold was provided. Macs2 defaults to q-value thresold = 0.01.");
+	qvalue = 0.01;
     }
 
-    // Check if MACS2 needs to be installed
-    this.install();
+    this.requirement = DockerRequirement.newDockerRequirement(dockerImage, true);
+  }
 
-    // Display version of MACS2
-    getLogger().info("Will run MACS2 version: " + getMACS2Version());
+  @Override
+  public Set<Requirement> getRequirements() {
+
+    return Collections.singleton(this.requirement);
   }
 
   /**
-   * Check whether MACS2 is already installed. If not decompress Eoulsan's
-   * included MACS2 archive and install it.
-   */
-  private void install() {
-
-    // Check with python whether MACS2 is avalaible
-    try {
-      this.isMACS2installed = ProcessUtils
-          .execToString(
-              "python -c 'import pkgutil; allnames = [name for (module_loader, name, ispkg) in pkgutil.iter_modules()]; print \"MACS2\" in allnames'")
-          .startsWith("True");
-    } catch (java.io.IOException e) {
-      getLogger().warning(
-          "Cannot determine if MACS2 is installed. Installing MACS2. e:"
-              + e.toString());
-    }
-
-    // If MACS2 is installed, exit installation
-    if (this.isMACS2installed) {
-      getLogger()
-          .info("MACS2 already installed (python CL check). No installation.");
-      return;
-    }
-
-    // If MACS2 not installed, install it
-    getLogger().info("MACS2 not installed. Installing...");
-    try {
-      // Get the shipped archive
-      String binaryFile = BinariesInstaller.install(CALLER_NAME,
-          SHIPPED_PACKAGE_VERSION, PACKAGE_ARCHIVE, EoulsanRuntime.getSettings()
-              .getTempDirectoryFile().getAbsolutePath());
-      getLogger().info("Archive location : " + binaryFile);
-      DataFile macs2Archive = new DataFile(binaryFile);
-
-      // Set up a few paths to be used later
-      String macs2Path = macs2Archive.getParent() + "/MACS2-2.0.10.20131216/";
-      this.macs2BinPath = macs2Path + "bin/macs2";
-      this.macs2LibPath = macs2Path + "lib/python2.7/site-packages";
-
-      // Extract full archive
-      String cmd = String.format("tar -xzf %s -C %s", macs2Archive.getSource(),
-          macs2Archive.getParent().getSource());
-      getLogger().info("Extract archive : " + cmd);
-      ProcessUtils.exec(cmd, false);
-
-      // Install MACS2
-      cmd = String.format("python2 setup.py install --prefix %s", macs2Path);
-      getLogger().info("Installing : " + cmd + "in folder " + macs2Path);
-      ProcessUtils.exec(cmd, false);
-
-      // Set the flag indicating that MACS2 is now installed.
-      this.isMACS2installed = true;
-
-    } catch (java.io.IOException e) {
-      getLogger()
-          .warning("Error during MACS2 file installation : " + e.toString());
-      return;
-    }
-
-  }
-
-  /**
-   * Get current MACS2 version.
-   * @return Value returned by 'macs2 --version'. If an exception occures or if
-   *         MACS2 is not installed (or install() has not been called yet),
-   *         return 'Unknown'.
-   */
-  private String getMACS2Version() {
-
-    // Access version
-    try {
-      if (this.isMACS2installed) {
-        return ProcessUtils.execToString("macs2 --version").trim();
-      }
-    } catch (java.io.IOException e) {
-      getLogger()
-          .warning("Cannot determine MACS2 version. Error:" + e.toString());
-    }
-
-    // If IO exception or MACS2 not installed, return 'Unknown'.
-    return "Unknown";
-
-  }
-
-  /**
-   * Run macs2. Installation was made during configuration.
+   * Run macs2.
    */
   @Override
   public TaskResult execute(final TaskContext context,
@@ -246,43 +184,10 @@ public class MACS2Module extends AbstractModule {
 
     // Get input data (BAM format)
     final Data inData = context.getInputData(DataFormats.MAPPER_RESULTS_BAM);
-
-    // If we don't have sufficient input files: end step
-    if (!inData.isList() || inData.getListElements().size() < 2) {
-      getLogger().severe(
-          "Not enough data to run MACS2. Need at least one control and one sample.");
-      return status.createTaskResult();
-    }
-
-    // List all experiments and their corresponding controls
-    // Note that if by error multiple controls are specified for an experiment,
-    // only the last one will be used
-    HashMap<String, Data> expMap =
-        new HashMap<String, Data>(inData.getListElements().size() / 2);
-    for (Data anInputData : inData.getListElements()) {
-
-      boolean isReference = anInputData.getMetadata().get("Reference")
-          .toLowerCase().equals("true");
-      String experimentName = anInputData.getMetadata().get("Experiment");
-
-      // If we have a control, add it along with the experiment name
-      if (isReference) {
-        if (expMap.containsKey(experimentName)
-            && expMap.get(experimentName) != null) {
-          getLogger().warning("Multiple control samples for experiment "
-              + experimentName + ". First one will be used.");
-        } else {
-          expMap.put(experimentName, anInputData);
-        }
-      }
-      // if we have a sample, and no key yet set for the experiment, add it
-      // this will allow us to check later that each experiment has a control,
-      // and raise a warning otherwise
-      else if (!expMap.containsKey(experimentName)) {
-        expMap.put(experimentName, null);
-      }
-    }
-
+    
+    //Creation of a design object of the experimental design
+    final Design design = context.getWorkflow().getDesign();
+    
     // Before running MACS2 we have to create empty data list objects to hold
     // newly created outputs files
     final Data rModelDataList =
@@ -292,163 +197,203 @@ public class MACS2Module extends AbstractModule {
     final Data peakXlsDataList = context.getOutputData(PEAK_XLS, "peakxlslist");
     final Data peakDataList = context.getOutputData(PEAK, "peaklist");
 
-    // Loop through all samples
-    for (Data sampleData : inData.getListElements()) {
+    // If we don't have sufficient input files: end step
+    if (!inData.isList() || inData.getListElements().size() < 2) {
+      getLogger().severe(
+          "Not enough data to run MACS2. Need at least one control and one sample.");
+      return status.createTaskResult();
+    }
+    
+    //Construction of a HashMap containing a SampleName as String corresponding to a specific Data.
+    HashMap<String, Data> nameMap = 
+	new HashMap<String, Data>(inData.getListElements().size() / 2);
+    for(Data anInputData : inData.getListElements()){
+      String name = anInputData.getMetadata().getSampleName();
+      nameMap.put(name, anInputData);
+    }
 
-      // Get metadata of current sample
-      DataMetadata metadata = sampleData.getMetadata();
+    //
+    String refSampleName = "null";
 
-      // If current sample is a control, we don't call MACS2 on it
-      // (Information is in the design.txt file, column Reference)
-      if (metadata.get("Reference").toLowerCase().equals("true")) {
-        getLogger().info("Skipping control file.");
-        continue;
+    //First loop on Experiments.
+    for(Experiment e : design.getExperiments()){
+      //First loop on ExperimentSamples to find the input for this experiment. 
+      for(ExperimentSample expSam : e.getExperimentSamples()){
+       
+	//When mergin files with RepTechGroup, all the samples in the design are not set in the nameMap hashmap. This test allow to use only samples that are present in the nameMap hashmap.
+	if(!nameMap.containsKey(expSam.getSample().getName())){
+	  continue;
+	}
+ 
+        //Check if there is a reference for the Experiment. If not, set it to null.
+	if(DesignUtils.getReference(expSam).equals("true")){
+	  refSampleName = expSam.getSample().getName();
+	  break;
+	}
       }
 
-      // Get experiment name of current sample
-      String currentExpName = metadata.get("Experiment");
-      getLogger().finest("Experiment " + currentExpName);
-
-      // Check that we have a control for this experiment
-      if (expMap.get(currentExpName) == null) {
-        getLogger().warning("Sample "
-            + metadata.get("Name") + " from experiment " + currentExpName
-            + "has no control data. Will not be treated by MACS2.");
-        continue;
+      if(refSampleName == "null"){
+        getLogger().warning("No control for experiment : " + e.getName());
+	continue;
       }
-      getLogger().finest("Control data "
-          + expMap.get(currentExpName).getDataFile().getSource());
+      
+      //Second loop on ExperimentSamples which match the Data and launch macs2.
+      for(ExperimentSample expSam2 : e.getExperimentSamples()){
+	if(!nameMap.containsKey(expSam2.getSample().getName())){
+          getLogger().info("Skipping empty sample after merge : " + expSam2.getSample().getName());
+          continue;
+        }
 
-      /////////
-      // Construct the command line. TODO: use StringBuilder
+	if(refSampleName == expSam2.getSample().getName()){
+	  getLogger().info("Skipping control file.");
+          continue;
+        }
 
-      String cmd = "";
+        //Construct the command line
+	List<String> commandLine = new ArrayList<String>();
 
-      // Add folder where MACS2 was installed, if necessary
-      if (!macs2LibPath.equals("")) {
-        cmd += String.format("PYTHONPATH=%s:$PYTHONPATH ", macs2LibPath);
-      }
+        // First part of macs2 command
+	commandLine.add("macs2");
+	commandLine.add("callpeak");
 
-      // First part of macs2 command
-      cmd += macs2BinPath.equals("")
-          ? "macs2" : String.format("python2 %s", macs2BinPath);
-      cmd += " callpeak";
+        // Provide control and sample files
+	commandLine.add("-t");
+	getLogger().info("nomSample : " + nameMap.get(expSam2.getSample().getName()));
+	commandLine.add(nameMap.get(expSam2.getSample().getName()).getDataFilename());
+	commandLine.add("-c");
+	commandLine.add(nameMap.get(refSampleName).getDataFilename());
 
-      // Provide control and sample files
-      cmd += String.format(" -t %s", sampleData.getDataFile().getSource());
-      cmd += String.format(" -c %s",
-          expMap.get(currentExpName).getDataFile().getSource());
-      cmd += " -f BAM";
+	//If paired end
+	if (this.isPairedEnd) {
+	  commandLine.add("-f");
+	  commandLine.add("BAMPE");
 
-      // If pvalue threshold is set, qvalue threshold will be ignored by macs2
-      if (this.pvalue != 0) {
-        cmd += String.format(" --pvalue %f", pvalue);
-      } else if (this.qvalue != 0) {
-        cmd += String.format(" --qvalue %f", qvalue);
-      } else { // Default is set by macs2 to qvalue=0.01
-        cmd += " --qvalue 0.01";
-      }
+	} else { //If single end 
+	  commandLine.add("-f");
+	  commandLine.add("BAM");
+	}
 
-      // Options/parameters and extra arguments
-      String prefixOutputFiles = String.format("macs2_ouput_%s",
-          metadata.get("Name").replaceAll("[^a-zA-Z0-9]", ""));
-      cmd += String.format(" --name %s", prefixOutputFiles);
-      cmd += String.format(" --gsize %s", genomeSize);
-      if (isBroad) {
-        cmd += " --broad";
-      }
-      if (makeBdg) {
-        cmd += " --bdg";
-      }
-      cmd += String.format(" %s", extraArgs);
+        // If pvalue threshold is set, qvalue threshold will be ignored by macs2
+        if (this.pvalue != 0) {
+	  commandLine.add("--pvalue");
+	  commandLine.add(String.format("%f", pvalue));
+        } else { // Default was set to qvalue=0.01
+	  commandLine.add("--qvalue");
+	  commandLine.add(String.format("%f", qvalue));
+        }
 
-      // Run the command line.
-      getLogger().info("Running : " + cmd);
-      try {
-        ProcessUtils.execToString(cmd, true, false);
-      } catch (java.io.IOException e) {
-        getLogger().severe(e.toString());
-      }
+        // Options/parameters and extra arguments
+        String prefixOutputFiles = String.format("macs2_ouput_%s",
+            expSam2.getSample().getName().replaceAll("[^a-zA-Z0-9]", ""));
+	commandLine.add("--name");
+	commandLine.add(String.format("%s", prefixOutputFiles));
+	commandLine.add("--gsize");
+	commandLine.add(String.format("%s", genomeSize));
+        if (isBroad) {
+	  commandLine.add("--broad");
+        }
+        if (makeBdg) {
+	  commandLine.add("--bdg");
+        }
 
-      /////////
-      // Rename output files to be Eoulsan-complient
+	commandLine.add(String.format("%s", extraArgs));
+        
+	String commandLine2 = Joiner.on(" ").join(commandLine);
 
-      // Create new Data objects and register them into the output lists
-      // Needed because we are dealing with lists of files for each type
+	final File stdoutFile = new File("docker.out");
+	final File stderrFile = new File("docker.err");
 
-      // R model
-      final Data rModelData = rModelDataList.addDataToList(
-          metadata.get("Name").replaceAll("[^a-zA-Z0-9]", "") + "R");
-      rModelData.getMetadata().set(metadata);
+	final DockerSimpleProcess process =
+	    new DockerSimpleProcess(dockerImage);
+	
+	getLogger().info("Run command line : " + commandLine2);
+	try {
+	  final int exitValue = process.execute(commandLine, context.getStepOutputDirectory().toFile(), context.getLocalTempDirectory(), stdoutFile, stderrFile);
 
-      // Gapped peak
-      final Data gappedPeakData = gappedPeakDataList.addDataToList(
-          metadata.get("Name").replaceAll("[^a-zA-Z0-9]", "") + "GP");
-      gappedPeakData.getMetadata().set(metadata);
+	  ProcessUtils.throwExitCodeException(exitValue, Joiner.on(' ').join(commandLine));
+	} catch (EoulsanException | IOException err) {
+	  return status.createTaskResult(err);
+	}
+      
+        /////////
+        // Rename output files to be Eoulsan-complient
 
-      // Peaks (Excel format)
-      final Data peakXlsData = peakXlsDataList.addDataToList(
-          metadata.get("Name").replaceAll("[^a-zA-Z0-9]", "") + "Xls");
-      peakXlsData.getMetadata().set(metadata);
-
-      // Peaks
-      final Data peakData = peakDataList.addDataToList(
-          metadata.get("Name").replaceAll("[^a-zA-Z0-9]", "") + "Peak");
-      peakData.getMetadata().set(metadata);
-
-      // Now we must rename the outputs generated by MACS2 so that they
-      // correspond to the naming scheme of Eoulsan, and thus make them
-      // available to further analysis steps
-      // First, create a Datafile with one of the potential output file name of
-      // MACS2
-      // If the file does exist, rename it to the name created by Eoulsan and
-      // stored in data.getDataFile()
-
-      try {
-        DataFile sampleDataFolder = sampleData.getDataFile().getParent();
+        // Create new Data objects and register them into the output lists
+        // Needed because we are dealing with lists of files for each type
 
         // R model
-        final DataFile tmpRmodelFile =
-            new DataFile(sampleDataFolder, prefixOutputFiles + "_model.r");
-        if (tmpRmodelFile.exists()) {
-          tmpRmodelFile.toFile().renameTo(rModelData.getDataFile().toFile());
-        }
+        final Data rModelData = rModelDataList.addDataToList(
+            expSam2.getSample().getName().replaceAll("[^a-zA-Z0-9]", "") + "R");
+        rModelData.getMetadata().set(nameMap.get(expSam2.getSample().getName()).getMetadata());
 
         // Gapped peak
-        final DataFile tmpGappedPeakFile = new DataFile(sampleDataFolder,
-            prefixOutputFiles + "_peaks.gappedPeak");
-        if (tmpGappedPeakFile.exists()) {
-          tmpGappedPeakFile.toFile()
-              .renameTo(gappedPeakData.getDataFile().toFile());
-        }
+        final Data gappedPeakData = gappedPeakDataList.addDataToList(
+            expSam2.getSample().getName().replaceAll("[^a-zA-Z0-9]", "") + "GP");
+        gappedPeakData.getMetadata().set(nameMap.get(expSam2.getSample().getName()).getMetadata());
 
         // Peaks (Excel format)
-        final DataFile tmpPeakXlsFile =
-            new DataFile(sampleDataFolder, prefixOutputFiles + "_peaks.xls");
-        if (tmpPeakXlsFile.exists()) {
-          tmpPeakXlsFile.toFile().renameTo(peakXlsData.getDataFile().toFile());
-        }
+        final Data peakXlsData = peakXlsDataList.addDataToList(
+            expSam2.getSample().getName().replaceAll("[^a-zA-Z0-9]", "") + "Xls");
+        peakXlsData.getMetadata().set(nameMap.get(expSam2.getSample().getName()).getMetadata());
 
-        // Peak
-        // Peak file extension depends on one of the command line options
-        final DataFile tmpPeakFile;
-        if (isBroad) {
-          tmpPeakFile = new DataFile(sampleDataFolder,
-              prefixOutputFiles + "_peaks.broadPeak");
-        } else {
-          tmpPeakFile = new DataFile(sampleDataFolder,
-              prefixOutputFiles + "_peaks.narrowPeak");
-        }
-        if (tmpPeakFile.exists()) {
-          tmpPeakFile.toFile().renameTo(peakData.getDataFile().toFile());
-        }
+        // Peaks
+        final Data peakData = peakDataList.addDataToList(
+            expSam2.getSample().getName().replaceAll("[^a-zA-Z0-9]", "") + "Peak");
+        peakData.getMetadata().set(nameMap.get(expSam2.getSample().getName()).getMetadata());
 
-      } catch (java.io.IOException e) {
-        getLogger().severe("Could not determine folder of sample data file "
-            + sampleData.getDataFile() + ". Error:" + e.toString()
-            + " \nMACS2 output files will not be renamed.");
+        // Now we must rename the outputs generated by MACS2 so that they
+        // correspond to the naming scheme of Eoulsan, and thus make them
+        // available to further analysis steps
+        // First, create a Datafile with one of the potential output file name of
+        // MACS2
+        // If the file does exist, rename it to the name created by Eoulsan and
+        // stored in data.getDataFile()
+
+        try {
+          DataFile sampleDataFolder = nameMap.get(expSam2.getSample().getName()).getDataFile().getParent();
+
+          // R model
+          final DataFile tmpRmodelFile =
+              new DataFile(sampleDataFolder, prefixOutputFiles + "_model.r");
+          if (tmpRmodelFile.exists()) {
+            tmpRmodelFile.toFile().renameTo(rModelData.getDataFile().toFile());
+          }
+
+          // Gapped peak
+          final DataFile tmpGappedPeakFile = new DataFile(sampleDataFolder,
+              prefixOutputFiles + "_peaks.gappedPeak");
+          if (tmpGappedPeakFile.exists()) {
+            tmpGappedPeakFile.toFile()
+                .renameTo(gappedPeakData.getDataFile().toFile());
+          }
+
+          // Peaks (Excel format)
+          final DataFile tmpPeakXlsFile =
+              new DataFile(sampleDataFolder, prefixOutputFiles + "_peaks.xls");
+          if (tmpPeakXlsFile.exists()) {
+            tmpPeakXlsFile.toFile().renameTo(peakXlsData.getDataFile().toFile());
+          }
+
+          // Peak
+          // Peak file extension depends on one of the command line options
+          final DataFile tmpPeakFile;
+          if (isBroad) {
+            tmpPeakFile = new DataFile(sampleDataFolder,
+                prefixOutputFiles + "_peaks.broadPeak");
+          } else {
+            tmpPeakFile = new DataFile(sampleDataFolder,
+                prefixOutputFiles + "_peaks.narrowPeak");
+          }
+          if (tmpPeakFile.exists()) {
+            tmpPeakFile.toFile().renameTo(peakData.getDataFile().toFile());
+          }
+
+        } catch (java.io.IOException err) {
+          getLogger().severe("Could not determine folder of sample data file "
+              + nameMap.get(expSam2.getSample().getName()).getDataFile() + ". Error:" + err.toString()
+              + " \nMACS2 output files will not be renamed.");
+        }
       }
-
     }
 
     return status.createTaskResult();
