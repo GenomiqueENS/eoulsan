@@ -212,7 +212,7 @@ public class MACS2Module extends AbstractModule {
       nameMap.put(name, anInputData);
     }
 
-    //
+    //The refSampleName correspond to the control (reference) of an experiment.
     String refSampleName = "null";
 
     //First loop on Experiments.
@@ -225,7 +225,7 @@ public class MACS2Module extends AbstractModule {
 	  continue;
 	}
  
-        //Check if there is a reference for the Experiment. If not, set it to null.
+        //Check if there is a control for the Experiment. If not, set it to null.
 	if(DesignUtils.getReference(expSam).equals("true")){
 	  refSampleName = expSam.getSample().getName();
 	  break;
@@ -234,7 +234,6 @@ public class MACS2Module extends AbstractModule {
 
       if(refSampleName == "null"){
         getLogger().warning("No control for experiment : " + e.getName());
-	continue;
       }
       
       //Second loop on ExperimentSamples which match the Data and launch macs2.
@@ -260,8 +259,13 @@ public class MACS2Module extends AbstractModule {
 	commandLine.add("-t");
 	getLogger().info("nomSample : " + nameMap.get(expSam2.getSample().getName()));
 	commandLine.add(nameMap.get(expSam2.getSample().getName()).getDataFilename());
-	commandLine.add("-c");
-	commandLine.add(nameMap.get(refSampleName).getDataFilename());
+
+	//Test if there is a control for the experiment, if not the peak calling will be performed
+	//without control.
+	if(refSampleName != "null"){
+	  commandLine.add("-c");
+	  commandLine.add(nameMap.get(refSampleName).getDataFilename());
+	}
 
 	//If paired end
 	if (this.isPairedEnd) {
