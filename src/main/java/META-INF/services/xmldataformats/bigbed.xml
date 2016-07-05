@@ -1,0 +1,13 @@
+<dataformat>
+	<name>bigbed</name>
+	<description>bigbed format</description>
+	<alias>bigbed</alias>
+	<prefix>bigbed</prefix>
+	<extensions>
+		<extension default="true">.bb</extension>
+	</extensions>
+
+	<toolshedgalaxy>
+		<extension>bigbed</extension>
+	</toolshedgalaxy>
+</dataformat>

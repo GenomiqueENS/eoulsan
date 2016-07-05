@@ -125,4 +125,12 @@ public class DataFormats {
   /** Dummy format. */
   public static final DataFormat DUMMY_TXT =
       registry.getDataFormatFromName("dummy_txt");
+
+  /** BigBed format. */
+  public static final DataFormat BIGBED =
+      registry.getDataFormatFromName("bigbed");
+
+  /** BigWig format. */
+  public static final DataFormat BIGWIG =
+      registry.getDataFormatFromName("bigwig_bw");
 }

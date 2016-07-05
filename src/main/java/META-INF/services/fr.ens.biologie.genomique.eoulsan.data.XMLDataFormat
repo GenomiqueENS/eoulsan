@@ -26,3 +26,5 @@ gappedpeaks.xml
 macs2rmodel.xml
 peaks.xml
 peaksxls.xml
+bigbed.xml
+bigwig.xml
