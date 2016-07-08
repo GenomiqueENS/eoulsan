@@ -4,11 +4,18 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_BAM;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_INDEX_BAI;
 
+import java.io.IOException;
+import java.io.File;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Set;
+import java.util.List;
+import com.google.common.base.Joiner;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -30,28 +37,30 @@ import fr.ens.biologie.genomique.eoulsan.data.DataMetadata;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.BinariesInstaller;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
+import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
+import fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement;
+import fr.ens.biologie.genomique.eoulsan.util.docker.DockerSimpleProcess;
+import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.design.Experiment;
+import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
+import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 
 /**
- * This class uses tools from the DeepTools suite. Needs matplotlib... (sudo
- * apt-get install python-matplotlib AND sudo pip install pysam)
+ * This class uses tools from the DeepTools suite.
  * @author Celine Hernandez - CSB lab - ENS - Paris
+ * @author Cedric Michaud - CSB lab - ENS - Paris
  */
 @LocalOnly
 public class DeepToolsModule extends AbstractModule {
 
   private static final String SOFTWARE_LABEL = "deeptools";
-  private static final String SHIPPED_PACKAGE_VERSION = "1.5.11";
-  private static final String PACKAGE_ARCHIVE = "deepTools-1.5.11.tar.gz";
 
   private static DataFormat PEAK =
       DataFormatRegistry.getInstance().getDataFormatFromName("peaks");
 
-  /**
-   * Settings
-   */
+  private Requirement requirement;
 
-  private String deeptoolsPath = "";
-  private String deeptoolsLibPath = "";
+  final String dockerImage = "genomicpariscentre/deeptools:2.2.4";
 
   /**
    * Methods
@@ -75,7 +84,7 @@ public class DeepToolsModule extends AbstractModule {
   @Override
   public InputPorts getInputPorts() {
     final InputPortsBuilder builder = new InputPortsBuilder();
-    builder.addPort("inputpeak", false, PEAK);
+    builder.addPort("inputpeak", true, PEAK);
     builder.addPort("inputbamlist", true, MAPPER_RESULTS_BAM);
     builder.addPort("inputbailist", true, MAPPER_RESULTS_INDEX_BAI);
     return builder.create();
@@ -99,283 +108,336 @@ public class DeepToolsModule extends AbstractModule {
           "Unknown parameter for " + getName() + " step: " + p.getName());
     }
 
-    // Install softwares
-    this.install();
+    this.requirement = DockerRequirement.newDockerRequirement(dockerImage, true);
 
   }
 
-  /**
-   * Check whether DeepTools are already installed. If not decompress Eoulsan's
-   * included archives and install them.
-   */
-  private void install() {
-
-    // // Install
-    // if(!BinariesInstaller.check(this.SOFTWARE_LABEL,
-    // this.SHIPPED_PACKAGE_VERSION, "deeptools")) {
-
-    // If not installed, install it
-    getLogger().info("DeepTools not installed. Running installation....");
-
-    try {
-      // Get the shipped archive
-      String binaryFile = BinariesInstaller.install(SOFTWARE_LABEL,
-          SHIPPED_PACKAGE_VERSION, PACKAGE_ARCHIVE, EoulsanRuntime.getSettings()
-              .getTempDirectoryFile().getAbsolutePath());
-      getLogger().info("Archive location for DeepTools : " + binaryFile);
-      DataFile archive = new DataFile(binaryFile);
-
-      // Extract full archive
-      String cmd = String.format("tar -xzf %s -C %s", archive.getSource(),
-          archive.getParent().getSource());
-      getLogger().info("Extract archive : " + cmd);
-      ProcessUtils.system(cmd);
-
-      // Build DeepTools
-      cmd =
-          String.format("python2 setup.py build --prefix %s/deepTools-1.5.11/",
-              archive.getParent());
-      getLogger().info("Building : "
-          + cmd + " in folder " + archive.getParent() + "/deepTools-1.5.11/");
-      ProcessUtils.exec(cmd, false);
-
-      // Install DeepTools
-      cmd = String.format(
-          "python2 setup.py install --prefix %s/deepTools-1.5.11/",
-          archive.getParent());
-      getLogger().info("Installing : "
-          + cmd + " in folder " + archive.getParent() + "/deepTools-1.5.11/");
-      ProcessUtils.exec(cmd, false);
-
-      // Memorize path
-      // Deeptoold is using external scripts located in a folder called
-      // "deeptools" which must be added to PYTHONPATH before starting the tool
-      this.deeptoolsLibPath = archive.getParent() + "/deepTools-1.5.11/";
-      this.deeptoolsPath = archive.getParent() + "/deepTools-1.5.11/bin/";
-
-    } catch (java.io.IOException e) {
-      getLogger()
-          .warning("Error during DeepTools installation : " + e.toString());
-      return;
-    }
-    // }
-
+  @Override
+  public Set<Requirement> getRequirements() {
+    return Collections.singleton(this.requirement);
   }
 
   /**
-   * Run deeptools. Installation (if needed) was made during configuration.
+   * Run deeptools.
    */
   @Override
   public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
-    getLogger().info("Running DeepTools " + this.deeptoolsPath);
-
-    // Get peaks data (PEAK format, as generated by a peak caller)
+    // Get peaks *list* data (PEAK format, as generated by a peak caller)
     final Data peaksData = context.getInputData(PEAK);
 
-    // Get experiment name of peaks data
-    String currentPeaksfileExpName = peaksData.getMetadata().get("Experiment");
-    getLogger().finest("Peaks file Experiment " + currentPeaksfileExpName);
+    final Design design = context.getWorkflow().getDesign();
 
-    // Now list BAM files corresponding to this peak file's experiment
+    String currentPeaksfileExpName = "null";
+
+    //Create a hashmap to containt PEAK data and the experiment corresponding to thoses data as a key.
+    HashMap<String, Data> nameMapPEAK = new HashMap<String, Data>(peaksData.getListElements().size() / 2);
+    for(Data anInputData : peaksData.getListElements()){
+      String name = anInputData.getMetadata().getSampleName();
+      nameMapPEAK.put(name, anInputData);
+      for(Experiment e : design.getExperiments()){
+	for(ExperimentSample expSam : e.getExperimentSamples()){
+	  if(nameMapPEAK.get(expSam.getSample().getName()) != null){
+	    nameMapPEAK.remove(name);
+	    nameMapPEAK.put(e.getName(), anInputData);
+	  }
+	}
+      }
+    }
 
     // String for the concatenated BAM files paths/labels
-    String bamFileNames = "";
-    String bamFileLabels = "";
+    List<String> bamFileNames = new ArrayList<String>();
+    List<String> bamFileLabels = new ArrayList<String>();
+
     // Get bam *list* (BAM format, as generated by a mapper)
     final Data mappedData = context.getInputData(MAPPER_RESULTS_BAM);
-    // Loop through all samples
-    for (Data oneMappedData : mappedData.getListElements()) {
 
-      // Get metadata of current sample
-      DataMetadata metadata = oneMappedData.getMetadata();
+    //Create a hashmap to contain BAM data and the corresponding sample name as a key.
+    HashMap<String, Data> nameMapBAM = new HashMap<String, Data>(mappedData.getListElements().size() / 2);
+    for(Data anInputData : mappedData.getListElements()){
+      String name = anInputData.getMetadata().getSampleName();
+      nameMapBAM.put(name, anInputData);
+    }
 
-      // Get experiment name of current sample
-      String currentExpName = metadata.get("Experiment");
+    // Get bai *list* (BAI format, as generated by sam2bam)
+    final Data indexData = context.getInputData(MAPPER_RESULTS_INDEX_BAI);
 
-      if (currentExpName.equals(currentPeaksfileExpName)) {
+    //Create a hashmap to contain BAI data and the corresponding sample name as a key.
+    HashMap<String, Data> nameMapBAI = new HashMap<String, Data>(indexData.getListElements().size() / 2);
+    for(Data anInputData : indexData.getListElements()){
+      String name = anInputData.getMetadata().getSampleName();
+      nameMapBAI.put(name, anInputData);
+    }
 
-        getLogger().finest(
+
+    for(Experiment e : design.getExperiments()){
+
+      for(ExperimentSample expSam : e.getExperimentSamples()){
+
+        getLogger().info(
             String.format("BAM Experiment %s - Condition %s - RepTechGroup %s",
-                currentExpName, metadata.get("Condition"),
-                metadata.get("RepTechGroup")));
-        final String bamFileName = oneMappedData.getDataFile().getSource();
+                e.getName(), DesignUtils.getCondition(expSam),
+                DesignUtils.getRepTechGroup(expSam)));
 
-        bamFileNames += String.format(" %s", bamFileName);
-        bamFileLabels += String.format(" %s%s", metadata.get("Condition"),
-            metadata.get("RepTechGroup"));
+        final String bamFileName;
+
+	//Test to see if the corresponding experiment sample exists (Useful because of the replicates merge).
+        if(nameMapBAM.get(expSam.getSample().getName()) != null){
+          bamFileName = nameMapBAM.get(expSam.getSample().getName()).getDataFilename();
+	  bamFileNames.add(String.format("%s", bamFileName));
+	}else{
+	  continue;
+        }
+
+        bamFileLabels.add(String.format("%s%s", DesignUtils.getCondition(expSam),
+            DesignUtils.getRepTechGroup(expSam)));
 
         // Find the corresponding BAI file
         // This should be replaced when a more convenient way to link BAM/BAI
         // files will be available in Eoulsan
 
         // Get bai *list* (BAI format, as generated by sam2bam)
-        final Data indexData = context.getInputData(MAPPER_RESULTS_INDEX_BAI);
+        //final Data indexData = context.getInputData(MAPPER_RESULTS_INDEX_BAI);
         // Loop through all indexes to find the one corresppnding to current
         // sample
-        for (Data oneIndexData : indexData.getListElements()) {
+        for (ExperimentSample expSam2 : e.getExperimentSamples()) {
 
-          // Get metadata
-          DataMetadata metadataIdx = oneIndexData.getMetadata();
           // Compare to BAM information
-          if (metadataIdx.get("Experiment").equals(currentExpName)
-              && metadataIdx.get("Condition").equals(metadata.get("Condition"))
-              && metadataIdx.get("RepTechGroup")
-                  .equals(metadata.get("RepTechGroup"))) {
-
+          if (nameMapBAI.get(expSam.getSample().getName()) != null 
+	      && DesignUtils.getCondition(expSam2).equals(DesignUtils.getCondition(expSam))
+              && DesignUtils.getRepTechGroup(expSam2).equals(DesignUtils.getRepTechGroup(expSam))) {
+	      
+            getLogger().info("BAI File : " + nameMapBAI.get(expSam.getSample().getName()).getDataFilename());       
+	      
+	    //Create a symlink for this BAI file.
             try {
+	      final DataFile oldName = new DataFile(nameMapBAI.get(expSam.getSample().getName()).getDataFilename());
+
               final DataFile newName =
                   new DataFile(String.format("%s.bai", bamFileName));
+              getLogger().info("DataFile newName = " + newName);
               if (!newName.exists()) {
-                oneIndexData.getDataFile().symlink(newName);
+		getLogger().info("DataFile BAI : " + oldName);
+                oldName.symlink(newName);
               }
-            } catch (java.io.IOException e) {
-              e.printStackTrace();
-              getLogger().severe(e.getMessage());
+            } catch (java.io.IOException err) {
+              err.printStackTrace();
+              getLogger().severe(err.getMessage());
               return status.createTaskResult();
             }
 
             break;
           }
         }
-
       }
-    }
 
-    // Build command line for bamCorrelate: with bed file
+      //Create the docker process to use
+      final DockerSimpleProcess process = new DockerSimpleProcess(dockerImage);
 
-    // Executable
-    String cmd2 = deeptoolsPath;
-    cmd2 += String.format("bamCorrelate BED-file --BED %s",
-        peaksData.getDataFile().getSource());
-    // BAM files
-    cmd2 += String.format(" --bamfiles %s --labels %s", bamFileNames,
-        bamFileLabels);
-    // Parameters
-    cmd2 += " --corMethod spearman -f 200 --colorMap Reds --zMin 0 --zMax 1";
-    // Output file
-    cmd2 += String.format(" -o bamcorrelatebed_output_report_%s.pdf",
-        currentPeaksfileExpName);
-    // Run command
-    try {
-      getLogger()
-          .info(String.format("With : PYTHONPATH=%s \n running command: %s ",
-              deeptoolsLibPath, cmd2));
+      // Build command line to generate the multibamSummary file.
+      List<String> cmd1multibamSummary = new ArrayList<String>();
 
-      final ProcessBuilder pb2 = new ProcessBuilder("/bin/bash", "-c", cmd2);
-      Map<String, String> env2 = pb2.environment();
-      env2.put("PYTHONPATH", deeptoolsLibPath);
+      // Executable
+      cmd1multibamSummary.add("multiBamSummary");
+      cmd1multibamSummary.add("bins");
 
-      final Process p2 = pb2.start();
-      String output = loadStream(p2.getInputStream());
-      String error = loadStream(p2.getErrorStream());
+      //BAM files
+      cmd1multibamSummary.add("--bamfiles");
+      for(String element : bamFileNames){
+        cmd1multibamSummary.add(String.format("%s", element));
+      }
+      cmd1multibamSummary.add("--labels");
+      for(String element : bamFileLabels){
+        cmd1multibamSummary.add(String.format("%s", element));
+      }
+
+      //Construct output
+      final String multiBamSummaryOutput = String.format("multiBamSummary_readCounts_%s.npz",
+          e.getName());
+
+      cmd1multibamSummary.add("-o");
+      cmd1multibamSummary.add(String.format("%s", multiBamSummaryOutput));
+
+      cmd1multibamSummary.add("--outRawCounts");
+      cmd1multibamSummary.add(String.format("multiBamSummary_readCounts_%s.tab", e.getName()));
+
+      final File stderrFile1 = new File(String.format("dockerMultiBAMSummary_global_%s.err", e.getName()));
+      final File stdoutFile1 = new File(String.format("dockerMultiBAMSummary_global_%s.out", e.getName()));
+
+      //Execute process
+
       try {
-        p2.waitFor();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-        throw new java.io.IOException(e.getMessage());
+        final int exitValue1 = process.execute(cmd1multibamSummary, context.getStepOutputDirectory().toFile(), context.getLocalTempDirectory(), stdoutFile1, stderrFile1);
+
+        ProcessUtils.throwExitCodeException(exitValue1, Joiner.on(' ').join(cmd1multibamSummary));
+      } catch (EoulsanException | IOException err) {
+        return status.createTaskResult(err);
       }
-      getLogger().info("STDOUT:" + output);
-      getLogger().info("STDERR:" + error);
 
-    } catch (java.io.IOException e) {
-      e.printStackTrace();
-      getLogger().severe(e.getMessage());
-    }
+      // Build command line for bamCorrelate: whole genome
 
-    // Build command line for bamCorrelate: whole genome
+      List<String> cmd2bamCorrelate = new ArrayList<String>();
 
-    // Executable
-    String cmd1 = deeptoolsPath;
-    cmd1 += "bamCorrelate bins";
-    // BAM files
-    cmd1 += String.format(" --bamfiles %s --labels %s", bamFileNames,
-        bamFileLabels);
-    // Parameters
-    cmd1 += " --corMethod spearman -f 200 --colorMap Blues --zMin 0 --zMax 1";
-    // Output file
-    cmd1 += String.format(" -o ./bamcorrelatebins_output_report_%s.pdf",
-        currentPeaksfileExpName);
-    // Run command
-    try {
-      getLogger()
-          .info(String.format("With : PYTHONPATH=%s \n running command: %s ",
-              deeptoolsLibPath, cmd1)); // PYTHONPATH=\"" + archive.getParent()
-                                        // +
-                                        // "/deepTools-1.5.11/lib/python2.7/site-packages/\"
+      // Executable
+      cmd2bamCorrelate.add("plotCorrelation");
+      cmd2bamCorrelate.add("--whatToPlot");
+      cmd2bamCorrelate.add("heatmap");
+      // BAM files
+      cmd2bamCorrelate.add("--plotNumbers");
+      cmd2bamCorrelate.add("-in");
+      cmd2bamCorrelate.add(String.format("%s", multiBamSummaryOutput));
+      // Parameters
+      cmd2bamCorrelate.add("--corMethod");
+      cmd2bamCorrelate.add("spearman");
+      cmd2bamCorrelate.add("--colorMap");
+      cmd2bamCorrelate.add("Blues");
+      cmd2bamCorrelate.add("--zMin");
+      cmd2bamCorrelate.add("0");
+      cmd2bamCorrelate.add("--zMax");
+      cmd2bamCorrelate.add("1");
+      // Output file
+      cmd2bamCorrelate.add("-o");
+      cmd2bamCorrelate.add(String.format("bamcorrelatebins_output_report_%s.pdf", e.getName()));
 
-      final ProcessBuilder pb1 = new ProcessBuilder("/bin/bash", "-c", cmd1);
-      Map<String, String> env1 = pb1.environment();
-      env1.put("PYTHONPATH", deeptoolsLibPath);
+      final File stderrFile2 = new File(String.format("dockerPlotCorrelation_global_%s.err", e.getName()));
+      final File stdoutFile2 = new File(String.format("dockerPlotCorrelation_global_%s.out", e.getName()));
 
-      final Process p1 = pb1.start();
-      String output = loadStream(p1.getInputStream());
-      String error = loadStream(p1.getErrorStream());
+      //Execute process
+
       try {
-        p1.waitFor();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-        throw new java.io.IOException(e.getMessage());
+        final int exitValue2 = process.execute(cmd2bamCorrelate, context.getStepOutputDirectory().toFile(), context.getLocalTempDirectory(), stdoutFile2, stderrFile2);
+
+        ProcessUtils.throwExitCodeException(exitValue2, Joiner.on(' ').join(cmd2bamCorrelate));
+      } catch (EoulsanException | IOException err) {
+        return status.createTaskResult(err);
       }
-      getLogger().info("STDOUT:" + output);
-      getLogger().info("STDERR:" + error);
 
-    } catch (java.io.IOException e) {
-      e.printStackTrace();
-      getLogger().severe(e.getMessage());
-    }
+      if(nameMapPEAK.containsKey(e.getName())){
 
-    // Build command line for bamFingerprint: whole genome
+        // Build command line to generate the second multibamSummary file.
 
-    // Executable
-    String cmd3 = deeptoolsPath;
-    cmd3 += "bamFingerprint";
-    // BAM files
-    cmd3 += String.format(" --bamfiles %s --labels %s", bamFileNames,
-        bamFileLabels);
-    // Output file
-    cmd3 += String.format(
-        " --plotFile bamfingerprint_output_report_%s.pdf --plotFileFormat pdf",
-        currentPeaksfileExpName);
-    // Run command
-    try {
-      getLogger()
-          .info(String.format("With : PYTHONPATH=%s \n running command: %s ",
-              deeptoolsLibPath, cmd3));
+        List<String> cmd3multibamSummary = new ArrayList<String>();
 
-      final ProcessBuilder pb3 = new ProcessBuilder("/bin/bash", "-c", cmd3);
-      Map<String, String> env3 = pb3.environment();
-      env3.put("PYTHONPATH", deeptoolsLibPath);
+        //Executable
+        cmd3multibamSummary.add("multiBamSummary");
+        cmd3multibamSummary.add("BED-file");
+        cmd3multibamSummary.add("--BED");
+        cmd3multibamSummary.add(String.format("%s", nameMapPEAK.get(e.getName()).getDataFilename()));
 
-      final Process p3 = pb3.start();
-      String output = loadStream(p3.getInputStream());
-      String error = loadStream(p3.getErrorStream());
+        //BAM files
+        cmd3multibamSummary.add("--bamfiles");
+        for(String element : bamFileNames){
+          cmd3multibamSummary.add(String.format("%s", element));
+        }
+        cmd3multibamSummary.add("--labels");
+        for(String element : bamFileLabels){
+          cmd3multibamSummary.add(String.format("%s", element));
+        }
+
+        //Construct output
+        final String multiBamSummaryOutput2 = String.format("multiBamSummary_peaks_readCounts_%s.npz",
+            e.getName());
+
+        cmd3multibamSummary.add("-o");
+        cmd3multibamSummary.add(String.format("%s", multiBamSummaryOutput2));
+
+        cmd3multibamSummary.add("--outRawCounts");
+        cmd3multibamSummary.add(String.format("multiBamSummary_peaks_readCounts_%s.tab", e.getName()));
+
+        final File stderrFile3 = new File(String.format("dockerMultiBAMSummary_peak_%s.err", e.getName()));
+        final File stdoutFile3 = new File(String.format("dockerMultiBAMSummary_peak_%s.out", e.getName()));
+
+        //Execute process
+
+        try {
+          final int exitValue3 = process.execute(cmd3multibamSummary, context.getStepOutputDirectory().toFile(), context.getLocalTempDirectory(), stdoutFile3, stderrFile3);
+
+          ProcessUtils.throwExitCodeException(exitValue3, Joiner.on(' ').join(cmd3multibamSummary));
+        } catch (EoulsanException | IOException err) {
+          return status.createTaskResult(err);
+        }
+
+        // Build command line for bamCorrelate: bed file used
+
+        List<String> cmd4bamCorrelate = new ArrayList<String>();
+
+        // Executable
+        cmd4bamCorrelate.add("plotCorrelation");
+        cmd4bamCorrelate.add("--whatToPlot");
+        cmd4bamCorrelate.add("heatmap");
+        // BAM files
+        cmd4bamCorrelate.add("--plotNumbers");
+        cmd4bamCorrelate.add("-in");
+        cmd4bamCorrelate.add(String.format("%s", multiBamSummaryOutput2));
+        // Parameters
+        cmd4bamCorrelate.add("--corMethod");
+        cmd4bamCorrelate.add("spearman");
+        cmd4bamCorrelate.add("--colorMap");
+        cmd4bamCorrelate.add("Reds");
+        cmd4bamCorrelate.add("--zMin");
+        cmd4bamCorrelate.add("0");
+        cmd4bamCorrelate.add("--zMax");
+        cmd4bamCorrelate.add("1");
+        // Output file
+        cmd4bamCorrelate.add("-o");
+        cmd4bamCorrelate.add(String.format("bamcorrelatepeaks_output_report_%s.pdf", e.getName()));
+
+        final File stderrFile4 = new File(String.format("dockerPlotCorrelation_peak_%s.err", e.getName()));
+        final File stdoutFile4 = new File(String.format("dockerPlotCorrelation_peak_%s.out", e.getName()));
+
+        //Execute process
+
+        try {
+          final int exitValue4 = process.execute(cmd4bamCorrelate, context.getStepOutputDirectory().toFile(), context.getLocalTempDirectory(), stdoutFile4, stderrFile4);
+
+          ProcessUtils.throwExitCodeException(exitValue4, Joiner.on(' ').join(cmd4bamCorrelate));
+        } catch (EoulsanException | IOException err) {
+          return status.createTaskResult(err);
+        }
+
+      }
+
+      // Build command line for bamFingerprint: whole genome
+
+      List<String> cmd5bamFingerprint = new ArrayList<String>();
+
+      // Executable
+      cmd5bamFingerprint.add("plotFingerprint");
+      // BAM files
+      cmd5bamFingerprint.add("--bamfiles");
+      for(String element : bamFileNames){
+        cmd5bamFingerprint.add(String.format("%s", element));
+      }
+      cmd5bamFingerprint.add("--labels");
+      for(String element : bamFileLabels){
+        cmd5bamFingerprint.add(String.format("%s", element));
+      }
+      // Output file
+      cmd5bamFingerprint.add("--plotFile");
+      cmd5bamFingerprint.add(String.format("bamfingerprint_output_report_%s.pdf", e.getName()));
+      cmd5bamFingerprint.add("--plotFileFormat");
+      cmd5bamFingerprint.add("pdf");
+
+      final File stderrFile5 = new File(String.format("dockerFingerPrint_%s.err", e.getName()));
+      final File stdoutFile5 = new File(String.format("dockerFingerPrint_%s.out", e.getName()));
+
+      //String cmd1bis = Joiner.on(' ').join(cmd1);
+      //getLogger().info("Run the new command line 1 : " + cmd1bis);
+
+      //Execute process
+
       try {
-        p3.waitFor();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-        throw new java.io.IOException(e.getMessage());
-      }
-      getLogger().info("STDOUT:" + output);
-      getLogger().info("STDERR:" + error);
+        final int exitValue5 = process.execute(cmd5bamFingerprint, context.getStepOutputDirectory().toFile(), context.getLocalTempDirectory(), stdoutFile5, stderrFile5);
 
-    } catch (java.io.IOException e) {
-      e.printStackTrace();
-      getLogger().severe(e.getMessage());
+        ProcessUtils.throwExitCodeException(exitValue5, Joiner.on(' ').join(cmd5bamFingerprint));
+      } catch (EoulsanException | IOException err) {
+        return status.createTaskResult(err);
+      }
+
     }
 
     return status.createTaskResult();
 
   }
-
-  private static String loadStream(InputStream s) throws java.io.IOException {
-    BufferedReader br = new BufferedReader(new InputStreamReader(s));
-    StringBuilder sb = new StringBuilder();
-    String line;
-    while ((line = br.readLine()) != null)
-      sb.append(line).append("\n");
-    return sb.toString();
-  }
-
 }
