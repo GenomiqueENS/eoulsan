@@ -8,3 +8,5 @@ fr.ens.biologie.genomique.eoulsan.bio.readsfilters.ReadNameStartsWithReadFilter
 fr.ens.biologie.genomique.eoulsan.bio.readsfilters.ReadNameRegexReadFilter
 fr.ens.biologie.genomique.eoulsan.bio.readsfilters.TrimPolyNEndReadFilter
 fr.ens.biologie.genomique.eoulsan.bio.readsfilters.LengthReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.PatternReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.MaxLengthReadFilter
