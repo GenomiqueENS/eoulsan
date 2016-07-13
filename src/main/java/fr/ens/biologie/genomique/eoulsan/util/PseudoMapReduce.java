@@ -54,7 +54,6 @@ public abstract class PseudoMapReduce {
       Charset.forName(System.getProperty("file.encoding"));
 
   private File tmpDir;
-  private File mapOutputFile;
   private final List<File> listMapOutputFile = new ArrayList<>();
 
   private File sortOutputFile;
@@ -250,48 +249,6 @@ public abstract class PseudoMapReduce {
     bw.close();
   }
 
-  /**
-   * TODO save or remove ?? Execute the map phase with an InputStream as input.
-   * @param is input stream for the mapper
-   */
-  public void doMap_OLD(final InputStream is) throws IOException {
-
-    if (is == null) {
-      throw new NullPointerException("The input stream is null.");
-    }
-
-    this.reporter.clear();
-
-    this.mapOutputFile = File.createTempFile("map-", ".txt", this.tmpDir);
-
-    final BufferedReader br =
-        new BufferedReader(new InputStreamReader(is, CHARSET));
-    final UnSynchronizedBufferedWriter bw =
-        FileUtils.createFastBufferedWriter(this.mapOutputFile);
-
-    final List<String> results = new ArrayList<>();
-    String line;
-
-    final StringBuilder sb = new StringBuilder();
-
-    while ((line = br.readLine()) != null) {
-
-      map(line, results, this.reporter);
-
-      for (String r : results) {
-        sb.setLength(0);
-        sb.append(r);
-        sb.append('\n');
-        bw.write(sb.toString());
-      }
-
-      results.clear();
-    }
-
-    br.close();
-    bw.close();
-  }
-
   //
   // Sort management
   //
@@ -400,6 +357,11 @@ public abstract class PseudoMapReduce {
 
       final int indexFirstTab = line.indexOf('\t');
 
+      // Do not process line
+      if (line.isEmpty() || indexFirstTab == -1) {
+        continue;
+      }
+
       final String key = line.substring(0, indexFirstTab);
       final String value = line.substring(indexFirstTab + 1);
 
@@ -425,7 +387,10 @@ public abstract class PseudoMapReduce {
     }
 
     // Process lasts values
-    reduce(currentKey, values.iterator(), results, this.reporter);
+    if (currentKey != null) {
+      reduce(currentKey, values.iterator(), results, this.reporter);
+    }
+
     for (String result : results) {
       bw.write(result);
     }
