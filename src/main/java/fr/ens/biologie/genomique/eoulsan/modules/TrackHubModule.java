@@ -117,7 +117,7 @@ public class TrackHubModule extends AbstractModule {
         this.bigDataUrl = p.getStringValue();
       } else if("multi.wig".equals(p.getName())){
 	this.multiWIG = p.getStringValue();
-      } else if("server.http".equals(p.getName())){
+      } else if("server.name".equals(p.getName())){
 	this.HTTPserver = p.getStringValue();
       } else
         throw new EoulsanException("Unknown parameter for " + getName() + " step: " + p.getName());
