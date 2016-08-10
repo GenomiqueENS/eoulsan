@@ -601,6 +601,13 @@
 			<version>2.4.4</version>
 		</dependency>
 
+                <!-- Trimmomatic -->
+		<dependency>
+			<groupId>org.usadellab</groupId>
+			<artifactId>trimmomatic</artifactId>
+			<version>0.36</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
