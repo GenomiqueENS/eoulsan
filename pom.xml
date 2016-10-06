@@ -271,7 +271,7 @@
 			<id>ens</id>
 			<name>ENS repository</name>
 			<!--url>https://maven-repository.dev.java.net/nonav/repository</url -->
-			<url>http://transcriptome.ens.fr/maven2</url>
+			<url>http://outils.genomique.biologie.ens.fr/maven2</url>
 		</repository>
 		<!--repository>
 			<id>cloudera</id>
