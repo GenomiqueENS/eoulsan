@@ -926,7 +926,7 @@ public class IT {
         .getProperty(ITFactory.CHECK_ABSENCE_FILE_PATTERNS_CONF_KEY);
 
     // Check not define, use test name
-    if (this.testConf.contains(ITFactory.DESCRIPTION_CONF_KEY)) {
+    if (this.testConf.containsKey(ITFactory.DESCRIPTION_CONF_KEY)) {
       this.description =
           this.testConf.getProperty(ITFactory.DESCRIPTION_CONF_KEY)
               + ", action: " + this.itSuite.getActionType();
