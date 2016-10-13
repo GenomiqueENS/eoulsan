@@ -30,12 +30,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 
 /**
@@ -51,6 +54,7 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
   private final OutputStream os;
   private final SXSSFWorkbook wb = new SXSSFWorkbook(MAX_LINES_IN_MEMORY);
   private final Sheet sheet = this.wb.createSheet("new sheet");
+  private final CreationHelper createHelper = wb.getCreationHelper();
   private final CellStyle style;
   private int rowCount;
   private int colCount;
@@ -109,11 +113,12 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
     if (text != null) {
 
       if (link != null) {
-        cell.setCellFormula("HYPERLINK(\"" + link + "\",\"" + text + "\")");
-      } else {
-        cell.setCellValue(new XSSFRichTextString(text));
+        Hyperlink hyperlink = createHelper.createHyperlink(Hyperlink.LINK_URL);
+        hyperlink.setAddress(link);
+        cell.setHyperlink(hyperlink);
       }
 
+      cell.setCellValue(new XSSFRichTextString(text));
     }
 
   }
