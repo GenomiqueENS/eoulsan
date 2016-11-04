@@ -280,30 +280,41 @@ public abstract class PseudoMapReduce {
 
     this.sortOutputFile = File.createTempFile("sort-", ".txt", this.tmpDir);
 
-    final StringBuilder listFile = new StringBuilder();
-    for (File mapOutputFile : this.listMapOutputFile) {
-      listFile
-          .append(StringUtils.bashEscaping(mapOutputFile.getAbsolutePath()));
-      listFile.append(" ");
+    // Create command line to execute
+    final List<String> command = new ArrayList<>();
+    command.add("sort");
+
+    // Set the temporary directory if needed
+    if (this.tmpDir != null) {
+      command.add("-T");
+      command.add(this.tmpDir.getAbsolutePath());
     }
 
-    final String cmd =
-        "sort"
-            + (this.tmpDir != null
-                ? " -T "
-                    + StringUtils.bashEscaping(this.tmpDir.getAbsolutePath())
-                : "")
-            + " -o "
-            + StringUtils.bashEscaping(this.sortOutputFile.getAbsolutePath())
-            + " " + listFile.toString();
+    // Set the output file
+    command.add("-o");
+    command.add(this.sortOutputFile.getAbsolutePath());
 
-    final boolean result = ProcessUtils.system(cmd) == 0;
+    // Set the files to sort
+    for (File mapOutputFile : this.listMapOutputFile) {
+      command.add(mapOutputFile.getAbsolutePath());
+    }
+
+    // Execute command
+    final boolean result;
+    try {
+      result = new ProcessBuilder(command).start().waitFor() == 0;
+    } catch (InterruptedException e) {
+      throw new IOException(e);
+    }
+
+    // Remove temporary map output files
     for (File mapOutputFile : this.listMapOutputFile) {
       if (!mapOutputFile.delete()) {
         getLogger().warning("Can not delete map output file: "
             + mapOutputFile.getAbsolutePath());
       }
     }
+
     return result;
   }
 
