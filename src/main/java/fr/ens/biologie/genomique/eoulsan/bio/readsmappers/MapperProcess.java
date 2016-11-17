@@ -651,6 +651,13 @@ public abstract class MapperProcess {
   public void closeWriter1() throws IOException {
 
     if (this.writer1 != null) {
+
+      // Wait few seconds before closing the pipe
+      try {
+        Thread.sleep(2000);
+      } catch (InterruptedException e) {
+      }
+
       this.writer1.close();
     }
   }
@@ -662,6 +669,13 @@ public abstract class MapperProcess {
   public void closeWriter2() throws IOException {
 
     if (this.writer2 != null) {
+
+      // Wait few seconds before closing the pipe
+      try {
+        Thread.sleep(2000);
+      } catch (InterruptedException e) {
+      }
+
       this.writer2.close();
     }
   }
