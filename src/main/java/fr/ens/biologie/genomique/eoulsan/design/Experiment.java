@@ -30,8 +30,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.Serializable;
 import java.util.*;
 
-import com.google.common.base.Objects;
-
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 
 /**
@@ -241,7 +239,8 @@ public class Experiment implements Serializable {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("experimentId", this.experimentId)
+    return com.google.common.base.Objects.toStringHelper(this)
+        .add("experimentId", this.experimentId)
         .add("experimentNumber", this.experimentNumber)
         .add("experimentName", this.experimentName)
         .add("experimentMetadata", this.metadata)
@@ -251,7 +250,7 @@ public class Experiment implements Serializable {
   @Override
   public int hashCode() {
 
-    return Objects.hashCode(this.experimentId, this.experimentNumber,
+    return Objects.hash(this.experimentId, this.experimentNumber,
         this.experimentName, this.metadata, this.samples);
   }
 
@@ -268,10 +267,10 @@ public class Experiment implements Serializable {
 
     final Experiment that = (Experiment) o;
 
-    return Objects.equal(this.experimentId, that.experimentId)
-        && Objects.equal(this.experimentName, that.experimentName)
-        && Objects.equal(this.metadata, that.metadata)
-        && Objects.equal(this.samples, that.samples);
+    return Objects.equals(this.experimentId, that.experimentId)
+        && Objects.equals(this.experimentName, that.experimentName)
+        && Objects.equals(this.metadata, that.metadata)
+        && Objects.equals(this.samples, that.samples);
   }
 
   //

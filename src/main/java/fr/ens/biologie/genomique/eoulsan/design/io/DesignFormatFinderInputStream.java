@@ -50,7 +50,7 @@ public class DesignFormatFinderInputStream extends InputStream
     }
 
     try (final BufferedReader reader = new BufferedReader(new InputStreamReader(
-        new ByteArrayInputStream(this.cache), Globals.DEFAULT_FILE_ENCODING))) {
+        new ByteArrayInputStream(this.cache), Globals.DEFAULT_CHARSET))) {
 
       String line;
       int lineCount = 0;

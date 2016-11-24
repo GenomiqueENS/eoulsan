@@ -28,8 +28,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
-
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 
@@ -142,7 +141,8 @@ public class Sample implements Serializable {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("sampleId", this.sampleId)
+    return com.google.common.base.Objects.toStringHelper(this)
+        .add("sampleId", this.sampleId)
         .add("sampleNumber", this.sampleNumber)
         .add("sampleName", this.sampleName)
         .add("sampleMetadata", this.sampleMetadata).toString();
@@ -151,7 +151,7 @@ public class Sample implements Serializable {
   @Override
   public int hashCode() {
 
-    return Objects.hashCode(this.sampleId, this.sampleNumber, this.sampleName,
+    return Objects.hash(this.sampleId, this.sampleNumber, this.sampleName,
         this.sampleMetadata);
   }
 
@@ -168,9 +168,9 @@ public class Sample implements Serializable {
 
     final Sample that = (Sample) o;
 
-    return Objects.equal(this.sampleId, that.sampleId)
-        && Objects.equal(this.sampleName, that.sampleName)
-        && Objects.equal(this.sampleMetadata, that.sampleMetadata);
+    return Objects.equals(this.sampleId, that.sampleId)
+        && Objects.equals(this.sampleName, that.sampleName)
+        && Objects.equals(this.sampleMetadata, that.sampleMetadata);
   }
 
   //

@@ -25,6 +25,7 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools;
 
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElementFactory.newToolElement;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -34,8 +35,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import com.google.common.collect.Lists;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
@@ -281,7 +280,7 @@ public final class GalaxyToolXMLParserUtils {
       return null;
     }
 
-    final List<Element> result = Lists.newArrayList();
+    final List<Element> result = new ArrayList<>();
 
     for (int i = 0; i < nStepsList.getLength(); i++) {
 
