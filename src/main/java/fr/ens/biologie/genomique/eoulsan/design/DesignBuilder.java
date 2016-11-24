@@ -501,9 +501,9 @@ public class DesignBuilder {
           final String filename =
               StringUtils.filenameWithoutCompressionExtension(f.getName());
 
-          if (samplePrefix.equals(parseSampleNameFromFilename(filename))
+          if ((filename.endsWith(".fastq") || filename.endsWith(".fq"))
               && filename.contains(laneKey)
-              && (filename.endsWith(".fastq") || filename.endsWith(".fq"))) {
+              && samplePrefix.equals(parseSampleNameFromFilename(filename))) {
             return true;
           }
 
@@ -880,6 +880,10 @@ public class DesignBuilder {
         new ArrayList<String>(Arrays.asList(filename.split("_")));
 
     final int size = list.size();
+
+    if (size < 5) {
+      return null;
+    }
 
     StringBuilder sb = new StringBuilder();
     boolean first = true;
