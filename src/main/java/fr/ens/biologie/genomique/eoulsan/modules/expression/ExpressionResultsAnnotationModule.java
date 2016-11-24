@@ -116,11 +116,11 @@ public class ExpressionResultsAnnotationModule extends AbstractModule {
     final InputPortsBuilder builder = new InputPortsBuilder();
 
     // Add the port for the expression file
-    builder.addPort("expressionfile", EXPRESSION_RESULTS_TSV);
+    builder.addPort("expressionfile", EXPRESSION_RESULTS_TSV, true);
 
     // Add the port for the additional annotation
     if (this.useAdditionalAnnotationFile) {
-      builder.addPort("additionalannotation", ADDITIONAL_ANNOTATION_TSV);
+      builder.addPort("additionalannotation", ADDITIONAL_ANNOTATION_TSV, true);
     }
 
     return builder.create();
