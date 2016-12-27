@@ -1,9 +1,8 @@
-package fr.ens.biologie.genomique.eoulsan.util.docker;
+package fr.ens.biologie.genomique.eoulsan.util.process;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static java.util.Collections.singletonList;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,7 +10,8 @@ import java.io.IOException;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,18 +28,20 @@ import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.ContainerInfo;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.Image;
+import com.spotify.docker.client.messages.ProgressDetail;
+import com.spotify.docker.client.messages.ProgressMessage;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
-import fr.ens.biologie.genomique.eoulsan.util.AbstractSimpleProcess;
 import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
 
 /**
- * This class define how to execute a process using Docker.
+ * This class define a Docker image instance using the Spotify Docker client
+ * library.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class DockerSimpleProcess extends AbstractSimpleProcess {
+public class SportifyDockerImageInstance extends AbstractSimpleProcess
+    implements DockerImageInstance {
 
   private static final int SECOND_TO_WAIT_BEFORE_KILLING_CONTAINER = 10;
 
@@ -49,22 +51,20 @@ public class DockerSimpleProcess extends AbstractSimpleProcess {
   private final int userGid;
 
   @Override
-  public int execute(final List<String> commandLine,
-      final File executionDirectory,
-      final Map<String, String> environmentVariables,
-      final File temporaryDirectory, final File stdoutFile,
-      final File stderrFile, final boolean redirectErrorStream)
-      throws EoulsanException {
+  public AdvancedProcess start(List<String> commandLine,
+      File executionDirectory, Map<String, String> environmentVariables,
+      File temporaryDirectory, File stdoutFile, File stderrFile,
+      boolean redirectErrorStream, File... filesUsed) throws IOException {
 
     checkNotNull(commandLine, "commandLine argument cannot be null");
-    checkNotNull(executionDirectory,
-        "executionDirectory argument cannot be null");
     checkNotNull(stdoutFile, "stdoutFile argument cannot be null");
     checkNotNull(stderrFile, "stderrFile argument cannot be null");
 
-    checkArgument(executionDirectory.isDirectory(),
-        "execution directory does not exists or is not a directory: "
-            + executionDirectory.getAbsolutePath());
+    if (executionDirectory != null) {
+      checkArgument(executionDirectory.isDirectory(),
+          "execution directory does not exists or is not a directory: "
+              + executionDirectory.getAbsolutePath());
+    }
 
     try {
 
@@ -77,7 +77,7 @@ public class DockerSimpleProcess extends AbstractSimpleProcess {
       }
 
       // Pull image if needed
-      pullImageIfNotExists(this.dockerClient, this.dockerImage);
+      pullImageIfNotExists();
 
       // Create container configuration
       getLogger()
@@ -87,21 +87,26 @@ public class DockerSimpleProcess extends AbstractSimpleProcess {
           ContainerConfig.builder().image(dockerImage).cmd(commandLine);
 
       // Set the working directory
-      builder.workingDir(executionDirectory.getAbsolutePath());
+      if (executionDirectory != null) {
+        builder.workingDir(executionDirectory.getAbsolutePath());
+      }
 
       // Set the UID and GID of the docker process
       if (this.userUid >= 0 && this.userGid >= 0) {
         builder.user(this.userUid + ":" + this.userGid);
       }
 
+      // File/directories to mount
+      final List<File> toBind = new ArrayList<>();
+      if (filesUsed != null) {
+        toBind.addAll(Arrays.asList(filesUsed));
+      }
+
       // Define temporary directory
-      final List<File> toBind;
-      if (temporaryDirectory.isDirectory()) {
-        toBind = singletonList(temporaryDirectory);
+      if (temporaryDirectory != null && temporaryDirectory.isDirectory()) {
+        toBind.add(temporaryDirectory);
         env.add(
             TMP_DIR_ENV_VARIABLE + "=" + temporaryDirectory.getAbsolutePath());
-      } else {
-        toBind = Collections.emptyList();
       }
 
       builder.hostConfig(createBinds(executionDirectory, toBind));
@@ -125,66 +130,173 @@ public class DockerSimpleProcess extends AbstractSimpleProcess {
           LogsParameter.FOLLOW, LogsParameter.STDERR, LogsParameter.STDOUT);
       redirect(logStream, stdoutFile, stderrFile, redirectErrorStream);
 
-      // Wait the end of the container
-      getLogger().fine("Wait the end of the Docker container: " + containerId);
-      this.dockerClient.waitContainer(containerId);
-
       // Get process exit code
-      final ContainerInfo info =
-          this.dockerClient.inspectContainer(containerId);
-      final int exitValue = info.state().exitCode();
-      getLogger().fine("Exit value: " + exitValue);
+      final ContainerInfo info = dockerClient.inspectContainer(containerId);
 
-      // Stop container before removing it
-      this.dockerClient.stopContainer(containerId,
-          SECOND_TO_WAIT_BEFORE_KILLING_CONTAINER);
-
-      // Remove container
-      getLogger().fine("Remove Docker container: " + containerId);
-      try {
-        this.dockerClient.removeContainer(containerId);
-      } catch (DockerException | InterruptedException e) {
-        EoulsanLogger.getLogger()
-            .severe("Unable to remove Docker container: " + containerId);
+      if (info.state().pid() == 0) {
+        throw new IOException(
+            "Error while executing container, container pid is 0");
       }
 
-      return exitValue;
+      return new AdvancedProcess() {
+
+        @Override
+        public int waitFor() throws IOException {
+
+          int exitValue;
+
+          try {
+
+            // Wait the end of the container
+            getLogger()
+                .fine("Wait the end of the Docker container: " + containerId);
+            dockerClient.waitContainer(containerId);
+
+            // Get process exit code
+            final ContainerInfo info =
+                dockerClient.inspectContainer(containerId);
+            exitValue = info.state().exitCode();
+            getLogger().fine("Exit value: " + exitValue);
+
+            // Stop container before removing it
+            dockerClient.stopContainer(containerId,
+                SECOND_TO_WAIT_BEFORE_KILLING_CONTAINER);
+
+            // Remove container
+            getLogger().fine("Remove Docker container: " + containerId);
+          } catch (DockerException | InterruptedException e) {
+            throw new IOException(e);
+          }
+          try {
+            dockerClient.removeContainer(containerId);
+          } catch (DockerException | InterruptedException e) {
+            EoulsanLogger.getLogger()
+                .severe("Unable to remove Docker container: " + containerId);
+          }
+
+          return exitValue;
+        }
+      };
+
     } catch (DockerException | InterruptedException e) {
-      throw new EoulsanException(e);
+      throw new IOException(e);
     }
+
   }
 
   //
   // Docker methods
   //
 
-  /**
-   * Pull a Docker image if not exists.
-   * @param dockerClient the Docker client
-   * @param dockerImageName the Docker image
-   * @throws DockerException if an error occurs while pulling the Docker image
-   * @throws InterruptedException if an error occurs while pulling the Docker
-   *           image
-   */
-  private static void pullImageIfNotExists(DockerClient dockerClient,
-      final String dockerImageName)
-      throws DockerException, InterruptedException {
+  @Override
+  public void pullImageIfNotExists() throws IOException {
 
-    checkNotNull(dockerClient, "dockerClient argument cannot be null");
-    checkNotNull(dockerImageName, "dockerImageName argument cannot be null");
+    try {
+      List<Image> images = this.dockerClient.listImages();
 
-    List<Image> images = dockerClient.listImages();
-
-    for (Image image : images) {
-      for (String tag : image.repoTags()) {
-        if (dockerImageName.equals(tag)) {
-          return;
+      for (Image image : images) {
+        for (String tag : image.repoTags()) {
+          if (this.dockerImage.equals(tag)) {
+            return;
+          }
         }
       }
+
+      getLogger().fine("Pull Docker image: " + this.dockerImage);
+      this.dockerClient.pull(this.dockerImage);
+    } catch (InterruptedException | DockerException e) {
+      throw new IOException(e);
+    }
+  }
+
+  @Override
+  public void pullImageIfNotExists(final ProgressHandler progress)
+      throws IOException {
+
+    try {
+      List<Image> images = this.dockerClient.listImages();
+
+      for (Image image : images) {
+        for (String tag : image.repoTags()) {
+          if (this.dockerImage.equals(tag)) {
+            return;
+          }
+        }
+      }
+
+      getLogger().fine("Pull Docker image: " + this.dockerImage);
+
+      if (progress != null) {
+
+        // With ProgressHandler
+
+        final com.spotify.docker.client.ProgressHandler pg =
+            new com.spotify.docker.client.ProgressHandler() {
+
+              private Map<String, Double> imagesProgress = new HashMap<>();
+
+              @Override
+              public void progress(final ProgressMessage msg)
+                  throws DockerException {
+
+                final String id = msg.id();
+                final ProgressDetail pgd = msg.progressDetail();
+
+                // Image id must be set
+                if (id == null) {
+                  return;
+                }
+
+                // Register all the images to download
+                if (!this.imagesProgress.containsKey(id)) {
+                  this.imagesProgress.put(id, 0.0);
+                }
+
+                // Only show download progress
+                if (!"Downloading".equals(msg.status())) {
+                  return;
+                }
+
+                // ProgressDetail must be currently set
+                if (pgd != null && pgd.total() > 0) {
+
+                  // Compute the progress of the current image
+                  final double imageProgress =
+                      (double) pgd.current() / pgd.total();
+
+                  // Update the map
+                  this.imagesProgress.put(id, imageProgress);
+
+                  // Compute downloading progress
+                  double sum = 0;
+                  for (double d : this.imagesProgress.values()) {
+                    sum += d;
+                  }
+                  final double downloadProgress =
+                      sum / (this.imagesProgress.size() - 1);
+
+                  // Update the progress message
+                  if (downloadProgress >= 0.0 && downloadProgress <= 1.0) {
+                    progress.update(downloadProgress);
+                  }
+                }
+              }
+
+            };
+
+        this.dockerClient.pull(this.dockerImage, pg);
+
+      } else {
+
+        // Without ProgressHandler
+
+        this.dockerClient.pull(this.dockerImage);
+      }
+
+    } catch (InterruptedException | DockerException e) {
+      throw new IOException(e);
     }
 
-    getLogger().fine("Pull Docker image: " + dockerImageName);
-    dockerClient.pull(dockerImageName);
   }
 
   /**
@@ -320,21 +432,11 @@ public class DockerSimpleProcess extends AbstractSimpleProcess {
 
   /**
    * Constructor.
-   * @param dockerImage Docker image
-   * @param temporaryDirectory temporary directory
-   */
-  public DockerSimpleProcess(final String dockerImage) {
-
-    this(DockerManager.getInstance().getClient(), dockerImage);
-  }
-
-  /**
-   * Constructor.
    * @param dockerClient Docker connection URI
    * @param dockerImage Docker image
    * @param temporaryDirectory temporary directory
    */
-  public DockerSimpleProcess(final DockerClient dockerClient,
+  SportifyDockerImageInstance(final DockerClient dockerClient,
       final String dockerImage) {
 
     checkNotNull(dockerClient, "dockerClient argument cannot be null");

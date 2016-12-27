@@ -69,7 +69,7 @@ import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.io.DesignWriter;
 import fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignWriter;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
-import fr.ens.biologie.genomique.eoulsan.util.docker.DockerManager;
+import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
 
 /**
  * This class define a Workflow. This class must be extended by a class to be
@@ -559,7 +559,11 @@ public abstract class AbstractWorkflow implements Workflow {
     }
 
     // Close Docker connections
-    DockerManager.getInstance().closeConnections();
+    try {
+      DockerManager.getInstance().closeConnections();
+    } catch (IOException e) {
+      EoulsanLogger.logWarning("Error while closing Docker connection");
+    }
   }
 
   /**
@@ -593,8 +597,11 @@ public abstract class AbstractWorkflow implements Workflow {
     EmergencyStopTasks.getInstance().stop();
 
     // Close Docker connections
-    DockerManager.getInstance().closeConnections();
-
+    try {
+      DockerManager.getInstance().closeConnections();
+    } catch (IOException e) {
+      EoulsanLogger.logWarning("Error while closing Docker connection");
+    }
     // Log end of analysis
     logEndAnalysis(false);
 

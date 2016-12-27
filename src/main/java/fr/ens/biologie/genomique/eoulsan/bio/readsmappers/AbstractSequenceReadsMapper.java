@@ -45,7 +45,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.common.base.Strings;
-import com.spotify.docker.client.DockerClient;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -65,7 +64,6 @@ import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  * @author Maria Bernard
  */
-@SuppressWarnings("FinalPrivateMethod")
 public abstract class AbstractSequenceReadsMapper
     implements SequenceReadsMapper {
 
@@ -93,7 +91,6 @@ public abstract class AbstractSequenceReadsMapper
   private File executablesTempDir =
       EoulsanRuntime.getSettings().getExecutablesTempDirectoryFile();
   private boolean multipleInstancesEnabled;
-  private DockerClient dockerClient;
 
   private ReporterIncrementer incrementer;
   private String counterGroup;
@@ -264,12 +261,6 @@ public abstract class AbstractSequenceReadsMapper
     return getTempDirectory().getAbsolutePath();
   }
 
-  @Override
-  public DockerClient getDockerClient() {
-
-    return this.dockerClient;
-  }
-
   /**
    * Get mapper executor.
    * @return the mapper executor
@@ -405,16 +396,8 @@ public abstract class AbstractSequenceReadsMapper
     }
   }
 
-  @Override
-  public void setDockerClient(final DockerClient dockerClient) {
-
-    checkState(!this.initialized, "Mapper has been initialized");
-
-    this.dockerClient = dockerClient;
-  }
-
   //
-  // Get mapper version
+  // Get Mapper version
   //
 
   @Override
@@ -938,9 +921,9 @@ public abstract class AbstractSequenceReadsMapper
     }
 
     // Set the executor to use
-    if (!this.mapperDockerImage.isEmpty() && this.dockerClient != null) {
-      this.executor = new DockerMapperExecutor(getDockerClient(),
-          getMapperDockerImage(), getTempDirectory());
+    if (!this.mapperDockerImage.isEmpty()) {
+      this.executor =
+          new DockerMapperExecutor(getMapperDockerImage(), getTempDirectory());
     } else if (isUseBundledBinaries()) {
       this.executor = new BundledMapperExecutor(getSoftwarePackage(),
           getMapperVersionToUse(), getExecutablesTempDirectory());

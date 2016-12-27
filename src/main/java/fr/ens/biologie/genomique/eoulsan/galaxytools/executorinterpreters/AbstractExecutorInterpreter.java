@@ -4,12 +4,12 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolExecutorResult;
-import fr.ens.biologie.genomique.eoulsan.util.SimpleProcess;
-import fr.ens.biologie.genomique.eoulsan.util.SystemSimpleProcess;
+import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
+import fr.ens.biologie.genomique.eoulsan.util.process.SystemSimpleProcess;
 
 /**
  * This class define an abstract executor interpreter that contains the default
@@ -24,8 +24,9 @@ public abstract class AbstractExecutorInterpreter
   /**
    * Create a new SimpleProcess that will be use to launch the command.
    * @return a new SimpleProcess object
+   * @throws IOException if an error occurs while creating the process
    */
-  protected SimpleProcess newSimpleProcess() {
+  protected SimpleProcess newSimpleProcess() throws IOException {
 
     return new SystemSimpleProcess();
   }
@@ -33,7 +34,7 @@ public abstract class AbstractExecutorInterpreter
   @Override
   public ToolExecutorResult execute(final List<String> commandLine,
       final File executionDirectory, File temporaryDirectory,
-      final File stdoutFile, final File stderrFile) {
+      final File stdoutFile, final File stderrFile) throws IOException {
 
     checkNotNull(commandLine, "commandLine argument cannot be null");
     checkNotNull(executionDirectory,
@@ -47,16 +48,10 @@ public abstract class AbstractExecutorInterpreter
         "execution directory does not exists or is not a directory: "
             + executionDirectory.getAbsolutePath());
 
-    try {
+    final int exitValue = newSimpleProcess().execute(commandLine,
+        executionDirectory, temporaryDirectory, stdoutFile, stderrFile);
 
-      final int exitValue = newSimpleProcess().execute(commandLine,
-          executionDirectory, temporaryDirectory, stdoutFile, stderrFile);
-
-      return new ToolExecutorResult(commandLine, exitValue);
-
-    } catch (EoulsanException e) {
-      return new ToolExecutorResult(commandLine, e);
-    }
+    return new ToolExecutorResult(commandLine, exitValue);
   }
 
 }

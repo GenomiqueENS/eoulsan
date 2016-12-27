@@ -1,11 +1,9 @@
-package fr.ens.biologie.genomique.eoulsan.util;
+package fr.ens.biologie.genomique.eoulsan.util.process;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 
 /**
  * This class define how to easily launch a subprocess using the Java Process
@@ -16,15 +14,14 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 public class SystemSimpleProcess extends AbstractSimpleProcess {
 
   @Override
-  public int execute(final List<String> commandLine,
+  public AdvancedProcess start(final List<String> commandLine,
       final File executionDirectory,
       final Map<String, String> environmentVariables,
       final File temporaryDirectory, final File stdoutFile,
-      final File stderrFile, final boolean redirectErrorStream)
-      throws EoulsanException {
+      final File stderrFile, final boolean redirectErrorStream,
+      final File... filesUsed) throws IOException {
 
     final ProcessBuilder pb = new ProcessBuilder(commandLine);
-
     // Set execution directory
     if (executionDirectory != null) {
       pb.directory(executionDirectory);
@@ -53,12 +50,21 @@ public class SystemSimpleProcess extends AbstractSimpleProcess {
       pb.redirectError(stderrFile);
     }
 
-    // Start the process
-    try {
-      return pb.start().waitFor();
-    } catch (IOException | InterruptedException e) {
-      throw new EoulsanException(e);
-    }
+    final Process process = pb.start();
+
+    return new AdvancedProcess() {
+
+      @Override
+      public int waitFor() throws IOException {
+
+        try {
+          return process.waitFor();
+        } catch (InterruptedException e) {
+          throw new IOException(e);
+        }
+      }
+
+    };
   }
 
 }
