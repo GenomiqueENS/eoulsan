@@ -108,10 +108,15 @@ public class DockerRequirement extends AbstractRequirement {
     try {
       List<Image> images = dockerClient.listImages();
 
-      for (Image image : images) {
-        for (String tag : image.repoTags()) {
-          if (this.dockerImage.equals(tag)) {
-            return true;
+      if (images != null) {
+        for (Image image : images) {
+          List<String> tags = image.repoTags();
+          if (tags != null) {
+            for (String tag : tags) {
+              if (this.dockerImage.equals(tag)) {
+                return true;
+              }
+            }
           }
         }
       }
