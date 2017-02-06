@@ -164,6 +164,11 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
+  public String getMapperExecutableName() {
+    return flavoredBinary();
+  }
+
+  @Override
   protected String getDefaultMapperArguments() {
 
     return DEFAULT_ARGUMENTS;
