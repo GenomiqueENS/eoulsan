@@ -142,6 +142,11 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
+  public String getMapperExecutableName() {
+    return MAPPER_EXECUTABLE;
+  }
+
+  @Override
   public DataFormat getArchiveFormat() {
 
     return DataFormats.BWA_INDEX_ZIP;
