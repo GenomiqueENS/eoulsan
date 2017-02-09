@@ -153,7 +153,7 @@ public abstract class AbstractBowtieReadsMapper
         bowtiePath = install(getMapperExecutables());
       }
 
-      final List<String> cmd = Lists.newArrayList(bowtiePath, " --version");
+      final List<String> cmd = Lists.newArrayList(bowtiePath, "--version");
 
       final String s = executeToString(cmd);
       final String[] lines = s.split("\n");
