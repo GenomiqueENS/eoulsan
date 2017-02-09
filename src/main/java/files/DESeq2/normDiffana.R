@@ -92,10 +92,14 @@ saveRawCountMatrix <- function(dds,fileName){
 #   output: countMatrix -> file
 # -----------------------------------------------------------------------------
 
-saveCountMatrix <- function(countMatrix,fileName){
+saveCountMatrix <- function(countMatrix,fileName,colnames){
 
+  if(missing(colnames)){
+    countNames <- colnames(countMatrix)
+  }else{
+    countNames<-colnames
+  }
 	# Add column Id
-	countNames <- colnames(countMatrix)
 	countMatrix <- cbind(countMatrix, row.names(countMatrix))
 	colnames(countMatrix) <- c(countNames, "Id")
 
@@ -561,17 +565,46 @@ anadiff <- function(dds, condition1, condition2, param, projectName){
 
     # selection of results of the comparison
     res <- results(dds, contrast=c("Condition", condition1, condition2))
-
+    headerDesc=mcols(res)[[2]]
     # function for plots
-    if(param==TRUE)anadiffPlots(paste(condition1,"_vs_", condition2,sep=""),
+    if(param==TRUE){
+      anadiffPlots(paste(condition1,"_vs_", condition2,sep=""),
       projectName,res)
-
+    }
     res <- as.data.frame(res)
     res <- data.frame(res, dispersions(dds))
     res <- res[order(res$padj),]
 
+
+    #define matrix column names to avoid ambiguities
+
+    #headerDesc[1] "mean of normalized counts for all samples"
+    #headerDesc[2] "log2 fold change (MLE): Condition condition1 vs condition2"
+    #headerDesc[3] "standard error: Condition WT-D vs WT-6h"
+    #headerDesc[4] "Wald statistic: Condition WT-D vs WT-6h"
+    #headerDesc[5] "Wald test p-value: Condition WT-D vs WT-6h"
+    #headerDesc[6] "BH adjusted p-values"
+
+    newHeader <- vector(mode="character", length=7)
+    newHeader[1]<-colnames(res)[1]
+    f<- strsplit(headerDesc[2], split = ' ')
+    v<-unlist(f)
+    compName<-paste(v[6],v[7],v[8],sep=" ")
+    newHeader[2]<-paste(paste(v[1],v[2],v[3],sep=""),compName,sep=" ")
+    f<- strsplit(headerDesc[3], split = ' ')
+    v<-unlist(f)
+    newHeader[3]<-paste(v[1],substr(v[2], 1, nchar(v[2])-1))
+    f<- strsplit(headerDesc[4], split = ' ')
+    v<-unlist(f)
+    newHeader[4]<-paste(v[1],substr(v[2], 1, nchar(v[2])-1))
+    f<- strsplit(headerDesc[5], split = ' ')
+    v<-unlist(f)
+    newHeader[5]<-paste(v[1],v[2],substr(v[3], 1, nchar(v[3])-1))
+    newHeader[6]<-headerDesc[6]
+    newHeader[7]<-colnames(res)[7]
+
     saveCountMatrix(res,paste(prefix, projectName,"-diffana_",condition1,
-      "_vs_",condition2,".tsv", sep=""))
+      "_vs_",condition2,".tsv", sep=""),newHeader)
 
     cat(paste("Comparison: ",paste(condition1,"_vs_", condition2,sep=""),
       " finish\n", sep=""))
@@ -681,8 +714,8 @@ anadiffPlots <- function(condName, projectName,res){
     # each adjusted p-value
     for(i in 1:length(p)){
         value[i] <- nrow(subset(res,
-			(res$padj < p[i] && res$log2FoldChange < -1) ||
-				(res$padj < p[i] && res$log2FoldChange > 1)  ))
+			(res$padj < p[i] & res$log2FoldChange < -1) |
+				(res$padj < p[i] & res$log2FoldChange > 1)  ))
     }
 
     png(paste(prefix, projectName,"-diffana_plot_differentially_expressed_features_",
