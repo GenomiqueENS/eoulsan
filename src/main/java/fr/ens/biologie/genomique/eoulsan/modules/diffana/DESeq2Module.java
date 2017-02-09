@@ -144,15 +144,15 @@ public class DESeq2Module extends AbstractModule {
         break;
 
       case DIFFANA_FIGURES:
-        this.normFig = parseBoolean(p);
+        this.diffanaFig = parseBoolean(p);
         break;
 
       case NORM_DIFFANA:
-        this.normFig = parseBoolean(p);
+        this.normDiffana = parseBoolean(p);
         break;
 
       case DIFFANA:
-        this.normFig = parseBoolean(p);
+        this.diffana = parseBoolean(p);
         break;
 
       case SIZE_FACTORS_TYPE:

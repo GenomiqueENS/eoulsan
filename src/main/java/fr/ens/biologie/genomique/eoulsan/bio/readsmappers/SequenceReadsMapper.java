@@ -329,6 +329,12 @@ public interface SequenceReadsMapper {
    */
   void throwMappingException() throws IOException;
 
+  /**
+   * Get mapper executable name.
+   * @return the name of the mapper executable
+   */
+  String getMapperExecutableName();
+
   //
   // Other methods
   //
