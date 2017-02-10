@@ -59,8 +59,7 @@ public class SpotifyDockerClient implements DockerClient {
     synchronized (this) {
 
       if (client != null) {
-        client.close();
-        this.close();
+        this.client.close();
       }
     }
   }
