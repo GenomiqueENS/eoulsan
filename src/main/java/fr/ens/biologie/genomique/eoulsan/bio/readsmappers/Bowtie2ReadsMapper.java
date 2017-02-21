@@ -42,7 +42,7 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
 
   public static final String MAPPER_NAME = "Bowtie2";
   private static final String DEFAULT_PACKAGE_VERSION = "2.0.6";
-  public static final String DEFAULT_ARGUMENTS = "";
+  public static final String DEFAULT_ARGUMENTS = "-k 2";
 
   private static final Version FIRST_FLAVORED_VERSION = new Version(2, 2, 0);
   private static final String MAPPER_EXECUTABLE = "bowtie2-align";
