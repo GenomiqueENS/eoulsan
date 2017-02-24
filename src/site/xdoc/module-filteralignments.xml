@@ -65,6 +65,7 @@
 		<tr><td>removeunmapped</td><td>boolean</td><td>If true, remove unmapped reads.</td><td></td></tr>
 		<tr><td>removemultimatches</td><td>boolean</td><td>If true, remove all alignments of a multi-matches read.</td><td></td></tr>
 		<tr><td>keeponematch</td><td>boolean</td><td>If true, keep only the first alignment of a multi-matches read.</td><td></td></tr>
+		<tr><td>quality.threhsold</td><td>integer</td><td>The threshold for the mapping quality. All the alignments with a mapping quality lower to the threshold will be removed.</td><td></td></tr>
 		<tr><td>keepnumbermatch.threshold</td><td>int</td><td>Keep the given number of the first alignments for a read.</td><td></td></tr>
 		<tr><td>distancefromreference.threshold</td><td>int</td><td>Keep alignments of a read according to the distance of the read from the reference sequence on the genome. This filter is useful to detect SNP and indel.</td><td></td></tr>
 		<tr><td>gsnapfilter</td><td>boolean</td><td>If true, remove alignments that are not supported by the expression estimation module, that is multiple alignments and those that contain a splice event.</td><td></td></tr>
