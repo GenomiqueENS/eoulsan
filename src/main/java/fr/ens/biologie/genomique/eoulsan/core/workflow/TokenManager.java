@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.Globals.STEP_RESULT_EXTENSION;
@@ -36,6 +35,7 @@ import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.DESIGN_STEP;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.GENERATOR_STEP;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.STANDARD_STEP;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,10 +45,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
@@ -179,8 +179,8 @@ public class TokenManager implements Runnable {
   public void logSendingToken(final StepOutputPort outputPort,
       final Token token) {
 
-    checkNotNull(token);
-    checkNotNull(outputPort);
+    Objects.requireNonNull(token);
+    Objects.requireNonNull(outputPort);
 
     // Test if the token is an end token
     if (!token.isEndOfStepToken()) {
@@ -222,7 +222,7 @@ public class TokenManager implements Runnable {
    */
   private void createCompatibilityLinkResultFiles(final Data data) {
 
-    checkNotNull(data, "data argument cannot be null");
+    requireNonNull(data, "data argument cannot be null");
 
     for (Data e : data.getListElements()) {
 
@@ -274,7 +274,7 @@ public class TokenManager implements Runnable {
    */
   private void createSymlinksInOutputDirectory(final Data data) {
 
-    Preconditions.checkNotNull(data, "data argument cannot be null");
+    requireNonNull(data, "data argument cannot be null");
 
     final DataFile outputDir =
         this.step.getAbstractWorkflow().getOutputDirectory();
@@ -319,8 +319,8 @@ public class TokenManager implements Runnable {
    */
   public void postToken(final StepInputPort inputPort, final Token token) {
 
-    checkNotNull(token);
-    checkNotNull(inputPort);
+    Objects.requireNonNull(token);
+    Objects.requireNonNull(inputPort);
 
     // Check origin step state
     final StepState originStepState = token.getOrigin().getStep().getState();
@@ -633,7 +633,7 @@ public class TokenManager implements Runnable {
    */
   void addFailedOutputData(final TaskContextImpl failedContext) {
 
-    checkNotNull(failedContext, "failedContext cannot be null");
+    requireNonNull(failedContext, "failedContext cannot be null");
 
     for (OutputPort port : this.outputPorts) {
       this.failedOutputDataToRemove.add(failedContext.getOutputData(port));
@@ -1012,7 +1012,7 @@ public class TokenManager implements Runnable {
    */
   TokenManager(final AbstractStep step) {
 
-    Preconditions.checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     this.step = step;
     this.inputPorts = step.getWorkflowInputPorts();

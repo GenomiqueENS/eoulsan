@@ -157,6 +157,23 @@
 			<properties />
 		</developer>
 		<developer>
+			<id>du</id>
+			<name>Runxin Du</name>
+			<email>du 0 biologie ens fr</email>
+			<url />
+			<organization>
+				École normale supérieure, IBENS, Genomic platform
+			</organization>
+			<organizationUrl>
+				https://www.genomique.biologie.ens.fr/
+			</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>1</timezone>
+			<properties />
+		</developer>
+		<developer>
 			<id>lecrom</id>
 			<name>Stéphane Le Crom</name>
 			<email>eoulsan 0 biologie ens fr</email>
@@ -271,7 +288,7 @@
 			<id>ens</id>
 			<name>ENS repository</name>
 			<!--url>https://maven-repository.dev.java.net/nonav/repository</url -->
-			<url>http://transcriptome.ens.fr/maven2</url>
+			<url>http://outils.genomique.biologie.ens.fr/maven2</url>
 		</repository>
 		<!--repository>
 			<id>cloudera</id>
@@ -601,6 +618,13 @@
 			<version>2.4.4</version>
 		</dependency>
 
+                <!-- Trimmomatic -->
+		<dependency>
+			<groupId>org.usadellab</groupId>
+			<artifactId>trimmomatic</artifactId>
+			<version>0.36</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -679,6 +703,27 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>animal-sniffer-maven-plugin</artifactId>
+				<version>1.15</version>
+				<executions>
+					<execution>
+						<id>signature-check</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<signature>
+						<groupId>org.codehaus.mojo.signature</groupId>
+						<artifactId>java17</artifactId>
+						<version>1.0</version>
+					</signature>
+				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
@@ -1057,13 +1102,22 @@ o
 			<!-- PLUG-in for static analysis code -->
 			<!-- mvn modernizer:modernizer -->
 			<plugin>
-			  <groupId>org.gaul</groupId>
-			  <artifactId>modernizer-maven-plugin</artifactId>
-			  <version>1.1.0</version>
-			  <configuration>
-			    <javaVersion>${java.version}</javaVersion>
-			  	<failOnViolations>False</failOnViolations>
-			  </configuration>
+				<groupId>org.gaul</groupId>
+				<artifactId>modernizer-maven-plugin</artifactId>
+				<version>1.4.0</version>
+				<executions>
+					<execution>
+						<id>modernizer</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>modernizer</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<javaVersion>${java.version}</javaVersion>
+					<failOnViolations>False</failOnViolations>
+				</configuration>
 			</plugin>
 		</plugins>
 

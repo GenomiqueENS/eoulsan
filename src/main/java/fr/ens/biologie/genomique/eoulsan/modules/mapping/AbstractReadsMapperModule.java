@@ -32,8 +32,6 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_
 import java.io.IOException;
 import java.util.Set;
 
-import com.spotify.docker.client.DockerClient;
-
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -45,7 +43,6 @@ import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
-import fr.ens.biologie.genomique.eoulsan.util.docker.DockerManager;
 
 /**
  * This class define an abstract module for read mapping.
@@ -298,12 +295,12 @@ public abstract class AbstractReadsMapperModule extends AbstractModule {
     }
 
     // Get Docker client
-    final DockerClient dockerClient;
-    if (!this.mapperDockerImage.isEmpty()) {
-      dockerClient = DockerManager.getInstance().getClient();
-    } else {
-      dockerClient = null;
-    }
+    //final DockerClient dockerClient;
+//    if (!this.mapperDockerImage.isEmpty()) {
+//      dockerClient = DockerManager.getInstance().getClient();
+//    } else {
+//      dockerClient = null;
+//    }
 
     // Check if the binary for the mapper is available
     try {
@@ -312,7 +309,7 @@ public abstract class AbstractReadsMapperModule extends AbstractModule {
       this.mapper.setMapperFlavorToUse(this.mapperFlavor);
       this.mapper.setUseBundledBinaries(this.useBundledBinaries);
       this.mapper.setMapperDockerImage(this.mapperDockerImage);
-      this.mapper.setDockerClient(dockerClient);
+      //this.mapper.setDockerClient(dockerClient);
       this.mapper.prepareBinaries();
     } catch (IOException e) {
       throw new EoulsanException(e);

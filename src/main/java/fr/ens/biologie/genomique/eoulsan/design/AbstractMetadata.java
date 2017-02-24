@@ -30,9 +30,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
-
-import com.google.common.base.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 
@@ -202,14 +201,14 @@ public abstract class AbstractMetadata {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("metadata", this.metadata)
-        .toString();
+    return com.google.common.base.Objects.toStringHelper(this)
+        .add("metadata", this.metadata).toString();
   }
 
   @Override
   public int hashCode() {
 
-    return Objects.hashCode(this.metadata);
+    return Objects.hash(this.metadata);
   }
 
   @Override
@@ -225,7 +224,7 @@ public abstract class AbstractMetadata {
 
     final AbstractMetadata that = (AbstractMetadata) o;
 
-    return Objects.equal(this.metadata, that.metadata);
+    return Objects.equals(this.metadata, that.metadata);
   }
 
 }

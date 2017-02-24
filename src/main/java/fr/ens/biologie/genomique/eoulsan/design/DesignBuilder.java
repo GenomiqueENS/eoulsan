@@ -463,6 +463,8 @@ public class DesignBuilder {
             "No sample Id field found for sample: " + sample);
       }
 
+      final String samplePrefix = sampleName == null ? sampleId : sampleName;
+
       // Select only project samples
       if (projectName != null && !projectName.equals(sampleProject)) {
         continue;
@@ -472,7 +474,15 @@ public class DesignBuilder {
         dataDir = new File(bcl2fastqOutputDir.getPath()
             + "/Project_" + sampleProject + "/Sample_" + sampleId);
       } else {
+
         dataDir = new File(bcl2fastqOutputDir.getPath() + "/" + sampleProject);
+
+        // Check if a sample sub directory may exist
+        String subdir = defineSampleSubDirName(sampleId, sampleName);
+
+        if (!"".equals(subdir)) {
+          dataDir = new File(dataDir, subdir);
+        }
       }
       // Test if the directory with fastq files exists
       if (!dataDir.exists() || !dataDir.isDirectory()) {
@@ -491,9 +501,9 @@ public class DesignBuilder {
           final String filename =
               StringUtils.filenameWithoutCompressionExtension(f.getName());
 
-          if (filename.startsWith(sampleId)
+          if ((filename.endsWith(".fastq") || filename.endsWith(".fq"))
               && filename.contains(laneKey)
-              && (filename.endsWith(".fastq") || filename.endsWith(".fq"))) {
+              && samplePrefix.equals(parseSampleNameFromFilename(filename))) {
             return true;
           }
 
@@ -518,8 +528,7 @@ public class DesignBuilder {
 
         try {
           list.add(new FastqEntry(new DataFile(fastqFile), normalizedSampleId,
-              sampleName == null ? sampleId : sampleName, sampleDesc,
-              sampleOperator));
+              samplePrefix, sampleDesc, sampleOperator));
         } catch (EmptyFastqException e) {
           getLogger().warning(e.getMessage());
         }
@@ -854,6 +863,61 @@ public class DesignBuilder {
     }
 
     return result;
+  }
+
+  /**
+   * Parse the sample name from its filename.
+   * @param filename the filename to parse
+   * @return the sample name
+   */
+  private static String parseSampleNameFromFilename(final String filename) {
+
+    if (filename == null) {
+      return null;
+    }
+
+    final List<String> list =
+        new ArrayList<String>(Arrays.asList(filename.split("_")));
+
+    final int size = list.size();
+
+    if (size < 5) {
+      return null;
+    }
+
+    StringBuilder sb = new StringBuilder();
+    boolean first = true;
+
+    for (String field : list.subList(0, size - 4)) {
+
+      if (first) {
+        first = false;
+      } else {
+        sb.append('_');
+      }
+
+      sb.append(field);
+    }
+
+    return sb.toString();
+  }
+
+  /**
+   * Get the sample sub directory.
+   * @param sampleId sample identifier
+   * @param sampleName sample name
+   * @return the sample sub directory or an empty string
+   */
+  public static String defineSampleSubDirName(final String sampleId,
+      final String sampleName) {
+
+    if (sampleId != null
+        && !"".equals(sampleId.trim()) && sampleName != null
+        && !"".equals(sampleName.trim())) {
+      return sampleId.trim();
+    }
+
+    return "";
   }
 
   //

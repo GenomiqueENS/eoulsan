@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
@@ -54,8 +55,9 @@ public class ToolExecutor {
   /**
    * Execute a tool.
    * @return a ToolExecutorResult object
+   * @throws IOException if an error occurs while executing the tool
    */
-  ToolExecutorResult execute() {
+  ToolExecutorResult execute() throws IOException {
 
     checkArgument(!this.commandLine.isEmpty(),
         "Command line for Galaxy tool is empty");
@@ -112,9 +114,10 @@ public class ToolExecutor {
    * @param context the context
    * @param toolData the tool data
    * @param commandLine the command line
+   * @throws IOException if an error occurs while executing the command
    */
   public ToolExecutor(final TaskContext context, final ToolData toolData,
-      final String commandLine) {
+      final String commandLine) throws IOException {
 
     checkNotNull(commandLine, "commandLine is null.");
     checkNotNull(context, "Step context is null.");

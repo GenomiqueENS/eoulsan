@@ -49,7 +49,7 @@ import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 public class STARReadsMapper extends AbstractSequenceReadsMapper {
 
   public static final String MAPPER_NAME = "STAR";
-  private static final String DEFAULT_PACKAGE_VERSION = "2.4.0k";
+  private static final String DEFAULT_PACKAGE_VERSION = "2.5.2b";
 
   private static final String MAPPER_STANDARD_EXECUTABLE = "STARstatic";
   private static final String MAPPER_LARGE_INDEX_EXECUTABLE = "STARlong";
@@ -160,6 +160,11 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   @Override
   protected String getIndexerExecutable() {
 
+    return flavoredBinary();
+  }
+
+  @Override
+  public String getMapperExecutableName() {
     return flavoredBinary();
   }
 

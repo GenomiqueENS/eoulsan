@@ -23,7 +23,7 @@
  */
 
 /**
- * This package contain utility classes for Docker usage.
+ * This package contain utility classes for processes usage.
  * @since 2.0
  */
-package fr.ens.biologie.genomique.eoulsan.util.docker;
+package fr.ens.biologie.genomique.eoulsan.util.process;

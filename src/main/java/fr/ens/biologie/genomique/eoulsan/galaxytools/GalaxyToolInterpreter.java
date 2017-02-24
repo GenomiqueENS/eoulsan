@@ -383,17 +383,21 @@ public class GalaxyToolInterpreter {
 
     final String commandLine = cheetahInterpreter.execute();
 
-    // Create the executor and interpret the command tag
-    final ToolExecutor executor =
-        new ToolExecutor(context, this.tool, commandLine);
+    try {
+      // Create the executor and interpret the command tag
+      final ToolExecutor executor =
+          new ToolExecutor(context, this.tool, commandLine);
 
-    // Execute the command
-    final ToolExecutorResult result = executor.execute();
+      // Execute the command
+      final ToolExecutorResult result = executor.execute();
 
-    isExecuted = true;
+      isExecuted = true;
 
-    // TODO
-    return result;
+      // TODO
+      return result;
+    } catch (IOException e) {
+      throw new EoulsanException(e);
+    }
   }
 
   public String getDescription() {

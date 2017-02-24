@@ -8,12 +8,11 @@ import java.util.List;
 
 import com.google.common.base.Joiner;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
-import fr.ens.biologie.genomique.eoulsan.util.SimpleProcess;
-import fr.ens.biologie.genomique.eoulsan.util.docker.DockerSimpleProcess;
+import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
+import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
 
 /**
  * This class define a Docker RExecutor.
@@ -86,26 +85,20 @@ public class DockerRExecutor extends ProcessRExecutor {
       final String sweaveOuput, final String... scriptArguments)
       throws IOException {
 
-    final SimpleProcess process = new DockerSimpleProcess(this.dockerImage);
+    final SimpleProcess process =
+        DockerManager.getInstance().createImageInstance(this.dockerImage);
 
     final List<String> commandLine =
         createCommand(rScriptFile, sweave, sweaveOuput, scriptArguments);
 
     final File stdoutFile = changeFileExtension(rScriptFile, ".out");
 
-    try {
+    final int exitValue = process.execute(commandLine, getOutputDirectory(),
+        Collections.singletonMap(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG),
+        getTemporaryDirectory(), stdoutFile, stdoutFile, true);
 
-      final int exitValue = process.execute(commandLine, getOutputDirectory(),
-          Collections.singletonMap(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG),
-          getTemporaryDirectory(), stdoutFile, stdoutFile, true);
-
-      ProcessUtils.throwExitCodeException(exitValue,
-          Joiner.on(' ').join(commandLine));
-
-    } catch (EoulsanException e) {
-      throw new IOException(e);
-    }
-
+    ProcessUtils.throwExitCodeException(exitValue,
+        Joiner.on(' ').join(commandLine));
   }
 
   //

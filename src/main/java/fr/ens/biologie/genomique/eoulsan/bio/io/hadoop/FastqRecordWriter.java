@@ -29,7 +29,7 @@ import static fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.Counters.INPUT_ENT
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.RecordWriter;
@@ -46,15 +46,10 @@ public class FastqRecordWriter extends RecordWriter<Text, Text> {
 
   private static final String COUNTERS_GROUP = "FASTQ Output Format Counters";
 
-  private static final String utf8 = "UTF-8";
   private static final byte[] newline;
 
   static {
-    try {
-      newline = "\n".getBytes(utf8);
-    } catch (UnsupportedEncodingException uee) {
-      throw new IllegalArgumentException("can't find " + utf8 + " encoding");
-    }
+    newline = "\n".getBytes(StandardCharsets.UTF_8);
   }
 
   private final DataOutputStream out;
@@ -73,7 +68,7 @@ public class FastqRecordWriter extends RecordWriter<Text, Text> {
 
     this.read.parse(value.toString());
 
-    this.out.write(this.read.toFastQ().getBytes(utf8));
+    this.out.write(this.read.toFastQ().getBytes(StandardCharsets.UTF_8));
     this.out.write(newline);
 
     this.context.getCounter(COUNTERS_GROUP, ENTRIES_WRITTEN).increment(1);

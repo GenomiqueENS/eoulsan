@@ -24,8 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
+import java.util.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 
@@ -84,7 +83,8 @@ class Token {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("id", this.id)
+    return com.google.common.base.Objects.toStringHelper(this)
+        .add("id", this.id)
         .add("fromPort", this.fromPort)
         .add("endOfStepToken", this.endOfStepToken).add("data", this.data)
         .toString();
@@ -100,7 +100,7 @@ class Token {
    */
   Token(final StepOutputPort fromPort) {
 
-    Preconditions.checkNotNull(fromPort);
+    Objects.requireNonNull(fromPort);
 
     this.fromPort = fromPort;
     this.endOfStepToken = true;
@@ -114,8 +114,8 @@ class Token {
    */
   Token(final StepOutputPort fromPort, final Data data) {
 
-    Preconditions.checkNotNull(fromPort);
-    Preconditions.checkNotNull(data);
+    Objects.requireNonNull(fromPort);
+    Objects.requireNonNull(data);
 
     this.fromPort = fromPort;
     this.endOfStepToken = false;

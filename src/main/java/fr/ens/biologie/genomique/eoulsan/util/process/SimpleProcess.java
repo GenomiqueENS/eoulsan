@@ -1,6 +1,7 @@
-package fr.ens.biologie.genomique.eoulsan.util;
+package fr.ens.biologie.genomique.eoulsan.util.process;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,11 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
  */
 public interface SimpleProcess {
 
+  public interface AdvancedProcess {
+
+    int waitFor() throws IOException;
+  }
+
   /**
    * Execute a process.
    * @param commandLine command line
@@ -24,8 +30,8 @@ public interface SimpleProcess {
    * @throws EoulsanException if an error occurs while running the process
    */
   int execute(List<String> commandLine, File executionDirectory,
-      File temporaryDirectory, File stdoutFile, File stderrFile)
-      throws EoulsanException;
+      File temporaryDirectory, File stdoutFile, File stderrFile,
+      File... filesUsed) throws IOException;
 
   /**
    * Execute a process.
@@ -41,7 +47,12 @@ public interface SimpleProcess {
    */
   int execute(List<String> commandLine, File executionDirectory,
       Map<String, String> environmentVariables, File temporaryDirectory,
-      File stdoutFile, File stderrFile, boolean redirectErrorStream)
-      throws EoulsanException;
+      File stdoutFile, File stderrFile, boolean redirectErrorStream,
+      File... filesUsed) throws IOException;
+
+  AdvancedProcess start(List<String> commandLine, File executionDirectory,
+      Map<String, String> environmentVariables, File temporaryDirectory,
+      File stdoutFile, File stderrFile, boolean redirectErrorStream,
+      File... filesUsed) throws IOException;
 
 }

@@ -106,11 +106,11 @@ public interface SequenceReadsMapper {
    */
   boolean isMultipleInstancesAllowed();
 
-  /**
-   * Get the Docker connection URI.
-   * @return the Docker connection URI
-   */
-  DockerClient getDockerClient();
+//  /**
+//   * Get the Docker connection URI.
+//   * @return the Docker connection URI
+//   */
+//  DockerClient getDockerClient();
 
   //
   // Index creation methods
@@ -266,11 +266,11 @@ public interface SequenceReadsMapper {
    */
   void setMultipleInstancesEnabled(boolean enable);
 
-  /**
-   * Set the Docker connection URI.
-   * @param uri the URI to set
-   */
-  void setDockerClient(DockerClient uri);
+//  /**
+//   * Set the Docker connection URI.
+//   * @param uri the URI to set
+//   */
+//  void setDockerClient(DockerClient uri);
 
   //
   // Mapping methods
@@ -328,6 +328,12 @@ public interface SequenceReadsMapper {
    * @throws IOException if an exception has occurred while mapping
    */
   void throwMappingException() throws IOException;
+
+  /**
+   * Get mapper executable name.
+   * @return the name of the mapper executable
+   */
+  String getMapperExecutableName();
 
   //
   // Other methods

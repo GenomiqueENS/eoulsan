@@ -1415,39 +1415,6 @@ public class FileUtils {
   }
 
   /**
-   * Create an hard link on an unix system.
-   * @param target target file
-   * @param link link file
-   * @return true if the link has been successfully created
-   */
-  public static final boolean createHardLink(final File target,
-      final File link) {
-
-    if (target == null || link == null || !target.exists()) {
-      return false;
-    }
-
-    final String cmd = "ln "
-        + StringUtils.bashEscaping(target.getAbsolutePath()) + " "
-        + StringUtils.bashEscaping(link.getAbsolutePath());
-    try {
-
-      Process p = Runtime.getRuntime().exec(cmd);
-      if (p.waitFor() == 0) {
-        return true;
-      }
-
-      return false;
-
-    } catch (IOException e) {
-      return false;
-    } catch (InterruptedException e) {
-      return false;
-    }
-
-  }
-
-  /**
    * Test if two stream are equals
    * @param a First stream to compare
    * @param b Second stream to compare

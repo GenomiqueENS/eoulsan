@@ -27,8 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.design;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
-
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 /**
  * This class defines the experiment sample.
@@ -72,7 +71,7 @@ public class ExperimentSample implements Serializable {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this)
+    return com.google.common.base.Objects.toStringHelper(this)
         .add("experimentSampleName", this.sample)
         .add("experimentSampleMetadata", this.metadata).toString();
   }
@@ -80,7 +79,7 @@ public class ExperimentSample implements Serializable {
   @Override
   public int hashCode() {
 
-    return Objects.hashCode(this.sample, this.metadata);
+    return Objects.hash(this.sample, this.metadata);
   }
 
   @Override
@@ -96,8 +95,8 @@ public class ExperimentSample implements Serializable {
 
     final ExperimentSample that = (ExperimentSample) o;
 
-    return Objects.equal(this.sample, that.sample)
-        && Objects.equal(this.metadata, that.metadata);
+    return Objects.equals(this.sample, that.sample)
+        && Objects.equals(this.metadata, that.metadata);
   }
 
   //

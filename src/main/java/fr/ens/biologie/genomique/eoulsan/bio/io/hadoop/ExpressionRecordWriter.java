@@ -29,7 +29,7 @@ import static fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.Counters.INPUT_ENT
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -46,17 +46,12 @@ public class ExpressionRecordWriter extends RecordWriter<Text, LongWritable> {
   private static final String COUNTERS_GROUP =
       "Expression Output Format Counters";
 
-  private static final String utf8 = "UTF-8";
   private static final byte[] newline;
   private static final byte[] separator;
 
   static {
-    try {
-      newline = "\n".getBytes(utf8);
-      separator = "\t".getBytes(utf8);
-    } catch (UnsupportedEncodingException uee) {
-      throw new IllegalArgumentException("can't find " + utf8 + " encoding");
-    }
+    newline = "\n".getBytes(StandardCharsets.UTF_8);
+    separator = "\t".getBytes(StandardCharsets.UTF_8);
   }
 
   private final DataOutputStream out;
@@ -74,7 +69,7 @@ public class ExpressionRecordWriter extends RecordWriter<Text, LongWritable> {
 
     this.out.write(key.getBytes(), 0, key.getLength());
     this.out.write(separator);
-    this.out.write(value.toString().getBytes(utf8));
+    this.out.write(value.toString().getBytes(StandardCharsets.UTF_8));
     this.out.write(newline);
 
     this.context.getCounter(COUNTERS_GROUP, ENTRIES_WRITTEN).increment(1);

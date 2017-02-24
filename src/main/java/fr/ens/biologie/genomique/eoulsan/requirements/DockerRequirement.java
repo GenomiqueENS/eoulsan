@@ -27,25 +27,17 @@ package fr.ens.biologie.genomique.eoulsan.requirements;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.DockerException;
-import com.spotify.docker.client.ProgressHandler;
-import com.spotify.docker.client.messages.Image;
-import com.spotify.docker.client.messages.ProgressDetail;
-import com.spotify.docker.client.messages.ProgressMessage;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Progress;
-import fr.ens.biologie.genomique.eoulsan.util.docker.DockerManager;
+import fr.ens.biologie.genomique.eoulsan.util.process.DockerImageInstance;
+import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
+import fr.ens.biologie.genomique.eoulsan.util.process.DockerImageInstance.ProgressHandler;
 
 /**
  * This class define a Docker requirement.
@@ -99,102 +91,33 @@ public class DockerRequirement extends AbstractRequirement {
   @Override
   public boolean isAvailable() {
 
-    final DockerClient dockerClient = DockerManager.getInstance().getClient();
-
-    if (dockerClient == null) {
-      return false;
-    }
-
     try {
-      List<Image> images = dockerClient.listImages();
-
-      for (Image image : images) {
-        for (String tag : image.repoTags()) {
-          if (this.dockerImage.equals(tag)) {
-            return true;
-          }
-        }
-      }
-
-    } catch (DockerException | InterruptedException e) {
-
+      return DockerManager.getInstance().listImageTags()
+          .contains(this.dockerImage);
+    } catch (IOException e) {
       return false;
     }
-
-    return false;
   }
 
   @Override
   public void install(final Progress progress) throws EoulsanException {
 
-    // Check if Docker URI has been set.
-    if (EoulsanRuntime.getSettings().getDockerConnection() == null) {
-      throw new EoulsanException("Docker connection URI is not set. "
-          + "Please set the \"main.docker.uri\" global parameter");
-    }
-
-    // Check if Docker connection has been created
-    final DockerClient dockerClient = DockerManager.getInstance().getClient();
-
-    if (dockerClient == null) {
-      throw new EoulsanException("Unable to connect to Docker deamon: "
-          + EoulsanRuntime.getSettings().getDockerConnection());
-    }
-
     try {
 
-      dockerClient.pull(this.dockerImage, new ProgressHandler() {
+      // Create Docker connection
+      final DockerImageInstance connnection =
+          DockerManager.getInstance().createImageInstance(this.dockerImage);
 
-        private Map<String, Double> imagesProgress = new HashMap<>();
+      // Pull image
+      connnection.pullImageIfNotExists(new ProgressHandler() {
 
         @Override
-        public void progress(final ProgressMessage msg) throws DockerException {
+        public void update(double progressValue) {
+          progress.setProgress(progressValue);
 
-          final String id = msg.id();
-          final ProgressDetail pgd = msg.progressDetail();
-
-          // Image id must be set
-          if (id == null) {
-            return;
-          }
-
-          // Register all the images to download
-          if (!this.imagesProgress.containsKey(id)) {
-            this.imagesProgress.put(id, 0.0);
-          }
-
-          // Only show download progress
-          if (!"Downloading".equals(msg.status())) {
-            return;
-          }
-
-          // ProgressDetail must be currently set
-          if (pgd != null && pgd.total() > 0) {
-
-            // Compute the progress of the current image
-            final double imageProgress = (double) pgd.current() / pgd.total();
-
-            // Update the map
-            this.imagesProgress.put(id, imageProgress);
-
-            // Compute downloading progress
-            double sum = 0;
-            for (double d : this.imagesProgress.values()) {
-              sum += d;
-            }
-            final double downloadProgress =
-                sum / (this.imagesProgress.size() - 1);
-
-            // Update the progress message
-            if (downloadProgress >= 0.0 && downloadProgress <= 1.0) {
-              progress.setProgress(downloadProgress);
-            }
-          }
         }
-
       });
-    } catch (DockerException | InterruptedException e) {
-
+    } catch (IOException e) {
       throw new EoulsanException(e);
     }
 

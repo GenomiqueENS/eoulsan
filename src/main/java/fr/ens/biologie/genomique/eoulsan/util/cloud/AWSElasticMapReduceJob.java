@@ -24,8 +24,10 @@
 
 package fr.ens.biologie.genomique.eoulsan.util.cloud;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
+
+import java.util.Objects;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.AWSCredentials;
@@ -340,13 +342,13 @@ public class AWSElasticMapReduceJob {
 
   void init() {
 
-    checkNotNull(this.AWSAccessKey);
-    checkNotNull(this.AWSAccessKey);
-    checkNotNull(this.jarLocation);
-    checkNotNull(this.jarArguments);
-    checkNotNull(this.slavesInstanceType);
-    checkNotNull(this.hadoopVersion);
-    checkNotNull(this.jobFlowName);
+    requireNonNull(this.AWSAccessKey);
+    requireNonNull(this.AWSAccessKey);
+    requireNonNull(this.jarLocation);
+    requireNonNull(this.jarArguments);
+    requireNonNull(this.slavesInstanceType);
+    requireNonNull(this.hadoopVersion);
+    requireNonNull(this.jobFlowName);
 
     if (this.nInstances < 1) {
       throw new IllegalArgumentException(

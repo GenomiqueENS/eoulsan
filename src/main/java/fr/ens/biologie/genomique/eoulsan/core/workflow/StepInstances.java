@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +54,7 @@ public class StepInstances {
    */
   public Module getModule(final Step step) {
 
-    checkNotNull(step, "Step is null");
+    requireNonNull(step, "Step is null");
     final String stepName = step.getModuleName();
     final String stepVersion = step.getStepVersion();
 
@@ -75,7 +75,7 @@ public class StepInstances {
   public Module getModule(final Step step, final String moduleName,
       final String moduleVersion) throws EoulsanException {
 
-    checkNotNull(moduleName, "Step name is null");
+    requireNonNull(moduleName, "Step name is null");
 
     if (!this.steps.containsKey(step)) {
 
@@ -99,8 +99,8 @@ public class StepInstances {
    */
   public void registerStep(final Step step, final Module module) {
 
-    checkNotNull(step, "workflow step is null");
-    checkNotNull(module, "module is null");
+    requireNonNull(step, "workflow step is null");
+    requireNonNull(module, "module is null");
 
     this.steps.put(step, module);
   }
@@ -111,7 +111,7 @@ public class StepInstances {
    */
   public void removeStep(final Step step) {
 
-    checkNotNull(step);
+    requireNonNull(step);
 
     this.steps.remove(step);
   }

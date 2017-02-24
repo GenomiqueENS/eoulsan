@@ -109,7 +109,7 @@
 							<td>norm.fig</td>
 							<td>boolean</td>
 							<td>
-								Allow to skip the figures produced during the normalization.
+								If true, generate the figures of the normalization.
 							</td>
 							<td>true</td>
 						</tr>
@@ -117,7 +117,7 @@
 							<td>diffana.fig</td>
 							<td>boolean</td>
 							<td>
-								Allow to skip the figures produced during the differential analysis.
+								If true, generate the figures of the differential analysis.
 							</td>
 							<td>true</td>
 						</tr>
@@ -125,7 +125,7 @@
 							<td>norm.diffana</td>
 							<td>boolean</td>
 							<td>
-								Allow to skip the normalization and the differential analysis. This option
+								If set to false, skip the normalization and the differential analysis. This option
 								is used to produce the contrast matrix without doing the normalization and
 								the differential analysis.
 							</td>
@@ -135,7 +135,7 @@
 							<td>diffana</td>
 							<td>boolean</td>
 							<td>
-								Allow to skip the differential analysis.
+								If set to false, skip the differential analysis.
 							</td>
 							<td>true</td>
 						</tr>

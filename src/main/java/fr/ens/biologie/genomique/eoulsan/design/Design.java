@@ -33,8 +33,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 
@@ -320,7 +319,7 @@ public class Design implements Serializable {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this)
+    return com.google.common.base.Objects.toStringHelper(this)
         .add("designNumber", this.designNumber)
         .add("designName", this.designName).add("samples", this.samples)
         .add("experiments", this.experiments)
@@ -330,7 +329,7 @@ public class Design implements Serializable {
   @Override
   public int hashCode() {
 
-    return Objects.hashCode(this.designNumber, this.designName, this.samples,
+    return Objects.hash(this.designNumber, this.designName, this.samples,
         this.experiments, this.designMetadata);
   }
 
@@ -347,10 +346,10 @@ public class Design implements Serializable {
 
     final Design that = (Design) o;
 
-    return Objects.equal(this.designName, that.designName)
-        && Objects.equal(this.samples, that.samples)
-        && Objects.equal(this.experiments, that.experiments)
-        && Objects.equal(this.designMetadata, that.designMetadata);
+    return Objects.equals(this.designName, that.designName)
+        && Objects.equals(this.samples, that.samples)
+        && Objects.equals(this.experiments, that.experiments)
+        && Objects.equals(this.designMetadata, that.designMetadata);
   }
 
   //

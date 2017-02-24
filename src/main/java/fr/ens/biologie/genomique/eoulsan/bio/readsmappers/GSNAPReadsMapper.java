@@ -130,6 +130,11 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
+  public String getMapperExecutableName() {
+    return MAPPER_EXECUTABLE;
+  }
+
+  @Override
   protected List<String> getIndexerCommand(final String indexerPathname,
       final String genomePathname) {
     List<String> cmd = new ArrayList<>();

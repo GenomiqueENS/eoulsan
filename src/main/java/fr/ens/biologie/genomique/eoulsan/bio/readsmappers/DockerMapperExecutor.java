@@ -35,20 +35,18 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 import com.google.common.base.Objects;
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.DockerException;
-import com.spotify.docker.client.messages.ContainerConfig;
-import com.spotify.docker.client.messages.ContainerCreation;
-import com.spotify.docker.client.messages.ContainerInfo;
-import com.spotify.docker.client.messages.HostConfig;
-import com.spotify.docker.client.messages.Image;
 
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.eoulsan.util.process.DockerImageInstance;
+import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
+import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess.AdvancedProcess;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
-import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
 
 /**
  * This class define a mapper executor that executes process in Docker
@@ -58,10 +56,7 @@ import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
  */
 public class DockerMapperExecutor implements MapperExecutor {
 
-  private final DockerClient dockerClient;
-  private final String dockerImage;
-  private final int userUid;
-  private final int userGid;
+  private final DockerImageInstance dockerConnection;
   private final File temporaryDirectory;
 
   /**
@@ -70,13 +65,10 @@ public class DockerMapperExecutor implements MapperExecutor {
    */
   private class DockerResult implements Result {
 
-    /*
-     * TODO merge part of this method in DockerProcess class.
-     */
-
-    private final String containerId;
+    // private final String containerId;
     private final File stdoutFile;
     private Integer waitForResult;
+    private AdvancedProcess process;
 
     @Override
     public InputStream getInputStream() throws IOException {
@@ -84,20 +76,6 @@ public class DockerMapperExecutor implements MapperExecutor {
       if (this.stdoutFile == null) {
         throw new IOException(
             "The excution command has not been configured to redirect stdout");
-      }
-
-      try {
-
-        // Get process exit code
-        final ContainerInfo info = dockerClient.inspectContainer(containerId);
-
-        if (info.state().pid() == 0) {
-          throw new IOException(
-              "Error while executing container, container pid is 0");
-        }
-
-      } catch (DockerException | InterruptedException e) {
-        throw new IOException(e);
       }
 
       try {
@@ -123,31 +101,17 @@ public class DockerMapperExecutor implements MapperExecutor {
 
       int result;
 
-      try {
+      // Wait the end of the container
+      getLogger().fine("Wait the end of the Docker container");
 
-        // Wait the end of the container
-        getLogger()
-            .fine("Wait the end of the Docker container: " + containerId);
-        dockerClient.waitContainer(containerId);
+      result = process.waitFor();
 
-        // Get process exit code
-        final ContainerInfo info = dockerClient.inspectContainer(containerId);
-        result = info.state().exitCode();
-
-        // Remove container
-        getLogger().fine("Remove Docker container: " + containerId);
-        dockerClient.removeContainer(containerId);
-
-        // Remove named pipe
-        if (this.stdoutFile != null) {
-          if (!this.stdoutFile.delete()) {
-            getLogger()
-                .warning("Unable to delete stdout file: " + this.stdoutFile);
-          }
+      // Remove named pipe
+      if (this.stdoutFile != null) {
+        if (!this.stdoutFile.delete()) {
+          getLogger()
+              .warning("Unable to delete stdout file: " + this.stdoutFile);
         }
-
-      } catch (DockerException | InterruptedException e) {
-        throw new IOException(e);
       }
 
       this.waitForResult = result;
@@ -174,61 +138,37 @@ public class DockerMapperExecutor implements MapperExecutor {
 
       checkNotNull(command, "command argument cannot be null");
 
-      try {
+      // Pull image if needed
+      dockerConnection.pullImageIfNotExists();
 
-        // Pull image if needed
-        pullImageIfNotExists(dockerClient, dockerImage);
+      // Create container configuration
+      getLogger().fine("Configure container, command to execute: " + command);
 
-        // Create container configuration
-        getLogger().fine("Configure container, command to execute: " + command);
-
-        List<File> newFilesUsed = new ArrayList<>();
-        if (filesUsed != null) {
-          Collections.addAll(newFilesUsed, filesUsed);
-        }
-
-        if (stdout) {
-          final String uuid = UUID.randomUUID().toString();
-          this.stdoutFile = new File(temporaryDirectory, "stdout-" + uuid);
-          FileUtils.createNamedPipe(this.stdoutFile);
-          newFilesUsed.add(this.stdoutFile);
-
-        } else {
-          this.stdoutFile = null;
-        }
-
-        final ContainerConfig.Builder builder =
-            ContainerConfig.builder().image(dockerImage)
-                .cmd(convertCommand(command, this.stdoutFile, redirectStderr));
-
-        // Set the working directory
-        if (executionDirectory != null) {
-          builder.workingDir(executionDirectory.getAbsolutePath());
-          newFilesUsed.add(executionDirectory);
-        }
-
-        // Set the UID and GID of the docker process
-        if (userUid >= 0 && userGid >= 0) {
-          builder.user(userUid + ":" + userGid);
-        }
-
-        // Define binds
-        builder.hostConfig(createBinds(executionDirectory, newFilesUsed));
-
-        // Create container
-        final ContainerCreation creation =
-            dockerClient.createContainer(builder.build());
-
-        // Get container id
-        this.containerId = creation.id();
-
-        // Start container
-        getLogger().fine("Start of the Docker container: " + containerId);
-        dockerClient.startContainer(containerId);
-
-      } catch (DockerException | InterruptedException e) {
-        throw new IOException(e);
+      List<File> newFilesUsed = new ArrayList<>();
+      if (filesUsed != null) {
+        Collections.addAll(newFilesUsed, filesUsed);
       }
+
+      if (stdout) {
+        final String uuid = UUID.randomUUID().toString();
+        this.stdoutFile = new File(temporaryDirectory, "stdout-" + uuid);
+        FileUtils.createNamedPipe(this.stdoutFile);
+        newFilesUsed.add(this.stdoutFile);
+
+      } else {
+        this.stdoutFile = null;
+      }
+
+      // Start container
+      getLogger().fine("Start of the Docker container");
+      // dockerClient.startContainer(containerId);
+
+      final File nullFile = new File("/dev/null");
+      final File[] files = newFilesUsed.toArray(new File[newFilesUsed.size()]);
+
+      this.process = dockerConnection.start(
+          convertCommand(command, this.stdoutFile, redirectStderr),
+          executionDirectory, null, null, nullFile, nullFile, false, files);
     }
   }
 
@@ -275,35 +215,6 @@ public class DockerMapperExecutor implements MapperExecutor {
   //
 
   /**
-   * Pull a Docker image if not exists.
-   * @param dockerClient the Docker client
-   * @param dockerImageName the Docker image
-   * @throws DockerException if an error occurs while pulling the Docker image
-   * @throws InterruptedException if an error occurs while pulling the Docker
-   *           image
-   */
-  private static void pullImageIfNotExists(DockerClient dockerClient,
-      final String dockerImageName)
-      throws DockerException, InterruptedException {
-
-    checkNotNull(dockerClient, "dockerClient argument cannot be null");
-    checkNotNull(dockerImageName, "dockerImageName argument cannot be null");
-
-    List<Image> images = dockerClient.listImages();
-
-    for (Image image : images) {
-      for (String tag : image.repoTags()) {
-        if (dockerImageName.equals(tag)) {
-          return;
-        }
-      }
-    }
-
-    getLogger().fine("Pull Docker image: " + dockerImageName);
-    dockerClient.pull(dockerImageName);
-  }
-
-  /**
    * Convert command to sh command if needed.
    * @param command the command to convert
    * @param stdout the stdout file to use
@@ -341,38 +252,6 @@ public class DockerMapperExecutor implements MapperExecutor {
     return result;
   }
 
-  /**
-   * Create Docker binds.
-   * @param executionDirectory execution directory
-   * @param files files to binds
-   * @return an HostConfig object
-   */
-  private static HostConfig createBinds(final File executionDirectory,
-      List<File> files) {
-
-    HostConfig.Builder builder = HostConfig.builder();
-    Set<String> binds = new HashSet<>();
-
-    if (executionDirectory != null) {
-
-      binds.add(executionDirectory.getAbsolutePath()
-          + ':' + executionDirectory.getAbsolutePath());
-    }
-
-    if (files != null) {
-      for (File f : files) {
-
-        if (f.exists()) {
-          binds.add(f.getAbsolutePath() + ':' + f.getAbsolutePath());
-        }
-      }
-    }
-
-    builder.binds(new ArrayList<>(binds));
-
-    return builder.build();
-  }
-
   //
   // Object methods
   //
@@ -380,8 +259,8 @@ public class DockerMapperExecutor implements MapperExecutor {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("dockerConnection", dockerClient)
-        .add("dockerImage", dockerImage)
+    return Objects.toStringHelper(this)
+        .add("dockerConnection", dockerConnection)
         .add("temporaryDirectory", temporaryDirectory).toString();
   }
 
@@ -394,20 +273,18 @@ public class DockerMapperExecutor implements MapperExecutor {
    * @param dockerClient Docker client
    * @param dockerImage Docker image
    * @param temporaryDirectory temporary directory
+   * @throws IOException if an error occurs while creating the connection
    */
-  DockerMapperExecutor(final DockerClient dockerClient,
-      final String dockerImage, final File temporaryDirectory) {
+  DockerMapperExecutor(final String dockerImage, final File temporaryDirectory)
+      throws IOException {
 
-    checkNotNull(dockerClient, "dockerConnection argument cannot be null");
     checkNotNull(dockerImage, "dockerImage argument cannot be null");
     checkNotNull(temporaryDirectory,
         "temporaryDirectory argument cannot be null");
 
-    this.dockerClient = dockerClient;
-    this.dockerImage = dockerImage;
     this.temporaryDirectory = temporaryDirectory;
-    this.userUid = SystemUtils.uid();
-    this.userGid = SystemUtils.gid();
+    this.dockerConnection =
+        DockerManager.getInstance().createImageInstance(dockerImage);
   }
 
 }

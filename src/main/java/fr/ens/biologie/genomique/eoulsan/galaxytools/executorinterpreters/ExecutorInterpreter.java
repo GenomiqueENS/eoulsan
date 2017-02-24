@@ -1,6 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolExecutorResult;
@@ -33,9 +34,10 @@ public interface ExecutorInterpreter {
    * @param stdoutFile stdout file
    * @param stderrFile stderr file
    * @return a ToolExecutor object
+   * @throws IOException if an error occurs while executing the command
    */
   ToolExecutorResult execute(final List<String> commandLine,
       File executionDirectory, File temporaryDirectory, File stdoutFile,
-      File stderrFile);
+      File stderrFile) throws IOException;
 
 }
