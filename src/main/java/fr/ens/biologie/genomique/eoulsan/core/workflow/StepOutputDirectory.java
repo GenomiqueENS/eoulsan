@@ -50,7 +50,6 @@ class StepOutputDirectory {
 
     /**
      * Get a OutputTreeType object from the Eoulsan settings.
-     * @param type the type
      * @return a OutputTreeType object
      */
     public static OutputTreeType getOutputTreeType() {

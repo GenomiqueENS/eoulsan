@@ -87,7 +87,6 @@ public class CommandStep extends AbstractStep {
    * @param requiredMemory required memory
    * @param requiredProcessors required processors
    * @param dataProduct data product
-   * @param outputDirectory output directory
    * @throws EoulsanException id an error occurs while creating the step
    */
   public CommandStep(final AbstractWorkflow workflow, final String id,

@@ -140,7 +140,7 @@ public abstract class AbstractComparatorWithBloomFilter
    * Build BloomFilter represented the input stream.
    * @param is the input stream source
    * @return BloomFilter corresponding to the input stream
-   * @throws IOException
+   * @throws IOException if bloom filter creation fails
    */
   protected EnhancedBloomFilter buildBloomFilter(final InputStream is)
       throws IOException {

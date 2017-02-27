@@ -356,7 +356,7 @@ public class CopyInputDataModule extends AbstractModule {
    * Method to decode the allowed compressions parameter.
    * @param value the parameter value as a string
    * @return the parameter value as an EnumSet
-   * @throws EoulsanException
+   * @throws EoulsanException if the value parameter is null
    */
   private static EnumSet<CompressionType> decodeAllowedCompressionsParameterValue(
       final String value) throws EoulsanException {

@@ -179,14 +179,6 @@ public final class ProcessUtils {
   }
 
   /**
-   * Execute a command.
-   * @param cmd command to execute
-   * @param temporaryDirectory temporary where create the temporary shell file
-   * @return the exit error of the program
-   * @throws IOException
-   */
-
-  /**
    * Execute a command with the OS.
    * @param cmd Command to execute
    * @param stdOutput don't show the result of the command on the standard

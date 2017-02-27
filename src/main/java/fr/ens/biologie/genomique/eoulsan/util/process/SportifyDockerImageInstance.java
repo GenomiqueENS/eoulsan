@@ -434,7 +434,6 @@ public class SportifyDockerImageInstance extends AbstractSimpleProcess
    * Constructor.
    * @param dockerClient Docker connection URI
    * @param dockerImage Docker image
-   * @param temporaryDirectory temporary directory
    */
   SportifyDockerImageInstance(final DockerClient dockerClient,
       final String dockerImage) {

@@ -111,7 +111,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
    * @param removeAmbiguousCases true to remove ambiguous cases
    * @throws IOException if an error occurs while creating job
    * @throws BadBioEntryException if an entry of the annotation file is invalid
-   * @throws EoulsanException
+   * @throws EoulsanException if the job creating fails
    */
   private static Job createJobHTSeqCounter(final Configuration parentConf,
       final TaskContext context, final Data alignmentsData,

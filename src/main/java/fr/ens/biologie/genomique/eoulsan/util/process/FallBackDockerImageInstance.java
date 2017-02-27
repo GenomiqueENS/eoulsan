@@ -188,9 +188,7 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
 
   /**
    * Constructor.
-   * @param dockerClient Docker connection URI
    * @param dockerImage Docker image
-   * @param temporaryDirectory temporary directory
    */
   FallBackDockerImageInstance(final String dockerImage) {
 

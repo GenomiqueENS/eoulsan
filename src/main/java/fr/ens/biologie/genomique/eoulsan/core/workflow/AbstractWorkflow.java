@@ -819,7 +819,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
   /**
    * Check temporary directory.
-   * @throws EoulsanException
+   * @throws EoulsanException if the checking of the temporary directory fails
    */
   private void checkTemporaryDirectory() throws EoulsanException {
 

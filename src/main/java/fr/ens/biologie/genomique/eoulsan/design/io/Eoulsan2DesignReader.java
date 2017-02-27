@@ -87,7 +87,7 @@ public class Eoulsan2DesignReader implements DesignReader {
    * experiments.
    * @param design the design object
    * @param line the line read from your design file
-   * @throws IOException
+   * @throws IOException if the header parsing fails
    */
   private void parseHeader(final Design design, final String line)
       throws IOException {
@@ -126,7 +126,7 @@ public class Eoulsan2DesignReader implements DesignReader {
    * @param key the key of the experiment metadata read
    * @param value the value of the experiment metadata read
    * @param design the design object
-   * @throws IOException
+   * @throws IOException if the metadata read is incorrect
    */
   private void readExpMetadata(String key, String value, Design design)
       throws IOException {
@@ -170,7 +170,7 @@ public class Eoulsan2DesignReader implements DesignReader {
    * @param key the key of the design metadata
    * @param value the value of the design metadata
    * @param design the design object
-   * @throws IOException
+   * @throws IOException if design metadata read is incorrect
    */
   private void readDesignMetadata(String key, String value, Design design)
       throws IOException {
@@ -201,7 +201,7 @@ public class Eoulsan2DesignReader implements DesignReader {
    * @param design the design object
    * @param columnNames the name of the columns
    * @param line the line read from your design file
-   * @throws IOException
+   * @throws IOException if the data read is incorrect
    */
   private void parseColumns(final Design design, final List<String> columnNames,
       final String line, final boolean firstLine) throws IOException {
@@ -297,7 +297,7 @@ public class Eoulsan2DesignReader implements DesignReader {
    * @param columnValue the value
    * @param design the design object
    * @param sample the sample
-   * @throws IOException
+   * @throws IOException if the metadata read is incorrect
    */
   private void readSampleMetadata(String columnName, String columnValue,
       Design design, Sample sample) throws IOException {
@@ -318,7 +318,7 @@ public class Eoulsan2DesignReader implements DesignReader {
    * @param columnValue the value
    * @param design the design object
    * @param sample the sample
-   * @throws IOException
+   * @throws IOException if the sample metadata read is incorrect
    */
   private void readExperimentSampleMetadata(String columnName,
       String columnValue, Design design, Sample sample) throws IOException {

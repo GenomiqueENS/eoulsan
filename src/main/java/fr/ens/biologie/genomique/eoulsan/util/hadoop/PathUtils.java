@@ -494,21 +494,6 @@ public final class PathUtils {
   }
 
   /**
-   * Get the FileSystem of a Path
-   * @param path Path to get FileSystem
-   * @param conf Configuration Object
-   * @return a FileSystem Object
-   * @throws IOException if an error occurs while getting the FileSystem object
-   */
-  /*
-   * public static FileSystem getFileSystem(final Path path, final Configuration
-   * conf) throws IOException { if (path == null) throw new
-   * NullPointerException("Path is null"); if (conf == null) throw new
-   * NullPointerException("The configuration object is null"); return
-   * FileSystem.get(path.toUri(), conf); }
-   */
-
-  /**
    * Fully delete a file of the content of a directory
    * @param path Path of the file
    * @param conf Configuration Object

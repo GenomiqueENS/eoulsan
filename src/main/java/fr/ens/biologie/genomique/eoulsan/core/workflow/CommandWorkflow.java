@@ -1010,7 +1010,7 @@ public class CommandWorkflow extends AbstractWorkflow {
    * @param firstSteps optional steps to add at the beginning of the workflow
    * @param endSteps optional steps to add at the end of the workflow
    * @param design Design to use with the workflow
-   * @throws EoulsanException
+   * @throws EoulsanException if the creation of the CommandWorkflow object fails
    */
   public CommandWorkflow(final ExecutorArguments executionArguments,
       final CommandWorkflowModel workflowCommand, final List<Module> firstSteps,

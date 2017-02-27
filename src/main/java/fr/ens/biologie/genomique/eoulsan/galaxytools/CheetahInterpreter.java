@@ -203,7 +203,7 @@ public class CheetahInterpreter {
    * Instantiates a new tool Cheetah script interpreter.
    * @param cheetahScript the Cheetah script to execute
    * @param variables the variables of the script
-   * @throws EoulsanException
+   * @throws EoulsanException if the constructor fails
    */
   public CheetahInterpreter(final String cheetahScript,
       final Map<String, String> variables) throws EoulsanException {

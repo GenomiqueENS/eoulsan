@@ -51,7 +51,8 @@ public abstract class AbstractTrimmomaticReadFilter extends AbstractReadFilter {
   
   
   /**
-   * @param trimmerArgs
+   * Create a Trimmer object
+   * @param trimmerArgs trimmer arguments
    * @return new sequence after trimmomatic
    */
   protected abstract AbstractSingleRecordTrimmer createTrimmer(

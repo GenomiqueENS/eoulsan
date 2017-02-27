@@ -91,7 +91,7 @@ public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
    * Find the resource to load.
    * @param directory the directory where loading the resources
    * @return a list of relative paths
-   * @throws IOException
+   * @throws IOException if an error occrs while finding the resource
    */
   private List<String> findResourcePaths(final DataFile directory)
       throws IOException {

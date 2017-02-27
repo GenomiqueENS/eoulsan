@@ -101,7 +101,7 @@ public class HTSeqUtilsTest {
     assertTrue(results.contains("a"));
     assertFalse(results.contains("b"));
 
-    /*************************************************************/
+    // *************************************************************
 
     ivSeq.clear();
     ivSeq.add(new GenomicInterval(chromosome, 23, 40, strand));
@@ -116,8 +116,7 @@ public class HTSeqUtilsTest {
     assertFalse(results.contains("a"));
     assertFalse(results.contains("b"));
 
-    /*************************************************************/
-
+    // *************************************************************
     ivSeq.clear();
     ivSeq.add(new GenomicInterval(chromosome, 5, 23, strand));
 
@@ -131,7 +130,7 @@ public class HTSeqUtilsTest {
     assertFalse(results.contains("a"));
     assertFalse(results.contains("b"));
 
-    /*************************************************************/
+    // *************************************************************
 
     ivSeq.clear();
     ivSeq.add(new GenomicInterval(chromosome, 15, 30, strand));
@@ -151,7 +150,7 @@ public class HTSeqUtilsTest {
     assertFalse(results.contains("a"));
     assertFalse(results.contains("b"));
 
-    /*************************************************************/
+    // *************************************************************
 
     ivSeq.clear();
     ivSeq.add(new GenomicInterval(chromosome, 30, 55, strand));

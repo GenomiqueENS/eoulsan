@@ -270,7 +270,6 @@ public class DockerMapperExecutor implements MapperExecutor {
 
   /**
    * Constructor.
-   * @param dockerClient Docker client
    * @param dockerImage Docker image
    * @param temporaryDirectory temporary directory
    * @throws IOException if an error occurs while creating the connection

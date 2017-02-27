@@ -173,7 +173,7 @@ public class GFFReader
 
   /**
    * Close the stream.
-   * @throws IOException
+   * @throws IOException if an error occurs while closing the file
    */
   @Override
   public void close() throws IOException {

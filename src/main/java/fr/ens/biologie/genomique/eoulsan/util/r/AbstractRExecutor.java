@@ -40,7 +40,7 @@ public abstract class AbstractRExecutor implements RExecutor {
   /**
    * Remove a file of the analysis.
    * @param filename the filename of the file to remove
-   * @throws IOException
+   * @throws IOException if the removing of the file fails
    */
   protected abstract void removeFile(String filename) throws IOException;
 
