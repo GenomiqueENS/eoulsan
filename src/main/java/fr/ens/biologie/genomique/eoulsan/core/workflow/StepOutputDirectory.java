@@ -77,7 +77,7 @@ class StepOutputDirectory {
 
     if (this.hadoopMode
         && ExecutionMode
-            .getExecutionMode(module.getClass()) == ExecutionMode.HADOOP_ONLY) {
+            .getExecutionMode(module.getClass()).isHadoopCompatible()) {
       return workflow.getHadoopWorkingDirectory();
     }
 
