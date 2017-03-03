@@ -46,7 +46,8 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
 
   public static final String MAPPER_NAME = "GSNAP";
   private static final String DEFAULT_PACKAGE_VERSION = "2012-07-20";
-  private static final String MAPPER_EXECUTABLE = "gsnap";
+  private static final String GSNAP_MAPPER_EXECUTABLE = "gsnap";
+  private static final String GMAP_MAPPER_EXECUTABLE = "gmap";
   private static final String[] INDEXER_EXECUTABLES =
       new String[] {"fa_coords", "gmap_process", "gmapindex", "gmap_build"};
 
@@ -73,7 +74,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
       final String gsnapPath;
 
       synchronized (SYNC) {
-        gsnapPath = install(MAPPER_EXECUTABLE);
+        gsnapPath = install(flavoredBinary());
       }
 
       final List<String> cmd = Lists.newArrayList(gsnapPath, " --version");
@@ -131,7 +132,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
 
   @Override
   public String getMapperExecutableName() {
-    return MAPPER_EXECUTABLE;
+    return flavoredBinary();
   }
 
   @Override
@@ -155,6 +156,22 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
     return cmd;
   }
 
+  /**
+   * Get the name of the flavored binary.
+   * @return the flavored binary name
+   */
+  private String flavoredBinary() {
+
+    final String flavor = getMapperFlavorToUse();
+
+    if (flavor != null
+            && "gmap".equals(flavor.trim().toLowerCase())) {
+      return GMAP_MAPPER_EXECUTABLE;
+    }
+    return GSNAP_MAPPER_EXECUTABLE;
+
+  }
+
   @Override
   protected MapperProcess internalMapSE(final File archiveIndexDir)
       throws IOException {
@@ -162,7 +179,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
     final String gsnapPath;
 
     synchronized (SYNC) {
-      gsnapPath = install(MAPPER_EXECUTABLE);
+      gsnapPath = install(flavoredBinary());
     }
 
     return createMapperProcessSE(gsnapPath,
@@ -176,7 +193,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
     final String gsnapPath;
 
     synchronized (SYNC) {
-      gsnapPath = install(MAPPER_EXECUTABLE);
+      gsnapPath = install(flavoredBinary());
     }
 
     return createMapperProcessPE(gsnapPath,
@@ -195,7 +212,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
         // Build the command line
         final List<String> cmd = new ArrayList<>();
         cmd.add(gsnapPath);
-        cmd.add("-A");
+        cmd.add(GSNAP_MAPPER_EXECUTABLE.equals(flavoredBinary()) ? "-A" : "-f");
         cmd.add("sam");
         cmd.add(fastqFormat);
         cmd.add("-t");
@@ -227,7 +244,7 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
         // Build the command line
         final List<String> cmd = new ArrayList<>();
         cmd.add(gsnapPath);
-        cmd.add("-A");
+        cmd.add(GSNAP_MAPPER_EXECUTABLE.equals(flavoredBinary()) ? "-A" : "-f");
         cmd.add("sam");
         cmd.add(fastqFormat);
         cmd.add("-t");
