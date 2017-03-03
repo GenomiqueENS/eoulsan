@@ -28,7 +28,7 @@ RUN cd /tmp && \
     cd STAR/source && \
     git checkout STAR_$VERSION && \
     make clean STARstatic && \
-    mv STARstatic /usr/local/bin && \
+    mv STARstatic /usr/local/bin/STAR && \
     make clean STARlong && \
     mv STAR /usr/local/bin/STARlong
 
