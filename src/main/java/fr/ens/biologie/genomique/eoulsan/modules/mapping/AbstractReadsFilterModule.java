@@ -180,7 +180,7 @@ public abstract class AbstractReadsFilterModule extends AbstractModule {
 
     case "trim.length.threshold":
       Modules.renamedParameter(context, parameter,
-          "trimpolynend\" and \"length");
+          "trimpolynend\" and \"length", true);
       break;
 
     default:
