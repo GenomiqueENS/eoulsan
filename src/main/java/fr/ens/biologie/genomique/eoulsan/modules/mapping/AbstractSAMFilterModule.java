@@ -164,6 +164,7 @@ public abstract class AbstractSAMFilterModule extends AbstractModule {
 
     case "mappingqualitythreshold":
     case "mappingquality":
+    case "mappingquality.threshold":
       Modules.renamedParameter(context, parameter,
           QualityReadAlignmentsFilter.FILTER_NAME + ".threshold", true);
 
