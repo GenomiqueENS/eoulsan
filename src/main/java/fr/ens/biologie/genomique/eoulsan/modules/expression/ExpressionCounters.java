@@ -41,6 +41,7 @@ public enum ExpressionCounters {
   LOW_QUAL_ALIGNMENTS_COUNTER("number of alignments with too low quality"),
   EMPTY_ALIGNMENTS_COUNTER("number of alignments with no feature"),
   AMBIGUOUS_ALIGNMENTS_COUNTER("number of ambiguous alignments"),
+  MISSING_MATES_COUNTER("number of missing mate alignments"),
 
   PARENTS_COUNTER("parent"), INVALID_CHROMOSOME_COUNTER("invalid chromosome"),
   PARENT_ID_NOT_FOUND_COUNTER("Parent Id not found in exon range");
