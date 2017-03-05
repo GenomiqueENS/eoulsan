@@ -81,23 +81,40 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
   }
 
-  private static boolean isPairedData(final InputStream is) {
+  /**
+   * Check if a SAM file contains paired-end data.
+   * @param samIs the SAM file input stream
+   * @return true if the SAM file contains paired-end data
+   */
+  public static boolean isPairedData(final InputStream samIs) {
 
-    final SamReader input =
-        SamReaderFactory.makeDefault().open(SamInputResource.of(is));
-
-    SAMRecordIterator samIterator = input.iterator();
-
-    boolean result = false;
-
-    // Test if input is paired-end data
-    if (samIterator.hasNext()) {
-      if (samIterator.next().getReadPairedFlag()) {
-        result = true;
-      }
+    if (samIs == null) {
+      throw new NullPointerException("is argument cannot be null");
     }
 
-    return result;
+    try {
+      final SamReader input =
+        SamReaderFactory.makeDefault().open(SamInputResource.of(samIs));
+
+      SAMRecordIterator samIterator = input.iterator();
+
+      boolean result = false;
+
+      // Test if input is paired-end data
+      if (samIterator.hasNext()) {
+        if (samIterator.next().getReadPairedFlag()) {
+          result = true;
+        }
+      }
+
+      // Close input file
+      input.close();
+
+      return result;
+
+    } catch(IOException e) {
+      return false;
+    }
   }
 
   /**
