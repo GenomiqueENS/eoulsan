@@ -462,7 +462,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       getLogger().info("Genomic type: " + getGenomicType());
 
       // Get the paired end mode
-      boolean pairedEnd = alignmentsData.getMetadata().isPairedEnd();
+      boolean pairedEnd = HTSeqCounter.isPairedData(alignmentsData.getDataFile().open());
 
       // Paired-end pre-processing
       if (pairedEnd) {
