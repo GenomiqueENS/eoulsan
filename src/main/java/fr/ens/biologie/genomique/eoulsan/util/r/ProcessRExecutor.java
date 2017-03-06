@@ -178,7 +178,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
     // Update the command with the path of the command
     command.set(0, executablePath.getAbsolutePath());
 
-    final ProcessBuilder pb = new ProcessBuilder();
+    final ProcessBuilder pb = new ProcessBuilder(command);
 
     // Set the LANG to C
     pb.environment().put(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG);
