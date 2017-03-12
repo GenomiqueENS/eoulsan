@@ -92,13 +92,14 @@ saveRawCountMatrix <- function(dds,fileName){
 #   output: countMatrix -> file
 # -----------------------------------------------------------------------------
 
-saveCountMatrix <- function(countMatrix,fileName,colnames){
+saveCountMatrix <- function(countMatrix,fileName,colNames=NULL){
 
-  if(missing(colnames)){
-    countNames <- colnames(countMatrix)
-  }else{
-    countNames<-colnames
-  }
+    if(is.null(colNames)){
+        countNames <- colnames(countMatrix)
+    }else{
+        countNames <- colNames
+    }
+
 	# Add column Id
 	countMatrix <- cbind(countMatrix, row.names(countMatrix))
 	colnames(countMatrix) <- c(countNames, "Id")
