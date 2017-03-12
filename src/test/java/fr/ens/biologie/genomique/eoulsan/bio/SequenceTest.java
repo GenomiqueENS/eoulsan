@@ -365,6 +365,30 @@ public class SequenceTest {
   }
 
   @Test
+  public void testComplement() {
+
+    Sequence s = new Sequence(0, "toto", "ATGC");
+    assertEquals("ATGC", s.getSequence());
+    s.complement();
+    assertEquals("TACG", s.getSequence());
+
+    s = new Sequence(0, "toto", null);
+    assertNull(s.getSequence());
+  }
+
+  @Test
+  public void testComplementString() {
+
+    assertNull(
+      Sequence.complement(null, Alphabets.AMBIGUOUS_DNA_ALPHABET));
+    assertNull(Sequence.complement("ATGC", null));
+
+    assertEquals("GCAT",
+      Sequence.complement("CGTA", Alphabets.AMBIGUOUS_DNA_ALPHABET));
+  }
+
+
+  @Test
   public void testReverseComplement() {
 
     Sequence s = new Sequence(0, "toto", "ATGC");
