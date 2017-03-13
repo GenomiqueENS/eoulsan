@@ -63,6 +63,44 @@ public class Sequence {
   }
 
   /**
+   * Get the identifier in the name.
+   * @return the identifier in the name
+   */
+  public final String getIdentifierInName() {
+
+    if (this.name==null) {
+      return null;
+    }
+
+    int pos = this.name.indexOf(' ');
+
+    if (pos==-1) {
+      return this.name;
+    }
+
+    return this.name.substring(0, pos);
+  }
+
+  /**
+   * Get the description in the name.
+   * @return the description in the name
+   */
+  public final String getDescriptionInName() {
+
+    if (this.name==null) {
+      return null;
+    }
+
+    int pos = this.name.indexOf(' ');
+
+    if (pos==-1) {
+      return "";
+    }
+
+    return trim(this.name.substring(pos));
+  }
+
+  /**
    * Get the description of the sequence.
    * @return a string with the description
    */

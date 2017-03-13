@@ -83,6 +83,59 @@ public class SequenceTest {
   }
 
   @Test
+  public void testGetIdentifierInName() {
+
+    Sequence s = new Sequence();
+    assertEquals(null, s.getIdentifierInName());
+
+    s.setName("");
+    assertEquals("", s.getIdentifierInName());
+
+    s.setName("titi");
+    assertEquals("titi", s.getIdentifierInName());
+
+    s.setName("titi toto");
+    assertEquals("titi", s.getIdentifierInName());
+
+    s.setName("titi ");
+    assertEquals("titi", s.getIdentifierInName());
+
+    s.setName("titi ");
+    assertEquals("titi", s.getIdentifierInName());
+  }
+
+  @Test
+  public void testGetDescriptionInName() {
+
+    Sequence s = new Sequence();
+    assertEquals(null, s.getDescriptionInName());
+
+    s.setName("");
+    assertEquals("", s.getDescriptionInName());
+
+    s.setName("");
+    assertEquals("", s.getDescriptionInName());
+
+    s.setName("titi toto");
+    assertEquals("toto", s.getDescriptionInName());
+
+    s.setName(" titi toto ");
+    assertEquals("toto", s.getDescriptionInName());
+
+    s.setName(" titi  toto ");
+    assertEquals("toto", s.getDescriptionInName());
+
+    s.setName("titi");
+    assertEquals("", s.getDescriptionInName());
+
+    s.setName("titi ");
+    assertEquals("", s.getDescriptionInName());
+
+    s.setName(" titi ");
+    assertEquals("", s.getDescriptionInName());
+  }
+
+  @Test
   public void testGetSetDescription() {
 
     Sequence s = new Sequence();
