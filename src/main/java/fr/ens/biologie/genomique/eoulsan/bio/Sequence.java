@@ -373,6 +373,40 @@ public class Sequence {
   }
 
   /**
+   * Set the sequence as the complement.
+   */
+  public final void complement() {
+
+    this.sequence = complement(this.sequence, this.alphabet);
+  }
+
+  /**
+   * Get the sequence as the complement. This method work only with
+   * A,T,G and C bases.
+   * @param sequence sequence to reverse complement
+   * @param alphabet alphabet of the sequence to reverse complement
+   * @return the reverse complement sequence
+   */
+  public static final String complement(final String sequence,
+    final Alphabet alphabet) {
+
+    if (sequence == null || alphabet == null) {
+      return null;
+    }
+
+    final char[] array = sequence.toCharArray();
+    final int len = array.length;
+
+    final StringBuilder sb = new StringBuilder(len);
+
+    for (int i = 0; i < array.length; i++) {
+      sb.append(alphabet.getComplement(array[i]));
+    }
+
+    return sb.toString();
+  }
+
+  /**
    * Set the sequence as the reverse complement.
    */
   public final void reverseComplement() {
