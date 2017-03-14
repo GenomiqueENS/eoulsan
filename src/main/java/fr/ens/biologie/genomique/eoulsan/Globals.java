@@ -223,7 +223,7 @@ public final class Globals {
   public static final String OTHER_LOG_FILENAME = "additional.log";
 
   /** Output tree type. */
-  public static final String OUTPUT_TREE_TYPE_DEFAULT = "flat";
+  public static final String OUTPUT_TREE_TYPE_DEFAULT = "step";
 
   //
   // Files encoding

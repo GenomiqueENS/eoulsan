@@ -58,6 +58,8 @@
                 "no" (that do nothing) and the experimental "lanterna"</td></tr>
 		<tr><td>main.local.threads</td><td>integer</td><td>0</td><td>Number of threads to use in local mode</td></tr>
 
+		<tr><td>main.output.tree.type</td><td>string</td><td>step</td><td>Define the organization of the output files. If value is "flat" all the output files will be in the execution directory, and if value is "step" all the output files of a step will be gethered in a dedicated directory</td></tr>
+
 		<tr><td>main.format.path</td><td>string</td><td>Not set</td><td>Define the paths of the formats. Multiple paths can be separated using a space character</td></tr>
 		<tr><td>main.galaxy.tool.path</td><td>string</td><td>Not set</td><td>Define the paths of the galaxy tools files. Multiple paths can be separated using a space character</td></tr>
 
