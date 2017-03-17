@@ -87,6 +87,7 @@ public class ToolExecutor {
     final TaskContextImpl context = (TaskContextImpl) this.stepContext;
 
     final File executionDirectory = context.getStepOutputDirectory().toFile();
+    final File workflowOutputDirectory = context.getOutputDirectory().toFile();
     final File logDirectory = context.getTaskOutputDirectory().toFile();
     final File tempDirectory = context.getLocalTempDirectory();
 
@@ -98,11 +99,13 @@ public class ToolExecutor {
     getLogger().info("Interpreter: " + interpreter);
     getLogger().info("Command: " + command);
     getLogger().info("Execution directory: " + executionDirectory);
+    getLogger().info("Workflow output directory: " + workflowOutputDirectory);
+    getLogger().info("Temporary directory: " + tempDirectory);
     getLogger().info("Stdout: " + stdoutFile);
     getLogger().info("Stderr: " + stderrFile);
 
     return ti.execute(command, executionDirectory, tempDirectory, stdoutFile,
-        stderrFile);
+        stderrFile, workflowOutputDirectory);
   }
 
   //

@@ -33,11 +33,12 @@ public interface ExecutorInterpreter {
    * @param temporaryDirectory temporary directory
    * @param stdoutFile stdout file
    * @param stderrFile stderr file
+   * @param filesUsed files used
    * @return a ToolExecutor object
    * @throws IOException if an error occurs while executing the command
    */
   ToolExecutorResult execute(final List<String> commandLine,
       File executionDirectory, File temporaryDirectory, File stdoutFile,
-      File stderrFile) throws IOException;
+      File stderrFile, File... filesUsed) throws IOException;
 
 }
