@@ -126,7 +126,7 @@ public class DataParameterToolElement extends AbstractToolElement {
     } else {
       // Convert format in DataFormat
       this.dataFormat = DataFormatRegistry.getInstance()
-          .getDataFormatFromToolshedExtension(formats.get(0));
+          .getDataFormatFromToolshedExtensionOrNameOrAlias(formats.get(0));
     }
   }
 

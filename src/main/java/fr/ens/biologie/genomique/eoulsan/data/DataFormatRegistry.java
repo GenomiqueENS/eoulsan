@@ -477,6 +477,19 @@ public class DataFormatRegistry {
     return result != null ? result : getDataFormatFromAlias(name);
   }
 
+
+  /**
+   * Get a DataFormat from its alias.
+   * @param name the name of the DataFormat to get
+   * @return a DataFormat if found or null
+   */
+  public DataFormat getDataFormatFromToolshedExtensionOrNameOrAlias(final String name) {
+
+    DataFormat result = getDataFormatFromToolshedExtension(name);
+
+    return result != null ? result : getDataFormatFromNameOrAlias(name);
+  }
+
   /**
    * Get DataFormats from an extension.
    * @param extension the extension of the file without compression extension
