@@ -35,12 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.google.common.base.Splitter;
 
@@ -263,9 +258,19 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
 
     try {
 
-      final DataFile outputDir = context.getOutputDirectory();
-      final List<DataFile> files = outputDir.list();
+      final DataFile outputDir = context.getStepOutputDirectory();
+      final List<DataFile> files = new ArrayList<>();
       final List<DataFile> filesToConvert = new ArrayList<>();
+
+      // Handle step output directory
+      for (DataFile f : context.getOutputDirectory().list()) {
+
+        if (!f.getMetaData().isDir()) {
+          files.add(f);
+        } else if(f.getName().endsWith(Globals.STEP_OUTPUT_DIRECTORY_SUFFIX)) {
+          files.addAll(f.list());
+        }
+      }
 
       // Filter files to convert
       for (DataFile f : files) {
@@ -274,8 +279,17 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
         }
       }
 
+      Set<String> processedFilenames = new HashSet<>();
+
       // Annotate all selected files
       for (DataFile inFile : filesToConvert) {
+
+        // Do not process 2 times the same file
+        if (processedFilenames.contains(inFile.getName())) {
+          continue;
+        } else {
+          processedFilenames.add(inFile.getName());
+        }
 
         // For each formats
         for (Map.Entry<String, DataFormat> e : this.outputFormats.entrySet()) {
