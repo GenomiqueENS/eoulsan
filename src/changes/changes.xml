@@ -1310,5 +1310,85 @@ of reads that reject each filter like in local mode.
 
          </release>
 
+         <release version="2.0-beta5" description="Eoulsan 2.0-beta5 release" date="TBD">
+
+            <action dev="jourdren" type="fix">
+                The createdesign action can now handle GTF files.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                In STARIndexGeneratorModule, when a GTF file was required by user, the module still try to open a GFF file.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                Fix links in XLSX files created by Eoulsan.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                Fix lock issue in Hadoop mode with STAR mapper.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                Fix issues when parse DESeq2 module parameters.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                Fix issues when parse DESeq2 module parameters.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                Fix issues when generate plots with DESeq2.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                In HTSeq-count, now check if input data is paired-end by reading the data instead of using Eoulsan metadata.
+            </action>
+
+            <action dev="jourdren" type="add">
+                The createdesign action can now handle several bcl2fastq samplesheets arguments.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Add several read filters that come from Trimmomatic.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Add STAR 2.5.2b binary in Eouslan jar. This is now the default version for Eoulsan.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Add GSNAP/GMAP STAR 2.5.2b binary in Eouslan jar.
+            </action>
+
+            <action dev="jourdren" type="update">
+                The output files of each step are now saved in a dedicated directory.
+            </action>
+
+            <action dev="jourdren" type="update">
+                The createdesign action now use for the default condition and the technical replicate the sample name instead of the sample id.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Modules that require Docker can now be used in Hadoop mode.
+            </action>
+
+            <action dev="jourdren" type="update">
+                The default arguments with Bowtie 2 are now: "-k 2".
+            </action>
+
+            <action dev="jourdren" type="update">
+                Rename the "mapping.quality" SAM filter to "quality".
+            </action>
+
+            <action dev="jourdren" type="update">
+                GMAP mapper can now be used in Eoulsan as a flavor of GSNAP.
+            </action>
+
+            <action dev="jourdren" type="update">
+                Add GMAP/GSNAP 2017-02-25 binary in Eoulsan jar.
+            </action>
+
+         </release>
+
 	</body>
 </document>
