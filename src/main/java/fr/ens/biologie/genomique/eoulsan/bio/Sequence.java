@@ -373,6 +373,37 @@ public class Sequence {
   }
 
   /**
+   * Set the sequence as the reverse.
+   */
+  public final void reverse() {
+
+    this.sequence = reverse(this.sequence);
+  }
+
+  /**
+   * Get the sequence as the reverse.
+   * @param sequence sequence to reverse complement
+   * @return the reverse complement sequence
+   */
+  public static final String reverse(final String sequence) {
+
+    if (sequence == null) {
+      return null;
+    }
+
+    final char[] array = sequence.toCharArray();
+    final int len = array.length;
+
+    final StringBuilder sb = new StringBuilder(len);
+
+    for (int i = len - 1; i >= 0; i--) {
+      sb.append(array[i]);
+    }
+
+    return sb.toString();
+  }
+
+  /**
    * Set the sequence as the complement.
    */
   public final void complement() {

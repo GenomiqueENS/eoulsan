@@ -418,6 +418,28 @@ public class SequenceTest {
   }
 
   @Test
+  public void testReverse() {
+
+    Sequence s = new Sequence(0, "toto", "ATGC");
+    assertEquals("ATGC", s.getSequence());
+    s.reverse();
+    assertEquals("CGTA", s.getSequence());
+
+    s = new Sequence(0, "toto", null);
+    assertNull(s.getSequence());
+  }
+
+  @Test
+  public void testReverseString() {
+
+    assertNull(
+            Sequence.reverse(null));
+
+    assertEquals("CGTA",
+            Sequence.reverse("ATGC"));
+  }
+
+  @Test
   public void testComplement() {
 
     Sequence s = new Sequence(0, "toto", "ATGC");
