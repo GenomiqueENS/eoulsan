@@ -41,7 +41,7 @@ import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
+import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.annotations.RequiresAllPreviousSteps;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
@@ -73,7 +73,7 @@ import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
  * @since 2.0
  * @author Laurent Jourdren
  */
-@HadoopCompatible
+@LocalOnly
 @RequiresAllPreviousSteps
 public class DiffanaResultsAnnotationModule extends AbstractModule {
 
@@ -261,6 +261,9 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
       final DataFile outputDir = context.getStepOutputDirectory();
       final List<DataFile> files = new ArrayList<>();
       final List<DataFile> filesToConvert = new ArrayList<>();
+
+      context.getLogger().info("Search files in directory: " + context.getOutputDirectory());
+      context.getLogger().info("Output directory: " + outputDir);
 
       // Handle step output directory
       for (DataFile f : context.getOutputDirectory().list()) {
