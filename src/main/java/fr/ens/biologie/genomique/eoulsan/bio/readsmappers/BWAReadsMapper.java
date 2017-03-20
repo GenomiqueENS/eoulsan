@@ -268,7 +268,13 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
         final List<String> cmd1 = new ArrayList<>();
         cmd1.add(bwaPath);
-        cmd1.add("aln");
+
+        // Select the flavor/algorithm to use
+        if ("mem".equals(getMapperFlavorToUse())) {
+          cmd1.add("mem");
+        } else {
+          cmd1.add("aln");
+        }
 
         if (illuminaFastq) {
           cmd1.add("-I");
@@ -406,7 +412,14 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
         final List<String> cmd1 = new ArrayList<>();
         cmd1.add(bwaPath);
-        cmd1.add("aln");
+
+        // Select the flavor/algorithm to use
+        if ("mem".equals(getMapperFlavorToUse())) {
+          cmd1.add("mem");
+        } else {
+          cmd1.add("aln");
+        }
+
         if (illuminaFastq) {
           cmd1.add("-I");
         }
