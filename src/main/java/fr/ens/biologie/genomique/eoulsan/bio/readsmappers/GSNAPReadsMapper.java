@@ -212,8 +212,15 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
         // Build the command line
         final List<String> cmd = new ArrayList<>();
         cmd.add(gsnapPath);
-        cmd.add(GSNAP_MAPPER_EXECUTABLE.equals(flavoredBinary()) ? "-A" : "-f");
-        cmd.add("sam");
+
+        if (GSNAP_MAPPER_EXECUTABLE.equals(flavoredBinary())) {
+          cmd.add("-A");
+          cmd.add("sam");
+        } else {
+          cmd.add("-f");
+          cmd.add("samse");
+        }
+
         cmd.add(fastqFormat);
         cmd.add("-t");
         cmd.add(getThreadsNumber() + "");
@@ -244,8 +251,15 @@ public class GSNAPReadsMapper extends AbstractSequenceReadsMapper {
         // Build the command line
         final List<String> cmd = new ArrayList<>();
         cmd.add(gsnapPath);
-        cmd.add(GSNAP_MAPPER_EXECUTABLE.equals(flavoredBinary()) ? "-A" : "-f");
-        cmd.add("sam");
+
+        if (GSNAP_MAPPER_EXECUTABLE.equals(flavoredBinary())) {
+          cmd.add("-A");
+          cmd.add("sam");
+        } else {
+          cmd.add("-f");
+          cmd.add("sampe");
+        }
+
         cmd.add(fastqFormat);
         cmd.add("-t");
         cmd.add(getThreadsNumber() + "");
