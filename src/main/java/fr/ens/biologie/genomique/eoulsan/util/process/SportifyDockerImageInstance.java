@@ -60,6 +60,11 @@ public class SportifyDockerImageInstance extends AbstractSimpleProcess
     checkNotNull(stdoutFile, "stdoutFile argument cannot be null");
     checkNotNull(stderrFile, "stderrFile argument cannot be null");
 
+    EoulsanLogger.getLogger().fine(getClass().getName() + " : commandLine=" + commandLine +
+            ", executionDirectory=" + executionDirectory + ", environmentVariables=" + environmentVariables +
+            ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile=" + stdoutFile + ", stderrFile=" + stderrFile +
+            ", redirectErrorStream="+redirectErrorStream + ", filesUsed" + Arrays.toString(filesUsed));
+
     if (executionDirectory != null) {
       checkArgument(executionDirectory.isDirectory(),
           "execution directory does not exists or is not a directory: "
@@ -440,6 +445,8 @@ public class SportifyDockerImageInstance extends AbstractSimpleProcess
 
     checkNotNull(dockerClient, "dockerClient argument cannot be null");
     checkNotNull(dockerImage, "dockerImage argument cannot be null");
+
+    EoulsanLogger.getLogger().fine(getClass().getName()+" docker image used: "+ dockerImage);
 
     this.dockerClient = dockerClient;
     this.dockerImage = dockerImage;

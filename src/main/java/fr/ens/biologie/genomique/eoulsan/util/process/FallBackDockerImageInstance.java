@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
 
@@ -37,6 +38,11 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
     checkNotNull(commandLine, "commandLine argument cannot be null");
     checkNotNull(stdoutFile, "stdoutFile argument cannot be null");
     checkNotNull(stderrFile, "stderrFile argument cannot be null");
+
+    EoulsanLogger.getLogger().fine(getClass().getName() + " : commandLine=" + commandLine +
+            ", executionDirectory=" + executionDirectory + ", environmentVariables=" + environmentVariables +
+            ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile=" + stdoutFile + ", stderrFile=" + stderrFile +
+            ", redirectErrorStream="+redirectErrorStream + ", filesUsed" + Arrays.toString(filesUsed));
 
     if (executionDirectory != null) {
       checkArgument(executionDirectory.isDirectory(),
@@ -193,6 +199,8 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
   FallBackDockerImageInstance(final String dockerImage) {
 
     checkNotNull(dockerImage, "dockerImage argument cannot be null");
+
+    EoulsanLogger.getLogger().fine(getClass().getName()+" docker image used: "+ dockerImage);
 
     this.dockerImage = dockerImage;
     this.userUid = SystemUtils.uid();
