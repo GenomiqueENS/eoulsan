@@ -82,7 +82,7 @@ public class DockerRExecutor extends ProcessRExecutor {
 
   @Override
   protected void executeRScript(final File rScriptFile, final boolean sweave,
-      final String sweaveOuput, final String... scriptArguments)
+      final String sweaveOuput, final File workflowOutputDir, final String... scriptArguments)
       throws IOException {
 
     final SimpleProcess process =
@@ -95,7 +95,7 @@ public class DockerRExecutor extends ProcessRExecutor {
 
     final int exitValue = process.execute(commandLine, getOutputDirectory(),
         Collections.singletonMap(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG),
-        getTemporaryDirectory(), stdoutFile, stdoutFile, true);
+        getTemporaryDirectory(), stdoutFile, stdoutFile, true, workflowOutputDir);
 
     ProcessUtils.throwExitCodeException(exitValue,
         Joiner.on(' ').join(commandLine));

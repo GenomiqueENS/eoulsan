@@ -507,10 +507,11 @@ public class DESeq2 {
 
   /**
    * Method to run DESeq2.
+   * @param workflowOutputDir workflow output directory
    * @throws IOException if writeDeseq2Design fails
    * @throws EoulsanException if the comparisons value is not correct
    */
-  public void runDEseq2() throws IOException, EoulsanException {
+  public void runDEseq2(final DataFile workflowOutputDir) throws IOException, EoulsanException {
 
     final String prefix = this.stepId + "_" + this.experiment.getName();
 
@@ -564,7 +565,7 @@ public class DESeq2 {
 
       // Run buildContrast.R
       this.executor.executeRScript(buildContrastScript, false, null,
-          this.saveRScripts, description, deseq2DesignFileName, this.model,
+          this.saveRScripts, description, workflowOutputDir, deseq2DesignFileName, this.model,
           comparisonFileName, this.experiment.getName() + CONTRAST_FILE_SUFFIX,
           this.stepId + "_");
     }
@@ -586,7 +587,7 @@ public class DESeq2 {
 
       // Run normDiffana.R
       this.executor.executeRScript(normDiffanaScript, false, null,
-          this.saveRScripts, description,
+          this.saveRScripts, description, workflowOutputDir,
           createNormDiffanaCommandLine(deseq2DesignFileName, contrastFilename));
     }
 

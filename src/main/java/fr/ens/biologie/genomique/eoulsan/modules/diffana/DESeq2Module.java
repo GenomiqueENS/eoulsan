@@ -50,6 +50,7 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
@@ -228,7 +229,7 @@ public class DESeq2Module extends AbstractModule {
         new DESeq2(this.executor, stepId, design, e, sampleFiles, this.normFig,
             this.diffanaFig, this.normDiffana, this.diffana,
             this.sizeFactorsType, this.fitType, this.statisticTest,
-            context.getSettings().isSaveRscripts()).runDEseq2();
+            context.getSettings().isSaveRscripts()).runDEseq2(context.getOutputDirectory());
 
       }
     } catch (IOException | EoulsanException e) {
