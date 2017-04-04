@@ -22,3 +22,4 @@ additional_annotation_tsv.xml
 fastqc_report_html.xml
 dummy_txt.xml
 text_txt.xml
+cutadapt_adapter_fasta.xml

@@ -1,0 +1,13 @@
+<dataformat>
+  <name>cutadapt_adapter</name>
+  <description>cutadapt format</description>
+  <alias>cutadapt</alias>
+  <prefix>cutadapt</prefix>
+  <extensions>
+    <extension default="true">.adapter</extension>
+  </extensions>
+
+  <toolshedgalaxy>
+    <extension>adapter</extension>   
+  </toolshedgalaxy>
+</dataformat>

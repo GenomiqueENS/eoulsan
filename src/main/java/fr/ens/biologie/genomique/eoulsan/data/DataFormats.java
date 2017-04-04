@@ -125,4 +125,8 @@ public class DataFormats {
   /** Dummy format. */
   public static final DataFormat DUMMY_TXT =
       registry.getDataFormatFromName("dummy_txt");
+
+  /** Cutadapt adapters format. */
+  public static final DataFormat CUTADAPT_ADAPTER_FASTA =
+          registry.getDataFormatFromName("cutadapt_adapter");
 }
