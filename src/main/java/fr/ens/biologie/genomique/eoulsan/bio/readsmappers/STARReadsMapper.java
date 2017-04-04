@@ -74,53 +74,22 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
         execPath = install(flavoredBinary());
       }
 
-      // Create temporary directory
-      final File tempDir = File.createTempFile("STAR-get-version-", ".tmp",
-          EoulsanRuntime.getSettings().getTempDirectoryFile());
+      final List<String> cmd = Lists.newArrayList(execPath, "--version");
 
-      if (!(tempDir.delete() && tempDir.mkdir())) {
-        EoulsanLogger.getLogger()
-            .warning("Cannot create temporary directory for STAR: " + tempDir);
+      final String s = executeToString(cmd);
+      final String[] lines = s.split("\n");
+      if (lines.length == 0) {
         return null;
       }
 
-      // Execute STAR with no argument
-      getExecutor()
-          .execute(Lists.newArrayList(execPath), tempDir, false, false, tempDir)
-          .waitFor();
-
-      final File logFile = new File(tempDir, "Log.out");
-
-      // Read STAR version from STAR log file
-      String version = null;
-      try (BufferedReader reader =
-          Files.newReader(logFile, Globals.DEFAULT_CHARSET)) {
-        final String line = reader.readLine();
-
-        if (line != null && line.indexOf('=') != -1) {
-          version = line.substring(line.indexOf('=') + 1).trim();
-          if (version.startsWith("STAR_")) {
-            version = version.substring("STAR_".length());
-          }
-        }
-
-      } catch (IOException e) {
-        e.printStackTrace();
-        return null;
+      final String[] tokens = lines[0].split("_");
+      if (tokens.length > 1) {
+        return tokens[1].trim();
       }
 
-      // Delete temporary files
-      deleteFile(new File(tempDir, "Log.progress.out"));
-      deleteFile(new File(tempDir, "Aligned.out.sam"));
-      deleteFile(new File(tempDir, "_tmp"));
-      deleteFile(new File(tempDir, "_STARtmp"));
-      deleteFile(logFile);
-      deleteFile(tempDir);
+      return null;
 
-      return version;
     } catch (IOException e) {
-
-      e.printStackTrace();
 
       return null;
     }
