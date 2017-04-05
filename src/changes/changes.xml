@@ -1317,7 +1317,7 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="fix">
-                In STARIndexGeneratorModule, when a GTF file was required by user, the module still try to open a GFF file.
+                In STARIndexGeneratorModule, when a GTF file was required by user, the module still tried to open a GFF file.
             </action>
 
             <action dev="jourdren" type="fix">
@@ -1329,19 +1329,27 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="fix">
-                Fix issues when parse DESeq2 module parameters.
+                The stderr output is now redirected to /dev/null for all mappers to avoid fullil the stderr buffer by the mapper and block the mapping.
             </action>
 
             <action dev="jourdren" type="fix">
-                Fix issues when parse DESeq2 module parameters.
+                Fix issues when parsing DESeq2 module parameters.
             </action>
 
             <action dev="jourdren" type="fix">
-                Fix issues when generate plots with DESeq2.
+                Fix issues when generating plots with DESeq2.
             </action>
 
             <action dev="jourdren" type="fix">
                 In HTSeq-count, now check if input data is paired-end by reading the data instead of using Eoulsan metadata.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                Fix the "diffanaresultsannotation" module to avoid saving output files on HDFS in Hadoop mode.
+            </action>
+
+            <action dev="jourdren" type="fix">
+                In design step, now get the compression of the files even if storage protocols have been used (e.g. genonme:// or gff://).
             </action>
 
             <action dev="jourdren" type="add">
@@ -1353,11 +1361,19 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="add">
-                Add STAR 2.5.2b binary in Eouslan jar. This is now the default version for Eoulsan.
+                Add STAR 2.5.2b binary in the Eouslan jar. This version is now the default version for Eoulsan.
             </action>
 
             <action dev="jourdren" type="add">
-                Add GSNAP/GMAP STAR 2.5.2b binary in Eouslan jar.
+                Add GSNAP/GMAP STAR 2017-02-25 binary in Eouslan jar.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Add a new data type for cutadapt adapters.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Add new methods for the Sequence class: reverse(), complement(), reverseComplement(), getIdentifierInName() and getDescriptionInName().
             </action>
 
             <action dev="jourdren" type="update">
@@ -1385,7 +1401,11 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="update">
-                Add GMAP/GSNAP 2017-02-25 binary in Eoulsan jar.
+                For the BWA mapper, user can now use the "mem" alignment algorithm in addition of the "aln" algorithm by selecting the flavor of the mapper.
+            </action>
+
+            <action dev="jourdren" type="update">
+                In expression module in local mode, add a new counter that indicate the number of missing mate alignments.
             </action>
 
          </release>
