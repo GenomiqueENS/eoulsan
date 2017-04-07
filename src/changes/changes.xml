@@ -1310,7 +1310,7 @@ of reads that reject each filter like in local mode.
 
          </release>
 
-         <release version="2.0-beta5" description="Eoulsan 2.0-beta5 release" date="TBD">
+         <release version="2.0-beta5" description="Eoulsan 2.0-beta5 release" date="2017-04-07">
 
             <action dev="jourdren" type="fix">
                 The createdesign action can now handle GTF files.
