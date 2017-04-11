@@ -10,7 +10,7 @@
 	<description>
 		A pipeline for NGS analysis.
 	</description>
-	<url>http://outils.genomique.biologie.ens.fr/eoulsan2</url>
+	<url>http://outils.genomique.biologie.ens.fr/eoulsan</url>
 	<inceptionYear>2010</inceptionYear>
 
 	<properties>
