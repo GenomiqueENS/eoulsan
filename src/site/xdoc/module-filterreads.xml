@@ -94,6 +94,7 @@ filter will not produce the same output if declared before or after the trim fil
 		<tr><td>leading</td><td>string</td><td>Remove low quality bases from the beginning</td><td>Not set</td><td>No</td></tr>
 		<tr><td>headcrop</td><td>string</td><td>Remove the specified number of bases from beginning of the read</td><td>Not set</td><td>No</td></tr>
 		<tr><td>crop</td><td>string</td><td>Remove bases regardless of quality from the end of the read</td><td>Not set</td><td>No</td></tr>
+		<tr><td>nanoporesequencetype.keep</td><td>string</td><td>Keep only a type of Nanopore reads. Available values are: template, complement and consensus. For 1D sequencing, use consensus value to keep all the reads.</td><td>consensus</td><td>No</td></tr>
 	</table>
          <li><b>Configuration example</b>:</li>
 <pre>

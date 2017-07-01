@@ -15,3 +15,4 @@ fr.ens.biologie.genomique.eoulsan.bio.readsfilters.CropTrimmerReadFilter
 fr.ens.biologie.genomique.eoulsan.bio.readsfilters.LeadingTrimmerReadFilter
 fr.ens.biologie.genomique.eoulsan.bio.readsfilters.TrailingTrimmerReadFilter
 fr.ens.biologie.genomique.eoulsan.bio.readsfilters.SlidingWindowTrimmerReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.NanoporeSequenceTypeFilter
