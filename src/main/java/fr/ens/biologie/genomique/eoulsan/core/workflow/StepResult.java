@@ -24,11 +24,11 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Strings.nullToEmpty;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.FAILED;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toTimeHumanReadable;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -236,7 +236,7 @@ public class StepResult {
 
   public void addResult(final TaskResultImpl result) {
 
-    checkNotNull(result, "result cannot be null");
+    requireNonNull(result, "result cannot be null");
 
     // Check immutable state
     checkImmutableState();
@@ -513,7 +513,7 @@ public class StepResult {
    */
   public void read(final DataFile file) throws IOException {
 
-    checkNotNull(file, "file is null");
+    requireNonNull(file, "file is null");
 
     read(file.open());
   }
@@ -524,7 +524,7 @@ public class StepResult {
    */
   public void read(final InputStream in) {
 
-    checkNotNull(in);
+    requireNonNull(in);
     checkImmutableState();
 
     final JsonReader reader = Json.createReader(new InputStreamReader(in));
@@ -601,7 +601,7 @@ public class StepResult {
   public void write(final DataFile file, final boolean oldFormat)
       throws IOException {
 
-    checkNotNull(file, "file is null");
+    requireNonNull(file, "file is null");
 
     write(file.create(), oldFormat);
   }
@@ -615,7 +615,7 @@ public class StepResult {
   public void write(final OutputStream out, final boolean oldFormat)
       throws IOException {
 
-    checkNotNull(out, "output stream is null");
+    requireNonNull(out, "output stream is null");
     checkState(this.immutable, "Cannot write non immutable object");
 
     BufferedWriter writer = FileUtils.createBufferedWriter(out);

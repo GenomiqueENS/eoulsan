@@ -19,7 +19,8 @@ package fr.ens.biologie.genomique.eoulsan.util.locker;
 
         import java.io.IOException;
         import java.util.List;
-        import java.util.concurrent.CountDownLatch;
+import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
         import java.util.concurrent.TimeUnit;
         import java.util.concurrent.atomic.AtomicBoolean;
         import java.util.logging.Level;
@@ -101,7 +102,7 @@ public class DistributedLock {
      */
     public DistributedLock(ZooKeeper zkClient, String lockPath,
                            Iterable<ACL> acl) {
-        this.zkClient = Preconditions.checkNotNull(zkClient);
+        this.zkClient = Objects.requireNonNull(zkClient);
         this.lockPath = checkNotBlank(lockPath);
         this.acl = ImmutableList.copyOf(acl);
         this.syncPoint = new CountDownLatch(1);
@@ -181,7 +182,7 @@ public class DistributedLock {
             throw new IOException(
                     "Error, neither attempting to lock nor holding a lock!");
         }
-        Preconditions.checkNotNull(currentId);
+        Objects.requireNonNull(currentId);
         // Try aborting!
         if (!holdsLock) {
             aborted.set(true);
@@ -205,7 +206,7 @@ public class DistributedLock {
 
     private void cleanup() {
         LOG.info("Cleaning up!");
-        Preconditions.checkNotNull(currentId);
+        Objects.requireNonNull(currentId);
         try {
             Stat stat = zkClient.exists(currentNode, false);
             if (stat != null) {
@@ -326,8 +327,8 @@ public class DistributedLock {
      */
     private static void ensurePath(ZooKeeper zkClient, List<ACL> acl, String path)
             throws InterruptedException, KeeperException {
-        Preconditions.checkNotNull(zkClient);
-        Preconditions.checkNotNull(path);
+        Objects.requireNonNull(zkClient);
+        Objects.requireNonNull(path);
         Preconditions.checkArgument(path.startsWith("/"));
 
         ensurePathInternal(zkClient, acl, path);
@@ -359,7 +360,7 @@ public class DistributedLock {
     }
 
     private static String checkNotBlank(String argument) {
-        Preconditions.checkNotNull(argument);
+        Objects.requireNonNull(argument);
         Preconditions.checkArgument(!argument.trim().isEmpty(),
                 "Argument cannot be blank");
         return argument;
