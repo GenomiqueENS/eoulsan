@@ -5,6 +5,8 @@ import java.util.Iterator;
 import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.bio.NanoporeReadId;
+import fr.ens.biologie.genomique.eoulsan.bio.NanoporeReadId.SequenceType;
 import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
 
 /**
@@ -14,14 +16,10 @@ import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
  */
 public class NanoporeSequenceTypeFilter extends AbstractReadFilter {
 
-  private enum SequenceType {
-    TEMPLATE, COMPLEMENT, CONSENSUS
-  };
-
   public static final String FILTER_NAME = "nanoporesequencetype";
 
   private Splitter spliter = Splitter.on(' ').omitEmptyStrings();
-  private SequenceType sequenceType = SequenceType.CONSENSUS;
+  private NanoporeReadId.SequenceType sequenceType = SequenceType.CONSENSUS;
 
   @Override
   public String getName() {
