@@ -22,8 +22,6 @@ public class ExpressionMatrixTSVWriter {
 
     StringBuilder sb = new StringBuilder();
 
-    //sb.append("Id");
-
     for (String columnName : matrix.getColumnNames()) {
       sb.append('\t');
       sb.append(columnName);
@@ -40,7 +38,8 @@ public class ExpressionMatrixTSVWriter {
         sb.append('\t');
 
         double d = value;
-        if (Double.isFinite(d) && Math.floor(d) - d == 0.0) {
+        if (!(Double.isNaN(d) || Double.isInfinite(d))
+            && Math.floor(d) - d == 0.0) {
           sb.append((int) d);
         } else {
           sb.append(value);
