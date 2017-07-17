@@ -174,6 +174,23 @@
 			<properties />
 		</developer>
 		<developer>
+			<id>birer</id>
+			<name>Aurélien Birer</name>
+			<email>birer 0 biologie ens fr</email>
+			<url />
+			<organization>
+				École normale supérieure, IBENS, Genomic platform
+			</organization>
+			<organizationUrl>
+				https://www.genomique.biologie.ens.fr/
+			</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>1</timezone>
+			<properties />
+		</developer>
+		<developer>
 			<id>lecrom</id>
 			<name>Stéphane Le Crom</name>
 			<email>eoulsan 0 biologie ens fr</email>
@@ -623,6 +640,14 @@
 			<groupId>org.usadellab</groupId>
 			<artifactId>trimmomatic</artifactId>
 			<version>0.36</version>
+		</dependency>
+
+		<!-- Required to read HDFS5/FAST5 files -->
+		<dependency>
+			<groupId>cisd</groupId>
+			<artifactId>jhdf5</artifactId>
+			<version>12.02.3</version>
+			<!--scope>compile</scope-->
 		</dependency>
 
 	</dependencies>
