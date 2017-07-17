@@ -328,6 +328,50 @@ public class ExpressionMatrix {
     this.columnIndex.remove(oldColumnName);
   }
 
+  /**
+   * Remove a column of the matrix.
+   * @param columnName the name of the column to remove
+   */
+  public void removeColumn(final String columnName) {
+
+    Objects.requireNonNull(columnName, "columnName argument cannot be null");
+
+    if (!this.columnIndex.containsKey(columnName)) {
+      throw new IllegalArgumentException(
+          "columnIndex does not exists: " + columnName);
+    }
+
+    // Get columnIndex
+    int columnIndex = this.columnIndex.get(columnName);
+
+    // Remove the column values
+    for (Collection<Double> list : this.values.asMap().values()) {
+      ((List<Double>) list).remove(columnIndex);
+    }
+
+    // Remove the column
+    this.columnIndex.remove(columnName);
+  }
+
+  /**
+   * Remove a raw of the matrix.
+   * @param rawName the name of the raw to remove
+   */
+  public void removeRaw(final String rawName) {
+
+    Objects.requireNonNull(rawName, "rawName argument cannot be null");
+
+    if (!this.rawOrder.contains(rawName)) {
+      throw new IllegalArgumentException("rawName does not exists: " + rawName);
+    }
+
+    // Add the default values
+    this.values.removeAll(rawName);
+
+    // Add the raw name in the order of raw
+    this.rawOrder.remove(rawName);
+  }
+
   //
   // Default value
   //

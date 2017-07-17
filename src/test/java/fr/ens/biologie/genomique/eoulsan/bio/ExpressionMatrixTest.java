@@ -252,4 +252,59 @@ public class ExpressionMatrixTest {
     assertEquals(Double.NaN, matrix.getValue("raw4", "col2"), 0.0);
   }
 
+  @Test
+  public void testRemoveRaw() {
+
+    ExpressionMatrix matrix = new ExpressionMatrix();
+    matrix.addColumns("col1", "col2");
+    matrix.addRaws("raw1", "raw2", "raw3");
+
+    matrix.setValue("raw1", "col1", 1);
+    matrix.setValue("raw2", "col1", 2);
+    matrix.setValue("raw3", "col1", 3);
+    matrix.setValue("raw1", "col2", 4);
+    matrix.setValue("raw2", "col2", 5);
+    matrix.setValue("raw3", "col2", 6);
+
+    assertEquals(3, matrix.getRawCount());
+    assertEquals(2, matrix.getColumnCount());
+
+    matrix.removeRaw("raw2");
+
+    assertEquals(2, matrix.getRawCount());
+    assertEquals(2, matrix.getColumnCount());
+
+    assertEquals(1.0, matrix.getValue("raw1", "col1"), 0.0);
+    assertEquals(3.0, matrix.getValue("raw3", "col1"), 0.0);
+    assertEquals(4.0, matrix.getValue("raw1", "col2"), 0.0);
+    assertEquals(6.0, matrix.getValue("raw3", "col2"), 0.0);
+  }
+
+  @Test
+  public void testRemoveColumn() {
+
+    ExpressionMatrix matrix = new ExpressionMatrix();
+    matrix.addColumns("col1", "col2");
+    matrix.addRaws("raw1", "raw2", "raw3");
+
+    matrix.setValue("raw1", "col1", 1);
+    matrix.setValue("raw2", "col1", 2);
+    matrix.setValue("raw3", "col1", 3);
+    matrix.setValue("raw1", "col2", 4);
+    matrix.setValue("raw2", "col2", 5);
+    matrix.setValue("raw3", "col2", 6);
+
+    assertEquals(3, matrix.getRawCount());
+    assertEquals(2, matrix.getColumnCount());
+
+    matrix.removeColumn("col2");
+
+    assertEquals(3, matrix.getRawCount());
+    assertEquals(1, matrix.getColumnCount());
+
+    assertEquals(1.0, matrix.getValue("raw1", "col1"), 0.0);
+    assertEquals(2.0, matrix.getValue("raw2", "col1"), 0.0);
+    assertEquals(3.0, matrix.getValue("raw3", "col1"), 0.0);
+  }
+
 }

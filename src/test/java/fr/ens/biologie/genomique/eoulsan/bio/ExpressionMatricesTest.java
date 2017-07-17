@@ -52,4 +52,29 @@ public class ExpressionMatricesTest {
     assertEquals(356.0, dest.getValue("raw2", "b"), 0.0);
   }
 
+  @Test
+  public void testremoveEmptyRows() {
+
+    ExpressionMatrix matrix = new ExpressionMatrix();
+
+    matrix.addColumns("a1", "a2", "a3");
+    matrix.addRaws("raw1", "raw2", "raw3", "raw4");
+
+    matrix.setValue("raw1", "a1", 1);
+    matrix.setValue("raw1", "a2", 2);
+    matrix.setValue("raw1", "a3", 4);
+
+    matrix.setValue("raw3", "a1", 101);
+    matrix.setValue("raw3", "a2", 102);
+    matrix.setValue("raw3", "a3", 104);
+
+    assertEquals(4, matrix.getRawCount());
+
+    ExpressionMatrices.removeEmptyRows(matrix);
+
+    assertEquals(2, matrix.getRawCount());
+    assertEquals(Arrays.asList("raw1", "raw3"), matrix.getRawNames());
+
+  }
+
 }

@@ -1,6 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.bio;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -22,10 +23,12 @@ public class ExpressionMatrices {
       final Collection<String> srcColumNames, final ExpressionMatrix destMatrix,
       final String destColumName) {
 
-    Objects.requireNonNull(srcMatrix);
-    Objects.requireNonNull(srcColumNames);
-    Objects.requireNonNull(destMatrix);
-    Objects.requireNonNull(destColumName);
+    Objects.requireNonNull(srcMatrix, "srcMatrix argument cannot be null");
+    Objects.requireNonNull(srcColumNames,
+        "srcColumNames argument cannot be null");
+    Objects.requireNonNull(destMatrix, "destMatrix argument cannot be null");
+    Objects.requireNonNull(destColumName,
+        "destColumName argument cannot be null");
 
     for (String rawName : srcMatrix.getRawNames()) {
 
@@ -37,6 +40,34 @@ public class ExpressionMatrices {
 
       destMatrix.setValue(rawName, destColumName, sum);
     }
+  }
+
+  /**
+   * Remove all the raws of the matrix that contains only zero values.
+   * @param matrix the matrix to process
+   */
+  public static void removeEmptyRows(final ExpressionMatrix matrix) {
+
+    Objects.requireNonNull(matrix, "matrix argument cannot be null");
+
+    for (String rawName : matrix.getRawNames()) {
+
+      List<Double> raw = matrix.getRawValues(rawName);
+
+      boolean findNonZero = false;
+      for (Double v : raw) {
+        if (v != 0.0) {
+          findNonZero = true;
+          break;
+        }
+      }
+
+      if (!findNonZero) {
+        matrix.removeRaw(rawName);
+      }
+
+    }
+
   }
 
 }
