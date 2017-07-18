@@ -126,10 +126,19 @@ public class DataToolElement extends AbstractToolElement {
 
     if (this.formats.isEmpty()) {
       this.dataFormat = null;
-    } else {
-      // Convert format in DataFormat
-      this.dataFormat = DataFormatRegistry.getInstance()
-          .getDataFormatFromToolshedExtensionOrNameOrAlias(this.formats.get(0));
+      throw new EoulsanException("Parsing tool xml: no format found");
+    }
+
+    // Get the format
+    String format = this.formats.get(0);
+
+    // Convert format in DataFormat
+    this.dataFormat = DataFormatRegistry.getInstance()
+        .getDataFormatFromToolshedExtensionOrNameOrAlias(format);
+
+    // Check if a valid format has been found
+    if (this.dataFormat == null) {
+      throw new EoulsanException("Parsing tool xml: unknown format: " + format);
     }
   }
 
