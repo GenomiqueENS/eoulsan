@@ -39,6 +39,7 @@ import org.w3c.dom.NodeList;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ConditionalToolElement;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.DataToolElement;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElement;
 import fr.ens.biologie.genomique.eoulsan.util.XMLUtils;
 
@@ -90,10 +91,10 @@ public final class GalaxyToolXMLParserUtils {
   private static final String CONDITIONAL = "conditional";
 
   /**
-   * Extract param element.
+   * Extract parameter elements.
    * @param parent the parent
    * @param elementName the element name
-   * @return the map
+   * @return a map with the Galaxy tool elements
    * @throws EoulsanException the Eoulsan exception
    */
   public static Map<String, ToolElement> extractParamElement(
@@ -102,6 +103,14 @@ public final class GalaxyToolXMLParserUtils {
     return extractParamElement(parent, elementName, stepParameters);
   }
 
+  /**
+   * Extract parameter elements.
+   * @param parent the parent
+   * @param elementName the element name
+   * @param stepParameters step parameters
+   * @return a map with the Galaxy tool elements
+   * @throws EoulsanException the Eoulsan exception
+   */
   public static Map<String, ToolElement> extractParamElement(
       final Element parent, final String elementName,
       final Map<String, Parameter> stepParameters) throws EoulsanException {
@@ -113,16 +122,39 @@ public final class GalaxyToolXMLParserUtils {
         extractChildElementsByTagName(parent, elementName);
 
     for (final Element param : simpleParams) {
-      final ToolElement ptg = newToolElement(param);
+      final ToolElement toolElement = newToolElement(param);
 
-      if (!ptg.isFile()) {
-        ptg.setValues(stepParameters);
-      }
+      setElementValue(toolElement, stepParameters);
 
-      results.put(ptg.getName(), ptg);
+      results.put(toolElement.getName(), toolElement);
     }
 
     return results;
+  }
+
+  /**
+   * Set the tool element value.
+   * @param toolElement tool element
+   * @param stepParameters step parameters
+   * @throws EoulsanException if an error occurs while setting the value
+   */
+  public static void setElementValue(final ToolElement toolElement,
+      final Map<String, Parameter> stepParameters) throws EoulsanException {
+
+    if (!(toolElement instanceof DataToolElement)) {
+
+      // Use namespace
+      Parameter p = stepParameters.get(toolElement.getName());
+
+      if (p == null) {
+        // Without namespace
+        p = stepParameters.get(toolElement.getShortName());
+      }
+
+      if (p != null) {
+        toolElement.setValue(p.getStringValue());
+      }
+    }
   }
 
   /**
@@ -157,7 +189,7 @@ public final class GalaxyToolXMLParserUtils {
     for (final Element param : condParams) {
       final ConditionalToolElement tce = new ConditionalToolElement(param);
 
-      final ToolElement parameterSelect = tce.getToolElementSelect();
+      final ToolElement parameterSelect = tce.getToolElementSelected();
       results.put(parameterSelect.getName(), parameterSelect);
 
       // Set parameter

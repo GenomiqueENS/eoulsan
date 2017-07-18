@@ -7,7 +7,10 @@
   <generator>fr.ens.biologie.genomique.eoulsan.modules.generators.GFFFastaGeneratorModule</generator>
   <checker>fr.ens.biologie.genomique.eoulsan.checkers.GenomeChecker</checker>
   <extensions>
-  	<extension default="true">.fasta</extension>
-  	<extension>.fa</extension>
+    <extension default="true">.fasta</extension>
+    <extension>.fa</extension>
   </extensions>
+  <toolshedgalaxy>
+    <extension>fasta</extension>
+  </toolshedgalaxy>
 </dataformat>

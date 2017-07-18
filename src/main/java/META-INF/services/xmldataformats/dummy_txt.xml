@@ -5,6 +5,9 @@
   <onefileperanalysis>false</onefileperanalysis>
   <generator>fr.ens.biologie.genomique.eoulsan.modules.generators.DummyGeneratorModule</generator>
   <extensions>
-  	<extension default="true">.dummy</extension>
+    <extension default="true">.dummy</extension>
   </extensions>
+  <toolshedgalaxy>
+    <extension>txt</extension>
+  </toolshedgalaxy>
 </dataformat>

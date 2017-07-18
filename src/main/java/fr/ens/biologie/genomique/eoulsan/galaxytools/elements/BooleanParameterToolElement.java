@@ -26,14 +26,13 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 import org.w3c.dom.Element;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 
 /**
- * The Class ToolParameterBoolean.
+ * This class define a boolean tool element parameter.
  * @author Sandrine Perrin
  * @since 2.0
  */
-public class BooleanParameterToolElement extends AbstractToolElement {
+public class BooleanParameterToolElement extends AbstractParameterToolElement {
 
   /** The Constant TYPE. */
   public final static String TYPE = "boolean";
@@ -48,7 +47,7 @@ public class BooleanParameterToolElement extends AbstractToolElement {
   private final static String ATT_FALSEVALUE_KEY = "falsevalue";
 
   /** The checked_lowered. */
-  private final String checked;
+  private final boolean checked;
 
   /** The true value. */
   private final String trueValue;
@@ -57,49 +56,60 @@ public class BooleanParameterToolElement extends AbstractToolElement {
   private final String falseValue;
 
   /** The value. */
-  private String value;
+  private boolean value;
+
+  private boolean set;
+
+  //
+  // Getters
+  //
 
   @Override
-  public boolean isValueParameterValid() {
+  public boolean isParameterValueValid() {
     return true;
   }
 
   @Override
   public String getValue() {
-    return this.value;
+    return this.value ? this.trueValue : this.falseValue;
   }
 
   @Override
-  public void setDefaultValue() throws EoulsanException {
-
-    setValue(this.checked == null ? null : this.checked.toLowerCase());
+  public boolean isSet() {
+    return this.set;
   }
+
+  //
+  // Setters
+  //
 
   @Override
-  public void setValue(final Parameter stepParameter) throws EoulsanException {
+  public void setValue(final String value) throws EoulsanException {
 
-    super.setValue(stepParameter);
+    if (value == null) {
+      this.value = false;
+      return;
+    }
 
-    setValue(stepParameter.getLowerStringValue());
-  }
-
-  private void setValue(final String value) throws EoulsanException {
-
-    switch (value) {
+    switch (value.trim().toLowerCase()) {
 
     case "yes":
     case "on":
     case "true":
-      this.value = this.trueValue;
+      this.value = true;
       break;
 
     default:
-      this.value = this.falseValue;
+      this.value = false;
       break;
     }
 
     this.set = true;
   }
+
+  //
+  // Object methods
+  //
 
   @Override
   public String toString() {
@@ -113,26 +123,32 @@ public class BooleanParameterToolElement extends AbstractToolElement {
   //
 
   /**
-   * Instantiates a new tool parameter boolean.
-   * @param param the param
+   * Instantiates a new boolean tool parameter.
+   * @param param the parameter
    */
   public BooleanParameterToolElement(final Element param) {
     this(param, null);
   }
 
   /**
-   * Instantiates a new tool parameter boolean.
-   * @param param the param
+   * Instantiates a new boolean tool parameter.
+   * @param param the parameter
    * @param nameSpace the name space
    */
-  public BooleanParameterToolElement(final Element param, final String nameSpace) {
+  public BooleanParameterToolElement(final Element param,
+      final String nameSpace) {
     super(param, nameSpace);
 
-    this.checked = param.getAttribute(ATT_CHECKED_KEY);
+    this.checked = Boolean.parseBoolean(param.getAttribute(ATT_CHECKED_KEY));
 
-    this.trueValue = param.getAttribute(ATT_TRUEVALUE_KEY);
+    String trueValue = param.getAttribute(ATT_TRUEVALUE_KEY);
+    this.trueValue = trueValue == null ? "" : trueValue;
 
-    this.falseValue = param.getAttribute(ATT_FALSEVALUE_KEY);
+    String falseValue = param.getAttribute(ATT_FALSEVALUE_KEY);
+    this.falseValue = falseValue == null ? "" : falseValue;
+
+    // Set default value
+    this.value = this.checked;
   }
 
 }

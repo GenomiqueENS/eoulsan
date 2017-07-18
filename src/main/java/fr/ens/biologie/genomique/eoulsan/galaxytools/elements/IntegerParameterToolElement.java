@@ -26,20 +26,16 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 import org.w3c.dom.Element;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 
 /**
- * The Class ToolParameterInteger.
+ * This class define an integer tool element parameter.
  * @author Sandrine Perrin
  * @since 2.0
  */
-public class IntegerParameterToolElement extends AbstractToolElement {
+public class IntegerParameterToolElement extends TextParameterToolElement {
 
   /** The Constant TYPE. */
   public final static String TYPE = "integer";
-
-  /** The Constant ATT_DEFAULT_KEY. */
-  private final static String ATT_DEFAULT_KEY = "value";
 
   /** The Constant ATT_MIN_KEY. */
   private final static String ATT_MIN_KEY = "min";
@@ -53,52 +49,48 @@ public class IntegerParameterToolElement extends AbstractToolElement {
   /** The max. */
   private final int max;
 
-  /** The default value. */
-  private String defaultValue;
-
-  /** The value. */
-  private int value;
+  //
+  // Getters
+  //
 
   @Override
-  public boolean isValueParameterValid() {
-    return this.value >= this.min && this.value <= this.max;
+  public boolean isParameterValueValid() {
+
+    int v;
+
+    try {
+      v = Integer.parseInt(getValue());
+    } catch (NumberFormatException e) {
+      return false;
+    }
+
+    return v >= this.min && v <= this.max;
   }
+
+  //
+  // Setters
+  //
 
   @Override
-  public void setDefaultValue() throws EoulsanException {
+  public void setValue(final String value) throws EoulsanException {
 
-    setValue(this.defaultValue);
-  }
+    super.setValue(value);
 
-  @Override
-  public void setValue(final Parameter stepParameter) throws EoulsanException {
-    super.setValue(stepParameter);
-
-    this.setValue(stepParameter.getStringValue());
-
-  }
-
-  private void setValue(final String value) throws EoulsanException {
-    this.value = Integer.parseInt(value);
-
-    this.set = true;
-
-    if (!this.isValueParameterValid()) {
+    if (!this.isParameterValueValid()) {
       throw new EoulsanException("ToolGalaxy step: parameter "
-          + this.getName() + " value setting for step: " + this.value
+          + this.getName() + " value setting for step: " + getValue()
           + ". Invalid to interval [" + this.min + "," + this.max + "]");
     }
   }
 
-  @Override
-  public String getValue() {
-    return "" + this.value;
-  }
+  //
+  // Object methods
+  //
 
   @Override
   public String toString() {
     return "ToolParameterInteger [min="
-        + this.min + ", max=" + this.max + ", value=" + this.value + "]";
+        + this.min + ", max=" + this.max + ", value=" + getValue() + "]";
   }
 
   //
@@ -106,27 +98,27 @@ public class IntegerParameterToolElement extends AbstractToolElement {
   //
 
   /**
-   * Instantiates a new tool parameter integer.
-   * @param param the param
-   * @throws EoulsanException the eoulsan exception
+   * Instantiates a new integer tool element parameter.
+   * @param param the parameter
+   * @throws EoulsanException if an error occurs while setting the value
    */
-  public IntegerParameterToolElement(final Element param) throws EoulsanException {
+  public IntegerParameterToolElement(final Element param)
+      throws EoulsanException {
     this(param, null);
   }
 
   /**
-   * Instantiates a new tool parameter integer.
-   * @param param the param
+   * Instantiates a new integer tool element parameter.
+   * @param param the parameter
    * @param nameSpace the name space
-   * @throws EoulsanException the eoulsan exception
+   * @throws EoulsanException if an error occurs while setting the value
    */
-  public IntegerParameterToolElement(final Element param, final String nameSpace)
-      throws EoulsanException {
+  public IntegerParameterToolElement(final Element param,
+      final String nameSpace) throws EoulsanException {
+
     super(param, nameSpace);
 
     // Set value
-    this.defaultValue = param.getAttribute(ATT_DEFAULT_KEY);
-
     try {
       String value = param.getAttribute(ATT_MIN_KEY);
       this.min = value.isEmpty() ? Integer.MIN_VALUE : Integer.parseInt(value);

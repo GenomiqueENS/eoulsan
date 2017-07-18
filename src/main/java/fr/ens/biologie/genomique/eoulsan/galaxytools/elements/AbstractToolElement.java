@@ -24,19 +24,15 @@
 
 package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
-import java.util.Map;
-
 import org.w3c.dom.Element;
 
 import com.google.common.base.Splitter;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Naming;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import jersey.repackaged.com.google.common.base.Objects;
 
 /**
- * The Class AbstractToolElement.
+ * This class define an abstract tool element.
  * @author Sandrine Perrin
  * @since 2.0
  */
@@ -48,9 +44,6 @@ public abstract class AbstractToolElement implements ToolElement {
 
   /** Data from attribute param tag. */
   private final String shortName;
-
-  /** The name space. */
-  private final String nameSpace;
 
   /** The name. */
   private final String name;
@@ -67,75 +60,9 @@ public abstract class AbstractToolElement implements ToolElement {
   /** The help. */
   private String help = "";
 
-  /** The is setting. */
-  protected boolean set = false;
-
-  /**
-   * Checks if is value parameter valid.
-   * @return true, if is value parameter valid
-   */
-  abstract boolean isValueParameterValid();
-
-  @Override
-  public void setValues(final Map<String, Parameter> stepParameters)
-      throws EoulsanException {
-
-    // Extract parameter
-    final Parameter parameter = extractParameterByName(stepParameters);
-
-    if (parameter == null) {
-      setDefaultValue();
-    } else {
-      setValue(parameter);
-    }
-  }
-
-  @Override
-  public boolean isFile() {
-    return false;
-  }
-
-  @Override
-  public DataFormat getDataFormat() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Parameter extractParameterByName(
-      final Map<String, Parameter> stepParameters) {
-
-    // Use namespace
-    Parameter p = stepParameters.get(getName());
-
-    if (p == null) {
-      // Without namespace
-      p = stepParameters.get(getShortName());
-    }
-
-    // Return parameter founded or null
-    return p;
-  }
-
   //
   // Getter and setter
   //
-
-  @Override
-  public boolean isSet() {
-    return this.set;
-  }
-
-  @Override
-  abstract public String getValue();
-
-  @Override
-  public void setValue(final Parameter stepParameter) throws EoulsanException {
-    // TODO
-    if (stepParameter == null && !isSet())
-      throw new EoulsanException(
-          "GalaxyTool parameter missing to set " + getName());
-
-  }
 
   /**
    * Checks if is optional.
@@ -197,64 +124,41 @@ public abstract class AbstractToolElement implements ToolElement {
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((this.help == null) ? 0 : this.help.hashCode());
-    result = prime * result
-        + ((this.isOptional == null) ? 0 : this.isOptional.hashCode());
-    result =
-        prime * result + ((this.label == null) ? 0 : this.label.hashCode());
-    result = prime * result
-        + ((this.shortName == null) ? 0 : this.shortName.hashCode());
-    result = prime * result + ((this.type == null) ? 0 : this.type.hashCode());
-    return result;
+
+    return Objects.hashCode(this.help, this.isOptional, this.label,
+        this.shortName, this.type);
   }
 
   @Override
   public boolean equals(final Object obj) {
+
     if (this == obj) {
       return true;
     }
-    if (obj == null) {
+
+    if (obj == null || !(obj instanceof AbstractToolElement)) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+
+    final AbstractToolElement that = (AbstractToolElement) obj;
+
+    if (!Objects.equal(this.help, that.help)) {
       return false;
     }
-    final AbstractToolElement other = (AbstractToolElement) obj;
-    if (this.help == null) {
-      if (other.help != null) {
-        return false;
-      }
-    } else if (!this.help.equals(other.help)) {
+
+    if (!Objects.equal(this.isOptional, that.isOptional)) {
       return false;
     }
-    if (this.isOptional == null) {
-      if (other.isOptional != null) {
-        return false;
-      }
-    } else if (!this.isOptional.equals(other.isOptional)) {
+
+    if (!Objects.equal(this.label, that.label)) {
       return false;
     }
-    if (this.label == null) {
-      if (other.label != null) {
-        return false;
-      }
-    } else if (!this.label.equals(other.label)) {
+
+    if (!Objects.equal(this.shortName, that.shortName)) {
       return false;
     }
-    if (this.shortName == null) {
-      if (other.shortName != null) {
-        return false;
-      }
-    } else if (!this.shortName.equals(other.shortName)) {
-      return false;
-    }
-    if (this.type == null) {
-      if (other.type != null) {
-        return false;
-      }
-    } else if (!this.type.equals(other.type)) {
+
+    if (!Objects.equal(this.type, that.type)) {
       return false;
     }
     return true;
@@ -265,7 +169,7 @@ public abstract class AbstractToolElement implements ToolElement {
   //
   /**
    * Instantiates a new abstract tool element.
-   * @param param the param
+   * @param param the parameter
    */
   public AbstractToolElement(final Element param) {
     this(param, null);
@@ -273,13 +177,12 @@ public abstract class AbstractToolElement implements ToolElement {
 
   /**
    * Instantiates a new abstract tool element.
-   * @param param the param
+   * @param param the parameter
    * @param nameSpace the name space
    */
   public AbstractToolElement(final Element param, final String nameSpace) {
 
     this.shortName = param.getAttribute("name");
-    this.nameSpace = nameSpace;
 
     // If exists add prefix from parent element
     if (nameSpace == null || nameSpace.isEmpty()) {

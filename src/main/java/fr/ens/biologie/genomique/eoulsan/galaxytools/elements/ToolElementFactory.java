@@ -14,9 +14,9 @@ public class ToolElementFactory {
 
   /**
    * Gets the instance tool element.
-   * @param param the param
+   * @param param the parameter
    * @return the instance tool element
-   * @throws EoulsanException the eoulsan exception
+   * @throws EoulsanException if an error occurs while creating ToolElement
    */
   public static ToolElement newToolElement(final Element param)
       throws EoulsanException {
@@ -25,10 +25,10 @@ public class ToolElementFactory {
 
   /**
    * Gets the instance tool element.
-   * @param tag the param
+   * @param tag the parameter
    * @param nameSpace the name space
    * @return the instance tool element
-   * @throws EoulsanException the eoulsan exception
+   * @throws EoulsanException if an error occurs while creating ToolElement
    */
   public static ToolElement newToolElement(final Element tag,
       final String nameSpace) throws EoulsanException {
@@ -67,10 +67,12 @@ public class ToolElementFactory {
     case TextParameterToolElement.TYPE:
       toolElement = new TextParameterToolElement(tag, nameSpace);
       break;
+    case DataToolElement.TYPE:
+      toolElement = new DataToolElement(tag, nameSpace);
+      break;
 
     default:
-      toolElement = new DataParameterToolElement(tag, nameSpace);
-      break;
+      throw new EoulsanException("Unknown parameter type:" + type);
     }
 
     return toolElement;

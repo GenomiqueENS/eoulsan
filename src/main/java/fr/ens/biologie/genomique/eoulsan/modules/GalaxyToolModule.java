@@ -45,7 +45,7 @@ import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolInterpreter;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolData;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolExecutorResult;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElement;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.DataToolElement;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.DockerExecutorInterpreter;
 import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
@@ -89,7 +89,7 @@ public class GalaxyToolModule extends AbstractModule {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
 
-    for (final ToolElement element : this.toolInterpreter
+    for (final DataToolElement element : this.toolInterpreter
         .getInputDataElements()) {
 
       builder.addPort(element.getValidatedName(), element.getDataFormat(),
@@ -104,7 +104,7 @@ public class GalaxyToolModule extends AbstractModule {
 
     final OutputPortsBuilder builder = new OutputPortsBuilder();
 
-    for (final ToolElement element : this.toolInterpreter
+    for (final DataToolElement element : this.toolInterpreter
         .getOutputDataElements()) {
 
       builder.addPort(element.getValidatedName(), element.getDataFormat());

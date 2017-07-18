@@ -25,11 +25,11 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
 import java.util.List;
 
-import com.google.common.base.Joiner;
 import org.w3c.dom.Element;
 
+import com.google.common.base.Joiner;
+
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
@@ -44,6 +44,9 @@ public class DataToolElement extends AbstractToolElement {
   /** The Constant TAG_NAME. */
   public static final String TAG_NAME = "data";
 
+  /** The Constant TYPE. */
+  public final static String TYPE = "data";
+
   /** The formats. */
   private final List<String> formats;
 
@@ -53,43 +56,30 @@ public class DataToolElement extends AbstractToolElement {
   /** The value. */
   private String value = "";
 
-  @Override
-  public void setDefaultValue() {
-  }
-
-  @Override
-  boolean isValueParameterValid() {
-    return true;
-  }
+  //
+  // Getters
+  //
 
   @Override
   public String getValue() {
     return this.value;
   }
 
-  @Override
-  public void setValue(final Parameter stepParameter) throws EoulsanException {
-    super.setValue(stepParameter);
-
-    this.setValue(stepParameter.getValue());
-  }
-
-  private void setValue(final String value) {
-    this.value = value;
-  }
-
-  @Override
-  public boolean isFile() {
-    return this.dataFormat != null;
-  }
-
-  @Override
+  /**
+   * Get the data format of the tool element.
+   * @return the data format
+   */
   public DataFormat getDataFormat() {
-    if (this.isFile()) {
-      return this.dataFormat;
-    }
+    return this.dataFormat;
+  }
 
-    throw new UnsupportedOperationException();
+  //
+  // Setters
+  //
+
+  @Override
+  public void setValue(final String value) {
+    this.value = value;
   }
 
   //
@@ -99,17 +89,7 @@ public class DataToolElement extends AbstractToolElement {
   /**
    * Instantiates a new tool outputs data.
    * @param param the param
-   * @throws EoulsanException the eoulsan exception
-   */
-  public DataToolElement(final Element param) throws EoulsanException {
-    this(param, null);
-  }
-
-  /**
-   * Instantiates a new tool outputs data.
-   * @param param the param
-   * @param nameSpace the name space
-   * @throws EoulsanException the eoulsan exception
+   * @throws EoulsanException if an error occurs while setting the value
    */
   public DataToolElement(final Element param, final String nameSpace)
       throws EoulsanException {

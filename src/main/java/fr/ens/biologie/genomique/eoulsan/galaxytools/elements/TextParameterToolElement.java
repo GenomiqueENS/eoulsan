@@ -3,14 +3,13 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 import org.w3c.dom.Element;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 
 /**
- * This class define a text parameter element.
+ * This class define a text tool element parameter.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class TextParameterToolElement extends AbstractToolElement {
+public class TextParameterToolElement extends AbstractParameterToolElement {
 
   /** The Constant TYPE. */
   public final static String TYPE = "text";
@@ -18,19 +17,17 @@ public class TextParameterToolElement extends AbstractToolElement {
   /** The Constant ATT_DEFAULT_KEY. */
   private final static String ATT_DEFAULT_KEY = "value";
 
-  /** The default value. */
-  private String defaultValue = "";
-
   /** The value. */
   private String value = "";
 
-  @Override
-  public void setDefaultValue() throws EoulsanException {
-    setValue(this.defaultValue);
-  }
+  private boolean set;
+
+  //
+  // Getters
+  //
 
   @Override
-  boolean isValueParameterValid() {
+  public boolean isParameterValueValid() {
     return true;
   }
 
@@ -40,15 +37,17 @@ public class TextParameterToolElement extends AbstractToolElement {
   }
 
   @Override
-  public void setValue(final Parameter stepParameter) throws EoulsanException {
-
-    this.setValue(stepParameter.getStringValue());
-
+  public boolean isSet() {
+    return this.set;
   }
 
-  private void setValue(final String value) throws EoulsanException {
-    this.value = value;
+  //
+  // Setters
+  //
 
+  @Override
+  public void setValue(final String value) throws EoulsanException {
+    this.value = value;
     this.set = true;
   }
 
@@ -57,26 +56,26 @@ public class TextParameterToolElement extends AbstractToolElement {
   //
 
   /**
-   * Instantiates a new tool parameter integer.
-   * @param param the param
-   * @throws EoulsanException the eoulsan exception
+   * Instantiates a new text tool element parameter.
+   * @param param the parameter
+   * @throws EoulsanException if an error occurs while setting the value
    */
   public TextParameterToolElement(final Element param) throws EoulsanException {
     this(param, null);
   }
 
   /**
-   * Instantiates a new tool parameter integer.
-   * @param param the param
+   * Instantiates a new text tool element parameter.
+   * @param param the parameter
    * @param nameSpace the name space
-   * @throws EoulsanException the eoulsan exception
+   * @throws EoulsanException if an error occurs while setting the value
    */
   public TextParameterToolElement(final Element param, final String nameSpace)
       throws EoulsanException {
     super(param, nameSpace);
 
-    // Set value
-    this.defaultValue = param.getAttribute(ATT_DEFAULT_KEY);
+    // Set the default value
+    this.value = param.getAttribute(ATT_DEFAULT_KEY);
   }
 
 }

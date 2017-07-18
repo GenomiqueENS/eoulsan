@@ -48,6 +48,7 @@ import com.google.common.base.Splitter;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeDebug;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.DataToolElement;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElement;
 import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 
@@ -275,8 +276,7 @@ public class GalaxyToolInterpreterTest {
       for (Map.Entry<String, ToolElement> e : interpreter.getInputs()
           .entrySet()) {
 
-        if (e.getValue().isFile()) {
-
+        if (e.getValue() instanceof DataToolElement) {
           inputCount++;
           assertTrue(this.inputCommandVariables.containsKey(e.getKey())
               || this.inputCommandVariables.containsKey(
@@ -290,7 +290,7 @@ public class GalaxyToolInterpreterTest {
       for (Map.Entry<String, ToolElement> e : interpreter.getOutputs()
           .entrySet()) {
 
-        if (e.getValue().isFile()) {
+        if (e.getValue() instanceof DataToolElement) {
 
           outputCount++;
           assertTrue(this.outputCommandVariables.containsKey(e.getKey())
@@ -325,7 +325,7 @@ public class GalaxyToolInterpreterTest {
       // instance
       for (final ToolElement ptg : interpreter.getInputs().values()) {
 
-        if (!ptg.isFile()) {
+        if (!(ptg instanceof DataToolElement)) {
 
           // Update list variables needed to build command line
           if (!this.otherCommandVariables.containsKey(ptg.getName())) {
