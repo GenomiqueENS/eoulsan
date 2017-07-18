@@ -64,6 +64,9 @@ public class ToolElementFactory {
     case SelectParameterToolElement.TYPE:
       toolElement = new SelectParameterToolElement(tag, nameSpace);
       break;
+    case TextParameterToolElement.TYPE:
+      toolElement = new TextParameterToolElement(tag, nameSpace);
+      break;
 
     default:
       toolElement = new DataParameterToolElement(tag, nameSpace);
