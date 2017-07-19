@@ -24,7 +24,7 @@
 package fr.ens.biologie.genomique.eoulsan.galaxytools;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractCommand;
+import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractCheetahScript;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractDescription;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractDockerImage;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractInterpreter;
@@ -45,7 +45,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
  * @author Sandrine Perrin
  * @since 2.0
  */
-public class ToolData {
+public class ToolInfo {
 
   private static final String DEFAULT_VERSION = "unknown";
 
@@ -54,6 +54,9 @@ public class ToolData {
 
   /** The tool name. */
   private final String toolName;
+
+  /** The tool source. */
+  private final String toolSource;
 
   /** The tool version. */
   private final String toolVersion;
@@ -65,7 +68,7 @@ public class ToolData {
   private final String interpreter;
 
   /** The command script. */
-  private final String commandScript;
+  private final String cheetahScript;
 
   /** The Docker image. */
   private final String dockerImage;
@@ -73,6 +76,14 @@ public class ToolData {
   //
   // Getters
   //
+
+  /**
+   * Get the tool source.
+   * @return the tool source
+   */
+  public String getToolSource() {
+    return this.toolSource;
+  }
 
   /**
    * Get the tool Id.
@@ -115,11 +126,11 @@ public class ToolData {
   }
 
   /**
-   * Get the command script.
-   * @return the command script
+   * Get the Cheetah script.
+   * @return the Cheetah script
    */
-  public String getCommandScript() {
-    return this.commandScript;
+  public String getCheetahScript() {
+    return this.cheetahScript;
   }
 
   /**
@@ -142,7 +153,7 @@ public class ToolData {
         .add("description", this.description)
         .add("interpreter", this.interpreter)
         .add("dockerImage", this.dockerImage)
-        .add("commandScript", this.commandScript).toString();
+        .add("commandScript", this.cheetahScript).toString();
   }
 
   //
@@ -152,9 +163,11 @@ public class ToolData {
   /**
    * Constructor.
    * @param document the DOM document to parse
+   * @param toolSource the source of the tool
    * @throws EoulsanException if an error occurs while parsing the document
    */
-  ToolData(final Document document) throws EoulsanException {
+  ToolInfo(final Document document, final String toolSource)
+      throws EoulsanException {
 
     checkNotNull(document, "doc argument cannot be null");
 
@@ -164,16 +177,17 @@ public class ToolData {
     this.description = extractDescription(document);
     this.interpreter = extractInterpreter(document);
     this.dockerImage = emptyToNull(extractDockerImage(document));
-    this.commandScript = emptyToNull(extractCommand(document));
+    this.cheetahScript = emptyToNull(extractCheetahScript(document));
 
     final String toolVersion = nullToEmpty(extractToolVersion(document));
     this.toolVersion = "".equals(toolVersion) ? DEFAULT_VERSION : toolVersion;
+    this.toolSource = toolSource == null ? "unknown source" : toolSource;
 
     if (this.toolName == null) {
       throw new EoulsanException("GalaxyTool name can not be null");
     }
 
-    if (this.commandScript == null) {
+    if (this.cheetahScript == null) {
       throw new EoulsanException("No command found in Galaxy tool");
     }
 

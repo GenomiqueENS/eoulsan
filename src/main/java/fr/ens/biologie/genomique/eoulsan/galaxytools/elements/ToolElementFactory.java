@@ -1,9 +1,12 @@
 package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
+import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.newEoulsanException;
+
 import org.w3c.dom.Element;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
 
 /**
  * This class define a factory for ToolElement objects.
@@ -14,34 +17,36 @@ public class ToolElementFactory {
 
   /**
    * Gets the instance tool element.
+   * @param toolInfo ToolInfo object
    * @param param the parameter
    * @return the instance tool element
    * @throws EoulsanException if an error occurs while creating ToolElement
    */
-  public static ToolElement newToolElement(final Element param)
-      throws EoulsanException {
-    return ToolElementFactory.newToolElement(param, null);
+  public static ToolElement newToolElement(final ToolInfo toolInfo,
+      final Element param) throws EoulsanException {
+    return ToolElementFactory.newToolElement(toolInfo, param, null);
   }
 
   /**
    * Gets the instance tool element.
+   * @param toolInfo ToolInfo object
    * @param tag the parameter
    * @param nameSpace the name space
    * @return the instance tool element
    * @throws EoulsanException if an error occurs while creating ToolElement
    */
-  public static ToolElement newToolElement(final Element tag,
-      final String nameSpace) throws EoulsanException {
+  public static ToolElement newToolElement(final ToolInfo toolInfo,
+      final Element tag, final String nameSpace) throws EoulsanException {
 
     if (tag == null) {
-      throw new EoulsanException(
-          "Parsing xml: no element param found to instantiate a tool element.");
+      throw newEoulsanException(toolInfo,
+          "no element found to instantiate a tool element");
     }
 
     final String tagName = tag.getTagName();
 
     if (tagName.equals(DataToolElement.TAG_NAME)) {
-      return new DataToolElement(tag, nameSpace);
+      return new DataToolElement(toolInfo, tag, nameSpace);
     }
 
     // Instantiate a tool parameter according to attribute type value
@@ -53,22 +58,22 @@ public class ToolElementFactory {
     switch (type) {
 
     case BooleanParameterToolElement.TYPE:
-      toolElement = new BooleanParameterToolElement(tag, nameSpace);
+      toolElement = new BooleanParameterToolElement(toolInfo, tag, nameSpace);
       break;
     case IntegerParameterToolElement.TYPE:
-      toolElement = new IntegerParameterToolElement(tag, nameSpace);
+      toolElement = new IntegerParameterToolElement(toolInfo, tag, nameSpace);
       break;
     case FloatParameterToolElement.TYPE:
-      toolElement = new FloatParameterToolElement(tag, nameSpace);
+      toolElement = new FloatParameterToolElement(toolInfo, tag, nameSpace);
       break;
     case SelectParameterToolElement.TYPE:
-      toolElement = new SelectParameterToolElement(tag, nameSpace);
+      toolElement = new SelectParameterToolElement(toolInfo, tag, nameSpace);
       break;
     case TextParameterToolElement.TYPE:
-      toolElement = new TextParameterToolElement(tag, nameSpace);
+      toolElement = new TextParameterToolElement(toolInfo, tag, nameSpace);
       break;
     case DataToolElement.TYPE:
-      toolElement = new DataToolElement(tag, nameSpace);
+      toolElement = new DataToolElement(toolInfo, tag, nameSpace);
       break;
 
     default:

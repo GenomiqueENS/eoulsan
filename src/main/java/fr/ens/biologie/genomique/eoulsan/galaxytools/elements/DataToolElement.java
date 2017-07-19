@@ -23,6 +23,8 @@
  */
 package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
+import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.newEoulsanException;
+
 import java.util.List;
 
 import org.w3c.dom.Element;
@@ -32,6 +34,7 @@ import com.google.common.base.Joiner;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
 import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 
 /**
@@ -88,11 +91,12 @@ public class DataToolElement extends AbstractToolElement {
 
   /**
    * Instantiates a new tool outputs data.
+   * @param toolInfo the ToolInfo object
    * @param param the param
    * @throws EoulsanException if an error occurs while setting the value
    */
-  public DataToolElement(final Element param, final String nameSpace)
-      throws EoulsanException {
+  public DataToolElement(final ToolInfo toolInfo, final Element param,
+      final String nameSpace) throws EoulsanException {
     super(param, nameSpace);
 
     this.formats =
@@ -100,13 +104,14 @@ public class DataToolElement extends AbstractToolElement {
 
     // Check count format found
     if (this.formats.size() > 1) {
-      throw new EoulsanException("Parsing tool xml: more one format data found,"
-          + Joiner.on(",").join(this.formats) + " invalid.");
+      throw newEoulsanException(toolInfo, getName(),
+          "more one format data found ("
+              + Joiner.on(",").join(this.formats) + ")");
     }
 
     if (this.formats.isEmpty()) {
       this.dataFormat = null;
-      throw new EoulsanException("Parsing tool xml: no format found");
+      throw newEoulsanException(toolInfo, getName(), "no format found");
     }
 
     // Get the format
@@ -118,8 +123,10 @@ public class DataToolElement extends AbstractToolElement {
 
     // Check if a valid format has been found
     if (this.dataFormat == null) {
-      throw new EoulsanException("Parsing tool xml: unknown format: " + format);
+      throw newEoulsanException(toolInfo, getName(),
+          "unknown format: " + format);
     }
+
   }
 
 }

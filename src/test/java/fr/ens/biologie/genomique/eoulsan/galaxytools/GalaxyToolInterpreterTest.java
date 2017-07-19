@@ -259,7 +259,8 @@ public class GalaxyToolInterpreterTest {
       // Init tool interpreter
       final InputStream is = this.getClass().getResourceAsStream(toolXMLPath);
       assertNotNull("Resource not found: " + toolXMLPath, is);
-      final GalaxyToolInterpreter interpreter = new GalaxyToolInterpreter(is);
+      final GalaxyToolInterpreter interpreter =
+          new GalaxyToolInterpreter(is, toolXMLPath);
 
       // Configure interpreter with parameters setting in workflow Eoulsan file
       interpreter.configure(setStepParameters);
@@ -269,7 +270,7 @@ public class GalaxyToolInterpreterTest {
 
       // Extract instance on toolData which contains all data useful from XML
       // file
-      final ToolData toolData = interpreter.getToolData();
+      final ToolInfo toolData = interpreter.getToolData();
 
       // Check input data names
       int inputCount = 0;
@@ -307,7 +308,7 @@ public class GalaxyToolInterpreterTest {
 
       // Init Tool python interpreter
       final CheetahInterpreter tpi =
-          new CheetahInterpreter(toolData.getCommandScript(), variables);
+          new CheetahInterpreter(toolData.getCheetahScript(), variables);
 
       // Create command line and compare with command expected
       compareCommandLine(tpi.execute());

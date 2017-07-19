@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractChildElementsByTagName;
+import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.newEoulsanException;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.setElementValue;
 import static fr.ens.biologie.genomique.eoulsan.util.XMLUtils.getElementsByTagName;
 
@@ -43,6 +44,7 @@ import com.google.common.collect.Multimap;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
 
 /**
  * This class define a conditional tool element.
@@ -173,12 +175,13 @@ public class ConditionalToolElement implements ToolElement {
 
   /**
    * Parses the actions related options.
+   * @param toolInfo the ToolInfo object
    * @param element the element
    * @return a multimap
    * @throws EoulsanException if an error occurs while creating a tool element
    */
   private Multimap<String, ToolElement> parseActionsRelatedOptions(
-      final Element element) throws EoulsanException {
+      final ToolInfo toolInfo, final Element element) throws EoulsanException {
 
     // Associate value options with param define in when tag, can be empty
     final Multimap<String, ToolElement> result = ArrayListMultimap.create();
@@ -201,7 +204,7 @@ public class ConditionalToolElement implements ToolElement {
       for (final Element elem : paramElement) {
         // Initialize tool parameter related to the choice
         final ToolElement toolParameter =
-            ToolElementFactory.newToolElement(elem, this.nameSpace);
+            ToolElementFactory.newToolElement(toolInfo, elem, this.nameSpace);
 
         if (toolParameter != null) {
           // Add tool parameter in result
@@ -227,31 +230,33 @@ public class ConditionalToolElement implements ToolElement {
 
   /**
    * Instantiates a new tool conditional element.
+   * @param toolInfo the ToolInfo object
    * @param element the element
    * @throws EoulsanException the eoulsan exception
    */
-  public ConditionalToolElement(final Element element) throws EoulsanException {
+  public ConditionalToolElement(final ToolInfo toolInfo, final Element element)
+      throws EoulsanException {
 
     this.nameSpace = element.getAttribute("name");
 
     final List<Element> param = extractChildElementsByTagName(element, "param");
 
     if (param.isEmpty() || param.size() != 1) {
-      throw new EoulsanException(
-          "Parsing tool xml: not found valid param element "
-              + param.size()
-              + ". Must be 1 in conditional element, for type select");
+      throw newEoulsanException(toolInfo, getName(),
+          "no valid parameter element found. "
+              + "Only 1 element must be found in conditional element (found:  "
+              + param.size() + ")");
     }
 
     // Check element select exist
     if (!param.get(0).getAttribute("type").equals("select")) {
-      throw new EoulsanException(
-          "Parsing tool xml: no parameter type select found, in conditional element.");
+      throw newEoulsanException(toolInfo, getName(),
+          "no parameter with \"select\" type found in conditional element");
     }
 
     // Init parameter select
     this.toolElementSelected =
-        new SelectParameterToolElement(param.get(0), this.nameSpace);
+        new SelectParameterToolElement(toolInfo, param.get(0), this.nameSpace);
 
     // Init default value
     if (this.toolElementSelected instanceof AbstractParameterToolElement
@@ -260,7 +265,8 @@ public class ConditionalToolElement implements ToolElement {
     }
 
     // Extract all case available
-    this.actionsRelatedOptions = this.parseActionsRelatedOptions(element);
+    this.actionsRelatedOptions =
+        this.parseActionsRelatedOptions(toolInfo, element);
     this.toolElementResult = new HashMap<>();
   }
 

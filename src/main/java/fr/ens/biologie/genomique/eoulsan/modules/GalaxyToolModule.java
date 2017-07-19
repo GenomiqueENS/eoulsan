@@ -43,7 +43,7 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolInterpreter;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolData;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolExecutorResult;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.DataToolElement;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.DockerExecutorInterpreter;
@@ -59,7 +59,7 @@ import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 public class GalaxyToolModule extends AbstractModule {
 
   /** Tool data. */
-  private ToolData toolData;
+  private ToolInfo toolData;
 
   /** The tool interpreter. */
   private final GalaxyToolInterpreter toolInterpreter;
@@ -132,7 +132,7 @@ public class GalaxyToolModule extends AbstractModule {
 
     // If the interpreter of the tool is Docker, add the Docker image to the
     // list of the Docker image to fetch
-    final ToolData toolData = this.toolInterpreter.getToolData();
+    final ToolInfo toolData = this.toolInterpreter.getToolData();
     if (DockerExecutorInterpreter.INTERPRETER_NAME
         .equals(toolData.getInterpreter())) {
 
@@ -159,7 +159,10 @@ public class GalaxyToolModule extends AbstractModule {
     }
 
     // Set the description of the context
-    status.setDescription(this.toolInterpreter.getDescription());
+    status.setDescription("Launch tool galaxy "
+        + this.toolData.getToolName() + ", version "
+        + this.toolData.getToolVersion() + " with interpreter "
+        + this.toolData.getInterpreter());
 
     status.setProgressMessage("Command line generate by python interpreter: "
         + result.getCommandLineAsString() + ".");
@@ -224,8 +227,8 @@ public class GalaxyToolModule extends AbstractModule {
       throw new NullPointerException("toolXMLis argument cannot be null");
     }
 
-    this.toolInterpreter = new GalaxyToolInterpreter(toolXMLis);
     this.source = source == null ? "Undefined source" : source.trim();
+    this.toolInterpreter = new GalaxyToolInterpreter(toolXMLis, this.source);
 
     // Extract tool data
     this.toolData = this.toolInterpreter.getToolData();

@@ -23,9 +23,12 @@
  */
 package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
+import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.newEoulsanException;
+
 import org.w3c.dom.Element;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
 
 /**
  * This class define an integer tool element parameter.
@@ -48,6 +51,8 @@ public class IntegerParameterToolElement extends TextParameterToolElement {
 
   /** The max. */
   private final int max;
+
+  private final ToolInfo toolInfo;
 
   //
   // Getters
@@ -77,9 +82,10 @@ public class IntegerParameterToolElement extends TextParameterToolElement {
     super.setValue(value);
 
     if (!this.isParameterValueValid()) {
-      throw new EoulsanException("ToolGalaxy step: parameter "
-          + this.getName() + " value setting for step: " + getValue()
-          + ". Invalid to interval [" + this.min + "," + this.max + "]");
+      throw newEoulsanException(this.toolInfo, getName(),
+          "invalid value for parameter: "
+              + getValue() + "(the value must be in interval [" + this.min + "-"
+              + this.max + "])");
     }
   }
 
@@ -99,35 +105,44 @@ public class IntegerParameterToolElement extends TextParameterToolElement {
 
   /**
    * Instantiates a new integer tool element parameter.
+   * @param toolInfo the ToolInfo object
    * @param param the parameter
    * @throws EoulsanException if an error occurs while setting the value
    */
-  public IntegerParameterToolElement(final Element param)
-      throws EoulsanException {
-    this(param, null);
+  public IntegerParameterToolElement(final ToolInfo toolInfo,
+      final Element param) throws EoulsanException {
+    this(toolInfo, param, null);
   }
 
   /**
    * Instantiates a new integer tool element parameter.
+   * @param toolInfo the ToolInfo object
    * @param param the parameter
    * @param nameSpace the name space
    * @throws EoulsanException if an error occurs while setting the value
    */
-  public IntegerParameterToolElement(final Element param,
-      final String nameSpace) throws EoulsanException {
+  public IntegerParameterToolElement(final ToolInfo toolInfo,
+      final Element param, final String nameSpace) throws EoulsanException {
 
-    super(param, nameSpace);
+    super(toolInfo, param, nameSpace);
+    this.toolInfo = toolInfo;
 
-    // Set value
+    // Get minimal value
+    String value = param.getAttribute(ATT_MIN_KEY);
     try {
-      String value = param.getAttribute(ATT_MIN_KEY);
       this.min = value.isEmpty() ? Integer.MIN_VALUE : Integer.parseInt(value);
-
-      value = param.getAttribute(ATT_MAX_KEY);
-      this.max = value.isEmpty() ? Integer.MAX_VALUE : Integer.parseInt(value);
-
     } catch (final NumberFormatException e) {
-      throw new EoulsanException("Fail extract value " + e.getMessage());
+      throw newEoulsanException(toolInfo, getName(),
+          "Failed to extract min value: " + value);
+    }
+
+    // Get maximal value
+    value = param.getAttribute(ATT_MAX_KEY);
+    try {
+      this.max = value.isEmpty() ? Integer.MAX_VALUE : Integer.parseInt(value);
+    } catch (final NumberFormatException e) {
+      throw newEoulsanException(toolInfo, getName(),
+          "Failed to extract max value: " + value);
     }
   }
 

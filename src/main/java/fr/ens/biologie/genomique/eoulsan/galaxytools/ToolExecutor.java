@@ -49,7 +49,7 @@ public class ToolExecutor {
   private static final String STDERR_SUFFIX = ".galaxytool.err";
 
   private final TaskContext stepContext;
-  private final ToolData toolData;
+  private final ToolInfo toolData;
   private final String commandLine;
 
   /**
@@ -119,7 +119,7 @@ public class ToolExecutor {
    * @param commandLine the command line
    * @throws IOException if an error occurs while executing the command
    */
-  public ToolExecutor(final TaskContext context, final ToolData toolData,
+  public ToolExecutor(final TaskContext context, final ToolInfo toolData,
       final String commandLine) throws IOException {
 
     checkNotNull(commandLine, "commandLine is null.");

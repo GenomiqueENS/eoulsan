@@ -3,6 +3,7 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 import org.w3c.dom.Element;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
 
 /**
  * This class define a text tool element parameter.
@@ -57,21 +58,24 @@ public class TextParameterToolElement extends AbstractParameterToolElement {
 
   /**
    * Instantiates a new text tool element parameter.
+   * @param toolInfo the ToolInfo object
    * @param param the parameter
    * @throws EoulsanException if an error occurs while setting the value
    */
-  public TextParameterToolElement(final Element param) throws EoulsanException {
-    this(param, null);
+  public TextParameterToolElement(final ToolInfo toolInfo, final Element param)
+      throws EoulsanException {
+    this(toolInfo, param, null);
   }
 
   /**
    * Instantiates a new text tool element parameter.
+   * @param toolInfo the ToolInfo object
    * @param param the parameter
    * @param nameSpace the name space
    * @throws EoulsanException if an error occurs while setting the value
    */
-  public TextParameterToolElement(final Element param, final String nameSpace)
-      throws EoulsanException {
+  public TextParameterToolElement(final ToolInfo toolInfo, final Element param,
+      final String nameSpace) throws EoulsanException {
     super(param, nameSpace);
 
     // Set the default value

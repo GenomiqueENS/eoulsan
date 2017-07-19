@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 import org.w3c.dom.Element;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
 
 /**
  * This class define a boolean tool element parameter.
@@ -124,19 +125,22 @@ public class BooleanParameterToolElement extends AbstractParameterToolElement {
 
   /**
    * Instantiates a new boolean tool parameter.
+   * @param toolInfo the ToolInfo object
    * @param param the parameter
    */
-  public BooleanParameterToolElement(final Element param) {
-    this(param, null);
+  public BooleanParameterToolElement(final ToolInfo toolInfo,
+      final Element param) {
+    this(toolInfo, param, null);
   }
 
   /**
    * Instantiates a new boolean tool parameter.
+   * @param toolInfo the ToolInfo object
    * @param param the parameter
    * @param nameSpace the name space
    */
-  public BooleanParameterToolElement(final Element param,
-      final String nameSpace) {
+  public BooleanParameterToolElement(final ToolInfo toolInfo,
+      final Element param, final String nameSpace) {
     super(param, nameSpace);
 
     this.checked = Boolean.parseBoolean(param.getAttribute(ATT_CHECKED_KEY));

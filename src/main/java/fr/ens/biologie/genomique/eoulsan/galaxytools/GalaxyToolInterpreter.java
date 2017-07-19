@@ -96,11 +96,8 @@ public class GalaxyToolInterpreter {
   private ElementPorts inputPorts;
   private ElementPorts outputPorts;
 
-  /** The step parameters. */
-  private final Map<String, Parameter> stepParameters;
-
-  /** The tool. */
-  private final ToolData tool;
+  /** The tool information. */
+  private final ToolInfo toolInfo;
 
   private boolean isConfigured = false;
   private boolean isExecuted = false;
@@ -289,16 +286,18 @@ public class GalaxyToolInterpreter {
     checkState(!isConfigured,
         "GalaxyToolStep, this instance has been already configured");
 
+    Map<String, Parameter> stepParameters = new HashMap<>();
+
     // Convert Set in Map
     for (final Parameter p : parameters) {
-      this.stepParameters.put(p.getName(), p);
+      stepParameters.put(p.getName(), p);
     }
 
     final Document localDoc = this.doc;
 
     // Extract variable settings
-    this.inputs = extractInputs(localDoc, this.stepParameters);
-    this.outputs = extractOutputs(localDoc, this.stepParameters);
+    this.inputs = extractInputs(this.toolInfo, localDoc, stepParameters);
+    this.outputs = extractOutputs(this.toolInfo, localDoc, stepParameters);
 
     this.inputPorts = new ElementPorts(this.inputs);
     this.outputPorts = new ElementPorts(this.outputs);
@@ -320,7 +319,7 @@ public class GalaxyToolInterpreter {
         "GalaxyToolStep, this instance has been already executed");
 
     context.getLogger().info("Parsing xml file successfully.");
-    context.getLogger().info("Tool description " + this.tool);
+    context.getLogger().info("Tool description " + this.toolInfo);
 
     final int variablesCount = this.inputs.size() + this.outputs.size();
     final Map<String, String> variables = new HashMap<>(variablesCount);
@@ -384,14 +383,14 @@ public class GalaxyToolInterpreter {
 
     // Create the Cheetah interpreter
     final CheetahInterpreter cheetahInterpreter =
-        new CheetahInterpreter(this.tool.getCommandScript(), variables);
+        new CheetahInterpreter(this.toolInfo.getCheetahScript(), variables);
 
     final String commandLine = cheetahInterpreter.execute();
 
     try {
       // Create the executor and interpret the command tag
       final ToolExecutor executor =
-          new ToolExecutor(context, this.tool, commandLine);
+          new ToolExecutor(context, this.toolInfo, commandLine);
 
       // Execute the command
       final ToolExecutorResult result = executor.execute();
@@ -403,13 +402,6 @@ public class GalaxyToolInterpreter {
     } catch (IOException e) {
       throw new EoulsanException(e);
     }
-  }
-
-  public String getDescription() {
-
-    return "Launch tool galaxy "
-        + this.tool.getToolName() + ", version " + this.tool.getToolVersion()
-        + " with interpreter " + this.tool.getInterpreter();
   }
 
   //
@@ -519,8 +511,8 @@ public class GalaxyToolInterpreter {
    * Gets the tool data.
    * @return the tool data
    */
-  public ToolData getToolData() {
-    return this.tool;
+  public ToolInfo getToolData() {
+    return this.toolInfo;
   }
 
   @Override
@@ -529,7 +521,7 @@ public class GalaxyToolInterpreter {
         + Joiner.on("\n").withKeyValueSeparator("=").join(this.inputs)
         + ", \noutputs="
         + Joiner.on("\n").withKeyValueSeparator("=").join(this.outputs)
-        + ", \ntool=" + this.tool + "]";
+        + ", \ntool=" + this.toolInfo + "]";
   }
 
   /**
@@ -565,7 +557,7 @@ public class GalaxyToolInterpreter {
   public GalaxyToolInterpreter(final File file)
       throws EoulsanException, FileNotFoundException {
 
-    this(new FileInputStream(file));
+    this(new FileInputStream(file), file.getName());
   }
 
   /**
@@ -573,15 +565,15 @@ public class GalaxyToolInterpreter {
    * @param in the input stream
    * @throws EoulsanException the Eoulsan exception
    */
-  public GalaxyToolInterpreter(final InputStream in) throws EoulsanException {
+  public GalaxyToolInterpreter(final InputStream in, final String toolSource)
+      throws EoulsanException {
 
     checkNotNull(in, "in argument cannot be null");
 
     this.toolXMLis = in;
     this.doc = buildDOM();
-    this.stepParameters = new HashMap<>();
 
-    this.tool = new ToolData(this.doc);
+    this.toolInfo = new ToolInfo(this.doc, toolSource);
 
     checkDomValidity();
 
