@@ -83,8 +83,8 @@ public class FloatParameterToolElement extends TextParameterToolElement {
     if (!this.isParameterValueValid()) {
       throw newEoulsanException(this.toolInfo, getName(),
           "invalid value for parameter: "
-              + getValue() + "(the value must be in interval [" + this.min + "-"
-              + this.max + "])");
+              + getValue() + " (the value must be in interval [" + this.min
+              + " - " + this.max + "])");
     }
   }
 
