@@ -40,8 +40,7 @@ import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  * @since 2.0
  */
-
-public abstract class AbstractMetadata {
+public abstract class AbstractMetadata implements Metadata {
 
   private Map<String, String> metadata = new LinkedHashMap<>();
 
@@ -49,11 +48,7 @@ public abstract class AbstractMetadata {
   // Methods
   //
 
-  /**
-   * Get the value according the key.
-   * @param key the key
-   * @return the value
-   */
+  @Override
   public String get(final String key) {
 
     checkNotNull(key, "key argument cannot be null");
@@ -61,11 +56,7 @@ public abstract class AbstractMetadata {
     return this.metadata.get(key.trim());
   }
 
-  /**
-   * Get the trimmed value according the key.
-   * @param key the key
-   * @return the value
-   */
+  @Override
   public String getTrimmed(final String key) {
 
     final String value = get(key);
@@ -73,11 +64,7 @@ public abstract class AbstractMetadata {
     return value != null ? value.trim() : null;
   }
 
-  /**
-   * Set the value according the key.
-   * @param key the key
-   * @param value the value
-   */
+  @Override
   public void set(final String key, final String value) {
 
     checkNotNull(key, "key argument cannot be null");
@@ -86,11 +73,7 @@ public abstract class AbstractMetadata {
     this.metadata.put(key, value);
   }
 
-  /**
-   * Set the value as a list according the key.
-   * @param key the key
-   * @param value the value as a list
-   */
+  @Override
   public void set(final String key, final List<String> value) {
 
     checkNotNull(key, "key argument cannot be null");
@@ -111,29 +94,19 @@ public abstract class AbstractMetadata {
     }
   }
 
-  /**
-   * Get the number of metadata.
-   * @return the number of metadata
-   */
+  @Override
   public int size() {
 
     return this.metadata.size();
   }
 
-  /**
-   * Test if there is no metadata.
-   * @return true if there is no metadata
-   */
+  @Override
   public boolean isEmpty() {
 
     return this.metadata.isEmpty();
   }
 
-  /**
-   * Test if the key is in md.
-   * @param key the key
-   * @return true if the key is in md
-   */
+  @Override
   public boolean contains(final String key) {
 
     checkNotNull(key, "key argument cannot be null");
@@ -141,11 +114,7 @@ public abstract class AbstractMetadata {
     return this.metadata.containsKey(key.trim());
   }
 
-  /**
-   * Get the value according the key as a list.
-   * @param key the key
-   * @return the value as a list
-   */
+  @Override
   public List<String> getAsList(final String key) {
 
     checkNotNull(key, "key argument cannot be null");
@@ -153,11 +122,7 @@ public abstract class AbstractMetadata {
     return StringUtils.deserializeStringArray(get(key.trim()));
   }
 
-  /**
-   * Get the value according the key as a boolean.
-   * @param key the key
-   * @return the value as a boolean
-   */
+  @Override
   public boolean getAsBoolean(final String key) {
 
     checkNotNull(key, "key argument cannot be null");
@@ -165,28 +130,19 @@ public abstract class AbstractMetadata {
     return Boolean.parseBoolean(get(key.trim()).toLowerCase());
   }
 
-  /**
-   * Get the keys of the metadata
-   * @return a set with the keys of the metadata
-   */
+  @Override
   public Set<String> keySet() {
 
     return Collections.unmodifiableSet(this.metadata.keySet());
   }
 
-  /**
-   * Get an entry set of the metadata.
-   * @return a set of entries
-   */
+  @Override
   public Set<Map.Entry<String, String>> entrySet() {
 
     return Collections.unmodifiableSet(this.metadata.entrySet());
   }
 
-  /**
-   * Remove the value according the key.
-   * @param key the key
-   */
+  @Override
   public void remove(final String key) {
 
     checkNotNull(key, "key argument cannot be null");

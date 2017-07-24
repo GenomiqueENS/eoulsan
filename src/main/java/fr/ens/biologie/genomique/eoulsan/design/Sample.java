@@ -24,171 +24,56 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.io.Serializable;
-import java.util.Objects;
-
-import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
-
 /**
- * This class defines a sample.
+ * This interface defines a sample.
  * @author Xavier Bauquet
  * @since 2.0
  */
-
-public class Sample implements Serializable {
-
-  /** Serialization version UID. */
-  private static final long serialVersionUID = 3674095532228721218L;
+public interface Sample {
 
   /** Sample Id field. */
-  public static final String SAMPLE_ID_FIELD = "SampleId";
-
+  String SAMPLE_ID_FIELD = "SampleId";
   /** Sample Name field. */
-  public static final String SAMPLE_NAME_FIELD = "SampleName";
-
+  String SAMPLE_NAME_FIELD = "SampleName";
   /** Sample Name field. */
-  public static final String SAMPLE_NUMBER_FIELD = "SampleNumber";
-
-  private static int instanceCount;
-
-  private final Design design;
-  private final String sampleId;
-  private final int sampleNumber = ++instanceCount;
-  private String sampleName = "Sample" + sampleNumber;
-  private final SampleMetadata sampleMetadata = new SampleMetadata();
-
-  //
-  // Getters
-  //
+  String SAMPLE_NUMBER_FIELD = "SampleNumber";
 
   /**
    * Get the design related to the sample.
    * @return the Design object related to the sample
    */
-  public Design getDesign() {
-
-    return this.design;
-  }
+  Design getDesign();
 
   /**
    * Get the sample id.
    * @return the sample id
    */
-  public String getId() {
-
-    return this.sampleId;
-  }
+  String getId();
 
   /**
    * Get the sample number.
    * @return the sample number
    */
-  public int getNumber() {
-
-    return this.sampleNumber;
-  }
+  int getNumber();
 
   /**
    * Get the sample name.
    * @return the sample name
    */
-  public String getName() {
-
-    return this.sampleName;
-  }
+  String getName();
 
   /**
    * Get the sample metadata.
    * @return an object SampleMetadata
    */
-  public SampleMetadata getMetadata() {
-
-    return this.sampleMetadata;
-  }
-
-  //
-  // Setter
-  //
+  SampleMetadata getMetadata();
 
   /**
    * Set the sample name.
    * @param newSampleName the new sample name
    */
-  public void setName(String newSampleName) {
+  void setName(String newSampleName);
 
-    checkNotNull(newSampleName, "newSampleName argument cannot be null");
+  int hashCode();
 
-    final String name = newSampleName.trim();
-
-    // Do nothing if the new name is the old name
-    if (name.equals(this.sampleName)) {
-      return;
-    }
-
-    checkArgument(!this.design.containsSampleName(name),
-        "The sample name already exists in the design: " + name);
-
-    this.sampleName = name;
-  }
-
-  //
-  // Object methods
-  //
-
-  @Override
-  public String toString() {
-
-    return com.google.common.base.Objects.toStringHelper(this)
-        .add("sampleId", this.sampleId)
-        .add("sampleNumber", this.sampleNumber)
-        .add("sampleName", this.sampleName)
-        .add("sampleMetadata", this.sampleMetadata).toString();
-  }
-
-  @Override
-  public int hashCode() {
-
-    return Objects.hash(this.sampleId, this.sampleNumber, this.sampleName,
-        this.sampleMetadata);
-  }
-
-  @Override
-  public boolean equals(final Object o) {
-
-    if (o == this) {
-      return true;
-    }
-
-    if (!(o instanceof Sample)) {
-      return false;
-    }
-
-    final Sample that = (Sample) o;
-
-    return Objects.equals(this.sampleId, that.sampleId)
-        && Objects.equals(this.sampleName, that.sampleName)
-        && Objects.equals(this.sampleMetadata, that.sampleMetadata);
-  }
-
-  //
-  // Constructor
-  //
-
-  /**
-   * @param design the design object
-   * @param sampleId the sample id
-   */
-  Sample(final Design design, final String sampleId) {
-
-    checkNotNull(design, "design argument cannot be null");
-    checkNotNull(sampleId, "sampleId argument cannot be null");
-    checkArgument(FileNaming.isDataNameValid(sampleId),
-        "The id of a sample can only contains letters and digit: " + sampleId);
-
-    this.design = design;
-    this.sampleId = sampleId.trim();
-  }
 }

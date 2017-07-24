@@ -28,17 +28,17 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.design.Design;
-import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
-import fr.ens.biologie.genomique.eoulsan.design.Sample;
+import fr.ens.biologie.genomique.eoulsan.design.DesignImpl;
+import fr.ens.biologie.genomique.eoulsan.design.ExperimentSampleImpl;
+import fr.ens.biologie.genomique.eoulsan.design.SampleImpl;
 
 public class ExperimentSampleTest {
 
   @Test
   public void test() {
-    Design d = new Design();
-    Sample s = new Sample(d, "1");
-    ExperimentSample es = new ExperimentSample(s);
+    Design d = DesignFactory.createEmptyDesign();
+    Sample s = new SampleImpl(d, "1");
+    ExperimentSample es = new ExperimentSampleImpl(s);
 
     // test ExperimentSampleName
     assertNotNull(es.getSample());

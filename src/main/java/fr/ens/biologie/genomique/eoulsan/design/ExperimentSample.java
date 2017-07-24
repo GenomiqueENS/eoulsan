@@ -24,92 +24,23 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.io.Serializable;
-import java.util.Objects;
-
 /**
- * This class defines the experiment sample.
+ * This interface defines the experiment sample.
  * @author Xavier Bauquet
  * @since 2.0
  */
-
-public class ExperimentSample implements Serializable {
-
-  /** Serialization version UID. */
-  private static final long serialVersionUID = -3180171254543892681L;
-
-  private final Sample sample;
-  private final ExperimentSampleMetadata metadata =
-      new ExperimentSampleMetadata();
-
-  //
-  // Getters
-  //
+public interface ExperimentSample {
 
   /**
    * Get the experiment sample name.
    * @return the experiment sample name
    */
-  public Sample getSample() {
-    return this.sample;
-  }
+  Sample getSample();
 
   /**
    * Get the experiment sample metadata.
    * @return an ExperimentSampleMetadata object
    */
-  public ExperimentSampleMetadata getMetadata() {
-    return this.metadata;
-  }
-
-  //
-  // Object methods
-  //
-
-  @Override
-  public String toString() {
-
-    return com.google.common.base.Objects.toStringHelper(this)
-        .add("experimentSampleName", this.sample)
-        .add("experimentSampleMetadata", this.metadata).toString();
-  }
-
-  @Override
-  public int hashCode() {
-
-    return Objects.hash(this.sample, this.metadata);
-  }
-
-  @Override
-  public boolean equals(final Object o) {
-
-    if (o == this) {
-      return true;
-    }
-
-    if (!(o instanceof ExperimentSample)) {
-      return false;
-    }
-
-    final ExperimentSample that = (ExperimentSample) o;
-
-    return Objects.equals(this.sample, that.sample)
-        && Objects.equals(this.metadata, that.metadata);
-  }
-
-  //
-  // Constructor
-  //
-  /**
-   * @param sample the experiment sample
-   */
-  ExperimentSample(final Sample sample) {
-
-    checkNotNull(sample, "The sample argument cannot be null");
-
-    this.sample = sample;
-  }
+  ExperimentSampleMetadata getMetadata();
 
 }

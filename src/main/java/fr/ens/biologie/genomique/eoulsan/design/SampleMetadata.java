@@ -24,340 +24,232 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.io.Serializable;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
 
 /**
- * This class defines the sample metadata.
+ * This interface defines the sample metadata.
  * @author Xavier Bauquet
  * @since 2.0
  */
-
-public class SampleMetadata extends AbstractMetadata implements Serializable {
-
-  /** Serialization version UID. */
-  private static final long serialVersionUID = -6298102513903455973L;
+public interface SampleMetadata extends Metadata {
 
   // constants
-  public static final String READS_KEY = "Reads";
-  public static final String DESCRIPTION_KEY = "Description";
-  public static final String OPERATOR_KEY = "Operator";
-  public static final String COMMENT_KEY = "Comment";
-  public static final String DATE_KEY = "Date";
-  public static final String SERIAL_NUMBER_KEY = "SerialNumber";
-  public static final String UUID_KEY = "UUID";
-  public static final String REP_TECH_GROUP_KEY = "RepTechGroup";
-  public static final String REFERENCE_KEY = "Reference";
-  public static final String FASTQ_FORMAT_KEY = "FastqFormat";
-  public static final String CONDITION_KEY = "Condition";
-
-  //
-  // Getters
-  //
+  String READS_KEY = "Reads";
+  String DESCRIPTION_KEY = "Description";
+  String OPERATOR_KEY = "Operator";
+  String COMMENT_KEY = "Comment";
+  String DATE_KEY = "Date";
+  String SERIAL_NUMBER_KEY = "SerialNumber";
+  String UUID_KEY = "UUID";
+  String REP_TECH_GROUP_KEY = "RepTechGroup";
+  String REFERENCE_KEY = "Reference";
+  String FASTQ_FORMAT_KEY = "FastqFormat";
+  String CONDITION_KEY = "Condition";
 
   /**
    * Get the reads as a list.
    * @return the list of reads
    */
-  public List<String> getReads() {
-    return getAsList(READS_KEY);
-  }
+  List<String> getReads();
 
   /**
    * Get the description.
    * @return the description
    */
-  public String getDescription() {
-    return getTrimmed(DESCRIPTION_KEY);
-  }
+  String getDescription();
 
   /**
    * Get the operator.
    * @return the operator
    */
-  public String getOperator() {
-    return getTrimmed(OPERATOR_KEY);
-  }
+  String getOperator();
 
   /**
    * Get the comment.
    * @return the comment
    */
-  public String getComment() {
-    return getTrimmed(COMMENT_KEY);
-  }
+  String getComment();
 
   /**
    * Get the date.
    * @return the date
    */
-  public String getDate() {
-    return getTrimmed(DATE_KEY);
-  }
+  String getDate();
 
   /**
    * Get the serial number.
    * @return the serial number
    */
-  public String getSerialNumber() {
-    return getTrimmed(SERIAL_NUMBER_KEY);
-  }
+  String getSerialNumber();
 
   /**
    * Get the UUID.
    * @return the UUID
    */
-  public String getUUID() {
-    return getTrimmed(UUID_KEY);
-  }
+  String getUUID();
 
   /**
    * Get the RepTechGroup.
    * @return the RepTechGroup
    */
-  public String getRepTechGroup() {
-    return getTrimmed(REP_TECH_GROUP_KEY);
-  }
+  String getRepTechGroup();
 
   /**
    * Get the reference.
    * @return the reference
    */
-  public String getReference() {
-    return getTrimmed(REFERENCE_KEY);
-  }
+  String getReference();
 
   /**
    * Get the reference.
    * @return the reference
    */
-  public boolean isReference() {
-
-    String value = getReference();
-
-    if (value == null) {
-      return false;
-    }
-
-    value = value.trim().toLowerCase();
-
-    return "t".equals(value)
-        || "true".equals(value) || "y".equals(value) || "yes".equals(value);
-  }
+  boolean isReference();
 
   /**
    * Get the fastq format.
    * @return the fastq format
    */
-  public FastqFormat getFastqFormat() {
-
-    return FastqFormat.getFormatFromName(get(FASTQ_FORMAT_KEY));
-  }
+  FastqFormat getFastqFormat();
 
   /**
    * Get the condition.
    * @return the condition
    */
-  public String getCondition() {
-    return get(CONDITION_KEY);
-  }
-
-  //
-  // Setters
-  //
+  String getCondition();
 
   /**
    * Set the reads.
    * @param newReads the new reads
    */
-  public void setReads(List<String> newReads) {
-    set(READS_KEY, newReads);
-  }
+  void setReads(List<String> newReads);
 
   /**
    * Set the description.
    * @param newDescription the new description
    */
-  public void setDescription(String newDescription) {
-    set(DESCRIPTION_KEY, newDescription);
-  }
+  void setDescription(String newDescription);
 
   /**
    * Set the operator.
    * @param newOperator the new operator
    */
-  public void setOperator(String newOperator) {
-    set(OPERATOR_KEY, newOperator);
-  }
+  void setOperator(String newOperator);
 
   /**
    * Set the comment.
    * @param newComment the new comment
    */
-  public void setComment(String newComment) {
-    set(COMMENT_KEY, newComment);
-  }
+  void setComment(String newComment);
 
   /**
    * Set the date.
    * @param newDate the new date
    */
-  public void setDate(String newDate) {
-    set(DATE_KEY, newDate);
-  }
+  void setDate(String newDate);
 
   /**
    * Set the serial number.
    * @param newSerialNumber the new serial number
    */
-  public void setSerialNumber(String newSerialNumber) {
-    set(SERIAL_NUMBER_KEY, newSerialNumber);
-  }
+  void setSerialNumber(String newSerialNumber);
 
   /**
    * Set the UUID.
    * @param newUUID the new UUID
    */
-  public void setUUID(String newUUID) {
-    set(UUID_KEY, newUUID);
-  }
+  void setUUID(String newUUID);
 
   /**
    * Set the ReptechGroup.
    * @param newReptechGroup the new ReptechGroup
    */
-  public void setRepTechGroup(String newReptechGroup) {
-    set(REP_TECH_GROUP_KEY, newReptechGroup);
-  }
+  void setRepTechGroup(String newReptechGroup);
 
   /**
    * Set the reference.
    * @param newReference the new reference
    */
-  public void setReference(String newReference) {
-    set(REFERENCE_KEY, newReference);
-  }
+  void setReference(String newReference);
 
   /**
    * Set the fastq format.
    * @param newfastqFormat the new fastq format
    */
-  public void setFastqFormat(FastqFormat newfastqFormat) {
-
-    checkNotNull(newfastqFormat, "FastqFormat is null");
-
-    set(FASTQ_FORMAT_KEY, newfastqFormat.getName());
-  }
+  void setFastqFormat(FastqFormat newfastqFormat);
 
   /**
    * Set the condition.
    * @param newCondition the new condition
    */
-  public void setCondition(String newCondition) {
-    set(CONDITION_KEY, newCondition);
-  }
-
-  //
-  // Contains
-  //
+  void setCondition(String newCondition);
 
   /**
    * Test if the reads field exists.
    * @return true if the reads field exists
    */
-  public boolean containsReads() {
-    return contains(READS_KEY);
-  }
+  boolean containsReads();
 
   /**
    * Test if the description field exists.
    * @return true if the description field exists
    */
-  public boolean containsDescription() {
-    return contains(DESCRIPTION_KEY);
-  }
+  boolean containsDescription();
 
   /**
    * Test if the operator field exists.
    * @return true if the operator field exists
    */
-  public boolean containsOperator() {
-    return contains(OPERATOR_KEY);
-  }
+  boolean containsOperator();
 
   /**
    * Test if the comment field exists.
    * @return true if the comment field exists
    */
-  public boolean containsComment() {
-    return contains(COMMENT_KEY);
-  }
+  boolean containsComment();
 
   /**
    * Test if the date field exists.
    * @return true if the date field exists
    */
-  public boolean containsDate() {
-    return contains(DATE_KEY);
-  }
+  boolean containsDate();
 
   /**
    * Test if the serial number field exists.
    * @return true if the serial number field exists
    */
-  public boolean containsSerialNumber() {
-    return contains(SERIAL_NUMBER_KEY);
-  }
+  boolean containsSerialNumber();
 
   /**
    * Test if the UUID field exists.
    * @return true if the UUID field exists
    */
-  public boolean containsUUID() {
-    return contains(UUID_KEY);
-  }
+  boolean containsUUID();
 
   /**
    * Test if the RepTechGroup field exists.
    * @return true if the RepTechGroup field exists
    */
-  public boolean containsRepTechGroup() {
-    return contains(REP_TECH_GROUP_KEY);
-  }
+  boolean containsRepTechGroup();
 
   /**
    * Test if the reference field exists.
    * @return true if the reference field exists
    */
-  public boolean containsReference() {
-    return contains(REFERENCE_KEY);
-  }
+  boolean containsReference();
 
   /**
    * Test if the fastq format field exists.
    * @return true if the fastq format field exists
    */
-  public boolean containsFastqFormat() {
-    return contains(FASTQ_FORMAT_KEY);
-  }
+  boolean containsFastqFormat();
 
   /**
    * Test if the condition field exists.
    * @return true if the condition field exists
    */
-  public boolean containsCondition() {
-    return contains(CONDITION_KEY);
-  }
-
-  //
-  // Constructor
-  //
-  public SampleMetadata() {
-
-  }
+  boolean containsCondition();
 
 }

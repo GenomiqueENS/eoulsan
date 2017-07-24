@@ -37,7 +37,7 @@ public final class DesignFactory {
    */
   public static Design createEmptyDesign() {
 
-    return new Design();
+    return new DesignImpl();
   }
 
   //

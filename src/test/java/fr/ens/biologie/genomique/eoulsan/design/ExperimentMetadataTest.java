@@ -25,20 +25,17 @@
 package fr.ens.biologie.genomique.eoulsan.design;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
-
-import fr.ens.biologie.genomique.eoulsan.design.Design;
-import fr.ens.biologie.genomique.eoulsan.design.ExperimentMetadata;
 
 public class ExperimentMetadataTest {
 
   @Test
   public void test() {
-    Design d = new Design();
+    Design d = DesignFactory.createEmptyDesign();
     d.addExperiment("1");
     ExperimentMetadata em = d.getExperiment("1").getMetadata();
 
