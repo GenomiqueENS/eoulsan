@@ -74,6 +74,4 @@ public interface Sample {
    */
   void setName(String newSampleName);
 
-  int hashCode();
-
 }
