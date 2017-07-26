@@ -24,45 +24,24 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-import java.util.Objects;
+import static org.junit.Assert.assertNotNull;
 
-/**
- * This class is a factory for experimental design.
- * @since 1.0
- * @author Laurent Jourdren
- */
-public final class DesignFactory {
+import org.junit.Test;
 
-  /**
-   * Create a design without targets.
-   * @return a new DesignImpl
-   */
-  public static Design createEmptyDesign() {
+public class UnmodifiableExperimentSampleTest {
 
-    return new DesignImpl();
-  }
+  @Test
+  public void test() {
+    Design d = DesignFactory.createEmptyDesign();
+    Sample s = new SampleImpl(d, "1");
+    ExperimentSample es = new ExperimentSampleImpl(s);
+    ExperimentSample ues = new UnmodifiableExperimentSample(es);
 
-  /**
-   * Create an unmodifiable wrapper around an existing design.
-   * @param design the design
-   * @return an unmodifiable wrapper
-   */
-  public static Design unmodifiableDesign(final Design design) {
+    // test ExperimentSampleName
+    assertNotNull(ues.getSample());
 
-    Objects.requireNonNull(design, "design argument cannot be null");
-
-    if (design instanceof UnmodifiableDesign) {
-      return design;
-    }
-
-    return new UnmodifiableDesign(design);
-  }
-
-  //
-  // Constructor
-  //
-
-  private DesignFactory() {
+    // test ExperimentSampleMetadata
+    assertNotNull(ues.getMetadata());
   }
 
 }
