@@ -143,9 +143,13 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
     // Create context thread
     final TaskThread st = new TaskThread(context);
 
+    // Get the number of required processors
+    final int requiredProcessors =
+        context.getCurrentStep().getRequiredProcessors();
+
     // Submit the context thread the thread executor
     synchronized (this.threads) {
-      this.threads.add(this.executor.submit(st, st));
+      this.threads.add(this.executor.submit(st, st, requiredProcessors));
     }
   }
 

@@ -254,8 +254,7 @@
           <tr><td>discardoutput</td><td>boolean</td><td>false</td><td>When this attribute is set to true, the output files of the step will be saved in the working directory instead of the output directory of the workflow and will be removed at the end of the workflow if successful</td></tr>
           <tr><td>skip</td><td>boolean</td><td>false</td><td>The <tt>skip</tt> attribute allow to skip a step if its value is set to true</td></tr>
           <tr><td>requiredprocs</td><td>integer</td><td>-1</td><td>The <tt>requiredprocs</tt> attribute allow to set the number of processors to use by the step. 
-            This value is only used in <b>clusterexec</b> mode and for steps in <b>local mode</b> that handle their parallelization like the mapping step.
-            By default in <b>clusterexec</b> mode, one processor will be used to process each step.</td></tr>
+            By default one processor will be used to process each task of a step (except for steps that in <b>local mode</b> that handle their parallelization like the mapping step).</td></tr>
           <tr><td>requiredmemory</td><td>integer</td><td>-1</td><td>The <tt>requiredmemory</tt> attribute allow to set the amount of memory required in megabytes by the step. 
             This value is only used in <b>clusterexec</b> mode. If not set, Eoulsan will require to the cluster scheduler the same amount of memory allocated to Eoulsan JVM.
             Unit prefixes like MB, M, GB, G can be used for the required memory value (e.g. 8GB).</td></tr>

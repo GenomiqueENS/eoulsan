@@ -24,6 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.schedulers;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -41,10 +44,43 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
   private final ReentrantLock pauseLock = new ReentrantLock();
   private final Condition unPaused = this.pauseLock.newCondition();
 
+  private final int maxThreads;
+  private volatile int threadsAvailable;
+  private final Map<Future<?>, Integer> requirements =
+      new ConcurrentHashMap<>();
+
+  /**
+   * Submit a task.
+   * @param task the task to submmit
+   * @param result the result
+   * @param requiredProcessors the required processor number
+   * @return a Future task
+   */
+  public <T> Future<T> submit(Runnable task, T result, int requiredProcessors) {
+
+    // The number of thread of the task cannot excess the maximal number of
+    // threads and if the number of required processors is not set, use 1 as
+    // default value
+    int requiredThreads = requiredProcessors < 1
+        ? 1 : Math.min(requiredProcessors, this.maxThreads);
+
+    Future<T> submitResult = super.submit(task, result);
+    this.requirements.put(submitResult, requiredThreads);
+
+    return submitResult;
+  }
+
   @Override
   protected void beforeExecute(final Thread t, final Runnable r) {
 
     super.beforeExecute(t, r);
+
+    // Wait if requirements has not been yet updated
+    while (!this.requirements.containsKey(r)) {
+      sleep();
+    }
+
+    int requiredThreads = this.requirements.get(r);
 
     this.pauseLock.lock();
 
@@ -57,6 +93,30 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
     } finally {
       this.pauseLock.unlock();
     }
+
+    // Sleep until threads are available
+    while (this.threadsAvailable - requiredThreads < 0) {
+      sleep();
+    }
+
+    synchronized (this) {
+      this.threadsAvailable -= requiredThreads;
+    }
+
+  }
+
+  @Override
+  protected void afterExecute(Runnable task, Throwable t) {
+
+    int requiredThreads = this.requirements.get(task);
+
+    synchronized (this) {
+      this.threadsAvailable += requiredThreads;
+    }
+
+    this.requirements.remove(task);
+
+    super.afterExecute(task, t);
   }
 
   /**
@@ -88,6 +148,18 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
     }
   }
 
+  /**
+   * Sleep 1 second.
+   */
+  private static void sleep() {
+
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      // Do nothing
+    }
+  }
+
   //
   // Constructor
   //
@@ -100,6 +172,9 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 
     super(threadNumber, threadNumber, 0L, TimeUnit.MILLISECONDS,
         new LinkedBlockingQueue<Runnable>());
+
+    this.maxThreads = threadNumber < 1 ? 1 : threadNumber;
+    this.threadsAvailable = this.maxThreads;
   }
 
 }
