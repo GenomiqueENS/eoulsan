@@ -2,8 +2,6 @@ package fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters;
 
 import java.io.File;
 
-import org.apache.commons.lang.NullArgumentException;
-
 import fr.ens.biologie.genomique.eoulsan.Main;
 
 /**
@@ -43,11 +41,11 @@ public abstract class BundledScriptBpipeTaskScheduler
       final String commandWrapperScript) {
 
     if (schedulerName == null) {
-      throw new NullArgumentException("schedulerName argument cannot be null");
+      throw new NullPointerException("schedulerName argument cannot be null");
     }
 
     if (commandWrapperScript == null) {
-      throw new NullArgumentException(
+      throw new NullPointerException(
           "commandWrapperScript argument cannot be null");
     }
 
