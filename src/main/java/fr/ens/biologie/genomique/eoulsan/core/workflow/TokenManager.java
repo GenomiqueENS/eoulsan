@@ -58,6 +58,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.core.InputPort;
 import fr.ens.biologie.genomique.eoulsan.core.Naming;
@@ -797,6 +798,11 @@ public class TokenManager implements Runnable {
    * Start the Token manager thread.
    */
   void start() {
+
+    // Do not start the thread if is a cluster task
+    if (EoulsanRuntime.getRuntime().getMode() == EoulsanExecMode.CLUSTER_TASK) {
+      return;
+    }
 
     // Check if the thread has been already started
     checkState(!this.isStarted, "The token manager thread for step "
