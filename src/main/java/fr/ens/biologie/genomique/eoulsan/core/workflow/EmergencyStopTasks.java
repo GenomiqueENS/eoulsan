@@ -14,7 +14,7 @@ public class EmergencyStopTasks {
 
   private static EmergencyStopTasks instance;
 
-  private Set<EmergencyStopTask> tasks = new HashSet<>();
+  private volatile Set<EmergencyStopTask> tasks = new HashSet<>();
 
   /**
    * Add an emergency task.
@@ -24,7 +24,7 @@ public class EmergencyStopTasks {
 
     checkNotNull(task, "task argument cannot be null");
 
-    synchronized (this) {
+    synchronized (this.tasks) {
       this.tasks.add(task);
     }
   }
@@ -37,7 +37,7 @@ public class EmergencyStopTasks {
 
     checkNotNull(task, "task argument cannot be null");
 
-    synchronized (this) {
+    synchronized (this.tasks) {
       this.tasks.remove(task);
     }
   }
@@ -47,7 +47,7 @@ public class EmergencyStopTasks {
    */
   public void stop() {
 
-    synchronized (this) {
+    synchronized (this.tasks) {
       for (EmergencyStopTask task : this.tasks) {
         task.stop();
       }
