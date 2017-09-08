@@ -38,8 +38,9 @@
     <section name="Expression module">
 
       <p>This module allow to compute expression using the filtered alignments and a annotation file that contains genomic elements to count.
-      Eoulsan currently provide two counting methods : the original Eoulsan counting method and htseq-count. The second method is a fast the
-      implementation of htseq-count. For more information about this method see <a href="http://www-huber.embl.de/users/anders/HTSeq/doc/count.html">HTSeq website</a>.</p>
+      Eoulsan currently provide one counting method: htseq-count (the original Eoulsan counting method is now deprecated).
+      This method is a fast the implementation of htseq-count.
+      For more information about this method see <a href="http://www-huber.embl.de/users/anders/HTSeq/doc/count.html">HTSeq website</a>.</p>
 
       <p><b>WARNING</b>: The support of the original Eoulsan counter is now deprecated and will be soon removed from Eoulsan.</p>
 

@@ -39,7 +39,7 @@
 
 		<section name="Normalization module">
 
-			<p>This module allow to normalization on expression module results.</p>
+			<p>This module allow to normalize expression module results.</p>
 
 			<ul>
 				<li><b>Name</b>: normalization</li>
