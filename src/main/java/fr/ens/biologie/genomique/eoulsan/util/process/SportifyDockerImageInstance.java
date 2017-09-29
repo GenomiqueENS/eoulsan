@@ -9,6 +9,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
+import java.nio.file.FileStore;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,6 +34,7 @@ import com.spotify.docker.client.messages.ProgressDetail;
 import com.spotify.docker.client.messages.ProgressMessage;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
 
 /**
@@ -49,6 +52,7 @@ public class SportifyDockerImageInstance extends AbstractSimpleProcess
   private final String dockerImage;
   private final int userUid;
   private final int userGid;
+  private final boolean convertNFSFilesToMountRoots;
 
   @Override
   public AdvancedProcess start(List<String> commandLine,
@@ -114,7 +118,8 @@ public class SportifyDockerImageInstance extends AbstractSimpleProcess
             TMP_DIR_ENV_VARIABLE + "=" + temporaryDirectory.getAbsolutePath());
       }
 
-      builder.hostConfig(createBinds(executionDirectory, toBind));
+      builder.hostConfig(createBinds(executionDirectory, toBind,
+          this.convertNFSFilesToMountRoots));
 
       // Set environment variables
       builder.env(env);
@@ -308,24 +313,30 @@ public class SportifyDockerImageInstance extends AbstractSimpleProcess
    * Create Docker binds.
    * @param executionDirectory execution directory
    * @param files files to binds
+   * @param convertNFSFilesToMountRoots convert NFS files to mount points
    * @return an HostConfig object
    */
   private static HostConfig createBinds(final File executionDirectory,
-      List<File> files) {
+      final List<File> files, final boolean convertNFSFilesToMountRoots)
+      throws IOException {
 
     HostConfig.Builder builder = HostConfig.builder();
     Set<String> binds = new HashSet<>();
 
     if (executionDirectory != null) {
 
-      binds.add(executionDirectory.getAbsolutePath()
-          + ':' + executionDirectory.getAbsolutePath());
+      File f = convertNFSFilesToMountRoots
+          ? convertNFSFileToMountPoint(executionDirectory) : executionDirectory;
+
+      binds.add(f.getAbsolutePath()
+          + ':' + f.getAbsolutePath());
     }
 
     if (files != null) {
       for (File f : files) {
 
         if (f.exists()) {
+          f = convertNFSFilesToMountRoots ? convertNFSFileToMountPoint(f) : f;
           binds.add(f.getAbsolutePath() + ':' + f.getAbsolutePath());
         }
       }
@@ -420,6 +431,39 @@ public class SportifyDockerImageInstance extends AbstractSimpleProcess
     new Thread(r).start();
   }
 
+
+  /**
+   * Convert a file path to a mount point path if the file is on a NFS server.
+   * @param files the list of file to convert
+   * @return a list of file
+   * @throws IOException if mount of a file cannot be found
+   */
+  static File convertNFSFileToMountPoint(File file) throws IOException {
+
+    if (file == null) {
+      return null;
+    }
+
+    FileStore fileStore = Files.getFileStore(file.toPath());
+    EoulsanLogger.getLogger()
+        .info("file: " + file + ", fileSystem type: " + fileStore.type());
+
+    // If the file is on an NFS mount
+    if ("nfs".equals(fileStore.type()) || "nfs4".equals(fileStore.type())) {
+
+      // Get Mount point
+      String info = fileStore.toString();
+      String mountPoint =
+          info.substring(0, info.length() - fileStore.name().length() - 3);
+
+      EoulsanLogger.getLogger().info("in: " + file + ", out: " + mountPoint);
+
+      return new File(mountPoint);
+    }
+
+    return file;
+  }
+
   //
   // Object methods
   //
@@ -452,6 +496,8 @@ public class SportifyDockerImageInstance extends AbstractSimpleProcess
     this.dockerImage = dockerImage;
     this.userUid = SystemUtils.uid();
     this.userGid = SystemUtils.gid();
+    this.convertNFSFilesToMountRoots = EoulsanRuntime.isRuntime()
+        ? EoulsanRuntime.getSettings().isDockerMountNFSRoots() : false;
   }
 
 }

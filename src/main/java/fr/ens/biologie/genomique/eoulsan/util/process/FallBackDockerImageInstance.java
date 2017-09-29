@@ -3,6 +3,7 @@ package fr.ens.biologie.genomique.eoulsan.util.process;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.util.process.SportifyDockerImageInstance.convertNFSFileToMountPoint;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
 
@@ -26,6 +28,7 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
   private final String dockerImage;
   private final int userUid;
   private final int userGid;
+  private final boolean convertNFSFilesToMountRoots;
 
   @Override
   public AdvancedProcess start(final List<String> commandLine,
@@ -84,7 +87,7 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
     }
 
     // Bind directories
-    toBind(command, directoriesToBind);
+    toBind(command, directoriesToBind, this.convertNFSFilesToMountRoots);
 
     // Set the UID and GID of the docker process
     if (this.userUid >= 0 && this.userGid >= 0) {
@@ -129,13 +132,20 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
    * Add the volume arguments to the Docker command line.
    * @param command the command line
    * @param directories the share directory to add
+   * @throws IOException if an error occurs when converting the file path
    */
   private static void toBind(final List<String> command,
-      final List<File> directories) {
+      final List<File> directories, final boolean convertNFSFilesToMountRoots)
+      throws IOException {
 
     for (File directory : directories) {
 
       if (directory != null) {
+
+        directory = convertNFSFilesToMountRoots
+            ? convertNFSFileToMountPoint(directory)
+            : directory;
+
         command.add("--volume");
         command.add(
             directory.getAbsolutePath() + ':' + directory.getAbsolutePath());
@@ -205,6 +215,9 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
     this.dockerImage = dockerImage;
     this.userUid = SystemUtils.uid();
     this.userGid = SystemUtils.gid();
+
+    this.convertNFSFilesToMountRoots = EoulsanRuntime.isRuntime()
+        ? EoulsanRuntime.getSettings().isDockerMountNFSRoots() : false;
   }
 
 }

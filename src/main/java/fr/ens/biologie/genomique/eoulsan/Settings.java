@@ -147,6 +147,9 @@ public final class Settings implements Serializable {
 
   private static final String DOCKER_URI_KEY = MAIN_PREFIX_KEY + "docker.uri";
 
+  private static final String DOCKER_MOUNT_NFS_ROOTS_KEY =
+      MAIN_PREFIX_KEY + "docker.mount.nfs.roots";
+
   private static final String ZOOKEEPER_CONNECT_STRING_KEY =
       "zookeeper.connect.string";
 
@@ -549,6 +552,16 @@ public final class Settings implements Serializable {
   public String getDockerConnection() {
 
     return this.properties.getProperty(DOCKER_URI_KEY);
+  }
+
+  /**
+   * Test if when use Docker, NFS roots must been mounted instead of file paths.
+   * @return true if if when use Docker, NFS roots must been mounted instead of file paths
+   */
+  public boolean isDockerMountNFSRoots() {
+
+    return Boolean.parseBoolean(
+        this.properties.getProperty(DOCKER_MOUNT_NFS_ROOTS_KEY, "" + false));
   }
 
   /**
@@ -1054,6 +1067,15 @@ public final class Settings implements Serializable {
   public void setDockerConnectionURI(final String uri) {
 
     this.properties.setProperty(DOCKER_URI_KEY, uri);
+  }
+
+  /**
+   * Set if when use Docker, NFS roots must been mounted instead of file paths.
+   * param value the value of the parameter
+   */
+  public void setDockerMountNFSRoots(final boolean enable) {
+
+    this.properties.setProperty(DOCKER_MOUNT_NFS_ROOTS_KEY, "" + enable);
   }
 
   /**
