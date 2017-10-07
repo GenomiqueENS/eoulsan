@@ -103,6 +103,7 @@ public class CommandWorkflowModel implements Serializable {
   private final Map<String, Set<Parameter>> stepParameters = new HashMap<>();
   private final Map<String, Boolean> stepSkipped = new HashMap<>();
   private final Map<String, Boolean> stepDiscardOutput = new HashMap<>();
+  private final Map<String, Boolean> stepDiscardOutputAsap = new HashMap<>();
   private final Map<String, Integer> stepRequiredMemory = new HashMap<>();
   private final Map<String, Integer> stepRequiredProcessors = new HashMap<>();
   private final Map<String, String> stepDataProduct = new HashMap<>();
@@ -215,6 +216,8 @@ public class CommandWorkflowModel implements Serializable {
    * @param parameters parameters of the step
    * @param skipStep true if the step must be skip
    * @param discardOutput true if the output of the step can be removed
+   * @param discardOutput true if the output of the step can be removed as soon
+   *          as possible
    * @param requiredMemory required memory
    * @param requiredProcs required processors
    * @throws EoulsanException if an error occurs while adding the step
@@ -222,8 +225,9 @@ public class CommandWorkflowModel implements Serializable {
   void addStep(final String stepId, final String module, final String version,
       final Map<String, StepOutputPort> inputs, final Set<Parameter> parameters,
       final boolean skipStep, final boolean discardOutput,
-      final int requiredMemory, final int requiredProcs,
-      final String dataProduct) throws EoulsanException {
+      final boolean discardOutputAsap, final int requiredMemory,
+      final int requiredProcs, final String dataProduct)
+      throws EoulsanException {
 
     if (module == null) {
       throw new EoulsanException("The module of the step is null.");
@@ -314,6 +318,7 @@ public class CommandWorkflowModel implements Serializable {
     this.stepParameters.put(stepIdLower, parameters);
     this.stepSkipped.put(stepIdLower, skipStep);
     this.stepDiscardOutput.put(stepIdLower, discardOutput);
+    this.stepDiscardOutputAsap.put(stepIdLower, discardOutputAsap);
     this.stepRequiredMemory.put(stepIdLower, requiredMemory);
     this.stepRequiredProcessors.put(stepIdLower, requiredProcs);
     this.stepDataProduct.put(stepIdLower, dataProduct);
@@ -398,6 +403,16 @@ public class CommandWorkflowModel implements Serializable {
   public boolean isStepDiscardOutput(final String stepId) {
 
     return this.stepDiscardOutput.get(stepId);
+  }
+
+  /**
+   * Test if the output of the step can be removed as soon as possible.
+   * @param stepId step id
+   * @return true if the output of the step can be removed
+   */
+  public boolean isStepDiscardOutputAsap(final String stepId) {
+
+    return this.stepDiscardOutputAsap.get(stepId);
   }
 
   /**

@@ -629,6 +629,44 @@ public class TokenManager implements Runnable {
   //
 
   /**
+   * Remove inputs of the step if required by user
+   */
+  private void removeInputsIfRequired() {
+
+    final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
+
+    for (AbstractStep step : this.step.getWorkflowInputPorts()
+        .getLinkedSteps()) {
+
+      final TokenManager tokenManager = registry.getTokenManager(step);
+      tokenManager.removeOutputsIfRequired();
+    }
+  }
+
+  /**
+   * Remove outputs of the step if required by user
+   */
+  private void removeOutputsIfRequired() {
+
+    // Do nothing if removing output as soon as possible is not required
+    if (!this.step.isDiscardOutputAsap()) {
+      return;
+    }
+
+    // Check if all the step that require step's output is done
+    for (AbstractStep step : this.step.getWorkflowOutputPorts()
+        .getLinkedSteps()) {
+
+      if (step.getState() != StepState.DONE) {
+        return;
+      }
+    }
+
+    // Remove the outputs of the step
+    removeOutputsToDiscard();
+  }
+
+  /**
    * Add a failed task.
    * @param failedContext failed task context
    */
@@ -955,6 +993,9 @@ public class TokenManager implements Runnable {
       this.step.getAbstractWorkflow().emergencyStop(exception,
           "Error while executing the workflow");
     }
+
+    // Remove inputs of the step if required by user
+    removeInputsIfRequired();
   }
 
   /**

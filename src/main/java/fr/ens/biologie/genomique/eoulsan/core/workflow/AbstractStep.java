@@ -84,6 +84,7 @@ public abstract class AbstractStep implements Step {
   private final String moduleName;
   private final ExecutionMode mode;
   private boolean skip;
+  private boolean discardOutputAsap;
   private final boolean terminalStep;
   private final boolean copyResultsToOutput;
   private final boolean createLogFiles;
@@ -299,6 +300,14 @@ public abstract class AbstractStep implements Step {
    */
   DataProduct getDataProduct() {
     return this.dataProduct;
+  }
+
+  /**
+   * Test if output of the step must be removed as soon as possible.
+   * @return true if output of the step must be removed as soon as possible
+   */
+  public boolean isDiscardOutputAsap() {
+    return this.discardOutputAsap;
   }
 
   //
@@ -650,6 +659,7 @@ public abstract class AbstractStep implements Step {
    * @param stepVersion step version
    * @param skip true to skip execution of the step
    * @param copyResultsToOutput copy step result to output directory
+   * @param discardOutputAsap discard output as soon as possible
    * @param parameters parameters of the step
    * @param requiredMemory required memory
    * @param requiredProcessors required processors
@@ -658,12 +668,14 @@ public abstract class AbstractStep implements Step {
    */
   AbstractStep(final AbstractWorkflow workflow, final String id,
       final String moduleName, final String stepVersion, final boolean skip,
-      final boolean copyResultsToOutput, final Set<Parameter> parameters,
+      final boolean copyResultsToOutput, final boolean discardOutputAsap,
+      final Set<Parameter> parameters,
       final int requiredMemory, final int requiredProcessors,
       final String dataProduct) throws EoulsanException {
 
     this(workflow, id, moduleName, stepVersion, skip, copyResultsToOutput,
-        parameters, requiredMemory, requiredProcessors, dataProduct, null);
+        discardOutputAsap, parameters, requiredMemory, requiredProcessors,
+        dataProduct, null);
   }
 
   /**
@@ -674,6 +686,7 @@ public abstract class AbstractStep implements Step {
    * @param stepVersion step version
    * @param skip true to skip execution of the step
    * @param copyResultsToOutput copy step result to output directory
+   * @param discardOutputAsap discard output as soon as possible
    * @param parameters parameters of the step
    * @param requiredMemory required memory
    * @param requiredProcessors required processors
@@ -683,10 +696,10 @@ public abstract class AbstractStep implements Step {
    */
   AbstractStep(final AbstractWorkflow workflow, final String id,
       final String moduleName, final String stepVersion, final boolean skip,
-      final boolean copyResultsToOutput, final Set<Parameter> parameters,
-      final int requiredMemory, final int requiredProcessors,
-      final String dataProduct, final DataFile outputDirectory)
-      throws EoulsanException {
+      final boolean copyResultsToOutput, final boolean discardOutputAsap,
+      final Set<Parameter> parameters, final int requiredMemory,
+      final int requiredProcessors, final String dataProduct,
+      final DataFile outputDirectory) throws EoulsanException {
 
     checkNotNull(workflow, "Workflow argument cannot be null");
     checkNotNull(id, "Step id argument cannot be null");
@@ -701,6 +714,7 @@ public abstract class AbstractStep implements Step {
     this.moduleName = moduleName;
     this.version = stepVersion;
     this.copyResultsToOutput = copyResultsToOutput;
+    this.discardOutputAsap = discardOutputAsap;
     this.requiredMemory = requiredMemory;
     this.requiredProcessors = requiredProcessors;
     this.dataProductConfiguration = dataProduct;
