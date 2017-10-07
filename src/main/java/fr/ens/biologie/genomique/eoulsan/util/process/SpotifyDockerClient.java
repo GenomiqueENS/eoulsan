@@ -50,7 +50,7 @@ public class SpotifyDockerClient implements DockerClient {
   @Override
   public DockerImageInstance createConnection(String dockerImage) {
 
-    return new SportifyDockerImageInstance(this.client, dockerImage);
+    return new SpotifyDockerImageInstance(this.client, dockerImage);
   }
 
   @Override

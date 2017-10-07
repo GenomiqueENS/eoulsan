@@ -3,7 +3,7 @@ package fr.ens.biologie.genomique.eoulsan.util.process;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.util.process.SportifyDockerImageInstance.convertNFSFileToMountPoint;
+import static fr.ens.biologie.genomique.eoulsan.util.process.SpotifyDockerImageInstance.convertNFSFileToMountPoint;
 
 import java.io.File;
 import java.io.IOException;

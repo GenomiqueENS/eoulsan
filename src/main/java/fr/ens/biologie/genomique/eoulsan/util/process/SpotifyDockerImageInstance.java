@@ -43,7 +43,7 @@ import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class SportifyDockerImageInstance extends AbstractSimpleProcess
+public class SpotifyDockerImageInstance extends AbstractSimpleProcess
     implements DockerImageInstance {
 
   private static final int SECOND_TO_WAIT_BEFORE_KILLING_CONTAINER = 10;
@@ -484,7 +484,7 @@ public class SportifyDockerImageInstance extends AbstractSimpleProcess
    * @param dockerClient Docker connection URI
    * @param dockerImage Docker image
    */
-  SportifyDockerImageInstance(final DockerClient dockerClient,
+  SpotifyDockerImageInstance(final DockerClient dockerClient,
       final String dockerImage) {
 
     checkNotNull(dockerClient, "dockerClient argument cannot be null");
