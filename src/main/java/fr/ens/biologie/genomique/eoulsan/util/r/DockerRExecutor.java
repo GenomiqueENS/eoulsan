@@ -13,6 +13,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
 import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
+import fr.ens.biologie.genomique.eoulsan.util.process.SystemSimpleProcess;
 
 /**
  * This class define a Docker RExecutor.
@@ -81,24 +82,9 @@ public class DockerRExecutor extends ProcessRExecutor {
   }
 
   @Override
-  protected void executeRScript(final File rScriptFile, final boolean sweave,
-      final String sweaveOuput, final File workflowOutputDir, final String... scriptArguments)
-      throws IOException {
+  protected SimpleProcess createSimpleProcess() throws IOException {
 
-    final SimpleProcess process =
-        DockerManager.getInstance().createImageInstance(this.dockerImage);
-
-    final List<String> commandLine =
-        createCommand(rScriptFile, sweave, sweaveOuput, scriptArguments);
-
-    final File stdoutFile = changeFileExtension(rScriptFile, ".out");
-
-    final int exitValue = process.execute(commandLine, getOutputDirectory(),
-        Collections.singletonMap(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG),
-        getTemporaryDirectory(), stdoutFile, stdoutFile, true, workflowOutputDir);
-
-    ProcessUtils.throwExitCodeException(exitValue,
-        Joiner.on(' ').join(commandLine));
+    return DockerManager.getInstance().createImageInstance(this.dockerImage);
   }
 
   //
