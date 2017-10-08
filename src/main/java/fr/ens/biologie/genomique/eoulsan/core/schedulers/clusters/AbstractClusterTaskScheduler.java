@@ -39,6 +39,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import com.google.common.collect.Queues;
 
@@ -60,9 +62,36 @@ import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
     implements ClusterTaskScheduler {
 
-  private static final int STATUS_UPDATE_DELAY = 5 * 1000;
+  private static final int STATUS_UPDATE_DELAY = 2 * 1000;
 
   private final Queue<TaskThread> queue = Queues.newLinkedBlockingQueue();
+  private final StatusUpdateWaitingQueue statusUpdateQueue =
+      new StatusUpdateWaitingQueue();
+
+  /**
+   * This class define a waiting queue for status update queries.
+   */
+  private static class StatusUpdateWaitingQueue {
+
+    private BlockingQueue<TaskThread> queue = new LinkedBlockingDeque<>();
+
+    public void waitTurn(TaskThread l) throws InterruptedException {
+
+      // Add element to queue
+      this.queue.add(l);
+
+      TaskThread e;
+
+      // Wait while the element if not the first element of the queue
+      do {
+        e = this.queue.element();
+        Thread.sleep(STATUS_UPDATE_DELAY);
+      } while (e != l);
+
+      // Remove the element from the queue
+      this.queue.poll();
+    }
+  }
 
   /**
    * This class allow to fetch standard output or standard error.
@@ -208,6 +237,9 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
 
         do {
 
+          // Wait turn before querying job status
+          statusUpdateQueue.waitTurn(this);
+
           status = statusJob(this.jobId);
 
           switch (status.getStatusValue()) {
@@ -221,9 +253,6 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
           default:
             break;
           }
-
-          // Wait before do another query on job status
-          Thread.sleep(STATUS_UPDATE_DELAY);
 
         } while (!completed);
 
