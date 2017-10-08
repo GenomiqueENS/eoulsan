@@ -330,6 +330,9 @@ public class GalaxyToolInterpreter {
 
     Data inData = null;
 
+    // Input file to use for Docker
+    final Set<File> inputFiles = new HashSet<>();
+
     // Extract from inputs variable command
     for (final ToolElement e : this.inputs.values()) {
 
@@ -344,10 +347,10 @@ public class GalaxyToolInterpreter {
           inData = data;
         }
 
-        final DataFile inFile = inPort.getInputDataFile(context);
-        variables.put(e.getName(), inFile.toFile().getAbsolutePath());
-        variables.put(removeNamespace(e.getName()),
-            inFile.toFile().getAbsolutePath());
+        final File inFile = inPort.getInputDataFile(context).toFile();
+        inputFiles.add(inFile);
+        variables.put(e.getName(), inFile.getAbsolutePath());
+        variables.put(removeNamespace(e.getName()), inFile.getAbsolutePath());
 
       } else {
         // Variables setting with parameters file
@@ -390,7 +393,7 @@ public class GalaxyToolInterpreter {
     try {
       // Create the executor and interpret the command tag
       final ToolExecutor executor =
-          new ToolExecutor(context, this.toolInfo, commandLine);
+          new ToolExecutor(context, this.toolInfo, commandLine, inputFiles);
 
       // Execute the command
       final ToolExecutorResult result = executor.execute();

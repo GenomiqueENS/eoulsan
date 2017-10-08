@@ -29,7 +29,11 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
@@ -51,6 +55,7 @@ public class ToolExecutor {
   private final TaskContext stepContext;
   private final ToolInfo toolData;
   private final String commandLine;
+  private final Set<File> inputFiles;
 
   /**
    * Execute a tool.
@@ -105,7 +110,25 @@ public class ToolExecutor {
     getLogger().info("Stderr: " + stderrFile);
 
     return ti.execute(command, executionDirectory, tempDirectory, stdoutFile,
-        stderrFile, workflowOutputDirectory);
+        stderrFile, toArray(inputFiles, workflowOutputDirectory));
+  }
+
+  /**
+   * Convert collection and array of File objects into an Array.
+   * @param collection the collection to convert
+   * @param files the array to convert
+   * @return an Array of File
+   */
+  private static File[] toArray(Collection<File> collection, File... files) {
+
+    final List<File> list = new ArrayList<>();
+    list.addAll(collection);
+
+    if (files != null) {
+      list.addAll(Arrays.asList(files));
+    }
+
+    return list.toArray(new File[list.size()]);
   }
 
   //
@@ -117,10 +140,11 @@ public class ToolExecutor {
    * @param context the context
    * @param toolData the tool data
    * @param commandLine the command line
+   * @param inputFiles input files to use
    * @throws IOException if an error occurs while executing the command
    */
   public ToolExecutor(final TaskContext context, final ToolInfo toolData,
-      final String commandLine) throws IOException {
+      final String commandLine, final Set<File> inputFiles) throws IOException {
 
     checkNotNull(commandLine, "commandLine is null.");
     checkNotNull(context, "Step context is null.");
@@ -128,6 +152,7 @@ public class ToolExecutor {
     this.toolData = toolData;
     this.commandLine = commandLine.trim();
     this.stepContext = context;
+    this.inputFiles = inputFiles;
 
     execute();
   }
