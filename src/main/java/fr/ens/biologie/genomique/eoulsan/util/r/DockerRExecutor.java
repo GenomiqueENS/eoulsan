@@ -3,17 +3,11 @@ package fr.ens.biologie.genomique.eoulsan.util.r;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collections;
-import java.util.List;
-
-import com.google.common.base.Joiner;
 
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
-import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
 import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
-import fr.ens.biologie.genomique.eoulsan.util.process.SystemSimpleProcess;
 
 /**
  * This class define a Docker RExecutor.
@@ -54,8 +48,8 @@ public class DockerRExecutor extends ProcessRExecutor {
 
     // Check if the file is in the output directory (or a subdir) or in the
     // temporary directory (or a subdir)
-    if (isInSubDir(getOutputDirectory(), inFile)
-        || isInSubDir(getTemporaryDirectory(), inFile)) {
+    if (!(isInSubDir(getOutputDirectory(), inFile)
+        || isInSubDir(getTemporaryDirectory(), inFile))) {
 
       // If not, copy files
       if (outputFile.exists()) {
@@ -70,15 +64,36 @@ public class DockerRExecutor extends ProcessRExecutor {
     }
   }
 
+  /**
+   * Test if a file is in a sub directory of another file.
+   * @param a first file
+   * @param b second file
+   * @return true if a file is in a sub directory of another file
+   */
   private static boolean isInSubDir(File a, File b) {
 
-    final File aAbs = a.getAbsoluteFile();
-    final File bAbs = b.getAbsoluteFile();
+    final File aAbs = getCanonicalOrAbsoluteFile(a);
+    final File bAbs = getCanonicalOrAbsoluteFile(b);
 
     final URI aURI = aAbs.toURI();
     final URI bURI = bAbs.toURI();
 
     return !bURI.equals(aURI.relativize(bURI));
+  }
+
+  /**
+   * Get the canonical file of a file or the absolute file of the file if the
+   * canonical file cannot be revolved.
+   * @param f the file
+   * @return the canonical file or the absolute file
+   */
+  private static File getCanonicalOrAbsoluteFile(File f) {
+
+    try {
+      return f.getCanonicalFile();
+    } catch (IOException e) {
+      return  f.getAbsoluteFile();
+    }
   }
 
   @Override
