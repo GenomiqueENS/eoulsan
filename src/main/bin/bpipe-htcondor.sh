@@ -228,10 +228,10 @@ status () {
                   2|R) echo RUNNING;;
                   3|X) echo COMPLETE 999;; # Artificial exit code because Slurm does not provide one
                   4|C)
-                     command_exit_status=`condor_history -limit 1 -format "%d\n" ExitCode $1`
+                     command_exit_status=`condor_history -limit 1 -format "%d\n" ExitCode $1 | tr -d ' '`
                      condor_history_success=$?
 
-                     if [[ -z "command_exit_status" ]]
+                     if [[ -z "$command_exit_status" ]]
                      then
                         exit $CONDOR_Q_FAILED
                      fi
