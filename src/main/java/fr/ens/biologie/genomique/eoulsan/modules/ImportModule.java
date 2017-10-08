@@ -82,6 +82,7 @@ public class ImportModule extends AbstractModule {
 
   private Set<DataFile> files;
   private OutputPorts outputPorts;
+  private boolean copy;
 
   @Override
   public String getName() {
@@ -122,6 +123,10 @@ public class ImportModule extends AbstractModule {
         if (p.getStringValue().length() > 0) {
           baseDir = new DataFile(p.getStringValue());
         }
+        break;
+
+      case "copy":
+        this.copy = p.getBooleanValue();
         break;
 
       default:
@@ -244,7 +249,12 @@ public class ImportModule extends AbstractModule {
           }
 
           // Copy or create symbolic link
-          DataFiles.symlinkOrCopy(inputFile, outputFile, true);
+          if (this.copy) {
+            DataFiles.copy(inputFile, outputFile);
+
+          } else {
+            DataFiles.symlinkOrCopy(inputFile, outputFile, true);
+          }
         }
 
         // Set the metadata for the data
