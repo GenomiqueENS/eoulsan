@@ -30,15 +30,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Hyperlink;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 
 /**
@@ -55,7 +55,8 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
   private final SXSSFWorkbook wb = new SXSSFWorkbook(MAX_LINES_IN_MEMORY);
   private final Sheet sheet = this.wb.createSheet("new sheet");
   private final CreationHelper createHelper = wb.getCreationHelper();
-  private final CellStyle style;
+  private final CellStyle headerStyle;
+  private final CellStyle linkStyle;
   private int rowCount;
   private int colCount;
   private Row row = this.sheet.createRow(this.rowCount++);
@@ -65,7 +66,7 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
 
     final Cell cell = this.row.createCell(this.colCount++);
     cell.setCellValue(new XSSFRichTextString(fieldName));
-    cell.setCellStyle(this.style);
+    cell.setCellStyle(this.headerStyle);
   }
 
   @Override
@@ -116,11 +117,11 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
         Hyperlink hyperlink = createHelper.createHyperlink(Hyperlink.LINK_URL);
         hyperlink.setAddress(link);
         cell.setHyperlink(hyperlink);
+        cell.setCellStyle(this.linkStyle);
       }
 
       cell.setCellValue(new XSSFRichTextString(text));
     }
-
   }
 
   @Override
@@ -152,16 +153,25 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
     // Temporary files will be compressed
     this.wb.setCompressTempFiles(true);
 
-    // Create a new font and alter it.
+    // Create a new header font and alter it.
     Font font = this.wb.createFont();
     font.setItalic(true);
     font.setFontHeightInPoints((short) 10);
 
     // Fonts are set into a style so create a new one to use.
-    this.style = this.wb.createCellStyle();
-    this.style.setFillForegroundColor(HSSFColor.ORANGE.index);
-    this.style.setFillPattern(CellStyle.SOLID_FOREGROUND);
-    this.style.setFont(font);
+    this.headerStyle = this.wb.createCellStyle();
+    this.headerStyle.setFillForegroundColor(HSSFColor.ORANGE.index);
+    this.headerStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+    this.headerStyle.setFont(font);
+
+    // Create a new link font and alter it.
+    Font linkfont = this.wb.createFont();
+    linkfont.setUnderline(XSSFFont.U_SINGLE);
+    linkfont.setColor(HSSFColor.BLUE.index);
+
+    // Create link style
+    this.linkStyle = this.wb.createCellStyle();
+    this.linkStyle.setFont(linkfont);
   }
 
   /**
