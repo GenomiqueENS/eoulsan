@@ -3,6 +3,7 @@ package fr.ens.biologie.genomique.eoulsan.util.process;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.util.CollectionUtils.nullToEmpty;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -202,10 +203,9 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
   public void pullImageIfNotExists() throws IOException {
 
     try {
-      List<Image> images = this.dockerClient.listImages();
 
-      for (Image image : images) {
-        for (String tag : image.repoTags()) {
+      for (Image image : nullToEmpty(this.dockerClient.listImages())) {
+        for (String tag : nullToEmpty(image.repoTags())) {
           if (this.dockerImage.equals(tag)) {
             return;
           }
@@ -224,10 +224,9 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
       throws IOException {
 
     try {
-      List<Image> images = this.dockerClient.listImages();
 
-      for (Image image : images) {
-        for (String tag : image.repoTags()) {
+      for (Image image : nullToEmpty(this.dockerClient.listImages())) {
+        for (String tag : nullToEmpty(image.repoTags())) {
           if (this.dockerImage.equals(tag)) {
             return;
           }

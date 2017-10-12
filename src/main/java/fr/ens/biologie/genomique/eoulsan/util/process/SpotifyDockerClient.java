@@ -3,7 +3,6 @@ package fr.ens.biologie.genomique.eoulsan.util.process;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import com.spotify.docker.client.DefaultDockerClient;
@@ -11,6 +10,7 @@ import com.spotify.docker.client.DockerException;
 import com.spotify.docker.client.messages.Image;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
+import fr.ens.biologie.genomique.eoulsan.util.CollectionUtils;
 
 /**
  * This class define a Docker client using the Spotify Docker client library.
@@ -70,16 +70,11 @@ public class SpotifyDockerClient implements DockerClient {
     final Set<String> result = new HashSet<>();
 
     try {
-      List<Image> images = this.client.listImages();
 
-      if (images != null) {
-        for (Image image : images) {
-          if (image != null) {
-            for (String tag : image.repoTags()) {
-              if (tag != null) {
-                result.add(tag);
-              }
-            }
+      for (Image image : CollectionUtils.nullToEmpty(this.client.listImages())) {
+        for (String tag : CollectionUtils.nullToEmpty(image.repoTags())) {
+          if (tag != null) {
+            result.add(tag);
           }
         }
       }
