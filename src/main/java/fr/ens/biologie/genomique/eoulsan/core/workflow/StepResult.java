@@ -234,15 +234,22 @@ public class StepResult {
     this.immutable = true;
   }
 
-  public void addResult(final TaskResultImpl result) {
+  /**
+   * Add a task result to the step result.
+   * @param context the context to execute
+   * @param result the result to add
+   */
+  public void addResult(final TaskContextImpl context,
+      final TaskResultImpl result) {
 
+    requireNonNull(context, "result cannot be null");
     requireNonNull(result, "result cannot be null");
 
     // Check immutable state
     checkImmutableState();
 
     // Check if result has been already added
-    final int contextId = result.getContext().getId();
+    final int contextId = context.getId();
     checkState(!this.taskNames.containsKey(contextId),
         "Context #"
             + contextId + " has already been added to result of step "
@@ -266,7 +273,7 @@ public class StepResult {
     // Compute duration
     this.duration = this.endTime.getTime() - this.startTime.getTime();
 
-    final String taskName = result.getContext().getContextName();
+    final String taskName = context.getContextName();
     this.taskNames.put(contextId, taskName);
 
     // Set counters information
@@ -285,7 +292,7 @@ public class StepResult {
         }
 
         // Set the state of the step as fail
-        result.getContext().getStep().setState(FAILED);
+        context.getStep().setState(FAILED);
       }
 
     }
