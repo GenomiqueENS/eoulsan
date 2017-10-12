@@ -29,14 +29,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.Hyperlink;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFCell;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
@@ -54,7 +55,7 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
   private final OutputStream os;
   private final SXSSFWorkbook wb = new SXSSFWorkbook(MAX_LINES_IN_MEMORY);
   private final Sheet sheet = this.wb.createSheet("new sheet");
-  private final CreationHelper createHelper = wb.getCreationHelper();
+  private final CellStyle defaultStyle;
   private final CellStyle headerStyle;
   private final CellStyle linkStyle;
   private int rowCount;
@@ -87,6 +88,7 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
 
     final Cell cell = this.row.createCell(this.colCount++);
     cell.setCellValue(l);
+    cell.setCellStyle(this.defaultStyle);
   }
 
   @Override
@@ -94,6 +96,7 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
 
     final Cell cell = this.row.createCell(this.colCount++);
     cell.setCellValue(d);
+    cell.setCellStyle(this.defaultStyle);
   }
 
   @Override
@@ -102,6 +105,7 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
     final Cell cell = this.row.createCell(this.colCount++);
     if (text != null) {
       cell.setCellValue(new XSSFRichTextString(text));
+      cell.setCellStyle(this.defaultStyle);
     }
   }
 
@@ -109,18 +113,20 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
   public void writeLink(final String text, final String link)
       throws IOException {
 
-    final Cell cell = this.row.createCell(this.colCount++);
+    final SXSSFCell cell =
+        (SXSSFCell) this.row.createCell(this.colCount++, CellType.FORMULA);
+    // final Cell cell = this.row.createCell(this.colCount++);
 
     if (text != null) {
 
       if (link != null) {
-        Hyperlink hyperlink = createHelper.createHyperlink(Hyperlink.LINK_URL);
-        hyperlink.setAddress(link);
-        cell.setHyperlink(hyperlink);
+        cell.setCellFormula("HYPERLINK(\""
+            + link.replace("\"", "\"\"") + "\",\"" + text.replace("\"", "\"\"")
+            + "\")");
         cell.setCellStyle(this.linkStyle);
       }
 
-      cell.setCellValue(new XSSFRichTextString(text));
+      cell.setCellValue(text);
     }
   }
 
@@ -153,23 +159,29 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
     // Temporary files will be compressed
     this.wb.setCompressTempFiles(true);
 
-    // Create a new header font and alter it.
-    Font font = this.wb.createFont();
-    font.setItalic(true);
-    font.setFontHeightInPoints((short) 10);
+    // Define default style
+    Font defaultFont = this.wb.createFont();
+    defaultFont.setFontName("Arial");
+    defaultFont.setFontHeightInPoints((short) 10);
+    this.defaultStyle = this.wb.createCellStyle();
+    this.defaultStyle.setFont(defaultFont);
 
-    // Fonts are set into a style so create a new one to use.
+    // Define header style
+    Font headerFont = this.wb.createFont();
+    headerFont.setFontName(defaultFont.getFontName());
+    headerFont.setFontHeightInPoints(defaultFont.getFontHeightInPoints());
+    headerFont.setItalic(true);
     this.headerStyle = this.wb.createCellStyle();
-    this.headerStyle.setFillForegroundColor(HSSFColor.ORANGE.index);
-    this.headerStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-    this.headerStyle.setFont(font);
+    this.headerStyle.setFillForegroundColor(IndexedColors.ORANGE.getIndex());
+    this.headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+    this.headerStyle.setFont(headerFont);
 
-    // Create a new link font and alter it.
+    // Define link style
     Font linkfont = this.wb.createFont();
+    linkfont.setFontName(defaultFont.getFontName());
+    linkfont.setFontHeightInPoints(defaultFont.getFontHeightInPoints());
     linkfont.setUnderline(XSSFFont.U_SINGLE);
-    linkfont.setColor(HSSFColor.BLUE.index);
-
-    // Create link style
+    linkfont.setColor(IndexedColors.BLUE.getIndex());
     this.linkStyle = this.wb.createCellStyle();
     this.linkStyle.setFont(linkfont);
   }
