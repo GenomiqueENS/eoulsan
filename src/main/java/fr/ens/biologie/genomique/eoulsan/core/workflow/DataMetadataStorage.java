@@ -225,21 +225,6 @@ public class DataMetadataStorage {
 
   /**
    * Get the singleton.
-   * @return the DataMetadataStorage object
-   */
-  public static DataMetadataStorage getInstance() {
-
-    if (singleton == null) {
-
-      throw new EoulsanRuntimeException(
-          "No metadata storage has been previously instanced");
-    }
-
-    return singleton;
-  }
-
-  /**
-   * Get the singleton.
    * @param metadataDir directory where store metadata
    * @return the DataMetadataStorage object
    */

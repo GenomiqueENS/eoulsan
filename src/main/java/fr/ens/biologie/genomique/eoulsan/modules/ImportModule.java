@@ -214,7 +214,8 @@ public class ImportModule extends AbstractModule {
                       fileNaming.getPart());
 
               // Set metadata of imported files
-              final boolean isMetadataSet = DataMetadataStorage.getInstance()
+              final boolean isMetadataSet =
+                  DataMetadataStorage.getInstance(context.getOutputDirectory())
                   .loadMetadata(data, Collections.singletonList(inputFile));
 
               // Set the metadata from sample metadata
@@ -258,7 +259,8 @@ public class ImportModule extends AbstractModule {
         }
 
         // Set the metadata for the data
-        DataMetadataStorage.getInstance().loadMetadata(data, inputFiles);
+        DataMetadataStorage.getInstance(context.getOutputDirectory())
+            .loadMetadata(data, inputFiles);
       }
 
     } catch (EoulsanException | IOException e) {
