@@ -17,6 +17,7 @@ public class EmergencyStopTasks {
 
   private final Set<EmergencyStopTask> tasks =
       Collections.synchronizedSet(new HashSet<EmergencyStopTask>());
+  private volatile boolean stopped;
 
   /**
    * Add an emergency task.
@@ -26,7 +27,12 @@ public class EmergencyStopTasks {
 
     checkNotNull(task, "task argument cannot be null");
 
-    this.tasks.add(task);
+    // If stopped, stop immediately the new task
+    if (stopped) {
+      task.stop();
+    } else {
+      this.tasks.add(task);
+    }
   }
 
   /**
@@ -37,13 +43,24 @@ public class EmergencyStopTasks {
 
     checkNotNull(task, "task argument cannot be null");
 
-    this.tasks.remove(task);
+    // Only remove task if not stopped
+    if (!stopped) {
+      this.tasks.remove(task);
+    }
   }
 
   /**
    * Stop all the tasks.
    */
   public void stop() {
+
+    // Do nothing if already stopped
+    if (this.stopped) {
+      return;
+    }
+
+    // Prevent adding or removing tasks
+    this.stopped = true;
 
     synchronized (this.tasks) {
       for (EmergencyStopTask task : this.tasks) {
