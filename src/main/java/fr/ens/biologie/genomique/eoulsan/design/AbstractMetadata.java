@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.design;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,7 +41,10 @@ import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public abstract class AbstractMetadata implements Metadata {
+public abstract class AbstractMetadata implements Metadata, Serializable {
+
+  /** Serialization version UID. */
+  private static final long serialVersionUID = 5756414666624839231L;
 
   private Map<String, String> metadata = new LinkedHashMap<>();
 
