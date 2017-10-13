@@ -62,7 +62,7 @@ import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
     implements ClusterTaskScheduler {
 
-  private static final int STATUS_UPDATE_DELAY = 2 * 1000;
+  private static final int STATUS_UPDATE_DELAY = 1000;
 
   private final Queue<TaskThread> queue = Queues.newLinkedBlockingQueue();
   private final StatusUpdateWaitingQueue statusUpdateQueue =
