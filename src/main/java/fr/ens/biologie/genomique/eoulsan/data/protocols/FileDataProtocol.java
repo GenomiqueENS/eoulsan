@@ -29,6 +29,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.FileSystemException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -130,7 +131,14 @@ public class FileDataProtocol extends AbstractDataProtocol {
     }
 
     if (Files.isSymbolicLink(f.toPath())) {
-      result.setSymbolicLink(new DataFile(Files.readSymbolicLink(f.toPath())));
+      try {
+        result
+            .setSymbolicLink(new DataFile(Files.readSymbolicLink(f.toPath())));
+      } catch (FileSystemException e) {
+        // Do nothing
+        // TODO In some case on a cluster Files.readSymbolicLink() throw an IO
+        // Error
+      }
     }
 
     return result;
