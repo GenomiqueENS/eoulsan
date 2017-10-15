@@ -29,12 +29,14 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_CONTEXT_EXTENSION;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_DATA_EXTENSION;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_DONE_EXTENSION;
+import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_JOB_ID;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_RESULT_EXTENSION;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -212,6 +214,21 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
       return TaskResultImpl.deserialize(taskResultFile);
     }
 
+    /**
+     * Create a file with the identifier of the submitted job.
+     * @throws IOException if an error occurs while submitting the file
+     */
+    private void createJobIdFile() throws IOException {
+
+      // Define the file for the job id
+      final File taskResultFile =
+          new File(this.taskDir, this.taskPrefix + TASK_JOB_ID);
+
+      try (PrintWriter out = new PrintWriter(taskResultFile)) {
+        out.println(this.jobId);
+      }
+    }
+
     @Override
     public void run() {
 
@@ -230,6 +247,9 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
         // Submit Job
         this.jobId = submitJob(createJobName(), createJobCommand(), taskFile,
             this.context.getId(), requiredMemory, requiredProcessors);
+
+        // Create a file with the id of the submitted job
+        createJobIdFile();
 
         StatusResult status = null;
 

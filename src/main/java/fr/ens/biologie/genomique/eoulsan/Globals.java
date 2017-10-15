@@ -274,6 +274,9 @@ public final class Globals {
   /** Task stderr extension. */
   public static final String TASK_STDERR_EXTENSION = ".task.err";
 
+  /** Task jobb id extension. */
+  public static final String TASK_JOB_ID = ".task.job.id";
+
   /** Step output directory suffix. */
   public static final String STEP_OUTPUT_DIRECTORY_SUFFIX = "_output";
 
