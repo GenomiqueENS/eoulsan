@@ -43,8 +43,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
-
-import com.google.common.collect.Queues;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Main;
@@ -66,7 +65,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
 
   private static final int STATUS_UPDATE_DELAY = 1000;
 
-  private final Queue<TaskThread> queue = Queues.newLinkedBlockingQueue();
+  private final Queue<TaskThread> queue = new LinkedBlockingQueue<>();
   private final StatusUpdateWaitingQueue statusUpdateQueue =
       new StatusUpdateWaitingQueue();
 
