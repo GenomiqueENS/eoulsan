@@ -269,7 +269,6 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
         TaskRunner.sendTokens(this.context, result);
 
       } catch (IOException | EoulsanException | InterruptedException e) {
-        e.printStackTrace();
         result = TaskRunner.createStepResult(this.context, e);
       } finally {
 
