@@ -27,14 +27,13 @@ package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 import fr.ens.biologie.genomique.eoulsan.util.ServiceNameLoader;
 
 /**
- * This class define a service to retrieve a SequenceReadsMapper
- * @since 1.0
+ * This class define a service to retrieve a MapperProvider.
+ * @since 2.0
  * @author Laurent Jourdren
  */
-public class SequenceReadsMapperService
-    extends ServiceNameLoader<SequenceReadsMapper> {
+public class MapperProviderService extends ServiceNameLoader<MapperProvider> {
 
-  private static SequenceReadsMapperService service;
+  private static MapperProviderService service;
 
   //
   // Static method
@@ -44,10 +43,10 @@ public class SequenceReadsMapperService
    * Retrieve the singleton static instance of SequenceReadsMapperService.
    * @return A SequenceReadsMapperService instance
    */
-  public static synchronized SequenceReadsMapperService getInstance() {
+  public static synchronized MapperProviderService getInstance() {
 
     if (service == null) {
-      service = new SequenceReadsMapperService();
+      service = new MapperProviderService();
     }
 
     return service;
@@ -66,7 +65,7 @@ public class SequenceReadsMapperService
   @Override
   protected String getMethodName() {
 
-    return "getMapperName";
+    return "getName";
   }
 
   //
@@ -76,8 +75,8 @@ public class SequenceReadsMapperService
   /**
    * Private constructor.
    */
-  private SequenceReadsMapperService() {
-    super(SequenceReadsMapper.class);
+  private MapperProviderService() {
+    super(MapperProvider.class);
   }
 
 }

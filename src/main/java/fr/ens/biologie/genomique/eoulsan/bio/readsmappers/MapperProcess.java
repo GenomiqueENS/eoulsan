@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -830,39 +831,45 @@ public abstract class MapperProcess {
 
   /**
    * Constructor.
-   * @param mapper mapper to use
+   * @param mapperName mapper name
+   * @param executor executor
+   * @param temporaryDirectory temporary directory
    * @param pairedEnd paired-end mode
    * @throws IOException if en error occurs
    */
-  protected MapperProcess(final AbstractSequenceReadsMapper mapper,
-      final boolean pairedEnd) throws IOException {
+  protected MapperProcess(final String mapperName, MapperExecutor executor,
+      final File temporaryDirectory, final boolean pairedEnd)
+      throws IOException {
 
-    this(mapper, pairedEnd, false);
+    this(mapperName, executor, temporaryDirectory, pairedEnd, false);
   }
 
   /**
    * Constructor.
-   * @param mapper mapper to use
+   * @param mapperName mapper name
+   * @param executor executor
+   * @param temporaryDirectory temporary directory
    * @param pairedEnd paired-end mode
    * @throws IOException if en error occurs
    */
-  protected MapperProcess(final AbstractSequenceReadsMapper mapper,
-      final boolean pairedEnd, final boolean threadForRead1)
-      throws IOException {
+  protected MapperProcess(final String mapperName, MapperExecutor executor,
+      final File temporaryDirectory, final boolean pairedEnd,
+      final boolean threadForRead1) throws IOException {
 
-    if (mapper == null) {
-      throw new NullPointerException("The mapper is null");
-    }
+    requireNonNull(mapperName, "mapperName argument cannot be null");
+    requireNonNull(executor, "executor argument cannot be null");
+    requireNonNull(temporaryDirectory,
+        "temporaryDirectory argument cannot be null");
 
     try {
-      this.mapperName = mapper.getMapperName();
+      this.mapperName = mapperName;
       this.uuid = UUID.randomUUID().toString();
 
-      this.executor = mapper.getExecutor();
+      this.executor = executor;
       this.pairedEnd = pairedEnd;
 
       // Define temporary files
-      final File tmpDir = mapper.getTempDirectory();
+      final File tmpDir = temporaryDirectory;
 
       this.pipeFile1 = new File(tmpDir, "mapper-inputfile1-" + uuid + ".fq");
       this.pipeFile2 = new File(tmpDir, "mapper-inputfile2-" + uuid + ".fq");

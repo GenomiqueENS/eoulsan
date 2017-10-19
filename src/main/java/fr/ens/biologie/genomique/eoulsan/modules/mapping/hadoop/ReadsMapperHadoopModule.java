@@ -105,7 +105,7 @@ public class ReadsMapperHadoopModule extends AbstractReadsMapperModule {
       Modules.invalidConfiguration(context,
           "The selected mapper cannot be used in Hadoop mode as "
               + "computation cannot be parallelized: "
-              + getMapper().getMapperName());
+              + getMapper().getName());
     }
 
     // Check if user wants to use non bundled mapper binaries

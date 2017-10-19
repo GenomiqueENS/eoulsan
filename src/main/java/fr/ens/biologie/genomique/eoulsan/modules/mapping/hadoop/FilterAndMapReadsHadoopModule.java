@@ -97,7 +97,7 @@ public class FilterAndMapReadsHadoopModule
       Modules.invalidConfiguration(context,
           "The selected mapper cannot be used in hadoop mode as "
               + "computation cannot be parallelized: "
-              + getMapper().getMapperName());
+              + getMapper().getName());
     }
   }
 
