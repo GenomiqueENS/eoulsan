@@ -279,35 +279,35 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     ProcessUtils.waitRandom(5000);
     this.lock.lock();
 
-    // Init mapper
-    EntryMapping mapping =
+    // Initialize mapping
+    this.mapping =
         mapperIndex.newEntryMapping(fastqFormat, mapperArguments, mapperThreads,
             true, new HadoopReporter(context), this.counterGroup);
 
     // Lock if no multiple instances enabled
-    if (mapping.isMultipleInstancesEnabled()) {
+    if (this.mapping.isMultipleInstancesEnabled()) {
 
       // Unlock
       this.lock.unlock();
     } else {
 
       context.setStatus(
-          "Wait free JVM for running " + mapping.getName());
+          "Wait free JVM for running " + this.mapping.getName());
 
       // Wait free JVM
       waitFreeJVM(context);
     }
 
     if (pairedEnd) {
-      this.process = mapping.mapPE();
+      this.process = this.mapping.mapPE();
     } else {
-      this.process = mapping.mapSE();
+      this.process = this.mapping.mapSE();
     }
 
     this.writeHeaders = context.getTaskAttemptID().getTaskID().getId() == 0;
     this.samResultsParserThread = startParseSAMResultsThread(this.process);
 
-    context.setStatus("Run " + mapping.getName());
+    context.setStatus("Run " + this.mapping.getName());
 
     getLogger().info("End of setup()");
   }
