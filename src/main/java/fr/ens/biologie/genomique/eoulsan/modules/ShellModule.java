@@ -32,6 +32,7 @@ import java.util.Set;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
+import fr.ens.biologie.genomique.eoulsan.annotations.NoOutputDirectory;
 import fr.ens.biologie.genomique.eoulsan.annotations.RequiresAllPreviousSteps;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
@@ -48,6 +49,7 @@ import fr.ens.biologie.genomique.eoulsan.core.Version;
  */
 @LocalOnly
 @RequiresAllPreviousSteps
+@NoOutputDirectory
 public class ShellModule extends AbstractModule {
 
   private static final String MODULE_NAME = "shell";

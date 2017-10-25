@@ -105,16 +105,5 @@ public class BAM2SAMLocalModule extends AbstractBAM2SAMModule {
     bamReader.close();
 
   }
-  // public static void main(String[] args) throws IOException { //
-  // system.out.println()
-  // // //
-  // // system.err.println()
-  // File in = new File(
-  // "/home/firmo/shares-net/sequencages/analyses/es_prr_A2015/sam2bam_bam_alignments_SH2day5L4.bam");
-  // File out =
-  // new File("/home/firmo/tests/sam2bam_bam_alignments_SH2day5L4.sam");
-  // convert(in, out);
-  //
-  // }
 
 }

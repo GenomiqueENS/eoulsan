@@ -23,13 +23,8 @@
  */
 package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
-import java.util.Map;
-
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-
 /**
- * The Class ToolParameterEmpty.
+ * This class  define an empty tool element.
  * @author Sandrine Perrin
  * @since 2.0
  */
@@ -38,10 +33,7 @@ public class EmptyToolElement implements ToolElement {
   private final String shortName;
   private final String name;
 
-  /**
-   * Instantiates a new tool parameter empty.
-   */
-
+  @Override
   public String getShortName() {
     return this.shortName;
   }
@@ -57,68 +49,44 @@ public class EmptyToolElement implements ToolElement {
   }
 
   @Override
-  public boolean isSet() {
-    return false;
-  }
-
-  @Override
   public String getValue() {
     return "No Value";
   }
 
   @Override
-  public void setDefaultValue() {
-  }
-
-  @Override
-  public void setValue(final Parameter stepParameter) {
-  }
-
-  @Override
-  public void setValues(final Map<String, Parameter> stepParameters) {
-
-  }
-
-  @Override
-  public boolean isFile() {
-    return false;
-  }
-
-  @Override
-  public DataFormat getDataFormat() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Parameter extractParameterByName(
-      Map<String, Parameter> stepParameters) {
-
-    final Parameter p = stepParameters.get(getName());
-
-    if (p == null)
-      return stepParameters.get(getShortName());
-
-    return p;
+  public void setValue(final String value) {
   }
 
   //
   // Constructors
   //
 
+  /**
+   * Public constructor.
+   */
   public EmptyToolElement() {
     this("noName");
   }
 
-  public EmptyToolElement(final String nameToolElement) {
-    this(nameToolElement, null);
+  /**
+   * Public constructor.
+   * @param toolElementName name of the tool element
+   */
+  public EmptyToolElement(final String toolElementName) {
+    this(toolElementName, null);
   }
 
-  public EmptyToolElement(final String nameToolElement,
+  /**
+   * Public constructor.
+   * @param toolElementName name of the tool element
+   * @param nameSpace name space
+   */
+  public EmptyToolElement(final String toolElementName,
       final String nameSpace) {
-    this.shortName = nameToolElement;
+    this.shortName = toolElementName;
 
     // Add name space for full name, if exists
-    this.name = (nameSpace == null ? "" : nameSpace + ".") + nameToolElement;
-
+    this.name = (nameSpace == null ? "" : nameSpace + ".") + toolElementName;
   }
+
 }

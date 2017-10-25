@@ -24,14 +24,10 @@
 
 package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
-import java.util.Map;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 
 /**
- * The Interface ToolElement.
+ * The ToolElement interface.
  * @author Sandrine Perrin
  * @since 2.0
  */
@@ -47,16 +43,16 @@ public interface ToolElement {
   String getName();
 
   /**
+   * Gets the short name.
+   * @return the short name
+   */
+  String getShortName();
+
+  /**
    * Gets the name which respect Eoulsan's syntax.
    * @return the name
    */
   String getValidatedName();
-
-  /**
-   * Checks if is setting.
-   * @return true, if is setting
-   */
-  boolean isSet();
 
   /**
    * Gets the value.
@@ -65,42 +61,10 @@ public interface ToolElement {
   String getValue();
 
   /**
-   * Sets the parameter eoulsan.
-   */
-  void setDefaultValue() throws EoulsanException;
-
-  /**
-   * Sets the parameter eoulsan.
+   * Sets the value.
    * @param stepParameter the new parameter eoulsan
    * @throws EoulsanException the eoulsan exception
    */
-  void setValue(final Parameter stepParameter) throws EoulsanException;
-
-  /**
-   * Sets the parameter eoulsan.
-   * @param stepParameters the step parameters
-   * @throws EoulsanException the eoulsan exception
-   */
-  void setValues(final Map<String, Parameter> stepParameters)
-      throws EoulsanException;
-
-  /**
-   * Checks if is file.
-   * @return true, if is file
-   */
-  boolean isFile();
-
-  /**
-   * Gets the data format.
-   * @return the data format
-   */
-  DataFormat getDataFormat();
-
-  /**
-   * Extract parameter by name.
-   * @param stepParameters step parameters
-   * @return the parameter found or null.
-   */
-  Parameter extractParameterByName(final Map<String, Parameter> stepParameters);
+  void setValue(final String value) throws EoulsanException;
 
 }

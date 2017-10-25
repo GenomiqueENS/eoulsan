@@ -87,7 +87,7 @@ public class GenomicArrayTest {
   @Test
   public void testAddEntry() {
 
-    /**
+    /*
      * In comments of this function, the order of intervals that is indicated is
      * defined by the starting positions of each intervals on the chromosome.
      * For example, "the first interval is before the second one" means that the
@@ -95,7 +95,7 @@ public class GenomicArrayTest {
      * position of the second interval.
      */
 
-    /**
+    /*
      * The two intervals are non-overlapping and the first one is before the
      * second one.
      */
@@ -115,7 +115,7 @@ public class GenomicArrayTest {
 
     assertTrue(this.r.containsKey(this.fgi.iv(60, 70)));
 
-    /**
+    /*
      * The two intervals are non overlapping and the first one is after the
      * second.
      */
@@ -140,7 +140,7 @@ public class GenomicArrayTest {
     assertTrue(this.r.containsKey(this.fgi.iv(5, 10)));
     assertEquals(1, this.r.get(this.fgi.iv(5, 10)).size());
 
-    /**
+    /*
      * The two intervals are overlapping and the first one is before the second
      * one.
      */
@@ -168,7 +168,7 @@ public class GenomicArrayTest {
     assertTrue(this.r.containsKey(this.fgi_stranded.iv(21, 25)));
     assertEquals(1, this.r.get(this.fgi_stranded.iv(21, 25)).size());
 
-    /**
+    /*
      * The two intervals are overlapping and the first one is after the second
      * one.
      */
@@ -196,7 +196,7 @@ public class GenomicArrayTest {
     assertTrue(this.r.containsKey(this.fgi.iv(31, 40)));
     assertEquals(1, this.r.get(this.fgi.iv(31, 40)).size());
 
-    /**
+    /*
      * The two intervals are overlapping on only one base and the first interval
      * is before the second one.
      */
@@ -224,7 +224,7 @@ public class GenomicArrayTest {
     assertTrue(this.r.containsKey(this.fgi.iv(21, 30)));
     assertEquals(1, this.r.get(this.fgi.iv(21, 30)).size());
 
-    /**
+    /*
      * The two intervals are overlapping on only one base and the first interval
      * is after the second one.
      */
@@ -252,7 +252,7 @@ public class GenomicArrayTest {
     assertTrue(this.r.containsKey(this.fgi.iv(21, 30)));
     assertEquals(1, this.r.get(this.fgi.iv(21, 30)).size());
 
-    /**
+    /*
      * The first interval is included in the second one and they have the same
      * starting position.
      */
@@ -277,7 +277,7 @@ public class GenomicArrayTest {
     assertTrue(this.r.containsKey(this.fgi.iv(41, 55)));
     assertEquals(1, this.r.get(this.fgi.iv(41, 55)).size());
 
-    /**
+    /*
      * The second interval is included in the first one and they have the same
      * starting position.
      */
@@ -302,7 +302,7 @@ public class GenomicArrayTest {
     assertTrue(this.r.containsKey(this.fgi.iv(36, 40)));
     assertEquals(1, this.r.get(this.fgi.iv(36, 40)).size());
 
-    /**
+    /*
      * The first interval is included in the second one and they have the same
      * ending position.
      */
@@ -327,7 +327,7 @@ public class GenomicArrayTest {
     assertTrue(this.r.containsKey(this.fgi.iv(10, 40)));
     assertEquals(2, this.r.get(this.fgi.iv(10, 40)).size());
 
-    /**
+    /*
      * The second interval is included in the first one and they have the same
      * ending position.
      */
@@ -352,7 +352,7 @@ public class GenomicArrayTest {
     assertTrue(this.r.containsKey(this.fgi.iv(10, 40)));
     assertEquals(2, this.r.get(this.fgi.iv(10, 40)).size());
 
-    /**
+    /*
      * The second interval is included in the first one.
      */
     this.ga.clear();
@@ -379,7 +379,7 @@ public class GenomicArrayTest {
     assertTrue(this.r.containsKey(this.fgi.iv(36, 40)));
     assertEquals(1, this.r.get(this.fgi.iv(36, 40)).size());
 
-    /**
+    /*
      * The first interval is included in the second one.
      */
     this.ga.clear();
@@ -406,7 +406,7 @@ public class GenomicArrayTest {
     assertTrue(this.r.containsKey(this.fgi.iv(36, 40)));
     assertEquals(1, this.r.get(this.fgi.iv(36, 40)).size());
 
-    /**
+    /*
      * The two intervals are identical.
      */
     this.ga.clear();

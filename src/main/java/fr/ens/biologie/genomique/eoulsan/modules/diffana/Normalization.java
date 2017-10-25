@@ -41,6 +41,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
@@ -111,6 +112,7 @@ public class Normalization {
       throws EoulsanException {
 
     final boolean saveRScript = context.getSettings().isSaveRscripts();
+    final DataFile workflowOutputDir = context.getOutputDirectory();
 
     try {
 
@@ -158,7 +160,7 @@ public class Normalization {
 
         // Execute the R script
         executor.executeRScript(rScript, true, sweaveOutput, saveRScript,
-            description);
+            description, workflowOutputDir);
 
         // Remove input files
         executor.removeInputFiles();

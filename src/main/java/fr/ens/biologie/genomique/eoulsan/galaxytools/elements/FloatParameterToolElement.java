@@ -23,23 +23,22 @@
  */
 package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
+import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.newEoulsanException;
+
 import org.w3c.dom.Element;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
 
 /**
- * The Class ToolParameterFloat.
+ * This class define a float tool element parameter.
  * @author Sandrine Perrin
  * @since 2.0
  */
-public class FloatParameterToolElement extends AbstractToolElement {
+public class FloatParameterToolElement extends TextParameterToolElement {
 
   /** The Constant TYPE. */
   public final static String TYPE = "float";
-
-  /** The Constant ATT_DEFAULT_KEY. */
-  private final static String ATT_DEFAULT_KEY = "value";
 
   /** The Constant ATT_MIN_KEY. */
   private final static String ATT_MIN_KEY = "min";
@@ -53,52 +52,50 @@ public class FloatParameterToolElement extends AbstractToolElement {
   /** The max. */
   private final double max;
 
-  private String defaultValue;
+  private final ToolInfo toolInfo;
 
-  /** The value. */
-  private double value;
-
-  @Override
-  public void setDefaultValue() throws EoulsanException {
-
-    setValue(this.defaultValue);
-  }
+  //
+  // Getters
+  //
 
   @Override
-  public boolean isValueParameterValid() {
-    return this.value >= this.min && this.value <= this.max;
+  public boolean isParameterValueValid() {
+
+    double v;
+
+    try {
+      v = Double.parseDouble(getValue());
+    } catch (NumberFormatException e) {
+      return false;
+    }
+    return v >= this.min && v <= this.max;
   }
+
+  //
+  // Setters
+  //
 
   @Override
-  public void setValue(final Parameter stepParameter) throws EoulsanException {
-    super.setValue(stepParameter);
+  public void setValue(final String value) throws EoulsanException {
 
-    this.setValue(stepParameter.getStringValue());
+    super.setValue(value);
 
-  }
-
-  private void setValue(final String value) throws EoulsanException {
-
-    this.value = Double.parseDouble(value);
-
-    this.set = true;
-
-    if (!this.isValueParameterValid()) {
-      throw new EoulsanException("ToolGalaxy step: parameter "
-          + this.getName() + " value setting for step: " + this.value
-          + ". Invalid to interval [" + this.min + "," + this.max + "]");
+    if (!this.isParameterValueValid()) {
+      throw newEoulsanException(this.toolInfo, getName(),
+          "invalid value for parameter: "
+              + getValue() + " (the value must be in interval [" + this.min
+              + " - " + this.max + "])");
     }
   }
 
-  @Override
-  public String getValue() {
-    return "" + this.value;
-  }
+  //
+  // Object methods
+  //
 
   @Override
   public String toString() {
     return "ToolParameterFloat [min="
-        + this.min + ", max=" + this.max + ", value=" + this.value + "]";
+        + this.min + ", max=" + this.max + ", value=" + getValue() + "]";
   }
 
   //
@@ -106,35 +103,45 @@ public class FloatParameterToolElement extends AbstractToolElement {
   //
 
   /**
-   * Instantiates a new tool parameter float.
+   * Instantiates a new float tool parameter.
+   * @param toolInfo the ToolInfo object
    * @param param the param
    * @throws EoulsanException the eoulsan exception
    */
-  public FloatParameterToolElement(final Element param) throws EoulsanException {
-    this(param, null);
+  public FloatParameterToolElement(final ToolInfo toolInfo, final Element param)
+      throws EoulsanException {
+    this(toolInfo, param, null);
   }
 
   /**
-   * Instantiates a new tool parameter float.
+   * Instantiates a new float tool parameter.
+   * @param toolInfo the ToolInfo object
    * @param param the param
    * @param nameSpace the name space
    * @throws EoulsanException the eoulsan exception
    */
-  public FloatParameterToolElement(final Element param, final String nameSpace)
-      throws EoulsanException {
-    super(param, nameSpace);
+  public FloatParameterToolElement(final ToolInfo toolInfo, final Element param,
+      final String nameSpace) throws EoulsanException {
 
-    this.defaultValue = param.getAttribute(ATT_DEFAULT_KEY);
+    super(toolInfo, param, nameSpace);
+    this.toolInfo = toolInfo;
 
+    // Get minimal value
+    String value = param.getAttribute(ATT_MIN_KEY);
     try {
-      String value = param.getAttribute(ATT_MIN_KEY);
       this.min = value.isEmpty() ? Double.MIN_VALUE : Double.parseDouble(value);
-
-      value = param.getAttribute(ATT_MAX_KEY);
-      this.max = value.isEmpty() ? Double.MAX_VALUE : Double.parseDouble(value);
-
     } catch (final NumberFormatException e) {
-      throw new EoulsanException("Fail extract value " + e.getMessage());
+      throw newEoulsanException(toolInfo, getName(),
+          "Failed to extract min value: " + value);
+    }
+
+    // Get maximal
+    value = param.getAttribute(ATT_MAX_KEY);
+    try {
+      this.max = value.isEmpty() ? Double.MAX_VALUE : Double.parseDouble(value);
+    } catch (NumberFormatException e) {
+      throw newEoulsanException(toolInfo, getName(),
+          "Failed to extract max value: " + value);
     }
   }
 

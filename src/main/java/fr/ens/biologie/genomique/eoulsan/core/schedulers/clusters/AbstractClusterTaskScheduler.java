@@ -29,18 +29,21 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_CONTEXT_EXTENSION;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_DATA_EXTENSION;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_DONE_EXTENSION;
+import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_JOB_ID;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_RESULT_EXTENSION;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
-
-import com.google.common.collect.Queues;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Main;
@@ -60,9 +63,36 @@ import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
     implements ClusterTaskScheduler {
 
-  private static final int STATUS_UPDATE_DELAY = 5 * 1000;
+  private static final int STATUS_UPDATE_DELAY = 1000;
 
-  private final Queue<TaskThread> queue = Queues.newLinkedBlockingQueue();
+  private final Queue<TaskThread> queue = new LinkedBlockingQueue<>();
+  private final StatusUpdateWaitingQueue statusUpdateQueue =
+      new StatusUpdateWaitingQueue();
+
+  /**
+   * This class define a waiting queue for status update queries.
+   */
+  private static class StatusUpdateWaitingQueue {
+
+    private BlockingQueue<TaskThread> queue = new LinkedBlockingDeque<>();
+
+    public void waitTurn(TaskThread l) throws InterruptedException {
+
+      // Add element to queue
+      this.queue.add(l);
+
+      TaskThread e;
+
+      // Wait while the element if not the first element of the queue
+      do {
+        e = this.queue.element();
+        Thread.sleep(STATUS_UPDATE_DELAY);
+      } while (e != l);
+
+      // Remove the element from the queue
+      this.queue.poll();
+    }
+  }
 
   /**
    * This class allow to fetch standard output or standard error.
@@ -183,6 +213,21 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
       return TaskResultImpl.deserialize(taskResultFile);
     }
 
+    /**
+     * Create a file with the identifier of the submitted job.
+     * @throws IOException if an error occurs while submitting the file
+     */
+    private void createJobIdFile() throws IOException {
+
+      // Define the file for the job id
+      final File taskResultFile =
+          new File(this.taskDir, this.taskPrefix + TASK_JOB_ID);
+
+      try (PrintWriter out = new PrintWriter(taskResultFile)) {
+        out.println(this.jobId);
+      }
+    }
+
     @Override
     public void run() {
 
@@ -202,11 +247,17 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
         this.jobId = submitJob(createJobName(), createJobCommand(), taskFile,
             this.context.getId(), requiredMemory, requiredProcessors);
 
+        // Create a file with the id of the submitted job
+        createJobIdFile();
+
         StatusResult status = null;
 
         boolean completed = false;
 
         do {
+
+          // Wait turn before querying job status
+          statusUpdateQueue.waitTurn(this);
 
           status = statusJob(this.jobId);
 
@@ -221,9 +272,6 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
           default:
             break;
           }
-
-          // Wait before do another query on job status
-          Thread.sleep(STATUS_UPDATE_DELAY);
 
         } while (!completed);
 
@@ -240,7 +288,6 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
         TaskRunner.sendTokens(this.context, result);
 
       } catch (IOException | EoulsanException | InterruptedException e) {
-        e.printStackTrace();
         result = TaskRunner.createStepResult(this.context, e);
       } finally {
 

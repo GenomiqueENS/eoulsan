@@ -24,11 +24,14 @@
 
 package fr.ens.biologie.genomique.eoulsan.galaxytools;
 
-import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractInputs;
-import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractOutputs;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractInputs;
+import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractOutputs;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -61,6 +64,7 @@ import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.DataToolElement;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElement;
 import fr.ens.biologie.genomique.eoulsan.util.XMLUtils;
 
@@ -92,11 +96,8 @@ public class GalaxyToolInterpreter {
   private ElementPorts inputPorts;
   private ElementPorts outputPorts;
 
-  /** The step parameters. */
-  private final Map<String, Parameter> stepParameters;
-
-  /** The tool. */
-  private final ToolData tool;
+  /** The tool information. */
+  private final ToolInfo toolInfo;
 
   private boolean isConfigured = false;
   private boolean isExecuted = false;
@@ -110,7 +111,7 @@ public class GalaxyToolInterpreter {
    */
   private static final class ElementPort {
 
-    private final ToolElement element;
+    private final DataToolElement element;
 
     private final String portName;
 
@@ -156,7 +157,7 @@ public class GalaxyToolInterpreter {
      * @param portName Eoulsan port name
      * @param fileIndex file index
      */
-    public ElementPort(final ToolElement element, final String portName,
+    public ElementPort(final DataToolElement element, final String portName,
         final int fileIndex) {
 
       this.element = element;
@@ -187,9 +188,9 @@ public class GalaxyToolInterpreter {
      * ports. Only one of the port of multi-files DataFormat are kept.
      * @return a set of ToolElement
      */
-    public Set<ToolElement> getStepElements() {
+    public Set<DataToolElement> getStepElements() {
 
-      final Set<ToolElement> result = new HashSet<>();
+      final Set<DataToolElement> result = new HashSet<>();
 
       for (ElementPort e : ports.values()) {
 
@@ -239,15 +240,17 @@ public class GalaxyToolInterpreter {
       for (ToolElement e : sortedElements(elements.values())) {
 
         // Discard parameters
-        if (!e.isFile()) {
+        if (!(e instanceof DataToolElement)) {
           continue;
         }
 
-        final DataFormat format = e.getDataFormat();
+        DataToolElement dataElement = (DataToolElement) e;
+
+        final DataFormat format = dataElement.getDataFormat();
 
         if (format.getMaxFilesCount() == 1) {
           this.ports.put(e.getName(),
-              new ElementPort(e, e.getValidatedName(), -1));
+              new ElementPort(dataElement, e.getValidatedName(), -1));
         } else {
 
           // If the DataFormat of the element is multi-file, only keep one
@@ -264,8 +267,8 @@ public class GalaxyToolInterpreter {
             formatPortNames.put(format, portName);
           }
 
-          this.ports.put(e.getName(),
-              new ElementPort(e, portName, formatCount.count(format)));
+          this.ports.put(e.getName(), new ElementPort(dataElement, portName,
+              formatCount.count(format)));
           formatCount.add(format);
         }
       }
@@ -283,16 +286,18 @@ public class GalaxyToolInterpreter {
     checkState(!isConfigured,
         "GalaxyToolStep, this instance has been already configured");
 
+    Map<String, Parameter> stepParameters = new HashMap<>();
+
     // Convert Set in Map
     for (final Parameter p : parameters) {
-      this.stepParameters.put(p.getName(), p);
+      stepParameters.put(p.getName(), p);
     }
 
     final Document localDoc = this.doc;
 
     // Extract variable settings
-    this.inputs = extractInputs(localDoc, this.stepParameters);
-    this.outputs = extractOutputs(localDoc, this.stepParameters);
+    this.inputs = extractInputs(this.toolInfo, localDoc, stepParameters);
+    this.outputs = extractOutputs(this.toolInfo, localDoc, stepParameters);
 
     this.inputPorts = new ElementPorts(this.inputs);
     this.outputPorts = new ElementPorts(this.outputs);
@@ -314,7 +319,7 @@ public class GalaxyToolInterpreter {
         "GalaxyToolStep, this instance has been already executed");
 
     context.getLogger().info("Parsing xml file successfully.");
-    context.getLogger().info("Tool description " + this.tool);
+    context.getLogger().info("Tool description " + this.toolInfo);
 
     final int variablesCount = this.inputs.size() + this.outputs.size();
     final Map<String, String> variables = new HashMap<>(variablesCount);
@@ -325,13 +330,15 @@ public class GalaxyToolInterpreter {
 
     Data inData = null;
 
+    // Input file to use for Docker
+    final Set<File> inputFiles = new HashSet<>();
+
     // Extract from inputs variable command
-    for (final ToolElement ptg : this.inputs.values()) {
+    for (final ToolElement e : this.inputs.values()) {
 
-      if (ptg.isFile()) {
+      if (e instanceof DataToolElement) {
 
-        final ElementPort inPort =
-            this.inputPorts.getPortElements(ptg.getName());
+        final ElementPort inPort = this.inputPorts.getPortElements(e.getName());
 
         // Extract value from context from DataFormat
         final Data data = context.getInputData(inPort.portName);
@@ -340,33 +347,33 @@ public class GalaxyToolInterpreter {
           inData = data;
         }
 
-        final DataFile inFile = inPort.getInputDataFile(context);
-        variables.put(ptg.getName(), inFile.toFile().getAbsolutePath());
-        variables.put(removeNamespace(ptg.getName()),
-            inFile.toFile().getAbsolutePath());
+        final File inFile = inPort.getInputDataFile(context).toFile();
+        inputFiles.add(inFile);
+        variables.put(e.getName(), inFile.getAbsolutePath());
+        variables.put(removeNamespace(e.getName()), inFile.getAbsolutePath());
 
       } else {
         // Variables setting with parameters file
-        variables.put(ptg.getName(), ptg.getValue());
+        variables.put(e.getName(), e.getValue());
       }
     }
 
     // Extract from outputs variable command
-    for (final ToolElement ptg : this.outputs.values()) {
+    for (final ToolElement e : this.outputs.values()) {
 
-      if (ptg.isFile()) {
+      if (e instanceof DataToolElement) {
 
         final ElementPort outPort =
-            this.outputPorts.getPortElements(ptg.getName());
+            this.outputPorts.getPortElements(e.getName());
 
         // Extract value from context from DataFormat
         final DataFile outFile = outPort.getOutputDataFile(context, inData);
-        variables.put(ptg.getName(), outFile.toFile().getAbsolutePath());
-        variables.put(removeNamespace(ptg.getName()),
+        variables.put(e.getName(), outFile.toFile().getAbsolutePath());
+        variables.put(removeNamespace(e.getName()),
             outFile.toFile().getAbsolutePath());
       } else {
         // Variables setting with parameters file
-        variables.put(ptg.getName(), ptg.getValue());
+        variables.put(e.getName(), e.getValue());
       }
     }
 
@@ -379,28 +386,25 @@ public class GalaxyToolInterpreter {
 
     // Create the Cheetah interpreter
     final CheetahInterpreter cheetahInterpreter =
-        new CheetahInterpreter(this.tool.getCommandScript(), variables);
+        new CheetahInterpreter(this.toolInfo.getCheetahScript(), variables);
 
     final String commandLine = cheetahInterpreter.execute();
 
-    // Create the executor and interpret the command tag
-    final ToolExecutor executor =
-        new ToolExecutor(context, this.tool, commandLine);
+    try {
+      // Create the executor and interpret the command tag
+      final ToolExecutor executor =
+          new ToolExecutor(context, this.toolInfo, commandLine, inputFiles);
 
-    // Execute the command
-    final ToolExecutorResult result = executor.execute();
+      // Execute the command
+      final ToolExecutorResult result = executor.execute();
 
-    isExecuted = true;
+      isExecuted = true;
 
-    // TODO
-    return result;
-  }
-
-  public String getDescription() {
-
-    return "Launch tool galaxy "
-        + this.tool.getToolName() + ", version " + this.tool.getToolVersion()
-        + " with interpreter " + this.tool.getInterpreter();
+      // TODO
+      return result;
+    } catch (IOException e) {
+      throw new EoulsanException(e);
+    }
   }
 
   //
@@ -493,7 +497,7 @@ public class GalaxyToolInterpreter {
    * line.
    * @return the in data format expected
    */
-  public Set<ToolElement> getInputDataElements() {
+  public Set<DataToolElement> getInputDataElements() {
     return this.inputPorts.getStepElements();
   }
 
@@ -502,7 +506,7 @@ public class GalaxyToolInterpreter {
    * line.
    * @return the out data format expected
    */
-  public Set<ToolElement> getOutputDataElements() {
+  public Set<DataToolElement> getOutputDataElements() {
     return this.outputPorts.getStepElements();
   }
 
@@ -510,8 +514,8 @@ public class GalaxyToolInterpreter {
    * Gets the tool data.
    * @return the tool data
    */
-  public ToolData getToolData() {
-    return this.tool;
+  public ToolInfo getToolData() {
+    return this.toolInfo;
   }
 
   @Override
@@ -520,7 +524,7 @@ public class GalaxyToolInterpreter {
         + Joiner.on("\n").withKeyValueSeparator("=").join(this.inputs)
         + ", \noutputs="
         + Joiner.on("\n").withKeyValueSeparator("=").join(this.outputs)
-        + ", \ntool=" + this.tool + "]";
+        + ", \ntool=" + this.toolInfo + "]";
   }
 
   /**
@@ -549,18 +553,30 @@ public class GalaxyToolInterpreter {
 
   /**
    * Public constructor.
+   * @param file the Galaxy tool file
+   * @throws EoulsanException the Eoulsan exception
+   * @throws FileNotFoundException if the file cannot be load
+   */
+  public GalaxyToolInterpreter(final File file)
+      throws EoulsanException, FileNotFoundException {
+
+    this(new FileInputStream(file), file.getName());
+  }
+
+  /**
+   * Public constructor.
    * @param in the input stream
    * @throws EoulsanException the Eoulsan exception
    */
-  public GalaxyToolInterpreter(final InputStream in) throws EoulsanException {
+  public GalaxyToolInterpreter(final InputStream in, final String toolSource)
+      throws EoulsanException {
 
     checkNotNull(in, "in argument cannot be null");
 
     this.toolXMLis = in;
     this.doc = buildDOM();
-    this.stepParameters = new HashMap<>();
 
-    this.tool = new ToolData(this.doc);
+    this.toolInfo = new ToolInfo(this.doc, toolSource);
 
     checkDomValidity();
 

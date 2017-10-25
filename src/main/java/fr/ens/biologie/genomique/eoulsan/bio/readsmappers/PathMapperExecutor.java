@@ -73,6 +73,11 @@ public class PathMapperExecutor implements MapperExecutor {
     ProcessBuilder builder = new ProcessBuilder(command);
     builder.redirectErrorStream(redirectStderr);
 
+    // If no redirection of stderr in stdout, redirect stderr to /dev/null
+    if (!redirectStderr) {
+      builder.redirectError(new File("/dev/null"));
+    }
+
     if (executionDirectory != null) {
       builder.directory(executionDirectory);
     }

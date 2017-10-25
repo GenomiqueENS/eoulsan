@@ -72,6 +72,7 @@
                 <tr><td>file.chr.start.end</td><td>String</td><td>Path to the file that contains the list of splice junctions coordinates</td><td>None</td></tr>
                 <tr><td>gtf.feature.exon</td><td>String</td><td>Feature type (3rd column in GFF file) to be used</td><td>None</td></tr>
                 <tr><td>gtf.tag.exon.parent.transcript</td><td>String</td><td>GFF attribute to be used as feature ID</td><td>None</td></tr>
+                <tr><td>features.file.format</td><td>string</td><td>The features file format. Currently only GFF/GFF3 and GTF format are supported.</td><td>gff3</td></tr>
                 <tr><td>genome.sa.index.nbases</td><td>Integer</td><td>See <a href="https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf">STAR documentation</a> for more information</td><td>None</td></tr>
                 <tr><td>genome.chr.bin.nbits</td><td>Integer</td><td>See <a href="https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf">STAR documentation</a> for more information</td><td>None</td></tr>
                 <tr><td>use.expression.step.parameters</td><td>Boolean</td><td>Use the <b>genomictype</b> and <b>attributeid</b> parameters values from an <a href="./module-expression.html">expression step</a> to set the values of the <b>gtf.feature.exon</b> and <b>gtf.tag.exon.parent.transcript</b> parameters of this step</td><td>False</td></tr>

@@ -66,7 +66,8 @@ public class TaskSchedulerFactory {
       final String clusterSchedulerName = settings.getClusterSchedulerName();
 
       // Check if the cluster scheduler setting has been set
-      if (clusterSchedulerName == null) {
+      if (clusterSchedulerName == null
+          || clusterSchedulerName.trim().isEmpty()) {
         throw new EoulsanException(
             "No cluster scheduler defined. Use the \"main.cluster.scheduler.name\" setting to define it");
       }

@@ -1,0 +1,24 @@
+<tool id="scqualitychecking" name="scqualitychecking01" >
+	<description> Perform quality checking and filtering on raw count data from single cell RNA-Seq experiment</description>
+	<command interpreter="docker"  dockerimage="genomicpariscentre/scqualitychecking:0.1">Rscript scripts/SCQualityChecking.R $input1 $input2 $input3 $plot.option $detection.threshold $expression.threshold $expression.option $reads.threshold $reads.option $prop.mt $prop.sp $nb.filter $output1 $output2 $output3</command>
+	<inputs>
+		<param format="txt" name="input1" type="data" label="Source file" />
+		<param format="txt" name="input2" type="data" label="Source file" />
+		<param format="txt" name="input3" type="data" label="Source file" />
+		
+		<param name="plot.option" type="text" value="All" label="Plotting parameter"/>
+		<param name="detection.threshold" type="integer" value="10" label="Gene detection parameter"/>
+		<param name="expression.threshold" type="integer" value="4000" label="Minimum number of detected genes parameter"/>
+		<param name="expression.option" type="text" value="Endogenous" label="Type of detected genes parameter"/>
+		<param name="reads.threshold" type="integer" value="200000" label="Minimum number of reads parameter"/>
+		<param name="reads.option" type="text" value="Endogenous" label="Type of aligned reads parameter"/>
+		<param name="prop.mt" type="float" value="0.1" label="Maximum proportion of mitochondrially aligned reads parameter"/>
+		<param name="prop.sp" type="float" value="0.5" label="Maximum proportion of exogenously aligned reads parameter"/>
+		<param name="nb.filter" type="integer" value="1" min="1" max="4" label="Removal number of un-passed filters parameter"/>
+	</inputs>
+	<outputs>
+		<data format="txt" name="output1" />
+		<data format="txt" name="output2" />
+		<data format="txt" name="output3" />
+	</outputs>
+</tool>

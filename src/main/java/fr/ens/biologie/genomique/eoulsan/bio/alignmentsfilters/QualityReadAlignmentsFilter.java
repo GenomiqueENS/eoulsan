@@ -38,7 +38,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
  */
 public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
 
-  public static final String FILTER_NAME = "mappingquality";
+  public static final String FILTER_NAME = "quality";
   private int qualityThreshold = -1;
 
   private final List<SAMRecord> result = new ArrayList<>();
@@ -110,7 +110,7 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
         return;
       }
 
-      if (this.qualityThreshold < 0.0) {
+      if (this.qualityThreshold < 0 || this.qualityThreshold > 255) {
         throw new EoulsanException(
             "Invalid qualityThreshold: " + this.qualityThreshold);
       }
@@ -123,7 +123,7 @@ public class QualityReadAlignmentsFilter extends AbstractReadAlignmentsFilter {
   @Override
   public void init() {
 
-    if (this.qualityThreshold < 0.0) {
+    if (this.qualityThreshold < 0) {
       throw new IllegalArgumentException("Quality threshold is not set for "
           + getName() + " alignments filter.");
     }

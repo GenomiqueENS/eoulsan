@@ -50,8 +50,6 @@ public abstract class AbstractBowtieReadsMapper
 
   abstract protected String getExtensionIndexFile();
 
-  abstract protected String[] getMapperExecutables();
-
   @Override
   abstract protected String getIndexerExecutable();
 
@@ -150,10 +148,10 @@ public abstract class AbstractBowtieReadsMapper
       final String bowtiePath;
 
       synchronized (SYNC) {
-        bowtiePath = install(getMapperExecutables());
+        bowtiePath = install(getMapperExecutableName());
       }
 
-      final List<String> cmd = Lists.newArrayList(bowtiePath, " --version");
+      final List<String> cmd = Lists.newArrayList(bowtiePath, "--version");
 
       final String s = executeToString(cmd);
       final String[] lines = s.split("\n");
@@ -202,7 +200,7 @@ public abstract class AbstractBowtieReadsMapper
     final String bowtiePath;
 
     synchronized (SYNC) {
-      bowtiePath = install(getMapperExecutables());
+      bowtiePath = install(getMapperExecutableName());
     }
 
     // Get index argument
@@ -248,7 +246,7 @@ public abstract class AbstractBowtieReadsMapper
     final String bowtiePath;
 
     synchronized (SYNC) {
-      bowtiePath = install(getMapperExecutables());
+      bowtiePath = install(getMapperExecutableName());
     }
 
     // Get index argument

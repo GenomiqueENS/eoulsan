@@ -65,6 +65,9 @@ public class RserveRExecutor extends AbstractRExecutor {
   @Override
   public void openConnection() throws IOException {
 
+    // Check if temporary and output directories exists
+    super.openConnection();
+
     this.rConnection = new RSConnection(serverName);
   }
 
@@ -133,7 +136,7 @@ public class RserveRExecutor extends AbstractRExecutor {
 
   @Override
   protected void executeRScript(final File rScriptFile, final boolean sweave,
-      final String sweaveOuput, final String... scriptArguments)
+      final String sweaveOuput, final File workflowOutputDir, final String... scriptArguments)
       throws IOException {
 
     checkConnection();

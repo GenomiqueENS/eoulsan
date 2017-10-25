@@ -31,6 +31,7 @@ import java.util.Set;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 
 /**
@@ -83,6 +84,7 @@ public class CommandStep extends AbstractStep {
    * @param parameters parameters of the step
    * @param skip true to skip execution of the step
    * @param copyResultsToOutput true to copy step results to output
+   * @param discardOutputAsap discard output as soon as possible
    * @param requiredMemory required memory
    * @param requiredProcessors required processors
    * @param dataProduct data product
@@ -91,12 +93,43 @@ public class CommandStep extends AbstractStep {
   public CommandStep(final AbstractWorkflow workflow, final String id,
       final String moduleName, final String stepVersion,
       final Set<Parameter> parameters, final boolean skip,
-      final boolean copyResultsToOutput, final int requiredMemory,
-      final int requiredProcessors, final String dataProduct)
+      final boolean copyResultsToOutput, final boolean discardOutputAsap,
+      final int requiredMemory, final int requiredProcessors,
+      final String dataProduct)
       throws EoulsanException {
 
     super(workflow, id, moduleName, stepVersion, skip, copyResultsToOutput,
-        parameters, requiredMemory, requiredProcessors, dataProduct);
+        discardOutputAsap, parameters, requiredMemory, requiredProcessors,
+        dataProduct);
+  }
+
+  /**
+   * Create a step for a standard step.
+   * @param workflow workflow of the step
+   * @param id identifier of the step
+   * @param moduleName module name
+   * @param stepVersion step version
+   * @param parameters parameters of the step
+   * @param skip true to skip execution of the step
+   * @param copyResultsToOutput true to copy step results to output
+   * @param discardOutputAsap discard output as soon as possible
+   * @param requiredMemory required memory
+   * @param requiredProcessors required processors
+   * @param dataProduct data product
+   * @param outputDirectory output directory
+   * @throws EoulsanException id an error occurs while creating the step
+   */
+  public CommandStep(final AbstractWorkflow workflow, final String id,
+      final String moduleName, final String stepVersion,
+      final Set<Parameter> parameters, final boolean skip,
+      final boolean copyResultsToOutput, final boolean discardOutputAsap,
+      final int requiredMemory, final int requiredProcessors,
+      final String dataProduct,
+      final DataFile outputDirectory) throws EoulsanException {
+
+    super(workflow, id, moduleName, stepVersion, skip, copyResultsToOutput,
+        discardOutputAsap, parameters, requiredMemory, requiredProcessors,
+        dataProduct, outputDirectory);
   }
 
   /**
@@ -122,6 +155,7 @@ public class CommandStep extends AbstractStep {
       final Set<Parameter> parameters) throws EoulsanException {
 
     this(workflow, module.getName(), module.getName(),
-        module.getVersion().toString(), parameters, false, false, -1, -1, "");
+        module.getVersion().toString(), parameters, false, false, false, -1, -1,
+        "");
   }
 }

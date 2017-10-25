@@ -193,6 +193,7 @@ public class CommandWorkflow extends AbstractWorkflow {
       final Set<Parameter> stepParameters = c.getStepParameters(stepId);
       final boolean skip = c.isStepSkipped(stepId);
       final boolean copyResultsToOutput = !c.isStepDiscardOutput(stepId);
+      final boolean discardOutputAsap = c.isStepDiscardOutputAsap(stepId);
       final int requiredMemory = c.getStepRequiredMemory(stepId);
       final int requiredProcessors = c.getStepRequiredProcessors(stepId);
       final String dataProduct = c.getStepDataProduct(stepId);
@@ -202,8 +203,8 @@ public class CommandWorkflow extends AbstractWorkflow {
           + ") step.");
 
       addStep(new CommandStep(this, stepId, moduleName, stepVersion,
-          stepParameters, skip, copyResultsToOutput, requiredMemory,
-          requiredProcessors, dataProduct));
+          stepParameters, skip, copyResultsToOutput, discardOutputAsap,
+          requiredMemory, requiredProcessors, dataProduct));
     }
 
     // Check if there one or more step to execute
@@ -336,7 +337,7 @@ public class CommandWorkflow extends AbstractWorkflow {
           new CommandStep(this, r.getName() + "install" + installerCount,
               RequirementInstallerModule.MODULE_NAME,
               Globals.APP_VERSION.toString(), r.getParameters(), false, false,
-              -1, -1, "");
+              false, -1, -1, "");
 
       // Configure the installer step
       step.configure();
@@ -487,9 +488,17 @@ public class CommandWorkflow extends AbstractWorkflow {
             CopyInputDataModule.encodeAllowedCompressionsParameterValue(
                 outputCompressionsAllowed)));
 
+    // Get outputDirectory
+    final DataFile outputDirectory =
+        StepOutputDirectory.getInstance().workingDirectory(workflow,
+            inputPort.getStep(), inputPort.getStep().getModule());
+
+    final boolean discardOutputAsap = inputPort.getStep().isDiscardOutputAsap();
+
     // Create step
-    CommandStep step = new CommandStep(workflow, stepId, stepName, null,
-        parameters, false, false, -1, -1, "");
+    CommandStep step =
+        new CommandStep(workflow, stepId, stepName, null, parameters, false,
+            false, discardOutputAsap, -1, -1, "", outputDirectory);
 
     // Configure step
     step.configure();
@@ -536,9 +545,18 @@ public class CommandWorkflow extends AbstractWorkflow {
       parameters.add(new Parameter(CopyOutputDataModule.FORMATS_PARAMETER,
           outputPort.getFormat().getName()));
 
+      // Get outputDirectory
+      final DataFile outputDirectory =
+          StepOutputDirectory.getInstance().workflowDirectory(
+              workflow, outputPort.getStep(), outputPort.getStep().getModule());
+
+      final boolean discardOutputAsap =
+          outputPort.getStep().isDiscardOutputAsap();
+
       // Create step
-      CommandStep step = new CommandStep(workflow, stepId, stepName, null,
-          parameters, false, true, -1, -1, "");
+      CommandStep step =
+          new CommandStep(workflow, stepId, stepName, null, parameters, false,
+              true, discardOutputAsap, -1, -1, "", outputDirectory);
 
       // Configure step
       step.configure();
@@ -795,12 +813,16 @@ public class CommandWorkflow extends AbstractWorkflow {
       }
     }
 
+    final StepOutputDirectory dispatcher =
+        StepOutputDirectory.getInstance();
+
     // Add steps to copy output data from steps to output directory if
     // necessary
     for (CommandStep step : Lists.newArrayList(this.steps)) {
 
       if (step.isCopyResultsToOutput()
-          && !step.getStepOutputDirectory().equals(getOutputDirectory())
+          && !step.getStepOutputDirectory().equals(
+              dispatcher.workflowDirectory(this, step, step.getModule()))
           && !step.getWorkflowOutputPorts().isEmpty()) {
 
         final List<CommandStep> newSteps =
@@ -996,7 +1018,7 @@ public class CommandWorkflow extends AbstractWorkflow {
    * @param firstSteps optional steps to add at the beginning of the workflow
    * @param endSteps optional steps to add at the end of the workflow
    * @param design Design to use with the workflow
-   * @throws EoulsanException
+   * @throws EoulsanException if the creation of the CommandWorkflow object fails
    */
   public CommandWorkflow(final ExecutorArguments executionArguments,
       final CommandWorkflowModel workflowCommand, final List<Module> firstSteps,

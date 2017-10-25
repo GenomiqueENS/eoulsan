@@ -1,24 +1,20 @@
 package fr.ens.biologie.genomique.eoulsan.modules;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.BIGWIG;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.BIGBED;
+import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.BIGWIG;
 
-import java.util.Date;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.io.File;
-import java.io.IOException;
 import java.util.Set;
-import java.io.Writer;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
@@ -30,20 +26,12 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
-import fr.ens.biologie.genomique.eoulsan.data.DataMetadata;
-import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
-import fr.ens.biologie.genomique.eoulsan.util.BinariesInstaller;
-import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
-import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
-import fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement;
-import fr.ens.biologie.genomique.eoulsan.util.docker.DockerSimpleProcess;
+//import fr.ens.biologie.genomique.eoulsan.util.docker.DockerSimpleProcess;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
-import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
+import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 
 /**
  * This class construct TrackHub for genome browser visualisation.

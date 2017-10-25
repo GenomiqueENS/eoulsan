@@ -40,7 +40,7 @@ public abstract class AbstractRExecutor implements RExecutor {
   /**
    * Remove a file of the analysis.
    * @param filename the filename of the file to remove
-   * @throws IOException
+   * @throws IOException if the removing of the file fails
    */
   protected abstract void removeFile(String filename) throws IOException;
 
@@ -53,7 +53,7 @@ public abstract class AbstractRExecutor implements RExecutor {
    * @throws IOException if an error occurs while executing the script
    */
   protected abstract void executeRScript(File rScriptFile, boolean sweave,
-      String sweaveOuput, String... scriptArguments) throws IOException;
+      String sweaveOuput, File workflowOutputDir, String... scriptArguments) throws IOException;
 
   /**
    * Get the output directory of the analysis.
@@ -80,7 +80,18 @@ public abstract class AbstractRExecutor implements RExecutor {
   @Override
   public void openConnection() throws IOException {
 
-    // Nothing to do for the default implementation
+    if (!outputDirectory.isDirectory()) {
+      throw new IOException(
+          "The output directory does not exist or is not a directory: "
+              + outputDirectory);
+    }
+
+    if (!temporaryDirectory.isDirectory()) {
+      throw new IOException(
+          "The output directory does not exist or is not a directory: "
+              + outputDirectory);
+    }
+
   }
 
   @Override
@@ -130,7 +141,7 @@ public abstract class AbstractRExecutor implements RExecutor {
   @Override
   public void executeRScript(final String rScript, final boolean sweave,
       final String sweaveOutput, final boolean saveRscript,
-      final String description, String... scriptArguments) throws IOException {
+      final String description, final DataFile workflowOutputDir, final String... scriptArguments) throws IOException {
 
     if (rScript == null) {
       throw new NullPointerException("rScript argument cannot be null");
@@ -149,7 +160,7 @@ public abstract class AbstractRExecutor implements RExecutor {
     writer.close();
 
     // Execute R script
-    executeRScript(rScriptFile, sweave, sweaveOutput, scriptArguments);
+    executeRScript(rScriptFile, sweave, sweaveOutput, workflowOutputDir.toFile(), scriptArguments);
 
     // Remove temporary R script
     if (!saveRscript) {
@@ -178,20 +189,8 @@ public abstract class AbstractRExecutor implements RExecutor {
       throw new NullPointerException("outputDirectory argument cannot be null");
     }
 
-    if (!outputDirectory.isDirectory()) {
-      throw new IOException(
-          "The output directory does not exist or is not a directory: "
-              + outputDirectory);
-    }
-
     if (temporaryDirectory == null) {
       throw new NullPointerException("outputDirectory argument cannot be null");
-    }
-
-    if (!temporaryDirectory.isDirectory()) {
-      throw new IOException(
-          "The output directory does not exist or is not a directory: "
-              + outputDirectory);
     }
 
     this.outputDirectory = outputDirectory;

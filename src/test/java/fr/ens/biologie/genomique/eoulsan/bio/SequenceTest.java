@@ -83,6 +83,59 @@ public class SequenceTest {
   }
 
   @Test
+  public void testGetIdentifierInName() {
+
+    Sequence s = new Sequence();
+    assertEquals(null, s.getIdentifierInName());
+
+    s.setName("");
+    assertEquals("", s.getIdentifierInName());
+
+    s.setName("titi");
+    assertEquals("titi", s.getIdentifierInName());
+
+    s.setName("titi toto");
+    assertEquals("titi", s.getIdentifierInName());
+
+    s.setName("titi ");
+    assertEquals("titi", s.getIdentifierInName());
+
+    s.setName("titi ");
+    assertEquals("titi", s.getIdentifierInName());
+  }
+
+  @Test
+  public void testGetDescriptionInName() {
+
+    Sequence s = new Sequence();
+    assertEquals(null, s.getDescriptionInName());
+
+    s.setName("");
+    assertEquals("", s.getDescriptionInName());
+
+    s.setName("");
+    assertEquals("", s.getDescriptionInName());
+
+    s.setName("titi toto");
+    assertEquals("toto", s.getDescriptionInName());
+
+    s.setName(" titi toto ");
+    assertEquals("toto", s.getDescriptionInName());
+
+    s.setName(" titi  toto ");
+    assertEquals("toto", s.getDescriptionInName());
+
+    s.setName("titi");
+    assertEquals("", s.getDescriptionInName());
+
+    s.setName("titi ");
+    assertEquals("", s.getDescriptionInName());
+
+    s.setName(" titi ");
+    assertEquals("", s.getDescriptionInName());
+  }
+
+  @Test
   public void testGetSetDescription() {
 
     Sequence s = new Sequence();
@@ -363,6 +416,52 @@ public class SequenceTest {
     s = new Sequence(1, "toto", "AATTGGCC");
     assertEquals(4.0 / 8.0, s.getGCPercent(), 0.1);
   }
+
+  @Test
+  public void testReverse() {
+
+    Sequence s = new Sequence(0, "toto", "ATGC");
+    assertEquals("ATGC", s.getSequence());
+    s.reverse();
+    assertEquals("CGTA", s.getSequence());
+
+    s = new Sequence(0, "toto", null);
+    assertNull(s.getSequence());
+  }
+
+  @Test
+  public void testReverseString() {
+
+    assertNull(
+            Sequence.reverse(null));
+
+    assertEquals("CGTA",
+            Sequence.reverse("ATGC"));
+  }
+
+  @Test
+  public void testComplement() {
+
+    Sequence s = new Sequence(0, "toto", "ATGC");
+    assertEquals("ATGC", s.getSequence());
+    s.complement();
+    assertEquals("TACG", s.getSequence());
+
+    s = new Sequence(0, "toto", null);
+    assertNull(s.getSequence());
+  }
+
+  @Test
+  public void testComplementString() {
+
+    assertNull(
+      Sequence.complement(null, Alphabets.AMBIGUOUS_DNA_ALPHABET));
+    assertNull(Sequence.complement("ATGC", null));
+
+    assertEquals("GCAT",
+      Sequence.complement("CGTA", Alphabets.AMBIGUOUS_DNA_ALPHABET));
+  }
+
 
   @Test
   public void testReverseComplement() {

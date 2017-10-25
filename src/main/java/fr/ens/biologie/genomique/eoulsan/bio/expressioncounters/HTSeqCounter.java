@@ -81,23 +81,40 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
   }
 
-  private static boolean isPairedData(final InputStream is) {
+  /**
+   * Check if a SAM file contains paired-end data.
+   * @param samIs the SAM file input stream
+   * @return true if the SAM file contains paired-end data
+   */
+  public static boolean isPairedData(final InputStream samIs) {
 
-    final SamReader input =
-        SamReaderFactory.makeDefault().open(SamInputResource.of(is));
-
-    SAMRecordIterator samIterator = input.iterator();
-
-    boolean result = false;
-
-    // Test if input is paired-end data
-    if (samIterator.hasNext()) {
-      if (samIterator.next().getReadPairedFlag()) {
-        result = true;
-      }
+    if (samIs == null) {
+      throw new NullPointerException("is argument cannot be null");
     }
 
-    return result;
+    try {
+      final SamReader input =
+        SamReaderFactory.makeDefault().open(SamInputResource.of(samIs));
+
+      SAMRecordIterator samIterator = input.iterator();
+
+      boolean result = false;
+
+      // Test if input is paired-end data
+      if (samIterator.hasNext()) {
+        if (samIterator.next().getReadPairedFlag()) {
+          result = true;
+        }
+      }
+
+      // Close input file
+      input.close();
+
+      return result;
+
+    } catch(IOException e) {
+      return false;
+    }
   }
 
   /**
@@ -163,9 +180,10 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
     int empty = 0;
     int ambiguous = 0;
-    int notaligned = 0;
-    int lowqual = 0;
-    int nonunique = 0;
+    int notAligned = 0;
+    int lowQual = 0;
+    int nonUnique = 0;
+    int missingMate = 0;
     SAMRecord sam1 = null, sam2 = null;
 
     // Read the SAM file
@@ -181,20 +199,20 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
         // unmapped read
         if (samRecord.getReadUnmappedFlag()) {
-          notaligned++;
+          notAligned++;
           continue;
         }
 
         // multiple alignment
         if (samRecord.getAttribute("NH") != null
             && samRecord.getIntegerAttribute("NH") > 1) {
-          nonunique++;
+          nonUnique++;
           continue;
         }
 
         // too low quality
         if (samRecord.getMappingQuality() < minAverageQual) {
-          lowqual++;
+          lowQual++;
           continue;
         }
 
@@ -224,6 +242,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         if (!sam1.getReadName().equals(sam2.getReadName())) {
           sam1 = sam2;
           sam2 = null;
+          missingMate++;
           continue;
         }
 
@@ -237,7 +256,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
         // unmapped read
         if (sam1.getReadUnmappedFlag() && sam2.getReadUnmappedFlag()) {
-          notaligned++;
+          notAligned++;
           continue;
         }
 
@@ -246,14 +265,14 @@ public class HTSeqCounter extends AbstractExpressionCounter {
             && sam1.getIntegerAttribute("NH") > 1)
             || (sam2.getAttribute("NH") != null
                 && sam2.getIntegerAttribute("NH") > 1)) {
-          nonunique++;
+          nonUnique++;
           continue;
         }
 
         // too low quality
         if (sam1.getMappingQuality() < minAverageQual
             || sam2.getMappingQuality() < minAverageQual) {
-          lowqual++;
+          lowQual++;
           continue;
         }
 
@@ -309,17 +328,19 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         ExpressionCounters.AMBIGUOUS_ALIGNMENTS_COUNTER.counterName(),
         ambiguous);
     reporter.incrCounter(counterGroup,
-        ExpressionCounters.LOW_QUAL_ALIGNMENTS_COUNTER.counterName(), lowqual);
+        ExpressionCounters.LOW_QUAL_ALIGNMENTS_COUNTER.counterName(), lowQual);
     reporter.incrCounter(counterGroup,
         ExpressionCounters.NOT_ALIGNED_ALIGNMENTS_COUNTER.counterName(),
-        notaligned);
+        notAligned);
     reporter.incrCounter(counterGroup,
         ExpressionCounters.NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName(),
-        nonunique);
+        nonUnique);
+    reporter.incrCounter(counterGroup,
+      ExpressionCounters.MISSING_MATES_COUNTER.counterName(), missingMate);
 
     reporter.incrCounter(counterGroup,
         ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(),
-        empty + ambiguous + lowqual + notaligned + nonunique);
+        empty + ambiguous + lowQual + notAligned + nonUnique);
 
     writer.close();
   }

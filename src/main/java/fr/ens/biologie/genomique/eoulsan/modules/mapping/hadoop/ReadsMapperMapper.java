@@ -63,7 +63,7 @@ import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopReporter;
 import fr.ens.biologie.genomique.eoulsan.util.locker.Locker;
-import fr.ens.biologie.genomique.eoulsan.util.locker.ZooKeeperLocker;
+import fr.ens.biologie.genomique.eoulsan.util.locker.DistributedLocker;
 
 /**
  * This class defines a generic mapper for reads mapping.
@@ -234,10 +234,10 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
     getLogger().info("Fastq format: " + fastqFormat);
 
-    this.lock = new ZooKeeperLocker(conf.get(ZOOKEEPER_CONNECT_STRING_KEY),
+    this.lock = new DistributedLocker(conf.get(ZOOKEEPER_CONNECT_STRING_KEY),
         Integer.parseInt(conf.get(ZOOKEEPER_SESSION_TIMEOUT_KEY)),
         "/eoulsan-locks-" + InetAddress.getLocalHost().getHostName(),
-        "mapper-lock-");
+        "eoulsan-mapper-lock");
 
     // Get Mapper arguments
     final String mapperArguments = unDoubleQuotes(conf.get(MAPPER_ARGS_KEY));
@@ -276,6 +276,9 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     // Set mapper temporary directory
     this.mapper.setTempDirectory(tempDir);
 
+    // Set mapper executable temporary directory
+    this.mapper.setExecutablesTempDirectory(tempDir);
+
     // Enable multiple instance of the mapper, if not supported
     // this.mapper.isMultipleInstancesEnabled() will return false
     this.mapper.setMultipleInstancesEnabled(true);
@@ -288,6 +291,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     // Lock if mapper
     ProcessUtils.waitRandom(5000);
     this.lock.lock();
+
 
     // Init mapper
     this.mapper.init(archiveIndexFile.open(), this.mapperIndexDir,
@@ -366,7 +370,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     final long waitStartTime = System.currentTimeMillis();
 
     ProcessUtils
-        .waitUntilExecutableRunning(this.mapper.getMapperName().toLowerCase());
+        .waitUntilExecutableRunning(this.mapper.getMapperExecutableName());
 
     getLogger().info("Wait "
         + StringUtils

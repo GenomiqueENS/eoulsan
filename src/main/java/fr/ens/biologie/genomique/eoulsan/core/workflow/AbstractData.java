@@ -44,6 +44,7 @@ abstract class AbstractData implements Data, Serializable {
 
   private static int instanceCount;
 
+  private final int id;
   private String name;
   private boolean defaultName = true;
   private final DataFormat format;
@@ -51,6 +52,10 @@ abstract class AbstractData implements Data, Serializable {
 
   @Override
   public String getName() {
+
+    if (this.name == null) {
+      return "data" + id;
+    }
 
     return this.name;
   }
@@ -81,12 +86,22 @@ abstract class AbstractData implements Data, Serializable {
    */
   void setName(final String name) {
 
+    setName(name, false);
+  }
+
+  /**
+   * Set the name of the data.
+   * @param name the new name of the data
+   * @param defaultName true if the name of the data is a default name
+   */
+  void setName(final String name, final boolean defaultName) {
+
     checkNotNull(name, "The name of the data cannot be null");
     checkArgument(FileNaming.isDataNameValid(name),
         "The name of data can only contains letters and digit: " + name);
 
     this.name = name;
-    this.defaultName = false;
+    this.defaultName = defaultName;
   }
 
   void setPart(final int part) {
@@ -104,6 +119,14 @@ abstract class AbstractData implements Data, Serializable {
     return this.defaultName;
   }
 
+  /**
+   * Test if a name has been set for the data.
+   * @return true if a name has been set for the data
+   */
+  boolean isNameSet() {
+    return this.name != null;
+  }
+
   //
   // Constructor
   //
@@ -115,6 +138,10 @@ abstract class AbstractData implements Data, Serializable {
   protected AbstractData(final DataFormat format) {
 
     checkNotNull(format, "format argument cannot be null");
+
+    synchronized (this.getClass()) {
+      this.id = ++instanceCount;
+    }
 
     this.name = "data" + (++instanceCount);
     this.format = format;

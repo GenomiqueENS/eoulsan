@@ -133,4 +133,8 @@ public class DataFormats {
   /** BigWig format. */
   public static final DataFormat BIGWIG =
       registry.getDataFormatFromName("bigwig_bw");
+
+  /** Cutadapt adapters format. */
+  public static final DataFormat CUTADAPT_ADAPTER_FASTA =
+          registry.getDataFormatFromName("cutadapt_adapter");
 }

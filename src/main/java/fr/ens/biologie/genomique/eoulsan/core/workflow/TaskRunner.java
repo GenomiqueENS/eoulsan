@@ -38,8 +38,7 @@ import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toTimeHumanRead
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -350,9 +349,10 @@ public class TaskRunner {
    */
   private String createDefaultContextName() {
 
-    final List<String> namedData = new ArrayList<>();
-    final List<String> fileNames = new ArrayList<>();
-    final List<String> otherDataNames = new ArrayList<>();
+    final Set<String> namedData = new LinkedHashSet<>();
+    final Set<String> defaultNamedData = new LinkedHashSet<>();
+    final Set<String> fileNames = new LinkedHashSet<>();
+    final Set<String> otherDataNames = new LinkedHashSet<>();
 
     // Collect the names of the data and files names
     for (String inputPortName : this.context.getCurrentStep().getInputPorts()
@@ -366,6 +366,8 @@ public class TaskRunner {
 
         if (!data.isDefaultName()) {
           namedData.add(data.getName());
+        } else if (data.isNameSet()) {
+          defaultNamedData.add(data.getName());
         } else {
 
           for (DataFile file : WorkflowDataUtils.getDataFiles(data)) {
@@ -379,9 +381,11 @@ public class TaskRunner {
     }
 
     // Choose the name of the context
-    if (namedData.size() > 0) {
+    if (!namedData.isEmpty()) {
       return Joiner.on('-').join(namedData);
-    } else if (fileNames.size() > 0) {
+    } else if (!defaultNamedData.isEmpty()) {
+      return Joiner.on('-').join(defaultNamedData);
+    } else if (!fileNames.isEmpty()) {
       return Joiner.on('-').join(fileNames);
     } else {
       return Joiner.on('-').join(otherDataNames);

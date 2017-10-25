@@ -28,3 +28,4 @@ peaks.xml
 peaksxls.xml
 bigbed.xml
 bigwig.xml
+cutadapt_adapter_fasta.xml

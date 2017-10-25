@@ -4,21 +4,17 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_BAM;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_INDEX_BAI;
 
-import java.io.IOException;
 import java.io.File;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Map;
-import java.util.Set;
-import java.util.List;
-import com.google.common.base.Joiner;
-import java.util.Collections;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
+import com.google.common.base.Joiner;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
@@ -33,17 +29,16 @@ import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
-import fr.ens.biologie.genomique.eoulsan.data.DataMetadata;
-import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
-import fr.ens.biologie.genomique.eoulsan.util.BinariesInstaller;
-import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
-import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
-import fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement;
-import fr.ens.biologie.genomique.eoulsan.util.docker.DockerSimpleProcess;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
-import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
+import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
+import fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement;
+import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
+import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
+import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
+import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
 
 /**
  * This class uses tools from the DeepTools suite.
@@ -232,8 +227,14 @@ public class DeepToolsModule extends AbstractModule {
         }
       }
 
-      //Create the docker process to use
-      final DockerSimpleProcess process = new DockerSimpleProcess(dockerImage);
+      // Create the docker process to use
+      final SimpleProcess process;
+
+      try {
+        process = DockerManager.getInstance().createImageInstance(dockerImage);
+      } catch (IOException err) {
+        return status.createTaskResult(err);
+      }
 
       // Build command line to generate the multibamSummary file.
       List<String> cmd1multibamSummary = new ArrayList<String>();
@@ -271,7 +272,7 @@ public class DeepToolsModule extends AbstractModule {
         final int exitValue1 = process.execute(cmd1multibamSummary, context.getStepOutputDirectory().toFile(), context.getLocalTempDirectory(), stdoutFile1, stderrFile1);
 
         ProcessUtils.throwExitCodeException(exitValue1, Joiner.on(' ').join(cmd1multibamSummary));
-      } catch (EoulsanException | IOException err) {
+      } catch (IOException err) {
         return status.createTaskResult(err);
       }
 
@@ -309,7 +310,7 @@ public class DeepToolsModule extends AbstractModule {
         final int exitValue2 = process.execute(cmd2bamCorrelate, context.getStepOutputDirectory().toFile(), context.getLocalTempDirectory(), stdoutFile2, stderrFile2);
 
         ProcessUtils.throwExitCodeException(exitValue2, Joiner.on(' ').join(cmd2bamCorrelate));
-      } catch (EoulsanException | IOException err) {
+      } catch (IOException err) {
         return status.createTaskResult(err);
       }
 
@@ -354,7 +355,7 @@ public class DeepToolsModule extends AbstractModule {
           final int exitValue3 = process.execute(cmd3multibamSummary, context.getStepOutputDirectory().toFile(), context.getLocalTempDirectory(), stdoutFile3, stderrFile3);
 
           ProcessUtils.throwExitCodeException(exitValue3, Joiner.on(' ').join(cmd3multibamSummary));
-        } catch (EoulsanException | IOException err) {
+        } catch (IOException err) {
           return status.createTaskResult(err);
         }
 
@@ -392,7 +393,7 @@ public class DeepToolsModule extends AbstractModule {
           final int exitValue4 = process.execute(cmd4bamCorrelate, context.getStepOutputDirectory().toFile(), context.getLocalTempDirectory(), stdoutFile4, stderrFile4);
 
           ProcessUtils.throwExitCodeException(exitValue4, Joiner.on(' ').join(cmd4bamCorrelate));
-        } catch (EoulsanException | IOException err) {
+        } catch (IOException err) {
           return status.createTaskResult(err);
         }
 
@@ -431,7 +432,7 @@ public class DeepToolsModule extends AbstractModule {
         final int exitValue5 = process.execute(cmd5bamFingerprint, context.getStepOutputDirectory().toFile(), context.getLocalTempDirectory(), stdoutFile5, stderrFile5);
 
         ProcessUtils.throwExitCodeException(exitValue5, Joiner.on(' ').join(cmd5bamFingerprint));
-      } catch (EoulsanException | IOException err) {
+      } catch (IOException err) {
         return status.createTaskResult(err);
       }
 

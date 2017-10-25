@@ -239,6 +239,10 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
     // Set mapper temporary directory
     mapper.setTempDirectory(context.getLocalTempDirectory());
 
+    // Set mapper executable temporary directory
+    mapper.setExecutablesTempDirectory(
+        context.getSettings().getExecutablesTempDirectoryFile());
+
     // Init mapper
     mapper.init(archiveIndexFile, indexDir, reporter, COUNTER_GROUP);
 

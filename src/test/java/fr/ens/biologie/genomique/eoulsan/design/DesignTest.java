@@ -31,15 +31,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.design.Design;
-import fr.ens.biologie.genomique.eoulsan.design.Experiment;
-import fr.ens.biologie.genomique.eoulsan.design.Sample;
-
 public class DesignTest {
 
   @Test
   public void testSample() {
-    Design d = new Design();
+    Design d = DesignFactory.createEmptyDesign();
 
     // test addSample
     d.addSample("1");
@@ -76,7 +72,7 @@ public class DesignTest {
 
   @Test
   public void testExperiment() {
-    Design d = new Design();
+    Design d = DesignFactory.createEmptyDesign();
 
     // test addExperiment
     d.addExperiment("1");
@@ -111,7 +107,7 @@ public class DesignTest {
 
   @Test
   public void testMetadata() {
-    Design d = new Design();
+    Design d = DesignFactory.createEmptyDesign();
 
     // test getMetadata
     assertNotNull(d.getMetadata());
@@ -120,7 +116,7 @@ public class DesignTest {
   @Test
   public void testDesignAttribute() {
 
-    Design d = new Design();
+    Design d = DesignFactory.createEmptyDesign();
 
     d.setName("MyDesign");
 

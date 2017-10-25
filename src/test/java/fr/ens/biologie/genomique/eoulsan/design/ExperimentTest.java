@@ -30,14 +30,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.design.Design;
-import fr.ens.biologie.genomique.eoulsan.design.Experiment;
-
 public class ExperimentTest {
 
   @Test
   public void test() {
-    Design d = new Design();
+    Design d = DesignFactory.createEmptyDesign();
     d.addExperiment("1");
     d.addExperiment("2");
 

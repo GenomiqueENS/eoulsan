@@ -23,23 +23,26 @@
  */
 package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
+import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.newEoulsanException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.base.Joiner;
 import org.w3c.dom.Element;
 
+import com.google.common.base.Joiner;
+
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
 
 /**
- * The Class ToolParameterSelect.
+ * This class define a select tool element parameter.
  * @author Sandrine Perrin
  * @since 2.0
  */
-public class SelectParameterToolElement extends AbstractToolElement {
+public class SelectParameterToolElement extends AbstractParameterToolElement {
 
   /** The Constant TYPE. */
   public final static String TYPE = "select";
@@ -59,37 +62,51 @@ public class SelectParameterToolElement extends AbstractToolElement {
   /** The value. */
   private String value = "";
 
+  private boolean set;
+
+  private final ToolInfo toolInfo;
+
+  //
+  // Getters
+  //
+
   @Override
-  boolean isValueParameterValid() {
+  public boolean isParameterValueValid() {
     // Check value contains in options values
     return this.optionsValue.contains(this.value);
   }
 
   @Override
-  public void setDefaultValue() {
+  public String getValue() {
+    return this.value;
   }
 
   @Override
-  public void setValue(final Parameter stepParameter) throws EoulsanException {
-    super.setValue(stepParameter);
-
-    if (stepParameter != null) {
-      this.setValue(stepParameter.getStringValue());
-    }
+  public boolean isSet() {
+    return this.set;
   }
 
-  private void setValue(final String value) throws EoulsanException {
-    this.set = true;
+  //
+  // Setters
+  //
+
+  @Override
+  public void setValue(final String value) throws EoulsanException {
 
     this.value = value;
+    this.set = true;
 
-    if (!this.isValueParameterValid()) {
-      throw new EoulsanException("ToolGalaxy step: parameter "
-          + this.getName() + " value setting : " + this.value
-          + " is invalid. \n\tAvailable values: "
-          + Joiner.on(",").join(this.optionsValue));
+    if (!this.isParameterValueValid()) {
+      throw newEoulsanException(this.toolInfo, getName(),
+          "The \""
+              + this.value + "\" value is invalid. Available values are: "
+              + Joiner.on(",").join(this.optionsValue));
     }
   }
+
+  //
+  // Private methods
+  //
 
   /**
    * Extract all options.
@@ -121,14 +138,13 @@ public class SelectParameterToolElement extends AbstractToolElement {
     return Collections.unmodifiableList(options);
   }
 
+  //
+  // Object methods
+  //
+
   @Override
   public String toString() {
     return "ToolParameterSelect [" + super.toString() + "]";
-  }
-
-  @Override
-  public String getValue() {
-    return this.value;
   }
 
   //
@@ -136,28 +152,32 @@ public class SelectParameterToolElement extends AbstractToolElement {
   //
 
   /**
-   * Instantiates a new tool parameter select.
+   * Instantiates a new select tool element parameter.
+   * @param toolInfo the ToolInfo object
    * @param param the param
    * @throws EoulsanException the eoulsan exception
    */
-  public SelectParameterToolElement(final Element param) throws EoulsanException {
-    this(param, null);
+  public SelectParameterToolElement(final ToolInfo toolInfo,
+      final Element param) throws EoulsanException {
+    this(toolInfo, param, null);
   }
 
   /**
-   * Instantiates a new tool parameter select.
+   * Instantiates a new select tool element parameter.
+   * @param toolInfo the ToolInfo object
    * @param param the param
    * @param nameSpace the name space
    * @throws EoulsanException the eoulsan exception
    */
-  public SelectParameterToolElement(final Element param, final String nameSpace)
-      throws EoulsanException {
+  public SelectParameterToolElement(final ToolInfo toolInfo,
+      final Element param, final String nameSpace) throws EoulsanException {
+
     super(param, nameSpace);
+    this.toolInfo = toolInfo;
 
     this.optionsElement =
         GalaxyToolXMLParserUtils.extractChildElementsByTagName(param, "option");
     this.optionsValue = this.extractAllOptions();
-
   }
 
 }

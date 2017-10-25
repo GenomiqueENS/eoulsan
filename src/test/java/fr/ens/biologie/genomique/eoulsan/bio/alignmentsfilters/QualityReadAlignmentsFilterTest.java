@@ -199,7 +199,7 @@ public class QualityReadAlignmentsFilterTest {
    */
   @Test
   public void testGetName() {
-    assertEquals("mappingquality", this.filter.getName());
+    assertEquals("quality", this.filter.getName());
     assertFalse("ko".equals(this.filter.getName()));
   }
 

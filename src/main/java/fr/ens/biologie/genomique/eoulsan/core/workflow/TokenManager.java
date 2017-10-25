@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.Globals.STEP_RESULT_EXTENSION;
@@ -36,6 +35,7 @@ import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.DESIGN_STEP;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.GENERATOR_STEP;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.STANDARD_STEP;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,10 +45,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
@@ -58,6 +58,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.core.InputPort;
 import fr.ens.biologie.genomique.eoulsan.core.Naming;
@@ -179,8 +180,8 @@ public class TokenManager implements Runnable {
   public void logSendingToken(final StepOutputPort outputPort,
       final Token token) {
 
-    checkNotNull(token);
-    checkNotNull(outputPort);
+    Objects.requireNonNull(token);
+    Objects.requireNonNull(outputPort);
 
     // Test if the token is an end token
     if (!token.isEndOfStepToken()) {
@@ -222,7 +223,7 @@ public class TokenManager implements Runnable {
    */
   private void createCompatibilityLinkResultFiles(final Data data) {
 
-    checkNotNull(data, "data argument cannot be null");
+    requireNonNull(data, "data argument cannot be null");
 
     for (Data e : data.getListElements()) {
 
@@ -274,7 +275,7 @@ public class TokenManager implements Runnable {
    */
   private void createSymlinksInOutputDirectory(final Data data) {
 
-    Preconditions.checkNotNull(data, "data argument cannot be null");
+    requireNonNull(data, "data argument cannot be null");
 
     final DataFile outputDir =
         this.step.getAbstractWorkflow().getOutputDirectory();
@@ -319,8 +320,8 @@ public class TokenManager implements Runnable {
    */
   public void postToken(final StepInputPort inputPort, final Token token) {
 
-    checkNotNull(token);
-    checkNotNull(inputPort);
+    Objects.requireNonNull(token);
+    Objects.requireNonNull(inputPort);
 
     // Check origin step state
     final StepState originStepState = token.getOrigin().getStep().getState();
@@ -628,12 +629,50 @@ public class TokenManager implements Runnable {
   //
 
   /**
+   * Remove inputs of the step if required by user
+   */
+  private void removeInputsIfRequired() {
+
+    final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
+
+    for (AbstractStep step : this.step.getWorkflowInputPorts()
+        .getLinkedSteps()) {
+
+      final TokenManager tokenManager = registry.getTokenManager(step);
+      tokenManager.removeOutputsIfRequired();
+    }
+  }
+
+  /**
+   * Remove outputs of the step if required by user
+   */
+  private void removeOutputsIfRequired() {
+
+    // Do nothing if removing output as soon as possible is not required
+    if (!this.step.isDiscardOutputAsap()) {
+      return;
+    }
+
+    // Check if all the step that require step's output is done
+    for (AbstractStep step : this.step.getWorkflowOutputPorts()
+        .getLinkedSteps()) {
+
+      if (step.getState() != StepState.DONE) {
+        return;
+      }
+    }
+
+    // Remove the outputs of the step
+    removeOutputsToDiscard();
+  }
+
+  /**
    * Add a failed task.
    * @param failedContext failed task context
    */
   void addFailedOutputData(final TaskContextImpl failedContext) {
 
-    checkNotNull(failedContext, "failedContext cannot be null");
+    requireNonNull(failedContext, "failedContext cannot be null");
 
     for (OutputPort port : this.outputPorts) {
       this.failedOutputDataToRemove.add(failedContext.getOutputData(port));
@@ -651,11 +690,22 @@ public class TokenManager implements Runnable {
     }
 
     final DataFile outputStepDir = this.step.getStepOutputDirectory();
+
+    final DataFile expectedOutputStepDir =
+        StepOutputDirectory.getInstance().workflowDirectory(
+            this.step.getAbstractWorkflow(), this.step, this.step.getModule());
+
     final DataFile outputWorkflowDir =
         this.step.getAbstractWorkflow().getOutputDirectory();
 
-    // Do nothing if the output of the step is the output of the workflow
-    if (outputWorkflowDir.equals(outputStepDir)) {
+    // Only remove symbolic links if the output directory of the step is not the
+    // expected output directory
+    final boolean remove = !expectedOutputStepDir.equals(outputStepDir);
+
+    // In debug mode do not remove links
+    if (!remove
+        && EoulsanRuntime.getSettings()
+            .getBooleanSetting("debug.keep.step.output.links")) {
       return;
     }
 
@@ -666,13 +716,21 @@ public class TokenManager implements Runnable {
         // Standard data file
         if (data.getFormat().getMaxFilesCount() < 2) {
 
-          removeFileAndSymLink(data.getDataFile(), outputWorkflowDir);
+          if (remove) {
+            removeFileAndSymLink(data.getDataFile(), outputWorkflowDir);
+          } else {
+            removeSymLink(data.getDataFile(), outputWorkflowDir);
+          }
         }
         // Multi file data file
         else {
 
           for (int i = 0; i < data.getDataFileCount(); i++) {
-            removeFileAndSymLink(data.getDataFile(i), outputWorkflowDir);
+            if (remove) {
+              removeFileAndSymLink(data.getDataFile(i), outputWorkflowDir);
+            } else {
+              removeSymLink(data.getDataFile(i), outputWorkflowDir);
+            }
           }
         }
       }
@@ -746,6 +804,16 @@ public class TokenManager implements Runnable {
     }
 
     // Remove the symbolic link
+    removeSymLink(file, symlinkDir);
+  }
+
+  /**
+   * Remove the symbolic link of a file.
+   * @param file file to remove
+   * @param symlinkDir the directory where is the symbolic link to remove
+   */
+  private void removeSymLink(final DataFile file, final DataFile symlinkDir) {
+
     final DataFile link = new DataFile(symlinkDir, file.getName());
     try {
 
@@ -758,7 +826,6 @@ public class TokenManager implements Runnable {
       getLogger().severe("Cannot remove data symbolic link to discard: "
           + link + " (" + e.getMessage() + ")");
     }
-
   }
 
   //
@@ -769,6 +836,11 @@ public class TokenManager implements Runnable {
    * Start the Token manager thread.
    */
   void start() {
+
+    // Do not start the thread if is a cluster task
+    if (EoulsanRuntime.getRuntime().getMode() == EoulsanExecMode.CLUSTER_TASK) {
+      return;
+    }
 
     // Check if the thread has been already started
     checkState(!this.isStarted, "The token manager thread for step "
@@ -806,6 +878,8 @@ public class TokenManager implements Runnable {
   public void run() {
 
     try {
+
+      boolean firstSubmission = true;
 
       do {
 
@@ -847,6 +921,18 @@ public class TokenManager implements Runnable {
 
         // Submit execution of the available contexts
         if (!this.step.isSkip()) {
+
+          // Create the step output directory if this is the first submission
+          if (firstSubmission) {
+
+            final DataFile outputDirectory = this.step.getStepOutputDirectory();
+
+            if (!outputDirectory.exists()) {
+              outputDirectory.mkdirs();
+            }
+            firstSubmission = false;
+          }
+
           this.scheduler.submit(this.step, contexts);
         }
 
@@ -907,6 +993,9 @@ public class TokenManager implements Runnable {
       this.step.getAbstractWorkflow().emergencyStop(exception,
           "Error while executing the workflow");
     }
+
+    // Remove inputs of the step if required by user
+    removeInputsIfRequired();
   }
 
   /**
@@ -970,7 +1059,7 @@ public class TokenManager implements Runnable {
    */
   TokenManager(final AbstractStep step) {
 
-    Preconditions.checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     this.step = step;
     this.inputPorts = step.getWorkflowInputPorts();

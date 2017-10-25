@@ -24,7 +24,7 @@ command.expected=samtools rmdup "input_value" "output_value" 2>&1 || echo "Error
 
 test_description=grep python script 1
 toolshedxml.path=grep.xml
-param.input=input_value
+input.input=input_value
 param.pattern=[a-z]
 param.invert=true
 output.out_file1=output_value
@@ -33,7 +33,7 @@ command.expected=grep.py -i input_value -o output_value -pattern '[a-z]' -v true
 
 test_description=grep python script 2
 toolshedxml.path=grep.xml
-param.input=input_value
+input.input=input_value
 param.pattern=[a-z]
 param.invert=false
 output.out_file1=output_value
@@ -73,7 +73,7 @@ toolshedxml.path=sam_to_bam.xml
 input.source.input1=input_value
 other.source.index.fields.path=index_fields_value
 param.source.index_source=history
-param.source.ref_file=ref_file_value
+input.source.ref_file=ref_file_value
 output.output1=output_value
 command.expected=sam_to_bam.py --input1=input_value --ref_file=ref_file_value --output1=output_value
 
@@ -107,3 +107,34 @@ input.input2=in2.fq
 output.output1=out1.fq
 output.output2=out2.fq
 command.expected=trim_galore --path_to_cutadapt /tmp/cutadapt-1.8.1/bin/cutadapt --quality 30 -e 0.1 --stringency 1 --length 20 --paired in1.fq in2.fq ; /RenameOutput2.sh in1.fq out1.fq ; /RenameOutput3.sh in2.fq out2.fq
+
+test_description=matrix quality filtering
+toolshedxml.path=quality-filtering.xml
+param.plot.option=yes1
+param.detection.threshold=1000
+param.expression.option=yes2
+param.expression.threshold=2000
+param.reads.option=yes3
+param.reads.threshold=3000
+param.prop.mt=0.11
+param.prop.sp=0.22
+param.nb.filter=3
+input.input1=in1.txt
+input.input2=in2.txt
+input.input3=in3.txt
+output.output1=out1.txt
+output.output2=out2.txt
+output.output3=out3.txt
+command.expected=Rscript scripts/SCQualityChecking.R in1.txt in2.txt in3.txt yes1 1000 2000 yes2 3000 yes3 0.11 0.22 3 out1.txt out2.txt out3.txt
+
+
+test_description=matrix quality filtering default values
+toolshedxml.path=quality-filtering.xml
+input.input1=in1.txt
+input.input2=in2.txt
+input.input3=in3.txt
+output.output1=out1.txt
+output.output2=out2.txt
+output.output3=out3.txt
+command.expected=Rscript scripts/SCQualityChecking.R in1.txt in2.txt in3.txt All 10 4000 Endogenous 200000 Endogenous 0.1 0.5 1 out1.txt out2.txt out3.txt
+

@@ -2,6 +2,7 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,7 +15,9 @@ public class EmergencyStopTasks {
 
   private static EmergencyStopTasks instance;
 
-  private Set<EmergencyStopTask> tasks = new HashSet<>();
+  private final Set<EmergencyStopTask> tasks =
+      Collections.synchronizedSet(new HashSet<EmergencyStopTask>());
+  private volatile boolean stopped;
 
   /**
    * Add an emergency task.
@@ -24,7 +27,10 @@ public class EmergencyStopTasks {
 
     checkNotNull(task, "task argument cannot be null");
 
-    synchronized (this) {
+    // If stopped, stop immediately the new task
+    if (stopped) {
+      task.stop();
+    } else {
       this.tasks.add(task);
     }
   }
@@ -37,7 +43,8 @@ public class EmergencyStopTasks {
 
     checkNotNull(task, "task argument cannot be null");
 
-    synchronized (this) {
+    // Only remove task if not stopped
+    if (!stopped) {
       this.tasks.remove(task);
     }
   }
@@ -47,7 +54,15 @@ public class EmergencyStopTasks {
    */
   public void stop() {
 
-    synchronized (this) {
+    // Do nothing if already stopped
+    if (this.stopped) {
+      return;
+    }
+
+    // Prevent adding or removing tasks
+    this.stopped = true;
+
+    synchronized (this.tasks) {
       for (EmergencyStopTask task : this.tasks) {
         task.stop();
       }

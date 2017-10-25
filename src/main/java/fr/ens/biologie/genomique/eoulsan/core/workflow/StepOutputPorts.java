@@ -43,6 +43,23 @@ class StepOutputPorts extends AbstractPorts<StepOutputPort>
 
   private static final long serialVersionUID = 183816706502235237L;
 
+  /**
+   * Get the steps linked to the ports.
+   * @return a set with the steps related to the ports
+   */
+  public Set<AbstractStep> getLinkedSteps() {
+
+    final Set<AbstractStep> result = new HashSet<>();
+
+    for (StepOutputPort sop : this) {
+      for (StepInputPort sip : sop.getLinks()) {
+        result.add(sip.getStep());
+      }
+    }
+
+    return Collections.unmodifiableSet(result);
+  }
+
   //
   // Static methods
   //

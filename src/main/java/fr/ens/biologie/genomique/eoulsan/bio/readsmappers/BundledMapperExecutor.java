@@ -48,7 +48,7 @@ public class BundledMapperExecutor implements MapperExecutor {
 
   private final String softwarePackage;
   private final String version;
-  private final File temporaryDirectory;
+  private final File executablesTemporaryDirectory;
 
   /**
    * This class define an executor result for BundledMapperExecutor and
@@ -97,7 +97,7 @@ public class BundledMapperExecutor implements MapperExecutor {
     checkNotNull(executable, "executable argument cannot be null");
 
     return BinariesInstaller.install(this.softwarePackage, this.version,
-        executable, this.temporaryDirectory.getAbsolutePath());
+        executable, this.executablesTemporaryDirectory.getAbsolutePath());
   }
 
   @Override
@@ -119,6 +119,11 @@ public class BundledMapperExecutor implements MapperExecutor {
     final ProcessBuilder builder = new ProcessBuilder(command);
     builder.redirectErrorStream(redirectStderr);
 
+    // If no redirection of stderr in stdout, redirect stderr to /dev/null
+    if (!redirectStderr) {
+      builder.redirectError(new File("/dev/null"));
+    }
+
     // Set execution directory if exists
     if (executionDirectory != null) {
       builder.directory(executionDirectory);
@@ -139,7 +144,8 @@ public class BundledMapperExecutor implements MapperExecutor {
   public String toString() {
 
     return Objects.toStringHelper(this).add("softwarePackage", softwarePackage)
-        .add("version", version).add("temporaryDirectory", temporaryDirectory)
+        .add("version", version)
+        .add("executablesTemporaryDirectory", executablesTemporaryDirectory)
         .toString();
   }
 
@@ -151,19 +157,19 @@ public class BundledMapperExecutor implements MapperExecutor {
    * Constructor.
    * @param softwarePackage software package of the mapper
    * @param version version of the mapper
-   * @param temporaryDirectory temporary directory to use
+   * @param executablesTemporaryDirectory temporary directory for executables
    */
   BundledMapperExecutor(final String softwarePackage, final String version,
-      final File temporaryDirectory) {
+      final File executablesTemporaryDirectory) {
 
     checkNotNull(softwarePackage, "dockerConnection argument cannot be null");
     checkNotNull(version, "dockerConnection argument cannot be null");
-    checkNotNull(temporaryDirectory,
+    checkNotNull(executablesTemporaryDirectory,
         "dockerConnection argument cannot be null");
 
     this.softwarePackage = softwarePackage;
     this.version = version;
-    this.temporaryDirectory = temporaryDirectory;
+    this.executablesTemporaryDirectory = executablesTemporaryDirectory;
   }
 
 }

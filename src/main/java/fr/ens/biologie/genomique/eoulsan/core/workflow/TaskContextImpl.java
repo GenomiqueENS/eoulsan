@@ -287,7 +287,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
         "unknown output port name: " + portName);
 
     final AbstractData data = this.outputData.get(portName);
-    data.setName(dataName);
+    data.setName(dataName, true);
     data.setPart(part);
 
     return data;
@@ -297,9 +297,17 @@ public class TaskContextImpl implements TaskContext, Serializable {
   public Data getOutputData(final String portName, final Data origin) {
 
     checkNotNull(origin, "origin cannot be null");
+    checkNotNull(portName, "portName cannot be null");
+    checkArgument(this.outputData.containsKey(portName),
+        "unknown output port name: " + portName);
 
-    final Data result =
-        getOutputData(portName, origin.getName(), origin.getPart());
+    final AbstractData result = this.outputData.get(portName);
+
+    AbstractData oriData = origin instanceof UnmodifiableData
+        ? ((UnmodifiableData) origin).getData() : (AbstractData) origin;
+
+    result.setName(oriData.getName(), oriData.isDefaultName());
+    result.setPart(oriData.getPart());
 
     // Set the metadata of the new data from the origin data only if each data
     // are not a list

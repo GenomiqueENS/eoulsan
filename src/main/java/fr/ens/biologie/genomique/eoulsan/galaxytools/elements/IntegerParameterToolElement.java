@@ -23,23 +23,22 @@
  */
 package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
+import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.newEoulsanException;
+
 import org.w3c.dom.Element;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
 
 /**
- * The Class ToolParameterInteger.
+ * This class define an integer tool element parameter.
  * @author Sandrine Perrin
  * @since 2.0
  */
-public class IntegerParameterToolElement extends AbstractToolElement {
+public class IntegerParameterToolElement extends TextParameterToolElement {
 
   /** The Constant TYPE. */
   public final static String TYPE = "integer";
-
-  /** The Constant ATT_DEFAULT_KEY. */
-  private final static String ATT_DEFAULT_KEY = "value";
 
   /** The Constant ATT_MIN_KEY. */
   private final static String ATT_MIN_KEY = "min";
@@ -53,52 +52,51 @@ public class IntegerParameterToolElement extends AbstractToolElement {
   /** The max. */
   private final int max;
 
-  /** The default value. */
-  private String defaultValue;
+  private final ToolInfo toolInfo;
 
-  /** The value. */
-  private int value;
-
-  @Override
-  public boolean isValueParameterValid() {
-    return this.value >= this.min && this.value <= this.max;
-  }
+  //
+  // Getters
+  //
 
   @Override
-  public void setDefaultValue() throws EoulsanException {
+  public boolean isParameterValueValid() {
 
-    setValue(this.defaultValue);
+    int v;
+
+    try {
+      v = Integer.parseInt(getValue());
+    } catch (NumberFormatException e) {
+      return false;
+    }
+
+    return v >= this.min && v <= this.max;
   }
+
+  //
+  // Setters
+  //
 
   @Override
-  public void setValue(final Parameter stepParameter) throws EoulsanException {
-    super.setValue(stepParameter);
+  public void setValue(final String value) throws EoulsanException {
 
-    this.setValue(stepParameter.getStringValue());
+    super.setValue(value);
 
-  }
-
-  private void setValue(final String value) throws EoulsanException {
-    this.value = Integer.parseInt(value);
-
-    this.set = true;
-
-    if (!this.isValueParameterValid()) {
-      throw new EoulsanException("ToolGalaxy step: parameter "
-          + this.getName() + " value setting for step: " + this.value
-          + ". Invalid to interval [" + this.min + "," + this.max + "]");
+    if (!this.isParameterValueValid()) {
+      throw newEoulsanException(this.toolInfo, getName(),
+          "invalid value for parameter: "
+              + getValue() + " (the value must be in interval [" + this.min
+              + " - " + this.max + "])");
     }
   }
 
-  @Override
-  public String getValue() {
-    return "" + this.value;
-  }
+  //
+  // Object methods
+  //
 
   @Override
   public String toString() {
     return "ToolParameterInteger [min="
-        + this.min + ", max=" + this.max + ", value=" + this.value + "]";
+        + this.min + ", max=" + this.max + ", value=" + getValue() + "]";
   }
 
   //
@@ -106,36 +104,45 @@ public class IntegerParameterToolElement extends AbstractToolElement {
   //
 
   /**
-   * Instantiates a new tool parameter integer.
-   * @param param the param
-   * @throws EoulsanException the eoulsan exception
+   * Instantiates a new integer tool element parameter.
+   * @param toolInfo the ToolInfo object
+   * @param param the parameter
+   * @throws EoulsanException if an error occurs while setting the value
    */
-  public IntegerParameterToolElement(final Element param) throws EoulsanException {
-    this(param, null);
+  public IntegerParameterToolElement(final ToolInfo toolInfo,
+      final Element param) throws EoulsanException {
+    this(toolInfo, param, null);
   }
 
   /**
-   * Instantiates a new tool parameter integer.
-   * @param param the param
+   * Instantiates a new integer tool element parameter.
+   * @param toolInfo the ToolInfo object
+   * @param param the parameter
    * @param nameSpace the name space
-   * @throws EoulsanException the eoulsan exception
+   * @throws EoulsanException if an error occurs while setting the value
    */
-  public IntegerParameterToolElement(final Element param, final String nameSpace)
-      throws EoulsanException {
-    super(param, nameSpace);
+  public IntegerParameterToolElement(final ToolInfo toolInfo,
+      final Element param, final String nameSpace) throws EoulsanException {
 
-    // Set value
-    this.defaultValue = param.getAttribute(ATT_DEFAULT_KEY);
+    super(toolInfo, param, nameSpace);
+    this.toolInfo = toolInfo;
 
+    // Get minimal value
+    String value = param.getAttribute(ATT_MIN_KEY);
     try {
-      String value = param.getAttribute(ATT_MIN_KEY);
       this.min = value.isEmpty() ? Integer.MIN_VALUE : Integer.parseInt(value);
-
-      value = param.getAttribute(ATT_MAX_KEY);
-      this.max = value.isEmpty() ? Integer.MAX_VALUE : Integer.parseInt(value);
-
     } catch (final NumberFormatException e) {
-      throw new EoulsanException("Fail extract value " + e.getMessage());
+      throw newEoulsanException(toolInfo, getName(),
+          "Failed to extract min value: " + value);
+    }
+
+    // Get maximal value
+    value = param.getAttribute(ATT_MAX_KEY);
+    try {
+      this.max = value.isEmpty() ? Integer.MAX_VALUE : Integer.parseInt(value);
+    } catch (final NumberFormatException e) {
+      throw newEoulsanException(toolInfo, getName(),
+          "Failed to extract max value: " + value);
     }
   }
 

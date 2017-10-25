@@ -35,18 +35,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
+import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.annotations.RequiresAllPreviousSteps;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
@@ -78,7 +73,7 @@ import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
  * @since 2.0
  * @author Laurent Jourdren
  */
-@HadoopCompatible
+@LocalOnly
 @RequiresAllPreviousSteps
 public class DiffanaResultsAnnotationModule extends AbstractModule {
 
@@ -156,7 +151,7 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
       final Set<Parameter> stepParameters) throws EoulsanException {
 
     String pattern = DEFAULT_FILE_INPUT_GLOB_PATTERN;
-    this.outputPrefix = context.getCurrentStep().getId();
+    this.outputPrefix = context.getCurrentStep().getId() + '_';
 
     for (final Parameter p : stepParameters) {
 
@@ -263,9 +258,22 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
 
     try {
 
-      final DataFile outputDir = context.getOutputDirectory();
-      final List<DataFile> files = outputDir.list();
+      final DataFile outputDir = context.getStepOutputDirectory();
+      final List<DataFile> files = new ArrayList<>();
       final List<DataFile> filesToConvert = new ArrayList<>();
+
+      context.getLogger().info("Search files in directory: " + context.getOutputDirectory());
+      context.getLogger().info("Output directory: " + outputDir);
+
+      // Handle step output directory
+      for (DataFile f : context.getOutputDirectory().list()) {
+
+        if (!f.getMetaData().isDir()) {
+          files.add(f);
+        } else if(f.getName().endsWith(Globals.STEP_OUTPUT_DIRECTORY_SUFFIX)) {
+          files.addAll(f.list());
+        }
+      }
 
       // Filter files to convert
       for (DataFile f : files) {
@@ -274,8 +282,17 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
         }
       }
 
+      Set<String> processedFilenames = new HashSet<>();
+
       // Annotate all selected files
       for (DataFile inFile : filesToConvert) {
+
+        // Do not process 2 times the same file
+        if (processedFilenames.contains(inFile.getName())) {
+          continue;
+        } else {
+          processedFilenames.add(inFile.getName());
+        }
 
         // For each formats
         for (Map.Entry<String, DataFormat> e : this.outputFormats.entrySet()) {

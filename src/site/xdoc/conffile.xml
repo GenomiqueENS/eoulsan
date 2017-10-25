@@ -50,12 +50,15 @@
 	<table>
 		<tr><th>Parameter</th><th>Type</th><th>Default value</th><th>Description</th></tr>
 		<tr><td>main.tmp.dir</td><td>string</td><td>/tmp usually</td><td>Path to the temporary directory</td></tr>
+		<tr><td>main.executables.tmp.dir</td><td>string</td><td>The value of the <tt>main.tmp.dir</tt> parameter</td><td>Path to the temporary directory for binaries extracted from Eoulsan Jar</td></tr>
 		<tr><td>main.debug</td><td>boolean</td><td>false</td><td>Enable debugging information</td></tr>
 		<tr><td>main.printstacktrace</td><td>boolean</td><td>false</td><td>Enable print stack trace when error occurs</td></tr>
 		<!--tr><td>main.bypass.platform.checking</td><td>boolean</td><td>false</td><td>Bypass platform checking</td></tr-->
 		<tr><td>main.ui.name</td><td>string</td><td>basic</td><td>Define the user interface to use. There is currently 3 available UI: "basic" (the default UI),
                 "no" (that do nothing) and the experimental "lanterna"</td></tr>
 		<tr><td>main.local.threads</td><td>integer</td><td>0</td><td>Number of threads to use in local mode</td></tr>
+
+		<tr><td>main.output.tree.type</td><td>string</td><td>step</td><td>Define the organization of the output files. If value is "flat" all the output files will be in the execution directory, and if value is "step" all the output files of a step will be gethered in a dedicated directory</td></tr>
 
 		<tr><td>main.format.path</td><td>string</td><td>Not set</td><td>Define the paths of the formats. Multiple paths can be separated using a space character</td></tr>
 		<tr><td>main.galaxy.tool.path</td><td>string</td><td>Not set</td><td>Define the paths of the galaxy tools files. Multiple paths can be separated using a space character</td></tr>
@@ -79,6 +82,7 @@
 		<tr><td>main.additional.annotation.hypertext.links.path</td><td>string</td><td>Not set</td><td>Path to the additional annotation hypertext links info file (cannot be an URL)</td></tr>
 		
 		<tr><td>main.docker.uri</td><td>string</td><td>Not set</td><td>The Docker server URI. Usually the value is <tt>unix:///var/run/docker.sock</tt></td></tr>
+		<tr><td>main.docker.mount.nfs.roots</td><td>boolean</td><td>false</td><td>If this option is enabled, when mounted data in a Docker container are stored in a NFS volume, mount the root the of NFS volume instead of data path. This option avoid some right issues with NFS root squash</td></tr>
 		<tr><td>main.mail.send.result.mail</td><td>boolean</td><td>false</td><td>Enable send mail to user at the end of analysis</td></tr>
 		<tr><td>main.mail.send.result.mail.to</td><td>string</td><td>Not set</td><td>Mail address where send result message</td></tr>
 		<tr><td>main.mail.smtp.host</td><td>string</td><td>Not set</td><td>SMTP server to use to send mails. See the <a href="#smtp">SMTP section</a> for more information</td></tr>

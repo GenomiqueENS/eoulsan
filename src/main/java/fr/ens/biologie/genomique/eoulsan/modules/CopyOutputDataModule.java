@@ -34,6 +34,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
+import fr.ens.biologie.genomique.eoulsan.annotations.NoOutputDirectory;
 import fr.ens.biologie.genomique.eoulsan.annotations.ReuseModuleInstance;
 import fr.ens.biologie.genomique.eoulsan.core.DataUtils;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
@@ -61,6 +62,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 @LocalOnly
 @ReuseModuleInstance
 @NoLog
+@NoOutputDirectory
 public class CopyOutputDataModule extends AbstractModule {
 
   public static final String MODULE_NAME = "_copyoutputformat";

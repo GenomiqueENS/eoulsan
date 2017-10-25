@@ -73,19 +73,28 @@ filter will not produce the same output if declared before or after the trim fil
          <table>
 		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th><th>Modify reads</th></tr>
 
-		<tr><td>paircheck</td><td>none</td><td>Check if the identifiers of the two ends had the same identifier</td><td>None</td><td>No</td></tr>
-		<tr><td>pairedend.accept.paired.end</td><td>boolean</td><td>Remove all paired-end reads if false</td><td>Not set</td><td>No</td></tr>
-		<tr><td>pairedend.accept.single.end</td><td>boolean</td><td>Remove all single-end reads if false</td><td>Not set</td><td>No</td></tr>
-		<tr><td>illuminaid</td><td>none</td><td>Remove all reads that not pass illumina filters</td><td>Not set</td><td>No</td></tr>
+		<tr><td>paircheck</td><td>none</td><td>Check if the identifiers of the two ends had the same identifier if enabled.</td><td>N/A</td><td>No</td></tr>
+		<tr><td>pairedend.accept.paired.end</td><td>boolean</td><td>Remove all paired-end reads if false.</td><td>Not set</td><td>No</td></tr>
+		<tr><td>pairedend.accept.single.end</td><td>boolean</td><td>Remove all single-end reads if false.</td><td>Not set</td><td>No</td></tr>
+		<tr><td>illuminaid</td><td>none</td><td>Remove all reads that not pass illumina filters if enabled.</td><td>N/A</td><td>No</td></tr>
 		<tr><td>quality.threshold</td><td>float</td><td>The threshold for the mean base quality. Unit in decimal quality score</td><td>Not set</td><td>No</td></tr>
-		<tr><td>trimpolynend</td><td>none</td><td>This filter trim polyN tails of reads.</td><td>Not set</td><td>Yes</td></tr>
+		<tr><td>trimpolynend</td><td>none</td><td>This filter trim polyN tails of reads if enabled.</td><td>N/A</td><td>Yes</td></tr>
 		<tr><td>length.minimal.length.threshold</td><td>integer</td><td>The minimal threshold for the reads length. Unit in bases.</td><td>Not set</td><td>No</td></tr>
 		<tr><td>trim.length.threshold</td><td>integer</td><td>The threshold for the length of the reads. Unit in bases. This filter trim polyN tails of reads. This filter is <b>deprecated</b>, use instead <code>trimpolyn</code> and <code>length.minimal.length.threshold</code>.</td><td>Not set</td><td>Yes</td></tr>
-		<tr><td>readnamestartwith.forbidden.prefixes</td><td>string</td><td>Remove all reads with id that starts with one of prefixes separated by comma</td><td>Not set</td><td>No</td></tr>
-		<tr><td>readnamestartwith.allowed.prefixes</td><td>string</td><td>Keep only the reads with id that starts with one of prefixes separated by comma</td><td>Not set</td><td>No</td></tr>
-		<tr><td>readnameregex.forbidden.regex</td><td>string</td><td>Remove all the reads with id that matches with the regular expression</td><td>Not set</td><td>No</td></tr>
-		<tr><td>readnameregex.allowed.regex</td><td>string</td><td>Keep only the reads with id that matches with the regular expression</td><td>Not set</td><td>No</td></tr>
-		<tr><td>hadoop.reducer.task.count</td><td>integer</td><td>The count of Hadoop reducer tasks to use for this step. This parameter is only used in Hadoop mode</td><td>Not set</td><td>N/A</td></tr>
+		<tr><td>readnamestartwith.forbidden.prefixes</td><td>string</td><td>Remove all reads with id that starts with one of prefixes separated by comma.</td><td>Not set</td><td>No</td></tr>
+		<tr><td>readnamestartwith.allowed.prefixes</td><td>string</td><td>Keep only the reads with id that starts with one of prefixes separated by comma.</td><td>Not set</td><td>No</td></tr>
+		<tr><td>readnameregex.forbidden.regex</td><td>string</td><td>Remove all the reads with id that matches with the regular expression.</td><td>Not set</td><td>No</td></tr>
+		<tr><td>readnameregex.allowed.regex</td><td>string</td><td>Keep only the reads with id that matches with the regular expression.</td><td>Not set</td><td>No</td></tr>
+		<tr><td>hadoop.reducer.task.count</td><td>integer</td><td>The count of Hadoop reducer tasks to use for this step. This parameter is only used in Hadoop mode.</td><td>Not set</td><td>N/A</td></tr>
+		<tr><td>maxlength.maximum.length.threshold</td><td>integer</td><td>The maximum threshold for the reads length. Unit in bases.</td><td>Not set</td><td>No</td></tr>
+		<tr><td>readsequenceregex.forbidden.regex</td><td>string</td><td>Remove all the reads with pattern that matches with the regular expression.</td><td>Not set</td><td>No</td></tr>
+		<tr><td>readsequenceregex.allowed.regex</td><td>string</td><td>Keep only the reads with pattern that matches with the regular expression.</td><td>Not set</td><td>No</td></tr>
+		<tr><td>slidingwindow</td><td>string</td><td>Cutting once the average quality within the window falls below a threshold</td><td>Not set</td><td>No</td></tr>
+		<tr><td>trailing</td><td>string</td><td>Remove low quality bases from the end</td><td>Not set</td><td>No</td></tr>
+		<tr><td>leading</td><td>string</td><td>Remove low quality bases from the beginning</td><td>Not set</td><td>No</td></tr>
+		<tr><td>headcrop</td><td>string</td><td>Remove the specified number of bases from beginning of the read</td><td>Not set</td><td>No</td></tr>
+		<tr><td>crop</td><td>string</td><td>Remove bases regardless of quality from the end of the read</td><td>Not set</td><td>No</td></tr>
+		<tr><td>nanoporesequencetype.keep</td><td>string</td><td>Keep only a type of Nanopore reads. Available values are: template, complement and consensus. For 1D sequencing, use consensus value to keep all the reads.</td><td>consensus</td><td>No</td></tr>
 	</table>
          <li><b>Configuration example</b>:</li>
 <pre>

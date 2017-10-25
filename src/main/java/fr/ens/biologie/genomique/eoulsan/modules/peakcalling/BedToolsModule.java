@@ -35,8 +35,8 @@ import fr.ens.biologie.genomique.eoulsan.util.BinariesInstaller;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement;
-import fr.ens.biologie.genomique.eoulsan.util.docker.DockerSimpleProcess;
-import fr.ens.biologie.genomique.eoulsan.util.docker.DockerManager;
+import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
+import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
@@ -274,17 +274,20 @@ public class BedToolsModule extends AbstractModule {
 
       final File stderrFile = new File("docker.err");
 
-      final DockerSimpleProcess process = new DockerSimpleProcess(dockerImage);
-
       String cmd2 = Joiner.on(' ').join(cmd);
       getLogger().info("Run command line : " + cmd2);
 
       // Run bedtools
       try {
-	final int exitValue = process.execute(cmd, context.getStepOutputDirectory().toFile(), context.getLocalTempDirectory(), outputFile, stderrFile);
+
+        final SimpleProcess process =
+            DockerManager.getInstance().createImageInstance(dockerImage);
+        final int exitValue =
+            process.execute(cmd, context.getStepOutputDirectory().toFile(),
+                context.getLocalTempDirectory(), outputFile, stderrFile);
 
         ProcessUtils.throwExitCodeException(exitValue, Joiner.on(' ').join(cmd));
-      } catch (EoulsanException | IOException err) {
+      } catch (IOException err) {
         return status.createTaskResult(err);
       }
     }

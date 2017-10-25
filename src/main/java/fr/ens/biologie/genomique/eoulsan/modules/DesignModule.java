@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.modules;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -54,6 +55,8 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
+import fr.ens.biologie.genomique.eoulsan.data.protocols.DataProtocol;
+import fr.ens.biologie.genomique.eoulsan.data.protocols.StorageDataProtocol;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
@@ -181,7 +184,7 @@ public class DesignModule extends AbstractModule {
 
     if (value != null) {
 
-      final DataFile file = new DataFile(value);
+      final DataFile file = getUnderLyingDataFile(new DataFile(value));
       final CompressionType fileCompression = file.getCompressionType();
 
       if (fileCompression != CompressionType.NONE) {
@@ -366,6 +369,31 @@ public class DesignModule extends AbstractModule {
     }
 
     return result;
+  }
+
+  /**
+   * Get the underlying file if the file is available via a StorageDataProtocol.
+   * @param file the input file
+   * @return the underlying file if exist or the original file
+   */
+  private static DataFile getUnderLyingDataFile(final DataFile file) {
+
+    if (file == null) {
+      return null;
+    }
+
+    try {
+      DataProtocol protocol = file.getProtocol();
+
+      if (protocol != null && protocol instanceof StorageDataProtocol) {
+
+        return ((StorageDataProtocol) protocol).getUnderLyingData(file);
+      }
+    } catch (IOException e) {
+      return file;
+    }
+
+    return file;
   }
 
   //

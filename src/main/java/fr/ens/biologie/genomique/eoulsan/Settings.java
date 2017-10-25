@@ -1,4 +1,6 @@
 /*
+
+
  *                  Eoulsan development code
  *
  * This code may be freely distributed and modified under the
@@ -66,8 +68,14 @@ public final class Settings implements Serializable {
 
   private static final String TMP_DIR_KEY = MAIN_PREFIX_KEY + "tmp.dir";
 
+  private static final String EXECUTABLES_TMP_DIR_KEY =
+      MAIN_PREFIX_KEY + "executables.tmp.dir";
+
   private static final String LOCAL_THREADS_NUMBER =
       MAIN_PREFIX_KEY + "local.threads";
+
+  private static final String OUTPUT_TREE_TYPE =
+      MAIN_PREFIX_KEY + "output.tree.type";
 
   private static final String DATA_FORMAT_PATH =
       MAIN_PREFIX_KEY + "format.path";
@@ -138,6 +146,9 @@ public final class Settings implements Serializable {
       MAIN_PREFIX_KEY + "mail.smtp.host";
 
   private static final String DOCKER_URI_KEY = MAIN_PREFIX_KEY + "docker.uri";
+
+  private static final String DOCKER_MOUNT_NFS_ROOTS_KEY =
+      MAIN_PREFIX_KEY + "docker.mount.nfs.roots";
 
   private static final String ZOOKEEPER_CONNECT_STRING_KEY =
       "zookeeper.connect.string";
@@ -318,6 +329,25 @@ public final class Settings implements Serializable {
   public boolean isUserDefinedTempDirectory() {
 
     return this.properties.containsKey(TMP_DIR_KEY);
+  }
+
+  /**
+   * Get the temporary directory for executables.
+   * @return The temporary directory for executables
+   */
+  public String getExecutablesTempDirectory() {
+
+    return this.properties.getProperty(EXECUTABLES_TMP_DIR_KEY,
+        getTempDirectory());
+  }
+
+  /**
+   * Get the temporary directory File for executables.
+   * @return The temporary directory for executables as a File object
+   */
+  public File getExecutablesTempDirectoryFile() {
+
+    return new File(getExecutablesTempDirectory());
   }
 
   /**
@@ -525,6 +555,16 @@ public final class Settings implements Serializable {
   }
 
   /**
+   * Test if when use Docker, NFS roots must been mounted instead of file paths.
+   * @return true if if when use Docker, NFS roots must been mounted instead of file paths
+   */
+  public boolean isDockerMountNFSRoots() {
+
+    return Boolean.parseBoolean(
+        this.properties.getProperty(DOCKER_MOUNT_NFS_ROOTS_KEY, "" + false));
+  }
+
+  /**
    * Get the Docker connection URI.
    * @return the docker connection URI
    */
@@ -532,7 +572,7 @@ public final class Settings implements Serializable {
 
     final String connectionString = getDockerConnection();
 
-    if (connectionString == null) {
+    if (connectionString == null || connectionString.trim().isEmpty()) {
       return null;
     }
 
@@ -559,6 +599,16 @@ public final class Settings implements Serializable {
   public String getGalaxyToolPath() {
 
     return this.properties.getProperty(GALAXY_TOOL_PATH);
+  }
+
+  /**
+   * Get the output tree type.
+   * @return the output tree type
+   */
+  public String getOutputTreeType() {
+
+    return this.properties.getProperty(OUTPUT_TREE_TYPE,
+        Globals.OUTPUT_TREE_TYPE_DEFAULT);
   }
 
   /**
@@ -792,6 +842,20 @@ public final class Settings implements Serializable {
   }
 
   /**
+   * Set the temporary directory for executables.
+   * @param executablesTempDirectory The path to the temporary directory for
+   *          executables
+   */
+  public void setExecutablesTempDirectory(
+      final String executablesTempDirectory) {
+
+    if (executablesTempDirectory != null) {
+      this.properties.setProperty(EXECUTABLES_TMP_DIR_KEY,
+          executablesTempDirectory);
+    }
+  }
+
+  /**
    * Set if the design must be obfuscated
    * @param obfuscate true if the design must be obfuscated
    */
@@ -1006,6 +1070,15 @@ public final class Settings implements Serializable {
   }
 
   /**
+   * Set if when use Docker, NFS roots must been mounted instead of file paths.
+   * param value the value of the parameter
+   */
+  public void setDockerMountNFSRoots(final boolean enable) {
+
+    this.properties.setProperty(DOCKER_MOUNT_NFS_ROOTS_KEY, "" + enable);
+  }
+
+  /**
    * Set the format path.
    * @param path the format
    */
@@ -1021,6 +1094,15 @@ public final class Settings implements Serializable {
   public void setGalaxyToolPath(final String path) {
 
     this.properties.setProperty(DATA_FORMAT_PATH, path);
+  }
+
+  /**
+   * Set the output tree type.
+   * @param outputTreeType the output tree type
+   */
+  public void setOutputTreeType(final String outputTreeType) {
+
+    this.properties.getProperty(OUTPUT_TREE_TYPE, outputTreeType);
   }
 
   /**

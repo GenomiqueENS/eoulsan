@@ -24,6 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
+import java.util.Objects;
+
 /**
  * This class is a factory for experimental design.
  * @since 1.0
@@ -37,7 +39,23 @@ public final class DesignFactory {
    */
   public static Design createEmptyDesign() {
 
-    return new Design();
+    return new DesignImpl();
+  }
+
+  /**
+   * Create an unmodifiable wrapper around an existing design.
+   * @param design the design
+   * @return an unmodifiable wrapper
+   */
+  public static Design unmodifiableDesign(final Design design) {
+
+    Objects.requireNonNull(design, "design argument cannot be null");
+
+    if (design instanceof UnmodifiableDesign) {
+      return design;
+    }
+
+    return new UnmodifiableDesign(design);
   }
 
   //

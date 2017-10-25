@@ -179,7 +179,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
    * @param reporter the Reporter object of the Eoulsan run
    * @param counterGroup string with the counter name group for the expression
    *          step
-   * @throws IOException
+   * @throws IOException if the methods fails
    */
   protected abstract void internalCount(final DataFile alignmentFile,
       final DataFile annotationFile, final boolean gtfFormat,

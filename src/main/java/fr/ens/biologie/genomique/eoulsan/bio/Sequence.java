@@ -63,6 +63,44 @@ public class Sequence {
   }
 
   /**
+   * Get the identifier in the name.
+   * @return the identifier in the name
+   */
+  public final String getIdentifierInName() {
+
+    if (this.name==null) {
+      return null;
+    }
+
+    int pos = this.name.indexOf(' ');
+
+    if (pos==-1) {
+      return this.name;
+    }
+
+    return this.name.substring(0, pos);
+  }
+
+  /**
+   * Get the description in the name.
+   * @return the description in the name
+   */
+  public final String getDescriptionInName() {
+
+    if (this.name==null) {
+      return null;
+    }
+
+    int pos = this.name.indexOf(' ');
+
+    if (pos==-1) {
+      return "";
+    }
+
+    return trim(this.name.substring(pos));
+  }
+
+  /**
    * Get the description of the sequence.
    * @return a string with the description
    */
@@ -332,6 +370,71 @@ public class Sequence {
     }
 
     return (double) count / (double) len;
+  }
+
+  /**
+   * Set the sequence as the reverse.
+   */
+  public final void reverse() {
+
+    this.sequence = reverse(this.sequence);
+  }
+
+  /**
+   * Get the sequence as the reverse.
+   * @param sequence sequence to reverse complement
+   * @return the reverse complement sequence
+   */
+  public static final String reverse(final String sequence) {
+
+    if (sequence == null) {
+      return null;
+    }
+
+    final char[] array = sequence.toCharArray();
+    final int len = array.length;
+
+    final StringBuilder sb = new StringBuilder(len);
+
+    for (int i = len - 1; i >= 0; i--) {
+      sb.append(array[i]);
+    }
+
+    return sb.toString();
+  }
+
+  /**
+   * Set the sequence as the complement.
+   */
+  public final void complement() {
+
+    this.sequence = complement(this.sequence, this.alphabet);
+  }
+
+  /**
+   * Get the sequence as the complement. This method work only with
+   * A,T,G and C bases.
+   * @param sequence sequence to reverse complement
+   * @param alphabet alphabet of the sequence to reverse complement
+   * @return the reverse complement sequence
+   */
+  public static final String complement(final String sequence,
+    final Alphabet alphabet) {
+
+    if (sequence == null || alphabet == null) {
+      return null;
+    }
+
+    final char[] array = sequence.toCharArray();
+    final int len = array.length;
+
+    final StringBuilder sb = new StringBuilder(len);
+
+    for (int i = 0; i < array.length; i++) {
+      sb.append(alphabet.getComplement(array[i]));
+    }
+
+    return sb.toString();
   }
 
   /**

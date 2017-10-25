@@ -30,15 +30,12 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.design.Design;
-import fr.ens.biologie.genomique.eoulsan.design.DesignMetadata;
-
 public class DesignMetadataTest {
 
   @Test
   public void test() {
 
-    Design d = new Design();
+    Design d = DesignFactory.createEmptyDesign();
 
     DesignMetadata dm = d.getMetadata();
 

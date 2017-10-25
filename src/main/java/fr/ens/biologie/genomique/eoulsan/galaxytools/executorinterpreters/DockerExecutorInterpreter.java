@@ -2,13 +2,14 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.google.common.base.Objects;
 
-import fr.ens.biologie.genomique.eoulsan.util.SimpleProcess;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
-import fr.ens.biologie.genomique.eoulsan.util.docker.DockerSimpleProcess;
+import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
+import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
 
 /**
  * This class define a Docker executor interpreter.
@@ -36,9 +37,9 @@ public class DockerExecutorInterpreter extends AbstractExecutorInterpreter {
   }
 
   @Override
-  protected SimpleProcess newSimpleProcess() {
+  protected SimpleProcess newSimpleProcess() throws IOException {
 
-    return new DockerSimpleProcess(this.dockerImage);
+    return DockerManager.getInstance().createImageInstance(this.dockerImage);
   }
 
   //

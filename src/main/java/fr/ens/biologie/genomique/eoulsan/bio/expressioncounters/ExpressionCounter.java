@@ -148,7 +148,7 @@ public interface ExpressionCounter {
    * @param gtfFormat true if the annotation is in GTF format
    * @param expressionFile output file for the expression step
    * @param genomeDescFile file containing the genome description
-   * @throws IOException
+   * @throws IOException if the counting fails
    */
   void count(DataFile alignmentFile, DataFile annotationFile,
       final boolean gtfFormat, DataFile expressionFile, DataFile genomeDescFile)

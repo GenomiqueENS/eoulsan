@@ -71,12 +71,13 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
 
   /**
    * Add a task result to its step result.
-   * @param step the step of the result
+   * @param context the context to execute
    * @param result the result to add
    */
-  private void addResult(final Step step, final TaskResultImpl result) {
+  private void addResult(final TaskContextImpl context,
+      final TaskResultImpl result) {
 
-    this.results.get(step).addResult(result);
+    this.results.get(getStep(context.getId())).addResult(context, result);
   }
 
   /**
@@ -223,7 +224,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     checkNotNull(result, "result argument is null");
 
     // Add the context result to the step result
-    addResult(getStep(context.getId()), result);
+    addResult(context, result);
 
     // Update counters
     addDoneContext(context);

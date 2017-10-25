@@ -81,6 +81,12 @@ else
 	JAVA_CMD="java"
 fi
 
+# Set the temporary directory
+TMPDIR_JVM_OPT=""
+if [ -n "$TMPDIR" ]; then
+	TMPDIR_JVM_OPT="-Djava.io.tmpdir=$TMPDIR"
+fi
+
 COMMON_LIBS=$(make_paths $LIBDIR)
 LOCAL_LIBS=$(make_paths $LIBDIR/local)
 PLUGINS_LIBS=$(make_paths $EOULSAN_PLUGINS)
@@ -88,6 +94,7 @@ APP_CLASSPATH=$COMMON_LIBS:$LOCAL_LIBS:$PLUGINS:$PLUGINS_LIBS
 
 # Launch Eoulsan
 $JAVA_CMD \
+		$TMPDIR_JVM_OPT \
 		$JVM_OPTS \
 		-Xmx${MEMORY}m \
 		-cp $APP_CLASSPATH \

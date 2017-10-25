@@ -3,19 +3,17 @@ package fr.ens.biologie.genomique.eoulsan.modules.peakcalling;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_BAM;
 
-import java.util.HashMap;
-import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
-import com.google.common.base.Joiner;
-import java.util.Collections;
 import java.io.File;
 import java.io.IOException;
-import com.spotify.docker.client.DockerException;
-import com.spotify.docker.client.DockerClient;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
+import com.google.common.base.Joiner;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
@@ -33,19 +31,16 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
-import fr.ens.biologie.genomique.eoulsan.data.DataMetadata;
-import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
-import fr.ens.biologie.genomique.eoulsan.util.BinariesInstaller;
-import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
-import fr.ens.biologie.genomique.eoulsan.design.Sample;
+import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
-import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
+import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
-import fr.ens.biologie.genomique.eoulsan.util.docker.DockerSimpleProcess;
-import fr.ens.biologie.genomique.eoulsan.util.docker.DockerManager;
+import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
+import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
+import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
 
 
 /**
@@ -307,15 +302,14 @@ public class MACS2Module extends AbstractModule {
 	final File stdoutFile = new File("docker.out");
 	final File stderrFile = new File("docker.err");
 
-	final DockerSimpleProcess process =
-	    new DockerSimpleProcess(dockerImage);
-	
 	getLogger().info("Run command line : " + commandLine2);
 	try {
+	  final SimpleProcess process =
+          DockerManager.getInstance().createImageInstance(dockerImage);
 	  final int exitValue = process.execute(commandLine, context.getStepOutputDirectory().toFile(), context.getLocalTempDirectory(), stdoutFile, stderrFile);
 
 	  ProcessUtils.throwExitCodeException(exitValue, Joiner.on(' ').join(commandLine));
-	} catch (EoulsanException | IOException err) {
+	} catch (IOException err) {
 	  return status.createTaskResult(err);
 	}
       

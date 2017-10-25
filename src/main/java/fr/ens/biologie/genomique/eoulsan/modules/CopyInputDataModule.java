@@ -41,8 +41,9 @@ import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.annotations.HadoopInternal;
+import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
+import fr.ens.biologie.genomique.eoulsan.annotations.NoOutputDirectory;
 import fr.ens.biologie.genomique.eoulsan.annotations.ReuseModuleInstance;
 import fr.ens.biologie.genomique.eoulsan.core.DataUtils;
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
@@ -71,9 +72,10 @@ import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
  * @author Laurent Jourdren
  * @since 2.0
  */
-@HadoopInternal
+@LocalOnly
 @ReuseModuleInstance
 @NoLog
+@NoOutputDirectory
 public class CopyInputDataModule extends AbstractModule {
 
   public static final String MODULE_NAME = "_copyinputformat";
@@ -354,7 +356,7 @@ public class CopyInputDataModule extends AbstractModule {
    * Method to decode the allowed compressions parameter.
    * @param value the parameter value as a string
    * @return the parameter value as an EnumSet
-   * @throws EoulsanException
+   * @throws EoulsanException if the value parameter is null
    */
   private static EnumSet<CompressionType> decodeAllowedCompressionsParameterValue(
       final String value) throws EoulsanException {

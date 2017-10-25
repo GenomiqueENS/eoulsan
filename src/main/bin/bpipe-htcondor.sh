@@ -206,16 +206,16 @@ status () {
    if [[ $# -ge 1 ]]
    then
          # get the output of condor_q
-         job_state=`condor_q $1 | tail -n +5 | tr -s ' ' | cut -f 6 -d ' '`
-         condor_q_success=${PIPESTATUS[0]}
+         job_state=`condor_q -nobatch -format "%d\n" JobStatus $1`
+         condor_q_success=$?
 
          if [[ $condor_q_success == 0 ]]
          then
 
                if [[ -z "$job_state"  ]]
                then
-                   job_state=`condor_history $1 | tail -n 1 | tr -s ' ' | cut -f 6 -d ' '`
-                   condor_history_success=${PIPESTATUS[0]}
+                   job_state=`condor_history -limit 1 -format "%d\n" JobStatus $1`
+                   condor_history_success=$?
 
                    if [[ $condor_history_success -ne 0 ]]
                    then
@@ -224,14 +224,14 @@ status () {
                fi
 
                case "$job_state" in
-                  H|I) echo WAITING;;
-                  R) echo RUNNING;;
-                  X) echo COMPLETE 999;; # Artificial exit code because Slurm does not provide one
-                  C)
-                     command_exit_status=`condor_history -long $1 | grep ExitCode | cut -f 2 -d '=' | tr -d ' '`
-                     condor_history_success=${PIPESTATUS[0]}
+                  5|1|H|I) echo WAITING;;
+                  2|R) echo RUNNING;;
+                  3|X) echo COMPLETE 999;; # Artificial exit code because Slurm does not provide one
+                  4|C)
+                     command_exit_status=`condor_history -limit 1 -format "%d\n" ExitCode $1 | tr -d ' '`
+                     condor_history_success=$?
 
-                     if [[ -z "command_exit_status" ]]
+                     if [[ -z "$command_exit_status" ]]
                      then
                         exit $CONDOR_Q_FAILED
                      fi

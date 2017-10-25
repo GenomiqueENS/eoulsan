@@ -178,14 +178,17 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
               jobId);
 
           if (fields.size() != 2) {
-            throw new IOException("Invalid complete string: " + jobStatus);
+            throw new IOException(
+                "Invalid complete string for job " + jobId + ": " + jobStatus);
           }
 
           try {
             return new StatusResult(StatusValue.COMPLETE,
                 Integer.parseInt(fields.get(1)));
           } catch (NumberFormatException e) {
-            throw new IOException("Invalid complete string: " + jobStatus, e);
+            throw new IOException(
+                "Invalid complete string for job " + jobId + ": " + jobStatus,
+                e);
           }
 
         case "UNKNOWN":

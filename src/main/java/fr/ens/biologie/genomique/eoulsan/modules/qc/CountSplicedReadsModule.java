@@ -23,8 +23,10 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
-import htsjdk.samtools.SAMFileReader;
 import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 
 /**
  * This step computes how many spliced alignments there are in a SAM file. This
@@ -124,7 +126,8 @@ public class CountSplicedReadsModule extends AbstractModule {
 
     try {
       // Open SAM file
-      final SAMFileReader reader = new SAMFileReader(samFile.open());
+      final SamReader reader =
+          SamReaderFactory.makeDefault().open(SamInputResource.of(samFile.open()));
 
       // To count total number of records
       int recordCount = 0;

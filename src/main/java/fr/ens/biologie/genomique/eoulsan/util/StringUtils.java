@@ -251,13 +251,17 @@ public final class StringUtils {
    */
   public static final String toTimeHumanReadable(final long time) {
 
-    long min = time / (60 * 1000);
-    long minRest = time % (60 * 1000);
+    long hour = time / (60 * 60 * 1000);
+    long hourRest = time % (60 * 60 * 1000);
+
+    long min = hourRest / (60 * 1000);
+    long minRest = hourRest % (60 * 1000);
+
     long sec = minRest / 1000;
 
     long mili = minRest % 1000;
 
-    return String.format("%02d:%02d.%03d", min, sec, mili);
+    return String.format("%02d:%02d:%02d.%03d", hour, min, sec, mili);
   }
 
   /**

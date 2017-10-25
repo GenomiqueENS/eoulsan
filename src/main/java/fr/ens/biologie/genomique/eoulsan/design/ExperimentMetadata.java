@@ -24,239 +24,165 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-import java.io.Serializable;
-
 /**
- * This class defines the experiment metadata.
+ * This interface defines the experiment metadata.
  * @author Xavier Bauquet
  * @since 2.0
  */
-
-public class ExperimentMetadata extends AbstractMetadata
-    implements Serializable {
-
-  /** Serialization version UID. */
-  private static final long serialVersionUID = -625223839967520050L;
+public interface ExperimentMetadata extends Metadata {
 
   // constants
-  public static final String SKIP_KEY = "skip";
-  public static final String REFERENCE_KEY = "reference";
-  public static final String MODEL_KEY = "model";
-  public static final String CONTRAST_KEY = "contrast";
-  public static final String BUILD_CONTRAST_KEY = "buildContrast";
-  public static final String DESIGN_FILE_KEY = "designFile";
-  public static final String COMPARISONS_KEY = "comparisons";
-  public static final String CONTRAST_FILE_KEY = "contrastFile";
-
-  //
-  // Getters
-  //
+  String SKIP_KEY = "skip";
+  String REFERENCE_KEY = "reference";
+  String MODEL_KEY = "model";
+  String CONTRAST_KEY = "contrast";
+  String BUILD_CONTRAST_KEY = "buildContrast";
+  String DESIGN_FILE_KEY = "designFile";
+  String COMPARISONS_KEY = "comparisons";
+  String CONTRAST_FILE_KEY = "contrastFile";
 
   /**
    * Get the skip option.
    * @return the skip option
    */
-  public boolean isSkip() {
-    return getAsBoolean(SKIP_KEY);
-  }
+  boolean isSkip();
 
   /**
    * Get the reference option.
    * @return the reference option
    */
-  public String getReference() {
-    return getTrimmed(REFERENCE_KEY);
-  }
+  String getReference();
 
   /**
    * Get the model DEseq2 option.
    * @return the model DEseq2 option
    */
-  public String getModel() {
-    return getTrimmed(MODEL_KEY);
-  }
+  String getModel();
 
   /**
    * Get the contrast DEseq2 option.
    * @return the contrast DEseq2 option
    */
-  public boolean isContrast() {
-    return getAsBoolean(CONTRAST_KEY);
-  }
+  boolean isContrast();
 
   /**
    * Get the buildContrast DEseq2 option.
    * @return the buildContrast DEseq2 option
    */
-  public boolean isBuildContrast() {
-    return getAsBoolean(BUILD_CONTRAST_KEY);
-  }
+  boolean isBuildContrast();
 
   /**
    * Get the designFile DEseq2 option.
    * @return the designFile DEseq2 option
    */
-  public String getDesignFile() {
-    return get(DESIGN_FILE_KEY);
-  }
+  String getDesignFile();
 
   /**
    * Get the comparisons DEseq2 option.
    * @return the comparisons DEseq2 option
    */
-  public String getComparisons() {
-    return get(COMPARISONS_KEY);
-  }
+  String getComparisons();
 
   /**
    * Get the contrastFile DEseq2 option.
    * @return the contrastFile DEseq2 option
    */
-  public String getContrastFile() {
-    return get(CONTRAST_FILE_KEY);
-  }
-
-  //
-  // Setters
-  //
+  String getContrastFile();
 
   /**
    * Set the skip option.
    * @param newSkip the new skip option
    */
-  public void setSkip(boolean newSkip) {
-    set(SKIP_KEY, "" + newSkip);
-  }
+  void setSkip(boolean newSkip);
 
   /**
    * Set the reference option.
    * @param newReference the new reference option
    */
-  public void setReference(String newReference) {
-    set(REFERENCE_KEY, newReference);
-  }
+  void setReference(String newReference);
 
   /**
    * Set the model DEseq2 option.
    * @param newModel the new model DEseq2 option
    */
-  public void setModel(String newModel) {
-    set(MODEL_KEY, newModel);
-  }
+  void setModel(String newModel);
 
   /**
    * Set the contrast DEseq2 option.
    * @param newContrast the new contrast DEseq2 option
    */
-  public void setContrast(boolean newContrast) {
-    set(CONTRAST_KEY, "" + newContrast);
-  }
+  void setContrast(boolean newContrast);
 
   /**
    * Set the buildContrast DEseq2 option.
    * @param newBuildContrast the new buildContrast DEseq2 option
    */
-  public void setBuildContrast(boolean newBuildContrast) {
-    set(BUILD_CONTRAST_KEY, "" + newBuildContrast);
-  }
+  void setBuildContrast(boolean newBuildContrast);
 
   /**
    * Set the designFile DEseq2 option.
    * @param newDesignFile the new designFile DEseq2 option
    */
-  public void setDesignFile(String newDesignFile) {
-    set(DESIGN_FILE_KEY, newDesignFile);
-  }
+  void setDesignFile(String newDesignFile);
 
   /**
    * Set the comparisons DEseq2 option.
    * @param newComparisons the new comparisons DEseq2 option
    */
-  public void setComparisons(String newComparisons) {
-    set(COMPARISONS_KEY, newComparisons);
-  }
+  void setComparisons(String newComparisons);
 
   /**
    * Set the contrastFile DEseq2 option.
    * @param newContrastFile the new contrastFile DEseq2 option
    */
-  public void setContrastFile(String newContrastFile) {
-    set(CONTRAST_FILE_KEY, newContrastFile);
-  }
-
-  //
-  // Contains
-  //
+  void setContrastFile(String newContrastFile);
 
   /**
    * Test if the skip option exists.
    * @return true if the skip option exists
    */
-  public boolean containsSkip() {
-    return contains(SKIP_KEY);
-  }
+  boolean containsSkip();
 
   /**
    * Test if the reference option exists.
    * @return true if the reference option exists
    */
-  public boolean containsReference() {
-    return contains(REFERENCE_KEY);
-  }
+  boolean containsReference();
 
   /**
    * Test if the model option exists.
    * @return true if the model option exists
    */
-  public boolean containsModel() {
-    return contains(MODEL_KEY);
-  }
+  boolean containsModel();
 
   /**
    * Test if the contrast option exists.
    * @return true if the contrast option exists
    */
-  public boolean containsContrast() {
-    return contains(CONTRAST_KEY);
-  }
+  boolean containsContrast();
 
   /**
    * Test if the buildContrast option exists.
    * @return true if the buildContrast option exists
    */
-  public boolean containsBuildContrast() {
-    return contains(BUILD_CONTRAST_KEY);
-  }
+  boolean containsBuildContrast();
 
   /**
    * Test if the designFile option exists.
    * @return true if the designFile option exists
    */
-  public boolean containsDesignFile() {
-    return contains(DESIGN_FILE_KEY);
-  }
+  boolean containsDesignFile();
 
   /**
    * Test if the comparisons option exists.
    * @return true if the comparisons option exists
    */
-  public boolean containsComparisons() {
-    return contains(COMPARISONS_KEY);
-  }
+  boolean containsComparisons();
 
   /**
    * Test if the contrastFile option exists.
    * @return true if the contrastFile option exists
    */
-  public boolean containsContrastFile() {
-    return contains(CONTRAST_FILE_KEY);
-  }
-
-  //
-  // Constructor
-  //
-  public ExperimentMetadata() {
-
-  }
+  boolean containsContrastFile();
 
 }

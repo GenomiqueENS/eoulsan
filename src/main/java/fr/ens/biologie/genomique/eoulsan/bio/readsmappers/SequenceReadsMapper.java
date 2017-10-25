@@ -106,11 +106,11 @@ public interface SequenceReadsMapper {
    */
   boolean isMultipleInstancesAllowed();
 
-  /**
-   * Get the Docker connection URI.
-   * @return the Docker connection URI
-   */
-  DockerClient getDockerClient();
+//  /**
+//   * Get the Docker connection URI.
+//   * @return the Docker connection URI
+//   */
+//  DockerClient getDockerClient();
 
   //
   // Index creation methods
@@ -220,10 +220,23 @@ public interface SequenceReadsMapper {
   File getTempDirectory();
 
   /**
+   * Get the temporary directory for executables.
+   * @return the temporary directory for executables
+   */
+  File getExecutablesTempDirectory();
+
+  /**
    * Set the temporary directory to use by the mapper.
    * @param tempDirectory the temporary directory to use
    */
   void setTempDirectory(File tempDirectory);
+
+  /**
+   * Set the temporary directory to store executables.
+   * @param executableTempDirectory the temporary directory for executables to
+   *          use
+   */
+  void setExecutablesTempDirectory(File executableTempDirectory);
 
   /**
    * Set the FASTQ format.
@@ -253,11 +266,11 @@ public interface SequenceReadsMapper {
    */
   void setMultipleInstancesEnabled(boolean enable);
 
-  /**
-   * Set the Docker connection URI.
-   * @param uri the URI to set
-   */
-  void setDockerClient(DockerClient uri);
+//  /**
+//   * Set the Docker connection URI.
+//   * @param uri the URI to set
+//   */
+//  void setDockerClient(DockerClient uri);
 
   //
   // Mapping methods
@@ -315,6 +328,12 @@ public interface SequenceReadsMapper {
    * @throws IOException if an exception has occurred while mapping
    */
   void throwMappingException() throws IOException;
+
+  /**
+   * Get mapper executable name.
+   * @return the name of the mapper executable
+   */
+  String getMapperExecutableName();
 
   //
   // Other methods

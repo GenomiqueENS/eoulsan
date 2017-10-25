@@ -8,3 +8,11 @@ fr.ens.biologie.genomique.eoulsan.bio.readsfilters.ReadNameStartsWithReadFilter
 fr.ens.biologie.genomique.eoulsan.bio.readsfilters.ReadNameRegexReadFilter
 fr.ens.biologie.genomique.eoulsan.bio.readsfilters.TrimPolyNEndReadFilter
 fr.ens.biologie.genomique.eoulsan.bio.readsfilters.LengthReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.PatternReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.MaxLengthReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.HeadCropTrimmerReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.CropTrimmerReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.LeadingTrimmerReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.TrailingTrimmerReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.SlidingWindowTrimmerReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.NanoporeSequenceTypeFilter
