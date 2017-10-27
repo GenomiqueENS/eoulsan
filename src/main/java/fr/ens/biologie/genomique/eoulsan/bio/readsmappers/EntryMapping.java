@@ -137,7 +137,7 @@ public class EntryMapping {
    * Get the provider of the mapper.
    * @return the provider of the mapper
    */
-  private MapperProvider getProvider() {
+  protected MapperProvider getProvider() {
     return this.mapperIndex.getMapperInstance().getMapper().getProvider();
   }
 
@@ -164,10 +164,13 @@ public class EntryMapping {
         + this.mapperIndex.getMapperName() + " in single-end mode");
 
     // Process to mapping
-    final MapperProcess result = getProvider().mapSE(this);
+    final MapperProcess result = getProvider().mapSE(this, null);
 
     // Set counter
     result.setIncrementer(this.incrementer, this.counterGroup);
+
+    // Start mapper
+    result.startProcess();
 
     return result;
   }
@@ -183,10 +186,13 @@ public class EntryMapping {
         + this.mapperIndex.getMapperName() + " in paired-end mode");
 
     // Process to mapping
-    final MapperProcess result = getProvider().mapPE(this);
+    final MapperProcess result = getProvider().mapPE(this, null, null);
 
     // Set counter
     result.setIncrementer(this.incrementer, this.counterGroup);
+
+    // Start mapper
+    result.startProcess();
 
     return result;
   }

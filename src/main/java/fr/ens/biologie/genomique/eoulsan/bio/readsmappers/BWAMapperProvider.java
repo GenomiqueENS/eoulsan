@@ -203,7 +203,8 @@ public class BWAMapperProvider implements MapperProvider {
   //
 
   @Override
-  public MapperProcess mapSE(final EntryMapping mapping) throws IOException {
+  public MapperProcess mapSE(final EntryMapping mapping, final File inputFile)
+      throws IOException {
 
     final String bwaPath;
 
@@ -214,11 +215,12 @@ public class BWAMapperProvider implements MapperProvider {
     // Path to index
     final String indexPath = getIndexPath(mapping.getIndexDirectory());
 
-    return createMapperProcessSE(mapping, bwaPath, indexPath);
+    return createMapperProcessSE(mapping, bwaPath, indexPath, inputFile);
   }
 
   @Override
-  public MapperProcess mapPE(final EntryMapping mapping) throws IOException {
+  public MapperProcess mapPE(final EntryMapping mapping, final File inputFile1,
+      final File inputFile2) throws IOException {
 
     final String bwaPath;
 
@@ -229,11 +231,13 @@ public class BWAMapperProvider implements MapperProvider {
     // Path to index
     final String indexPath = getIndexPath(mapping.getIndexDirectory());
 
-    return createMapperProcessPE(mapping, bwaPath, indexPath);
+    return createMapperProcessPE(mapping, bwaPath, indexPath, inputFile1,
+        inputFile2);
   }
 
   private MapperProcess createMapperProcessSE(final EntryMapping mapping,
-      final String bwaPath, final String indexPath) throws IOException {
+      final String bwaPath, final String indexPath, final File inputFile)
+      throws IOException {
 
     // Get the BWA algorithm to use
     boolean bwaAln = !MEM_FLAVOR.equals(mapping.getFlavor());
@@ -242,7 +246,7 @@ public class BWAMapperProvider implements MapperProvider {
 
       // BWA aln
       return new MapperProcess(mapping.getName(), mapping.getExecutor(),
-          mapping.getTemporaryDirectory(), false) {
+          mapping.getTemporaryDirectory(), false, inputFile) {
 
         private File saiFile;
         private File fastqFile;
@@ -349,7 +353,7 @@ public class BWAMapperProvider implements MapperProvider {
 
     // BWA mem
     return new MapperProcess(mapping.getName(), mapping.getExecutor(),
-        mapping.getTemporaryDirectory(), false) {
+        mapping.getTemporaryDirectory(), false, inputFile) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -379,7 +383,8 @@ public class BWAMapperProvider implements MapperProvider {
   }
 
   private MapperProcess createMapperProcessPE(final EntryMapping mapping,
-      final String bwaPath, final String indexPath) throws IOException {
+      final String bwaPath, final String indexPath, final File inputFile1,
+      final File inputFile2) throws IOException {
 
     // Get the BWA algorithm to use
     boolean bwaAln = !MEM_FLAVOR.equals(mapping.getFlavor());
@@ -388,7 +393,7 @@ public class BWAMapperProvider implements MapperProvider {
 
       // BWA aln
       return new MapperProcess(mapping.getName(), mapping.getExecutor(),
-          mapping.getTemporaryDirectory(), true) {
+          mapping.getTemporaryDirectory(), true, inputFile1, inputFile2) {
 
         private File saiFile1;
         private File saiFile2;
@@ -557,7 +562,7 @@ public class BWAMapperProvider implements MapperProvider {
 
       // BWA mem
       return new MapperProcess(mapping.getName(), mapping.getExecutor(),
-          mapping.getTemporaryDirectory(), true) {
+          mapping.getTemporaryDirectory(), true, inputFile1, inputFile2) {
 
         @Override
         protected List<List<String>> createCommandLines() {

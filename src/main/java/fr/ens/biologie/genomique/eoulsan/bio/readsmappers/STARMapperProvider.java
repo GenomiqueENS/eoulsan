@@ -193,7 +193,8 @@ public class STARMapperProvider implements MapperProvider {
     return cmd;
   }
 
-  public MapperProcess mapSE(final EntryMapping mapping) throws IOException {
+  public MapperProcess mapSE(final EntryMapping mapping, final File inputFile)
+      throws IOException {
 
     final String starPath;
 
@@ -202,10 +203,12 @@ public class STARMapperProvider implements MapperProvider {
           mapping.getExecutor().install(flavoredBinary(mapping.getFlavor()));
     }
 
-    return createMapperProcessSE(mapping, starPath);
+    return createMapperProcessSE(mapping, starPath, inputFile);
   }
 
-  public MapperProcess mapPE(final EntryMapping mapping) throws IOException {
+  public MapperProcess mapPE(final EntryMapping mapping, final File inputFile1,
+      final File inputFile2)
+      throws IOException {
 
     final String starPath;
 
@@ -214,14 +217,14 @@ public class STARMapperProvider implements MapperProvider {
           mapping.getExecutor().install(flavoredBinary(mapping.getFlavor()));
     }
 
-    return createMapperProcessPE(mapping, starPath);
+    return createMapperProcessPE(mapping, starPath, inputFile1, inputFile2);
   }
 
   private MapperProcess createMapperProcessSE(final EntryMapping mapping,
-      final String starPath) throws IOException {
+      final String starPath, final File inputFile) throws IOException {
 
     return new MapperProcess(mapping.getName(), mapping.getExecutor(),
-        mapping.getTemporaryDirectory(), false) {
+        mapping.getTemporaryDirectory(), false, inputFile) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -248,10 +251,11 @@ public class STARMapperProvider implements MapperProvider {
   }
 
   private MapperProcess createMapperProcessPE(final EntryMapping mapping,
-      final String starPath) throws IOException {
+      final String starPath, final File inputFile1,
+      final File inputFile2) throws IOException {
 
     return new MapperProcess(mapping.getName(), mapping.getExecutor(),
-        mapping.getTemporaryDirectory(), true, true) {
+        mapping.getTemporaryDirectory(), true, true, inputFile1, inputFile2) {
 
       @Override
       protected List<List<String>> createCommandLines() {

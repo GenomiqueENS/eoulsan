@@ -24,6 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -125,17 +126,23 @@ public interface MapperProvider {
   /**
    * Map in single-end.
    * @param mapping the mapping object
+   * @param inputFile input file or null if the mapper is launched in entry mode
    * @return a MapperProcess object
    * @throws IOException if an error occurs while launching the mapping
    */
-  MapperProcess mapSE(EntryMapping mapping) throws IOException;
+  MapperProcess mapSE(EntryMapping mapping, File inputFile) throws IOException;
 
   /**
    * Map in paired-end.
    * @param mapping the mapping object
+   * @param inputFile1 input file #1 or null if the mapper is launched in entry
+   *          mode
+   * @param inputFile2 input file 32 or null if the mapper is launched in entry
+   *          mode
    * @return a MapperProcess object
    * @throws IOException if an error occurs while launching the mapping
    */
-  MapperProcess mapPE(EntryMapping mapping) throws IOException;
+  MapperProcess mapPE(EntryMapping mapping, File inputFile1, File inputFile2)
+      throws IOException;
 
 }

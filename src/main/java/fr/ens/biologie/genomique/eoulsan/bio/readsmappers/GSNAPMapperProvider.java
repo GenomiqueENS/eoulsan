@@ -199,7 +199,8 @@ public class GSNAPMapperProvider implements MapperProvider {
   }
 
   @Override
-  public MapperProcess mapSE(final EntryMapping mapping) throws IOException {
+  public MapperProcess mapSE(final EntryMapping mapping, final File inputFile)
+      throws IOException {
 
     final String gsnapPath;
 
@@ -209,11 +210,12 @@ public class GSNAPMapperProvider implements MapperProvider {
     }
 
     return createMapperProcessSE(mapping, gsnapPath,
-        getGSNAPQualityArgument(mapping.getFastqFormat()));
+        getGSNAPQualityArgument(mapping.getFastqFormat()), inputFile);
   }
 
   @Override
-  public MapperProcess mapPE(final EntryMapping mapping) throws IOException {
+  public MapperProcess mapPE(final EntryMapping mapping, final File inputFile1,
+      final File inputFile2) throws IOException {
     final String gsnapPath;
 
     synchronized (SYNC) {
@@ -222,14 +224,16 @@ public class GSNAPMapperProvider implements MapperProvider {
     }
 
     return createMapperProcessPE(mapping, gsnapPath,
-        getGSNAPQualityArgument(mapping.getFastqFormat()));
+        getGSNAPQualityArgument(mapping.getFastqFormat()), inputFile1,
+        inputFile2);
   }
 
   private MapperProcess createMapperProcessSE(final EntryMapping mapping,
-      final String gsnapPath, final String fastqFormat) throws IOException {
+      final String gsnapPath, final String fastqFormat, final File inputFile)
+      throws IOException {
 
     return new MapperProcess(mapping.getName(), mapping.getExecutor(),
-        mapping.getTemporaryDirectory(), false) {
+        mapping.getTemporaryDirectory(), false, inputFile) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -267,10 +271,11 @@ public class GSNAPMapperProvider implements MapperProvider {
   }
 
   private MapperProcess createMapperProcessPE(final EntryMapping mapping,
-      final String gsnapPath, final String fastqFormat) throws IOException {
+      final String gsnapPath, final String fastqFormat, final File inputFile1,
+      final File inputFile2) throws IOException {
 
     return new MapperProcess(mapping.getName(), mapping.getExecutor(),
-        mapping.getTemporaryDirectory(), true) {
+        mapping.getTemporaryDirectory(), true, inputFile1, inputFile2) {
 
       @Override
       protected List<List<String>> createCommandLines() {
