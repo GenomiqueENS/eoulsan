@@ -957,11 +957,12 @@ public abstract class MapperProcess {
           : null;
 
       addFilesToRemove(this.pipeFile1, this.pipeFile2);
-
-      additionalInit();
     } else {
       this.writer1 = null;
       this.writer2 = null;
     }
+
+    // Launch addition initialization
+    additionalInit();
   }
 }
