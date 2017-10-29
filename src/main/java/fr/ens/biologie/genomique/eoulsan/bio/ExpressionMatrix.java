@@ -229,7 +229,7 @@ public class ExpressionMatrix {
 
   /**
    * Add a new columns.
-   * @param columnName the name of the new column
+   * @param columnNames the names of the new columns
    */
   public void addColumns(final List<String> columnNames) {
 
@@ -242,7 +242,7 @@ public class ExpressionMatrix {
 
   /**
    * Add a new columns.
-   * @param columnName the name of the new column
+   * @param columnNames the name of the new columns
    */
   public void addColumns(final String... columnNames) {
 

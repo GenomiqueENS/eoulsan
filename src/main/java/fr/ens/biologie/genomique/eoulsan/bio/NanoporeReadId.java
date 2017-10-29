@@ -94,7 +94,7 @@ public class NanoporeReadId {
 
   /**
    * Get the barcode
-   * @return
+   * @return the barcode
    */
   public String getBarcode() {
     return this.barcode;
