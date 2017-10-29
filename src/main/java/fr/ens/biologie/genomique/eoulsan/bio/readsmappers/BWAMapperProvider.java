@@ -261,18 +261,22 @@ public class BWAMapperProvider implements MapperProvider {
           this.saiFile =
               new File(tmpDir, PREFIX_FILES + "-sai-" + uuid + SAI_EXTENSION);
 
-          this.fastqFile = new File(tmpDir,
-              PREFIX_FILES + "-fastq-" + uuid + FASTQ_EXTENSION);
-
           // Create named pipes
           FileUtils.createNamedPipe(this.saiFile);
 
-          // Add fastq copy file and sai file to files to remove
-          addFilesToRemove(saiFile, this.fastqFile);
+          if (inputFile == null) {
 
-          // Create FASTQ writer
-          this.writer = new FastqWriterThread(this.fastqFile,
-              "BWA sampe writeFirstPairEntries thread");
+            // Create copy of FASTQ input file
+            this.fastqFile = new File(tmpDir,
+                PREFIX_FILES + "-fastq-" + uuid + FASTQ_EXTENSION);
+
+            // Create FASTQ writer
+            this.writer = new FastqWriterThread(this.fastqFile,
+                "BWA samse writeFirstPairEntries thread");
+          }
+
+          // Add FASTQ copy file and sai file to files to remove
+          addFilesToRemove(saiFile, this.fastqFile);
         }
 
         @Override
@@ -339,7 +343,11 @@ public class BWAMapperProvider implements MapperProvider {
           cmd2.add("samse");
           cmd2.add(indexPath);
           cmd2.add(this.saiFile.getAbsolutePath());
-          cmd2.add(this.fastqFile.getAbsolutePath());
+          if (inputFile != null) {
+            cmd2.add(inputFile.getAbsolutePath());
+          } else {
+            cmd2.add(this.fastqFile.getAbsolutePath());
+          }
 
           final List<List<String>> result = new ArrayList<>();
           result.add(cmd1);
@@ -413,11 +421,20 @@ public class BWAMapperProvider implements MapperProvider {
           this.saiFile2 =
               new File(tmpDir, PREFIX_FILES + "-sai2-" + uuid + SAI_EXTENSION);
 
-          this.fastqFile1 = new File(tmpDir,
-              PREFIX_FILES + "-fastq1-" + uuid + FASTQ_EXTENSION);
+          if (inputFile1 == null) {
 
-          this.fastqFile2 = new File(tmpDir,
-              PREFIX_FILES + "-fastq2-" + uuid + FASTQ_EXTENSION);
+            this.fastqFile1 = new File(tmpDir,
+                PREFIX_FILES + "-fastq1-" + uuid + FASTQ_EXTENSION);
+
+            this.fastqFile2 = new File(tmpDir,
+                PREFIX_FILES + "-fastq2-" + uuid + FASTQ_EXTENSION);
+
+            // Create writer on FASTQ files
+            this.writer1 = new FastqWriterThread(this.fastqFile1,
+                "BWA sampe writeFirstPairEntries thread");
+            this.writer2 = new FastqWriterThread(this.fastqFile2,
+                "BWA sampe writeSecondPairEntries thread");
+          }
 
           // Create named pipes
           FileUtils.createNamedPipe(this.saiFile1);
@@ -426,12 +443,6 @@ public class BWAMapperProvider implements MapperProvider {
           // Add fastq copy file and sai file to files to remove
           addFilesToRemove(this.saiFile1, this.saiFile2, this.fastqFile1,
               this.fastqFile2);
-
-          // Create writer on FASTQ files
-          this.writer1 = new FastqWriterThread(this.fastqFile1,
-              "BWA sampe writeFirstPairEntries thread");
-          this.writer2 = new FastqWriterThread(this.fastqFile2,
-              "BWA sampe writeSecondPairEntries thread");
         }
 
         @Override
@@ -545,8 +556,13 @@ public class BWAMapperProvider implements MapperProvider {
           cmd3.add(indexPath);
           cmd3.add(this.saiFile1.getAbsolutePath());
           cmd3.add(this.saiFile2.getAbsolutePath());
-          cmd3.add(this.fastqFile1.getAbsolutePath());
-          cmd3.add(this.fastqFile2.getAbsolutePath());
+          if (inputFile1 != null) {
+            cmd3.add(inputFile1.getAbsolutePath());
+            cmd3.add(inputFile2.getAbsolutePath());
+          } else {
+            cmd3.add(this.fastqFile1.getAbsolutePath());
+            cmd3.add(this.fastqFile2.getAbsolutePath());
+          }
 
           final List<List<String>> result = new ArrayList<>();
           result.add(cmd1);

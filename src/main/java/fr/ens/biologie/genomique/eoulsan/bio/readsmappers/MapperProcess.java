@@ -797,7 +797,7 @@ public abstract class MapperProcess {
    */
   private void removeFile(final File f) {
 
-    if (f.exists()) {
+    if (f != null && f.exists()) {
 
       if (!f.delete()) {
         getLogger().warning("Cannot remove temporary file: " + f);
