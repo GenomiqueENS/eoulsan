@@ -277,16 +277,23 @@ public class TaskRunner {
 
       if (logger != null) {
 
-        Handler handler = logger.getHandlers()[0];
+        Handler[] handlers = logger.getHandlers();
 
-        // Close handler
-        handler.close();
+        // Check if an handler has been set
+        if (handlers != null && handlers.length > 0) {
 
-        // Remove logger from EoulsanLogger registry
-        EoulsanLogger.removeThreadGroupLogger(threadGroup);
+          // Get the first handler
+          Handler handler = handlers[0];
 
-        // Remove handler
-        logger.removeHandler(handler);
+          // Close handler
+          handler.close();
+
+          // Remove logger from EoulsanLogger registry
+          EoulsanLogger.removeThreadGroupLogger(threadGroup);
+
+          // Remove handler
+          logger.removeHandler(handler);
+        }
       }
     }
 
