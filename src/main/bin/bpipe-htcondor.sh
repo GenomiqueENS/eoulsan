@@ -112,6 +112,12 @@ make_htcondor_description_file () {
       procs_request="request_cpus = ${PROCS}"
    fi
 
+   if [[ -z $CONCURRENCY_LIMITS ]]; then
+      concurrency_limits=""
+   else
+      concurrency_limits="concurrency_limits = ${CONCURRENCY_LIMITS}"
+   fi
+
    # set the job directory if needed
    if [[ -n $JOBDIR ]]; then
       # check if the directory already exists
@@ -144,6 +150,7 @@ getenv = True
 output = $job_script_dir/script-$JOB_SCRIPT_ID.stdout
 error = $job_script_dir/script-$JOB_SCRIPT_ID.stderr
 arguments = $ARGUMENTS
+$concurrency_limits
 queue
 HERE
 

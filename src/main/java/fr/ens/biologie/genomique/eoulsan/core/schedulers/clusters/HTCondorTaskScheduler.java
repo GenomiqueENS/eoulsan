@@ -24,6 +24,11 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters;
 
+import java.util.Collections;
+import java.util.Map;
+
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
+
 /**
  * This class define a HTCondor cluster scheduler using a Bpipe script.
  * @author Laurent Jourdren
@@ -34,6 +39,19 @@ public class HTCondorTaskScheduler extends BundledScriptBpipeTaskScheduler {
   public static final String SCHEDULER_NAME = "htcondor";
   private static final String COMMAND_WRAPPER_SCRIPT = "bpipe-htcondor.sh";
 
+  private final String concurrencyLimits;
+
+  @Override
+  protected Map<String, String> additionalScriptEnvironment() {
+
+    if (this.concurrencyLimits != null) {
+      return Collections.singletonMap("CONCURRENCY_LIMITS",
+          this.concurrencyLimits);
+    }
+
+    return Collections.emptyMap();
+  }
+
   //
   // Constructor
   //
@@ -43,6 +61,10 @@ public class HTCondorTaskScheduler extends BundledScriptBpipeTaskScheduler {
    */
   public HTCondorTaskScheduler() {
     super(SCHEDULER_NAME, COMMAND_WRAPPER_SCRIPT);
+
+    // Get the concurrency limits
+    this.concurrencyLimits = EoulsanRuntime.getRuntime().getSettings()
+        .getSetting("htcondor.concurrency.limits");
   }
 
 }

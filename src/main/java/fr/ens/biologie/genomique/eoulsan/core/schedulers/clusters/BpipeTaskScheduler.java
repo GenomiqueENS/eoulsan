@@ -33,7 +33,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -244,6 +246,7 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
     builder.environment().put("COMMAND", jobCommand);
     builder.environment().put("JOBDIR", jobDirectory.getAbsolutePath());
     builder.environment().put("EOULSAN_TASK_ID", "" + taskId);
+    builder.environment().putAll(additionalScriptEnvironment());
 
     if (requiredMemory > 0) {
 
@@ -326,6 +329,14 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
     }
 
     return f.getAbsolutePath();
+  }
+
+  /**
+   * Define additional environment variable for bpipe scripts.
+   * @return a Map with the additional environment variables
+   */
+  protected Map<String,String> additionalScriptEnvironment() {
+    return Collections.emptyMap();
   }
 
 }
