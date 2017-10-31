@@ -1,6 +1,0 @@
-# Reads mapper
-fr.ens.biologie.genomique.eoulsan.bio.readsmappers.BWAReadsMapper
-fr.ens.biologie.genomique.eoulsan.bio.readsmappers.BowtieReadsMapper
-fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Bowtie2ReadsMapper
-fr.ens.biologie.genomique.eoulsan.bio.readsmappers.GSNAPReadsMapper
-fr.ens.biologie.genomique.eoulsan.bio.readsmappers.STARReadsMapper

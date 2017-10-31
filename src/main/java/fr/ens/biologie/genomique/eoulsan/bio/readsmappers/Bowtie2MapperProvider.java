@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
@@ -38,10 +39,10 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
  * @since 1.2
  * @author Laurent Jourdren
  */
-public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
+public class Bowtie2MapperProvider extends AbstractBowtieMapperProvider {
 
   public static final String MAPPER_NAME = "Bowtie2";
-  private static final String DEFAULT_PACKAGE_VERSION = "2.0.6";
+  private static final String DEFAULT_VERSION = "2.0.6";
   public static final String DEFAULT_ARGUMENTS = "-k 2";
 
   private static final Version FIRST_FLAVORED_VERSION = new Version(2, 2, 0);
@@ -51,22 +52,22 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
   private static final String EXTENSION_INDEX_FILE = ".rev.1.bt2";
 
   @Override
-  public String getMapperName() {
+  public String getName() {
 
     return MAPPER_NAME;
   }
 
   @Override
-  protected String getDefaultPackageVersion() {
+  public String getDefaultVersion() {
 
-    return DEFAULT_PACKAGE_VERSION;
+    return DEFAULT_VERSION;
   }
 
   @Override
-  protected String getExtensionIndexFile() {
+  protected String getExtensionIndexFile(final EntryMapping mapping) {
 
     return EXTENSION_INDEX_FILE
-        + (isLongIndexFlavor(FIRST_FLAVORED_VERSION) ? "l" : "");
+        + (isLongIndexFlavor(mapping, FIRST_FLAVORED_VERSION) ? "l" : "");
   }
 
   @Override
@@ -76,15 +77,19 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
   }
 
   @Override
-  protected String getIndexerExecutable() {
+  public List<String> getIndexerExecutables(
+      final MapperInstance mapperInstance) {
 
-    return flavoredBinary(INDEXER_EXECUTABLE, FIRST_FLAVORED_VERSION);
+    return Collections.singletonList(
+        flavoredBinary(mapperInstance.getVersion(), mapperInstance.getFlavor(),
+            INDEXER_EXECUTABLE, FIRST_FLAVORED_VERSION));
   }
 
   @Override
-  public String getMapperExecutableName() {
+  public String getMapperExecutableName(final MapperInstance mapperInstance) {
 
-    return flavoredBinary(MAPPER_EXECUTABLE, FIRST_FLAVORED_VERSION);
+    return flavoredBinary(mapperInstance.getVersion(),
+        mapperInstance.getFlavor(), MAPPER_EXECUTABLE, FIRST_FLAVORED_VERSION);
   }
 
   @Override
@@ -114,8 +119,8 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
   }
 
   @Override
-  protected List<String> createCommonArgs(final String bowtiePath,
-      final String index) {
+  protected List<String> createCommonArgs(final EntryMapping mapping,
+      final String bowtiePath, final String index) {
 
     final List<String> result = new ArrayList<>();
 
@@ -123,13 +128,13 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
     result.add(bowtiePath);
 
     // Set the user options
-    result.addAll(getListMapperArguments());
+    result.addAll(mapping.getMapperArguments());
 
-    if (!isMultipleInstancesEnabled()) {
+    if (!mapping.isMultipleInstancesEnabled()) {
 
       // Set the number of threads to use
       result.add("-p");
-      result.add(getThreadsNumber() + "");
+      result.add(mapping.getThreadNumber() + "");
     } else {
 
       // Enable memory mapped index
@@ -140,7 +145,7 @@ public class Bowtie2ReadsMapper extends AbstractBowtieReadsMapper {
     result.add(("-q"));
 
     // Set the quality format
-    result.add(bowtieQualityArgument());
+    result.add(bowtieQualityArgument(mapping));
 
     // Quiet mode
     result.add("--quiet");

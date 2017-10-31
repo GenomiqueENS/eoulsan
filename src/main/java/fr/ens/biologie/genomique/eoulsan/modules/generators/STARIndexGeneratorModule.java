@@ -26,8 +26,8 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.Generator;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.STARReadsMapper;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.SequenceReadsMapper;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.STARMapperProvider;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
@@ -62,7 +62,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
 
   private static final int OVERHANG_DEFAULT = 100;
 
-  private final SequenceReadsMapper mapper = new STARReadsMapper();
+  private final Mapper mapper = Mapper.newMapper(STARMapperProvider.MAPPER_NAME);
 
   private Integer overhang = OVERHANG_DEFAULT;
   private boolean gtfFile;
@@ -347,7 +347,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
       }
 
       status
-          .setProgressMessage(this.mapper.getMapperName() + " index creation");
+          .setProgressMessage(this.mapper.getName() + " index creation");
 
       // Create the index
       GenomeMapperIndexGeneratorModule.execute(this.mapper, context,
