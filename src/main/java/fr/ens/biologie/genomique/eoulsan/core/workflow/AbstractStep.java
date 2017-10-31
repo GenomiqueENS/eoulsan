@@ -84,9 +84,8 @@ public abstract class AbstractStep implements Step {
   private final String moduleName;
   private final ExecutionMode mode;
   private boolean skip;
-  private boolean discardOutputAsap;
+  private final DiscardOutput discardOutput;
   private final boolean terminalStep;
-  private final boolean copyResultsToOutput;
   private final boolean createLogFiles;
 
   private final int requiredMemory;
@@ -258,16 +257,6 @@ public abstract class AbstractStep implements Step {
   }
 
   /**
-   * Test if output files of the steps must be copied to output directory.
-   * @return true if output files of the steps must be copied to output
-   *         directory
-   */
-  protected boolean isCopyResultsToOutput() {
-
-    return this.copyResultsToOutput;
-  }
-
-  /**
    * Test if step log files must be created.
    * @return true if step log files must be created
    */
@@ -303,11 +292,11 @@ public abstract class AbstractStep implements Step {
   }
 
   /**
-   * Test if output of the step must be removed as soon as possible.
-   * @return true if output of the step must be removed as soon as possible
+   * Get the discard output value.
+   * @return the discard output value
    */
-  public boolean isDiscardOutputAsap() {
-    return this.discardOutputAsap;
+  public DiscardOutput getDiscardOutput() {
+    return this.discardOutput;
   }
 
   //
@@ -543,11 +532,11 @@ public abstract class AbstractStep implements Step {
     this.createLogFiles = false;
     this.type = type;
     this.parameters = Collections.emptySet();
-    this.copyResultsToOutput = false;
     this.parallelizationMode = ParallelizationMode.NOT_NEEDED;
     this.requiredMemory = -1;
     this.requiredProcessors = -1;
     this.dataProductConfiguration = "";
+    this.discardOutput = DiscardOutput.SUCCESS;
 
     switch (type) {
     case CHECKER_STEP:
@@ -562,7 +551,7 @@ public abstract class AbstractStep implements Step {
 
       // Define output directory
       this.outputDir = StepOutputDirectory.getInstance().defaultDirectory(workflow,
-          this, checkerModule, this.copyResultsToOutput);
+          this, checkerModule, false);
       break;
 
     case DESIGN_STEP:
@@ -580,7 +569,7 @@ public abstract class AbstractStep implements Step {
 
       // Define output directory
       this.outputDir = StepOutputDirectory.getInstance().defaultDirectory(workflow,
-          this, designModule, this.copyResultsToOutput);
+          this, designModule, false);
 
       break;
 
@@ -595,7 +584,7 @@ public abstract class AbstractStep implements Step {
 
       // Define output directory
       this.outputDir = StepOutputDirectory.getInstance().defaultDirectory(workflow,
-          this, fakeModule, this.copyResultsToOutput);
+          this, fakeModule, false);
       break;
     }
 
@@ -634,15 +623,15 @@ public abstract class AbstractStep implements Step {
     this.version = generatorModule.getVersion().toString();
     this.mode = ExecutionMode.getExecutionMode(generatorModule.getClass());
     this.parameters = Collections.emptySet();
-    this.copyResultsToOutput = false;
     this.parallelizationMode = getParallelizationMode(generatorModule);
     this.requiredMemory = -1;
     this.requiredProcessors = -1;
     this.dataProductConfiguration = "";
+    this.discardOutput = DiscardOutput.SUCCESS;
 
     // Define output directory
     this.outputDir = StepOutputDirectory.getInstance().defaultDirectory(workflow, this,
-        generatorModule, this.copyResultsToOutput);
+        generatorModule, false);
 
     // Set state observer
     this.observer = new StepStateObserver(this);
@@ -658,8 +647,7 @@ public abstract class AbstractStep implements Step {
    * @param moduleName module name
    * @param stepVersion step version
    * @param skip true to skip execution of the step
-   * @param copyResultsToOutput copy step result to output directory
-   * @param discardOutputAsap discard output as soon as possible
+   * @param discardOutput discard value
    * @param parameters parameters of the step
    * @param requiredMemory required memory
    * @param requiredProcessors required processors
@@ -668,14 +656,13 @@ public abstract class AbstractStep implements Step {
    */
   AbstractStep(final AbstractWorkflow workflow, final String id,
       final String moduleName, final String stepVersion, final boolean skip,
-      final boolean copyResultsToOutput, final boolean discardOutputAsap,
+      final DiscardOutput  discardOutput,
       final Set<Parameter> parameters,
       final int requiredMemory, final int requiredProcessors,
       final String dataProduct) throws EoulsanException {
 
-    this(workflow, id, moduleName, stepVersion, skip, copyResultsToOutput,
-        discardOutputAsap, parameters, requiredMemory, requiredProcessors,
-        dataProduct, null);
+    this(workflow, id, moduleName, stepVersion, skip, discardOutput, parameters,
+        requiredMemory, requiredProcessors, dataProduct, null);
   }
 
   /**
@@ -685,8 +672,7 @@ public abstract class AbstractStep implements Step {
    * @param moduleName module name
    * @param stepVersion step version
    * @param skip true to skip execution of the step
-   * @param copyResultsToOutput copy step result to output directory
-   * @param discardOutputAsap discard output as soon as possible
+   * @param discardOutput discard output value
    * @param parameters parameters of the step
    * @param requiredMemory required memory
    * @param requiredProcessors required processors
@@ -696,7 +682,7 @@ public abstract class AbstractStep implements Step {
    */
   AbstractStep(final AbstractWorkflow workflow, final String id,
       final String moduleName, final String stepVersion, final boolean skip,
-      final boolean copyResultsToOutput, final boolean discardOutputAsap,
+      final DiscardOutput discardOutput,
       final Set<Parameter> parameters, final int requiredMemory,
       final int requiredProcessors, final String dataProduct,
       final DataFile outputDirectory) throws EoulsanException {
@@ -713,8 +699,7 @@ public abstract class AbstractStep implements Step {
     this.skip = skip;
     this.moduleName = moduleName;
     this.version = stepVersion;
-    this.copyResultsToOutput = copyResultsToOutput;
-    this.discardOutputAsap = discardOutputAsap;
+    this.discardOutput = discardOutput;
     this.requiredMemory = requiredMemory;
     this.requiredProcessors = requiredProcessors;
     this.dataProductConfiguration = dataProduct;
@@ -732,7 +717,7 @@ public abstract class AbstractStep implements Step {
     // Define output directory
     this.outputDir = outputDirectory != null
         ? outputDirectory : StepOutputDirectory.getInstance().defaultDirectory(workflow,
-            this, module, copyResultsToOutput);
+            this, module, discardOutput.isCopyResultsToOutput());
 
     // Set state observer
     this.observer = new StepStateObserver(this);
