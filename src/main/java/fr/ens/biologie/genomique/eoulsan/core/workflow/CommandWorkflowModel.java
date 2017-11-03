@@ -105,7 +105,6 @@ public class CommandWorkflowModel implements Serializable {
   private final Map<String, Boolean> stepSkipped = new HashMap<>();
   private final Map<String, Step.DiscardOutput> stepDiscardOutput =
       new HashMap<>();
-  private final Map<String, Boolean> stepDiscardOutputAsap = new HashMap<>();
   private final Map<String, Integer> stepRequiredMemory = new HashMap<>();
   private final Map<String, Integer> stepRequiredProcessors = new HashMap<>();
   private final Map<String, String> stepDataProduct = new HashMap<>();
@@ -401,16 +400,6 @@ public class CommandWorkflowModel implements Serializable {
   public Step.DiscardOutput getStepDiscardOutput(final String stepId) {
 
     return this.stepDiscardOutput.get(stepId);
-  }
-
-  /**
-   * Test if the output of the step can be removed as soon as possible.
-   * @param stepId step id
-   * @return true if the output of the step can be removed
-   */
-  public boolean isStepDiscardOutputAsap(final String stepId) {
-
-    return this.stepDiscardOutputAsap.get(stepId);
   }
 
   /**
