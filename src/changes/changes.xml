@@ -1410,5 +1410,101 @@ of reads that reject each filter like in local mode.
 
          </release>
 
+         <release version="2.0-beta6" description="Eoulsan 2.0-beta6 release" date="TBD">
+
+            <action dev="jourdren" type="fix">
+               Fix issues with BWA mem wrapper.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               When using a Galaxy module in Docker mode with input files that are outside the workflow directory, they were not mounted in the container.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               The XLSX files created by Eoulsan now use a formula to create hyperlinks in XLSX spreadsheets. This is more portable with Microsoft Excel and Libreoffice.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               In clusterexec mode, the result of the task was sending to the deseriablized workflow and not to the real workflow.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               The name of tasks were not always as expected in the step result files.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               Fix NullPointerException when the required Docker images were not installed.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               Many fixes in the workflow engine to improve the stability of the software.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Add GMAP/GSNAP 2017-04-24 to Eoulsan.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add "asap" as a new value for the "discardoutput" attribute of the workflow to remove output files of a step once all the steps that require this outputs are completed.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add a new filter to select only a type of Nanopore sequence.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Eoulsan can now handle Galaxy tools with text parameters.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add support for HTCondor ConcurrencyLimits. The defined value will be used for all submitted jobs.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add a "main.docker.mount.nfs.roots" global parameter that allow to avoid some right issues with files stored on NFS storage and Docker.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add a new class NanoporeReadId to easily parse Nanopore read ids.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add classes to handle expression matrices.
+            </action>
+
+           <action dev="jourdren" type="add">
+               Add the Fast5 class from the Toullig project in Eoulsan.
+            </action>
+
+            <action dev="jourdren" type="update">
+                The generate-casava-design-validator.sh script that is now in Aozan git repository.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Big refactoring of the API of the readsmapper package. The new API is more convinient and easier to improve.
+            </action>
+
+            <action dev="jourdren" type="update">
+               The "requiredprocs" attribute can now be use for standard steps in local mode.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Update HTCondor wrapper to handle last HTCondor version changes.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Add a "copy" parameter in the import module. This will allow to always copy files to import.
+            </action>
+
+            <action dev="jourdren" type="update">
+               In "clusterexec" mode, now use a waiting queue for all scheduler status queries instead of a sleeping time for each job. Now waits one second between two queries.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Now use the "HH:MM:SS.mmm" format instead of the "MM:SS.mmm" format.
+            </action>
+
+         </release>
+
 	</body>
 </document>
