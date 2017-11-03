@@ -23,8 +23,8 @@ public class GenericExecutorInterpreter extends AbstractExecutorInterpreter {
   private static final String GALAXY_TOOL_INTERPRETER_SETTING_PREFIX =
       "main.galaxy.tool.interpreter.";
 
-  private String name;
-  private File path;
+  private final String name;
+  private final File path;
 
   @Override
   public String getName() {

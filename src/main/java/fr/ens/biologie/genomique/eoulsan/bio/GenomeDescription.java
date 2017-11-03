@@ -222,7 +222,7 @@ public class GenomeDescription {
    * Save genome description.
    * @param file output file
    */
-  public void save(final File file) throws FileNotFoundException, IOException {
+  public void save(final File file) throws IOException {
 
     checkNotNull(file, "File is null");
     save(FileUtils.createOutputStream(file));

@@ -106,7 +106,7 @@ public abstract class AbstractWorkflow implements Workflow {
   private AbstractStep checkerStep;
   private AbstractStep firstStep;
 
-  private Set<DataFile> deleteOnExitFiles = new HashSet<>();
+  private final Set<DataFile> deleteOnExitFiles = new HashSet<>();
 
   private volatile boolean shutdownNow;
 

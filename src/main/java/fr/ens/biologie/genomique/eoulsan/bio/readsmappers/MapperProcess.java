@@ -61,7 +61,7 @@ public abstract class MapperProcess {
   private final MapperExecutor executor;
   private final boolean pairedEnd;
 
-  private List<Result> processResults = new ArrayList<>();
+  private final List<Result> processResults = new ArrayList<>();
 
   private InputStream stdout;
 
@@ -74,7 +74,7 @@ public abstract class MapperProcess {
   private ReporterIncrementer incrementer;
   private String counterGroup;
 
-  private List<File> filesToRemove = new ArrayList<>();
+  private final List<File> filesToRemove = new ArrayList<>();
 
   //
   // Inner classes
@@ -868,11 +868,8 @@ public abstract class MapperProcess {
       this.executor = executor;
       this.pairedEnd = pairedEnd;
 
-      // Define temporary files
-      final File tmpDir = temporaryDirectory;
-
-      this.pipeFile1 = new File(tmpDir, "mapper-inputfile1-" + uuid + ".fq");
-      this.pipeFile2 = new File(tmpDir, "mapper-inputfile2-" + uuid + ".fq");
+      this.pipeFile1 = new File(temporaryDirectory, "mapper-inputfile1-" + uuid + ".fq");
+      this.pipeFile2 = new File(temporaryDirectory, "mapper-inputfile2-" + uuid + ".fq");
 
       this.writer1 = threadForRead1
           ? new FastqWriterThread(this.pipeFile1, "FastqWriterThread fastq1")
@@ -886,7 +883,7 @@ public abstract class MapperProcess {
       additionalInit();
 
       // Start mapper instance
-      startProcess(tmpDir);
+      startProcess(temporaryDirectory);
 
     } catch (InterruptedException e) {
       throw new IOException(e);

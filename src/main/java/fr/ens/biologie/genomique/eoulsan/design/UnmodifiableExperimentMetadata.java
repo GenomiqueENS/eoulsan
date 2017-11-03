@@ -200,6 +200,7 @@ public class UnmodifiableExperimentMetadata
 
   @Override
   public boolean equals(Object obj) {
+
     return this.md.equals(obj);
   }
 

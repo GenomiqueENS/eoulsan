@@ -264,8 +264,7 @@ public class CommandWorkflow extends AbstractWorkflow {
    */
   private void initializeSettings() {
 
-    final CommandWorkflowModel c = this.workflowCommand;
-    final Set<Parameter> globalParameters = c.getGlobalParameters();
+    final Set<Parameter> globalParameters = this.workflowCommand.getGlobalParameters();
 
     final Settings settings = EoulsanRuntime.getSettings();
 

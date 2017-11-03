@@ -251,6 +251,7 @@ class UnmodifiableSampleMetadata implements SampleMetadata, Serializable {
 
   @Override
   public boolean equals(Object obj) {
+
     return this.md.equals(obj);
   }
 

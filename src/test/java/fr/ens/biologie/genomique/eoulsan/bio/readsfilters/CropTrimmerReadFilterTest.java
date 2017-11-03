@@ -23,8 +23,6 @@ public class CropTrimmerReadFilterTest {
   assertEquals("read1", read.getName());
   assertEquals("AGGGG", read.getSequence());
   assertEquals("xwxwx", read.getQuality());
-  assertFalse(read.getSequence() == "AGGGG");
-  assertFalse(read.getSequence() == "GCAAA");
   assertFalse(filter.accept(null));
   
   }

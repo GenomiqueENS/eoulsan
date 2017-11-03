@@ -48,9 +48,6 @@ public class BamComparatorTest {
   private final File dir =
       new File(new File(".").getAbsolutePath() + "/src/test/java/files");
 
-  private InputStream isA;
-  private InputStream isB;
-
   private final File fileA = new File(this.dir, "mapper_results_2.bam");
   // Same file then fileA
   private final File fileB = new File(this.dir, "mapper_results_2bis.bam");
@@ -61,10 +58,10 @@ public class BamComparatorTest {
     final AbstractComparatorWithBloomFilter comparator =
         new BAMComparator(false);
 
-    this.isA = new FileInputStream(this.fileA);
-    this.isB = new FileInputStream(this.fileB);
+    final InputStream isA = new FileInputStream(this.fileA);
+    final InputStream isB = new FileInputStream(this.fileB);
 
-    assertTrue("files are equals", comparator.compareFiles(this.isA, this.isB));
+    assertTrue("files are equals", comparator.compareFiles(isA, isB));
   }
 
   @Test

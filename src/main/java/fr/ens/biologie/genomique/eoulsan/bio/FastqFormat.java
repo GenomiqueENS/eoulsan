@@ -509,8 +509,7 @@ public enum FastqFormat {
       @Override
       public int compare(final FastqFormat o1, final FastqFormat o2) {
 
-        return Integer.valueOf(o1.getCharMin())
-            .compareTo((int) o2.getCharMin());
+        return Integer.compare(o1.getCharMin(), o2.getCharMin());
       }
     });
 

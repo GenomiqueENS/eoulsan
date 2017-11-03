@@ -23,9 +23,9 @@ import com.google.common.collect.Multimap;
  */
 public class ExpressionMatrix {
 
-  private Multimap<String, Double> values = ArrayListMultimap.create();
-  private Map<String, Integer> columnIndex = new HashMap<>();
-  private Set<String> rawOrder = new LinkedHashSet<>();
+  private final Multimap<String, Double> values = ArrayListMultimap.create();
+  private final Map<String, Integer> columnIndex = new HashMap<>();
+  private final Set<String> rawOrder = new LinkedHashSet<>();
   private Double defaultValue = 0.0;
 
   //

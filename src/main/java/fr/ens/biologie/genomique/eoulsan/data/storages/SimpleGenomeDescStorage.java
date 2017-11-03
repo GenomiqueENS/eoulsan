@@ -301,9 +301,7 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
 
     try {
       return new SimpleGenomeDescStorage(dir);
-    } catch (IOException e) {
-      return null;
-    } catch (NullPointerException e) {
+    } catch (IOException | NullPointerException e) {
       return null;
     }
   }

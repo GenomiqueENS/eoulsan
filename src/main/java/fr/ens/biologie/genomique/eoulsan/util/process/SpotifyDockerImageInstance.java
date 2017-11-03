@@ -242,7 +242,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
         final com.spotify.docker.client.ProgressHandler pg =
             new com.spotify.docker.client.ProgressHandler() {
 
-              private Map<String, Double> imagesProgress = new HashMap<>();
+              private final Map<String, Double> imagesProgress = new HashMap<>();
 
               @Override
               public void progress(final ProgressMessage msg)

@@ -55,7 +55,7 @@ public abstract class AbstractComparatorWithBloomFilter
 
   @Override
   public boolean compareFiles(final File fileA, final File fileB)
-      throws FileNotFoundException, IOException {
+      throws IOException {
 
     // Check input files
     if (!checkFiles(fileA, fileB) && checkFileSize()) {

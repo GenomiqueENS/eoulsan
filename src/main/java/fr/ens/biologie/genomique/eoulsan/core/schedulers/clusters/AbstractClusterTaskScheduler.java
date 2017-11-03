@@ -74,7 +74,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
    */
   private static class StatusUpdateWaitingQueue {
 
-    private BlockingQueue<TaskThread> queue = new LinkedBlockingDeque<>();
+    private final BlockingQueue<TaskThread> queue = new LinkedBlockingDeque<>();
 
     public void waitTurn(TaskThread l) throws InterruptedException {
 

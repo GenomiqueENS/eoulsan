@@ -108,7 +108,7 @@ public class DesignFormatFinderInputStream extends InputStream
    * @return the DesignReader for the data
    * @throws IOException if an error occurs while reading data
    */
-  public DesignReader getDesignReader() throws IOException, IOException {
+  public DesignReader getDesignReader() throws IOException {
 
     switch (getDesignFormatVersion()) {
 

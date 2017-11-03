@@ -847,7 +847,7 @@ public class GenomicArray<T> {
    * @param outputFile Output file
    */
   public void save(final File outputFile)
-      throws FileNotFoundException, IOException {
+      throws IOException {
 
     if (outputFile == null) {
       throw new NullPointerException("outputFile argument cannot be null");
@@ -886,7 +886,7 @@ public class GenomicArray<T> {
    * @param inputFile input file
    */
   public void load(final File inputFile)
-      throws FileNotFoundException, IOException {
+      throws IOException {
 
     if (inputFile == null) {
       throw new NullPointerException("inputFile argument cannot be null");

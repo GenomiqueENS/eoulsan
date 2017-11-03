@@ -158,7 +158,7 @@ public class CommonLinksInfoTranslator extends AbstractTranslator {
    * Load the field and links from a file
    * @param in File to load
    */
-  public void load(final File in) throws FileNotFoundException, IOException {
+  public void load(final File in) throws IOException {
 
     if (in == null) {
       throw new NullPointerException("file argument can't be null.");

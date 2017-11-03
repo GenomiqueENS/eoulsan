@@ -9,7 +9,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
  */
 abstract class AbstractUI implements UI {
 
-  private boolean interactiveMode;
+  private final boolean interactiveMode;
 
   /**
    * Test if Eoulsan is running in an interactive mode.

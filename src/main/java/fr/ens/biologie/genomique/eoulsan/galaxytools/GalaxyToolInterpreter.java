@@ -171,7 +171,7 @@ public class GalaxyToolInterpreter {
    */
   private static final class ElementPorts {
 
-    private Map<String, ElementPort> ports = new HashMap<>();
+    private final Map<String, ElementPort> ports = new HashMap<>();
 
     /**
      * Get an ElementPort from its name.
@@ -438,12 +438,10 @@ public class GalaxyToolInterpreter {
    */
   private void checkDomValidity() throws EoulsanException {
 
-    final Document localDoc = this.doc;
-
     for (final String tag : TAG_FORBIDDEN) {
 
       // Check tag exists in tool file
-      if (!XMLUtils.getElementsByTagName(localDoc, tag).isEmpty()) {
+      if (!XMLUtils.getElementsByTagName(this.doc, tag).isEmpty()) {
         // Throw exception
         throw new EoulsanException("Parsing tool xml: unsupported tag " + tag);
       }

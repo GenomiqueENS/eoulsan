@@ -41,7 +41,7 @@ public class EoulsanLogger {
 
   private static String loggerName = Globals.APP_NAME;
 
-  private static Map<String, Logger> threadGroupLoggers = new HashMap<>();
+  private static final Map<String, Logger> threadGroupLoggers = new HashMap<>();
 
   private static Logger logger;
 

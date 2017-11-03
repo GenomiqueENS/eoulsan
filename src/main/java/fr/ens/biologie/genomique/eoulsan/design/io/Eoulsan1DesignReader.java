@@ -107,7 +107,6 @@ public class Eoulsan1DesignReader implements DesignReader {
     try (final BufferedReader br = new BufferedReader(
         new InputStreamReader(this.is, Globals.DEFAULT_CHARSET))) {
 
-      final String separator = TAB_SEPARATOR;
       String line = null;
 
       boolean firstLine = true;
@@ -129,7 +128,7 @@ public class Eoulsan1DesignReader implements DesignReader {
           continue;
         }
 
-        final String[] fields = line.split(separator);
+        final String[] fields = line.split(TAB_SEPARATOR);
 
         if (firstLine) {
 

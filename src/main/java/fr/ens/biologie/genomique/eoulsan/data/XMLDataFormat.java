@@ -241,11 +241,7 @@ public final class XMLDataFormat extends AbstractDataFormat
       }
 
       return null;
-    } catch (ClassNotFoundException e) {
-      return null;
-    } catch (InstantiationException e) {
-      return null;
-    } catch (IllegalAccessException e) {
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
       return null;
     }
   }

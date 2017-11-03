@@ -306,7 +306,7 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    */
   public OutputStream rawCreate() throws IOException {
 
-    return getProtocol().putData(this, this.md == null ? null : this.md);
+    return getProtocol().putData(this, this.md);
   }
 
   /**

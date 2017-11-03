@@ -65,7 +65,7 @@ public class FastqMerger implements Merger {
 
   @Override
   public void merge(final Iterator<DataFile> inDataFileIterator,
-      final DataFile outFile) throws FileNotFoundException, IOException {
+      final DataFile outFile) throws IOException {
 
     final FastqWriter writer = new FastqWriter(outFile.create());
 

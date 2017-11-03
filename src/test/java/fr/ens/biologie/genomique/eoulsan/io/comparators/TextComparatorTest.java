@@ -44,9 +44,6 @@ public class TextComparatorTest {
   private final File dir =
       new File(new File(".").getAbsolutePath() + "/src/test/java/files");
 
-  private InputStream isA;
-  private InputStream isB;
-
   private final File fileA = new File(this.dir, "testdataformat.xml");
   private final File fileB = new File(this.dir, "phix.fasta");
   private File fileC;
@@ -65,13 +62,13 @@ public class TextComparatorTest {
   @Test
   public void testDifferentTextFiles() throws Exception {
 
-    this.isA = new FileInputStream(this.fileA);
-    this.isB = new FileInputStream(this.fileB);
+    final InputStream isA = new FileInputStream(this.fileA);
+    final InputStream isB = new FileInputStream(this.fileB);
 
     AbstractComparatorWithBloomFilter comparator =
         new SAMComparator(false, "@PG");
     assertFalse("files are different",
-        comparator.compareFiles(this.isA, this.isB));
+        comparator.compareFiles(isA, isB));
   }
 
   @Test

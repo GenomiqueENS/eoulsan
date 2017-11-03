@@ -1,6 +1,5 @@
 package fr.ens.biologie.genomique.eoulsan.util.locker;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
@@ -18,7 +17,7 @@ import java.util.concurrent.CountDownLatch;
 public class DistributedLocker implements Locker, Watcher {
 
     private final DistributedLock lock;
-    private CountDownLatch connectSignal = new CountDownLatch(1);
+    private final CountDownLatch connectSignal = new CountDownLatch(1);
 
 
     @Override

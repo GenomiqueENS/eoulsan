@@ -114,7 +114,7 @@ public class DESeq2 {
   private final String stepId;
 
   // Temporary expression filenames
-  private Map<String, String> sampleFilenames = new HashMap<>();
+  private final Map<String, String> sampleFilenames = new HashMap<>();
 
   //
   // Enums
@@ -213,7 +213,7 @@ public class DESeq2 {
 
     WALD("Wald"), LRT("LRT");
 
-    private String name;
+    private final String name;
 
     public String toDESeq2Value() {
 

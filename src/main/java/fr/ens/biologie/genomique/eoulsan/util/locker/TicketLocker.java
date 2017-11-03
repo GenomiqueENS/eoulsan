@@ -149,9 +149,7 @@ public class TicketLocker implements Locker {
 
     }
 
-    catch (IOException e) {
-      return null;
-    } catch (NotBoundException e) {
+    catch (IOException | NotBoundException e) {
       return null;
     }
   }

@@ -452,9 +452,7 @@ public class S3DataProtocol implements DataProtocol {
 
     try {
       return new S3URL(src).getS3Object() != null;
-    } catch (AmazonS3Exception e) {
-      return false;
-    } catch (IOException e) {
+    } catch (AmazonS3Exception | IOException e) {
       return false;
     }
 

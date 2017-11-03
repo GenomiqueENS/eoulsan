@@ -52,7 +52,7 @@ public class MapperInstance {
   private static final String SYNC = MapperInstance.class.getName();
 
   private final Mapper mapper;
-  private MapperExecutor executor;
+  private final MapperExecutor executor;
 
   private final String version;
   private final String flavor;

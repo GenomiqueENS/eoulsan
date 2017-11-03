@@ -60,7 +60,7 @@ public interface Comparator {
    * @throws IOException if an error occurs while comparing the files.
    */
   boolean compareFiles(final File fileA, final File fileB)
-      throws FileNotFoundException, IOException;
+      throws IOException;
 
   /**
    * Compare two files no ordered, check if they are the same contents.

@@ -126,9 +126,8 @@ public class CheetahInterpreter {
     try (final PythonInterpreter interpreter = new PythonInterpreter()) {
 
       final PyObject nameSpace = createNameSpace(this.variables);
-      final String template = this.cheetahScript;
 
-      interpreter.set("template", template);
+      interpreter.set("template", this.cheetahScript);
       interpreter.set("nameSpace", nameSpace);
 
       final String pythonScript = "from Cheetah.Template import Template\n"

@@ -18,7 +18,7 @@ public class NanoporeSequenceTypeFilter extends AbstractReadFilter {
 
   public static final String FILTER_NAME = "nanoporesequencetype";
 
-  private Splitter spliter = Splitter.on(' ').omitEmptyStrings();
+  private final Splitter spliter = Splitter.on(' ').omitEmptyStrings();
   private NanoporeReadId.SequenceType sequenceType = SequenceType.CONSENSUS;
 
   @Override

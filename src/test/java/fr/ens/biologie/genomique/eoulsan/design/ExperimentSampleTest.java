@@ -28,10 +28,6 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.design.DesignImpl;
-import fr.ens.biologie.genomique.eoulsan.design.ExperimentSampleImpl;
-import fr.ens.biologie.genomique.eoulsan.design.SampleImpl;
-
 public class ExperimentSampleTest {
 
   @Test

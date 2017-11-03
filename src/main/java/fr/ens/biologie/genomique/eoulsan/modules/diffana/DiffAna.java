@@ -68,7 +68,7 @@ public class DiffAna extends Normalization {
 
     POOLED("pooled"), PER_CONDITION("per-condition"), BLIND("blind");
 
-    private String name;
+    private final String name;
 
     /**
      * Get the dispersion estimation method
@@ -121,7 +121,7 @@ public class DiffAna extends Normalization {
 
     FIT_ONLY("fit-only"), MAXIMUM("maximum"), GENE_EST_ONLY("gene-est-only");
 
-    private String name;
+    private final String name;
 
     /**
      * Get the dispersion estimation sharingMode name
@@ -175,7 +175,7 @@ public class DiffAna extends Normalization {
 
     PARAMETRIC("parametric"), LOCAL("local");
 
-    private String name;
+    private final String name;
 
     /**
      * Get the dispersion estimation fitType name

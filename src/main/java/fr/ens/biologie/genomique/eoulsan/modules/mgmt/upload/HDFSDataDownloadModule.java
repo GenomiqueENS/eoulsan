@@ -238,11 +238,7 @@ public class HDFSDataDownloadModule extends AbstractModule {
       status.setProgressMessage(logMsg.toString());
       return status.createTaskResult();
 
-    } catch (EoulsanException e) {
-
-      return status.createTaskResult(e,
-          "Error while download results: " + e.getMessage());
-    } catch (IOException e) {
+    } catch (EoulsanException | IOException e) {
 
       return status.createTaskResult(e,
           "Error while download results: " + e.getMessage());

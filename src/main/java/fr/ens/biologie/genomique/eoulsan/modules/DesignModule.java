@@ -76,8 +76,8 @@ public class DesignModule extends AbstractModule {
   private final Design design;
   private final CheckerModule checkerModule;
   private OutputPorts outputPorts;
-  private Set<String> designPortNames = new HashSet<>();
-  private Set<String> samplePortNames = new HashSet<>();
+  private final Set<String> designPortNames = new HashSet<>();
+  private final Set<String> samplePortNames = new HashSet<>();
 
   @Override
   public String getName() {

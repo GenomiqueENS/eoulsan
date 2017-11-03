@@ -367,9 +367,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
 
     try {
       return new SimpleGenomeIndexStorage(dir);
-    } catch (IOException e) {
-      return null;
-    } catch (NullPointerException e) {
+    } catch (IOException | NullPointerException e) {
       return null;
     }
   }
