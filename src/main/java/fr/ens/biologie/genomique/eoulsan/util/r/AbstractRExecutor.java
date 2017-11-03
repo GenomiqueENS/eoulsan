@@ -53,7 +53,8 @@ public abstract class AbstractRExecutor implements RExecutor {
    * @throws IOException if an error occurs while executing the script
    */
   protected abstract void executeRScript(File rScriptFile, boolean sweave,
-      String sweaveOuput, File workflowOutputDir, String... scriptArguments) throws IOException;
+      String sweaveOuput, File workflowOutputDir, String... scriptArguments)
+      throws IOException;
 
   /**
    * Get the output directory of the analysis.
@@ -141,7 +142,8 @@ public abstract class AbstractRExecutor implements RExecutor {
   @Override
   public void executeRScript(final String rScript, final boolean sweave,
       final String sweaveOutput, final boolean saveRscript,
-      final String description, final DataFile workflowOutputDir, final String... scriptArguments) throws IOException {
+      final String description, final DataFile workflowOutputDir,
+      final String... scriptArguments) throws IOException {
 
     if (rScript == null) {
       throw new NullPointerException("rScript argument cannot be null");
@@ -160,7 +162,8 @@ public abstract class AbstractRExecutor implements RExecutor {
     writer.close();
 
     // Execute R script
-    executeRScript(rScriptFile, sweave, sweaveOutput, workflowOutputDir.toFile(), scriptArguments);
+    executeRScript(rScriptFile, sweave, sweaveOutput,
+        workflowOutputDir.toFile(), scriptArguments);
 
     // Remove temporary R script
     if (!saveRscript) {

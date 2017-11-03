@@ -4,7 +4,8 @@ import org.usadellab.trimmomatic.trim.AbstractSingleRecordTrimmer;
 import org.usadellab.trimmomatic.trim.CropTrimmer;
 
 /**
- * This class define a Crop trimmomatic readfilter allow paired-end and single-end
+ * This class define a Crop trimmomatic readfilter allow paired-end and
+ * single-end
  * @since 1.0
  * @author du
  */

@@ -64,8 +64,7 @@ public class TextComparatorTest {
 
     AbstractComparatorWithBloomFilter comparator =
         new SAMComparator(false, "@PG");
-    assertFalse("files are different",
-        comparator.compareFiles(isA, isB));
+    assertFalse("files are different", comparator.compareFiles(isA, isB));
   }
 
   @Test

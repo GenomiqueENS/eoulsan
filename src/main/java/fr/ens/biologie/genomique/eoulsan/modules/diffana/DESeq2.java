@@ -511,7 +511,8 @@ public class DESeq2 {
    * @throws IOException if writeDeseq2Design fails
    * @throws EoulsanException if the comparisons value is not correct
    */
-  public void runDEseq2(final DataFile workflowOutputDir) throws IOException, EoulsanException {
+  public void runDEseq2(final DataFile workflowOutputDir)
+      throws IOException, EoulsanException {
 
     final String prefix = this.stepId + "_" + this.experiment.getName();
 
@@ -565,9 +566,9 @@ public class DESeq2 {
 
       // Run buildContrast.R
       this.executor.executeRScript(buildContrastScript, false, null,
-          this.saveRScripts, description, workflowOutputDir, deseq2DesignFileName, this.model,
-          comparisonFileName, this.experiment.getName() + CONTRAST_FILE_SUFFIX,
-          this.stepId + "_");
+          this.saveRScripts, description, workflowOutputDir,
+          deseq2DesignFileName, this.model, comparisonFileName,
+          this.experiment.getName() + CONTRAST_FILE_SUFFIX, this.stepId + "_");
     }
 
     // Run normalization and differential analysis

@@ -251,8 +251,7 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
 
     try {
 
-      status
-          .setProgressMessage(this.mapper.getName() + " index creation");
+      status.setProgressMessage(this.mapper.getName() + " index creation");
 
       // Create the index
       execute(this.mapper, context, null, null, 0);

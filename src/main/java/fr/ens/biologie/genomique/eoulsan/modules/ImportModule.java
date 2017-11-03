@@ -216,7 +216,7 @@ public class ImportModule extends AbstractModule {
               // Set metadata of imported files
               final boolean isMetadataSet =
                   DataMetadataStorage.getInstance(context.getOutputDirectory())
-                  .loadMetadata(data, Collections.singletonList(inputFile));
+                      .loadMetadata(data, Collections.singletonList(inputFile));
 
               // Set the metadata from sample metadata
               if (!isMetadataSet && samples.containsKey(data.getName())) {

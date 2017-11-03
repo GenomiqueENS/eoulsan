@@ -65,10 +65,12 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
     checkNotNull(stdoutFile, "stdoutFile argument cannot be null");
     checkNotNull(stderrFile, "stderrFile argument cannot be null");
 
-    EoulsanLogger.getLogger().fine(getClass().getName() + " : commandLine=" + commandLine +
-            ", executionDirectory=" + executionDirectory + ", environmentVariables=" + environmentVariables +
-            ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile=" + stdoutFile + ", stderrFile=" + stderrFile +
-            ", redirectErrorStream="+redirectErrorStream + ", filesUsed" + Arrays.toString(filesUsed));
+    EoulsanLogger.getLogger().fine(getClass().getName()
+        + " : commandLine=" + commandLine + ", executionDirectory="
+        + executionDirectory + ", environmentVariables=" + environmentVariables
+        + ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile="
+        + stdoutFile + ", stderrFile=" + stderrFile + ", redirectErrorStream="
+        + redirectErrorStream + ", filesUsed" + Arrays.toString(filesUsed));
 
     if (executionDirectory != null) {
       checkArgument(executionDirectory.isDirectory(),
@@ -242,7 +244,8 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
         final com.spotify.docker.client.ProgressHandler pg =
             new com.spotify.docker.client.ProgressHandler() {
 
-              private final Map<String, Double> imagesProgress = new HashMap<>();
+              private final Map<String, Double> imagesProgress =
+                  new HashMap<>();
 
               @Override
               public void progress(final ProgressMessage msg)
@@ -327,8 +330,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
       File f = convertNFSFilesToMountRoots
           ? convertNFSFileToMountPoint(executionDirectory) : executionDirectory;
 
-      binds.add(f.getAbsolutePath()
-          + ':' + f.getAbsolutePath());
+      binds.add(f.getAbsolutePath() + ':' + f.getAbsolutePath());
     }
 
     if (files != null) {
@@ -430,7 +432,6 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
     new Thread(r).start();
   }
 
-
   /**
    * Convert a file path to a mount point path if the file is on a NFS server.
    * @param files the list of file to convert
@@ -489,7 +490,8 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
     checkNotNull(dockerClient, "dockerClient argument cannot be null");
     checkNotNull(dockerImage, "dockerImage argument cannot be null");
 
-    EoulsanLogger.getLogger().fine(getClass().getName()+" docker image used: "+ dockerImage);
+    EoulsanLogger.getLogger()
+        .fine(getClass().getName() + " docker image used: " + dockerImage);
 
     this.dockerClient = dockerClient;
     this.dockerImage = dockerImage;

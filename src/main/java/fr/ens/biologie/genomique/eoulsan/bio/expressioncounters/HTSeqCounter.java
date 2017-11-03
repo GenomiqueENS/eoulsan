@@ -93,7 +93,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
     try {
       final SamReader input =
-        SamReaderFactory.makeDefault().open(SamInputResource.of(samIs));
+          SamReaderFactory.makeDefault().open(SamInputResource.of(samIs));
 
       SAMRecordIterator samIterator = input.iterator();
 
@@ -111,7 +111,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
       return result;
 
-    } catch(IOException e) {
+    } catch (IOException e) {
       return false;
     }
   }
@@ -335,7 +335,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         ExpressionCounters.NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName(),
         nonUnique);
     reporter.incrCounter(counterGroup,
-      ExpressionCounters.MISSING_MATES_COUNTER.counterName(), missingMate);
+        ExpressionCounters.MISSING_MATES_COUNTER.counterName(), missingMate);
 
     reporter.incrCounter(counterGroup,
         ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(),

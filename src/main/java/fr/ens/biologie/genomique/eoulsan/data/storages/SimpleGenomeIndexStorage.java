@@ -101,16 +101,14 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     checkNotNull(genome, "Genome description is null");
     checkNotNull(additionalDescription, "additionalDescription is null");
 
-    final IndexEntry entry =
-        this.entries
-            .get(createKey(mapperInstance, genome, additionalDescription));
+    final IndexEntry entry = this.entries
+        .get(createKey(mapperInstance, genome, additionalDescription));
 
     return entry == null ? null : entry.file;
   }
 
   @Override
-  public void put(final MapperInstance mapper,
-      final GenomeDescription genome,
+  public void put(final MapperInstance mapper, final GenomeDescription genome,
       final Map<String, String> additionalDescription,
       final DataFile indexArchive) {
 
@@ -192,8 +190,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     final LinkedHashMap<String, String> map = new LinkedHashMap<>();
 
     map.put("mapper.name", nullToEmpty(mapperInstance.getName()));
-    map.put("mapper.version",
-        nullToEmpty(mapperInstance.getVersion()).trim());
+    map.put("mapper.version", nullToEmpty(mapperInstance.getVersion()).trim());
     map.put("mapper.flavor", nullToEmpty(mapperInstance.getFlavor()).trim());
     map.put("genome.md5sum", nullToEmpty(genome.getMD5Sum()).trim());
 
@@ -342,9 +339,8 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
       final GenomeDescription genome,
       final Map<String, String> additionalDescription) {
 
-    return createKey(mapperInstance.getName(),
-        createMD5Sum(
-            createMD5SumMap(mapperInstance, genome, additionalDescription)));
+    return createKey(mapperInstance.getName(), createMD5Sum(
+        createMD5SumMap(mapperInstance, genome, additionalDescription)));
   }
 
   private static String createKey(final String mapperName,

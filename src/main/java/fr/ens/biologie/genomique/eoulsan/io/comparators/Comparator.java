@@ -58,8 +58,7 @@ public interface Comparator {
    * @return boolean true if files are same.
    * @throws IOException if an error occurs while comparing the files.
    */
-  boolean compareFiles(final File fileA, final File fileB)
-      throws IOException;
+  boolean compareFiles(final File fileA, final File fileB) throws IOException;
 
   /**
    * Compare two files no ordered, check if they are the same contents.

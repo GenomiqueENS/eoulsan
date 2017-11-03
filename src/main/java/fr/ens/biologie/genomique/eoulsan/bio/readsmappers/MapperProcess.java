@@ -868,8 +868,10 @@ public abstract class MapperProcess {
       this.executor = executor;
       this.pairedEnd = pairedEnd;
 
-      this.pipeFile1 = new File(temporaryDirectory, "mapper-inputfile1-" + uuid + ".fq");
-      this.pipeFile2 = new File(temporaryDirectory, "mapper-inputfile2-" + uuid + ".fq");
+      this.pipeFile1 =
+          new File(temporaryDirectory, "mapper-inputfile1-" + uuid + ".fq");
+      this.pipeFile2 =
+          new File(temporaryDirectory, "mapper-inputfile2-" + uuid + ".fq");
 
       this.writer1 = threadForRead1
           ? new FastqWriterThread(this.pipeFile1, "FastqWriterThread fastq1")

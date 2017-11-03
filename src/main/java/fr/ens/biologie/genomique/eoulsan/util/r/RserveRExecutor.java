@@ -136,8 +136,8 @@ public class RserveRExecutor extends AbstractRExecutor {
 
   @Override
   protected void executeRScript(final File rScriptFile, final boolean sweave,
-      final String sweaveOuput, final File workflowOutputDir, final String... scriptArguments)
-      throws IOException {
+      final String sweaveOuput, final File workflowOutputDir,
+      final String... scriptArguments) throws IOException {
 
     checkConnection();
 

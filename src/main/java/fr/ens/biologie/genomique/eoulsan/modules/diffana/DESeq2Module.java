@@ -228,7 +228,8 @@ public class DESeq2Module extends AbstractModule {
         new DESeq2(this.executor, stepId, design, e, sampleFiles, this.normFig,
             this.diffanaFig, this.normDiffana, this.diffana,
             this.sizeFactorsType, this.fitType, this.statisticTest,
-            context.getSettings().isSaveRscripts()).runDEseq2(context.getOutputDirectory());
+            context.getSettings().isSaveRscripts())
+                .runDEseq2(context.getOutputDirectory());
 
       }
     } catch (IOException | EoulsanException e) {

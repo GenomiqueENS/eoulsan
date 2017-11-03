@@ -32,7 +32,7 @@ public abstract class AbstractTrimmomaticReadFilter extends AbstractReadFilter {
       } catch (Exception e) {
         throw new EoulsanException("Invalid parameter: " + value, e);
       }
-      
+
     } else {
       throw new EoulsanException(
           "Unknown parameter for " + getName() + " read filter: " + key);
@@ -47,9 +47,6 @@ public abstract class AbstractTrimmomaticReadFilter extends AbstractReadFilter {
     }
   }
 
-  
-  
-  
   /**
    * Create a Trimmer object
    * @param trimmerArgs trimmer arguments

@@ -556,7 +556,8 @@ public final class Settings implements Serializable {
 
   /**
    * Test if when use Docker, NFS roots must been mounted instead of file paths.
-   * @return true if if when use Docker, NFS roots must been mounted instead of file paths
+   * @return true if if when use Docker, NFS roots must been mounted instead of
+   *         file paths
    */
   public boolean isDockerMountNFSRoots() {
 

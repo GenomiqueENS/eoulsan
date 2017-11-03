@@ -59,8 +59,8 @@ public interface RExecutor {
    * @throws IOException if an error occurs while executing the script
    */
   void executeRScript(String rScript, boolean sweave, String sweaveOutput,
-      boolean saveRscript, String description, DataFile workflowOutputDir, String... scriptArguments)
-      throws IOException;
+      boolean saveRscript, String description, DataFile workflowOutputDir,
+      String... scriptArguments) throws IOException;
 
   /**
    * Remove input files.

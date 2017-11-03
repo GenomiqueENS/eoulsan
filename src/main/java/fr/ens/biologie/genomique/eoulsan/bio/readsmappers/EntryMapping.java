@@ -205,9 +205,9 @@ public class EntryMapping {
    * @param incrementer the incrementer
    * @param counterGroup the counter group
    */
-  EntryMapping(final MapperIndex mapperIndex,
-      final FastqFormat fastqFormat, final List<String> mapperArguments,
-      final int threadNumber, final boolean multipleInstanceEnabled,
+  EntryMapping(final MapperIndex mapperIndex, final FastqFormat fastqFormat,
+      final List<String> mapperArguments, final int threadNumber,
+      final boolean multipleInstanceEnabled,
       final ReporterIncrementer incrementer, final String counterGroup) {
 
     requireNonNull(mapperIndex, "mapperIndex cannot be null");

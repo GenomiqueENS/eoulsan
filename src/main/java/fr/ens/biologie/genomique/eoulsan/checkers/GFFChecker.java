@@ -319,8 +319,7 @@ public class GFFChecker implements Checker {
    * @param gtfFormat true if the entry is in GTF format
    * @return the entry in the correct format
    */
-  private static String formatEntry(final GFFEntry e,
-      final boolean gtfFormat) {
+  private static String formatEntry(final GFFEntry e, final boolean gtfFormat) {
 
     if (gtfFormat) {
       return e.toGTF();

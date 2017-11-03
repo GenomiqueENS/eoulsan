@@ -302,8 +302,8 @@ public class CommandWorkflowParser {
                 getLogger().info("In workflow file found "
                     + module + " step (parameters: " + parameters + ").");
                 result.addStep(stepId, module, version, inputs, parameters,
-                    skip, discardOutput, requiredMemory,
-                    requiredProcs, dataProduct);
+                    skip, discardOutput, requiredMemory, requiredProcs,
+                    dataProduct);
               }
             }
           }

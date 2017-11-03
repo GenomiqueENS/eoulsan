@@ -167,8 +167,8 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
 
         getLogger().info("Map files: "
             + inFile1 + "," + inFile2 + ", Fastq format: " + fastqFormat
-            + ", use " + mapper.getName() + " with "
-            + mapper.getThreadNumber() + " threads option");
+            + ", use " + mapper.getName() + " with " + mapper.getThreadNumber()
+            + " threads option");
 
         // Single read mapping
         final MapperProcess process = mapper.mapPE(inFile1, inFile2);
@@ -218,7 +218,6 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
   private FileMapping initMapper(final TaskContext context,
       final FastqFormat format, final DataFile archiveIndexFile,
       final File indexDir, final Reporter reporter) throws IOException {
-
 
     // Get the mapper object
     final Mapper mapper = getMapper();

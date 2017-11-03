@@ -112,8 +112,8 @@ public final class Globals {
 
   /** Platforms where the application is available. */
   public static final Set<String> AVAILABLE_BINARY_ARCH =
-      Collections.unmodifiableSet(new HashSet<>(
-          Arrays.asList("linux\tamd64", "linux\tx86_64")));
+      Collections.unmodifiableSet(
+          new HashSet<>(Arrays.asList("linux\tamd64", "linux\tx86_64")));
 
   /** Platforms alias. */
   public static final Map<String, String> AVAILABLE_BINARY_ARCH_ALIAS =

@@ -477,13 +477,13 @@ public class DataFormatRegistry {
     return result != null ? result : getDataFormatFromAlias(name);
   }
 
-
   /**
    * Get a DataFormat from its alias.
    * @param name the name of the DataFormat to get
    * @return a DataFormat if found or null
    */
-  public DataFormat getDataFormatFromToolshedExtensionOrNameOrAlias(final String name) {
+  public DataFormat getDataFormatFromToolshedExtensionOrNameOrAlias(
+      final String name) {
 
     DataFormat result = getDataFormatFromToolshedExtension(name);
 

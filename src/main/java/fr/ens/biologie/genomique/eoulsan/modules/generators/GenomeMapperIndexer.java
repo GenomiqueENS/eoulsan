@@ -174,8 +174,7 @@ public final class GenomeMapperIndexer {
    */
   public GenomeMapperIndexer(final MapperInstance mapperInstance,
       final String additionalArguments,
-      final Map<String, String> additionalDescription,
-      final int threads) {
+      final Map<String, String> additionalDescription, final int threads) {
 
     checkNotNull(mapperInstance, "Mapper is null");
     checkNotNull(additionalDescription, "additionalDescription is null");

@@ -36,18 +36,17 @@ public class HeadCropTrimmerReadFilterTest {
     assertEquals("read3", read.getName());
     assertNotEquals("AGGGGGCAAA", read.getSequence());
     assertNotEquals("xxxxxxxxxx", read.getQuality());
-    
+
     filter = new HeadCropTrimmerReadFilter();
     filter.setParameter("arguments", "11");
     filter.init();
-    
+
     read = new ReadSequence(0, "read4", "AGGGGGCAAA", "xxxxxxxxxx");
     assertFalse(filter.accept(read));
     assertEquals("read4", read.getName());
     assertEquals("AGGGGGCAAA", read.getSequence());
     assertEquals("xxxxxxxxxx", read.getQuality());
-    
-    
+
   }
 
 }

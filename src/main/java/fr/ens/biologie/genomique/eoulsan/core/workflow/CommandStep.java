@@ -93,9 +93,8 @@ public class CommandStep extends AbstractStep {
   public CommandStep(final AbstractWorkflow workflow, final String id,
       final String moduleName, final String stepVersion,
       final Set<Parameter> parameters, final boolean skip,
-      final Step.DiscardOutput discardOutput,
-      final int requiredMemory, final int requiredProcessors,
-      final String dataProduct)
+      final Step.DiscardOutput discardOutput, final int requiredMemory,
+      final int requiredProcessors, final String dataProduct)
       throws EoulsanException {
 
     super(workflow, id, moduleName, stepVersion, skip, discardOutput,
@@ -120,9 +119,8 @@ public class CommandStep extends AbstractStep {
   public CommandStep(final AbstractWorkflow workflow, final String id,
       final String moduleName, final String stepVersion,
       final Set<Parameter> parameters, final boolean skip,
-      final Step.DiscardOutput discardOutput,
-      final int requiredMemory, final int requiredProcessors,
-      final String dataProduct,
+      final Step.DiscardOutput discardOutput, final int requiredMemory,
+      final int requiredProcessors, final String dataProduct,
       final DataFile outputDirectory) throws EoulsanException {
 
     super(workflow, id, moduleName, stepVersion, skip, discardOutput,

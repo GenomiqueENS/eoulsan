@@ -128,8 +128,7 @@ public interface Step extends Serializable {
      * @return a DiscardOutput value
      * @throws EoulsanException if the attribute value is unknown
      */
-    public static DiscardOutput parse(final String s)
-        throws EoulsanException {
+    public static DiscardOutput parse(final String s) throws EoulsanException {
 
       if (s == null) {
         throw new NullPointerException("s argument cannot be null");

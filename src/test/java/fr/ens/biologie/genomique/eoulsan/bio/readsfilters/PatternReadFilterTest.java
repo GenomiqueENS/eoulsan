@@ -95,8 +95,6 @@ public class PatternReadFilterTest {
     assertFalse(filter.accept(new ReadSequence(0, "", "ATGC", "")));
     assertFalse(filter.accept(new ReadSequence(0, "", "AAATGCG", "")));
     assertTrue(filter.accept(new ReadSequence(0, "", "AGCT", "")));
-                                                                   
-                                                                   
 
     filter = new PatternReadFilter();
     filter.setParameter("allowed.regex", "ATGC");

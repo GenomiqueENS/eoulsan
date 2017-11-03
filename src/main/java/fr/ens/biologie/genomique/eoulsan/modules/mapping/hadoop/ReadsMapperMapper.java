@@ -267,8 +267,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     }
 
     getLogger().info("Use "
-        + mapper.getName() + " with " + mapperThreads
-        + " threads option");
+        + mapper.getName() + " with " + mapperThreads + " threads option");
 
     // Update last used file timestamp for the mapper indexes clean up
     updateLastUsedMapperIndex(this.mapperIndexDir);
@@ -280,9 +279,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     this.lock.lock();
 
     // Initialize mapping
-    this.mapping =
-        mapperIndex.newEntryMapping(fastqFormat, mapperArguments, mapperThreads,
-            true, new HadoopReporter(context), this.counterGroup);
+    this.mapping = mapperIndex.newEntryMapping(fastqFormat, mapperArguments,
+        mapperThreads, true, new HadoopReporter(context), this.counterGroup);
 
     // Lock if no multiple instances enabled
     if (this.mapping.isMultipleInstancesEnabled()) {
@@ -291,8 +289,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
       this.lock.unlock();
     } else {
 
-      context.setStatus(
-          "Wait free JVM for running " + this.mapping.getName());
+      context.setStatus("Wait free JVM for running " + this.mapping.getName());
 
       // Wait free JVM
       waitFreeJVM(context);
@@ -355,10 +352,9 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
     final long waitStartTime = System.currentTimeMillis();
 
-    ProcessUtils
-        .waitUntilExecutableRunning(
-            this.mapping.getMapperInstance().getMapper().getProvider()
-                .getMapperExecutableName(this.mapping.getMapperInstance()));
+    ProcessUtils.waitUntilExecutableRunning(
+        this.mapping.getMapperInstance().getMapper().getProvider()
+            .getMapperExecutableName(this.mapping.getMapperInstance()));
 
     getLogger().info("Wait "
         + StringUtils

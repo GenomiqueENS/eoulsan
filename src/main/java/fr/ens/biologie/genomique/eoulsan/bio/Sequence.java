@@ -68,13 +68,13 @@ public class Sequence {
    */
   public final String getIdentifierInName() {
 
-    if (this.name==null) {
+    if (this.name == null) {
       return null;
     }
 
     int pos = this.name.indexOf(' ');
 
-    if (pos==-1) {
+    if (pos == -1) {
       return this.name;
     }
 
@@ -87,13 +87,13 @@ public class Sequence {
    */
   public final String getDescriptionInName() {
 
-    if (this.name==null) {
+    if (this.name == null) {
       return null;
     }
 
     int pos = this.name.indexOf(' ');
 
-    if (pos==-1) {
+    if (pos == -1) {
       return "";
     }
 
@@ -412,14 +412,14 @@ public class Sequence {
   }
 
   /**
-   * Get the sequence as the complement. This method work only with
-   * A,T,G and C bases.
+   * Get the sequence as the complement. This method work only with A,T,G and C
+   * bases.
    * @param sequence sequence to reverse complement
    * @param alphabet alphabet of the sequence to reverse complement
    * @return the reverse complement sequence
    */
   public static final String complement(final String sequence,
-    final Alphabet alphabet) {
+      final Alphabet alphabet) {
 
     if (sequence == null || alphabet == null) {
       return null;

@@ -42,10 +42,12 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
     checkNotNull(stdoutFile, "stdoutFile argument cannot be null");
     checkNotNull(stderrFile, "stderrFile argument cannot be null");
 
-    EoulsanLogger.getLogger().fine(getClass().getName() + " : commandLine=" + commandLine +
-            ", executionDirectory=" + executionDirectory + ", environmentVariables=" + environmentVariables +
-            ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile=" + stdoutFile + ", stderrFile=" + stderrFile +
-            ", redirectErrorStream="+redirectErrorStream + ", filesUsed" + Arrays.toString(filesUsed));
+    EoulsanLogger.getLogger().fine(getClass().getName()
+        + " : commandLine=" + commandLine + ", executionDirectory="
+        + executionDirectory + ", environmentVariables=" + environmentVariables
+        + ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile="
+        + stdoutFile + ", stderrFile=" + stderrFile + ", redirectErrorStream="
+        + redirectErrorStream + ", filesUsed" + Arrays.toString(filesUsed));
 
     if (executionDirectory != null) {
       checkArgument(executionDirectory.isDirectory(),
@@ -143,8 +145,7 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
       if (directory != null) {
 
         directory = convertNFSFilesToMountRoots
-            ? convertNFSFileToMountPoint(directory)
-            : directory;
+            ? convertNFSFileToMountPoint(directory) : directory;
 
         command.add("--volume");
         command.add(
@@ -210,7 +211,8 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
 
     checkNotNull(dockerImage, "dockerImage argument cannot be null");
 
-    EoulsanLogger.getLogger().fine(getClass().getName()+" docker image used: "+ dockerImage);
+    EoulsanLogger.getLogger()
+        .fine(getClass().getName() + " docker image used: " + dockerImage);
 
     this.dockerImage = dockerImage;
     this.userUid = SystemUtils.uid();

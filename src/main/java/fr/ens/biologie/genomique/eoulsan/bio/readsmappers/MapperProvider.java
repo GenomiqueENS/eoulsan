@@ -92,8 +92,6 @@ public interface MapperProvider {
    */
   String getDefaultMapperArguments();
 
-
-
   /**
    * Get the indexer executables.
    * @return the indexer executables

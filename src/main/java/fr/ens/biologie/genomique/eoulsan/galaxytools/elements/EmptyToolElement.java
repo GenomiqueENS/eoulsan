@@ -24,7 +24,7 @@
 package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
 /**
- * This class  define an empty tool element.
+ * This class define an empty tool element.
  * @author Sandrine Perrin
  * @since 2.0
  */

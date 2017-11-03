@@ -42,7 +42,6 @@ import fr.ens.biologie.genomique.eoulsan.design.ExperimentSampleMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
 
-
 public class Eoulsan2ReaderWriterTest {
 
   @Test

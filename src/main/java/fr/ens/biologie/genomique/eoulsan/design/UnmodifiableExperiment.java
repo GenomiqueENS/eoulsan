@@ -56,8 +56,7 @@ public class UnmodifiableExperiment implements Experiment, Serializable {
 
     List<ExperimentSample> samples = this.experiment.getExperimentSamples();
 
-    List<ExperimentSample> result =
-        new ArrayList<>(samples.size());
+    List<ExperimentSample> result = new ArrayList<>(samples.size());
 
     for (ExperimentSample sample : samples) {
       result.add(new UnmodifiableExperimentSample(sample));

@@ -92,7 +92,7 @@ public class DockerRExecutor extends ProcessRExecutor {
     try {
       return f.getCanonicalFile();
     } catch (IOException e) {
-      return  f.getAbsoluteFile();
+      return f.getAbsoluteFile();
     }
   }
 

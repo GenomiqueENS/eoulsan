@@ -156,7 +156,8 @@ public class CheetahInterpreter {
 
       for (Map.Entry<String, String> e : plateholders.entrySet()) {
 
-        List<String> fields = GuavaCompatibility.splitToList(Splitter.on('.'), e.getKey());
+        List<String> fields =
+            GuavaCompatibility.splitToList(Splitter.on('.'), e.getKey());
 
         PyStrDictionary dict = result;
 

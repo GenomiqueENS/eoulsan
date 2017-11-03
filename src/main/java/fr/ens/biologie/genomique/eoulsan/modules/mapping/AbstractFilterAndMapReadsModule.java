@@ -308,7 +308,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
       Modules.invalidConfiguration(context, "No mapper set");
     }
 
- // Create a Mapper object
+    // Create a Mapper object
     this.mapper = Mapper.newMapper(mapperName);
 
     if (this.mapper == null) {

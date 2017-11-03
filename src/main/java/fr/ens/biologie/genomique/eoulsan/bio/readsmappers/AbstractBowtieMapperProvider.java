@@ -197,7 +197,8 @@ public abstract class AbstractBowtieMapperProvider implements MapperProvider {
   }
 
   protected String bowtieQualityArgument(final EntryMapping mapping) {
-    return BowtieMapperProvider.getBowtieQualityArgument(mapping.getFastqFormat());
+    return BowtieMapperProvider
+        .getBowtieQualityArgument(mapping.getFastqFormat());
   }
 
   //

@@ -24,10 +24,12 @@ public class SystemSimpleProcess extends AbstractSimpleProcess {
       final File stderrFile, final boolean redirectErrorStream,
       final File... filesUsed) throws IOException {
 
-    EoulsanLogger.getLogger().fine(getClass().getName() + " : commandLine=" + commandLine +
-            ", executionDirectory=" + executionDirectory + ", environmentVariables=" + environmentVariables +
-            ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile=" + stdoutFile + ", stderrFile=" + stderrFile +
-            ", redirectErrorStream="+redirectErrorStream + ", filesUsed" + Arrays.toString(filesUsed));
+    EoulsanLogger.getLogger().fine(getClass().getName()
+        + " : commandLine=" + commandLine + ", executionDirectory="
+        + executionDirectory + ", environmentVariables=" + environmentVariables
+        + ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile="
+        + stdoutFile + ", stderrFile=" + stderrFile + ", redirectErrorStream="
+        + redirectErrorStream + ", filesUsed" + Arrays.toString(filesUsed));
 
     final ProcessBuilder pb = new ProcessBuilder(commandLine);
     // Set execution directory

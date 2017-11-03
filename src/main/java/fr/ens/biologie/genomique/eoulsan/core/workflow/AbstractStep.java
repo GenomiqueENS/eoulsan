@@ -550,8 +550,8 @@ public abstract class AbstractStep implements Step {
       this.mode = ExecutionMode.getExecutionMode(checkerModule.getClass());
 
       // Define output directory
-      this.outputDir = StepOutputDirectory.getInstance().defaultDirectory(workflow,
-          this, checkerModule, false);
+      this.outputDir = StepOutputDirectory.getInstance()
+          .defaultDirectory(workflow, this, checkerModule, false);
       break;
 
     case DESIGN_STEP:
@@ -568,8 +568,8 @@ public abstract class AbstractStep implements Step {
       this.mode = ExecutionMode.getExecutionMode(designModule.getClass());
 
       // Define output directory
-      this.outputDir = StepOutputDirectory.getInstance().defaultDirectory(workflow,
-          this, designModule, false);
+      this.outputDir = StepOutputDirectory.getInstance()
+          .defaultDirectory(workflow, this, designModule, false);
 
       break;
 
@@ -583,8 +583,8 @@ public abstract class AbstractStep implements Step {
       this.mode = ExecutionMode.NONE;
 
       // Define output directory
-      this.outputDir = StepOutputDirectory.getInstance().defaultDirectory(workflow,
-          this, fakeModule, false);
+      this.outputDir = StepOutputDirectory.getInstance()
+          .defaultDirectory(workflow, this, fakeModule, false);
       break;
     }
 
@@ -630,8 +630,8 @@ public abstract class AbstractStep implements Step {
     this.discardOutput = DiscardOutput.SUCCESS;
 
     // Define output directory
-    this.outputDir = StepOutputDirectory.getInstance().defaultDirectory(workflow, this,
-        generatorModule, false);
+    this.outputDir = StepOutputDirectory.getInstance()
+        .defaultDirectory(workflow, this, generatorModule, false);
 
     // Set state observer
     this.observer = new StepStateObserver(this);
@@ -656,8 +656,7 @@ public abstract class AbstractStep implements Step {
    */
   AbstractStep(final AbstractWorkflow workflow, final String id,
       final String moduleName, final String stepVersion, final boolean skip,
-      final DiscardOutput  discardOutput,
-      final Set<Parameter> parameters,
+      final DiscardOutput discardOutput, final Set<Parameter> parameters,
       final int requiredMemory, final int requiredProcessors,
       final String dataProduct) throws EoulsanException {
 
@@ -682,10 +681,10 @@ public abstract class AbstractStep implements Step {
    */
   AbstractStep(final AbstractWorkflow workflow, final String id,
       final String moduleName, final String stepVersion, final boolean skip,
-      final DiscardOutput discardOutput,
-      final Set<Parameter> parameters, final int requiredMemory,
-      final int requiredProcessors, final String dataProduct,
-      final DataFile outputDirectory) throws EoulsanException {
+      final DiscardOutput discardOutput, final Set<Parameter> parameters,
+      final int requiredMemory, final int requiredProcessors,
+      final String dataProduct, final DataFile outputDirectory)
+      throws EoulsanException {
 
     checkNotNull(workflow, "Workflow argument cannot be null");
     checkNotNull(id, "Step id argument cannot be null");
@@ -716,8 +715,8 @@ public abstract class AbstractStep implements Step {
 
     // Define output directory
     this.outputDir = outputDirectory != null
-        ? outputDirectory : StepOutputDirectory.getInstance().defaultDirectory(workflow,
-            this, module, discardOutput.isCopyResultsToOutput());
+        ? outputDirectory : StepOutputDirectory.getInstance().defaultDirectory(
+            workflow, this, module, discardOutput.isCopyResultsToOutput());
 
     // Set state observer
     this.observer = new StepStateObserver(this);

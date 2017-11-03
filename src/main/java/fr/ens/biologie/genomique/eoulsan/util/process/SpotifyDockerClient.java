@@ -71,7 +71,8 @@ public class SpotifyDockerClient implements DockerClient {
 
     try {
 
-      for (Image image : CollectionUtils.nullToEmpty(this.client.listImages())) {
+      for (Image image : CollectionUtils
+          .nullToEmpty(this.client.listImages())) {
         for (String tag : CollectionUtils.nullToEmpty(image.repoTags())) {
           if (tag != null) {
             result.add(tag);

@@ -845,8 +845,7 @@ public class GenomicArray<T> {
    * Save the annotation.
    * @param outputFile Output file
    */
-  public void save(final File outputFile)
-      throws IOException {
+  public void save(final File outputFile) throws IOException {
 
     if (outputFile == null) {
       throw new NullPointerException("outputFile argument cannot be null");
@@ -884,8 +883,7 @@ public class GenomicArray<T> {
    * Load the annotation.
    * @param inputFile input file
    */
-  public void load(final File inputFile)
-      throws IOException {
+  public void load(final File inputFile) throws IOException {
 
     if (inputFile == null) {
       throw new NullPointerException("inputFile argument cannot be null");

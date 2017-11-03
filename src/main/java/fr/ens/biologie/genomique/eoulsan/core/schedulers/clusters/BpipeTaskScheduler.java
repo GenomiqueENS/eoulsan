@@ -334,7 +334,7 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
    * Define additional environment variable for bpipe scripts.
    * @return a Map with the additional environment variables
    */
-  protected Map<String,String> additionalScriptEnvironment() {
+  protected Map<String, String> additionalScriptEnvironment() {
     return Collections.emptyMap();
   }
 

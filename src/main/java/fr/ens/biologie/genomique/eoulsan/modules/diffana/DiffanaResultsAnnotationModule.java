@@ -268,7 +268,8 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
       final List<DataFile> files = new ArrayList<>();
       final List<DataFile> filesToConvert = new ArrayList<>();
 
-      context.getLogger().info("Search files in directory: " + context.getOutputDirectory());
+      context.getLogger()
+          .info("Search files in directory: " + context.getOutputDirectory());
       context.getLogger().info("Output directory: " + outputDir);
 
       // Handle step output directory
@@ -276,7 +277,7 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
 
         if (!f.getMetaData().isDir()) {
           files.add(f);
-        } else if(f.getName().endsWith(Globals.STEP_OUTPUT_DIRECTORY_SUFFIX)) {
+        } else if (f.getName().endsWith(Globals.STEP_OUTPUT_DIRECTORY_SUFFIX)) {
           files.addAll(f.list());
         }
       }

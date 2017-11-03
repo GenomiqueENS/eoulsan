@@ -62,7 +62,8 @@ public class STARIndexGeneratorModule extends AbstractModule {
 
   private static final int OVERHANG_DEFAULT = 100;
 
-  private final Mapper mapper = Mapper.newMapper(STARMapperProvider.MAPPER_NAME);
+  private final Mapper mapper =
+      Mapper.newMapper(STARMapperProvider.MAPPER_NAME);
 
   private Integer overhang = OVERHANG_DEFAULT;
   private boolean gtfFile;
@@ -346,8 +347,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
             this.genomeChrBinNbits.toString());
       }
 
-      status
-          .setProgressMessage(this.mapper.getName() + " index creation");
+      status.setProgressMessage(this.mapper.getName() + " index creation");
 
       // Create the index
       GenomeMapperIndexGeneratorModule.execute(this.mapper, context,

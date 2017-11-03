@@ -4,7 +4,8 @@ import org.usadellab.trimmomatic.trim.AbstractSingleRecordTrimmer;
 import org.usadellab.trimmomatic.trim.LeadingTrimmer;
 
 /**
- * This class define a Leading trimmomatic readfilter allow paired-end and single-end
+ * This class define a Leading trimmomatic readfilter allow paired-end and
+ * single-end
  * @since 1.0
  * @author du
  */

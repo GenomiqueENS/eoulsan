@@ -128,5 +128,5 @@ public class DataFormats {
 
   /** Cutadapt adapters format. */
   public static final DataFormat CUTADAPT_ADAPTER_FASTA =
-          registry.getDataFormatFromName("cutadapt_adapter");
+      registry.getDataFormatFromName("cutadapt_adapter");
 }
