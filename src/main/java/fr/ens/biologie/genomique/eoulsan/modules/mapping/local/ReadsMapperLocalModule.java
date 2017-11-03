@@ -60,6 +60,7 @@ import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
 import fr.ens.biologie.genomique.eoulsan.util.Reporter;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
+import fr.ens.biologie.genomique.eoulsan.util.UnSynchronizedBufferedWriter;
 
 /**
  * This class define a module for reads mapping.
@@ -270,8 +271,9 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
     // Parse SAM result file
     final BufferedReader readerResults =
         FileUtils.createBufferedReader(samFileInputStream);
-    final Writer writer = new OutputStreamWriter(new FileOutputStream(samFile),
-        StandardCharsets.ISO_8859_1);
+    final Writer writer =
+        new UnSynchronizedBufferedWriter(new OutputStreamWriter(
+            new FileOutputStream(samFile), StandardCharsets.ISO_8859_1));
 
     int entriesParsed = 0;
 

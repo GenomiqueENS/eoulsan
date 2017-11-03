@@ -41,6 +41,11 @@ import fr.ens.biologie.genomique.eoulsan.bio.io.FastqReader;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 
+/**
+ * This class define a mapping using files as input.
+ * @author Laurent Jourdren
+ * @since 2.0
+ */
 public class FileMapping extends EntryMapping {
 
   private IOException mappingException;
@@ -49,6 +54,10 @@ public class FileMapping extends EntryMapping {
   // Getters
   //
 
+  /**
+   * Throws the exception if occurs
+   * @throws IOException
+   */
   public void throwMappingException() throws IOException {
 
     if (this.mappingException != null) {
@@ -60,6 +69,13 @@ public class FileMapping extends EntryMapping {
   // Mapping methods
   //
 
+  /**
+   * Map files in paired-end mode.
+   * @param readsFile1 first file
+   * @param readsFile2 second file
+   * @return a MapperProcess object
+   * @throws IOException if an error occurs while launching the mapper
+   */
   public final MapperProcess mapPE(final DataFile readsFile1,
       final DataFile readsFile2) throws IOException {
 
@@ -80,6 +96,13 @@ public class FileMapping extends EntryMapping {
     return mapPE(readsFile1.open(), readsFile2.open());
   }
 
+  /**
+   * Map files in paired-end mode.
+   * @param readsFile1 first file
+   * @param readsFile2 second file
+   * @return a MapperProcess object
+   * @throws IOException if an error occurs while launching the mapper
+   */
   public final MapperProcess mapPE(final File readsFile1, final File readsFile2)
       throws IOException {
 
@@ -127,6 +150,12 @@ public class FileMapping extends EntryMapping {
     return mapperProcess;
   }
 
+  /**
+   * Map a file in single-end mode.
+   * @param readsFile first file
+   * @return a MapperProcess object
+   * @throws IOException if an error occurs while launching the mapper
+   */
   public final MapperProcess mapSE(final DataFile readsFile)
       throws IOException {
 
@@ -138,18 +167,11 @@ public class FileMapping extends EntryMapping {
 
     getLogger().fine("FASTQ file to map: " + readsFile);
 
+    if (readsFile.isLocalFile()) {
+      return mapSE(readsFile.toFile());
+    }
+
     return mapSE(readsFile.open());
-  }
-
-  public final MapperProcess mapSE(final File readsFile) throws IOException {
-
-    checkNotNull(readsFile, "readsFile is null");
-    checkExistingStandardFile(readsFile,
-        "readsFile1 not exits or is not a standard file.");
-
-    getLogger().fine("FASTQ file to map: " + readsFile);
-
-    return mapSE(new FileInputStream(readsFile));
   }
 
   /**
@@ -175,7 +197,32 @@ public class FileMapping extends EntryMapping {
   }
 
   /**
-   * Write first pairs entries to the mapper process
+   * Map reads of FASTQ file in single end mode.
+   * @param inputFile FASTQ input file
+   * @return an InputStream with SAM data
+   * @throws IOException if an error occurs while mapping the reads
+   */
+  private MapperProcess mapSE(final File inputFile) throws IOException {
+
+    checkNotNull(inputFile, "inputFile argument is null");
+
+    getLogger().fine("Mapping with "
+        + this.mapperIndex.getMapperName() + " in single-end mode");
+
+    // Process to mapping
+    final MapperProcess result = getProvider().mapSE(this, inputFile);
+
+    // Set counter
+    result.setIncrementer(this.incrementer, this.counterGroup);
+
+    // Start mapper
+    result.startProcess();
+
+    return result;
+  }
+
+  /**
+   * Write first pairs entries to the mapper process.
    * @param in first pairs FASTQ file
    * @param mp mapper process
    * @throws FileNotFoundException if the input cannot be found
@@ -211,7 +258,7 @@ public class FileMapping extends EntryMapping {
   }
 
   /**
-   * Write first pairs entries to the mapper process
+   * Write first pairs entries to the mapper process.
    * @param in first pairs FASTQ file
    * @param mp mapper process
    * @throws FileNotFoundException if the input cannot be found
@@ -247,11 +294,13 @@ public class FileMapping extends EntryMapping {
     t.start();
   }
 
+  @Override
   public MapperProcess mapPE() throws IOException {
 
     throw new IllegalStateException();
   }
 
+  @Override
   public MapperProcess mapSE() throws IOException {
 
     throw new IllegalStateException();
@@ -261,6 +310,16 @@ public class FileMapping extends EntryMapping {
   // Constructor
   //
 
+  /**
+   * Constructor.
+   * @param mapperIndex mapper index object
+   * @param fastqFormat FASTQ format
+   * @param mapperArguments the mapper arguments
+   * @param threadNumber the thread number
+   * @param multipleInstanceEnabled true if multiple instance must be enabled
+   * @param incrementer the incrementer
+   * @param counterGroup the counter group
+   */
   public FileMapping(final MapperIndex mapperIndex,
       final FastqFormat fastqFormat, final List<String> mapperArguments,
       final int threadNumber, final boolean multipleInstanceEnabled,

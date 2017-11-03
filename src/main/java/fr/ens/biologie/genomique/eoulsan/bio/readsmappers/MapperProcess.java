@@ -71,6 +71,8 @@ public abstract class MapperProcess {
   private final FastqWriter writer1;
   private final FastqWriter writer2;
 
+  private final File temporaryDirectory;
+
   private ReporterIncrementer incrementer;
   private String counterGroup;
 
@@ -718,6 +720,20 @@ public abstract class MapperProcess {
   }
 
   /**
+   * Start the process.
+   * @throws IOException if an error occurs while starting the process
+   */
+  void startProcess() throws IOException {
+
+    try {
+      // Start mapper instance
+      startProcess(this.temporaryDirectory);
+    } catch (InterruptedException e) {
+      throw new IOException(e);
+    }
+  }
+
+  /**
    * Start the process(es) of the mapper.
    * @param tmpDirectory temporary directory
    * @throws IOException if an error occurs while starting the process(es)
@@ -781,7 +797,7 @@ public abstract class MapperProcess {
    */
   private void removeFile(final File f) {
 
-    if (f.exists()) {
+    if (f != null && f.exists()) {
 
       if (!f.delete()) {
         getLogger().warning("Cannot remove temporary file: " + f);
@@ -835,7 +851,7 @@ public abstract class MapperProcess {
    * @param executor executor
    * @param temporaryDirectory temporary directory
    * @param pairedEnd paired-end mode
-   * @throws IOException if en error occurs
+   * @throws IOException if an error occurs
    */
   protected MapperProcess(final String mapperName, MapperExecutor executor,
       final File temporaryDirectory, final boolean pairedEnd)
@@ -850,28 +866,88 @@ public abstract class MapperProcess {
    * @param executor executor
    * @param temporaryDirectory temporary directory
    * @param pairedEnd paired-end mode
+   * @param inputFile1 first file to map
+   * @param inputFile2 second file to map
+   * @throws IOException if an error occurs
+   */
+  protected MapperProcess(final String mapperName, MapperExecutor executor,
+      final File temporaryDirectory, final boolean pairedEnd,
+      final File inputFile1, final File inputFile2) throws IOException {
+
+    this(mapperName, executor, temporaryDirectory, pairedEnd, false, inputFile1,
+        inputFile2);
+  }
+
+  /**
+   * Constructor.
+   * @param mapperName mapper name
+   * @param executor executor
+   * @param temporaryDirectory temporary directory
+   * @param pairedEnd paired-end mode
+   * @param inputFile first file to map
+   * @throws IOException if an error occurs
+   */
+  protected MapperProcess(final String mapperName, MapperExecutor executor,
+      final File temporaryDirectory, final boolean pairedEnd,
+      final File inputFile) throws IOException {
+
+    this(mapperName, executor, temporaryDirectory, pairedEnd, false, inputFile,
+        null);
+  }
+
+  /**
+   * Constructor.
+   * @param mapperName mapper name
+   * @param executor executor
+   * @param temporaryDirectory temporary directory
+   * @param pairedEnd paired-end mode
    * @throws IOException if en error occurs
    */
   protected MapperProcess(final String mapperName, MapperExecutor executor,
       final File temporaryDirectory, final boolean pairedEnd,
       final boolean threadForRead1) throws IOException {
 
+    this(mapperName, executor, temporaryDirectory, pairedEnd, threadForRead1,
+        null, null);
+  }
+
+  /**
+   * Constructor.
+   * @param mapperName mapper name
+   * @param executor executor
+   * @param temporaryDirectory temporary directory
+   * @param pairedEnd paired-end mode
+   * @param inputFile1 first file to map
+   * @param inputFile2 second file to map
+   * @throws IOException if en error occurs
+   */
+  protected MapperProcess(final String mapperName, MapperExecutor executor,
+      final File temporaryDirectory, final boolean pairedEnd,
+      final boolean threadForRead1, final File inputFile1,
+      final File inputFile2) throws IOException {
+
     requireNonNull(mapperName, "mapperName argument cannot be null");
     requireNonNull(executor, "executor argument cannot be null");
     requireNonNull(temporaryDirectory,
         "temporaryDirectory argument cannot be null");
 
-    try {
-      this.mapperName = mapperName;
-      this.uuid = UUID.randomUUID().toString();
+    this.mapperName = mapperName;
+    this.uuid = UUID.randomUUID().toString();
 
-      this.executor = executor;
-      this.pairedEnd = pairedEnd;
+    this.executor = executor;
+    this.pairedEnd = pairedEnd;
 
-      this.pipeFile1 =
-          new File(temporaryDirectory, "mapper-inputfile1-" + uuid + ".fq");
-      this.pipeFile2 =
-          new File(temporaryDirectory, "mapper-inputfile2-" + uuid + ".fq");
+    this.temporaryDirectory = temporaryDirectory;
+
+    this.pipeFile1 = inputFile1 != null
+        ? inputFile1 : new File(this.temporaryDirectory,
+            "mapper-inputfile1-" + uuid + ".fq");
+    this.pipeFile2 = inputFile2 != null
+        ? inputFile2 : new File(this.temporaryDirectory,
+            "mapper-inputfile2-" + uuid + ".fq");
+
+    // If in entry mode
+    if (inputFile1 == null) {
 
       this.writer1 = threadForRead1
           ? new FastqWriterThread(this.pipeFile1, "FastqWriterThread fastq1")
@@ -881,14 +957,12 @@ public abstract class MapperProcess {
           : null;
 
       addFilesToRemove(this.pipeFile1, this.pipeFile2);
-
-      additionalInit();
-
-      // Start mapper instance
-      startProcess(temporaryDirectory);
-
-    } catch (InterruptedException e) {
-      throw new IOException(e);
+    } else {
+      this.writer1 = null;
+      this.writer2 = null;
     }
+
+    // Launch addition initialization
+    additionalInit();
   }
 }
