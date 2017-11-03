@@ -24,12 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.design.io;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignMetadata.ADDITIONAL_ANNOTATION_FILE_KEY;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignMetadata.GENOME_FILE_KEY;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignMetadata.GFF_FILE_KEY;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignMetadata.GTF_FILE_KEY;
 import static java.util.Collections.unmodifiableMap;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.BufferedReader;
 import java.io.File;

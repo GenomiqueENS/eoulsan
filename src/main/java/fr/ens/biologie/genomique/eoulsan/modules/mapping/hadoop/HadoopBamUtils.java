@@ -1,12 +1,5 @@
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop;
 
-import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SamFileHeaderMerger;
-import htsjdk.samtools.SamInputResource;
-import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
-import htsjdk.samtools.util.BlockCompressedStreamConstants;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -21,6 +14,13 @@ import org.apache.hadoop.io.IOUtils;
 import org.seqdoop.hadoop_bam.SAMFormat;
 import org.seqdoop.hadoop_bam.cli.Utils;
 import org.seqdoop.hadoop_bam.util.SAMOutputPreparer;
+
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SamFileHeaderMerger;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
+import htsjdk.samtools.util.BlockCompressedStreamConstants;
 
 public class HadoopBamUtils {
 

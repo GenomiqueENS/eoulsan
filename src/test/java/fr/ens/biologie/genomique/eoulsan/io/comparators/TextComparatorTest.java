@@ -37,9 +37,6 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.io.comparators.AbstractComparatorWithBloomFilter;
-import fr.ens.biologie.genomique.eoulsan.io.comparators.SAMComparator;
-
 public class TextComparatorTest {
   private final File dir =
       new File(new File(".").getAbsolutePath() + "/src/test/java/files");

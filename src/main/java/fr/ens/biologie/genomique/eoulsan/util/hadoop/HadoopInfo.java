@@ -33,9 +33,9 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.DF;
 import org.apache.hadoop.util.VersionInfo;
 
+import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.util.LinuxCpuInfo;
 import fr.ens.biologie.genomique.eoulsan.util.LinuxMemInfo;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;

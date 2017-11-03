@@ -37,7 +37,6 @@ import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeDebug;
-import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.io.CompressionType;

@@ -27,6 +27,9 @@ package fr.ens.biologie.genomique.eoulsan.modules.fastqc;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
+
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
@@ -34,10 +37,6 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
-
-import javax.imageio.ImageIO;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import uk.ac.babraham.FastQC.Modules.QCModule;
 import uk.ac.babraham.FastQC.Utilities.ImageToBase64;
 

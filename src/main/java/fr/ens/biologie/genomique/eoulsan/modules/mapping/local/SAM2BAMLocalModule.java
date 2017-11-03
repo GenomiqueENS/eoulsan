@@ -2,18 +2,10 @@ package fr.ens.biologie.genomique.eoulsan.modules.mapping.local;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
-import htsjdk.samtools.SAMFileHeader.SortOrder;
-import htsjdk.samtools.SAMFileWriter;
-import htsjdk.samtools.SAMFileWriterFactory;
-import htsjdk.samtools.SAMRecord;
-import htsjdk.samtools.SamInputResource;
-import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
-
 import java.io.File;
 import java.io.IOException;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
@@ -24,6 +16,13 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractSAM2BAMModule;
 import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
 import fr.ens.biologie.genomique.eoulsan.util.Reporter;
+import htsjdk.samtools.SAMFileHeader.SortOrder;
+import htsjdk.samtools.SAMFileWriter;
+import htsjdk.samtools.SAMFileWriterFactory;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 
 /**
  * This class define a module for converting SAM files into BAM.

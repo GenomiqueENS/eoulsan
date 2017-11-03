@@ -1,14 +1,5 @@
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop;
 
-import hbparquet.hadoop.util.ContextUtil;
-import htsjdk.samtools.BAMIndexer;
-import htsjdk.samtools.SAMFileHeader.SortOrder;
-import htsjdk.samtools.SAMRecord;
-import htsjdk.samtools.SamInputResource;
-import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
-import htsjdk.samtools.ValidationStringency;
-
 import static fr.ens.biologie.genomique.eoulsan.CommonHadoop.createConfiguration;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_BAM;
@@ -64,6 +55,14 @@ import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractSAM2BAMModule;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SortRecordReader.IndexerMapper;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopJobEmergencyStopTask;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.MapReduceUtils;
+import hbparquet.hadoop.util.ContextUtil;
+import htsjdk.samtools.BAMIndexer;
+import htsjdk.samtools.SAMFileHeader.SortOrder;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
+import htsjdk.samtools.ValidationStringency;
 
 /**
  * This class define a module for converting SAM files into BAM.

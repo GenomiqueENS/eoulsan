@@ -15,7 +15,6 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.Date;
 
-import fr.ens.biologie.genomique.eoulsan.bio.Fast5;
 import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.bio.Fast5.ChemistryVersion;

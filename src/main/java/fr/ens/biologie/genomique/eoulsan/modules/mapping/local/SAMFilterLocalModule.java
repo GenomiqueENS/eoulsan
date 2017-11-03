@@ -24,14 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.local;
 
-import htsjdk.samtools.SAMFileWriter;
-import htsjdk.samtools.SAMFileWriterFactory;
-import htsjdk.samtools.SAMFormatException;
-import htsjdk.samtools.SAMRecord;
-import htsjdk.samtools.SamInputResource;
-import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
-
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.ALIGNMENTS_WITH_INVALID_SAM_FORMAT;
@@ -61,6 +53,13 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractSAMFilterModule;
 import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
 import fr.ens.biologie.genomique.eoulsan.util.Reporter;
+import htsjdk.samtools.SAMFileWriter;
+import htsjdk.samtools.SAMFileWriterFactory;
+import htsjdk.samtools.SAMFormatException;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 
 /**
  * This class define a Step for alignments filtering.

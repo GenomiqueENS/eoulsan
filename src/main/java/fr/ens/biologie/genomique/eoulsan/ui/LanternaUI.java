@@ -44,8 +44,8 @@ import com.googlecode.lanterna.terminal.text.UnixTerminal;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
-import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
+import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 
 /**
  * This class define an UI using Lanterna library.

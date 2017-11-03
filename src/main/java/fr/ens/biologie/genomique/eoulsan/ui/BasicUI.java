@@ -34,8 +34,8 @@ import com.google.common.base.Strings;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
-import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
+import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 
 /**
  * This class define a basic UI for Eoulsan.

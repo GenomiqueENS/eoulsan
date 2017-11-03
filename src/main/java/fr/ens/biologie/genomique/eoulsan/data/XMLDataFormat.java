@@ -44,9 +44,9 @@ import org.xml.sax.SAXException;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.splitermergers.Merger;
 import fr.ens.biologie.genomique.eoulsan.splitermergers.Splitter;
 import fr.ens.biologie.genomique.eoulsan.util.XMLUtils;

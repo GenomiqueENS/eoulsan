@@ -24,12 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.expressioncounters;
 
-import htsjdk.samtools.SAMRecord;
-import htsjdk.samtools.SAMRecordIterator;
-import htsjdk.samtools.SamInputResource;
-import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -49,6 +43,11 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.Reporter;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMRecordIterator;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 
 /**
  * This class defines a wrapper on the HTSeq-count counter.

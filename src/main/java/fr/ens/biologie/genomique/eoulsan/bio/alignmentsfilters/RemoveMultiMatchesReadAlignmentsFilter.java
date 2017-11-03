@@ -24,9 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters;
 
-import htsjdk.samtools.SAMRecord;
-
 import java.util.List;
+
+import htsjdk.samtools.SAMRecord;
 
 /**
  * This alignments filter remove all the alignments if more there is more one

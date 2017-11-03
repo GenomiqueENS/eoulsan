@@ -26,10 +26,10 @@ package fr.ens.biologie.genomique.eoulsan.actions;
 
 import java.util.List;
 
+import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.LocalEoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 
 /**
  * This class define the cluster exec Action.

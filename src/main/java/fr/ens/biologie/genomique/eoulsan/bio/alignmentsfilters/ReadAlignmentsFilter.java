@@ -24,11 +24,10 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters;
 
-import htsjdk.samtools.SAMRecord;
-
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import htsjdk.samtools.SAMRecord;
 
 /**
  * This interface define a filter for alignments.

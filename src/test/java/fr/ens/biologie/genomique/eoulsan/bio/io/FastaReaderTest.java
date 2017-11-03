@@ -32,8 +32,6 @@ import java.io.InputStream;
 import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.bio.Sequence;
-import fr.ens.biologie.genomique.eoulsan.bio.io.FastaReader;
-import fr.ens.biologie.genomique.eoulsan.bio.io.SequenceReader;
 
 public class FastaReaderTest {
 

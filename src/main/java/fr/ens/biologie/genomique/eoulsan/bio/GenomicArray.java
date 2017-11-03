@@ -25,7 +25,6 @@
 package fr.ens.biologie.genomique.eoulsan.bio;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;

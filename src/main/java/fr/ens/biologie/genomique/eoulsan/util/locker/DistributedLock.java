@@ -18,31 +18,31 @@ package fr.ens.biologie.genomique.eoulsan.util.locker;
 //=================================================================================================
 
         import java.io.IOException;
-        import java.util.List;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
-        import java.util.concurrent.TimeUnit;
-        import java.util.concurrent.atomic.AtomicBoolean;
-        import java.util.logging.Level;
-        import java.util.logging.Logger;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-        import javax.annotation.concurrent.ThreadSafe;
+import javax.annotation.concurrent.ThreadSafe;
 
-        import org.apache.zookeeper.CreateMode;
-        import org.apache.zookeeper.KeeperException;
-        import org.apache.zookeeper.WatchedEvent;
-        import org.apache.zookeeper.Watcher;
-        import org.apache.zookeeper.ZooDefs;
-        import org.apache.zookeeper.ZooKeeper;
-        import org.apache.zookeeper.data.ACL;
-        import org.apache.zookeeper.data.Stat;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.data.ACL;
+import org.apache.zookeeper.data.Stat;
 
-        import com.google.common.base.Preconditions;
-        import com.google.common.collect.ImmutableList;
-        import com.google.common.collect.Ordering;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Ordering;
 
-        import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-        import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 
 /**
  * Distributed locking via ZooKeeper. Assuming there are N clients that all try

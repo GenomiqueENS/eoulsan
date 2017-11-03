@@ -26,9 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters;
 
 import static org.junit.Assert.assertEquals;
 
-import htsjdk.samtools.SAMLineParser;
-import htsjdk.samtools.SAMRecord;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +34,8 @@ import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.bio.SAMUtils;
-import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.RemoveMultiMatchesReadAlignmentsFilter;
+import htsjdk.samtools.SAMLineParser;
+import htsjdk.samtools.SAMRecord;
 
 /**
  * This class is a JUnit test class to test the class

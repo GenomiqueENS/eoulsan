@@ -43,10 +43,10 @@ import java.util.UUID;
 import com.google.common.base.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.process.DockerImageInstance;
 import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
 import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess.AdvancedProcess;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 
 /**
  * This class define a mapper executor that executes process in Docker

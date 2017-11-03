@@ -63,8 +63,8 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopReporter;
-import fr.ens.biologie.genomique.eoulsan.util.locker.Locker;
 import fr.ens.biologie.genomique.eoulsan.util.locker.DistributedLocker;
+import fr.ens.biologie.genomique.eoulsan.util.locker.Locker;
 
 /**
  * This class defines a generic mapper for reads mapping.

@@ -24,7 +24,6 @@
 package fr.ens.biologie.genomique.eoulsan.io.comparators;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;

@@ -29,7 +29,6 @@ import static fr.ens.biologie.genomique.eoulsan.util.FileUtils.checkExistingStan
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;

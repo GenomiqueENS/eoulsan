@@ -34,9 +34,9 @@ import fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters.ClusterTaskScheduler;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.AbstractStep;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepResult;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 
 /**
  * This class defined a combined task scheduler for cluster mode.

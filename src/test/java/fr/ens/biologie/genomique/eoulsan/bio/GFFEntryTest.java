@@ -30,9 +30,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
-import fr.ens.biologie.genomique.eoulsan.bio.GFFEntry;
-
 public class GFFEntryTest {
 
   private final String[] TEST_GFF3_STRINGS = {

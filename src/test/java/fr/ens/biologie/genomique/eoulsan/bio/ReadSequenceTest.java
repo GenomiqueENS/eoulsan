@@ -36,11 +36,6 @@ import java.lang.reflect.Modifier;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.bio.Alphabets;
-import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
-import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
-import fr.ens.biologie.genomique.eoulsan.bio.Sequence;
-
 public class ReadSequenceTest {
 
   @Test

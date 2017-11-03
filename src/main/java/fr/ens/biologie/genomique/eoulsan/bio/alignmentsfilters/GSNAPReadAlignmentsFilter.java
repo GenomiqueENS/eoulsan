@@ -24,9 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters;
 
-import htsjdk.samtools.SAMRecord;
-
 import java.util.List;
+
+import htsjdk.samtools.SAMRecord;
 
 /**
  * This class defines a filter to use after the mapper GSNAP (for the

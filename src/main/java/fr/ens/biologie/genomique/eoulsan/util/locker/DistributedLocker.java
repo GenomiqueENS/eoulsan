@@ -1,11 +1,11 @@
 package fr.ens.biologie.genomique.eoulsan.util.locker;
 
+import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
-
-import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * This class implements a locker using Zookeeper based on Twiter's DistributedLock class. See {@link <a href=

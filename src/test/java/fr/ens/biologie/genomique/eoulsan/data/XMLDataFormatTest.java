@@ -29,7 +29,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.data.XMLDataFormat;
 
 public class XMLDataFormatTest {
 

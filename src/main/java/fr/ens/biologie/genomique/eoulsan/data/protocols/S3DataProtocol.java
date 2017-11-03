@@ -44,6 +44,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.transfer.Transfer;
 import com.amazonaws.services.s3.transfer.Transfer.TransferState;
+import com.amazonaws.services.s3.transfer.TransferManager;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Settings;
@@ -53,8 +54,6 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
-
-import com.amazonaws.services.s3.transfer.TransferManager;
 
 /**
  * This class define the s3 protocol in local mode.

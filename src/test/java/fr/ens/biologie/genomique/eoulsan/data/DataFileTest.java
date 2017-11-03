@@ -38,7 +38,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeDebug;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.protocols.DataProtocolService;
 
 public class DataFileTest {

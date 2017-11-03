@@ -2,9 +2,9 @@ package fr.ens.biologie.genomique.eoulsan.design;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Map.Entry;
 
 class UnmodifiableDesignMetadata implements DesignMetadata, Serializable {
 

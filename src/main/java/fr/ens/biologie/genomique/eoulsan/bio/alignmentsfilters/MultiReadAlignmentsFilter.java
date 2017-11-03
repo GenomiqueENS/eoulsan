@@ -24,12 +24,11 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters;
 
-import htsjdk.samtools.SAMRecord;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
+import htsjdk.samtools.SAMRecord;
 
 /**
  * This class define an alignments filter that calls successively a list of

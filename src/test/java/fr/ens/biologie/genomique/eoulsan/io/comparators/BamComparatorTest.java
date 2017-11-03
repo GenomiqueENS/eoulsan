@@ -26,11 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.io.comparators;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import htsjdk.samtools.SAMFileWriter;
-import htsjdk.samtools.SAMFileWriterFactory;
-import htsjdk.samtools.SAMRecord;
-import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,8 +35,11 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.io.comparators.AbstractComparatorWithBloomFilter;
-import fr.ens.biologie.genomique.eoulsan.io.comparators.BAMComparator;
+import htsjdk.samtools.SAMFileWriter;
+import htsjdk.samtools.SAMFileWriterFactory;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 
 public class BamComparatorTest {
 
