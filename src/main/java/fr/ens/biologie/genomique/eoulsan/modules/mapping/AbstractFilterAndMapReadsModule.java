@@ -84,7 +84,6 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
   private int reducerTaskCount = -1;
   private int hadoopThreads = -1;
 
-  private final int mappingQualityThreshold = -1;
   private int hadoopMapperRequiredMemory =
       AbstractReadsMapperModule.DEFAULT_MAPPER_REQUIRED_MEMORY;
 
@@ -165,15 +164,6 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
   protected Mapper getMapper() {
 
     return this.mapper;
-  }
-
-  /**
-   * Get the mapping quality threshold.
-   * @return the quality mapping threshold
-   */
-  protected int getMappingQualityThreshold() {
-
-    return this.mappingQualityThreshold;
   }
 
   /**
