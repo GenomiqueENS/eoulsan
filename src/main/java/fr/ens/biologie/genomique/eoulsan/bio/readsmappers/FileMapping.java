@@ -29,7 +29,6 @@ import static fr.ens.biologie.genomique.eoulsan.util.FileUtils.checkExistingStan
 import static fr.ens.biologie.genomique.eoulsan.util.Utils.checkNotNull;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +38,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
 import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
 import fr.ens.biologie.genomique.eoulsan.bio.io.FastqReader;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 
 /**
@@ -90,6 +90,14 @@ public class FileMapping extends EntryMapping {
       throw new IOException("readsFile1 not exits");
     }
 
+    // Use file mapping only if files are local and not compressed
+    if (readsFile1.isLocalFile()
+        && readsFile1.getCompressionType() == CompressionType.NONE
+        && readsFile2.isLocalFile()
+        && readsFile2.getCompressionType() == CompressionType.NONE) {
+      return mapPE(readsFile1.toFile(), readsFile2.toFile());
+    }
+
     getLogger().fine("First pair FASTQ file to map: " + readsFile1);
     getLogger().fine("Second pair FASTQ file to map: " + readsFile2);
 
@@ -114,11 +122,22 @@ public class FileMapping extends EntryMapping {
     checkExistingStandardFile(readsFile2,
         "readsFile2 not exits or is not a standard file.");
 
-    getLogger().fine("First pair FASTQ file: " + readsFile1);
-    getLogger().fine("Second pair FASTQ file: " + readsFile2);
+    getLogger().fine("First pair FASTQ file to map: " + readsFile1);
+    getLogger().fine("Second pair FASTQ file to map: " + readsFile2);
+    getLogger().fine("Mapping with "
+        + this.mapperIndex.getMapperName() + " in paired-end mode");
 
-    return mapPE(new FileInputStream(readsFile1),
-        new FileInputStream(readsFile2));
+    // Process to mapping
+    final MapperProcess result =
+        getProvider().mapPE(this, readsFile1, readsFile2);
+
+    // Set counter
+    result.setIncrementer(this.incrementer, this.counterGroup);
+
+    // Start mapper
+    result.startProcess();
+
+    return result;
   }
 
   /**
@@ -165,11 +184,13 @@ public class FileMapping extends EntryMapping {
       throw new IOException("readsFile1 not exits");
     }
 
-    getLogger().fine("FASTQ file to map: " + readsFile);
-
-    if (readsFile.isLocalFile()) {
+    // Use file mapping only if file is local and not compressed
+    if (readsFile.isLocalFile()
+        && readsFile.getCompressionType() == CompressionType.NONE) {
       return mapSE(readsFile.toFile());
     }
+
+    getLogger().fine("FASTQ file to map: " + readsFile);
 
     return mapSE(readsFile.open());
   }
@@ -198,19 +219,23 @@ public class FileMapping extends EntryMapping {
 
   /**
    * Map reads of FASTQ file in single end mode.
-   * @param inputFile FASTQ input file
+   * @param readFile FASTQ input file
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  private MapperProcess mapSE(final File inputFile) throws IOException {
+  public MapperProcess mapSE(final File readsFile) throws IOException {
 
-    checkNotNull(inputFile, "inputFile argument is null");
+    checkNotNull(readsFile, "readsFile is null");
 
+    checkExistingStandardFile(readsFile,
+        "reads File not exits or is not a standard file.");
+
+    getLogger().fine("FASTQ file to map: " + readsFile);
     getLogger().fine("Mapping with "
         + this.mapperIndex.getMapperName() + " in single-end mode");
 
     // Process to mapping
-    final MapperProcess result = getProvider().mapSE(this, inputFile);
+    final MapperProcess result = getProvider().mapSE(this, readsFile);
 
     // Set counter
     result.setIncrementer(this.incrementer, this.counterGroup);
