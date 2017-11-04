@@ -1440,6 +1440,10 @@ of reads that reject each filter like in local mode.
                Many fixes in the workflow engine to improve the stability of the software.
             </action>
 
+            <action dev="jourdren" type="fix">
+               The mapping stalled when FASTQ input files were empty or very small.
+            </action>
+
             <action dev="jourdren" type="add">
                 Add GMAP/GSNAP 2017-04-24 to Eoulsan.
             </action>
