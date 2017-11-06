@@ -1410,7 +1410,7 @@ of reads that reject each filter like in local mode.
 
          </release>
 
-         <release version="2.0-beta6" description="Eoulsan 2.0-beta6 release" date="TBD">
+         <release version="2.0" description="Eoulsan 2.0 release" date="2017-11-06">
 
             <action dev="jourdren" type="fix">
                Fix issues with BWA mem wrapper.
