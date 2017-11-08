@@ -10,7 +10,7 @@
 make_paths() {
 
 	local RESULT=
-	for lib in `ls $1`
+	for lib in $(ls $1)
 	do
 		if [ -f $1/$lib ]; then
 			RESULT=$RESULT:$1/$lib
@@ -21,8 +21,8 @@ make_paths() {
 }
 
 # Get the path to this script
-REAL_SCRIPT_PATH=`readlink -f $0`
-BASEDIR=`dirname $REAL_SCRIPT_PATH`
+REAL_SCRIPT_PATH=$(readlink -f $0)
+BASEDIR=$(dirname $REAL_SCRIPT_PATH)
 
 # Set the Eoulsan libraries path
 LIBDIR=$BASEDIR/lib
@@ -51,7 +51,7 @@ fi
 
 # Parse options
 OPTERR=0
-while getopts “j:m:J:p:” OPTION
+while getopts "j:m:J:p:" OPTION
 do
 	case $OPTION in
 		j)
