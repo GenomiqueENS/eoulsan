@@ -102,6 +102,7 @@ $JAVA_CMD \
 		-Deoulsan.classpath=$APP_CLASSPATH \
 		-Deoulsan.memory=$MEMORY \
 		-Deoulsan.launch.mode=local \
-		-Deoulsan.launch.script.path=$0 \
+		-Deoulsan.launch.script.path="$0" \
+		-Deoulsan.path="$BASEDIR" \
 		-Deoulsan.hadoop.libs=$COMMON_LIBS:$PLUGINS:$PLUGINS_LIB \
 		fr.ens.biologie.genomique.eoulsan.Main "$@"
