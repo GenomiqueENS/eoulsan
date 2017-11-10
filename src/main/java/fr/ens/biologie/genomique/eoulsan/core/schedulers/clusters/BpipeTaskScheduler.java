@@ -247,6 +247,11 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
     builder.environment().put("EOULSAN_TASK_ID", "" + taskId);
     builder.environment().putAll(additionalScriptEnvironment());
 
+    // Remove DISPLAY environment variable for submitted jobs
+    if (builder.environment().containsKey("DISPLAY")) {
+      builder.environment().remove("DISPLAY");
+    }
+
     if (requiredMemory > 0) {
 
       final int memory =
