@@ -219,7 +219,7 @@ public class FileMapping extends EntryMapping {
 
   /**
    * Map reads of FASTQ file in single end mode.
-   * @param readFile FASTQ input file
+   * @param readsFile FASTQ input file
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
