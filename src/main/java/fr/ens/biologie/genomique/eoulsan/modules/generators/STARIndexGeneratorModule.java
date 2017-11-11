@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.Generator;
@@ -74,9 +73,6 @@ public class STARIndexGeneratorModule extends AbstractModule {
   private Integer genomeSAindexNbases;
   private Integer genomeChrBinNbits;
   private boolean useExpressionStepParameters;
-
-  private int localThreads;
-  private int maxLocalThreads;
 
   @Override
   public String getName() {
@@ -164,11 +160,11 @@ public class STARIndexGeneratorModule extends AbstractModule {
         break;
 
       case "local.threads":
-        this.localThreads = p.getIntValueGreaterOrEqualsTo(1);
+        Modules.removedParameter(context, p);
         break;
 
       case "max.local.threads":
-        this.maxLocalThreads = p.getIntValueGreaterOrEqualsTo(1);
+        Modules.removedParameter(context, p);
         break;
 
       case "features.file.format":
@@ -352,7 +348,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
       // Create the index
       GenomeMapperIndexGeneratorModule.execute(this.mapper, context,
           additionalArguments.toString(), additionalDescription,
-          Common.getThreadsNumber(this.localThreads, this.maxLocalThreads));
+          context.getCurrentStep().getRequiredProcessors());
 
       // Remove temporary files
       for (File temporaryFile : temporaryFiles) {
