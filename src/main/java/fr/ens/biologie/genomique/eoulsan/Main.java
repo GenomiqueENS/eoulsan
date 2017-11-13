@@ -460,6 +460,14 @@ public abstract class Main {
         + " Startup script: " + (getLaunchScriptPath() == null
             ? "(no startup script)" : getLaunchScriptPath()));
 
+    // Eoulsan installation directory
+    getLogger()
+        .info(Globals.APP_NAME
+            + " installation directory: "
+            + (getEoulsanDirectory() == null
+                ? "(installation directory not found)"
+                : getEoulsanDirectory()));
+
     // Command line arguments
     final List<String> args = new ArrayList<>();
     for (String a : getArgs()) {

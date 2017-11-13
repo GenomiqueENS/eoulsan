@@ -176,6 +176,7 @@ public class HadoopExecAction extends AbstractAction {
     if (main.getEoulsanScriptPath() != null) {
       result
           .add("-D" + Main.EOULSAN_SCRIPT + "=" + main.getEoulsanScriptPath());
+      result.add("-D" + Main.EOULSAN_PATH + "=" + main.getEoulsanDirectory());
     }
 
     if (main.getClassPath() != null) {
