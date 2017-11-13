@@ -1510,5 +1510,30 @@ of reads that reject each filter like in local mode.
 
          </release>
 
+         <release version="2.1" description="Eoulsan 2.1 release" date="TBD">
+
+            <action dev="jourdren" type="fix">
+               In cluster mode, the path to the job submission script was not correct if eoulsan.sh was launched from a symbolic link.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               Now in cluster mode, do not export the DISPLAY environment variable when submitting jobs. If the DISPLAY environment variable exits and no related X server is available, the annotation steps will fail when generating XLSX files.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add Minimap2 mapper support.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add two new alignment filters based on the SAM flag: "removesecondary" and "removesupplementary".
+            </action>
+
+            <action dev="jourdren" type="update">
+               Remove "local.threads" and "max.local.threads" options in the "starindexgenerator" module. The number of threads to use for the step using this module is now defined using the "requiredprocs" of the step XML tag.
+            </action>
+
+         </release>
+
+
 	</body>
 </document>
