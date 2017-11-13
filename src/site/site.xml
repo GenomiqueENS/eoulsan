@@ -70,6 +70,7 @@
 
 			<item name="Built-in modules" href="/modules.html" collapse="true">
 				<item name="Create mapper index" href="/module-createmapperindex.html" />
+				<item name="Create Minimap2 mapper index" href="/module-createminimap2mapperindex.html" />
 				<item name="Create STAR mapper index" href="/module-createstarmapperindex.html" />
 				<item name="FastQC" href="/module-fastqc.html" />
 				<item name="Filter reads" href="/module-filterreads.html" />

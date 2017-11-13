@@ -147,8 +147,8 @@ public class Minimap2MapperProvider implements MapperProvider {
 
     List<String> cmd = new ArrayList<>();
     cmd.add(indexerPathname);
-    cmd.add(genomeFile.getAbsolutePath());
     cmd.addAll(indexerArguments);
+    cmd.add(genomeFile.getAbsolutePath());
     cmd.add("-d");
     cmd.add(INDEX_FILENAME);
 
