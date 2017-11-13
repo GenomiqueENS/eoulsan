@@ -25,16 +25,15 @@
 package fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters;
 
 /**
- * This alignment filter remove all the unmapped alignments.
- * @since 1.1
+ * This class remove all the supplementary alignments.
  * @author Laurent Jourdren
- * @author Claire Wallon
+ * @since 2.1
  */
-public class RemoveUnmappedReadAlignmentsFilter
+public class SupplementaryAlignmentRemoveFlagReadAlignmentsFilter
     extends AbstractRemoveFlagReadAlignmentsFilter {
 
-  public static final String FILTER_NAME = "removeunmapped";
-  private static final int FLAG_VALUE = 0x4;
+  public static final String FILTER_NAME = "removesupplementary";
+  private static final int FLAG_VALUE = 0x800;
 
   @Override
   public String getName() {
@@ -44,13 +43,14 @@ public class RemoveUnmappedReadAlignmentsFilter
 
   @Override
   public String getDescription() {
-    return "Remove all the unmapped alignments";
+    return "Remove all the supplementary alignments";
   }
 
   /**
    * Public constructor.
    */
-  public RemoveUnmappedReadAlignmentsFilter() {
+  public SupplementaryAlignmentRemoveFlagReadAlignmentsFilter() {
     super(FLAG_VALUE);
   }
+
 }
