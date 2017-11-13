@@ -62,6 +62,10 @@ public class DataFormats {
   public static final DataFormat STAR_INDEX_ZIP =
       registry.getDataFormatFromName("star_index_zip");
 
+  /** Minimap2 index data format. */
+  public static final DataFormat MINIMAP2_INDEX_ZIP =
+      registry.getDataFormatFromName("minimap2_index_zip");
+
   /** SAM results data format. */
   public static final DataFormat MAPPER_RESULTS_SAM =
       registry.getDataFormatFromName("mapper_results_sam");
