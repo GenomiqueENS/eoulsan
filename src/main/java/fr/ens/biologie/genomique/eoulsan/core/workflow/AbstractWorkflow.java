@@ -37,6 +37,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -902,6 +903,18 @@ public abstract class AbstractWorkflow implements Workflow {
 
     // Send mail
     Common.sendMail(mailSubject, mailMessage);
+  }
+
+  //
+  // Serialization method
+  //
+
+  private void writeObject(ObjectOutputStream s) throws IOException {
+
+    // Avoid change of state while serialization
+    synchronized (this) {
+      s.writeObject(this);
+    }
   }
 
   //
