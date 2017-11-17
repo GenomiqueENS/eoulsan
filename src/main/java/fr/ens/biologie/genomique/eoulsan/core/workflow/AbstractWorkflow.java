@@ -913,7 +913,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
     // Avoid change of state while serialization
     synchronized (this) {
-      s.writeObject(this);
+      s.defaultWriteObject();
     }
   }
 
