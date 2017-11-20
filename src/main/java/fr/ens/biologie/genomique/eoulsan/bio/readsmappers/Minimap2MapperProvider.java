@@ -219,8 +219,8 @@ public class Minimap2MapperProvider implements MapperProvider {
         cmd.add(mapping.getIndexDirectory().getAbsolutePath()
             + "/" + INDEX_FILENAME);
 
-        cmd.add(inputFile1.getAbsolutePath());
-        cmd.add(inputFile2.getAbsolutePath());
+        cmd.add(getNamedPipeFile1().getAbsolutePath());
+        cmd.add(getNamedPipeFile2().getAbsolutePath());
 
         return Collections.singletonList(cmd);
       }
