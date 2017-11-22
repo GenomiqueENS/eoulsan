@@ -1510,7 +1510,7 @@ of reads that reject each filter like in local mode.
 
          </release>
 
-         <release version="2.1" description="Eoulsan 2.1 release" date="TBD">
+         <release version="2.1" description="Eoulsan 2.1 release" date="2017-11-22">
 
             <action dev="jourdren" type="fix">
                In cluster mode, the path to the job submission script was not correct if eoulsan.sh was launched from a symbolic link.
@@ -1518,6 +1518,10 @@ of reads that reject each filter like in local mode.
 
             <action dev="jourdren" type="fix">
                Now in cluster mode, do not export the DISPLAY environment variable when submitting jobs. If the DISPLAY environment variable exits and no related X server is available, the annotation steps will fail when generating XLSX files.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               In AbstractWorkflow, avoid ConcurrentModificationException with cluster mode in some rare cases.
             </action>
 
             <action dev="jourdren" type="add">
