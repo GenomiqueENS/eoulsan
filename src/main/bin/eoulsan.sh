@@ -28,11 +28,11 @@ BASEDIR=$(dirname $REAL_SCRIPT_PATH)
 LIBDIR=$BASEDIR/lib
 
 # Set the memory in MiB needed by Eoulsan (only Java part, not external tools)
-# By Default 2048
+# By Default 4096
 if [ -n "$EOULSAN_MEMORY" ]; then
 	MEMORY=$EOULSAN_MEMORY
 else
-	MEMORY=2048
+	MEMORY=4096
 fi
 
 # Additional JVM options

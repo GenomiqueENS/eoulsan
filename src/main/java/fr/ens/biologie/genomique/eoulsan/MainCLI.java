@@ -58,7 +58,7 @@ public final class MainCLI extends Main {
         .withDescription("JAVA_HOME path").create('j'));
 
     options.addOption(OptionBuilder.withArgName("size").hasArg()
-        .withDescription("maximal memory usage for JVM in MB (2048 by default)")
+        .withDescription("maximal memory usage for JVM in MB (4096 by default)")
         .create('m'));
 
     options.addOption(OptionBuilder.withArgName("args").hasArg()

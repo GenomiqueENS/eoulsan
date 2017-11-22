@@ -80,7 +80,7 @@
 	  </tr>
 	  <tr>
             <td>Memory</td>
-            <td>By default 2048 MiB are allocated to the JVM for running Eoulsan.
+            <td>By default 4096 MiB are allocated to the JVM for running Eoulsan.
             You can use another value with the <code>-m</code> parameter of <b>eoulsan.sh</b>.
             However Eoulsan use external tools 
             like Bowtie that also need memory, 8 GiB seem to be

@@ -56,7 +56,7 @@ usage: eoulsan [options] action arguments
                        software
  -log &lt;file&gt;           external log file
  -loglevel &lt;level&gt;     log level
- -m &lt;size&gt;             maximal memory usage for JVM in MB (2048 by default)
+ -m &lt;size&gt;             maximal memory usage for JVM in MB (4096 by default)
  -p &lt;classpath&gt;        additional classpath for eoulsan plugins
  -s &lt;property=value&gt;   set a configuration setting. This option can be
                        used several times
@@ -107,7 +107,7 @@ Available actions:
       <p>Set the log level, there are 5 log level define in Eoulsan : <b>Severe</b>, <b>Warning</b>, <b>Info</b>, <b>Fine</b> and <b>all</b>. By default the log level is set to <b>Info</b>.</p>
     </subsection>
 	<subsection name="-m &lt;size&gt;">
-		<p>Define the maximal size in megabytes that can be allocated by the JVM. The default value is <b>2048</b>.</p>
+		<p>Define the maximal size in megabytes that can be allocated by the JVM. The default value is <b>4096</b>.</p>
 	</subsection>
 	<subsection name="-p &lt;classpath&gt;">
 		<p>Define additional classpath for Eoulsan plug-ins or dependencies.</p>
@@ -122,7 +122,7 @@ Available actions:
         <p>In order to avoid modify the <tt>eoulsan.sh</tt> file, you use the following  environment variable to configure Eoulsan JVM and plugins path:</p>
         <ul>
             <li><b>EOULSAN_JAVA_HOME</b>: The path to the JDK to use with Eoulsan. If this environment variable is not set the <b>JAVA_HOME</b> environment varibale will be used. If none of this environment variables is set, the default java command will be used to launch Eoulsan.</li>
-            <li><b>EOULSAN_MEMORY</b>: The maximum size in MiB of the JVM memory allocation pool. Default value is 2048.</li>
+            <li><b>EOULSAN_MEMORY</b>: The maximum size in MiB of the JVM memory allocation pool. Default value is 4096.</li>
             <li><b>EOULSAN_JVM_OPTS</b>: The JVM options. Default value is "-server".</li>
             <li><b>EOULSAN_PLUGINS</b>: The path to Eoulsan plugins. No default value is set.</li>
         </ul>
