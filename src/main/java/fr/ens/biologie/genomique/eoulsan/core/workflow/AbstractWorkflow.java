@@ -85,7 +85,8 @@ public abstract class AbstractWorkflow implements Workflow {
 
   private static final String DESIGN_COPY_FILENAME = "design.txt";
   protected static final String WORKFLOW_COPY_FILENAME = "workflow.xml";
-  private static final String WORKFLOW_GRAPHVIZ_FILENAME = "workflow.gv";
+  private static final String WORKFLOW_GRAPHVIZ_FILENAME = "workflow.dot";
+  private static final String WORKFLOW_IMAGE_FILENAME = "workflow.png";
 
   private final DataFile localWorkingDir;
   private final DataFile hadoopWorkingDir;
@@ -670,9 +671,10 @@ public abstract class AbstractWorkflow implements Workflow {
           new DataFile(jobDir, DESIGN_COPY_FILENAME).create());
       designWriter.write(getDesign());
 
-      // Save the workflow as a Graphviz file
-      new Workflow2Graphviz(this)
-          .save(new DataFile(jobDir, WORKFLOW_GRAPHVIZ_FILENAME));
+      // Save the workflow as a Graphviz and an image files
+      new Workflow2Graphviz(this,
+          new DataFile(jobDir, WORKFLOW_GRAPHVIZ_FILENAME),
+          new DataFile(jobDir, WORKFLOW_IMAGE_FILENAME)).saveImageFile();
 
     } catch (IOException e) {
       throw new EoulsanException(
