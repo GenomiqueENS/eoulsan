@@ -12,10 +12,13 @@ import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.FileStore;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -334,12 +337,9 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
     }
 
     if (files != null) {
-      for (File f : files) {
-
-        if (f.exists()) {
-          f = convertNFSFilesToMountRoots ? convertNFSFileToMountPoint(f) : f;
-          binds.add(f.getAbsolutePath() + ':' + f.getAbsolutePath());
-        }
+      for (File f : fileIndirections(
+          convertNFSFileToMountPoint(files, convertNFSFilesToMountRoots))) {
+        binds.add(f.getAbsolutePath() + ':' + f.getAbsolutePath());
       }
     }
 
@@ -434,11 +434,39 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
 
   /**
    * Convert a file path to a mount point path if the file is on a NFS server.
-   * @param files the list of file to convert
-   * @return a list of file
+   * @param files the list of the files to convert
+   * @param convertNFSFilesToMountRoots true if files must be converted
+   * @return a set of files
    * @throws IOException if mount of a file cannot be found
    */
-  static File convertNFSFileToMountPoint(File file) throws IOException {
+  static Set<File> convertNFSFileToMountPoint(
+      final Collection<File> files,final boolean convertNFSFilesToMountRoots)
+      throws IOException {
+
+    if (files == null) {
+      return null;
+    }
+
+    Set<File> result = new LinkedHashSet<>();
+
+    for (File file : files) {
+
+      if (file !=null && file.exists()) {
+        result.add(convertNFSFilesToMountRoots
+            ? convertNFSFileToMountPoint(file) : file);
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Convert a file path to a mount point path if the file is on a NFS server.
+   * @param files the file to convert
+   * @return a converted file
+   * @throws IOException if mount of a file cannot be found
+   */
+  static File convertNFSFileToMountPoint(final File file) throws IOException {
 
     if (file == null) {
       return null;
@@ -462,6 +490,69 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
     }
 
     return file;
+  }
+
+  /**
+   * List all the indirections of files.
+   * @param files the files
+   * @return a set with the file indirections
+   * @throws IOException if an error occurs while searching indirections
+   */
+  static final Set<File> fileIndirections(final Collection<File> files) throws IOException {
+
+    if (files == null) {
+      return null;
+    }
+
+    Set<File> result = new LinkedHashSet<>();
+
+    for (File f : files) {
+
+      if (f != null) {
+        result.addAll(fileIndirections(f));
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * List all the file indirections.
+   * @param file the file
+   * @return a set with the file indirections
+   * @throws IOException if an error occurs while searching indirections
+   */
+  static final Set<File> fileIndirections(final File file) throws IOException {
+
+    if (file == null) {
+      return null;
+    }
+
+    Set<File> result = new LinkedHashSet<>();
+
+    Path path = file.toPath();
+    Path previousPath = null;
+
+      do {
+
+        result.add(path.toFile().getAbsoluteFile());
+        previousPath = path;
+        path = Files.readSymbolicLink(path);
+
+        if (!path.isAbsolute()) {
+
+          File previousFile = previousPath.toFile();
+          File newFile = previousFile.isDirectory()
+              ? new File(previousFile, path.toString())
+              : new File(previousFile.getParentFile(), path.toString());
+          path = newFile.toPath();
+        }
+
+      } while (Files.isSymbolicLink(path) && !result.contains(path.toFile()));
+      result.add(path.toFile().getAbsoluteFile());
+
+
+    return result;
   }
 
   //
