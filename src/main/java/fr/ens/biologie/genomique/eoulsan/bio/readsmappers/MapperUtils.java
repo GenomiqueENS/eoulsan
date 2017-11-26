@@ -56,7 +56,7 @@ public class MapperUtils {
     requireNonNull(executor, "executor argument cannot be null");
     requireNonNull(command, "command argument cannot be null");
 
-    final Result result = executor.execute(command, null, true, true);
+    final Result result = executor.execute(command, null, true, null, true);
 
     final StringBuilder sb = new StringBuilder();
 

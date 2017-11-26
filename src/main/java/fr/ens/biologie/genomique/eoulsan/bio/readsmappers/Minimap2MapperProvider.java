@@ -161,8 +161,8 @@ public class Minimap2MapperProvider implements MapperProvider {
   }
 
   @Override
-  public MapperProcess mapSE(final EntryMapping mapping, final File inputFile)
-      throws IOException {
+  public MapperProcess mapSE(final EntryMapping mapping, final File inputFile,
+      final File errorFile, final File logFile) throws IOException {
 
     final String minimap2Path;
 
@@ -171,7 +171,7 @@ public class Minimap2MapperProvider implements MapperProvider {
     }
 
     return new MapperProcess(mapping.getName(), mapping.getExecutor(),
-        mapping.getTemporaryDirectory(), false, inputFile) {
+        mapping.getTemporaryDirectory(), errorFile, false, inputFile) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -196,7 +196,8 @@ public class Minimap2MapperProvider implements MapperProvider {
 
   @Override
   public MapperProcess mapPE(final EntryMapping mapping, final File inputFile1,
-      final File inputFile2) throws IOException {
+      final File inputFile2, final File errorFile, final File logFile)
+      throws IOException {
     final String minimap2Path;
 
     synchronized (SYNC) {
@@ -204,7 +205,8 @@ public class Minimap2MapperProvider implements MapperProvider {
     }
 
     return new MapperProcess(mapping.getName(), mapping.getExecutor(),
-        mapping.getTemporaryDirectory(), false, inputFile1, inputFile2) {
+        mapping.getTemporaryDirectory(), errorFile, false, inputFile1,
+        inputFile2) {
 
       @Override
       protected List<List<String>> createCommandLines() {

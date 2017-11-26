@@ -112,15 +112,18 @@ public class BundledMapperExecutor implements MapperExecutor {
   @Override
   public Result execute(final List<String> command,
       final File executionDirectory, final boolean stdout,
-      final boolean redirectStderr, final File... fileUsed) throws IOException {
+      final File stdErrFile, final boolean redirectStderr,
+      final File... fileUsed) throws IOException {
 
     checkNotNull(command, "command argument cannot be null");
 
     final ProcessBuilder builder = new ProcessBuilder(command);
     builder.redirectErrorStream(redirectStderr);
 
-    // If no redirection of stderr in stdout, redirect stderr to /dev/null
-    if (!redirectStderr) {
+    // Define the redirection of standard error
+    if (stdErrFile != null) {
+      builder.redirectError(stdErrFile);
+    } else if (!redirectStderr) {
       builder.redirectError(new File("/dev/null"));
     }
 

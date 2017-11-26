@@ -67,6 +67,7 @@ public abstract class MapperProcess {
 
   private final File pipeFile1;
   private final File pipeFile2;
+  private final File stdErrFile;
 
   private final FastqWriter writer1;
   private final FastqWriter writer2;
@@ -752,8 +753,9 @@ public abstract class MapperProcess {
 
       final boolean last = i == cmds.size() - 1;
 
-      final Result result = this.executor.execute(cmds.get(i),
-          executionDirectory, last, false, this.pipeFile1, this.pipeFile2);
+      final Result result =
+          this.executor.execute(cmds.get(i), executionDirectory, last,
+              this.stdErrFile, false, this.pipeFile1, this.pipeFile2);
 
       this.processResults.add(result);
 
@@ -854,10 +856,10 @@ public abstract class MapperProcess {
    * @throws IOException if an error occurs
    */
   protected MapperProcess(final String mapperName, MapperExecutor executor,
-      final File temporaryDirectory, final boolean pairedEnd)
+      final File temporaryDirectory, final File stdErrFile, final boolean pairedEnd)
       throws IOException {
 
-    this(mapperName, executor, temporaryDirectory, pairedEnd, false);
+    this(mapperName, executor, temporaryDirectory, stdErrFile, pairedEnd, false);
   }
 
   /**
@@ -871,11 +873,11 @@ public abstract class MapperProcess {
    * @throws IOException if an error occurs
    */
   protected MapperProcess(final String mapperName, MapperExecutor executor,
-      final File temporaryDirectory, final boolean pairedEnd,
+      final File temporaryDirectory, final File stdErrFile, final boolean pairedEnd,
       final File inputFile1, final File inputFile2) throws IOException {
 
-    this(mapperName, executor, temporaryDirectory, pairedEnd, false, inputFile1,
-        inputFile2);
+    this(mapperName, executor, temporaryDirectory, stdErrFile, pairedEnd, false,
+        inputFile1, inputFile2);
   }
 
   /**
@@ -888,11 +890,11 @@ public abstract class MapperProcess {
    * @throws IOException if an error occurs
    */
   protected MapperProcess(final String mapperName, MapperExecutor executor,
-      final File temporaryDirectory, final boolean pairedEnd,
-      final File inputFile) throws IOException {
+      final File temporaryDirectory, final File stdErrFile,
+      final boolean pairedEnd, final File inputFile) throws IOException {
 
-    this(mapperName, executor, temporaryDirectory, pairedEnd, false, inputFile,
-        null);
+    this(mapperName, executor, temporaryDirectory, stdErrFile, pairedEnd, false,
+        inputFile, null);
   }
 
   /**
@@ -904,11 +906,11 @@ public abstract class MapperProcess {
    * @throws IOException if en error occurs
    */
   protected MapperProcess(final String mapperName, MapperExecutor executor,
-      final File temporaryDirectory, final boolean pairedEnd,
+      final File temporaryDirectory, final File stdErrFile, final boolean pairedEnd,
       final boolean threadForRead1) throws IOException {
 
-    this(mapperName, executor, temporaryDirectory, pairedEnd, threadForRead1,
-        null, null);
+    this(mapperName, executor, temporaryDirectory, stdErrFile, pairedEnd,
+        threadForRead1, null, null);
   }
 
   /**
@@ -922,7 +924,7 @@ public abstract class MapperProcess {
    * @throws IOException if en error occurs
    */
   protected MapperProcess(final String mapperName, MapperExecutor executor,
-      final File temporaryDirectory, final boolean pairedEnd,
+      final File temporaryDirectory, final File stdErrFile, final boolean pairedEnd,
       final boolean threadForRead1, final File inputFile1,
       final File inputFile2) throws IOException {
 
@@ -945,6 +947,8 @@ public abstract class MapperProcess {
     this.pipeFile2 = inputFile2 != null
         ? inputFile2 : new File(this.temporaryDirectory,
             "mapper-inputfile2-" + uuid + ".fq");
+
+    this.stdErrFile = stdErrFile;
 
     // If in entry mode
     if (inputFile1 == null) {
