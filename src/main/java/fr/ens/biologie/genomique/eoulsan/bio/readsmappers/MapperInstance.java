@@ -272,8 +272,8 @@ public class MapperInstance {
     getLogger().fine(cmd.toString());
 
     final int exitValue =
-        this.executor.execute(cmd, tmpGenomeFile.getParentFile(), false, false,
-            genomeFile, tmpGenomeFile).waitFor();
+        this.executor.execute(cmd, tmpGenomeFile.getParentFile(), false, null,
+            false, genomeFile, tmpGenomeFile).waitFor();
 
     if (exitValue != 0) {
       throw new IOException(

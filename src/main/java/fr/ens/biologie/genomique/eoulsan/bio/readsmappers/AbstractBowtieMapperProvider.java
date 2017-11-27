@@ -206,8 +206,8 @@ public abstract class AbstractBowtieMapperProvider implements MapperProvider {
   //
 
   @Override
-  public MapperProcess mapSE(final EntryMapping mapping, final File inputFile)
-      throws IOException {
+  public MapperProcess mapSE(final EntryMapping mapping, final File inputFile,
+      final File errorFile, final File logFile) throws IOException {
 
     final String bowtiePath;
 
@@ -220,7 +220,7 @@ public abstract class AbstractBowtieMapperProvider implements MapperProvider {
     final String index = getIndexArgument(mapping);
 
     return new MapperProcess(mapping.getName(), mapping.getExecutor(),
-        mapping.getTemporaryDirectory(), false, inputFile) {
+        mapping.getTemporaryDirectory(), errorFile, false, inputFile) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -255,7 +255,8 @@ public abstract class AbstractBowtieMapperProvider implements MapperProvider {
 
   @Override
   public MapperProcess mapPE(final EntryMapping mapping, final File inputFile1,
-      final File inputFile2) throws IOException {
+      final File inputFile2, final File errorFile, final File logFile)
+      throws IOException {
 
     final String bowtiePath;
 
@@ -268,7 +269,8 @@ public abstract class AbstractBowtieMapperProvider implements MapperProvider {
     final String index = getIndexArgument(mapping);
 
     return new MapperProcess(mapping.getName(), mapping.getExecutor(),
-        mapping.getTemporaryDirectory(), true, inputFile1, inputFile2) {
+        mapping.getTemporaryDirectory(), errorFile, true, inputFile1,
+        inputFile2) {
 
       @Override
       protected List<List<String>> createCommandLines() {

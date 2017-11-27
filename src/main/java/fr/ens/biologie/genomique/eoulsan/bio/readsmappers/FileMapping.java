@@ -73,11 +73,14 @@ public class FileMapping extends EntryMapping {
    * Map files in paired-end mode.
    * @param readsFile1 first file
    * @param readsFile2 second file
+   * @param errorFile standard error file
+   * @param logFile log file
    * @return a MapperProcess object
    * @throws IOException if an error occurs while launching the mapper
    */
   public final MapperProcess mapPE(final DataFile readsFile1,
-      final DataFile readsFile2) throws IOException {
+      final DataFile readsFile2, final File errorFile, final File logFile)
+      throws IOException {
 
     checkNotNull(readsFile1, "readsFile1 is null");
     checkNotNull(readsFile2, "readsFile2 is null");
@@ -95,24 +98,27 @@ public class FileMapping extends EntryMapping {
         && readsFile1.getCompressionType() == CompressionType.NONE
         && readsFile2.isLocalFile()
         && readsFile2.getCompressionType() == CompressionType.NONE) {
-      return mapPE(readsFile1.toFile(), readsFile2.toFile());
+      return mapPE(readsFile1.toFile(), readsFile2.toFile(), errorFile,
+          logFile);
     }
 
     getLogger().fine("First pair FASTQ file to map: " + readsFile1);
     getLogger().fine("Second pair FASTQ file to map: " + readsFile2);
 
-    return mapPE(readsFile1.open(), readsFile2.open());
+    return mapPE(readsFile1.open(), readsFile2.open(), errorFile, logFile);
   }
 
   /**
    * Map files in paired-end mode.
    * @param readsFile1 first file
    * @param readsFile2 second file
+   * @param errorFile standard error file
+   * @param logFile log file
    * @return a MapperProcess object
    * @throws IOException if an error occurs while launching the mapper
    */
-  public final MapperProcess mapPE(final File readsFile1, final File readsFile2)
-      throws IOException {
+  public final MapperProcess mapPE(final File readsFile1, final File readsFile2,
+      final File errorFile, final File logFile) throws IOException {
 
     checkNotNull(readsFile1, "readsFile1 is null");
     checkNotNull(readsFile2, "readsFile2 is null");
@@ -129,7 +135,7 @@ public class FileMapping extends EntryMapping {
 
     // Process to mapping
     final MapperProcess result =
-        getProvider().mapPE(this, readsFile1, readsFile2);
+        getProvider().mapPE(this, readsFile1, readsFile2, errorFile, logFile);
 
     // Set counter
     result.setIncrementer(this.incrementer, this.counterGroup);
@@ -144,11 +150,13 @@ public class FileMapping extends EntryMapping {
    * Map reads of FASTQ file in paired end mode.
    * @param in1 FASTQ input file with reads of the first end
    * @param in2 FASTQ input file with reads of the first end mapper
+   * @param errorFile standard error file
+   * @param logFile log file
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  private MapperProcess mapPE(final InputStream in1, final InputStream in2)
-      throws IOException {
+  private MapperProcess mapPE(final InputStream in1, final InputStream in2,
+      final File errorFile, final File logFile) throws IOException {
 
     checkNotNull(in1, "in1 argument is null");
     checkNotNull(in2, "in2 argument is null");
@@ -160,7 +168,7 @@ public class FileMapping extends EntryMapping {
     checkNotNull(in2, "readsFile2 is null");
 
     // Process to mapping
-    final MapperProcess mapperProcess = super.mapPE();
+    final MapperProcess mapperProcess = super.mapPE(errorFile, logFile);
 
     // Copy reads files to named pipes
     writeFirstPairEntries(in1, mapperProcess);
@@ -172,11 +180,13 @@ public class FileMapping extends EntryMapping {
   /**
    * Map a file in single-end mode.
    * @param readsFile first file
+   * @param errorFile standard error file
+   * @param logFile log file
    * @return a MapperProcess object
    * @throws IOException if an error occurs while launching the mapper
    */
-  public final MapperProcess mapSE(final DataFile readsFile)
-      throws IOException {
+  public final MapperProcess mapSE(final DataFile readsFile,
+      final File errorFile, final File logFile) throws IOException {
 
     checkNotNull(readsFile, "readsFile is null");
 
@@ -187,21 +197,24 @@ public class FileMapping extends EntryMapping {
     // Use file mapping only if file is local and not compressed
     if (readsFile.isLocalFile()
         && readsFile.getCompressionType() == CompressionType.NONE) {
-      return mapSE(readsFile.toFile());
+      return mapSE(readsFile.toFile(), errorFile, logFile);
     }
 
     getLogger().fine("FASTQ file to map: " + readsFile);
 
-    return mapSE(readsFile.open());
+    return mapSE(readsFile.open(), errorFile, logFile);
   }
 
   /**
    * Map reads of FASTQ file in single end mode.
    * @param in FASTQ input stream
+   * @param errorFile standard error file
+   * @param logFile log file
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  private MapperProcess mapSE(final InputStream in) throws IOException {
+  private MapperProcess mapSE(final InputStream in, final File errorFile,
+      final File logFile) throws IOException {
 
     checkNotNull(in, "in argument is null");
 
@@ -209,7 +222,7 @@ public class FileMapping extends EntryMapping {
         + this.mapperIndex.getMapperName() + " in single-end mode");
 
     // Process to mapping
-    final MapperProcess mapperProcess = super.mapSE();
+    final MapperProcess mapperProcess = super.mapSE(errorFile, logFile);
 
     // Copy reads file to named pipe
     writeFirstPairEntries(in, mapperProcess);
@@ -220,10 +233,13 @@ public class FileMapping extends EntryMapping {
   /**
    * Map reads of FASTQ file in single end mode.
    * @param readsFile FASTQ input file
+   * @param errorFile standard error file
+   * @param logFile log file
    * @return an InputStream with SAM data
    * @throws IOException if an error occurs while mapping the reads
    */
-  public MapperProcess mapSE(final File readsFile) throws IOException {
+  public MapperProcess mapSE(final File readsFile, final File errorFile,
+      final File logFile) throws IOException {
 
     checkNotNull(readsFile, "readsFile is null");
 
@@ -235,7 +251,8 @@ public class FileMapping extends EntryMapping {
         + this.mapperIndex.getMapperName() + " in single-end mode");
 
     // Process to mapping
-    final MapperProcess result = getProvider().mapSE(this, readsFile);
+    final MapperProcess result =
+        getProvider().mapSE(this, readsFile, errorFile, logFile);
 
     // Set counter
     result.setIncrementer(this.incrementer, this.counterGroup);
@@ -320,13 +337,15 @@ public class FileMapping extends EntryMapping {
   }
 
   @Override
-  public MapperProcess mapPE() throws IOException {
+  public MapperProcess mapPE(final File errorFile, final File logFile)
+      throws IOException {
 
     throw new IllegalStateException();
   }
 
   @Override
-  public MapperProcess mapSE() throws IOException {
+  public MapperProcess mapSE(final File errorFile, final File logFile)
+      throws IOException {
 
     throw new IllegalStateException();
   }

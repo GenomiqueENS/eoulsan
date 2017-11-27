@@ -160,11 +160,25 @@ public class EntryMapping {
    */
   public MapperProcess mapSE() throws IOException {
 
+    return mapSE(null, null);
+  }
+
+  /**
+   * Map in single-end mode.
+   * @param errorFile standard error file
+   * @param logFile log file
+   * @return a MapperProcess process
+   * @throws IOException if an error occurs while starting the mapping
+   */
+  public MapperProcess mapSE(final File errorFile, final File logFile)
+      throws IOException {
+
     getLogger().fine("Mapping with "
         + this.mapperIndex.getMapperName() + " in single-end mode");
 
     // Process to mapping
-    final MapperProcess result = getProvider().mapSE(this, null);
+    final MapperProcess result =
+        getProvider().mapSE(this, null, errorFile, logFile);
 
     // Set counter
     result.setIncrementer(this.incrementer, this.counterGroup);
@@ -182,11 +196,25 @@ public class EntryMapping {
    */
   public MapperProcess mapPE() throws IOException {
 
+    return mapPE(null, null);
+  }
+
+  /**
+   * Map in paired-end mode.
+   * @param errorFile standard error file
+   * @param logFile log file
+   * @return a MapperProcess process
+   * @throws IOException if an error occurs while starting the mapping
+   */
+  public MapperProcess mapPE(final File errorFile, final File logFile)
+      throws IOException {
+
     getLogger().fine("Mapping with "
         + this.mapperIndex.getMapperName() + " in paired-end mode");
 
     // Process to mapping
-    final MapperProcess result = getProvider().mapPE(this, null, null);
+    final MapperProcess result =
+        getProvider().mapPE(this, null, null, errorFile, logFile);
 
     // Set counter
     result.setIncrementer(this.incrementer, this.counterGroup);

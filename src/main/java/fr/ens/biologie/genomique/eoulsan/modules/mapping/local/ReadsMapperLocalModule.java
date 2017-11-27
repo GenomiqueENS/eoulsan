@@ -111,6 +111,14 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
       // Define final output SAM file
       final File samFile = outData.getDataFile().toFile();
 
+      // Define mapper error file
+      final File errorFile = new File(samFile.getParentFile(),
+          StringUtils.filenameWithoutExtension(samFile.getName()) + ".err");
+
+      // Define mapper log file
+      final File logFile = new File(samFile.getParentFile(),
+          StringUtils.filenameWithoutExtension(samFile.getName()) + ".log");
+
       // Get FASTQ format
       final FastqFormat fastqFormat = inData.getMetadata().getFastqFormat();
 
@@ -142,7 +150,7 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
             + " threads option");
 
         // Single read mapping
-        final MapperProcess process = mapper.mapSE(inFile);
+        final MapperProcess process = mapper.mapSE(inFile, errorFile, logFile);
 
         // Parse output of the mapper
         parseSAMResults(process.getStout(), samFile, reporter);
@@ -172,7 +180,8 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
             + " threads option");
 
         // Single read mapping
-        final MapperProcess process = mapper.mapPE(inFile1, inFile2);
+        final MapperProcess process =
+            mapper.mapPE(inFile1, inFile2, errorFile, logFile);
 
         // Parse output of the mapper
         parseSAMResults(process.getStout(), samFile, reporter);

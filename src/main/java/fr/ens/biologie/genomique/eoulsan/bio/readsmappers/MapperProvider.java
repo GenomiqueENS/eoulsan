@@ -125,10 +125,13 @@ public interface MapperProvider {
    * Map in single-end.
    * @param mapping the mapping object
    * @param inputFile input file or null if the mapper is launched in entry mode
+   * @param errorFile standard error file
+   * @param logFile log file
    * @return a MapperProcess object
    * @throws IOException if an error occurs while launching the mapping
    */
-  MapperProcess mapSE(EntryMapping mapping, File inputFile) throws IOException;
+  MapperProcess mapSE(EntryMapping mapping, File inputFile, File errorFile,
+      final File logFile) throws IOException;
 
   /**
    * Map in paired-end.
@@ -137,10 +140,12 @@ public interface MapperProvider {
    *          mode
    * @param inputFile2 input file 32 or null if the mapper is launched in entry
    *          mode
+   * @param errorFile standard error file
+   * @param logFile log file
    * @return a MapperProcess object
    * @throws IOException if an error occurs while launching the mapping
    */
-  MapperProcess mapPE(EntryMapping mapping, File inputFile1, File inputFile2)
-      throws IOException;
+  MapperProcess mapPE(EntryMapping mapping, File inputFile1, File inputFile2,
+      File errorFile, final File logFile) throws IOException;
 
 }
