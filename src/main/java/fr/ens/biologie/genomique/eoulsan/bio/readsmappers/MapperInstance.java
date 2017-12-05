@@ -30,6 +30,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperExecutor.Result;
 import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
@@ -211,9 +213,15 @@ public class MapperInstance {
     final File unCompressedGenomeFile =
         uncompressGenomeIfNecessary(genomeFile, indexCreationDir);
 
+    // Define log output files
+    File outputDir = archiveOutputFile.getParentFile();
+    String basename = StringUtils.basename(archiveOutputFile.getName());
+    File stdoutFile = new File(outputDir, basename + ".out");
+    File stderrFile = new File(outputDir, basename + ".err");
+
     // Compute index
     computeIndex(unCompressedGenomeFile, indexCreationDir, indexerArguments,
-        threads);
+        threads, stdoutFile, stderrFile);
 
     // Zip index files
     FileUtils.createZip(indexCreationDir, archiveOutputFile);
@@ -230,11 +238,13 @@ public class MapperInstance {
    * @param outputDir the output directory
    * @param indexerArguments the index arguments
    * @param threads the number of threads to use
+   * @param stdErrorFile standard output file
+   * @param stdErrorFile standard error file
    * @throws IOException if an error occurs while creating the index
    */
   private void computeIndex(final File genomeFile, final File outputDir,
-      final List<String> indexerArguments, final int threads)
-      throws IOException {
+      final List<String> indexerArguments, final int threads, final File stdOutFile,
+      final File stdErrorFile) throws IOException {
 
     checkNotNull(genomeFile, "genome file is null");
     checkNotNull(outputDir, "output directory is null");
@@ -271,9 +281,16 @@ public class MapperInstance {
 
     getLogger().fine(cmd.toString());
 
-    final int exitValue =
-        this.executor.execute(cmd, tmpGenomeFile.getParentFile(), false, null,
-            false, genomeFile, tmpGenomeFile).waitFor();
+    final Result result =
+        this.executor.execute(cmd, tmpGenomeFile.getParentFile(), false,
+            stdErrorFile, false, genomeFile, tmpGenomeFile);
+
+    // Create stdout file
+    if (stdOutFile != null) {
+      FileUtils.copy(result.getInputStream(), new FileOutputStream(stdOutFile));
+    }
+
+    final int exitValue = result.waitFor();
 
     if (exitValue != 0) {
       throw new IOException(

@@ -168,6 +168,8 @@ public class BundledMapperExecutor implements MapperExecutor {
     getLogger()
         .info("Process command: " + Joiner.on(' ').join(builder.command()));
     getLogger().info("Process directory: " + builder.directory());
+    getLogger().fine("Process redirect output: " + builder.redirectOutput());
+    getLogger().fine("Process redirect error: " + builder.redirectError());
 
     return new ProcessResult(builder.start());
   }
