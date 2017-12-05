@@ -530,27 +530,72 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
 
     Set<File> result = new LinkedHashSet<>();
 
-    Path path = file.toPath();
-    Path previousPath = null;
+    fileIndirections(file, result);
 
-      do {
+    return result;
+  }
 
-        result.add(path.toFile().getAbsoluteFile());
-        previousPath = path;
-        path = Files.readSymbolicLink(path);
+  /**
+   * List all the file indirections.
+   * @param file the file
+   * @param result the result object
+   * @throws IOException if an error occurs while searching indirections
+   */
+  private static final void fileIndirections(final File file, Set<File> result)
+      throws IOException {
 
-        if (!path.isAbsolute()) {
+    if (file == null) {
+      return;
+    }
 
-          File previousFile = previousPath.toFile();
-          File newFile = previousFile.isDirectory()
-              ? new File(previousFile, path.toString())
-              : new File(previousFile.getParentFile(), path.toString());
-          path = newFile.toPath();
+    // Case has been already processed
+    if (result.contains(file)) {
+      return;
+    }
+
+    File previousFile = new File("/");
+
+    for (File f : parentDirectories(file)) {
+
+      Path path = f.toPath();
+
+      if (Files.isSymbolicLink(path)) {
+
+        // Get the target of the link
+        Path link = Files.readSymbolicLink(path);
+
+        // If the target is not an absolute path
+        if (!link.isAbsolute()) {
+          link = new File(previousFile, link.toString()).toPath();
         }
 
-      } while (Files.isSymbolicLink(path) && !result.contains(path.toFile()));
-      result.add(path.toFile().getAbsoluteFile());
+        // Process the target of the link
+        fileIndirections(link.toFile().getAbsoluteFile(), result);
+        result.add(f);
+      }
 
+      previousFile = f;
+    }
+
+    result.add(file);
+  }
+
+  /**
+   * Get all the parent directories of a file.
+   * @param file the file
+   * @return a list with all the parent directories of the file
+   */
+  private static List<File> parentDirectories(final File file) {
+
+    List<File> result = new ArrayList<>();
+    File f = file;
+
+    do {
+
+      result.add(0, f);
+      f = f.getParentFile();
+
+    } while (f != null);
 
     return result;
   }
