@@ -172,13 +172,12 @@ public class STARMapperProvider implements MapperProvider {
   }
 
   @Override
-  public List<String> getIndexerCommand(final String indexerPathname,
-      final String genomePathname, final List<String> indexerArguments,
+  public List<String> getIndexerCommand(final File indexerFile,
+      final File genomeFile, final List<String> indexerArguments,
       final int threads) {
 
-    final File genomeFile = new File(genomePathname);
     List<String> cmd = new ArrayList<>();
-    cmd.add(indexerPathname);
+    cmd.add(indexerFile.getAbsolutePath());
     cmd.add("--runThreadN");
     cmd.add("" + threads);
     cmd.add("--runMode");
@@ -186,7 +185,7 @@ public class STARMapperProvider implements MapperProvider {
     cmd.add("--genomeDir");
     cmd.add(genomeFile.getParentFile().getAbsolutePath());
     cmd.add("--genomeFastaFiles");
-    cmd.add(genomePathname);
+    cmd.add(genomeFile.getAbsolutePath());
 
     cmd.addAll(indexerArguments);
 

@@ -183,14 +183,14 @@ public abstract class AbstractBowtieMapperProvider implements MapperProvider {
   }
 
   @Override
-  public List<String> getIndexerCommand(final String indexerPathname,
-      final String genomePathname, final List<String> indexerArguments,
+  public List<String> getIndexerCommand(final File indexerFile,
+      final File genomeFile, final List<String> indexerArguments,
       final int threads) {
 
     List<String> cmd = new ArrayList<>();
 
-    cmd.add(indexerPathname);
-    cmd.add(genomePathname);
+    cmd.add(indexerFile.getAbsolutePath());
+    cmd.add(genomeFile.getAbsolutePath());
     cmd.add("genome");
 
     return cmd;

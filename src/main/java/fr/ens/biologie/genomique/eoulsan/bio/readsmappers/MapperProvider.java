@@ -107,13 +107,13 @@ public interface MapperProvider {
 
   /**
    * Get the indexer command.
-   * @param indexerPathname the path to the indexer
-   * @param genomePathname the path to the genome
+   * @param indexerExecutable the indexer executable file
+   * @param genomeFile the genome file
    * @param indexerArguments the indexer arguments
    * @param threads threads to use
    * @return a list that is the command to execute
    */
-  List<String> getIndexerCommand(String indexerPathname, String genomePathname,
+  List<String> getIndexerCommand(File indexerExecutable, File genomeFile,
       List<String> indexerArguments, int threads);
 
   /**

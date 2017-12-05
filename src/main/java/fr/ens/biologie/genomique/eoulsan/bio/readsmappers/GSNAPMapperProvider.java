@@ -163,24 +163,24 @@ public class GSNAPMapperProvider implements MapperProvider {
   }
 
   @Override
-  public List<String> getIndexerCommand(final String indexerPathname,
-      final String genomePathname, final List<String> indexerArguments,
+  public List<String> getIndexerCommand(final File indexerFile,
+      final File genomeFile, final List<String> indexerArguments,
       final int threads) {
 
     List<String> cmd = new ArrayList<>();
     final String binariesDirectory =
-        new File(indexerPathname).getParentFile().getAbsolutePath();
+        indexerFile.getParentFile().getAbsolutePath();
     final String genomeDirectory =
-        new File(genomePathname).getParentFile().getAbsolutePath();
+        genomeFile.getParentFile().getAbsolutePath();
 
-    cmd.add(indexerPathname);
+    cmd.add(indexerFile.getAbsolutePath());
     cmd.add("-B");
     cmd.add(binariesDirectory);
     cmd.add("-D");
     cmd.add(genomeDirectory);
     cmd.add("-d");
     cmd.add("genome");
-    cmd.add(genomePathname);
+    cmd.add(genomeFile.getAbsolutePath());
 
     return cmd;
   }

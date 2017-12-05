@@ -243,8 +243,9 @@ public class MapperInstance {
    * @throws IOException if an error occurs while creating the index
    */
   private void computeIndex(final File genomeFile, final File outputDir,
-      final List<String> indexerArguments, final int threads, final File stdOutFile,
-      final File stdErrorFile) throws IOException {
+      final List<String> indexerArguments, final int threads,
+      final File stdOutFile, final File stdErrorFile)
+      throws IOException {
 
     checkNotNull(genomeFile, "genome file is null");
     checkNotNull(outputDir, "output directory is null");
@@ -254,7 +255,7 @@ public class MapperInstance {
 
     final long startTime = System.currentTimeMillis();
 
-    final String indexerPath = installIndexer();
+    final File indexer = new File(installIndexer());
 
     if (!outputDir.exists() && !outputDir.mkdir()) {
       throw new IOException("Unable to create directory for genome index");
@@ -276,8 +277,8 @@ public class MapperInstance {
 
     // Build the command line and compute the index
     final List<String> cmd = new ArrayList<>();
-    cmd.addAll(this.mapper.getProvider().getIndexerCommand(indexerPath,
-        tmpGenomeFile.getAbsolutePath(), indexerArguments, threads));
+    cmd.addAll(this.mapper.getProvider().getIndexerCommand(indexer,
+        tmpGenomeFile, indexerArguments, threads));
 
     getLogger().fine(cmd.toString());
 

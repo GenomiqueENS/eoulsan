@@ -169,25 +169,23 @@ public class BWAMapperProvider implements MapperProvider {
   }
 
   @Override
-  public List<String> getIndexerCommand(final String indexerPathname,
-      final String genomePathname, final List<String> indexerArguments,
+  public List<String> getIndexerCommand(final File indexerFile,
+      final File genomeFile, final List<String> indexerArguments,
       final int threads) {
 
-    final File genomeFile = new File(genomePathname);
     List<String> cmd = new ArrayList<>();
     if (genomeFile.length() >= MIN_BWTSW_GENOME_SIZE) {
-      cmd.add(indexerPathname);
       cmd.add("index");
       cmd.add("-a");
       cmd.add("bwtsw");
-      cmd.add(genomePathname);
+      cmd.add(genomeFile.getAbsolutePath());
 
       return cmd;
     }
 
-    cmd.add(indexerPathname);
+    cmd.add(indexerFile.getAbsolutePath());
     cmd.add("index");
-    cmd.add(genomePathname);
+    cmd.add(genomeFile.getAbsolutePath());
 
     return cmd;
   }
