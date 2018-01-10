@@ -113,22 +113,26 @@ public class SAM2BAMLocalModule extends AbstractSAM2BAMModule {
       reporter.incrCounter(COUNTER_GROUP, "sorted records", 1);
     }
 
-    // Change index bai file
-    final String bamIndexFilename =
-        bamDataFile.getName().substring(0, bamDataFile.getName().length() - 1)
-            + "i";
-    final File bamIndexFile =
-        new File(bamDataFile.toFile().getParentFile(), bamIndexFilename);
-    if (!bamIndexFile.renameTo(bamIndexDataFile.toFile())) {
-      EoulsanLogger.getLogger().warning("Unable to rename the BAI file "
-          + bamIndexFile + " to " + bamIndexDataFile.toFile());
-    }
-
-    // Create a symbolic link
-    bamIndexDataFile.symlink(new DataFile(bamIndexFile), true);
-
     samReader.close();
     samWriter.close();
+
+    // Rename index bai file
+    final String createdBamIndexFilename =
+        bamDataFile.getName().substring(0, bamDataFile.getName().length() - 1)
+            + "i";
+    final File createdBamIndexFile =
+        new File(bamDataFile.toFile().getParentFile(), createdBamIndexFilename);
+
+    if (!createdBamIndexFile.renameTo(bamIndexDataFile.toFile())) {
+      EoulsanLogger.getLogger().warning("Unable to rename the BAI file "
+          + createdBamIndexFile + " to " + bamIndexDataFile.toFile());
+    }
+
+    // Create a symbolic links
+    bamIndexDataFile.symlink(new DataFile(createdBamIndexFile), true);
+    bamIndexDataFile.symlink(
+        new DataFile(bamDataFile.getParent(), bamDataFile.getName() + ".bai" ),
+        true);
   }
 
 }
