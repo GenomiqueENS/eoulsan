@@ -562,7 +562,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
     // Close Docker connections
     try {
-      DockerManager.getInstance().closeConnections();
+      DockerManager.closeConnections();
     } catch (IOException e) {
       EoulsanLogger.logWarning("Error while closing Docker connection");
     }
@@ -600,7 +600,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
     // Close Docker connections
     try {
-      DockerManager.getInstance().closeConnections();
+      DockerManager.closeConnections();
     } catch (IOException e) {
       EoulsanLogger.logWarning("Error while closing Docker connection");
     }

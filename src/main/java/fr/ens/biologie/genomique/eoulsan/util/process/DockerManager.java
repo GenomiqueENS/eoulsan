@@ -65,9 +65,11 @@ public class DockerManager {
    * Close Docker connections.
    * @throws IOException if an error occurs while closing the connections
    */
-  public void closeConnections() throws IOException {
+  public static void closeConnections() throws IOException {
 
-    this.client.close();
+    if (singleton != null) {
+      singleton.client.close();
+    }
   }
 
   //
