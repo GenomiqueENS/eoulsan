@@ -268,7 +268,8 @@ public class MapperInstance {
 
       try {
 
-        Files.createSymbolicLink(tmpGenomeFile.toPath(), genomeFile.toPath());
+        Files.createSymbolicLink(tmpGenomeFile.toPath(),
+            genomeFile.getAbsoluteFile().toPath());
       } catch (IOException e) {
         throw new IOException("Unable to create the symbolic link in "
             + tmpGenomeFile + " directory for " + genomeFile);
