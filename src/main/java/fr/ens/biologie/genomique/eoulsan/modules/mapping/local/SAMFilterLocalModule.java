@@ -57,6 +57,7 @@ import htsjdk.samtools.SAMFileWriter;
 import htsjdk.samtools.SAMFileWriterFactory;
 import htsjdk.samtools.SAMFormatException;
 import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMRecordIterator;
 import htsjdk.samtools.SamInputResource;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
@@ -167,55 +168,63 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
         new SAMFileWriterFactory().setTempDirectory(tmpDir)
             .makeSAMWriter(inputSam.getFileHeader(), false, outFile.create());
 
-    try {
 
-      for (SAMRecord samRecord : inputSam) {
+    final SAMRecordIterator it = inputSam.iterator();
 
-        // single-end or paired-end mode ?
-        if (counterInput == 0) {
-          if (samRecord.getReadPairedFlag()) {
-            pairedEnd = true;
-          }
-        }
+    while (it.hasNext()) {
 
-        counterInput++;
+      final SAMRecord samRecord;
 
-        // storage and filtering of all the alignments of a read in the list
-        // "records"
-        if (!rafb.addAlignment(samRecord)) {
+      // Check if SAM entry is correct
+      try {
+        samRecord = it.next();
 
-          records.clear();
-          records.addAll(rafb.getFilteredAlignments());
-
-          // sort alignments of the current read
-          Collections.sort(records, new SAMComparator());
-
-          // writing records
-          for (SAMRecord r : records) {
-            outputSam.addAlignment(r);
-            counterOutput++;
-          }
-
-          rafb.addAlignment(samRecord);
-        }
-
+      } catch (SAMFormatException e) {
+        counterInvalid++;
+        continue;
       }
 
-      // treatment of the last record
-      records.clear();
-      records.addAll(rafb.getFilteredAlignments());
-
-      // sort alignments of the last read
-      Collections.sort(records, new SAMComparator());
-
-      // writing records
-      for (SAMRecord r : records) {
-        outputSam.addAlignment(r);
-        counterOutput++;
+      // single-end or paired-end mode ?
+      if (counterInput == 0) {
+        if (samRecord.getReadPairedFlag()) {
+          pairedEnd = true;
+        }
       }
 
-    } catch (SAMFormatException e) {
-      counterInvalid++;
+      counterInput++;
+
+      // storage and filtering of all the alignments of a read in the list
+      // "records"
+      if (!rafb.addAlignment(samRecord)) {
+
+        records.clear();
+        records.addAll(rafb.getFilteredAlignments());
+
+        // sort alignments of the current read
+        Collections.sort(records, new SAMComparator());
+
+        // writing records
+        for (SAMRecord r : records) {
+          outputSam.addAlignment(r);
+          counterOutput++;
+        }
+
+        rafb.addAlignment(samRecord);
+      }
+
+    }
+
+    // treatment of the last record
+    records.clear();
+    records.addAll(rafb.getFilteredAlignments());
+
+    // sort alignments of the last read
+    Collections.sort(records, new SAMComparator());
+
+    // writing records
+    for (SAMRecord r : records) {
+      outputSam.addAlignment(r);
+      counterOutput++;
     }
 
     // paired-end mode
