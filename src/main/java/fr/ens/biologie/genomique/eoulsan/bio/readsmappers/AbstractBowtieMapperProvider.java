@@ -41,7 +41,8 @@ import fr.ens.biologie.genomique.eoulsan.core.Version;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public abstract class AbstractBowtieMapperProvider implements MapperProvider {
+public abstract class AbstractBowtieMapperProvider
+    extends AbstractMapperProvider {
 
   protected static final String SYNC =
       AbstractBowtieMapperProvider.class.getName();
@@ -57,23 +58,8 @@ public abstract class AbstractBowtieMapperProvider implements MapperProvider {
   }
 
   @Override
-  public boolean isSplitsAllowed() {
-    return true;
-  }
-
-  @Override
   public boolean isMultipleInstancesAllowed() {
     return true;
-  }
-
-  @Override
-  public boolean isIndexGeneratorOnly() {
-    return false;
-  }
-
-  @Override
-  public boolean isCompressedIndex() {
-    return false;
   }
 
   @Override

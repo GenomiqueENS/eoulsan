@@ -40,7 +40,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class STARMapperProvider implements MapperProvider {
+public class STARMapperProvider extends AbstractMapperProvider {
 
   public static final String MAPPER_NAME = "STAR";
   private static final String DEFAULT_VERSION = "2.5.2b";
@@ -74,27 +74,6 @@ public class STARMapperProvider implements MapperProvider {
   public DataFormat getArchiveFormat() {
 
     return DataFormats.STAR_INDEX_ZIP;
-  }
-
-  @Override
-  public boolean isIndexGeneratorOnly() {
-    return false;
-  }
-
-  @Override
-  public boolean isCompressedIndex() {
-    return false;
-  }
-
-  @Override
-  public boolean isMultipleInstancesAllowed() {
-    return false;
-  }
-
-  @Override
-  public boolean isSplitsAllowed() {
-
-    return true;
   }
 
   @Override

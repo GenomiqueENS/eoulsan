@@ -42,7 +42,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
  * @since 1.2
  * @author Claire Wallon
  */
-public class GSNAPMapperProvider implements MapperProvider {
+public class GSNAPMapperProvider extends AbstractMapperProvider {
 
   public static final String MAPPER_NAME = "GSNAP";
   private static final String DEFAULT_PACKAGE_VERSION = "2012-07-20";
@@ -76,27 +76,6 @@ public class GSNAPMapperProvider implements MapperProvider {
   public DataFormat getArchiveFormat() {
 
     return DataFormats.GSNAP_INDEX_ZIP;
-  }
-
-  @Override
-  public boolean isIndexGeneratorOnly() {
-    return false;
-  }
-
-  @Override
-  public boolean isCompressedIndex() {
-    return false;
-  }
-
-  @Override
-  public boolean isMultipleInstancesAllowed() {
-    return false;
-  }
-
-  @Override
-  public boolean isSplitsAllowed() {
-
-    return true;
   }
 
   @Override

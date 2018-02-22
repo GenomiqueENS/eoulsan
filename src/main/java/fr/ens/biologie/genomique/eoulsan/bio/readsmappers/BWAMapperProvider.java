@@ -46,7 +46,7 @@ import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class BWAMapperProvider implements MapperProvider {
+public class BWAMapperProvider extends AbstractMapperProvider {
 
   public static final String MAPPER_NAME = "BWA";
   private static final String DEFAULT_VERSION = "0.6.2";
@@ -84,27 +84,6 @@ public class BWAMapperProvider implements MapperProvider {
   public DataFormat getArchiveFormat() {
 
     return DataFormats.BWA_INDEX_ZIP;
-  }
-
-  @Override
-  public boolean isIndexGeneratorOnly() {
-    return false;
-  }
-
-  @Override
-  public boolean isCompressedIndex() {
-    return false;
-  }
-
-  @Override
-  public boolean isMultipleInstancesAllowed() {
-    return false;
-  }
-
-  @Override
-  public boolean isSplitsAllowed() {
-
-    return true;
   }
 
   @Override

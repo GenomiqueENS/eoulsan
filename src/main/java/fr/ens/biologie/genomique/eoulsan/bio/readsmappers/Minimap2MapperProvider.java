@@ -40,7 +40,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
  * @since 2.1
  * @author Laurent Jourdren
  */
-public class Minimap2MapperProvider implements MapperProvider {
+public class Minimap2MapperProvider extends AbstractMapperProvider {
 
   public static final String MAPPER_NAME = "minimap2";
   private static final String DEFAULT_PACKAGE_VERSION = "2.5";
@@ -72,26 +72,6 @@ public class Minimap2MapperProvider implements MapperProvider {
   @Override
   public DataFormat getArchiveFormat() {
     return DataFormats.MINIMAP2_INDEX_ZIP;
-  }
-
-  @Override
-  public boolean isIndexGeneratorOnly() {
-    return false;
-  }
-
-  @Override
-  public boolean isCompressedIndex() {
-    return false;
-  }
-
-  @Override
-  public boolean isMultipleInstancesAllowed() {
-    return false;
-  }
-
-  @Override
-  public boolean isSplitsAllowed() {
-    return true;
   }
 
   @Override
