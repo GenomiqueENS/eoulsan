@@ -484,8 +484,6 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
       String mountPoint =
           info.substring(0, info.length() - fileStore.name().length() - 3);
 
-      EoulsanLogger.getLogger().info("in: " + file + ", out: " + mountPoint);
-
       return new File(mountPoint);
     }
 
