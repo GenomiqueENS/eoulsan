@@ -92,6 +92,11 @@ public class BWAMapperProvider implements MapperProvider {
   }
 
   @Override
+  public boolean isCompressedIndex() {
+    return false;
+  }
+
+  @Override
   public boolean isMultipleInstancesAllowed() {
     return false;
   }

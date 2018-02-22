@@ -113,6 +113,14 @@ public class Mapper {
     return this.provider.getArchiveFormat();
   }
 
+  /**
+   * Test if the mapper index must be compressed in ZIP archive.
+   * @return true if the mapper index must be compressed
+   */
+  public boolean isCompressIndex() {
+    return this.provider.isCompressedIndex();
+  }
+
   //
   // Setters
   //

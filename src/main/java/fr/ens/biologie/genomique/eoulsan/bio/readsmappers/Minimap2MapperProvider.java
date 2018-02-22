@@ -80,6 +80,11 @@ public class Minimap2MapperProvider implements MapperProvider {
   }
 
   @Override
+  public boolean isCompressedIndex() {
+    return false;
+  }
+
+  @Override
   public boolean isMultipleInstancesAllowed() {
     return false;
   }

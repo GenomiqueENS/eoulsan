@@ -72,6 +72,11 @@ public abstract class AbstractBowtieMapperProvider implements MapperProvider {
   }
 
   @Override
+  public boolean isCompressedIndex() {
+    return false;
+  }
+
+  @Override
   public boolean checkIfFlavorExists(final MapperInstance mapperInstance) {
 
     if (mapperInstance.getFlavor() == null) {

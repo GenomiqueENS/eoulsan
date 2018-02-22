@@ -68,6 +68,12 @@ public interface MapperProvider {
   boolean isIndexGeneratorOnly();
 
   /**
+   * Test if the mapper index must be compressed in ZIP archive.
+   * @return true if the mapper index must be compressed
+   */
+  boolean isCompressedIndex();
+
+  /**
    * Test if multiples instances of the read mapper can be used at the same
    * time.
    * @return true if multiples instances of the read mapper can be used at the
