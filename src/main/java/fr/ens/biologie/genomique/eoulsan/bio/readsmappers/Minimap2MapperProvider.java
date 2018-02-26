@@ -43,7 +43,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 public class Minimap2MapperProvider extends AbstractMapperProvider {
 
   public static final String MAPPER_NAME = "minimap2";
-  private static final String DEFAULT_PACKAGE_VERSION = "2.5";
+  private static final String DEFAULT_PACKAGE_VERSION = "2.9";
 
   private static final String MAPPER_STANDARD_EXECUTABLE = "minimap2";
 
