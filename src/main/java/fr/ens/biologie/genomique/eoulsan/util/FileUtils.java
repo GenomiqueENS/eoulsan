@@ -853,8 +853,30 @@ public class FileUtils {
     out.close();
   }
 
-  private static void zipFolder(final File directory, final String path,
+  /**
+   * Add a directory to a ZipOutputStream.
+   * @param directory directory to add to the ZIP file
+   * @param path path of the directory in the ZIP file
+   * @param out ZipOutputStream stream
+   * @param store compress or store the files to add to the ZIP file
+   */
+  public static void zipFolder(final File directory, final String path,
       final ZipOutputStream out, boolean store) throws IOException {
+
+    if (directory == null) {
+      throw new IOException("Input directory is null");
+    }
+
+    if (!(directory.exists() && directory.isDirectory())) {
+      throw new IOException("Invalid directory (" + directory + ")");
+    }
+
+    if (path == null) {
+      throw new NullPointerException("path argument cannot be null");
+    }
+    if (out == null) {
+      throw new NullPointerException("out argument cannot be null");
+    }
 
     // Add directory even empty
     if (!"".equals(path)) {

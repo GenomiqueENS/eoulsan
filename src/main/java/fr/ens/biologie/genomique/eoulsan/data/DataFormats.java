@@ -122,9 +122,13 @@ public class DataFormats {
   public static final DataFormat ADDITIONAL_ANNOTATION_TSV =
       registry.getDataFormatFromName("additional_annotation_tsv");
 
-  /** FastQC report format. */
+  /** FastQC HTML report format. */
   public static final DataFormat FASTQC_REPORT_HTML =
       registry.getDataFormatFromName("fastqc_report_html");
+
+  /** FastQC ZIP report format. */
+  public static final DataFormat FASTQC_REPORT_ZIP =
+      registry.getDataFormatFromName("fastqc_report_zip");
 
   /** Dummy format. */
   public static final DataFormat DUMMY_TXT =

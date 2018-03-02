@@ -20,6 +20,7 @@ annotated_expression_results_ods.xml
 annotated_expression_results_xlsx.xml
 additional_annotation_tsv.xml
 fastqc_report_html.xml
+fastqc_report_zip.xml
 dummy_txt.xml
 text_txt.xml
 cutadapt_adapter_fasta.xml
