@@ -453,7 +453,7 @@ public class FastQCModule extends AbstractModule {
     final ZipOutputStream out =
         new ZipOutputStream(new FileOutputStream(zipFile));
 
-    FileUtils.zipFolder(directory, subdirName, out, false);
+    FileUtils.zipFolder(directory, subdirName + '/', out, false);
     out.close();
   }
 
