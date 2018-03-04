@@ -147,9 +147,6 @@ public class Bowtie2MapperProvider extends AbstractBowtieMapperProvider {
     // Set the quality format
     result.add(bowtieQualityArgument(mapping));
 
-    // Quiet mode
-    result.add("--quiet");
-
     // Genome index name
     result.add("-x");
     result.add(index);

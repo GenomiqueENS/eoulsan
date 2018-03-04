@@ -149,9 +149,6 @@ public class BowtieMapperProvider extends AbstractBowtieMapperProvider {
     // Output in SAM format
     result.add("-S");
 
-    // Quiet mode
-    result.add("--quiet");
-
     // Genome index name
     result.add(index);
 
