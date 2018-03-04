@@ -25,7 +25,9 @@
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.local;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.DEFAULT_SINGLE_OUTPUT_PORT_NAME;
 import static fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode.OWN_PARALLELIZATION;
+import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_LOG;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_FASTQ;
 
@@ -46,8 +48,11 @@ import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperIndex;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperInstance;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperProcess;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.STARMapperProvider;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
+import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
+import fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
@@ -88,6 +93,17 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
   }
 
   @Override
+  public OutputPorts getOutputPorts() {
+
+    OutputPortsBuilder builder = new OutputPortsBuilder();
+
+    builder.addPort(DEFAULT_SINGLE_OUTPUT_PORT_NAME, MAPPER_RESULTS_SAM);
+    builder.addPort("log", MAPPER_RESULTS_LOG);
+
+    return builder.create();
+  }
+
+  @Override
   public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
@@ -111,13 +127,20 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
       // Define final output SAM file
       final File samFile = outData.getDataFile().toFile();
 
+      // Get error log data
+      final Data logData = context.getOutputData(MAPPER_RESULTS_LOG, inData);
+
       // Define mapper error file
-      final File errorFile = new File(samFile.getParentFile(),
-          StringUtils.filenameWithoutExtension(samFile.getName()) + ".err");
+      final File errorFile = logData.getDataFile().toFile();
+
+      // If the mapper is STAR, the log extension must be empty
+      final String logExtension =
+          STARMapperProvider.MAPPER_NAME.equals(getMapperName()) ? "." : ".log";
 
       // Define mapper log file
       final File logFile = new File(samFile.getParentFile(),
-          StringUtils.filenameWithoutExtension(samFile.getName()) + ".log");
+          StringUtils.filenameWithoutExtension(errorFile.getName())
+              + logExtension);
 
       // Get FASTQ format
       final FastqFormat fastqFormat = inData.getMetadata().getFastqFormat();

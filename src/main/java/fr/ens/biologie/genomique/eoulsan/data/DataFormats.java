@@ -78,6 +78,10 @@ public class DataFormats {
   public static final DataFormat MAPPER_RESULTS_INDEX_BAI =
       registry.getDataFormatFromName("mapper_results_index_bai");
 
+  /** Mapper log file format. */
+  public static final DataFormat MAPPER_RESULTS_LOG =
+      registry.getDataFormatFromName("mapper_results_log");
+
   /** Expression results data format. */
   public static final DataFormat EXPRESSION_RESULTS_TSV =
       registry.getDataFormatFromName("expression_results_tsv");
