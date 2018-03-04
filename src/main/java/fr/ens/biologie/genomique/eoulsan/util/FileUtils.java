@@ -945,8 +945,7 @@ public class FileUtils {
     // Add directories
     if (directoriesToAdd != null) {
       for (final File dir : directoriesToAdd) {
-        zipFolder(dir, path + File.separator + dir.getName() + File.separator,
-            out, store);
+        zipFolder(dir, path + dir.getName() + File.separator, out, store);
       }
     }
 
