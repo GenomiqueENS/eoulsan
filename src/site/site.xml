@@ -82,6 +82,7 @@
 				<item name="Sam2Fastq" href="module-sam2fastq.html" />
 				<item name="Expression" href="/module-expression.html" />
 				<item name="Expression annotation" href="/module-expressionresultsannotation.html" />
+				<item name="MultiQC" href="/module-multiqc.html" />
 				<item name="Normalization" href="/module-normalization.html" />
 				<item name="Differential analysis" href="/module-diffana.html" />
 				<item name="Differential analysis annotation" href="/module-diffanaresultsannotation.html" />

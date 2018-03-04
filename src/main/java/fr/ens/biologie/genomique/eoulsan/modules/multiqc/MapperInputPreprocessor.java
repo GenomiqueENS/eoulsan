@@ -1,0 +1,65 @@
+package fr.ens.biologie.genomique.eoulsan.modules.multiqc;
+
+import java.io.File;
+import java.io.IOException;
+
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
+import fr.ens.biologie.genomique.eoulsan.data.Data;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
+import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
+
+/**
+ * This class define a preprocessor for mapper reports.
+ * @since 2.2
+ * @author Laurent Jourdren
+ */
+public class MapperInputPreprocessor implements InputPreprocessor {
+
+  public static final String REPORT_NAME = "mapreads";
+
+  @Override
+  public String getReportName() {
+    return REPORT_NAME;
+  }
+
+  private static final String STAR_LOG_SUFFIX = "Log.final.out";
+
+  @Override
+  public DataFormat getDataFormat() {
+    return DataFormats.MAPPER_RESULTS_LOG;
+  }
+
+  @Override
+  public void preprocess(final TaskContext context, final Data data,
+      final File multiQCInputDirectory) throws IOException {
+
+    // Get data name
+    String name = data.getName();
+
+    // Define symbolic link path
+    DataFile symlink = new DataFile(multiQCInputDirectory, name + ".samlog");
+
+    // Define target log file
+    DataFile logFile = data.getDataFile();
+
+    // Create symbolic link
+    if (logFile.exists()) {
+      logFile.symlink(symlink);
+    }
+
+    // STAR log
+    DataFile starLog = new DataFile(logFile.getParent(),
+        StringUtils.filenameWithoutExtension(logFile.getName())
+            + '.' + STAR_LOG_SUFFIX);
+
+    // If STAR log exists create symbolic link to this log file
+    if (starLog.exists()) {
+      DataFile starLogSymlink =
+          new DataFile(multiQCInputDirectory, name + STAR_LOG_SUFFIX);
+      starLog.symlink(starLogSymlink);
+    }
+  }
+
+}

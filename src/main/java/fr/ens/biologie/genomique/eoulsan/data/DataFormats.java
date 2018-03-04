@@ -141,4 +141,8 @@ public class DataFormats {
   /** Cutadapt adapters format. */
   public static final DataFormat CUTADAPT_ADAPTER_FASTA =
       registry.getDataFormatFromName("cutadapt_adapter");
+
+  /** MultiQC HTML report format. */
+  public static final DataFormat MULTIQC_REPORT_HTML =
+      registry.getDataFormatFromName("multiqc_report_html");
 }

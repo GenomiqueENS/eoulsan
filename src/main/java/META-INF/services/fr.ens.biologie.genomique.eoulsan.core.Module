@@ -49,6 +49,7 @@ fr.ens.biologie.genomique.eoulsan.modules.ShellModule
 
 # QC steps
 fr.ens.biologie.genomique.eoulsan.modules.fastqc.FastQCModule
+fr.ens.biologie.genomique.eoulsan.modules.multiqc.MultiQCModule
 
 # Other steps
 fr.ens.biologie.genomique.eoulsan.modules.ImportModule
