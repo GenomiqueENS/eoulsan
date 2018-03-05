@@ -269,7 +269,7 @@ public class GalaxyToolInterpreterTest {
 
       // Extract instance on toolData which contains all data useful from XML
       // file
-      final ToolInfo toolData = interpreter.getToolData();
+      final ToolInfo toolData = interpreter.getToolInfo();
 
       // Check input data names
       int inputCount = 0;

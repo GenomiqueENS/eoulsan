@@ -49,8 +49,8 @@ public class DockerExecutorInterpreter extends AbstractExecutorInterpreter {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("dockerImage", dockerImage)
-        .toString();
+    return Objects.toStringHelper(this).add("name", getName())
+        .add("dockerImage", dockerImage).toString();
   }
 
   //

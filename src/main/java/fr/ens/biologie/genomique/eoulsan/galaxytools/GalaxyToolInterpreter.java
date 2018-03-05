@@ -316,10 +316,10 @@ public class GalaxyToolInterpreter {
       throws EoulsanException {
 
     checkState(!isExecuted,
-        "GalaxyToolStep, this instance has been already executed");
+        "this instance has been already executed");
 
     context.getLogger().info("Parsing xml file successfully.");
-    context.getLogger().info("Tool description " + this.toolInfo);
+    context.getLogger().info("Tool description: " + this.toolInfo);
 
     final int variablesCount = this.inputs.size() + this.outputs.size();
     final Map<String, String> variables = new HashMap<>(variablesCount);
@@ -378,17 +378,19 @@ public class GalaxyToolInterpreter {
     }
 
     if (variables.isEmpty()) {
-      throw new EoulsanException("No parameter settings.");
+      throw new EoulsanException("No variable set for Cheetah script.");
     }
 
-    context.getLogger().info("Tool variable settings  "
+    context.getLogger().info("Tool variables: "
         + Joiner.on("\t").withKeyValueSeparator("=").join(variables));
 
     // Create the Cheetah interpreter
     final CheetahInterpreter cheetahInterpreter =
         new CheetahInterpreter(this.toolInfo.getCheetahScript(), variables);
 
+    // Get the command line to execute from Cheetah code execution
     final String commandLine = cheetahInterpreter.execute();
+    context.getLogger().fine("Cheetah code execution output: " + this.toolInfo);
 
     try {
       // Create the executor and interpret the command tag
@@ -398,11 +400,10 @@ public class GalaxyToolInterpreter {
       // Execute the command
       final ToolExecutorResult result = executor.execute();
 
-      isExecuted = true;
-
-      // TODO
+      this.isExecuted = true;
       return result;
     } catch (IOException e) {
+      this.isExecuted = true;
       throw new EoulsanException(e);
     }
   }
@@ -509,10 +510,10 @@ public class GalaxyToolInterpreter {
   }
 
   /**
-   * Gets the tool data.
-   * @return the tool data
+   * Gets the tool information.
+   * @return the tool information
    */
-  public ToolInfo getToolData() {
+  public ToolInfo getToolInfo() {
     return this.toolInfo;
   }
 
@@ -577,6 +578,6 @@ public class GalaxyToolInterpreter {
     this.toolInfo = new ToolInfo(this.doc, toolSource);
 
     checkDomValidity();
-
   }
+
 }

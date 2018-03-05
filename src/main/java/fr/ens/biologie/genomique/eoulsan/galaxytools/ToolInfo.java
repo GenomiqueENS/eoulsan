@@ -192,7 +192,6 @@ public class ToolInfo {
     }
 
     // TODO check the tool id string
-
   }
 
 }
