@@ -251,7 +251,7 @@ public final class XMLDataFormat extends AbstractDataFormat
   // Parsing methods
   //
 
-  private void parse(final InputStream is) throws ParserConfigurationException,
+  private void parse(final InputStream is, final String source) throws ParserConfigurationException,
       SAXException, IOException, EoulsanException {
 
     final Document doc;
@@ -262,12 +262,13 @@ public final class XMLDataFormat extends AbstractDataFormat
     doc = dBuilder.parse(is);
     doc.getDocumentElement().normalize();
 
-    parse(doc);
+    parse(doc, source);
 
     is.close();
   }
 
-  private void parse(final Document document) throws EoulsanException {
+  private void parse(final Document document, final String source)
+      throws EoulsanException {
 
     for (Element e : XMLUtils.getElementsByTagName(document, "dataformat")) {
 
@@ -285,6 +286,18 @@ public final class XMLDataFormat extends AbstractDataFormat
       this.splitterClassName = XMLUtils.getTagValue(e, "splitter");
       this.mergerClassName = XMLUtils.getTagValue(e, "merger");
 
+      // Check object values
+      if (this.name == null) {
+        throw new EoulsanException(
+            "The name of the dataformat is null (source: " + source + ")");
+      }
+
+      this.name = this.name.trim().toLowerCase();
+      if (this.name.isEmpty()) {
+        throw new EoulsanException(
+            "The name of the dataformat is empty (source: " + source + ")");
+      }
+
       if (this.designMetadataKeyName != null
           || this.sampleMetadataKeyName != null) {
         this.dataFormatFromDesignFile = true;
@@ -294,7 +307,8 @@ public final class XMLDataFormat extends AbstractDataFormat
           && this.sampleMetadataKeyName != null) {
         throw new EoulsanException(
             "A DataFormat cannot be provided by a design "
-                + "metadata entry and a sample metadata entry.");
+                + "metadata entry and a sample metadata entry. (format name: "
+                + this.name + ", source: " + source + ")");
       }
 
       // Get the parameters of the generator step
@@ -321,7 +335,8 @@ public final class XMLDataFormat extends AbstractDataFormat
       } catch (NumberFormatException exp) {
         throw new EoulsanException(
             "Invalid maximal files count for data format "
-                + this.name + ": " + maxFiles,
+                + this.name + ": " + maxFiles + " (format name: " + this.name
+                + ", source: " + source + ")",
             exp);
       }
 
@@ -351,17 +366,13 @@ public final class XMLDataFormat extends AbstractDataFormat
       }
     }
 
-    // Check object values
-    if (this.name == null) {
-      throw new EoulsanException("The name of the dataformat is null");
-    }
 
-    this.name = this.name.trim().toLowerCase();
 
     if (!FileNaming.isFormatPrefixValid(this.prefix)) {
       throw new EoulsanException(
-          "The prefix of the dataformat is invalid (only ascii letters and digits are allowed): "
-              + this.prefix);
+          "The prefix of the dataformat is invalid "
+              + "(only ascii letters and digits are allowed): " + this.prefix
+              + " (format name: " + this.name + ", source: " + source + ")");
     }
 
     if (this.description != null) {
@@ -397,13 +408,15 @@ public final class XMLDataFormat extends AbstractDataFormat
     }
 
     if (this.maxFilesCount < 1 || this.maxFilesCount > 2) {
-      throw new EoulsanException("Invalid maximal files count for data format "
-          + this.name + ": " + this.maxFilesCount);
+      throw new EoulsanException("Invalid maximal files count for data format: "
+          + this.maxFilesCount + " (format name: " + this.name + ", source: "
+          + source + ")");
     }
 
     if (this.extensions.size() == 0) {
       throw new EoulsanException(
-          "No extension define for the data format " + this.name);
+          "No extension define for the data format. (format name: "
+              + this.name + ", source: " + source + ")");
     }
   }
 
@@ -485,16 +498,19 @@ public final class XMLDataFormat extends AbstractDataFormat
   /**
    * Public constructor.
    * @param is input stream that contains the value of the data format
+   * @param source source of the format
    * @throws EoulsanException
    */
-  public XMLDataFormat(final InputStream is) throws EoulsanException {
+  public XMLDataFormat(final InputStream is, final String source)
+      throws EoulsanException {
 
     if (is == null) {
       throw new NullPointerException("The input stream is null");
     }
 
     try {
-      parse(is);
+      parse(is, source == null || source.trim().isEmpty()
+          ? "unknown source" : source);
     } catch (ParserConfigurationException | IOException | SAXException e) {
       throw new EoulsanException(e);
     }

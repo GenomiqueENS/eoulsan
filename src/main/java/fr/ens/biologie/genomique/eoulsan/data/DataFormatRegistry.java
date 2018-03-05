@@ -103,7 +103,7 @@ public class DataFormatRegistry {
     protected XMLDataFormat load(final InputStream in, final String source)
         throws IOException, EoulsanException {
 
-      return new XMLDataFormat(in);
+      return new XMLDataFormat(in, source);
     }
 
     /**
@@ -163,7 +163,7 @@ public class DataFormatRegistry {
             "The input stream of the XML DataFormat source is null: " + source);
       }
 
-      return new XMLDataFormat(in);
+      return new XMLDataFormat(in, source);
     }
 
     public DataFormatClassPathLoader() {

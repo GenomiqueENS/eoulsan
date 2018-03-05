@@ -76,14 +76,16 @@ public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
 
           if (resourceName == null) {
             throw new EoulsanException(
-                "Cannot get resource name for resource: " + resource);
+                "Cannot get resource name for resource: "
+                    + resource + " (file: " + file + ")");
           }
 
           addResource(resourceName, file.getSource());
         }
       }
     } catch (IOException | EoulsanException e) {
-      throw new ServiceConfigurationError("Unable to load resource", e);
+      throw new ServiceConfigurationError(
+          "Unable to load resource: " + e.getMessage(), e);
     }
   }
 

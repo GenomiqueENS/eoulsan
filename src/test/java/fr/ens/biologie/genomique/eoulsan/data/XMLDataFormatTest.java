@@ -37,7 +37,7 @@ public class XMLDataFormatTest {
 
     try {
       new XMLDataFormat(
-          this.getClass().getResourceAsStream("/testdataformat.xml"));
+          this.getClass().getResourceAsStream("/testdataformat.xml"), null);
       assertTrue(true);
     } catch (EoulsanException e) {
       assertTrue(false);
