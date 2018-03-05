@@ -68,8 +68,8 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
     checkNotNull(stdoutFile, "stdoutFile argument cannot be null");
     checkNotNull(stderrFile, "stderrFile argument cannot be null");
 
-    EoulsanLogger.getLogger().fine(getClass().getName()
-        + " : commandLine=" + commandLine + ", executionDirectory="
+    EoulsanLogger.getLogger().fine(getClass().getSimpleName()
+        + ": commandLine=" + commandLine + ", executionDirectory="
         + executionDirectory + ", environmentVariables=" + environmentVariables
         + ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile="
         + stdoutFile + ", stderrFile=" + stderrFile + ", redirectErrorStream="
@@ -625,7 +625,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
     checkNotNull(dockerImage, "dockerImage argument cannot be null");
 
     EoulsanLogger.getLogger()
-        .fine(getClass().getName() + " docker image used: " + dockerImage);
+        .fine(getClass().getSimpleName() + " docker image used: " + dockerImage);
 
     this.dockerClient = dockerClient;
     this.dockerImage = dockerImage;
