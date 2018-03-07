@@ -231,27 +231,29 @@ public class ExpressionMatrixTest {
     assertEquals(0.0, matrix.getValue("row1", "col2"), 0.0);
     assertEquals(0.0, matrix.getValue("row2", "col2"), 0.0);
 
-    matrix.setDefaultValue(1.0);
-    matrix.addRow("row3");
-    assertEquals(0.0, matrix.getValue("row1", "col1"), 0.0);
-    assertEquals(0.0, matrix.getValue("row2", "col1"), 0.0);
-    assertEquals(1.0, matrix.getValue("row3", "col1"), 0.0);
+    matrix = new DenseExpressionMatrix(1.0);
 
-    assertEquals(0.0, matrix.getValue("row1", "col2"), 0.0);
-    assertEquals(0.0, matrix.getValue("row2", "col2"), 0.0);
-    assertEquals(1.0, matrix.getValue("row3", "col2"), 0.0);
+    assertEquals(0.0, matrix.getDefaultValue(), 1.0);
 
-    matrix.setDefaultValue(Double.NaN);
-    matrix.addRow("row4");
-    assertEquals(0.0, matrix.getValue("row1", "col1"), 0.0);
-    assertEquals(0.0, matrix.getValue("row2", "col1"), 0.0);
-    assertEquals(1.0, matrix.getValue("row3", "col1"), 0.0);
-    assertEquals(Double.NaN, matrix.getValue("row4", "col1"), 0.0);
+    matrix.addColumns("col1", "col2");
+    matrix.addRows("row1", "row2");
 
-    assertEquals(0.0, matrix.getValue("row1", "col2"), 0.0);
-    assertEquals(0.0, matrix.getValue("row2", "col2"), 0.0);
-    assertEquals(1.0, matrix.getValue("row3", "col2"), 0.0);
-    assertEquals(Double.NaN, matrix.getValue("row4", "col2"), 0.0);
+    assertEquals(1.0, matrix.getValue("row1", "col1"), 0.0);
+    assertEquals(1.0, matrix.getValue("row2", "col1"), 0.0);
+    assertEquals(1.0, matrix.getValue("row1", "col2"), 0.0);
+    assertEquals(1.0, matrix.getValue("row2", "col2"), 0.0);
+
+    matrix = new DenseExpressionMatrix(Double.NaN);
+
+    assertEquals(Double.NaN, matrix.getDefaultValue(), 0.0);
+
+    matrix.addColumns("col1", "col2");
+    matrix.addRows("row1", "row2");
+
+    assertEquals(Double.NaN, matrix.getValue("row1", "col1"), 0.0);
+    assertEquals(Double.NaN, matrix.getValue("row2", "col1"), 0.0);
+    assertEquals(Double.NaN, matrix.getValue("row1", "col2"), 0.0);
+    assertEquals(Double.NaN, matrix.getValue("row2", "col2"), 0.0);
   }
 
   @Test

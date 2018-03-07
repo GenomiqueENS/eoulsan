@@ -23,10 +23,12 @@ import com.google.common.collect.Multimap;
  */
 public class DenseExpressionMatrix extends AbstractExpressionMatrix {
 
+  private static final double DEFAULT_DEFAULT_VALUE = 0.0;
+
   private final Multimap<String, Double> values = ArrayListMultimap.create();
   private final Map<String, Integer> columnIndex = new HashMap<>();
   private final Set<String> rowOrder = new LinkedHashSet<>();
-  private Double defaultValue = 0.0;
+  private final Double defaultValue;
 
   //
   // Getters
@@ -257,12 +259,6 @@ public class DenseExpressionMatrix extends AbstractExpressionMatrix {
     return this.defaultValue;
   }
 
-  @Override
-  public void setDefaultValue(final double defaultValue) {
-
-    this.defaultValue = defaultValue;
-  }
-
   //
   // Object methods
   //
@@ -289,6 +285,26 @@ public class DenseExpressionMatrix extends AbstractExpressionMatrix {
   public int hashCode() {
 
     return Objects.hash(this.values, this.columnIndex, this.rowOrder);
+  }
+
+  //
+  // Constructor
+  //
+
+  /**
+   * Public constructor.
+   * @param defaultValue the default value of the matrix
+   */
+  public DenseExpressionMatrix() {
+    this(DEFAULT_DEFAULT_VALUE);
+  }
+
+  /**
+   * Public constructor.
+   * @param defaultValue the default value of the matrix
+   */
+  public DenseExpressionMatrix(final double defaultValue) {
+    this.defaultValue = defaultValue;
   }
 
 }

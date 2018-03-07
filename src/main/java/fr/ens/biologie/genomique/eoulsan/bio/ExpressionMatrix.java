@@ -139,10 +139,4 @@ public interface ExpressionMatrix {
    */
   double getDefaultValue();
 
-  /**
-   * Set the default value of a cell.
-   * @param defaultValue the default value of a cell
-   */
-  void setDefaultValue(double defaultValue);
-
 }
