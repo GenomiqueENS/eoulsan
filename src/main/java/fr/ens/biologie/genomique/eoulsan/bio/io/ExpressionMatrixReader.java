@@ -18,4 +18,12 @@ public interface ExpressionMatrixReader {
    */
   ExpressionMatrix read() throws IOException;
 
+  /**
+   * Read an ExpressionMatrix object.
+   * @param matrix matrix to use for saving data loaded
+   * @return an ExpressionMatrix object
+   * @throws IOException if an error occurs while reading the file
+   */
+  ExpressionMatrix read(ExpressionMatrix matrix) throws IOException;
+
 }

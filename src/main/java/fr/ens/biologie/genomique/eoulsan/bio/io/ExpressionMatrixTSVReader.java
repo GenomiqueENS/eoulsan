@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.python.google.common.base.Splitter;
 
@@ -30,7 +31,14 @@ public class ExpressionMatrixTSVReader implements ExpressionMatrixReader {
   @Override
   public ExpressionMatrix read() throws IOException {
 
-    ExpressionMatrix result = new DenseExpressionMatrix();
+    return read(new DenseExpressionMatrix());
+  }
+
+  @Override
+  public ExpressionMatrix read(final ExpressionMatrix matrix)
+      throws IOException {
+
+    Objects.requireNonNull(matrix, "matrix argument cannot be null");
 
     String line;
     boolean first = true;
@@ -70,7 +78,7 @@ public class ExpressionMatrixTSVReader implements ExpressionMatrixReader {
           if (rowName == null) {
             rowName = s;
           } else {
-            result.setValue(rowName, it.next(), Double.parseDouble(s));
+            matrix.setValue(rowName, it.next(), Double.parseDouble(s));
           }
         }
       }
@@ -79,7 +87,7 @@ public class ExpressionMatrixTSVReader implements ExpressionMatrixReader {
     // Close the reader
     this.reader.close();
 
-    return result;
+    return matrix;
   }
 
   //

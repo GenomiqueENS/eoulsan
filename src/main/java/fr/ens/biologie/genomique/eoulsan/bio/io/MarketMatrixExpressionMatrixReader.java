@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.common.base.Splitter;
 
@@ -49,7 +50,14 @@ public class MarketMatrixExpressionMatrixReader
   @Override
   public ExpressionMatrix read() throws IOException {
 
-    final ExpressionMatrix result = new DenseExpressionMatrix();
+    return read(new DenseExpressionMatrix());
+  }
+
+  @Override
+  public ExpressionMatrix read(final ExpressionMatrix matrix)
+      throws IOException {
+
+    Objects.requireNonNull(matrix, "matrix argument cannot be null");
 
     boolean first = true;
 
@@ -143,20 +151,20 @@ public class MarketMatrixExpressionMatrixReader
 
         // Fill row names
         for (int k = 1; k <= rowCount; k++) {
-          result.addRow(getRowName(k));
+          matrix.addRow(getRowName(k));
         }
 
         // Fill column names
         for (int k = 1; k <= columnCount; k++) {
-          result.addColumn(getColumnName(k));
+          matrix.addColumn(getColumnName(k));
         }
 
       } else {
-        result.setValue(getRowName(i), getColumnName(j), value);
+        matrix.setValue(getRowName(i), getColumnName(j), value);
       }
     }
 
-    return result;
+    return matrix;
   }
 
   //
