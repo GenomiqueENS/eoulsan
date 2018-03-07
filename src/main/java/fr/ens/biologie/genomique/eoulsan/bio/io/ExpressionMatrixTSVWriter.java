@@ -35,12 +35,12 @@ public class ExpressionMatrixTSVWriter implements ExpressionMatrixWriter {
     sb.append('\n');
     this.writer.write(sb.toString());
 
-    for (String rawName : matrix.getRawNames()) {
+    for (String rowName : matrix.getRowNames()) {
       sb.setLength(0);
 
-      sb.append(rawName);
+      sb.append(rowName);
 
-      for (Double value : matrix.getRawValues(rawName)) {
+      for (Double value : matrix.getRowValues(rowName)) {
         sb.append('\t');
 
         double d = value;

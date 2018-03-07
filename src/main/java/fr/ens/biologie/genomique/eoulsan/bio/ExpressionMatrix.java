@@ -5,26 +5,26 @@ import java.util.List;
 public interface ExpressionMatrix {
 
   /**
-   * Get the raw names.
-   * @return the raw names
+   * Get the row names.
+   * @return the row names
    */
-  List<String> getRawNames();
+  List<String> getRowNames();
 
   /**
-   * Get the raw count.
-   * @return the raw count
+   * Get the row count.
+   * @return the row count
    */
-  int getRawCount();
+  int getRowCount();
 
   /**
    * Get the column names.
-   * @return the raw names
+   * @return the row names
    */
   List<String> getColumnNames();
 
   /**
    * Get the column count.
-   * @return the raw names
+   * @return the row names
    */
   int getColumnCount();
 
@@ -36,19 +36,19 @@ public interface ExpressionMatrix {
   List<Double> getColumnValues(String columnName);
 
   /**
-   * Get the raw values.
-   * @param rawName the raw name
-   * @return a list with the raw values
+   * Get the row values.
+   * @param rowName the row name
+   * @return a list with the row values
    */
-  List<Double> getRawValues(String rawName);
+  List<Double> getRowValues(String rowName);
 
   /**
    * Get a value of the matrix
-   * @param rawName the raw name
+   * @param rowName the row name
    * @param columnName the column name
    * @return the value of the cell
    */
-  Double getValue(String rawName, String columnName);
+  Double getValue(String rowName, String columnName);
 
   /**
    * Test if a column exists
@@ -58,37 +58,37 @@ public interface ExpressionMatrix {
   boolean containsColumn(String columnName);
 
   /**
-   * Test if a raw exists
-   * @param rawName the name of the raw
-   * @return true if the raw exists
+   * Test if a row exists
+   * @param rowName the name of the row
+   * @return true if the row exists
    */
-  boolean containsraw(String rawName);
+  boolean containsRow(String rowName);
 
   /**
    * Set a value of the matrix.
-   * @param rawName raw name
+   * @param rowName row name
    * @param columnName column name
    * @param value the value to set
    */
-  void setValue(String rawName, String columnName, double value);
+  void setValue(String rowName, String columnName, double value);
 
   /**
-   * Add new raws.
-   * @param rawNames the names of the raw to add
+   * Add new rows.
+   * @param rowNames the names of the row to add
    */
-  void addRaws(List<String> rawNames);
+  void addRows(List<String> rowNames);
 
   /**
-   * Add new raws.
-   * @param rawNames the names of the raw to add
+   * Add new rows.
+   * @param rowNames the names of the row to add
    */
-  void addRaws(String... rawNames);
+  void addRows(String... rowNames);
 
   /**
-   * Add a new raw.
-   * @param rawName the name of the raw to add
+   * Add a new row.
+   * @param rowName the name of the row to add
    */
-  void addRaw(String rawName);
+  void addRow(String rowName);
 
   /**
    * Add a new columns.
@@ -128,10 +128,10 @@ public interface ExpressionMatrix {
   void removeColumn(String columnName);
 
   /**
-   * Remove a raw of the matrix.
-   * @param rawName the name of the raw to remove
+   * Remove a row of the matrix.
+   * @param rowName the name of the row to remove
    */
-  void removeRaw(String rawName);
+  void removeRow(String rowName);
 
   /**
    * Get the default value of a cell.

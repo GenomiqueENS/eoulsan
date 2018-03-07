@@ -65,12 +65,12 @@ public class ExpressionMatrixTSVReader implements ExpressionMatrixReader {
         }
 
         Iterator<String> it = columnNames.iterator();
-        String rawName = null;
+        String rowName = null;
         for (String s : fields) {
-          if (rawName == null) {
-            rawName = s;
+          if (rowName == null) {
+            rowName = s;
           } else {
-            result.setValue(rawName, it.next(), Double.parseDouble(s));
+            result.setValue(rowName, it.next(), Double.parseDouble(s));
           }
         }
       }

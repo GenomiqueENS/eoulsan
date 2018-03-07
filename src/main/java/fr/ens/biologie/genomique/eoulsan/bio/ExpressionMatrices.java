@@ -30,32 +30,32 @@ public class ExpressionMatrices {
     Objects.requireNonNull(destColumName,
         "destColumName argument cannot be null");
 
-    for (String rawName : srcMatrix.getRawNames()) {
+    for (String rowName : srcMatrix.getRowNames()) {
 
       double sum = 0.0;
 
       for (String columnName : srcColumNames) {
-        sum += srcMatrix.getValue(rawName, columnName);
+        sum += srcMatrix.getValue(rowName, columnName);
       }
 
-      destMatrix.setValue(rawName, destColumName, sum);
+      destMatrix.setValue(rowName, destColumName, sum);
     }
   }
 
   /**
-   * Remove all the raws of the matrix that contains only zero values.
+   * Remove all the rows of the matrix that contains only zero values.
    * @param matrix the matrix to process
    */
   public static void removeEmptyRows(final ExpressionMatrix matrix) {
 
     Objects.requireNonNull(matrix, "matrix argument cannot be null");
 
-    for (String rawName : matrix.getRawNames()) {
+    for (String rowName : matrix.getRowNames()) {
 
-      List<Double> raw = matrix.getRawValues(rawName);
+      List<Double> row = matrix.getRowValues(rowName);
 
       boolean findNonZero = false;
-      for (Double v : raw) {
+      for (Double v : row) {
         if (v != 0.0) {
           findNonZero = true;
           break;
@@ -63,7 +63,7 @@ public class ExpressionMatrices {
       }
 
       if (!findNonZero) {
-        matrix.removeRaw(rawName);
+        matrix.removeRow(rowName);
       }
 
     }

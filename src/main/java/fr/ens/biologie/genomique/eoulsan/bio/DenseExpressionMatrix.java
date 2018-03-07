@@ -25,7 +25,7 @@ public class DenseExpressionMatrix implements ExpressionMatrix {
 
   private final Multimap<String, Double> values = ArrayListMultimap.create();
   private final Map<String, Integer> columnIndex = new HashMap<>();
-  private final Set<String> rawOrder = new LinkedHashSet<>();
+  private final Set<String> rowOrder = new LinkedHashSet<>();
   private Double defaultValue = 0.0;
 
   //
@@ -33,15 +33,15 @@ public class DenseExpressionMatrix implements ExpressionMatrix {
   //
 
   @Override
-  public List<String> getRawNames() {
+  public List<String> getRowNames() {
 
-    return Collections.unmodifiableList(new ArrayList<>(this.rawOrder));
+    return Collections.unmodifiableList(new ArrayList<>(this.rowOrder));
   }
 
   @Override
-  public int getRawCount() {
+  public int getRowCount() {
 
-    return this.rawOrder.size();
+    return this.rowOrder.size();
   }
 
   @Override
@@ -67,38 +67,38 @@ public class DenseExpressionMatrix implements ExpressionMatrix {
 
     Objects.requireNonNull(columnName, "columnName argument cannot be null");
 
-    List<Double> result = new ArrayList<>(this.rawOrder.size());
+    List<Double> result = new ArrayList<>(this.rowOrder.size());
 
-    for (String rawName : this.rawOrder) {
-      result.add(getValue(rawName, columnName));
+    for (String rowName : this.rowOrder) {
+      result.add(getValue(rowName, columnName));
     }
 
     return Collections.unmodifiableList(result);
   }
 
   @Override
-  public List<Double> getRawValues(final String rawName) {
+  public List<Double> getRowValues(final String rowName) {
 
-    Objects.requireNonNull(rawName, "rawName argument cannot be null");
+    Objects.requireNonNull(rowName, "rowName argument cannot be null");
 
-    return (List<Double>) this.values.get(rawName);
+    return (List<Double>) this.values.get(rowName);
   }
 
   @Override
-  public Double getValue(final String rawName, final String columnName) {
+  public Double getValue(final String rowName, final String columnName) {
 
-    Objects.requireNonNull(rawName, "rawName argument cannot be null");
+    Objects.requireNonNull(rowName, "rowName argument cannot be null");
     Objects.requireNonNull(columnName, "columnName argument cannot be null");
 
     if (!this.columnIndex.containsKey(columnName)) {
       throw new IllegalArgumentException("Unknown column name: " + columnName);
     }
 
-    if (!this.rawOrder.contains(rawName)) {
-      throw new IllegalArgumentException("Unknown raw name: " + rawName);
+    if (!this.rowOrder.contains(rowName)) {
+      throw new IllegalArgumentException("Unknown row name: " + rowName);
     }
 
-    return getRawValues(rawName).get(this.columnIndex.get(columnName));
+    return getRowValues(rowName).get(this.columnIndex.get(columnName));
   }
 
   @Override
@@ -108,13 +108,13 @@ public class DenseExpressionMatrix implements ExpressionMatrix {
   }
 
   @Override
-  public boolean containsraw(final String rawName) {
+  public boolean containsRow(final String rowName) {
 
     if (this.columnIndex.size() == 0) {
-      return this.rawOrder.contains(rawName);
+      return this.rowOrder.contains(rowName);
     }
 
-    return this.values.containsKey(rawName);
+    return this.values.containsKey(rowName);
   }
 
   //
@@ -122,10 +122,10 @@ public class DenseExpressionMatrix implements ExpressionMatrix {
   //
 
   @Override
-  public void setValue(final String rawName, final String columnName,
+  public void setValue(final String rowName, final String columnName,
       final double value) {
 
-    Objects.requireNonNull(rawName, "rawName argument cannot be null");
+    Objects.requireNonNull(rowName, "rowName argument cannot be null");
     Objects.requireNonNull(columnName, "columnName argument cannot be null");
 
     // Check if a column must be added
@@ -133,51 +133,51 @@ public class DenseExpressionMatrix implements ExpressionMatrix {
       addColumn(columnName);
     }
 
-    // Check if a raw must be added
-    if (!this.values.containsKey(rawName)) {
-      addRaw(rawName);
+    // Check if a row must be added
+    if (!this.values.containsKey(rowName)) {
+      addRow(rowName);
     }
 
     // Set the value
-    ((List<Double>) this.values.get(rawName))
+    ((List<Double>) this.values.get(rowName))
         .set(this.columnIndex.get(columnName), value);
   }
 
   @Override
-  public void addRaws(final List<String> rawNames) {
+  public void addRows(final List<String> rowNames) {
 
-    Objects.requireNonNull("rawNames argument cannot be null");
+    Objects.requireNonNull("rowNames argument cannot be null");
 
-    for (String rawName : rawNames) {
-      addRaw(rawName);
+    for (String rowName : rowNames) {
+      addRow(rowName);
     }
   }
 
   @Override
-  public void addRaws(final String... rawNames) {
+  public void addRows(final String... rowNames) {
 
-    Objects.requireNonNull("rawNames argument cannot be null");
+    Objects.requireNonNull("rowNames argument cannot be null");
 
-    for (String rawName : rawNames) {
-      addRaw(rawName);
+    for (String rowName : rowNames) {
+      addRow(rowName);
     }
   }
 
   @Override
-  public void addRaw(final String rawName) {
+  public void addRow(final String rowName) {
 
-    Objects.requireNonNull(rawName, "rawName argument cannot be null");
+    Objects.requireNonNull(rowName, "rowName argument cannot be null");
 
-    if (this.rawOrder.contains(rawName)) {
+    if (this.rowOrder.contains(rowName)) {
       return;
     }
 
     // Add the default values
-    this.values.putAll(rawName,
+    this.values.putAll(rowName,
         Collections.nCopies(this.columnIndex.size(), this.defaultValue));
 
-    // Add the raw name in the order of raw
-    this.rawOrder.add(rawName);
+    // Add the row name in the order of row
+    this.rowOrder.add(rowName);
   }
 
   @Override
@@ -212,11 +212,11 @@ public class DenseExpressionMatrix implements ExpressionMatrix {
     // Add the column name in the index of column
     this.columnIndex.put(columnName, this.columnIndex.size());
 
-    if (this.columnIndex.size() == 1 && !this.rawOrder.isEmpty()) {
+    if (this.columnIndex.size() == 1 && !this.rowOrder.isEmpty()) {
 
-      // Fill existing empty raws
-      for (String rawName : this.rawOrder) {
-        this.values.put(rawName, this.defaultValue);
+      // Fill existing empty rows
+      for (String rowName : this.rowOrder) {
+        this.values.put(rowName, this.defaultValue);
       }
     } else {
 
@@ -234,12 +234,12 @@ public class DenseExpressionMatrix implements ExpressionMatrix {
     Objects.requireNonNull(matrix, "matrix argument cannot be null");
 
     List<String> newColumnNames = matrix.getColumnNames();
-    List<String> newRawNames = matrix.getRawNames();
+    List<String> newRowNames = matrix.getRowNames();
 
     // Add the valueq
-    for (String rawName : newRawNames) {
+    for (String rowName : newRowNames) {
       for (String columnName : newColumnNames) {
-        setValue(rawName, columnName, matrix.getValue(rawName, columnName));
+        setValue(rowName, columnName, matrix.getValue(rowName, columnName));
       }
     }
   }
@@ -288,19 +288,19 @@ public class DenseExpressionMatrix implements ExpressionMatrix {
   }
 
   @Override
-  public void removeRaw(final String rawName) {
+  public void removeRow(final String rowName) {
 
-    Objects.requireNonNull(rawName, "rawName argument cannot be null");
+    Objects.requireNonNull(rowName, "rowName argument cannot be null");
 
-    if (!this.rawOrder.contains(rawName)) {
-      throw new IllegalArgumentException("rawName does not exists: " + rawName);
+    if (!this.rowOrder.contains(rowName)) {
+      throw new IllegalArgumentException("rowName does not exists: " + rowName);
     }
 
     // Add the default values
-    this.values.removeAll(rawName);
+    this.values.removeAll(rowName);
 
-    // Add the raw name in the order of raw
-    this.rawOrder.remove(rawName);
+    // Add the row name in the order of row
+    this.rowOrder.remove(rowName);
   }
 
   //
@@ -336,11 +336,11 @@ public class DenseExpressionMatrix implements ExpressionMatrix {
     }
     sb.append('\n');
 
-    for (String rawName : getRawNames()) {
+    for (String rowName : getRowNames()) {
 
-      sb.append(rawName);
+      sb.append(rowName);
 
-      for (Double value : getRawValues(rawName)) {
+      for (Double value : getRowValues(rowName)) {
         sb.append('\t');
         sb.append(value);
       }
@@ -365,13 +365,13 @@ public class DenseExpressionMatrix implements ExpressionMatrix {
 
     return equal(this.values, that.values)
         && equal(this.columnIndex, that.columnIndex)
-        && equal(this.rawOrder, that.rawOrder);
+        && equal(this.rowOrder, that.rowOrder);
   }
 
   @Override
   public int hashCode() {
 
-    return Objects.hash(this.values, this.columnIndex, this.rawOrder);
+    return Objects.hash(this.values, this.columnIndex, this.rowOrder);
   }
 
 }
