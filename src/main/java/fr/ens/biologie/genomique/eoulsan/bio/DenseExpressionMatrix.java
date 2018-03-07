@@ -17,7 +17,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 /**
- * This class define an expression matrix.
+ * This class define a dense expression matrix.
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -218,7 +218,7 @@ public class DenseExpressionMatrix extends AbstractExpressionMatrix {
 
     if (!this.columnIndex.containsKey(columnName)) {
       throw new IllegalArgumentException(
-          "columnIndex does not exists: " + columnName);
+          "columnName does not exists: " + columnName);
     }
 
     // Get columnIndex
@@ -288,7 +288,7 @@ public class DenseExpressionMatrix extends AbstractExpressionMatrix {
   }
 
   //
-  // Constructor
+  // Constructors
   //
 
   /**
