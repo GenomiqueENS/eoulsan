@@ -65,9 +65,26 @@ public class ExpressionMatrices {
       if (!findNonZero) {
         matrix.removeRow(rowName);
       }
-
     }
+  }
 
+  /**
+   * Reverse the row and column of a matrix.
+   * @param srcMatrix input matrix
+   * @param destMatrix output matrix
+   */
+  public static void reverse(final ExpressionMatrix srcMatrix,
+      final ExpressionMatrix destMatrix) {
+
+    Objects.requireNonNull(srcMatrix, "matrix argument cannot be null");
+    Objects.requireNonNull(destMatrix, "matrix argument cannot be null");
+
+    for (String rowName : srcMatrix.getRowNames()) {
+      for (String columnName : srcMatrix.getColumnNames()) {
+        destMatrix.setValue(columnName, rowName,
+            srcMatrix.getValue(rowName, columnName));
+      }
+    }
   }
 
 }
