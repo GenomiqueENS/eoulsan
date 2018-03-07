@@ -14,16 +14,23 @@ import java.util.List;
 
 import org.python.google.common.base.Splitter;
 
+import fr.ens.biologie.genomique.eoulsan.bio.DenseExpressionMatrix;
 import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 
-public class ExpressionMatrixTSVReader {
+/**
+ * This class define an ExpressionMatrix reader for TSV format.
+ * @author Laurent Jourdren
+ * @since 2.0
+ */
+public class ExpressionMatrixTSVReader implements ExpressionMatrixReader {
 
   private final BufferedReader reader;
 
+  @Override
   public ExpressionMatrix read() throws IOException {
 
-    ExpressionMatrix result = new ExpressionMatrix();
+    ExpressionMatrix result = new DenseExpressionMatrix();
 
     String line;
     boolean first = true;

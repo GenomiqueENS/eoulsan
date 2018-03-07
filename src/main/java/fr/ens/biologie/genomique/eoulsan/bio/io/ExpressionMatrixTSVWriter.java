@@ -12,10 +12,16 @@ import java.util.Objects;
 import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 
-public class ExpressionMatrixTSVWriter {
+/**
+ * This class define an ExpressionMatrix writer for TSV format.
+ * @author Laurent Jourdren
+ * @since 2.0
+ */
+public class ExpressionMatrixTSVWriter implements ExpressionMatrixWriter {
 
   private final Writer writer;
 
+  @Override
   public void write(final ExpressionMatrix matrix) throws IOException {
 
     Objects.requireNonNull(matrix, "matrix argument cannot be null");

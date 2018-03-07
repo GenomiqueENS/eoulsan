@@ -11,8 +11,8 @@ public class ExpressionMatricesTest {
   @Test
   public void testMerge() {
 
-    ExpressionMatrix src = new ExpressionMatrix();
-    ExpressionMatrix dest = new ExpressionMatrix();
+    ExpressionMatrix src = new DenseExpressionMatrix();
+    ExpressionMatrix dest = new DenseExpressionMatrix();
 
     src.addColumns("a1", "a2", "a3", "b1", "b2", "b3");
     src.addRaws("raw1", "raw2");
@@ -55,7 +55,7 @@ public class ExpressionMatricesTest {
   @Test
   public void testremoveEmptyRows() {
 
-    ExpressionMatrix matrix = new ExpressionMatrix();
+    ExpressionMatrix matrix = new DenseExpressionMatrix();
 
     matrix.addColumns("a1", "a2", "a3");
     matrix.addRaws("raw1", "raw2", "raw3", "raw4");
