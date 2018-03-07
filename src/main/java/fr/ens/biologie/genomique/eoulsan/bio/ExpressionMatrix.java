@@ -139,4 +139,10 @@ public interface ExpressionMatrix {
    */
   double getDefaultValue();
 
+  /**
+   * Get the size of the matrix.
+   * @return the size (the number of elements) of the matrix
+   */
+  int size();
+
 }

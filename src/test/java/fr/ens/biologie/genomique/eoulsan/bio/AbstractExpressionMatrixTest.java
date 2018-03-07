@@ -25,9 +25,11 @@ public abstract class AbstractExpressionMatrixTest {
     assertTrue(matrix.containsRow("row1"));
     assertFalse(matrix.containsRow("row2"));
     assertEquals(Arrays.asList("row1"), matrix.getRowNames());
+    assertEquals(0, matrix.size());
 
     matrix.addRow("row2");
     assertEquals(2, matrix.getRowCount());
+    assertEquals(0, matrix.size());
     assertTrue(matrix.containsRow("row1"));
     assertTrue(matrix.containsRow("row2"));
     assertFalse(matrix.containsRow("row3"));
@@ -35,7 +37,9 @@ public abstract class AbstractExpressionMatrixTest {
 
     matrix.addColumn("col1");
     assertEquals(0.0, matrix.getValue("row1", "col1"), 0.0);
+    assertEquals(2, matrix.size());
     assertEquals(0.0, matrix.getValue("row2", "col1"), 0.0);
+    assertEquals(2, matrix.size());
   }
 
   @Test
@@ -44,12 +48,14 @@ public abstract class AbstractExpressionMatrixTest {
     ExpressionMatrix matrix = createMatrix();
 
     assertEquals(0, matrix.getRowCount());
+    assertEquals(0, matrix.size());
 
     matrix.addColumn("col1");
     assertEquals(1, matrix.getColumnCount());
     assertTrue(matrix.containsColumn("col1"));
     assertFalse(matrix.containsColumn("col2"));
     assertEquals(Arrays.asList("col1"), matrix.getColumnNames());
+    assertEquals(0, matrix.size());
 
     matrix.addColumn("col2");
     assertEquals(2, matrix.getColumnCount());
@@ -57,10 +63,12 @@ public abstract class AbstractExpressionMatrixTest {
     assertTrue(matrix.containsColumn("col2"));
     assertFalse(matrix.containsColumn("col3"));
     assertEquals(Arrays.asList("col1", "col2"), matrix.getColumnNames());
+    assertEquals(0, matrix.size());
 
     matrix.addRow("row1");
     assertEquals(0.0, matrix.getValue("row1", "col1"), 0.0);
     assertEquals(0.0, matrix.getValue("row1", "col2"), 0.0);
+    assertEquals(2, matrix.size());
   }
 
   @Test
@@ -265,6 +273,7 @@ public abstract class AbstractExpressionMatrixTest {
     ExpressionMatrix matrix = createMatrix();
     matrix.addColumns("col1", "col2");
     matrix.addRows("row1", "row2", "row3");
+    assertEquals(6, matrix.size());
 
     matrix.setValue("row1", "col1", 1);
     matrix.setValue("row2", "col1", 2);
@@ -272,11 +281,13 @@ public abstract class AbstractExpressionMatrixTest {
     matrix.setValue("row1", "col2", 4);
     matrix.setValue("row2", "col2", 5);
     matrix.setValue("row3", "col2", 6);
+    assertEquals(6, matrix.size());
 
     assertEquals(3, matrix.getRowCount());
     assertEquals(2, matrix.getColumnCount());
 
     matrix.removeRow("row2");
+    assertEquals(4, matrix.size());
 
     assertEquals(2, matrix.getRowCount());
     assertEquals(2, matrix.getColumnCount());
@@ -293,6 +304,7 @@ public abstract class AbstractExpressionMatrixTest {
     ExpressionMatrix matrix = createMatrix();
     matrix.addColumns("col1", "col2");
     matrix.addRows("row1", "row2", "row3");
+    assertEquals(6, matrix.size());
 
     matrix.setValue("row1", "col1", 1);
     matrix.setValue("row2", "col1", 2);
@@ -305,6 +317,7 @@ public abstract class AbstractExpressionMatrixTest {
     assertEquals(2, matrix.getColumnCount());
 
     matrix.removeColumn("col2");
+    assertEquals(3, matrix.size());
 
     assertEquals(3, matrix.getRowCount());
     assertEquals(1, matrix.getColumnCount());

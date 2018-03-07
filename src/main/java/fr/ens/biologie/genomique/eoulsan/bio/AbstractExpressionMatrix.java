@@ -66,6 +66,11 @@ public abstract class AbstractExpressionMatrix implements ExpressionMatrix {
     }
   }
 
+  @Override
+  public int size() {
+    return getRowCount() * getColumnCount();
+  }
+
   //
   // Object methods
   //
