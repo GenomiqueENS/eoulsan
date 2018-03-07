@@ -8,12 +8,15 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-public class ExpressionMatrixTest {
+public abstract class AbstractExpressionMatrixTest {
+
+  protected abstract ExpressionMatrix createMatrix();
+  protected abstract ExpressionMatrix createMatrix(double defaultValue);
 
   @Test
   public void testAddRow() {
 
-    ExpressionMatrix matrix = new DenseExpressionMatrix();
+    ExpressionMatrix matrix = createMatrix();
 
     assertEquals(0, matrix.getRowCount());
 
@@ -38,7 +41,7 @@ public class ExpressionMatrixTest {
   @Test
   public void testAddColumn() {
 
-    ExpressionMatrix matrix = new DenseExpressionMatrix();
+    ExpressionMatrix matrix = createMatrix();
 
     assertEquals(0, matrix.getRowCount());
 
@@ -63,7 +66,7 @@ public class ExpressionMatrixTest {
   @Test
   public void testGetRowValues() {
 
-    ExpressionMatrix matrix = new DenseExpressionMatrix();
+    ExpressionMatrix matrix = createMatrix();
     matrix.addColumns("col1", "col2");
     matrix.addRows("row1", "row2", "row3");
 
@@ -82,7 +85,7 @@ public class ExpressionMatrixTest {
   @Test
   public void testGetColumnValues() {
 
-    ExpressionMatrix matrix = new DenseExpressionMatrix();
+    ExpressionMatrix matrix = createMatrix();
     matrix.addColumns("col1", "col2");
     matrix.addRows("row1", "row2", "row3");
 
@@ -100,7 +103,7 @@ public class ExpressionMatrixTest {
   @Test
   public void testGetValue() {
 
-    ExpressionMatrix matrix = new DenseExpressionMatrix();
+    ExpressionMatrix matrix = createMatrix();
     matrix.addColumns("col1", "col2");
     matrix.addRows("row1", "row2", "row3");
 
@@ -137,7 +140,7 @@ public class ExpressionMatrixTest {
   @Test
   public void testAdd() {
 
-    ExpressionMatrix matrix1 = new DenseExpressionMatrix();
+    ExpressionMatrix matrix1 = createMatrix();
     matrix1.addColumns("col1", "col2");
     matrix1.addRows("row1", "row2", "row3");
 
@@ -148,7 +151,7 @@ public class ExpressionMatrixTest {
     matrix1.setValue("row2", "col2", 5);
     matrix1.setValue("row3", "col2", 6);
 
-    DenseExpressionMatrix matrix2 = new DenseExpressionMatrix();
+    ExpressionMatrix matrix2 = createMatrix();
     matrix2.addColumns("col2", "col3");
     matrix2.addRows("row2", "row3", "row4");
 
@@ -178,7 +181,7 @@ public class ExpressionMatrixTest {
   @Test
   public void testRenameColumn() {
 
-    ExpressionMatrix matrix = new DenseExpressionMatrix();
+    ExpressionMatrix matrix = createMatrix();
 
     assertEquals(0, matrix.getRowCount());
 
@@ -219,7 +222,7 @@ public class ExpressionMatrixTest {
   @Test
   public void testSetDefaultValue() {
 
-    ExpressionMatrix matrix = new DenseExpressionMatrix();
+    ExpressionMatrix matrix = createMatrix();
 
     assertEquals(0.0, matrix.getDefaultValue(), 0.0);
 
@@ -231,7 +234,7 @@ public class ExpressionMatrixTest {
     assertEquals(0.0, matrix.getValue("row1", "col2"), 0.0);
     assertEquals(0.0, matrix.getValue("row2", "col2"), 0.0);
 
-    matrix = new DenseExpressionMatrix(1.0);
+    matrix = createMatrix(1.0);
 
     assertEquals(0.0, matrix.getDefaultValue(), 1.0);
 
@@ -243,7 +246,7 @@ public class ExpressionMatrixTest {
     assertEquals(1.0, matrix.getValue("row1", "col2"), 0.0);
     assertEquals(1.0, matrix.getValue("row2", "col2"), 0.0);
 
-    matrix = new DenseExpressionMatrix(Double.NaN);
+    matrix = createMatrix(Double.NaN);
 
     assertEquals(Double.NaN, matrix.getDefaultValue(), 0.0);
 
@@ -259,7 +262,7 @@ public class ExpressionMatrixTest {
   @Test
   public void testRemoveRow() {
 
-    ExpressionMatrix matrix = new DenseExpressionMatrix();
+    ExpressionMatrix matrix = createMatrix();
     matrix.addColumns("col1", "col2");
     matrix.addRows("row1", "row2", "row3");
 
@@ -287,7 +290,7 @@ public class ExpressionMatrixTest {
   @Test
   public void testRemoveColumn() {
 
-    ExpressionMatrix matrix = new DenseExpressionMatrix();
+    ExpressionMatrix matrix = createMatrix();
     matrix.addColumns("col1", "col2");
     matrix.addRows("row1", "row2", "row3");
 
