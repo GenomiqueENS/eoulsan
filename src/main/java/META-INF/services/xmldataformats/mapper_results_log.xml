@@ -1,7 +1,7 @@
 <dataformat>
   <name>mapper_results_log</name>
   <description>mapper log file format</description>
-  <alias>sam</alias>
+  <alias>mapperlog</alias>
   <prefix>alignmentslog</prefix>
   <extensions>
     <extension default="true">.err</extension>
