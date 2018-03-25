@@ -88,6 +88,40 @@ public abstract class AbstractExpressionMatrixTest {
     assertEquals(Arrays.asList(1.0, 4.0), matrix.getRowValues("row1"));
     assertEquals(Arrays.asList(2.0, 5.0), matrix.getRowValues("row2"));
     assertEquals(Arrays.asList(3.0, 6.0), matrix.getRowValues("row3"));
+
+    matrix = createMatrix();
+    matrix.addColumns("col1", "col2", "col3");
+    matrix.addRows("row1", "row2", "row3", "row4", "row5");
+
+    matrix.setValue("row2", "col1", 2);
+    matrix.setValue("row2", "col2", 5);
+
+    matrix.setValue("row3", "col2", 6);
+
+    matrix.setValue("row4", "col3", 7);
+
+    matrix.setValue("row5", "col1", 8);
+    matrix.setValue("row5", "col2", 9);
+    matrix.setValue("row5", "col3", 10);
+
+    matrix.setValue("row6", "col1", 11);
+    matrix.setValue("row6", "col3", 12);
+
+    assertEquals(Arrays.asList(0.0, 0.0, 0.0), matrix.getRowValues("row1"));
+    assertEquals(Arrays.asList(2.0, 5.0, 0.0), matrix.getRowValues("row2"));
+    assertEquals(Arrays.asList(0.0, 6.0, 0.0), matrix.getRowValues("row3"));
+    assertEquals(Arrays.asList(0.0, 0.0, 7.0), matrix.getRowValues("row4"));
+    assertEquals(Arrays.asList(8.0, 9.0, 10.0), matrix.getRowValues("row5"));
+    assertEquals(Arrays.asList(11.0, 0.0, 12.0), matrix.getRowValues("row6"));
+
+    matrix.removeColumn("col1");
+
+    assertEquals(Arrays.asList(0.0, 0.0), matrix.getRowValues("row1"));
+    assertEquals(Arrays.asList(5.0, 0.0), matrix.getRowValues("row2"));
+    assertEquals(Arrays.asList(6.0, 0.0), matrix.getRowValues("row3"));
+    assertEquals(Arrays.asList(0.0, 7.0), matrix.getRowValues("row4"));
+    assertEquals(Arrays.asList(9.0, 10.0), matrix.getRowValues("row5"));
+    assertEquals(Arrays.asList(0.0, 12.0), matrix.getRowValues("row6"));
   }
 
   @Test
