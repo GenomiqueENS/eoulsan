@@ -4,9 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
+
+import fr.ens.biologie.genomique.eoulsan.bio.AbstractExpressionMatrix.BasicEntry;
+import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix.Entry;
 
 public abstract class AbstractExpressionMatrixTest {
 
@@ -177,6 +182,62 @@ public abstract class AbstractExpressionMatrixTest {
       assertTrue(true);
     }
 
+  }
+
+  @Test
+  public void testValues() {
+
+    ExpressionMatrix matrix = createMatrix();
+
+    matrix = createMatrix();
+    matrix.addColumns("col1", "col2", "col3");
+    matrix.addRows("row1", "row2", "row3");
+
+    matrix.setValue("row2", "col1", 2);
+    matrix.setValue("row2", "col2", 5);
+
+    matrix.setValue("row3", "col2", 6);
+
+    List<Entry> result = new ArrayList<>();
+    for (Entry e : matrix.values()) {
+      result.add(e);
+    }
+
+    assertEquals(Arrays.asList(new BasicEntry("row1", "col1", 0.0),
+        new BasicEntry("row1", "col2", 0.0),
+        new BasicEntry("row1", "col3", 0.0),
+        new BasicEntry("row2", "col1", 2.0),
+        new BasicEntry("row2", "col2", 5.0),
+        new BasicEntry("row2", "col3", 0.0),
+        new BasicEntry("row3", "col1", 0.0),
+        new BasicEntry("row3", "col2", 6.0),
+        new BasicEntry("row3", "col3", 0.0)), result);
+  }
+
+  @Test
+  public void testNonZeroValues() {
+
+    ExpressionMatrix matrix = createMatrix();
+
+    matrix = createMatrix();
+    matrix.addColumns("col1", "col2", "col3");
+    matrix.addRows("row1", "row2", "row3");
+
+    matrix.setValue("row2", "col1", 2);
+    matrix.setValue("row2", "col2", 5);
+
+    matrix.setValue("row3", "col2", 6);
+
+    List<Entry> result = new ArrayList<>();
+    for (Entry e : matrix.nonZeroValues()) {
+      result.add(e);
+    }
+
+    assertEquals(
+        Arrays.asList(new BasicEntry("row2", "col1", 2.0),
+            new BasicEntry("row2", "col2", 5.0),
+            new BasicEntry("row3", "col2", 6.0)),
+        result);
   }
 
   @Test

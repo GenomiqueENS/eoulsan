@@ -5,6 +5,7 @@ import static java.util.Collections.nCopies;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,8 @@ public class SparseExpressionMatrix extends AbstractExpressionMatrix {
   private final NavigableMap<Long, Double> values = new TreeMap<>();
   private final Map<String, Integer> rowNames = new LinkedHashMap<>();
   private final Map<String, Integer> columnNames = new LinkedHashMap<>();
+  private final Map<Integer, String> reverseRowNames = new HashMap<>();
+  private final Map<Integer, String> reverseColumnNames = new HashMap<>();
   private final Map<Integer, Integer> columnIndex = new HashMap<>();
   private int rowCount;
   private int columnCount;
@@ -112,6 +115,51 @@ public class SparseExpressionMatrix extends AbstractExpressionMatrix {
   }
 
   @Override
+  public Iterable<Entry> nonZeroValues() {
+
+    final Iterator<Map.Entry<Long, Double>> it =
+        this.values.entrySet().iterator();
+
+    return new Iterable<Entry>() {
+
+      @Override
+      public Iterator<Entry> iterator() {
+
+        return new Iterator<Entry>() {
+
+          int lastRowId = -1;
+          String lastRowName;
+
+          @Override
+          public boolean hasNext() {
+
+            return it.hasNext();
+          }
+
+          @Override
+          public Entry next() {
+
+            Map.Entry<Long, Double> e = it.next();
+            Long cellId = e.getKey();
+            int rowId = getRowId(cellId);
+            int columnId = getColumnId(cellId);
+
+            if (rowId != lastRowId) {
+              this.lastRowId = rowId;
+              this.lastRowName = reverseRowNames.get(rowId);
+            }
+
+            return new BasicEntry(this.lastRowName,
+                reverseColumnNames.get(columnId), e.getValue());
+          }
+        };
+
+      }
+    };
+
+  }
+
+  @Override
   public Double getValue(final String rowName, final String columnName) {
 
     return getValue(getCellId(getRowId(rowName), getColumnId(columnName)));
@@ -168,7 +216,8 @@ public class SparseExpressionMatrix extends AbstractExpressionMatrix {
       return;
     }
 
-    this.rowNames.put(rowName, this.rowCount++);
+    this.rowNames.put(rowName, this.rowCount);
+    this.reverseRowNames.put(this.rowCount++, rowName);
   }
 
   @Override
@@ -181,6 +230,7 @@ public class SparseExpressionMatrix extends AbstractExpressionMatrix {
     }
 
     this.columnNames.put(columnName, this.columnCount);
+    this.reverseColumnNames.put(this.columnCount, columnName);
     this.columnIndex.put(this.columnCount++, this.columnIndex.size());
   }
 
@@ -204,6 +254,7 @@ public class SparseExpressionMatrix extends AbstractExpressionMatrix {
     Integer columnId = getColumnId(oldColumnName);
     this.columnNames.remove(oldColumnName);
     this.columnNames.put(newColumnName, columnId);
+    this.reverseColumnNames.put(columnId, newColumnName);
   }
 
   @Override
@@ -230,6 +281,7 @@ public class SparseExpressionMatrix extends AbstractExpressionMatrix {
 
     // Remove the column
     this.columnNames.remove(columnName);
+    this.reverseColumnNames.remove(columnId);
 
     // Update the index of the column
     this.columnIndex.remove(columnId);
@@ -263,6 +315,7 @@ public class SparseExpressionMatrix extends AbstractExpressionMatrix {
 
     // Remove the column
     this.rowNames.remove(rowName);
+    this.reverseRowNames.remove(rowId);
   }
 
   @Override

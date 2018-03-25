@@ -4,6 +4,27 @@ import java.util.List;
 
 public interface ExpressionMatrix {
 
+  interface Entry {
+
+    /**
+     * Get the name of the row of the entry.
+     * @return the name of the row of the entry
+     */
+    String getRowName();
+
+    /**
+     * Get the name of the column of the entry.
+     * @return the name of the column of the entry
+     */
+    String getColumnName();
+
+    /**
+     * Get the value of the entry
+     * @return the value of the entry
+     */
+    Double getValue();
+  }
+
   /**
    * Get the row names.
    * @return the row names
@@ -27,6 +48,18 @@ public interface ExpressionMatrix {
    * @return the row names
    */
   int getColumnCount();
+
+  /**
+   * Get the values of the matrix.
+   * @return the values of the matrix
+   */
+  Iterable<Entry> values();
+
+  /**
+   * Get the non zero values of the matrix.
+   * @return the non zero values of the matrix
+   */
+  Iterable<Entry> nonZeroValues();
 
   /**
    * Get the values of a column.
