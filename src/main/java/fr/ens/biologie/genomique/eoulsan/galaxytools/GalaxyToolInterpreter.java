@@ -343,7 +343,7 @@ public class GalaxyToolInterpreter {
         // Extract value from context from DataFormat
         final Data data = context.getInputData(inPort.portName);
 
-        if (inData == null || isDataNameInDesign(inData, context)) {
+        if (inData == null || isDataNameInDesign(data, context)) {
           inData = data;
         }
 
@@ -462,8 +462,7 @@ public class GalaxyToolInterpreter {
 
     for (Sample sample : context.getWorkflow().getDesign().getSamples()) {
 
-      // TODO Change sample.getName() to sample.getId() with the new Design API
-      if (Naming.toValidName(sample.getName()).equals(dataName)) {
+      if (Naming.toValidName(sample.getId()).equals(dataName)) {
         return true;
       }
     }
