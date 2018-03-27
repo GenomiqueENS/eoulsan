@@ -81,7 +81,8 @@ public class GalaxyToolInterpreter {
   /** The Constant TAG_FORBIDDEN. */
   private final static Set<String> TAG_FORBIDDEN = Sets.newHashSet("repeat");
 
-  private static final String TMP_DIR_ENVIRONMENT_VARIABLE_NAME = "TMPDIR";
+  private static final String TMP_DIR_VARIABLE_NAME = "TMPDIR";
+  private static final String THREADS_VARIABLE_NAME = "THREADS";
 
   // Set DOM related to the tool XML file
   /** The doc. */
@@ -325,8 +326,14 @@ public class GalaxyToolInterpreter {
     final Map<String, String> variables = new HashMap<>(variablesCount);
 
     // Set a TMPDIR variable that contain the path to the temporary directory
-    variables.put(TMP_DIR_ENVIRONMENT_VARIABLE_NAME,
+    variables.put(TMP_DIR_VARIABLE_NAME,
         context.getLocalTempDirectory().getAbsolutePath());
+
+    // Set a THREADS variable that contain the required thread number
+    final int threadNumber =
+        context.getCurrentStep().getRequiredProcessors() > 0
+            ? context.getCurrentStep().getRequiredProcessors() : 1;
+    variables.put(THREADS_VARIABLE_NAME, "" + threadNumber);
 
     Data inData = null;
 
