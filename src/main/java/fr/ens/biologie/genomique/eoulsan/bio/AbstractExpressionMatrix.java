@@ -90,6 +90,11 @@ public abstract class AbstractExpressionMatrix implements ExpressionMatrix {
           boolean first = true;
 
           @Override
+          public void remove() {
+            throw new UnsupportedOperationException("remove");
+          }
+
+          @Override
           public boolean hasNext() {
 
             return rowNames.hasNext() || this.columnIterator.hasNext();
@@ -133,6 +138,11 @@ public abstract class AbstractExpressionMatrix implements ExpressionMatrix {
         return new Iterator<Entry>() {
 
           Entry nextValue;
+
+          @Override
+          public void remove() {
+            throw new UnsupportedOperationException("remove");
+          }
 
           @Override
           public boolean hasNext() {

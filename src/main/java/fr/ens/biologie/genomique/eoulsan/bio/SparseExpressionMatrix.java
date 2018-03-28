@@ -131,6 +131,11 @@ public class SparseExpressionMatrix extends AbstractExpressionMatrix {
           String lastRowName;
 
           @Override
+          public void remove() {
+            throw new UnsupportedOperationException("remove");
+          }
+
+          @Override
           public boolean hasNext() {
 
             return it.hasNext();
