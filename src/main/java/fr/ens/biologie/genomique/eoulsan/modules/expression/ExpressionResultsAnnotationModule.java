@@ -268,7 +268,8 @@ public class ExpressionResultsAnnotationModule extends AbstractModule {
         final TranslatorOutputFormat of;
 
         if (format == ANNOTATED_EXPRESSION_RESULTS_XLSX) {
-          of = new XLSXTranslatorOutputFormat(outFile.create());
+          of = new XLSXTranslatorOutputFormat(outFile.create(),
+              context.getLocalTempDirectory());
         } else if (format == ANNOTATED_EXPRESSION_RESULTS_ODS) {
           of = new ODSTranslatorOutputFormat(outFile.create());
         } else {

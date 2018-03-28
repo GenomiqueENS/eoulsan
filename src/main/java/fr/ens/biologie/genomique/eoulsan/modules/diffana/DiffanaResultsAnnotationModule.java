@@ -319,7 +319,8 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
             outFile = new DataFile(outputDir, prefix
                 + ANNOTATED_EXPRESSION_RESULTS_XLSX.getDefaultExtension());
             checkIfFileExists(outFile, context);
-            of = new XLSXTranslatorOutputFormat(outFile.create());
+            of = new XLSXTranslatorOutputFormat(outFile.create(),
+                context.getLocalTempDirectory());
 
           } else if (format == ANNOTATED_EXPRESSION_RESULTS_ODS) {
 
