@@ -316,8 +316,7 @@ public class GalaxyToolInterpreter {
   public ToolExecutorResult execute(final TaskContext context)
       throws EoulsanException {
 
-    checkState(!isExecuted,
-        "this instance has been already executed");
+    checkState(!isExecuted, "this instance has been already executed");
 
     context.getLogger().info("Parsing xml file successfully.");
     context.getLogger().info("Tool description: " + this.toolInfo);
@@ -335,7 +334,8 @@ public class GalaxyToolInterpreter {
             ? context.getCurrentStep().getRequiredProcessors() : 1;
     variables.put(THREADS_VARIABLE_NAME, "" + threadNumber);
 
-    Data inData = null;
+    // Input Data
+    final Set<Data> inputDataSet = new HashSet<>();
 
     // Input file to use for Docker
     final Set<File> inputFiles = new HashSet<>();
@@ -349,10 +349,7 @@ public class GalaxyToolInterpreter {
 
         // Extract value from context from DataFormat
         final Data data = context.getInputData(inPort.portName);
-
-        if (inData == null || isDataNameInDesign(data, context)) {
-          inData = data;
-        }
+        inputDataSet.add(data);
 
         final File inFile = inPort.getInputDataFile(context).toFile();
         inputFiles.add(inFile);
@@ -374,7 +371,8 @@ public class GalaxyToolInterpreter {
             this.outputPorts.getPortElements(e.getName());
 
         // Extract value from context from DataFormat
-        final DataFile outFile = outPort.getOutputDataFile(context, inData);
+        final DataFile outFile = outPort.getOutputDataFile(context,
+            selectSourceData(inputDataSet, context));
         variables.put(e.getName(), outFile.toFile().getAbsolutePath());
         variables.put(removeNamespace(e.getName()),
             outFile.toFile().getAbsolutePath());
@@ -454,6 +452,40 @@ public class GalaxyToolInterpreter {
         throw new EoulsanException("Parsing tool xml: unsupported tag " + tag);
       }
     }
+  }
+
+  /**
+   * Select the input data to use as data source.
+   * @param inputDataSet a set with all the input data
+   * @param context the task context
+   * @return the data source to use for the output data or null if there is no
+   *         input data
+   */
+  private Data selectSourceData(final Set<Data> inputDataSet,
+      final TaskContext context) {
+
+    Data inData = null;
+
+    for (Data data : inputDataSet) {
+
+      if (inData == null) {
+        // Take the first data in all case
+        inData = data;
+      } else if (!data.getFormat().isOneFilePerAnalysis()) {
+
+        if (inData.getFormat().isOneFilePerAnalysis()) {
+          // If there is more that one input data replace the current selected
+          // Data by a data which format allow multiple data per analysis
+          inData = data;
+        } else if (isDataNameInDesign(data, context)) {
+          // If a data with a format that allow multiple data per analysis is
+          // selected, prefers data from design
+          inData = data;
+        }
+      }
+    }
+
+    return inData;
   }
 
   /**
