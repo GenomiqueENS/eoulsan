@@ -40,6 +40,7 @@ import java.util.Set;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
@@ -229,31 +230,45 @@ public class Workflow2Graphviz {
 
   /**
    * Convert and save the workflow as an image file.
-   * @throws IOException if an error occurs while creating the output file
    */
-  public void saveImageFile() throws IOException {
+  public boolean saveImageFile() {
 
-    File tmpDotFile = File.createTempFile("eoulsan-workflow-", ".dot");
-    File tmpImageFile = File.createTempFile("eoulsan-workflow-", ".png");
+    final DataFile tmpDotDataFile;
+    final DataFile tmpImageDataFile;
+    final File dotExecutableFile;
 
-    DataFile tmpDotDataFile = new DataFile(tmpDotFile);
-    DataFile tmpImageDataFile = new DataFile(tmpImageFile);
+    try {
 
-    // Save temporary dot file
-    saveDotFile(tmpDotDataFile);
+      File tmpDotFile = File.createTempFile("eoulsan-workflow-", ".dot");
+      File tmpImageFile = File.createTempFile("eoulsan-workflow-", ".png");
 
-    // Copy workflow dot file
-    DataFiles.copy(tmpDotDataFile, this.dotFile);
+      tmpDotDataFile = new DataFile(tmpDotFile);
+      tmpImageDataFile = new DataFile(tmpImageFile);
 
-    // Get the dot executable path
-    File dotExecutableFile = SystemUtils.searchExecutableInPATH("dot");
-    if (dotExecutableFile == null) {
+      // Save temporary dot file
+      saveDotFile(tmpDotDataFile);
 
-      // Delete temporary files
-      tmpDotFile.delete();
-      tmpImageFile.delete();
+      // Copy workflow dot file
+      DataFiles.copy(tmpDotDataFile, this.dotFile);
 
-      return;
+      // Get the dot executable path
+      dotExecutableFile = SystemUtils.searchExecutableInPATH("dot");
+      if (dotExecutableFile == null) {
+
+        EoulsanLogger
+            .logWarning("Unable to find the \"dot\" command in the PATH"
+                + " to create the workflow image file");
+
+        // Delete temporary files
+        tmpDotDataFile.delete();
+        tmpImageDataFile.delete();
+
+        return false;
+      }
+    } catch (IOException e) {
+      EoulsanLogger
+          .logWarning("Unable to create workflow image: " + e.getMessage());
+      return false;
     }
 
     // Create command line
@@ -267,19 +282,24 @@ public class Workflow2Graphviz {
       int exitcode = p.waitFor();
 
       if (exitcode != 0) {
-        throw new IOException("Invalid exit code of GraphViz: " + exitcode);
+        EoulsanLogger.logWarning(
+            "Unable to create workflow image: dot exit error: " + exitcode);
+        return false;
       }
 
       // Copy workflow image
       DataFiles.copy(tmpImageDataFile, this.imageFile);
 
-    } catch (InterruptedException e) {
-      throw new IOException(e);
+      return true;
+    } catch (IOException | InterruptedException e) {
+      EoulsanLogger
+          .logWarning("Unable to create workflow image: " + e.getMessage());
+      return false;
     } finally {
 
       // Delete temporary files
-      tmpDotFile.delete();
-      tmpImageFile.delete();
+      tmpDotDataFile.toFile().delete();
+      tmpImageDataFile.toFile().delete();
     }
   }
 

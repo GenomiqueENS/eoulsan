@@ -672,9 +672,15 @@ public abstract class AbstractWorkflow implements Workflow {
       designWriter.write(getDesign());
 
       // Save the workflow as a Graphviz and an image files
-      new Workflow2Graphviz(this,
+      Workflow2Graphviz graphviz = new Workflow2Graphviz(this,
           new DataFile(jobDir, WORKFLOW_GRAPHVIZ_FILENAME),
-          new DataFile(jobDir, WORKFLOW_IMAGE_FILENAME)).saveImageFile();
+          new DataFile(jobDir, WORKFLOW_IMAGE_FILENAME));
+
+      // Create an image or only the dot file
+      if (!this.workflowContext.getSettings().isSaveWorkflowImage()
+          || !graphviz.saveImageFile()) {
+        graphviz.saveDotFile();
+      }
 
     } catch (IOException e) {
       throw new EoulsanException(
