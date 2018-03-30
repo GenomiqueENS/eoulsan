@@ -77,6 +77,9 @@ public final class Settings implements Serializable {
   private static final String OUTPUT_TREE_TYPE =
       MAIN_PREFIX_KEY + "output.tree.type";
 
+  private static final String SAVE_WORKFLOW_IMAGE_KEY =
+      MAIN_PREFIX_KEY + "generate.workflow.image";
+
   private static final String DATA_FORMAT_PATH =
       MAIN_PREFIX_KEY + "format.path";
 
@@ -613,6 +616,16 @@ public final class Settings implements Serializable {
   }
 
   /**
+   * Test if an image of the workflow must be saved.
+   * @return true if an image of the workflow must be saved
+   */
+  public boolean isSaveWorkflowImage() {
+
+    return Boolean.parseBoolean(this.properties.getProperty(
+        SAVE_WORKFLOW_IMAGE_KEY, "" + Globals.SAVE_WORKFLOW_IMAGE_DEFAULT));
+  }
+
+  /**
    * Get a setting value.
    * @return settingName value as a String
    */
@@ -1104,6 +1117,15 @@ public final class Settings implements Serializable {
   public void setOutputTreeType(final String outputTreeType) {
 
     this.properties.getProperty(OUTPUT_TREE_TYPE, outputTreeType);
+  }
+
+  /**
+   * Set if an image of the workflow must be saved.
+   * @param save the value
+   */
+  public void setSaveWorkflowImage(final boolean save) {
+
+    this.properties.setProperty(SAVE_WORKFLOW_IMAGE_KEY, "" + save);
   }
 
   /**

@@ -225,6 +225,9 @@ public final class Globals {
   /** Output tree type. */
   public static final String OUTPUT_TREE_TYPE_DEFAULT = "step";
 
+  /** Save workflow image. */
+  public static final boolean SAVE_WORKFLOW_IMAGE_DEFAULT = true;
+
   //
   // Files encoding
   //
