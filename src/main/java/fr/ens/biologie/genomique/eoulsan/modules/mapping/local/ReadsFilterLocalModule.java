@@ -248,7 +248,9 @@ public class ReadsFilterLocalModule extends AbstractReadsFilterModule {
         // Test if the second read exists
         if (!reader2.hasNext()) {
           reader2.throwException();
-          throw new IOException("Excepted end of the second reads file.");
+          throw new IOException("Unexcepted end of the second read file. "
+              + inFile1.getName() + " and " + inFile2.getName()
+              + " must have the same number of entries/lines.");
         }
 
         // Get the second read
@@ -276,7 +278,9 @@ public class ReadsFilterLocalModule extends AbstractReadsFilterModule {
       reader2.throwException();
 
       if (reader2.hasNext()) {
-        throw new IOException("Excepted end of the first reads file.");
+        throw new IOException("Unexcepted end of the first read file. "
+            + inFile1.getName() + " and " + inFile2.getName()
+            + " must have the same number of entries/lines.");
       }
 
     } catch (BadBioEntryException e) {
