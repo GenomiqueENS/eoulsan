@@ -28,7 +28,7 @@ public class ExpressionMatrixSparseWriter implements ExpressionMatrixWriter {
     Objects.requireNonNull(matrix, "matrix argument cannot be null");
 
     // Write header
-    this.writer.write("#Row name\tColumn name\tValue\n");
+    this.writer.write("gene\tcell\tcount\n");
 
     for (Entry e : matrix.nonZeroValues()) {
 
