@@ -357,10 +357,19 @@ public final class XMLDataFormat extends AbstractDataFormat
 
     }
 
-    // Parse Galaxy format names
+    // Parse Galaxy format names (using the old tag names)
     for (Element toolshed : XMLUtils.getElementsByTagName(document,
         "toolshedgalaxy")) {
       for (Element ext : XMLUtils.getElementsByTagName(toolshed, "extension")) {
+
+        this.galaxyFormatNames.add(ext.getTextContent().trim());
+      }
+    }
+
+    // Parse Galaxy format names (using the new tag names)
+    for (Element toolshed : XMLUtils.getElementsByTagName(document,
+        "galaxy")) {
+      for (Element ext : XMLUtils.getElementsByTagName(toolshed, "formatname")) {
 
         this.galaxyFormatNames.add(ext.getTextContent().trim());
       }

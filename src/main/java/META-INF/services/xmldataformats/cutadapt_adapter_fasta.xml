@@ -7,7 +7,7 @@
     <extension default="true">.adapter</extension>
   </extensions>
 
-  <toolshedgalaxy>
-    <extension>adapter</extension>   
-  </toolshedgalaxy>
+  <galaxy>
+    <formatname>adapter</formatname>
+  </galaxy>
 </dataformat>
