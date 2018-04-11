@@ -66,6 +66,14 @@
                 <tr><td>hadoop.reducer.task.count</td><td>integer</td><td>The count of Hadoop reducer tasks to use for this step. This parameter is only used in Hadoop mode</td><td>Not set</td></tr>
         </table>
 
+        <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Convert BAM to SAM step --&gt;
+&lt;step id="mybam2samstep" skip="false" discardoutput="false"&gt;
+	&lt;module&gt;bam2sam&lt;/module&gt;
+	&lt;parameters/&gt;
+&lt;/step&gt;
+</pre>
       </ul>
 
 
