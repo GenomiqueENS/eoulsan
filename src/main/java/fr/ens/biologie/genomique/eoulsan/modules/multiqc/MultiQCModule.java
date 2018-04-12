@@ -197,42 +197,26 @@ public class MultiQCModule extends AbstractModule {
   private static Collection<InputPreprocessor> parseReportParameter(
       final String reports, final String stepId) throws EoulsanException {
 
+    // Get service instance
+    final InputPreprocessorService service = InputPreprocessorService.getInstance();
+
     final Map<String, InputPreprocessor> result = new HashMap<>();
 
     for (String report : Splitter.on(',').trimResults().omitEmptyStrings()
         .splitToList(reports.toLowerCase())) {
 
-      switch (report) {
+      // Only process each report type once
+      if (result.containsKey(report)) {
+        continue;
+      }
 
-      case FastQCInputPreprocessor.REPORT_NAME:
-        if (!result.containsKey(report)) {
-          result.put(report, new FastQCInputPreprocessor());
-        }
-        break;
-
-      case MapperInputPreprocessor.REPORT_NAME:
-        if (!result.containsKey(report)) {
-          result.put(report, new MapperInputPreprocessor());
-        }
-        break;
-
-      case ExpressionInputPreprocessor.REPORT_NAME:
-        if (!result.containsKey(report)) {
-          result.put(report, new ExpressionInputPreprocessor());
-        }
-        break;
-
-      case FeatureCountsInputPreprocessor.REPORT_NAME:
-        if (!result.containsKey(report)) {
-          result.put(report, new FeatureCountsInputPreprocessor());
-        }
-        break;
-
-      default:
+      if (!service.isService(report)) {
         throw new EoulsanException("In step \""
             + stepId + "\", invalid MultiQC configuration: unknown report type"
             + report);
       }
+
+      result.put(report, service.newService(report));
     }
 
     if (result.isEmpty()) {

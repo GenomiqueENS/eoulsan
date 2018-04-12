@@ -1,0 +1,4 @@
+fr.ens.biologie.genomique.eoulsan.modules.multiqc.ExpressionInputPreprocessor
+fr.ens.biologie.genomique.eoulsan.modules.multiqc.FastQCInputPreprocessor
+fr.ens.biologie.genomique.eoulsan.modules.multiqc.FeatureCountsInputPreprocessor
+fr.ens.biologie.genomique.eoulsan.modules.multiqc.MapperInputPreprocessor
