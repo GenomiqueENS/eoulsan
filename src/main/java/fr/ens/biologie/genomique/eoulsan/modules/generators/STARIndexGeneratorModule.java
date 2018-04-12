@@ -83,12 +83,10 @@ public class STARIndexGeneratorModule extends AbstractModule {
 
   public static final String MODULE_NAME = "starindexgenerator";
 
-  private static final int OVERHANG_DEFAULT = 100;
-
   private final Mapper mapper =
       Mapper.newMapper(STARMapperProvider.MAPPER_NAME);
 
-  private Integer overhang = OVERHANG_DEFAULT;
+  private Integer overhang = null;
   private boolean gtfFile;
   private boolean gtfFormat;
   private String chrStartEndFilename;
