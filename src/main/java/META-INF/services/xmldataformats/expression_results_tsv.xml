@@ -6,7 +6,7 @@
   <splitter>fr.ens.biologie.genomique.eoulsan.splitermergers.ExpressionSplitter</splitter>
   <merger>fr.ens.biologie.genomique.eoulsan.splitermergers.ExpressionMerger</merger>
   <extensions>
-  	<extension default="true">.tsv</extension>
-  	<extension>.txt</extension>
+    <extension default="true">.tsv</extension>
+    <extension>.txt</extension>
   </extensions>
 </dataformat>

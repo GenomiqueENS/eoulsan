@@ -6,7 +6,6 @@
   <extensions>
     <extension default="true">.txt</extension>
   </extensions>
-
   <galaxy>
     <formatname>text</formatname>
   </galaxy>

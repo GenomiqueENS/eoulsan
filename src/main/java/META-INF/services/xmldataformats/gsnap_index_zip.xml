@@ -6,6 +6,6 @@
   <content-type>application/zip</content-type>
   <generator mapperName="gsnap" >fr.ens.biologie.genomique.eoulsan.modules.generators.GenomeMapperIndexGeneratorModule</generator>
   <extensions>
-  	<extension default="true">.zip</extension>
+    <extension default="true">.zip</extension>
   </extensions>
 </dataformat>

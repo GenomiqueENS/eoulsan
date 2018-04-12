@@ -6,7 +6,6 @@
   <extensions>
     <extension default="true">.adapter</extension>
   </extensions>
-
   <galaxy>
     <formatname>adapter</formatname>
   </galaxy>

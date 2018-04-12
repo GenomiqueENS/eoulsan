@@ -3,6 +3,6 @@
   <description>xlsx annotated expression results format</description>
   <prefix>annotatedexpression</prefix>
   <extensions>
-  	<extension default="true">.xlsx</extension>
+    <extension default="true">.xlsx</extension>
   </extensions>
 </dataformat>

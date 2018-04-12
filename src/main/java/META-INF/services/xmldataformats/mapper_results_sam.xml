@@ -8,7 +8,6 @@
   <extensions>
     <extension default="true">.sam</extension>
   </extensions>
-  
   <galaxy>
     <formatname>sam</formatname>
   </galaxy>

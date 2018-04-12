@@ -12,7 +12,6 @@
     <extension default="true">.fq</extension>
     <extension>.fastq</extension>
   </extensions>
-
   <galaxy>
     <formatname>fq</formatname>
     <formatname>fastq</formatname>
