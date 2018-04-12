@@ -145,4 +145,8 @@ public class DataFormats {
   /** MultiQC HTML report format. */
   public static final DataFormat MULTIQC_REPORT_HTML =
       registry.getDataFormatFromName("multiqc_report_html");
+
+  /** FeatureCounts summary format. */
+  public static final DataFormat FEATURECOUNTS_SUMMARY_TXT =
+      registry.getDataFormatFromName("featurecounts_summary_txt");
 }

@@ -75,6 +75,7 @@
                 <tr><td>fastqc</td><td>FastQC</td><td></td></tr>
                 <tr><td>mapreads</td><td>The MultiQC section name change against the mapper used in the workflow (e.g. Bowtie&nbsp;1/Bowtie&nbsp;2/STAR...)</td><td><b>Warning:</b> this report is not available in Hadoop mode.</td></tr>
                 <tr><td>expression</td><td>HTSeq Count</td><td></td></tr>
+                <tr><td>featurecounts</td><td>FeaturesCounts</td><td></td></tr>
           </table>
          <br/>
 

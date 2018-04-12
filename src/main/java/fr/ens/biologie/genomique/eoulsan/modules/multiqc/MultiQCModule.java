@@ -216,9 +216,16 @@ public class MultiQCModule extends AbstractModule {
           result.put(report, new MapperInputPreprocessor());
         }
         break;
+
       case ExpressionInputPreprocessor.REPORT_NAME:
         if (!result.containsKey(report)) {
           result.put(report, new ExpressionInputPreprocessor());
+        }
+        break;
+
+      case FeatureCountsInputPreprocessor.REPORT_NAME:
+        if (!result.containsKey(report)) {
+          result.put(report, new FeatureCountsInputPreprocessor());
         }
         break;
 
