@@ -1538,6 +1538,93 @@ of reads that reject each filter like in local mode.
 
          </release>
 
+         <release version="2.2" description="Eoulsan 2.2 release" date="TBD">
+
+            <action dev="jourdren" type="fix">
+               When using the createdesign action, if the symbolic link to create already exists, now rename it.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               Now do not try to create a Docker connection when closing Docker connections.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               Fix symbolic link creation in MapperInstance.computeIndex() when reference genome is not compressed.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               When create Docker binds, now binds also file indirections of the files to mount.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               In the filtersam module in local mode, a bad SAM entry format led to not process the last alignments of the SAM file.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               Now use the eoulsan temporary directory instead of the system temporary directory when creating XLSX files in DiffanaResultsAnnotationModule and ExpressionResultsAnnotationModule.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               In STARIndexGeneratorModule, now only add the "--sjdbOverhang" STAR option to the command line when the overhang is set.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               When using a Galaxy tool, the command were executed two times.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Now by default 4096 MiB are allocated to the JVM for running Eoulsan instead of 2048 MiB.
+            </action>
+
+            <action dev="jourdren" type="update">
+               In the sam2bam module in local mode, now also create .bam.bai symbolic links.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Reenable MA plots for contrast analysis with DESeq2.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Now all the genome mapper indexes produces uncompressed ZIP archives for faster startup of the mapping step.
+            </action>
+
+            <action dev="jourdren" type="update">
+               The FastQC module now also generate a ZIP report in addition to the HTML report.
+            </action>
+
+            <action dev="jourdren" type="update">
+               For Galaxy tools, add a new variable in the Cheetah interpreter named "THREADS" that contains the number of required threads by the user. The value default value of this variable is 1.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Eoulsan now produce a image file from the Graphviz file of the workflow if GraphViz is installed on the system..
+            </action>
+
+            <action dev="jourdren" type="add">
+               Now in non-hadoop mode, Eoulsan create an error file (and log files for STAR) for the mapping steps.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Now save the standard output and standard error of the mapper index builder in files.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add Minimap2 2.10 binary into Eoulsan.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add a new module for MultiQC, supported reports are FastQC, mapreads, expression and FeatureCounts.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add expression matrix dedicated classes in the bio package. Two implementation are provided (dense and sparse). Supported files formats are TSV, UMI-tools, MarketMatrix and Cell Ranger (some formats can be only read or written).
+            </action>
+
+            <action dev="jourdren" type="update">
+               Update the syntax of the XML data formats: the toolshedgalaxy/extension tags are renamed galaxy/formatname. Backward compatibility is conserved.
+            </action>
+
+         </release>
 
 	</body>
 </document>
