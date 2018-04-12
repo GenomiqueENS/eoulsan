@@ -8,7 +8,6 @@ import static java.util.Collections.unmodifiableSet;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -273,10 +272,9 @@ public class MultiQCModule extends AbstractModule {
 
     for (File f : inputDirectory.listFiles()) {
 
-      // Do not handle files and directory that starts with '.' and files that
-      // are not symbolic links
-      if (!f.getName().startsWith(".") && Files.isSymbolicLink(f.toPath())) {
-        filesUsed.add(f.toPath().toRealPath().toFile());
+      // Do not handle files and directory that starts with '.'
+      if (!f.getName().startsWith(".")) {
+        filesUsed.add(f);
       }
     }
 
