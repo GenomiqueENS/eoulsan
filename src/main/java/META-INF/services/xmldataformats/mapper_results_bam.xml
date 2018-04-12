@@ -8,9 +8,7 @@
   <extensions>
     <extension default="true">.bam</extension>
   </extensions>
-  
   <galaxy>
     <formatname>bam</formatname>
   </galaxy>
-  
 </dataformat>
