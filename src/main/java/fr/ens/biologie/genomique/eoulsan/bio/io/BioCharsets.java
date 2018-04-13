@@ -55,7 +55,7 @@ public class BioCharsets {
   public static final String GFF_ENCODING = "ISO-8859-1";
 
   /** GFF Charset. */
-  public static final Charset GFF_CHARSET = Charset.forName(SAM_ENCODING);
+  public static final Charset GFF_CHARSET = Charset.forName(GFF_ENCODING);
 
   /** Expression files encoding. */
   public static final String EXPRESSION_ENCODING = "UTF-8";
