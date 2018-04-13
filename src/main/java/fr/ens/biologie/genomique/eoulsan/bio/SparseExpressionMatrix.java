@@ -388,7 +388,6 @@ public class SparseExpressionMatrix extends AbstractExpressionMatrix {
 
   /**
    * Public constructor.
-   * @param defaultValue the default value of the matrix
    */
   public SparseExpressionMatrix() {
     this(DEFAULT_DEFAULT_VALUE);

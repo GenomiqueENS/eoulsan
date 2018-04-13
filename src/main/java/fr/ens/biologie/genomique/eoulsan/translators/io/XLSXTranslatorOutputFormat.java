@@ -204,7 +204,6 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
   /**
    * Public constructor.
    * @param os output stream
-   * @param temporaryDirectory the temporary directory to use
    */
   public XLSXTranslatorOutputFormat(final OutputStream os) {
 

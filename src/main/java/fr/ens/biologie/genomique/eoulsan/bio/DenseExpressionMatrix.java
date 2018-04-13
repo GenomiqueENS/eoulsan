@@ -293,7 +293,6 @@ public class DenseExpressionMatrix extends AbstractExpressionMatrix {
 
   /**
    * Public constructor.
-   * @param defaultValue the default value of the matrix
    */
   public DenseExpressionMatrix() {
     this(DEFAULT_DEFAULT_VALUE);

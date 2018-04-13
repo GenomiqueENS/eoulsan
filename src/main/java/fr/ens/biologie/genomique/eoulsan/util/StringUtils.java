@@ -849,7 +849,7 @@ public final class StringUtils {
 
   /**
    * Join elements of a collection of strings into a string.
-   * @param array array of strings to join
+   * @param collection collection of strings to join
    * @param separator separator to use
    */
   public static String join(final Collection<String> collection, final String separator) {

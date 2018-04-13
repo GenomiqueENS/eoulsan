@@ -315,8 +315,8 @@ public class BEDEntry {
   }
 
   /**
-   * Get the ending position of the feature in the chromosome (one based).
-   * @return the ends of the feature
+   * Set the ending position of the feature in the chromosome (one based).
+   * @param chromosomeEnd the end position on the chromosome
    */
   public void setChromosomeEnd(final int chromosomeEnd) {
 
@@ -338,8 +338,8 @@ public class BEDEntry {
   }
 
   /**
-   * Get the score of the feature.
-   * @return the score of the feature
+   * Set the score of the feature.
+   * @param score the score of the feature
    */
   public void setScore(final String score) {
 
@@ -347,8 +347,8 @@ public class BEDEntry {
   }
 
   /**
-   * Get the score of the feature.
-   * @return the score of the feature
+   * Set the score of the feature.
+   * @param score the score of the feature
    */
   public void setScore(final int score) {
 
@@ -361,8 +361,8 @@ public class BEDEntry {
   }
 
   /**
-   * Get the score of the feature.
-   * @return the score of the feature
+   * Set the score of the feature.
+   * @param score the score of the feature
    */
   public void setScore(final double score) {
 
@@ -370,8 +370,8 @@ public class BEDEntry {
   }
 
   /**
-   * Get the strand of the feature
-   * @return the strand of the feature
+   * Set the strand of the feature.
+   * @param strand the strand of the feature
    */
   public void setStrand(final char strand) {
 
@@ -427,7 +427,9 @@ public class BEDEntry {
 
   /**
    * Set the RGB value of the item.
-   * @param rgbItem the RGB value of the item
+   * @param r the red value (0-255)
+   * @param g the green value (0-255)
+   * @param b the blue value (0-255)
    */
   public void setRgbItem(int r, int g, int b) {
 
@@ -451,7 +453,8 @@ public class BEDEntry {
 
   /**
    * Add a block to the list of block.
-   * @param block the block to add
+   * @param startBlock start position of the block
+   * @param endBlock end position of the block
    */
   public void addBlock(final int startBlock, final int endBlock) {
 
@@ -460,8 +463,9 @@ public class BEDEntry {
   }
 
   /**
-   * Add a block to the list of block.
-   * @param block the block to add
+   * Remove a block to the list of block.
+   * @param startBlock start position of the block
+   * @param endBlock end position of the block
    */
   public void removeBlock(final int startBlock, final int endBlock) {
 

@@ -191,7 +191,6 @@ public class MapperInstance {
    * @param genomeFile the genome file
    * @param indexerArguments indexer arguments
    * @param threads thread number to use
-   * @param compresssIndex if false data will be only stored in ZIP file
    * @throws IOException if an error occurs while creating the index
    */
   public void makeArchiveIndex(final File genomeFile,
