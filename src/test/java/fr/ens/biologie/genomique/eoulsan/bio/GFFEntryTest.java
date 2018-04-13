@@ -251,6 +251,19 @@ public class GFFEntryTest {
   }
 
   @Test
+  public void testGetLength() {
+
+    GFFEntry e = new GFFEntry();
+    try {
+      e.parseGFF3(
+          "ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
+    } catch (BadBioEntryException exp) {
+      assertTrue(false);
+    }
+
+    assertEquals(8001, e.getLength());
+  }
+  @Test
   public void testGetScore() {
 
     GFFEntry e = new GFFEntry();
