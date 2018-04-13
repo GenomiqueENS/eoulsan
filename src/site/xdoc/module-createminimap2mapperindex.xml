@@ -66,16 +66,16 @@
          <li><b>Optional parameters</b>:</li>
            <table>
                 <tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
-                <tr><td>index.arguments</td><td>string</td><td>Specifies the indexer arguments to use to build the index</td><td>Not set</td></tr>
+                <tr><td>indexer.arguments</td><td>string</td><td>Specifies the indexer arguments to use to build the index</td><td>Not set</td></tr>
            </table>
          <li><b>Configuration example</b>:</li>
 <pre>
 &lt;!-- Create Minimap2 index --&gt;
 &lt;step skip="false"&gt;
-	&lt;module&gt;minimape2indexgenerator&lt;/module&gt;
+	&lt;module&gt;minimap2indexgenerator&lt;/module&gt;
 	&lt;parameters&gt;
 		&lt;parameter&gt;
-			&lt;name&gt;indexarguments&lt;/name&gt;
+			&lt;name&gt;indexer.arguments&lt;/name&gt;
 			&lt;value&gt;-x splice&lt;/value&gt;
 		&lt;/parameter&gt;
 	&lt;/parameters&gt;
