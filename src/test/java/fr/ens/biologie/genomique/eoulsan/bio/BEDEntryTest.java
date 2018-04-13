@@ -19,21 +19,21 @@ public class BEDEntryTest {
   }
 
   @Test
-  public void testGetChromosomeStart() throws BadBioEntryException {
+  public void testGetStart() throws BadBioEntryException {
 
     BEDEntry e = new BEDEntry();
     e.parse("chr1\t11873\t14409\tuc001aaa.3\t0\t+", 6);
 
-    assertEquals(11874, e.getChromosomeStart());
+    assertEquals(11874, e.getStart());
   }
 
   @Test
-  public void testGetChromosomeEnd() throws BadBioEntryException {
+  public void testGetEnd() throws BadBioEntryException {
 
     BEDEntry e = new BEDEntry();
     e.parse("chr1\t11873\t14409\tuc001aaa.3\t0\t+", 6);
 
-    assertEquals(14408, e.getChromosomeEnd());
+    assertEquals(14408, e.getEnd());
   }
 
   @Test
@@ -146,25 +146,25 @@ public class BEDEntryTest {
   }
 
   @Test
-  public void testSetChromosomeStart() {
+  public void testSetStart() {
 
     BEDEntry e = new BEDEntry();
-    assertEquals(0, e.getChromosomeStart());
+    assertEquals(0, e.getStart());
 
-    e.setChromosomeStart(5555);
+    e.setStart(5555);
 
-    assertEquals(5555, e.getChromosomeStart());
+    assertEquals(5555, e.getStart());
   }
 
   @Test
-  public void testSetChromosomeEnd() {
+  public void testSetEnd() {
 
     BEDEntry e = new BEDEntry();
-    assertEquals(0, e.getChromosomeEnd());
+    assertEquals(0, e.getEnd());
 
-    e.setChromosomeEnd(6666);
+    e.setEnd(6666);
 
-    assertEquals(6666, e.getChromosomeEnd());
+    assertEquals(6666, e.getEnd());
   }
 
   @Test

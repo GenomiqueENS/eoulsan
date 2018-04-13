@@ -20,8 +20,8 @@ public class BEDEntry {
 
   private final Map<String, List<String>> metaData = new LinkedHashMap<>();
   private String chromosomeName;
-  private int chromosomeStart;
-  private int chromosomeEnd;
+  private int start;
+  private int end;
   private String name;
   private String score;
   private char strand;
@@ -94,16 +94,16 @@ public class BEDEntry {
    * Get the starting position of the feature in the chromosome (zero based).
    * @return the starts of the feature
    */
-  public int getChromosomeStart() {
-    return chromosomeStart;
+  public int getStart() {
+    return start;
   }
 
   /**
    * Get the ending position of the feature in the chromosome (one based).
    * @return the ends of the feature
    */
-  public int getChromosomeEnd() {
-    return chromosomeEnd;
+  public int getEnd() {
+    return end;
   }
 
   /**
@@ -301,31 +301,31 @@ public class BEDEntry {
 
   /**
    * Set the starting position of the feature in the chromosome (zero based).
-   * @param chromosomeStart the start of the feature
+   * @param start the start of the feature
    */
-  public void setChromosomeStart(final int chromosomeStart) {
+  public void setStart(final int start) {
 
-    if (chromosomeStart < 0) {
+    if (start < 0) {
       throw new IllegalArgumentException(
           "chromosomeStart argument cannot be lower than zero: "
-              + chromosomeStart);
+              + start);
     }
 
-    this.chromosomeStart = chromosomeStart;
+    this.start = start;
   }
 
   /**
    * Set the ending position of the feature in the chromosome (one based).
-   * @param chromosomeEnd the end position on the chromosome
+   * @param end the end position on the chromosome
    */
-  public void setChromosomeEnd(final int chromosomeEnd) {
+  public void setEnd(final int end) {
 
-    if (chromosomeEnd < 0) {
+    if (end < 0) {
       throw new IllegalArgumentException(
-          "chromosomeEnd argument cannot be lower than zero: " + chromosomeEnd);
+          "chromosomeEnd argument cannot be lower than zero: " + end);
     }
 
-    this.chromosomeEnd = chromosomeEnd;
+    this.end = end;
   }
 
   /**
@@ -486,7 +486,7 @@ public class BEDEntry {
   public String toBED3() {
 
     return this.chromosomeName
-        + '\t' + (this.chromosomeStart - 1) + '\t' + (this.chromosomeEnd + 1);
+        + '\t' + (this.start - 1) + '\t' + (this.end + 1);
   }
 
   /**
@@ -496,7 +496,7 @@ public class BEDEntry {
   public String toBED4() {
 
     return this.chromosomeName
-        + '\t' + (this.chromosomeStart - 1) + '\t' + (this.chromosomeEnd + 1)
+        + '\t' + (this.start - 1) + '\t' + (this.end + 1)
         + '\t' + (this.name == null ? "" : this.name);
   }
 
@@ -507,7 +507,7 @@ public class BEDEntry {
   public String toBED5() {
 
     return this.chromosomeName
-        + '\t' + (this.chromosomeStart - 1) + '\t' + (this.chromosomeEnd + 1)
+        + '\t' + (this.start - 1) + '\t' + (this.end + 1)
         + '\t' + (this.name != null ? this.name : "") + '\t'
         + (this.score != null ? this.score : '0');
   }
@@ -519,7 +519,7 @@ public class BEDEntry {
   public String toBED6() {
 
     return this.chromosomeName
-        + '\t' + (this.chromosomeStart - 1) + '\t' + (this.chromosomeEnd + 1)
+        + '\t' + (this.start - 1) + '\t' + (this.end + 1)
         + '\t' + (this.name != null ? this.name : "") + '\t'
         + (this.score != null ? this.score : '0') + '\t'
         + (this.strand != 0 ? this.strand : "");
@@ -535,9 +535,9 @@ public class BEDEntry {
 
     sb.append(this.chromosomeName);
     sb.append('\t');
-    sb.append(this.chromosomeStart - 1);
+    sb.append(this.start - 1);
     sb.append('\t');
-    sb.append(this.chromosomeEnd + 1);
+    sb.append(this.end + 1);
     sb.append('\t');
     sb.append(this.name != null ? this.name : "");
     sb.append('\t');
@@ -623,8 +623,8 @@ public class BEDEntry {
       throw new BadBioEntryException("chromosome name is empty", s);
     }
 
-    this.chromosomeStart = parseCoordinate(fields.get(1), 1, Integer.MIN_VALUE);
-    this.chromosomeEnd = parseCoordinate(fields.get(2), -1, Integer.MAX_VALUE);
+    this.start = parseCoordinate(fields.get(1), 1, Integer.MIN_VALUE);
+    this.end = parseCoordinate(fields.get(2), -1, Integer.MAX_VALUE);
     this.blocks.clear();
 
     if (requiredFieldCount == 3) {
@@ -760,8 +760,8 @@ public class BEDEntry {
   public void clear() {
 
     this.chromosomeName = null;
-    this.chromosomeStart = 0;
-    this.chromosomeEnd = 0;
+    this.start = 0;
+    this.end = 0;
     this.name = null;
     this.score = null;
     this.strand = 0;
