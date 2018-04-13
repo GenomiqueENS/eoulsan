@@ -198,7 +198,8 @@ public class MultiQCModule extends AbstractModule {
       final String reports, final String stepId) throws EoulsanException {
 
     // Get service instance
-    final InputPreprocessorService service = InputPreprocessorService.getInstance();
+    final InputPreprocessorService service =
+        InputPreprocessorService.getInstance();
 
     final Map<String, InputPreprocessor> result = new HashMap<>();
 

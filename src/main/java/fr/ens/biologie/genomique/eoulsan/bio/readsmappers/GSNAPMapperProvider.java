@@ -154,8 +154,7 @@ public class GSNAPMapperProvider extends AbstractMapperProvider {
     List<String> cmd = new ArrayList<>();
     final String binariesDirectory =
         indexerFile.getParentFile().getAbsolutePath();
-    final String genomeDirectory =
-        genomeFile.getParentFile().getAbsolutePath();
+    final String genomeDirectory = genomeFile.getParentFile().getAbsolutePath();
 
     cmd.add(indexerFile.getAbsolutePath());
     cmd.add("-B");

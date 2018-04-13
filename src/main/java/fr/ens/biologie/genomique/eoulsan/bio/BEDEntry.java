@@ -324,8 +324,7 @@ public class BEDEntry {
 
     if (start < 0) {
       throw new IllegalArgumentException(
-          "chromosomeStart argument cannot be lower than zero: "
-              + start);
+          "chromosomeStart argument cannot be lower than zero: " + start);
     }
 
     this.start = start;
@@ -513,8 +512,8 @@ public class BEDEntry {
   public String toBED4() {
 
     return this.chromosomeName
-        + '\t' + (this.start - 1) + '\t' + (this.end + 1)
-        + '\t' + (this.name == null ? "" : this.name);
+        + '\t' + (this.start - 1) + '\t' + (this.end + 1) + '\t'
+        + (this.name == null ? "" : this.name);
   }
 
   /**
@@ -524,8 +523,8 @@ public class BEDEntry {
   public String toBED5() {
 
     return this.chromosomeName
-        + '\t' + (this.start - 1) + '\t' + (this.end + 1)
-        + '\t' + (this.name != null ? this.name : "") + '\t'
+        + '\t' + (this.start - 1) + '\t' + (this.end + 1) + '\t'
+        + (this.name != null ? this.name : "") + '\t'
         + (this.score != null ? this.score : '0');
   }
 
@@ -536,8 +535,8 @@ public class BEDEntry {
   public String toBED6() {
 
     return this.chromosomeName
-        + '\t' + (this.start - 1) + '\t' + (this.end + 1)
-        + '\t' + (this.name != null ? this.name : "") + '\t'
+        + '\t' + (this.start - 1) + '\t' + (this.end + 1) + '\t'
+        + (this.name != null ? this.name : "") + '\t'
         + (this.score != null ? this.score : '0') + '\t'
         + (this.strand != 0 ? this.strand : "");
   }

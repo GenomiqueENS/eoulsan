@@ -60,7 +60,8 @@ public class DummyTaskScheduler extends BpipeTaskScheduler {
    */
   public DummyTaskScheduler() {
 
-    final File binDir = new File(Main.getInstance().getEoulsanDirectory(), "bin");
+    final File binDir =
+        new File(Main.getInstance().getEoulsanDirectory(), "bin");
 
     this.commandWrapperFile = new File(binDir, COMMAND_WRAPPER_SCRIPT);
   }

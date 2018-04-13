@@ -168,7 +168,6 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
         new SAMFileWriterFactory().setTempDirectory(tmpDir)
             .makeSAMWriter(inputSam.getFileHeader(), false, outFile.create());
 
-
     final SAMRecordIterator it = inputSam.iterator();
 
     while (it.hasNext()) {

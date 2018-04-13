@@ -439,9 +439,8 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
    * @return a set of files
    * @throws IOException if mount of a file cannot be found
    */
-  static Set<File> convertNFSFileToMountPoint(
-      final Collection<File> files,final boolean convertNFSFilesToMountRoots)
-      throws IOException {
+  static Set<File> convertNFSFileToMountPoint(final Collection<File> files,
+      final boolean convertNFSFilesToMountRoots) throws IOException {
 
     if (files == null) {
       return null;
@@ -451,7 +450,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
 
     for (File file : files) {
 
-      if (file !=null && file.exists()) {
+      if (file != null && file.exists()) {
         result.add(convertNFSFilesToMountRoots
             ? convertNFSFileToMountPoint(file) : file);
       }
@@ -496,7 +495,8 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
    * @return a set with the file indirections
    * @throws IOException if an error occurs while searching indirections
    */
-  static final Set<File> fileIndirections(final Collection<File> files) throws IOException {
+  static final Set<File> fileIndirections(final Collection<File> files)
+      throws IOException {
 
     if (files == null) {
       return null;
@@ -624,8 +624,8 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
     checkNotNull(dockerClient, "dockerClient argument cannot be null");
     checkNotNull(dockerImage, "dockerImage argument cannot be null");
 
-    EoulsanLogger.getLogger()
-        .fine(getClass().getSimpleName() + " docker image used: " + dockerImage);
+    EoulsanLogger.getLogger().fine(
+        getClass().getSimpleName() + " docker image used: " + dockerImage);
 
     this.dockerClient = dockerClient;
     this.dockerImage = dockerImage;

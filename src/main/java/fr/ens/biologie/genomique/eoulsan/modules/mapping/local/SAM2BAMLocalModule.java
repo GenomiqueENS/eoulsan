@@ -131,7 +131,7 @@ public class SAM2BAMLocalModule extends AbstractSAM2BAMModule {
     // Create a symbolic links
     bamIndexDataFile.symlink(new DataFile(createdBamIndexFile), true);
     bamIndexDataFile.symlink(
-        new DataFile(bamDataFile.getParent(), bamDataFile.getName() + ".bai" ),
+        new DataFile(bamDataFile.getParent(), bamDataFile.getName() + ".bai"),
         true);
   }
 

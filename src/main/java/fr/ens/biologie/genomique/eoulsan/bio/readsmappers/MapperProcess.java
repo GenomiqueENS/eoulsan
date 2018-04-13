@@ -856,10 +856,11 @@ public abstract class MapperProcess {
    * @throws IOException if an error occurs
    */
   protected MapperProcess(final String mapperName, MapperExecutor executor,
-      final File temporaryDirectory, final File stdErrFile, final boolean pairedEnd)
-      throws IOException {
+      final File temporaryDirectory, final File stdErrFile,
+      final boolean pairedEnd) throws IOException {
 
-    this(mapperName, executor, temporaryDirectory, stdErrFile, pairedEnd, false);
+    this(mapperName, executor, temporaryDirectory, stdErrFile, pairedEnd,
+        false);
   }
 
   /**
@@ -873,8 +874,9 @@ public abstract class MapperProcess {
    * @throws IOException if an error occurs
    */
   protected MapperProcess(final String mapperName, MapperExecutor executor,
-      final File temporaryDirectory, final File stdErrFile, final boolean pairedEnd,
-      final File inputFile1, final File inputFile2) throws IOException {
+      final File temporaryDirectory, final File stdErrFile,
+      final boolean pairedEnd, final File inputFile1, final File inputFile2)
+      throws IOException {
 
     this(mapperName, executor, temporaryDirectory, stdErrFile, pairedEnd, false,
         inputFile1, inputFile2);
@@ -906,8 +908,9 @@ public abstract class MapperProcess {
    * @throws IOException if en error occurs
    */
   protected MapperProcess(final String mapperName, MapperExecutor executor,
-      final File temporaryDirectory, final File stdErrFile, final boolean pairedEnd,
-      final boolean threadForRead1) throws IOException {
+      final File temporaryDirectory, final File stdErrFile,
+      final boolean pairedEnd, final boolean threadForRead1)
+      throws IOException {
 
     this(mapperName, executor, temporaryDirectory, stdErrFile, pairedEnd,
         threadForRead1, null, null);
@@ -924,9 +927,9 @@ public abstract class MapperProcess {
    * @throws IOException if en error occurs
    */
   protected MapperProcess(final String mapperName, MapperExecutor executor,
-      final File temporaryDirectory, final File stdErrFile, final boolean pairedEnd,
-      final boolean threadForRead1, final File inputFile1,
-      final File inputFile2) throws IOException {
+      final File temporaryDirectory, final File stdErrFile,
+      final boolean pairedEnd, final boolean threadForRead1,
+      final File inputFile1, final File inputFile2) throws IOException {
 
     requireNonNull(mapperName, "mapperName argument cannot be null");
     requireNonNull(executor, "executor argument cannot be null");

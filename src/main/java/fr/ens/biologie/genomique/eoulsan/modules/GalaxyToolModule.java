@@ -66,7 +66,7 @@ public class GalaxyToolModule extends AbstractModule {
   private final String source;
 
   /** The requirements of the tool. */
-  private Set<Requirement> requirements = new HashSet<>() ;
+  private Set<Requirement> requirements = new HashSet<>();
 
   //
   // Module methods
@@ -143,10 +143,10 @@ public class GalaxyToolModule extends AbstractModule {
 
     // Set the description of the context
     final ToolInfo toolInfo = this.toolInterpreter.getToolInfo();
-    context.getLogger().info("Launch tool galaxy "
-        + toolInfo.getToolName() + ", version "
-        + toolInfo.getToolVersion() + " with interpreter "
-        + toolInfo.getInterpreter());
+    context.getLogger()
+        .info("Launch tool galaxy "
+            + toolInfo.getToolName() + ", version " + toolInfo.getToolVersion()
+            + " with interpreter " + toolInfo.getInterpreter());
 
     final ToolExecutorResult result;
 

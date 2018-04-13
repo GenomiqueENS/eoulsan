@@ -245,8 +245,7 @@ public class MapperInstance {
    */
   private void computeIndex(final File genomeFile, final File outputDir,
       final List<String> indexerArguments, final int threads,
-      final File stdOutFile, final File stdErrorFile)
-      throws IOException {
+      final File stdOutFile, final File stdErrorFile) throws IOException {
 
     checkNotNull(genomeFile, "genome file is null");
     checkNotNull(outputDir, "output directory is null");

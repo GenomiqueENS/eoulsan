@@ -16,6 +16,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix.Entry;
 public abstract class AbstractExpressionMatrixTest {
 
   protected abstract ExpressionMatrix createMatrix();
+
   protected abstract ExpressionMatrix createMatrix(double defaultValue);
 
   @Test
@@ -233,11 +234,9 @@ public abstract class AbstractExpressionMatrixTest {
       result.add(e);
     }
 
-    assertEquals(
-        Arrays.asList(new BasicEntry("row2", "col1", 2.0),
-            new BasicEntry("row2", "col2", 5.0),
-            new BasicEntry("row3", "col2", 6.0)),
-        result);
+    assertEquals(Arrays.asList(new BasicEntry("row2", "col1", 2.0),
+        new BasicEntry("row2", "col2", 5.0),
+        new BasicEntry("row3", "col2", 6.0)), result);
   }
 
   @Test

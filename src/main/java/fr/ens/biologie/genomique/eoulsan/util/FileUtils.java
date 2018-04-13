@@ -898,7 +898,7 @@ public class FileUtils {
       BufferedInputStream origin = null;
 
       for (final File f : filesToAdd) {
-        ZipEntry ze =new ZipEntry(path + f.getName());
+        ZipEntry ze = new ZipEntry(path + f.getName());
 
         if (store) {
 

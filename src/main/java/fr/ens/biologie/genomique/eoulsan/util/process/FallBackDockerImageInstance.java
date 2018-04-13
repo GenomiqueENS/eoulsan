@@ -137,9 +137,8 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
    * @param files the share files to add
    * @throws IOException if an error occurs when converting the file path
    */
-  private static void toBind(final List<String> command,
-      final List<File> files, final boolean convertNFSFilesToMountRoots)
-      throws IOException {
+  private static void toBind(final List<String> command, final List<File> files,
+      final boolean convertNFSFilesToMountRoots) throws IOException {
 
     for (File file : fileIndirections(
         convertNFSFileToMountPoint(files, convertNFSFilesToMountRoots))) {
@@ -206,8 +205,8 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
 
     checkNotNull(dockerImage, "dockerImage argument cannot be null");
 
-    EoulsanLogger.getLogger()
-        .fine(getClass().getSimpleName() + " docker image used: " + dockerImage);
+    EoulsanLogger.getLogger().fine(
+        getClass().getSimpleName() + " docker image used: " + dockerImage);
 
     this.dockerImage = dockerImage;
     this.userUid = SystemUtils.uid();

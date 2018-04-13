@@ -75,9 +75,8 @@ public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
           final String resourceName = getResourceName(resource);
 
           if (resourceName == null) {
-            throw new EoulsanException(
-                "Cannot get resource name for resource: "
-                    + resource + " (file: " + file + ")");
+            throw new EoulsanException("Cannot get resource name for resource: "
+                + resource + " (file: " + file + ")");
           }
 
           addResource(resourceName, file.getSource());

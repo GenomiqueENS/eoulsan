@@ -491,8 +491,8 @@ public final class DesignUtils {
 
     final DesignMetadata dmd = design.getMetadata();
     for (final String field : designKeysToModify) {
-      dmd.set(field,
-          replaceLocalPathBySymlinks(dmd.getAsList(field), symlinksDir, createdLinks));
+      dmd.set(field, replaceLocalPathBySymlinks(dmd.getAsList(field),
+          symlinksDir, createdLinks));
     }
 
     //
@@ -513,14 +513,15 @@ public final class DesignUtils {
 
       final SampleMetadata smd = s.getMetadata();
       for (final String field : sampleKeysToModify) {
-        smd.set(field,
-            replaceLocalPathBySymlinks(smd.getAsList(field), symlinksDir, createdLinks));
+        smd.set(field, replaceLocalPathBySymlinks(smd.getAsList(field),
+            symlinksDir, createdLinks));
       }
     }
   }
 
   /**
-   * Replace values with the path of a symbolic link that will be created by this method.
+   * Replace values with the path of a symbolic link that will be created by
+   * this method.
    * @param values the values to change
    * @param symlinksDir the directory of the symbolic links
    * @param createdLinks a set with the name of the created symbolic link
@@ -600,7 +601,6 @@ public final class DesignUtils {
 
     return newName;
   }
-
 
   /**
    * Get the Condition metadata value for an experimentSample. First look in

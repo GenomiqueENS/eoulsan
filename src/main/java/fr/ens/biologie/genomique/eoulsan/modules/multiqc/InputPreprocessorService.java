@@ -7,7 +7,8 @@ import fr.ens.biologie.genomique.eoulsan.util.ServiceNameLoader;
  * @since 2.2
  * @author Laurent Jourdren
  */
-public class InputPreprocessorService extends ServiceNameLoader<InputPreprocessor> {
+public class InputPreprocessorService
+    extends ServiceNameLoader<InputPreprocessor> {
 
   private static InputPreprocessorService service;
 

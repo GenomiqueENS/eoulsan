@@ -321,12 +321,13 @@ public class FastQCModule extends AbstractModule {
     // Define modules list
     final OverRepresentedSeqs os = new OverRepresentedSeqs();
 
-    final List<AbstractQCModule> modules = new ArrayList<>(Arrays.asList(new BasicStats(),
-        new PerBaseQualityScores(), new PerTileQualityScores(),
-        new PerSequenceQualityScores(), new PerBaseSequenceContent(),
-        new PerSequenceGCContent(), new NContent(),
-        new SequenceLengthDistribution(), os.duplicationLevelModule(), os,
-        new AdapterContent(), new KmerContent()));
+    final List<AbstractQCModule> modules =
+        new ArrayList<>(Arrays.asList(new BasicStats(),
+            new PerBaseQualityScores(), new PerTileQualityScores(),
+            new PerSequenceQualityScores(), new PerBaseSequenceContent(),
+            new PerSequenceGCContent(), new NContent(),
+            new SequenceLengthDistribution(), os.duplicationLevelModule(), os,
+            new AdapterContent(), new KmerContent()));
 
     // Process sequences
     processSequences(modules, seqFile);
@@ -337,8 +338,8 @@ public class FastQCModule extends AbstractModule {
         : singletonList((AbstractQCModule) new EmptyFileQC(inputFile));
 
     // Set the description of the context
-    status.setDescription(
-        "Create FastQC report on " + inputFile + " in " + htmlOutputFile.getName());
+    status.setDescription("Create FastQC report on "
+        + inputFile + " in " + htmlOutputFile.getName());
 
     // Create the report
     createReport(reportModules, seqFile, htmlOutputFile, zipOutputFile, tmpDir);

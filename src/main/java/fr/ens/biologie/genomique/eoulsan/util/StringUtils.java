@@ -852,7 +852,8 @@ public final class StringUtils {
    * @param collection collection of strings to join
    * @param separator separator to use
    */
-  public static String join(final Collection<String> collection, final String separator) {
+  public static String join(final Collection<String> collection,
+      final String separator) {
 
     if (collection == null) {
       return null;

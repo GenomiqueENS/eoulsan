@@ -263,6 +263,7 @@ public class GFFEntryTest {
 
     assertEquals(8001, e.getLength());
   }
+
   @Test
   public void testGetScore() {
 

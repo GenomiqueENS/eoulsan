@@ -114,7 +114,7 @@ public class GFFEntry {
    * @return the end position
    */
   public final int getLength() {
-    return this.end - this.start +1;
+    return this.end - this.start + 1;
   }
 
   /**

@@ -251,8 +251,9 @@ public final class XMLDataFormat extends AbstractDataFormat
   // Parsing methods
   //
 
-  private void parse(final InputStream is, final String source) throws ParserConfigurationException,
-      SAXException, IOException, EoulsanException {
+  private void parse(final InputStream is, final String source)
+      throws ParserConfigurationException, SAXException, IOException,
+      EoulsanException {
 
     final Document doc;
 
@@ -367,19 +368,18 @@ public final class XMLDataFormat extends AbstractDataFormat
     }
 
     // Parse Galaxy format names (using the new tag names)
-    for (Element toolshed : XMLUtils.getElementsByTagName(document,
-        "galaxy")) {
-      for (Element ext : XMLUtils.getElementsByTagName(toolshed, "formatname")) {
+    for (Element toolshed : XMLUtils.getElementsByTagName(document, "galaxy")) {
+      for (Element ext : XMLUtils.getElementsByTagName(toolshed,
+          "formatname")) {
 
         this.galaxyFormatNames.add(ext.getTextContent().trim());
       }
     }
 
     if (!FileNaming.isFormatPrefixValid(this.prefix)) {
-      throw new EoulsanException(
-          "The prefix of the dataformat is invalid "
-              + "(only ascii letters and digits are allowed): " + this.prefix
-              + " (format name: " + this.name + ", source: " + source + ")");
+      throw new EoulsanException("The prefix of the dataformat is invalid "
+          + "(only ascii letters and digits are allowed): " + this.prefix
+          + " (format name: " + this.name + ", source: " + source + ")");
     }
 
     if (this.description != null) {

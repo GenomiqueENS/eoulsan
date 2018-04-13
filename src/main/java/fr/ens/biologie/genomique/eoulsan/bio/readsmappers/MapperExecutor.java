@@ -88,6 +88,7 @@ interface MapperExecutor {
    *           command
    */
   Result execute(List<String> command, File executionDirectory, boolean stdout,
-      File stdErrFile, boolean redirectStderr, File... filesUsed) throws IOException;
+      File stdErrFile, boolean redirectStderr, File... filesUsed)
+      throws IOException;
 
 }
