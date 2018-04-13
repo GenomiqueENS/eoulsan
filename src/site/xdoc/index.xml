@@ -106,6 +106,7 @@
                     <ul>
                       <li>DESeq2</li>
                       <li>FastQC</li>
+                      <li>MultiQC</li>
                       <li>sam2bam</li>
                       <li>bam2sam</li>
                       <li>sam2fastq</li>
@@ -124,8 +125,7 @@
 		  <li>Docker support</li>
 		  <li>New mappers added: STAR, Minimap2</li>
 		  <li>Support of flavors of mappers (e.g. standard and large index binary versions of Bowtie 1, Bowtie 2 and STAR)</li>
-		  <li>Update of the bundled versions of the mappers: Bowtie (1.1.1), Bowtie2 (2.2.4), BWA (0.7.12 and 0.7.15) and GSNAP (2014-12-21, 2017-02-25 and 2017-04-24)</li>
-		  <li>New FastQC step</li>
+		  <li>Update of the bundled versions of the mappers: Bowtie (1.1.1), Bowtie2 (2.2.4), BWA (0.7.12 and 0.7.15), GSNAP (2014-12-21, 2017-02-25 and 2017-04-24) and Minimap2 (2.5 and 2.10)</li>
 		  <li>Hadoop 2.x support</li>
 		  <li>Support of many job schedulers: HT-Condor, SLURM, TORQUE, PBS Pro and TGCC</li>
 		  <li>Galaxy tool XML file can be interpreted as an Eoulsan step</li>
