@@ -37,6 +37,15 @@ public class BEDEntryTest {
   }
 
   @Test
+  public void testGetLength() throws BadBioEntryException {
+
+    BEDEntry e = new BEDEntry();
+    e.parse("chr1\t1000\t2001\tuc001aaa.3\t0\t+", 6);
+
+    assertEquals(1000, e.getLength());
+  }
+
+  @Test
   public void testGetName() throws BadBioEntryException {
 
     BEDEntry e = new BEDEntry();
@@ -85,6 +94,22 @@ public class BEDEntryTest {
 
     e.parse(s, 12);
     assertEquals(21872, e.getThickEnd());
+  }
+
+  @Test
+  public void testGetThickLength() throws BadBioEntryException {
+
+    BEDEntry e = new BEDEntry();
+
+    String s =
+        "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t1000\t2001\t0\t3\t354,109,1189,\t0,739,1347,";
+
+    e.parse(s, 12);
+    assertEquals(1000, e.getThickLength());
+
+    s = "chr1\t11873\t14409";
+    e.parse(s);
+    assertEquals(0, e.getThickLength());
   }
 
   @Test

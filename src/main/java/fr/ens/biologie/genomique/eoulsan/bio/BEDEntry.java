@@ -87,7 +87,7 @@ public class BEDEntry {
    * @return the chromosome name
    */
   public String getChromosomeName() {
-    return chromosomeName;
+    return this.chromosomeName;
   }
 
   /**
@@ -95,7 +95,7 @@ public class BEDEntry {
    * @return the starts of the feature
    */
   public int getStart() {
-    return start;
+    return this.start;
   }
 
   /**
@@ -103,7 +103,15 @@ public class BEDEntry {
    * @return the ends of the feature
    */
   public int getEnd() {
-    return end;
+    return this.end;
+  }
+
+  /**
+   * Get the length of the entry.
+   * @return the length of feature
+   */
+  public int getLength() {
+    return this.end - this.start + 1;
   }
 
   /**
@@ -111,7 +119,7 @@ public class BEDEntry {
    * @return the name of the BED feature
    */
   public String getName() {
-    return name;
+    return this.name;
   }
 
   /**
@@ -119,7 +127,7 @@ public class BEDEntry {
    * @return the score of the feature
    */
   public String getScore() {
-    return score;
+    return this.score;
   }
 
   /**
@@ -127,7 +135,7 @@ public class BEDEntry {
    * @return the strand of the feature
    */
   public char getStrand() {
-    return strand;
+    return this.strand;
   }
 
   /**
@@ -135,7 +143,7 @@ public class BEDEntry {
    * @return the starting position at which the feature is drawn thickly
    */
   public int getThickStart() {
-    return thickStart;
+    return this.thickStart;
   }
 
   /**
@@ -143,7 +151,16 @@ public class BEDEntry {
    * @return the ending position at which the feature is drawn thickly
    */
   public int getThickEnd() {
-    return thickEnd;
+    return this.thickEnd;
+  }
+
+  /**
+   * Get the thick length.
+   * @return the thick length
+   */
+  public int getThickLength() {
+    return this.thickStart == 0 || this.getThickEnd() == 0
+        ? 0 : this.thickEnd - this.thickStart + 1;
   }
 
   /**
@@ -614,6 +631,8 @@ public class BEDEntry {
           "Invalid required field count: " + requiredFieldCount);
     }
 
+    clear();
+
     final Splitter splitter = Splitter.on('\t').trimResults();
 
     List<String> fields = splitter.splitToList(s);
@@ -625,7 +644,6 @@ public class BEDEntry {
 
     this.start = parseCoordinate(fields.get(1), 1, Integer.MIN_VALUE);
     this.end = parseCoordinate(fields.get(2), -1, Integer.MAX_VALUE);
-    this.blocks.clear();
 
     if (requiredFieldCount == 3) {
       return;
