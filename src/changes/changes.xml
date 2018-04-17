@@ -1538,7 +1538,7 @@ of reads that reject each filter like in local mode.
 
          </release>
 
-         <release version="2.2" description="Eoulsan 2.2 release" date="TBD">
+         <release version="2.2" description="Eoulsan 2.2 release" date="2018-04-17">
 
             <action dev="jourdren" type="fix">
                When using the createdesign action, if the symbolic link to create already exists, now rename it.
