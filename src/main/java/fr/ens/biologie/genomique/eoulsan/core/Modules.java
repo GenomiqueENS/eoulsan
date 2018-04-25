@@ -26,6 +26,8 @@ package fr.ens.biologie.genomique.eoulsan.core;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Set;
+
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 
@@ -186,6 +188,50 @@ public class Modules {
 
     throw new EoulsanException("The invalid configuration for the \""
         + context.getCurrentStep().getId() + "\" step: " + message);
+  }
+
+  /**
+   * Get the last parameter which name match for a parameter set.
+   * @param parameters the parameter set
+   * @param parameterName the name of the parameter to look for
+   * @return the last parameter that match or null if the parameter is not found
+   */
+  public static Parameter getParameter(final Set<Parameter> parameters,
+      final String parameterName) {
+
+    checkNotNull(parameters, "parameters argument cannot be null");
+    checkNotNull(parameterName, "parameterName argument cannot be null");
+
+    Parameter result = null;
+
+    for (Parameter p : parameters) {
+      if (parameterName.equals(p.getName())) {
+        result = p;
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * test if a set of parameters contains a parameter.
+   * @param parameters the parameter set
+   * @param parameterName the name of the parameter to look for
+   * @return true if the set of parameter contains the parameter
+   */
+  public static boolean containsParameter(final Set<Parameter> parameters,
+      final String parameterName) {
+
+    checkNotNull(parameters, "parameters argument cannot be null");
+    checkNotNull(parameterName, "parameterName argument cannot be null");
+
+    for (Parameter p : parameters) {
+      if (parameterName.equals(p.getName())) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   //

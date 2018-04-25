@@ -24,9 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.expressioncounters;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Writer;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,148 +32,230 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Splitter;
+
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
+import fr.ens.biologie.genomique.eoulsan.bio.GFFEntry;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomicArray;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomicInterval;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters;
-import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
-import fr.ens.biologie.genomique.eoulsan.util.Reporter;
+import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
+import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 import htsjdk.samtools.SAMRecord;
-import htsjdk.samtools.SAMRecordIterator;
-import htsjdk.samtools.SamInputResource;
-import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
 
 /**
  * This class defines a wrapper on the HTSeq-count counter.
  * @since 1.2
  * @author Claire Wallon
  */
-public class HTSeqCounter extends AbstractExpressionCounter {
+public class HTSeqCounter extends AbstractExpressionCounter
+    implements Serializable {
+
+  private static final long serialVersionUID = 4750866178483111062L;
 
   /** Counter name. */
   public static final String COUNTER_NAME = "htseq-count";
 
+  public static final String REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME =
+      "remove.ambiguous.cases";
+  public static final String OVERLAP_MODE_PARAMETER_NAME = "overlap.mode";
+  public static final String STRANDED_PARAMETER_NAME = "stranded";
+  public static final String COUNTER_PARAMETER_NAME = "counter";
+  public static final String GENOMIC_TYPE_PARAMETER_NAME = "genomic.type";
+  public static final String ATTRIBUTE_ID_PARAMETER_NAME = "attribute.id";
+  public static final String SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME =
+      "split.attribute.values";
+
+  private static final String GENOMIC_TYPE_DEFAULT = "exon";
+  private static final String ATTRIBUTE_ID_DEFAULT = "PARENT";
+  private static final int MIN_AVERAGE_QUALITY_DEFAULT = 0;
+
+  private String genomicType = GENOMIC_TYPE_DEFAULT;
+  private String attributeId = ATTRIBUTE_ID_DEFAULT;
+  private boolean splitAttributeValues;
+  private StrandUsage stranded;
+  private OverlapMode overlapMode;
+  private boolean removeAmbiguousCases;
+  private int minAverageQuality = MIN_AVERAGE_QUALITY_DEFAULT;
+  private GenomicArray<String> features;
+
   @Override
-  public String getCounterName() {
+  public String getName() {
 
     return COUNTER_NAME;
   }
 
   @Override
-  protected void internalCount(final DataFile alignmentFile,
-      final DataFile annotationFile, final boolean gtfFormat,
-      final DataFile expressionFile, final DataFile genomeDescFile,
-      final Reporter reporter, final String counterGroup)
-      throws IOException, EoulsanException, BadBioEntryException {
+  public String getDescription() {
 
-    countReadsInFeatures(alignmentFile, annotationFile, gtfFormat,
-        expressionFile, getStranded(), getOverlapMode(),
-        isRemoveAmbiguousCases(), getGenomicType(), getAttributeId(),
-        isSplitAttributeValues(), false, 0, null, genomeDescFile, reporter,
-        counterGroup);
+    return COUNTER_NAME + " counter";
+  }
+
+  @Override
+  public void setParameter(final String key, final String value)
+      throws EoulsanException {
+
+    if (key == null) {
+      throw new NullPointerException("the key argument is null");
+    }
+
+    if (value == null) {
+      throw new NullPointerException("the value argument is null");
+    }
+
+    // TODO handle minimal quality parameter
+
+    switch (key) {
+
+    case GENOMIC_TYPE_PARAMETER_NAME:
+      this.genomicType = value;
+      break;
+
+    case ATTRIBUTE_ID_PARAMETER_NAME:
+      this.attributeId = value;
+      break;
+
+    case STRANDED_PARAMETER_NAME:
+
+      this.stranded = StrandUsage.getStrandUsageFromName(value);
+
+      if (this.stranded == null) {
+        throw new EoulsanException("Unknown strand mode");
+      }
+      break;
+
+    case OVERLAP_MODE_PARAMETER_NAME:
+
+      this.overlapMode = OverlapMode.getOverlapModeFromName(value);
+
+      if (this.overlapMode == null) {
+        throw new EoulsanException("Unknown overlap mode");
+      }
+      break;
+
+    case REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME:
+      this.removeAmbiguousCases = Boolean.parseBoolean(value);
+      break;
+
+    case SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME:
+      this.splitAttributeValues = Boolean.parseBoolean(value);
+      break;
+
+    default:
+      throw new EoulsanException("Unknown parameter: " + key);
+    }
 
   }
 
-  /**
-   * Check if a SAM file contains paired-end data.
-   * @param samIs the SAM file input stream
-   * @return true if the SAM file contains paired-end data
-   */
-  public static boolean isPairedData(final InputStream samIs) {
+  @Override
+  public void checkConfiguration() throws EoulsanException {
 
-    if (samIs == null) {
-      throw new NullPointerException("is argument cannot be null");
+    if (this.genomicType == null) {
+      throw new EoulsanException("No parent type set");
     }
 
-    try {
-      final SamReader input =
-          SamReaderFactory.makeDefault().open(SamInputResource.of(samIs));
+    if (this.attributeId == null) {
+      throw new EoulsanException("No attribute id set");
+    }
 
-      SAMRecordIterator samIterator = input.iterator();
+    if (this.stranded == null) {
+      throw new EoulsanException("Unknown strand mode");
+    }
 
-      boolean result = false;
+    if (this.overlapMode == null) {
+      throw new EoulsanException("Unknown overlap mode");
+    }
+  }
 
-      // Test if input is paired-end data
-      if (samIterator.hasNext()) {
-        if (samIterator.next().getReadPairedFlag()) {
-          result = true;
+  @Override
+  public void init(final GenomeDescription desc,
+      final Iterable<GFFEntry> annotations) throws EoulsanException {
+
+    if (desc == null) {
+      throw new NullPointerException("the desc argument is null");
+    }
+
+    if (annotations == null) {
+      throw new NullPointerException("the annotations argument is null");
+    }
+
+    if (this.features != null) {
+      throw new IllegalStateException(
+          "the counter has been already initialized");
+    }
+
+    // Check configuration
+    checkConfiguration();
+
+    this.features = new GenomicArray<>(desc);
+
+    final Splitter splitter = Splitter.on(',').omitEmptyStrings().trimResults();
+
+    // Read the annotation file
+    for (final GFFEntry gff : annotations) {
+
+      if (this.genomicType.equals(gff.getType())) {
+
+        final String featureId = gff.getAttributeValue(attributeId);
+        if (featureId == null) {
+
+          throw new EoulsanException("Feature "
+              + this.genomicType + " does not contain a " + attributeId
+              + " attribute");
+        }
+
+        if ((this.stranded == StrandUsage.YES
+            || this.stranded == StrandUsage.REVERSE)
+            && '.' == gff.getStrand()) {
+
+          throw new EoulsanException("Feature "
+              + this.genomicType
+              + " does not have strand information but you are running "
+              + "htseq-count in stranded mode.");
+        }
+
+        // Addition to the list of features of a GenomicInterval object
+        // corresponding to the current annotation line
+
+        final List<String> featureIds;
+
+        if (this.splitAttributeValues) {
+          featureIds = GuavaCompatibility.splitToList(splitter, featureId);
+        } else {
+          featureIds = Collections.singletonList(featureId);
+        }
+
+        // Split parent if needed
+        for (String f : featureIds) {
+          this.features.addEntry(
+              new GenomicInterval(gff, this.stranded.isSaveStrandInfo()), f);
         }
       }
+    }
 
-      // Close input file
-      input.close();
-
-      return result;
-
-    } catch (IOException e) {
-      return false;
+    if (this.features.getFeaturesIds().size() == 0) {
+      throw new EoulsanException(
+          "Warning: No features of type '" + this.genomicType + "' found.\n");
     }
   }
 
-  /**
-   * Count the number of alignments for all the features of the annotation file.
-   * @param samFile SAM file that contains alignments
-   * @param annotationFile annotation file
-   * @param gtfFormat true if the the annotation file is in GTF format
-   * @param outFile output file
-   * @param stranded strand to consider
-   * @param overlapMode overlap mode to consider
-   * @param removeAmbiguousCases if true : ambiguous cases will be removed
-   * @param featureType annotation feature type to consider
-   * @param attributeId annotation attribute id to consider
-   * @param splitAttributeValues split attribute values
-   * @param quiet if true : suppress progress report and warnings
-   * @param minAverageQual minimum value for alignment quality
-   * @param samOutFile output SAM file annotating each line with its assignment
-   *          to a feature or a special counter (as an optional field with tag
-   *          'XF').
-   * @param reporter Reporter object.
-   * @param counterGroup counter group for the Reporter object.
-   * @throws EoulsanException
-   * @throws IOException
-   * @throws BadBioEntryException
-   */
-  private static void countReadsInFeatures(final DataFile samFile,
-      final DataFile annotationFile, final boolean gtfFormat,
-      final DataFile outFile, final StrandUsage stranded,
-      final OverlapMode overlapMode, final boolean removeAmbiguousCases,
-      final String featureType, final String attributeId,
-      final boolean splitAttributeValues, final boolean quiet,
-      final int minAverageQual, final DataFile samOutFile,
-      final DataFile genomeDescFile, final Reporter reporter,
-      final String counterGroup)
-      throws EoulsanException, IOException, BadBioEntryException {
+  @Override
+  public Map<String, Integer> count(final Iterable<SAMRecord> samRecords,
+      final ReporterIncrementer reporter, final String counterGroup)
+      throws EoulsanException {
 
-    final GenomicArray<String> features =
-        new GenomicArray<>(GenomeDescription.load(genomeDescFile.open()));
-
-    final Map<String, Integer> counts = new HashMap<>();
-
-    final Writer writer = FileUtils.createBufferedWriter(outFile.create());
-
-    boolean pairedEnd = false;
-
-    // read and store in 'features' the annotation file
-    HTSeqUtils.storeAnnotation(features, annotationFile.open(), gtfFormat,
-        featureType, stranded, attributeId, splitAttributeValues, counts);
-
-    if (counts.size() == 0) {
-      writer.close();
-      throw new EoulsanException(
-          "Warning: No features of type '" + featureType + "' found.\n");
+    if (reporter == null) {
+      throw new NullPointerException("the reporter argument is null");
     }
 
-    List<GenomicInterval> ivSeq = new ArrayList<>();
+    if (counterGroup == null) {
+      throw new NullPointerException("the counterGroup argument is null");
+    }
 
-    final SamReader inputSam = SamReaderFactory.makeDefault()
-        .open(SamInputResource.of(samFile.open()));
-
-    // paired-end mode ?
-    pairedEnd = isPairedData(samFile.open());
+    if (this.features == null) {
+      throw new IllegalStateException("the counter has not been initialized");
+    }
 
     int empty = 0;
     int ambiguous = 0;
@@ -183,16 +263,19 @@ public class HTSeqCounter extends AbstractExpressionCounter {
     int lowQual = 0;
     int nonUnique = 0;
     int missingMate = 0;
+
     SAMRecord sam1 = null, sam2 = null;
+    final List<GenomicInterval> ivSeq = new ArrayList<>();
+    final Map<String, Integer> counts = new HashMap<>();
 
     // Read the SAM file
-    for (final SAMRecord samRecord : inputSam) {
+    for (final SAMRecord samRecord : samRecords) {
 
       reporter.incrCounter(counterGroup,
           ExpressionCounters.TOTAL_ALIGNMENTS_COUNTER.counterName(), 1);
 
       // single-end mode
-      if (!pairedEnd) {
+      if (!samRecord.getReadPairedFlag()) {
 
         ivSeq.clear();
 
@@ -210,13 +293,12 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         }
 
         // too low quality
-        if (samRecord.getMappingQuality() < minAverageQual) {
+        if (samRecord.getMappingQuality() < minAverageQuality) {
           lowQual++;
           continue;
         }
 
-        ivSeq.addAll(HTSeqUtils.addIntervals(samRecord, stranded));
-
+        ivSeq.addAll(HTSeqUtils.addIntervals(samRecord, this.stranded));
       }
 
       // paired-end mode
@@ -246,11 +328,11 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         }
 
         if (!sam1.getReadUnmappedFlag()) {
-          ivSeq.addAll(HTSeqUtils.addIntervals(sam1, stranded));
+          ivSeq.addAll(HTSeqUtils.addIntervals(sam1, this.stranded));
         }
 
         if (!sam2.getReadUnmappedFlag()) {
-          ivSeq.addAll(HTSeqUtils.addIntervals(sam2, stranded));
+          ivSeq.addAll(HTSeqUtils.addIntervals(sam2, this.stranded));
         }
 
         // unmapped read
@@ -269,22 +351,16 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         }
 
         // too low quality
-        if (sam1.getMappingQuality() < minAverageQual
-            || sam2.getMappingQuality() < minAverageQual) {
+        if (sam1.getMappingQuality() < minAverageQuality
+            || sam2.getMappingQuality() < minAverageQuality) {
           lowQual++;
           continue;
         }
 
       }
 
-      Set<String> fs = null;
-
-      fs = HTSeqUtils.featuresOverlapped(ivSeq, features, overlapMode,
-          stranded);
-
-      if (fs == null) {
-        fs = Collections.emptySet();
-      }
+      Set<String> fs = HTSeqUtils.featuresOverlapped(ivSeq, this.features,
+          this.overlapMode, this.stranded);
 
       switch (fs.size()) {
       case 0:
@@ -293,32 +369,29 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
       case 1:
         final String id1 = fs.iterator().next();
-        counts.put(id1, counts.get(id1) + 1);
+        if (!counts.containsKey(id1)) {
+          counts.put(id1, 1);
+        } else {
+          counts.put(id1, counts.get(id1) + 1);
+        }
         break;
 
       default:
 
-        if (removeAmbiguousCases) {
+        if (this.removeAmbiguousCases) {
           ambiguous++;
         } else {
           for (String id2 : fs) {
-            counts.put(id2, counts.get(id2) + 1);
+            if (!counts.containsKey(id2)) {
+              counts.put(id2, 1);
+            } else {
+              counts.put(id2, counts.get(id2) + 1);
+            }
           }
         }
         break;
       }
 
-    }
-
-    inputSam.close();
-
-    // Write results
-    final List<String> keysSorted = new ArrayList<>(counts.keySet());
-    Collections.sort(keysSorted);
-
-    writer.write("Id\tCount\n");
-    for (String key : keysSorted) {
-      writer.write(key + "\t" + counts.get(key) + "\n");
     }
 
     reporter.incrCounter(counterGroup,
@@ -341,7 +414,37 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(),
         empty + ambiguous + lowQual + notAligned + nonUnique);
 
-    writer.close();
+    return counts;
+  }
+
+  @Override
+  public void addZeroCountFeatures(final Map<String, Integer> counts) {
+
+    if (counts == null) {
+      throw new NullPointerException("The counts arguments cannot be null");
+    }
+
+    if (this.features == null) {
+      throw new IllegalStateException("the counter has not been initialized");
+    }
+
+    for (String feature : this.features.getFeaturesIds()) {
+
+      if (!counts.containsKey(feature)) {
+        counts.put(feature, 0);
+      }
+    }
+  }
+
+  @Override
+  public String toString() {
+
+    return "HTSeqCounter{genomicType="
+        + this.genomicType + ", attributeId=" + this.attributeId
+        + ", splitAttributeValues=" + this.splitAttributeValues + ", stranded="
+        + this.stranded + ", overlapMode=" + this.overlapMode
+        + ", removeAmbiguousCases=" + this.removeAmbiguousCases
+        + ", minAverageQuality=" + this.minAverageQuality + "}";
   }
 
 }

@@ -49,6 +49,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.Generator;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
+import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.STARMapperProvider;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
@@ -236,13 +237,11 @@ public class STARIndexGeneratorModule extends AbstractModule {
 
           switch (p.getName()) {
 
-          case AbstractExpressionModule.OLD_GENOMIC_TYPE_PARAMETER_NAME:
-          case AbstractExpressionModule.GENOMIC_TYPE_PARAMETER_NAME:
+          case HTSeqCounter.GENOMIC_TYPE_PARAMETER_NAME:
             gtfFeatureExon = p.getStringValue();
             break;
 
-          case AbstractExpressionModule.OLD_ATTRIBUTE_ID_PARAMETER_NAME:
-          case AbstractExpressionModule.ATTRIBUTE_ID_PARAMETER_NAME:
+          case HTSeqCounter.ATTRIBUTE_ID_PARAMETER_NAME:
             gtfTagExonParentTranscript = p.getStringValue();
             break;
 

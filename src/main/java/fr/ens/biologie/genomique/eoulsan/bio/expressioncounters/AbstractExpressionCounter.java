@@ -24,17 +24,18 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.expressioncounters;
 
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.util.FileUtils.checkExistingStandardFile;
-import static fr.ens.biologie.genomique.eoulsan.util.Utils.checkNotNull;
-
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
+import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
+import fr.ens.biologie.genomique.eoulsan.bio.io.GFFReader;
+import fr.ens.biologie.genomique.eoulsan.bio.io.GTFReader;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.util.Reporter;
+import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReaderFactory;
 
 /**
  * This abstract class implements a generic Expression Counter.
@@ -43,165 +44,48 @@ import fr.ens.biologie.genomique.eoulsan.util.Reporter;
  */
 public abstract class AbstractExpressionCounter implements ExpressionCounter {
 
-  private String genomicType;
-  private String attributeId;
-  private boolean splitAttributeValues;
-  private StrandUsage stranded;
-  private OverlapMode overlapMode;
-  private boolean noAmbiguousCases;
-  private Reporter reporter;
-  private String counterGroup;
-  private String tempDir = EoulsanRuntime.getSettings().getTempDirectory();
-
-  //
-  // Getters
-  //
-
   @Override
-  public StrandUsage getStranded() {
-    return this.stranded;
+  public void init(final DataFile genomeDescFile, final DataFile annotationFile,
+      final boolean gtfFormat) throws EoulsanException, IOException {
+
+    init(genomeDescFile.open(), annotationFile.open(), gtfFormat);
   }
 
   @Override
-  public OverlapMode getOverlapMode() {
-    return this.overlapMode;
-  }
+  public void init(final InputStream descIs, final InputStream annotationIs,
+      final boolean gtfFormat) throws EoulsanException, IOException {
 
-  @Override
-  public String getTempDirectory() {
-    return this.tempDir;
-  }
+    try (GFFReader gffReader =
+        gtfFormat ? new GTFReader(annotationIs) : new GFFReader(annotationIs)) {
 
-  @Override
-  public String getGenomicType() {
-    return this.genomicType;
-  }
-
-  @Override
-  public String getAttributeId() {
-    return this.attributeId;
-  }
-
-  @Override
-  public boolean isRemoveAmbiguousCases() {
-    return this.noAmbiguousCases;
-  }
-
-  @Override
-  public boolean isSplitAttributeValues() {
-    return this.splitAttributeValues;
-  }
-
-  //
-  // Setters
-  //
-
-  @Override
-  public void setStranded(final StrandUsage stranded) {
-
-    if (stranded == null) {
-      this.stranded = StrandUsage.NO;
-    } else {
-      this.stranded = stranded;
+      init(GenomeDescription.load(descIs), gffReader);
     }
   }
 
   @Override
-  public void setOverlapMode(final OverlapMode mode) {
+  public Map<String, Integer> count(final DataFile samFile,
+      final ReporterIncrementer reporter, final String counterGroup)
+      throws EoulsanException, IOException {
 
-    if (mode == null) {
-      this.overlapMode = OverlapMode.UNION;
-    } else {
-      this.overlapMode = mode;
+    if (samFile == null) {
+      throw new NullPointerException("the samFile argument is null");
     }
+
+    return count(samFile.open(), reporter, counterGroup);
   }
 
   @Override
-  public void setRemoveAmbiguousCases(final boolean removeAmbiguousCases) {
+  public Map<String, Integer> count(final InputStream inputSam,
+      final ReporterIncrementer reporter, final String counterGroup)
+      throws EoulsanException {
 
-    this.noAmbiguousCases = removeAmbiguousCases;
-  }
+    if (inputSam == null) {
+      throw new NullPointerException("the inputSam argument is null");
+    }
 
-  @Override
-  public void setTempDirectory(final String tempDirectory) {
-
-    this.tempDir = tempDirectory;
-  }
-
-  @Override
-  public void setGenomicType(final String genomicType) {
-
-    this.genomicType = genomicType;
-  }
-
-  @Override
-  public void setAttributeId(final String attributeId) {
-
-    this.attributeId = attributeId;
-  }
-
-  @Override
-  public void setSplitAttributeValues(final boolean splitAttributeValues) {
-
-    this.splitAttributeValues = splitAttributeValues;
-  }
-
-  //
-  // Counting
-  //
-
-  @Override
-  public final void count(final DataFile alignmentFile,
-      final DataFile annotationFile, final boolean gtfFormat,
-      final DataFile expressionFile, final DataFile genomeDescFile)
-      throws IOException, EoulsanException, BadBioEntryException {
-
-    getLogger().fine("Counting with " + getCounterName());
-
-    checkNotNull(alignmentFile, "alignmentFile is null");
-    checkNotNull(annotationFile, "annotationFile is null");
-    checkNotNull(expressionFile, "expressionFile is null");
-    checkExistingStandardFile(alignmentFile.toFile(),
-        "alignmentFile not exits or is not a standard file.");
-
-    // Process to counting
-    internalCount(alignmentFile, annotationFile, gtfFormat, expressionFile,
-        genomeDescFile, this.reporter, this.counterGroup);
-  }
-
-  /**
-   * This method runs the ExpressionCounter.
-   * @param alignmentFile file containing SAM alignments
-   * @param annotationFile file containing the reference genome annotation
-   * @param gtfFormat true if the annotation is in GTF format
-   * @param expressionFile output file for the expression step
-   * @param genomeDescFile file containing the genome description
-   * @param reporter the Reporter object of the Eoulsan run
-   * @param counterGroup string with the counter name group for the expression
-   *          step
-   * @throws IOException if the methods fails
-   */
-  protected abstract void internalCount(final DataFile alignmentFile,
-      final DataFile annotationFile, final boolean gtfFormat,
-      final DataFile expressionFile, final DataFile genomeDescFile,
-      Reporter reporter, String counterGroup)
-      throws IOException, EoulsanException, BadBioEntryException;
-
-  //
-  // Init
-  //
-
-  @Override
-  public void init(final String genomicType, final String attributeId,
-      final Reporter reporter, final String counterGroup) {
-
-    checkNotNull(reporter, "reporter is null");
-    checkNotNull(counterGroup, "counterGroup is null");
-
-    this.genomicType = genomicType;
-    this.attributeId = attributeId;
-    this.reporter = reporter;
-    this.counterGroup = counterGroup;
+    return count(
+        SamReaderFactory.makeDefault().open(SamInputResource.of(inputSam)),
+        reporter, counterGroup);
   }
 
 }

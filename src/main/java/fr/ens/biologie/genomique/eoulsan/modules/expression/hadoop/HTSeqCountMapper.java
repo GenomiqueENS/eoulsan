@@ -25,22 +25,16 @@
 package fr.ens.biologie.genomique.eoulsan.modules.expression.hadoop;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters.AMBIGUOUS_ALIGNMENTS_COUNTER;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters.ELIMINATED_READS_COUNTER;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters.EMPTY_ALIGNMENTS_COUNTER;
 import static fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters.INVALID_SAM_ENTRIES_COUNTER;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters.LOW_QUAL_ALIGNMENTS_COUNTER;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters.NOT_ALIGNED_ALIGNMENTS_COUNTER;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters.NOT_UNIQUE_ALIGNMENTS_COUNTER;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters.TOTAL_ALIGNMENTS_COUNTER;
 import static fr.ens.biologie.genomique.eoulsan.modules.expression.hadoop.ExpressionHadoopModule.SAM_RECORD_PAIRED_END_SERPARATOR;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.hadoop.conf.Configuration;
@@ -52,15 +46,11 @@ import org.apache.hadoop.mapreduce.Mapper;
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
-import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
-import fr.ens.biologie.genomique.eoulsan.bio.GenomicArray;
-import fr.ens.biologie.genomique.eoulsan.bio.GenomicInterval;
 import fr.ens.biologie.genomique.eoulsan.bio.SAMUtils;
-import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqUtils;
-import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.OverlapMode;
-import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.StrandUsage;
-import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters;
+import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.ExpressionCounter;
+import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
+import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopReporterIncrementer;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.PathUtils;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFormatException;
@@ -74,25 +64,15 @@ import htsjdk.samtools.SAMRecord;
  */
 public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
 
-  // Parameters keys
-  static final String STRANDED_PARAM =
-      Globals.PARAMETER_PREFIX + ".expression.stranded.parameter";
-  static final String OVERLAP_MODE_PARAM =
-      Globals.PARAMETER_PREFIX + ".expression.overlapmode.parameter";
-  static final String REMOVE_AMBIGUOUS_CASES =
-      Globals.PARAMETER_PREFIX + ".expression.no.ambiguous.cases";
-
-  private final GenomicArray<String> features = new GenomicArray<>();
-
+  private ExpressionCounter counter;
   private String counterGroup;
-  private StrandUsage stranded;
-  private OverlapMode overlapMode;
-  private boolean removeAmbiguousCases;
 
   private final SAMLineParser parser = new SAMLineParser(new SAMFileHeader());
   private final Pattern recordSplitterPattern =
       Pattern.compile("" + SAM_RECORD_PAIRED_END_SERPARATOR);
 
+  private final List<SAMRecord> samRecords = new ArrayList<>();
+  private ReporterIncrementer reporter;
   private final Text outKey = new Text();
   private final LongWritable outValue = new LongWritable(1L);
 
@@ -102,6 +82,9 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
 
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
+
+    // Define the reporter
+    this.reporter = new HadoopReporterIncrementer(context);
 
     try {
 
@@ -130,8 +113,8 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
             "Retrieve more than one file in distributed cache");
       }
 
-      // Load features
-      this.features.load(
+      // Deserialize counter
+      this.counter = loadSerializedCounter(
           PathUtils.createInputStream(new Path(localCacheFiles[0]), conf));
 
       // Counter group
@@ -155,17 +138,6 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
       // Set the chromosomes sizes in the parser
       this.parser.getFileHeader().setSequenceDictionary(
           SAMUtils.newSAMSequenceDictionary(genomeDescription));
-
-      // Get the "stranded" parameter
-      this.stranded =
-          StrandUsage.getStrandUsageFromName(conf.get(STRANDED_PARAM));
-
-      // Get the "overlap mode" parameter
-      this.overlapMode =
-          OverlapMode.getOverlapModeFromName(conf.get(OVERLAP_MODE_PARAM));
-
-      // Get the "no ambiguous cases" parameter
-      this.removeAmbiguousCases = conf.getBoolean(REMOVE_AMBIGUOUS_CASES, true);
 
     } catch (IOException e) {
       getLogger().severe(
@@ -192,70 +164,39 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
       return;
     }
 
-    final String[] fields = recordSplitterPattern.split(line);
-    final List<GenomicInterval> ivSeq;
+    // Clean samRecords
+    this.samRecords.clear();
 
     try {
 
-      // Add intervals
-      switch (fields.length) {
-
-      // Single end data
-      case 1:
-        ivSeq = createSingleEndIntervals(context, fields[0]);
-        break;
-
-      // paired end data
-      case 2:
-        ivSeq = addPairedEndIntervals(context, fields[0], fields[1]);
-        break;
-
-      default:
-        throw new EoulsanException(
-            "Invalid number of SAM record(s) found in the entry: "
-                + fields.length);
+      // Split the entry (handle paired-end reads)
+      for (String field : this.recordSplitterPattern.split(line)) {
+        this.samRecords.add(this.parser.parseLine(field));
       }
 
-      incrementCounter(context, TOTAL_ALIGNMENTS_COUNTER, fields.length);
+      // Check if there is only one or two entries in the line
+      if (samRecords.isEmpty() || samRecords.size() > 2) {
+        throw new EoulsanException(
+            "Invalid number of SAM record(s) found in the entry: "
+                + samRecords.size());
+      }
 
-      final Set<String> fs = null2empty(HTSeqUtils.featuresOverlapped(ivSeq,
-          this.features, this.overlapMode, this.stranded));
+      // Count
+      final Map<String, Integer> counts =
+          this.counter.count(samRecords, this.reporter, this.counterGroup);
 
-      switch (fs.size()) {
-      case 0:
-        incrementCounter(context, EMPTY_ALIGNMENTS_COUNTER);
-        incrementCounter(context, ELIMINATED_READS_COUNTER);
-        break;
-
-      case 1:
-        final String id1 = fs.iterator().next();
-        this.outKey.set(id1);
+      // Write the results
+      for (Map.Entry<String, Integer> e : counts.entrySet()) {
+        this.outKey.set(e.getKey());
+        this.outValue.set(e.getValue());
         context.write(this.outKey, this.outValue);
-        break;
-
-      default:
-
-        if (this.removeAmbiguousCases) {
-
-          // Ambiguous case will be removed
-
-          incrementCounter(context, AMBIGUOUS_ALIGNMENTS_COUNTER);
-          incrementCounter(context, ELIMINATED_READS_COUNTER);
-        } else {
-
-          // Ambiguous case will be used in the count
-
-          for (String id2 : fs) {
-            this.outKey.set(id2);
-            context.write(this.outKey, this.outValue);
-          }
-        }
-        break;
       }
 
     } catch (SAMFormatException | EoulsanException e) {
 
-      incrementCounter(context, INVALID_SAM_ENTRIES_COUNTER);
+      context.getCounter(this.counterGroup,
+          INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
+
       getLogger().info("Invalid SAM output entry: "
           + e.getMessage() + " line='" + line + "'");
     }
@@ -264,154 +205,25 @@ public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
 
   @Override
   public void cleanup(final Context context) throws IOException {
-
-    this.features.clear();
-  }
-
-  //
-  // Intervals creation methods
-  //
-
-  /**
-   * Create single end intervals.
-   * @param context Hadoop context
-   * @param record the SAM record
-   */
-  private List<GenomicInterval> createSingleEndIntervals(final Context context,
-      final String record) {
-
-    final List<GenomicInterval> ivSeq = new ArrayList<>();
-    final SAMRecord samRecord = this.parser.parseLine(record);
-
-    // unmapped read
-    if (samRecord.getReadUnmappedFlag()) {
-
-      incrementCounter(context, NOT_ALIGNED_ALIGNMENTS_COUNTER);
-      incrementCounter(context, ELIMINATED_READS_COUNTER);
-
-      return ivSeq;
-    }
-
-    // multiple alignment
-    if (samRecord.getAttribute("NH") != null
-        && samRecord.getIntegerAttribute("NH") > 1) {
-
-      incrementCounter(context, NOT_UNIQUE_ALIGNMENTS_COUNTER);
-      incrementCounter(context, ELIMINATED_READS_COUNTER);
-
-      return ivSeq;
-    }
-
-    // too low quality
-    if (samRecord.getMappingQuality() < 0) {
-
-      incrementCounter(context, LOW_QUAL_ALIGNMENTS_COUNTER);
-      incrementCounter(context, ELIMINATED_READS_COUNTER);
-
-      return ivSeq;
-    }
-
-    ivSeq.addAll(HTSeqUtils.addIntervals(samRecord, this.stranded));
-
-    return ivSeq;
-  }
-
-  /**
-   * Create paired end intervals.
-   * @param context Hadoop context
-   * @param record1 the SAM record of the first end
-   * @param record2 the SAM record of the second end
-   */
-  private List<GenomicInterval> addPairedEndIntervals(final Context context,
-      final String record1, final String record2) {
-
-    final List<GenomicInterval> ivSeq = new ArrayList<>();
-
-    final SAMRecord samRecord1 = this.parser.parseLine(record1);
-    final SAMRecord samRecord2 = this.parser.parseLine(record2);
-
-    if (!samRecord1.getReadUnmappedFlag()) {
-      ivSeq.addAll(HTSeqUtils.addIntervals(samRecord1, this.stranded));
-    }
-
-    if (!samRecord2.getReadUnmappedFlag()) {
-      ivSeq.addAll(HTSeqUtils.addIntervals(samRecord2, this.stranded));
-    }
-
-    // unmapped read
-    if (samRecord1.getReadUnmappedFlag() && samRecord2.getReadUnmappedFlag()) {
-
-      incrementCounter(context, NOT_ALIGNED_ALIGNMENTS_COUNTER);
-      incrementCounter(context, ELIMINATED_READS_COUNTER);
-
-      return ivSeq;
-    }
-
-    // multiple alignment
-    if ((samRecord1.getAttribute("NH") != null
-        && samRecord1.getIntegerAttribute("NH") > 1)
-        || (samRecord2.getAttribute("NH") != null
-            && samRecord2.getIntegerAttribute("NH") > 1)) {
-
-      incrementCounter(context, NOT_UNIQUE_ALIGNMENTS_COUNTER);
-      incrementCounter(context, ELIMINATED_READS_COUNTER);
-
-      return ivSeq;
-    }
-
-    // too low quality
-    if (samRecord1.getMappingQuality() < 0
-        || samRecord2.getMappingQuality() < 0) {
-
-      incrementCounter(context, LOW_QUAL_ALIGNMENTS_COUNTER);
-      incrementCounter(context, ELIMINATED_READS_COUNTER);
-
-      return ivSeq;
-    }
-
-    return ivSeq;
   }
 
   //
   // Other methods
   //
 
-  /**
-   * Increment an expression counter with a value of 1.
-   * @param context the Hadoop context
-   * @param counter the expression counter
-   */
-  private void incrementCounter(final Context context,
-      final ExpressionCounters counter) {
+  private static ExpressionCounter loadSerializedCounter(final InputStream in)
+      throws IOException {
 
-    incrementCounter(context, counter, 1);
-  }
-
-  /**
-   * Increment an expression counter.
-   * @param context the Hadoop context
-   * @param counter the expression counter
-   * @param increment the increment
-   */
-  private void incrementCounter(final Context context,
-      final ExpressionCounters counter, final int increment) {
-
-    context.getCounter(this.counterGroup, counter.counterName())
-        .increment(increment);
-  }
-
-  /**
-   * Return an empty set if the parameter is null.
-   * @param set the set
-   * @return an empty set if the parameter is null or the original set
-   */
-  private static <E> Set<E> null2empty(final Set<E> set) {
-
-    if (set == null) {
-      return Collections.emptySet();
+    if (in == null) {
+      throw new NullPointerException("is argument cannot be null");
     }
 
-    return set;
+    try (ObjectInputStream ois = new ObjectInputStream(in)) {
+      return (ExpressionCounter) ois.readObject();
+
+    } catch (ClassNotFoundException e) {
+      throw new IOException("Unable to load data.");
+    }
   }
 
 }

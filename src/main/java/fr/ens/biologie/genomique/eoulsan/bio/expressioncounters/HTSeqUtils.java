@@ -235,7 +235,7 @@ public class HTSeqUtils {
   public static Set<String> featuresOverlapped(
       final List<GenomicInterval> ivList, final GenomicArray<String> features,
       final OverlapMode mode, final StrandUsage stranded)
-      throws EoulsanException, IOException {
+      throws EoulsanException {
 
     Set<String> fs = null;
 
@@ -322,6 +322,11 @@ public class HTSeqUtils {
       }
     } else {
       throw new EoulsanException("Error : illegal overlap mode.");
+    }
+
+    // Do not return null
+    if (fs == null) {
+      return Collections.emptySet();
     }
 
     return fs;

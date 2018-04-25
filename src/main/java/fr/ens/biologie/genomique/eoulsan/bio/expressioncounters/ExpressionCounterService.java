@@ -66,7 +66,7 @@ public class ExpressionCounterService
   @Override
   protected String getMethodName() {
 
-    return "getCounterName";
+    return "getName";
   }
 
   //
