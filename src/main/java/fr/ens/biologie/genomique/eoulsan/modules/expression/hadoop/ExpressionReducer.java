@@ -32,11 +32,11 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 /**
- * Reducer for the expression estimation with htseq-count.
+ * Reducer for the expression estimation.
  * @since 1.2
  * @author Claire Wallon
  */
-public class HTSeqCountReducer
+public class ExpressionReducer
     extends Reducer<Text, LongWritable, Text, LongWritable> {
 
   final LongWritable outValue = new LongWritable();

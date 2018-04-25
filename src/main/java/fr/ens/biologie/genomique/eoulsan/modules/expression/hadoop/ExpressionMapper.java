@@ -58,11 +58,11 @@ import htsjdk.samtools.SAMLineParser;
 import htsjdk.samtools.SAMRecord;
 
 /**
- * Mapper for the expression estimation with htseq-count.
+ * Mapper for the expression estimation.
  * @since 1.2
  * @author Claire Wallon
  */
-public class HTSeqCountMapper extends Mapper<Text, Text, Text, LongWritable> {
+public class ExpressionMapper extends Mapper<Text, Text, Text, LongWritable> {
 
   private ExpressionCounter counter;
   private String counterGroup;

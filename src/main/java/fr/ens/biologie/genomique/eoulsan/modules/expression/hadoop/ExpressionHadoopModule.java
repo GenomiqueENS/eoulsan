@@ -208,13 +208,13 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
     job.setInputFormatClass(SAMInputFormat.class);
 
     // Set the mapper class
-    job.setMapperClass(HTSeqCountMapper.class);
+    job.setMapperClass(ExpressionMapper.class);
 
     // Set the combiner class
-    job.setCombinerClass(HTSeqCountReducer.class);
+    job.setCombinerClass(ExpressionReducer.class);
 
     // Set the reducer class
-    job.setReducerClass(HTSeqCountReducer.class);
+    job.setReducerClass(ExpressionReducer.class);
 
     // Set the output format
     job.setOutputFormatClass(ExpressionOutputFormat.class);
