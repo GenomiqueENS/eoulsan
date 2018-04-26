@@ -66,6 +66,7 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.FinalExpressionFeaturesCreator;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
@@ -132,6 +133,10 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
       getLogger().info("Counter: " + getExpressionCounter());
 
+      // Initialize the counter
+      initializeCounter(getExpressionCounter(), genomeDescriptionData,
+          featureAnnotationData);
+
       // Get the paired end mode
       boolean pairedEnd = isPairedData(alignmentsData.getDataFile().open());
 
@@ -144,10 +149,9 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
             status, COUNTER_GROUP);
       }
 
-      // Create the list of jobs to run
-
+      // Create the expression job
       final Job job = createExpressionJob(conf, context, alignmentsData,
-          featureAnnotationData, genomeDescriptionData, outData,
+          genomeDescriptionData, featureAnnotationData, outData,
           getExpressionCounter(), pairedEnd);
 
       // Compute map-reduce part of the expression computation
@@ -188,15 +192,16 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
    * @param parentConf parent configuration
    * @param context the Eoulsan task context
    * @param alignmentsData alignment data
-   * @param featureAnnotationData feature annotations data
    * @param genomeDescriptionData genome description data
+   * @param featureAnnotationData feature annotations data
    * @throws IOException if an error occurs while creating job
+   * @throws EoulsanException if an error occurs while initialize the counter
    */
   private static Job createExpressionJob(final Configuration parentConf,
       final TaskContext context, final Data alignmentsData,
-      final Data featureAnnotationData, final Data genomeDescriptionData,
+      final Data genomeDescriptionData, final Data featureAnnotationData,
       final Data outData, final ExpressionCounter counter,
-      final boolean tsamFormat) throws IOException {
+      final boolean tsamFormat) throws IOException, EoulsanException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -263,8 +268,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       lock.lock();
 
       // Serialize the counter
-      serializeCounter(context, counter, annotationDataFile,
-          counterSerializationFilePath, jobConf);
+      serializeCounter(context, counter, counterSerializationFilePath, jobConf);
 
       lock.unlock();
     }
@@ -375,31 +379,49 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
   }
 
   //
-  // Counter serialization methods
+  // Counter initialization and serialization methods
   //
+
+  /**
+   * Initialize the counter.
+   * @param counter the counter to initialize
+   * @param genomeDescData the genome description data
+   * @param annotationData the annotation data
+   * @throws EoulsanException if an error occurs while initialize the counter
+   * @throws IOException if an error occurs while reading the input data
+   */
+  private static void initializeCounter(final ExpressionCounter counter,
+      final Data genomeDescData, final Data annotationData)
+      throws EoulsanException, IOException {
+
+    // Initialize the counter
+    counter.init(genomeDescData.getDataFile(), annotationData.getDataFile(),
+        annotationData.getFormat() == DataFormats.ANNOTATION_GTF);
+  }
 
   /**
    * Serialize a counter object.
    * @param context Eoulsan context
    * @param counter to serialize
-   * @param annotationFile GFF annotation file path
    * @param counterSerializationFilePath feature index output path
    * @param conf Hadoop configuration object
    * @throws IOException if an error occurs while creating the counter
    *           serialization file
+   * @throws EoulsanException if an error occurs while initialize the counter
    */
   private static void serializeCounter(final TaskContext context,
-      final ExpressionCounter counter, final DataFile annotationFile,
+      final ExpressionCounter counter,
       final Path counterSerializationFilePath, final Configuration conf)
-      throws IOException {
+      throws IOException, EoulsanException {
 
     // Do nothing if the file already exists
     if (PathUtils.isFile(counterSerializationFilePath, conf)) {
       return;
     }
 
+    // Define the filename of the counter serialization file
     final File counterSerializationFile = context.getRuntime()
-        .createFileInTempDir(StringUtils.basename(annotationFile.getName())
+        .createFileInTempDir(counterSerializationFilePath.getName()
             + SERIALIZATION_EXTENSION);
 
     // Serialize the counter
