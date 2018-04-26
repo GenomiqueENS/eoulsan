@@ -180,7 +180,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
       throw new NullPointerException("the annotations argument is null");
     }
 
-    if (this.features != null) {
+    if (isInitialized()) {
       throw new IllegalStateException(
           "the counter has been already initialized");
     }
@@ -253,7 +253,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
       throw new NullPointerException("the counterGroup argument is null");
     }
 
-    if (this.features == null) {
+    if (!isInitialized()) {
       throw new IllegalStateException("the counter has not been initialized");
     }
 
@@ -424,7 +424,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
       throw new NullPointerException("The counts arguments cannot be null");
     }
 
-    if (this.features == null) {
+    if (!isInitialized()) {
       throw new IllegalStateException("the counter has not been initialized");
     }
 
@@ -436,6 +436,15 @@ public class HTSeqCounter extends AbstractExpressionCounter
     }
   }
 
+  /**
+   * Test if the counter has been initialized.
+   * @return true if the counter has been initialized
+   */
+  private boolean isInitialized() {
+
+    return this.features != null;
+  }
+
   @Override
   public String toString() {
 
@@ -444,7 +453,8 @@ public class HTSeqCounter extends AbstractExpressionCounter
         + ", splitAttributeValues=" + this.splitAttributeValues + ", stranded="
         + this.stranded + ", overlapMode=" + this.overlapMode
         + ", removeAmbiguousCases=" + this.removeAmbiguousCases
-        + ", minAverageQuality=" + this.minAverageQuality + "}";
+        + ", minAverageQuality=" + this.minAverageQuality + ", initialized="
+        + isInitialized() + "}";
   }
 
 }
