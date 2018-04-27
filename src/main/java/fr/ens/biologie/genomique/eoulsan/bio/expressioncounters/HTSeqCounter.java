@@ -68,17 +68,14 @@ public class HTSeqCounter extends AbstractExpressionCounter
       "split.attribute.values";
   public static final String MINIMUM_QUALITY_PARAMETER_NAME = "minimum.quality";
 
-  private static final String GENOMIC_TYPE_DEFAULT = "exon";
-  private static final String ATTRIBUTE_ID_DEFAULT = "PARENT";
-  private static final int MIN_AVERAGE_QUALITY_DEFAULT = 0;
+  private String genomicType = "exon";
+  private String attributeId = "PARENT";
+  private boolean splitAttributeValues = false;
+  private StrandUsage stranded = StrandUsage.NO;
+  private OverlapMode overlapMode = OverlapMode.UNION;
+  private boolean removeAmbiguousCases = true;
+  private int minimalQuality = 0;
 
-  private String genomicType = GENOMIC_TYPE_DEFAULT;
-  private String attributeId = ATTRIBUTE_ID_DEFAULT;
-  private boolean splitAttributeValues;
-  private StrandUsage stranded;
-  private OverlapMode overlapMode;
-  private boolean removeAmbiguousCases;
-  private int minimalQuality = MIN_AVERAGE_QUALITY_DEFAULT;
   private GenomicArray<String> features;
 
   @Override
