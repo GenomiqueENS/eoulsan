@@ -66,7 +66,8 @@ public class HTSeqCounter extends AbstractExpressionCounter
   public static final String ATTRIBUTE_ID_PARAMETER_NAME = "attribute.id";
   public static final String SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME =
       "split.attribute.values";
-  public static final String MINIMUM_QUALITY_PARAMETER_NAME = "minimum.quality";
+  public static final String MINIMUM_ALIGNMENT_QUALITY_PARAMETER_NAME =
+      "minimum.alignment.quality";
   public static final String REMOVE_NON_UNIQUE_ALIGNMENT_PARAMETER_NAME =
       "remove.non.unique.alignments";
 
@@ -105,8 +106,6 @@ public class HTSeqCounter extends AbstractExpressionCounter
       throw new NullPointerException("the value argument is null");
     }
 
-    // TODO handle minimal quality parameter
-
     switch (key) {
 
     case GENOMIC_TYPE_PARAMETER_NAME:
@@ -143,7 +142,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
       this.splitAttributeValues = Boolean.parseBoolean(value);
       break;
 
-    case MINIMUM_QUALITY_PARAMETER_NAME:
+    case MINIMUM_ALIGNMENT_QUALITY_PARAMETER_NAME:
       try {
         this.minimalQuality = Integer.parseInt(value);
       } catch (NumberFormatException e) {
