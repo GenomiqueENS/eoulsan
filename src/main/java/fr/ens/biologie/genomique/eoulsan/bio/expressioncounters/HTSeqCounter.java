@@ -67,6 +67,8 @@ public class HTSeqCounter extends AbstractExpressionCounter
   public static final String SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME =
       "split.attribute.values";
   public static final String MINIMUM_QUALITY_PARAMETER_NAME = "minimum.quality";
+  public static final String REMOVE_NON_UNIQUE_ALIGNMENT_PARAMETER_NAME =
+      "remove.non.unique.alignments";
 
   private String genomicType = "exon";
   private String attributeId = "PARENT";
@@ -75,6 +77,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
   private OverlapMode overlapMode = OverlapMode.UNION;
   private boolean removeAmbiguousCases = true;
   private int minimalQuality = 0;
+  private boolean removeNonUnique = true;
 
   private GenomicArray<String> features;
 
@@ -146,6 +149,10 @@ public class HTSeqCounter extends AbstractExpressionCounter
       } catch (NumberFormatException e) {
         new EoulsanException("Invalid minimal quality value: " + value);
       }
+      break;
+
+    case REMOVE_NON_UNIQUE_ALIGNMENT_PARAMETER_NAME:
+      this.removeNonUnique = Boolean.parseBoolean(value);
       break;
 
     default:
@@ -295,7 +302,9 @@ public class HTSeqCounter extends AbstractExpressionCounter
         if (samRecord.getAttribute("NH") != null
             && samRecord.getIntegerAttribute("NH") > 1) {
           nonUnique++;
-          continue;
+          if (this.removeNonUnique) {
+            continue;
+          }
         }
 
         // too low quality
@@ -353,7 +362,9 @@ public class HTSeqCounter extends AbstractExpressionCounter
             || (sam2.getAttribute("NH") != null
                 && sam2.getIntegerAttribute("NH") > 1)) {
           nonUnique++;
-          continue;
+          if (this.removeNonUnique) {
+            continue;
+          }
         }
 
         // too low quality
