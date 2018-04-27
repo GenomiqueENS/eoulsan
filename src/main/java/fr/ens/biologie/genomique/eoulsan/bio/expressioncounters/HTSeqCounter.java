@@ -66,6 +66,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
   public static final String ATTRIBUTE_ID_PARAMETER_NAME = "attribute.id";
   public static final String SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME =
       "split.attribute.values";
+  public static final String MINIMUM_QUALITY_PARAMETER_NAME = "minimum.quality";
 
   private static final String GENOMIC_TYPE_DEFAULT = "exon";
   private static final String ATTRIBUTE_ID_DEFAULT = "PARENT";
@@ -77,7 +78,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
   private StrandUsage stranded;
   private OverlapMode overlapMode;
   private boolean removeAmbiguousCases;
-  private int minAverageQuality = MIN_AVERAGE_QUALITY_DEFAULT;
+  private int minimalQuality = MIN_AVERAGE_QUALITY_DEFAULT;
   private GenomicArray<String> features;
 
   @Override
@@ -140,6 +141,14 @@ public class HTSeqCounter extends AbstractExpressionCounter
 
     case SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME:
       this.splitAttributeValues = Boolean.parseBoolean(value);
+      break;
+
+    case MINIMUM_QUALITY_PARAMETER_NAME:
+      try {
+        this.minimalQuality = Integer.parseInt(value);
+      } catch (NumberFormatException e) {
+        new EoulsanException("Invalid minimal quality value: " + value);
+      }
       break;
 
     default:
@@ -293,7 +302,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
         }
 
         // too low quality
-        if (samRecord.getMappingQuality() < minAverageQuality) {
+        if (samRecord.getMappingQuality() < this.minimalQuality) {
           lowQual++;
           continue;
         }
@@ -351,8 +360,8 @@ public class HTSeqCounter extends AbstractExpressionCounter
         }
 
         // too low quality
-        if (sam1.getMappingQuality() < minAverageQuality
-            || sam2.getMappingQuality() < minAverageQuality) {
+        if (sam1.getMappingQuality() < this.minimalQuality
+            || sam2.getMappingQuality() < this.minimalQuality) {
           lowQual++;
           continue;
         }
@@ -444,7 +453,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
         + ", splitAttributeValues=" + this.splitAttributeValues + ", stranded="
         + this.stranded + ", overlapMode=" + this.overlapMode
         + ", removeAmbiguousCases=" + this.removeAmbiguousCases
-        + ", minAverageQuality=" + this.minAverageQuality + "}";
+        + ", minAverageQuality=" + this.minimalQuality + "}";
   }
 
 }

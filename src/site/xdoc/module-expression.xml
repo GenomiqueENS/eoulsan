@@ -83,6 +83,7 @@
 If "yes" or "no", the read has to be mapped to the same strand as the feature or it is considered overlapping with a feature
 regardless of whether it is mapped to the same or the opposite strand as the feature.</td><td>no</td></tr>
 		<tr><td>overlap.mode</td><td>string</td><td>Name of the overlap mode to use (union, intersection-nonempty or intersection-strict).</td><td>union</td></tr>
+		<tr><td>minimum.quality</td><td>integer</td><td>.</td>skip all reads with alignment quality lower than the given minimal value<td>0</td></tr>
 		<tr><td>remove.ambiguous.cases</td><td>boolean</td><td>Keep or remove ambiguous cases in the count.</td><td>true</td></tr>
 		<tr><td>split.attribute.values</td><td>boolean</td><td>Split values of the attribute field</td><td>false</td></tr>
 	 </table>
