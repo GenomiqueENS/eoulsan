@@ -54,6 +54,9 @@ public class HTSeqCounter extends AbstractExpressionCounter
 
   private static final long serialVersionUID = 4750866178483111062L;
 
+  // TODO Handle HTSeq-count --secondary-alignments parameter
+  // TODO Handle HTSeq-count --supplementary-alignments parameter
+
   /** Counter name. */
   public static final String COUNTER_NAME = "htseq-count";
 
@@ -146,7 +149,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
       try {
         this.minimalQuality = Integer.parseInt(value);
       } catch (NumberFormatException e) {
-        new EoulsanException("Invalid minimal quality value: " + value);
+        throw new EoulsanException("Invalid minimal quality value: " + value);
       }
       break;
 
@@ -157,7 +160,6 @@ public class HTSeqCounter extends AbstractExpressionCounter
     default:
       throw new EoulsanException("Unknown parameter: " + key);
     }
-
   }
 
   @Override
@@ -460,7 +462,8 @@ public class HTSeqCounter extends AbstractExpressionCounter
         + ", splitAttributeValues=" + this.splitAttributeValues + ", stranded="
         + this.stranded + ", overlapMode=" + this.overlapMode
         + ", removeAmbiguousCases=" + this.removeAmbiguousCases
-        + ", minAverageQuality=" + this.minimalQuality + "}";
+        + ", removeNonUnique=" + this.removeNonUnique + ", minAverageQuality="
+        + this.minimalQuality + "}";
   }
 
 }
