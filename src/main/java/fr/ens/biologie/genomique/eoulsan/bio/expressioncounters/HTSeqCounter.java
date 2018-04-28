@@ -54,9 +54,6 @@ public class HTSeqCounter extends AbstractExpressionCounter
 
   private static final long serialVersionUID = 4750866178483111062L;
 
-  // TODO Handle HTSeq-count --secondary-alignments parameter
-  // TODO Handle HTSeq-count --supplementary-alignments parameter
-
   /** Counter name. */
   public static final String COUNTER_NAME = "htseq-count";
 
@@ -71,8 +68,12 @@ public class HTSeqCounter extends AbstractExpressionCounter
       "split.attribute.values";
   public static final String MINIMUM_ALIGNMENT_QUALITY_PARAMETER_NAME =
       "minimum.alignment.quality";
-  public static final String REMOVE_NON_UNIQUE_ALIGNMENT_PARAMETER_NAME =
+  public static final String REMOVE_NON_UNIQUE_ALIGNMENTS_PARAMETER_NAME =
       "remove.non.unique.alignments";
+  public static final String REMOVE_SECONDARY_ALIGNMENTS_PARAMETER_NAME =
+      "remove.secondary.alignments";
+  public static final String REMOVE_SUPPLEMENTARY_ALIGNMENTS_PARAMETER_NAME =
+      "remove.supplementary.alignments";
 
   private String genomicType = "exon";
   private String attributeId = "PARENT";
@@ -82,6 +83,8 @@ public class HTSeqCounter extends AbstractExpressionCounter
   private boolean removeAmbiguousCases = true;
   private int minimalQuality = 0;
   private boolean removeNonUnique = true;
+  private boolean removeSecondaryAlignments = false;
+  private boolean removeSupplementaryAlignments = false;
 
   private GenomicArray<String> features;
 
@@ -153,8 +156,16 @@ public class HTSeqCounter extends AbstractExpressionCounter
       }
       break;
 
-    case REMOVE_NON_UNIQUE_ALIGNMENT_PARAMETER_NAME:
+    case REMOVE_NON_UNIQUE_ALIGNMENTS_PARAMETER_NAME:
       this.removeNonUnique = Boolean.parseBoolean(value);
+      break;
+
+    case REMOVE_SECONDARY_ALIGNMENTS_PARAMETER_NAME:
+      this.removeSecondaryAlignments = Boolean.parseBoolean(value);
+      break;
+
+    case REMOVE_SUPPLEMENTARY_ALIGNMENTS_PARAMETER_NAME:
+      this.removeSupplementaryAlignments = Boolean.parseBoolean(value);
       break;
 
     default:
@@ -299,6 +310,18 @@ public class HTSeqCounter extends AbstractExpressionCounter
           continue;
         }
 
+        // secondary alignment
+        if (this.removeSecondaryAlignments
+            && samRecord.getNotPrimaryAlignmentFlag()) {
+          continue;
+        }
+
+        // supplementary alignment
+        if (this.removeSupplementaryAlignments
+            && samRecord.getSupplementaryAlignmentFlag()) {
+          continue;
+        }
+
         // multiple alignment
         if (samRecord.getAttribute("NH") != null
             && samRecord.getIntegerAttribute("NH") > 1) {
@@ -355,6 +378,26 @@ public class HTSeqCounter extends AbstractExpressionCounter
         if (sam1.getReadUnmappedFlag() && sam2.getReadUnmappedFlag()) {
           notAligned++;
           continue;
+        }
+
+        // secondary alignment
+        if (this.removeSecondaryAlignments) {
+          if (sam1 != null && sam1.getNotPrimaryAlignmentFlag()) {
+            continue;
+          }
+          if (sam2 != null && sam2.getNotPrimaryAlignmentFlag()) {
+            continue;
+          }
+        }
+
+        // supplementary alignment
+        if (this.removeSupplementaryAlignments) {
+          if (sam1 != null && sam1.getSupplementaryAlignmentFlag()) {
+            continue;
+          }
+          if (sam2 != null && sam2.getSupplementaryAlignmentFlag()) {
+            continue;
+          }
         }
 
         // multiple alignment

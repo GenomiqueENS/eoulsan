@@ -86,6 +86,8 @@ regardless of whether it is mapped to the same or the opposite strand as the fea
 		<tr><td>minimum.alignment.quality</td><td>integer</td><td>.</td>skip all reads with alignment quality lower than the given minimal value<td>0</td></tr>
 		<tr><td>remove.ambiguous.cases</td><td>boolean</td><td>Keep or remove ambiguous cases in the count</td><td>true</td></tr>
 		<tr><td>remove.non.unique.alignments</td><td>boolean</td><td>Keep or remove non unique alignments for the count (use the <tt>NH</tt> tag of the optional fields of the SAM entries)</td><td>true</td></tr>
+		<tr><td>remove.secondary.alignments</td><td>boolean</td><td>Remove alignments with the secondary alignment flag for the count</td><td>false</td></tr>
+		<tr><td>remove.supplementary.alignments</td><td>boolean</td><td>Remove alignments with the supplementary alignment flag for the count</td><td>false</td></tr>
 		<tr><td>split.attribute.values</td><td>boolean</td><td>Split values of the attribute field</td><td>false</td></tr>
 	 </table>
         <li><b>Configuration example</b>:</li>
