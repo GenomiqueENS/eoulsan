@@ -27,6 +27,9 @@ package fr.ens.biologie.genomique.eoulsan.bio.expressioncounters;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.ATTRIBUTE_ID_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.GENOMIC_TYPE_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.OVERLAP_MODE_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.REMOVE_NON_UNIQUE_ALIGNMENTS_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.REMOVE_SECONDARY_ALIGNMENTS_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.STRANDED_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.OverlapMode.INTERSECTION_NONEMPTY;
 import static org.junit.Assert.assertEquals;
@@ -41,7 +44,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
@@ -74,7 +76,6 @@ public class HTSeqCountTest {
     }
   }
 
-  @Ignore
   @Test
   public void testCountWithNH()
       throws EoulsanException, IOException, BadBioEntryException {
@@ -90,7 +91,6 @@ public class HTSeqCountTest {
     compareCounts(counter, "/yeast_RNASeq_excerpt_withNH_counts.tsv");
   }
 
-  @Ignore
   @Test
   public void testCountNonUnique()
       throws EoulsanException, IOException, BadBioEntryException {
@@ -102,29 +102,12 @@ public class HTSeqCountTest {
     counter.setParameter(GENOMIC_TYPE_PARAMETER_NAME, "exon");
     counter.setParameter(ATTRIBUTE_ID_PARAMETER_NAME, "gene_id");
     counter.setParameter(STRANDED_PARAMETER_NAME, StrandUsage.YES.getName());
+    counter.setParameter(REMOVE_NON_UNIQUE_ALIGNMENTS_PARAMETER_NAME, "false");
+    counter.setParameter(REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME, "false");
 
     compareCounts(counter, "/yeast_RNASeq_excerpt_withNH_counts_nonunique.tsv");
   }
 
-  @Ignore
-  @Test
-  public void testCountTwocolumns()
-      throws EoulsanException, IOException, BadBioEntryException {
-
-    // htseq-count -m intersection-nonempty -i gene_id
-    // --additional-attr gene_name --nonunique none
-    HTSeqCounter counter = new HTSeqCounter();
-    counter.setParameter(OVERLAP_MODE_PARAMETER_NAME,
-        INTERSECTION_NONEMPTY.getName());
-    counter.setParameter(GENOMIC_TYPE_PARAMETER_NAME, "exon");
-    counter.setParameter(ATTRIBUTE_ID_PARAMETER_NAME, "gene_id");
-    counter.setParameter(STRANDED_PARAMETER_NAME, StrandUsage.YES.getName());
-
-    compareCounts(counter,
-        "/yeast_RNASeq_excerpt_withNH_counts_twocolumns.tsv");
-  }
-
-  @Ignore
   @Test
   public void testCountIgnoreSecondary()
       throws EoulsanException, IOException, BadBioEntryException {
@@ -137,6 +120,7 @@ public class HTSeqCountTest {
     counter.setParameter(GENOMIC_TYPE_PARAMETER_NAME, "exon");
     counter.setParameter(ATTRIBUTE_ID_PARAMETER_NAME, "gene_id");
     counter.setParameter(STRANDED_PARAMETER_NAME, StrandUsage.YES.getName());
+    counter.setParameter(REMOVE_SECONDARY_ALIGNMENTS_PARAMETER_NAME, "true");
 
     compareCounts(counter,
         "/yeast_RNASeq_excerpt_withNH_counts_ignore_secondary.tsv");
