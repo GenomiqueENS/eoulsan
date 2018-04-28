@@ -85,8 +85,8 @@ public interface ExpressionCounter {
 
   /**
    * Initialize the counter
-   * @param genomeDescFile genome description file
-   * @param annotationFile annotation file
+   * @param descIs genome description file
+   * @param annotationIs annotation file
    * @param gtfFormat true if the input format is in GTF format
    * @throws EoulsanException if an error occurs while initialize the counter
    * @throws IOException if an error occurs while reading input files
@@ -96,8 +96,8 @@ public interface ExpressionCounter {
 
   /**
    * Initialize the counter
-   * @param genomeDescFile genome description
-   * @param annotationFile annotation entries
+   * @param desc genome description
+   * @param annotations annotation entries
    * @throws EoulsanException if an error occurs while initialize the counter
    */
   void init(GenomeDescription desc, Iterable<GFFEntry> annotations)
@@ -118,7 +118,7 @@ public interface ExpressionCounter {
 
   /**
    * Count the the features.
-   * @param inputSAM SAM file as an InputStream
+   * @param inputSam SAM file as an InputStream
    * @param reporter the reporter
    * @param counterGroup the counter group of the reporter
    * @return a map with the counts

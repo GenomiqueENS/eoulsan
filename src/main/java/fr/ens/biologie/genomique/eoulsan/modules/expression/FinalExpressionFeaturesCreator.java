@@ -231,7 +231,7 @@ public class FinalExpressionFeaturesCreator {
 
   /**
    * Public constructor.
-   * @param ga GenomicArray object
+   * @param counter the counter
    */
   public FinalExpressionFeaturesCreator(final ExpressionCounter counter) {
 
