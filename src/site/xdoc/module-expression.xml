@@ -85,7 +85,7 @@ regardless of whether it is mapped to the same or the opposite strand as the fea
 		<tr><td>overlap.mode</td><td>string</td><td>Name of the overlap mode to use (union, intersection-nonempty or intersection-strict).</td><td>union</td></tr>
 		<tr><td>minimum.alignment.quality</td><td>integer</td><td>.</td>skip all reads with alignment quality lower than the given minimal value<td>0</td></tr>
 		<tr><td>remove.ambiguous.cases</td><td>boolean</td><td>Keep or remove ambiguous cases in the count</td><td>true</td></tr>
-		<tr><td>remove.non.unique.alignments</td><td>boolean</td><td>Keep or remove non unique alignments for the count</td><td>true</td></tr>
+		<tr><td>remove.non.unique.alignments</td><td>boolean</td><td>Keep or remove non unique alignments for the count (use the <tt>NH</tt> tag of the optional fields of the SAM entries)</td><td>true</td></tr>
 		<tr><td>split.attribute.values</td><td>boolean</td><td>Split values of the attribute field</td><td>false</td></tr>
 	 </table>
         <li><b>Configuration example</b>:</li>
@@ -127,8 +127,7 @@ regardless of whether it is mapped to the same or the opposite strand as the fea
 </pre>
        </ul>
 
-	<p>In local mode, use the <b>main.tmp.dir</b> global parameter to set the temporary directory if this step fails with a full disk error.</p>
-	<p><b>Note</b>: The <b>htseq-count</b> counter always filter multi-matches reads (using the <tt>NH</tt> tag of the optional fields of the SAM entries) before counting.</p>
+	<p><b>Note</b>: To get the same results as the original implementation of <b>htseq-count</b> with the <tt>--non-unique all</tt> argument, you must to set to false the <b>remove.ambiguous.cases</b> <u>and</u> <b>remove.non.unique.alignments</b> parameters.</p>
 
     </section>
 
