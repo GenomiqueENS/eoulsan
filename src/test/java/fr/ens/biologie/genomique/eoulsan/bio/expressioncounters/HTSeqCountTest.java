@@ -30,6 +30,7 @@ import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCoun
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.REMOVE_NON_UNIQUE_ALIGNMENTS_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.REMOVE_SECONDARY_ALIGNMENTS_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.SAM_TAG_DEFAULT;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.STRANDED_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.OverlapMode.INTERSECTION_NONEMPTY;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.OverlapMode.INTERSECTION_STRICT;
@@ -38,6 +39,7 @@ import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.StrandUsa
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.StrandUsage.REVERSE;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.StrandUsage.YES;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -45,7 +47,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.junit.Before;
@@ -58,6 +62,10 @@ import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.bio.io.GTFReader;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounterCounter;
 import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 
 /**
  * This class test the HTSeqCount class.
@@ -73,6 +81,101 @@ public class HTSeqCountTest {
   private static final String COUNTER_GROUP = "expression";
 
   private GenomeDescription genomeDescription;
+
+  /**
+   * This class allow to compare SAM output files from the counter.
+   */
+  private static class IteratorComparator
+      implements Iterable<SAMRecord>, Iterator<SAMRecord> {
+
+    private final Iterator<SAMRecord> sourceRecords;
+    private final Iterator<SAMRecord> expectedRecords;
+
+    private SAMRecord sourceCurrent;
+    private SAMRecord expectedCurrent;
+
+    @Override
+    public Iterator<SAMRecord> iterator() {
+      return this;
+    }
+
+    @Override
+    public boolean hasNext() {
+
+      boolean result = this.sourceRecords.hasNext();
+
+      if (!result && this.sourceCurrent != null) {
+        assertEquals(this.expectedCurrent, this.sourceCurrent);
+        this.sourceCurrent = null;
+      }
+
+      return result;
+    }
+
+    @Override
+    public SAMRecord next() {
+
+      if (this.sourceCurrent != null) {
+        sortSAMAbiguousTagValues(this.expectedCurrent);
+        sortSAMAbiguousTagValues(this.sourceCurrent);
+        assertEquals(this.expectedCurrent, this.sourceCurrent);
+        this.sourceCurrent = null;
+      }
+
+      this.sourceCurrent = this.sourceRecords.next();
+      this.expectedCurrent = this.expectedRecords.next();
+      assertNotEquals(this.expectedCurrent, this.sourceCurrent);
+
+      return this.sourceCurrent;
+    }
+
+    /**
+     * Sort the values for the ambiguous cases.
+     * @param samRecord the samRecord to process
+     */
+    private static void sortSAMAbiguousTagValues(SAMRecord samRecord) {
+
+      String value = (String) samRecord.getAttribute(SAM_TAG_DEFAULT);
+
+      if (value == null
+          || !value.startsWith("__ambiguous[") || value.indexOf('+') == -1) {
+        return;
+      }
+
+      String[] values = value.substring("__ambiguous[".length())
+          .replace("]", "").split("\\+");
+      Arrays.sort(values);
+
+      boolean first = true;
+
+      StringBuilder sb = new StringBuilder();
+      sb.append("__ambiguous[");
+      for (String s : values) {
+        if (first) {
+          first = false;
+        } else {
+          sb.append('\t');
+        }
+        sb.append(s);
+      }
+      sb.append(']');
+
+      samRecord.setAttribute(SAM_TAG_DEFAULT, sb.toString());
+    }
+
+    /**
+     * Constructor.
+     * @param sourceRecords source SAM entry
+     * @param expectedRecords expected SAM entry
+     */
+    private IteratorComparator(final SamReader sourceRecords,
+        final SamReader expectedRecords) {
+
+      this.sourceRecords = sourceRecords.iterator();
+      this.expectedRecords = expectedRecords.iterator();
+    }
+
+  }
 
   @Before
   public void init() throws IOException {
@@ -193,6 +296,22 @@ public class HTSeqCountTest {
         "/yeast_RNASeq_excerpt_withNH_counts_ignore_secondary.tsv");
   }
 
+  @Test
+  public void testCountSamOutput()
+      throws EoulsanException, IOException, BadBioEntryException {
+
+    // htseq-count -m intersection-nonempty --nonunique none
+    // --secondary-alignments ignore
+    HTSeqCounter counter = new HTSeqCounter();
+    counter.setParameter(OVERLAP_MODE_PARAMETER_NAME,
+        INTERSECTION_NONEMPTY.getName());
+    counter.setParameter(GENOMIC_TYPE_PARAMETER_NAME, "exon");
+    counter.setParameter(ATTRIBUTE_ID_PARAMETER_NAME, "gene_id");
+    counter.setParameter(STRANDED_PARAMETER_NAME, StrandUsage.YES.getName());
+
+    compareSams(counter, "/yeast_RNASeq_excerpt_withNH_counts.sam");
+  }
+
   //
   // Utility methods
   //
@@ -273,6 +392,39 @@ public class HTSeqCountTest {
       assertEquals(entryCounts, counts.size());
     }
 
+  }
+
+  /**
+   * Compare counts.
+   * @param counter counter
+   * @param expectedRessource expected counts resources
+   * @throws IOException if an error occurs while reading the expected counts
+   * @throws EoulsanException if an error occurs while counting
+   */
+  private void compareSams(HTSeqCounter counter, final String expectedRessource)
+      throws IOException, EoulsanException {
+
+    try (GTFReader reader =
+        new GTFReader(this.getClass().getResourceAsStream(GTF_RESSOURCE))) {
+      counter.init(this.genomeDescription, reader);
+    }
+
+    LocalReporter reporter = new LocalReporter();
+    try (
+        InputStream sourceStream =
+            this.getClass().getResourceAsStream(SAM_RESSOURCE);
+        InputStream expectedStream = this.getClass()
+            .getResourceAsStream(HTSEQ_RESSOURCE_DIR + expectedRessource)) {
+
+      SamReader sourceReader = SamReaderFactory.makeDefault()
+          .open(SamInputResource.of(sourceStream));
+
+      SamReader expectedReader = SamReaderFactory.makeDefault()
+          .open(SamInputResource.of(expectedStream));
+
+      counter.count(new IteratorComparator(sourceReader, expectedReader),
+          reporter, COUNTER_GROUP);
+    }
   }
 
   /**

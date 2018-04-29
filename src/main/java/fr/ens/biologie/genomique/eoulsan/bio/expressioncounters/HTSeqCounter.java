@@ -24,6 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.expressioncounters;
 
+import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.join;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +41,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.GFFEntry;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomicArray;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomicInterval;
+import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqUtils.UnknownChromosomeException;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounterCounter;
 import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
@@ -75,6 +78,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
       "remove.secondary.alignments";
   public static final String REMOVE_SUPPLEMENTARY_ALIGNMENTS_PARAMETER_NAME =
       "remove.supplementary.alignments";
+  public static final String SAM_TAG_DEFAULT = "XF";
 
   private String genomicType = "exon";
   private String attributeId = "PARENT";
@@ -86,6 +90,8 @@ public class HTSeqCounter extends AbstractExpressionCounter
   private boolean removeNonUnique = true;
   private boolean removeSecondaryAlignments = false;
   private boolean removeSupplementaryAlignments = false;
+
+  private String samTag = SAM_TAG_DEFAULT;
 
   private GenomicArray<String> features;
 
@@ -354,7 +360,9 @@ public class HTSeqCounter extends AbstractExpressionCounter
       // single-end mode
       if (!samRecord.getReadPairedFlag()) {
 
-        if (!processSingleEnd(samRecord, ivSeq, internalCounters)) {
+        sam1 = samRecord;
+
+        if (!processSingleEnd(sam1, ivSeq, internalCounters)) {
           continue;
         }
       }
@@ -396,7 +404,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
       }
 
       // Update counts
-      updateCounts(ivSeq, counts, internalCounters);
+      updateCounts(sam1, sam2, ivSeq, counts, internalCounters);
     }
 
     // Set the counters in the reporter
@@ -424,6 +432,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
     // unmapped read
     if (samRecord.getReadUnmappedFlag()) {
       counters.notAligned++;
+      assignment(samRecord, null, "__not_aligned");
       return false;
     }
 
@@ -443,6 +452,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
     if (samRecord.getAttribute("NH") != null
         && samRecord.getIntegerAttribute("NH") > 1) {
       counters.nonUnique++;
+      assignment(samRecord, null, "__alignment_not_unique");
       if (this.removeNonUnique) {
         return false;
       }
@@ -451,6 +461,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
     // too low quality
     if (samRecord.getMappingQuality() < this.minimalQuality) {
       counters.lowQual++;
+      assignment(samRecord, null, "__too_low_aQual");
       return false;
     }
 
@@ -481,6 +492,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
     // unmapped read
     if (sam1.getReadUnmappedFlag() && sam2.getReadUnmappedFlag()) {
       counters.notAligned++;
+      assignment(sam1, sam2, "__not_aligned");
       return false;
     }
 
@@ -509,6 +521,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
         || (sam2.getAttribute("NH") != null
             && sam2.getIntegerAttribute("NH") > 1)) {
       counters.nonUnique++;
+      assignment(sam1, sam2, "__alignment_not_unique");
       if (this.removeNonUnique) {
         return false;
       }
@@ -518,6 +531,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
     if (sam1.getMappingQuality() < this.minimalQuality
         || sam2.getMappingQuality() < this.minimalQuality) {
       counters.lowQual++;
+      assignment(sam1, sam2, "__too_low_aQual");
       return false;
     }
 
@@ -531,31 +545,43 @@ public class HTSeqCounter extends AbstractExpressionCounter
    * @param internalCounters the counters
    * @throws EoulsanException if an error occurs while counting
    */
-  private void updateCounts(final List<GenomicInterval> ivSeq,
+  private void updateCounts(final SAMRecord samRecord1,
+      final SAMRecord samRecord2, final List<GenomicInterval> ivSeq,
       final Map<String, Integer> counts,
       final InternalCounters internalCounters) throws EoulsanException {
 
-    Set<String> fs = HTSeqUtils.featuresOverlapped(ivSeq, this.features,
-        this.overlapMode, this.stranded);
+    try {
+      Set<String> fs = HTSeqUtils.featuresOverlapped(ivSeq, this.features,
+          this.overlapMode, this.stranded);
 
-    switch (fs.size()) {
-    case 0:
-      internalCounters.empty++;
-      break;
+      switch (fs.size()) {
+      case 0:
+        internalCounters.empty++;
+        assignment(samRecord1, samRecord2, "__no_feature");
+        break;
 
-    case 1:
-      increment(counts, fs.iterator().next());
-      break;
+      case 1:
+        String id = fs.iterator().next();
+        increment(counts, id);
+        assignment(samRecord1, samRecord2, id);
+        break;
 
-    default:
+      default:
 
-      internalCounters.ambiguous++;
-      if (!this.removeAmbiguousCases) {
-        for (String id2 : fs) {
-          increment(counts, id2);
+        internalCounters.ambiguous++;
+        assignment(samRecord1, samRecord2,
+            "__ambiguous[" + join(fs, "+") + ']');
+
+        if (!this.removeAmbiguousCases) {
+          for (String id2 : fs) {
+            increment(counts, id2);
+          }
         }
+        break;
       }
-      break;
+    } catch (UnknownChromosomeException e) {
+      internalCounters.empty++;
+      assignment(samRecord1, samRecord2, "__no_feature");
     }
   }
 
@@ -571,6 +597,24 @@ public class HTSeqCounter extends AbstractExpressionCounter
       counts.put(key, 1);
     } else {
       counts.put(key, counts.get(key) + 1);
+    }
+  }
+
+  /**
+   * Assign a feature to SAM entries.
+   * @param samRecord1 first entry
+   * @param samRecord2 second entry
+   * @param assignment the value of the assignment
+   */
+  private void assignment(final SAMRecord samRecord1,
+      final SAMRecord samRecord2, final String assignment) {
+
+    if (samRecord1 != null) {
+      samRecord1.setAttribute(this.samTag, assignment);
+    }
+
+    if (samRecord2 != null) {
+      samRecord2.setAttribute(this.samTag, assignment);
     }
   }
 

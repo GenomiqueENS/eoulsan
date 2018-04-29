@@ -71,6 +71,7 @@
 		<tr><td>counter</td><td>string</td><td>The name of the counter to use (eoulsanCounter or htseq-count).
 		The support of <b>eoulsanCounter</b> has been removed from Eoulsan 2.x.</td><td>htseq-count</td></tr>
 		<tr><td>features.file.format</td><td>string</td><td>The features file format. Currently only GFF/GFF3 and GTF format are supported.</td><td>gff3</td></tr>
+		<tr><td>output.file.format</td><td>string</td><td>The output file format. Currently only TSV and SAM format are supported. If SAM format selected, each SAM entry will have its feature assignment (as an optional field with tag 'XF')</td><td>tsv</td></tr>
 		<tr><td>genomic.type</td><td>string</td><td>feature type (3rd column in GFF file) to be used, all features of other type are ignored.</td><td>exon</td></tr>
 		<tr><td>attribute.id</td><td>string</td><td>GFF attribute to be used as feature ID</td><td>PARENT</td></tr>
 	 </table>

@@ -24,8 +24,10 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.expressioncounters;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
@@ -126,6 +128,21 @@ public interface ExpressionCounter {
    * @throws IOException if an error occurs while reading the input file
    */
   public Map<String, Integer> count(InputStream inputSam,
+      ReporterIncrementer reporter, String counterGroup)
+      throws EoulsanException;
+
+  /**
+   * Count the the features.
+   * @param inputSam SAM file as an InputStream
+   * @param outputSam SAM file as an OutputStream
+   * @param reporter the reporter
+   * @param counterGroup the counter group of the reporter
+   * @return a map with the counts
+   * @throws EoulsanException if an error occurs while counting
+   * @throws IOException if an error occurs while reading the input file
+   */
+  public Map<String, Integer> count(InputStream inputSam,
+      OutputStream outputSam, File temporaryDirectory,
       ReporterIncrementer reporter, String counterGroup)
       throws EoulsanException;
 

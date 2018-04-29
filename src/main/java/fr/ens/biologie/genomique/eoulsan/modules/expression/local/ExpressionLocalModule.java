@@ -66,12 +66,13 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
 
     try {
 
-      final Data featuresAnnotationData =
-          context.getInputData(isGTFFormat() ? ANNOTATION_GTF : ANNOTATION_GFF);
+      final Data featuresAnnotationData = context
+          .getInputData(isGTFInputFormat() ? ANNOTATION_GTF : ANNOTATION_GFF);
       final Data alignmentData = context.getInputData(MAPPER_RESULTS_SAM);
       final Data genomeDescriptionData = context.getInputData(GENOME_DESC_TXT);
-      final Data expressionData =
-          context.getOutputData(EXPRESSION_RESULTS_TSV, alignmentData);
+      final Data expressionData = context.getOutputData(
+          isSAMOutputFormat() ? MAPPER_RESULTS_SAM : EXPRESSION_RESULTS_TSV,
+          alignmentData);
 
       final ExpressionCounter counter = getExpressionCounter();
 
@@ -90,7 +91,7 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
       // Get final expression file
       final DataFile expressionFile = expressionData.getDataFile();
 
-      counter.init(genomeDescFile, annotationFile, isGTFFormat());
+      counter.init(genomeDescFile, annotationFile, isGTFInputFormat());
 
       final String sampleCounterHeader = "Expression computation with "
           + counter.getName() + " (" + alignmentData.getName() + ", "
@@ -99,22 +100,31 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
 
       status.setDescription(sampleCounterHeader);
 
-      // Launch counting
-      Map<String, Integer> result =
-          counter.count(alignmentFile, reporter, COUNTER_GROUP);
+      final Map<String, Integer> result;
 
-      // Add features with zero count
-      counter.addZeroCountFeatures(result);
+      if (isSAMOutputFormat()) {
 
-      // Save result
-      writeResult(result, expressionFile);
+        result = counter.count(alignmentFile.open(), expressionFile.create(),
+            context.getLocalTempDirectory(), reporter, COUNTER_GROUP);
+      } else {
+        // Launch counting
+        result = counter.count(alignmentFile, reporter, COUNTER_GROUP);
+
+        // Add features with zero count
+        counter.addZeroCountFeatures(result);
+
+        // Save result
+        writeResult(result, expressionFile);
+      }
 
       status.setCounters(reporter, COUNTER_GROUP);
 
       // Write log file
       return status.createTaskResult();
 
-    } catch (FileNotFoundException e) {
+    } catch (
+
+    FileNotFoundException e) {
       return status.createTaskResult(e, "File not found: " + e.getMessage());
     } catch (IOException e) {
       return status.createTaskResult(e,

@@ -62,6 +62,18 @@ import htsjdk.samtools.SAMRecord;
  */
 public class HTSeqUtils {
 
+  /**
+   * This class define a unknown chromosome exception.
+   */
+  public static class UnknownChromosomeException extends EoulsanException {
+
+    private static final long serialVersionUID = -7074516037283735042L;
+
+    public UnknownChromosomeException(String chromosome) {
+      super("Unknown chromosome: " + chromosome);
+    }
+  }
+
   public static void storeAnnotation(final GenomicArray<String> features,
       final InputStream annotationIs, final boolean gtfFormat,
       final String featureType, final StrandUsage stranded,
@@ -249,7 +261,7 @@ public class HTSeqUtils {
         final String chr = iv.getChromosome();
 
         if (!features.containsChromosome(chr)) {
-          throw new EoulsanException("Unknown chromosome: " + chr);
+          throw new UnknownChromosomeException(chr);
         }
 
         // Get features that overlap the current interval of the read

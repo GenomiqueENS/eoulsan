@@ -71,6 +71,8 @@ public abstract class AbstractExpressionModule extends AbstractModule {
   public static final String COUNTER_PARAMETER_NAME = "counter";
   public static final String FEATURES_FILE_FORMAT_PARAMETER_NAME =
       "features.file.format";
+  public static final String OUTPUT_FILE_FORMAT_PARAMETER_NAME =
+      "output.file.format";
 
   private static final String OLD_EOULSAN_COUNTER_NAME = "eoulsanCounter";
   private static final String OLD_REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME =
@@ -81,7 +83,8 @@ public abstract class AbstractExpressionModule extends AbstractModule {
   private static final String OLD_SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME =
       "splitattributevalues";
 
-  private boolean gtfFormat;
+  private boolean gtfInputFormat;
+  private boolean samOutputFormat;
   private ExpressionCounter counter;
 
   //
@@ -89,11 +92,19 @@ public abstract class AbstractExpressionModule extends AbstractModule {
   //
 
   /**
-   * Test if GTF format must be used.
-   * @return true if GTF format must be used
+   * Test if GTF input format must be used.
+   * @return true if GTF input format must be used
    */
-  protected boolean isGTFFormat() {
-    return this.gtfFormat;
+  protected boolean isGTFInputFormat() {
+    return this.gtfInputFormat;
+  }
+
+  /**
+   * Test if SAM output format must be used.
+   * @return true if SAM output format must be used
+   */
+  protected boolean isSAMOutputFormat() {
+    return this.samOutputFormat;
   }
 
   /**
@@ -134,7 +145,7 @@ public abstract class AbstractExpressionModule extends AbstractModule {
 
     builder.addPort("alignments", MAPPER_RESULTS_SAM);
     builder.addPort("featuresannotation",
-        this.gtfFormat ? ANNOTATION_GTF : ANNOTATION_GFF);
+        this.gtfInputFormat ? ANNOTATION_GTF : ANNOTATION_GFF);
     builder.addPort("genomedescription", GENOME_DESC_TXT);
 
     return builder.create();
@@ -142,6 +153,10 @@ public abstract class AbstractExpressionModule extends AbstractModule {
 
   @Override
   public OutputPorts getOutputPorts() {
+
+    if (this.samOutputFormat) {
+      return singleOutputPort(MAPPER_RESULTS_SAM);
+    }
     return singleOutputPort(EXPRESSION_RESULTS_TSV);
   }
 
@@ -220,12 +235,12 @@ public abstract class AbstractExpressionModule extends AbstractModule {
         switch (p.getLowerStringValue()) {
 
         case "gtf":
-          this.gtfFormat = true;
+          this.gtfInputFormat = true;
           break;
 
         case "gff":
         case "gff3":
-          this.gtfFormat = false;
+          this.gtfInputFormat = false;
           break;
 
         default:
@@ -233,7 +248,24 @@ public abstract class AbstractExpressionModule extends AbstractModule {
               "Unknown annotation file format");
           break;
         }
+        break;
 
+      case OUTPUT_FILE_FORMAT_PARAMETER_NAME:
+
+        switch (p.getLowerStringValue()) {
+
+        case "tsv":
+          this.samOutputFormat = false;
+          break;
+
+        case "sam":
+          this.samOutputFormat = true;
+          break;
+
+        default:
+          Modules.badParameterValue(context, p, "Unknown output file format");
+          break;
+        }
         break;
 
       default:
@@ -255,7 +287,8 @@ public abstract class AbstractExpressionModule extends AbstractModule {
     // Configure Checker
     if (context.getRuntime().getMode() != EoulsanExecMode.CLUSTER_TASK) {
       CheckerModule.configureChecker(
-          this.gtfFormat ? ANNOTATION_GTF : ANNOTATION_GFF, stepParameters);
+          this.gtfInputFormat ? ANNOTATION_GTF : ANNOTATION_GFF,
+          stepParameters);
     }
 
     // Log Step parameters

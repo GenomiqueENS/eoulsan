@@ -59,6 +59,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.ExpressionCounte
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.ExpressionOutputFormat;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.SAMInputFormat;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
+import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
@@ -111,6 +112,12 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       final Set<Parameter> stepParameters) throws EoulsanException {
 
     super.configure(context, stepParameters);
+
+    if (isSAMOutputFormat()) {
+      Modules.invalidConfiguration(context,
+          "SAM output is not yet implemented in Hadoop mode");
+    }
+
     this.conf = CommonHadoop.createConfiguration(EoulsanRuntime.getSettings());
   }
 
@@ -120,7 +127,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
     final Data alignmentsData = context.getInputData(MAPPER_RESULTS_SAM);
     final Data featureAnnotationData =
-        context.getInputData(isGTFFormat() ? ANNOTATION_GFF : ANNOTATION_GFF);
+        context.getInputData(isGTFInputFormat() ? ANNOTATION_GFF : ANNOTATION_GFF);
     final Data genomeDescriptionData = context.getInputData(GENOME_DESC_TXT);
     final Data outData =
         context.getOutputData(EXPRESSION_RESULTS_TSV, alignmentsData);

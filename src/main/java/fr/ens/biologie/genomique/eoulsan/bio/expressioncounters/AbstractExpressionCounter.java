@@ -24,8 +24,11 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.expressioncounters;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Iterator;
 import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
@@ -34,7 +37,11 @@ import fr.ens.biologie.genomique.eoulsan.bio.io.GFFReader;
 import fr.ens.biologie.genomique.eoulsan.bio.io.GTFReader;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
+import htsjdk.samtools.SAMFileWriter;
+import htsjdk.samtools.SAMFileWriterFactory;
+import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
 
 /**
@@ -43,6 +50,61 @@ import htsjdk.samtools.SamReaderFactory;
  * @author Claire Wallon
  */
 public abstract class AbstractExpressionCounter implements ExpressionCounter {
+
+  /**
+   * This class allow to save the modified SAM entries after the counting.
+   */
+  private static class IteratorWriter
+      implements Iterable<SAMRecord>, Iterator<SAMRecord> {
+
+    private final SAMFileWriter writer;
+    private final Iterator<SAMRecord> samRecords;
+    private SAMRecord current;
+
+    @Override
+    public Iterator<SAMRecord> iterator() {
+      return this;
+    }
+
+    @Override
+    public boolean hasNext() {
+
+      boolean result = this.samRecords.hasNext();
+
+      if (!result && this.current != null) {
+        this.writer.addAlignment(this.current);
+        this.writer.close();
+        this.current = null;
+      }
+
+      return result;
+    }
+
+    @Override
+    public SAMRecord next() {
+
+      if (this.current != null) {
+        this.writer.addAlignment(this.current);
+        this.current = null;
+      }
+
+      this.current = this.samRecords.next();
+
+      return this.current;
+    }
+
+    /**
+     * Constructor.
+     * @param writer SAM writer
+     * @param samReader SAM reader
+     */
+    private IteratorWriter(final SAMFileWriter writer,
+        final SamReader samReader) {
+
+      this.writer = writer;
+      this.samRecords = samReader.iterator();
+    }
+  }
 
   @Override
   public void init(final DataFile genomeDescFile, final DataFile annotationFile,
@@ -86,6 +148,36 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
     return count(
         SamReaderFactory.makeDefault().open(SamInputResource.of(inputSam)),
         reporter, counterGroup);
+  }
+
+  @Override
+  public Map<String, Integer> count(final InputStream inputSam,
+      final OutputStream outputSam, final File temporaryDirectory,
+      final ReporterIncrementer reporter, final String counterGroup)
+      throws EoulsanException {
+
+    if (inputSam == null) {
+      throw new NullPointerException("the inputSam argument is null");
+    }
+
+    if (outputSam == null) {
+      throw new NullPointerException("the outputSam argument is null");
+    }
+
+    if (temporaryDirectory == null) {
+      throw new NullPointerException("the temporaryDirectory argument is null");
+    }
+
+    // Define the reader
+    SamReader reader =
+        SamReaderFactory.makeDefault().open(SamInputResource.of(inputSam));
+
+    // Define the writer
+    SAMFileWriter writer =
+        new SAMFileWriterFactory().setTempDirectory(temporaryDirectory)
+            .makeSAMWriter(reader.getFileHeader(), false, outputSam);
+
+    return count(new IteratorWriter(writer, reader), reporter, counterGroup);
   }
 
 }
