@@ -22,7 +22,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule;
-import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters;
+import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounterCounter;
 
 /**
  * This class define a preprocessor for expression reports.
@@ -121,7 +121,7 @@ public class ExpressionInputPreprocessor implements InputPreprocessor {
 
       JsonObject dict = counters.getJsonObject(sampleId);
 
-      for (ExpressionCounters ec : ExpressionCounters.values()) {
+      for (ExpressionCounterCounter ec : ExpressionCounterCounter.values()) {
 
         if (ec.htSeqCountCounterName() != null) {
 

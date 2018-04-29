@@ -51,7 +51,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
 import fr.ens.biologie.genomique.eoulsan.bio.GFFEntry;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.bio.io.GTFReader;
-import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters;
+import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounterCounter;
 import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
 
 /**
@@ -189,7 +189,7 @@ public class HTSeqCountTest {
 
         if (line.startsWith("__")) {
 
-          ExpressionCounters c = ExpressionCounters.getCounterFromHTSeqCountName(key);
+          ExpressionCounterCounter c = ExpressionCounterCounter.getCounterFromHTSeqCountName(key);
 
           if (c != null) {
             assertEquals(value == 0 ? -1 : value,

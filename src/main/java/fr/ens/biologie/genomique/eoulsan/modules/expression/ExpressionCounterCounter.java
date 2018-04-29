@@ -29,7 +29,7 @@ package fr.ens.biologie.genomique.eoulsan.modules.expression;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public enum ExpressionCounters {
+public enum ExpressionCounterCounter {
 
   INVALID_SAM_ENTRIES_COUNTER("invalid SAM input entries"),
   TOTAL_READS_COUNTER("reads total"), UNUSED_READS_COUNTER("reads unused"),
@@ -76,7 +76,7 @@ public enum ExpressionCounters {
    * @param counterName the name of the counter to search
    * @return the counter if found or null
    */
-  public static ExpressionCounters getCounterFromHTSeqCountName(
+  public static ExpressionCounterCounter getCounterFromHTSeqCountName(
       final String counterName) {
 
     if (counterName == null) {
@@ -86,7 +86,7 @@ public enum ExpressionCounters {
     String s =
         counterName.startsWith("__") ? counterName.substring(2) : counterName;
 
-    for (ExpressionCounters c : ExpressionCounters.values()) {
+    for (ExpressionCounterCounter c : ExpressionCounterCounter.values()) {
 
       if (c.htseqName != null && c.htseqName.equals(s)) {
         return c;
@@ -102,14 +102,14 @@ public enum ExpressionCounters {
    * @param counterName the name of the counter to search
    * @return the counter if found or null
    */
-  public static ExpressionCounters getCounterFromEoulsanName(
+  public static ExpressionCounterCounter getCounterFromEoulsanName(
       final String counterName) {
 
     if (counterName == null) {
       throw new NullPointerException("counterName argument cannot be null");
     }
 
-    for (ExpressionCounters c : ExpressionCounters.values()) {
+    for (ExpressionCounterCounter c : ExpressionCounterCounter.values()) {
 
       if (c.counterName != null && c.counterName.equals(counterName)) {
         return c;
@@ -133,7 +133,7 @@ public enum ExpressionCounters {
    * Constructor name.
    * @param counterName counter name
    */
-  ExpressionCounters(final String counterName) {
+  ExpressionCounterCounter(final String counterName) {
 
     this(counterName, null);
   }
@@ -143,7 +143,7 @@ public enum ExpressionCounters {
    * @param counterName counter name
    * @param htseqName htSeq counter name
    */
-  ExpressionCounters(final String counterName, String htseqName) {
+  ExpressionCounterCounter(final String counterName, String htseqName) {
 
     this.counterName = counterName;
     this.htseqName = htseqName;

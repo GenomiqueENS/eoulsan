@@ -39,7 +39,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.GFFEntry;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomicArray;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomicInterval;
-import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters;
+import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounterCounter;
 import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 import htsjdk.samtools.SAMFileHeader.SortOrder;
@@ -108,30 +108,30 @@ public class HTSeqCounter extends AbstractExpressionCounter
     private void fillReporter() {
 
       reporter.incrCounter(counterGroup,
-          ExpressionCounters.TOTAL_ALIGNMENTS_COUNTER.counterName(),
+          ExpressionCounterCounter.TOTAL_ALIGNMENTS_COUNTER.counterName(),
           this.input);
 
       reporter.incrCounter(counterGroup,
-          ExpressionCounters.EMPTY_ALIGNMENTS_COUNTER.counterName(),
+          ExpressionCounterCounter.EMPTY_ALIGNMENTS_COUNTER.counterName(),
           this.empty);
       reporter.incrCounter(counterGroup,
-          ExpressionCounters.AMBIGUOUS_ALIGNMENTS_COUNTER.counterName(),
+          ExpressionCounterCounter.AMBIGUOUS_ALIGNMENTS_COUNTER.counterName(),
           this.ambiguous);
       reporter.incrCounter(counterGroup,
-          ExpressionCounters.LOW_QUAL_ALIGNMENTS_COUNTER.counterName(),
+          ExpressionCounterCounter.LOW_QUAL_ALIGNMENTS_COUNTER.counterName(),
           this.lowQual);
       reporter.incrCounter(counterGroup,
-          ExpressionCounters.NOT_ALIGNED_ALIGNMENTS_COUNTER.counterName(),
+          ExpressionCounterCounter.NOT_ALIGNED_ALIGNMENTS_COUNTER.counterName(),
           this.notAligned);
       reporter.incrCounter(counterGroup,
-          ExpressionCounters.NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName(),
+          ExpressionCounterCounter.NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName(),
           this.nonUnique);
       reporter.incrCounter(counterGroup,
-          ExpressionCounters.MISSING_MATES_COUNTER.counterName(),
+          ExpressionCounterCounter.MISSING_MATES_COUNTER.counterName(),
           this.missingMate);
 
       reporter.incrCounter(counterGroup,
-          ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(),
+          ExpressionCounterCounter.ELIMINATED_READS_COUNTER.counterName(),
           this.empty
               + this.ambiguous + this.lowQual + this.notAligned
               + this.nonUnique);
