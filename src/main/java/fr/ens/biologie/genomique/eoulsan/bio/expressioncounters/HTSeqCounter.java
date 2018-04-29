@@ -549,9 +549,8 @@ public class HTSeqCounter extends AbstractExpressionCounter
 
     default:
 
-      if (this.removeAmbiguousCases) {
-        internalCounters.ambiguous++;
-      } else {
+      internalCounters.ambiguous++;
+      if (!this.removeAmbiguousCases) {
         for (String id2 : fs) {
           increment(counts, id2);
         }
