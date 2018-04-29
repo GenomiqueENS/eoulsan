@@ -24,16 +24,11 @@
 
 package fr.ens.biologie.genomique.eoulsan.checkers;
 
+import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.ATTRIBUTE_ID_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.GENOMIC_TYPE_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.STRANDED_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GTF;
-import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.ATTRIBUTE_ID_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.COUNTER_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.FEATURES_FILE_FORMAT_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.GENOMIC_TYPE_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.OVERLAP_MODE_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.STRANDED_PARAMETER_NAME;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -112,17 +107,7 @@ public class GFFChecker implements Checker {
         break;
 
       default:
-
-        if (!FEATURES_FILE_FORMAT_PARAMETER_NAME.equals(p.getName())
-            && !COUNTER_PARAMETER_NAME.equals(p.getName())
-            && !OVERLAP_MODE_PARAMETER_NAME.equals(p.getName())
-            && !REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME.equals(p.getName())
-            && !SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME.equals(p.getName())) {
-          throw new EoulsanException(
-              "Unknown parameter for " + getName() + " step: " + p.getName());
-
-        }
-
+        break;
       }
     }
   }
