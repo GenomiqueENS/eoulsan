@@ -32,6 +32,11 @@ import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCoun
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.REMOVE_SECONDARY_ALIGNMENTS_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.STRANDED_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.OverlapMode.INTERSECTION_NONEMPTY;
+import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.OverlapMode.INTERSECTION_STRICT;
+import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.OverlapMode.UNION;
+import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.StrandUsage.NO;
+import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.StrandUsage.REVERSE;
+import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.StrandUsage.YES;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -88,9 +93,69 @@ public class HTSeqCountTest {
         INTERSECTION_NONEMPTY.getName());
     counter.setParameter(GENOMIC_TYPE_PARAMETER_NAME, "exon");
     counter.setParameter(ATTRIBUTE_ID_PARAMETER_NAME, "gene_id");
-    counter.setParameter(STRANDED_PARAMETER_NAME, StrandUsage.YES.getName());
+    counter.setParameter(STRANDED_PARAMETER_NAME, YES.getName());
 
     compareCounts(counter, "/yeast_RNASeq_excerpt_withNH_counts.tsv");
+  }
+
+  @Test
+  public void testCountWithNHUnion()
+      throws EoulsanException, IOException, BadBioEntryException {
+
+    // htseq-count -m intersection-nonempty --nonunique none
+    HTSeqCounter counter = new HTSeqCounter();
+    counter.setParameter(OVERLAP_MODE_PARAMETER_NAME, UNION.getName());
+    counter.setParameter(GENOMIC_TYPE_PARAMETER_NAME, "exon");
+    counter.setParameter(ATTRIBUTE_ID_PARAMETER_NAME, "gene_id");
+    counter.setParameter(STRANDED_PARAMETER_NAME, YES.getName());
+
+    compareCounts(counter, "/yeast_RNASeq_excerpt_withNH_counts_union.tsv");
+  }
+
+  @Test
+  public void testCountWithNHIntersectionStrict()
+      throws EoulsanException, IOException, BadBioEntryException {
+
+    // htseq-count -m intersection-nonempty --nonunique none
+    HTSeqCounter counter = new HTSeqCounter();
+    counter.setParameter(OVERLAP_MODE_PARAMETER_NAME,
+        INTERSECTION_STRICT.getName());
+    counter.setParameter(GENOMIC_TYPE_PARAMETER_NAME, "exon");
+    counter.setParameter(ATTRIBUTE_ID_PARAMETER_NAME, "gene_id");
+    counter.setParameter(STRANDED_PARAMETER_NAME, YES.getName());
+
+    compareCounts(counter,
+        "/yeast_RNASeq_excerpt_withNH_counts_intersection-strict.tsv");
+  }
+
+  @Test
+  public void testCountWithNHNo()
+      throws EoulsanException, IOException, BadBioEntryException {
+
+    // htseq-count -m intersection-nonempty --nonunique none
+    HTSeqCounter counter = new HTSeqCounter();
+    counter.setParameter(OVERLAP_MODE_PARAMETER_NAME,
+        INTERSECTION_NONEMPTY.getName());
+    counter.setParameter(GENOMIC_TYPE_PARAMETER_NAME, "exon");
+    counter.setParameter(ATTRIBUTE_ID_PARAMETER_NAME, "gene_id");
+    counter.setParameter(STRANDED_PARAMETER_NAME, NO.getName());
+
+    compareCounts(counter, "/yeast_RNASeq_excerpt_withNH_counts_no.tsv");
+  }
+
+  @Test
+  public void testCountWithNHReverse()
+      throws EoulsanException, IOException, BadBioEntryException {
+
+    // htseq-count -m intersection-nonempty --nonunique none
+    HTSeqCounter counter = new HTSeqCounter();
+    counter.setParameter(OVERLAP_MODE_PARAMETER_NAME,
+        INTERSECTION_NONEMPTY.getName());
+    counter.setParameter(GENOMIC_TYPE_PARAMETER_NAME, "exon");
+    counter.setParameter(ATTRIBUTE_ID_PARAMETER_NAME, "gene_id");
+    counter.setParameter(STRANDED_PARAMETER_NAME, REVERSE.getName());
+
+    compareCounts(counter, "/yeast_RNASeq_excerpt_withNH_counts_reverse.tsv");
   }
 
   @Test
@@ -189,7 +254,8 @@ public class HTSeqCountTest {
 
         if (line.startsWith("__")) {
 
-          ExpressionCounterCounter c = ExpressionCounterCounter.getCounterFromHTSeqCountName(key);
+          ExpressionCounterCounter c =
+              ExpressionCounterCounter.getCounterFromHTSeqCountName(key);
 
           if (c != null) {
             assertEquals(value == 0 ? -1 : value,
