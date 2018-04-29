@@ -42,6 +42,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.GenomicInterval;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters;
 import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
+import htsjdk.samtools.SAMFileHeader.SortOrder;
 import htsjdk.samtools.SAMRecord;
 
 /**
@@ -87,6 +88,63 @@ public class HTSeqCounter extends AbstractExpressionCounter
   private boolean removeSupplementaryAlignments = false;
 
   private GenomicArray<String> features;
+
+  /**
+   * Internal class for counters
+   */
+  private static class InternalCounters {
+
+    final ReporterIncrementer reporter;
+    final String counterGroup;
+
+    private int input;
+    private int empty;
+    private int ambiguous;
+    private int notAligned;
+    private int lowQual;
+    private int nonUnique;
+    private int missingMate;
+
+    private void fillReporter() {
+
+      reporter.incrCounter(counterGroup,
+          ExpressionCounters.TOTAL_ALIGNMENTS_COUNTER.counterName(),
+          this.input);
+
+      reporter.incrCounter(counterGroup,
+          ExpressionCounters.EMPTY_ALIGNMENTS_COUNTER.counterName(),
+          this.empty);
+      reporter.incrCounter(counterGroup,
+          ExpressionCounters.AMBIGUOUS_ALIGNMENTS_COUNTER.counterName(),
+          this.ambiguous);
+      reporter.incrCounter(counterGroup,
+          ExpressionCounters.LOW_QUAL_ALIGNMENTS_COUNTER.counterName(),
+          this.lowQual);
+      reporter.incrCounter(counterGroup,
+          ExpressionCounters.NOT_ALIGNED_ALIGNMENTS_COUNTER.counterName(),
+          this.notAligned);
+      reporter.incrCounter(counterGroup,
+          ExpressionCounters.NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName(),
+          this.nonUnique);
+      reporter.incrCounter(counterGroup,
+          ExpressionCounters.MISSING_MATES_COUNTER.counterName(),
+          this.missingMate);
+
+      reporter.incrCounter(counterGroup,
+          ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(),
+          this.empty
+              + this.ambiguous + this.lowQual + this.notAligned
+              + this.nonUnique);
+    }
+
+    private InternalCounters(final ReporterIncrementer reporter,
+        final String counterGroup) {
+
+      this.reporter = reporter;
+      this.counterGroup = counterGroup;
+    }
+
+  }
 
   @Override
   public String getName() {
@@ -282,66 +340,32 @@ public class HTSeqCounter extends AbstractExpressionCounter
       throw new IllegalStateException("the counter has not been initialized");
     }
 
-    int empty = 0;
-    int ambiguous = 0;
-    int notAligned = 0;
-    int lowQual = 0;
-    int nonUnique = 0;
-    int missingMate = 0;
-
     SAMRecord sam1 = null, sam2 = null;
-    final List<GenomicInterval> ivSeq = new ArrayList<>();
     final Map<String, Integer> counts = new HashMap<>();
+    final List<GenomicInterval> ivSeq = new ArrayList<>();
+    final InternalCounters internalCounters =
+        new InternalCounters(reporter, counterGroup);
 
     // Read the SAM file
     for (final SAMRecord samRecord : samRecords) {
 
-      reporter.incrCounter(counterGroup,
-          ExpressionCounters.TOTAL_ALIGNMENTS_COUNTER.counterName(), 1);
+      internalCounters.input++;
 
       // single-end mode
       if (!samRecord.getReadPairedFlag()) {
 
-        ivSeq.clear();
-
-        // unmapped read
-        if (samRecord.getReadUnmappedFlag()) {
-          notAligned++;
+        if (!processSingleEnd(samRecord, ivSeq, internalCounters)) {
           continue;
         }
-
-        // secondary alignment
-        if (this.removeSecondaryAlignments
-            && samRecord.getNotPrimaryAlignmentFlag()) {
-          continue;
-        }
-
-        // supplementary alignment
-        if (this.removeSupplementaryAlignments
-            && samRecord.getSupplementaryAlignmentFlag()) {
-          continue;
-        }
-
-        // multiple alignment
-        if (samRecord.getAttribute("NH") != null
-            && samRecord.getIntegerAttribute("NH") > 1) {
-          nonUnique++;
-          if (this.removeNonUnique) {
-            continue;
-          }
-        }
-
-        // too low quality
-        if (samRecord.getMappingQuality() < this.minimalQuality) {
-          lowQual++;
-          continue;
-        }
-
-        ivSeq.addAll(HTSeqUtils.addIntervals(samRecord, this.stranded));
       }
 
       // paired-end mode
       else {
+
+        if (samRecord.getHeader().getSortOrder() == SortOrder.coordinate) {
+          throw new EoulsanException(
+              "The counter does not support SAM data sorted by coordinate in paired-end mode");
+        }
 
         if (sam1 != null && sam2 != null) {
           sam1 = null;
@@ -362,120 +386,193 @@ public class HTSeqCounter extends AbstractExpressionCounter
         if (!sam1.getReadName().equals(sam2.getReadName())) {
           sam1 = sam2;
           sam2 = null;
-          missingMate++;
+          internalCounters.missingMate++;
           continue;
         }
 
-        if (!sam1.getReadUnmappedFlag()) {
-          ivSeq.addAll(HTSeqUtils.addIntervals(sam1, this.stranded));
-        }
-
-        if (!sam2.getReadUnmappedFlag()) {
-          ivSeq.addAll(HTSeqUtils.addIntervals(sam2, this.stranded));
-        }
-
-        // unmapped read
-        if (sam1.getReadUnmappedFlag() && sam2.getReadUnmappedFlag()) {
-          notAligned++;
+        if (!pairedEnd(sam1, sam2, ivSeq, internalCounters)) {
           continue;
         }
-
-        // secondary alignment
-        if (this.removeSecondaryAlignments) {
-          if (sam1 != null && sam1.getNotPrimaryAlignmentFlag()) {
-            continue;
-          }
-          if (sam2 != null && sam2.getNotPrimaryAlignmentFlag()) {
-            continue;
-          }
-        }
-
-        // supplementary alignment
-        if (this.removeSupplementaryAlignments) {
-          if (sam1 != null && sam1.getSupplementaryAlignmentFlag()) {
-            continue;
-          }
-          if (sam2 != null && sam2.getSupplementaryAlignmentFlag()) {
-            continue;
-          }
-        }
-
-        // multiple alignment
-        if ((sam1.getAttribute("NH") != null
-            && sam1.getIntegerAttribute("NH") > 1)
-            || (sam2.getAttribute("NH") != null
-                && sam2.getIntegerAttribute("NH") > 1)) {
-          nonUnique++;
-          if (this.removeNonUnique) {
-            continue;
-          }
-        }
-
-        // too low quality
-        if (sam1.getMappingQuality() < this.minimalQuality
-            || sam2.getMappingQuality() < this.minimalQuality) {
-          lowQual++;
-          continue;
-        }
-
       }
 
-      Set<String> fs = HTSeqUtils.featuresOverlapped(ivSeq, this.features,
-          this.overlapMode, this.stranded);
-
-      switch (fs.size()) {
-      case 0:
-        empty++;
-        break;
-
-      case 1:
-        final String id1 = fs.iterator().next();
-        if (!counts.containsKey(id1)) {
-          counts.put(id1, 1);
-        } else {
-          counts.put(id1, counts.get(id1) + 1);
-        }
-        break;
-
-      default:
-
-        if (this.removeAmbiguousCases) {
-          ambiguous++;
-        } else {
-          for (String id2 : fs) {
-            if (!counts.containsKey(id2)) {
-              counts.put(id2, 1);
-            } else {
-              counts.put(id2, counts.get(id2) + 1);
-            }
-          }
-        }
-        break;
-      }
-
+      // Update counts
+      updateCounts(ivSeq, counts, internalCounters);
     }
 
-    reporter.incrCounter(counterGroup,
-        ExpressionCounters.EMPTY_ALIGNMENTS_COUNTER.counterName(), empty);
-    reporter.incrCounter(counterGroup,
-        ExpressionCounters.AMBIGUOUS_ALIGNMENTS_COUNTER.counterName(),
-        ambiguous);
-    reporter.incrCounter(counterGroup,
-        ExpressionCounters.LOW_QUAL_ALIGNMENTS_COUNTER.counterName(), lowQual);
-    reporter.incrCounter(counterGroup,
-        ExpressionCounters.NOT_ALIGNED_ALIGNMENTS_COUNTER.counterName(),
-        notAligned);
-    reporter.incrCounter(counterGroup,
-        ExpressionCounters.NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName(),
-        nonUnique);
-    reporter.incrCounter(counterGroup,
-        ExpressionCounters.MISSING_MATES_COUNTER.counterName(), missingMate);
-
-    reporter.incrCounter(counterGroup,
-        ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(),
-        empty + ambiguous + lowQual + notAligned + nonUnique);
+    // Set the counters in the reporter
+    internalCounters.fillReporter();
 
     return counts;
+  }
+
+  //
+  // Other methods
+  //
+
+  /**
+   * Process single-end alignment.
+   * @param samRecord SAM record
+   * @param ivSeq genomic intervals
+   * @param counters the counters
+   * @return false if the alignment has not been processed
+   */
+  private boolean processSingleEnd(final SAMRecord samRecord,
+      final List<GenomicInterval> ivSeq, final InternalCounters counters) {
+
+    ivSeq.clear();
+
+    // unmapped read
+    if (samRecord.getReadUnmappedFlag()) {
+      counters.notAligned++;
+      return false;
+    }
+
+    // secondary alignment
+    if (this.removeSecondaryAlignments
+        && samRecord.getNotPrimaryAlignmentFlag()) {
+      return false;
+    }
+
+    // supplementary alignment
+    if (this.removeSupplementaryAlignments
+        && samRecord.getSupplementaryAlignmentFlag()) {
+      return false;
+    }
+
+    // multiple alignment
+    if (samRecord.getAttribute("NH") != null
+        && samRecord.getIntegerAttribute("NH") > 1) {
+      counters.nonUnique++;
+      if (this.removeNonUnique) {
+        return false;
+      }
+    }
+
+    // too low quality
+    if (samRecord.getMappingQuality() < this.minimalQuality) {
+      counters.lowQual++;
+      return false;
+    }
+
+    ivSeq.addAll(HTSeqUtils.addIntervals(samRecord, this.stranded));
+
+    return true;
+  }
+
+  /**
+   * Process paired-end alignment.
+   * @param sam1 first SAM record
+   * @param sam2 second SAM record
+   * @param ivSeq genomic intervals
+   * @param counters the counters
+   * @return false if the alignments has not been processed
+   */
+  private boolean pairedEnd(final SAMRecord sam1, final SAMRecord sam2,
+      final List<GenomicInterval> ivSeq, final InternalCounters counters) {
+
+    if (!sam1.getReadUnmappedFlag()) {
+      ivSeq.addAll(HTSeqUtils.addIntervals(sam1, this.stranded));
+    }
+
+    if (!sam2.getReadUnmappedFlag()) {
+      ivSeq.addAll(HTSeqUtils.addIntervals(sam2, this.stranded));
+    }
+
+    // unmapped read
+    if (sam1.getReadUnmappedFlag() && sam2.getReadUnmappedFlag()) {
+      counters.notAligned++;
+      return false;
+    }
+
+    // secondary alignment
+    if (this.removeSecondaryAlignments) {
+      if (sam1 != null && sam1.getNotPrimaryAlignmentFlag()) {
+        return false;
+      }
+      if (sam2 != null && sam2.getNotPrimaryAlignmentFlag()) {
+        return false;
+      }
+    }
+
+    // supplementary alignment
+    if (this.removeSupplementaryAlignments) {
+      if (sam1 != null && sam1.getSupplementaryAlignmentFlag()) {
+        return false;
+      }
+      if (sam2 != null && sam2.getSupplementaryAlignmentFlag()) {
+        return false;
+      }
+    }
+
+    // multiple alignment
+    if ((sam1.getAttribute("NH") != null && sam1.getIntegerAttribute("NH") > 1)
+        || (sam2.getAttribute("NH") != null
+            && sam2.getIntegerAttribute("NH") > 1)) {
+      counters.nonUnique++;
+      if (this.removeNonUnique) {
+        return false;
+      }
+    }
+
+    // too low quality
+    if (sam1.getMappingQuality() < this.minimalQuality
+        || sam2.getMappingQuality() < this.minimalQuality) {
+      counters.lowQual++;
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Update the counts.
+   * @param ivSeq the genomic intervals
+   * @param counts the counts
+   * @param internalCounters the counters
+   * @throws EoulsanException if an error occurs while counting
+   */
+  private void updateCounts(final List<GenomicInterval> ivSeq,
+      final Map<String, Integer> counts,
+      final InternalCounters internalCounters) throws EoulsanException {
+
+    Set<String> fs = HTSeqUtils.featuresOverlapped(ivSeq, this.features,
+        this.overlapMode, this.stranded);
+
+    switch (fs.size()) {
+    case 0:
+      internalCounters.empty++;
+      break;
+
+    case 1:
+      increment(counts, fs.iterator().next());
+      break;
+
+    default:
+
+      if (this.removeAmbiguousCases) {
+        internalCounters.ambiguous++;
+      } else {
+        for (String id2 : fs) {
+          increment(counts, id2);
+        }
+      }
+      break;
+    }
+  }
+
+  /**
+   * Increment a count.
+   * @param counts the counts
+   * @param key the feature to increment
+   */
+  private static void increment(final Map<String, Integer> counts,
+      final String key) {
+
+    if (!counts.containsKey(key)) {
+      counts.put(key, 1);
+    } else {
+      counts.put(key, counts.get(key) + 1);
+    }
   }
 
   @Override
