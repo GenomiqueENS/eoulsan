@@ -51,6 +51,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
 import fr.ens.biologie.genomique.eoulsan.bio.GFFEntry;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.bio.io.GTFReader;
+import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters;
 import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
 
 /**
@@ -64,6 +65,7 @@ public class HTSeqCountTest {
       HTSEQ_RESSOURCE_DIR + "/Saccharomyces_cerevisiae.SGD1.01.56.gtf";
   private static final String SAM_RESSOURCE =
       HTSEQ_RESSOURCE_DIR + "/yeast_RNASeq_excerpt_withNH.sam";
+  private static final String COUNTER_GROUP = "expression";
 
   private GenomeDescription genomeDescription;
 
@@ -148,12 +150,12 @@ public class HTSeqCountTest {
     LocalReporter reporter = new LocalReporter();
     Map<String, Integer> counts = null;
     try (InputStream in = this.getClass().getResourceAsStream(SAM_RESSOURCE)) {
-      counts = counter.count(in, reporter, "expression");
+      counts = counter.count(in, reporter, COUNTER_GROUP);
     }
 
     counter.addZeroCountFeatures(counts);
 
-    compareCounts(counts, HTSEQ_RESSOURCE_DIR + expectedRessource);
+    compareCounts(counts, reporter, HTSEQ_RESSOURCE_DIR + expectedRessource);
   }
 
   /**
@@ -163,7 +165,7 @@ public class HTSeqCountTest {
    * @throws IOException if an error occurs while reading the expected values
    */
   private void compareCounts(final Map<String, Integer> counts,
-      final String ressource) throws IOException {
+      final LocalReporter reporter, final String ressource) throws IOException {
 
     assertNotNull(counts);
     assertNotNull(ressource);
@@ -177,16 +179,28 @@ public class HTSeqCountTest {
       while ((line = reader.readLine()) != null) {
 
         line = line.trim();
-        if (line.isEmpty() || line.startsWith("_")) {
+        if (line.isEmpty()) {
           continue;
         }
 
         String[] fields = line.split("\t");
-        String geneId = fields[0];
+        String key = fields[0];
         int value = Integer.parseInt(fields[1]);
 
-        assertTrue(counts.containsKey(geneId));
-        assertEquals(value, counts.get(geneId).intValue());
+        if (line.startsWith("__")) {
+
+          ExpressionCounters c = ExpressionCounters.getCounterFromHTSeqCountName(key);
+
+          if (c != null) {
+            assertEquals(value == 0 ? -1 : value,
+                reporter.getCounterValue(COUNTER_GROUP, c.counterName()));
+          }
+
+          continue;
+        }
+
+        assertTrue(counts.containsKey(key));
+        assertEquals(value, counts.get(key).intValue());
 
         entryCounts++;
       }
