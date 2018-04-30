@@ -56,8 +56,8 @@ public class SAM2BAMLocalModule extends AbstractSAM2BAMModule {
       final DataFile bamFile = outBAMData.getDataFile();
       final DataFile bamIndexFile = outBAIData.getDataFile();
 
-      convert(samFile, bamFile, bamIndexFile, getCompressionLevel(), reporter,
-          context.getLocalTempDirectory());
+      convert(samFile, bamFile, bamIndexFile, getSortOrder(),
+          getCompressionLevel(), reporter, context.getLocalTempDirectory());
 
       // Set the description of the context
       status.setDescription("Convert alignments ("
@@ -80,6 +80,7 @@ public class SAM2BAMLocalModule extends AbstractSAM2BAMModule {
    * @param samDataFile input SAM file
    * @param bamDataFile output SAM file
    * @param bamIndexDataFile output index file
+   * @param sortOrder sort order
    * @param compressionLevel compression level
    * @param reporter reporter
    * @param tmpDir temporary directory
@@ -87,8 +88,8 @@ public class SAM2BAMLocalModule extends AbstractSAM2BAMModule {
    */
   private static void convert(final DataFile samDataFile,
       final DataFile bamDataFile, final DataFile bamIndexDataFile,
-      final int compressionLevel, final Reporter reporter, final File tmpDir)
-      throws IOException {
+      final SortOrder sortOrder, final int compressionLevel,
+      final Reporter reporter, final File tmpDir) throws IOException {
 
     checkArgument(compressionLevel >= 0 && compressionLevel <= 9,
         "Invalid compression level [0-9]: " + compressionLevel);
@@ -98,7 +99,7 @@ public class SAM2BAMLocalModule extends AbstractSAM2BAMModule {
         .open(SamInputResource.of(samDataFile.open()));
 
     // Force sort
-    samReader.getFileHeader().setSortOrder(SortOrder.coordinate);
+    samReader.getFileHeader().setSortOrder(sortOrder);
 
     // Get Bam file
     final File bamFile = bamDataFile.toFile();

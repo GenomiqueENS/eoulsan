@@ -1,8 +1,8 @@
 package fr.ens.biologie.genomique.eoulsan.modules.mapping;
 
 import static fr.ens.biologie.genomique.eoulsan.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.singleInputPort;
+import static fr.ens.biologie.genomique.eoulsan.core.Modules.removedParameter;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_BAM;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
@@ -11,12 +11,14 @@ import java.util.Set;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
+import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
+import htsjdk.samtools.SAMFileHeader.SortOrder;
 
 /**
  * This class define a module for converting BAM files into SAM.
@@ -29,6 +31,7 @@ public abstract class AbstractBAM2SAMModule extends AbstractModule {
   protected static final String COUNTER_GROUP = "bam2sam";
 
   private int reducerTaskCount = -1;
+  private SortOrder sortOrder = SortOrder.coordinate;
 
   //
   // Getters
@@ -41,6 +44,15 @@ public abstract class AbstractBAM2SAMModule extends AbstractModule {
   protected int getReducerTaskCount() {
 
     return this.reducerTaskCount;
+  }
+
+  /**
+   * Get the sort order.
+   * @return the sort order
+   */
+  protected SortOrder getSortOrder() {
+
+    return this.sortOrder;
   }
 
   //
@@ -85,12 +97,19 @@ public abstract class AbstractBAM2SAMModule extends AbstractModule {
       switch (p.getName()) {
 
       case "input.format":
-        getLogger().warning("Deprecated parameter \""
-            + p.getName() + "\" for step " + getName());
+        removedParameter(context, p);
         break;
 
       case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
         this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
+        break;
+
+      case "sort.order":
+        try {
+          this.sortOrder = SortOrder.valueOf(p.getLowerStringValue());
+        } catch (IllegalArgumentException e) {
+          Modules.badParameterValue(context, p, "Unknown sort order");
+        }
         break;
 
       default:

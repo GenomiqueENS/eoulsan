@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -46,6 +47,9 @@ import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
+import fr.ens.biologie.genomique.eoulsan.core.Modules;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
@@ -80,6 +84,19 @@ public class SAM2BAMHadoopModule extends AbstractSAM2BAMModule {
   public InputPorts getInputPorts() {
 
     return allPortsRequiredInWorkingDirectory(super.getInputPorts());
+  }
+
+  @Override
+  public void configure(final StepConfigurationContext context,
+      final Set<Parameter> stepParameters) throws EoulsanException {
+
+    super.configure(context, stepParameters);
+
+    if (getSortOrder() != SortOrder.coordinate) {
+      Modules.invalidConfiguration(context,
+          "The sam2bam module currently only works with coordinate sort order");
+    }
+
   }
 
   @Override

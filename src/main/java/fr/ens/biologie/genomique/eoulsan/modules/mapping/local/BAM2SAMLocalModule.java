@@ -50,7 +50,8 @@ public class BAM2SAMLocalModule extends AbstractBAM2SAMModule {
       final DataFile samFile = outSAMData.getDataFile();
       final DataFile bamFile = inData.getDataFile();
 
-      convert(bamFile, samFile, reporter, context.getLocalTempDirectory());
+      convert(bamFile, samFile, getSortOrder(), reporter,
+          context.getLocalTempDirectory());
 
       // Set the description of the context
 
@@ -69,18 +70,18 @@ public class BAM2SAMLocalModule extends AbstractBAM2SAMModule {
   }
 
   /**
-   * Convert BAM file to sorted SAM with Picard
+   * Convert BAM file to sorted SAM with Picard.
    * @param bamDataFile input SAM file
    * @param samDataFile output SAM file
+   * @param sortOrder sort order
    * @param reporter reporter
    * @param tmpDir temporary directory
    * @throws IOException if an error occurs
    */
 
-  // private static final void convert(final File in, final File out)
   private static void convert(final DataFile bamDataFile,
-      final DataFile samDataFile, final Reporter reporter, final File tmpDir)
-      throws IOException {
+      final DataFile samDataFile, final SortOrder sortOrder,
+      final Reporter reporter, final File tmpDir) throws IOException {
 
     InputStream in = bamDataFile.open();
     OutputStream out = samDataFile.create();
@@ -90,7 +91,7 @@ public class BAM2SAMLocalModule extends AbstractBAM2SAMModule {
         SamReaderFactory.makeDefault().open(SamInputResource.of(in));
 
     // Force sort
-    bamReader.getFileHeader().setSortOrder(SortOrder.unsorted);
+    bamReader.getFileHeader().setSortOrder(sortOrder);
 
     // Open sam file
     final SAMFileWriter samWriter = new SAMFileWriterFactory()

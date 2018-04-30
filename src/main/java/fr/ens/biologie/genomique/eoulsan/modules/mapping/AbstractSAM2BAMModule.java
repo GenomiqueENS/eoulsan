@@ -18,6 +18,7 @@ import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
+import htsjdk.samtools.SAMFileHeader.SortOrder;
 
 /**
  * This class define a module for converting SAM files into BAM.
@@ -33,10 +34,20 @@ public abstract class AbstractSAM2BAMModule extends AbstractModule {
 
   private int compressionLevel = DEFAULT_COMPRESSION_LEVEL;
   private int reducerTaskCount = -1;
+  private SortOrder sortOrder = SortOrder.coordinate;
 
   //
   // Getters
   //
+
+  /**
+   * Get the sort order.
+   * @return the sort order
+   */
+  protected SortOrder getSortOrder() {
+
+    return this.sortOrder;
+  }
 
   /**
    * Get the compression level to use.
@@ -96,6 +107,14 @@ public abstract class AbstractSAM2BAMModule extends AbstractModule {
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
+
+      case "sort.order":
+        try {
+          this.sortOrder = SortOrder.valueOf(p.getLowerStringValue());
+        } catch (IllegalArgumentException e) {
+          Modules.badParameterValue(context, p, "Unknown sort order");
+        }
+        break;
 
       case "compression.level":
         this.compressionLevel = p.getIntValueInRange(0, 9);
