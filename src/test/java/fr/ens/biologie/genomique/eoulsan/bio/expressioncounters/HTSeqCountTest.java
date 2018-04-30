@@ -28,9 +28,11 @@ import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCoun
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.GENOMIC_TYPE_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.OVERLAP_MODE_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.REMOVE_NON_ASSIGNED_FEATURES_SAM_TAGS_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.REMOVE_NON_UNIQUE_ALIGNMENTS_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.REMOVE_SECONDARY_ALIGNMENTS_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.SAM_TAG_DEFAULT;
+import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.SAM_TAG_TO_USE_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.STRANDED_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.OverlapMode.INTERSECTION_NONEMPTY;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.OverlapMode.INTERSECTION_STRICT;
@@ -39,7 +41,6 @@ import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.StrandUsa
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.StrandUsage.REVERSE;
 import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.StrandUsage.YES;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -90,6 +91,7 @@ public class HTSeqCountTest {
 
     private final Iterator<SAMRecord> sourceRecords;
     private final Iterator<SAMRecord> expectedRecords;
+    private final String samTag;
 
     private SAMRecord sourceCurrent;
     private SAMRecord expectedCurrent;
@@ -116,15 +118,14 @@ public class HTSeqCountTest {
     public SAMRecord next() {
 
       if (this.sourceCurrent != null) {
-        sortSAMAbiguousTagValues(this.expectedCurrent);
-        sortSAMAbiguousTagValues(this.sourceCurrent);
+        sortSAMAbiguousTagValues(this.expectedCurrent, this.samTag);
+        sortSAMAbiguousTagValues(this.sourceCurrent, this.samTag);
         assertEquals(this.expectedCurrent, this.sourceCurrent);
         this.sourceCurrent = null;
       }
 
       this.sourceCurrent = this.sourceRecords.next();
       this.expectedCurrent = this.expectedRecords.next();
-      assertNotEquals(this.expectedCurrent, this.sourceCurrent);
 
       return this.sourceCurrent;
     }
@@ -133,9 +134,10 @@ public class HTSeqCountTest {
      * Sort the values for the ambiguous cases.
      * @param samRecord the samRecord to process
      */
-    private static void sortSAMAbiguousTagValues(SAMRecord samRecord) {
+    private static void sortSAMAbiguousTagValues(SAMRecord samRecord,
+        final String samTag) {
 
-      String value = (String) samRecord.getAttribute(SAM_TAG_DEFAULT);
+      String value = (String) samRecord.getAttribute(samTag);
 
       if (value == null
           || !value.startsWith("__ambiguous[") || value.indexOf('+') == -1) {
@@ -167,12 +169,14 @@ public class HTSeqCountTest {
      * Constructor.
      * @param sourceRecords source SAM entry
      * @param expectedRecords expected SAM entry
+     * @param samTag the sam tag to use
      */
     private IteratorComparator(final SamReader sourceRecords,
-        final SamReader expectedRecords) {
+        final SamReader expectedRecords, final String samTag) {
 
       this.sourceRecords = sourceRecords.iterator();
       this.expectedRecords = expectedRecords.iterator();
+      this.samTag = samTag;
     }
 
   }
@@ -289,7 +293,7 @@ public class HTSeqCountTest {
         INTERSECTION_NONEMPTY.getName());
     counter.setParameter(GENOMIC_TYPE_PARAMETER_NAME, "exon");
     counter.setParameter(ATTRIBUTE_ID_PARAMETER_NAME, "gene_id");
-    counter.setParameter(STRANDED_PARAMETER_NAME, StrandUsage.YES.getName());
+    counter.setParameter(STRANDED_PARAMETER_NAME, YES.getName());
     counter.setParameter(REMOVE_SECONDARY_ALIGNMENTS_PARAMETER_NAME, "true");
 
     compareCounts(counter,
@@ -307,9 +311,30 @@ public class HTSeqCountTest {
         INTERSECTION_NONEMPTY.getName());
     counter.setParameter(GENOMIC_TYPE_PARAMETER_NAME, "exon");
     counter.setParameter(ATTRIBUTE_ID_PARAMETER_NAME, "gene_id");
-    counter.setParameter(STRANDED_PARAMETER_NAME, StrandUsage.YES.getName());
+    counter.setParameter(STRANDED_PARAMETER_NAME, YES.getName());
 
-    compareSams(counter, "/yeast_RNASeq_excerpt_withNH_counts.sam");
+    compareSams(counter, "/yeast_RNASeq_excerpt_withNH_counts.sam",
+        SAM_TAG_DEFAULT);
+  }
+
+  @Test
+  public void testCountSamOutputWithNonAssigned()
+      throws EoulsanException, IOException, BadBioEntryException {
+
+    // htseq-count -m intersection-nonempty --nonunique none
+    // --secondary-alignments ignore
+    HTSeqCounter counter = new HTSeqCounter();
+    counter.setParameter(OVERLAP_MODE_PARAMETER_NAME,
+        INTERSECTION_NONEMPTY.getName());
+    counter.setParameter(GENOMIC_TYPE_PARAMETER_NAME, "exon");
+    counter.setParameter(ATTRIBUTE_ID_PARAMETER_NAME, "gene_id");
+    counter.setParameter(STRANDED_PARAMETER_NAME, YES.getName());
+    counter.setParameter(REMOVE_NON_ASSIGNED_FEATURES_SAM_TAGS_PARAMETER_NAME,
+        "true");
+    counter.setParameter(SAM_TAG_TO_USE_PARAMETER_NAME, "XT");
+
+    compareSams(counter,
+        "/yeast_RNASeq_excerpt_withNH_counts_only_assigned.sam", "XT");
   }
 
   //
@@ -398,11 +423,12 @@ public class HTSeqCountTest {
    * Compare counts.
    * @param counter counter
    * @param expectedRessource expected counts resources
+   * @param samTag the SAM tag to use
    * @throws IOException if an error occurs while reading the expected counts
    * @throws EoulsanException if an error occurs while counting
    */
-  private void compareSams(HTSeqCounter counter, final String expectedRessource)
-      throws IOException, EoulsanException {
+  private void compareSams(HTSeqCounter counter, final String expectedRessource,
+      final String samTag) throws IOException, EoulsanException {
 
     try (GTFReader reader =
         new GTFReader(this.getClass().getResourceAsStream(GTF_RESSOURCE))) {
@@ -422,7 +448,8 @@ public class HTSeqCountTest {
       SamReader expectedReader = SamReaderFactory.makeDefault()
           .open(SamInputResource.of(expectedStream));
 
-      counter.count(new IteratorComparator(sourceReader, expectedReader),
+      counter.count(
+          new IteratorComparator(sourceReader, expectedReader, samTag),
           reporter, COUNTER_GROUP);
     }
   }

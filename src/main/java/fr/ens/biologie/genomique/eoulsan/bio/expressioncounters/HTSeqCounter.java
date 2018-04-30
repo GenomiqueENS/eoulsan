@@ -78,6 +78,11 @@ public class HTSeqCounter extends AbstractExpressionCounter
       "remove.secondary.alignments";
   public static final String REMOVE_SUPPLEMENTARY_ALIGNMENTS_PARAMETER_NAME =
       "remove.supplementary.alignments";
+  public static final String REMOVE_NON_ASSIGNED_FEATURES_SAM_TAGS_PARAMETER_NAME =
+      "remove.non.assigned.sam.tags";
+  public static final String SAM_TAG_TO_USE_PARAMETER_NAME =
+      "sam.tag.to.use";
+
   public static final String SAM_TAG_DEFAULT = "XF";
 
   private String genomicType = "exon";
@@ -90,6 +95,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
   private boolean removeNonUnique = true;
   private boolean removeSecondaryAlignments = false;
   private boolean removeSupplementaryAlignments = false;
+  private boolean removeNonAssignedFeatureSamTags =false;
 
   private String samTag = SAM_TAG_DEFAULT;
 
@@ -230,6 +236,19 @@ public class HTSeqCounter extends AbstractExpressionCounter
 
     case REMOVE_SUPPLEMENTARY_ALIGNMENTS_PARAMETER_NAME:
       this.removeSupplementaryAlignments = Boolean.parseBoolean(value);
+      break;
+
+    case REMOVE_NON_ASSIGNED_FEATURES_SAM_TAGS_PARAMETER_NAME:
+      this.removeNonAssignedFeatureSamTags = Boolean.parseBoolean(value);
+      break;
+
+    case SAM_TAG_TO_USE_PARAMETER_NAME:
+      this.samTag = value.toUpperCase().trim();
+      if (this.samTag.length() != 2
+          || (this.samTag.charAt(0) < 'X' && this.samTag.charAt(0) > 'Z')
+          || (this.samTag.charAt(1) < 'A' && this.samTag.charAt(1) > 'Z')) {
+        throw new EoulsanException("Invalid SAM tag: " + value);
+      }
       break;
 
     default:
@@ -569,8 +588,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
       default:
 
         internalCounters.ambiguous++;
-        assignment(samRecord1, samRecord2,
-            "__ambiguous[" + join(fs, "+") + ']');
+        assignment(samRecord1, samRecord2, fs);
 
         if (!this.removeAmbiguousCases) {
           for (String id2 : fs) {
@@ -609,6 +627,10 @@ public class HTSeqCounter extends AbstractExpressionCounter
   private void assignment(final SAMRecord samRecord1,
       final SAMRecord samRecord2, final String assignment) {
 
+    if (this.removeNonAssignedFeatureSamTags && assignment.startsWith("__")) {
+      return;
+    }
+
     if (samRecord1 != null) {
       samRecord1.setAttribute(this.samTag, assignment);
     }
@@ -616,6 +638,19 @@ public class HTSeqCounter extends AbstractExpressionCounter
     if (samRecord2 != null) {
       samRecord2.setAttribute(this.samTag, assignment);
     }
+  }
+
+  /**
+   * Assign features to SAM entries.
+   * @param samRecord1 first entry
+   * @param samRecord2 second entry
+   * @param assignment the value of the assignment
+   */
+  private void assignment(final SAMRecord samRecord1,
+      final SAMRecord samRecord2, final Set<String> features) {
+
+    assignment(samRecord1, samRecord2,
+        "__ambiguous[" + join(features, "+") + ']');
   }
 
   @Override
