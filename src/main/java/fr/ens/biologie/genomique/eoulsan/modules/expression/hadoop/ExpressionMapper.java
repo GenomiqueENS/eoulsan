@@ -83,14 +83,31 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, LongWritable> {
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
 
+    final Configuration conf = context.getConfiguration();
+
+    // Counter group
+    this.counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);
+    if (this.counterGroup == null) {
+      throw new IOException("No counter group defined");
+    }
+
     // Define the reporter
     this.reporter = new HadoopReporterIncrementer(context);
 
+    // Get the cache files
+    final URI[] localCacheFiles = context.getCacheFiles();
+
+    // Initialize counter and parser
+    initCounterAndParser(conf, this.parser, localCacheFiles);
+
+    getLogger().info("End of setup()");
+  }
+
+  static ExpressionCounter initCounterAndParser(final Configuration conf,
+      final SAMLineParser parser, final URI[] localCacheFiles)
+      throws IOException {
+
     try {
-
-      final Configuration conf = context.getConfiguration();
-
-      final URI[] localCacheFiles = context.getCacheFiles();
 
       if (localCacheFiles == null || localCacheFiles.length == 0) {
         throw new IOException("Unable to retrieve genome index");
@@ -114,14 +131,8 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, LongWritable> {
       }
 
       // Deserialize counter
-      this.counter = loadSerializedCounter(
+      ExpressionCounter counter = loadSerializedCounter(
           PathUtils.createInputStream(new Path(localCacheFiles[0]), conf));
-
-      // Counter group
-      this.counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);
-      if (this.counterGroup == null) {
-        throw new IOException("No counter group defined");
-      }
 
       // Get the genome description filename
       final String genomeDescFile =
@@ -136,15 +147,16 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, LongWritable> {
           .load(PathUtils.createInputStream(new Path(genomeDescFile), conf));
 
       // Set the chromosomes sizes in the parser
-      this.parser.getFileHeader().setSequenceDictionary(
+      parser.getFileHeader().setSequenceDictionary(
           SAMUtils.newSAMSequenceDictionary(genomeDescription));
+
+      return counter;
 
     } catch (IOException e) {
       getLogger().severe(
           "Error while loading annotation data in Mapper: " + e.getMessage());
+      throw new IOException(e);
     }
-
-    getLogger().info("End of setup()");
   }
 
   /**

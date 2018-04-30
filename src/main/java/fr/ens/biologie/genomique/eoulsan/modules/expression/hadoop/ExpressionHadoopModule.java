@@ -58,8 +58,8 @@ import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
 import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.ExpressionOutputFormat;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.SAMInputFormat;
+import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.SAMOutputFormat;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
-import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
@@ -112,12 +112,6 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       final Set<Parameter> stepParameters) throws EoulsanException {
 
     super.configure(context, stepParameters);
-
-    if (isSAMOutputFormat()) {
-      Modules.invalidConfiguration(context,
-          "SAM output is not yet implemented in Hadoop mode");
-    }
-
     this.conf = CommonHadoop.createConfiguration(EoulsanRuntime.getSettings());
   }
 
@@ -126,8 +120,8 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       final TaskStatus status) {
 
     final Data alignmentsData = context.getInputData(MAPPER_RESULTS_SAM);
-    final Data featureAnnotationData =
-        context.getInputData(isGTFInputFormat() ? ANNOTATION_GFF : ANNOTATION_GFF);
+    final Data featureAnnotationData = context
+        .getInputData(isGTFInputFormat() ? ANNOTATION_GFF : ANNOTATION_GFF);
     final Data genomeDescriptionData = context.getInputData(GENOME_DESC_TXT);
     final Data outData =
         context.getOutputData(EXPRESSION_RESULTS_TSV, alignmentsData);
@@ -169,13 +163,17 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       getLogger().info("Finish the first part of the expression computation in "
           + ((mapReduceEndTime - startTime) / 1000) + " seconds.");
 
-      // Create the final expression files
-      createFinalExpressionFeaturesFile(context, getExpressionCounter(),
-          outData, job, this.conf);
+      // Only for TSV ouput
+      if (!isSAMOutputFormat()) {
 
-      getLogger().info("Finish the create of the final expression files in "
-          + ((System.currentTimeMillis() - mapReduceEndTime) / 1000)
-          + " seconds.");
+        // Create the final expression files
+        createFinalExpressionFeaturesFile(context, getExpressionCounter(),
+            outData, job, this.conf);
+
+        getLogger().info("Finish the create of the final expression files in "
+            + ((System.currentTimeMillis() - mapReduceEndTime) / 1000)
+            + " seconds.");
+      }
 
       return status.createTaskResult();
 
@@ -298,23 +296,43 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
     // Set input format
     job.setInputFormatClass(SAMInputFormat.class);
 
-    // Set the mapper class
-    job.setMapperClass(ExpressionMapper.class);
+    if (MAPPER_RESULTS_SAM.equals(outData.getFormat())) {
 
-    // Set the combiner class
-    job.setCombinerClass(ExpressionReducer.class);
+      // Set the mapper class for SAM output
+      job.setMapperClass(ExpressionSAMOutputMapper.class);
 
-    // Set the reducer class
-    job.setReducerClass(ExpressionReducer.class);
+      // Set the number of reducers
+      job.setNumReduceTasks(0);
 
-    // Set the output format
-    job.setOutputFormatClass(ExpressionOutputFormat.class);
+      // Set the output format
+      job.setOutputFormatClass(SAMOutputFormat.class);
 
-    // Set the output key class
-    job.setOutputKeyClass(Text.class);
+      // Set the output key class
+      job.setOutputKeyClass(Text.class);
 
-    // Set the output value class
-    job.setOutputValueClass(LongWritable.class);
+      // Set the output value class
+      job.setOutputValueClass(Text.class);
+
+    } else {
+
+      // Set the mapper class for TSV output
+      job.setMapperClass(ExpressionMapper.class);
+
+      // Set the combiner class
+      job.setCombinerClass(ExpressionReducer.class);
+
+      // Set the reducer class
+      job.setReducerClass(ExpressionReducer.class);
+
+      // Set the output format
+      job.setOutputFormatClass(ExpressionOutputFormat.class);
+
+      // Set the output key class
+      job.setOutputKeyClass(Text.class);
+
+      // Set the output value class
+      job.setOutputValueClass(LongWritable.class);
+    }
 
     // Set output path
     FileOutputFormat.setOutputPath(job, new Path(tmpFile.getSource()));
@@ -417,9 +435,8 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
    * @throws EoulsanException if an error occurs while initialize the counter
    */
   private static void serializeCounter(final TaskContext context,
-      final ExpressionCounter counter,
-      final Path counterSerializationFilePath, final Configuration conf)
-      throws IOException, EoulsanException {
+      final ExpressionCounter counter, final Path counterSerializationFilePath,
+      final Configuration conf) throws IOException, EoulsanException {
 
     // Do nothing if the file already exists
     if (PathUtils.isFile(counterSerializationFilePath, conf)) {
@@ -427,9 +444,9 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
     }
 
     // Define the filename of the counter serialization file
-    final File counterSerializationFile = context.getRuntime()
-        .createFileInTempDir(counterSerializationFilePath.getName()
-            + SERIALIZATION_EXTENSION);
+    final File counterSerializationFile =
+        context.getRuntime().createFileInTempDir(
+            counterSerializationFilePath.getName() + SERIALIZATION_EXTENSION);
 
     // Serialize the counter
     serializeCounter(counter, counterSerializationFile);
