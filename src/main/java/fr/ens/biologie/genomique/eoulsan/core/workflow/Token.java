@@ -37,7 +37,7 @@ class Token {
 
   private static int count;
 
-  private final int id = ++count;
+  private final int id;
   private final StepOutputPort fromPort;
   private final boolean endOfStepToken;
   private final Data data;
@@ -101,6 +101,10 @@ class Token {
 
     Objects.requireNonNull(fromPort);
 
+    synchronized (this) {
+      this.id = ++count;
+    }
+
     this.fromPort = fromPort;
     this.endOfStepToken = true;
     this.data = null;
@@ -115,6 +119,10 @@ class Token {
 
     Objects.requireNonNull(fromPort);
     Objects.requireNonNull(data);
+
+    synchronized (this) {
+      this.id = ++count;
+    }
 
     this.fromPort = fromPort;
     this.endOfStepToken = false;

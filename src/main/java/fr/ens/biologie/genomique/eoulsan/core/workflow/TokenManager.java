@@ -52,6 +52,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
+import com.google.common.eventbus.Subscribe;
 
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.Common;
@@ -178,7 +179,7 @@ public class TokenManager implements Runnable {
    * @param outputPort the output port
    * @param token the token sent
    */
-  public void logSendingToken(final StepOutputPort outputPort,
+  private void logSendingToken(final StepOutputPort outputPort,
       final Token token) {
 
     Objects.requireNonNull(token);
@@ -314,12 +315,45 @@ public class TokenManager implements Runnable {
     }
   }
 
+  @Subscribe
+  public void tokenEvent(final Token token) {
+
+    Objects.requireNonNull(token);
+
+    final StepOutputPort tokenOrigin = token.getOrigin();
+    final AbstractStep stepOrigin = tokenOrigin.getStep();
+    final int currentStepNumber = this.step.getNumber();
+
+    // Post the token if the token must be post to the current step
+    for (StepInputPort linkInputPort : tokenOrigin.getLinks()) {
+
+      // Check if the link is linked to the current step
+      if (linkInputPort.getStep().getNumber() != currentStepNumber) {
+        continue;
+      }
+
+      // Find the linked port(s)
+      for (StepInputPort sip : this.inputPorts) {
+
+        if (sip.getName().equals(linkInputPort.getName())) {
+          postToken(linkInputPort, token);
+        }
+      }
+    }
+
+    // Log token sending by the step that created the token
+    if (this.step.getNumber() == stepOrigin.getNumber()) {
+      logSendingToken(tokenOrigin, token);
+      return;
+    }
+  }
+
   /**
    * Post a token to the the token manager.
    * @param inputPort port where the token must be posted
    * @param token the token to post
    */
-  public void postToken(final StepInputPort inputPort, final Token token) {
+  private void postToken(final StepInputPort inputPort, final Token token) {
 
     Objects.requireNonNull(token);
     Objects.requireNonNull(inputPort);
@@ -428,7 +462,9 @@ public class TokenManager implements Runnable {
   private void sendEndOfStepTokens() {
 
     for (StepOutputPort outputPort : this.outputPorts) {
-      this.step.sendToken(new Token(outputPort));
+
+      // Send the token on the event bus
+      WorkflowBusEvent.getInstance().post(new Token(outputPort));
     }
   }
 
@@ -479,7 +515,8 @@ public class TokenManager implements Runnable {
 
         }
 
-        this.step.sendToken(new Token(port, data));
+        // Send the token on the event bus
+        WorkflowBusEvent.getInstance().post(new Token(port, data));
       }
     }
 
@@ -990,6 +1027,9 @@ public class TokenManager implements Runnable {
           "Error while executing the workflow");
     }
 
+    // Register the token manager to the event bus
+    WorkflowBusEvent.getInstance().register(this);
+
     // Remove inputs of the step if required by user
     removeInputsIfRequired();
   }
@@ -1063,6 +1103,9 @@ public class TokenManager implements Runnable {
 
     // Get the scheduler
     this.scheduler = TaskSchedulerFactory.getScheduler();
+
+    // Register the token manager to the event bus
+    WorkflowBusEvent.getInstance().register(this);
   }
 
 }

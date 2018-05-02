@@ -443,45 +443,6 @@ public abstract class AbstractStep implements Step {
   }
 
   //
-  // Token handling
-  //
-
-  /**
-   * Send a token to the next steps.
-   * @param token token to send
-   */
-  void sendToken(final Token token) {
-
-    checkNotNull(token, "token cannot be null");
-
-    final String outputPortName = token.getOrigin().getName();
-
-    for (StepInputPort inputPort : this.outputPorts.getPort(outputPortName)
-        .getLinks()) {
-
-      inputPort.getStep().postToken(inputPort, token);
-    }
-
-    // Log token sending
-    TokenManagerRegistry.getInstance().getTokenManager(this)
-        .logSendingToken(token.getOrigin(), token);
-  }
-
-  /**
-   * Receive a token.
-   * @param inputPort destination of the token
-   * @param token the token
-   */
-  private void postToken(final StepInputPort inputPort, final Token token) {
-
-    checkNotNull(inputPort, "inputPort cannot be null");
-    checkNotNull(token, "token cannot be null");
-
-    TokenManagerRegistry.getInstance().getTokenManager(this)
-        .postToken(inputPort, token);
-  }
-
-  //
   // Other methods
   //
 
