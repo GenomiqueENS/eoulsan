@@ -346,7 +346,8 @@ public class TaskRunner {
     // the step
     final AbstractStep step = this.context.getWorkflowStep();
     if (step.getState() == WORKING) {
-      step.setState(PARTIALLY_DONE);
+      WorkflowBusEvent.getInstance()
+          .post(new StepStateEvent(step, PARTIALLY_DONE));
     }
 
   }

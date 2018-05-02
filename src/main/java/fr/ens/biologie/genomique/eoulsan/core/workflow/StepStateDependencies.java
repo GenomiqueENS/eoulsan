@@ -38,16 +38,17 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.common.base.Joiner;
+import com.google.common.eventbus.Subscribe;
 
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
 
 /**
- * This class define an observer for step states.
+ * This class allow to store the step state and its dependencies.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class StepStateObserver implements Serializable {
+public class StepStateDependencies implements Serializable {
 
   private static final long serialVersionUID = -5734184849291521186L;
 
@@ -55,7 +56,6 @@ public class StepStateObserver implements Serializable {
   private StepState stepState = CREATED;
 
   private final Set<AbstractStep> requiredSteps = new HashSet<>();
-  private final Set<AbstractStep> stepsToInform = new HashSet<>();
 
   /**
    * Add a dependency.
@@ -64,7 +64,7 @@ public class StepStateObserver implements Serializable {
   public void addDependency(final AbstractStep step) {
 
     this.requiredSteps.add(step);
-    step.getStepStateObserver().stepsToInform.add(this.step);
+    WorkflowBusEvent.getInstance().register(step.getStepStateDependencies());
   }
 
   /**
@@ -86,10 +86,57 @@ public class StepStateObserver implements Serializable {
   }
 
   /**
+   * Listen StepState events.
+   * @param event the event to handle
+   */
+  @Subscribe
+  public void stepStateEvent(final StepStateEvent event) {
+
+    if (event == null) {
+      return;
+    }
+
+    final int eventStepNumber = event.getStep().getNumber();
+
+    if (eventStepNumber == this.step.getNumber()) {
+      setState(event.getState());
+    }
+
+    // Do nothing if the step is already in READY state
+    if (this.stepState != WAITING) {
+      return;
+    }
+
+    // Check if the dependencies of the step has been updated
+    boolean found = false;
+    for (AbstractStep step : this.requiredSteps) {
+
+      if (eventStepNumber == step.getNumber()) {
+        found = true;
+        break;
+      }
+    }
+
+    // No update
+    if (!found) {
+      return;
+    }
+
+    for (AbstractStep step : this.requiredSteps) {
+      if (!(step.getState().isDoneState())) {
+        return;
+      }
+    }
+
+    // Set the step to the READY state
+    setState(READY);
+  }
+
+  /**
    * Set the state of the step.
    * @param state the new state of the step
    */
-  public void setState(final StepState state) {
+  private void setState(final StepState state) {
 
     // Do nothing if the state has not changed or if the current state is a
     // final state
@@ -129,13 +176,6 @@ public class StepStateObserver implements Serializable {
       logDependencies();
     }
 
-    // Inform step that depend of this step
-    if (this.stepState.isDoneState()) {
-      for (AbstractStep step : this.stepsToInform) {
-        step.getStepStateObserver().updateStatus();
-      }
-    }
-
     // Start Token manager thread for the step if state is READY
     if (this.stepState == READY) {
       TokenManagerRegistry.getInstance().getTokenManager(this.step).start();
@@ -148,27 +188,6 @@ public class StepStateObserver implements Serializable {
     for (StepObserver o : StepObserverRegistry.getInstance().getObservers()) {
       o.notifyStepState(this.step);
     }
-  }
-
-  /**
-   * Update the status of the step to READY if all the dependency of this step
-   * are in DONE state.
-   */
-  private void updateStatus() {
-
-    // Do nothing if the step is already in READY state
-    if (getState() == READY) {
-      return;
-    }
-
-    for (AbstractStep step : this.requiredSteps) {
-      if (!(step.getState().isDoneState())) {
-        return;
-      }
-    }
-
-    // Set the step to the READY state
-    setState(READY);
   }
 
   /**
@@ -202,11 +221,14 @@ public class StepStateObserver implements Serializable {
    * Constructor.
    * @param step the step related to the instance
    */
-  public StepStateObserver(final AbstractStep step) {
+  public StepStateDependencies(final AbstractStep step) {
 
     checkNotNull(step, "step cannot be null");
 
     this.step = step;
+
+    // Register the observer
+    WorkflowBusEvent.getInstance().register(this);
 
     getLogger().fine("Step #"
         + this.step.getNumber() + " " + this.step.getId() + " is now in state "

@@ -913,6 +913,7 @@ public class TokenManager implements Runnable {
     try {
 
       boolean firstSubmission = true;
+      final WorkflowBusEvent eventBus = WorkflowBusEvent.getInstance();
 
       do {
 
@@ -930,7 +931,7 @@ public class TokenManager implements Runnable {
 
         // Set the step to the working state
         if (state == READY) {
-          this.step.setState(WORKING);
+          eventBus.post(new StepStateEvent(this.step, WORKING));
         }
 
         // Create new contexts to submit
@@ -990,7 +991,7 @@ public class TokenManager implements Runnable {
 
               // Change Step state
               if (result.isSuccess()) {
-                this.step.setState(DONE);
+                eventBus.post(new StepStateEvent(this.step, DONE));
 
                 // Write step result
                 if (this.step.isCreateLogFiles()) {
@@ -1001,12 +1002,12 @@ public class TokenManager implements Runnable {
                 sendEndOfStepTokens();
               }
             } else {
-              this.step.setState(FAILED);
+              eventBus.post(new StepStateEvent(this.step, FAILED));
             }
           } else {
 
             // If the step is skip the result is always OK
-            this.step.setState(DONE);
+            eventBus.post(new StepStateEvent(this.step, DONE));
 
             // Send all the tokens of step tokens
             sendSkipStepTokens();

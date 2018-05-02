@@ -439,6 +439,9 @@ public abstract class AbstractWorkflow implements Workflow {
     // Get the token manager registry
     final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
 
+    // Get event bus
+    WorkflowBusEvent eventBus = WorkflowBusEvent.getInstance();
+
     // Set Steps to WAITING state
     for (AbstractStep step : this.steps.keySet()) {
 
@@ -446,7 +449,7 @@ public abstract class AbstractWorkflow implements Workflow {
       registry.getTokenManager(step);
 
       // Set state to WAITING
-      step.setState(WAITING);
+      eventBus.post(new StepStateEvent(step, WAITING));
     }
 
     // Register Shutdown hook
@@ -575,9 +578,12 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   void emergencyStop(final Throwable exception, final String errorMessage) {
 
+    // Get event bus
+    WorkflowBusEvent eventBus = WorkflowBusEvent.getInstance();
+
     // Change working step state to aborted
     for (AbstractStep step : getSortedStepsByState(PARTIALLY_DONE, WORKING)) {
-      step.setState(ABORTED);
+      eventBus.post(new StepStateEvent(step, ABORTED));
     }
 
     // Stop the workflow
