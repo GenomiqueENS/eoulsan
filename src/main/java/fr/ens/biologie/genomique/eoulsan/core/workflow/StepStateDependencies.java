@@ -64,7 +64,7 @@ public class StepStateDependencies implements Serializable {
   public void addDependency(final AbstractStep step) {
 
     this.requiredSteps.add(step);
-    WorkflowBusEvent.getInstance().register(step.getStepStateDependencies());
+    WorkflowEventBus.getInstance().register(step.getStepStateDependencies());
   }
 
   /**
@@ -228,7 +228,7 @@ public class StepStateDependencies implements Serializable {
     this.step = step;
 
     // Register the observer
-    WorkflowBusEvent.getInstance().register(this);
+    WorkflowEventBus.getInstance().register(this);
 
     getLogger().fine("Step #"
         + this.step.getNumber() + " " + this.step.getId() + " is now in state "

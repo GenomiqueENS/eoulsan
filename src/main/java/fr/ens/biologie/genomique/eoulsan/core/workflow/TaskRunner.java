@@ -339,15 +339,14 @@ public class TaskRunner {
 
       // Send the token
       //this.context.getStep().sendToken(new Token(port, data));
-      WorkflowBusEvent.getInstance().post(new Token(port, data));
+      WorkflowEventBus.getInstance().postToken(port, data);
     }
 
     // Change the state of the step to PARTIALY_DONE if it the end first task of
     // the step
     final AbstractStep step = this.context.getWorkflowStep();
     if (step.getState() == WORKING) {
-      WorkflowBusEvent.getInstance()
-          .post(new StepStateEvent(step, PARTIALLY_DONE));
+      WorkflowEventBus.getInstance().postStepStateChange(step, PARTIALLY_DONE);
     }
 
   }

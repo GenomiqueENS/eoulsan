@@ -5,15 +5,17 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
+import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
+import fr.ens.biologie.genomique.eoulsan.data.Data;;
 
 /**
  * This class define a single for the event bus.
  * @since 2.3
  * @author Laurent Jourdren
  */
-public class WorkflowBusEvent {
+public class WorkflowEventBus {
 
-  private static WorkflowBusEvent singleton;
+  private static WorkflowEventBus singleton;
 
   private final EventBus eventBus;
 
@@ -39,9 +41,38 @@ public class WorkflowBusEvent {
    * Post an event.
    * @param object the event to post
    */
-  public void post(final Object object) {
+  private void post(final Object object) {
 
     this.eventBus.post(object);
+  }
+
+  /**
+   * Post a step state change event.
+   * @param step the step
+   * @param state the new state
+   */
+  void postStepStateChange(final AbstractStep step, final StepState state) {
+
+    post(new StepStateEvent(step, state));
+  }
+
+  /**
+   * Post a token.
+   * @param fromPort the port emiting the token
+   */
+  void postToken(final StepOutputPort fromPort) {
+
+    post(new Token(fromPort));
+  }
+
+  /**
+   * Post a token.
+   * @param fromPort the port emiting the token
+   * @param data of the token
+   */
+  void postToken(final StepOutputPort fromPort, final Data data) {
+
+    post(new Token(fromPort, data));
   }
 
   @Subscribe
@@ -58,10 +89,10 @@ public class WorkflowBusEvent {
    * Get the singleton instance of WorkflowBusEvent.
    * @return the singleton instance of WorkflowBusEvent
    */
-  public static synchronized WorkflowBusEvent getInstance() {
+  public static synchronized WorkflowEventBus getInstance() {
 
     if (singleton == null) {
-      singleton = new WorkflowBusEvent();
+      singleton = new WorkflowEventBus();
     }
 
     return singleton;
@@ -74,7 +105,7 @@ public class WorkflowBusEvent {
   /**
    * Private constructor.
    */
-  private WorkflowBusEvent() {
+  private WorkflowEventBus() {
 
     this.eventBus = new EventBus("Eoulsan");
     this.eventBus.register(this);

@@ -464,7 +464,7 @@ public class TokenManager implements Runnable {
     for (StepOutputPort outputPort : this.outputPorts) {
 
       // Send the token on the event bus
-      WorkflowBusEvent.getInstance().post(new Token(outputPort));
+      WorkflowEventBus.getInstance().postToken(outputPort);
     }
   }
 
@@ -516,7 +516,7 @@ public class TokenManager implements Runnable {
         }
 
         // Send the token on the event bus
-        WorkflowBusEvent.getInstance().post(new Token(port, data));
+        WorkflowEventBus.getInstance().postToken(port, data);
       }
     }
 
@@ -913,7 +913,7 @@ public class TokenManager implements Runnable {
     try {
 
       boolean firstSubmission = true;
-      final WorkflowBusEvent eventBus = WorkflowBusEvent.getInstance();
+      final WorkflowEventBus eventBus = WorkflowEventBus.getInstance();
 
       do {
 
@@ -931,7 +931,7 @@ public class TokenManager implements Runnable {
 
         // Set the step to the working state
         if (state == READY) {
-          eventBus.post(new StepStateEvent(this.step, WORKING));
+          eventBus.postStepStateChange(this.step, WORKING);
         }
 
         // Create new contexts to submit
@@ -991,7 +991,7 @@ public class TokenManager implements Runnable {
 
               // Change Step state
               if (result.isSuccess()) {
-                eventBus.post(new StepStateEvent(this.step, DONE));
+                eventBus.postStepStateChange(this.step, DONE);
 
                 // Write step result
                 if (this.step.isCreateLogFiles()) {
@@ -1002,12 +1002,12 @@ public class TokenManager implements Runnable {
                 sendEndOfStepTokens();
               }
             } else {
-              eventBus.post(new StepStateEvent(this.step, FAILED));
+              eventBus.postStepStateChange(this.step, FAILED);
             }
           } else {
 
             // If the step is skip the result is always OK
-            eventBus.post(new StepStateEvent(this.step, DONE));
+            eventBus.postStepStateChange(this.step, DONE);
 
             // Send all the tokens of step tokens
             sendSkipStepTokens();
@@ -1029,7 +1029,7 @@ public class TokenManager implements Runnable {
     }
 
     // Register the token manager to the event bus
-    WorkflowBusEvent.getInstance().register(this);
+    WorkflowEventBus.getInstance().register(this);
 
     // Remove inputs of the step if required by user
     removeInputsIfRequired();
@@ -1106,7 +1106,7 @@ public class TokenManager implements Runnable {
     this.scheduler = TaskSchedulerFactory.getScheduler();
 
     // Register the token manager to the event bus
-    WorkflowBusEvent.getInstance().register(this);
+    WorkflowEventBus.getInstance().register(this);
   }
 
 }

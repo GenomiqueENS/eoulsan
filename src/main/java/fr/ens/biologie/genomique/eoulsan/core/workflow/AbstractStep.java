@@ -313,7 +313,7 @@ public abstract class AbstractStep implements Step {
     requireNonNull(state, "state argument cannot be null");
 
     // Send the message
-    WorkflowBusEvent.getInstance().post(new StepStateEvent(this, state));
+    WorkflowEventBus.getInstance().postStepStateChange(this, state);
   }
 
   /**
