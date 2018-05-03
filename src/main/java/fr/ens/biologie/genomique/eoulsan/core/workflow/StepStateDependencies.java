@@ -180,11 +180,6 @@ public class StepStateDependencies implements Serializable {
     if (this.stepState == READY) {
       TokenManagerRegistry.getInstance().getTokenManager(this.step).start();
     }
-
-    // Inform listeners
-    for (StepObserver o : StepObserverRegistry.getInstance().getObservers()) {
-      o.notifyStepState(this.step);
-    }
   }
 
   /**

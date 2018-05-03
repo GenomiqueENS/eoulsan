@@ -903,13 +903,12 @@ public abstract class AbstractWorkflow implements Workflow {
         + " s.");
 
     // Inform observers of the end of the analysis
-    for (StepObserver o : StepObserverRegistry.getInstance().getObservers()) {
-      o.notifyWorkflowSuccess(success,
-          "(Job done in "
-              + StringUtils.toTimeHumanReadable(
-                  this.stopwatch.elapsed(MILLISECONDS))
-              + " s.)");
-    }
+    WorkflowEventBus.getInstance()
+        .postUIEvent(new UIWorkflowEvent(success,
+            "(Job done in "
+                + StringUtils.toTimeHumanReadable(
+                    this.stopwatch.elapsed(MILLISECONDS))
+                + " s.)"));
 
     // Send a mail
 

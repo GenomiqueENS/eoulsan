@@ -75,6 +75,15 @@ public class WorkflowEventBus {
     post(new Token(fromPort, data));
   }
 
+  /**
+   * Post an UI event.
+   * @param uiEvent UI event
+   */
+  void postUIEvent(final UIEvent uiEvent) {
+
+    post(uiEvent);
+  }
+
   @Subscribe
   public void deadEvent(final DeadEvent event) {
 
