@@ -5,6 +5,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
 import fr.ens.biologie.genomique.eoulsan.data.Data;;
 
@@ -116,7 +117,7 @@ public class WorkflowEventBus {
    */
   private WorkflowEventBus() {
 
-    this.eventBus = new EventBus("Eoulsan");
+    this.eventBus = new EventBus(Globals.APP_NAME);
     this.eventBus.register(this);
   }
 
