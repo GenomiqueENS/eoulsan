@@ -181,9 +181,6 @@ public class StepStateDependencies implements Serializable {
       TokenManagerRegistry.getInstance().getTokenManager(this.step).start();
     }
 
-    // Inform workflow object
-    this.step.getAbstractWorkflow().updateStepState(this.step);
-
     // Inform listeners
     for (StepObserver o : StepObserverRegistry.getInstance().getObservers()) {
       o.notifyStepState(this.step);
