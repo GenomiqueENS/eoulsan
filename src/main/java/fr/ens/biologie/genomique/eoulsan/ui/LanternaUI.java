@@ -60,6 +60,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   private final Map<Step, Integer> runningTasks = new HashMap<>();
   private final Map<Step, Integer> doneTasks = new HashMap<>();
   private final Map<Step, Double> stepProgress = new HashMap<>();
+  private final Map<Step, StepState> stepState = new HashMap<>();
   private double globalProgress;
 
   private UnixTerminal terminal;
@@ -109,13 +110,16 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   }
 
   @Override
-  public void notifyStepState(final Step step) {
+  public void notifyStepState(final Step step, final StepState stepState) {
 
-    if (step == null || step.getWorkflow() != this.workflow) {
+    if (step == null
+        || step.getWorkflow() != this.workflow || stepState == null) {
       return;
     }
 
-    switch (step.getState()) {
+    this.stepState.put(step, stepState);
+
+    switch (stepState) {
 
     case READY:
       notifyStepState(step, 0, 0, 0.0);
@@ -156,7 +160,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
         return;
       }
 
-      final StepState state = step.getState();
+      final StepState state = this.stepState.get(step);
 
       if (!(state == WORKING
           || state == PARTIALLY_DONE || state == DONE || state == FAILED
@@ -263,7 +267,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
       return false;
     }
 
-    final StepState state = step.getState();
+    final StepState state = this.stepState.get(step);
 
     if (!(state == WORKING
         || state == PARTIALLY_DONE || state == DONE || state == FAILED
@@ -315,7 +319,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
         submittedTasks == null ? 0 : submittedTasks,
         runningTasks == null ? 0 : runningTasks,
         doneTasks == null ? 0 : doneTasks,
-        stepProgress == null ? 0.0 : stepProgress, step.getState());
+        stepProgress == null ? 0.0 : stepProgress, this.stepState.get(step));
 
     // Update workflow progress
     showWorkflowProgress(lastLineY, globalProgress, null, null);

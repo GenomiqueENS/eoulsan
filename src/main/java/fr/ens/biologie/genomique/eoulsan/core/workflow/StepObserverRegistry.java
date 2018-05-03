@@ -132,7 +132,7 @@ public class StepObserverRegistry {
     }
 
     for (StepObserver o : this.observers) {
-      o.notifyStepState(event.getStep());
+      o.notifyStepState(event.getStep(), event.getState());
     }
   }
 
