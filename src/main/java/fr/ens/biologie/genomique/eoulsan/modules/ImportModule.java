@@ -86,6 +86,7 @@ public class ImportModule extends AbstractModule {
   private Set<DataFile> files;
   private OutputPorts outputPorts;
   private boolean copy;
+  private DataFormat format;
 
   /**
    * This class allow to find files that matche to a pattern.
@@ -200,6 +201,14 @@ public class ImportModule extends AbstractModule {
         this.copy = p.getBooleanValue();
         break;
 
+      case "format":
+        this.format = DataFormatRegistry.getInstance()
+            .getDataFormatFromGalaxyFormatNameOrNameOrAlias(p.getValue());
+        if (this.format == null) {
+          Modules.badParameterValue(context, p, "Unknown format");
+        }
+        break;
+
       default:
         Modules.unknownParameter(context, p);
       }
@@ -226,14 +235,24 @@ public class ImportModule extends AbstractModule {
 
       // Get the format and the compression of the files
       final Map<DataFormat, CompressionType> formats =
-          listDataFormatFromFileList(this.files);
+          listDataFormatFromFileList(this.files, this.format);
+
+      if (formats.isEmpty()) {
+        Modules.invalidConfiguration(context,
+            "No format found for the files matching to the pattern");
+      }
+
+      if (formats.size() > 1) {
+        Modules.invalidConfiguration(context,
+            "More than one file format found for the files matching "
+                + "to the pattern");
+      }
 
       // Create the output ports
       final OutputPortsBuilder builder = new OutputPortsBuilder();
-      int count = 0;
 
       for (Map.Entry<DataFormat, CompressionType> e : formats.entrySet()) {
-        builder.addPort("output" + (++count), true, e.getKey(), e.getValue());
+        builder.addPort("output", true, e.getKey(), e.getValue());
       }
 
       this.outputPorts = builder.create();
@@ -272,7 +291,8 @@ public class ImportModule extends AbstractModule {
         // For each files of the data
         for (DataFile inputFile : inputFiles) {
 
-          final DataFormat format = fileFormat(registry, inputFile);
+          final DataFormat format = this.format == null
+              ? fileFormat(registry, inputFile) : this.format;
           final FileNaming fileNaming = fileNaming(inputFile);
 
           // Define the data object
@@ -395,11 +415,13 @@ public class ImportModule extends AbstractModule {
   /**
    * Get the format and compression of a list of files.
    * @param files the list of file
+   * @param format format of the file. Can be null
    * @return a map with for each format the common compression of the files
    * @throws EoulsanException if format of a file cannot be determined
    */
   private static Map<DataFormat, CompressionType> listDataFormatFromFileList(
-      final Set<DataFile> files) throws EoulsanException {
+      final Set<DataFile> files, final DataFormat format)
+      throws EoulsanException {
 
     if (files == null) {
       return Collections.emptyMap();
@@ -410,13 +432,14 @@ public class ImportModule extends AbstractModule {
 
     for (DataFile file : files) {
 
-      final DataFormat format = fileFormat(registry, file);
+      final DataFormat fileFormat =
+          format == null ? fileFormat(registry, file) : format;
       final CompressionType compression = file.getCompressionType();
 
-      final CompressionType previous = result.get(format);
+      final CompressionType previous = result.get(fileFormat);
 
       if (previous == null || previous == CompressionType.NONE) {
-        result.put(format, compression);
+        result.put(fileFormat, compression);
       }
 
     }
