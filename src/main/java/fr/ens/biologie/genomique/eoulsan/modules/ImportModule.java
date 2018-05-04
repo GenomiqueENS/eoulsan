@@ -24,19 +24,25 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules;
 
+import static java.nio.file.FileVisitResult.CONTINUE;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
-
-import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -77,12 +83,80 @@ public class ImportModule extends AbstractModule {
 
   public static final String MODULE_NAME = "import";
 
-  private static final Splitter SPACE_SPLITTER =
-      Splitter.on(' ').trimResults().omitEmptyStrings();
-
   private Set<DataFile> files;
   private OutputPorts outputPorts;
   private boolean copy;
+
+  /**
+   * This class allow to find files that matche to a pattern.
+   */
+  private static class Finder extends SimpleFileVisitor<Path> {
+
+    private final PathMatcher matcher;
+    private final Set<File> files = new HashSet<>();
+
+    /**
+     * Test if a file matches to the pattern.
+     * @param file the file to test
+     */
+    private void find(Path file) {
+
+      if (matcher.matches(file.toAbsolutePath())) {
+        this.files.add(file.toFile());
+      }
+    }
+
+    /**
+     * Get the file found.
+     * @return a set with the files found
+     */
+    Set<DataFile> getFiles() {
+
+      final Set<DataFile> result = new HashSet<>();
+      for (File f : this.files) {
+        result.add(new DataFile(f));
+      }
+
+      return result;
+    }
+
+    @Override
+    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+      find(file);
+      return CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult preVisitDirectory(final Path dir,
+        final BasicFileAttributes attrs) {
+      find(dir);
+      return CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult visitFileFailed(Path file, IOException exc) {
+      return CONTINUE;
+    }
+
+    //
+    // Constructor
+    //
+
+    /**
+     * Constructor.
+     * @param workingDirectory the working directory
+     * @param pattern the file matching pattern
+     */
+    Finder(final File workingDirectory, final String pattern) {
+
+      String finalPattern = !pattern.startsWith("/")
+          ? workingDirectory.getAbsolutePath() + '/' + pattern : pattern;
+
+      this.matcher =
+          FileSystems.getDefault().getPathMatcher("glob:" + finalPattern);
+    }
+
+  }
 
   @Override
   public String getName() {
@@ -106,7 +180,7 @@ public class ImportModule extends AbstractModule {
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
 
-    DataFile baseDir = new DataFile(new File("."));
+    DataFile baseDir = context.getOutputDirectory();
     String pattern = "";
 
     // Parse parameters
@@ -119,10 +193,7 @@ public class ImportModule extends AbstractModule {
         break;
 
       case "directory":
-
-        if (p.getStringValue().length() > 0) {
-          baseDir = new DataFile(p.getStringValue());
-        }
+        Modules.deprecatedParameter(context, p, true);
         break;
 
       case "copy":
@@ -144,7 +215,8 @@ public class ImportModule extends AbstractModule {
       }
 
       // Get the list of the files to import
-      this.files = listFilesFromPatterns(baseDir, pattern);
+      this.files = findFiles(baseDir, pattern);
+      // this.files = listFilesFromPatterns(baseDir, pattern);
 
       // Check if some files has been found
       if (this.files.isEmpty()) {
@@ -275,79 +347,49 @@ public class ImportModule extends AbstractModule {
   //
 
   /**
-   * Build collection of PathMatcher for selection files to tread according to a
-   * pattern file define in test configuration. Patterns set in string with
-   * space to separator. Get input and output patterns files.
-   * @param patterns sequences of patterns filesList.
-   * @return a set of PathMatcher, one per pattern.
+   * Get the part of a path that exists.
+   * @param path the path to check
+   * @return a new Path with the part of the path that exists
    */
-  private static Set<PathMatcher> createPathMatchers(final String patterns) {
+  private static Path getMinExistingPath(final String path) {
 
-    // No pattern defined
-    if (patterns == null || patterns.trim().isEmpty()) {
+    File result = new File("/");
 
-      return Collections.emptySet();
-    }
+    for (Path p : new File(path).toPath()) {
 
-    // Initialize collection
-    final Set<PathMatcher> result = new HashSet<>();
-
-    // Parse patterns
-    for (final String globSyntax : SPACE_SPLITTER.split(patterns)) {
-
-      // Convert in syntax reading by Java
-      final PathMatcher matcher =
-          FileSystems.getDefault().getPathMatcher("glob:" + globSyntax);
-
-      // Add in list patterns files to treat
-      result.add(matcher);
-    }
-
-    // Return unmodifiable collection
-    return Collections.unmodifiableSet(result);
-  }
-
-  /**
-   * Listing recursively all files in the source directory which match with
-   * patterns files
-   * @param patternKey the pattern key
-   * @return the list with all files which match with pattern
-   * @throws IOException if an error occurs while parsing input directory
-   * @throws EoulsanException if no file to compare found
-   */
-  private Set<DataFile> listFilesFromPatterns(final DataFile directory,
-      final String patternKey) throws IOException, EoulsanException {
-
-    final Set<PathMatcher> fileMatchers = createPathMatchers(patternKey);
-
-    final Set<DataFile> files = listFilesFromPatterns(directory, fileMatchers);
-
-    // Return unmodifiable list
-    return Collections.unmodifiableSet(files);
-  }
-
-  /**
-   * Create list files matching to the patterns
-   * @param patterns set of pattern to filter file in result directory
-   * @return unmodifiable list of files or empty list
-   * @throws IOException
-   */
-  private Set<DataFile> listFilesFromPatterns(final DataFile directory,
-      final Set<PathMatcher> patterns) throws IOException {
-
-    final Set<DataFile> filesFound = new HashSet<>();
-    final List<DataFile> files = directory.list();
-
-    for (final PathMatcher matcher : patterns) {
-
-      for (DataFile f : files) {
-        if (matcher.matches(new File(f.getName()).toPath())) {
-          filesFound.add(f);
-        }
+      File f = new File(result, p.toString());
+      if (f.exists()) {
+        result = f;
+      } else {
+        break;
       }
     }
 
-    return Collections.unmodifiableSet(filesFound);
+    return result.toPath();
+  }
+
+  /**
+   * Find files that match with the pattern.
+   * @param workingDirectory the working directory
+   * @param pattern the pattern
+   * @return a set with the matching files
+   * @throws IOException if a error occurs while finding files
+   */
+  private static Set<DataFile> findFiles(final DataFile workingDirectory,
+      final String pattern) throws IOException {
+
+    Objects.requireNonNull(workingDirectory,
+        "workingDirectory argument cannot be null");
+    Objects.requireNonNull(pattern, "pattern argument cannot be null");
+
+    Finder finder = new Finder(workingDirectory.toFile(), pattern);
+
+    Path baseDir = pattern.startsWith("/")
+        ? getMinExistingPath(pattern)
+        : workingDirectory.toFile().toPath();
+
+    Files.walkFileTree(baseDir, finder);
+    return finder.getFiles();
   }
 
   /**
