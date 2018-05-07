@@ -143,6 +143,14 @@ public final class Globals {
   /** Application Website url. */
   public static final String WEBSITE_URL = getWebSiteURL();
 
+  /** Project email. */
+  public static final String CONTACT_EMAIL =
+      APP_NAME_LOWER_CASE + "@biologie.ens.fr";
+
+  /** Project discussion group. */
+  public static final String DISCUSSION_GROUP =
+      "http://groups.google.com/group/" + APP_NAME_LOWER_CASE;
+
   private static final String COPYRIGHT_DATE = "2010-" + APP_BUILD_YEAR;
 
   /** Licence text. */
@@ -156,16 +164,14 @@ public final class Globals {
       + ", " + Globals.APP_BUILD_NUMBER + ")"
       + " is a pipeline for NGS analysis.\n" + "This version has been built on "
       + APP_BUILD_DATE + ".\n\n" + "Authors:\n"
-      + "  Laurent Jourdren <jourdren@biologie.ens.fr>\n"
-      + "  Maria Bernard <mbernard@biologie.ens.fr>\n"
-      + "  Stéphane Le Crom <lecrom@biologie.ens.fr>\n"
-      + "  Claire Wallon <wallon@biologie.ens.fr>\n"
-      + "  Vivien Deshaies <deshaies@biologie.ens.fr>\n"
-      + "  Sandrine Perrin <sperrin@biologie.ens.fr>\n" + "Contacts:\n"
-      + "  Mail: " + APP_NAME_LOWER_CASE + "@biologie.ens.fr\n"
-      + "  Google group: http://groups.google.com/group/" + APP_NAME_LOWER_CASE
-      + "\n" + "  Website: " + WEBSITE_URL + "\n" + "Copyright "
-      + COPYRIGHT_DATE + " IBENS genomic platform\n" + LICENSE_TXT + "\n";
+      + "  Laurent Jourdren (Project leader and maintainer)\n"
+      + "  Maria Bernard\n" + "  Stéphane Le Crom\n" + "  Claire Wallon\n"
+      + "  Vivien Deshaies\n" + "  Sandrine Perrin\n" + "  Xavier Bauquet\n"
+      + "  Cyril Firmo\n" + "  Runxin Du\n" + "  Aurélien Birer\n"
+      + "Contacts:\n" + "  Email: " + CONTACT_EMAIL + "\n"
+      + "  Discussion group: " + DISCUSSION_GROUP + "\n" + "  Website: "
+      + WEBSITE_URL + "\n" + "Copyright " + COPYRIGHT_DATE
+      + " IBENS genomics core facility\n" + LICENSE_TXT + "\n";
 
   /** Default standard output state. */
   public static final boolean STD_OUTPUT_DEFAULT = false;
