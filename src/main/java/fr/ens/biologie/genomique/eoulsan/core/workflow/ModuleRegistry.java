@@ -131,7 +131,8 @@ public class ModuleRegistry {
      * Constructor.
      * @param resourcePaths paths where searching for the resources.
      */
-    public GalaxyToolModuleFileResourceLoader(final String resourcePaths) {
+    public GalaxyToolModuleFileResourceLoader(
+        final List<String> resourcePaths) {
 
       super(GalaxyToolModule.class, getDefaultFormatDirectory());
 
@@ -139,7 +140,6 @@ public class ModuleRegistry {
         addResourcePaths(resourcePaths);
       }
     }
-
   }
 
   /**
@@ -390,7 +390,7 @@ public class ModuleRegistry {
     this.service = new ModuleService();
     this.galaxyClassPathLoader = new GalaxyToolStepClassPathLoader();
     this.galaxyFileLoader = new GalaxyToolModuleFileResourceLoader(
-        getSettings().getGalaxyToolPath());
+        getSettings().getGalaxyToolPaths());
   }
 
 }

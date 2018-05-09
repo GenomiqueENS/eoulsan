@@ -129,15 +129,15 @@ public class DataFormatRegistry {
      * Constructor.
      * @param resourcePaths paths where searching for the resources.
      */
-    public DataFormatFileResourceLoader(final String resourcePaths) {
+    public DataFormatFileResourceLoader(final List<String> resourcePaths) {
 
       super(XMLDataFormat.class, getDefaultFormatDirectory());
 
       if (resourcePaths != null) {
+
         addResourcePaths(resourcePaths);
       }
     }
-
   }
 
   /**
@@ -641,7 +641,7 @@ public class DataFormatRegistry {
 
       // Load XML formats from external resources (files...)
       DataFormatFileResourceLoader formatFileLoader =
-          new DataFormatFileResourceLoader(getSettings().getDataFormatPath());
+          new DataFormatFileResourceLoader(getSettings().getDataFormatPaths());
       formatFileLoader.reload();
       formats.addAll(formatFileLoader.loadAllResources());
 

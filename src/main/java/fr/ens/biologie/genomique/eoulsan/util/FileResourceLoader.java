@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.ServiceConfigurationError;
 
@@ -171,11 +172,11 @@ public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
    * Add a resource paths.
    * @param resourcePaths the resource path to add
    */
-  public void addResourcePaths(final String resourcePaths) {
+  public void addResourcePaths(final Collection<String> resourcePaths) {
 
     checkNotNull(resourcePaths, "resourcePaths argument cannot be null");
 
-    for (String directory : resourcePaths.split(" ")) {
+    for (String directory : resourcePaths) {
 
       directory = directory.trim();
 
