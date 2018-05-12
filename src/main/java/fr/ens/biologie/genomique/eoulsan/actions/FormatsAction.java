@@ -10,8 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.python.google.common.base.Joiner;
-import org.python.google.common.base.Strings;
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
