@@ -98,7 +98,7 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, LongWritable> {
     final URI[] localCacheFiles = context.getCacheFiles();
 
     // Initialize counter and parser
-    initCounterAndParser(conf, this.parser, localCacheFiles);
+    this.counter = initCounterAndParser(conf, this.parser, localCacheFiles);
 
     getLogger().info("End of setup()");
   }

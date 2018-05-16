@@ -66,7 +66,8 @@ public class ExpressionSAMOutputMapper extends Mapper<Text, Text, Text, Text> {
     final URI[] localCacheFiles = context.getCacheFiles();
 
     // Initialize counter and parser
-    ExpressionMapper.initCounterAndParser(conf, this.parser, localCacheFiles);
+    this.counter = ExpressionMapper.initCounterAndParser(conf, this.parser,
+        localCacheFiles);
 
     getLogger().info("End of setup()");
   }
@@ -84,7 +85,7 @@ public class ExpressionSAMOutputMapper extends Mapper<Text, Text, Text, Text> {
     final String line = value.toString();
 
     // Write SAM headers
-    if (line.length() > 0 && line.charAt(0) == '@') {
+    if (!line.isEmpty() && line.charAt(0) == '@') {
       this.outKey.set("");
       this.outValue.set(line);
       context.write(this.outKey, this.outValue);
@@ -125,7 +126,7 @@ public class ExpressionSAMOutputMapper extends Mapper<Text, Text, Text, Text> {
           outKey.set(samString.substring(0, tabPos));
         }
 
-        this.outKey.set(samString);
+        this.outValue.set(samString);
         context.write(this.outKey, this.outValue);
       }
 

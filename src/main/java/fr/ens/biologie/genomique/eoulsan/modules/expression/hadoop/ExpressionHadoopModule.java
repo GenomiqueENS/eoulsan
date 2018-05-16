@@ -123,8 +123,9 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
     final Data featureAnnotationData = context
         .getInputData(isGTFInputFormat() ? ANNOTATION_GFF : ANNOTATION_GFF);
     final Data genomeDescriptionData = context.getInputData(GENOME_DESC_TXT);
-    final Data outData =
-        context.getOutputData(EXPRESSION_RESULTS_TSV, alignmentsData);
+    final Data outData = context.getOutputData(
+        isSAMOutputFormat() ? MAPPER_RESULTS_SAM : EXPRESSION_RESULTS_TSV,
+        alignmentsData);
 
     // Create configuration object
     final Configuration conf = createConfiguration();
@@ -163,7 +164,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       getLogger().info("Finish the first part of the expression computation in "
           + ((mapReduceEndTime - startTime) / 1000) + " seconds.");
 
-      // Only for TSV ouput
+      // Only for TSV output
       if (!isSAMOutputFormat()) {
 
         // Create the final expression files
@@ -236,15 +237,10 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
     // Get output file
     final DataFile outFile = outData.getDataFile();
 
-    // Get temporary file
-    final DataFile tmpFile =
-        new DataFile(outFile.getParent(), outFile.getBasename() + ".tmp");
-
     getLogger().fine("sample: " + alignmentsData.getName());
     getLogger().fine("inputPath.getName(): " + inputPath.getName());
     getLogger().fine("annotationDataFile: " + annotationDataFile.getSource());
     getLogger().fine("outFile: " + outFile.getSource());
-    getLogger().fine("tmpFile: " + tmpFile.getSource());
 
     jobConf.set("mapred.child.java.opts", "-Xmx1024m");
 
@@ -313,6 +309,9 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       // Set the output value class
       job.setOutputValueClass(Text.class);
 
+      // Set output path
+      FileOutputFormat.setOutputPath(job, new Path(outFile.getSource()));
+
     } else {
 
       // Set the mapper class for TSV output
@@ -332,10 +331,15 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
       // Set the output value class
       job.setOutputValueClass(LongWritable.class);
-    }
 
-    // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(tmpFile.getSource()));
+      // Get temporary file
+      final DataFile tmpFile =
+          new DataFile(outFile.getParent(), outFile.getBasename() + ".tmp");
+      getLogger().fine("tmpFile: " + tmpFile.getSource());
+
+      // Set output path
+      FileOutputFormat.setOutputPath(job, new Path(tmpFile.getSource()));
+    }
 
     return job;
   }
