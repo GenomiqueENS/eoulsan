@@ -67,6 +67,11 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
     }
 
     @Override
+    public void remove() {
+      throw new UnsupportedOperationException("remove");
+    }
+
+    @Override
     public boolean hasNext() {
 
       boolean result = this.samRecords.hasNext();
