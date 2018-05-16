@@ -649,8 +649,12 @@ public class HTSeqCounter extends AbstractExpressionCounter
   private void assignment(final SAMRecord samRecord1,
       final SAMRecord samRecord2, final Set<String> features) {
 
+    // Sort the features to always have the same feature order in outputs
+    List<String> list = new ArrayList<>(features);
+    Collections.sort(list);
+
     assignment(samRecord1, samRecord2,
-        "__ambiguous[" + join(features, "+") + ']');
+        "__ambiguous[" + join(list, "+") + ']');
   }
 
   @Override
