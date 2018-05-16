@@ -102,6 +102,11 @@ public class HTSeqCountTest {
     }
 
     @Override
+    public void remove() {
+      throw new UnsupportedOperationException("remove");
+    }
+
+    @Override
     public boolean hasNext() {
 
       boolean result = this.sourceRecords.hasNext();
