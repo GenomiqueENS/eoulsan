@@ -114,10 +114,12 @@ public class HTSeqCounter extends AbstractExpressionCounter
     private int ambiguous;
     private int notAligned;
     private int lowQual;
+    private int secondaryAlignments;
+    private int supplementaryAlignments;
     private int nonUnique;
     private int missingMate;
 
-    private void fillReporter() {
+    private void fillReporter(final HTSeqCounter counter) {
 
       reporter.incrCounter(counterGroup,
           ExpressionCounterCounter.TOTAL_ALIGNMENTS_COUNTER.counterName(),
@@ -145,8 +147,11 @@ public class HTSeqCounter extends AbstractExpressionCounter
       reporter.incrCounter(counterGroup,
           ExpressionCounterCounter.ELIMINATED_READS_COUNTER.counterName(),
           this.empty
-              + this.ambiguous + this.lowQual + this.notAligned
-              + this.nonUnique);
+              + (counter.removeAmbiguousCases ? this.ambiguous : 0)
+              + this.lowQual + this.notAligned
+              + (counter.removeNonUnique ? this.nonUnique : 0)
+              + this.secondaryAlignments + this.supplementaryAlignments
+              + this.missingMate);
     }
 
     private InternalCounters(final ReporterIncrementer reporter,
@@ -427,7 +432,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
     }
 
     // Set the counters in the reporter
-    internalCounters.fillReporter();
+    internalCounters.fillReporter(this);
 
     return counts;
   }
@@ -458,12 +463,14 @@ public class HTSeqCounter extends AbstractExpressionCounter
     // secondary alignment
     if (this.removeSecondaryAlignments
         && samRecord.getNotPrimaryAlignmentFlag()) {
+      counters.secondaryAlignments++;
       return false;
     }
 
     // supplementary alignment
     if (this.removeSupplementaryAlignments
         && samRecord.getSupplementaryAlignmentFlag()) {
+      counters.supplementaryAlignments++;
       return false;
     }
 
