@@ -6,6 +6,9 @@ fr.ens.biologie.genomique.eoulsan.actions.ExecAction
 fr.ens.biologie.genomique.eoulsan.actions.HadoopExecAction
 fr.ens.biologie.genomique.eoulsan.actions.UploadS3Action
 fr.ens.biologie.genomique.eoulsan.actions.ClusterExecAction
+fr.ens.biologie.genomique.eoulsan.actions.InfoAction
+fr.ens.biologie.genomique.eoulsan.actions.FormatsAction
+fr.ens.biologie.genomique.eoulsan.actions.ModulesAction
 
 # Hadoop jar actions
 fr.ens.biologie.genomique.eoulsan.actions.ExecJarHadoopAction
