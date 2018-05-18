@@ -24,12 +24,18 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.expressioncounters;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
+import fr.ens.biologie.genomique.eoulsan.bio.GFFEntry;
+import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.util.Reporter;
+import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
+import htsjdk.samtools.SAMRecord;
 
 /**
  * This class define an interface for a wrapper on an ExpressionCounter.
@@ -46,128 +52,116 @@ public interface ExpressionCounter {
    * Get the counter name.
    * @return a string with the counter name
    */
-  String getCounterName();
+  String getName();
 
   /**
-   * Get the strand usage for the ExpressionCounter.
-   * @return the StrandUsage
+   * Get the description of the filter.
+   * @return the description of the filter
    */
-  StrandUsage getStranded();
+  String getDescription();
 
   /**
-   * Get the overlap mode for the ExpressionCounter.
-   * @return the OverlapMode
+   * Set a parameter of the counter.
+   * @param key name of the parameter to set
+   * @param value value of the parameter to set
+   * @throws EoulsanException if the parameter is invalid
    */
-  OverlapMode getOverlapMode();
+  void setParameter(String key, String value) throws EoulsanException;
 
   /**
-   * Test if ambiguous cases must be removed.
-   * @return true if ambiguous cases must be removed
+   * Check the counter configuration.
+   * @throws EoulsanException if counter configuration is invalid
    */
-  boolean isRemoveAmbiguousCases();
+  void checkConfiguration() throws EoulsanException;
 
   /**
-   * Get the genomic type on which to count expression.
-   * @return a string with the genomic type name
+   * Initialize the counter
+   * @param genomeDescFile genome description file
+   * @param annotationFile annotation file
+   * @param gtfFormat true if the input format is in GTF format
+   * @throws EoulsanException if an error occurs while initialize the counter
+   * @throws IOException if an error occurs while reading input files
    */
-  String getGenomicType();
+  void init(DataFile genomeDescFile, DataFile annotationFile, boolean gtfFormat)
+      throws EoulsanException, IOException;
 
   /**
-   * Get the GFF attribute ID to be used as feature ID.
-   * @return a string with the attribute ID
+   * Initialize the counter
+   * @param descIs genome description file
+   * @param annotationIs annotation file
+   * @param gtfFormat true if the input format is in GTF format
+   * @throws EoulsanException if an error occurs while initialize the counter
+   * @throws IOException if an error occurs while reading input files
    */
-  String getAttributeId();
+  void init(InputStream descIs, InputStream annotationIs, boolean gtfFormat)
+      throws EoulsanException, IOException;
 
   /**
-   * Test if parent attribute values must be split.
-   * @return true if parent attribute values must be split
+   * Initialize the counter
+   * @param desc genome description
+   * @param annotations annotation entries
+   * @throws EoulsanException if an error occurs while initialize the counter
    */
-  boolean isSplitAttributeValues();
+  void init(GenomeDescription desc, Iterable<GFFEntry> annotations)
+      throws EoulsanException;
 
   /**
-   * Get the temporary directory.
-   * @return a string with the absolute path of the temporary directory
+   * Count the the features.
+   * @param samFile SAM file
+   * @param reporter the reporter
+   * @param counterGroup the counter group of the reporter
+   * @return a map with the counts
+   * @throws EoulsanException if an error occurs while counting
+   * @throws IOException if an error occurs while reading the input file
    */
-  String getTempDirectory();
-
-  //
-  // Setters
-  //
+  public Map<String, Integer> count(DataFile samFile,
+      ReporterIncrementer reporter, String counterGroup)
+      throws EoulsanException, IOException;
 
   /**
-   * Set the strand usage for the ExpressionCounter.
-   * @param stranded the StrandUsage object
+   * Count the the features.
+   * @param inputSam SAM file as an InputStream
+   * @param reporter the reporter
+   * @param counterGroup the counter group of the reporter
+   * @return a map with the counts
+   * @throws EoulsanException if an error occurs while counting
+   * @throws IOException if an error occurs while reading the input file
    */
-  void setStranded(StrandUsage stranded);
+  public Map<String, Integer> count(InputStream inputSam,
+      ReporterIncrementer reporter, String counterGroup)
+      throws EoulsanException;
 
   /**
-   * Set the overlap mode for the ExpressionCounter.
-   * @param mode the OverlapMode object
+   * Count the the features.
+   * @param inputSam SAM file as an InputStream
+   * @param outputSam SAM file as an OutputStream
+   * @param reporter the reporter
+   * @param counterGroup the counter group of the reporter
+   * @return a map with the counts
+   * @throws EoulsanException if an error occurs while counting
+   * @throws IOException if an error occurs while reading the input file
    */
-  void setOverlapMode(OverlapMode mode);
+  public Map<String, Integer> count(InputStream inputSam,
+      OutputStream outputSam, File temporaryDirectory,
+      ReporterIncrementer reporter, String counterGroup)
+      throws EoulsanException;
 
   /**
-   * Set if ambiguous cases must be removed.
-   * @param removeAmbiguousCases true if ambiguous cases must be removed
+   * Count the the features.
+   * @param samRecords SAM entries
+   * @param reporter the reporter
+   * @param counterGroup the counter group of the reporter
+   * @return a map with the counts
+   * @throws EoulsanException if an error occurs while counting
    */
-  void setRemoveAmbiguousCases(boolean removeAmbiguousCases);
+  public Map<String, Integer> count(Iterable<SAMRecord> samRecords,
+      ReporterIncrementer reporter, String counterGroup)
+      throws EoulsanException;
 
   /**
-   * Set the genomic type on which to count expression.
-   * @param genomicType string with the genomic type name
+   * Add missing zero count features.
+   * @param counts the counts
    */
-  void setGenomicType(String genomicType);
-
-  /**
-   * Set the attribute ID to be used as feature ID.
-   * @param attributeId string with the attribute ID
-   */
-  void setAttributeId(String attributeId);
-
-  /**
-   * Set if attribute values must be split.
-   * @param splitAttributesValues true if attribute values must be split
-   */
-  void setSplitAttributeValues(boolean splitAttributesValues);
-
-  /**
-   * Set the temporary directory.
-   * @param tempDirectory a string with the absolute path of the temporary
-   *          directory
-   */
-  void setTempDirectory(String tempDirectory);
-
-  //
-  // Counting methods
-  //
-
-  /**
-   * This method runs the ExpressionCounter.
-   * @param alignmentFile file containing SAM alignments
-   * @param annotationFile file containing the reference genome annotation
-   * @param gtfFormat true if the annotation is in GTF format
-   * @param expressionFile output file for the expression step
-   * @param genomeDescFile file containing the genome description
-   * @throws IOException if the counting fails
-   */
-  void count(DataFile alignmentFile, DataFile annotationFile,
-      final boolean gtfFormat, DataFile expressionFile, DataFile genomeDescFile)
-      throws IOException, EoulsanException, BadBioEntryException;
-
-  //
-  // Other methods
-  //
-
-  /**
-   * This method initializes the ExpressionCounter.
-   * @param genomicType : a string with the genomic type on which to count
-   *          expression
-   * @param attributeId GFF attribute to be used as feature ID
-   * @param reporter : the Reporter object of the Eoulsan run
-   * @param counterGroup : string with the counter name group for the expression
-   *          step
-   */
-  void init(String genomicType, String attributeId, Reporter reporter,
-      String counterGroup);
+  public void addZeroCountFeatures(Map<String, Integer> counts);
 
 }

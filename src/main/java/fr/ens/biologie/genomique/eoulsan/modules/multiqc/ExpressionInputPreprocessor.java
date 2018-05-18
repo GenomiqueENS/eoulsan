@@ -1,11 +1,5 @@
 package fr.ens.biologie.genomique.eoulsan.modules.multiqc;
 
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters.AMBIGUOUS_ALIGNMENTS_COUNTER;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters.EMPTY_ALIGNMENTS_COUNTER;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters.LOW_QUAL_ALIGNMENTS_COUNTER;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters.NOT_ALIGNED_ALIGNMENTS_COUNTER;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters.NOT_UNIQUE_ALIGNMENTS_COUNTER;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -28,6 +22,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule;
+import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounterCounter;
 
 /**
  * This class define a preprocessor for expression reports.
@@ -37,19 +32,7 @@ import fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionMo
 public class ExpressionInputPreprocessor implements InputPreprocessor {
 
   public static final String REPORT_NAME = "expression";
-  private Map<String, SampleStats> sampleStats;
-
-  /**
-   * Define HTSeq-count statistics
-   */
-  private static class SampleStats {
-
-    int noFeature;
-    int ambiguous;
-    int lowQual;
-    int notAligned;
-    int notUnique;
-  }
+  private Map<String, Map<String, Integer>> sampleStats;
 
   @Override
   public String getReportName() {
@@ -112,11 +95,11 @@ public class ExpressionInputPreprocessor implements InputPreprocessor {
     }
   }
 
-  private static Map<String, SampleStats> parseStepResultFile(DataFile file)
-      throws IOException {
+  private static Map<String, Map<String, Integer>> parseStepResultFile(
+      DataFile file) throws IOException {
 
     // Define result
-    final Map<String, SampleStats> result = new HashMap<>();
+    final Map<String, Map<String, Integer>> result = new HashMap<>();
 
     // Load JSON file in memory
     JsonReader jsonReader = Json.createReader(file.open());
@@ -133,33 +116,22 @@ public class ExpressionInputPreprocessor implements InputPreprocessor {
     for (Map.Entry<String, JsonValue> e : counters.entrySet()) {
 
       String sampleId = e.getKey();
-      SampleStats stats = new SampleStats();
+      Map<String, Integer> stats = new HashMap<>();
       result.put(sampleId, stats);
 
       JsonObject dict = counters.getJsonObject(sampleId);
 
-      if (dict.containsKey(EMPTY_ALIGNMENTS_COUNTER.counterName())) {
+      for (ExpressionCounterCounter ec : ExpressionCounterCounter.values()) {
 
-        stats.noFeature = dict.getInt(EMPTY_ALIGNMENTS_COUNTER.counterName());
-      }
+        if (ec.htSeqCountCounterName() != null) {
 
-      if (dict.containsKey(AMBIGUOUS_ALIGNMENTS_COUNTER.counterName())) {
-        stats.ambiguous =
-            dict.getInt(AMBIGUOUS_ALIGNMENTS_COUNTER.counterName());
-      }
-
-      if (dict.containsKey(LOW_QUAL_ALIGNMENTS_COUNTER.counterName())) {
-        stats.lowQual = dict.getInt(LOW_QUAL_ALIGNMENTS_COUNTER.counterName());
-      }
-
-      if (dict.containsKey(NOT_ALIGNED_ALIGNMENTS_COUNTER.counterName())) {
-        stats.notAligned =
-            dict.getInt(NOT_ALIGNED_ALIGNMENTS_COUNTER.counterName());
-      }
-
-      if (dict.containsKey(NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName())) {
-        stats.notUnique =
-            dict.getInt(NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName());
+          if (!dict.containsKey(ec.counterName())) {
+            stats.put(ec.htSeqCountCounterName(), 0);
+          } else {
+            stats.put(ec.htSeqCountCounterName(),
+                dict.getInt(ec.counterName()));
+          }
+        }
       }
     }
 
@@ -175,7 +147,7 @@ public class ExpressionInputPreprocessor implements InputPreprocessor {
    * @throws IOException if an error occurs while reading or writing the files
    */
   private void enhanceExpressionFile(final File inFile, final File outFile,
-      final SampleStats stats) throws IOException {
+      final Map<String, Integer> stats) throws IOException {
 
     try (BufferedReader reader = new BufferedReader(new FileReader(inFile));
         Writer writer = new FileWriter(outFile)) {
@@ -187,11 +159,9 @@ public class ExpressionInputPreprocessor implements InputPreprocessor {
       }
 
       if (stats != null) {
-        writer.write("__no_feature\t" + stats.noFeature + "\n");
-        writer.write("__ambiguous\t" + stats.ambiguous + "\n");
-        writer.write("__too_low_aQual\t" + stats.lowQual + "\n");
-        writer.write("__not_aligned\t" + stats.notAligned + "\n");
-        writer.write("__alignment_not_unique\t" + stats.notUnique + "\n");
+        for (Map.Entry<String, Integer> e : stats.entrySet()) {
+          writer.write("__\t" + e.getKey() + "\t" + e.getValue() + "\n");
+        }
       }
     }
 

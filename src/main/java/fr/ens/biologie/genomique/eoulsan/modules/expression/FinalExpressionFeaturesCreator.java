@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.bio.GenomicArray;
+import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.ExpressionCounter;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.Utils;
@@ -57,7 +57,7 @@ public class FinalExpressionFeaturesCreator {
   private static final Charset CHARSET =
       Charset.forName(Globals.DEFAULT_FILE_ENCODING);
 
-  private GenomicArray<String> ga = new GenomicArray<>();
+  private ExpressionCounter counter;
   private final Map<String, ExpressionFeature> expressionResults =
       new HashMap<>();
 
@@ -147,7 +147,9 @@ public class FinalExpressionFeaturesCreator {
   public void initializeExpressionResults() {
 
     this.expressionResults.clear();
-    for (String id : this.ga.getFeaturesIds()) {
+    Map<String, Integer> emptyMap = new HashMap<>();
+    this.counter.addZeroCountFeatures(emptyMap);
+    for (String id : emptyMap.keySet()) {
       this.expressionResults.put(id, new ExpressionFeature(id));
     }
   }
@@ -229,36 +231,15 @@ public class FinalExpressionFeaturesCreator {
 
   /**
    * Public constructor.
-   * @param indexFile index file
+   * @param counter the counter
    */
-  public FinalExpressionFeaturesCreator(final File indexFile)
-      throws IOException {
+  public FinalExpressionFeaturesCreator(final ExpressionCounter counter) {
 
-    this(FileUtils.createInputStream(indexFile));
-  }
-
-  /**
-   * Public constructor.
-   * @param indexIs index input stream
-   */
-  public FinalExpressionFeaturesCreator(final InputStream indexIs)
-      throws IOException {
-
-    this.ga = new GenomicArray<>();
-    this.ga.load(indexIs);
-  }
-
-  /**
-   * Public constructor.
-   * @param ga GenomicArray object
-   */
-  public FinalExpressionFeaturesCreator(final GenomicArray<String> ga) {
-
-    if (ga == null) {
-      throw new NullPointerException("GenomicArray is null.");
+    if (counter == null) {
+      throw new NullPointerException("counter argument is null.");
     }
 
-    this.ga = ga;
+    this.counter = counter;
   }
 
 }

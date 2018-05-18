@@ -71,6 +71,7 @@
 		<tr><td>counter</td><td>string</td><td>The name of the counter to use (eoulsanCounter or htseq-count).
 		The support of <b>eoulsanCounter</b> has been removed from Eoulsan 2.x.</td><td>htseq-count</td></tr>
 		<tr><td>features.file.format</td><td>string</td><td>The features file format. Currently only GFF/GFF3 and GTF format are supported.</td><td>gff3</td></tr>
+		<tr><td>output.file.format</td><td>string</td><td>The output file format. Currently only TSV and SAM format are supported. If SAM format selected, each SAM entry will have its feature assignment (as an optional field with tag 'XF')</td><td>tsv</td></tr>
 		<tr><td>genomic.type</td><td>string</td><td>feature type (3rd column in GFF file) to be used, all features of other type are ignored.</td><td>exon</td></tr>
 		<tr><td>attribute.id</td><td>string</td><td>GFF attribute to be used as feature ID</td><td>PARENT</td></tr>
 	 </table>
@@ -83,7 +84,13 @@
 If "yes" or "no", the read has to be mapped to the same strand as the feature or it is considered overlapping with a feature
 regardless of whether it is mapped to the same or the opposite strand as the feature.</td><td>no</td></tr>
 		<tr><td>overlap.mode</td><td>string</td><td>Name of the overlap mode to use (union, intersection-nonempty or intersection-strict).</td><td>union</td></tr>
-		<tr><td>remove.ambiguous.cases</td><td>boolean</td><td>Keep or remove ambiguous cases in the count.</td><td>true</td></tr>
+		<tr><td>minimum.alignment.quality</td><td>integer</td><td>.</td>skip all reads with alignment quality lower than the given minimal value<td>0</td></tr>
+		<tr><td>remove.ambiguous.cases</td><td>boolean</td><td>Keep or remove ambiguous cases in the count</td><td>true</td></tr>
+		<tr><td>remove.non.unique.alignments</td><td>boolean</td><td>Keep or remove non unique alignments for the count (use the <tt>NH</tt> tag of the optional fields of the SAM entries)</td><td>true</td></tr>
+		<tr><td>remove.secondary.alignments</td><td>boolean</td><td>Remove alignments with the secondary alignment flag for the count</td><td>false</td></tr>
+		<tr><td>remove.supplementary.alignments</td><td>boolean</td><td>Remove alignments with the supplementary alignment flag for the count</td><td>false</td></tr>
+		<tr><td>remove.non.assigned.sam.tags</td><td>boolean</td><td>Do not add a SAM tag for non assigned SAM entries</td><td>false</td></tr>
+		<tr><td>sam.tag.to.use</td><td>string</td><td>Name of the SAM tag to use for the assigned features. Value must be X?, Y? or Z? where ? is a letter</td><td>XF</td></tr>
 		<tr><td>split.attribute.values</td><td>boolean</td><td>Split values of the attribute field</td><td>false</td></tr>
 	 </table>
         <li><b>Configuration example</b>:</li>
@@ -125,8 +132,7 @@ regardless of whether it is mapped to the same or the opposite strand as the fea
 </pre>
        </ul>
 
-	<p>In local mode, use the <b>main.tmp.dir</b> global parameter to set the temporary directory if this step fails with a full disk error.</p>
-	<p><b>Note</b>: The <b>htseq-count</b> counter always filter multi-matches reads (using the <tt>NH</tt> tag of the optional fields of the SAM entries) before counting.</p>
+	<p><b>Note</b>: To get the same results as the original implementation of <b>htseq-count</b> with the <tt>--non-unique all</tt> argument, you must to set to false the <b>remove.ambiguous.cases</b> <u>and</u> <b>remove.non.unique.alignments</b> parameters.</p>
 
     </section>
 
