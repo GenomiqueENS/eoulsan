@@ -29,7 +29,7 @@ import org.w3c.dom.Element;
 import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.core.Naming;
-import jersey.repackaged.com.google.common.base.Objects;
+import com.google.common.base.Objects;
 
 /**
  * This class define an abstract tool element.
