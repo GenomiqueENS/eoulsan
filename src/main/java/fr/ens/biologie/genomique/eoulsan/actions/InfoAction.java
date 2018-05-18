@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.python.google.common.base.Strings;
+import com.google.common.base.Strings;
 
 import fr.ens.biologie.genomique.eoulsan.Infos;
 import fr.ens.biologie.genomique.eoulsan.Infos.Info;
