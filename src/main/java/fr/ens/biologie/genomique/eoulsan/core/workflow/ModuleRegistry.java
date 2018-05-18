@@ -37,8 +37,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.base.Strings;
 
@@ -67,6 +69,7 @@ public class ModuleRegistry {
   private final ModuleService service;
   private final GalaxyToolStepClassPathLoader galaxyClassPathLoader;
   private final GalaxyToolModuleFileResourceLoader galaxyFileLoader;
+  private final Set<String> javaModuleFound = new LinkedHashSet<>();
 
   //
   // Inner classes
@@ -131,7 +134,8 @@ public class ModuleRegistry {
      * Constructor.
      * @param resourcePaths paths where searching for the resources.
      */
-    public GalaxyToolModuleFileResourceLoader(final String resourcePaths) {
+    public GalaxyToolModuleFileResourceLoader(
+        final List<String> resourcePaths) {
 
       super(GalaxyToolModule.class, getDefaultFormatDirectory());
 
@@ -139,7 +143,6 @@ public class ModuleRegistry {
         addResourcePaths(resourcePaths);
       }
     }
-
   }
 
   /**
@@ -233,12 +236,16 @@ public class ModuleRegistry {
     this.galaxyClassPathLoader.reload();
     this.galaxyFileLoader.reload();
 
+    this.javaModuleFound.clear();
+
     // Log steps defined in jars
     for (Map.Entry<String, String> e : this.service.getServiceClasses()
         .entries()) {
 
+      this.javaModuleFound.add(e.getKey());
+
       getLogger()
-          .config("Found step: " + e.getKey() + " (" + e.getValue() + ")");
+          .config("Found module: " + e.getKey() + " (" + e.getValue() + ")");
     }
 
     // Log Galaxy tool steps
@@ -248,9 +255,30 @@ public class ModuleRegistry {
 
     for (GalaxyToolModule s : stepsFound) {
 
-      getLogger().config("Found step: "
+      getLogger().config("Found module: "
           + s.getName() + " (Galaxy tool, source: " + s.getSource() + ")");
     }
+  }
+
+  /**
+   * Get all the modules.
+   * @return a list of all the modules
+   */
+  public List<Module> getAllModules() {
+
+    List<Module> result = new ArrayList<>();
+
+    // Load all Java modules
+    for (String moduleName : this.javaModuleFound) {
+
+      result.addAll(this.service.newServices(moduleName));
+    }
+
+    // Load all Galaxy modules
+    result.addAll(this.galaxyClassPathLoader.loadAllResources());
+    result.addAll(this.galaxyFileLoader.loadAllResources());
+
+    return result;
   }
 
   /**
@@ -390,7 +418,7 @@ public class ModuleRegistry {
     this.service = new ModuleService();
     this.galaxyClassPathLoader = new GalaxyToolStepClassPathLoader();
     this.galaxyFileLoader = new GalaxyToolModuleFileResourceLoader(
-        getSettings().getGalaxyToolPath());
+        getSettings().getGalaxyToolPaths());
   }
 
 }

@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.expression.local;
 
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GTF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
@@ -33,12 +32,16 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
-import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
 import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.ExpressionCounter;
-import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
@@ -63,14 +66,15 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
 
     try {
 
-      final Data featuresAnnotationData =
-          context.getInputData(isGTFFormat() ? ANNOTATION_GTF : ANNOTATION_GFF);
+      final Data featuresAnnotationData = context
+          .getInputData(isGTFInputFormat() ? ANNOTATION_GTF : ANNOTATION_GFF);
       final Data alignmentData = context.getInputData(MAPPER_RESULTS_SAM);
       final Data genomeDescriptionData = context.getInputData(GENOME_DESC_TXT);
-      final Data expressionData =
-          context.getOutputData(EXPRESSION_RESULTS_TSV, alignmentData);
+      final Data expressionData = context.getOutputData(
+          isSAMOutputFormat() ? MAPPER_RESULTS_SAM : EXPRESSION_RESULTS_TSV,
+          alignmentData);
 
-      final ExpressionCounter counter = getCounter();
+      final ExpressionCounter counter = getExpressionCounter();
 
       // Create the reporter
       final Reporter reporter = new LocalReporter();
@@ -87,30 +91,40 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
       // Get final expression file
       final DataFile expressionFile = expressionData.getDataFile();
 
-      // Expression counting
-      count(context, counter, annotationFile, isGTFFormat(), alignmentFile,
-          expressionFile, genomeDescFile, reporter);
-
-      final String htSeqArgsLog = ", "
-          + getAttributeId() + ", stranded: " + getStranded()
-          + ", removeAmbiguousCases: " + isRemoveAmbiguousCases();
+      counter.init(genomeDescFile, annotationFile, isGTFInputFormat());
 
       final String sampleCounterHeader = "Expression computation with "
-          + counter.getCounterName() + " (" + alignmentData.getName() + ", "
+          + counter.getName() + " (" + alignmentData.getName() + ", "
           + alignmentFile.getName() + ", " + annotationFile.getName() + ", "
-          + getGenomicType()
-          // If counter is HTSeq-count add additional parameters to log
-          + (HTSeqCounter.COUNTER_NAME.equals(counter.getCounterName())
-              ? htSeqArgsLog : "")
-          + ")";
+          + counter.toString() + ")";
 
       status.setDescription(sampleCounterHeader);
+
+      final Map<String, Integer> result;
+
+      if (isSAMOutputFormat()) {
+
+        result = counter.count(alignmentFile.open(), expressionFile.create(),
+            context.getLocalTempDirectory(), reporter, COUNTER_GROUP);
+      } else {
+        // Launch counting
+        result = counter.count(alignmentFile, reporter, COUNTER_GROUP);
+
+        // Add features with zero count
+        counter.addZeroCountFeatures(result);
+
+        // Save result
+        writeResult(result, expressionFile);
+      }
+
       status.setCounters(reporter, COUNTER_GROUP);
 
       // Write log file
       return status.createTaskResult();
 
-    } catch (FileNotFoundException e) {
+    } catch (
+
+    FileNotFoundException e) {
       return status.createTaskResult(e, "File not found: " + e.getMessage());
     } catch (IOException e) {
       return status.createTaskResult(e,
@@ -118,50 +132,28 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
     } catch (EoulsanException e) {
       return status.createTaskResult(e,
           "Error while reading the annotation file: " + e.getMessage());
-    } catch (BadBioEntryException e) {
-      return status.createTaskResult(e,
-          "Error while reading the annotation file: " + e.getMessage());
     }
-
   }
 
-  private void count(final TaskContext context, final ExpressionCounter counter,
-      final DataFile annotationFile, final boolean gtfFormat,
-      final DataFile alignmentFile, final DataFile expressionFile,
-      final DataFile genomeDescFile, final Reporter reporter)
-      throws IOException, EoulsanException, BadBioEntryException {
+  /**
+   * Write the results.
+   * @param counts map with the counts to write
+   * @param expressionFile the output file
+   * @throws IOException if an error occurs while writing the the file
+   */
+  private static final void writeResult(final Map<String, Integer> counts,
+      final DataFile expressionFile) throws IOException {
 
-    // Init expression counter
-    counter.init(getGenomicType(), getAttributeId(), reporter, COUNTER_GROUP);
+    try (Writer writer = new OutputStreamWriter(expressionFile.create())) {
+      final List<String> keysSorted = new ArrayList<>(counts.keySet());
+      Collections.sort(keysSorted);
 
-    // Set counter arguments
-    initCounterArguments(counter,
-        context.getLocalTempDirectory().getAbsolutePath());
-
-    getLogger().info("Expression computation in SAM file: "
-        + alignmentFile + ", use " + counter.getCounterName());
-
-    // Process to counting
-    counter.count(alignmentFile, annotationFile, gtfFormat, expressionFile,
-        genomeDescFile);
-  }
-
-  private void initCounterArguments(final ExpressionCounter counter,
-      final String tempDirectory) {
-
-    if (getStranded() != null) {
-      counter.setStranded(getStranded());
+      writer.write("Id\tCount\n");
+      for (String key : keysSorted) {
+        writer.write(key + "\t" + counts.get(key) + "\n");
+      }
     }
 
-    if (getOverlapMode() != null) {
-      counter.setOverlapMode(getOverlapMode());
-    }
-
-    counter.setRemoveAmbiguousCases(isRemoveAmbiguousCases());
-    counter.setSplitAttributeValues(isSplitAttributeValues());
-
-    // Set counter temporary directory
-    counter.setTempDirectory(tempDirectory);
   }
 
 }

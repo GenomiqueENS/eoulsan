@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import org.python.google.common.base.Splitter;
+import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.bio.DenseExpressionMatrix;
 import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix;
