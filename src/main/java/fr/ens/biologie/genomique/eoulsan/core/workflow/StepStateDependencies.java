@@ -33,8 +33,10 @@ import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WAITING;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Joiner;
@@ -53,9 +55,10 @@ public class StepStateDependencies implements Serializable {
   private static final long serialVersionUID = -5734184849291521186L;
 
   private final AbstractStep step;
-  private StepState stepState = CREATED;
+  private volatile StepState stepState = CREATED;
 
   private final Set<AbstractStep> requiredSteps = new HashSet<>();
+  private final Map<Integer, Boolean> dependenciesDone = new HashMap<>();
 
   /**
    * Add a dependency.
@@ -65,6 +68,11 @@ public class StepStateDependencies implements Serializable {
 
     this.requiredSteps.add(step);
     WorkflowEventBus.getInstance().register(step.getStepStateDependencies());
+
+    // Fill the dependencies map
+    if (!this.dependenciesDone.containsKey(step.getNumber())) {
+      this.dependenciesDone.put(step.getNumber(), false);
+    }
   }
 
   /**
@@ -98,45 +106,46 @@ public class StepStateDependencies implements Serializable {
 
     final int eventStepNumber = event.getStep().getNumber();
 
+    // Update the step state ?
     if (eventStepNumber == this.step.getNumber()) {
       setState(event.getState());
-    }
-
-    // Do nothing if the step is already in READY state
-    if (this.stepState != WAITING) {
       return;
     }
 
     // Check if the dependencies of the step has been updated
-    boolean found = false;
-    for (AbstractStep step : this.requiredSteps) {
+    if (this.stepState == WAITING
+        && event.getState().isDoneState()
+        && this.dependenciesDone.containsKey(eventStepNumber)) {
 
-      if (eventStepNumber == step.getNumber()) {
-        found = true;
-        break;
+      synchronized (this.dependenciesDone) {
+
+        // Nothing to do if step already done/partially done
+        if (this.dependenciesDone.get(eventStepNumber)) {
+          return;
+        }
+
+        // Update dependency state
+        this.dependenciesDone.put(eventStepNumber, true);
+
+        // Check if all dependencies are done
+        for (boolean done : this.dependenciesDone.values()) {
+          if (!done) {
+            return;
+          }
+        }
+
+        // Set the step to the READY state
+        setState(READY);
       }
-    }
 
-    // No update
-    if (!found) {
-      return;
     }
-
-    for (AbstractStep step : this.requiredSteps) {
-      if (!(step.getState().isDoneState())) {
-        return;
-      }
-    }
-
-    // Set the step to the READY state
-    setState(READY);
   }
 
   /**
    * Set the state of the step.
    * @param state the new state of the step
    */
-  private void setState(final StepState state) {
+  private synchronized void setState(final StepState state) {
 
     // Do nothing if the state has not changed or if the current state is a
     // final state
@@ -155,15 +164,12 @@ public class StepStateDependencies implements Serializable {
     final StepState previousState = this.stepState;
 
     // If is the root step, there is nothing to wait
-    synchronized (this) {
+    if (this.step.getType() == Step.StepType.ROOT_STEP && state == WAITING) {
+      this.stepState = READY;
+    } else {
 
-      if (this.step.getType() == Step.StepType.ROOT_STEP && state == WAITING) {
-        this.stepState = READY;
-      } else {
-
-        // Set the new state
-        this.stepState = state;
-      }
+      // Set the new state
+      this.stepState = state;
     }
 
     // Log the new state of the step
