@@ -26,7 +26,9 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.CONFIGURED;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.CREATED;
+import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.DONE;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.READY;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WAITING;
 
@@ -52,10 +54,11 @@ import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
  */
 public class StepStateDependencies implements Serializable {
 
-  private static final long serialVersionUID = -5734184849291521186L;
+  private static final long serialVersionUID = 3290646225243643382L;
 
   private final AbstractStep step;
   private volatile StepState stepState = CREATED;
+  private volatile boolean noInput = false;
 
   private final Set<AbstractStep> requiredSteps = new HashSet<>();
   private final Map<Integer, Boolean> dependenciesDone = new HashMap<>();
@@ -105,16 +108,17 @@ public class StepStateDependencies implements Serializable {
     }
 
     final int eventStepNumber = event.getStep().getNumber();
+    final StepState state = event.getState();
 
     // Update the step state ?
     if (eventStepNumber == this.step.getNumber()) {
-      setState(event.getState());
+      setState(state);
       return;
     }
 
     // Check if the dependencies of the step has been updated
     if (this.stepState == WAITING
-        && event.getState().isDoneState()
+        && isDepencenyStepDone(state)
         && this.dependenciesDone.containsKey(eventStepNumber)) {
 
       synchronized (this.dependenciesDone) {
@@ -142,6 +146,16 @@ public class StepStateDependencies implements Serializable {
   }
 
   /**
+   * Test if a dependency step is done.
+   * @param state the state of the dependency step
+   * @return true if the dependency step is done
+   */
+  private boolean isDepencenyStepDone(final StepState state) {
+
+    return this.noInput ? state == DONE : state.isDoneState();
+  }
+
+  /**
    * Set the state of the step.
    * @param state the new state of the step
    */
@@ -162,6 +176,11 @@ public class StepStateDependencies implements Serializable {
 
     // Save current state
     final StepState previousState = this.stepState;
+
+    // After configuration, check if the step has one or more input ports
+    if (state == CONFIGURED) {
+      this.noInput = this.step.getInputPorts().isEmpty();
+    }
 
     // If is the root step, there is nothing to wait
     if (this.step.getType() == Step.StepType.ROOT_STEP && state == WAITING) {
