@@ -35,7 +35,10 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -115,6 +118,7 @@ public final class Settings implements Serializable {
   private static final String OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_KEY =
       MAIN_PREFIX_KEY + "design.remove.replicate.info";
 
+  // TODO To keep ?
   private static final String DEFAULT_FASTQ_FORMAT_KEY =
       MAIN_PREFIX_KEY + "default.fastq.format";
 
@@ -588,21 +592,51 @@ public final class Settings implements Serializable {
   }
 
   /**
-   * Get the format path.
+   * Get the format paths.
    * @return the format path
    */
-  public String getDataFormatPath() {
+  public List<String> getDataFormatPaths() {
 
-    return this.properties.getProperty(DATA_FORMAT_PATH);
+    String value = this.properties.getProperty(DATA_FORMAT_PATH);
+
+    if (value == null) {
+      return Collections.emptyList();
+    }
+
+    List<String> result = new ArrayList<>();
+
+    for (String s : value.split(" ")) {
+
+      if (!s.isEmpty()) {
+        result.add(s);
+      }
+    }
+
+    return result;
   }
 
   /**
    * Get the Galaxy tool path.
    * @return the Galaxy tool path
    */
-  public String getGalaxyToolPath() {
+  public List<String> getGalaxyToolPaths() {
 
-    return this.properties.getProperty(GALAXY_TOOL_PATH);
+    String value = this.properties.getProperty(GALAXY_TOOL_PATH);
+
+    if (value == null) {
+      return Collections.emptyList();
+    }
+
+    List<String> result = new ArrayList<>();
+
+    for (String s : value.split(" ")) {
+
+      if (!s.isEmpty()) {
+        result.add(s);
+      }
+    }
+
+    return result;
   }
 
   /**

@@ -33,7 +33,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -48,11 +47,8 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import com.google.common.base.Joiner;
-
 import fr.ens.biologie.genomique.eoulsan.actions.Action;
 import fr.ens.biologie.genomique.eoulsan.actions.ActionService;
-import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
 
 /**
  * This class is the main class. Check the environment, if Hadoop library is in
@@ -447,46 +443,8 @@ public abstract class Main {
     getLogger().info("Welcome to " + Globals.WELCOME_MSG);
     getLogger().info("Start in " + this.launchModeName + " mode");
 
-    // Show versions
-    getLogger()
-        .info(Globals.APP_NAME + " version: " + Globals.APP_VERSION_STRING);
-    getLogger()
-        .info(Globals.APP_NAME + " revision: " + Globals.APP_BUILD_COMMIT);
-    getLogger()
-        .info(Globals.APP_NAME + " build date: " + Globals.APP_BUILD_DATE);
-
-    // Startup script
-    getLogger().info(Globals.APP_NAME
-        + " Startup script: " + (getLaunchScriptPath() == null
-            ? "(no startup script)" : getLaunchScriptPath()));
-
-    // Eoulsan installation directory
-    getLogger()
-        .info(Globals.APP_NAME
-            + " installation directory: "
-            + (getEoulsanDirectory() == null
-                ? "(installation directory not found)"
-                : getEoulsanDirectory()));
-
-    // Command line arguments
-    final List<String> args = new ArrayList<>();
-    for (String a : getArgs()) {
-      if (a.indexOf(' ') != -1) {
-        args.add("\"" + a + "\"");
-      } else {
-        args.add(a);
-      }
-    }
-
-    getLogger().info(Globals.APP_NAME
-        + " Command line arguments: " + Joiner.on(' ').join(args));
-
-    // Log file
-    getLogger()
-        .info("Log file: " + (this.logFile == null ? "(none)" : this.logFile));
-
-    // Log level
-    getLogger().info("Log level: " + getLogger().getLevel());
+    Infos.log(Level.INFO, Infos.softwareInfos(this));
+    Infos.log(Level.INFO, Infos.commandLineInfo(this));
   }
 
   /**
@@ -494,25 +452,7 @@ public abstract class Main {
    */
   protected void sysInfoLog() {
 
-    // Host
-    getLogger().info("Host: " + SystemUtils.getHostName());
-
-    // Operating system
-    getLogger().info("Operating system name: " + System.getProperty("os.name"));
-    getLogger()
-        .info("Operating system version: " + System.getProperty("os.version"));
-    getLogger().info("Operating system arch: " + System.getProperty("os.arch"));
-
-    // User information
-    getLogger().info("User name: " + System.getProperty("user.name"));
-    getLogger().info("User home: " + System.getProperty("user.home"));
-    getLogger()
-        .info("User current directory: " + System.getProperty("user.dir"));
-
-    // Java version
-    getLogger().info("Java vendor: " + System.getProperty("java.vendor"));
-    getLogger().info("Java vm name: " + System.getProperty("java.vm.name"));
-    getLogger().info("Java version: " + System.getProperty("java.version"));
+    Infos.log(Level.INFO, Infos.systemInfos());
   }
 
   /**

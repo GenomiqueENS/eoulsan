@@ -25,22 +25,21 @@
 package fr.ens.biologie.genomique.eoulsan;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Collections.singletonList;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.StreamHandler;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.DF;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.VersionInfo;
 
-import fr.ens.biologie.genomique.eoulsan.util.LinuxCpuInfo;
-import fr.ens.biologie.genomique.eoulsan.util.LinuxMemInfo;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
+import fr.ens.biologie.genomique.eoulsan.Infos.Info;
 
 /**
  * Main class in Hadoop mode.
@@ -50,10 +49,6 @@ import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 public final class MainHadoop extends Main {
 
   private static final String LAUNCH_MODE_NAME = "hadoop";
-
-  private static final String ROOT_PATH = "/";
-  private static final String VAR_PATH = "/var";
-  private static final String TMP_PATH = "/tmp";
 
   private Configuration conf;
 
@@ -102,103 +97,34 @@ public final class MainHadoop extends Main {
 
     try {
 
-      parseCpuinfo();
-      parseMeminfo();
-
-      df(new File(ROOT_PATH), this.conf);
-      df(new File(TMP_PATH), this.conf);
-      df(new File(VAR_PATH), this.conf);
+      Infos.log(Level.INFO, Infos.cpuInfo());
+      Infos.log(Level.INFO, Infos.memInfo());
+      Infos.log(Level.INFO, Infos.partitionInfo(EoulsanRuntime.getSettings()));
 
       // Log the usage of the hadoop temporary directory partition
       final String hadoopTmp = this.conf.get("hadoop.tmp.dir");
       if (hadoopTmp != null) {
-        df(new File(hadoopTmp), this.conf);
+        Infos.log(Level.INFO, singletonList(Infos.diskFreeInfo(new File(hadoopTmp))));
       }
 
       // Log the usage of the Java temporary directory partition
       final File tmpDir = new File(System.getProperty("java.io.tmpdir"));
       if (tmpDir != null && tmpDir.exists() && tmpDir.isDirectory()) {
-        df(tmpDir, this.conf);
+        Infos.log(Level.INFO, Infos.diskFreeInfo(new File(hadoopTmp)));
       }
-
-      // Log Hadoop information
-      HadoopInfo();
 
     } catch (IOException e) {
       getLogger()
           .severe("Error while getting system information: " + e.getMessage());
     }
 
-  }
-
-  /**
-   * Parse information from /etc/cpuinfo
-   * @throws IOException if an error occurs while parsing information
-   */
-  private static void parseCpuinfo() throws IOException {
-
-    final LinuxCpuInfo cpuinfo = new LinuxCpuInfo();
-
-    final String modelName = cpuinfo.getModelName();
-    final String processor = cpuinfo.getProcessor();
-    final String cpuMHz = cpuinfo.getCPUMHz();
-    final String bogomips = cpuinfo.getBogoMips();
-    final String cores = cpuinfo.getCores();
-
-    getLogger().info(
-        "SYSINFO CPU model name: " + (modelName == null ? "NA" : modelName));
-    getLogger().info("SYSINFO CPU count: "
-        + (processor == null
-            ? "NA" : "" + (Integer.parseInt(processor.trim()) + 1)));
-    getLogger().info("SYSINFO CPU cores: " + (cores == null ? "NA" : cores));
-    getLogger().info(
-        "SYSINFO CPU clock: " + (cpuMHz == null ? "NA" : cpuMHz) + " MHz");
-    getLogger()
-        .info("SYSINFO Bogomips: " + (bogomips == null ? "NA" : bogomips));
-  }
-
-  /**
-   * Parse information from /etc/meminfo
-   * @throws IOException if an error occurs while parsing information
-   */
-  private static void parseMeminfo() throws IOException {
-
-    final LinuxMemInfo meminfo = new LinuxMemInfo();
-    final String memTotal = meminfo.getMemTotal();
-
-    getLogger()
-        .info("SYSINFO Mem Total: " + (memTotal == null ? "NA" : memTotal));
-  }
-
-  /**
-   * Log disk free information.
-   * @param f file
-   * @param conf Hadoop configuration
-   * @throws IOException if an error occurs
-   */
-  private static void df(final File f, final Configuration conf)
-      throws IOException {
-
-    DF df = new DF(f, conf);
-
-    getLogger().info("SYSINFO "
-        + f + " " + StringUtils.sizeToHumanReadable(df.getCapacity())
-        + " capacity, " + StringUtils.sizeToHumanReadable(df.getUsed())
-        + " used, " + StringUtils.sizeToHumanReadable(df.getAvailable())
-        + " available, " + df.getPercentUsed() + "% used");
-
-  }
-
-  /**
-   * Log some Hadoop information.
-   */
-  private static void HadoopInfo() {
-
-    getLogger().info("SYSINFO Hadoop version: " + VersionInfo.getVersion());
-    getLogger().info("SYSINFO Hadoop revision: " + VersionInfo.getRevision());
-    getLogger().info("SYSINFO Hadoop date: " + VersionInfo.getDate());
-    getLogger().info("SYSINFO Hadoop user: " + VersionInfo.getUser());
-    getLogger().info("SYSINFO Hadoop url: " + VersionInfo.getUrl());
+    // Log Hadoop information
+    Infos.log(Level.INFO, new Info("Hadoop version", VersionInfo.getVersion()));
+    Infos.log(Level.INFO,
+        new Info("Hadoop revision", VersionInfo.getRevision()));
+    Infos.log(Level.INFO, new Info("Hadoop date", VersionInfo.getDate()));
+    Infos.log(Level.INFO, new Info("Hadoop user", VersionInfo.getUser()));
+    Infos.log(Level.INFO, new Info("Hadoop url", VersionInfo.getUrl()));
   }
 
   //
