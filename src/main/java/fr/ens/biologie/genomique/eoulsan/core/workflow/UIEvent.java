@@ -6,4 +6,10 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
  * @since 2.3
  */
 public abstract class UIEvent {
+
+  @Override
+  public String toString() {
+    return "UIEvent";
+  }
+
 }

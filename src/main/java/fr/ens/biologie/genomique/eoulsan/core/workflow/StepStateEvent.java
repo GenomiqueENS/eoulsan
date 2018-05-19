@@ -34,6 +34,18 @@ class StepStateEvent {
   }
 
   //
+  // Object methods
+  //
+
+  @Override
+  public String toString() {
+
+    return "StepStateEvent{StepId="
+        + this.step.getId() + ", StepNumber=" + this.step.getNumber()
+        + ", state=" + this.state + "}";
+  }
+
+  //
   // Constructor
   //
 

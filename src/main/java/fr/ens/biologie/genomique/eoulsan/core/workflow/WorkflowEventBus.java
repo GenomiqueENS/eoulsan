@@ -19,6 +19,7 @@ public class WorkflowEventBus {
   private static WorkflowEventBus singleton;
 
   private final EventBus eventBus;
+  private final boolean logEvent = true;
 
   /**
    * Register an listener object.
@@ -83,6 +84,14 @@ public class WorkflowEventBus {
   void postUIEvent(final UIEvent uiEvent) {
 
     post(uiEvent);
+  }
+
+  @Subscribe
+  public void logAllEvents(final Object event) {
+
+    if (this.logEvent) {
+      EoulsanLogger.getLogger().finest("Event: " + event);
+    }
   }
 
   @Subscribe
