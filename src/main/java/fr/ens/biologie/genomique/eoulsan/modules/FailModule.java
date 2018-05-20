@@ -40,7 +40,8 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 
 /**
  * This module is a module that always fails. This module is only used for
@@ -56,6 +57,7 @@ public class FailModule extends AbstractModule {
   public static final String MODULE_NAME = "fail";
 
   private int delay = 0;
+  private DataFormat inputFormat;
 
   @Override
   public String getName() {
@@ -72,7 +74,9 @@ public class FailModule extends AbstractModule {
   @Override
   public InputPorts getInputPorts() {
 
-    return InputPortsBuilder.singleInputPort(DataFormats.DUMMY_TXT);
+    return this.inputFormat == null
+        ? InputPortsBuilder.noInputPort()
+        : InputPortsBuilder.singleInputPort(this.inputFormat);
   }
 
   @Override
@@ -85,6 +89,15 @@ public class FailModule extends AbstractModule {
 
       case "delay":
         this.delay = p.getIntValueGreaterOrEqualsTo(0);
+        break;
+
+      case "input.format":
+        this.inputFormat = DataFormatRegistry.getInstance()
+            .getDataFormatFromGalaxyFormatNameOrNameOrAlias(
+                p.getLowerStringValue());
+        if (this.inputFormat == null) {
+          Modules.badParameterValue(context, p, "Unknown format");
+        }
         break;
 
       default:
