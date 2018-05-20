@@ -7,7 +7,8 @@ import com.google.common.eventbus.Subscribe;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
-import fr.ens.biologie.genomique.eoulsan.data.Data;;
+import fr.ens.biologie.genomique.eoulsan.data.Data;
+import fr.ens.biologie.genomique.eoulsan.util.StringUtils;;
 
 /**
  * This class define a single for the event bus.
@@ -19,7 +20,6 @@ public class WorkflowEventBus {
   private static WorkflowEventBus singleton;
 
   private final EventBus eventBus;
-  private final boolean logEvent = true;
 
   /**
    * Register an listener object.
@@ -84,14 +84,6 @@ public class WorkflowEventBus {
   void postUIEvent(final UIEvent uiEvent) {
 
     post(uiEvent);
-  }
-
-  @Subscribe
-  public void logAllEvents(final Object event) {
-
-    if (this.logEvent) {
-      EoulsanLogger.getLogger().finest("Event: " + event);
-    }
   }
 
   @Subscribe
