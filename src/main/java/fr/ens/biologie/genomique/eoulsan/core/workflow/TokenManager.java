@@ -29,7 +29,6 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.Globals.STEP_RESULT_EXTENSION;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.ABORTED;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.DONE;
-import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.FAILED;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.READY;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.DESIGN_STEP;
@@ -1001,8 +1000,6 @@ public class TokenManager implements Runnable {
                 // Send end of step tokens
                 sendEndOfStepTokens();
               }
-            } else {
-              eventBus.postStepStateChange(this.step, FAILED);
             }
           } else {
 
