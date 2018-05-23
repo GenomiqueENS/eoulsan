@@ -89,7 +89,7 @@ public class SparseExpressionMatrix extends AbstractExpressionMatrix {
         this.values.subMap(getCellId(rowId, 0), getCellId(rowId + 1, 0));
 
     if (subMap.isEmpty()) {
-      return nCopies(colCount, Double.valueOf(this.defaultValue));
+      return nCopies(colCount, this.defaultValue);
     }
 
     final boolean columnRemoved = this.columnCount != this.columnIndex.size();

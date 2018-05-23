@@ -443,8 +443,8 @@ public class DESeq2 {
   private String[] createNormDiffanaCommandLine(
       final String deseq2DesignFileName, final String contrastFilename) {
 
-    final List<String> command = new ArrayList<>();
-    command.addAll(asList(booleanParameter(normFig), booleanParameter(diffana),
+    final List<String> command = new ArrayList<>(
+      asList(booleanParameter(normFig), booleanParameter(diffana),
         booleanParameter(diffanaFig)));
 
     // Define contrast file
@@ -462,7 +462,7 @@ public class DESeq2 {
         this.statisticTest.toDESeq2Value(), contrastFilename,
         this.stepId + "_"));
 
-    return command.toArray(new String[command.size()]);
+    return command.toArray(new String[0]);
   }
 
   /**

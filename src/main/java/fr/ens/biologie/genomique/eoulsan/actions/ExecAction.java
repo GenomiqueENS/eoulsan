@@ -85,7 +85,7 @@ public class ExecAction extends AbstractAction {
 
       // parse the command line arguments
       final CommandLine line = parser.parse(options,
-          arguments.toArray(new String[arguments.size()]), true);
+          arguments.toArray(new String[0]), true);
 
       // Help option
       if (line.hasOption("help")) {

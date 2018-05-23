@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -30,7 +31,7 @@ public abstract class AbstractExpressionMatrixTest {
     assertEquals(1, matrix.getRowCount());
     assertTrue(matrix.containsRow("row1"));
     assertFalse(matrix.containsRow("row2"));
-    assertEquals(Arrays.asList("row1"), matrix.getRowNames());
+    assertEquals(Collections.singletonList("row1"), matrix.getRowNames());
     assertEquals(0, matrix.size());
 
     matrix.addRow("row2");

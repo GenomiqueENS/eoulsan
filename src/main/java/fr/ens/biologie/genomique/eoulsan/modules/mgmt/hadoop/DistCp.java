@@ -339,7 +339,7 @@ public class DistCp implements Tool {
         splits.add(new FileSplit(src, pos, cbrem, (String[]) null));
       }
 
-      return splits.toArray(new FileSplit[splits.size()]);
+      return splits.toArray(new FileSplit[0]);
     }
 
     /**

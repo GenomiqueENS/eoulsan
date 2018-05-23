@@ -47,7 +47,7 @@ public class SampleMetadataTest {
     assertNull(sm.getReads());
     // test setReads
     sm.setReads(Collections.singletonList("toto"));
-    assertEquals(Arrays.asList("toto"), sm.getReads());
+    assertEquals(Collections.singletonList("toto"), sm.getReads());
     // test containsReads
     assertTrue(sm.containsReads());
 

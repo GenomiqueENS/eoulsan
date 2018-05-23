@@ -237,7 +237,7 @@ public class ITCommandExecutor {
 
     // Extract environment variable from current context and configuration test
     this.environmentVariables =
-        environmentVariables.toArray(new String[environmentVariables.size()]);
+        environmentVariables.toArray(new String[0]);
     this.cmdLineFile = new File(this.outputTestDirectory, CMDLINE_FILENAME);
 
     this.durationMax = durationMax;

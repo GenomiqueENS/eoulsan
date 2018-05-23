@@ -170,7 +170,7 @@ public class DockerMapperExecutor implements MapperExecutor {
 
       final File nullFile = new File("/dev/null");
       final File finalErrFile = stdErrFile == null ? nullFile : stdErrFile;
-      final File[] files = newFilesUsed.toArray(new File[newFilesUsed.size()]);
+      final File[] files = newFilesUsed.toArray(new File[0]);
 
       this.process = dockerConnection.start(
           convertCommand(command, this.stdoutFile, redirectStderr),

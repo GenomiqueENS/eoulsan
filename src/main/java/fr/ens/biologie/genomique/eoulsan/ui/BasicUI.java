@@ -150,7 +150,7 @@ public class BasicUI extends AbstractUI {
       return;
     }
 
-    System.out.printf("Step "
+    System.out.print("Step "
         + step.getId() + " " + this.stepState.get(step).toString() + " note: "
         + note);
   }

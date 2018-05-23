@@ -121,14 +121,13 @@ public class ToolExecutor {
    */
   private static File[] toArray(Collection<File> collection, File... files) {
 
-    final List<File> list = new ArrayList<>();
-    list.addAll(collection);
+    final List<File> list = new ArrayList<>(collection);
 
     if (files != null) {
       list.addAll(Arrays.asList(files));
     }
 
-    return list.toArray(new File[list.size()]);
+    return list.toArray(new File[0]);
   }
 
   //

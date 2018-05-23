@@ -394,7 +394,7 @@ public class FastQCModule extends AbstractModule {
 
     // Create the output report
     new HTMLReportArchive(seqFile,
-        modules.toArray(new QCModule[modules.size()]), reportTempFile);
+        modules.toArray(new QCModule[0]), reportTempFile);
 
     // Report zip filename
     final String baseFilename =

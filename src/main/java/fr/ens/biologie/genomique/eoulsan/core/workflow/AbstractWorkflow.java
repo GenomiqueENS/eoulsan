@@ -166,8 +166,7 @@ public abstract class AbstractWorkflow implements Workflow {
   @Override
   public Set<Step> getSteps() {
 
-    final Set<Step> result = new HashSet<>();
-    result.addAll(this.steps.keySet());
+    final Set<Step> result = new HashSet<>(this.steps.keySet());
 
     return Collections.unmodifiableSet(result);
   }

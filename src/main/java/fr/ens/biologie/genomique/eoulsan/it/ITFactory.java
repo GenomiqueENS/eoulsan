@@ -183,12 +183,11 @@ public class ITFactory {
   private Map<String, File> collectTestsDirectoryToExecute()
       throws EoulsanException, IOException {
 
-    // final List<IT> tests = new ArrayList<>();
     final Map<String, File> result = new HashMap<>();
-    final List<File> testsToExecuteDirectories = new ArrayList<>();
 
     // Collect tests from a file with names tests
-    testsToExecuteDirectories.addAll(readTestListFile());
+    final List<File> testsToExecuteDirectories =
+      new ArrayList<>(readTestListFile());
 
     // Add the selected test if set
     if (this.selectedTest != null) {

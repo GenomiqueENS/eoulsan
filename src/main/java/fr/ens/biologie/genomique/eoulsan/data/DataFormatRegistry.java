@@ -631,13 +631,12 @@ public class DataFormatRegistry {
 
     try {
 
-      final List<DataFormat> formats = new ArrayList<>();
-
       // Load XML formats from the Jar
       DataFormatClassPathLoader formatClassLoader =
           new DataFormatClassPathLoader();
       formatClassLoader.reload();
-      formats.addAll(formatClassLoader.loadAllResources());
+      final List<DataFormat> formats =
+        new ArrayList<>(formatClassLoader.loadAllResources());
 
       // Load XML formats from external resources (files...)
       DataFormatFileResourceLoader formatFileLoader =

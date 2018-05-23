@@ -191,7 +191,7 @@ public class AWSElasticMapReduceExecModule extends AbstractModule {
     eoulsanArgsList.add("hdfs:///test");
 
     final String[] eoulsanArgs =
-        eoulsanArgsList.toArray(new String[eoulsanArgsList.size()]);
+        eoulsanArgsList.toArray(new String[0]);
 
     // AWS builder
     final AWSElasticMapReduceBuilder builder = new AWSElasticMapReduceBuilder();

@@ -267,7 +267,7 @@ public class MultiQCModule extends AbstractModule {
     final int exitValue = process.execute(
         createMultiQCOptions(inputDirectory, multiQCReportFile, projectName),
         executionDirectory, temporaryDirectory, stdoutFile, stderrFile,
-        filesUsed.toArray(new File[filesUsed.size()]));
+        filesUsed.toArray(new File[0]));
 
     if (exitValue > 0) {
       throw new EoulsanException("Invalid exit code of MultiQC: " + exitValue);

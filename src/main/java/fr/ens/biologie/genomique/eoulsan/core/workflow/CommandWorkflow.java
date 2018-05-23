@@ -871,8 +871,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
         // Remove indirect dependencies of the step to the set of the new
         // dependencies
-        Set<AbstractStep> newDependencies = new HashSet<>();
-        newDependencies.addAll(steps);
+        Set<AbstractStep> newDependencies = new HashSet<>(steps);
         newDependencies.removeAll(dependencies);
 
         // Remove steps after the current step

@@ -359,7 +359,7 @@ public class IlluminaReadIdTest {
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#ATCACG/1");
     assertTrue(ii.isSequenceIndexField());
     assertEquals("ATCACG", ii.getSequenceIndex());
-    assertEquals(Arrays.asList("ATCACG"), ii.getSequenceIndexList());
+    assertEquals(Collections.singletonList("ATCACG"), ii.getSequenceIndexList());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
     assertFalse(ii.isSequenceIndexField());

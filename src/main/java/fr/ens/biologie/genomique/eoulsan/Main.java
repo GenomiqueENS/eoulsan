@@ -320,7 +320,7 @@ public abstract class Main {
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
-    final String[] argsArray = this.args.toArray(new String[this.args.size()]);
+    final String[] argsArray = this.args.toArray(new String[0]);
 
     int argsOptions = 0;
 
