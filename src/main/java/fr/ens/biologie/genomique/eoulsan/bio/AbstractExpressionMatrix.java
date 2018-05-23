@@ -150,7 +150,7 @@ public abstract class AbstractExpressionMatrix implements ExpressionMatrix {
             while (values.hasNext()) {
 
               this.nextValue = values.next();
-              if (this.nextValue.getValue().doubleValue() != 0.0) {
+              if (this.nextValue.getValue() != 0.0) {
                 return true;
               }
             }

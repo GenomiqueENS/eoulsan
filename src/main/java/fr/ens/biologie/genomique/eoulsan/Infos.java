@@ -714,7 +714,7 @@ public class Infos {
 
     Set<Info> set = new LinkedHashSet<>();
 
-    for (String p : new HashSet<String>(Arrays.asList("/", "/tmp", "/var",
+    for (String p : new HashSet<>(Arrays.asList("/", "/tmp", "/var",
         settings.getTempDirectory(), settings.getExecutablesTempDirectory()))) {
 
       if (p != null) {

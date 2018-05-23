@@ -197,7 +197,7 @@ public class SparseExpressionMatrix extends AbstractExpressionMatrix {
     Integer rowId = this.rowNames.get(rowName);
     if (rowId == null) {
       addRow(rowName);
-      rowId = Integer.valueOf(this.rowCount - 1);
+      rowId = this.rowCount - 1;
     }
 
     // Get the column id
@@ -367,7 +367,7 @@ public class SparseExpressionMatrix extends AbstractExpressionMatrix {
   @SuppressWarnings("unused")
   private static int getRowId(Long cellId) {
 
-    return (int) (cellId.longValue() >> 32);
+    return (int) (cellId >> 32);
   }
 
   private static int getColumnId(Long cellId) {
