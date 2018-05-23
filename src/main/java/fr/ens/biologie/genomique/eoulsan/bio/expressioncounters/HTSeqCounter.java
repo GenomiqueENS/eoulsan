@@ -651,7 +651,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
    * Assign features to SAM entries.
    * @param samRecord1 first entry
    * @param samRecord2 second entry
-   * @param assignment the value of the assignment
+   * @param features ambiguous features of the assignment
    */
   private void assignment(final SAMRecord samRecord1,
       final SAMRecord samRecord2, final Set<String> features) {

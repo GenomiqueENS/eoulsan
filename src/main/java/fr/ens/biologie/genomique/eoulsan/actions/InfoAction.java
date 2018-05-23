@@ -145,7 +145,7 @@ public class InfoAction extends AbstractInfoAction {
 
   /**
    * Get the maximal length of the key of the Info objects in a map.
-   * @param infos the info object
+   * @param sections info sections
    * @return the maximal length of the key of the Info objects
    */
   private static int maxLengthKey(Map<String, List<Info>> sections) {

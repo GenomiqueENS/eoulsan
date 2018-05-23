@@ -304,7 +304,7 @@ public class MultiQCModule extends AbstractModule {
 
   /**
    * Creating MultiQC command line.
-   * @param inputDirectories input directories
+   * @param inputDirectory input directory
    * @param multiQCReportFile output report
    * @param projectName project name
    * @return a list with the MultiQC arguments

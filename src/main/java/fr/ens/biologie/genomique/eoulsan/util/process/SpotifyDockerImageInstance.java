@@ -461,7 +461,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
 
   /**
    * Convert a file path to a mount point path if the file is on a NFS server.
-   * @param files the file to convert
+   * @param file the file to convert
    * @return a converted file
    * @throws IOException if mount of a file cannot be found
    */

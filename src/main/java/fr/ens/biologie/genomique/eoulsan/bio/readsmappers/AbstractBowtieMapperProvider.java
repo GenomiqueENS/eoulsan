@@ -300,7 +300,7 @@ public abstract class AbstractBowtieMapperProvider
 
   /**
    * Get the index argument for bowtie from the archive index directory path
-   * @param archiveIndexDir archive index directory
+   * @param mapping mapping object
    * @return the Bowtie index argument
    * @throws IOException if an error occurs when getting directory path
    */

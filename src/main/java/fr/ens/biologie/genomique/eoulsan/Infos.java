@@ -346,7 +346,7 @@ public class Infos {
   /**
    * Log a list of Info.
    * @param level Log level
-   * @param listInfos the list of info to log
+   * @param info info to log
    */
   public static void log(final Level level, final Info info) {
 

@@ -374,7 +374,7 @@ public class FastQCModule extends AbstractModule {
    * @param modules the modules
    * @param seqFile the sequence file
    * @param htmlReportFile the report file
-   * @param zipReportFile the report file
+   * @param zipOutputFile the report file
    * @param tempDirectory temporary directory
    * @throws IOException Signals that an I/O exception has occurred.
    * @throws XMLStreamException the XML stream exception
