@@ -37,9 +37,6 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.io.comparators.AbstractComparatorWithBloomFilter;
-import fr.ens.biologie.genomique.eoulsan.io.comparators.FastqComparator;
-
 public class FastqComparatorTest {
 
   private final File dir =

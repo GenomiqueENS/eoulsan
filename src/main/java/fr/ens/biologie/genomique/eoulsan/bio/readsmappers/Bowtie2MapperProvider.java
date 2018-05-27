@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
@@ -34,77 +35,61 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 
 /**
  * This class define a wrapper on the Bowtie mapper. Includes only specific
- * methods of bowtie
- * @since 1.0
+ * methods of bowtie2
+ * @since 1.2
  * @author Laurent Jourdren
  */
-public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
+public class Bowtie2MapperProvider extends AbstractBowtieMapperProvider {
 
-  public static final String MAPPER_NAME = "Bowtie";
-  private static final String DEFAULT_PACKAGE_VERSION = "0.12.9";
-  public static final String DEFAULT_ARGUMENTS = "--best -k 2";
+  public static final String MAPPER_NAME = "Bowtie2";
+  private static final String DEFAULT_VERSION = "2.0.6";
+  public static final String DEFAULT_ARGUMENTS = "-k 2";
 
-  private static final Version FIRST_FLAVORED_VERSION = new Version(1, 1, 0);
-  private static final String MAPPER_EXECUTABLE = "bowtie";
-  private static final String MAPPER_NEW_EXECUTABLE = "bowtie-align";
-  private static final String INDEXER_EXECUTABLE = "bowtie-build";
+  private static final Version FIRST_FLAVORED_VERSION = new Version(2, 2, 0);
+  private static final String MAPPER_EXECUTABLE = "bowtie2-align";
+  private static final String INDEXER_EXECUTABLE = "bowtie2-build";
 
-  private static final String EXTENSION_INDEX_FILE = ".rev.1.ebwt";
+  private static final String EXTENSION_INDEX_FILE = ".rev.1.bt2";
 
   @Override
-  public String getMapperName() {
+  public String getName() {
 
     return MAPPER_NAME;
   }
 
   @Override
-  protected String getDefaultPackageVersion() {
+  public String getDefaultVersion() {
 
-    return DEFAULT_PACKAGE_VERSION;
+    return DEFAULT_VERSION;
   }
 
   @Override
-  protected String getExtensionIndexFile() {
+  protected String getExtensionIndexFile(final EntryMapping mapping) {
 
     return EXTENSION_INDEX_FILE
-        + (isLongIndexFlavor(FIRST_FLAVORED_VERSION) ? "l" : "");
+        + (isLongIndexFlavor(mapping, FIRST_FLAVORED_VERSION) ? "l" : "");
   }
 
   @Override
   public DataFormat getArchiveFormat() {
 
-    return DataFormats.BOWTIE_INDEX_ZIP;
+    return DataFormats.BOWTIE2_INDEX_ZIP;
   }
 
   @Override
-  protected String getIndexerExecutable() {
+  public List<String> getIndexerExecutables(
+      final MapperInstance mapperInstance) {
 
-    return flavoredBinary(INDEXER_EXECUTABLE, FIRST_FLAVORED_VERSION);
+    return Collections.singletonList(
+        flavoredBinary(mapperInstance.getVersion(), mapperInstance.getFlavor(),
+            INDEXER_EXECUTABLE, FIRST_FLAVORED_VERSION));
   }
 
   @Override
-  public String getMapperExecutableName() {
+  public String getMapperExecutableName(final MapperInstance mapperInstance) {
 
-    return flavoredBinary(MAPPER_EXECUTABLE,
-        MAPPER_NEW_EXECUTABLE, FIRST_FLAVORED_VERSION);
-  }
-
-  protected static final String getBowtieQualityArgument(
-      final FastqFormat format) {
-
-    switch (format) {
-
-    case FASTQ_SOLEXA:
-      return "--solexa-quals";
-
-    case FASTQ_ILLUMINA:
-    case FASTQ_ILLUMINA_1_5:
-      return "--phred64-quals";
-
-    case FASTQ_SANGER:
-    default:
-      return "--phred33-quals";
-    }
+    return flavoredBinary(mapperInstance.getVersion(),
+        mapperInstance.getFlavor(), MAPPER_EXECUTABLE, FIRST_FLAVORED_VERSION);
   }
 
   @Override
@@ -112,9 +97,30 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
     return DEFAULT_ARGUMENTS;
   }
 
+  protected static final String getBowtieQualityArgument(
+      final FastqFormat format) throws Exception {
+
+    switch (format) {
+
+    case FASTQ_SOLEXA:
+      // TODO BOWTIE do not support solexa quality scores
+      // return "--solexa-quals";
+      throw new Exception(
+          "Format " + format.getName() + " not available with bowtie2");
+
+    case FASTQ_ILLUMINA:
+    case FASTQ_ILLUMINA_1_5:
+      return "--phred64";
+
+    case FASTQ_SANGER:
+    default:
+      return "--phred33";
+    }
+  }
+
   @Override
-  protected List<String> createCommonArgs(final String bowtiePath,
-      final String index) {
+  protected List<String> createCommonArgs(final EntryMapping mapping,
+      final String bowtiePath, final String index) {
 
     final List<String> result = new ArrayList<>();
 
@@ -122,13 +128,13 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
     result.add(bowtiePath);
 
     // Set the user options
-    result.addAll(getListMapperArguments());
+    result.addAll(mapping.getMapperArguments());
 
-    if (!isMultipleInstancesEnabled()) {
+    if (!mapping.isMultipleInstancesEnabled()) {
 
       // Set the number of threads to use
       result.add("-p");
-      result.add(getThreadsNumber() + "");
+      result.add(mapping.getThreadNumber() + "");
     } else {
 
       // Enable memory mapped index
@@ -139,15 +145,10 @@ public class BowtieReadsMapper extends AbstractBowtieReadsMapper {
     result.add(("-q"));
 
     // Set the quality format
-    result.add(bowtieQualityArgument());
-
-    // Output in SAM format
-    result.add("-S");
-
-    // Quiet mode
-    result.add("--quiet");
+    result.add(bowtieQualityArgument(mapping));
 
     // Genome index name
+    result.add("-x");
     result.add(index);
 
     return result;

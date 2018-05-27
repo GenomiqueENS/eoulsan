@@ -112,8 +112,8 @@ public final class Globals {
 
   /** Platforms where the application is available. */
   public static final Set<String> AVAILABLE_BINARY_ARCH =
-      Collections.unmodifiableSet(new HashSet<>(
-          Arrays.asList(new String[] {"linux\tamd64", "linux\tx86_64"})));
+      Collections.unmodifiableSet(
+          new HashSet<>(Arrays.asList("linux\tamd64", "linux\tx86_64")));
 
   /** Platforms alias. */
   public static final Map<String, String> AVAILABLE_BINARY_ARCH_ALIAS =
@@ -224,6 +224,9 @@ public final class Globals {
 
   /** Output tree type. */
   public static final String OUTPUT_TREE_TYPE_DEFAULT = "step";
+
+  /** Save workflow image. */
+  public static final boolean SAVE_WORKFLOW_IMAGE_DEFAULT = true;
 
   //
   // Files encoding

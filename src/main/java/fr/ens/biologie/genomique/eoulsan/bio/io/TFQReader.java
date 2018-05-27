@@ -49,7 +49,6 @@ public class TFQReader implements ReadSequenceReader {
 
   private final boolean reuse;
   private ReadSequence result = null;
-  private final StringBuilder sb = new StringBuilder();
 
   private boolean end = false;
   private boolean nextCallDone = true;
@@ -100,7 +99,6 @@ public class TFQReader implements ReadSequenceReader {
         return true;
       }
 
-      this.sb.setLength(0);
       this.end = true;
 
       return false;

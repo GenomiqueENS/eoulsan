@@ -24,12 +24,11 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters;
 
-import htsjdk.samtools.SAMRecord;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import htsjdk.samtools.SAMRecord;
 
 /**
  * This alignments filter keep a given number of the first alignments for a

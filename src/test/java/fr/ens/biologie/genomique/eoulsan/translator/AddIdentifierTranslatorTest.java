@@ -13,7 +13,8 @@ import fr.ens.biologie.genomique.eoulsan.translators.MultiColumnTranslator;
 public class AddIdentifierTranslatorTest {
 
   private static final String[] ARRAY_FIELD = {"Col1", "Col2", "Col3", "Col4"};
-  MultiColumnTranslator transl = new MultiColumnTranslator(ARRAY_FIELD);
+  private final MultiColumnTranslator transl =
+      new MultiColumnTranslator(ARRAY_FIELD);
 
   @Test
   public void testAddIdentifierTranslator() {

@@ -136,7 +136,7 @@ public class UnmodifiableSampleMetadataTest {
     assertNull(usm.getReads());
     // test setReads
     sm.setReads(Collections.singletonList("toto"));
-    assertEquals(Arrays.asList(new String[] {"toto"}), usm.getReads());
+    assertEquals(Arrays.asList("toto"), usm.getReads());
     // test containsReads
     assertTrue(usm.containsReads());
 

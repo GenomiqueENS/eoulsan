@@ -95,11 +95,10 @@ public class GalaxyToolInterpreterTest {
   /**
    * Test tool interpreter, it read the extra file. To set a test, it give XML
    * name file, parameter value, command line expected.
-   * @throws FileNotFoundException the XML file is not found
    * @throws Exception if an error occurs during setting or execution on a test
    */
   @Test
-  public void testToolInterpreter() throws FileNotFoundException, Exception {
+  public void testToolInterpreter() throws Exception {
 
     // Extract extra file, contains key=value
     final InputStream srcTestsSetting =
@@ -270,7 +269,7 @@ public class GalaxyToolInterpreterTest {
 
       // Extract instance on toolData which contains all data useful from XML
       // file
-      final ToolInfo toolData = interpreter.getToolData();
+      final ToolInfo toolData = interpreter.getToolInfo();
 
       // Check input data names
       int inputCount = 0;

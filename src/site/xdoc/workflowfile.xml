@@ -251,7 +251,7 @@
         <table>
           <tr><th>Attribute</th><th>Type</th><th>Default value</th><th>Description</th></tr>
           <tr><td>id</td><td>string</td><td>The name of the module to execute</td><td>This value define the identifier of the step. The id value must be unique in a workflow. The identifier is used to named output filenames of the step</td></tr>
-          <tr><td>discardoutput</td><td>string</td><td>false</td><td>When this attribute is set to <b>true</b>, the output files of the step will be saved in the working directory instead of the output directory of the workflow and will be removed at the end of the workflow if successful. If you use <b>asap</b> instead of <b>true</b>, the output files of the step will be removed once all the steps that require the outputs will be completed.</td></tr>
+          <tr><td>discardoutput</td><td>string</td><td>no</td><td>When this attribute is set to <b>success</b>, the output files of the step will be saved in the working directory instead of the output directory of the workflow and will be removed at the end of the workflow if successful. If you use <b>asap</b> instead of <b>success</b>, the output files of the step will be removed once all the steps that require the outputs will be completed.</td></tr>
           <tr><td>skip</td><td>boolean</td><td>false</td><td>The <tt>skip</tt> attribute allow to skip a step if its value is set to true</td></tr>
           <tr><td>requiredprocs</td><td>integer</td><td>-1</td><td>The <tt>requiredprocs</tt> attribute allow to set the number of processors to use by the step. 
             By default one processor will be used to process each task of a step (except for steps that in <b>local mode</b> that handle their parallelization like the mapping step).</td></tr>

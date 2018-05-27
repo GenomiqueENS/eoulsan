@@ -29,9 +29,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import htsjdk.samtools.SAMLineParser;
-import htsjdk.samtools.SAMRecord;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +38,8 @@ import org.junit.Test;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.bio.SAMUtils;
-import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.QualityReadAlignmentsFilter;
+import htsjdk.samtools.SAMLineParser;
+import htsjdk.samtools.SAMRecord;
 
 /**
  * This class is a JUnit test class to test the class

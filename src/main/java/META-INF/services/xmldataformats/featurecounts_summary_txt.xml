@@ -1,0 +1,12 @@
+<dataformat>
+  <name>featurecounts_summary_txt</name>
+  <description>Output text file of feature which include a summary of number of genes assigned / unassigned</description>
+  <alias>fc_summary</alias>
+  <prefix>featurecounts</prefix>
+  <extensions>
+   <extension default="true">.summary</extension>
+  </extensions>
+  <galaxy>
+    <formatname>featurecountSummary</formatname>
+  </galaxy>
+</dataformat>

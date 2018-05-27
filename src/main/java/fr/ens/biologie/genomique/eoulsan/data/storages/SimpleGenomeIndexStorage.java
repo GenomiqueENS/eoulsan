@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.SequenceReadsMapper;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperInstance;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 
@@ -93,23 +93,22 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
   //
 
   @Override
-  public DataFile get(final SequenceReadsMapper mapper,
+  public DataFile get(final MapperInstance mapperInstance,
       final GenomeDescription genome,
       final Map<String, String> additionalDescription) {
 
-    checkNotNull(mapper, "Mapper is null");
-    checkNotNull(mapper, "Genome description is null");
+    checkNotNull(mapperInstance, "Mapper is null");
+    checkNotNull(genome, "Genome description is null");
     checkNotNull(additionalDescription, "additionalDescription is null");
 
-    final IndexEntry entry =
-        this.entries.get(createKey(mapper, genome, additionalDescription));
+    final IndexEntry entry = this.entries
+        .get(createKey(mapperInstance, genome, additionalDescription));
 
     return entry == null ? null : entry.file;
   }
 
   @Override
-  public void put(final SequenceReadsMapper mapper,
-      final GenomeDescription genome,
+  public void put(final MapperInstance mapper, final GenomeDescription genome,
       final Map<String, String> additionalDescription,
       final DataFile indexArchive) {
 
@@ -159,7 +158,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
   // Sum creation method
   //
 
-  private IndexEntry createIndexEntry(final SequenceReadsMapper mapper,
+  private IndexEntry createIndexEntry(final MapperInstance mapper,
       final GenomeDescription genome,
       final Map<String, String> additionalDescription) {
 
@@ -167,7 +166,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
     entry.genomeName = genome.getGenomeName().trim();
     entry.sequences = genome.getSequenceCount();
     entry.length = genome.getGenomeLength();
-    entry.mapperName = mapper.getMapperName().toLowerCase().trim();
+    entry.mapperName = mapper.getName().toLowerCase().trim();
 
     final Map<String, String> md5Map =
         createMD5SumMap(mapper, genome, additionalDescription);
@@ -185,15 +184,14 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
   }
 
   private static Map<String, String> createMD5SumMap(
-      final SequenceReadsMapper mapper, final GenomeDescription genome,
+      final MapperInstance mapperInstance, final GenomeDescription genome,
       final Map<String, String> additionalDescription) {
 
     final LinkedHashMap<String, String> map = new LinkedHashMap<>();
 
-    map.put("mapper.name", nullToEmpty(mapper.getMapperName()));
-    map.put("mapper.version",
-        nullToEmpty(mapper.getMapperVersionToUse()).trim());
-    map.put("mapper.flavor", nullToEmpty(mapper.getMapperFlavor()).trim());
+    map.put("mapper.name", nullToEmpty(mapperInstance.getName()));
+    map.put("mapper.version", nullToEmpty(mapperInstance.getVersion()).trim());
+    map.put("mapper.flavor", nullToEmpty(mapperInstance.getFlavor()).trim());
     map.put("genome.md5sum", nullToEmpty(genome.getMD5Sum()).trim());
 
     // Add sorted additional description
@@ -337,12 +335,12 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
   // Other methods
   //
 
-  private static String createKey(final SequenceReadsMapper mapper,
+  private static String createKey(final MapperInstance mapperInstance,
       final GenomeDescription genome,
       final Map<String, String> additionalDescription) {
 
-    return createKey(mapper.getMapperName(),
-        createMD5Sum(createMD5SumMap(mapper, genome, additionalDescription)));
+    return createKey(mapperInstance.getName(), createMD5Sum(
+        createMD5SumMap(mapperInstance, genome, additionalDescription)));
   }
 
   private static String createKey(final String mapperName,
@@ -365,9 +363,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
 
     try {
       return new SimpleGenomeIndexStorage(dir);
-    } catch (IOException e) {
-      return null;
-    } catch (NullPointerException e) {
+    } catch (IOException | NullPointerException e) {
       return null;
     }
   }

@@ -103,7 +103,7 @@ public class DataFormatRegistry {
     protected XMLDataFormat load(final InputStream in, final String source)
         throws IOException, EoulsanException {
 
-      return new XMLDataFormat(in);
+      return new XMLDataFormat(in, source);
     }
 
     /**
@@ -163,7 +163,7 @@ public class DataFormatRegistry {
             "The input stream of the XML DataFormat source is null: " + source);
       }
 
-      return new XMLDataFormat(in);
+      return new XMLDataFormat(in, source);
     }
 
     public DataFormatClassPathLoader() {
@@ -440,13 +440,13 @@ public class DataFormatRegistry {
   }
 
   /**
-   * Get DataFormats from an toolshed Galaxy name extension.
-   * @param name Galaxy name extension.
+   * Get DataFormat from an Galaxy format name.
+   * @param formatName Galaxy name extension.
    * @return DataFormat
    */
-  public DataFormat getDataFormatFromToolshedExtension(final String name) {
+  public DataFormat getDataFormatFromGalaxyFormatName(final String formatName) {
 
-    if (name == null || name.isEmpty()) {
+    if (formatName == null || formatName.isEmpty()) {
       return null;
     }
 
@@ -454,9 +454,10 @@ public class DataFormatRegistry {
     for (DataFormat df : this.formats) {
 
       // Parse Galaxy tool extension
-      for (String ext : df.getGalaxyToolExtensions()) {
+      for (String galaxyFormatName : df.getGalaxyFormatNames()) {
 
-        if (name.toLowerCase(Globals.DEFAULT_LOCALE).equals(ext)) {
+        if (formatName.toLowerCase(Globals.DEFAULT_LOCALE)
+            .equals(galaxyFormatName)) {
           return df;
         }
       }
@@ -477,15 +478,15 @@ public class DataFormatRegistry {
     return result != null ? result : getDataFormatFromAlias(name);
   }
 
-
   /**
-   * Get a DataFormat from its alias.
+   * Get a DataFormat from its Galaxy format name or its name or alias.
    * @param name the name of the DataFormat to get
    * @return a DataFormat if found or null
    */
-  public DataFormat getDataFormatFromToolshedExtensionOrNameOrAlias(final String name) {
+  public DataFormat getDataFormatFromGalaxyFormatNameOrNameOrAlias(
+      final String name) {
 
-    DataFormat result = getDataFormatFromToolshedExtension(name);
+    DataFormat result = getDataFormatFromGalaxyFormatName(name);
 
     return result != null ? result : getDataFormatFromNameOrAlias(name);
   }

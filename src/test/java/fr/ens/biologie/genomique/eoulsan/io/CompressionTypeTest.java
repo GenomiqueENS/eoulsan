@@ -28,8 +28,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
-
 public class CompressionTypeTest {
 
   @Test

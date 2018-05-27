@@ -40,7 +40,6 @@ import org.junit.Test;
 
 import com.google.common.base.Strings;
 
-import fr.ens.biologie.genomique.eoulsan.io.FileConcatInputStream;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 
 public class FileConcatInputStreamTest {

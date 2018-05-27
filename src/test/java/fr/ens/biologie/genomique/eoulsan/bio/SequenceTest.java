@@ -33,9 +33,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.bio.Alphabets;
-import fr.ens.biologie.genomique.eoulsan.bio.Sequence;
-
 public class SequenceTest {
 
   @Test
@@ -432,11 +429,9 @@ public class SequenceTest {
   @Test
   public void testReverseString() {
 
-    assertNull(
-            Sequence.reverse(null));
+    assertNull(Sequence.reverse(null));
 
-    assertEquals("CGTA",
-            Sequence.reverse("ATGC"));
+    assertEquals("CGTA", Sequence.reverse("ATGC"));
   }
 
   @Test
@@ -454,14 +449,12 @@ public class SequenceTest {
   @Test
   public void testComplementString() {
 
-    assertNull(
-      Sequence.complement(null, Alphabets.AMBIGUOUS_DNA_ALPHABET));
+    assertNull(Sequence.complement(null, Alphabets.AMBIGUOUS_DNA_ALPHABET));
     assertNull(Sequence.complement("ATGC", null));
 
     assertEquals("GCAT",
-      Sequence.complement("CGTA", Alphabets.AMBIGUOUS_DNA_ALPHABET));
+        Sequence.complement("CGTA", Alphabets.AMBIGUOUS_DNA_ALPHABET));
   }
-
 
   @Test
   public void testReverseComplement() {

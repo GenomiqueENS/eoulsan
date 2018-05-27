@@ -51,7 +51,6 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
   private long pos;
   private long end;
   private SplitLineReader in;
-  private FSDataInputStream fileIn;
   private Seekable filePosition;
   private int maxLineLength;
   private LongWritable key;
@@ -78,7 +77,7 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
 
     // open the file and seek to the start of the split
     final FileSystem fs = file.getFileSystem(job);
-    fileIn = fs.open(file);
+    final FSDataInputStream fileIn = fs.open(file);
 
     CompressionCodec codec = new CompressionCodecFactory(job).getCodec(file);
     if (null != codec) {

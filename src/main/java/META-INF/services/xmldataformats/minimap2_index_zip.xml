@@ -1,0 +1,11 @@
+<dataformat>
+  <name>minimap2_index_zip</name>
+  <description>minimap2 index zipped format</description>
+  <prefix>minimap2index</prefix>
+  <onefileperanalysis>true</onefileperanalysis>
+  <content-type>application/zip</content-type>
+  <generator mapperName="minimap2">fr.ens.biologie.genomique.eoulsan.modules.generators.GenomeMapperIndexGeneratorModule</generator>
+  <extensions>
+    <extension default="true">.zip</extension>
+  </extensions>
+</dataformat>

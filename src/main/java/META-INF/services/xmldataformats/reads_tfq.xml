@@ -3,6 +3,6 @@
   <description>reads in tfq format</description>
   <prefix>reads</prefix>
   <extensions>
-  	<extension default="true">.tfq</extension>
+    <extension default="true">.tfq</extension>
   </extensions>
 </dataformat>

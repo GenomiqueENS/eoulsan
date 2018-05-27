@@ -42,7 +42,8 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
  */
 public final class SystemUtils {
 
-  private static String HADOOP_CLASS_TO_TEST = "org.apache.hadoop.io.Text";
+  private static final String HADOOP_CLASS_TO_TEST =
+      "org.apache.hadoop.io.Text";
 
   /**
    * Get the name of the host.

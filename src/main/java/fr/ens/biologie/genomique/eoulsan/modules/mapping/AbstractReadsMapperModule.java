@@ -35,8 +35,7 @@ import java.util.Set;
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.SequenceReadsMapper;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.SequenceReadsMapperService;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
@@ -79,7 +78,7 @@ public abstract class AbstractReadsMapperModule extends AbstractModule {
   public static final int HADOOP_TIMEOUT = 60 * 60 * 1000;
   static final int DEFAULT_MAPPER_REQUIRED_MEMORY = 8 * 1024;
 
-  private SequenceReadsMapper mapper;
+  private Mapper mapper;
   private String mapperVersion = "";
   private String mapperFlavor = "";
   private String mapperDockerImage = "";
@@ -101,7 +100,7 @@ public abstract class AbstractReadsMapperModule extends AbstractModule {
    * @return Returns the mapperName
    */
   protected String getMapperName() {
-    return this.mapper.getMapperName();
+    return this.mapper.getName();
   }
 
   /**
@@ -176,7 +175,7 @@ public abstract class AbstractReadsMapperModule extends AbstractModule {
    * Get the mapper object.
    * @return the mapper object
    */
-  protected SequenceReadsMapper getMapper() {
+  protected Mapper getMapper() {
 
     return this.mapper;
   }
@@ -279,38 +278,28 @@ public abstract class AbstractReadsMapperModule extends AbstractModule {
       Modules.invalidConfiguration(context, "No mapper set");
     }
 
-    this.mapper =
-        SequenceReadsMapperService.getInstance().newService(mapperName);
+    // Create a Mapper object
+    this.mapper = Mapper.newMapper(mapperName);
 
     // Check if the mapper wrapper has been found
-    if (this.mapper == null) {
+    if (mapper == null) {
       Modules.invalidConfiguration(context, "Unknown mapper: " + mapperName);
     }
-
-    // Check if the mapper is not only a generator
-    if (this.mapper.isIndexGeneratorOnly()) {
-      Modules.invalidConfiguration(context,
-          "The selected mapper can only be used for index generation: "
-              + mapperName);
-    }
-
-    // Get Docker client
-    //final DockerClient dockerClient;
-//    if (!this.mapperDockerImage.isEmpty()) {
-//      dockerClient = DockerManager.getInstance().getClient();
-//    } else {
-//      dockerClient = null;
-//    }
 
     // Check if the binary for the mapper is available
     try {
 
-      this.mapper.setMapperVersionToUse(this.mapperVersion);
-      this.mapper.setMapperFlavorToUse(this.mapperFlavor);
-      this.mapper.setUseBundledBinaries(this.useBundledBinaries);
-      this.mapper.setMapperDockerImage(this.mapperDockerImage);
-      //this.mapper.setDockerClient(dockerClient);
-      this.mapper.prepareBinaries();
+      // Create a new instance of the mapper for required version and flavor
+      this.mapper.newMapperInstance(this.mapperVersion, this.mapperFlavor,
+          this.useBundledBinaries, this.mapperDockerImage);
+
+      // Check if the mapper is not only a generator
+      if (mapper.isIndexGeneratorOnly()) {
+        Modules.invalidConfiguration(context,
+            "The selected mapper can only be used for index generation: "
+                + mapperName);
+      }
+
     } catch (IOException e) {
       throw new EoulsanException(e);
     }
@@ -322,11 +311,10 @@ public abstract class AbstractReadsMapperModule extends AbstractModule {
 
     // Log Step parameters
     getLogger().info("In "
-        + getName() + ", mapper=" + this.mapper.getMapperName() + " (version: "
-        + this.mapper.getMapperVersion() + ")");
+        + getName() + ", mapper=" + this.mapper.getName() + " (version: "
+        + this.mapperVersion + ")");
     getLogger()
         .info("In " + getName() + ", mapperarguments=" + this.mapperArguments);
-
   }
 
   //

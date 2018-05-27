@@ -2,8 +2,8 @@ package fr.ens.biologie.genomique.eoulsan.design;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Objects;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 public class UnmodifiableExperimentSampleMetadata

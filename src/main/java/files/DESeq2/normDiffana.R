@@ -642,7 +642,9 @@ contrastAnadiff <- function(dds, nameContrastVec,vsContrastVec, contrastVec,
     vsContrastVec <- gsub("%","-",vsContrastVec)
 
     # function for plots
-    #if(param==TRUE)anadiffPlots(nameContrastVec, projectName,res)
+    if(param==TRUE){
+      anadiffPlots(nameContrastVec, projectName,res)
+    }
 
     res <- as.data.frame(res)
     res <- data.frame(res, dispersions(dds))

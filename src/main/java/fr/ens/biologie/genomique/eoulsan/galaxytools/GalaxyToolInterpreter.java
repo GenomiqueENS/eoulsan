@@ -81,7 +81,8 @@ public class GalaxyToolInterpreter {
   /** The Constant TAG_FORBIDDEN. */
   private final static Set<String> TAG_FORBIDDEN = Sets.newHashSet("repeat");
 
-  private static final String TMP_DIR_ENVIRONMENT_VARIABLE_NAME = "TMPDIR";
+  private static final String TMP_DIR_VARIABLE_NAME = "TMPDIR";
+  private static final String THREADS_VARIABLE_NAME = "THREADS";
 
   // Set DOM related to the tool XML file
   /** The doc. */
@@ -171,7 +172,7 @@ public class GalaxyToolInterpreter {
    */
   private static final class ElementPorts {
 
-    private Map<String, ElementPort> ports = new HashMap<>();
+    private final Map<String, ElementPort> ports = new HashMap<>();
 
     /**
      * Get an ElementPort from its name.
@@ -315,20 +316,26 @@ public class GalaxyToolInterpreter {
   public ToolExecutorResult execute(final TaskContext context)
       throws EoulsanException {
 
-    checkState(!isExecuted,
-        "GalaxyToolStep, this instance has been already executed");
+    checkState(!isExecuted, "this instance has been already executed");
 
     context.getLogger().info("Parsing xml file successfully.");
-    context.getLogger().info("Tool description " + this.toolInfo);
+    context.getLogger().info("Tool description: " + this.toolInfo);
 
     final int variablesCount = this.inputs.size() + this.outputs.size();
     final Map<String, String> variables = new HashMap<>(variablesCount);
 
     // Set a TMPDIR variable that contain the path to the temporary directory
-    variables.put(TMP_DIR_ENVIRONMENT_VARIABLE_NAME,
+    variables.put(TMP_DIR_VARIABLE_NAME,
         context.getLocalTempDirectory().getAbsolutePath());
 
-    Data inData = null;
+    // Set a THREADS variable that contain the required thread number
+    final int threadNumber =
+        context.getCurrentStep().getRequiredProcessors() > 0
+            ? context.getCurrentStep().getRequiredProcessors() : 1;
+    variables.put(THREADS_VARIABLE_NAME, "" + threadNumber);
+
+    // Input Data
+    final Set<Data> inputDataSet = new HashSet<>();
 
     // Input file to use for Docker
     final Set<File> inputFiles = new HashSet<>();
@@ -342,10 +349,7 @@ public class GalaxyToolInterpreter {
 
         // Extract value from context from DataFormat
         final Data data = context.getInputData(inPort.portName);
-
-        if (inData == null || isDataNameInDesign(inData, context)) {
-          inData = data;
-        }
+        inputDataSet.add(data);
 
         final File inFile = inPort.getInputDataFile(context).toFile();
         inputFiles.add(inFile);
@@ -367,7 +371,8 @@ public class GalaxyToolInterpreter {
             this.outputPorts.getPortElements(e.getName());
 
         // Extract value from context from DataFormat
-        final DataFile outFile = outPort.getOutputDataFile(context, inData);
+        final DataFile outFile = outPort.getOutputDataFile(context,
+            selectSourceData(inputDataSet, context));
         variables.put(e.getName(), outFile.toFile().getAbsolutePath());
         variables.put(removeNamespace(e.getName()),
             outFile.toFile().getAbsolutePath());
@@ -378,17 +383,19 @@ public class GalaxyToolInterpreter {
     }
 
     if (variables.isEmpty()) {
-      throw new EoulsanException("No parameter settings.");
+      throw new EoulsanException("No variable set for Cheetah script.");
     }
 
-    context.getLogger().info("Tool variable settings  "
+    context.getLogger().info("Tool variables: "
         + Joiner.on("\t").withKeyValueSeparator("=").join(variables));
 
     // Create the Cheetah interpreter
     final CheetahInterpreter cheetahInterpreter =
         new CheetahInterpreter(this.toolInfo.getCheetahScript(), variables);
 
+    // Get the command line to execute from Cheetah code execution
     final String commandLine = cheetahInterpreter.execute();
+    context.getLogger().fine("Cheetah code execution output: " + this.toolInfo);
 
     try {
       // Create the executor and interpret the command tag
@@ -398,11 +405,10 @@ public class GalaxyToolInterpreter {
       // Execute the command
       final ToolExecutorResult result = executor.execute();
 
-      isExecuted = true;
-
-      // TODO
+      this.isExecuted = true;
       return result;
     } catch (IOException e) {
+      this.isExecuted = true;
       throw new EoulsanException(e);
     }
   }
@@ -438,16 +444,48 @@ public class GalaxyToolInterpreter {
    */
   private void checkDomValidity() throws EoulsanException {
 
-    final Document localDoc = this.doc;
-
     for (final String tag : TAG_FORBIDDEN) {
 
       // Check tag exists in tool file
-      if (!XMLUtils.getElementsByTagName(localDoc, tag).isEmpty()) {
+      if (!XMLUtils.getElementsByTagName(this.doc, tag).isEmpty()) {
         // Throw exception
         throw new EoulsanException("Parsing tool xml: unsupported tag " + tag);
       }
     }
+  }
+
+  /**
+   * Select the input data to use as data source.
+   * @param inputDataSet a set with all the input data
+   * @param context the task context
+   * @return the data source to use for the output data or null if there is no
+   *         input data
+   */
+  private Data selectSourceData(final Set<Data> inputDataSet,
+      final TaskContext context) {
+
+    Data inData = null;
+
+    for (Data data : inputDataSet) {
+
+      if (inData == null) {
+        // Take the first data in all case
+        inData = data;
+      } else if (!data.getFormat().isOneFilePerAnalysis()) {
+
+        if (inData.getFormat().isOneFilePerAnalysis()) {
+          // If there is more that one input data replace the current selected
+          // Data by a data which format allow multiple data per analysis
+          inData = data;
+        } else if (isDataNameInDesign(data, context)) {
+          // If a data with a format that allow multiple data per analysis is
+          // selected, prefers data from design
+          inData = data;
+        }
+      }
+    }
+
+    return inData;
   }
 
   /**
@@ -463,8 +501,7 @@ public class GalaxyToolInterpreter {
 
     for (Sample sample : context.getWorkflow().getDesign().getSamples()) {
 
-      // TODO Change sample.getName() to sample.getId() with the new Design API
-      if (Naming.toValidName(sample.getName()).equals(dataName)) {
+      if (Naming.toValidName(sample.getId()).equals(dataName)) {
         return true;
       }
     }
@@ -511,10 +548,10 @@ public class GalaxyToolInterpreter {
   }
 
   /**
-   * Gets the tool data.
-   * @return the tool data
+   * Gets the tool information.
+   * @return the tool information
    */
-  public ToolInfo getToolData() {
+  public ToolInfo getToolInfo() {
     return this.toolInfo;
   }
 
@@ -579,6 +616,6 @@ public class GalaxyToolInterpreter {
     this.toolInfo = new ToolInfo(this.doc, toolSource);
 
     checkDomValidity();
-
   }
+
 }

@@ -15,7 +15,7 @@ public class NanoporeReadId {
 
   public enum SequenceType {
     TEMPLATE, COMPLEMENT, CONSENSUS
-  };
+  }
 
   private final Splitter spaceSplitter = Splitter.on(' ').omitEmptyStrings();
   private final Splitter equalsSplitter = Splitter.on('=');
@@ -94,7 +94,7 @@ public class NanoporeReadId {
 
   /**
    * Get the barcode
-   * @return
+   * @return the barcode
    */
   public String getBarcode() {
     return this.barcode;

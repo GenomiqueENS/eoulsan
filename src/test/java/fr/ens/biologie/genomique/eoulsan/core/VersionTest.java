@@ -8,8 +8,6 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 
-import fr.ens.biologie.genomique.eoulsan.core.Version;
-
 public class VersionTest {
 
   @Test

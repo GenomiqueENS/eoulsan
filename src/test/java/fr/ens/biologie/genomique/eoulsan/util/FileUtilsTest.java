@@ -30,8 +30,6 @@ import java.io.File;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
-
 public class FileUtilsTest {
 
   @Test

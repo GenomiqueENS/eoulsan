@@ -10,7 +10,7 @@
     <extension default="true">.fasta</extension>
     <extension>.fa</extension>
   </extensions>
-  <toolshedgalaxy>
-    <extension>fasta</extension>
-  </toolshedgalaxy>
+  <galaxy>
+    <formatname>fasta</formatname>
+  </galaxy>
 </dataformat>

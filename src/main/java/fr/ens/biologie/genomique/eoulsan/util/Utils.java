@@ -167,7 +167,7 @@ public class Utils {
   public static <E> List<E> newArrayList(
       final Collection<? extends E> elements) {
 
-    return new ArrayList<E>(elements);
+    return new ArrayList<>(elements);
   }
 
   /**
@@ -178,7 +178,7 @@ public class Utils {
   public static <E> HashSet<E> newHashSet(
       final Collection<? extends E> elements) {
 
-    return new HashSet<E>(elements);
+    return new HashSet<>(elements);
   }
 
   /**

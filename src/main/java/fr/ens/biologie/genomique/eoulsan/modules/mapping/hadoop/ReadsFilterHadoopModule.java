@@ -24,6 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static fr.ens.biologie.genomique.eoulsan.CommonHadoop.createConfiguration;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_FASTQ;
@@ -31,7 +32,6 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_TFQ;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX;
 import static java.util.Collections.singletonList;
-import static com.google.common.collect.Lists.newArrayList;
 
 import java.io.IOException;
 import java.util.List;

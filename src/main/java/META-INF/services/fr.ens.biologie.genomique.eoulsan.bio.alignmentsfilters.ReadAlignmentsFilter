@@ -5,3 +5,5 @@ fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.QualityReadAlignmentsFil
 fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.KeepNumberMatchReadAlignmentsFilter
 fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.DistanceFromReferenceReadAlignmentsFilter
 fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.GSNAPReadAlignmentsFilter
+fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.SupplementaryAlignmentRemoveFlagReadAlignmentsFilter
+fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.SecondaryAlignmentRemoveFlagReadAlignmentsFilter

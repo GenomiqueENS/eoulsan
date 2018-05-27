@@ -3,7 +3,7 @@
   <description>tsv annotated expression results format</description>
   <prefix>annotatedexpression</prefix>
   <extensions>
-  	<extension default="true">.tsv</extension>
-  	<extension>.txt</extension>
+    <extension default="true">.tsv</extension>
+    <extension>.txt</extension>
   </extensions>
 </dataformat>

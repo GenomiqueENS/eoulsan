@@ -3,6 +3,6 @@
   <description>unmap reads in fasta format</description>
   <prefix>unmap</prefix>
   <extensions>
-  	<extension default="true">.fasta</extension>
+    <extension default="true">.fasta</extension>
   </extensions>
 </dataformat>

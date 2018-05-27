@@ -25,7 +25,9 @@
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.local;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.DEFAULT_SINGLE_OUTPUT_PORT_NAME;
 import static fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode.OWN_PARALLELIZATION;
+import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_LOG;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_FASTQ;
 
@@ -41,10 +43,16 @@ import java.nio.charset.StandardCharsets;
 
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.FileMapping;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperIndex;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperInstance;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperProcess;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.SequenceReadsMapper;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.STARMapperProvider;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
+import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
+import fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
@@ -57,6 +65,7 @@ import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
 import fr.ens.biologie.genomique.eoulsan.util.Reporter;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
+import fr.ens.biologie.genomique.eoulsan.util.UnSynchronizedBufferedWriter;
 
 /**
  * This class define a module for reads mapping.
@@ -79,6 +88,17 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort(READS_PORT_NAME, READS_FASTQ);
     builder.addPort(MAPPER_INDEX_PORT_NAME, getMapper().getArchiveFormat());
+
+    return builder.create();
+  }
+
+  @Override
+  public OutputPorts getOutputPorts() {
+
+    OutputPortsBuilder builder = new OutputPortsBuilder();
+
+    builder.addPort(DEFAULT_SINGLE_OUTPUT_PORT_NAME, MAPPER_RESULTS_SAM);
+    builder.addPort("log", MAPPER_RESULTS_LOG);
 
     return builder.create();
   }
@@ -107,11 +127,26 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
       // Define final output SAM file
       final File samFile = outData.getDataFile().toFile();
 
+      // Get error log data
+      final Data logData = context.getOutputData(MAPPER_RESULTS_LOG, inData);
+
+      // Define mapper error file
+      final File errorFile = logData.getDataFile().toFile();
+
+      // If the mapper is STAR, the log extension must be empty
+      final String logExtension =
+          STARMapperProvider.MAPPER_NAME.equals(getMapperName()) ? "." : ".log";
+
+      // Define mapper log file
+      final File logFile = new File(samFile.getParentFile(),
+          StringUtils.filenameWithoutExtension(errorFile.getName())
+              + logExtension);
+
       // Get FASTQ format
       final FastqFormat fastqFormat = inData.getMetadata().getFastqFormat();
 
       // Initialize the mapper
-      final SequenceReadsMapper mapper = initMapper(context, fastqFormat,
+      final FileMapping mapper = initMapper(context, fastqFormat,
           archiveIndexFile, indexDir, reporter);
 
       if (inData.getDataFileCount() < 1) {
@@ -134,11 +169,11 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
 
         getLogger().info("Map file: "
             + inFile + ", Fastq format: " + fastqFormat + ", use "
-            + mapper.getMapperName() + " with " + mapper.getThreadsNumber()
+            + mapper.getName() + " with " + mapper.getThreadNumber()
             + " threads option");
 
         // Single read mapping
-        final MapperProcess process = mapper.mapSE(inFile);
+        final MapperProcess process = mapper.mapSE(inFile, errorFile, logFile);
 
         // Parse output of the mapper
         parseSAMResults(process.getStout(), samFile, reporter);
@@ -147,7 +182,7 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
         process.waitFor();
 
         logMsg = "Mapping reads in "
-            + fastqFormat + " with " + mapper.getMapperName() + " ("
+            + fastqFormat + " with " + mapper.getName() + " ("
             + inData.getName() + ", " + inFile.getName() + ")";
 
       }
@@ -164,11 +199,12 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
 
         getLogger().info("Map files: "
             + inFile1 + "," + inFile2 + ", Fastq format: " + fastqFormat
-            + ", use " + mapper.getMapperName() + " with "
-            + mapper.getThreadsNumber() + " threads option");
+            + ", use " + mapper.getName() + " with " + mapper.getThreadNumber()
+            + " threads option");
 
         // Single read mapping
-        final MapperProcess process = mapper.mapPE(inFile1, inFile2);
+        final MapperProcess process =
+            mapper.mapPE(inFile1, inFile2, errorFile, logFile);
 
         // Parse output of the mapper
         parseSAMResults(process.getStout(), samFile, reporter);
@@ -177,7 +213,7 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
         process.waitFor();
 
         logMsg = "Mapping reads in "
-            + fastqFormat + " with " + mapper.getMapperName() + " ("
+            + fastqFormat + " with " + mapper.getName() + " ("
             + inData.getName() + ", " + inFile1.getName() + ","
             + inFile2.getName() + ")";
       }
@@ -212,29 +248,12 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
    * @param reporter reporter
    * @throws IOException
    */
-  private SequenceReadsMapper initMapper(final TaskContext context,
+  private FileMapping initMapper(final TaskContext context,
       final FastqFormat format, final DataFile archiveIndexFile,
       final File indexDir, final Reporter reporter) throws IOException {
 
-    final SequenceReadsMapper mapper = getMapper();
-
-    // Set FASTQ format
-    mapper.setFastqFormat(format);
-
-    // Set mapper argument if needed
-    if (getMapperArguments() != null) {
-      mapper.setMapperArguments(getMapperArguments());
-    }
-
-    // Get the number of threads to use
-    int mapperThreads = getMapperLocalThreads();
-    if (mapperThreads > Runtime.getRuntime().availableProcessors()
-        || mapperThreads < 1) {
-      mapperThreads = Runtime.getRuntime().availableProcessors();
-    }
-
-    // Set the number of threads
-    mapper.setThreadsNumber(mapperThreads);
+    // Get the mapper object
+    final Mapper mapper = getMapper();
 
     // Set mapper temporary directory
     mapper.setTempDirectory(context.getLocalTempDirectory());
@@ -243,13 +262,30 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
     mapper.setExecutablesTempDirectory(
         context.getSettings().getExecutablesTempDirectoryFile());
 
-    // Init mapper
-    mapper.init(archiveIndexFile, indexDir, reporter, COUNTER_GROUP);
+    // Create the mapper instance
+    final MapperInstance mapperInstance =
+        mapper.newMapperInstance(getMapperVersion(), getMapperFlavor(),
+            isUseBundledBinaries(), getMapperDockerImage());
+
+    // Create the MapperIndex object
+    final MapperIndex mapperIndex =
+        mapperInstance.newMapperIndex(archiveIndexFile.open(), indexDir);
+
+    // Get the number of threads to use
+    int mapperThreads = getMapperLocalThreads();
+    if (mapperThreads > Runtime.getRuntime().availableProcessors()
+        || mapperThreads < 1) {
+      mapperThreads = Runtime.getRuntime().availableProcessors();
+    }
+
+    final FileMapping mapping = mapperIndex.newFileMapping(format,
+        getMapperArguments(), mapperThreads, false, reporter, COUNTER_GROUP);
 
     // Delete the index directory at the end of the workflow
-    context.getWorkflow().deleteOnExit(new DataFile(indexDir));
+    context.getWorkflow()
+        .deleteOnExit(new DataFile(mapperIndex.getIndexDirectory()));
 
-    return mapper;
+    return mapping;
   }
 
   /**
@@ -267,8 +303,9 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
     // Parse SAM result file
     final BufferedReader readerResults =
         FileUtils.createBufferedReader(samFileInputStream);
-    final Writer writer = new OutputStreamWriter(new FileOutputStream(samFile),
-        StandardCharsets.ISO_8859_1);
+    final Writer writer =
+        new UnSynchronizedBufferedWriter(new OutputStreamWriter(
+            new FileOutputStream(samFile), StandardCharsets.ISO_8859_1));
 
     int entriesParsed = 0;
 

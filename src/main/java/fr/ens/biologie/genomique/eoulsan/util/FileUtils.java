@@ -51,6 +51,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.zip.CRC32;
+import java.util.zip.CheckedInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -819,6 +821,17 @@ public class FileUtils {
    */
   public static void createZip(final File directory, final File zipFile)
       throws IOException {
+    createZip(directory, zipFile, false);
+  }
+
+  /**
+   * Create a zip archive with the content of a directory.
+   * @param directory directory to compress
+   * @param zipFile output file
+   * @throws IOException if an error occurs while compressing data
+   */
+  public static void createZip(final File directory, final File zipFile,
+      final boolean store) throws IOException {
 
     if (directory == null) {
       throw new IOException("Input directory is null");
@@ -835,13 +848,35 @@ public class FileUtils {
     final ZipOutputStream out =
         new ZipOutputStream(new FileOutputStream(zipFile));
 
-    zipFolder(directory, "", out);
+    zipFolder(directory, "", out, store);
 
     out.close();
   }
 
-  private static void zipFolder(final File directory, final String path,
-      final ZipOutputStream out) throws IOException {
+  /**
+   * Add a directory to a ZipOutputStream.
+   * @param directory directory to add to the ZIP file
+   * @param path path of the directory in the ZIP file
+   * @param out ZipOutputStream stream
+   * @param store compress or store the files to add to the ZIP file
+   */
+  public static void zipFolder(final File directory, final String path,
+      final ZipOutputStream out, boolean store) throws IOException {
+
+    if (directory == null) {
+      throw new IOException("Input directory is null");
+    }
+
+    if (!(directory.exists() && directory.isDirectory())) {
+      throw new IOException("Invalid directory (" + directory + ")");
+    }
+
+    if (path == null) {
+      throw new NullPointerException("path argument cannot be null");
+    }
+    if (out == null) {
+      throw new NullPointerException("out argument cannot be null");
+    }
 
     // Add directory even empty
     if (!"".equals(path)) {
@@ -863,7 +898,28 @@ public class FileUtils {
       BufferedInputStream origin = null;
 
       for (final File f : filesToAdd) {
-        out.putNextEntry(new ZipEntry(path + f.getName()));
+        ZipEntry ze = new ZipEntry(path + f.getName());
+
+        if (store) {
+
+          // Compute checksum for storage
+          final FileInputStream fi = new FileInputStream(f);
+          CheckedInputStream originCheck = new CheckedInputStream(
+              new BufferedInputStream(fi, DEFAULT_BUFFER_SIZE), new CRC32());
+          while (originCheck.read(data, 0, DEFAULT_BUFFER_SIZE) != -1) {
+            ;
+          }
+          fi.close();
+
+          ze.setMethod(ZipEntry.STORED);
+          ze.setCrc(originCheck.getChecksum().getValue());
+        } else {
+          ze.setMethod(ZipEntry.DEFLATED);
+        }
+
+        ze.setSize(f.length());
+        out.putNextEntry(ze);
+
         final FileInputStream fi = new FileInputStream(f);
 
         origin = new BufferedInputStream(fi, DEFAULT_BUFFER_SIZE);
@@ -889,8 +945,7 @@ public class FileUtils {
     // Add directories
     if (directoriesToAdd != null) {
       for (final File dir : directoriesToAdd) {
-        zipFolder(dir, path + File.separator + dir.getName() + File.separator,
-            out);
+        zipFolder(dir, path + dir.getName() + File.separator, out, store);
       }
     }
 

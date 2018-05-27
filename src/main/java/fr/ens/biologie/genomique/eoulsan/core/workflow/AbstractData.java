@@ -139,7 +139,7 @@ abstract class AbstractData implements Data, Serializable {
 
     checkNotNull(format, "format argument cannot be null");
 
-    synchronized (this.getClass()) {
+    synchronized (AbstractData.class) {
       this.id = ++instanceCount;
     }
 

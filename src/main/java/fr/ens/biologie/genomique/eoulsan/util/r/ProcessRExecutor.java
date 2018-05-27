@@ -34,7 +34,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
   protected static final String LANG_ENVIRONMENT_VARIABLE = "LANG";
   protected static final String DEFAULT_R_LANG = "C";
 
-  private Set<String> filenamesToKeep = new HashSet<>();
+  private final Set<String> filenamesToKeep = new HashSet<>();
 
   @Override
   public String getName() {

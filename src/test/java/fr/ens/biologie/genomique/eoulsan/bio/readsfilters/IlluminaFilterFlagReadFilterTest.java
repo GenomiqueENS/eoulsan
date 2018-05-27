@@ -31,8 +31,6 @@ import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
-import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.IlluminaFilterFlagReadFilter;
-import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.ReadFilter;
 
 public class IlluminaFilterFlagReadFilterTest {
 

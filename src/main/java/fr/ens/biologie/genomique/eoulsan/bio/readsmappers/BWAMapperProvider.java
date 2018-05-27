@@ -40,59 +40,72 @@ import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
-import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 
 /**
  * This class define a wrapper on the BWA mapper.
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class BWAReadsMapper extends AbstractSequenceReadsMapper {
+public class BWAMapperProvider extends AbstractMapperProvider {
 
   public static final String MAPPER_NAME = "BWA";
-  private static final String DEFAULT_PACKAGE_VERSION = "0.6.2";
+  private static final String DEFAULT_VERSION = "0.6.2";
   private static final String MAPPER_EXECUTABLE = "bwa";
   private static final String INDEXER_EXECUTABLE = MAPPER_EXECUTABLE;
+  private static final String MEM_FLAVOR = "mem";
+  private static final String ALN_FLAVOR = "aln";
 
   private static final int MIN_BWTSW_GENOME_SIZE = 1024 * 1024 * 1024;
   public static final String DEFAULT_ARGUMENTS = "-l 28";
 
-  private static final String SYNC = BWAReadsMapper.class.getName();
+  private static final String SYNC = BWAMapperProvider.class.getName();
   private static final String PREFIX_FILES = "bwa";
   private static final String SAI_EXTENSION = ".sai";
   private static final String FASTQ_EXTENSION = ".fq";
 
   @Override
-  public String getMapperName() {
+  public String getName() {
 
     return MAPPER_NAME;
   }
 
   @Override
-  protected String getDefaultPackageVersion() {
+  public String getDefaultVersion() {
 
-    return DEFAULT_PACKAGE_VERSION;
+    return DEFAULT_VERSION;
   }
 
   @Override
-  public boolean isSplitsAllowed() {
-
-    return true;
+  public String getDefaultFlavor() {
+    return ALN_FLAVOR;
   }
 
   @Override
-  public String internalGetMapperVersion() {
+  public DataFormat getArchiveFormat() {
+
+    return DataFormats.BWA_INDEX_ZIP;
+  }
+
+  @Override
+  public String getDefaultMapperArguments() {
+
+    return DEFAULT_ARGUMENTS;
+  }
+
+  @Override
+  public String readBinaryVersion(final MapperInstance mapperInstance) {
 
     try {
       final String execPath;
 
       synchronized (SYNC) {
-        execPath = install(MAPPER_EXECUTABLE);
+        execPath = mapperInstance.getExecutor().install(MAPPER_EXECUTABLE);
       }
 
       final List<String> cmd = Lists.newArrayList(execPath);
 
-      final String s = executeToString(cmd);
+      final String s =
+          MapperUtils.executeToString(mapperInstance.getExecutor(), cmd);
       final String[] lines = s.split("\n");
 
       for (String line : lines) {
@@ -114,54 +127,57 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected List<String> getIndexerCommand(final String indexerPathname,
-      final String genomePathname) {
+  public List<String> getIndexerExecutables(
+      final MapperInstance mapperInstance) {
 
-    final File genomeFile = new File(genomePathname);
-    List<String> cmd = new ArrayList<>();
-    if (genomeFile.length() >= MIN_BWTSW_GENOME_SIZE) {
-      cmd.add(indexerPathname);
-      cmd.add("index");
-      cmd.add("-a");
-      cmd.add("bwtsw");
-      cmd.add(genomePathname);
-
-      return cmd;
-    }
-
-    cmd.add(indexerPathname);
-    cmd.add("index");
-    cmd.add(genomePathname);
-
-    return cmd;
+    return Collections.singletonList(INDEXER_EXECUTABLE);
   }
 
   @Override
-  protected String getIndexerExecutable() {
-
-    return INDEXER_EXECUTABLE;
-  }
-
-  @Override
-  public String getMapperExecutableName() {
+  public String getMapperExecutableName(final MapperInstance mapperInstance) {
     return MAPPER_EXECUTABLE;
   }
 
   @Override
-  public DataFormat getArchiveFormat() {
+  public boolean checkIfFlavorExists(final MapperInstance mapperInstance) {
 
-    return DataFormats.BWA_INDEX_ZIP;
+    switch (mapperInstance.getFlavor().trim().toLowerCase()) {
+
+    case ALN_FLAVOR:
+    case MEM_FLAVOR:
+      return true;
+
+    default:
+      return false;
+    }
   }
 
   @Override
-  protected String getDefaultMapperArguments() {
+  public List<String> getIndexerCommand(final File indexerFile,
+      final File genomeFile, final List<String> indexerArguments,
+      final int threads) {
 
-    return DEFAULT_ARGUMENTS;
+    List<String> cmd = new ArrayList<>();
+    if (genomeFile.length() >= MIN_BWTSW_GENOME_SIZE) {
+      cmd.add("index");
+      cmd.add("-a");
+      cmd.add("bwtsw");
+      cmd.add(genomeFile.getAbsolutePath());
+
+      return cmd;
+    }
+
+    cmd.add(indexerFile.getAbsolutePath());
+    cmd.add("index");
+    cmd.add(genomeFile.getAbsolutePath());
+
+    return cmd;
   }
 
   private String getIndexPath(final File archiveIndexDir) throws IOException {
 
-    return getIndexPath(archiveIndexDir, ".bwt", 4);
+    return MapperUtils.getIndexPath(getName(), archiveIndexDir, ".bwt", 4)
+        .toString();
   }
 
   //
@@ -169,47 +185,52 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
   //
 
   @Override
-  protected MapperProcess internalMapSE(final File archiveIndex)
-      throws IOException {
+  public MapperProcess mapSE(final EntryMapping mapping, final File inputFile,
+      final File errorFile, final File logFile) throws IOException {
 
     final String bwaPath;
 
     synchronized (SYNC) {
-      bwaPath = install(MAPPER_EXECUTABLE);
+      bwaPath = mapping.getExecutor().install(MAPPER_EXECUTABLE);
     }
 
     // Path to index
-    final String indexPath = getIndexPath(archiveIndex);
+    final String indexPath = getIndexPath(mapping.getIndexDirectory());
 
-    return createMapperProcessSE(bwaPath, indexPath);
+    return createMapperProcessSE(mapping, bwaPath, indexPath, inputFile,
+        errorFile);
   }
 
   @Override
-  protected MapperProcess internalMapPE(final File archiveIndex)
+  public MapperProcess mapPE(final EntryMapping mapping, final File inputFile1,
+      final File inputFile2, final File errorFile, final File logFile)
       throws IOException {
 
     final String bwaPath;
 
     synchronized (SYNC) {
-      bwaPath = install(MAPPER_EXECUTABLE);
+      bwaPath = mapping.getExecutor().install(MAPPER_EXECUTABLE);
     }
 
     // Path to index
-    final String indexPath = getIndexPath(archiveIndex);
+    final String indexPath = getIndexPath(mapping.getIndexDirectory());
 
-    return createMapperProcessPE(bwaPath, indexPath);
+    return createMapperProcessPE(mapping, bwaPath, indexPath, inputFile1,
+        inputFile2, errorFile);
   }
 
-  private MapperProcess createMapperProcessSE(final String bwaPath,
-      final String indexPath) throws IOException {
+  private MapperProcess createMapperProcessSE(final EntryMapping mapping,
+      final String bwaPath, final String indexPath, final File inputFile,
+      final File errorFile) throws IOException {
 
     // Get the BWA algorithm to use
-    boolean bwaAln = !"mem".equals(getMapperFlavorToUse());
+    boolean bwaAln = !MEM_FLAVOR.equals(mapping.getFlavor());
 
     if (bwaAln) {
 
       // BWA aln
-      return new MapperProcess(this, false) {
+      return new MapperProcess(mapping.getName(), mapping.getExecutor(),
+          mapping.getTemporaryDirectory(), errorFile, false, inputFile) {
 
         private File saiFile;
         private File fastqFile;
@@ -224,18 +245,22 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
           this.saiFile =
               new File(tmpDir, PREFIX_FILES + "-sai-" + uuid + SAI_EXTENSION);
 
-          this.fastqFile = new File(tmpDir,
-              PREFIX_FILES + "-fastq-" + uuid + FASTQ_EXTENSION);
-
           // Create named pipes
           FileUtils.createNamedPipe(this.saiFile);
 
-          // Add fastq copy file and sai file to files to remove
-          addFilesToRemove(saiFile, this.fastqFile);
+          if (inputFile == null) {
 
-          // Create FASTQ writer
-          this.writer = new FastqWriterThread(this.fastqFile,
-              "BWA sampe writeFirstPairEntries thread");
+            // Create copy of FASTQ input file
+            this.fastqFile = new File(tmpDir,
+                PREFIX_FILES + "-fastq-" + uuid + FASTQ_EXTENSION);
+
+            // Create FASTQ writer
+            this.writer = new FastqWriterThread(this.fastqFile,
+                "BWA samse writeFirstPairEntries thread");
+          }
+
+          // Add FASTQ copy file and sai file to files to remove
+          addFilesToRemove(saiFile, this.fastqFile);
         }
 
         @Override
@@ -271,24 +296,25 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         @Override
         protected List<List<String>> createCommandLines() {
 
-          final boolean illuminaFastq = getFastqFormat() == FASTQ_ILLUMINA
-              || getFastqFormat() == FASTQ_ILLUMINA_1_5;
+          final boolean illuminaFastq =
+              mapping.getFastqFormat() == FASTQ_ILLUMINA
+                  || mapping.getFastqFormat() == FASTQ_ILLUMINA_1_5;
 
           final List<String> cmd1 = new ArrayList<>();
           cmd1.add(bwaPath);
 
           // Select the flavor/algorithm to use
-          cmd1.add("aln");
+          cmd1.add(ALN_FLAVOR);
 
           if (illuminaFastq) {
             cmd1.add("-I");
           }
 
           // Set the user options
-          cmd1.addAll(getListMapperArguments());
+          cmd1.addAll(mapping.getMapperArguments());
 
           cmd1.add("-t");
-          cmd1.add(getThreadsNumber() + "");
+          cmd1.add(mapping.getThreadNumber() + "");
           cmd1.add("-f");
           cmd1.add(this.saiFile.getAbsolutePath());
           cmd1.add(indexPath);
@@ -301,7 +327,11 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
           cmd2.add("samse");
           cmd2.add(indexPath);
           cmd2.add(this.saiFile.getAbsolutePath());
-          cmd2.add(this.fastqFile.getAbsolutePath());
+          if (inputFile != null) {
+            cmd2.add(inputFile.getAbsolutePath());
+          } else {
+            cmd2.add(this.fastqFile.getAbsolutePath());
+          }
 
           final List<List<String>> result = new ArrayList<>();
           result.add(cmd1);
@@ -314,7 +344,8 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     }
 
     // BWA mem
-    return new MapperProcess(this, false) {
+    return new MapperProcess(mapping.getName(), mapping.getExecutor(),
+        mapping.getTemporaryDirectory(), errorFile, false, inputFile) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -323,13 +354,13 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         cmd.add(bwaPath);
 
         // Select the flavor/algorithm to use
-        cmd.add("mem");
+        cmd.add(MEM_FLAVOR);
 
         // Set the user options
-        cmd.addAll(getListMapperArguments());
+        cmd.addAll(mapping.getMapperArguments());
 
         cmd.add("-t");
-        cmd.add(getThreadsNumber() + "");
+        cmd.add(mapping.getThreadNumber() + "");
 
         // Set the index path
         cmd.add(indexPath);
@@ -343,16 +374,19 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     };
   }
 
-  private MapperProcess createMapperProcessPE(final String bwaPath,
-      final String indexPath) throws IOException {
+  private MapperProcess createMapperProcessPE(final EntryMapping mapping,
+      final String bwaPath, final String indexPath, final File inputFile1,
+      final File inputFile2, final File errorFile) throws IOException {
 
     // Get the BWA algorithm to use
-    boolean bwaAln = !"mem".equals(getMapperFlavorToUse());
+    boolean bwaAln = !MEM_FLAVOR.equals(mapping.getFlavor());
 
     if (bwaAln) {
 
       // BWA aln
-      return new MapperProcess(this, true) {
+      return new MapperProcess(mapping.getName(), mapping.getExecutor(),
+          mapping.getTemporaryDirectory(), errorFile, true, inputFile1,
+          inputFile2) {
 
         private File saiFile1;
         private File saiFile2;
@@ -372,11 +406,20 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
           this.saiFile2 =
               new File(tmpDir, PREFIX_FILES + "-sai2-" + uuid + SAI_EXTENSION);
 
-          this.fastqFile1 = new File(tmpDir,
-              PREFIX_FILES + "-fastq1-" + uuid + FASTQ_EXTENSION);
+          if (inputFile1 == null) {
 
-          this.fastqFile2 = new File(tmpDir,
-              PREFIX_FILES + "-fastq2-" + uuid + FASTQ_EXTENSION);
+            this.fastqFile1 = new File(tmpDir,
+                PREFIX_FILES + "-fastq1-" + uuid + FASTQ_EXTENSION);
+
+            this.fastqFile2 = new File(tmpDir,
+                PREFIX_FILES + "-fastq2-" + uuid + FASTQ_EXTENSION);
+
+            // Create writer on FASTQ files
+            this.writer1 = new FastqWriterThread(this.fastqFile1,
+                "BWA sampe writeFirstPairEntries thread");
+            this.writer2 = new FastqWriterThread(this.fastqFile2,
+                "BWA sampe writeSecondPairEntries thread");
+          }
 
           // Create named pipes
           FileUtils.createNamedPipe(this.saiFile1);
@@ -385,12 +428,6 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
           // Add fastq copy file and sai file to files to remove
           addFilesToRemove(this.saiFile1, this.saiFile2, this.fastqFile1,
               this.fastqFile2);
-
-          // Create writer on FASTQ files
-          this.writer1 = new FastqWriterThread(this.fastqFile1,
-              "BWA sampe writeFirstPairEntries thread");
-          this.writer2 = new FastqWriterThread(this.fastqFile2,
-              "BWA sampe writeSecondPairEntries thread");
         }
 
         @Override
@@ -446,17 +483,18 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
         @Override
         protected List<List<String>> createCommandLines() {
 
-          final boolean illuminaFastq = getFastqFormat() == FASTQ_ILLUMINA
-              || getFastqFormat() == FASTQ_ILLUMINA_1_5;
+          final boolean illuminaFastq =
+              mapping.getFastqFormat() == FASTQ_ILLUMINA
+                  || mapping.getFastqFormat() == FASTQ_ILLUMINA_1_5;
 
           final List<String> cmd1 = new ArrayList<>();
           cmd1.add(bwaPath);
 
           // Select the flavor/algorithm to use
-          if ("mem".equals(getMapperFlavorToUse())) {
-            cmd1.add("mem");
+          if (MEM_FLAVOR.equals(mapping.getFlavor())) {
+            cmd1.add(MEM_FLAVOR);
           } else {
-            cmd1.add("aln");
+            cmd1.add(ALN_FLAVOR);
           }
 
           if (illuminaFastq) {
@@ -466,10 +504,10 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
           // There are 2 bwa aln processes in paired-end mode, so we divided the
           // number of threads by 2
           final int threadNumber =
-              getThreadsNumber() > 1 ? getThreadsNumber() / 2 : 1;
+              mapping.getThreadNumber() > 1 ? mapping.getThreadNumber() / 2 : 1;
 
           // Set the user options
-          cmd1.addAll(getListMapperArguments());
+          cmd1.addAll(mapping.getMapperArguments());
 
           cmd1.add("-t");
           cmd1.add(threadNumber + "");
@@ -480,13 +518,13 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
           final List<String> cmd2 = new ArrayList<>();
           cmd2.add(bwaPath);
-          cmd2.add("aln");
+          cmd2.add(ALN_FLAVOR);
           if (illuminaFastq) {
             cmd2.add("-I");
           }
 
           // Set the user options
-          cmd2.addAll(getListMapperArguments());
+          cmd2.addAll(mapping.getMapperArguments());
 
           cmd2.add("-t");
           cmd2.add(threadNumber + "");
@@ -503,8 +541,13 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
           cmd3.add(indexPath);
           cmd3.add(this.saiFile1.getAbsolutePath());
           cmd3.add(this.saiFile2.getAbsolutePath());
-          cmd3.add(this.fastqFile1.getAbsolutePath());
-          cmd3.add(this.fastqFile2.getAbsolutePath());
+          if (inputFile1 != null) {
+            cmd3.add(inputFile1.getAbsolutePath());
+            cmd3.add(inputFile2.getAbsolutePath());
+          } else {
+            cmd3.add(this.fastqFile1.getAbsolutePath());
+            cmd3.add(this.fastqFile2.getAbsolutePath());
+          }
 
           final List<List<String>> result = new ArrayList<>();
           result.add(cmd1);
@@ -519,7 +562,9 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
     } else {
 
       // BWA mem
-      return new MapperProcess(this, true) {
+      return new MapperProcess(mapping.getName(), mapping.getExecutor(),
+          mapping.getTemporaryDirectory(), errorFile, true, inputFile1,
+          inputFile2) {
 
         @Override
         protected List<List<String>> createCommandLines() {
@@ -528,13 +573,13 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
           cmd.add(bwaPath);
 
           // Select the flavor/algorithm to use
-          cmd.add("mem");
+          cmd.add(MEM_FLAVOR);
 
           // Set the user options
-          cmd.addAll(getListMapperArguments());
+          cmd.addAll(mapping.getMapperArguments());
 
           cmd.add("-t");
-          cmd.add(getThreadsNumber() + "");
+          cmd.add(mapping.getThreadNumber() + "");
 
           // Set the index path
           cmd.add(indexPath);
@@ -548,18 +593,6 @@ public class BWAReadsMapper extends AbstractSequenceReadsMapper {
 
       };
     }
-  }
-
-  //
-  // Init
-  //
-
-  @Override
-  public void init(final File archiveIndexFile, final File archiveIndexDir,
-      final ReporterIncrementer incrementer, final String counterGroup)
-      throws IOException {
-
-    super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }
 
 }

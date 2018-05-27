@@ -27,7 +27,6 @@ package fr.ens.biologie.genomique.eoulsan.translators;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -158,7 +157,7 @@ public class CommonLinksInfoTranslator extends AbstractTranslator {
    * Load the field and links from a file
    * @param in File to load
    */
-  public void load(final File in) throws FileNotFoundException, IOException {
+  public void load(final File in) throws IOException {
 
     if (in == null) {
       throw new NullPointerException("file argument can't be null.");

@@ -42,9 +42,6 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
-import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
-
 public class FastqFormatTest {
 
   @Test

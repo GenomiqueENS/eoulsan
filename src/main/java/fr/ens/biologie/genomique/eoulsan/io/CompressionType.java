@@ -43,8 +43,8 @@ public enum CompressionType {
 
   GZIP("gzip", ".gz"), BZIP2("bzip2", ".bz2"), NONE("", "");
 
-  private String contentEncoding;
-  private String extension;
+  private final String contentEncoding;
+  private final String extension;
 
   //
   // Getters

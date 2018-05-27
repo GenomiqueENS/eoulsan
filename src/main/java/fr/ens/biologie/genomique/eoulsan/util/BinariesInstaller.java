@@ -45,7 +45,7 @@ public class BinariesInstaller {
   private static final int BUFFER_SIZE = 32 * 1024;
 
   private static void install(final String inputPath, final String file,
-      final String outputPath) throws FileNotFoundException, IOException {
+      final String outputPath) throws IOException {
 
     if (new File(outputPath, file).isFile()) {
       getLogger().fine(file + " is already installed.");

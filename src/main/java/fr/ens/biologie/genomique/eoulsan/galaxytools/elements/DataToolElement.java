@@ -119,7 +119,7 @@ public class DataToolElement extends AbstractToolElement {
 
     // Convert format in DataFormat
     this.dataFormat = DataFormatRegistry.getInstance()
-        .getDataFormatFromToolshedExtensionOrNameOrAlias(format);
+        .getDataFormatFromGalaxyFormatNameOrNameOrAlias(format);
 
     // Check if a valid format has been found
     if (this.dataFormat == null) {

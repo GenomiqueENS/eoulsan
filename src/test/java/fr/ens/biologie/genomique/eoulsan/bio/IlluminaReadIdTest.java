@@ -34,8 +34,6 @@ import java.util.Collections;
 import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.bio.IlluminaReadId;
-import fr.ens.biologie.genomique.eoulsan.bio.Sequence;
 
 public class IlluminaReadIdTest {
 

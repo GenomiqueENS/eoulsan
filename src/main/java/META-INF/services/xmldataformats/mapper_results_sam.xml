@@ -6,10 +6,9 @@
   <splitter>fr.ens.biologie.genomique.eoulsan.splitermergers.SAMSplitter</splitter>
   <merger>fr.ens.biologie.genomique.eoulsan.splitermergers.SAMMerger</merger>
   <extensions>
-  	<extension default="true">.sam</extension>
+    <extension default="true">.sam</extension>
   </extensions>
-  
-  <toolshedgalaxy>
-  	<extension>sam</extension>    	
-  </toolshedgalaxy>
+  <galaxy>
+    <formatname>sam</formatname>
+  </galaxy>
 </dataformat>

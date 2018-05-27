@@ -65,6 +65,14 @@
                 <tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
                 <tr><td>hadoop.reducer.task.count</td><td>integer</td><td>The count of Hadoop reducer tasks to use for this step. This parameter is only used in Hadoop mode</td><td>Not set</td></tr>
         </table>
+        <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Convert SAM to FASTQ step --&gt;
+&lt;step id="mysam2fastqstep" skip="false" discardoutput="false"&gt;
+	&lt;module&gt;sam2fastq&lt;/module&gt;
+	&lt;parameters/&gt;
+&lt;/step&gt;
+</pre>
 
       </ul>
 

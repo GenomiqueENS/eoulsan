@@ -43,8 +43,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
 import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.SequenceReadsMapper;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.SequenceReadsMapperService;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
@@ -77,7 +76,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
   private Map<String, String> readsFiltersParameters;
   private Map<String, String> alignmentsFiltersParameters;
-  private SequenceReadsMapper mapper;
+  private Mapper mapper;
   private String mapperVersion = "";
   private String mapperFlavor = "";
   private String mapperArguments;
@@ -85,7 +84,6 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
   private int reducerTaskCount = -1;
   private int hadoopThreads = -1;
 
-  private final int mappingQualityThreshold = -1;
   private int hadoopMapperRequiredMemory =
       AbstractReadsMapperModule.DEFAULT_MAPPER_REQUIRED_MEMORY;
 
@@ -114,7 +112,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
    * @return Returns the mapperName
    */
   protected String getMapperName() {
-    return this.mapper.getMapperName();
+    return this.mapper.getName();
   }
 
   /**
@@ -163,18 +161,9 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
    * Get the mapper.
    * @return the mapper object
    */
-  protected SequenceReadsMapper getMapper() {
+  protected Mapper getMapper() {
 
     return this.mapper;
-  }
-
-  /**
-   * Get the mapping quality threshold.
-   * @return the quality mapping threshold
-   */
-  protected int getMappingQualityThreshold() {
-
-    return this.mappingQualityThreshold;
   }
 
   /**
@@ -309,8 +298,8 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
       Modules.invalidConfiguration(context, "No mapper set");
     }
 
-    this.mapper =
-        SequenceReadsMapperService.getInstance().newService(mapperName);
+    // Create a Mapper object
+    this.mapper = Mapper.newMapper(mapperName);
 
     if (this.mapper == null) {
       Modules.invalidConfiguration(context, "Unknown mapper: " + mapperName);
@@ -324,9 +313,18 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
     // Check if the binary for the mapper is available
     try {
-      this.mapper.setMapperVersionToUse(this.mapperVersion);
-      this.mapper.setMapperFlavorToUse(this.mapperFlavor);
-      this.mapper.prepareBinaries();
+
+      // Create a new instance of the mapper for required version and flavor
+      this.mapper.newMapperInstance(this.mapperVersion, this.mapperFlavor, true,
+          null);
+
+      // Check if the mapper is not only a generator
+      if (mapper.isIndexGeneratorOnly()) {
+        Modules.invalidConfiguration(context,
+            "The selected mapper can only be used for index generation: "
+                + mapperName);
+      }
+
     } catch (IOException e) {
       throw new EoulsanException(e);
     }
@@ -338,8 +336,8 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
     // Log Step parameters
     getLogger().info("In "
-        + getName() + ", mapper=" + this.mapper.getMapperName() + " (version: "
-        + this.mapper.getMapperVersion() + ")");
+        + getName() + ", mapper=" + this.mapper.getName() + " (version: "
+        + this.mapperVersion + ")");
     getLogger()
         .info("In " + getName() + ", mapperarguments=" + this.mapperArguments);
   }

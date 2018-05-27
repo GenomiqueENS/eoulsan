@@ -35,8 +35,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
-
 public class StringUtilsTest {
 
   @Test

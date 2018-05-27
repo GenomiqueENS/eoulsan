@@ -27,7 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.data.storages;
 import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.SequenceReadsMapper;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperInstance;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 
 /**
@@ -39,23 +39,23 @@ public interface GenomeIndexStorage {
 
   /**
    * Get the DataFile that corresponds to a mapper and a genome
-   * @param mapper mapper
+   * @param mapperInstance mapper
    * @param genome genome description object for the genome
    * @param additionalDescription description of the additional parameters
    * @return a DataFile that contains the path to the index or null if the index
    *         has not yet been computed
    */
-  DataFile get(SequenceReadsMapper mapper, GenomeDescription genome,
+  DataFile get(MapperInstance mapperInstance, GenomeDescription genome,
       Map<String, String> additionalDescription);
 
   /**
    * Put the index archive in the storage.
-   * @param mapper mapper
+   * @param mapperInstance mapper
    * @param genome genome description object
    * @param additionalDescription description of the additional parameters
    * @param indexArchive the DataFile that contains the index
    */
-  void put(SequenceReadsMapper mapper, GenomeDescription genome,
+  void put(MapperInstance mapperInstance, GenomeDescription genome,
       Map<String, String> additionalDescription, DataFile indexArchive);
 
 }

@@ -25,20 +25,20 @@ package fr.ens.biologie.genomique.eoulsan.modules.fastqc;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
-import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_FASTQ;
 import static java.util.Collections.singletonList;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.ZipOutputStream;
 
 import javax.xml.stream.XMLStreamException;
-
-import com.google.common.collect.Lists;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -47,6 +47,7 @@ import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
+import fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
@@ -61,6 +62,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 import uk.ac.babraham.FastQC.Modules.AbstractQCModule;
 import uk.ac.babraham.FastQC.Modules.AdapterContent;
 import uk.ac.babraham.FastQC.Modules.BasicStats;
@@ -147,7 +149,11 @@ public class FastQCModule extends AbstractModule {
   @Override
   public OutputPorts getOutputPorts() {
 
-    return singleOutputPort(DataFormats.FASTQC_REPORT_HTML);
+    final OutputPortsBuilder builder = new OutputPortsBuilder();
+    builder.addPort("htmlreport", DataFormats.FASTQC_REPORT_HTML);
+    builder.addPort("zipreport", DataFormats.FASTQC_REPORT_ZIP);
+
+    return builder.create();
   }
 
   @Override
@@ -233,8 +239,10 @@ public class FastQCModule extends AbstractModule {
     final Data inData = context.getInputData(this.inputFormat);
 
     // Get output data
-    final Data outData =
+    final Data htmlOutData =
         context.getOutputData(DataFormats.FASTQC_REPORT_HTML, inData);
+    final Data zipOutData =
+        context.getOutputData(DataFormats.FASTQC_REPORT_ZIP, inData);
 
     // Define the list of input files
     final List<DataFile> inputFiles = new ArrayList<>();
@@ -253,12 +261,13 @@ public class FastQCModule extends AbstractModule {
       int i = 0;
       for (DataFile inputFile : inputFiles) {
 
-        // Define the report output file
-        final DataFile reportFile = outData.getDataFile(i++);
+        // Define the report output files
+        final DataFile htmlReportFile = htmlOutData.getDataFile(i);
+        final DataFile zipReportFile = zipOutData.getDataFile(i++);
 
         // Launch FastQC analysis
-        processFile(inputFile, this.inputFormat == READS_FASTQ, reportFile,
-            context.getLocalTempDirectory(), status);
+        processFile(inputFile, this.inputFormat == READS_FASTQ, htmlReportFile,
+            zipReportFile, context.getLocalTempDirectory(), status);
       }
 
       return status.createTaskResult();
@@ -282,7 +291,8 @@ public class FastQCModule extends AbstractModule {
    * Process an input file by FastQC.
    * @param inputFile the input file
    * @param fastqFormat true if the format of the input file is FASTQ
-   * @param outputFile the report output file
+   * @param htmlOutputFile the HTML report output file
+   * @param zipOutputFile the ZIP report output file
    * @param tmpDir the temporary directory
    * @param status the task status
    * @throws SequenceFormatException if an error occurs while processing
@@ -291,7 +301,8 @@ public class FastQCModule extends AbstractModule {
    * @throws XMLStreamException if an error occurs while creating report
    */
   private void processFile(DataFile inputFile, final boolean fastqFormat,
-      final DataFile outputFile, final File tmpDir, final TaskStatus status)
+      final DataFile htmlOutputFile, final DataFile zipOutputFile,
+      final File tmpDir, final TaskStatus status)
       throws SequenceFormatException, IOException, XMLStreamException {
 
     // Set the description of the context
@@ -310,12 +321,13 @@ public class FastQCModule extends AbstractModule {
     // Define modules list
     final OverRepresentedSeqs os = new OverRepresentedSeqs();
 
-    final List<AbstractQCModule> modules = Lists.newArrayList(new BasicStats(),
-        new PerBaseQualityScores(), new PerTileQualityScores(),
-        new PerSequenceQualityScores(), new PerBaseSequenceContent(),
-        new PerSequenceGCContent(), new NContent(),
-        new SequenceLengthDistribution(), os.duplicationLevelModule(), os,
-        new AdapterContent(), new KmerContent());
+    final List<AbstractQCModule> modules =
+        new ArrayList<>(Arrays.asList(new BasicStats(),
+            new PerBaseQualityScores(), new PerTileQualityScores(),
+            new PerSequenceQualityScores(), new PerBaseSequenceContent(),
+            new PerSequenceGCContent(), new NContent(),
+            new SequenceLengthDistribution(), os.duplicationLevelModule(), os,
+            new AdapterContent(), new KmerContent()));
 
     // Process sequences
     processSequences(modules, seqFile);
@@ -326,11 +338,11 @@ public class FastQCModule extends AbstractModule {
         : singletonList((AbstractQCModule) new EmptyFileQC(inputFile));
 
     // Set the description of the context
-    status.setDescription(
-        "Create FastQC report on " + inputFile + " in " + outputFile.getName());
+    status.setDescription("Create FastQC report on "
+        + inputFile + " in " + htmlOutputFile.getName());
 
     // Create the report
-    createReport(reportModules, seqFile, outputFile, tmpDir);
+    createReport(reportModules, seqFile, htmlOutputFile, zipOutputFile, tmpDir);
 
     // Keep module data is now unnecessary
     modules.clear();
@@ -361,14 +373,16 @@ public class FastQCModule extends AbstractModule {
    * Creates the report.
    * @param modules the modules
    * @param seqFile the sequence file
-   * @param reportFile the report file
+   * @param htmlReportFile the report file
+   * @param zipReportFile the report file
    * @param tempDirectory temporary directory
    * @throws IOException Signals that an I/O exception has occurred.
    * @throws XMLStreamException the XML stream exception
    */
   private void createReport(final List<AbstractQCModule> modules,
-      final SequenceFile seqFile, final DataFile reportFile,
-      final File tempDirectory) throws IOException, XMLStreamException {
+      final SequenceFile seqFile, final DataFile htmlReportFile,
+      final DataFile zipOutputFile, final File tempDirectory)
+      throws IOException, XMLStreamException {
 
     // Get the report extension
     final String reportExtension =
@@ -383,28 +397,41 @@ public class FastQCModule extends AbstractModule {
         modules.toArray(new QCModule[modules.size()]), reportTempFile);
 
     // Report zip filename
-    final String baseFilename = reportFile.getName().substring(0,
-        reportFile.getName().length() - reportExtension.length());
+    final String baseFilename =
+        StringUtils.filenameWithoutExtension(reportTempFile.getName());
 
-    // Remove zip file
+    // Define the path of the ZIP directory
+    final File zipDir = new File(reportTempFile.getParentFile(), baseFilename);
 
+    // Define the path of the ZIP file
     final File zipFile =
-        new File(reportTempFile.getParent(), baseFilename + ".zip");
+        new File(zipDir.getParentFile(), baseFilename + ".zip");
+
+    // Remove original zip file
     if (!zipFile.delete()) {
-      getLogger()
-          .warning("Unable to remove FastQC output zip file: " + zipFile);
+      getLogger().warning(
+          "Unable to remove original FastQC output zip file: " + zipFile);
     }
 
-    // Remove directory file
-    final File zipDir = new File(reportTempFile.getParent(), baseFilename);
+    // Recreate the zip file
+    zipDirectory(zipDir, zipFile,
+        StringUtils.filenameWithoutExtension(htmlReportFile.getName()));
 
+    // Remove directory file
     if (!FileUtils.recursiveDelete(zipDir)) {
       getLogger()
           .warning("Unable to remove FastQC output directory: " + zipDir);
     }
 
     // Copy the temporary file to the real output file
-    DataFiles.copy(new DataFile(reportTempFile), reportFile);
+    DataFiles.copy(new DataFile(reportTempFile), htmlReportFile);
+    DataFiles.copy(new DataFile(zipFile), zipOutputFile);
+
+    // Remove rezipped zip file
+    if (!zipFile.delete()) {
+      getLogger().warning(
+          "Unable to remove rezipped FastQC output zip file: " + zipFile);
+    }
 
     // Remove the temporary file
     if (!reportTempFile.delete()) {
@@ -412,6 +439,23 @@ public class FastQCModule extends AbstractModule {
           "Unable to remove FastQC temporary output file: " + reportTempFile);
     }
 
+  }
+
+  /**
+   * Zip a directory.
+   * @param directory the directory to zip
+   * @param zipFile the ZIP file
+   * @param subdirName the name of the directory to zip in the ZIP file
+   * @throws IOException if an error occurs while zipping the file
+   */
+  private static void zipDirectory(final File directory, final File zipFile,
+      final String subdirName) throws IOException {
+
+    final ZipOutputStream out =
+        new ZipOutputStream(new FileOutputStream(zipFile));
+
+    FileUtils.zipFolder(directory, subdirName + '/', out, false);
+    out.close();
   }
 
 }

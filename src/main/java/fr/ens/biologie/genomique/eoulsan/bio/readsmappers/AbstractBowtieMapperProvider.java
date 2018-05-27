@@ -35,27 +35,26 @@ import java.util.List;
 import com.google.common.collect.Lists;
 
 import fr.ens.biologie.genomique.eoulsan.core.Version;
-import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 
 /**
  * This class define a wrapper on the Bowtie mapper.
  * @since 2.0
  * @author Laurent Jourdren
  */
-public abstract class AbstractBowtieReadsMapper
-    extends AbstractSequenceReadsMapper {
+public abstract class AbstractBowtieMapperProvider
+    extends AbstractMapperProvider {
 
   protected static final String SYNC =
-      AbstractBowtieReadsMapper.class.getName();
+      AbstractBowtieMapperProvider.class.getName();
 
-  abstract protected String getExtensionIndexFile();
+  private static final String SHORT_INDEX_FLAVOR = "standard";
+  private static final String LARGE_INDEX_FLAVOR = "large-index";
+
+  abstract protected String getExtensionIndexFile(final EntryMapping mapping);
 
   @Override
-  abstract protected String getIndexerExecutable();
-
-  @Override
-  public boolean isSplitsAllowed() {
-    return true;
+  public String getDefaultFlavor() {
+    return SHORT_INDEX_FLAVOR;
   }
 
   @Override
@@ -64,22 +63,17 @@ public abstract class AbstractBowtieReadsMapper
   }
 
   @Override
-  protected boolean checkIfFlavorExists() {
+  public boolean checkIfFlavorExists(final MapperInstance mapperInstance) {
 
-    final String flavor = getMapperFlavorToUse();
-
-    if (flavor == null) {
+    if (mapperInstance.getFlavor() == null) {
       return true;
     }
 
-    switch (flavor.trim().toLowerCase()) {
-    case "":
+    switch (mapperInstance.getFlavor().trim().toLowerCase()) {
     case SHORT_INDEX_FLAVOR:
-      setFlavor(SHORT_INDEX_FLAVOR);
       return true;
 
     case LARGE_INDEX_FLAVOR:
-      setFlavor(LARGE_INDEX_FLAVOR);
       return true;
 
     default:
@@ -87,13 +81,14 @@ public abstract class AbstractBowtieReadsMapper
     }
   }
 
-  protected boolean isLongIndexFlavor(final Version firstFlavoredVersion) {
+  protected boolean isLongIndexFlavor(final EntryMapping mapping,
+      final Version firstFlavoredVersion) {
 
-    final Version currentVersion = new Version(getMapperVersionToUse());
+    final Version currentVersion = new Version(mapping.getVersion());
 
     if (currentVersion.greaterThanOrEqualTo(firstFlavoredVersion)) {
 
-      final String flavor = getMapperFlavorToUse();
+      final String flavor = mapping.getFlavor();
 
       return flavor != null
           && LARGE_INDEX_FLAVOR.equals(flavor.trim().toLowerCase());
@@ -104,31 +99,35 @@ public abstract class AbstractBowtieReadsMapper
 
   /**
    * Get the name of a bowtie flavored binary.
+   * @param version mapper version
+   * @param flavor mapper flavor
    * @param binary the binary
    * @param firstFlavoredVersion first version of Bowtie to be flavored
    * @return the flavored binary name
    */
-  protected String flavoredBinary(final String binary,
-      final Version firstFlavoredVersion) {
+  protected String flavoredBinary(final String version, final String flavor,
+      final String binary, final Version firstFlavoredVersion) {
 
-    return flavoredBinary(binary, binary, firstFlavoredVersion);
+    return flavoredBinary(version, flavor, binary, binary,
+        firstFlavoredVersion);
   }
 
   /**
    * Get the name of a bowtie flavored binary.
+   * @param version mapper version
+   * @param flavor mapper flavor
    * @param binary the binary
    * @param newBinary the binary name for the new versions
    * @param firstFlavoredVersion first version of Bowtie to be flavored
    * @return the flavored binary name
    */
-  protected String flavoredBinary(final String binary, final String newBinary,
+  protected String flavoredBinary(final String version, final String flavor,
+      final String binary, final String newBinary,
       final Version firstFlavoredVersion) {
 
-    final Version currentVersion = new Version(getMapperVersionToUse());
+    final Version currentVersion = new Version(version);
 
     if (currentVersion.greaterThanOrEqualTo(firstFlavoredVersion)) {
-
-      final String flavor = getMapperFlavorToUse();
 
       if (flavor != null
           && LARGE_INDEX_FLAVOR.equals(flavor.trim().toLowerCase())) {
@@ -142,18 +141,20 @@ public abstract class AbstractBowtieReadsMapper
   }
 
   @Override
-  protected String internalGetMapperVersion() {
+  public String readBinaryVersion(final MapperInstance mapperInstance) {
 
     try {
       final String bowtiePath;
 
       synchronized (SYNC) {
-        bowtiePath = install(getMapperExecutableName());
+        bowtiePath = mapperInstance.getExecutor()
+            .install(getMapperExecutableName(mapperInstance));
       }
 
       final List<String> cmd = Lists.newArrayList(bowtiePath, "--version");
 
-      final String s = executeToString(cmd);
+      final String s =
+          MapperUtils.executeToString(mapperInstance.getExecutor(), cmd);
       final String[] lines = s.split("\n");
       if (lines.length == 0) {
         return null;
@@ -173,20 +174,22 @@ public abstract class AbstractBowtieReadsMapper
   }
 
   @Override
-  protected List<String> getIndexerCommand(final String indexerPathname,
-      final String genomePathname) {
+  public List<String> getIndexerCommand(final File indexerFile,
+      final File genomeFile, final List<String> indexerArguments,
+      final int threads) {
 
     List<String> cmd = new ArrayList<>();
 
-    cmd.add(indexerPathname);
-    cmd.add(genomePathname);
+    cmd.add(indexerFile.getAbsolutePath());
+    cmd.add(genomeFile.getAbsolutePath());
     cmd.add("genome");
 
     return cmd;
   }
 
-  protected String bowtieQualityArgument() {
-    return BowtieReadsMapper.getBowtieQualityArgument(getFastqFormat());
+  protected String bowtieQualityArgument(final EntryMapping mapping) {
+    return BowtieMapperProvider
+        .getBowtieQualityArgument(mapping.getFastqFormat());
   }
 
   //
@@ -194,19 +197,21 @@ public abstract class AbstractBowtieReadsMapper
   //
 
   @Override
-  protected MapperProcess internalMapSE(final File archiveIndexDir)
-      throws IOException {
+  public MapperProcess mapSE(final EntryMapping mapping, final File inputFile,
+      final File errorFile, final File logFile) throws IOException {
 
     final String bowtiePath;
 
     synchronized (SYNC) {
-      bowtiePath = install(getMapperExecutableName());
+      bowtiePath = mapping.getExecutor()
+          .install(getMapperExecutableName(mapping.getMapperInstance()));
     }
 
     // Get index argument
-    final String index = getIndexArgument(archiveIndexDir);
+    final String index = getIndexArgument(mapping);
 
-    return new MapperProcess(this, false) {
+    return new MapperProcess(mapping.getName(), mapping.getExecutor(),
+        mapping.getTemporaryDirectory(), errorFile, false, inputFile) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -215,10 +220,10 @@ public abstract class AbstractBowtieReadsMapper
         final List<String> cmd = new ArrayList<>();
 
         // Add common arguments
-        cmd.addAll(createCommonArgs(bowtiePath, index));
+        cmd.addAll(createCommonArgs(mapping, bowtiePath, index));
 
         // Enable Index memory mapped in streaming mode
-        if (isMultipleInstancesEnabled()) {
+        if (mapping.isMultipleInstancesEnabled()) {
           cmd.add("--mm");
         }
 
@@ -233,26 +238,30 @@ public abstract class AbstractBowtieReadsMapper
       @Override
       protected File executionDirectory() {
 
-        return archiveIndexDir;
+        return mapping.getIndexDirectory();
       }
 
     };
   }
 
   @Override
-  protected MapperProcess internalMapPE(final File archiveIndexDir)
+  public MapperProcess mapPE(final EntryMapping mapping, final File inputFile1,
+      final File inputFile2, final File errorFile, final File logFile)
       throws IOException {
 
     final String bowtiePath;
 
     synchronized (SYNC) {
-      bowtiePath = install(getMapperExecutableName());
+      bowtiePath = mapping.getExecutor()
+          .install(getMapperExecutableName(mapping.getMapperInstance()));
     }
 
     // Get index argument
-    final String index = getIndexArgument(archiveIndexDir);
+    final String index = getIndexArgument(mapping);
 
-    return new MapperProcess(this, true) {
+    return new MapperProcess(mapping.getName(), mapping.getExecutor(),
+        mapping.getTemporaryDirectory(), errorFile, true, inputFile1,
+        inputFile2) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -261,10 +270,10 @@ public abstract class AbstractBowtieReadsMapper
         final List<String> cmd = new ArrayList<>();
 
         // Add common arguments
-        cmd.addAll(createCommonArgs(bowtiePath, index));
+        cmd.addAll(createCommonArgs(mapping, bowtiePath, index));
 
         // Enable Index memory mapped in streaming mode
-        if (isMultipleInstancesEnabled()) {
+        if (mapping.isMultipleInstancesEnabled()) {
           cmd.add("--mm");
         }
 
@@ -282,7 +291,7 @@ public abstract class AbstractBowtieReadsMapper
       @Override
       protected File executionDirectory() {
 
-        return archiveIndexDir;
+        return mapping.getIndexDirectory();
       }
 
     };
@@ -295,28 +304,16 @@ public abstract class AbstractBowtieReadsMapper
    * @return the Bowtie index argument
    * @throws IOException if an error occurs when getting directory path
    */
-  private String getIndexArgument(final File archiveIndexDir)
+  private String getIndexArgument(final EntryMapping mapping)
       throws IOException {
 
-    final String extensionIndexFile = getExtensionIndexFile();
+    final String extensionIndexFile = getExtensionIndexFile(mapping);
 
-    return new File(getIndexPath(archiveIndexDir, extensionIndexFile,
-        extensionIndexFile.length())).getName();
+    return MapperUtils.getIndexPath(getName(), mapping.getIndexDirectory(),
+        extensionIndexFile, extensionIndexFile.length()).getName();
   }
 
-  protected abstract List<String> createCommonArgs(final String bowtiePath,
-      final String index);
-
-  //
-  // Init
-  //
-
-  @Override
-  public void init(final File archiveIndexFile, final File archiveIndexDir,
-      final ReporterIncrementer incrementer, final String counterGroup)
-      throws IOException {
-
-    super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
-  }
+  protected abstract List<String> createCommonArgs(final EntryMapping mapping,
+      final String bowtiePath, final String index);
 
 }

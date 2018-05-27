@@ -79,6 +79,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.CommandWorkflowParser.StepOutputPort;
 
@@ -102,8 +103,8 @@ public class CommandWorkflowModel implements Serializable {
   private final Map<String, Map<String, StepPort>> stepInputs = new HashMap<>();
   private final Map<String, Set<Parameter>> stepParameters = new HashMap<>();
   private final Map<String, Boolean> stepSkipped = new HashMap<>();
-  private final Map<String, Boolean> stepDiscardOutput = new HashMap<>();
-  private final Map<String, Boolean> stepDiscardOutputAsap = new HashMap<>();
+  private final Map<String, Step.DiscardOutput> stepDiscardOutput =
+      new HashMap<>();
   private final Map<String, Integer> stepRequiredMemory = new HashMap<>();
   private final Map<String, Integer> stepRequiredProcessors = new HashMap<>();
   private final Map<String, String> stepDataProduct = new HashMap<>();
@@ -215,19 +216,16 @@ public class CommandWorkflowModel implements Serializable {
    * @param inputs where find step inputs
    * @param parameters parameters of the step
    * @param skipStep true if the step must be skip
-   * @param discardOutput true if the output of the step can be removed
-   * @param discardOutput true if the output of the step can be removed as soon
-   *          as possible
+   * @param discardOutput discard output value
    * @param requiredMemory required memory
    * @param requiredProcs required processors
    * @throws EoulsanException if an error occurs while adding the step
    */
   void addStep(final String stepId, final String module, final String version,
       final Map<String, StepOutputPort> inputs, final Set<Parameter> parameters,
-      final boolean skipStep, final boolean discardOutput,
-      final boolean discardOutputAsap, final int requiredMemory,
-      final int requiredProcs, final String dataProduct)
-      throws EoulsanException {
+      final boolean skipStep, final Step.DiscardOutput discardOutput,
+      final int requiredMemory, final int requiredProcs,
+      final String dataProduct) throws EoulsanException {
 
     if (module == null) {
       throw new EoulsanException("The module of the step is null.");
@@ -318,7 +316,6 @@ public class CommandWorkflowModel implements Serializable {
     this.stepParameters.put(stepIdLower, parameters);
     this.stepSkipped.put(stepIdLower, skipStep);
     this.stepDiscardOutput.put(stepIdLower, discardOutput);
-    this.stepDiscardOutputAsap.put(stepIdLower, discardOutputAsap);
     this.stepRequiredMemory.put(stepIdLower, requiredMemory);
     this.stepRequiredProcessors.put(stepIdLower, requiredProcs);
     this.stepDataProduct.put(stepIdLower, dataProduct);
@@ -396,23 +393,13 @@ public class CommandWorkflowModel implements Serializable {
   }
 
   /**
-   * Test if the output of the step can be removed.
+   * Get the discard output value.
    * @param stepId step id
-   * @return true if the output of the step can be removed
+   * @return the discard output value
    */
-  public boolean isStepDiscardOutput(final String stepId) {
+  public Step.DiscardOutput getStepDiscardOutput(final String stepId) {
 
     return this.stepDiscardOutput.get(stepId);
-  }
-
-  /**
-   * Test if the output of the step can be removed as soon as possible.
-   * @param stepId step id
-   * @return true if the output of the step can be removed
-   */
-  public boolean isStepDiscardOutputAsap(final String stepId) {
-
-    return this.stepDiscardOutputAsap.get(stepId);
   }
 
   /**

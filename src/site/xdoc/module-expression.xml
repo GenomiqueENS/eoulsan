@@ -97,6 +97,10 @@ regardless of whether it is mapped to the same or the opposite strand as the fea
 			&lt;value&gt;htseq-count&lt;/value&gt;
 		&lt;/parameter&gt;
 		&lt;parameter&gt;
+			&lt;name&gt;features.file.format&lt;/name&gt;
+			&lt;value&gt;gff3&lt;/value&gt;
+		&lt;/parameter&gt;
+		&lt;parameter&gt;
 			&lt;name&gt;genomic.type&lt;/name&gt;
 			&lt;value&gt;exon&lt;/value&gt;
 		&lt;/parameter&gt;

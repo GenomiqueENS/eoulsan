@@ -43,10 +43,10 @@ import java.util.UUID;
 import com.google.common.base.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.process.DockerImageInstance;
 import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
 import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess.AdvancedProcess;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 
 /**
  * This class define a mapper executor that executes process in Docker
@@ -128,12 +128,13 @@ public class DockerMapperExecutor implements MapperExecutor {
      * @param command command to execute
      * @param executionDirectory execution directory
      * @param stdout true if stdout will be read
+     * @param stdErrFile standard error file
      * @param redirectStderr redirect stderr to stdout
      * @param filesUsed files used by the process
      * @throws IOException if an error occurs while creating the object
      */
     private DockerResult(final List<String> command,
-        final File executionDirectory, boolean stdout,
+        final File executionDirectory, boolean stdout, final File stdErrFile,
         final boolean redirectStderr, File... filesUsed) throws IOException {
 
       checkNotNull(command, "command argument cannot be null");
@@ -159,16 +160,21 @@ public class DockerMapperExecutor implements MapperExecutor {
         this.stdoutFile = null;
       }
 
+      if (stdErrFile != null) {
+        newFilesUsed.add(stdErrFile);
+      }
+
       // Start container
       getLogger().fine("Start of the Docker container");
       // dockerClient.startContainer(containerId);
 
       final File nullFile = new File("/dev/null");
+      final File finalErrFile = stdErrFile == null ? nullFile : stdErrFile;
       final File[] files = newFilesUsed.toArray(new File[newFilesUsed.size()]);
 
       this.process = dockerConnection.start(
           convertCommand(command, this.stdoutFile, redirectStderr),
-          executionDirectory, null, null, nullFile, nullFile, false, files);
+          executionDirectory, null, null, nullFile, finalErrFile, false, files);
     }
   }
 
@@ -185,7 +191,8 @@ public class DockerMapperExecutor implements MapperExecutor {
 
     final List<String> command = newArrayList("which", executable);
 
-    final Result result = execute(command, null, false, false, (File[]) null);
+    final Result result =
+        execute(command, null, false, null, false, (File[]) null);
 
     return result.waitFor() == 0;
   }
@@ -201,13 +208,13 @@ public class DockerMapperExecutor implements MapperExecutor {
   @Override
   public Result execute(final List<String> command,
       final File executionDirectory, final boolean stdout,
-      final boolean redirectStderr, final File... filesUsed)
-      throws IOException {
+      final File stdErrFile, final boolean redirectStderr,
+      final File... filesUsed) throws IOException {
 
     checkNotNull(command, "executable argument cannot be null");
 
-    return new DockerResult(command, executionDirectory, stdout, redirectStderr,
-        filesUsed);
+    return new DockerResult(command, executionDirectory, stdout, stdErrFile,
+        redirectStderr, filesUsed);
   }
 
   //

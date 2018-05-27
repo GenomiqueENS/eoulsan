@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.checkers;
 
-import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GTF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
+import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GTF;
 import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.ATTRIBUTE_ID_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.COUNTER_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.FEATURES_FILE_FORMAT;
@@ -319,8 +319,7 @@ public class GFFChecker implements Checker {
    * @param gtfFormat true if the entry is in GTF format
    * @return the entry in the correct format
    */
-  private static final String formatEntry(final GFFEntry e,
-      final boolean gtfFormat) {
+  private static String formatEntry(final GFFEntry e, final boolean gtfFormat) {
 
     if (gtfFormat) {
       return e.toGTF();

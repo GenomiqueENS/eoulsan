@@ -6,11 +6,9 @@
   <splitter>fr.ens.biologie.genomique.eoulsan.splitermergers.BAMSplitter</splitter>
   <merger>fr.ens.biologie.genomique.eoulsan.splitermergers.BAMMerger</merger>
   <extensions>
-  	<extension default="true">.bam</extension>
+    <extension default="true">.bam</extension>
   </extensions>
-  
-  <toolshedgalaxy>
-  	<extension>bam</extension>    	
-  </toolshedgalaxy>
-  
+  <galaxy>
+    <formatname>bam</formatname>
+  </galaxy>
 </dataformat>

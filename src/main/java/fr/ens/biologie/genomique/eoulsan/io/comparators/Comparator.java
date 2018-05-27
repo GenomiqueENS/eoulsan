@@ -24,7 +24,6 @@
 package fr.ens.biologie.genomique.eoulsan.io.comparators;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -59,8 +58,7 @@ public interface Comparator {
    * @return boolean true if files are same.
    * @throws IOException if an error occurs while comparing the files.
    */
-  boolean compareFiles(final File fileA, final File fileB)
-      throws FileNotFoundException, IOException;
+  boolean compareFiles(final File fileA, final File fileB) throws IOException;
 
   /**
    * Compare two files no ordered, check if they are the same contents.

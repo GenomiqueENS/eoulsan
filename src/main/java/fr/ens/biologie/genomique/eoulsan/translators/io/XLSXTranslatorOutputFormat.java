@@ -37,6 +37,8 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.util.DefaultTempFileCreationStrategy;
+import org.apache.poi.util.TempFile;
 import org.apache.poi.xssf.streaming.SXSSFCell;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -53,14 +55,14 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
   private static final int MAX_LINES_IN_MEMORY = 10;
 
   private final OutputStream os;
-  private final SXSSFWorkbook wb = new SXSSFWorkbook(MAX_LINES_IN_MEMORY);
-  private final Sheet sheet = this.wb.createSheet("new sheet");
+  private final SXSSFWorkbook wb;
+  private final Sheet sheet;
   private final CellStyle defaultStyle;
   private final CellStyle headerStyle;
   private final CellStyle linkStyle;
   private int rowCount;
   private int colCount;
-  private Row row = this.sheet.createRow(this.rowCount++);
+  private Row row;
 
   @Override
   public void addHeaderField(final String fieldName) throws IOException {
@@ -147,14 +149,27 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
   /**
    * Public constructor.
    * @param os output stream
+   * @param temporaryDirectory the temporary directory to use
    */
-  public XLSXTranslatorOutputFormat(final OutputStream os) {
+  public XLSXTranslatorOutputFormat(final OutputStream os,
+      final File temporaryDirectory) {
 
     if (os == null) {
       throw new NullPointerException("The output stream is null");
     }
 
     this.os = os;
+
+    // Set the temporary directory to use
+    if (temporaryDirectory != null) {
+      TempFile.setTempFileCreationStrategy(
+          new DefaultTempFileCreationStrategy(temporaryDirectory));
+    }
+
+    // Initialize the workbench
+    this.wb = new SXSSFWorkbook(MAX_LINES_IN_MEMORY);
+    this.sheet = this.wb.createSheet("new sheet");
+    this.row = this.sheet.createRow(this.rowCount++);
 
     // Temporary files will be compressed
     this.wb.setCompressTempFiles(true);
@@ -188,11 +203,31 @@ public class XLSXTranslatorOutputFormat implements TranslatorOutputFormat {
 
   /**
    * Public constructor.
+   * @param os output stream
+   */
+  public XLSXTranslatorOutputFormat(final OutputStream os) {
+
+    this(os, null);
+  }
+
+  /**
+   * Public constructor.
    * @param file output file
    */
   public XLSXTranslatorOutputFormat(final File file) throws IOException {
 
-    this(new FileOutputStream(file));
+    this(new FileOutputStream(file), null);
+  }
+
+  /**
+   * Public constructor.
+   * @param file output file
+   * @param temporaryDirectory the temporary directory to use
+   */
+  public XLSXTranslatorOutputFormat(final File file,
+      final File temporaryDirectory) throws IOException {
+
+    this(new FileOutputStream(file), temporaryDirectory);
   }
 
 }

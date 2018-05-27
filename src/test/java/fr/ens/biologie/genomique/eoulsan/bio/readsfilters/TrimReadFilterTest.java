@@ -32,8 +32,6 @@ import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
-import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.ReadFilter;
-import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.TrimReadFilter;
 
 public class TrimReadFilterTest {
 

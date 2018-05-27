@@ -34,7 +34,8 @@ public abstract class AbstractExecutorInterpreter
   @Override
   public ToolExecutorResult execute(final List<String> commandLine,
       final File executionDirectory, File temporaryDirectory,
-      final File stdoutFile, final File stderrFile, final File... filesUsed) throws IOException {
+      final File stdoutFile, final File stderrFile, final File... filesUsed)
+      throws IOException {
 
     checkNotNull(commandLine, "commandLine argument cannot be null");
     checkNotNull(executionDirectory,
@@ -48,8 +49,9 @@ public abstract class AbstractExecutorInterpreter
         "execution directory does not exists or is not a directory: "
             + executionDirectory.getAbsolutePath());
 
-    final int exitValue = newSimpleProcess().execute(commandLine,
-        executionDirectory, temporaryDirectory, stdoutFile, stderrFile, filesUsed);
+    final int exitValue =
+        newSimpleProcess().execute(commandLine, executionDirectory,
+            temporaryDirectory, stdoutFile, stderrFile, filesUsed);
 
     return new ToolExecutorResult(commandLine, exitValue);
   }

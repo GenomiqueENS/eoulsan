@@ -1,3 +1,27 @@
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École normale supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
+ *
+ */
+
 package fr.ens.biologie.genomique.eoulsan.modules.generators;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -21,13 +45,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.Generator;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.STARReadsMapper;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.SequenceReadsMapper;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.STARMapperProvider;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
@@ -60,11 +83,10 @@ public class STARIndexGeneratorModule extends AbstractModule {
 
   public static final String MODULE_NAME = "starindexgenerator";
 
-  private static final int OVERHANG_DEFAULT = 100;
+  private final Mapper mapper =
+      Mapper.newMapper(STARMapperProvider.MAPPER_NAME);
 
-  private final SequenceReadsMapper mapper = new STARReadsMapper();
-
-  private Integer overhang = OVERHANG_DEFAULT;
+  private Integer overhang = null;
   private boolean gtfFile;
   private boolean gtfFormat;
   private String chrStartEndFilename;
@@ -73,9 +95,6 @@ public class STARIndexGeneratorModule extends AbstractModule {
   private Integer genomeSAindexNbases;
   private Integer genomeChrBinNbits;
   private boolean useExpressionStepParameters;
-
-  private int localThreads;
-  private int maxLocalThreads;
 
   @Override
   public String getName() {
@@ -163,11 +182,11 @@ public class STARIndexGeneratorModule extends AbstractModule {
         break;
 
       case "local.threads":
-        this.localThreads = p.getIntValueGreaterOrEqualsTo(1);
+        Modules.removedParameter(context, p);
         break;
 
       case "max.local.threads":
-        this.maxLocalThreads = p.getIntValueGreaterOrEqualsTo(1);
+        Modules.removedParameter(context, p);
         break;
 
       case "features.file.format":
@@ -346,13 +365,12 @@ public class STARIndexGeneratorModule extends AbstractModule {
             this.genomeChrBinNbits.toString());
       }
 
-      status
-          .setProgressMessage(this.mapper.getMapperName() + " index creation");
+      status.setProgressMessage(this.mapper.getName() + " index creation");
 
       // Create the index
       GenomeMapperIndexGeneratorModule.execute(this.mapper, context,
           additionalArguments.toString(), additionalDescription,
-          Common.getThreadsNumber(this.localThreads, this.maxLocalThreads));
+          context.getCurrentStep().getRequiredProcessors());
 
       // Remove temporary files
       for (File temporaryFile : temporaryFiles) {

@@ -51,10 +51,8 @@ public abstract class BundledScriptBpipeTaskScheduler
 
     this.schedulerName = schedulerName;
 
-    final File eoulsanScript =
-        new File(Main.getInstance().getEoulsanScriptPath());
-
-    final File binDir = new File(eoulsanScript.getParent(), "bin");
+    final File binDir =
+        new File(Main.getInstance().getEoulsanDirectory(), "bin");
 
     this.commandWrapperFile = new File(binDir, commandWrapperScript);
   }

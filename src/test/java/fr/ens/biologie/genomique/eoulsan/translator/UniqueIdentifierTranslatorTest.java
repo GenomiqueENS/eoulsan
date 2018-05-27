@@ -21,7 +21,8 @@ public class UniqueIdentifierTranslatorTest {
   private static final String[] ARRAY_ROW_FOUR = {"D", "4", "D4", "0"};
   private static final String[] ARRAY_ROW_FIVE = {"E", "4", "D4"};
   private static final String[] ARRAY_UNIQUE_IDS = {"A", "B", "C"};
-  MultiColumnTranslator transl = new MultiColumnTranslator(ARRAY_FIELD);
+  private final MultiColumnTranslator transl =
+      new MultiColumnTranslator(ARRAY_FIELD);
 
   @Before
   public void setUp() throws Exception {

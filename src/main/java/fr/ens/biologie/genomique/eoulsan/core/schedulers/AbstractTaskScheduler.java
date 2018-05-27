@@ -39,11 +39,11 @@ import com.google.common.collect.Multimap;
 
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.AbstractStep;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.StepResult;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.StepStatus;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResultImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskRunner;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.StepResult;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.StepStatus;
 
 /**
  * This class define an abstract task scheduler.

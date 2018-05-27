@@ -1,9 +1,9 @@
 <dataformat>
-	<name>fastqc_report_html</name>
-	<description>FastQC report in html format</description>
-	<prefix>fastqcreport</prefix>
-	<maxfilescount>2</maxfilescount>
-	<extensions>
-		<extension default="true">.html</extension>
-	</extensions>
+  <name>fastqc_report_html</name>
+  <description>FastQC report in html format</description>
+  <prefix>fastqcreport</prefix>
+  <maxfilescount>2</maxfilescount>
+  <extensions>
+    <extension default="true">.html</extension>
+  </extensions>
 </dataformat>

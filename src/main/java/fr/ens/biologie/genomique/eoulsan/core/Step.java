@@ -28,6 +28,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+
 /**
  * This interface define a step of the workflow.
  * @author Laurent Jourdren
@@ -98,6 +100,62 @@ public interface Step extends Serializable {
       this.priority = priority;
       this.defaultStepId = defaultStepId;
     }
+  }
+
+  /**
+   * This enum define the value of the discard output attribute of the step tag
+   * in the Eoulsan workflow file.
+   * @author Laurent Jourdren
+   * @since 2.0
+   */
+  enum DiscardOutput {
+
+    NO, ASAP, SUCCESS;
+
+    /**
+     * Test if result must be copied to output.
+     * @return true if result must be copied to output
+     */
+    public boolean isCopyResultsToOutput() {
+
+      return this == NO;
+    }
+
+    /**
+     * This method define a parser for the values of the "discardoutput"
+     * attribute of the Eoulsan workflow.
+     * @param s the input string
+     * @return a DiscardOutput value
+     * @throws EoulsanException if the attribute value is unknown
+     */
+    public static DiscardOutput parse(final String s) throws EoulsanException {
+
+      if (s == null) {
+        throw new NullPointerException("s argument cannot be null");
+      }
+
+      switch (s.toLowerCase().trim()) {
+
+      case "no":
+      case "false":
+      case "":
+        return NO;
+
+      case "asap":
+        return ASAP;
+
+      case "yes":
+      case "completed":
+      case "true":
+        return SUCCESS;
+
+      default:
+        throw new EoulsanException(
+            "Unknown value for discardouput attribute: " + s);
+      }
+
+    }
+
   }
 
   /**

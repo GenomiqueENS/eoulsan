@@ -3,6 +3,6 @@
   <description>ods annotated expression results format</description>
   <prefix>annotatedexpression</prefix>
   <extensions>
-  	<extension default="true">.ods</extension>
+    <extension default="true">.ods</extension>
   </extensions>
 </dataformat>

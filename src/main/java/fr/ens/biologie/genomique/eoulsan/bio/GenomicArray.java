@@ -25,7 +25,6 @@
 package fr.ens.biologie.genomique.eoulsan.bio;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -846,8 +845,7 @@ public class GenomicArray<T> {
    * Save the annotation.
    * @param outputFile Output file
    */
-  public void save(final File outputFile)
-      throws FileNotFoundException, IOException {
+  public void save(final File outputFile) throws IOException {
 
     if (outputFile == null) {
       throw new NullPointerException("outputFile argument cannot be null");
@@ -885,8 +883,7 @@ public class GenomicArray<T> {
    * Load the annotation.
    * @param inputFile input file
    */
-  public void load(final File inputFile)
-      throws FileNotFoundException, IOException {
+  public void load(final File inputFile) throws IOException {
 
     if (inputFile == null) {
       throw new NullPointerException("inputFile argument cannot be null");

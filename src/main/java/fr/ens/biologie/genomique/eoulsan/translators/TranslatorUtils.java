@@ -62,8 +62,7 @@ public class TranslatorUtils {
    */
   public static void addTranslatorFields(final File inputFile,
       final int fieldToTranslate, final Translator translator,
-      final TranslatorOutputFormat of)
-      throws FileNotFoundException, IOException {
+      final TranslatorOutputFormat of) throws IOException {
 
     addTranslatorFields(new FileInputStream(inputFile), fieldToTranslate,
         translator, of);

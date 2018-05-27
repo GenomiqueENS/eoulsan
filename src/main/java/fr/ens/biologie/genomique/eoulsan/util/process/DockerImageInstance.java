@@ -12,7 +12,7 @@ public interface DockerImageInstance extends SimpleProcess {
   /**
    * Progression handler interface.
    */
-  public interface ProgressHandler {
+  interface ProgressHandler {
 
     /**
      * Update the progression.

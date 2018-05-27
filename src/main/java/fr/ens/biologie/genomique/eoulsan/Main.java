@@ -64,6 +64,7 @@ public abstract class Main {
 
   public static final String EOULSAN_CLASSPATH_JVM_ARG = "eoulsan.classpath";
   public static final String EOULSAN_SCRIPT = "eoulsan.launch.script.path";
+  public static final String EOULSAN_PATH = "eoulsan.path";
   public static final String EOULSAN_MEMORY = "eoulsan.memory";
 
   private static Main main;
@@ -156,9 +157,13 @@ public abstract class Main {
    */
   public File getEoulsanDirectory() {
 
-    final File scriptFile = new File(getEoulsanScriptPath());
+    String eoulsanPath = System.getProperty(EOULSAN_PATH);
 
-    return scriptFile.getParentFile();
+    if (eoulsanPath == null) {
+      throw new NullPointerException("Unknown install path of Eoulsan");
+    }
+
+    return new File(eoulsanPath);
   }
 
   /**
@@ -454,6 +459,14 @@ public abstract class Main {
     getLogger().info(Globals.APP_NAME
         + " Startup script: " + (getLaunchScriptPath() == null
             ? "(no startup script)" : getLaunchScriptPath()));
+
+    // Eoulsan installation directory
+    getLogger()
+        .info(Globals.APP_NAME
+            + " installation directory: "
+            + (getEoulsanDirectory() == null
+                ? "(installation directory not found)"
+                : getEoulsanDirectory()));
 
     // Command line arguments
     final List<String> args = new ArrayList<>();

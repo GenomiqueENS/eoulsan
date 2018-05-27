@@ -1,6 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.translator;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
@@ -21,8 +21,10 @@ public class ConcatTranslatorTest {
   private static final String[] ARRAY_ROW_THREE = {"C", "3.0", "C3", "0"};
   private static final String[] ARRAY_ROW_FOUR = {"D", "4", "D4", "0"};
   private static final String[] ARRAY_ROW_FIVE = {"E", "4", "D4"};
-  MultiColumnTranslator translA = new MultiColumnTranslator(ARRAY_FIELD_A);
-  MultiColumnTranslator translB = new MultiColumnTranslator(ARRAY_FIELD_B);
+  private final MultiColumnTranslator translA =
+      new MultiColumnTranslator(ARRAY_FIELD_A);
+  private final MultiColumnTranslator translB =
+      new MultiColumnTranslator(ARRAY_FIELD_B);
 
   @Before
   public void setUp() throws Exception {

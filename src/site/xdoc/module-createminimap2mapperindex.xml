@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École normale supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
+ *
+ */
+-->
+<document>
+
+  <properties>
+    <title>Create Minimap2 mapper index module</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
+
+
+
+  <body>
+
+    <section name="Create Minimap2 mapper index module">
+
+      <p>This module allow to create a Minimap2 mapper index with custom options. If this module is not declared in the workflow file, the default
+       mapper index generator will be used if you want to use Minimap2 as mapper.</p>
+
+      <ul>
+        <li><b>Internal name</b>: minimap2indexgenerator</li>
+        <li><b>Available</b>: Both local and distributed mode</li>
+
+        <br/>
+        <li><b>Input ports</b>:
+           <ul>
+             <li><b>genome</b>: genome sequence file (format: genome_fasta)</li>
+             <li><b>genomedescription</b>: genome description (automatically generated from genome sequence file)</li>
+           </ul>
+         </li>
+
+         <br/>
+         <li><b>Output port</b>:
+           <ul>
+             <li><b>output</b>: genome mapper index</li>
+           </ul>
+         </li>
+
+         <br/>
+        <li><b>Mandatory parameters</b>: none</li>
+        <br/>
+
+         <li><b>Optional parameters</b>:</li>
+           <table>
+                <tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
+                <tr><td>indexer.arguments</td><td>string</td><td>Specifies the indexer arguments to use to build the index</td><td>Not set</td></tr>
+           </table>
+         <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Create Minimap2 index --&gt;
+&lt;step skip="false"&gt;
+	&lt;module&gt;minimap2indexgenerator&lt;/module&gt;
+	&lt;parameters&gt;
+		&lt;parameter&gt;
+			&lt;name&gt;indexer.arguments&lt;/name&gt;
+			&lt;value&gt;-x splice&lt;/value&gt;
+		&lt;/parameter&gt;
+	&lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
+      </ul>
+    </section>
+
+
+  </body>
+
+</document>

@@ -41,6 +41,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.design.io.DefaultDesignReader;
 import fr.ens.biologie.genomique.eoulsan.design.io.DesignReader;
+import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 
 /**
  * Utils methods for Design.
@@ -474,6 +475,7 @@ public final class DesignUtils {
     }
 
     final DataFormatRegistry registry = DataFormatRegistry.getInstance();
+    final Set<String> createdLinks = new HashSet<>();
 
     //
     // Design metadata
@@ -489,8 +491,8 @@ public final class DesignUtils {
 
     final DesignMetadata dmd = design.getMetadata();
     for (final String field : designKeysToModify) {
-      dmd.set(field,
-          replaceLocalPathBySymlinks(dmd.getAsList(field), symlinksDir));
+      dmd.set(field, replaceLocalPathBySymlinks(dmd.getAsList(field),
+          symlinksDir, createdLinks));
     }
 
     //
@@ -511,14 +513,23 @@ public final class DesignUtils {
 
       final SampleMetadata smd = s.getMetadata();
       for (final String field : sampleKeysToModify) {
-        smd.set(field,
-            replaceLocalPathBySymlinks(smd.getAsList(field), symlinksDir));
+        smd.set(field, replaceLocalPathBySymlinks(smd.getAsList(field),
+            symlinksDir, createdLinks));
       }
     }
   }
 
+  /**
+   * Replace values with the path of a symbolic link that will be created by
+   * this method.
+   * @param values the values to change
+   * @param symlinksDir the directory of the symbolic links
+   * @param createdLinks a set with the name of the created symbolic link
+   * @return a list with the new values
+   * @throws IOException if the link cannot be created
+   */
   private static List<String> replaceLocalPathBySymlinks(List<String> values,
-      final DataFile symlinksDir) throws IOException {
+      final DataFile symlinksDir, Set<String> createdLinks) throws IOException {
 
     final List<String> result = new ArrayList<>();
 
@@ -528,7 +539,9 @@ public final class DesignUtils {
 
       if (inFile.isLocalFile()) {
 
-        final DataFile outFile = new DataFile(symlinksDir, inFile.getName());
+        String linkName = findLinkFilename(createdLinks, inFile.getName());
+
+        final DataFile outFile = new DataFile(symlinksDir, linkName);
 
         if (!inFile.exists()) {
           throw new IOException("File not exists: " + inFile);
@@ -545,13 +558,48 @@ public final class DesignUtils {
           throw new IOException("Cannot create symlink: " + outFile, e);
         }
 
-        result.add(inFile.getName());
+        createdLinks.add(linkName);
+        result.add(outFile.getName());
       } else {
         result.add(inputPath);
       }
     }
 
     return result;
+  }
+
+  /**
+   * Find a link filename that has not been yet used.
+   * @param createdLinks the created links
+   * @param filename the filename to create
+   * @return the filename to create
+   */
+  private static String findLinkFilename(Set<String> createdLinks,
+      String filename) {
+
+    if (!createdLinks.contains(filename)) {
+      return filename;
+    }
+
+    // Get the basename of the file and its extensions
+    String compressionExtension = StringUtils.compressionExtension(filename);
+    String extension =
+        StringUtils.extensionWithoutCompressionExtension(filename);
+    String basename = filename.substring(0,
+        filename.length() - compressionExtension.length() - extension.length());
+
+    int count = 1;
+    String newName;
+
+    // Find a non used filename
+    do {
+
+      count++;
+      newName = basename + '_' + count + extension + compressionExtension;
+
+    } while (createdLinks.contains(newName));
+
+    return newName;
   }
 
   /**

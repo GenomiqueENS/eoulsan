@@ -7,7 +7,7 @@ class UnmodifiableExperimentSample implements ExperimentSample, Serializable {
 
   private static final long serialVersionUID = -8223606436283749785L;
 
-  private ExperimentSample experimentSample;
+  private final ExperimentSample experimentSample;
 
   @Override
   public Sample getSample() {

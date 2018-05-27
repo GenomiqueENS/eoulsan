@@ -62,7 +62,7 @@ public interface ToolElement {
 
   /**
    * Sets the value.
-   * @param stepParameter the new parameter eoulsan
+   * @param value the value
    * @throws EoulsanException the eoulsan exception
    */
   void setValue(final String value) throws EoulsanException;

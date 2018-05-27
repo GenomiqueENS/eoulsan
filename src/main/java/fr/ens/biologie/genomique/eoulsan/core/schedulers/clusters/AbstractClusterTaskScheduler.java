@@ -74,7 +74,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
    */
   private static class StatusUpdateWaitingQueue {
 
-    private BlockingQueue<TaskThread> queue = new LinkedBlockingDeque<>();
+    private final BlockingQueue<TaskThread> queue = new LinkedBlockingDeque<>();
 
     public void waitTurn(TaskThread l) throws InterruptedException {
 
@@ -177,10 +177,10 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
     }
 
     /**
-     * Create the job name.
+     * Get the job name.
      * @return the job name
      */
-    private String createJobName() {
+    private String getJobName() {
 
       return this.context.getJobId() + "-" + this.taskPrefix;
     }
@@ -244,7 +244,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
             this.context.getCurrentStep().getRequiredProcessors();
 
         // Submit Job
-        this.jobId = submitJob(createJobName(), createJobCommand(), taskFile,
+        this.jobId = submitJob(getJobName(), createJobCommand(), taskFile,
             this.context.getId(), requiredMemory, requiredProcessors);
 
         // Create a file with the id of the submitted job
@@ -265,6 +265,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
 
           case COMPLETE:
             completed = true;
+            break;
 
           case WAITING:
           case RUNNING:
@@ -290,6 +291,14 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
       } catch (IOException | EoulsanException | InterruptedException e) {
         result = TaskRunner.createStepResult(this.context, e);
       } finally {
+
+        // Fall back if result is null
+        if (result == null) {
+          result = TaskRunner.createStepResult(this.context,
+              new IllegalStateException("Result is null for task #"
+                  + this.context.getId() + " in step "
+                  + getStep(this.context).getId()));
+        }
 
         // Change task state
         afterExecuteTask(this.context, result);
@@ -351,6 +360,9 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
       this.context = context;
       this.taskDir = context.getTaskOutputDirectory().toFile();
       this.taskPrefix = context.getTaskFilePrefix();
+
+      // Set Thread name
+      setName("TaskThead " + getJobName());
     }
   }
 

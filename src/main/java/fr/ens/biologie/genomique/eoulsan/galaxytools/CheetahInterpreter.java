@@ -126,9 +126,8 @@ public class CheetahInterpreter {
     try (final PythonInterpreter interpreter = new PythonInterpreter()) {
 
       final PyObject nameSpace = createNameSpace(this.variables);
-      final String template = this.cheetahScript;
 
-      interpreter.set("template", template);
+      interpreter.set("template", this.cheetahScript);
       interpreter.set("nameSpace", nameSpace);
 
       final String pythonScript = "from Cheetah.Template import Template\n"
@@ -157,7 +156,8 @@ public class CheetahInterpreter {
 
       for (Map.Entry<String, String> e : plateholders.entrySet()) {
 
-        List<String> fields = GuavaCompatibility.splitToList(Splitter.on('.'), e.getKey());
+        List<String> fields =
+            GuavaCompatibility.splitToList(Splitter.on('.'), e.getKey());
 
         PyStrDictionary dict = result;
 

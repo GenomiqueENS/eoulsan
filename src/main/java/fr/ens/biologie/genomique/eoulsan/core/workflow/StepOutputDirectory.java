@@ -76,8 +76,8 @@ class StepOutputDirectory {
     checkNotNull(module, "module argument cannot be null");
 
     if (this.hadoopMode
-        && ExecutionMode
-            .getExecutionMode(module.getClass()).isHadoopCompatible()) {
+        && ExecutionMode.getExecutionMode(module.getClass())
+            .isHadoopCompatible()) {
       return workflow.getHadoopWorkingDirectory();
     }
 

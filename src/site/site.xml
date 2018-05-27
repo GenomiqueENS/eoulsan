@@ -70,6 +70,7 @@
 
 			<item name="Built-in modules" href="/modules.html" collapse="true">
 				<item name="Create mapper index" href="/module-createmapperindex.html" />
+				<item name="Create Minimap2 mapper index" href="/module-createminimap2mapperindex.html" />
 				<item name="Create STAR mapper index" href="/module-createstarmapperindex.html" />
 				<item name="FastQC" href="/module-fastqc.html" />
 				<item name="Filter reads" href="/module-filterreads.html" />
@@ -81,6 +82,7 @@
 				<item name="Sam2Fastq" href="module-sam2fastq.html" />
 				<item name="Expression" href="/module-expression.html" />
 				<item name="Expression annotation" href="/module-expressionresultsannotation.html" />
+				<item name="MultiQC" href="/module-multiqc.html" />
 				<item name="Normalization" href="/module-normalization.html" />
 				<item name="Differential analysis" href="/module-diffana.html" />
 				<item name="Differential analysis annotation" href="/module-diffanaresultsannotation.html" />

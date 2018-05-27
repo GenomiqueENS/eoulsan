@@ -33,8 +33,6 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.io.ByteCountInputStream;
-
 public class ByteCountInputStreamTest {
 
   @Test

@@ -22,8 +22,8 @@ public class SAMRecordReader extends RecordReader<Text, Text> {
 
   private final TaskAttemptContext context;
   private final LineRecordReader lrr = new LineRecordReader();
-  private Text key = new Text();
-  private Text value = new Text();
+  private final Text key = new Text();
+  private final Text value = new Text();
 
   @Override
   public synchronized void close() throws IOException {

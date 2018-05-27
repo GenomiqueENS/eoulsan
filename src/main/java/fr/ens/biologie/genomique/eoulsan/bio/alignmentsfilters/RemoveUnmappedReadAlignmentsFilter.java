@@ -24,11 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters;
 
-import htsjdk.samtools.SAMRecord;
-
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This alignment filter remove all the unmapped alignments.
  * @since 1.1
@@ -36,11 +31,10 @@ import java.util.List;
  * @author Claire Wallon
  */
 public class RemoveUnmappedReadAlignmentsFilter
-    extends AbstractReadAlignmentsFilter {
+    extends AbstractRemoveFlagReadAlignmentsFilter {
 
   public static final String FILTER_NAME = "removeunmapped";
-
-  private final List<SAMRecord> recordsToRemove = new ArrayList<>();
+  private static final int FLAG_VALUE = 0x4;
 
   @Override
   public String getName() {
@@ -50,52 +44,13 @@ public class RemoveUnmappedReadAlignmentsFilter
 
   @Override
   public String getDescription() {
-
     return "Remove all the unmapped alignments";
   }
 
-  @Override
-  public void filterReadAlignments(final List<SAMRecord> records) {
-
-    if (records == null || records.isEmpty()) {
-      return;
-    }
-
-    // single-end mode
-    if (!records.get(0).getReadPairedFlag()) {
-      for (SAMRecord r : records) {
-        // storage in 'result' of records that do not pass the filter
-        if (r.getReadUnmappedFlag()) {
-          this.recordsToRemove.add(r);
-        }
-      }
-    }
-
-    // paired-end mode
-    else {
-      for (int counterRecord = 0; counterRecord < records.size()
-          - 1; counterRecord += 2) {
-
-        // storage in 'result' of records that do not pass the filter
-        if (records.get(counterRecord).getReadUnmappedFlag()
-            || records.get(counterRecord + 1).getReadUnmappedFlag()) {
-
-          // records are stored 2 by 2 because of the paired-end mode
-          this.recordsToRemove.add(records.get(counterRecord));
-          this.recordsToRemove.add(records.get(counterRecord + 1));
-        }
-      }
-    }
-
-    // all records that do not pass the filter are removed
-    records.removeAll(this.recordsToRemove);
-    this.recordsToRemove.clear();
+  /**
+   * Public constructor.
+   */
+  public RemoveUnmappedReadAlignmentsFilter() {
+    super(FLAG_VALUE);
   }
-
-  @Override
-  public String toString() {
-
-    return this.getClass().getSimpleName() + "{name=" + getName() + "}";
-  }
-
 }

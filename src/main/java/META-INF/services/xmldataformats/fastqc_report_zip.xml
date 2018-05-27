@@ -1,0 +1,9 @@
+<dataformat>
+  <name>fastqc_report_zip</name>
+  <description>FastQC report in zip format</description>
+  <prefix>fastqcreport</prefix>
+  <maxfilescount>2</maxfilescount>
+  <extensions>
+    <extension default="true">.zip</extension>
+  </extensions>
+</dataformat>

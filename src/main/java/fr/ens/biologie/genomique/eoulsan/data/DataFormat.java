@@ -110,7 +110,7 @@ public interface DataFormat {
    * Get the extension from Galaxy tool file of the DataType.
    * @return extension from Galaxy tool
    */
-  List<String> getGalaxyToolExtensions();
+  List<String> getGalaxyFormatNames();
 
   /**
    * Test if a generator is available for this DataFormat.

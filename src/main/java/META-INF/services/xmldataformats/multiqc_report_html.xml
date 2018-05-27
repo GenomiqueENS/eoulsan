@@ -1,0 +1,9 @@
+<dataformat>
+  <name>multiqc_report_html</name>
+  <description>MutliQC report in html format</description>
+  <prefix>multiqcreport</prefix>
+  <maxfilescount>1</maxfilescount>
+  <extensions>
+    <extension default="true">.html</extension>
+  </extensions>
+</dataformat>

@@ -53,16 +53,17 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
 
+import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.core.InputPort;
 import fr.ens.biologie.genomique.eoulsan.core.Naming;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPort;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
 import fr.ens.biologie.genomique.eoulsan.core.schedulers.TaskScheduler;
@@ -649,7 +650,7 @@ public class TokenManager implements Runnable {
   private void removeOutputsIfRequired() {
 
     // Do nothing if removing output as soon as possible is not required
-    if (!this.step.isDiscardOutputAsap()) {
+    if (this.step.getDiscardOutput() != Step.DiscardOutput.ASAP) {
       return;
     }
 
@@ -689,18 +690,13 @@ public class TokenManager implements Runnable {
       return;
     }
 
-    final DataFile outputStepDir = this.step.getStepOutputDirectory();
-
-    final DataFile expectedOutputStepDir =
-        StepOutputDirectory.getInstance().workflowDirectory(
-            this.step.getAbstractWorkflow(), this.step, this.step.getModule());
-
     final DataFile outputWorkflowDir =
         this.step.getAbstractWorkflow().getOutputDirectory();
 
     // Only remove symbolic links if the output directory of the step is not the
     // expected output directory
-    final boolean remove = !expectedOutputStepDir.equals(outputStepDir);
+    final boolean remove =
+        this.step.getDiscardOutput() != Step.DiscardOutput.NO;
 
     // In debug mode do not remove links
     if (!remove

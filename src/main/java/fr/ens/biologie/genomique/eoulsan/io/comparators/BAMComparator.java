@@ -24,11 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.io.comparators;
 
-import htsjdk.samtools.SAMRecord;
-import htsjdk.samtools.SamInputResource;
-import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -38,6 +33,10 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 
 import fr.ens.biologie.genomique.eoulsan.util.EnhancedBloomFilter;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 
 /**
  * This class allow compare two BAM file with use BloomFilter.

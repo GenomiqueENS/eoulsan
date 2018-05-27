@@ -26,10 +26,10 @@ package fr.ens.biologie.genomique.eoulsan.core.schedulers;
 
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepResult;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepStatus;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 
 /**
  * This interface define a task scheduler.

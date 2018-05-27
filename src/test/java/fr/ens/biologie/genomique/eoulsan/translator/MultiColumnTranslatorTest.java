@@ -19,7 +19,8 @@ public class MultiColumnTranslatorTest {
   private static final String[] ARRAY_ROW_THREE = {"C", "3.0", "C3", "0"};
   private static final String[] ARRAY_ROW_FOUR = {"D", "4", "D4", "0"};
   private static final String[] ARRAY_ROW_FIVE = {"E", "4", "D4"};
-  MultiColumnTranslator transl = new MultiColumnTranslator(ARRAY_FIELD);
+  private final MultiColumnTranslator transl =
+      new MultiColumnTranslator(ARRAY_FIELD);
 
   @Test
   public void testAddRow() {

@@ -114,10 +114,7 @@ public class GenomeDescriptionGeneratorModule extends AbstractModule {
 
       getLogger().fine("Genome description object: " + desc.toString());
 
-    } catch (BadBioEntryException e) {
-
-      return status.createTaskResult(e);
-    } catch (IOException e) {
+    } catch (BadBioEntryException | IOException e) {
 
       return status.createTaskResult(e);
     }

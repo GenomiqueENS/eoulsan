@@ -38,9 +38,6 @@ import org.junit.Test;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomicArray;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomicInterval;
-import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqUtils;
-import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.OverlapMode;
-import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.StrandUsage;
 
 public class HTSeqUtilsTest {
 

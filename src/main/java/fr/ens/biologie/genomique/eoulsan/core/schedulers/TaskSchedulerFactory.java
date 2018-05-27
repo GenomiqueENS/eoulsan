@@ -26,10 +26,10 @@ package fr.ens.biologie.genomique.eoulsan.core.schedulers;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Settings;
-import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters.ClusterTaskScheduler;
 import fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters.ClusterTaskSchedulerService;
 

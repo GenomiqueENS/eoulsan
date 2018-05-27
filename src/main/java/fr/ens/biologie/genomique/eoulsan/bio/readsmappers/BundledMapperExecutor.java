@@ -30,6 +30,9 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.util.List;
 
 import com.google.common.base.Joiner;
@@ -96,8 +99,38 @@ public class BundledMapperExecutor implements MapperExecutor {
 
     checkNotNull(executable, "executable argument cannot be null");
 
-    return BinariesInstaller.install(this.softwarePackage, this.version,
-        executable, this.executablesTemporaryDirectory.getAbsolutePath());
+    // Define the lock file
+    File lockFile =
+        new File(this.executablesTemporaryDirectory, executable + ".lock");
+
+    String result;
+
+    try {
+
+      FileLock lock = null;
+      try (RandomAccessFile raf = new RandomAccessFile(lockFile, "rw")) {
+
+        FileChannel channel = raf.getChannel();
+
+        // Lock
+        lock = channel.tryLock();
+
+        result = BinariesInstaller.install(this.softwarePackage, this.version,
+            executable, this.executablesTemporaryDirectory.getAbsolutePath());
+
+        // Unlock
+        if (lock != null) {
+          lock.release();
+        }
+
+        channel.close();
+      }
+
+    } finally {
+      lockFile.delete();
+    }
+
+    return result;
   }
 
   @Override
@@ -112,15 +145,18 @@ public class BundledMapperExecutor implements MapperExecutor {
   @Override
   public Result execute(final List<String> command,
       final File executionDirectory, final boolean stdout,
-      final boolean redirectStderr, final File... fileUsed) throws IOException {
+      final File stdErrFile, final boolean redirectStderr,
+      final File... fileUsed) throws IOException {
 
     checkNotNull(command, "command argument cannot be null");
 
     final ProcessBuilder builder = new ProcessBuilder(command);
     builder.redirectErrorStream(redirectStderr);
 
-    // If no redirection of stderr in stdout, redirect stderr to /dev/null
-    if (!redirectStderr) {
+    // Define the redirection of standard error
+    if (stdErrFile != null) {
+      builder.redirectError(stdErrFile);
+    } else if (!redirectStderr) {
       builder.redirectError(new File("/dev/null"));
     }
 
@@ -132,6 +168,8 @@ public class BundledMapperExecutor implements MapperExecutor {
     getLogger()
         .info("Process command: " + Joiner.on(' ').join(builder.command()));
     getLogger().info("Process directory: " + builder.directory());
+    getLogger().fine("Process redirect output: " + builder.redirectOutput());
+    getLogger().fine("Process redirect error: " + builder.redirectError());
 
     return new ProcessResult(builder.start());
   }

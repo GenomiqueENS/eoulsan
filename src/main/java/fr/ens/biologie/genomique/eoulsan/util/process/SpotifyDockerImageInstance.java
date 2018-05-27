@@ -12,10 +12,13 @@ import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.FileStore;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,10 +68,12 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
     checkNotNull(stdoutFile, "stdoutFile argument cannot be null");
     checkNotNull(stderrFile, "stderrFile argument cannot be null");
 
-    EoulsanLogger.getLogger().fine(getClass().getName() + " : commandLine=" + commandLine +
-            ", executionDirectory=" + executionDirectory + ", environmentVariables=" + environmentVariables +
-            ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile=" + stdoutFile + ", stderrFile=" + stderrFile +
-            ", redirectErrorStream="+redirectErrorStream + ", filesUsed" + Arrays.toString(filesUsed));
+    EoulsanLogger.getLogger().fine(getClass().getSimpleName()
+        + ": commandLine=" + commandLine + ", executionDirectory="
+        + executionDirectory + ", environmentVariables=" + environmentVariables
+        + ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile="
+        + stdoutFile + ", stderrFile=" + stderrFile + ", redirectErrorStream="
+        + redirectErrorStream + ", filesUsed" + Arrays.toString(filesUsed));
 
     if (executionDirectory != null) {
       checkArgument(executionDirectory.isDirectory(),
@@ -242,7 +247,8 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
         final com.spotify.docker.client.ProgressHandler pg =
             new com.spotify.docker.client.ProgressHandler() {
 
-              private Map<String, Double> imagesProgress = new HashMap<>();
+              private final Map<String, Double> imagesProgress =
+                  new HashMap<>();
 
               @Override
               public void progress(final ProgressMessage msg)
@@ -327,17 +333,13 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
       File f = convertNFSFilesToMountRoots
           ? convertNFSFileToMountPoint(executionDirectory) : executionDirectory;
 
-      binds.add(f.getAbsolutePath()
-          + ':' + f.getAbsolutePath());
+      binds.add(f.getAbsolutePath() + ':' + f.getAbsolutePath());
     }
 
     if (files != null) {
-      for (File f : files) {
-
-        if (f.exists()) {
-          f = convertNFSFilesToMountRoots ? convertNFSFileToMountPoint(f) : f;
-          binds.add(f.getAbsolutePath() + ':' + f.getAbsolutePath());
-        }
+      for (File f : fileIndirections(
+          convertNFSFileToMountPoint(files, convertNFSFilesToMountRoots))) {
+        binds.add(f.getAbsolutePath() + ':' + f.getAbsolutePath());
       }
     }
 
@@ -430,14 +432,40 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
     new Thread(r).start();
   }
 
+  /**
+   * Convert a file path to a mount point path if the file is on a NFS server.
+   * @param files the list of the files to convert
+   * @param convertNFSFilesToMountRoots true if files must be converted
+   * @return a set of files
+   * @throws IOException if mount of a file cannot be found
+   */
+  static Set<File> convertNFSFileToMountPoint(final Collection<File> files,
+      final boolean convertNFSFilesToMountRoots) throws IOException {
+
+    if (files == null) {
+      return null;
+    }
+
+    Set<File> result = new LinkedHashSet<>();
+
+    for (File file : files) {
+
+      if (file != null && file.exists()) {
+        result.add(convertNFSFilesToMountRoots
+            ? convertNFSFileToMountPoint(file) : file);
+      }
+    }
+
+    return result;
+  }
 
   /**
    * Convert a file path to a mount point path if the file is on a NFS server.
-   * @param files the list of file to convert
-   * @return a list of file
+   * @param files the file to convert
+   * @return a converted file
    * @throws IOException if mount of a file cannot be found
    */
-  static File convertNFSFileToMountPoint(File file) throws IOException {
+  static File convertNFSFileToMountPoint(final File file) throws IOException {
 
     if (file == null) {
       return null;
@@ -455,12 +483,119 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
       String mountPoint =
           info.substring(0, info.length() - fileStore.name().length() - 3);
 
-      EoulsanLogger.getLogger().info("in: " + file + ", out: " + mountPoint);
-
       return new File(mountPoint);
     }
 
     return file;
+  }
+
+  /**
+   * List all the indirections of files.
+   * @param files the files
+   * @return a set with the file indirections
+   * @throws IOException if an error occurs while searching indirections
+   */
+  static final Set<File> fileIndirections(final Collection<File> files)
+      throws IOException {
+
+    if (files == null) {
+      return null;
+    }
+
+    Set<File> result = new LinkedHashSet<>();
+
+    for (File f : files) {
+
+      if (f != null) {
+        result.addAll(fileIndirections(f));
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * List all the file indirections.
+   * @param file the file
+   * @return a set with the file indirections
+   * @throws IOException if an error occurs while searching indirections
+   */
+  static final Set<File> fileIndirections(final File file) throws IOException {
+
+    if (file == null) {
+      return null;
+    }
+
+    Set<File> result = new LinkedHashSet<>();
+
+    fileIndirections(file, result);
+
+    return result;
+  }
+
+  /**
+   * List all the file indirections.
+   * @param file the file
+   * @param result the result object
+   * @throws IOException if an error occurs while searching indirections
+   */
+  private static final void fileIndirections(final File file, Set<File> result)
+      throws IOException {
+
+    if (file == null) {
+      return;
+    }
+
+    // Case has been already processed
+    if (result.contains(file)) {
+      return;
+    }
+
+    File previousFile = new File("/");
+
+    for (File f : parentDirectories(file)) {
+
+      Path path = f.toPath();
+
+      if (Files.isSymbolicLink(path)) {
+
+        // Get the target of the link
+        Path link = Files.readSymbolicLink(path);
+
+        // If the target is not an absolute path
+        if (!link.isAbsolute()) {
+          link = new File(previousFile, link.toString()).toPath();
+        }
+
+        // Process the target of the link
+        fileIndirections(link.toFile().getAbsoluteFile(), result);
+        result.add(f);
+      }
+
+      previousFile = f;
+    }
+
+    result.add(file);
+  }
+
+  /**
+   * Get all the parent directories of a file.
+   * @param file the file
+   * @return a list with all the parent directories of the file
+   */
+  private static List<File> parentDirectories(final File file) {
+
+    List<File> result = new ArrayList<>();
+    File f = file;
+
+    do {
+
+      result.add(0, f);
+      f = f.getParentFile();
+
+    } while (f != null);
+
+    return result;
   }
 
   //
@@ -489,7 +624,8 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
     checkNotNull(dockerClient, "dockerClient argument cannot be null");
     checkNotNull(dockerImage, "dockerImage argument cannot be null");
 
-    EoulsanLogger.getLogger().fine(getClass().getName()+" docker image used: "+ dockerImage);
+    EoulsanLogger.getLogger().fine(
+        getClass().getSimpleName() + " docker image used: " + dockerImage);
 
     this.dockerClient = dockerClient;
     this.dockerImage = dockerImage;

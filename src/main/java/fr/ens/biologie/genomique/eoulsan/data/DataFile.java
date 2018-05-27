@@ -306,7 +306,7 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    */
   public OutputStream rawCreate() throws IOException {
 
-    return getProtocol().putData(this, this.md == null ? null : this.md);
+    return getProtocol().putData(this, this.md);
   }
 
   /**
@@ -441,8 +441,8 @@ public class DataFile implements Comparable<DataFile>, Serializable {
       final DataFile parent = isLocalFile()
           ? new DataFile(getParent().toFile().getAbsoluteFile()) : getParent();
 
-      final DataFile newTarget = new DataFile(
-          relativize(link.getParent(), parent), this.getName());
+      final DataFile newTarget =
+          new DataFile(relativize(link.getParent(), parent), this.getName());
 
       getProtocol().symlink(newTarget, link);
 

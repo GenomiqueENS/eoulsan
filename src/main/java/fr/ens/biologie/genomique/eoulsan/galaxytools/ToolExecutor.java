@@ -153,8 +153,6 @@ public class ToolExecutor {
     this.commandLine = commandLine.trim();
     this.stepContext = context;
     this.inputFiles = inputFiles;
-
-    execute();
   }
 
 }

@@ -287,14 +287,13 @@ public final class Version implements Comparable<Version> {
       return compMajor;
     }
 
-    final int compMinor =
-        Integer.valueOf(getMinor()).compareTo(version.getMinor());
+    final int compMinor = Integer.compare(getMinor(), version.getMinor());
     if (compMinor != 0) {
       return compMinor;
     }
 
     final int compRevision =
-        Integer.valueOf(getRevision()).compareTo(version.getRevision());
+        Integer.compare(getRevision(), version.getRevision());
     if (compRevision != 0) {
       return compRevision;
     }

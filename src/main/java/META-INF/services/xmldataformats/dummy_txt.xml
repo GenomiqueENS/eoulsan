@@ -7,7 +7,7 @@
   <extensions>
     <extension default="true">.dummy</extension>
   </extensions>
-  <toolshedgalaxy>
-    <extension>txt</extension>
-  </toolshedgalaxy>
+  <galaxy>
+    <formatname>txt</formatname>
+  </galaxy>
 </dataformat>

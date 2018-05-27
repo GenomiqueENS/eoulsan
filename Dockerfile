@@ -16,7 +16,7 @@ RUN apt-get update
 RUN apt-get install --yes openjdk-7-jre-headless
 
 # Download and install Eoulsan
-ADD https://github.com/GenomicParisCentre/eoulsan/releases/download/v2.0-beta5/eoulsan-2.0-beta5.tar.gz /tmp/
+ADD https://github.com/GenomicParisCentre/eoulsan/releases/download/v2.2/eoulsan-2.2.tar.gz /tmp/
 
 # Install Eoulsan
 RUN tar --directory /usr/local -xf /tmp/eoulsan-*.tar.gz

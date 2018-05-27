@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.base.Objects;
+
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
 
@@ -23,8 +25,8 @@ public class GenericExecutorInterpreter extends AbstractExecutorInterpreter {
   private static final String GALAXY_TOOL_INTERPRETER_SETTING_PREFIX =
       "main.galaxy.tool.interpreter.";
 
-  private String name;
-  private File path;
+  private final String name;
+  private final File path;
 
   @Override
   public String getName() {
@@ -51,6 +53,17 @@ public class GenericExecutorInterpreter extends AbstractExecutorInterpreter {
     result.addAll(StringUtils.splitShellCommandLine(arguments));
 
     return Collections.unmodifiableList(result);
+  }
+
+  //
+  // Object methods
+  //
+
+  @Override
+  public String toString() {
+
+    return Objects.toStringHelper(this).add("name", this.name)
+        .add("path", this.path).toString();
   }
 
   //

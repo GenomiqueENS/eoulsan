@@ -1,12 +1,12 @@
 package fr.ens.biologie.genomique.eoulsan.util.process;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 
 /**
  * This class define how to easily launch a subprocess using the Java Process
@@ -24,10 +24,12 @@ public class SystemSimpleProcess extends AbstractSimpleProcess {
       final File stderrFile, final boolean redirectErrorStream,
       final File... filesUsed) throws IOException {
 
-    EoulsanLogger.getLogger().fine(getClass().getName() + " : commandLine=" + commandLine +
-            ", executionDirectory=" + executionDirectory + ", environmentVariables=" + environmentVariables +
-            ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile=" + stdoutFile + ", stderrFile=" + stderrFile +
-            ", redirectErrorStream="+redirectErrorStream + ", filesUsed" + Arrays.toString(filesUsed));
+    EoulsanLogger.getLogger().fine(getClass().getName()
+        + " : commandLine=" + commandLine + ", executionDirectory="
+        + executionDirectory + ", environmentVariables=" + environmentVariables
+        + ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile="
+        + stdoutFile + ", stderrFile=" + stderrFile + ", redirectErrorStream="
+        + redirectErrorStream + ", filesUsed" + Arrays.toString(filesUsed));
 
     final ProcessBuilder pb = new ProcessBuilder(commandLine);
     // Set execution directory

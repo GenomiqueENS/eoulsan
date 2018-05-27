@@ -37,6 +37,7 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -84,7 +85,8 @@ public abstract class AbstractWorkflow implements Workflow {
 
   private static final String DESIGN_COPY_FILENAME = "design.txt";
   protected static final String WORKFLOW_COPY_FILENAME = "workflow.xml";
-  private static final String WORKFLOW_GRAPHVIZ_FILENAME = "workflow.gv";
+  private static final String WORKFLOW_GRAPHVIZ_FILENAME = "workflow.dot";
+  private static final String WORKFLOW_IMAGE_FILENAME = "workflow.png";
 
   private final DataFile localWorkingDir;
   private final DataFile hadoopWorkingDir;
@@ -106,7 +108,7 @@ public abstract class AbstractWorkflow implements Workflow {
   private AbstractStep checkerStep;
   private AbstractStep firstStep;
 
-  private Set<DataFile> deleteOnExitFiles = new HashSet<>();
+  private final Set<DataFile> deleteOnExitFiles = new HashSet<>();
 
   private volatile boolean shutdownNow;
 
@@ -560,7 +562,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
     // Close Docker connections
     try {
-      DockerManager.getInstance().closeConnections();
+      DockerManager.closeConnections();
     } catch (IOException e) {
       EoulsanLogger.logWarning("Error while closing Docker connection");
     }
@@ -598,7 +600,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
     // Close Docker connections
     try {
-      DockerManager.getInstance().closeConnections();
+      DockerManager.closeConnections();
     } catch (IOException e) {
       EoulsanLogger.logWarning("Error while closing Docker connection");
     }
@@ -669,9 +671,16 @@ public abstract class AbstractWorkflow implements Workflow {
           new DataFile(jobDir, DESIGN_COPY_FILENAME).create());
       designWriter.write(getDesign());
 
-      // Save the workflow as a Graphviz file
-      new Workflow2Graphviz(this)
-          .save(new DataFile(jobDir, WORKFLOW_GRAPHVIZ_FILENAME));
+      // Save the workflow as a Graphviz and an image files
+      Workflow2Graphviz graphviz = new Workflow2Graphviz(this,
+          new DataFile(jobDir, WORKFLOW_GRAPHVIZ_FILENAME),
+          new DataFile(jobDir, WORKFLOW_IMAGE_FILENAME));
+
+      // Create an image or only the dot file
+      if (!this.workflowContext.getSettings().isSaveWorkflowImage()
+          || !graphviz.saveImageFile()) {
+        graphviz.saveDotFile();
+      }
 
     } catch (IOException e) {
       throw new EoulsanException(
@@ -902,6 +911,18 @@ public abstract class AbstractWorkflow implements Workflow {
 
     // Send mail
     Common.sendMail(mailSubject, mailMessage);
+  }
+
+  //
+  // Serialization method
+  //
+
+  private void writeObject(ObjectOutputStream s) throws IOException {
+
+    // Avoid change of state while serialization
+    synchronized (this) {
+      s.defaultWriteObject();
+    }
   }
 
   //

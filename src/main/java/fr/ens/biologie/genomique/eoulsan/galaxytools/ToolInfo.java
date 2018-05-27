@@ -24,6 +24,8 @@
 package fr.ens.biologie.genomique.eoulsan.galaxytools;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.emptyToNull;
+import static com.google.common.base.Strings.nullToEmpty;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractCheetahScript;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractDescription;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractDockerImage;
@@ -31,8 +33,6 @@ import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserU
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractToolID;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractToolName;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractToolVersion;
-import static com.google.common.base.Strings.emptyToNull;
-import static com.google.common.base.Strings.nullToEmpty;
 
 import org.w3c.dom.Document;
 
@@ -192,7 +192,6 @@ public class ToolInfo {
     }
 
     // TODO check the tool id string
-
   }
 
 }

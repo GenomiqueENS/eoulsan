@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,51 +31,72 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import com.google.common.io.Files;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
-import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 
 /**
  * This class define a wrapper on the STAR mapper.
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class STARReadsMapper extends AbstractSequenceReadsMapper {
+public class STARMapperProvider extends AbstractMapperProvider {
 
   public static final String MAPPER_NAME = "STAR";
-  private static final String DEFAULT_PACKAGE_VERSION = "2.5.2b";
+  private static final String DEFAULT_VERSION = "2.5.2b";
 
   private static final String MAPPER_STANDARD_EXECUTABLE = "STAR";
   private static final String MAPPER_LARGE_INDEX_EXECUTABLE = "STARlong";
 
+  private static final String SHORT_INDEX_FLAVOR = "standard";
+  private static final String LARGE_INDEX_FLAVOR = "large-index";
+
   public static final String DEFAULT_ARGUMENTS = "--outSAMunmapped Within";
 
-  private static final String SYNC = STARReadsMapper.class.getName();
+  private static final String SYNC = STARMapperProvider.class.getName();
 
   @Override
-  public String getMapperName() {
-
+  public String getName() {
     return MAPPER_NAME;
   }
 
   @Override
-  public String internalGetMapperVersion() {
+  public String getDefaultVersion() {
+    return DEFAULT_VERSION;
+  }
+
+  @Override
+  public String getDefaultFlavor() {
+    return SHORT_INDEX_FLAVOR;
+  }
+
+  @Override
+  public DataFormat getArchiveFormat() {
+
+    return DataFormats.STAR_INDEX_ZIP;
+  }
+
+  @Override
+  public String getDefaultMapperArguments() {
+
+    return DEFAULT_ARGUMENTS;
+  }
+
+  @Override
+  public String readBinaryVersion(final MapperInstance mapperInstance) {
 
     try {
       final String execPath;
 
       synchronized (SYNC) {
-        execPath = install(flavoredBinary());
+        execPath = mapperInstance.getExecutor()
+            .install(flavoredBinary(mapperInstance.getFlavor()));
       }
 
       final List<String> cmd = Lists.newArrayList(execPath, "--version");
 
-      final String s = executeToString(cmd);
+      final String s =
+          MapperUtils.executeToString(mapperInstance.getExecutor(), cmd);
       final String[] lines = s.split("\n");
       if (lines.length == 0) {
         return null;
@@ -95,71 +115,25 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
     }
   }
 
-  /**
-   * Remove a file and log a warning if file cannot be removed.
-   * @param file file to remove
-   */
-  private void deleteFile(final File file) {
+  @Override
+  public List<String> getIndexerExecutables(
+      final MapperInstance mapperInstance) {
 
-    // Remove the file
-    if (!file.delete()) {
-      EoulsanLogger.getLogger().warning("Cannot remove file: " + file);
-    }
-
+    return Collections
+        .singletonList(flavoredBinary(mapperInstance.getFlavor()));
   }
 
   @Override
-  public boolean isSplitsAllowed() {
-
-    return true;
+  public String getMapperExecutableName(final MapperInstance mapperInstance) {
+    return flavoredBinary(mapperInstance.getFlavor());
   }
 
   @Override
-  public DataFormat getArchiveFormat() {
+  public boolean checkIfFlavorExists(final MapperInstance mapperInstance) {
 
-    return DataFormats.STAR_INDEX_ZIP;
-  }
-
-  @Override
-  protected String getDefaultPackageVersion() {
-
-    return DEFAULT_PACKAGE_VERSION;
-  }
-
-  @Override
-  protected String getIndexerExecutable() {
-
-    return flavoredBinary();
-  }
-
-  @Override
-  public String getMapperExecutableName() {
-    return flavoredBinary();
-  }
-
-  @Override
-  protected String getDefaultMapperArguments() {
-
-    return DEFAULT_ARGUMENTS;
-  }
-
-  @Override
-  protected boolean checkIfFlavorExists() {
-
-    final String flavor = getMapperFlavorToUse();
-
-    if (flavor == null) {
-      return true;
-    }
-
-    switch (flavor.trim().toLowerCase()) {
-    case "":
+    switch (mapperInstance.getFlavor().trim().toLowerCase()) {
     case SHORT_INDEX_FLAVOR:
-      setFlavor(SHORT_INDEX_FLAVOR);
-      return true;
-
     case LARGE_INDEX_FLAVOR:
-      setFlavor(LARGE_INDEX_FLAVOR);
       return true;
 
     default:
@@ -171,9 +145,7 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
    * Get the name of the flavored binary.
    * @return the flavored binary name
    */
-  private String flavoredBinary() {
-
-    final String flavor = getMapperFlavorToUse();
+  private String flavoredBinary(final String flavor) {
 
     if (flavor != null
         && LARGE_INDEX_FLAVOR.equals(flavor.trim().toLowerCase())) {
@@ -184,56 +156,63 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
   }
 
   @Override
-  protected List<String> getIndexerCommand(final String indexerPathname,
-      final String genomePathname) {
+  public List<String> getIndexerCommand(final File indexerFile,
+      final File genomeFile, final List<String> indexerArguments,
+      final int threads) {
 
-    final File genomeFile = new File(genomePathname);
     List<String> cmd = new ArrayList<>();
-    cmd.add(indexerPathname);
+    cmd.add(indexerFile.getAbsolutePath());
     cmd.add("--runThreadN");
-    cmd.add("" + getThreadsNumber());
+    cmd.add("" + threads);
     cmd.add("--runMode");
     cmd.add("genomeGenerate");
     cmd.add("--genomeDir");
     cmd.add(genomeFile.getParentFile().getAbsolutePath());
     cmd.add("--genomeFastaFiles");
-    cmd.add(genomePathname);
+    cmd.add(genomeFile.getAbsolutePath());
 
-    cmd.addAll(getListIndexerArguments());
+    cmd.addAll(indexerArguments);
 
     return cmd;
   }
 
   @Override
-  protected MapperProcess internalMapSE(final File archiveIndex)
-      throws IOException {
+  public MapperProcess mapSE(final EntryMapping mapping, final File inputFile,
+      final File errorFile, final File logFile) throws IOException {
 
     final String starPath;
 
     synchronized (SYNC) {
-      starPath = install(flavoredBinary());
+      starPath =
+          mapping.getExecutor().install(flavoredBinary(mapping.getFlavor()));
     }
 
-    return createMapperProcessSE(starPath, archiveIndex.getAbsolutePath());
+    return createMapperProcessSE(mapping, starPath, inputFile, errorFile,
+        logFile);
   }
 
   @Override
-  protected MapperProcess internalMapPE(final File archiveIndex)
+  public MapperProcess mapPE(final EntryMapping mapping, final File inputFile1,
+      final File inputFile2, final File errorFile, final File logFile)
       throws IOException {
 
     final String starPath;
 
     synchronized (SYNC) {
-      starPath = install(flavoredBinary());
+      starPath =
+          mapping.getExecutor().install(flavoredBinary(mapping.getFlavor()));
     }
 
-    return createMapperProcessPE(starPath, archiveIndex.getAbsolutePath());
+    return createMapperProcessPE(mapping, starPath, inputFile1, inputFile2,
+        errorFile, logFile);
   }
 
-  private MapperProcess createMapperProcessSE(final String starPath,
-      final String archivePath) throws IOException {
+  private MapperProcess createMapperProcessSE(final EntryMapping mapping,
+      final String starPath, final File inputFile, final File errorFile,
+      final File logFile) throws IOException {
 
-    return new MapperProcess(this, false) {
+    return new MapperProcess(mapping.getName(), mapping.getExecutor(),
+        mapping.getTemporaryDirectory(), errorFile, false, inputFile) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -242,13 +221,19 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
         final List<String> cmd = new ArrayList<>();
         cmd.add(starPath);
         cmd.add("--runThreadN");
-        cmd.add("" + getThreadsNumber());
+        cmd.add("" + mapping.getThreadNumber());
         cmd.add("--genomeDir");
-        cmd.add(archivePath);
+        cmd.add(mapping.getIndexDirectory().getAbsolutePath());
+
+        if (logFile != null) {
+          cmd.add("--outFileNamePrefix");
+          cmd.add(logFile.getAbsolutePath());
+        }
+
         cmd.add("--outStd");
         cmd.add("SAM");
 
-        cmd.addAll(getListMapperArguments());
+        cmd.addAll(mapping.getMapperArguments());
 
         cmd.add("--readFilesIn");
         cmd.add(getNamedPipeFile1().getAbsolutePath());
@@ -259,10 +244,13 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
     };
   }
 
-  private MapperProcess createMapperProcessPE(final String starPath,
-      final String archivePath) throws IOException {
+  private MapperProcess createMapperProcessPE(final EntryMapping mapping,
+      final String starPath, final File inputFile1, final File inputFile2,
+      final File errorFile, final File logFile) throws IOException {
 
-    return new MapperProcess(this, true, true) {
+    return new MapperProcess(mapping.getName(), mapping.getExecutor(),
+        mapping.getTemporaryDirectory(), errorFile, true, true, inputFile1,
+        inputFile2) {
 
       @Override
       protected List<List<String>> createCommandLines() {
@@ -271,13 +259,19 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
         final List<String> cmd = new ArrayList<>();
         cmd.add(starPath);
         cmd.add("--runThreadN");
-        cmd.add("" + getThreadsNumber());
+        cmd.add("" + mapping.getThreadNumber());
         cmd.add("--genomeDir");
-        cmd.add(archivePath);
+        cmd.add(mapping.getIndexDirectory().getAbsolutePath());
+
+        if (logFile != null) {
+          cmd.add("--outFileNamePrefix");
+          cmd.add(logFile.getAbsolutePath());
+        }
+
         cmd.add("--outStd");
         cmd.add("SAM");
 
-        cmd.addAll(getListMapperArguments());
+        cmd.addAll(mapping.getMapperArguments());
 
         cmd.add("--readFilesIn");
         cmd.add(getNamedPipeFile1().getAbsolutePath());
@@ -287,18 +281,6 @@ public class STARReadsMapper extends AbstractSequenceReadsMapper {
       }
 
     };
-  }
-
-  //
-  // Init
-  //
-
-  @Override
-  public void init(final File archiveIndexFile, final File archiveIndexDir,
-      final ReporterIncrementer incrementer, final String counterGroup)
-      throws IOException {
-
-    super.init(archiveIndexFile, archiveIndexDir, incrementer, counterGroup);
   }
 
 }

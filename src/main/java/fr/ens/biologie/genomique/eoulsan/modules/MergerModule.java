@@ -363,11 +363,7 @@ public class MergerModule extends AbstractModule {
 
       // Successful result
       return status.createTaskResult();
-    } catch (IOException e) {
-
-      // Fail of the task
-      return status.createTaskResult(e);
-    } catch (EoulsanException e) {
+    } catch (IOException | EoulsanException e) {
 
       // Fail of the task
       return status.createTaskResult(e);

@@ -10,7 +10,7 @@
 make_paths() {
 
 	local RESULT=
-	for lib in `ls $1`
+	for lib in $(ls $1)
 	do
 		if [ -f $1/$lib ]; then
 			RESULT=$RESULT:$1/$lib
@@ -21,18 +21,18 @@ make_paths() {
 }
 
 # Get the path to this script
-REAL_SCRIPT_PATH=`readlink -f $0`
-BASEDIR=`dirname $REAL_SCRIPT_PATH`
+REAL_SCRIPT_PATH=$(readlink -f $0)
+BASEDIR=$(dirname $REAL_SCRIPT_PATH)
 
 # Set the Eoulsan libraries path
 LIBDIR=$BASEDIR/lib
 
 # Set the memory in MiB needed by Eoulsan (only Java part, not external tools)
-# By Default 2048
+# By Default 4096
 if [ -n "$EOULSAN_MEMORY" ]; then
 	MEMORY=$EOULSAN_MEMORY
 else
-	MEMORY=2048
+	MEMORY=4096
 fi
 
 # Additional JVM options
@@ -51,7 +51,7 @@ fi
 
 # Parse options
 OPTERR=0
-while getopts “j:m:J:p:” OPTION
+while getopts "j:m:J:p:" OPTION
 do
 	case $OPTION in
 		j)
@@ -102,6 +102,7 @@ $JAVA_CMD \
 		-Deoulsan.classpath=$APP_CLASSPATH \
 		-Deoulsan.memory=$MEMORY \
 		-Deoulsan.launch.mode=local \
-		-Deoulsan.launch.script.path=$0 \
+		-Deoulsan.launch.script.path="$0" \
+		-Deoulsan.path="$BASEDIR" \
 		-Deoulsan.hadoop.libs=$COMMON_LIBS:$PLUGINS:$PLUGINS_LIB \
 		fr.ens.biologie.genomique.eoulsan.Main "$@"

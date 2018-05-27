@@ -38,8 +38,8 @@ import java.util.Set;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.SequenceReadsMapper;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.SequenceReadsMapperService;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperInstance;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
@@ -67,7 +67,7 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
 
   public static final String MODULE_NAME = "genericindexgenerator";
 
-  private SequenceReadsMapper mapper;
+  private Mapper mapper;
 
   @Override
   public String getName() {
@@ -115,8 +115,7 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
       case "mappername":
         final String mapperName = p.getStringValue();
 
-        this.mapper =
-            SequenceReadsMapperService.getInstance().newService(mapperName);
+        this.mapper = Mapper.newMapper(mapperName);
 
         if (this.mapper == null) {
           Modules.badParameterValue(context, p, "Unknown mapper");
@@ -137,9 +136,10 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
    * @param context the context of the task
    * @throws EoulsanException if more than one mapping step require this
    *           generator
+   * @throws IOException if an error occurs while creating the mapper instance
    */
-  static void searchMapperVersionAndFlavor(final SequenceReadsMapper mapper,
-      final TaskContext context) throws EoulsanException {
+  static MapperInstance searchMapperVersionAndFlavor(final Mapper mapper,
+      final TaskContext context) throws EoulsanException, IOException {
 
     int count = 0;
     String version = null;
@@ -176,9 +176,14 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
           "Found more than one mapping step in the workflow");
     }
 
-    // Set the version and the flavor to use
-    mapper.setMapperVersionToUse(version);
-    mapper.setMapperFlavorToUse(flavor);
+    // Set mapper temporary directory
+    mapper.setTempDirectory(context.getLocalTempDirectory());
+
+    // Set mapper executable temporary directory
+    mapper.setExecutablesTempDirectory(
+        context.getSettings().getExecutablesTempDirectoryFile());
+
+    return mapper.newMapperInstance(version, flavor);
   }
 
   /**
@@ -189,8 +194,8 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
    * @param additionalDescription additional indexer arguments description
    * @param threadCount the number of thread to use
    */
-  static void execute(final SequenceReadsMapper mapper,
-      final TaskContext context, final String additionalArguments,
+  static void execute(final Mapper mapper, final TaskContext context,
+      final String additionalArguments,
       final Map<String, String> additionalDescription, final int threadCount)
       throws IOException, EoulsanException {
 
@@ -225,23 +230,16 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
     final DataFile mapperIndexDataFile = outData.getDataFile();
 
     // Set the version and flavor
-    searchMapperVersionAndFlavor(mapper, context);
-
-    // Set mapper temporary directory
-    mapper.setTempDirectory(context.getLocalTempDirectory());
-
-    // Set mapper executable temporary directory
-    mapper.setExecutablesTempDirectory(
-        context.getSettings().getExecutablesTempDirectoryFile());
+    final MapperInstance mapperInstance =
+        searchMapperVersionAndFlavor(mapper, context);
 
     // Set the number of thread to use
     final int threads = threadCount < 1
         ? Runtime.getRuntime().availableProcessors() : threadCount;
-    mapper.setThreadsNumber(threads);
 
     // Create indexer
     final GenomeMapperIndexer indexer =
-        new GenomeMapperIndexer(mapper, args, descriptions);
+        new GenomeMapperIndexer(mapperInstance, args, descriptions, threads);
 
     // Create index
     indexer.createIndex(genomeDataFile, desc, mapperIndexDataFile);
@@ -253,8 +251,7 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
 
     try {
 
-      status
-          .setProgressMessage(this.mapper.getMapperName() + " index creation");
+      status.setProgressMessage(this.mapper.getName() + " index creation");
 
       // Create the index
       execute(this.mapper, context, null, null, 0);

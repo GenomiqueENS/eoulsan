@@ -28,6 +28,7 @@ import static fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement.n
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
@@ -43,8 +44,8 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolInterpreter;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolExecutorResult;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.DataToolElement;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.DockerExecutorInterpreter;
 import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
@@ -58,17 +59,14 @@ import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 @LocalOnly
 public class GalaxyToolModule extends AbstractModule {
 
-  /** Tool data. */
-  private ToolInfo toolData;
-
   /** The tool interpreter. */
   private final GalaxyToolInterpreter toolInterpreter;
 
   /** The source of the Galaxy tool. */
   private final String source;
 
-  /** The requirement of the tool. */
-  private Requirement requirement;
+  /** The requirements of the tool. */
+  private Set<Requirement> requirements = new HashSet<>();
 
   //
   // Module methods
@@ -76,12 +74,12 @@ public class GalaxyToolModule extends AbstractModule {
 
   @Override
   public String getName() {
-    return this.toolData.getToolName();
+    return this.toolInterpreter.getToolInfo().getToolName();
   }
 
   @Override
   public Version getVersion() {
-    return new Version(this.toolData.getToolVersion());
+    return new Version(this.toolInterpreter.getToolInfo().getToolVersion());
   }
 
   @Override
@@ -116,11 +114,7 @@ public class GalaxyToolModule extends AbstractModule {
   @Override
   public Set<Requirement> getRequirements() {
 
-    if (this.requirement == null) {
-      return Collections.emptySet();
-    }
-
-    return Collections.singleton(this.requirement);
+    return Collections.unmodifiableSet(this.requirements);
   }
 
   @Override
@@ -132,11 +126,11 @@ public class GalaxyToolModule extends AbstractModule {
 
     // If the interpreter of the tool is Docker, add the Docker image to the
     // list of the Docker image to fetch
-    final ToolInfo toolData = this.toolInterpreter.getToolData();
+    final ToolInfo toolData = this.toolInterpreter.getToolInfo();
     if (DockerExecutorInterpreter.INTERPRETER_NAME
         .equals(toolData.getInterpreter())) {
 
-      this.requirement = newDockerRequirement(toolData.getDockerImage());
+      this.requirements.add(newDockerRequirement(toolData.getDockerImage()));
     }
   }
 
@@ -147,10 +141,16 @@ public class GalaxyToolModule extends AbstractModule {
     // TODO check in data and out data corresponding to tool.xml
     // Check DataFormat expected corresponding from taskContext
 
+    // Set the description of the context
+    final ToolInfo toolInfo = this.toolInterpreter.getToolInfo();
+    context.getLogger()
+        .info("Launch tool galaxy "
+            + toolInfo.getToolName() + ", version " + toolInfo.getToolVersion()
+            + " with interpreter " + toolInfo.getInterpreter());
+
     final ToolExecutorResult result;
 
     try {
-
       result = this.toolInterpreter.execute(context);
     } catch (EoulsanException e) {
       return status.createTaskResult(e,
@@ -158,33 +158,23 @@ public class GalaxyToolModule extends AbstractModule {
               + e.getMessage());
     }
 
-    // Set the description of the context
-    status.setDescription("Launch tool galaxy "
-        + this.toolData.getToolName() + ", version "
-        + this.toolData.getToolVersion() + " with interpreter "
-        + this.toolData.getInterpreter());
-
-    status.setProgressMessage("Command line generate by python interpreter: "
-        + result.getCommandLineAsString() + ".");
-
     // Execution script fail, create an exception
     if (!result.isException()) {
       final Throwable e = result.getException();
 
       return status.createTaskResult(e,
-          "Error execution interrupted: " + e.getMessage());
+          "Error, execution interrupted: " + e.getMessage());
     }
 
     if (result.getExitValue() != 0) {
 
       return status.createTaskResult(null,
-          "Fail execution tool galaxy with command "
-              + result.getCommandLine() + ". Exit value: "
+          "Fail execution of Galaxy tool with command: "
+              + result.getCommandLine() + " Exit value: "
               + result.getExitValue());
     }
 
     return status.createTaskResult();
-
   }
 
   //
@@ -216,22 +206,19 @@ public class GalaxyToolModule extends AbstractModule {
 
   /**
    * Constructor.
-   * @param toolXMLis the input stream on tool xml file
+   * @param in the input stream for XML tool file
    * @param source source of the Galaxy tool
    * @throws EoulsanException the Eoulsan exception
    */
-  public GalaxyToolModule(final InputStream toolXMLis, final String source)
+  public GalaxyToolModule(final InputStream in, final String source)
       throws EoulsanException {
 
-    if (toolXMLis == null) {
-      throw new NullPointerException("toolXMLis argument cannot be null");
+    if (in == null) {
+      throw new NullPointerException("in argument cannot be null");
     }
 
     this.source = source == null ? "Undefined source" : source.trim();
-    this.toolInterpreter = new GalaxyToolInterpreter(toolXMLis, this.source);
-
-    // Extract tool data
-    this.toolData = this.toolInterpreter.getToolData();
+    this.toolInterpreter = new GalaxyToolInterpreter(in, this.source);
   }
 
 }

@@ -110,6 +110,14 @@ public class GFFEntry {
   }
 
   /**
+   * Get the length of the feature.
+   * @return the end position
+   */
+  public final int getLength() {
+    return this.end - this.start + 1;
+  }
+
+  /**
    * Get the score.
    * @return the score
    */

@@ -35,7 +35,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.google.common.base.Splitter;
 
@@ -262,7 +268,8 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
       final List<DataFile> files = new ArrayList<>();
       final List<DataFile> filesToConvert = new ArrayList<>();
 
-      context.getLogger().info("Search files in directory: " + context.getOutputDirectory());
+      context.getLogger()
+          .info("Search files in directory: " + context.getOutputDirectory());
       context.getLogger().info("Output directory: " + outputDir);
 
       // Handle step output directory
@@ -270,7 +277,7 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
 
         if (!f.getMetaData().isDir()) {
           files.add(f);
-        } else if(f.getName().endsWith(Globals.STEP_OUTPUT_DIRECTORY_SUFFIX)) {
+        } else if (f.getName().endsWith(Globals.STEP_OUTPUT_DIRECTORY_SUFFIX)) {
           files.addAll(f.list());
         }
       }
@@ -312,7 +319,8 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
             outFile = new DataFile(outputDir, prefix
                 + ANNOTATED_EXPRESSION_RESULTS_XLSX.getDefaultExtension());
             checkIfFileExists(outFile, context);
-            of = new XLSXTranslatorOutputFormat(outFile.create());
+            of = new XLSXTranslatorOutputFormat(outFile.create(),
+                context.getLocalTempDirectory());
 
           } else if (format == ANNOTATED_EXPRESSION_RESULTS_ODS) {
 

@@ -38,7 +38,7 @@ public class CollectionUtils {
   /**
    * Return an empty collection if the input collection is null;
    * @param c
-   * @return
+   * @return a collection
    */
   public static <E> Collection<E> nullToEmpty(Collection<E> c) {
 

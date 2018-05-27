@@ -21,7 +21,8 @@ public class AbstractTranslatorTest {
   private static final String[] ARRAY_ROW_FOUR = {"D", "4", "D4", "0"};
   private static final String[] ARRAY_ROW_FIVE = {"E", "4", "D4"};
   private static final String[] ARRAY_IDS = {"A", "B", "C", "D", "E"};
-  MultiColumnTranslator transl = new MultiColumnTranslator(ARRAY_FIELD);
+  private final MultiColumnTranslator transl =
+      new MultiColumnTranslator(ARRAY_FIELD);
 
   @Test
   public void testNewTrans() {

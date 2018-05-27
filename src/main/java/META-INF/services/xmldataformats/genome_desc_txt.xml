@@ -5,6 +5,6 @@
   <onefileperanalysis>true</onefileperanalysis>
   <generator>fr.ens.biologie.genomique.eoulsan.modules.generators.GenomeDescriptionGeneratorModule</generator>
   <extensions>
-  	<extension default="true">.txt</extension>
+    <extension default="true">.txt</extension>
   </extensions>
 </dataformat>

@@ -9,12 +9,11 @@
   <splitter>fr.ens.biologie.genomique.eoulsan.splitermergers.FastqSplitter</splitter>
   <merger>fr.ens.biologie.genomique.eoulsan.splitermergers.FastqMerger</merger>
   <extensions>
-  	<extension default="true">.fq</extension>
-  	<extension>.fastq</extension>
+    <extension default="true">.fq</extension>
+    <extension>.fastq</extension>
   </extensions>
-
-  <toolshedgalaxy>
-  	<extension>fq</extension>
-  	<extension>fastq</extension>    	
-  </toolshedgalaxy>
+  <galaxy>
+    <formatname>fq</formatname>
+    <formatname>fastq</formatname>
+  </galaxy>
 </dataformat>

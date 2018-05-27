@@ -30,9 +30,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
-import fr.ens.biologie.genomique.eoulsan.bio.GFFEntry;
-
 public class GFFEntryTest {
 
   private final String[] TEST_GFF3_STRINGS = {
@@ -251,6 +248,20 @@ public class GFFEntryTest {
     }
 
     assertEquals(9000, e.getEnd());
+  }
+
+  @Test
+  public void testGetLength() {
+
+    GFFEntry e = new GFFEntry();
+    try {
+      e.parseGFF3(
+          "ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
+    } catch (BadBioEntryException exp) {
+      assertTrue(false);
+    }
+
+    assertEquals(8001, e.getLength());
   }
 
   @Test

@@ -32,9 +32,6 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.io.comparators.Comparator;
-import fr.ens.biologie.genomique.eoulsan.io.comparators.LogComparator;
-
 public class LogComparatorTest {
 
   final private Comparator comparator = new LogComparator();

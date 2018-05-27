@@ -1,0 +1,7 @@
+# Reads mapper
+fr.ens.biologie.genomique.eoulsan.bio.readsmappers.BWAMapperProvider
+fr.ens.biologie.genomique.eoulsan.bio.readsmappers.BowtieMapperProvider
+fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Bowtie2MapperProvider
+fr.ens.biologie.genomique.eoulsan.bio.readsmappers.GSNAPMapperProvider
+fr.ens.biologie.genomique.eoulsan.bio.readsmappers.STARMapperProvider
+fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Minimap2MapperProvider

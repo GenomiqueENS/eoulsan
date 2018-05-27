@@ -2,18 +2,10 @@ package fr.ens.biologie.genomique.eoulsan.modules.mapping.local;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
-import htsjdk.samtools.SAMFileHeader.SortOrder;
-import htsjdk.samtools.SAMFileWriter;
-import htsjdk.samtools.SAMFileWriterFactory;
-import htsjdk.samtools.SAMRecord;
-import htsjdk.samtools.SamInputResource;
-import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
-
 import java.io.File;
 import java.io.IOException;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
@@ -24,6 +16,13 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractSAM2BAMModule;
 import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
 import fr.ens.biologie.genomique.eoulsan.util.Reporter;
+import htsjdk.samtools.SAMFileHeader.SortOrder;
+import htsjdk.samtools.SAMFileWriter;
+import htsjdk.samtools.SAMFileWriterFactory;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 
 /**
  * This class define a module for converting SAM files into BAM.
@@ -114,22 +113,26 @@ public class SAM2BAMLocalModule extends AbstractSAM2BAMModule {
       reporter.incrCounter(COUNTER_GROUP, "sorted records", 1);
     }
 
-    // Change index bai file
-    final String bamIndexFilename =
-        bamDataFile.getName().substring(0, bamDataFile.getName().length() - 1)
-            + "i";
-    final File bamIndexFile =
-        new File(bamDataFile.toFile().getParentFile(), bamIndexFilename);
-    if (!bamIndexFile.renameTo(bamIndexDataFile.toFile())) {
-      EoulsanLogger.getLogger().warning("Unable to rename the BAI file "
-          + bamIndexFile + " to " + bamIndexDataFile.toFile());
-    }
-
-    // Create a symbolic link
-    bamIndexDataFile.symlink(new DataFile(bamIndexFile), true);
-
     samReader.close();
     samWriter.close();
+
+    // Rename index bai file
+    final String createdBamIndexFilename =
+        bamDataFile.getName().substring(0, bamDataFile.getName().length() - 1)
+            + "i";
+    final File createdBamIndexFile =
+        new File(bamDataFile.toFile().getParentFile(), createdBamIndexFilename);
+
+    if (!createdBamIndexFile.renameTo(bamIndexDataFile.toFile())) {
+      EoulsanLogger.getLogger().warning("Unable to rename the BAI file "
+          + createdBamIndexFile + " to " + bamIndexDataFile.toFile());
+    }
+
+    // Create a symbolic links
+    bamIndexDataFile.symlink(new DataFile(createdBamIndexFile), true);
+    bamIndexDataFile.symlink(
+        new DataFile(bamDataFile.getParent(), bamDataFile.getName() + ".bai"),
+        true);
   }
 
 }

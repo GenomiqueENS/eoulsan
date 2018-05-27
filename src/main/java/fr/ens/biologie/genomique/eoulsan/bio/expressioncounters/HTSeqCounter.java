@@ -24,12 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.expressioncounters;
 
-import htsjdk.samtools.SAMRecord;
-import htsjdk.samtools.SAMRecordIterator;
-import htsjdk.samtools.SamInputResource;
-import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -49,6 +43,11 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounters;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.Reporter;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMRecordIterator;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 
 /**
  * This class defines a wrapper on the HTSeq-count counter.
@@ -94,7 +93,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
     try {
       final SamReader input =
-        SamReaderFactory.makeDefault().open(SamInputResource.of(samIs));
+          SamReaderFactory.makeDefault().open(SamInputResource.of(samIs));
 
       SAMRecordIterator samIterator = input.iterator();
 
@@ -112,7 +111,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
 
       return result;
 
-    } catch(IOException e) {
+    } catch (IOException e) {
       return false;
     }
   }
@@ -336,7 +335,7 @@ public class HTSeqCounter extends AbstractExpressionCounter {
         ExpressionCounters.NOT_UNIQUE_ALIGNMENTS_COUNTER.counterName(),
         nonUnique);
     reporter.incrCounter(counterGroup,
-      ExpressionCounters.MISSING_MATES_COUNTER.counterName(), missingMate);
+        ExpressionCounters.MISSING_MATES_COUNTER.counterName(), missingMate);
 
     reporter.incrCounter(counterGroup,
         ExpressionCounters.ELIMINATED_READS_COUNTER.counterName(),

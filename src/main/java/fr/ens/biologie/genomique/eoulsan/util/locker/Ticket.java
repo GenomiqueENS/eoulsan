@@ -133,7 +133,7 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
 
     // Compare Nano creation time
     final int comp2 =
-        Long.valueOf(this.nanoCreationTime).compareTo(ticket.nanoCreationTime);
+        Long.compare(this.nanoCreationTime, ticket.nanoCreationTime);
     if (comp2 != 0) {
       return comp2;
     }
@@ -144,7 +144,7 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
       return comp3;
     }
 
-    return Long.valueOf(this.threadId).compareTo(ticket.threadId);
+    return Long.compare(this.threadId, ticket.threadId);
   }
 
   @Override

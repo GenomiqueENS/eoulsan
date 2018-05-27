@@ -4,10 +4,9 @@
   <alias>text</alias>
   <prefix>text</prefix>
   <extensions>
-  	<extension default="true">.txt</extension>
+    <extension default="true">.txt</extension>
   </extensions>
-
-  <toolshedgalaxy>
-  	<extension>text</extension> 	
-  </toolshedgalaxy>
+  <galaxy>
+    <formatname>text</formatname>
+  </galaxy>
 </dataformat>

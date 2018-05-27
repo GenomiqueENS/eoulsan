@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.util.process.SpotifyDockerImageInstance.convertNFSFileToMountPoint;
+import static fr.ens.biologie.genomique.eoulsan.util.process.SpotifyDockerImageInstance.fileIndirections;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,10 +43,12 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
     checkNotNull(stdoutFile, "stdoutFile argument cannot be null");
     checkNotNull(stderrFile, "stderrFile argument cannot be null");
 
-    EoulsanLogger.getLogger().fine(getClass().getName() + " : commandLine=" + commandLine +
-            ", executionDirectory=" + executionDirectory + ", environmentVariables=" + environmentVariables +
-            ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile=" + stdoutFile + ", stderrFile=" + stderrFile +
-            ", redirectErrorStream="+redirectErrorStream + ", filesUsed" + Arrays.toString(filesUsed));
+    EoulsanLogger.getLogger().fine(getClass().getSimpleName()
+        + ": commandLine=" + commandLine + ", executionDirectory="
+        + executionDirectory + ", environmentVariables=" + environmentVariables
+        + ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile="
+        + stdoutFile + ", stderrFile=" + stderrFile + ", redirectErrorStream="
+        + redirectErrorStream + ", filesUsed" + Arrays.toString(filesUsed));
 
     if (executionDirectory != null) {
       checkArgument(executionDirectory.isDirectory(),
@@ -131,25 +134,17 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
   /**
    * Add the volume arguments to the Docker command line.
    * @param command the command line
-   * @param directories the share directory to add
+   * @param files the share files to add
    * @throws IOException if an error occurs when converting the file path
    */
-  private static void toBind(final List<String> command,
-      final List<File> directories, final boolean convertNFSFilesToMountRoots)
-      throws IOException {
+  private static void toBind(final List<String> command, final List<File> files,
+      final boolean convertNFSFilesToMountRoots) throws IOException {
 
-    for (File directory : directories) {
+    for (File file : fileIndirections(
+        convertNFSFileToMountPoint(files, convertNFSFilesToMountRoots))) {
 
-      if (directory != null) {
-
-        directory = convertNFSFilesToMountRoots
-            ? convertNFSFileToMountPoint(directory)
-            : directory;
-
-        command.add("--volume");
-        command.add(
-            directory.getAbsolutePath() + ':' + directory.getAbsolutePath());
-      }
+      command.add("--volume");
+      command.add(file.getAbsolutePath() + ':' + file.getAbsolutePath());
     }
   }
 
@@ -210,7 +205,8 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
 
     checkNotNull(dockerImage, "dockerImage argument cannot be null");
 
-    EoulsanLogger.getLogger().fine(getClass().getName()+" docker image used: "+ dockerImage);
+    EoulsanLogger.getLogger().fine(
+        getClass().getSimpleName() + " docker image used: " + dockerImage);
 
     this.dockerImage = dockerImage;
     this.userUid = SystemUtils.uid();

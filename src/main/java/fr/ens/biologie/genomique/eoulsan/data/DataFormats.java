@@ -62,6 +62,10 @@ public class DataFormats {
   public static final DataFormat STAR_INDEX_ZIP =
       registry.getDataFormatFromName("star_index_zip");
 
+  /** Minimap2 index data format. */
+  public static final DataFormat MINIMAP2_INDEX_ZIP =
+      registry.getDataFormatFromName("minimap2_index_zip");
+
   /** SAM results data format. */
   public static final DataFormat MAPPER_RESULTS_SAM =
       registry.getDataFormatFromName("mapper_results_sam");
@@ -73,6 +77,10 @@ public class DataFormats {
   /** BAM index results data format. */
   public static final DataFormat MAPPER_RESULTS_INDEX_BAI =
       registry.getDataFormatFromName("mapper_results_index_bai");
+
+  /** Mapper log file format. */
+  public static final DataFormat MAPPER_RESULTS_LOG =
+      registry.getDataFormatFromName("mapper_results_log");
 
   /** Expression results data format. */
   public static final DataFormat EXPRESSION_RESULTS_TSV =
@@ -118,9 +126,13 @@ public class DataFormats {
   public static final DataFormat ADDITIONAL_ANNOTATION_TSV =
       registry.getDataFormatFromName("additional_annotation_tsv");
 
-  /** FastQC report format. */
+  /** FastQC HTML report format. */
   public static final DataFormat FASTQC_REPORT_HTML =
       registry.getDataFormatFromName("fastqc_report_html");
+
+  /** FastQC ZIP report format. */
+  public static final DataFormat FASTQC_REPORT_ZIP =
+      registry.getDataFormatFromName("fastqc_report_zip");
 
   /** Dummy format. */
   public static final DataFormat DUMMY_TXT =
@@ -136,5 +148,13 @@ public class DataFormats {
 
   /** Cutadapt adapters format. */
   public static final DataFormat CUTADAPT_ADAPTER_FASTA =
-          registry.getDataFormatFromName("cutadapt_adapter");
+      registry.getDataFormatFromName("cutadapt_adapter");
+
+  /** MultiQC HTML report format. */
+  public static final DataFormat MULTIQC_REPORT_HTML =
+      registry.getDataFormatFromName("multiqc_report_html");
+
+  /** FeatureCounts summary format. */
+  public static final DataFormat FEATURECOUNTS_SUMMARY_TXT =
+      registry.getDataFormatFromName("featurecounts_summary_txt");
 }

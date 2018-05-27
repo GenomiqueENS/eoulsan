@@ -77,7 +77,7 @@ public class DiffAnaModule extends AbstractModule {
   private DispersionSharingMode dispEstSharingMode =
       DispersionSharingMode.MAXIMUM;
 
-  private Set<Requirement> requirements = new HashSet<>();
+  private final Set<Requirement> requirements = new HashSet<>();
   private RExecutor executor;
 
   //

@@ -46,7 +46,7 @@ public abstract class AbstractMetadata implements Metadata, Serializable {
   /** Serialization version UID. */
   private static final long serialVersionUID = 5756414666624839231L;
 
-  private Map<String, String> metadata = new LinkedHashMap<>();
+  private final Map<String, String> metadata = new LinkedHashMap<>();
 
   //
   // Methods

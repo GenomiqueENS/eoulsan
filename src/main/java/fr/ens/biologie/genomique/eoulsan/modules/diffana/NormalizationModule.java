@@ -60,7 +60,7 @@ public class NormalizationModule extends AbstractModule {
 
   static final String DESEQ1_DOCKER_IMAGE = "genomicpariscentre/deseq:1.8.3";
 
-  private Set<Requirement> requirements = new HashSet<>();
+  private final Set<Requirement> requirements = new HashSet<>();
   private RExecutor executor;
 
   //

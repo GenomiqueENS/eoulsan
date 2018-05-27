@@ -54,6 +54,7 @@ import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Step.DiscardOutput;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.CommandWorkflowModel.StepPort;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -192,8 +193,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
       final Set<Parameter> stepParameters = c.getStepParameters(stepId);
       final boolean skip = c.isStepSkipped(stepId);
-      final boolean copyResultsToOutput = !c.isStepDiscardOutput(stepId);
-      final boolean discardOutputAsap = c.isStepDiscardOutputAsap(stepId);
+      final Step.DiscardOutput discardOutput = c.getStepDiscardOutput(stepId);
       final int requiredMemory = c.getStepRequiredMemory(stepId);
       final int requiredProcessors = c.getStepRequiredProcessors(stepId);
       final String dataProduct = c.getStepDataProduct(stepId);
@@ -203,8 +203,8 @@ public class CommandWorkflow extends AbstractWorkflow {
           + ") step.");
 
       addStep(new CommandStep(this, stepId, moduleName, stepVersion,
-          stepParameters, skip, copyResultsToOutput, discardOutputAsap,
-          requiredMemory, requiredProcessors, dataProduct));
+          stepParameters, skip, discardOutput, requiredMemory,
+          requiredProcessors, dataProduct));
     }
 
     // Check if there one or more step to execute
@@ -264,8 +264,8 @@ public class CommandWorkflow extends AbstractWorkflow {
    */
   private void initializeSettings() {
 
-    final CommandWorkflowModel c = this.workflowCommand;
-    final Set<Parameter> globalParameters = c.getGlobalParameters();
+    final Set<Parameter> globalParameters =
+        this.workflowCommand.getGlobalParameters();
 
     final Settings settings = EoulsanRuntime.getSettings();
 
@@ -336,8 +336,8 @@ public class CommandWorkflow extends AbstractWorkflow {
       final CommandStep step =
           new CommandStep(this, r.getName() + "install" + installerCount,
               RequirementInstallerModule.MODULE_NAME,
-              Globals.APP_VERSION.toString(), r.getParameters(), false, false,
-              false, -1, -1, "");
+              Globals.APP_VERSION.toString(), r.getParameters(), false,
+              Step.DiscardOutput.NO, -1, -1, "");
 
       // Configure the installer step
       step.configure();
@@ -493,12 +493,9 @@ public class CommandWorkflow extends AbstractWorkflow {
         StepOutputDirectory.getInstance().workingDirectory(workflow,
             inputPort.getStep(), inputPort.getStep().getModule());
 
-    final boolean discardOutputAsap = inputPort.getStep().isDiscardOutputAsap();
-
     // Create step
-    CommandStep step =
-        new CommandStep(workflow, stepId, stepName, null, parameters, false,
-            false, discardOutputAsap, -1, -1, "", outputDirectory);
+    CommandStep step = new CommandStep(workflow, stepId, stepName, null,
+        parameters, false, DiscardOutput.ASAP, -1, -1, "", outputDirectory);
 
     // Configure step
     step.configure();
@@ -547,16 +544,12 @@ public class CommandWorkflow extends AbstractWorkflow {
 
       // Get outputDirectory
       final DataFile outputDirectory =
-          StepOutputDirectory.getInstance().workflowDirectory(
-              workflow, outputPort.getStep(), outputPort.getStep().getModule());
-
-      final boolean discardOutputAsap =
-          outputPort.getStep().isDiscardOutputAsap();
+          StepOutputDirectory.getInstance().workflowDirectory(workflow,
+              outputPort.getStep(), outputPort.getStep().getModule());
 
       // Create step
-      CommandStep step =
-          new CommandStep(workflow, stepId, stepName, null, parameters, false,
-              true, discardOutputAsap, -1, -1, "", outputDirectory);
+      CommandStep step = new CommandStep(workflow, stepId, stepName, null,
+          parameters, false, DiscardOutput.NO, -1, -1, "", outputDirectory);
 
       // Configure step
       step.configure();
@@ -813,14 +806,13 @@ public class CommandWorkflow extends AbstractWorkflow {
       }
     }
 
-    final StepOutputDirectory dispatcher =
-        StepOutputDirectory.getInstance();
+    final StepOutputDirectory dispatcher = StepOutputDirectory.getInstance();
 
     // Add steps to copy output data from steps to output directory if
     // necessary
     for (CommandStep step : Lists.newArrayList(this.steps)) {
 
-      if (step.isCopyResultsToOutput()
+      if (step.getDiscardOutput().isCopyResultsToOutput()
           && !step.getStepOutputDirectory().equals(
               dispatcher.workflowDirectory(this, step, step.getModule()))
           && !step.getWorkflowOutputPorts().isEmpty()) {
@@ -1018,7 +1010,8 @@ public class CommandWorkflow extends AbstractWorkflow {
    * @param firstSteps optional steps to add at the beginning of the workflow
    * @param endSteps optional steps to add at the end of the workflow
    * @param design Design to use with the workflow
-   * @throws EoulsanException if the creation of the CommandWorkflow object fails
+   * @throws EoulsanException if the creation of the CommandWorkflow object
+   *           fails
    */
   public CommandWorkflow(final ExecutorArguments executionArguments,
       final CommandWorkflowModel workflowCommand, final List<Module> firstSteps,

@@ -95,10 +95,9 @@
 
         <section name="What's new in Eoulsan @@@VERSION@@@? ">
 
-		<p>Eoulsan 2.0 is currently <u><b>under development</b></u>,
-		however this version has successfully passed our integration tests and will generate the same outputs obtained with Eoulsan 1.2.2.</p>
+		<p>Eoulsan @@@VERSION@@@ has successfully passed our integration tests and will generate the same outputs obtained with Eoulsan 1.2.2.</p>
 
-		<p><b>Warning:</b> this documentation may not be up to date for the latest features of Eoulsan 2.0.</p>
+		<p><b>Warning:</b> this documentation may not be up to date for the latest features of Eoulsan 2.x.</p>
 
 		<p>The main new features in this version of Eoulsan are:</p>
 		<ul>
@@ -107,6 +106,7 @@
                     <ul>
                       <li>DESeq2</li>
                       <li>FastQC</li>
+                      <li>MultiQC</li>
                       <li>sam2bam</li>
                       <li>bam2sam</li>
                       <li>sam2fastq</li>
@@ -123,10 +123,9 @@
 		  <li>Rewritten mapper launcher</li>
 		  <li>New JSON format for step result file</li>
 		  <li>Docker support</li>
-		  <li>New mapper added: STAR</li>
+		  <li>New mappers added: STAR, Minimap2</li>
 		  <li>Support of flavors of mappers (e.g. standard and large index binary versions of Bowtie 1, Bowtie 2 and STAR)</li>
-		  <li>Update of the bundled versions of the mappers: Bowtie (1.1.1), Bowtie2 (2.2.4), BWA (0.7.12) and GSNAP (2014-12-21)</li>
-		  <li>New FastQC step</li>
+		  <li>Update of the bundled versions of the mappers: Bowtie (1.1.1), Bowtie2 (2.2.4), BWA (0.7.12 and 0.7.15), GSNAP (2014-12-21, 2017-02-25 and 2017-04-24) and Minimap2 (2.5 and 2.10)</li>
 		  <li>Hadoop 2.x support</li>
 		  <li>Support of many job schedulers: HT-Condor, SLURM, TORQUE, PBS Pro and TGCC</li>
 		  <li>Galaxy tool XML file can be interpreted as an Eoulsan step</li>
@@ -156,7 +155,7 @@ $ curl @@@WEBSITE@@@/eoulsan-docker-installer.sh | bash</source>
 		</table>
 
         <p><b>Note:</b> Eoulsan 2.x is not binary compatible with Eoulsan 1.2.x, so step plug-ins written for previous versions will not work this release. The Eoulsan 2.x API
-        is not currently stable and breaking compatibility may occurs until final Eoulsan 2.0 version.</p>
+        is currently almost stable and small breaking compatibility may occurs in future.</p>
 
 	</section>
 
@@ -177,13 +176,13 @@ $ curl @@@WEBSITE@@@/eoulsan-docker-installer.sh | bash</source>
 		  <img src="images/boxplotRaw-200pxh.png"/> <img src="images/MA-plot-mo_injection-mo_mirna_injection-200pxh.png"/>
 		</div>
 
-		<p>This version currently use DESeq 1 for normalization and differential analysis but support of DESeq 2 is planned latter in the Eoulsan 2.0 release cycle.</p>
+		<p>This version currently use DESeq 1 and DESeq 2 for normalization and differential analysis but support for complex designs is only available with DESeq 2.</p>
 
 	</section>
 
 	<section name="Chip-Seq analysis">
 
-		<p>The final Eoulsan 2.0 version will support Chip-Seq analysis, however this feature is currently not implemented.</p>
+		<p>Chip-Seq workflow support is currently under development, it will available in a future version of Eoulsan 2.x.</p>
 
 	</section>
 

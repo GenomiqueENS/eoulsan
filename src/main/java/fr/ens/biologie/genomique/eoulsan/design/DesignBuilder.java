@@ -877,7 +877,7 @@ public class DesignBuilder {
     }
 
     final List<String> list =
-        new ArrayList<String>(Arrays.asList(filename.split("_")));
+        new ArrayList<>(Arrays.asList(filename.split("_")));
 
     final int size = list.size();
 

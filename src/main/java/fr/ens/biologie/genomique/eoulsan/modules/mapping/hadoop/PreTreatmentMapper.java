@@ -66,9 +66,6 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   private final ReadSequence read = new ReadSequence();
 
-  private Text outKey = new Text();
-  private Text outValue = new Text();
-
   //
   // Setup
   //
@@ -130,20 +127,23 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
     this.read.setSequence(this.fields.get(1));
     this.read.setQuality(this.fields.get(2));
 
+    final Text outKey;
+    final Text outValue;
+
     // Illumina technology and Casava 1.8 format for the '@' line
     if (!this.fields.get(0).contains("/")) {
-      this.outKey = new Text(this.read.getName().split(" ")[0]);
-      this.outValue = new Text(this.read.getName().split(" ")[1]
+      outKey = new Text(this.read.getName().split(" ")[0]);
+      outValue = new Text(this.read.getName().split(" ")[1]
           + "\t" + this.read.getSequence() + "\t" + this.read.getQuality());
     }
     // Before Casava 1.8 or technology other than Illumina
     else {
-      this.outKey = new Text(this.read.getName().split("/")[0] + "/");
-      this.outValue = new Text(this.read.getName().split("/")[1]
+      outKey = new Text(this.read.getName().split("/")[0] + "/");
+      outValue = new Text(this.read.getName().split("/")[1]
           + "\t" + this.read.getSequence() + "\t" + this.read.getQuality());
     }
 
-    context.write(this.outKey, this.outValue);
+    context.write(outKey, outValue);
     context.getCounter(this.counterGroup,
         OUTPUT_PRETREATMENT_READS_COUNTER.counterName()).increment(1);
 

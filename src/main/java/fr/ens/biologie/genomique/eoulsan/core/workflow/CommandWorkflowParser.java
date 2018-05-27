@@ -57,6 +57,7 @@ import org.xml.sax.SAXException;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
@@ -270,11 +271,8 @@ public class CommandWorkflowParser {
                 final int requiredProcs = parseProcessors(
                     eStepElement.getAttribute(REQUIRED_CPU_ATTR_NAME_STEP_TAG));
 
-                final boolean discardOutput = parseDiscardOutput(eStepElement
-                    .getAttribute(DISCARDOUTPUT_ATTR_NAME_STEP_TAG));
-
-                final boolean discardOutputAsap =
-                    parseDiscardOutputAsap(eStepElement
+                final Step.DiscardOutput discardOutput =
+                    Step.DiscardOutput.parse(eStepElement
                         .getAttribute(DISCARDOUTPUT_ATTR_NAME_STEP_TAG));
 
                 final String dataProduct = eStepElement
@@ -304,8 +302,8 @@ public class CommandWorkflowParser {
                 getLogger().info("In workflow file found "
                     + module + " step (parameters: " + parameters + ").");
                 result.addStep(stepId, module, version, inputs, parameters,
-                    skip, discardOutput, discardOutputAsap, requiredMemory,
-                    requiredProcs, dataProduct);
+                    skip, discardOutput, requiredMemory, requiredProcs,
+                    dataProduct);
               }
             }
           }
@@ -868,35 +866,6 @@ public class CommandWorkflowParser {
           + REQUIRED_CPU_ATTR_NAME_STEP_TAG + " attribute of tag "
           + STEP_TAG_NAME + ": " + s);
     }
-  }
-
-  /**
-   * Parse the discard output attribute.
-   * @param s the value of the attribute
-   * @return true if the discard output is enabled
-   */
-  private static boolean parseDiscardOutput(String s) {
-
-    if (s == null) {
-      return false;
-    }
-
-    return Boolean.parseBoolean(s.trim().toLowerCase())
-        || parseDiscardOutputAsap(s);
-  }
-
-  /**
-   * Parse the discard output attribute.
-   * @param s the value of the attribute
-   * @return true if the discard output as soon as possible is enabled
-   */
-  private static boolean parseDiscardOutputAsap(String s) {
-
-    if (s == null) {
-      return false;
-    }
-
-    return "asap".equals(s.trim().toLowerCase());
   }
 
   //

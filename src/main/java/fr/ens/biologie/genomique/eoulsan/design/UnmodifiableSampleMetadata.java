@@ -2,8 +2,8 @@ package fr.ens.biologie.genomique.eoulsan.design;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Objects;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
@@ -251,6 +251,7 @@ class UnmodifiableSampleMetadata implements SampleMetadata, Serializable {
 
   @Override
   public boolean equals(Object obj) {
+
     return this.md.equals(obj);
   }
 

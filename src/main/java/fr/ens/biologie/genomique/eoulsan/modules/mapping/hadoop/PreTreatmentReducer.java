@@ -46,7 +46,6 @@ public class PreTreatmentReducer extends Reducer<Text, Text, Text, Text> {
   private String counterGroup;
   private ReadSequence read1 = null, read2 = null;
   private String completeId1, completeId2;
-  private Text outValue, outKey;
 
   @Override
   protected void setup(final Context context)
@@ -128,13 +127,13 @@ public class PreTreatmentReducer extends Reducer<Text, Text, Text, Text> {
       return;
     }
 
-    this.outKey = new Text(this.completeId1);
+    final Text outKey = new Text(this.completeId1);
 
     // Write results
-    this.outValue = new Text(this.read1.getSequence()
+    final Text outValue = new Text(this.read1.getSequence()
         + "\t" + this.read1.getQuality() + "\t" + this.completeId2 + "\t"
         + this.read2.getSequence() + "\t" + this.read2.getQuality());
-    context.write(this.outKey, this.outValue);
+    context.write(outKey, outValue);
 
   }
 

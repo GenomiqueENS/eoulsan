@@ -34,7 +34,7 @@ import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.SequenceReadsMapper;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperInstance;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
 import fr.ens.biologie.genomique.eoulsan.data.storages.GenomeIndexStorage;
@@ -47,8 +47,10 @@ import fr.ens.biologie.genomique.eoulsan.data.storages.SimpleGenomeIndexStorage;
  */
 public final class GenomeMapperIndexer {
 
-  private final SequenceReadsMapper mapper;
+  private final MapperInstance mapperInstance;
   private final GenomeIndexStorage storage;
+  private final String indexerArguments;
+  private final int threads;
   private final LinkedHashMap<String, String> additionalDescription;
 
   /**
@@ -64,15 +66,15 @@ public final class GenomeMapperIndexer {
 
     final DataFile precomputedIndexDataFile;
 
-    getLogger().info("Mapper name: " + this.mapper.getMapperName());
-    getLogger().info("Mapper version: " + this.mapper.getMapperVersion());
-    getLogger().info("Mapper flavor: " + this.mapper.getMapperFlavor());
-    getLogger().info("Indexer arguments: " + this.mapper.getIndexerArguments());
+    getLogger().info("Mapper name: " + this.mapperInstance.getName());
+    getLogger().info("Mapper version: " + this.mapperInstance.getVersion());
+    getLogger().info("Mapper flavor: " + this.mapperInstance.getFlavor());
+    getLogger().info("Indexer arguments: " + this.indexerArguments);
 
     if (this.storage == null) {
       precomputedIndexDataFile = null;
     } else {
-      precomputedIndexDataFile = this.storage.get(this.mapper,
+      precomputedIndexDataFile = this.storage.get(this.mapperInstance,
           genomeDescription, this.additionalDescription);
     }
 
@@ -86,7 +88,7 @@ public final class GenomeMapperIndexer {
 
       // Save mapper index in storage
       if (this.storage != null) {
-        this.storage.put(this.mapper, genomeDescription,
+        this.storage.put(this.mapperInstance, genomeDescription,
             this.additionalDescription, mapperIndexDataFile);
       }
     } else {
@@ -117,13 +119,15 @@ public final class GenomeMapperIndexer {
     File outputFile = mapperIndex.toFile();
     if (outputFile == null) {
       outputFile = EoulsanRuntime.getRuntime().createTempFile(
-          this.mapper.getMapperName() + "-index-archive-", ".zip");
+          this.mapperInstance.getName() + "-index-archive-", ".zip");
     }
 
     if (genome.toFile() != null) {
-      this.mapper.makeArchiveIndex(genome.toFile(), outputFile);
+      this.mapperInstance.makeArchiveIndex(genome.toFile(), outputFile,
+          this.indexerArguments, this.threads);
     } else {
-      this.mapper.makeArchiveIndex(genome.open(), outputFile);
+      this.mapperInstance.makeArchiveIndex(genome.open(), outputFile,
+          this.indexerArguments, this.threads);
     }
 
     getLogger().info("mapperIndexDataFile: " + mapperIndex);
@@ -134,7 +138,7 @@ public final class GenomeMapperIndexer {
 
       if (!outputFile.delete()) {
         getLogger().severe("Unable to delete temporary "
-            + this.mapper.getMapperName() + " archive index.");
+            + this.mapperInstance.getName() + " archive index.");
       }
 
     }
@@ -164,25 +168,30 @@ public final class GenomeMapperIndexer {
 
   /**
    * Public constructor.
-   * @param mapper Mapper to use for the index generator
+   * @param mapperInstance Mapper to use for the index generator
    * @param additionalArguments additional indexer arguments
    * @param additionalDescription additional indexer arguments description
    */
-  public GenomeMapperIndexer(final SequenceReadsMapper mapper,
+  public GenomeMapperIndexer(final MapperInstance mapperInstance,
       final String additionalArguments,
-      final Map<String, String> additionalDescription) {
+      final Map<String, String> additionalDescription, final int threads) {
 
-    checkNotNull(mapper, "Mapper is null");
+    checkNotNull(mapperInstance, "Mapper is null");
     checkNotNull(additionalDescription, "additionalDescription is null");
 
     // Set the mapper
-    this.mapper = mapper;
+    this.mapperInstance = mapperInstance;
 
     // Get genome Index storage path
     this.storage = checkForGenomeIndexStore();
 
     // Set indexer additional arguments of the indexer
-    this.mapper.setIndexerArguments(additionalArguments);
+    this.indexerArguments =
+        additionalArguments == null || additionalArguments.trim().isEmpty()
+            ? "" : additionalArguments;
+
+    // Set the threads number
+    this.threads = threads;
 
     // Get the additional description
     this.additionalDescription = new LinkedHashMap<>(additionalDescription);

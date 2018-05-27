@@ -64,8 +64,10 @@
 		<tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
 		<tr><td>removeunmapped</td><td>None</td><td>If enabled, remove unmapped reads.</td><td>N/A</td></tr>
 		<tr><td>removemultimatches</td><td>None</td><td>If enabled, remove all alignments of a multi-matches read.</td><td>N/A</td></tr>
+		<tr><td>removesecondary</td><td>None</td><td>If enabled, remove all alignment with "secondary alignment" flag.</td><td>N/A</td></tr>
+		<tr><td>removesupplementary</td><td>None</td><td>If enabled, remove all alignment with "supplementary alignment" flag.</td><td>N/A</td></tr>
 		<tr><td>keeponematch</td><td>None</td><td>If enabled, keep only the first alignment of a multi-matches read.</td><td>N/A</td></tr>
-		<tr><td>quality.threhsold</td><td>integer</td><td>The threshold for the mapping quality. All the alignments with a mapping quality lower to the threshold will be removed.</td><td>Not set</td></tr>
+		<tr><td>quality.threshold</td><td>integer</td><td>The threshold for the mapping quality. All the alignments with a mapping quality lower to the threshold will be removed.</td><td>Not set</td></tr>
 		<tr><td>keepnumbermatch.threshold</td><td>int</td><td>Keep the given number of the first alignments for a read.</td><td>Not set</td></tr>
 		<tr><td>distancefromreference.threshold</td><td>int</td><td>Keep alignments of a read according to the distance of the read from the reference sequence on the genome. This filter is useful to detect SNP and indel.</td><td>Not set</td></tr>
 		<tr><td>gsnapfilter</td><td>None</td><td>If enabled, remove alignments that are not supported by the expression estimation module, that is multiple alignments and those that contain a splice event.</td><td>N/A</td></tr>

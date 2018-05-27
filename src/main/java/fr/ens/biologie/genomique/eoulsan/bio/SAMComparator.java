@@ -24,10 +24,10 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio;
 
-import htsjdk.samtools.SAMRecord;
-
 import java.io.Serializable;
 import java.util.Comparator;
+
+import htsjdk.samtools.SAMRecord;
 
 /**
  * This class is a Comparator for SAM records.

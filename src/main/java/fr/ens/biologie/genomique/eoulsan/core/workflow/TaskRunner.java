@@ -51,11 +51,11 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Main;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
-import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 
@@ -276,16 +276,23 @@ public class TaskRunner {
 
       if (logger != null) {
 
-        Handler handler = logger.getHandlers()[0];
+        Handler[] handlers = logger.getHandlers();
 
-        // Close handler
-        handler.close();
+        // Check if an handler has been set
+        if (handlers != null && handlers.length > 0) {
 
-        // Remove logger from EoulsanLogger registry
-        EoulsanLogger.removeThreadGroupLogger(threadGroup);
+          // Get the first handler
+          Handler handler = handlers[0];
 
-        // Remove handler
-        logger.removeHandler(handler);
+          // Close handler
+          handler.close();
+
+          // Remove logger from EoulsanLogger registry
+          EoulsanLogger.removeThreadGroupLogger(threadGroup);
+
+          // Remove handler
+          logger.removeHandler(handler);
+        }
       }
     }
 

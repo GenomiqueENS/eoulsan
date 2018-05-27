@@ -29,8 +29,9 @@ import static fr.ens.biologie.genomique.eoulsan.core.workflow.CommandWorkflow.EM
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 
@@ -83,8 +84,7 @@ public class CommandStep extends AbstractStep {
    * @param stepVersion step version
    * @param parameters parameters of the step
    * @param skip true to skip execution of the step
-   * @param copyResultsToOutput true to copy step results to output
-   * @param discardOutputAsap discard output as soon as possible
+   * @param discardOutput discard output value
    * @param requiredMemory required memory
    * @param requiredProcessors required processors
    * @param dataProduct data product
@@ -93,14 +93,12 @@ public class CommandStep extends AbstractStep {
   public CommandStep(final AbstractWorkflow workflow, final String id,
       final String moduleName, final String stepVersion,
       final Set<Parameter> parameters, final boolean skip,
-      final boolean copyResultsToOutput, final boolean discardOutputAsap,
-      final int requiredMemory, final int requiredProcessors,
-      final String dataProduct)
+      final Step.DiscardOutput discardOutput, final int requiredMemory,
+      final int requiredProcessors, final String dataProduct)
       throws EoulsanException {
 
-    super(workflow, id, moduleName, stepVersion, skip, copyResultsToOutput,
-        discardOutputAsap, parameters, requiredMemory, requiredProcessors,
-        dataProduct);
+    super(workflow, id, moduleName, stepVersion, skip, discardOutput,
+        parameters, requiredMemory, requiredProcessors, dataProduct);
   }
 
   /**
@@ -111,8 +109,7 @@ public class CommandStep extends AbstractStep {
    * @param stepVersion step version
    * @param parameters parameters of the step
    * @param skip true to skip execution of the step
-   * @param copyResultsToOutput true to copy step results to output
-   * @param discardOutputAsap discard output as soon as possible
+   * @param discardOutput discard output value
    * @param requiredMemory required memory
    * @param requiredProcessors required processors
    * @param dataProduct data product
@@ -122,14 +119,13 @@ public class CommandStep extends AbstractStep {
   public CommandStep(final AbstractWorkflow workflow, final String id,
       final String moduleName, final String stepVersion,
       final Set<Parameter> parameters, final boolean skip,
-      final boolean copyResultsToOutput, final boolean discardOutputAsap,
-      final int requiredMemory, final int requiredProcessors,
-      final String dataProduct,
+      final Step.DiscardOutput discardOutput, final int requiredMemory,
+      final int requiredProcessors, final String dataProduct,
       final DataFile outputDirectory) throws EoulsanException {
 
-    super(workflow, id, moduleName, stepVersion, skip, copyResultsToOutput,
-        discardOutputAsap, parameters, requiredMemory, requiredProcessors,
-        dataProduct, outputDirectory);
+    super(workflow, id, moduleName, stepVersion, skip, discardOutput,
+        parameters, requiredMemory, requiredProcessors, dataProduct,
+        outputDirectory);
   }
 
   /**
@@ -155,7 +151,7 @@ public class CommandStep extends AbstractStep {
       final Set<Parameter> parameters) throws EoulsanException {
 
     this(workflow, module.getName(), module.getName(),
-        module.getVersion().toString(), parameters, false, false, false, -1, -1,
-        "");
+        module.getVersion().toString(), parameters, false,
+        Step.DiscardOutput.NO, -1, -1, "");
   }
 }

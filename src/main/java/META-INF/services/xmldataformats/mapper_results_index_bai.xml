@@ -5,9 +5,9 @@
   <prefix>alignmentsindex</prefix>
   <content-type>application/octet-stream</content-type>
   <extensions>
-  	<extension default="true">.bai</extension>
+    <extension default="true">.bai</extension>
   </extensions>
-  <toolshedgalaxy>
-    <extension>bai</extension>    	
-  </toolshedgalaxy>
+  <galaxy>
+    <formatname>bai</formatname>
+  </galaxy>
 </dataformat>

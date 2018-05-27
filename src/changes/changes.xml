@@ -1410,5 +1410,221 @@ of reads that reject each filter like in local mode.
 
          </release>
 
+         <release version="2.0" description="Eoulsan 2.0 release" date="2017-11-06">
+
+            <action dev="jourdren" type="fix">
+               Fix issues with BWA mem wrapper.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               When using a Galaxy module in Docker mode with input files that are outside the workflow directory, they were not mounted in the container.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               The XLSX files created by Eoulsan now use a formula to create hyperlinks in XLSX spreadsheets. This is more portable with Microsoft Excel and Libreoffice.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               In clusterexec mode, the result of the task was sending to the deseriablized workflow and not to the real workflow.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               The name of tasks were not always as expected in the step result files.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               Fix NullPointerException when the required Docker images were not installed.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               Many fixes in the workflow engine to improve the stability of the software.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               The mapping stalled when FASTQ input files were empty or very small.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Add GMAP/GSNAP 2017-04-24 to Eoulsan.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add "asap" as a new value for the "discardoutput" attribute of the workflow to remove output files of a step once all the steps that require this outputs are completed.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add a new filter to select only a type of Nanopore sequence.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Eoulsan can now handle Galaxy tools with text parameters.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add support for HTCondor ConcurrencyLimits. The defined value will be used for all submitted jobs.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add a "main.docker.mount.nfs.roots" global parameter that allow to avoid some right issues with files stored on NFS storage and Docker.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add a new class NanoporeReadId to easily parse Nanopore read ids.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add classes to handle expression matrices.
+            </action>
+
+           <action dev="jourdren" type="add">
+               Add the Fast5 class from the Toullig project in Eoulsan.
+            </action>
+
+            <action dev="jourdren" type="update">
+                The generate-casava-design-validator.sh script that is now in Aozan git repository.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Big refactoring of the API of the readsmapper package. The new API is more convinient and easier to improve.
+            </action>
+
+            <action dev="jourdren" type="update">
+               The "requiredprocs" attribute can now be use for standard steps in local mode.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Update HTCondor wrapper to handle last HTCondor version changes.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Add a "copy" parameter in the import module. This will allow to always copy files to import.
+            </action>
+
+            <action dev="jourdren" type="update">
+               In "clusterexec" mode, now use a waiting queue for all scheduler status queries instead of a sleeping time for each job. Now waits one second between two queries.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Now use the "HH:MM:SS.mmm" format instead of the "MM:SS.mmm" format.
+            </action>
+
+         </release>
+
+         <release version="2.1" description="Eoulsan 2.1 release" date="2017-11-22">
+
+            <action dev="jourdren" type="fix">
+               In cluster mode, the path to the job submission script was not correct if eoulsan.sh was launched from a symbolic link.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               Now in cluster mode, do not export the DISPLAY environment variable when submitting jobs. If the DISPLAY environment variable exits and no related X server is available, the annotation steps will fail when generating XLSX files.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               In AbstractWorkflow, avoid ConcurrentModificationException with cluster mode in some rare cases.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add Minimap2 mapper support.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add two new alignment filters based on the SAM flag: "removesecondary" and "removesupplementary".
+            </action>
+
+            <action dev="jourdren" type="update">
+               Remove "local.threads" and "max.local.threads" options in the "starindexgenerator" module. The number of threads to use for the step using this module is now defined using the "requiredprocs" of the step XML tag.
+            </action>
+
+         </release>
+
+         <release version="2.2" description="Eoulsan 2.2 release" date="2018-04-17">
+
+            <action dev="jourdren" type="fix">
+               When using the createdesign action, if the symbolic link to create already exists, now rename it.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               Now do not try to create a Docker connection when closing Docker connections.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               Fix symbolic link creation in MapperInstance.computeIndex() when reference genome is not compressed.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               When create Docker binds, now binds also file indirections of the files to mount.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               In the filtersam module in local mode, a bad SAM entry format led to not process the last alignments of the SAM file.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               Now use the eoulsan temporary directory instead of the system temporary directory when creating XLSX files in DiffanaResultsAnnotationModule and ExpressionResultsAnnotationModule.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               In STARIndexGeneratorModule, now only add the "--sjdbOverhang" STAR option to the command line when the overhang is set.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               When using a Galaxy tool, the command were executed two times.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Now by default 4096 MiB are allocated to the JVM for running Eoulsan instead of 2048 MiB.
+            </action>
+
+            <action dev="jourdren" type="update">
+               In the sam2bam module in local mode, now also create .bam.bai symbolic links.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Reenable MA plots for contrast analysis with DESeq2.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Now all the genome mapper indexes produces uncompressed ZIP archives for faster startup of the mapping step.
+            </action>
+
+            <action dev="jourdren" type="update">
+               The FastQC module now also generate a ZIP report in addition to the HTML report.
+            </action>
+
+            <action dev="jourdren" type="update">
+               For Galaxy tools, add a new variable in the Cheetah interpreter named "THREADS" that contains the number of required threads by the user. The value default value of this variable is 1.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Eoulsan now produce a image file from the Graphviz file of the workflow if GraphViz is installed on the system..
+            </action>
+
+            <action dev="jourdren" type="add">
+               Now in non-hadoop mode, Eoulsan create an error file (and log files for STAR) for the mapping steps.
+            </action>
+
+            <action dev="jourdren" type="add">
+                Now save the standard output and standard error of the mapper index builder in files.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add Minimap2 2.10 binary into Eoulsan.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add a new module for MultiQC, supported reports are FastQC, mapreads, expression and FeatureCounts.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add expression matrix dedicated classes in the bio package. Two implementation are provided (dense and sparse). Supported files formats are TSV, UMI-tools, MarketMatrix and Cell Ranger (some formats can be only read or written).
+            </action>
+
+            <action dev="jourdren" type="update">
+               Update the syntax of the XML data formats: the toolshedgalaxy/extension tags are renamed galaxy/formatname. Backward compatibility is conserved.
+            </action>
+
+         </release>
+
 	</body>
 </document>

@@ -31,7 +31,6 @@ import static java.util.Arrays.asList;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -222,7 +221,7 @@ public class GenomeDescription {
    * Save genome description.
    * @param file output file
    */
-  public void save(final File file) throws FileNotFoundException, IOException {
+  public void save(final File file) throws IOException {
 
     checkNotNull(file, "File is null");
     save(FileUtils.createOutputStream(file));

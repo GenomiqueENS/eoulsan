@@ -3,6 +3,7 @@ fr.ens.biologie.genomique.eoulsan.modules.mapping.local.ReadsFilterLocalModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsFilterHadoopModule
 
 # Mapping reads steps
+fr.ens.biologie.genomique.eoulsan.modules.generators.Minimap2IndexGeneratorModule
 fr.ens.biologie.genomique.eoulsan.modules.generators.STARIndexGeneratorModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.local.ReadsMapperLocalModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsMapperHadoopModule
@@ -52,6 +53,7 @@ fr.ens.biologie.genomique.eoulsan.modules.ShellModule
 fr.ens.biologie.genomique.eoulsan.modules.fastqc.FastQCModule
 fr.ens.biologie.genomique.eoulsan.modules.qc.CountSplicedReadsModule
 fr.ens.biologie.genomique.eoulsan.modules.qc.IDRModule
+fr.ens.biologie.genomique.eoulsan.modules.multiqc.MultiQCModule
 
 # Other steps
 fr.ens.biologie.genomique.eoulsan.modules.ImportModule

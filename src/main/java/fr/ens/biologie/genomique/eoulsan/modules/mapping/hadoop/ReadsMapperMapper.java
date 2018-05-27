@@ -55,15 +55,16 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.EntryMapping;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperIndex;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperInstance;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperProcess;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.SequenceReadsMapper;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.SequenceReadsMapperService;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopReporter;
-import fr.ens.biologie.genomique.eoulsan.util.locker.Locker;
 import fr.ens.biologie.genomique.eoulsan.util.locker.DistributedLocker;
+import fr.ens.biologie.genomique.eoulsan.util.locker.Locker;
 
 /**
  * This class defines a generic mapper for reads mapping.
@@ -107,7 +108,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
   private Locker lock;
 
-  private SequenceReadsMapper mapper;
+  private EntryMapping mapping;
   private MapperProcess process;
   private Thread samResultsParserThread;
   private final BlockingDeque<String> queue = new LinkedBlockingDeque<>();
@@ -178,14 +179,29 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     }
 
     // Set the mapper
-    this.mapper =
-        SequenceReadsMapperService.getInstance().newService(mapperName);
+    final fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper mapper =
+        fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper
+            .newMapper(mapperName);
 
-    // Set the mapper version
-    this.mapper.setMapperVersionToUse(conf.get(MAPPER_VERSION_KEY));
+    // Create temporary directory if not exists
+    final File tempDir = EoulsanRuntime.getRuntime().getTempDirectory();
+    if (!tempDir.exists()) {
+      getLogger()
+          .fine("Create temporary directory: " + tempDir.getAbsolutePath());
+      if (!tempDir.mkdirs()) {
+        throw new IOException(
+            "Unable to create local Hadoop temporary directory: " + tempDir);
+      }
+    }
 
-    // Set the mapper flavor
-    this.mapper.setMapperFlavorToUse(conf.get(MAPPER_FLAVOR_KEY));
+    // Set mapper temporary directory
+    mapper.setTempDirectory(tempDir);
+
+    // Set mapper executable temporary directory
+    mapper.setExecutablesTempDirectory(tempDir);
+
+    final MapperInstance mapperInstance = mapper.newMapperInstance(
+        conf.get(MAPPER_VERSION_KEY), conf.get(MAPPER_FLAVOR_KEY));
 
     // Get counter group
     final String counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);
@@ -220,17 +236,16 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
         + archiveIndexFile);
 
     // Set index directory
-    this.mapperIndexDir =
-        new File(EoulsanRuntime.getRuntime().getTempDirectory(),
-            MAPPER_INDEX_DIR_PREFIX
-                + this.mapper.getMapperName() + "-index-"
-                + conf.get(INDEX_CHECKSUM_KEY));
+    this.mapperIndexDir = new File(
+        EoulsanRuntime.getRuntime().getTempDirectory(), MAPPER_INDEX_DIR_PREFIX
+            + mapper.getName() + "-index-" + conf.get(INDEX_CHECKSUM_KEY));
 
     getLogger()
         .info("Genome index directory where decompressed: " + mapperIndexDir);
 
-    // Set FASTQ format
-    this.mapper.setFastqFormat(fastqFormat);
+    // Create the MapperIndex object
+    final MapperIndex mapperIndex =
+        mapperInstance.newMapperIndex(archiveIndexFile.open(), mapperIndexDir);
 
     getLogger().info("Fastq format: " + fastqFormat);
 
@@ -241,9 +256,6 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
     // Get Mapper arguments
     final String mapperArguments = unDoubleQuotes(conf.get(MAPPER_ARGS_KEY));
-    if (mapperArguments != null) {
-      this.mapper.setMapperArguments(mapperArguments);
-    }
 
     // Get the number of threads to use
     int mapperThreads = Integer.parseInt(conf.get(MAPPER_THREADS_KEY,
@@ -254,34 +266,8 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
       mapperThreads = Runtime.getRuntime().availableProcessors();
     }
 
-    if (!this.mapper.isMultipleInstancesEnabled()) {
-      this.mapper.setThreadsNumber(mapperThreads);
-    }
-
     getLogger().info("Use "
-        + this.mapper.getMapperName() + " with " + mapperThreads
-        + " threads option");
-
-    // Create temporary directory if not exists
-    final File tempDir = EoulsanRuntime.getRuntime().getTempDirectory();
-    if (!tempDir.exists()) {
-      getLogger()
-          .fine("Create temporary directory: " + tempDir.getAbsolutePath());
-      if (!tempDir.mkdirs()) {
-        throw new IOException(
-            "Unable to create local Hadoop temporary directory: " + tempDir);
-      }
-    }
-
-    // Set mapper temporary directory
-    this.mapper.setTempDirectory(tempDir);
-
-    // Set mapper executable temporary directory
-    this.mapper.setExecutablesTempDirectory(tempDir);
-
-    // Enable multiple instance of the mapper, if not supported
-    // this.mapper.isMultipleInstancesEnabled() will return false
-    this.mapper.setMultipleInstancesEnabled(true);
+        + mapper.getName() + " with " + mapperThreads + " threads option");
 
     // Update last used file timestamp for the mapper indexes clean up
     updateLastUsedMapperIndex(this.mapperIndexDir);
@@ -292,35 +278,33 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     ProcessUtils.waitRandom(5000);
     this.lock.lock();
 
-
-    // Init mapper
-    this.mapper.init(archiveIndexFile.open(), this.mapperIndexDir,
-        new HadoopReporter(context), this.counterGroup);
+    // Initialize mapping
+    this.mapping = mapperIndex.newEntryMapping(fastqFormat, mapperArguments,
+        mapperThreads, true, new HadoopReporter(context), this.counterGroup);
 
     // Lock if no multiple instances enabled
-    if (this.mapper.isMultipleInstancesEnabled()) {
+    if (this.mapping.isMultipleInstancesEnabled()) {
 
       // Unlock
       this.lock.unlock();
     } else {
 
-      context.setStatus(
-          "Wait free JVM for running " + this.mapper.getMapperName());
+      context.setStatus("Wait free JVM for running " + this.mapping.getName());
 
       // Wait free JVM
       waitFreeJVM(context);
     }
 
     if (pairedEnd) {
-      this.process = this.mapper.mapPE();
+      this.process = this.mapping.mapPE();
     } else {
-      this.process = this.mapper.mapSE();
+      this.process = this.mapping.mapSE();
     }
 
     this.writeHeaders = context.getTaskAttemptID().getTaskID().getId() == 0;
     this.samResultsParserThread = startParseSAMResultsThread(this.process);
 
-    context.setStatus("Run " + this.mapper.getMapperName());
+    context.setStatus("Run " + this.mapping.getName());
 
     getLogger().info("End of setup()");
   }
@@ -338,10 +322,9 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     this.samResultsParserThread.join();
 
     this.process.waitFor();
-    this.mapper.throwMappingException();
 
     // Unlock if no multiple instances enabled
-    if (!this.mapper.isMultipleInstancesEnabled()) {
+    if (!this.mapping.isMultipleInstancesEnabled()) {
       this.lock.unlock();
     }
 
@@ -349,7 +332,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     writeResults(context, this.writeHeaders);
 
     getLogger().info(this.entriesParsed
-        + " entries parsed in " + this.mapper.getMapperName() + " output file");
+        + " entries parsed in " + this.mapping.getName() + " output file");
 
     // Clear old mapper indexes
     removeUnusedMapperIndexes(context.getConfiguration());
@@ -369,15 +352,16 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
     final long waitStartTime = System.currentTimeMillis();
 
-    ProcessUtils
-        .waitUntilExecutableRunning(this.mapper.getMapperExecutableName());
+    ProcessUtils.waitUntilExecutableRunning(
+        this.mapping.getMapperInstance().getMapper().getProvider()
+            .getMapperExecutableName(this.mapping.getMapperInstance()));
 
     getLogger().info("Wait "
         + StringUtils
             .toTimeHumanReadable(System.currentTimeMillis() - waitStartTime)
-        + " before running " + this.mapper.getMapperName());
+        + " before running " + this.mapping.getName());
 
-    context.setStatus("Run " + this.mapper.getMapperName());
+    context.setStatus("Run " + this.mapping.getName());
   }
 
   /**

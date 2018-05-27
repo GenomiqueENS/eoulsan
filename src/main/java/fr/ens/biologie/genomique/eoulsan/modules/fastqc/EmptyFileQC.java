@@ -28,7 +28,8 @@ public class EmptyFileQC extends AbstractQCModule {
   @SuppressWarnings("serial")
   private class ResultsTable extends AbstractTableModel {
 
-    private String[] rowNames = new String[] {"Filename", "Total Sequences",};
+    private final String[] rowNames =
+        new String[] {"Filename", "Total Sequences",};
 
     @Override
     public int getColumnCount() {

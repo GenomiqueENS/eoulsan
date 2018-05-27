@@ -14,7 +14,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
  */
 public interface SimpleProcess {
 
-  public interface AdvancedProcess {
+  interface AdvancedProcess {
 
     int waitFor() throws IOException;
   }

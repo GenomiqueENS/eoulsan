@@ -34,9 +34,6 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.bio.GenomicArray;
-import fr.ens.biologie.genomique.eoulsan.bio.GenomicInterval;
-
 /**
  * TODO: finish the test class.
  * @since 1.2

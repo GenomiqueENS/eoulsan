@@ -44,9 +44,9 @@ import org.xml.sax.SAXException;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.splitermergers.Merger;
 import fr.ens.biologie.genomique.eoulsan.splitermergers.Splitter;
 import fr.ens.biologie.genomique.eoulsan.util.XMLUtils;
@@ -74,7 +74,7 @@ public final class XMLDataFormat extends AbstractDataFormat
   private String sampleMetadataKeyName;
   private String contentType = "text/plain";
   private final List<String> extensions = new ArrayList<>();
-  private final List<String> galaxyToolExtensions = new ArrayList<>();
+  private final List<String> galaxyFormatNames = new ArrayList<>();
   private String generatorClassName;
   private final Set<Parameter> generatorParameters = new LinkedHashSet<>();
   private String checkerClassName;
@@ -137,8 +137,8 @@ public final class XMLDataFormat extends AbstractDataFormat
   }
 
   @Override
-  public List<String> getGalaxyToolExtensions() {
-    return this.galaxyToolExtensions;
+  public List<String> getGalaxyFormatNames() {
+    return this.galaxyFormatNames;
   }
 
   @Override
@@ -241,11 +241,8 @@ public final class XMLDataFormat extends AbstractDataFormat
       }
 
       return null;
-    } catch (ClassNotFoundException e) {
-      return null;
-    } catch (InstantiationException e) {
-      return null;
-    } catch (IllegalAccessException e) {
+    } catch (ClassNotFoundException | InstantiationException
+        | IllegalAccessException e) {
       return null;
     }
   }
@@ -254,8 +251,9 @@ public final class XMLDataFormat extends AbstractDataFormat
   // Parsing methods
   //
 
-  private void parse(final InputStream is) throws ParserConfigurationException,
-      SAXException, IOException, EoulsanException {
+  private void parse(final InputStream is, final String source)
+      throws ParserConfigurationException, SAXException, IOException,
+      EoulsanException {
 
     final Document doc;
 
@@ -265,12 +263,13 @@ public final class XMLDataFormat extends AbstractDataFormat
     doc = dBuilder.parse(is);
     doc.getDocumentElement().normalize();
 
-    parse(doc);
+    parse(doc, source);
 
     is.close();
   }
 
-  private void parse(final Document document) throws EoulsanException {
+  private void parse(final Document document, final String source)
+      throws EoulsanException {
 
     for (Element e : XMLUtils.getElementsByTagName(document, "dataformat")) {
 
@@ -288,6 +287,18 @@ public final class XMLDataFormat extends AbstractDataFormat
       this.splitterClassName = XMLUtils.getTagValue(e, "splitter");
       this.mergerClassName = XMLUtils.getTagValue(e, "merger");
 
+      // Check object values
+      if (this.name == null) {
+        throw new EoulsanException(
+            "The name of the dataformat is null (source: " + source + ")");
+      }
+
+      this.name = this.name.trim().toLowerCase();
+      if (this.name.isEmpty()) {
+        throw new EoulsanException(
+            "The name of the dataformat is empty (source: " + source + ")");
+      }
+
       if (this.designMetadataKeyName != null
           || this.sampleMetadataKeyName != null) {
         this.dataFormatFromDesignFile = true;
@@ -297,7 +308,8 @@ public final class XMLDataFormat extends AbstractDataFormat
           && this.sampleMetadataKeyName != null) {
         throw new EoulsanException(
             "A DataFormat cannot be provided by a design "
-                + "metadata entry and a sample metadata entry.");
+                + "metadata entry and a sample metadata entry. (format name: "
+                + this.name + ", source: " + source + ")");
       }
 
       // Get the parameters of the generator step
@@ -324,7 +336,8 @@ public final class XMLDataFormat extends AbstractDataFormat
       } catch (NumberFormatException exp) {
         throw new EoulsanException(
             "Invalid maximal files count for data format "
-                + this.name + ": " + maxFiles,
+                + this.name + ": " + maxFiles + " (format name: " + this.name
+                + ", source: " + source + ")",
             exp);
       }
 
@@ -345,26 +358,28 @@ public final class XMLDataFormat extends AbstractDataFormat
 
     }
 
-    // Parse toolshed extensions from Galaxy
+    // Parse Galaxy format names (using the old tag names)
     for (Element toolshed : XMLUtils.getElementsByTagName(document,
         "toolshedgalaxy")) {
       for (Element ext : XMLUtils.getElementsByTagName(toolshed, "extension")) {
 
-        this.galaxyToolExtensions.add(ext.getTextContent().trim());
+        this.galaxyFormatNames.add(ext.getTextContent().trim());
       }
     }
 
-    // Check object values
-    if (this.name == null) {
-      throw new EoulsanException("The name of the dataformat is null");
+    // Parse Galaxy format names (using the new tag names)
+    for (Element toolshed : XMLUtils.getElementsByTagName(document, "galaxy")) {
+      for (Element ext : XMLUtils.getElementsByTagName(toolshed,
+          "formatname")) {
+
+        this.galaxyFormatNames.add(ext.getTextContent().trim());
+      }
     }
 
-    this.name = this.name.trim().toLowerCase();
-
     if (!FileNaming.isFormatPrefixValid(this.prefix)) {
-      throw new EoulsanException(
-          "The prefix of the dataformat is invalid (only ascii letters and digits are allowed): "
-              + this.prefix);
+      throw new EoulsanException("The prefix of the dataformat is invalid "
+          + "(only ascii letters and digits are allowed): " + this.prefix
+          + " (format name: " + this.name + ", source: " + source + ")");
     }
 
     if (this.description != null) {
@@ -400,13 +415,15 @@ public final class XMLDataFormat extends AbstractDataFormat
     }
 
     if (this.maxFilesCount < 1 || this.maxFilesCount > 2) {
-      throw new EoulsanException("Invalid maximal files count for data format "
-          + this.name + ": " + this.maxFilesCount);
+      throw new EoulsanException("Invalid maximal files count for data format: "
+          + this.maxFilesCount + " (format name: " + this.name + ", source: "
+          + source + ")");
     }
 
     if (this.extensions.size() == 0) {
       throw new EoulsanException(
-          "No extension define for the data format " + this.name);
+          "No extension define for the data format. (format name: "
+              + this.name + ", source: " + source + ")");
     }
   }
 
@@ -444,7 +461,7 @@ public final class XMLDataFormat extends AbstractDataFormat
             that.sampleMetadataKeyName)
         && Objects.equals(this.contentType, that.contentType)
         && Objects.equals(this.extensions, that.extensions)
-        && Objects.equals(this.galaxyToolExtensions, that.galaxyToolExtensions)
+        && Objects.equals(this.galaxyFormatNames, that.galaxyFormatNames)
         && Objects.equals(this.generatorClassName, that.generatorClassName)
         && Objects.equals(this.checkerClassName, that.checkerClassName)
         && Objects.equals(this.splitterClassName, that.splitterClassName)
@@ -458,7 +475,7 @@ public final class XMLDataFormat extends AbstractDataFormat
     return Objects.hash(this.name, this.description, this.alias, this.prefix,
         this.oneFilePerAnalysis, this.dataFormatFromDesignFile,
         this.designMetadataKeyName, this.sampleMetadataKeyName,
-        this.contentType, this.extensions, this.galaxyToolExtensions,
+        this.contentType, this.extensions, this.galaxyFormatNames,
         this.generatorClassName, this.checkerClassName, this.splitterClassName,
         this.mergerClassName, this.maxFilesCount);
   }
@@ -472,7 +489,7 @@ public final class XMLDataFormat extends AbstractDataFormat
         .add("contentType", this.contentType)
         .add("defaultExtension", this.extensions.get(0))
         .add("extensions", this.extensions)
-        .add("galaxyToolExtensions", this.galaxyToolExtensions)
+        .add("galaxyToolExtensions", this.galaxyFormatNames)
         .add("generatorClassName", this.generatorClassName)
         .add("generatorParameters", this.generatorParameters)
         .add("checkerClassName", this.checkerClassName)
@@ -488,16 +505,19 @@ public final class XMLDataFormat extends AbstractDataFormat
   /**
    * Public constructor.
    * @param is input stream that contains the value of the data format
+   * @param source source of the format
    * @throws EoulsanException
    */
-  public XMLDataFormat(final InputStream is) throws EoulsanException {
+  public XMLDataFormat(final InputStream is, final String source)
+      throws EoulsanException {
 
     if (is == null) {
       throw new NullPointerException("The input stream is null");
     }
 
     try {
-      parse(is);
+      parse(is, source == null || source.trim().isEmpty()
+          ? "unknown source" : source);
     } catch (ParserConfigurationException | IOException | SAXException e) {
       throw new EoulsanException(e);
     }

@@ -8,6 +8,7 @@ star_index_zip.xml
 mapper_results_sam.xml
 mapper_results_bam.xml
 mapper_results_index_bai.xml
+mapper_results_log.xml
 expression_results_tsv.xml
 diffana_results_tsv.xml
 genome_fasta.xml
@@ -20,6 +21,7 @@ annotated_expression_results_ods.xml
 annotated_expression_results_xlsx.xml
 additional_annotation_tsv.xml
 fastqc_report_html.xml
+fastqc_report_zip.xml
 dummy_txt.xml
 text_txt.xml
 gappedpeaks.xml
@@ -29,3 +31,6 @@ peaksxls.xml
 bigbed.xml
 bigwig.xml
 cutadapt_adapter_fasta.xml
+minimap2_index_zip.xml
+multiqc_report_html.xml
+featurecounts_summary_txt.xml

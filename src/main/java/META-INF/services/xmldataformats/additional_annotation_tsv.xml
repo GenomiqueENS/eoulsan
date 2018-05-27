@@ -5,7 +5,7 @@
   <onefileperanalysis>true</onefileperanalysis>
   <designmetadatakey>AdditionalAnnotationFile</designmetadatakey>
   <extensions>
-  	<extension default="true">.tsv</extension>
-  	<extension>.txt</extension>
+    <extension default="true">.tsv</extension>
+    <extension>.txt</extension>
   </extensions>
 </dataformat>

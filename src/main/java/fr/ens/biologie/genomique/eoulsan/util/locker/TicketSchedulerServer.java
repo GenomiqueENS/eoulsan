@@ -50,10 +50,10 @@ public class TicketSchedulerServer implements TicketScheduler {
   private final Map<Ticket, Ticket> tickets = new HashMap<>();
   private final Set<Ticket> toRemove = new HashSet<>();
 
-  private final int maxWorkingTime = 2 * 60 * 1000;
-  private final int deadTime = 30 * 1000;
+  private static final int maxWorkingTime = 2 * 60 * 1000;
+  private static final int deadTime = 30 * 1000;
 
-  private final int checkingTime = 10 * 1000;
+  private static final int checkingTime = 10 * 1000;
   private long lastCheckingTime = 0;
 
   @Override

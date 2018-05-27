@@ -12,20 +12,18 @@ import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
 public class CropTrimmerReadFilterTest {
   @Test
   public void CropTirmmertest() throws EoulsanException {
-  ReadFilter filter = new CropTrimmerReadFilter();
+    ReadFilter filter = new CropTrimmerReadFilter();
 
-  filter.setParameter("arguments", "5");
-  filter.init();
+    filter.setParameter("arguments", "5");
+    filter.init();
 
-  ReadSequence read =
-      new ReadSequence(0, "read1", "AGGGGGCAAA", "xwxwxxabcd");
-  assertTrue(filter.accept(read));
-  assertEquals("read1", read.getName());
-  assertEquals("AGGGG", read.getSequence());
-  assertEquals("xwxwx", read.getQuality());
-  assertFalse(read.getSequence() == "AGGGG");
-  assertFalse(read.getSequence() == "GCAAA");
-  assertFalse(filter.accept(null));
-  
+    ReadSequence read =
+        new ReadSequence(0, "read1", "AGGGGGCAAA", "xwxwxxabcd");
+    assertTrue(filter.accept(read));
+    assertEquals("read1", read.getName());
+    assertEquals("AGGGG", read.getSequence());
+    assertEquals("xwxwx", read.getQuality());
+    assertFalse(filter.accept(null));
+
   }
 }

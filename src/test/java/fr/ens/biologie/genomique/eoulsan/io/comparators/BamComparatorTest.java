@@ -26,11 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.io.comparators;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import htsjdk.samtools.SAMFileWriter;
-import htsjdk.samtools.SAMFileWriterFactory;
-import htsjdk.samtools.SAMRecord;
-import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,16 +35,16 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.io.comparators.AbstractComparatorWithBloomFilter;
-import fr.ens.biologie.genomique.eoulsan.io.comparators.BAMComparator;
+import htsjdk.samtools.SAMFileWriter;
+import htsjdk.samtools.SAMFileWriterFactory;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 
 public class BamComparatorTest {
 
   private final File dir =
       new File(new File(".").getAbsolutePath() + "/src/test/java/files");
-
-  private InputStream isA;
-  private InputStream isB;
 
   private final File fileA = new File(this.dir, "mapper_results_2.bam");
   // Same file then fileA
@@ -61,10 +56,10 @@ public class BamComparatorTest {
     final AbstractComparatorWithBloomFilter comparator =
         new BAMComparator(false);
 
-    this.isA = new FileInputStream(this.fileA);
-    this.isB = new FileInputStream(this.fileB);
+    final InputStream isA = new FileInputStream(this.fileA);
+    final InputStream isB = new FileInputStream(this.fileB);
 
-    assertTrue("files are equals", comparator.compareFiles(this.isA, this.isB));
+    assertTrue("files are equals", comparator.compareFiles(isA, isB));
   }
 
   @Test

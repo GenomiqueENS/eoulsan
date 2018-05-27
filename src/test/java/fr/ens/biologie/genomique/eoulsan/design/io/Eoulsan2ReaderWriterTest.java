@@ -29,7 +29,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Test;
@@ -42,8 +41,6 @@ import fr.ens.biologie.genomique.eoulsan.design.ExperimentMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSampleMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
-import fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignReader;
-import fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignWriter;
 
 public class Eoulsan2ReaderWriterTest {
 

@@ -848,6 +848,37 @@ public final class StringUtils {
   }
 
   /**
+   * Join elements of a collection of strings into a string.
+   * @param collection collection of strings to join
+   * @param separator separator to use
+   */
+  public static String join(final Collection<String> collection,
+      final String separator) {
+
+    if (collection == null) {
+      return null;
+    }
+
+    final StringBuilder sb = new StringBuilder();
+
+    boolean first = true;
+    for (String s : collection) {
+
+      if (!first && separator != null) {
+        sb.append(separator);
+      }
+
+      if (first) {
+        first = false;
+      }
+
+      sb.append(s);
+    }
+
+    return sb.toString();
+  }
+
+  /**
    * Join elements of an array of strings into a string.
    * @param array array of strings to join
    * @param separator separator to use

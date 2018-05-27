@@ -84,8 +84,7 @@ class Token {
   public String toString() {
 
     return com.google.common.base.Objects.toStringHelper(this)
-        .add("id", this.id)
-        .add("fromPort", this.fromPort)
+        .add("id", this.id).add("fromPort", this.fromPort)
         .add("endOfStepToken", this.endOfStepToken).add("data", this.data)
         .toString();
   }

@@ -24,14 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.local;
 
-import htsjdk.samtools.SAMFileWriter;
-import htsjdk.samtools.SAMFileWriterFactory;
-import htsjdk.samtools.SAMFormatException;
-import htsjdk.samtools.SAMRecord;
-import htsjdk.samtools.SamInputResource;
-import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
-
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.ALIGNMENTS_WITH_INVALID_SAM_FORMAT;
@@ -61,6 +53,14 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractSAMFilterModule;
 import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
 import fr.ens.biologie.genomique.eoulsan.util.Reporter;
+import htsjdk.samtools.SAMFileWriter;
+import htsjdk.samtools.SAMFileWriterFactory;
+import htsjdk.samtools.SAMFormatException;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMRecordIterator;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
 
 /**
  * This class define a Step for alignments filtering.
@@ -168,55 +168,62 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
         new SAMFileWriterFactory().setTempDirectory(tmpDir)
             .makeSAMWriter(inputSam.getFileHeader(), false, outFile.create());
 
-    try {
+    final SAMRecordIterator it = inputSam.iterator();
 
-      for (SAMRecord samRecord : inputSam) {
+    while (it.hasNext()) {
 
-        // single-end or paired-end mode ?
-        if (counterInput == 0) {
-          if (samRecord.getReadPairedFlag()) {
-            pairedEnd = true;
-          }
-        }
+      final SAMRecord samRecord;
 
-        counterInput++;
+      // Check if SAM entry is correct
+      try {
+        samRecord = it.next();
 
-        // storage and filtering of all the alignments of a read in the list
-        // "records"
-        if (!rafb.addAlignment(samRecord)) {
-
-          records.clear();
-          records.addAll(rafb.getFilteredAlignments());
-
-          // sort alignments of the current read
-          Collections.sort(records, new SAMComparator());
-
-          // writing records
-          for (SAMRecord r : records) {
-            outputSam.addAlignment(r);
-            counterOutput++;
-          }
-
-          rafb.addAlignment(samRecord);
-        }
-
+      } catch (SAMFormatException e) {
+        counterInvalid++;
+        continue;
       }
 
-      // treatment of the last record
-      records.clear();
-      records.addAll(rafb.getFilteredAlignments());
-
-      // sort alignments of the last read
-      Collections.sort(records, new SAMComparator());
-
-      // writing records
-      for (SAMRecord r : records) {
-        outputSam.addAlignment(r);
-        counterOutput++;
+      // single-end or paired-end mode ?
+      if (counterInput == 0) {
+        if (samRecord.getReadPairedFlag()) {
+          pairedEnd = true;
+        }
       }
 
-    } catch (SAMFormatException e) {
-      counterInvalid++;
+      counterInput++;
+
+      // storage and filtering of all the alignments of a read in the list
+      // "records"
+      if (!rafb.addAlignment(samRecord)) {
+
+        records.clear();
+        records.addAll(rafb.getFilteredAlignments());
+
+        // sort alignments of the current read
+        Collections.sort(records, new SAMComparator());
+
+        // writing records
+        for (SAMRecord r : records) {
+          outputSam.addAlignment(r);
+          counterOutput++;
+        }
+
+        rafb.addAlignment(samRecord);
+      }
+
+    }
+
+    // treatment of the last record
+    records.clear();
+    records.addAll(rafb.getFilteredAlignments());
+
+    // sort alignments of the last read
+    Collections.sort(records, new SAMComparator());
+
+    // writing records
+    for (SAMRecord r : records) {
+      outputSam.addAlignment(r);
+      counterOutput++;
     }
 
     // paired-end mode
