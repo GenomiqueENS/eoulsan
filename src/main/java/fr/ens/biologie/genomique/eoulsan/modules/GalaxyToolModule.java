@@ -124,11 +124,14 @@ public class GalaxyToolModule extends AbstractModule {
     // Configure tool interpreter
     this.toolInterpreter.configure(stepParameters);
 
+    // Check if Docker is enabled
+    boolean dockerEnabled = context.getSettings().isDockerConnectionDefined();
+
     // If the interpreter of the tool is Docker, add the Docker image to the
     // list of the Docker image to fetch
     final ToolInfo toolData = this.toolInterpreter.getToolInfo();
     if (DockerExecutorInterpreter.INTERPRETER_NAME
-        .equals(toolData.getInterpreter())) {
+        .equals(toolData.getInterpreter(dockerEnabled))) {
 
       this.requirements.add(newDockerRequirement(toolData.getDockerImage()));
     }
@@ -141,12 +144,15 @@ public class GalaxyToolModule extends AbstractModule {
     // TODO check in data and out data corresponding to tool.xml
     // Check DataFormat expected corresponding from taskContext
 
+    // Check if Docker is enabled
+    boolean dockerEnabled = context.getSettings().isDockerConnectionDefined();
+
     // Set the description of the context
     final ToolInfo toolInfo = this.toolInterpreter.getToolInfo();
     context.getLogger()
         .info("Launch tool galaxy "
             + toolInfo.getToolName() + ", version " + toolInfo.getToolVersion()
-            + " with interpreter " + toolInfo.getInterpreter());
+            + " with interpreter " + toolInfo.getInterpreter(dockerEnabled));
 
     final ToolExecutorResult result;
 
