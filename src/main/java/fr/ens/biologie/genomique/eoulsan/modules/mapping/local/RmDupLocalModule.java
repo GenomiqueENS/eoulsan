@@ -12,6 +12,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
+import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
@@ -114,23 +115,26 @@ public class RmDupLocalModule extends AbstractModule {
 
     for (Parameter p : stepParameters) {
 
-      getLogger()
-          .info("Rmdup parameter: " + p.getName() + " : " + p.getStringValue());
+      switch (p.getName().toLowerCase()) {
 
-      if ("remove.marked".equals(p.getName())) {
+      case "remove.marked":
         this.delete = p.getBooleanValue();
-      } else if ("sort".equals(p.getName())) {
-        this.sort = p.getBooleanValue();
-      } else
-        throw new EoulsanException(
-            "Unknown parameter for " + getName() + " step: " + p.getName());
-    }
+        break;
 
+      case "sort":
+        this.sort = p.getBooleanValue();
+        break;
+
+      default:
+        Modules.unknownParameter(context, p);
+        break;
+      }
+    }
   }
 
   /**
    * Run Picard's MarkDuplicates.
-   * @throws EoulsanException if temp file can't be created.
+   * @throws EoulsanException if temporary file can't be created.
    */
   @Override
   public TaskResult execute(final TaskContext context,
@@ -153,6 +157,7 @@ public class RmDupLocalModule extends AbstractModule {
     // If a sort is necessary
     if (this.sort) {
       try {
+
         // Create a temp file
         final File tmpSortFile = FileUtils.createTempFile(
             context.getRuntime().getSettings().getTempDirectoryFile(),
@@ -167,6 +172,7 @@ public class RmDupLocalModule extends AbstractModule {
         sortArguments[1] = "OUTPUT=" + tmpSortFile;
         sortArguments[2] = "SORT_ORDER=coordinate";
         sortArguments[3] = "QUIET=true";
+
         // Start SortSam
         new picard.sam.SortSam().instanceMain(sortArguments);
 
@@ -174,7 +180,6 @@ public class RmDupLocalModule extends AbstractModule {
         inputFile = tmpSortFile;
 
       } catch (IOException ioe) {
-        ioe.printStackTrace();
         return status.createTaskResult();
       }
     }
@@ -190,16 +195,15 @@ public class RmDupLocalModule extends AbstractModule {
     arguments[4] = "METRICS_FILE=" + outputFile + ".picard_metrics";
     arguments[5] = "QUIET=true";
 
-    // picard.sam.MarkDuplicates.main(arguments); // includes a System.exit()
+    // Execute MarkDuplicates
     new MarkDuplicates().instanceMain(arguments);
 
     // If a temp file was created, delete it
-    if (sort) {
+    if (this.sort) {
       inputFile.delete();
     }
 
     return status.createTaskResult();
-
   }
 
 }

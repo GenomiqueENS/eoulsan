@@ -1,10 +1,13 @@
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.local;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
@@ -21,7 +24,6 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import picard.sam.MergeSamFiles;
 
@@ -70,7 +72,7 @@ public class MergeInputRepLocalModule extends AbstractModule {
   @Override
   public InputPorts getInputPorts() {
     final InputPortsBuilder builder = new InputPortsBuilder();
-    builder.addPort("input", true, DataFormats.MAPPER_RESULTS_SAM);
+    builder.addPort("input", true, MAPPER_RESULTS_SAM);
     return builder.create();
   }
 
@@ -80,7 +82,7 @@ public class MergeInputRepLocalModule extends AbstractModule {
   @Override
   public OutputPorts getOutputPorts() {
     final OutputPortsBuilder builder = new OutputPortsBuilder();
-    builder.addPort("output", true, DataFormats.MAPPER_RESULTS_SAM);
+    builder.addPort("output", true, MAPPER_RESULTS_SAM);
     return builder.create();
   }
 
@@ -112,14 +114,13 @@ public class MergeInputRepLocalModule extends AbstractModule {
       final TaskStatus status) {
 
     // Get input data (SAM format)
-    final Data inData = context.getInputData(DataFormats.MAPPER_RESULTS_SAM);
+    final Data inData = context.getInputData(MAPPER_RESULTS_SAM);
 
     // Get file name created by Eoulsan
     final Data outputDataList =
-        context.getOutputData(DataFormats.MAPPER_RESULTS_SAM, "mergedinput");
+        context.getOutputData(MAPPER_RESULTS_SAM, "mergedinput");
 
-    HashMap<String, ArrayList<Data>> referenceSamples =
-        new HashMap<String, ArrayList<Data>>();
+    Map<String, List<Data>> referenceSamples = new HashMap<>();
     for (Data anInputData : inData.getListElements()) {
 
       getLogger().finest("Input file. ref : "
@@ -139,14 +140,15 @@ public class MergeInputRepLocalModule extends AbstractModule {
             && referenceSamples.get(experimentName) != null) {
           referenceSamples.get(experimentName).add(anInputData);
         } else {
-          ArrayList<Data> tmpList = new ArrayList<Data>();
+          List<Data> tmpList = new ArrayList<Data>();
           tmpList.add(anInputData);
           referenceSamples.put(experimentName, tmpList);
         }
-      }
-      // If it's not a reference file, create a symlink with the correct output
-      // name (to make it available to further steps)
-      else {
+      } else {
+
+        // If it's not a reference file, create a symlink with the correct
+        // output
+        // name (to make it available to further steps)
 
         final Data outputData = outputDataList.addDataToList(anInputData
             .getMetadata().get("Name").replaceAll("[^a-zA-Z0-9]", ""));
@@ -166,9 +168,9 @@ public class MergeInputRepLocalModule extends AbstractModule {
     // Loop through all references
     for (String experimentName : referenceSamples.keySet()) {
 
-      ArrayList<Data> expData = referenceSamples.get(experimentName);
+      List<Data> expData = referenceSamples.get(experimentName);
 
-      // If we have only one Input, just make a symlink having the correct
+      // If we have only one Input, just make a symbolic link having the correct
       // output name for this step
       if (expData.size() == 1) {
 
