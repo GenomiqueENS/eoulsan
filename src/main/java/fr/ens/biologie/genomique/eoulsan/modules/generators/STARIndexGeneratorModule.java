@@ -96,6 +96,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
   private Integer genomeSAindexNbases;
   private Integer genomeChrBinNbits;
   private boolean useExpressionStepParameters;
+  private String indexerArguments;
 
   @Override
   public String getName() {
@@ -202,6 +203,11 @@ public class STARIndexGeneratorModule extends AbstractModule {
         case "gff3":
           this.gtfFormat = false;
           break;
+
+        case "indexer.arguments":
+          this.indexerArguments = p.getStringValue();
+          break;
+
 
         default:
           Modules.badParameterValue(context, p,
@@ -362,6 +368,11 @@ public class STARIndexGeneratorModule extends AbstractModule {
         additionalArguments.append(' ');
         additionalDescription.put("genomeChrBinNbits",
             this.genomeChrBinNbits.toString());
+      }
+
+      if (this.indexerArguments !=null && !this.indexerArguments.isEmpty()) {
+        additionalArguments.append(this.indexerArguments);
+        additionalDescription.put("indexerArguments", this.indexerArguments);
       }
 
       status.setProgressMessage(this.mapper.getName() + " index creation");
