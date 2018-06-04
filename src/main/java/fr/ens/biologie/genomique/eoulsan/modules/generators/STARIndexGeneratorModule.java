@@ -183,6 +183,10 @@ public class STARIndexGeneratorModule extends AbstractModule {
         this.useExpressionStepParameters = p.getBooleanValue();
         break;
 
+      case "indexer.arguments":
+        this.indexerArguments = p.getStringValue();
+        break;
+
       case "local.threads":
         Modules.removedParameter(context, p);
         break;
@@ -203,11 +207,6 @@ public class STARIndexGeneratorModule extends AbstractModule {
         case "gff3":
           this.gtfFormat = false;
           break;
-
-        case "indexer.arguments":
-          this.indexerArguments = p.getStringValue();
-          break;
-
 
         default:
           Modules.badParameterValue(context, p,
