@@ -51,6 +51,9 @@ fr.ens.biologie.genomique.eoulsan.modules.ShellModule
 fr.ens.biologie.genomique.eoulsan.modules.fastqc.FastQCModule
 fr.ens.biologie.genomique.eoulsan.modules.multiqc.MultiQCModule
 
+# Single cell RNA-Seq
+fr.ens.biologie.genomique.eoulsan.modules.singlecell.RSingleCellExperimentCreator
+
 # Other steps
 fr.ens.biologie.genomique.eoulsan.modules.ImportModule
 fr.ens.biologie.genomique.eoulsan.modules.FailModule
