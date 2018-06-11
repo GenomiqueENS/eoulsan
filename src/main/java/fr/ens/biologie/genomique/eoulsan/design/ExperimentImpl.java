@@ -112,9 +112,13 @@ public class ExperimentImpl implements Serializable, Experiment {
   @Override
   public ExperimentSample getExperimentSample(final Sample sample) {
 
+    if (sample == null) {
+      return null;
+    }
+
     for (ExperimentSample eSample : this.samples) {
 
-      if (eSample.getSample() == sample) {
+      if (eSample.getSample().getId() == sample.getId()) {
         return eSample;
       }
     }

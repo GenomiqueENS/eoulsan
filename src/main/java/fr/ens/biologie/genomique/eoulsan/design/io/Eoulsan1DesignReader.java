@@ -220,7 +220,7 @@ public class Eoulsan1DesignReader implements DesignReader {
                 design.addExperiment(experimentId);
                 design.getExperiment(experimentId).setName(value);
               }
-              design.getExperiment(value).addSample(sample);
+              design.getExperiment(experimentId).addSample(sample);
             } else {
 
               // Other fields
