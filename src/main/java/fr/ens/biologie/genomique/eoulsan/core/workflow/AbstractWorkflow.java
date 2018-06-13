@@ -93,6 +93,7 @@ public abstract class AbstractWorkflow implements Workflow {
   private final DataFile outputDir;
   private final DataFile jobDir;
   private final DataFile taskDir;
+  private final DataFile dataDir;
   private final DataFile tmpDir;
 
   private final Design design;
@@ -808,15 +809,7 @@ public abstract class AbstractWorkflow implements Workflow {
           continue;
         }
 
-        if (dir.exists() && !dir.getMetaData().isDir()) {
-          throw new EoulsanException(
-              "the directory is not a directory: " + dir);
-        }
-
-        if (!dir.exists()) {
-          dir.mkdirs();
-        }
-
+        createDirectory(dir);
       }
     } catch (IOException e) {
       throw new EoulsanException(e);
@@ -824,6 +817,58 @@ public abstract class AbstractWorkflow implements Workflow {
 
     // Check temporary directory
     checkTemporaryDirectory();
+  }
+
+  /**
+   * Create an "eoulsan-data" directory if mapper indexes or genome description
+   * storage has not been defined.
+   * @throws EoulsanException if an error about the directories is found
+   */
+  public void createEoulsanDataDirectoryIfRequired() throws EoulsanException {
+
+    try {
+
+      // Get Eoulsan settings
+      final Settings settings = EoulsanRuntime.getSettings();
+
+      // Create genome mapper index storage if not defined
+      if (settings.getGenomeMapperIndexStoragePath() == null) {
+
+        DataFile mapperIndexDir = new DataFile(this.dataDir, "mapperindexes");
+        settings.setGenomeMapperIndexStoragePath(mapperIndexDir.getSource());
+        createDirectory(mapperIndexDir);
+      }
+
+      // Create genome description storage if not defined
+      if (settings.getGenomeDescStoragePath() == null) {
+
+        DataFile genomeDescriptionDir =
+            new DataFile(this.dataDir, "genomedescriptions");
+        settings.setGenomeDescStoragePath(genomeDescriptionDir.getSource());
+        createDirectory(genomeDescriptionDir);
+      }
+
+    } catch (IOException e) {
+      throw new EoulsanException(e);
+    }
+
+  }
+
+  /**
+   * Create a directory.
+   * @param directory the directory to create
+   * @throws IOException if an error occurs while creating the directory
+   * @throws EoulsanException
+   */
+  private static void createDirectory(DataFile directory) throws IOException {
+
+    if (directory.exists() && !directory.getMetaData().isDir()) {
+      throw new IOException("the directory is not a directory: " + directory);
+    }
+
+    if (!directory.exists()) {
+      directory.mkdirs();
+    }
   }
 
   /**
@@ -956,6 +1001,8 @@ public abstract class AbstractWorkflow implements Workflow {
         newDataFile(executionArguments.getHadoopWorkingPathname());
 
     this.outputDir = newDataFile(executionArguments.getOutputPathname());
+
+    this.dataDir = newDataFile(executionArguments.getDataPathname());
 
     this.workflowContext = new WorkflowContext(executionArguments, this);
 
