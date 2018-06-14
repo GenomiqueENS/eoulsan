@@ -222,7 +222,7 @@ public class RSingleCellExperimentCreator extends AbstractModule {
       File genesFile = new File(outputDir, "genes.tsv");
       File cellsFile = new File(outputDir, "cells.tsv");
       File rdsFile =
-          context.getOutputData(SINGLE_CELL_EXPERMIMENT_RDS, matrices)
+          context.getOutputData(SINGLE_CELL_EXPERMIMENT_RDS, "matrix")
               .getDataFile().toFile();
 
       // Save data
