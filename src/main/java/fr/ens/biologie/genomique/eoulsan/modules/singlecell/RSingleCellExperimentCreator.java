@@ -5,6 +5,8 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ADDITIONAL_ANNO
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_MATRIX_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.SINGLE_CELL_EXPERMIMENT_RDS;
+import static fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement.newDockerRequirement;
+import static fr.ens.biologie.genomique.eoulsan.requirements.PathRequirement.newPathRequirement;
 import static java.util.Collections.unmodifiableSet;
 
 import java.io.BufferedReader;
@@ -176,6 +178,12 @@ public class RSingleCellExperimentCreator extends AbstractModule {
       }
     }
 
+    // Define requirements
+    if (this.dockerMode) {
+      this.requirements.add(newDockerRequirement(this.dockerImage));
+    } else {
+      this.requirements.add(newPathRequirement(R_DOCKER_IMAGE));
+    }
   }
 
   @Override
