@@ -217,7 +217,8 @@ public class Executor {
       return new DefaultDesignReader(is).read();
 
     } catch (IOException e) {
-      throw new EoulsanException(e);
+      throw new EoulsanException(
+          "Error while reading design file: " + e.getMessage(), e);
     }
   }
 
