@@ -338,7 +338,6 @@ public class TaskRunner {
       final Data data = this.context.getOutputData(port);
 
       // Send the token
-      //this.context.getStep().sendToken(new Token(port, data));
       WorkflowEventBus.getInstance().postToken(port, data);
     }
 

@@ -40,7 +40,7 @@ class Token {
 
   private final int id;
   private final StepOutputPort fromPort;
-  private final boolean endOfStepToken;
+  private final int tokensCount;
   private final Data data;
 
   /**
@@ -65,7 +65,15 @@ class Token {
    * @return true if the token is an end of step token
    */
   public boolean isEndOfStepToken() {
-    return this.endOfStepToken;
+    return this.tokensCount != -1;
+  }
+
+  /**
+   * Get the number of tokens sent by the port at the end of the step.
+   * @return the number of tokens sent by the port at the end of the step
+   */
+  public int getTokenCount() {
+    return this.tokensCount;
   }
 
   /**
@@ -86,7 +94,7 @@ class Token {
 
     return com.google.common.base.Objects.toStringHelper(this)
         .add("id", this.id).add("fromPort", this.fromPort)
-        .add("endOfStepToken", this.endOfStepToken).add("data", this.data)
+        .add("tokensSent", this.tokensCount).add("data", this.data)
         .toString();
   }
 
@@ -97,15 +105,16 @@ class Token {
   /**
    * Constructor for an end of step token.
    * @param fromPort origin of the token
+   * @param tokenCount number of tokens sent by the port at the end of the step
    */
-  Token(final StepOutputPort fromPort) {
+  Token(final StepOutputPort fromPort, final int tokenCount) {
 
     Objects.requireNonNull(fromPort);
 
     this.id = instanceCount.incrementAndGet();
 
     this.fromPort = fromPort;
-    this.endOfStepToken = true;
+    this.tokensCount = tokenCount;
     this.data = null;
   }
 
@@ -122,7 +131,7 @@ class Token {
     this.id = instanceCount.incrementAndGet();
 
     this.fromPort = fromPort;
-    this.endOfStepToken = false;
+    this.tokensCount = -1;
     this.data = data;
   }
 

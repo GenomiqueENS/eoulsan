@@ -49,6 +49,7 @@ import java.util.Set;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
@@ -89,6 +90,9 @@ public class TokenManager implements Runnable {
   private final StepOutputPorts outputPorts;
 
   private final Set<Integer> receivedTokens = new HashSet<>();
+  private final HashMultiset<StepInputPort> receivedPortTokens =
+      HashMultiset.create();
+  private int contextCount;
   private final Multimap<InputPort, Data> inputTokens =
       ArrayListMultimap.create();
   private final Multimap<OutputPort, Data> outputTokens =
@@ -388,6 +392,9 @@ public class TokenManager implements Runnable {
     // Test if the token is an end token
     if (token.isEndOfStepToken()) {
 
+      // Wait if all the token from the step have not been yet received
+      waitMissingTokens(inputPort, token);
+
       // Check if input port is empty for non skipped steps
       checkState(
           !(!this.step.isSkip() && this.inputTokens.get(inputPort).isEmpty()),
@@ -397,6 +404,11 @@ public class TokenManager implements Runnable {
       // The input port must be closed
       this.closedPorts.add(inputPort);
     } else {
+
+      // Count the number of tokens received for the input port
+      synchronized( this.receivedPortTokens) {
+        this.receivedPortTokens.add(inputPort);
+      }
 
       // Register data to process
       final Data data = token.getData();
@@ -413,6 +425,29 @@ public class TokenManager implements Runnable {
 
           addData(inputPort, data);
         }
+      }
+    }
+  }
+
+  /**
+   * Wait that all the input token of a port once a "end of step" token has been
+   * receieved.
+   * @param inputPort port where the token must be posted
+   * @param token the token to post
+   */
+  private void waitMissingTokens(final StepInputPort inputPort,
+      final Token token) {
+
+    checkState(token.getTokenCount() > -1,
+        "the number of expected token is not set");
+
+    final int expected = token.getTokenCount();
+
+    while (this.receivedPortTokens.count(inputPort) != expected) {
+      // Wait 1 second
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException e) {
       }
     }
   }
@@ -463,7 +498,7 @@ public class TokenManager implements Runnable {
     for (StepOutputPort outputPort : this.outputPorts) {
 
       // Send the token on the event bus
-      WorkflowEventBus.getInstance().postToken(outputPort);
+      WorkflowEventBus.getInstance().postToken(outputPort, this.contextCount);
     }
   }
 
@@ -950,6 +985,11 @@ public class TokenManager implements Runnable {
             // When the step has no input port
             contexts = createContextWhenNoInputPortExist(workflowContext);
           }
+        }
+
+        // Save the number of tasks of the step
+        synchronized (this) {
+          this.contextCount += contexts.size();
         }
 
         // Submit execution of the available contexts
