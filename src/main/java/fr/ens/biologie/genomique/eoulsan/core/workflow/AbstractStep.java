@@ -37,6 +37,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.common.collect.Sets;
 
@@ -68,7 +69,7 @@ public abstract class AbstractStep implements Step {
   /** Serialization version UID. */
   private static final long serialVersionUID = 2040628014465126384L;
 
-  private static int instanceCounter;
+  private static AtomicInteger instanceCount = new AtomicInteger(0);
 
   private final AbstractWorkflow workflow;
 
@@ -490,7 +491,7 @@ public abstract class AbstractStep implements Step {
     checkNotNull(type, "Type argument cannot be null");
 
     this.workflow = workflow;
-    this.number = instanceCounter++;
+    this.number = instanceCount.incrementAndGet();
     this.id = type.getDefaultStepId();
     this.skip = false;
     this.terminalStep = false;
@@ -578,7 +579,7 @@ public abstract class AbstractStep implements Step {
     checkNotNull(generatorModule, "The generator module is null");
 
     this.workflow = workflow;
-    this.number = instanceCounter++;
+    this.number = instanceCount.incrementAndGet();
     this.id = generatorModule.getName();
     this.skip = false;
     this.terminalStep = false;
@@ -658,7 +659,7 @@ public abstract class AbstractStep implements Step {
     checkNotNull(dataProduct, "dataProduct argument cannot be null");
 
     this.workflow = workflow;
-    this.number = instanceCounter++;
+    this.number = instanceCount.incrementAndGet();
     this.id = id;
     this.skip = skip;
     this.moduleName = moduleName;

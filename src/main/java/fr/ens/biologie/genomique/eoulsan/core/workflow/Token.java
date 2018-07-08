@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 
@@ -35,7 +36,7 @@ import fr.ens.biologie.genomique.eoulsan.data.Data;
  */
 class Token {
 
-  private static int count;
+  private static AtomicInteger instanceCount = new AtomicInteger(0);
 
   private final int id;
   private final StepOutputPort fromPort;
@@ -101,9 +102,7 @@ class Token {
 
     Objects.requireNonNull(fromPort);
 
-    synchronized (this) {
-      this.id = ++count;
-    }
+    this.id = instanceCount.incrementAndGet();
 
     this.fromPort = fromPort;
     this.endOfStepToken = true;
@@ -120,9 +119,7 @@ class Token {
     Objects.requireNonNull(fromPort);
     Objects.requireNonNull(data);
 
-    synchronized (this) {
-      this.id = ++count;
-    }
+    this.id = instanceCount.incrementAndGet();
 
     this.fromPort = fromPort;
     this.endOfStepToken = false;
