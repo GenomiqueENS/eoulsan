@@ -92,6 +92,8 @@ public class TokenManager implements Runnable {
   private final Set<Integer> receivedTokens = new HashSet<>();
   private final HashMultiset<StepInputPort> receivedPortTokens =
       HashMultiset.create();
+  private final HashMultiset<StepInputPort> expectedPortTokens =
+      HashMultiset.create();
   private int contextCount;
   private final Multimap<InputPort, Data> inputTokens =
       ArrayListMultimap.create();
@@ -392,21 +394,21 @@ public class TokenManager implements Runnable {
     // Test if the token is an end token
     if (token.isEndOfStepToken()) {
 
-      // Wait if all the token from the step have not been yet received
-      waitMissingTokens(inputPort, token);
+      checkState(token.getTokenCount() > -1,
+          "the number of expected token is not set");
 
-      // Check if input port is empty for non skipped steps
-      checkState(
-          !(!this.step.isSkip() && this.inputTokens.get(inputPort).isEmpty()),
-          "No data receive for port on step "
-              + this.step.getId() + ": " + inputPort.getName());
+      checkState(expectedPortTokens.count(inputPort) == 0,
+          "the number of expected token has been already set");
 
-      // The input port must be closed
-      this.closedPorts.add(inputPort);
+      // Set the number of expected tokens
+      synchronized (this.expectedPortTokens) {
+        this.expectedPortTokens.setCount(inputPort, token.getTokenCount());
+      }
+
     } else {
 
       // Count the number of tokens received for the input port
-      synchronized( this.receivedPortTokens) {
+      synchronized(this.receivedPortTokens) {
         this.receivedPortTokens.add(inputPort);
       }
 
@@ -427,29 +429,21 @@ public class TokenManager implements Runnable {
         }
       }
     }
-  }
 
-  /**
-   * Wait that all the input token of a port once a "end of step" token has been
-   * receieved.
-   * @param inputPort port where the token must be posted
-   * @param token the token to post
-   */
-  private void waitMissingTokens(final StepInputPort inputPort,
-      final Token token) {
+    // Close ports if all the expected tokens has been received
+    if (this.receivedPortTokens.count(inputPort) == this.expectedPortTokens
+        .count(inputPort)) {
 
-    checkState(token.getTokenCount() > -1,
-        "the number of expected token is not set");
+      // Check if input port is empty for non skipped steps
+      checkState(
+          !(!this.step.isSkip() && this.inputTokens.get(inputPort).isEmpty()),
+          "No data receive for port on step "
+              + this.step.getId() + ": " + inputPort.getName());
 
-    final int expected = token.getTokenCount();
-
-    while (this.receivedPortTokens.count(inputPort) != expected) {
-      // Wait 1 second
-      try {
-        Thread.sleep(1000);
-      } catch (InterruptedException e) {
-      }
+      // The input port must be closed
+      this.closedPorts.add(inputPort);
     }
+
   }
 
   /**
