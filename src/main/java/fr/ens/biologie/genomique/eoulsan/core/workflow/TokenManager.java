@@ -431,8 +431,10 @@ public class TokenManager implements Runnable {
     }
 
     // Close ports if all the expected tokens has been received
-    if (this.receivedPortTokens.count(inputPort) == this.expectedPortTokens
-        .count(inputPort)) {
+    if (this.step.isSkip()
+        || (this.expectedPortTokens.contains(inputPort)
+            && this.receivedPortTokens.count(
+                inputPort) == this.expectedPortTokens.count(inputPort))) {
 
       // Check if input port is empty for non skipped steps
       checkState(
@@ -545,6 +547,10 @@ public class TokenManager implements Runnable {
 
         // Send the token on the event bus
         WorkflowEventBus.getInstance().postToken(port, data);
+
+        // Save the number of context if the step was not skipped
+        // This number is equals to the number of posted data
+        this.contextCount++;
       }
     }
 
