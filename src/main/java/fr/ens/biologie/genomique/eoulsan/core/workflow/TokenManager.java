@@ -547,10 +547,12 @@ public class TokenManager implements Runnable {
 
         // Send the token on the event bus
         WorkflowEventBus.getInstance().postToken(port, data);
+      }
 
-        // Save the number of context if the step was not skipped
-        // This number is equals to the number of posted data
-        this.contextCount++;
+      // Save the number of context if the step was not skipped
+      // This number is equals to the number of posted data
+      synchronized(this) {
+        this.contextCount = Math.max(this.contextCount, existingData.size());
       }
     }
 
