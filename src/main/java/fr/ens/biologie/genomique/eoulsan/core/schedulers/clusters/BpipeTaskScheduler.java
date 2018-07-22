@@ -200,9 +200,10 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
         }
 
       } else {
-        getLogger()
-            .warning("Job status command failed. Exit code: " + exitCode);
-        throw new IOException("Job status failed, exit code: " + exitCode);
+        getLogger().warning("Job status command failed for job "
+            + jobId + ". Exit code: " + exitCode);
+        throw new IOException(
+            "Job status failed for job " + jobId + ", exit code: " + exitCode);
       }
     } catch (InterruptedException e) {
       throw new IOException(e);
