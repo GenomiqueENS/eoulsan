@@ -1,6 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.modules.chipseq.peakcalling;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.modules.chipseq.ChIPSeqDataFormats.PEAK;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +29,6 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.data.DataMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
@@ -51,9 +50,6 @@ public class BedToolsModule extends AbstractModule {
 
   /** Module name */
   private static final String MODULE_NAME = "bedtools";
-
-  private static DataFormat PEAK =
-      DataFormatRegistry.getInstance().getDataFormatFromName("peaks");
 
   private static final String BEDTOOLS_DEFAULT_DOCKER_IMAGE =
       "genomicpariscentre/bedtools:latest";

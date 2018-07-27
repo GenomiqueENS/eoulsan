@@ -2,6 +2,7 @@ package fr.ens.biologie.genomique.eoulsan.modules.chipseq.qc;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.singleInputPort;
+import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
 
@@ -20,7 +21,6 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
 import htsjdk.samtools.SAMRecord;
@@ -37,14 +37,8 @@ import htsjdk.samtools.SamReaderFactory;
 @LocalOnly
 public class CountSplicedReadsModule extends AbstractModule {
 
-  /**
-   *
-   */
   private static final String STEP_NAME = "countspliced";
 
-  /**
-   *
-   */
   protected static final String COUNTER_GROUP = "sam_stats";
 
   //
@@ -80,7 +74,7 @@ public class CountSplicedReadsModule extends AbstractModule {
    */
   @Override
   public InputPorts getInputPorts() {
-    return singleInputPort(DataFormats.MAPPER_RESULTS_SAM);
+    return singleInputPort(MAPPER_RESULTS_SAM);
   }
 
   //
@@ -114,7 +108,7 @@ public class CountSplicedReadsModule extends AbstractModule {
       final TaskStatus status) {
 
     // Get input data (SAM format)
-    final Data inData = context.getInputData(DataFormats.MAPPER_RESULTS_SAM);
+    final Data inData = context.getInputData(MAPPER_RESULTS_SAM);
 
     // Get the source
     final DataFile samFile = inData.getDataFile();
@@ -126,8 +120,8 @@ public class CountSplicedReadsModule extends AbstractModule {
 
     try {
       // Open SAM file
-      final SamReader reader =
-          SamReaderFactory.makeDefault().open(SamInputResource.of(samFile.open()));
+      final SamReader reader = SamReaderFactory.makeDefault()
+          .open(SamInputResource.of(samFile.open()));
 
       // To count total number of records
       int recordCount = 0;

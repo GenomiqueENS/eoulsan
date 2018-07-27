@@ -2,6 +2,10 @@ package fr.ens.biologie.genomique.eoulsan.modules.chipseq.peakcalling;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_BAM;
+import static fr.ens.biologie.genomique.eoulsan.modules.chipseq.ChIPSeqDataFormats.GAPPED_PEAK;
+import static fr.ens.biologie.genomique.eoulsan.modules.chipseq.ChIPSeqDataFormats.MACS2_RMODEL;
+import static fr.ens.biologie.genomique.eoulsan.modules.chipseq.ChIPSeqDataFormats.PEAK;
+import static fr.ens.biologie.genomique.eoulsan.modules.chipseq.ChIPSeqDataFormats.PEAK_XLS;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +32,6 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
@@ -41,7 +43,6 @@ import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
 import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
-
 
 /**
  * This class defines the macs2 peak-calling step. Handle multiple experiments
@@ -74,17 +75,8 @@ public class MACS2Module extends AbstractModule {
 
   private Requirement requirement;
 
-  private static DataFormat MACS2_RMODEL =
-      DataFormatRegistry.getInstance().getDataFormatFromName("macs2rmodel");
-  private static DataFormat GAPPED_PEAK =
-      DataFormatRegistry.getInstance().getDataFormatFromName("gappedpeaks");
-  private static DataFormat PEAK_XLS =
-      DataFormatRegistry.getInstance().getDataFormatFromName("peaksxls");
-  private static DataFormat PEAK =
-      DataFormatRegistry.getInstance().getDataFormatFromName("peaks");
-
   final String dockerImage = "genomicpariscentre/macs2:latest";
-  
+
   @Override
   public String getName() {
     return CALLER_EXECUTABLE;
@@ -144,7 +136,7 @@ public class MACS2Module extends AbstractModule {
       } else if ("extra.args".equals(p.getName())) {
         this.extraArgs = p.getStringValue();
       } else if ("is.paired.end".equals(p.getName())) {
-	this.isPairedEnd = p.getBooleanValue();
+        this.isPairedEnd = p.getBooleanValue();
       } else
         throw new EoulsanException(
             "Unknown parameter for " + getName() + " step: " + p.getName());
@@ -156,12 +148,13 @@ public class MACS2Module extends AbstractModule {
           "As p-value threshold is provided, q-value threshold will be ignored by macs2.");
     }
     if (this.pvalue == 0 && this.qvalue == 0) {
-	getLogger().warning(
+      getLogger().warning(
           "Neither p-value nor q-value threshold was provided. Macs2 defaults to q-value thresold = 0.01.");
-	qvalue = 0.01;
+      qvalue = 0.01;
     }
 
-    this.requirement = DockerRequirement.newDockerRequirement(dockerImage, true);
+    this.requirement =
+        DockerRequirement.newDockerRequirement(dockerImage, true);
   }
 
   @Override
@@ -179,10 +172,10 @@ public class MACS2Module extends AbstractModule {
 
     // Get input data (BAM format)
     final Data inData = context.getInputData(DataFormats.MAPPER_RESULTS_BAM);
-    
-    //Creation of a design object of the experimental design
+
+    // Creation of a design object of the experimental design
     final Design design = context.getWorkflow().getDesign();
-    
+
     // Before running MACS2 we have to create empty data list objects to hold
     // newly created outputs files
     final Data rModelDataList =
@@ -198,121 +191,132 @@ public class MACS2Module extends AbstractModule {
           "Not enough data to run MACS2. Need at least one control and one sample.");
       return status.createTaskResult();
     }
-    
-    //Construction of a HashMap containing a SampleName as String corresponding to a specific Data.
-    HashMap<String, Data> nameMap = 
-	new HashMap<String, Data>(inData.getListElements().size() / 2);
-    for(Data anInputData : inData.getListElements()){
+
+    // Construction of a HashMap containing a SampleName as String corresponding
+    // to a specific Data.
+    HashMap<String, Data> nameMap =
+        new HashMap<String, Data>(inData.getListElements().size() / 2);
+    for (Data anInputData : inData.getListElements()) {
       String name = anInputData.getMetadata().getSampleName();
       nameMap.put(name, anInputData);
     }
 
-    //The refSampleName correspond to the control (reference) of an experiment.
+    // The refSampleName correspond to the control (reference) of an experiment.
     String refSampleName = "null";
 
-    //First loop on Experiments.
-    for(Experiment e : design.getExperiments()){
-      //First loop on ExperimentSamples to find the input for this experiment. 
-      for(ExperimentSample expSam : e.getExperimentSamples()){
-       
-	//When mergin files with RepTechGroup, all the samples in the design are not set in the nameMap hashmap. This test allow to use only samples that are present in the nameMap hashmap.
-	if(!nameMap.containsKey(expSam.getSample().getName())){
-	  continue;
-	}
- 
-        //Check if there is a control for the Experiment. If not, set it to null.
-	if(DesignUtils.getReference(expSam).equals("true")){
-	  refSampleName = expSam.getSample().getName();
-	  break;
-	}
+    // First loop on Experiments.
+    for (Experiment e : design.getExperiments()) {
+      // First loop on ExperimentSamples to find the input for this experiment.
+      for (ExperimentSample expSam : e.getExperimentSamples()) {
+
+        // When mergin files with RepTechGroup, all the samples in the design
+        // are not set in the nameMap hashmap. This test allow to use only
+        // samples that are present in the nameMap hashmap.
+        if (!nameMap.containsKey(expSam.getSample().getName())) {
+          continue;
+        }
+
+        // Check if there is a control for the Experiment. If not, set it to
+        // null.
+        if (DesignUtils.getReference(expSam).equals("true")) {
+          refSampleName = expSam.getSample().getName();
+          break;
+        }
       }
 
-      if(refSampleName == "null"){
+      if (refSampleName == "null") {
         getLogger().warning("No control for experiment : " + e.getName());
       }
-      
-      //Second loop on ExperimentSamples which match the Data and launch macs2.
-      for(ExperimentSample expSam2 : e.getExperimentSamples()){
-	if(!nameMap.containsKey(expSam2.getSample().getName())){
-          getLogger().info("Skipping empty sample after merge : " + expSam2.getSample().getName());
+
+      // Second loop on ExperimentSamples which match the Data and launch macs2.
+      for (ExperimentSample expSam2 : e.getExperimentSamples()) {
+        if (!nameMap.containsKey(expSam2.getSample().getName())) {
+          getLogger().info("Skipping empty sample after merge : "
+              + expSam2.getSample().getName());
           continue;
         }
 
-	if(refSampleName == expSam2.getSample().getName()){
-	  getLogger().info("Skipping control file.");
+        if (refSampleName == expSam2.getSample().getName()) {
+          getLogger().info("Skipping control file.");
           continue;
         }
 
-        //Construct the command line
-	List<String> commandLine = new ArrayList<String>();
+        // Construct the command line
+        List<String> commandLine = new ArrayList<String>();
 
         // First part of macs2 command
-	commandLine.add("macs2");
-	commandLine.add("callpeak");
+        commandLine.add("macs2");
+        commandLine.add("callpeak");
 
         // Provide control and sample files
-	commandLine.add("-t");
-	getLogger().info("nomSample : " + nameMap.get(expSam2.getSample().getName()));
-	commandLine.add(nameMap.get(expSam2.getSample().getName()).getDataFilename());
+        commandLine.add("-t");
+        getLogger()
+            .info("nomSample : " + nameMap.get(expSam2.getSample().getName()));
+        commandLine
+            .add(nameMap.get(expSam2.getSample().getName()).getDataFilename());
 
-	//Test if there is a control for the experiment, if not the peak calling will be performed
-	//without control.
-	if(refSampleName != "null"){
-	  commandLine.add("-c");
-	  commandLine.add(nameMap.get(refSampleName).getDataFilename());
-	}
+        // Test if there is a control for the experiment, if not the peak
+        // calling will be performed
+        // without control.
+        if (refSampleName != "null") {
+          commandLine.add("-c");
+          commandLine.add(nameMap.get(refSampleName).getDataFilename());
+        }
 
-	//If paired end
-	if (this.isPairedEnd) {
-	  commandLine.add("-f");
-	  commandLine.add("BAMPE");
+        // If paired end
+        if (this.isPairedEnd) {
+          commandLine.add("-f");
+          commandLine.add("BAMPE");
 
-	} else { //If single end 
-	  commandLine.add("-f");
-	  commandLine.add("BAM");
-	}
+        } else { // If single end
+          commandLine.add("-f");
+          commandLine.add("BAM");
+        }
 
         // If pvalue threshold is set, qvalue threshold will be ignored by macs2
         if (this.pvalue != 0) {
-	  commandLine.add("--pvalue");
-	  commandLine.add(String.format("%f", pvalue));
+          commandLine.add("--pvalue");
+          commandLine.add(String.format("%f", pvalue));
         } else { // Default was set to qvalue=0.01
-	  commandLine.add("--qvalue");
-	  commandLine.add(String.format("%f", qvalue));
+          commandLine.add("--qvalue");
+          commandLine.add(String.format("%f", qvalue));
         }
 
         // Options/parameters and extra arguments
         String prefixOutputFiles = String.format("macs2_ouput_%s",
             expSam2.getSample().getName().replaceAll("[^a-zA-Z0-9]", ""));
-	commandLine.add("--name");
-	commandLine.add(String.format("%s", prefixOutputFiles));
-	commandLine.add("--gsize");
-	commandLine.add(String.format("%s", genomeSize));
+        commandLine.add("--name");
+        commandLine.add(String.format("%s", prefixOutputFiles));
+        commandLine.add("--gsize");
+        commandLine.add(String.format("%s", genomeSize));
         if (isBroad) {
-	  commandLine.add("--broad");
+          commandLine.add("--broad");
         }
         if (makeBdg) {
-	  commandLine.add("--bdg");
+          commandLine.add("--bdg");
         }
 
-	commandLine.add(String.format("%s", extraArgs));
-        
-	String commandLine2 = Joiner.on(" ").join(commandLine);
+        commandLine.add(String.format("%s", extraArgs));
 
-	final File stdoutFile = new File("docker.out");
-	final File stderrFile = new File("docker.err");
+        String commandLine2 = Joiner.on(" ").join(commandLine);
 
-	getLogger().info("Run command line : " + commandLine2);
-	try {
-	  final SimpleProcess process =
-          DockerManager.getInstance().createImageInstance(dockerImage);
-	  final int exitValue = process.execute(commandLine, context.getStepOutputDirectory().toFile(), context.getLocalTempDirectory(), stdoutFile, stderrFile);
+        final File stdoutFile = new File("docker.out");
+        final File stderrFile = new File("docker.err");
 
-	  ProcessUtils.throwExitCodeException(exitValue, Joiner.on(' ').join(commandLine));
-	} catch (IOException err) {
-	  return status.createTaskResult(err);
-	}
-      
+        getLogger().info("Run command line : " + commandLine2);
+        try {
+          final SimpleProcess process =
+              DockerManager.getInstance().createImageInstance(dockerImage);
+          final int exitValue = process.execute(commandLine,
+              context.getStepOutputDirectory().toFile(),
+              context.getLocalTempDirectory(), stdoutFile, stderrFile);
+
+          ProcessUtils.throwExitCodeException(exitValue,
+              Joiner.on(' ').join(commandLine));
+        } catch (IOException err) {
+          return status.createTaskResult(err);
+        }
+
         /////////
         // Rename output files to be Eoulsan-complient
 
@@ -322,33 +326,42 @@ public class MACS2Module extends AbstractModule {
         // R model
         final Data rModelData = rModelDataList.addDataToList(
             expSam2.getSample().getName().replaceAll("[^a-zA-Z0-9]", "") + "R");
-        rModelData.getMetadata().set(nameMap.get(expSam2.getSample().getName()).getMetadata());
+        rModelData.getMetadata()
+            .set(nameMap.get(expSam2.getSample().getName()).getMetadata());
 
         // Gapped peak
         final Data gappedPeakData = gappedPeakDataList.addDataToList(
-            expSam2.getSample().getName().replaceAll("[^a-zA-Z0-9]", "") + "GP");
-        gappedPeakData.getMetadata().set(nameMap.get(expSam2.getSample().getName()).getMetadata());
+            expSam2.getSample().getName().replaceAll("[^a-zA-Z0-9]", "")
+                + "GP");
+        gappedPeakData.getMetadata()
+            .set(nameMap.get(expSam2.getSample().getName()).getMetadata());
 
         // Peaks (Excel format)
         final Data peakXlsData = peakXlsDataList.addDataToList(
-            expSam2.getSample().getName().replaceAll("[^a-zA-Z0-9]", "") + "Xls");
-        peakXlsData.getMetadata().set(nameMap.get(expSam2.getSample().getName()).getMetadata());
+            expSam2.getSample().getName().replaceAll("[^a-zA-Z0-9]", "")
+                + "Xls");
+        peakXlsData.getMetadata()
+            .set(nameMap.get(expSam2.getSample().getName()).getMetadata());
 
         // Peaks
         final Data peakData = peakDataList.addDataToList(
-            expSam2.getSample().getName().replaceAll("[^a-zA-Z0-9]", "") + "Peak");
-        peakData.getMetadata().set(nameMap.get(expSam2.getSample().getName()).getMetadata());
+            expSam2.getSample().getName().replaceAll("[^a-zA-Z0-9]", "")
+                + "Peak");
+        peakData.getMetadata()
+            .set(nameMap.get(expSam2.getSample().getName()).getMetadata());
 
         // Now we must rename the outputs generated by MACS2 so that they
         // correspond to the naming scheme of Eoulsan, and thus make them
         // available to further analysis steps
-        // First, create a Datafile with one of the potential output file name of
+        // First, create a Datafile with one of the potential output file name
+        // of
         // MACS2
         // If the file does exist, rename it to the name created by Eoulsan and
         // stored in data.getDataFile()
 
         try {
-          DataFile sampleDataFolder = nameMap.get(expSam2.getSample().getName()).getDataFile().getParent();
+          DataFile sampleDataFolder = nameMap.get(expSam2.getSample().getName())
+              .getDataFile().getParent();
 
           // R model
           final DataFile tmpRmodelFile =
@@ -369,7 +382,8 @@ public class MACS2Module extends AbstractModule {
           final DataFile tmpPeakXlsFile =
               new DataFile(sampleDataFolder, prefixOutputFiles + "_peaks.xls");
           if (tmpPeakXlsFile.exists()) {
-            tmpPeakXlsFile.toFile().renameTo(peakXlsData.getDataFile().toFile());
+            tmpPeakXlsFile.toFile()
+                .renameTo(peakXlsData.getDataFile().toFile());
           }
 
           // Peak
@@ -388,7 +402,8 @@ public class MACS2Module extends AbstractModule {
 
         } catch (java.io.IOException err) {
           getLogger().severe("Could not determine folder of sample data file "
-              + nameMap.get(expSam2.getSample().getName()).getDataFile() + ". Error:" + err.toString()
+              + nameMap.get(expSam2.getSample().getName()).getDataFile()
+              + ". Error:" + err.toString()
               + " \nMACS2 output files will not be renamed.");
         }
       }

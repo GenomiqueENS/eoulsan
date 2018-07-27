@@ -39,14 +39,8 @@ import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 @LocalOnly
 public class IDRModule extends AbstractModule {
 
-  /**
-   *
-   */
   private static final String TOOL_NAME = "IDR";
 
-  /**
-   *
-   */
   private static final String SHIPPED_PACKAGE_VERSION = "20120922_patched";
 
   /**
@@ -61,15 +55,9 @@ public class IDRModule extends AbstractModule {
   private static DataFormat PEAK =
       DataFormatRegistry.getInstance().getDataFormatFromName("peaks");
 
-  /**
-   *
-   */
   private static final List<String> ACCEPTED_ASSEMBLIES =
       Arrays.asList("human.hg19", "human.hg18", "mm9", "worm.ws220");
 
-  /**
-   *
-   */
   private static final Map<String, String> ACCEPTED_ASSEMBLIES_FILES;
 
   static {
@@ -87,9 +75,10 @@ public class IDRModule extends AbstractModule {
 
   /**
    * Truncate input peak list. As written in IDR documentation, concerning
-   * parameter peak.half.width :
-   * "IMPORTANT: Currrently this parameter does not work properly so please pre-truncate your peaks if desired before feeding to IDR. Always set this parameter to -1."
-   * Consequently, this parameter is always -1 and cannot be modified.
+   * parameter peak.half.width : "IMPORTANT: Currrently this parameter does not
+   * work properly so please pre-truncate your peaks if desired before feeding
+   * to IDR. Always set this parameter to -1." Consequently, this parameter is
+   * always -1 and cannot be modified.
    */
   private int peakHalfWidth = -1;
 
@@ -191,8 +180,9 @@ public class IDRModule extends AbstractModule {
 
   /**
    * Set IDR parameters to configure the step. As written in IDR documentation,
-   * concerning parameter peak.half.width :
-   * "IMPORTANT: Currrently this parameter does not work properly so please pre-truncate your peaks if desired before feeding to IDR. Always set this parameter to -1."
+   * concerning parameter peak.half.width : "IMPORTANT: Currrently this
+   * parameter does not work properly so please pre-truncate your peaks if
+   * desired before feeding to IDR. Always set this parameter to -1."
    * @param context step configuration context
    * @param stepParameters parameters of the step
    * @throws EoulsanException if a parameter is invalid

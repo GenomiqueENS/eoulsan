@@ -39,10 +39,6 @@ import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 @LocalOnly
 public class TrackHubModule extends AbstractModule {
 
-  /**
-   * Settings for TrackHub generator
-   */
-
   // Parameters and arguments for MACS2 command line
   private String shortLabel = "shortLabel";
   private String longLabel = "longLabel";

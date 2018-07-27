@@ -1,6 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.modules.chipseq.peakcalling;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.modules.chipseq.ChIPSeqDataFormats.PEAK;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,8 +20,6 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 
@@ -32,12 +31,6 @@ import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
  */
 @LocalOnly
 public class MergePeaksModule extends AbstractModule {
-
-  /**
-   * Settings for MergePeaks
-   */
-  private static DataFormat PEAK =
-      DataFormatRegistry.getInstance().getDataFormatFromName("peaks");
 
   @Override
   public String getName() {
