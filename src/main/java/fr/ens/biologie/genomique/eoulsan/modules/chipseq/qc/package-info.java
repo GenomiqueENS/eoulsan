@@ -23,8 +23,8 @@
  */
 
 /**
- * This packages contains all the quality check steps.
+ * This packages contains all the quality check modules for ChIP-Seq.
  * @author Celine Hernandez - CSB lab - ENS - Paris
  * @since 2.0
  */
-package fr.ens.biologie.genomique.eoulsan.modules.qc;
+package fr.ens.biologie.genomique.eoulsan.modules.chipseq.qc;

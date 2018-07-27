@@ -1,4 +1,4 @@
-package fr.ens.biologie.genomique.eoulsan.modules;
+package fr.ens.biologie.genomique.eoulsan.modules.chipseq;
 
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.BIGBED;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.BIGWIG;
@@ -30,6 +30,7 @@ import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
+import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 
 /**
  * This class construct TrackHub for genome browser visualization.

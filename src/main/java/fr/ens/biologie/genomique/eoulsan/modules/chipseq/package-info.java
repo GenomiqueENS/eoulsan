@@ -23,8 +23,8 @@
  */
 
 /**
- * This packages contains the peak-calling step.
+ * This packages contains the ChIP-Seq modules.
  * @author Celine Hernandez - CSB lab - ENS - Paris
  * @since 2.0
  */
-package fr.ens.biologie.genomique.eoulsan.modules.peakcalling;
+package fr.ens.biologie.genomique.eoulsan.modules.chipseq;

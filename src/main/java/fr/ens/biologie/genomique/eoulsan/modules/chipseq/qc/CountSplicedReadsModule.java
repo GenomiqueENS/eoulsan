@@ -1,4 +1,4 @@
-package fr.ens.biologie.genomique.eoulsan.modules.qc;
+package fr.ens.biologie.genomique.eoulsan.modules.chipseq.qc;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.singleInputPort;

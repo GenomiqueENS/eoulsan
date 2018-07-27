@@ -51,18 +51,22 @@ fr.ens.biologie.genomique.eoulsan.modules.ShellModule
 
 # QC steps
 fr.ens.biologie.genomique.eoulsan.modules.fastqc.FastQCModule
-fr.ens.biologie.genomique.eoulsan.modules.qc.CountSplicedReadsModule
-fr.ens.biologie.genomique.eoulsan.modules.qc.IDRModule
 fr.ens.biologie.genomique.eoulsan.modules.multiqc.MultiQCModule
 
 # Other steps
 fr.ens.biologie.genomique.eoulsan.modules.ImportModule
 fr.ens.biologie.genomique.eoulsan.modules.FailModule
 fr.ens.biologie.genomique.eoulsan.modules.RequirementInstallerModule
-fr.ens.biologie.genomique.eoulsan.modules.TrackHubModule
 
-# Peak calling steps
-fr.ens.biologie.genomique.eoulsan.modules.peakcalling.BedToolsModule
-fr.ens.biologie.genomique.eoulsan.modules.peakcalling.DeepToolsModule
-fr.ens.biologie.genomique.eoulsan.modules.peakcalling.MACS2Module
-fr.ens.biologie.genomique.eoulsan.modules.peakcalling.MergePeaksModule
+# Chip-Seq QC
+fr.ens.biologie.genomique.eoulsan.modules.chipseq.qc.CountSplicedReadsModule
+fr.ens.biologie.genomique.eoulsan.modules.chipseq.qc.IDRModule
+
+# Chip-Seq Peak calling steps
+fr.ens.biologie.genomique.eoulsan.modules.chipseq.peakcalling.BedToolsModule
+fr.ens.biologie.genomique.eoulsan.modules.chipseq.peakcalling.DeepToolsModule
+fr.ens.biologie.genomique.eoulsan.modules.chipseq.peakcalling.MACS2Module
+fr.ens.biologie.genomique.eoulsan.modules.chipseq.peakcalling.MergePeaksModule
+
+# Chip-Seq other steps
+fr.ens.biologie.genomique.eoulsan.modules.chipseq.TrackHubModule

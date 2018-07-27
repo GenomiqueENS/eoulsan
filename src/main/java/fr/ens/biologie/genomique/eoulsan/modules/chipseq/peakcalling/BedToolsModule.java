@@ -1,4 +1,4 @@
-package fr.ens.biologie.genomique.eoulsan.modules.peakcalling;
+package fr.ens.biologie.genomique.eoulsan.modules.chipseq.peakcalling;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
