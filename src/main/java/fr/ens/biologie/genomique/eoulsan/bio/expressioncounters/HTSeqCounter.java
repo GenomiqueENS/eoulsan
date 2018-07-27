@@ -99,7 +99,8 @@ public class HTSeqCounter extends AbstractExpressionCounter
 
   private String samTag = SAM_TAG_DEFAULT;
 
-  private GenomicArray<String> features;
+  private final GenomicArray<String> features = new GenomicArray<>();
+  private boolean initialized;
 
   /**
    * Internal class for counters
@@ -293,7 +294,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
       throw new NullPointerException("the annotations argument is null");
     }
 
-    if (isInitialized()) {
+    if (this.initialized) {
       throw new IllegalStateException(
           "the counter has been already initialized");
     }
@@ -301,7 +302,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
     // Check configuration
     checkConfiguration();
 
-    this.features = new GenomicArray<>(desc);
+    this.features.addChromosomes(desc);
 
     final Splitter splitter = Splitter.on(',').omitEmptyStrings().trimResults();
 
@@ -351,6 +352,9 @@ public class HTSeqCounter extends AbstractExpressionCounter
       throw new EoulsanException(
           "Warning: No features of type '" + this.genomicType + "' found.\n");
     }
+
+    // The counter is now initialized
+    this.initialized = true;
   }
 
   @Override
@@ -366,7 +370,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
       throw new NullPointerException("the counterGroup argument is null");
     }
 
-    if (!isInitialized()) {
+    if (!this.initialized) {
       throw new IllegalStateException("the counter has not been initialized");
     }
 
@@ -671,7 +675,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
       throw new NullPointerException("The counts arguments cannot be null");
     }
 
-    if (!isInitialized()) {
+    if (!this.initialized) {
       throw new IllegalStateException("the counter has not been initialized");
     }
 
@@ -683,14 +687,6 @@ public class HTSeqCounter extends AbstractExpressionCounter
     }
   }
 
-  /**
-   * Test if the counter has been initialized.
-   * @return true if the counter has been initialized
-   */
-  private boolean isInitialized() {
-
-    return this.features != null;
-  }
 
   @Override
   public String toString() {
@@ -704,7 +700,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
         + ", removeSecondaryAlignments=" + this.removeSecondaryAlignments
         + ", removeSupplementaryAlignments="
         + this.removeSupplementaryAlignments + " minAverageQuality="
-        + this.minimalQuality + ", initialized=" + isInitialized() + "}";
+        + this.minimalQuality + ", initialized=" + this.initialized + "}";
   }
 
 }

@@ -99,6 +99,28 @@ public interface ExpressionCounter {
   /**
    * Initialize the counter
    * @param desc genome description
+   * @param annotationFile annotation file
+   * @param gtfFormat true if the input format is in GTF format
+   * @throws EoulsanException if an error occurs while initialize the counter
+   * @throws IOException if an error occurs while reading input files
+   */
+  void init(GenomeDescription desc, DataFile annotationFile, boolean gtfFormat)
+      throws EoulsanException, IOException;
+
+  /**
+   * Initialize the counter
+   * @param desc genome description
+   * @param annotationIs annotation file
+   * @param gtfFormat true if the input format is in GTF format
+   * @throws EoulsanException if an error occurs while initialize the counter
+   * @throws IOException if an error occurs while reading the annotation file
+   */
+  void init(GenomeDescription desc, InputStream annotationIs, boolean gtfFormat)
+      throws EoulsanException, IOException;
+
+  /**
+   * Initialize the counter
+   * @param desc genome description
    * @param annotations annotation entries
    * @throws EoulsanException if an error occurs while initialize the counter
    */
