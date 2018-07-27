@@ -509,6 +509,8 @@ public class TokenManager implements Runnable {
       samples.put(Naming.toValidName(sample.getId()), sample);
     }
 
+    int maxExistingDataCount = 0;
+
     for (StepOutputPort port : this.outputPorts) {
 
       // If port is not linked or only connected to skipped steps there is need
@@ -518,12 +520,14 @@ public class TokenManager implements Runnable {
       }
 
       final Set<Data> existingData = port.getExistingData();
+      maxExistingDataCount = Math.max(maxExistingDataCount, existingData.size());
 
       if (existingData.size() == 0) {
         throw new EoulsanRuntimeException("No output files of the step \""
             + this.step.getId() + "\" matching with "
             + WorkflowFileNaming.glob(port) + " found");
       }
+
 
       for (Data data : existingData) {
 
@@ -542,18 +546,17 @@ public class TokenManager implements Runnable {
             WorkflowDataUtils.setDataMetaData(data,
                 samples.get(data.getName()));
           }
-
         }
 
         // Send the token on the event bus
         WorkflowEventBus.getInstance().postToken(port, data);
       }
+    }
 
-      // Save the number of context if the step was not skipped
-      // This number is equals to the number of posted data
-      synchronized(this) {
-        this.contextCount = Math.max(this.contextCount, existingData.size());
-      }
+    // Save the number of context if the step was not skipped
+    // This number is equals to the number of posted data
+    synchronized(this) {
+      this.contextCount = maxExistingDataCount;
     }
 
     // Send end of step token
