@@ -1,9 +1,19 @@
 package fr.ens.biologie.genomique.eoulsan.bio;
 
-import static org.junit.Assert.*;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -101,6 +111,23 @@ public class BEDEntryTest {
 
     BEDEntry e = new BEDEntry();
 
+    assertEquals(0, e.getThickLength());
+    e.setThickStart(100);
+    e.setThickEnd(200);
+    assertEquals(101, e.getThickLength());
+
+    e.clear();
+    e.setThickEnd(200);
+    assertEquals(0, e.getThickLength());
+    e.setThickStart(100);
+    assertEquals(101, e.getThickLength());
+
+    e.clear();
+    e.setThickStart(100);
+    assertEquals(0, e.getThickLength());
+    e.setThickEnd(200);
+    assertEquals(101, e.getThickLength());
+
     String s =
         "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t1000\t2001\t0\t3\t354,109,1189,\t0,739,1347,";
 
@@ -163,7 +190,14 @@ public class BEDEntryTest {
   public void testSetChromosomeName() {
 
     BEDEntry e = new BEDEntry();
-    assertNull(e.getChromosomeName());
+    assertEquals("", e.getChromosomeName());
+
+    try {
+      e.setChromosomeName(null);
+      fail();
+    } catch (NullPointerException exp) {
+      assertTrue(true);
+    }
 
     e.setChromosomeName("chr1");
 
@@ -174,21 +208,37 @@ public class BEDEntryTest {
   public void testSetStart() {
 
     BEDEntry e = new BEDEntry();
-    assertEquals(0, e.getStart());
+    assertEquals(-1, e.getStart());
 
     e.setStart(5555);
-
     assertEquals(5555, e.getStart());
+
+    try {
+      e.setStart(-1);
+      fail();
+    } catch (IllegalArgumentException exp) {
+      assertTrue(true);
+    }
+    assertEquals(5555, e.getStart());
+
   }
 
   @Test
   public void testSetEnd() {
 
     BEDEntry e = new BEDEntry();
-    assertEquals(0, e.getEnd());
+    assertEquals(-1, e.getEnd());
 
     e.setEnd(6666);
 
+    assertEquals(6666, e.getEnd());
+
+    try {
+      e.setEnd(-1);
+      fail();
+    } catch (IllegalArgumentException exp) {
+      assertTrue(true);
+    }
     assertEquals(6666, e.getEnd());
   }
 
@@ -196,7 +246,7 @@ public class BEDEntryTest {
   public void testSetScoreString() {
 
     BEDEntry e = new BEDEntry();
-    assertNull(e.getScore());
+    assertEquals("", e.getScore());
 
     e.setScore("up");
 
@@ -207,7 +257,7 @@ public class BEDEntryTest {
   public void testSetScoreInt() {
 
     BEDEntry e = new BEDEntry();
-    assertNull(e.getScore());
+    assertEquals("", e.getScore());
 
     e.setScore(555);
 
@@ -233,7 +283,7 @@ public class BEDEntryTest {
   public void testSetScoreDouble() {
 
     BEDEntry e = new BEDEntry();
-    assertNull(e.getScore());
+    assertEquals("", e.getScore());
 
     e.setScore(555.5);
 
@@ -249,13 +299,28 @@ public class BEDEntryTest {
     e.setStrand('+');
 
     assertEquals('+', e.getStrand());
+
+    try {
+      e.setStrand('.');
+      fail();
+    } catch (IllegalArgumentException exp) {
+      assertTrue(true);
+    }
+
   }
 
   @Test
   public void testSetThickStart() {
 
     BEDEntry e = new BEDEntry();
-    assertEquals(0, e.getThickStart());
+    assertEquals(-1, e.getThickStart());
+
+    try {
+      e.setThickStart(0);
+      fail();
+    } catch (IllegalArgumentException exp) {
+      assertTrue(true);
+    }
 
     e.setThickStart(6666);
 
@@ -266,7 +331,14 @@ public class BEDEntryTest {
   public void testSetThickEnd() {
 
     BEDEntry e = new BEDEntry();
-    assertEquals(0, e.getThickEnd());
+    assertEquals(-1, e.getThickEnd());
+
+    try {
+      e.setThickEnd(0);
+      fail();
+    } catch (IllegalArgumentException exp) {
+      assertTrue(true);
+    }
 
     e.setThickEnd(7777);
 
@@ -282,6 +354,64 @@ public class BEDEntryTest {
     e.setRgbItem("15,120,200");
 
     assertEquals("15,120,200", e.getRgbItem());
+
+    e.setRgbItem(1, 2, 3);
+    assertEquals("1,2,3", e.getRgbItem());
+    e.setRgbItem(0, 0, 0);
+    assertEquals("0,0,0", e.getRgbItem());
+    e.setRgbItem(255, 255, 255);
+    assertEquals("255,255,255", e.getRgbItem());
+
+    e.clear();
+
+    try {
+      e.setRgbItem(-1, 2, 3);
+      fail();
+    } catch (IllegalArgumentException exp) {
+      assertTrue(true);
+    }
+    assertEquals("0", e.getRgbItem());
+
+    try {
+      e.setRgbItem(1, -1, 3);
+      fail();
+    } catch (IllegalArgumentException exp) {
+      assertTrue(true);
+    }
+    assertEquals("0", e.getRgbItem());
+
+    try {
+      e.setRgbItem(1, 2, -1);
+      fail();
+    } catch (IllegalArgumentException exp) {
+      assertTrue(true);
+    }
+    assertEquals("0", e.getRgbItem());
+
+    try {
+      e.setRgbItem(256, 2, 3);
+      fail();
+    } catch (IllegalArgumentException exp) {
+      assertTrue(true);
+    }
+    assertEquals("0", e.getRgbItem());
+
+    try {
+      e.setRgbItem(1, 256, 3);
+      fail();
+    } catch (IllegalArgumentException exp) {
+      assertTrue(true);
+    }
+    assertEquals("0", e.getRgbItem());
+
+    try {
+      e.setRgbItem(1, 2, 256);
+      fail();
+    } catch (IllegalArgumentException exp) {
+      assertTrue(true);
+    }
+    assertEquals("0", e.getRgbItem());
+
   }
 
   @Test
@@ -320,17 +450,36 @@ public class BEDEntryTest {
     e.addBlock(700, 1000);
 
     assertEquals(3, e.getBlockCount());
-    e.removeBlock(300, 500);
+    assertFalse(e.removeBlock(3000, 5000));
+    assertEquals(3, e.getBlockCount());
+    assertTrue(e.removeBlock(300, 500));
     assertEquals(2, e.getBlockCount());
-    e.removeBlock(100, 250);
+    assertTrue(e.removeBlock(100, 250));
     assertEquals(1, e.getBlockCount());
-    e.removeBlock(700, 1000);
+    assertTrue(e.removeBlock(700, 1000));
+    assertEquals(0, e.getBlockCount());
+
+    e.setStrand('+');
+    e.addBlock(100, 250);
+    e.addBlock(300, 500);
+    e.addBlock(700, 1000);
+
+    assertEquals(3, e.getBlockCount());
+    assertFalse(e.removeBlock(3000, 5000));
+    assertEquals(3, e.getBlockCount());
+    assertTrue(e.removeBlock(300, 500));
+    assertEquals(2, e.getBlockCount());
+    assertTrue(e.removeBlock(100, 250));
+    assertEquals(1, e.getBlockCount());
+    assertTrue(e.removeBlock(700, 1000));
+    assertEquals(0, e.getBlockCount());
   }
 
   @Test
   public void testToBED3() throws BadBioEntryException {
 
     BEDEntry e = new BEDEntry();
+    assertEquals("\t0\t0", e.toBED3());
 
     String s = "chr1\t11873\t14409";
 
@@ -342,6 +491,7 @@ public class BEDEntryTest {
   @Test
   public void testToBED4() throws BadBioEntryException {
     BEDEntry e = new BEDEntry();
+    assertEquals("\t0\t0\t", e.toBED4());
 
     String s = "chr1\t11873\t14409\tuc001aaa.3";
 
@@ -353,6 +503,7 @@ public class BEDEntryTest {
   @Test
   public void testToBED5() throws BadBioEntryException {
     BEDEntry e = new BEDEntry();
+    assertEquals("\t0\t0\t\t", e.toBED5());
 
     String s = "chr1\t11873\t14409\tuc001aaa.3\t0";
 
@@ -364,6 +515,7 @@ public class BEDEntryTest {
   @Test
   public void testToBED6() throws BadBioEntryException {
     BEDEntry e = new BEDEntry();
+    assertEquals("\t0\t0\t\t\t", e.toBED6());
 
     String s = "chr1\t11873\t14409\tuc001aaa.3\t0\t+";
 
@@ -376,13 +528,14 @@ public class BEDEntryTest {
   @Test
   public void testToBED12() throws BadBioEntryException {
     BEDEntry e = new BEDEntry();
+    assertEquals("\t0\t0\t\t\t\t0\t0\t0\t0\t\t", e.toBED12());
 
     String s =
         "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11873\t0\t3\t354,109,1189,\t0,739,1347,";
     e.parse(s, 12);
     assertEquals(s, e.toBED12());
 
-    s = "chr2\t21873\t24409\tuc002aaa.3\t0,155,200\t-\t21873\t21873\t0\t3\t1354,1109,11189,\t0,739,1347,";
+    s = "chr2\t21873\t24409\tuc002aaa.3\t0\t-\t21873\t21873\t0,155,200\t3\t1354,1109,11189,\t0,739,1347,";
     e.parse(s, 12);
     assertEquals(s, e.toBED12());
   }
@@ -391,6 +544,20 @@ public class BEDEntryTest {
   public void testParse() throws BadBioEntryException {
 
     BEDEntry e = new BEDEntry();
+
+    try {
+      e.parse(null);
+      fail();
+    } catch (NullPointerException exp) {
+      assertTrue(true);
+    }
+
+    try {
+      e.parse(null, 12);
+      fail();
+    } catch (NullPointerException exp) {
+      assertTrue(true);
+    }
 
     String s = "chr1\t11873\t14409";
     e.parse(s);
@@ -411,11 +578,12 @@ public class BEDEntryTest {
     s = "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11873\t0\t3\t354,109,1189,\t0,739,1347,";
     e.parse(s);
     assertEquals(s, e.toBED12());
+    assertEquals(s, e.toString());
 
     s = "chr1";
     try {
       e.parse(s);
-      assertTrue(false);
+      fail();
     } catch (IllegalArgumentException exp) {
       assertTrue(true);
     }
@@ -423,16 +591,79 @@ public class BEDEntryTest {
     s = "chr1\t11873";
     try {
       e.parse(s);
-      assertTrue(false);
+      fail();
+    } catch (IllegalArgumentException exp) {
+      assertTrue(true);
+    }
+
+    s = "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11D873\t0\t3\t354,109,1189,\t0,739,1347,";
+    e.parse(s);
+
+    s = "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11873\t0\t3\t354,109,1189";
+    try {
+      e.parse(s);
+      fail();
     } catch (IllegalArgumentException exp) {
       assertTrue(true);
     }
 
     s = "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11873\t0\t3\t354,109,1189";
     try {
-      e.parse(s);
-      assertTrue(false);
+      e.parse(s, 13);
+      fail();
     } catch (IllegalArgumentException exp) {
+      assertTrue(true);
+    }
+
+    s = " \t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11873\t0\t3\t354,109,1189";
+    try {
+      e.parse(s, 12);
+      fail();
+    } catch (BadBioEntryException exp) {
+      assertTrue(true);
+    }
+
+    s = "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11873\t0\t3\t354,109,1189,\t0,739,1347,";
+    e.parse(s);
+    assertEquals('+', e.getStrand());
+
+    s = "chr1\t11873\t14409\tuc001aaa.3\t0\t-\t11873\t11873\t0\t3\t354,109,1189,\t0,739,1347,";
+    e.parse(s);
+    assertEquals('-', e.getStrand());
+
+    s = "chr1\t11873\t14409\tuc001aaa.3\t0\t.\t11873\t11873\t0\t3\t354,109,1189,\t0,739,1347,";
+    e.parse(s);
+    assertEquals(0, e.getStrand());
+
+    s = "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11873\t0\t\t354,109,1189";
+    try {
+      e.parse(s, 12);
+      fail();
+    } catch (BadBioEntryException exp) {
+      assertTrue(true);
+    }
+
+    s = "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11873\t0\t3\t354,109,\t0,739,1347,";
+    try {
+      e.parse(s, 12);
+      fail();
+    } catch (BadBioEntryException exp) {
+      assertTrue(true);
+    }
+
+    s = "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11873\t0\t3\t354,109,1189,\t0,739,";
+    try {
+      e.parse(s, 12);
+      fail();
+    } catch (BadBioEntryException exp) {
+      assertTrue(true);
+    }
+
+    s = "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11873\t0\t3\t354,109,1189,\t0,73D9,1347,";
+    try {
+      e.parse(s, 12);
+      fail();
+    } catch (BadBioEntryException exp) {
       assertTrue(true);
     }
 
@@ -448,6 +679,8 @@ public class BEDEntryTest {
     } catch (BadBioEntryException exp) {
       assertTrue(false);
     }
+
+    assertFalse(e.isMetaDataEntry(null));
 
     assertFalse(e.isMetaDataEntry("key0"));
     assertEquals(0, e.getMetadataKeyNames().size());
@@ -466,6 +699,10 @@ public class BEDEntryTest {
   public void testGetMetadataEntryValues() {
 
     BEDEntry e = new BEDEntry();
+
+    assertEquals(Collections.emptyList(), e.getMetadataEntryValues(null));
+    assertEquals(Collections.emptyList(), e.getMetadataEntryValues("toto"));
+
     try {
       e.parse(
           "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11873\t0\t3\t354,109,1189,\t0,739,1347,");
@@ -496,9 +733,8 @@ public class BEDEntryTest {
         e.getMetadataKeyNames());
     assertEquals(Arrays.asList("position chr7:127471196-127495720", "hide all"),
         e.getMetadataEntryValues("browser"));
-    assertEquals(
-        Arrays.asList(
-            "name=\"ItemRGBDemo\" description=\"Item RGB demonstration\" visibility=2 itemRgb=\"On\""),
+    assertEquals(Arrays.asList(
+        "name=\"ItemRGBDemo\" description=\"Item RGB demonstration\" visibility=2 itemRgb=\"On\""),
         e.getMetadataEntryValues("track"));
   }
 
@@ -528,6 +764,103 @@ public class BEDEntryTest {
     assertTrue(e.getMetadataKeyNames().contains("key1"));
     assertTrue(e.getMetadataKeyNames().contains("key2"));
 
+  }
+
+  @Test
+  public void testGetBlocks() {
+
+    BEDEntry e = new BEDEntry();
+    e.setChromosomeName("chr1");
+    assertEquals(Collections.emptyList(), e.getBlocks());
+
+    e.addBlock(100, 250);
+    assertEquals(asList(new GenomicInterval("chr1", 100, 250, '.')),
+        e.getBlocks());
+
+    e.addBlock(300, 500);
+    assertEquals(2, e.getBlockCount());
+    assertEquals(asList(new GenomicInterval("chr1", 100, 250, '.'),
+        new GenomicInterval("chr1", 300, 500, '.')), e.getBlocks());
+
+  }
+
+  @Test
+  public void testAddMetaDataEntry() {
+
+    BEDEntry e = new BEDEntry();
+    assertEquals(emptySet(), e.getMetadataKeyNames());
+
+    assertFalse(e.addMetaDataEntry(null, null));
+    assertEquals(emptySet(), e.getMetadataKeyNames());
+    assertFalse(e.addMetaDataEntry("key", null));
+    assertEquals(emptySet(), e.getMetadataKeyNames());
+    assertFalse(e.addMetaDataEntry(null, "value"));
+    assertEquals(emptySet(), e.getMetadataKeyNames());
+    assertTrue(e.addMetaDataEntry("key1", "value1"));
+    assertEquals(Collections.singleton("key1"), e.getMetadataKeyNames());
+
+  }
+
+  @Test
+  public void testAddMetaDataEntries() {
+
+    BEDEntry e = new BEDEntry();
+
+    assertFalse(e.addMetaDataEntries(null));
+    Map<String, List<String>> entries = new HashMap<>();
+    assertTrue(e.addMetaDataEntries(entries));
+    entries.put("key0", null);
+    assertFalse(e.addMetaDataEntries(entries));
+    entries.clear();
+    List<String> l = new ArrayList<String>();
+    l.add(null);
+    entries.put("key00", l);
+    assertFalse(e.addMetaDataEntries(entries));
+    entries.clear();
+    entries.put("key1", Arrays.asList("val1"));
+    assertTrue(e.addMetaDataEntries(entries));
+    entries.clear();
+    entries.put("key2", Arrays.asList("val2", "val3"));
+    assertTrue(e.addMetaDataEntries(entries));
+  }
+
+  @Test
+  public void testRemoveMetaDataEntry() {
+
+    BEDEntry e = new BEDEntry();
+
+    assertEquals(Collections.emptySet(), e.getMetadataKeyNames());
+    e.addMetaDataEntry("key1", "value1");
+    assertEquals(Collections.singleton("key1"), e.getMetadataKeyNames());
+    e.addMetaDataEntry("key2", "value2");
+    assertEquals(new HashSet<String>(asList("key1", "key2")),
+        e.getMetadataKeyNames());
+    assertFalse(e.removeMetaDataEntry("key3"));
+    assertEquals(new HashSet<String>(asList("key1", "key2")),
+        e.getMetadataKeyNames());
+    assertFalse(e.removeMetaDataEntry(null));
+    assertEquals(new HashSet<String>(asList("key1", "key2")),
+        e.getMetadataKeyNames());
+    assertTrue(e.removeMetaDataEntry("key1"));
+    assertEquals(Collections.singleton("key2"), e.getMetadataKeyNames());
+  }
+
+  @Test
+  public void testSetName() {
+
+    BEDEntry e = new BEDEntry();
+
+    assertEquals("", e.getName());
+
+    try {
+      e.setName(null);
+      fail();
+    } catch (NullPointerException exp) {
+      assertTrue(true);
+    }
+
+    e.setName(" toto   ");
+    assertEquals("toto", e.getName());
   }
 
 }

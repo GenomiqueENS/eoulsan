@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.google.common.base.Splitter;
@@ -40,10 +41,6 @@ public class BEDEntry {
    */
   public final Set<String> getMetadataKeyNames() {
 
-    if (this.metaData == null) {
-      return Collections.emptySet();
-    }
-
     return Collections.unmodifiableSet(this.metaData.keySet());
   }
 
@@ -69,14 +66,10 @@ public class BEDEntry {
    */
   public final List<String> getMetadataEntryValues(final String key) {
 
-    if (key == null) {
-      return null;
-    }
-
     final List<String> list = this.metaData.get(key);
 
     if (list == null) {
-      return null;
+      return Collections.emptyList();
     }
 
     return Collections.unmodifiableList(list);
@@ -159,7 +152,7 @@ public class BEDEntry {
    * @return the thick length
    */
   public int getThickLength() {
-    return this.thickStart == 0 || this.getThickEnd() == 0
+    return this.thickStart == -1 || this.getThickEnd() == -1
         ? 0 : this.thickEnd - this.thickStart + 1;
   }
 
@@ -277,6 +270,11 @@ public class BEDEntry {
     }
 
     for (Map.Entry<String, List<String>> e : entries.entrySet()) {
+
+      if (e.getValue() == null) {
+        return false;
+      }
+
       for (String v : e.getValue()) {
 
         if (!addMetaDataEntry(e.getKey(), v)) {
@@ -295,10 +293,6 @@ public class BEDEntry {
    * @return true if the entry is removed
    */
   public final boolean removeMetaDataEntry(final String key) {
-
-    if (this.metaData.containsKey(key)) {
-      return false;
-    }
 
     return this.metaData.remove(key) != null;
   }
@@ -322,7 +316,7 @@ public class BEDEntry {
    */
   public void setStart(final int start) {
 
-    if (start < 0) {
+    if (start < 1) {
       throw new IllegalArgumentException(
           "chromosomeStart argument cannot be lower than zero: " + start);
     }
@@ -336,7 +330,7 @@ public class BEDEntry {
    */
   public void setEnd(final int end) {
 
-    if (end < 0) {
+    if (end < 1) {
       throw new IllegalArgumentException(
           "chromosomeEnd argument cannot be lower than zero: " + end);
     }
@@ -350,7 +344,9 @@ public class BEDEntry {
    */
   public void setName(final String name) {
 
-    this.name = name;
+    Objects.requireNonNull(name, "name argument cannot be null");
+
+    this.name = name.trim();
   }
 
   /**
@@ -410,7 +406,7 @@ public class BEDEntry {
    */
   public void setThickStart(final int thickStart) {
 
-    if (thickStart < 0) {
+    if (thickStart < 1) {
       throw new IllegalArgumentException(
           "thickStart argument cannot be lower than zero: " + thickStart);
     }
@@ -424,7 +420,7 @@ public class BEDEntry {
    */
   public void setThickEnd(final int thickEnd) {
 
-    if (thickEnd < 0) {
+    if (thickEnd < 1) {
       throw new IllegalArgumentException(
           "thickEnd argument cannot be lower than zero: " + thickEnd);
     }
@@ -472,9 +468,9 @@ public class BEDEntry {
    * @param startBlock start position of the block
    * @param endBlock end position of the block
    */
-  public void addBlock(final int startBlock, final int endBlock) {
+  public boolean addBlock(final int startBlock, final int endBlock) {
 
-    this.blocks.add(new GenomicInterval(this.chromosomeName, startBlock,
+    return this.blocks.add(new GenomicInterval(this.chromosomeName, startBlock,
         endBlock, this.strand == 0 ? '.' : this.strand));
   }
 
@@ -483,12 +479,12 @@ public class BEDEntry {
    * @param startBlock start position of the block
    * @param endBlock end position of the block
    */
-  public void removeBlock(final int startBlock, final int endBlock) {
+  public boolean removeBlock(final int startBlock, final int endBlock) {
 
     GenomicInterval block = new GenomicInterval(this.chromosomeName, startBlock,
         endBlock, this.strand == 0 ? '.' : this.strand);
 
-    this.blocks.remove(block);
+    return this.blocks.remove(block);
   }
 
   //
@@ -502,7 +498,8 @@ public class BEDEntry {
   public String toBED3() {
 
     return this.chromosomeName
-        + '\t' + (this.start - 1) + '\t' + (this.end + 1);
+        + '\t' + (this.start == -1 ? 0 : this.start - 1) + '\t'
+        + (this.end == -1 ? 0 : this.end + 1);
   }
 
   /**
@@ -512,8 +509,8 @@ public class BEDEntry {
   public String toBED4() {
 
     return this.chromosomeName
-        + '\t' + (this.start - 1) + '\t' + (this.end + 1) + '\t'
-        + (this.name == null ? "" : this.name);
+        + '\t' + (this.start == -1 ? 0 : this.start - 1) + '\t'
+        + (this.end == -1 ? 0 : this.end + 1) + '\t' + this.name;
   }
 
   /**
@@ -523,9 +520,9 @@ public class BEDEntry {
   public String toBED5() {
 
     return this.chromosomeName
-        + '\t' + (this.start - 1) + '\t' + (this.end + 1) + '\t'
-        + (this.name != null ? this.name : "") + '\t'
-        + (this.score != null ? this.score : '0');
+        + '\t' + (this.start == -1 ? 0 : this.start - 1) + '\t'
+        + (this.end == -1 ? 0 : this.end + 1) + '\t' + this.name + '\t'
+        + ("".equals(this.score) ? this.score : '0');
   }
 
   /**
@@ -535,9 +532,9 @@ public class BEDEntry {
   public String toBED6() {
 
     return this.chromosomeName
-        + '\t' + (this.start - 1) + '\t' + (this.end + 1) + '\t'
-        + (this.name != null ? this.name : "") + '\t'
-        + (this.score != null ? this.score : '0') + '\t'
+        + '\t' + (this.start == -1 ? 0 : this.start - 1) + '\t'
+        + (this.end == -1 ? 0 : this.end + 1) + '\t' + this.name + '\t'
+        + ("".equals(this.score) ? this.score : '0') + '\t'
         + (this.strand != 0 ? this.strand : "");
   }
 
@@ -551,21 +548,21 @@ public class BEDEntry {
 
     sb.append(this.chromosomeName);
     sb.append('\t');
-    sb.append(this.start - 1);
+    sb.append(this.start == -1 ? 0 : this.start - 1);
     sb.append('\t');
-    sb.append(this.end + 1);
+    sb.append(this.end == -1 ? 0 : this.end + 1);
     sb.append('\t');
-    sb.append(this.name != null ? this.name : "");
+    sb.append(this.name);
     sb.append('\t');
-    sb.append(this.score != null ? this.score : '0');
+    sb.append("".equals(this.score) ? this.score : '0');
     sb.append('\t');
     sb.append(this.strand != 0 ? this.strand : "");
     sb.append('\t');
-    sb.append(this.thickStart - 1);
+    sb.append(this.getThickStart() == -1 ? "0" : this.thickStart - 1);
     sb.append('\t');
-    sb.append(this.thickEnd + 1);
+    sb.append(this.getThickEnd() == -1 ? "0" : this.thickEnd + 1);
     sb.append('\t');
-    sb.append(this.rgbItem != null ? this.rgbItem : "");
+    sb.append(this.rgbItem);
     sb.append('\t');
     sb.append(getBlockCount());
     sb.append('\t');
@@ -714,10 +711,6 @@ public class BEDEntry {
    */
   private static int parseInt(final String s, final int defaultValue) {
 
-    if (s == null) {
-      return defaultValue;
-    }
-
     try {
       return Integer.parseInt(s.trim());
     } catch (NumberFormatException e) {
@@ -734,10 +727,6 @@ public class BEDEntry {
    */
   private static int parseCoordinate(final String s, final int diff,
       final int defaultValue) {
-
-    if (s == null) {
-      return defaultValue;
-    }
 
     try {
       return Integer.parseInt(s.trim()) + diff;
@@ -776,14 +765,14 @@ public class BEDEntry {
    */
   public void clear() {
 
-    this.chromosomeName = null;
-    this.start = 0;
-    this.end = 0;
-    this.name = null;
-    this.score = null;
+    this.chromosomeName = "";
+    this.start = -1;
+    this.end = -1;
+    this.name = "";
+    this.score = "";
     this.strand = 0;
-    this.thickStart = 0;
-    this.thickEnd = 0;
+    this.thickStart = -1;
+    this.thickEnd = -1;
     this.rgbItem = "0";
     this.blocks.clear();
 
