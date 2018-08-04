@@ -1,14 +1,17 @@
 package fr.ens.biologie.genomique.eoulsan.bio;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
 import com.google.common.base.Splitter;
+
+import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 
 /**
  * This class define a BedEntry. <b>Warning<b>: the coordinates stored in the
@@ -19,7 +22,7 @@ import com.google.common.base.Splitter;
  */
 public class BEDEntry {
 
-  private final Map<String, List<String>> metaData = new LinkedHashMap<>();
+  private final EntryMetadata metadata;
   private String chromosomeName;
   private int start;
   private int end;
@@ -36,12 +39,22 @@ public class BEDEntry {
   //
 
   /**
+   * Get the metadata.
+   * @return the metadata of the entry
+   */
+  public final EntryMetadata getMetadata() {
+
+    return this.metadata;
+  }
+
+  /**
    * Get metadata keys names.
    * @return the metadata keys names
    */
+  @Deprecated
   public final Set<String> getMetadataKeyNames() {
 
-    return Collections.unmodifiableSet(this.metaData.keySet());
+    return this.metadata.keySet();
   }
 
   /**
@@ -49,13 +62,10 @@ public class BEDEntry {
    * @param key key name of the metadata
    * @return true if the entry in the meta data exists
    */
+  @Deprecated
   public final boolean isMetaDataEntry(final String key) {
 
-    if (key == null) {
-      return false;
-    }
-
-    return this.metaData.containsKey(key);
+    return this.metadata.containsKey(key);
   }
 
   /**
@@ -64,15 +74,10 @@ public class BEDEntry {
    * @return the values of the attribute or null if the metadata name does not
    *         exists
    */
+  @Deprecated
   public final List<String> getMetadataEntryValues(final String key) {
 
-    final List<String> list = this.metaData.get(key);
-
-    if (list == null) {
-      return Collections.emptyList();
-    }
-
-    return Collections.unmodifiableList(list);
+    return this.metadata.get(key);
   }
 
   /**
@@ -237,24 +242,10 @@ public class BEDEntry {
    * @param value The value
    * @return true if the value is correctly added to the metadata
    */
+  @Deprecated
   public final boolean addMetaDataEntry(final String key, final String value) {
 
-    if (key == null || value == null) {
-      return false;
-    }
-
-    final List<String> list;
-
-    if (!this.metaData.containsKey(key)) {
-      list = new ArrayList<>();
-      this.metaData.put(key, list);
-    } else {
-      list = this.metaData.get(key);
-    }
-
-    list.add(value);
-
-    return true;
+    return this.metadata.add(key, value);
   }
 
   /**
@@ -265,26 +256,7 @@ public class BEDEntry {
   public final boolean addMetaDataEntries(
       final Map<String, List<String>> entries) {
 
-    if (entries == null) {
-      return false;
-    }
-
-    for (Map.Entry<String, List<String>> e : entries.entrySet()) {
-
-      if (e.getValue() == null) {
-        return false;
-      }
-
-      for (String v : e.getValue()) {
-
-        if (!addMetaDataEntry(e.getKey(), v)) {
-          return false;
-        }
-
-      }
-    }
-
-    return true;
+    return this.metadata.add(entries);
   }
 
   /**
@@ -294,7 +266,7 @@ public class BEDEntry {
    */
   public final boolean removeMetaDataEntry(final String key) {
 
-    return this.metaData.remove(key) != null;
+    return this.metadata.remove(key);
   }
 
   /**
@@ -581,9 +553,44 @@ public class BEDEntry {
     return sb.toString();
   }
 
+  //
+  // Object methods
+  //
+
   @Override
   public String toString() {
     return toBED12();
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Objects.hash(this.metadata, this.chromosomeName, this.start,
+        this.end, this.name, this.score, this.strand, this.thickStart,
+        this.thickEnd, this.rgbItem, this.blocks);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+
+    if (o == this) {
+      return true;
+    }
+
+    if (!(o instanceof BEDEntry)) {
+      return false;
+    }
+
+    final BEDEntry that = (BEDEntry) o;
+
+    return Objects.equals(this.metadata, that.metadata)
+        && Objects.equals(this.chromosomeName, that.chromosomeName)
+        && this.start == that.start && this.end == that.end
+        && Objects.equals(this.name, that.name)
+        && Objects.equals(this.score, that.score) && this.strand == that.strand
+        && this.thickStart == that.thickStart && this.thickEnd == that.thickEnd
+        && Objects.equals(this.rgbItem, that.rgbItem)
+        && Objects.equals(this.blocks, that.blocks);
   }
 
   //
@@ -631,7 +638,7 @@ public class BEDEntry {
 
     final Splitter splitter = Splitter.on('\t').trimResults();
 
-    List<String> fields = splitter.splitToList(s);
+    List<String> fields = GuavaCompatibility.splitToList(splitter, s);
 
     this.chromosomeName = fields.get(0);
     if (this.chromosomeName.isEmpty()) {
@@ -779,11 +786,11 @@ public class BEDEntry {
   }
 
   /**
-   * Clear metadata of the entry.
+   * Clear the metadata of the entry.
    */
   public final void clearMetaData() {
 
-    this.metaData.clear();
+    this.metadata.clear();
   }
 
   //
@@ -795,6 +802,17 @@ public class BEDEntry {
    */
   public BEDEntry() {
 
+    this(new EntryMetadata());
+  }
+
+  /**
+   * Public constructor.
+   */
+  public BEDEntry(EntryMetadata metadata) {
+
+    requireNonNull(metadata, " metadata argument cannot  be null");
+
+    this.metadata = metadata;
     clear();
   }
 

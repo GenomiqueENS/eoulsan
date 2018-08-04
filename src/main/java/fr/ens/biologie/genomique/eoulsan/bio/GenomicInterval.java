@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.bio;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.util.Utils;
 
@@ -207,7 +208,7 @@ public class GenomicInterval
 
     final GenomicInterval that = (GenomicInterval) o;
 
-    return Utils.equal(this.chromosome, that.chromosome)
+    return Objects.equals(this.chromosome, that.chromosome)
         && this.start == that.start && this.end == that.end
         && this.strand == that.strand;
 

@@ -27,6 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.bio;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -41,6 +42,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+@SuppressWarnings("deprecation")
 public class GFFEntryTest {
 
   private final String[] TEST_GFF3_STRINGS = {
@@ -755,7 +757,7 @@ public class GFFEntryTest {
 
     assertFalse(e.removeAttribute("toto"));
 
-    assertEquals(Collections.emptySet(), e.getMetadataKeyNames());
+    assertEquals(Collections.emptySet(), e.getAttributesNames());
 
     e.setAttributeValue("key1", "value1");
     assertEquals(Collections.singleton("key1"), e.getAttributesNames());
@@ -1001,6 +1003,69 @@ public class GFFEntryTest {
 
     assertEquals(".\t.\t.\t.\t.\t.\t.\t.\t.", e.toGTF());
 
+  }
+
+  @Test
+  public void testEqualsObject() {
+
+    GFFEntry e1 = new GFFEntry();
+    GFFEntry e2 = new GFFEntry();
+
+    assertEquals(e1, e1);
+    assertTrue(e1.equals(e1));
+
+    assertFalse(e1.equals(null));
+    assertFalse(e1.equals("toto"));
+    assertEquals(e1, e2);
+    assertTrue(e1.equals(e2));
+
+    e1.setSource("value");
+    assertNotEquals(e1, e2);
+    assertFalse(e1.equals(e2));
+
+    e2.setSource("value");
+    assertEquals(e1, e2);
+    assertTrue(e1.equals(e2));
+  }
+
+  @Test
+  public void testHashCode() {
+
+    GFFEntry e1 = new GFFEntry();
+    GFFEntry e2 = new GFFEntry();
+
+    assertEquals(e1.hashCode(), e2.hashCode());
+
+    e1.setSource("value");
+    assertNotEquals(e1.hashCode(), e2.hashCode());
+  }
+
+  @Test
+  public void testGetMetadata() {
+
+    GFFEntry e1 = new GFFEntry();
+    assertEquals(Collections.emptyMap(), e1.getMetadata().entries());
+
+    e1.addMetaDataEntry("key1", "value1");
+    assertEquals(
+        Collections.singletonMap("key1", Collections.singletonList("value1")),
+        e1.getMetadata().entries());
+
+    e1.clearMetaData();
+    assertEquals(Collections.emptyMap(), e1.getMetadata().entries());
+    e1.getMetadata().add("key2", "value2");
+    assertEquals(
+        Collections.singletonMap("key2", Collections.singletonList("value2")),
+        e1.getMetadata().entries());
+
+    EntryMetadata m = new EntryMetadata();
+    m.add("key3", "value3");
+
+    GFFEntry e2 = new GFFEntry(m);
+
+    assertEquals(
+        Collections.singletonMap("key3", Collections.singletonList("value3")),
+        e2.getMetadata().entries());
   }
 
 }

@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -17,6 +18,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+@SuppressWarnings("deprecation")
 public class BEDEntryTest {
 
   @Test
@@ -846,6 +848,34 @@ public class BEDEntryTest {
   }
 
   @Test
+  public void testGetMetadata() {
+
+    BEDEntry e1 = new BEDEntry();
+    assertEquals(Collections.emptyMap(), e1.getMetadata().entries());
+
+    e1.addMetaDataEntry("key1", "value1");
+    assertEquals(
+        Collections.singletonMap("key1", Collections.singletonList("value1")),
+        e1.getMetadata().entries());
+
+    e1.clearMetaData();
+    assertEquals(Collections.emptyMap(), e1.getMetadata().entries());
+    e1.getMetadata().add("key2", "value2");
+    assertEquals(
+        Collections.singletonMap("key2", Collections.singletonList("value2")),
+        e1.getMetadata().entries());
+
+    EntryMetadata m = new EntryMetadata();
+    m.add("key3", "value3");
+
+    BEDEntry e2 = new BEDEntry(m);
+
+    assertEquals(
+        Collections.singletonMap("key3", Collections.singletonList("value3")),
+        e2.getMetadata().entries());
+  }
+
+  @Test
   public void testSetName() {
 
     BEDEntry e = new BEDEntry();
@@ -861,6 +891,41 @@ public class BEDEntryTest {
 
     e.setName(" toto   ");
     assertEquals("toto", e.getName());
+  }
+
+  @Test
+  public void testEqualsObject() {
+
+    BEDEntry e1 = new BEDEntry();
+    BEDEntry e2 = new BEDEntry();
+
+    assertEquals(e1, e1);
+    assertTrue(e1.equals(e1));
+
+    assertFalse(e1.equals(null));
+    assertFalse(e1.equals("toto"));
+    assertEquals(e1, e2);
+    assertTrue(e1.equals(e2));
+
+    e1.setChromosomeName("value");
+    assertNotEquals(e1, e2);
+    assertFalse(e1.equals(e2));
+
+    e2.setChromosomeName("value");
+    assertEquals(e1, e2);
+    assertTrue(e1.equals(e2));
+  }
+
+  @Test
+  public void testHashCode() {
+
+    BEDEntry e1 = new BEDEntry();
+    BEDEntry e2 = new BEDEntry();
+
+    assertEquals(e1.hashCode(), e2.hashCode());
+
+    e1.setChromosomeName("value");
+    assertNotEquals(e1.hashCode(), e2.hashCode());
   }
 
 }
