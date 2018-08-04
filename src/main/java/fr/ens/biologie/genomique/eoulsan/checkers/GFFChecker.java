@@ -329,7 +329,7 @@ public class GFFChecker implements Checker {
     final Map<String, long[]> result = new HashMap<>();
 
     final List<String> sequenceRegions =
-        entry.getMetadataEntryValues("sequence-region");
+        entry.getMetadata().get("sequence-region");
 
     if (sequenceRegions == null) {
       return null;
