@@ -483,7 +483,7 @@ public class Sequence {
 
     return '>'
         + (this.name == null ? "" : this.name) + '\n'
-        + (this.sequence == null ? "" : this.sequence + '\n');
+        + (this.sequence == null ? "" : this.sequence);
   }
 
   /**
@@ -508,8 +508,13 @@ public class Sequence {
     while (pos < len) {
 
       final int nextPos = pos + width;
-      sb.append(this.sequence.subSequence(pos, nextPos > len ? len : nextPos));
-      sb.append('\n');
+
+      if (nextPos > len) {
+        sb.append(this.sequence.subSequence(pos, len));
+      } else {
+        sb.append(this.sequence.subSequence(pos, nextPos));
+        sb.append('\n');
+      }
       pos = nextPos;
     }
 

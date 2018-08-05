@@ -57,7 +57,7 @@ public class FastaWriter implements SequenceWriter {
       return;
     }
 
-    this.writer.write(sequence.toFasta(this.lineLength));
+    this.writer.write(sequence.toFasta(this.lineLength) + '\n');
   }
 
   /**

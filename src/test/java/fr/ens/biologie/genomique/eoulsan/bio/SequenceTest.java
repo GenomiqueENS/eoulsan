@@ -483,9 +483,9 @@ public class SequenceTest {
   public void testToFasta() {
 
     Sequence s = new Sequence(0, "toto", "ATGC");
-    assertEquals(">toto\nATGC\n", s.toFasta());
+    assertEquals(">toto\nATGC", s.toFasta());
     s = new Sequence(0, null, "ATGC");
-    assertEquals(">\nATGC\n", s.toFasta());
+    assertEquals(">\nATGC", s.toFasta());
     s = new Sequence(0, "toto", null);
     assertEquals(">toto\n", s.toFasta());
 
@@ -495,12 +495,12 @@ public class SequenceTest {
   public void testToFastaInt() {
 
     Sequence s = new Sequence(0, "toto", "ATGC");
-    assertEquals(">toto\nATGC\n", s.toFasta(0));
-    assertEquals(">toto\nATGC\n", s.toFasta(60));
+    assertEquals(">toto\nATGC", s.toFasta(0));
+    assertEquals(">toto\nATGC", s.toFasta(60));
 
     s = new Sequence(0, "toto", "ATGCATGCAT");
     assertEquals(">toto\nATGCA\nTGCAT\n", s.toFasta(5));
-    assertEquals(">toto\nATGCAT\nGCAT\n", s.toFasta(6));
+    assertEquals(">toto\nATGCAT\nGCAT", s.toFasta(6));
   }
 
   @Test
