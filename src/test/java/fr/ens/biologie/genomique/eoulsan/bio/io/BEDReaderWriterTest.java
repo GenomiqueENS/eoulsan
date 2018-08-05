@@ -33,7 +33,14 @@ public class BEDReaderWriterTest {
     MessageDigest mdi = MessageDigest.getInstance("MD5");
     MessageDigest mdo = MessageDigest.getInstance("MD5");
 
-    try (InputStream is = this.getClass().getResourceAsStream(resourcePath);
+    InputStream resourceStream =
+        this.getClass().getResourceAsStream(resourcePath);
+
+    if (resourceStream == null) {
+      throw new IOException("resource not found: " + resourcePath);
+    }
+
+    try (InputStream is = resourceStream;
         OutputStream os = ByteStreams.nullOutputStream();
         DigestInputStream dis = new DigestInputStream(is, mdi);
         DigestOutputStream dos = new DigestOutputStream(os, mdo);

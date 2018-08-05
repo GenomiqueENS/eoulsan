@@ -172,20 +172,4 @@ public class BEDWriter implements Closeable {
     this(outputFilename, DEFAULT_FORMAT);
   }
 
-  public static void main(String[] args) throws IOException {
-
-    File dir = new File("/home/jourdren/tmp");
-    File inputFile = new File(dir, "input.bed");
-    File outputFile = new File(dir, "output.bed");
-
-    try (BEDReader reader = new BEDReader(inputFile);
-        BEDWriter writer = new BEDWriter(outputFile, 9)) {
-
-      for (BEDEntry e : reader) {
-        writer.write(e);
-      }
-    }
-
-  }
-
 }
