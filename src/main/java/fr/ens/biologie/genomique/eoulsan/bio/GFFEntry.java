@@ -49,9 +49,7 @@ public class GFFEntry {
   private static final Pattern SEMI_COMA_SPLIT_PATTERN = Pattern.compile(";");
   private static final Pattern COMA_SPLIT_PATTERN = Pattern.compile(",");
 
-  // private final Map<String, List<String>> metaData = new LinkedHashMap<>();
   private final EntryMetadata metadata;
-  private int id;
   private String seqId;
   private String source;
   private String type;
@@ -73,14 +71,6 @@ public class GFFEntry {
   public final EntryMetadata getMetadata() {
 
     return this.metadata;
-  }
-
-  /**
-   * Get the id.
-   * @return the id
-   */
-  public final int getId() {
-    return this.id;
   }
 
   /**
@@ -221,15 +211,6 @@ public class GFFEntry {
   //
   // Setters
   //
-
-  /**
-   * Set the id.
-   * @param id the id of the entry
-   */
-  public final void setId(final int id) {
-
-    this.id = id;
-  }
 
   /**
    * Set the seqId.
@@ -773,8 +754,8 @@ public class GFFEntry {
   @Override
   public int hashCode() {
 
-    return Objects.hash(this.metadata, this.id, this.seqId, this.source,
-        this.type, this.start, this.end, this.score, this.strand, this.phase,
+    return Objects.hash(this.metadata, this.seqId, this.source, this.type,
+        this.start, this.end, this.score, this.strand, this.phase,
         this.attributes);
   }
 
@@ -792,7 +773,7 @@ public class GFFEntry {
     final GFFEntry that = (GFFEntry) o;
 
     return Objects.equals(this.metadata, that.metadata)
-        && this.id == that.id && Objects.equals(this.seqId, that.seqId)
+        && Objects.equals(this.seqId, that.seqId)
         && Objects.equals(this.source, that.source)
         && Objects.equals(this.type, that.type) && this.start == that.start
         && this.end == that.end && Objects.equals(this.score, that.score)

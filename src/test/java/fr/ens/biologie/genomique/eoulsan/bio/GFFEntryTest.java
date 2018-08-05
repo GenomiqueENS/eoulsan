@@ -233,14 +233,6 @@ public class GFFEntryTest {
   }
 
   @Test
-  public void testGetId() {
-
-    GFFEntry e = new GFFEntry();
-    e.setId(9999);
-    assertEquals(9999, e.getId());
-  }
-
-  @Test
   public void testGetSeqId() {
 
     GFFEntry e = new GFFEntry();
@@ -534,15 +526,6 @@ public class GFFEntryTest {
     assertEquals("gene00001", e.getAttributeValue("ID"));
     assertEquals("EDEN", e.getAttributeValue("Name"));
 
-  }
-
-  @Test
-  public void testSetId() {
-
-    GFFEntry e = new GFFEntry();
-    assertEquals(0, e.getId());
-    e.setId(8888);
-    assertEquals(8888, e.getId());
   }
 
   @Test

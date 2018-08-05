@@ -51,7 +51,6 @@ public class GFFReader
 
   private final BufferedReader reader;
   private GFFEntry result = null;
-  private int count;
   private boolean end;
   private boolean fastaSectionFound;
 
@@ -122,7 +121,6 @@ public class GFFReader
           } else {
             this.result.parseGTF(line.trim());
           }
-          this.result.setId(this.count++);
 
 
           this.nextCallDone = false;
