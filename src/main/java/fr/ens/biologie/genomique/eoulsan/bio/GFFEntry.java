@@ -701,7 +701,7 @@ public class GFFEntry {
         if (first) {
           first = false;
         } else {
-          sb.append("; ");
+          sb.append(' ');
         }
 
         sb.append(key);
@@ -709,6 +709,7 @@ public class GFFEntry {
 
         sb.append(value);
         sb.append('\"');
+        sb.append(';');
       }
     }
 
