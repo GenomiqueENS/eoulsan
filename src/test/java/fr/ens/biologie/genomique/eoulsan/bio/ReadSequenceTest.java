@@ -57,9 +57,9 @@ public class ReadSequenceTest {
   @Test
   public void testHashCode() {
 
-    ReadSequence s1 = new ReadSequence(0, "read1", "ATGC", "!!!!");
-    ReadSequence s2 = new ReadSequence(0, "read1", "ATGC", "!!!!");
-    ReadSequence s3 = new ReadSequence(0, "read1", "ATGC", "!!!#");
+    ReadSequence s1 = new ReadSequence("read1", "ATGC", "!!!!");
+    ReadSequence s2 = new ReadSequence("read1", "ATGC", "!!!!");
+    ReadSequence s3 = new ReadSequence("read1", "ATGC", "!!!#");
 
     assertEquals(s1.hashCode(), s2.hashCode());
     assertNotSame(s1.hashCode(), s3.hashCode());
@@ -74,9 +74,9 @@ public class ReadSequenceTest {
   @Test
   public void testEqualsObject() {
 
-    ReadSequence s1 = new ReadSequence(0, "read1", "ATGC", "!!!!");
-    ReadSequence s2 = new ReadSequence(0, "read1", "ATGC", "!!!!");
-    ReadSequence s3 = new ReadSequence(0, "read1", "ATGC", "!!!#");
+    ReadSequence s1 = new ReadSequence("read1", "ATGC", "!!!!");
+    ReadSequence s2 = new ReadSequence("read1", "ATGC", "!!!!");
+    ReadSequence s3 = new ReadSequence("read1", "ATGC", "!!!#");
 
     assertTrue(s1.equals(s2));
     assertFalse(s1.equals(s3));
@@ -101,7 +101,7 @@ public class ReadSequenceTest {
   @Test
   public void testValidate() {
 
-    ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
+    ReadSequence s = new ReadSequence("read1", "ATGC", "!!!!");
     assertTrue(s.validate());
     s.setFastqFormat(FastqFormat.FASTQ_ILLUMINA);
     assertFalse(s.validate());
@@ -118,9 +118,9 @@ public class ReadSequenceTest {
   @Test
   public void testToString() {
 
-    ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
+    ReadSequence s = new ReadSequence("read1", "ATGC", "!!!!");
     assertEquals(
-        "ReadSequence{id=0, name=read1, description=null, alphabet=ReadDNA, sequence=ATGC,"
+        "ReadSequence{name=read1, description=null, alphabet=ReadDNA, sequence=ATGC,"
             + " fastqFormat=fastq-sanger, quality=!!!!}",
         s.toString());
 
@@ -129,7 +129,7 @@ public class ReadSequenceTest {
   @Test
   public void testSetGetFastqFormat() {
 
-    ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
+    ReadSequence s = new ReadSequence("read1", "ATGC", "!!!!");
 
     assertEquals(FastqFormat.FASTQ_SANGER, s.getFastqFormat());
 
@@ -148,11 +148,10 @@ public class ReadSequenceTest {
   @Test
   public void testSetReadSequence() {
 
-    ReadSequence s1 = new ReadSequence(0, "read1", "ATGC", "!!!!");
-    ReadSequence s2 = new ReadSequence(1, "read2", "ATGCATGC", "@@@@@@@@");
+    ReadSequence s1 = new ReadSequence("read1", "ATGC", "!!!!");
+    ReadSequence s2 = new ReadSequence("read2", "ATGCATGC", "@@@@@@@@");
     s2.setFastqFormat(FastqFormat.FASTQ_ILLUMINA);
 
-    assertEquals(0, s1.getId());
     assertEquals("read1", s1.getName());
     assertEquals("ATGC", s1.getSequence());
     assertEquals(Alphabets.READ_DNA_ALPHABET, s1.getAlphabet());
@@ -161,7 +160,6 @@ public class ReadSequenceTest {
 
     s1.set(null);
 
-    assertEquals(0, s1.getId());
     assertEquals("read1", s1.getName());
     assertEquals("ATGC", s1.getSequence());
     assertEquals(Alphabets.READ_DNA_ALPHABET, s1.getAlphabet());
@@ -170,7 +168,6 @@ public class ReadSequenceTest {
 
     s1.set(s2);
 
-    assertEquals(1, s1.getId());
     assertEquals("read2", s1.getName());
     assertEquals("ATGCATGC", s1.getSequence());
     assertEquals(Alphabets.READ_DNA_ALPHABET, s1.getAlphabet());
@@ -186,7 +183,7 @@ public class ReadSequenceTest {
 
     assertNull(new ReadSequence().qualityScores());
 
-    ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
+    ReadSequence s = new ReadSequence("read1", "ATGC", "!!!!");
     assertArrayEquals(new int[] {0, 0, 0, 0}, s.qualityScores());
 
   }
@@ -196,7 +193,7 @@ public class ReadSequenceTest {
 
     assertNull(new ReadSequence().errorProbabilities());
 
-    ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
+    ReadSequence s = new ReadSequence("read1", "ATGC", "!!!!");
     assertEquals(1, s.errorProbabilities()[0], 0.1);
 
     s.setQuality("++++");
@@ -207,7 +204,7 @@ public class ReadSequenceTest {
   @Test
   public void testSubSequenceIntInt() {
 
-    ReadSequence s1 = new ReadSequence(1, "toto", "ATGC", "!#!#");
+    ReadSequence s1 = new ReadSequence("toto", "ATGC", "!#!#");
 
     try {
       s1.subSequence(-1, 2);
@@ -236,7 +233,6 @@ public class ReadSequenceTest {
     s2 = s1.subSequence(1, 4);
     assertEquals("TGC", s2.getSequence());
     assertEquals("#!#", s2.getQuality());
-    assertEquals(-1, s2.getId());
     assertEquals("toto[part]", s2.getName());
     assertEquals(FastqFormat.FASTQ_SANGER, s2.getFastqFormat());
 
@@ -265,8 +261,8 @@ public class ReadSequenceTest {
   @Test
   public void testConcatReadSequence() {
 
-    ReadSequence s1 = new ReadSequence(1, "toto", "AATT", "!!!!");
-    ReadSequence s2 = new ReadSequence(2, "titi", "GGCC", "####");
+    ReadSequence s1 = new ReadSequence("toto", "AATT", "!!!!");
+    ReadSequence s2 = new ReadSequence("titi", "GGCC", "####");
 
     s1.setFastqFormat(FastqFormat.FASTQ_ILLUMINA);
     s2.setFastqFormat(FastqFormat.FASTQ_SOLEXA);
@@ -304,7 +300,7 @@ public class ReadSequenceTest {
   @Test
   public void testToFastQ() {
 
-    ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
+    ReadSequence s = new ReadSequence("read1", "ATGC", "!!!!");
     assertEquals("@read1\nATGC\n+\n!!!!", s.toFastQ());
 
   }
@@ -312,7 +308,7 @@ public class ReadSequenceTest {
   @Test
   public void testToFastQBoolean() {
 
-    ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
+    ReadSequence s = new ReadSequence("read1", "ATGC", "!!!!");
     assertEquals("@read1\nATGC\n+\n!!!!", s.toFastQ(false));
     assertEquals("@read1\nATGC\n+read1\n!!!!", s.toFastQ(true));
   }
@@ -350,14 +346,14 @@ public class ReadSequenceTest {
   @Test
   public void testToTFQ() {
 
-    ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
+    ReadSequence s = new ReadSequence("read1", "ATGC", "!!!!");
     assertEquals("read1\tATGC\t!!!!", s.toTFQ());
   }
 
   @Test
   public void testToTFQBoolean() {
 
-    ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
+    ReadSequence s = new ReadSequence("read1", "ATGC", "!!!!");
     assertEquals("read1\tATGC\t!!!!", s.toTFQ(true));
     assertEquals("\tATGC\t!!!!", s.toTFQ(false));
   }
@@ -397,7 +393,7 @@ public class ReadSequenceTest {
   @Test
   public void testToOutKey() {
 
-    ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
+    ReadSequence s = new ReadSequence("read1", "ATGC", "!!!!");
     assertEquals("read1", s.toOutKey());
     s.setName(null);
     assertNull(s.toOutKey());
@@ -406,7 +402,7 @@ public class ReadSequenceTest {
   @Test
   public void testToOutValue() {
 
-    ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
+    ReadSequence s = new ReadSequence("read1", "ATGC", "!!!!");
     assertEquals("ATGC\t!!!!", s.toOutValue());
     s.setSequence(null);
     assertEquals("null\t!!!!", s.toOutValue());
@@ -483,7 +479,7 @@ public class ReadSequenceTest {
   @Test
   public void testValidateQuality() {
 
-    ReadSequence s = new ReadSequence(0, "read1", "ATGC", "!!!!");
+    ReadSequence s = new ReadSequence("read1", "ATGC", "!!!!");
     assertTrue(s.validate());
 
     s.setQuality("! !!");

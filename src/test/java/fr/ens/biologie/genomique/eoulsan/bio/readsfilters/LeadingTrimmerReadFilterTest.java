@@ -17,7 +17,7 @@ public class LeadingTrimmerReadFilterTest {
     filter.setParameter("arguments", "33");
     filter.init();
 
-    ReadSequence read = new ReadSequence(0, "read1", "AGG", "ABC");
+    ReadSequence read = new ReadSequence("read1", "AGG", "ABC");
     assertTrue(filter.accept(read));
     assertEquals("read1", read.getName());
     assertEquals("GG", read.getSequence());
@@ -45,13 +45,13 @@ public class LeadingTrimmerReadFilterTest {
     filter = new LeadingTrimmerReadFilter();
     filter.setParameter("arguments", "34");
     filter.init();
-    read = new ReadSequence(0, "read2", "AGAGTTA", "CABABAA");
+    read = new ReadSequence("read2", "AGAGTTA", "CABABAA");
     assertTrue(filter.accept(read));
     assertEquals("read2", read.getName());
     assertEquals("AGAGTTA", read.getSequence());
     assertEquals("CABABAA", read.getQuality());
 
-    read = new ReadSequence(0, "read3", "AGAGT", "ABABC");
+    read = new ReadSequence("read3", "AGAGT", "ABABC");
     assertTrue(filter.accept(read));
     assertEquals("read3", read.getName());
     assertEquals("T", read.getSequence());

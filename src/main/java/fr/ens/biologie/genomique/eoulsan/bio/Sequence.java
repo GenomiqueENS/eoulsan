@@ -36,7 +36,6 @@ import fr.ens.biologie.genomique.eoulsan.util.Utils;
  */
 public class Sequence {
 
-  protected int id;
   protected String name;
   protected String description;
   protected Alphabet alphabet = Alphabets.AMBIGUOUS_DNA_ALPHABET;
@@ -45,14 +44,6 @@ public class Sequence {
   //
   // Getters
   //
-
-  /**
-   * Get the id of the sequence.
-   * @return the id of the sequence
-   */
-  public final int getId() {
-    return this.id;
-  }
 
   /**
    * Set the name of the sequence.
@@ -129,14 +120,6 @@ public class Sequence {
   //
 
   /**
-   * Set the id of the sequence.
-   * @param id id to set
-   */
-  public final void setId(final int id) {
-    this.id = id;
-  }
-
-  /**
    * Set the name of the sequence.
    * @param name the name to set
    */
@@ -208,7 +191,6 @@ public class Sequence {
       throw new NullPointerException("Sequence is null");
     }
 
-    this.id = sequence.id;
     this.name = sequence.name;
     this.description = sequence.description;
     this.alphabet = sequence.alphabet;
@@ -257,7 +239,7 @@ public class Sequence {
       throw new StringIndexOutOfBoundsException(endIndex - beginIndex);
     }
 
-    return new Sequence(-1, this.name == null ? null : this.name + "[part]",
+    return new Sequence(this.name == null ? null : this.name + "[part]",
         getSequence().substring(beginIndex, endIndex));
   }
 
@@ -634,7 +616,7 @@ public class Sequence {
   @Override
   public int hashCode() {
 
-    return Utils.hashCode(this.id, this.name, this.description, this.alphabet,
+    return Utils.hashCode(this.name, this.description, this.alphabet,
         this.sequence);
   }
 
@@ -651,8 +633,7 @@ public class Sequence {
 
     final Sequence that = (Sequence) o;
 
-    return this.id == that.id
-        && equal(this.name, that.name)
+    return equal(this.name, that.name)
         && equal(this.description, that.description)
         && equal(this.alphabet, that.alphabet)
         && equal(this.sequence, that.sequence);
@@ -662,9 +643,9 @@ public class Sequence {
   public String toString() {
 
     return this.getClass().getSimpleName()
-        + "{id=" + this.id + ", name=" + this.name + ", description="
-        + this.description + ", alphabet=" + this.alphabet.toString()
-        + ", sequence=" + this.sequence + "}";
+        + "{name=" + this.name + ", description=" + this.description
+        + ", alphabet=" + this.alphabet.toString() + ", sequence="
+        + this.sequence + "}";
 
   }
 
@@ -680,28 +661,24 @@ public class Sequence {
 
   /**
    * Public constructor.
-   * @param id identifier of the sequence
    * @param name Name of the sequence
    * @param sequence Sequence of the sequence
    */
-  public Sequence(final int id, final String name, final String sequence) {
+  public Sequence(final String name, final String sequence) {
 
-    this.id = id;
     this.name = name;
     this.sequence = sequence;
   }
 
   /**
    * Public constructor.
-   * @param id identifier
    * @param name Name of the sequence
    * @param sequence Sequence of the sequence
    * @param description Description of the sequence
    */
-  public Sequence(final int id, final String name, final String sequence,
+  public Sequence(final String name, final String sequence,
       final String description) {
 
-    this.id = id;
     this.name = name;
     this.sequence = sequence;
     this.description = description;
@@ -717,7 +694,6 @@ public class Sequence {
       throw new NullPointerException("Sequence is null");
     }
 
-    this.id = sequence.id;
     this.name = sequence.name;
     this.alphabet = sequence.alphabet;
     this.sequence = sequence.sequence;

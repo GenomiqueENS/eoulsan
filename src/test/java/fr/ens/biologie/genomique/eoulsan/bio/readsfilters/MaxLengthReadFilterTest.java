@@ -28,19 +28,19 @@ public class MaxLengthReadFilterTest {
     read.setQuality("xxxxxxxx");
     assertTrue(filter.accept(read));
 
-    read = new ReadSequence(0, "toto", "ATGCATGC", "xxxxxxxx");
+    read = new ReadSequence("toto", "ATGCATGC", "xxxxxxxx");
     assertTrue(filter.accept(read));
 
-    read = new ReadSequence(0, "toto", "ATGCATGCA", "xxxxxxxxx");
+    read = new ReadSequence("toto", "ATGCATGCA", "xxxxxxxxx");
     assertFalse(filter.accept(read));
 
-    read = new ReadSequence(0, "toto", "ATGCATGCAT", "xxxxxxxxxx");
+    read = new ReadSequence("toto", "ATGCATGCAT", "xxxxxxxxxx");
     assertFalse(filter.accept(read));
 
-    read = new ReadSequence(0, "toto", "ATGCATGCATG", "xxxxxxxxxxx");
+    read = new ReadSequence("toto", "ATGCATGCATG", "xxxxxxxxxxx");
     assertFalse(filter.accept(read));
 
-    read = new ReadSequence(0, "toto", "ATGCATGCATGC", "xxxxxxxxxxxx");
+    read = new ReadSequence("toto", "ATGCATGCATGC", "xxxxxxxxxxxx");
     assertFalse(filter.accept(read));
   }
 }

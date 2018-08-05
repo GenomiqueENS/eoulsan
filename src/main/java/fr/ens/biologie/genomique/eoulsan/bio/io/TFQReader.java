@@ -52,7 +52,6 @@ public class TFQReader implements ReadSequenceReader {
 
   private boolean end = false;
   private boolean nextCallDone = true;
-  private int count;
   protected IOException ioException;
 
   @Override
@@ -95,7 +94,6 @@ public class TFQReader implements ReadSequenceReader {
         }
 
         this.result.parse(trim);
-        this.result.setId(++this.count);
         return true;
       }
 

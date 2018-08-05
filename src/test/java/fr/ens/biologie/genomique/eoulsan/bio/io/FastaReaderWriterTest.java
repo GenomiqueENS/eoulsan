@@ -52,7 +52,6 @@ public class FastaReaderWriterTest {
 
     for (Sequence s : reader) {
 
-      assertEquals(0, s.getId());
       assertEquals(
           "gi|9626372|ref|NC_001422.1| Enterobacteria phage phiX174, complete genome",
           s.getName());

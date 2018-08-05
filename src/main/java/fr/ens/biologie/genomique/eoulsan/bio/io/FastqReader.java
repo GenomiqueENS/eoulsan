@@ -50,7 +50,6 @@ public class FastqReader implements ReadSequenceReader {
 
   private ReadSequence result = null;
   private final StringBuilder sb = new StringBuilder();
-  private int count = 0;
   private int lineCount = 0;
 
   private boolean end = false;
@@ -114,7 +113,6 @@ public class FastqReader implements ReadSequenceReader {
 
           // Fill the ReadSequence object
           this.result.parseFastQ(this.sb.toString());
-          this.result.setId(this.count++);
           this.sb.setLength(0);
           return true;
         }

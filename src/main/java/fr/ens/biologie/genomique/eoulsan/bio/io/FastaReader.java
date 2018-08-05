@@ -53,7 +53,6 @@ public class FastaReader implements SequenceReader {
   private String nextSequenceName;
   private boolean end = false;
   private boolean nextCallDone = true;
-  private int count;
   protected IOException exception;
 
   @Override
@@ -96,7 +95,6 @@ public class FastaReader implements SequenceReader {
 
             this.result.setName(this.nextSequenceName);
             this.result.setSequence(this.sb.toString());
-            this.result.setId(this.count++);
             this.sb.setLength(0);
             this.nextSequenceName = trim.substring(1);
             this.nextCallDone = false;
@@ -120,7 +118,6 @@ public class FastaReader implements SequenceReader {
 
       this.result.setName(this.nextSequenceName);
       this.result.setSequence(this.sb.toString());
-      this.result.setId(this.count++);
       this.sb.setLength(0);
 
       this.nextCallDone = false;
