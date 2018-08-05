@@ -47,7 +47,7 @@ public class FastaReader implements SequenceReader {
 
   protected BufferedReader reader;
 
-  private Sequence result = null;
+  private Sequence result = new Sequence();
   private final StringBuilder sb = new StringBuilder();
 
   private String nextSequenceName;
@@ -74,8 +74,6 @@ public class FastaReader implements SequenceReader {
       return false;
     }
 
-    this.result = new Sequence();
-
     String line = null;
 
     try {
@@ -93,6 +91,7 @@ public class FastaReader implements SequenceReader {
 
           if (this.nextSequenceName != null) {
 
+            this.result = new Sequence();
             this.result.setName(this.nextSequenceName);
             this.result.setSequence(this.sb.toString());
             this.sb.setLength(0);

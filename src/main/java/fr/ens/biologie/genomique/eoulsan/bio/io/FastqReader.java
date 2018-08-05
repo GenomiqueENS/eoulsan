@@ -78,7 +78,6 @@ public class FastqReader implements ReadSequenceReader {
 
     this.nextCallDone = false;
 
-    this.result = new ReadSequence();
 
     String line = null;
     int entryLine = 0;
@@ -112,6 +111,7 @@ public class FastqReader implements ReadSequenceReader {
         if (entryLine == 4) {
 
           // Fill the ReadSequence object
+          this.result = new ReadSequence();
           this.result.parseFastQ(this.sb.toString());
           this.sb.setLength(0);
           return true;
