@@ -44,6 +44,7 @@ import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 public class FastaWriter implements SequenceWriter {
 
   private final Writer writer;
+  private final int lineLength;
 
   /**
    * Write the current entry.
@@ -56,7 +57,7 @@ public class FastaWriter implements SequenceWriter {
       return;
     }
 
-    this.writer.write(sequence.toFasta(Globals.FASTA_FILE_WIDTH));
+    this.writer.write(sequence.toFasta(this.lineLength));
   }
 
   /**
@@ -70,8 +71,80 @@ public class FastaWriter implements SequenceWriter {
   }
 
   //
+  // Other methods
+  //
+
+  /**
+   * Check the line length.
+   * @param lineLength the line length to check
+   * @return the input argument
+   * @throws IllegalArgumentException if the argument is invalid
+   */
+  private static int checkLineLength(final int lineLength) {
+
+    if (lineLength < 1) {
+      throw new IllegalArgumentException(
+          "Invalid FASTA line length: " + lineLength);
+    }
+
+    return lineLength;
+  }
+
+  //
   // Constructors
   //
+
+  /**
+   * Public constructor.
+   * @param writer Writer to use
+   * @param lineLength FASTA line length
+   */
+  public FastaWriter(final Writer writer, final int lineLength) {
+
+    if (writer == null) {
+      throw new NullPointerException("The writer is null.");
+    }
+
+    this.writer = writer;
+    this.lineLength = checkLineLength(lineLength);
+  }
+
+  /**
+   * Public constructor.
+   * @param os OutputStream to use
+   * @param lineLength FASTA line length
+   */
+  public FastaWriter(final OutputStream os, final int lineLength)
+      throws FileNotFoundException {
+
+    this.writer = FileUtils.createFastBufferedWriter(os, FASTA_CHARSET);
+    this.lineLength = checkLineLength(lineLength);
+  }
+
+  /**
+   * Public constructor.
+   * @param outputFile file to use
+   * @param lineLength FASTA line length
+   */
+  public FastaWriter(final File outputFile, final int lineLength)
+      throws IOException {
+
+    this.writer = FileUtils.createFastBufferedWriter(outputFile, FASTA_CHARSET);
+    this.lineLength = checkLineLength(lineLength);
+  }
+
+  /**
+   * Public constructor.
+   * @param outputFilename name of the file to use
+   * @param lineLength FASTA line length
+   */
+  public FastaWriter(final String outputFilename, final int lineLength)
+      throws IOException {
+
+    this.writer =
+        FileUtils.createFastBufferedWriter(outputFilename, FASTA_CHARSET);
+    this.lineLength = checkLineLength(lineLength);
+  }
 
   /**
    * Public constructor.
@@ -79,11 +152,7 @@ public class FastaWriter implements SequenceWriter {
    */
   public FastaWriter(final Writer writer) {
 
-    if (writer == null) {
-      throw new NullPointerException("The writer is null.");
-    }
-
-    this.writer = writer;
+    this(writer, Globals.FASTA_FILE_WIDTH);
   }
 
   /**
@@ -92,7 +161,7 @@ public class FastaWriter implements SequenceWriter {
    */
   public FastaWriter(final OutputStream os) throws FileNotFoundException {
 
-    this.writer = FileUtils.createFastBufferedWriter(os, FASTA_CHARSET);
+    this(os, Globals.FASTA_FILE_WIDTH);
   }
 
   /**
@@ -101,7 +170,7 @@ public class FastaWriter implements SequenceWriter {
    */
   public FastaWriter(final File outputFile) throws IOException {
 
-    this.writer = FileUtils.createFastBufferedWriter(outputFile, FASTA_CHARSET);
+    this(outputFile, Globals.FASTA_FILE_WIDTH);
   }
 
   /**
@@ -110,8 +179,7 @@ public class FastaWriter implements SequenceWriter {
    */
   public FastaWriter(final String outputFilename) throws IOException {
 
-    this.writer =
-        FileUtils.createFastBufferedWriter(outputFilename, FASTA_CHARSET);
+    this(outputFilename, Globals.FASTA_FILE_WIDTH);
   }
 
 }

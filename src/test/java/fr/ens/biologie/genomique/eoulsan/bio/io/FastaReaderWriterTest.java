@@ -24,16 +24,24 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.io;
 
+import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.md5DigestToString;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.DigestInputStream;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import org.junit.Test;
 
+import com.google.common.io.ByteStreams;
+
 import fr.ens.biologie.genomique.eoulsan.bio.Sequence;
 
-public class FastaReaderTest {
+public class FastaReaderWriterTest {
 
   @Test
   public void testFastaReaderInputStream() throws IOException {
@@ -52,7 +60,27 @@ public class FastaReaderTest {
     }
     reader.close();
     reader.throwException();
+  }
 
+  @Test
+  public void testReadWrite() throws IOException, NoSuchAlgorithmException {
+
+    MessageDigest mdi = MessageDigest.getInstance("MD5");
+    MessageDigest mdo = MessageDigest.getInstance("MD5");
+
+    try (InputStream is = this.getClass().getResourceAsStream("/phix.fasta");
+        OutputStream os = ByteStreams.nullOutputStream();
+        DigestInputStream dis = new DigestInputStream(is, mdi);
+        DigestOutputStream dos = new DigestOutputStream(os, mdo);
+        SequenceReader reader = new FastaReader(dis);
+        SequenceWriter writer = new FastaWriter(dos, 70)) {
+
+      for (Sequence s : reader) {
+        writer.write(s);
+      }
+    }
+
+    assertEquals(md5DigestToString(mdi), md5DigestToString(mdo));
   }
 
 }
