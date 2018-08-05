@@ -481,65 +481,68 @@ public class BEDEntryTest {
   public void testToBED3() throws BadBioEntryException {
 
     BEDEntry e = new BEDEntry();
-    assertEquals("\t0\t0", e.toBED3());
+    assertEquals("\t0\t0", e.toBED(3));
 
     String s = "chr1\t11873\t14409";
 
     e.parse(s, 3);
 
-    assertEquals(s, e.toBED3());
+    assertEquals(s, e.toBED(3));
   }
 
   @Test
   public void testToBED4() throws BadBioEntryException {
+
     BEDEntry e = new BEDEntry();
-    assertEquals("\t0\t0\t", e.toBED4());
+    assertEquals("\t0\t0\t", e.toBED(4));
 
     String s = "chr1\t11873\t14409\tuc001aaa.3";
 
     e.parse(s, 4);
 
-    assertEquals(s, e.toBED4());
+    assertEquals(s, e.toBED(4));
   }
 
   @Test
   public void testToBED5() throws BadBioEntryException {
+
     BEDEntry e = new BEDEntry();
-    assertEquals("\t0\t0\t\t", e.toBED5());
+    assertEquals("\t0\t0\t\t", e.toBED(5));
 
     String s = "chr1\t11873\t14409\tuc001aaa.3\t0";
 
     e.parse(s, 5);
 
-    assertEquals(s, e.toBED5());
+    assertEquals(s, e.toBED(5));
   }
 
   @Test
   public void testToBED6() throws BadBioEntryException {
+
     BEDEntry e = new BEDEntry();
-    assertEquals("\t0\t0\t\t\t", e.toBED6());
+    assertEquals("\t0\t0\t\t\t", e.toBED(6));
 
     String s = "chr1\t11873\t14409\tuc001aaa.3\t0\t+";
 
     e.parse(s, 6);
 
-    assertEquals(s, e.toBED6());
-
+    assertEquals(s, e.toBED(6));
   }
 
   @Test
   public void testToBED12() throws BadBioEntryException {
+
     BEDEntry e = new BEDEntry();
-    assertEquals("\t0\t0\t\t\t\t0\t0\t0\t0\t\t", e.toBED12());
+    assertEquals("\t0\t0\t\t\t\t0\t0\t0\t0\t\t", e.toBED(12));
 
     String s =
         "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11873\t0\t3\t354,109,1189,\t0,739,1347,";
     e.parse(s, 12);
-    assertEquals(s, e.toBED12());
+    assertEquals(s, e.toBED(12));
 
     s = "chr2\t21873\t24409\tuc002aaa.3\t0\t-\t21873\t21873\t0,155,200\t3\t1354,1109,11189,\t0,739,1347,";
     e.parse(s, 12);
-    assertEquals(s, e.toBED12());
+    assertEquals(s, e.toBED(12));
   }
 
   @Test
@@ -563,23 +566,32 @@ public class BEDEntryTest {
 
     String s = "chr1\t11873\t14409";
     e.parse(s);
-    assertEquals(s, e.toBED3());
+    assertEquals(s, e.toBED(3));
 
     s = "chr1\t11873\t14409\tuc001aaa.3";
     e.parse(s);
-    assertEquals(s, e.toBED4());
+    assertEquals(s, e.toBED(4));
 
     s = "chr1\t11873\t14409\tuc001aaa.3\t0";
     e.parse(s);
-    assertEquals(s, e.toBED5());
+    assertEquals(s, e.toBED(5));
 
     s = "chr1\t11873\t14409\tuc001aaa.3\t0\t+";
     e.parse(s);
-    assertEquals(s, e.toBED6());
+    assertEquals(s, e.toBED(6));
+
+    s = "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11873";
+    e.parse(s);
+    assertEquals(s, e.toBED(8));
+
+    s = "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11873\t0";
+    e.parse(s);
+    assertEquals(s, e.toBED(9));
 
     s = "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11873\t0\t3\t354,109,1189,\t0,739,1347,";
     e.parse(s);
-    assertEquals(s, e.toBED12());
+    assertEquals(s, e.toBED(12));
+    assertEquals(s, e.toBED());
     assertEquals(s, e.toString());
 
     s = "chr1";

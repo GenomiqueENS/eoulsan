@@ -464,57 +464,23 @@ public class BEDEntry {
   //
 
   /**
-   * Convert the object to a BED 3 columns entry.
-   * @return a BED entry
-   */
-  public String toBED3() {
-
-    return this.chromosomeName
-        + '\t' + (this.start == -1 ? 0 : this.start - 1) + '\t'
-        + (this.end == -1 ? 0 : this.end + 1);
-  }
-
-  /**
-   * Convert the object to a BED 4 columns entry.
-   * @return a BED entry
-   */
-  public String toBED4() {
-
-    return this.chromosomeName
-        + '\t' + (this.start == -1 ? 0 : this.start - 1) + '\t'
-        + (this.end == -1 ? 0 : this.end + 1) + '\t' + this.name;
-  }
-
-  /**
-   * Convert the object to a BED 5 columns entry.
-   * @return a BED entry
-   */
-  public String toBED5() {
-
-    return this.chromosomeName
-        + '\t' + (this.start == -1 ? 0 : this.start - 1) + '\t'
-        + (this.end == -1 ? 0 : this.end + 1) + '\t' + this.name + '\t'
-        + ("".equals(this.score) ? this.score : '0');
-  }
-
-  /**
-   * Convert the object to a BED 6 columns entry.
-   * @return a BED entry
-   */
-  public String toBED6() {
-
-    return this.chromosomeName
-        + '\t' + (this.start == -1 ? 0 : this.start - 1) + '\t'
-        + (this.end == -1 ? 0 : this.end + 1) + '\t' + this.name + '\t'
-        + ("".equals(this.score) ? this.score : '0') + '\t'
-        + (this.strand != 0 ? this.strand : "");
-  }
-
-  /**
    * Convert the object to a BED 12 columns entry.
    * @return a BED entry
    */
-  public String toBED12() {
+  public String toBED() {
+
+    return toBED(12);
+  }
+
+  /**
+   * Convert the object to a BED entry.
+   * @param fieldCount number of the fields of the BED entry
+   * @return a BED entry
+   */
+  public String toBED(final int fieldCount) {
+
+    // Check the number of fields
+    checkBEDFieldCount(fieldCount);
 
     StringBuilder sb = new StringBuilder();
 
@@ -523,18 +489,49 @@ public class BEDEntry {
     sb.append(this.start == -1 ? 0 : this.start - 1);
     sb.append('\t');
     sb.append(this.end == -1 ? 0 : this.end + 1);
+
+    if (fieldCount == 3) {
+      return sb.toString();
+    }
+
     sb.append('\t');
     sb.append(this.name);
+
+    if (fieldCount == 4) {
+      return sb.toString();
+    }
+
     sb.append('\t');
     sb.append("".equals(this.score) ? this.score : '0');
+
+    if (fieldCount == 5) {
+      return sb.toString();
+    }
+
     sb.append('\t');
     sb.append(this.strand != 0 ? this.strand : "");
+
+    if (fieldCount == 6) {
+      return sb.toString();
+    }
+
     sb.append('\t');
     sb.append(this.getThickStart() == -1 ? "0" : this.thickStart - 1);
+
     sb.append('\t');
     sb.append(this.getThickEnd() == -1 ? "0" : this.thickEnd + 1);
+
+    if (fieldCount == 8) {
+      return sb.toString();
+    }
+
     sb.append('\t');
     sb.append(this.rgbItem);
+
+    if (fieldCount == 9) {
+      return sb.toString();
+    }
+
     sb.append('\t');
     sb.append(getBlockCount());
     sb.append('\t');
@@ -559,7 +556,7 @@ public class BEDEntry {
 
   @Override
   public String toString() {
-    return toBED12();
+    return toBED(12);
   }
 
   @Override
@@ -627,12 +624,8 @@ public class BEDEntry {
       throw new NullPointerException("s argument cannot be null");
     }
 
-    if (requiredFieldCount < 3
-        || requiredFieldCount > 12
-        || (requiredFieldCount > 6 && requiredFieldCount < 12)) {
-      throw new IllegalArgumentException(
-          "Invalid required field count: " + requiredFieldCount);
-    }
+    // Check the number of fields
+    checkBEDFieldCount(requiredFieldCount);
 
     clear();
 
@@ -679,11 +672,19 @@ public class BEDEntry {
       return;
     }
 
+    this.thickStart = parseCoordinate(fields.get(6), 1, Integer.MIN_VALUE);
+    this.thickEnd = parseCoordinate(fields.get(7), -1, Integer.MAX_VALUE);
+
+    if (requiredFieldCount == 8) {
+      return;
+    }
+
     // Parse RGB
     setRgbItem(fields.get(8));
 
-    this.thickStart = parseCoordinate(fields.get(6), 1, Integer.MIN_VALUE);
-    this.thickEnd = parseCoordinate(fields.get(7), -1, Integer.MAX_VALUE);
+    if (requiredFieldCount == 9) {
+      return;
+    }
 
     int blockCount = parseInt(fields.get(9), -1);
 
@@ -791,6 +792,21 @@ public class BEDEntry {
   public final void clearMetaData() {
 
     this.metadata.clear();
+  }
+
+  /**
+   * Test if a field count for a bed entry is valid.
+   * @param fieldCount the number of fields of a BED entry
+   * @throws IllegalArgumentException if the number of field is invalid
+   */
+  public static void checkBEDFieldCount(final int fieldCount) {
+
+    if (fieldCount < 3
+        || fieldCount > 12 || fieldCount == 7 || fieldCount == 10
+        || fieldCount == 11) {
+      throw new IllegalArgumentException(
+          "Invalid required field count: " + fieldCount);
+    }
   }
 
   //
