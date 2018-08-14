@@ -529,4 +529,32 @@ public final class ReadSequence extends Sequence {
     this.alphabet = Alphabets.READ_DNA_ALPHABET;
   }
 
+  /**
+   * Public constructor.
+   * @param id identifier
+   * @param name Name of the read
+   * @param sequence Sequence of the read
+   * @param quality Quality of the read
+   */
+  @Deprecated
+  public ReadSequence(final int id, final String name, final String sequence,
+      final String quality) {
+
+    this(name, sequence, quality);
+  }
+
+  /**
+   * Public constructor.
+   * @param id identifier
+   * @param name Name of the read
+   * @param sequence Sequence of the read
+   * @param quality Quality of the read
+   */
+  @Deprecated
+  public ReadSequence(final int id, final String name, final String sequence,
+      final String quality, final FastqFormat fastqFormat) {
+
+    this(name, sequence, quality, fastqFormat);
+  }
+
 }

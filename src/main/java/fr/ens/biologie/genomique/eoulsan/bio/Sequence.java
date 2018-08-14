@@ -46,6 +46,15 @@ public class Sequence {
   //
 
   /**
+   * Get the id of the sequence.
+   * @return -1 as this method is deprecated
+   */
+  @Deprecated
+  public final int getId() {
+    return -1;
+  }
+
+  /**
    * Set the name of the sequence.
    * @return the name of the sequence
    */
@@ -118,6 +127,14 @@ public class Sequence {
   //
   // Setters
   //
+
+  /**
+   * Set the id of the sequence. Deprecated method, do nothing.
+   * @param id id to set
+   */
+  @Deprecated
+  public final void setId(final int id) {
+  }
 
   /**
    * Set the name of the sequence.
@@ -682,6 +699,32 @@ public class Sequence {
     this.name = name;
     this.sequence = sequence;
     this.description = description;
+  }
+
+  /**
+   * Public constructor.
+   * @param id identifier of the sequence
+   * @param name Name of the sequence
+   * @param sequence Sequence of the sequence
+   */
+  @Deprecated
+  public Sequence(final int id, final String name, final String sequence) {
+
+    this(name, sequence);
+  }
+
+  /**
+   * Public constructor.
+   * @param id identifier
+   * @param name Name of the sequence
+   * @param sequence Sequence of the sequence
+   * @param description Description of the sequence
+   */
+  @Deprecated
+  public Sequence(final int id, final String name, final String sequence,
+      final String description) {
+
+    this(name, sequence, description);
   }
 
   /**

@@ -74,6 +74,15 @@ public class GFFEntry {
   }
 
   /**
+   * Get the id.
+   * @return always -1 as this method is deprecated
+   */
+  @Deprecated
+  public final int getId() {
+    return -1;
+  }
+
+  /**
    * Get the seqId.
    * @return the seqId
    */
@@ -211,6 +220,14 @@ public class GFFEntry {
   //
   // Setters
   //
+
+  /**
+   * Set the id. Do nothing as this method is deprecated.
+   * @param id the id of the entry
+   */
+  @Deprecated
+  public final void setId(final int id) {
+  }
 
   /**
    * Set the seqId.
