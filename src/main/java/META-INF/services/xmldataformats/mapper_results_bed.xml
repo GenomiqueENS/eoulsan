@@ -1,0 +1,13 @@
+<dataformat>
+  <name>mapper_results_bed</name>
+  <description>bed format</description>
+  <alias>bed</alias>
+  <prefix>bed</prefix>
+  <extensions>
+     <extension default="true">.bed</extension>
+  </extensions>
+
+  <galaxy>
+     <formatname>bed</formatname>
+  </galaxy>
+</dataformat>

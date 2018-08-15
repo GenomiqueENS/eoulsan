@@ -24,6 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio;
 
+import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.StrandUsage.REVERSE;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,8 +34,11 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.StrandUsage;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import htsjdk.samtools.CigarElement;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMSequenceDictionary;
@@ -270,6 +275,139 @@ public class SAMUtils {
     header.setSequenceDictionary(newSAMSequenceDictionary(genomeDescription));
 
     return header;
+  }
+
+  /**
+   * Add intervals of a SAM record that are alignment matches (thanks to the
+   * CIGAR code, paftools algorithm).
+   * @param record the SAM record to treat.
+   * @return a BED entry.
+   */
+  public static BEDEntry parseIntervalsToBEDEntry(final SAMRecord record) {
+
+    return parseIntervalsToBEDEntry(record, null);
+  }
+
+  /**
+   * Add intervals of a SAM record that are alignment matches (thanks to the
+   * CIGAR code, paftools algorithm).
+   * @param record the SAM record to treat
+   * @param metadata the metadata of the BED entry
+   * @return a BED entry.
+   */
+  public static BEDEntry parseIntervalsToBEDEntry(final SAMRecord record,
+      final EntryMetadata metadata) {
+
+    Objects.requireNonNull(record, "record argument canot be null");
+
+    BEDEntry result =
+        metadata == null ? new BEDEntry() : new BEDEntry(metadata);
+
+    result.setChromosomeName(record.getReferenceName());
+    result.setStart(record.getAlignmentStart());
+    result.setEnd(record.getAlignmentEnd());
+    result.setName(record.getReadName());
+
+    if (!record.getReadUnmappedFlag()) {
+      result.setStrand(record.getReadNegativeStrandFlag() ? '-' : '+');
+    }
+
+    for (GenomicInterval gi : parseIntervals(record)) {
+      result.addBlock(gi.getStart(), gi.getEnd());
+    }
+
+    return result;
+  }
+
+  /**
+   * Add intervals of a SAM record that are alignment matches (thanks to the
+   * CIGAR code, paftools algorithm).
+   * @param record the SAM record to treat.
+   * @param stranded strand usage
+   * @return the list of intervals of the SAM record.
+   */
+  public static List<GenomicInterval> parseIntervals(final SAMRecord record,
+      final StrandUsage stranded) {
+
+    Objects.requireNonNull(record, "record argument canot be null");
+    Objects.requireNonNull(stranded, "stranded argument canot be null");
+
+    final char strand;
+
+    if (stranded == REVERSE) {
+      strand = record.getReadNegativeStrandFlag() ? '+' : '-';
+    } else {
+      strand = record.getReadNegativeStrandFlag() ? '-' : '+';
+    }
+
+    return parseIntervals(record, strand);
+  }
+
+  /**
+   * Add intervals of a SAM record that are alignment matches (thanks to the
+   * CIGAR code, paftools algorithm).
+   * @param record the SAM record to treat.
+   * @return the list of intervals of the SAM record.
+   */
+  public static List<GenomicInterval> parseIntervals(final SAMRecord record) {
+
+    Objects.requireNonNull(record, "record argument canot be null");
+
+    return parseIntervals(record,
+        record.getReadNegativeStrandFlag() ? '-' : '+');
+  }
+
+  /**
+   * Add intervals of a SAM record that are alignment matches (thanks to the
+   * CIGAR code, paftools algorithm).
+   * @param record the SAM record to treat.
+   * @param strand strand for the output intervals
+   * @return the list of intervals of the SAM record.
+   */
+  public static List<GenomicInterval> parseIntervals(final SAMRecord record,
+      char strand) {
+
+    Objects.requireNonNull(record, "record argument canot be null");
+
+    if (strand != '+' && strand != '-' && strand != '.') {
+      throw new IllegalArgumentException("invalid strand argument: " + strand);
+    }
+
+    List<GenomicInterval> result = new ArrayList<>();
+
+    int end = record.getAlignmentStart();
+    int start = record.getAlignmentStart();
+
+    for (CigarElement e : record.getCigar().getCigarElements()) {
+
+      switch (e.getOperator()) {
+
+      // Bases in block
+      case M:
+      case D:
+        end += e.getLength();
+        break;
+
+      // BaseNot in block
+      case N:
+        // Add previous block to the list
+        result.add(
+            new GenomicInterval(record.getReferenceName(), start, end, strand));
+        end += e.getLength();
+        start = end;
+        break;
+
+      default:
+        break;
+      }
+
+    }
+
+    // Add the last block to the list
+    result.add(
+        new GenomicInterval(record.getReferenceName(), start, end, strand));
+
+    return result;
   }
 
 }

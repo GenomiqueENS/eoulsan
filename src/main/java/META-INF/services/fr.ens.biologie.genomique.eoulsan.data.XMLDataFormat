@@ -8,6 +8,7 @@ star_index_zip.xml
 mapper_results_sam.xml
 mapper_results_bam.xml
 mapper_results_index_bai.xml
+mapper_results_bed.xml
 mapper_results_log.xml
 expression_results_tsv.xml
 diffana_results_tsv.xml
