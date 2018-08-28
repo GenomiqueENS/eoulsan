@@ -145,7 +145,7 @@ public class ExperimentImpl implements Serializable, Experiment {
     }
 
     checkArgument(!this.design.containsExperimentName(name),
-        "The sample name already exists in the design: " + name);
+        "The experiment name already exists in the design: " + name);
 
     this.experimentName = name;
   }
