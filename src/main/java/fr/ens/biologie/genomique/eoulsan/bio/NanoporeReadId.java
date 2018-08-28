@@ -2,7 +2,7 @@ package fr.ens.biologie.genomique.eoulsan.bio;
 
 import java.util.Iterator;
 
-import org.python.google.common.base.Splitter;
+import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 

@@ -76,6 +76,7 @@
                 <tr><td>genome.sa.index.nbases</td><td>Integer</td><td>See <a href="https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf">STAR documentation</a> for more information</td><td>None</td></tr>
                 <tr><td>genome.chr.bin.nbits</td><td>Integer</td><td>See <a href="https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf">STAR documentation</a> for more information</td><td>None</td></tr>
                 <tr><td>use.expression.step.parameters</td><td>Boolean</td><td>Use the <b>genomictype</b> and <b>attributeid</b> parameters values from an <a href="./module-expression.html">expression step</a> to set the values of the <b>gtf.feature.exon</b> and <b>gtf.tag.exon.parent.transcript</b> parameters of this step</td><td>False</td></tr>
+                <tr><td>indexer.arguments</td><td>String</td><td>Additional indexer arguments</td><td>Not set</td></tr>
            </table>
          <li><b>Configuration example</b>:</li>
 <pre>

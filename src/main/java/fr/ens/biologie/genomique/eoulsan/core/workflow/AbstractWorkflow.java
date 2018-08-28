@@ -53,6 +53,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.eventbus.Subscribe;
 
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
@@ -93,6 +94,7 @@ public abstract class AbstractWorkflow implements Workflow {
   private final DataFile outputDir;
   private final DataFile jobDir;
   private final DataFile taskDir;
+  private final DataFile dataDir;
   private final DataFile tmpDir;
 
   private final Design design;
@@ -278,13 +280,20 @@ public abstract class AbstractWorkflow implements Workflow {
   }
 
   /**
-   * Update the status of a step. This method is used by steps to inform the
-   * workflow object that the status of the step has been changed.
-   * @param step Step that the status has been changed.
+   * Listen StepState events. Update the status of a step. This method is used
+   * by steps to inform the workflow object that the status of the step has been
+   * changed.
+   * @param event the event to handle
    */
-  void updateStepState(final AbstractStep step) {
+  @Subscribe
+  public void stepStateEvent(final StepStateEvent event) {
 
-    Preconditions.checkNotNull(step, "step argument is null");
+    if (event == null) {
+      return;
+    }
+
+    final AbstractStep step = event.getStep();
+    final StepState newState = event.getState();
 
     if (step.getWorkflow() != this) {
       throw new IllegalStateException("step is not part of the workflow");
@@ -293,7 +302,11 @@ public abstract class AbstractWorkflow implements Workflow {
     synchronized (this) {
 
       StepState oldState = this.steps.get(step);
-      StepState newState = step.getState();
+
+      // Test if the state has changed
+      if (oldState == newState) {
+        return;
+      }
 
       this.states.remove(oldState, step);
       this.states.put(newState, step);
@@ -439,6 +452,9 @@ public abstract class AbstractWorkflow implements Workflow {
     // Get the token manager registry
     final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
 
+    // Get event bus
+    WorkflowEventBus eventBus = WorkflowEventBus.getInstance();
+
     // Set Steps to WAITING state
     for (AbstractStep step : this.steps.keySet()) {
 
@@ -446,7 +462,7 @@ public abstract class AbstractWorkflow implements Workflow {
       registry.getTokenManager(step);
 
       // Set state to WAITING
-      step.setState(WAITING);
+      eventBus.postStepStateChange(step, WAITING);
     }
 
     // Register Shutdown hook
@@ -575,9 +591,12 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   void emergencyStop(final Throwable exception, final String errorMessage) {
 
+    // Get event bus
+    WorkflowEventBus eventBus = WorkflowEventBus.getInstance();
+
     // Change working step state to aborted
     for (AbstractStep step : getSortedStepsByState(PARTIALLY_DONE, WORKING)) {
-      step.setState(ABORTED);
+      eventBus.postStepStateChange(step, ABORTED);
     }
 
     // Stop the workflow
@@ -808,15 +827,7 @@ public abstract class AbstractWorkflow implements Workflow {
           continue;
         }
 
-        if (dir.exists() && !dir.getMetaData().isDir()) {
-          throw new EoulsanException(
-              "the directory is not a directory: " + dir);
-        }
-
-        if (!dir.exists()) {
-          dir.mkdirs();
-        }
-
+        createDirectory(dir);
       }
     } catch (IOException e) {
       throw new EoulsanException(e);
@@ -824,6 +835,58 @@ public abstract class AbstractWorkflow implements Workflow {
 
     // Check temporary directory
     checkTemporaryDirectory();
+  }
+
+  /**
+   * Create an "eoulsan-data" directory if mapper indexes or genome description
+   * storage has not been defined.
+   * @throws EoulsanException if an error about the directories is found
+   */
+  public void createEoulsanDataDirectoryIfRequired() throws EoulsanException {
+
+    try {
+
+      // Get Eoulsan settings
+      final Settings settings = EoulsanRuntime.getSettings();
+
+      // Create genome mapper index storage if not defined
+      if (settings.getGenomeMapperIndexStoragePath() == null) {
+
+        DataFile mapperIndexDir = new DataFile(this.dataDir, "mapperindexes");
+        settings.setGenomeMapperIndexStoragePath(mapperIndexDir.getSource());
+        createDirectory(mapperIndexDir);
+      }
+
+      // Create genome description storage if not defined
+      if (settings.getGenomeDescStoragePath() == null) {
+
+        DataFile genomeDescriptionDir =
+            new DataFile(this.dataDir, "genomedescriptions");
+        settings.setGenomeDescStoragePath(genomeDescriptionDir.getSource());
+        createDirectory(genomeDescriptionDir);
+      }
+
+    } catch (IOException e) {
+      throw new EoulsanException(e);
+    }
+
+  }
+
+  /**
+   * Create a directory.
+   * @param directory the directory to create
+   * @throws IOException if an error occurs while creating the directory
+   * @throws EoulsanException
+   */
+  private static void createDirectory(DataFile directory) throws IOException {
+
+    if (directory.exists() && !directory.getMetaData().isDir()) {
+      throw new IOException("the directory is not a directory: " + directory);
+    }
+
+    if (!directory.exists()) {
+      directory.mkdirs();
+    }
   }
 
   /**
@@ -885,13 +948,12 @@ public abstract class AbstractWorkflow implements Workflow {
         + " s.");
 
     // Inform observers of the end of the analysis
-    for (StepObserver o : StepObserverRegistry.getInstance().getObservers()) {
-      o.notifyWorkflowSuccess(success,
-          "(Job done in "
-              + StringUtils.toTimeHumanReadable(
-                  this.stopwatch.elapsed(MILLISECONDS))
-              + " s.)");
-    }
+    WorkflowEventBus.getInstance()
+        .postUIEvent(new UIWorkflowEvent(success,
+            "(Job done in "
+                + StringUtils.toTimeHumanReadable(
+                    this.stopwatch.elapsed(MILLISECONDS))
+                + " s.)"));
 
     // Send a mail
 
@@ -957,7 +1019,11 @@ public abstract class AbstractWorkflow implements Workflow {
 
     this.outputDir = newDataFile(executionArguments.getOutputPathname());
 
+    this.dataDir = newDataFile(executionArguments.getDataPathname());
+
     this.workflowContext = new WorkflowContext(executionArguments, this);
 
+    // Register the object in the event bus
+    WorkflowEventBus.getInstance().register(this);
   }
 }

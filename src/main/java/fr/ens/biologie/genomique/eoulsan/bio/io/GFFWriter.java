@@ -32,6 +32,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.List;
+import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.bio.GFFEntry;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
@@ -51,16 +53,18 @@ public class GFFWriter implements Closeable {
 
     final StringBuilder sb = new StringBuilder();
 
-    if (this.gff3Format && !entry.isMetaDataEntry("gff-version")) {
+    if (this.gff3Format && !entry.getMetadata().containsKey("gff-version")) {
       sb.append("##gff-version 3\n");
     }
 
-    for (String k : entry.getMetadataKeyNames()) {
-      for (String e : entry.getMetadataEntryValues(k)) {
+    for (Map.Entry<String, List<String>> e : entry.getMetadata().entries()
+        .entrySet()) {
+
+      for (String v : e.getValue()) {
         sb.append("##");
-        sb.append(k);
+        sb.append(e.getKey());
         sb.append(' ');
-        sb.append(e);
+        sb.append(v);
         sb.append('\n');
       }
     }

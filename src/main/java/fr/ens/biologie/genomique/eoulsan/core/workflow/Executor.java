@@ -124,6 +124,9 @@ public class Executor {
     // Check directories (log, working, output, temporary...)
     workflow.checkDirectories();
 
+    // Create a "eoulsan-data" directory if required
+    workflow.createEoulsanDataDirectoryIfRequired();
+
     // Get UI
     final UI ui = startUI(workflow);
 
@@ -214,7 +217,8 @@ public class Executor {
       return new DefaultDesignReader(is).read();
 
     } catch (IOException e) {
-      throw new EoulsanException(e);
+      throw new EoulsanException(
+          "Error while reading design file: " + e.getMessage(), e);
     }
   }
 

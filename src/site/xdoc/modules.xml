@@ -51,8 +51,10 @@
 		<tr><td><a href="module-sam2bam.html">Sam2bam</a></td><td>Yes</td><td>Yes</td><td></td></tr>
 		<tr><td><a href="module-bam2sam.html">Bam2sam</a></td><td>Yes</td><td>Yes</td><td></td></tr>
 		<tr><td><a href="module-sam2fastq.html">Sam2fastq</a></td><td>Yes</td><td>Yes</td><td></td></tr>
+		<tr><td><a href="module-splice2bed.html">Splice2bed</a></td><td>Yes</td><td>Yes</td><td></td></tr>
 		<tr><td><a href="module-expression.html">Expression</a></td><td>Yes</td><td>Yes</td><td></td></tr>
 		<tr><td><a href="module-expressionresultsannotation.html">Expression annotation</a></td><td>Yes</td><td>Yes</td><td></td></tr>
+		<tr><td><a href="module-multiqc.html">MultiQC</a></td><td>Yes</td><td>Yes</td><td></td></tr>
 		<tr><td><a href="module-normalization.html">Normalization</a></td><td>Yes</td><td>No</td><td></td></tr>
 		<tr><td><a href="module-diffana.html">Differential analysis</a></td><td>Yes</td><td>No</td><td></td></tr>
 		<tr><td><a href="module-DESeq2.html">Differential analysis with DESeq2</a></td><td>Yes</td><td>No</td><td></td></tr>

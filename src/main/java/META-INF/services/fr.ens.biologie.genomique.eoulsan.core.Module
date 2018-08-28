@@ -13,6 +13,7 @@ fr.ens.biologie.genomique.eoulsan.modules.mapping.local.BAM2SAMLocalModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.local.SAM2FASTQLocalModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.local.RmDupLocalModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.local.MergeInputRepLocalModule
+fr.ens.biologie.genomique.eoulsan.modules.mapping.local.Splice2BEDModule
 
 # Filter and mapping steps
 fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.FilterAndMapReadsHadoopModule

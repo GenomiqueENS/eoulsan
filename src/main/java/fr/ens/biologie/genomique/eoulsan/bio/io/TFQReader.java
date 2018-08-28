@@ -47,12 +47,10 @@ public class TFQReader implements ReadSequenceReader {
 
   private final BufferedReader reader;
 
-  private final boolean reuse;
   private ReadSequence result = null;
 
   private boolean end = false;
   private boolean nextCallDone = true;
-  private int count;
   protected IOException ioException;
 
   @Override
@@ -76,11 +74,6 @@ public class TFQReader implements ReadSequenceReader {
 
     this.nextCallDone = false;
 
-    // Reuse result object or not
-    if (!this.reuse) {
-      this.result = new ReadSequence();
-    }
-
     String line = null;
 
     try {
@@ -94,8 +87,8 @@ public class TFQReader implements ReadSequenceReader {
           continue;
         }
 
+        this.result = new ReadSequence();
         this.result.parse(trim);
-        this.result.setId(++this.count);
         return true;
       }
 
@@ -146,23 +139,11 @@ public class TFQReader implements ReadSequenceReader {
    */
   public TFQReader(final InputStream is) {
 
-    this(is, false);
-  }
-
-  /**
-   * Public constructor
-   * @param is InputStream to use
-   * @param reuseResultObject if the object returns by the next() method will be
-   *          always the same
-   */
-  public TFQReader(final InputStream is, final boolean reuseResultObject) {
-
     if (is == null) {
       throw new NullPointerException("InputStream is null");
     }
 
     this.reader = FileUtils.createBufferedReader(is, FASTQ_CHARSET);
-    this.reuse = reuseResultObject;
   }
 
   /**
@@ -172,25 +153,11 @@ public class TFQReader implements ReadSequenceReader {
    */
   public TFQReader(final File file) throws FileNotFoundException {
 
-    this(file, false);
-  }
-
-  /**
-   * Public constructor
-   * @param file File to use
-   * @param reuseResultObject if the object returns by the next() method will be
-   *          always the same
-   * @throws FileNotFoundException if cannot find the input file
-   */
-  public TFQReader(final File file, final boolean reuseResultObject)
-      throws FileNotFoundException {
-
     if (file == null) {
       throw new NullPointerException("File is null");
     }
 
     this.reader = FileUtils.createBufferedReader(file, FASTQ_CHARSET);
-    this.reuse = reuseResultObject;
   }
 
   /**
@@ -200,25 +167,11 @@ public class TFQReader implements ReadSequenceReader {
    */
   public TFQReader(final String filename) throws FileNotFoundException {
 
-    this(filename, false);
-  }
-
-  /**
-   * Public constructor
-   * @param filename File to use
-   * @param reuseResultObject if the object returns by the next() method will be
-   *          always the same
-   * @throws FileNotFoundException if cannot find the input file
-   */
-  public TFQReader(final String filename, final boolean reuseResultObject)
-      throws FileNotFoundException {
-
     if (filename == null) {
       throw new NullPointerException("File is null");
     }
 
     this.reader = FileUtils.createBufferedReader(filename, FASTQ_CHARSET);
-    this.reuse = reuseResultObject;
   }
 
 }

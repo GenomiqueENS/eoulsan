@@ -157,4 +157,9 @@ public class DataFormats {
   /** FeatureCounts summary format. */
   public static final DataFormat FEATURECOUNTS_SUMMARY_TXT =
       registry.getDataFormatFromName("featurecounts_summary_txt");
+
+  /** BED format. */
+  public static final DataFormat MAPPER_RESULT_BED =
+      registry.getDataFormatFromName("mapper_results_bed");
+
 }

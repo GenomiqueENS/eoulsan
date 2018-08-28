@@ -98,7 +98,6 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
     final FastqWriter fastqWriter1 = new FastqWriter(fastqDataFile1.create());
     final FastqWriter fastqWriter2 = fastqDataFile2 == null
         ? null : new FastqWriter(fastqDataFile2.create());
-    int id = 0;
     String seq1 = null;
     String seq2 = null;
     String qual1 = null;
@@ -109,10 +108,9 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
       if (currentRecordId != null
           && !currentRecordId.equals(samRecord.getReadName())) {
 
-        id++;
         reporter.incrCounter(COUNTER_GROUP, "sorted records", 1);
 
-        writeFastq(id, fastqWriter1, fastqWriter2, currentRecordId, seq1, qual1,
+        writeFastq(fastqWriter1, fastqWriter2, currentRecordId, seq1, qual1,
             seq2, qual2);
         seq1 = seq2 = qual1 = qual2 = null;
 
@@ -129,9 +127,8 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
     }
 
     if (seq1 != null && seq2 != null) {
-      id++;
       reporter.incrCounter(COUNTER_GROUP, "sorted records", 1);
-      writeFastq(id, fastqWriter1, fastqWriter2, currentRecordId, seq1, qual1,
+      writeFastq(fastqWriter1, fastqWriter2, currentRecordId, seq1, qual1,
           seq2, qual2);
 
     }
@@ -195,14 +192,14 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
     return result;
   }
 
-  public static final void writeFastq(int id, FastqWriter fastqWriter1,
+  private static final void writeFastq(FastqWriter fastqWriter1,
       FastqWriter fastqWriter2, String currentRecordId, String seq1,
       String qual1, String seq2, String qual2) throws IOException {
 
     ReadSequence read1 = seq1 == null
-        ? null : new ReadSequence(id, currentRecordId, seq1, qual1);
+        ? null : new ReadSequence(currentRecordId, seq1, qual1);
     ReadSequence read2 = seq2 == null
-        ? null : new ReadSequence(id, currentRecordId, seq2, qual2);
+        ? null : new ReadSequence(currentRecordId, seq2, qual2);
 
     if (fastqWriter2 != null) {
       if (seq1 != null && seq2 != null) {

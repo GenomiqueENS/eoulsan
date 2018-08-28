@@ -5,7 +5,7 @@
 	<groupId>fr.ens.biologie.genomique</groupId>
 	<artifactId>eoulsan</artifactId>
 	<packaging>jar</packaging>
-	<version>2.2</version>
+	<version>2.3-SNAPSHOT</version>
 	<name>Eoulsan</name>
 	<description>
 		A pipeline for NGS analysis.
@@ -37,7 +37,7 @@
 			<email>eoulsan 0 biologie ens fr</email>
 			<url />
 			<organization>
-				École normale supérieure, IBENS, Genomic platform
+				École normale supérieure, IBENS, Genomics core facility
 			</organization>
 			<organizationUrl>
 				https://www.genomique.biologie.ens.fr/
@@ -57,7 +57,7 @@
 			<email>eoulsan 0 biologie ens fr</email>
 			<url />
 			<organization>
-				École normale supérieure, IBENS, Genomic platform
+				École normale supérieure, IBENS, Genomics core facility
 			</organization>
 			<organizationUrl>
 				https://www.genomique.biologie.ens.fr/
@@ -74,7 +74,7 @@
 			<email>eoulsan 0 biologie ens fr</email>
 			<url />
 			<organization>
-				École normale supérieure, IBENS, Genomic platform
+				École normale supérieure, IBENS, Genomics core facility
 			</organization>
 			<organizationUrl>
 				https://www.genomique.biologie.ens.fr/
@@ -91,7 +91,7 @@
 			<email>deshaies 0 biologie ens fr</email>
 			<url />
 			<organization>
-				École normale supérieure, IBENS, Genomic platform
+				École normale supérieure, IBENS, Genomics core facility
 			</organization>
 			<organizationUrl>
 				https://www.genomique.biologie.ens.fr/
@@ -108,7 +108,7 @@
 			<email>sperrin 0 biologie ens fr</email>
 			<url />
 			<organization>
-				École normale supérieure, IBENS, Genomic platform
+				École normale supérieure, IBENS, Genomics core facility
 			</organization>
 			<organizationUrl>
 				https://www.genomique.biologie.ens.fr/
@@ -126,7 +126,7 @@
 			<email>bauquet 0 biologie ens fr</email>
 			<url />
 			<organization>
-				École normale supérieure, IBENS, Genomic platform
+				École normale supérieure, IBENS, Genomics core facility
 			</organization>
 			<organizationUrl>
 				https://www.genomique.biologie.ens.fr/
@@ -145,7 +145,7 @@
 			<email>firmo 0 biologie ens fr</email>
 			<url />
 			<organization>
-				École normale supérieure, IBENS, Genomic platform
+				École normale supérieure, IBENS, Genomics core facility
 			</organization>
 			<organizationUrl>
 				https://www.genomique.biologie.ens.fr/
@@ -162,7 +162,7 @@
 			<email>du 0 biologie ens fr</email>
 			<url />
 			<organization>
-				École normale supérieure, IBENS, Genomic platform
+				École normale supérieure, IBENS, Genomics core facility
 			</organization>
 			<organizationUrl>
 				https://www.genomique.biologie.ens.fr/
@@ -179,7 +179,7 @@
 			<email>birer 0 biologie ens fr</email>
 			<url />
 			<organization>
-				École normale supérieure, IBENS, Genomic platform
+				École normale supérieure, IBENS, Genomics core facility
 			</organization>
 			<organizationUrl>
 				https://www.genomique.biologie.ens.fr/
@@ -196,7 +196,7 @@
 			<email>eoulsan 0 biologie ens fr</email>
 			<url />
 			<organization>
-				École normale supérieure, IBENS, Genomic platform
+				École normale supérieure, IBENS, Genomics core facility
 			</organization>
 			<organizationUrl>
 				https://www.genomique.biologie.ens.fr/
@@ -1117,7 +1117,7 @@ o
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>2.5.5</version>
+				<version>3.0.1</version>
 				<configuration>
 					<effort>Max</effort>
 					<xmlOutput>true</xmlOutput>

@@ -56,6 +56,7 @@ public class ExecutorArguments {
   private String outputPathname;
   private String jobPathname;
   private String taskPathname;
+  private String dataPathname;
   private final String jobId;
   private final String jobUUID = UUID.randomUUID().toString();
   private final long creationTime;
@@ -126,6 +127,14 @@ public class ExecutorArguments {
    */
   public final String getTemporaryPathname() {
     return this.temporaryPathname;
+  }
+
+  /**
+   * Get the data directory path.
+   * @return the temporary directory file path
+   */
+  public final String getDataPathname() {
+    return this.dataPathname;
   }
 
   /**
@@ -274,6 +283,19 @@ public class ExecutorArguments {
   }
 
   /**
+   * Set the data directory path.
+   * @param dataPathname The data directory path to set
+   */
+  public final void setDataPathname(final String dataPathname) {
+
+    if (dataPathname == null) {
+      return;
+    }
+
+    this.dataPathname = dataPathname;
+  }
+
+  /**
    * Set job description.
    * @param jobDescription job description
    */
@@ -393,6 +415,7 @@ public class ExecutorArguments {
     final File jobDir = new File(outputDir, getJobId());
     final File workingDir = new File(jobDir, "working");
     final File taskDir = new File(jobDir, "tasks");
+    final File dataDir = new File(outputDir, Globals.APP_NAME_LOWER_CASE + "-data");
     final File tmpDir = new File(jobDir, "tmp");
 
     // Set the local working path
@@ -412,6 +435,9 @@ public class ExecutorArguments {
 
     // Set the tasks path
     setTaskPathname(taskDir.getAbsolutePath());
+
+    // Set the data path
+    setDataPathname(dataDir.getAbsolutePath());
 
     // Set the temporary directory
     setTemporaryPathname(tmpDir.getAbsolutePath());

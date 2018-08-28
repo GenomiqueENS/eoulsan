@@ -33,7 +33,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -48,6 +47,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperInstance;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 
 /**
  * This class define a basic GenomeIndexStorage based on an index file.
@@ -217,9 +217,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
       md5Digest.update(e.getValue().getBytes(Globals.DEFAULT_CHARSET));
     }
 
-    final BigInteger bigInt = new BigInteger(1, md5Digest.digest());
-
-    return bigInt.toString(16);
+    return StringUtils.md5DigestToString(md5Digest);
   }
 
   //

@@ -45,7 +45,7 @@ public class QualityReadFilterTest {
 
     assertFalse(filter.accept(null));
 
-    ReadSequence read = new ReadSequence(0, "read1", "ATG", "ABC");
+    ReadSequence read = new ReadSequence("read1", "ATG", "ABC");
 
     assertEquals('B' - 33.0, StatUtils.mean(read.qualityScores()), 0.0);
     assertTrue(filter.accept(read));

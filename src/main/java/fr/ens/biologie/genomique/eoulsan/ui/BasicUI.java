@@ -46,6 +46,8 @@ public class BasicUI extends AbstractUI {
 
   private Workflow workflow;
   private final Map<Step, Double> steps = new HashMap<>();
+  private final Map<Step, StepState> stepState = new HashMap<>();
+
 
   private int lastMessageLength = 0;
 
@@ -69,16 +71,19 @@ public class BasicUI extends AbstractUI {
   }
 
   @Override
-  public void notifyStepState(final Step step) {
+  public void notifyStepState(final Step step, final StepState stepState) {
 
     // Check if the UI has been initialized
     checkState(this.workflow != null, "The UI has not been initialized");
 
-    if (step == null || step.getWorkflow() != this.workflow) {
+    if (step == null
+        || stepState == null || step.getWorkflow() != this.workflow) {
       return;
     }
 
-    if (step.getState() == StepState.WORKING) {
+    this.stepState.put(step, stepState);
+
+    if (stepState == StepState.WORKING) {
       notifyStepState(step, 0, 0, 0.0);
     }
   }
@@ -102,7 +107,7 @@ public class BasicUI extends AbstractUI {
 
     if (!isInteractiveMode()
         || step == null || step.getWorkflow() != this.workflow
-        || step.getState() != StepState.WORKING
+        || this.stepState.get(step) != StepState.WORKING
         || !this.steps.containsKey(step)) {
       return;
     }
@@ -146,7 +151,8 @@ public class BasicUI extends AbstractUI {
     }
 
     System.out.printf("Step "
-        + step.getId() + " " + step.getState().toString() + " note: " + note);
+        + step.getId() + " " + this.stepState.get(step).toString() + " note: "
+        + note);
   }
 
   @Override

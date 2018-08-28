@@ -29,6 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 
@@ -42,11 +43,11 @@ class SampleImpl implements Serializable, Sample {
   /** Serialization version UID. */
   private static final long serialVersionUID = 3674095532228721218L;
 
-  private static int instanceCount;
+  private static AtomicInteger instanceCount = new AtomicInteger(0);
 
   private final Design design;
   private final String sampleId;
-  private final int sampleNumber = ++instanceCount;
+  private final int sampleNumber = instanceCount.incrementAndGet();
   private String sampleName = "Sample" + sampleNumber;
   private final SampleMetadataImpl sampleMetadata = new SampleMetadataImpl();
 

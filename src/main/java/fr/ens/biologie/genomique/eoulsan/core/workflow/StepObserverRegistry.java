@@ -24,9 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import com.google.common.eventbus.Subscribe;
+
+import fr.ens.biologie.genomique.eoulsan.core.Step;
 
 /**
  * This class allow to relay workflow step events to other observers. This class
@@ -66,9 +69,131 @@ public class StepObserverRegistry {
     this.observers.remove(observer);
   }
 
-  public Set<StepObserver> getObservers() {
+  /**
+   * Test if observers has been registered
+   * @return true if observers has been registered
+   */
+  public boolean isNoObserverRegistered() {
+    return this.observers.isEmpty();
+  }
 
-    return Collections.unmodifiableSet(this.observers);
+  //
+  // Subscribe methods
+  //
+
+  /**
+   * Handle UI task events.
+   * @param event the event to handle
+   */
+  @Subscribe
+  public void uiTaskEvent(final UITaskEvent event) {
+
+    if (event == null) {
+      return;
+    }
+
+    final Step step = event.getStep();
+    final int contextId = event.getContextId();
+
+    switch (event.getTaskStatusMessage()) {
+
+    case SUBMITTED:
+      for (StepObserver o : this.observers) {
+        o.notifyTaskSubmitted(step, contextId);
+      }
+      break;
+
+    case RUNNING:
+      for (StepObserver o : this.observers) {
+        o.notifyTaskRunning(step, contextId);
+      }
+      break;
+
+    case DONE:
+      for (StepObserver o : this.observers) {
+        o.notifyTaskDone(step, contextId);
+      }
+      break;
+
+    default:
+      break;
+    }
+  }
+
+  /**
+   * Handle step state change events.
+   * @param event the event to handle
+   */
+  @Subscribe
+  public void stepStateEvent(final StepStateEvent event) {
+
+    if (event == null) {
+      return;
+    }
+
+    for (StepObserver o : this.observers) {
+      o.notifyStepState(event.getStep(), event.getState());
+    }
+  }
+
+  /**
+   * Handle UI step events.
+   * @param event the event to handle
+   */
+  @Subscribe
+  public void uiStepEvent(final UIStepEvent event) {
+
+    if (event == null) {
+      return;
+    }
+
+    final Step step = event.getStep();
+    final double progress = event.getProgress();
+
+    switch (event.getStatus()) {
+
+    case PROGRESS:
+      int contextId = event.getContextId();
+      String contextName = event.getContextName();
+      for (StepObserver o : this.observers) {
+        o.notifyStepState(step, contextId, contextName, progress);
+      }
+      break;
+
+    case TASK_PROGRESS:
+      int terminatedTasks = event.getTerminatedTasks();
+      int submittedTasks = event.getSubmittedTasks();
+      for (StepObserver o : this.observers) {
+        o.notifyStepState(step, terminatedTasks, submittedTasks, progress);
+      }
+      break;
+
+    case NOTE:
+      String note = event.getNote();
+      for (StepObserver o : this.observers) {
+        o.notifyStepState(step, note);
+      }
+      break;
+
+    default:
+      break;
+    }
+  }
+
+  /**
+   * Handle UI workflow events.
+   * @param event the event to handle
+   */
+  @Subscribe
+  public void uiWorkflowEvent(final UIWorkflowEvent event) {
+
+    if (event == null) {
+      return;
+    }
+
+    for (StepObserver o : this.observers) {
+      o.notifyWorkflowSuccess(event.isSuccess(), event.getMessage());
+    }
   }
 
   //
@@ -96,6 +221,9 @@ public class StepObserverRegistry {
    * Private constructor.
    */
   private StepObserverRegistry() {
+
+    // Register this class to dispatch messages to UIs
+    WorkflowEventBus.getInstance().register(this);
   }
 
 }

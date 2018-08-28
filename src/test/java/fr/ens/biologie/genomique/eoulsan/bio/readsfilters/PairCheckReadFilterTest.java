@@ -41,8 +41,8 @@ public class PairCheckReadFilterTest {
 
     assertFalse(filter.accept(null));
 
-    ReadSequence read1 = new ReadSequence(0, "read/1", "ATG", "wxy");
-    ReadSequence read2 = new ReadSequence(0, "read/2", "ATG", "wxy");
+    ReadSequence read1 = new ReadSequence("read/1", "ATG", "wxy");
+    ReadSequence read2 = new ReadSequence("read/2", "ATG", "wxy");
 
     assertTrue(filter.accept(read1, read2));
 

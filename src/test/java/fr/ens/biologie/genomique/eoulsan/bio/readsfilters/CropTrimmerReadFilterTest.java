@@ -18,7 +18,7 @@ public class CropTrimmerReadFilterTest {
     filter.init();
 
     ReadSequence read =
-        new ReadSequence(0, "read1", "AGGGGGCAAA", "xwxwxxabcd");
+        new ReadSequence("read1", "AGGGGGCAAA", "xwxwxxabcd");
     assertTrue(filter.accept(read));
     assertEquals("read1", read.getName());
     assertEquals("AGGGG", read.getSequence());

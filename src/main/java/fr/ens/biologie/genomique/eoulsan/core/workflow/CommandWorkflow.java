@@ -895,7 +895,7 @@ public class CommandWorkflow extends AbstractWorkflow {
   private void searchIndirectDependencies(final AbstractStep step,
       Set<AbstractStep> steps) {
 
-    for (AbstractStep s : step.getStepStateObserver().getRequiredSteps()) {
+    for (AbstractStep s : step.getStepStateDependencies().getRequiredSteps()) {
 
       if (!steps.contains(s)) {
         steps.add(s);

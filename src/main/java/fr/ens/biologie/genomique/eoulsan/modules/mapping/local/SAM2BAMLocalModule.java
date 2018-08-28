@@ -56,8 +56,8 @@ public class SAM2BAMLocalModule extends AbstractSAM2BAMModule {
       final DataFile bamFile = outBAMData.getDataFile();
       final DataFile bamIndexFile = outBAIData.getDataFile();
 
-      convert(samFile, bamFile, bamIndexFile, getCompressionLevel(), reporter,
-          context.getLocalTempDirectory());
+      convert(samFile, bamFile, bamIndexFile, getCompressionLevel(),
+          getMaxRecordsInRam(), reporter, context.getLocalTempDirectory());
 
       // Set the description of the context
       status.setDescription("Convert alignments ("
@@ -81,14 +81,15 @@ public class SAM2BAMLocalModule extends AbstractSAM2BAMModule {
    * @param bamDataFile output SAM file
    * @param bamIndexDataFile output index file
    * @param compressionLevel compression level
+   * @param maxRecordsInRam the maximum records in RAM
    * @param reporter reporter
    * @param tmpDir temporary directory
    * @throws IOException if an error occurs
    */
   private static void convert(final DataFile samDataFile,
       final DataFile bamDataFile, final DataFile bamIndexDataFile,
-      final int compressionLevel, final Reporter reporter, final File tmpDir)
-      throws IOException {
+      final int compressionLevel, final int maxRecordsInRam,
+      final Reporter reporter, final File tmpDir) throws IOException {
 
     checkArgument(compressionLevel >= 0 && compressionLevel <= 9,
         "Invalid compression level [0-9]: " + compressionLevel);
@@ -104,9 +105,10 @@ public class SAM2BAMLocalModule extends AbstractSAM2BAMModule {
     final File bamFile = bamDataFile.toFile();
 
     // Open Bam file
-    final SAMFileWriter samWriter = new SAMFileWriterFactory()
-        .setCreateIndex(true).setTempDirectory(tmpDir).makeBAMWriter(
-            samReader.getFileHeader(), false, bamFile, compressionLevel);
+    final SAMFileWriter samWriter =
+        new SAMFileWriterFactory().setCreateIndex(true).setTempDirectory(tmpDir)
+            .setMaxRecordsInRam(maxRecordsInRam).makeBAMWriter(
+                samReader.getFileHeader(), false, bamFile, compressionLevel);
 
     for (final SAMRecord samRecord : samReader) {
       samWriter.addAlignment(samRecord);

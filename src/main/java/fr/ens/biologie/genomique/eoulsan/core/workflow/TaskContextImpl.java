@@ -39,6 +39,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 import com.google.common.base.Objects;
@@ -67,7 +68,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
   /** Serialization version UID. */
   private static final long serialVersionUID = 8288158811122533646L;
 
-  private static int instanceCounter;
+  private static AtomicInteger instanceCount = new AtomicInteger(0);
 
   private final int id;
   private final WorkflowContext workflowContext;
@@ -702,9 +703,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
     checkNotNull(workflowContext, "workflow context cannot be null");
     checkNotNull(step, "step cannot be null");
 
-    synchronized (TaskContextImpl.class) {
-      this.id = (++instanceCounter);
-    }
+    this.id = instanceCount.incrementAndGet();
     this.contextName = "context" + this.id;
 
     this.workflowContext = workflowContext;

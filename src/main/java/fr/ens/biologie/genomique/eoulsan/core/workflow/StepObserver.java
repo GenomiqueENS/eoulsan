@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
 
 /**
  * This interface define workflow step events
@@ -36,8 +37,9 @@ public interface StepObserver {
   /**
    * The status of the step has been changed.
    * @param step step that the status has been changed
+   * @param step state the step state
    */
-  void notifyStepState(Step step);
+  void notifyStepState(Step step, final StepState stepState);
 
   /**
    * The progress of the step for a sample has been changed.

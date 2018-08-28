@@ -24,15 +24,19 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import static java.util.Objects.requireNonNull;
+
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Splitter;
+
+import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 
 /**
@@ -42,8 +46,10 @@ import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
  */
 public class GFFEntry {
 
-  private final Map<String, List<String>> metaData = new LinkedHashMap<>();
-  private int id;
+  private static final Pattern SEMI_COMA_SPLIT_PATTERN = Pattern.compile(";");
+  private static final Pattern COMA_SPLIT_PATTERN = Pattern.compile(",");
+
+  private final EntryMetadata metadata;
   private String seqId;
   private String source;
   private String type;
@@ -52,21 +58,28 @@ public class GFFEntry {
   private double score;
   private char strand;
   private int phase;
-  private Map<String, String> attributes;
-  private String[] parsedFields;
-  private static final Pattern SEMI_COMA_SPLIT_PATTERN = Pattern.compile(";");
-  private static final Pattern COMA_SPLIT_PATTERN = Pattern.compile(",");
+  private final Map<String, String> attributes = new LinkedHashMap<>();
 
   //
   // Getters
   //
 
   /**
-   * Get the id.
-   * @return the id
+   * Get the metadata.
+   * @return the metadata of the entry
    */
+  public final EntryMetadata getMetadata() {
+
+    return this.metadata;
+  }
+
+  /**
+   * Get the id.
+   * @return always -1 as this method is deprecated
+   */
+  @Deprecated
   public final int getId() {
-    return this.id;
+    return -1;
   }
 
   /**
@@ -145,13 +158,10 @@ public class GFFEntry {
    * Get metadata keys names.
    * @return the metadata keys names
    */
+  @Deprecated
   public final Set<String> getMetadataKeyNames() {
 
-    if (this.metaData == null) {
-      return Collections.emptySet();
-    }
-
-    return Collections.unmodifiableSet(this.metaData.keySet());
+    return this.metadata.keySet();
   }
 
   /**
@@ -159,10 +169,6 @@ public class GFFEntry {
    * @return the attributes names
    */
   public final Set<String> getAttributesNames() {
-
-    if (this.attributes == null) {
-      return Collections.emptySet();
-    }
 
     return Collections.unmodifiableSet(this.attributes.keySet());
   }
@@ -172,13 +178,10 @@ public class GFFEntry {
    * @param key key name of the metadata
    * @return true if the entry in the meta data exists
    */
+  @Deprecated
   public final boolean isMetaDataEntry(final String key) {
 
-    if (key == null) {
-      return false;
-    }
-
-    return this.metaData.containsKey(key);
+    return this.metadata.containsKey(key);
   }
 
   /**
@@ -187,10 +190,6 @@ public class GFFEntry {
    * @return true if the attribute exits
    */
   public final boolean isAttribute(final String attributeName) {
-
-    if (attributeName == null || this.attributes == null) {
-      return false;
-    }
 
     return this.attributes.containsKey(attributeName);
   }
@@ -201,19 +200,10 @@ public class GFFEntry {
    * @return the values of the attribute or null if the metadata name does not
    *         exists
    */
+  @Deprecated
   public final List<String> getMetadataEntryValues(final String key) {
 
-    if (key == null) {
-      return null;
-    }
-
-    final List<String> list = this.metaData.get(key);
-
-    if (list == null) {
-      return null;
-    }
-
-    return Collections.unmodifiableList(list);
+    return this.metadata.get(key);
   }
 
   /**
@@ -224,10 +214,6 @@ public class GFFEntry {
    */
   public final String getAttributeValue(final String attributeName) {
 
-    if (attributeName == null || this.attributes == null) {
-      return null;
-    }
-
     return this.attributes.get(attributeName);
   }
 
@@ -236,12 +222,11 @@ public class GFFEntry {
   //
 
   /**
-   * Set the id.
+   * Set the id. Do nothing as this method is deprecated.
    * @param id the id of the entry
    */
+  @Deprecated
   public final void setId(final int id) {
-
-    this.id = id;
   }
 
   /**
@@ -356,24 +341,10 @@ public class GFFEntry {
    * @param value The value
    * @return true if the value is correctly added to the metadata
    */
+  @Deprecated
   public final boolean addMetaDataEntry(final String key, final String value) {
 
-    if (key == null || value == null) {
-      return false;
-    }
-
-    final List<String> list;
-
-    if (!this.metaData.containsKey(key)) {
-      list = new ArrayList<>();
-      this.metaData.put(key, list);
-    } else {
-      list = this.metaData.get(key);
-    }
-
-    list.add(value);
-
-    return true;
+    return this.metadata.add(key, value);
   }
 
   /**
@@ -381,24 +352,11 @@ public class GFFEntry {
    * @param entries the entries to add
    * @return true if all the entries are correctly added to the metadata
    */
+  @Deprecated
   public final boolean addMetaDataEntries(
       final Map<String, List<String>> entries) {
 
-    if (entries == null) {
-      return false;
-    }
-
-    for (Map.Entry<String, List<String>> e : entries.entrySet()) {
-      for (String v : e.getValue()) {
-
-        if (!addMetaDataEntry(e.getKey(), v)) {
-          return false;
-        }
-
-      }
-    }
-
-    return true;
+    return this.metadata.add(entries);
   }
 
   /**
@@ -415,10 +373,6 @@ public class GFFEntry {
       return false;
     }
 
-    if (this.attributes == null) {
-      this.attributes = new LinkedHashMap<>();
-    }
-
     this.attributes.put(attributeName, value);
 
     return true;
@@ -429,13 +383,10 @@ public class GFFEntry {
    * @param key key of the metadata entry to remove
    * @return true if the entry is removed
    */
+  @Deprecated
   public final boolean removeMetaDataEntry(final String key) {
 
-    if (this.metaData.containsKey(key)) {
-      return false;
-    }
-
-    return this.metaData.remove(key) != null;
+    return this.metadata.remove(key);
   }
 
   /**
@@ -444,10 +395,6 @@ public class GFFEntry {
    * @return true if the attribute is removed
    */
   public final boolean removeAttribute(final String attributeName) {
-
-    if (this.attributes == null || this.attributes.containsKey(attributeName)) {
-      return false;
-    }
 
     return this.attributes.remove(attributeName) != null;
   }
@@ -469,17 +416,16 @@ public class GFFEntry {
     this.score = Double.NaN;
     this.strand = '.';
     this.phase = -1;
-    if (this.attributes != null) {
-      this.attributes.clear();
-    }
+    this.attributes.clear();
   }
 
   /**
    * Clear metadata of the entry.
    */
+  @Deprecated
   public final void clearMetaData() {
 
-    this.metaData.clear();
+    this.metadata.clear();
   }
 
   //
@@ -492,9 +438,8 @@ public class GFFEntry {
    */
   public final boolean isValidEntry() {
 
-    return this.seqId != null
-        && this.source != null && this.type != null && isValidStartAndEnd()
-        && isValidStrand();
+    // The only data that cannot be valid are the positions of the feature
+    return isValidStartAndEnd();
   }
 
   /**
@@ -502,10 +447,6 @@ public class GFFEntry {
    * @return true if the positions are valid
    */
   public final boolean isValidStartAndEnd() {
-
-    if (this.start == Integer.MIN_VALUE || this.end == Integer.MAX_VALUE) {
-      return false;
-    }
 
     if (this.start < 1) {
       return false;
@@ -524,16 +465,8 @@ public class GFFEntry {
    */
   public final boolean isValidStrand() {
 
-    switch (this.strand) {
-
-    case '+':
-    case '-':
-    case '.':
-    case '?':
-      return true;
-    default:
-      return false;
-    }
+    // Always true with the current implementation of the class
+    return true;
   }
 
   /**
@@ -561,10 +494,6 @@ public class GFFEntry {
 
   private static int parseInt(final String s, final int defaultValue) {
 
-    if (s == null) {
-      return defaultValue;
-    }
-
     try {
       return Integer.parseInt(s.trim());
     } catch (NumberFormatException e) {
@@ -573,10 +502,6 @@ public class GFFEntry {
   }
 
   private static double parseDouble(final String s, final double defaultValue) {
-
-    if (s == null) {
-      return defaultValue;
-    }
 
     try {
       return Double.parseDouble(s.trim());
@@ -594,39 +519,30 @@ public class GFFEntry {
   private String parseCommon(final String s) throws BadBioEntryException {
 
     if (s == null) {
-      throw new IllegalArgumentException("String to parse is null");
+      throw new NullPointerException("String to parse is null");
     }
 
-    if (this.parsedFields == null) {
-      this.parsedFields = new String[9];
-    } else {
-      Arrays.fill(this.parsedFields, null);
-    }
+    List<String> fields =
+        GuavaCompatibility.splitToList(Splitter.on('\t').trimResults(), s);
 
-    final String[] fields = this.parsedFields;
-
-    try {
-
-      StringUtils.fastSplit(s, fields);
-    } catch (ArrayIndexOutOfBoundsException e) {
+    if (fields.size() != 9) {
 
       throw new BadBioEntryException("Error in GFF parsing line ("
           + s.split("\t").length + " fields, 9 attempted)", s);
     }
 
-    setSeqId(fields[0]);
-    setSource(fields[1]);
-    setType(fields[2]);
+    setSeqId(fields.get(0));
+    setSource(fields.get(1));
+    setType(fields.get(2));
 
-    setStart(parseInt(fields[3], Integer.MIN_VALUE));
-    setEnd(parseInt(fields[4], Integer.MIN_VALUE));
-    setScore(parseDouble(fields[5], Double.NaN));
+    setStart(parseInt(fields.get(3), Integer.MIN_VALUE));
+    setEnd(parseInt(fields.get(4), Integer.MIN_VALUE));
+    setScore(parseDouble(fields.get(5), Double.NaN));
 
-    setStrand(fields[6] == null || fields[6].length() == 0
-        ? '.' : fields[6].charAt(0));
-    setPhase(parseInt(fields[7], -1));
+    setStrand(fields.get(6).length() == 0 ? '.' : fields.get(6).charAt(0));
+    setPhase(parseInt(fields.get(7), -1));
 
-    return fields[8];
+    return fields.get(8);
   }
 
   /**
@@ -635,13 +551,7 @@ public class GFFEntry {
    */
   private void parseGFF3Attributes(final String attributesField) {
 
-    if (this.attributes != null) {
-      this.attributes.clear();
-    }
-
-    if (attributesField == null) {
-      return;
-    }
+    this.attributes.clear();
 
     if ("".equals(attributesField) || ".".equals(attributesField)) {
       return;
@@ -670,13 +580,7 @@ public class GFFEntry {
    */
   private void parseGTFAttributes(final String attributesField) {
 
-    if (this.attributes != null) {
-      this.attributes.clear();
-    }
-
-    if (attributesField == null) {
-      return;
-    }
+    this.attributes.clear();
 
     if ("".equals(attributesField) || ".".equals(attributesField)) {
       return;
@@ -748,7 +652,7 @@ public class GFFEntry {
    */
   private String attributesToGFF3String() {
 
-    if (this.attributes == null || this.attributes.size() == 0) {
+    if (this.attributes.size() == 0) {
       return ".";
     }
 
@@ -778,7 +682,7 @@ public class GFFEntry {
    */
   private String attributesToGTFString() {
 
-    if (this.attributes == null || this.attributes.size() == 0) {
+    if (this.attributes.size() == 0) {
       return ".";
     }
 
@@ -795,7 +699,7 @@ public class GFFEntry {
         if (first) {
           first = false;
         } else {
-          sb.append("; ");
+          sb.append(' ');
         }
 
         sb.append(key);
@@ -803,6 +707,7 @@ public class GFFEntry {
 
         sb.append(value);
         sb.append('\"');
+        sb.append(';');
       }
     }
 
@@ -849,6 +754,10 @@ public class GFFEntry {
         + attributesToGTFString();
   }
 
+  //
+  // Object methods
+  //
+
   /**
    * Override toString().
    * @return the GFF entry in GFF3 format
@@ -857,6 +766,36 @@ public class GFFEntry {
   public String toString() {
 
     return toGFF3();
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Objects.hash(this.metadata, this.seqId, this.source, this.type,
+        this.start, this.end, this.score, this.strand, this.phase,
+        this.attributes);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+
+    if (o == this) {
+      return true;
+    }
+
+    if (!(o instanceof GFFEntry)) {
+      return false;
+    }
+
+    final GFFEntry that = (GFFEntry) o;
+
+    return Objects.equals(this.metadata, that.metadata)
+        && Objects.equals(this.seqId, that.seqId)
+        && Objects.equals(this.source, that.source)
+        && Objects.equals(this.type, that.type) && this.start == that.start
+        && this.end == that.end && Objects.equals(this.score, that.score)
+        && this.strand == that.strand && this.phase == that.phase
+        && Objects.equals(this.attributes, that.attributes);
   }
 
   //
@@ -868,6 +807,17 @@ public class GFFEntry {
    */
   public GFFEntry() {
 
+    this(new EntryMetadata());
+  }
+
+  /**
+   * Public constructor.
+   */
+  public GFFEntry(EntryMetadata metadata) {
+
+    requireNonNull(metadata, " metadata argument cannot  be null");
+
+    this.metadata = metadata;
     clear();
   }
 
