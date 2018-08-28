@@ -1,0 +1,12 @@
+<dataformat>
+    <name>singlecellexperiment_rds</name>
+    <description>single cell experiment RDS format</description>
+    <prefix>sce</prefix>
+    <extensions>
+        <extension default="true">.rds</extension>
+    </extensions>
+    <galaxy>
+        <formatname>singlecellexperiment</formatname>
+    </galaxy>
+</dataformat>
+

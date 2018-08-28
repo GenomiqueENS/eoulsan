@@ -562,6 +562,21 @@ public final class Settings implements Serializable {
   }
 
   /**
+   * Test if a Docker connection has been set.
+   * @return true if a Docker connection has been set
+   */
+  public boolean isDockerConnectionDefined() {
+
+    String connection = getDockerConnection();
+
+    if (connection == null || connection.trim().isEmpty()) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
    * Test if when use Docker, NFS roots must been mounted instead of file paths.
    * @return true if if when use Docker, NFS roots must been mounted instead of
    *         file paths

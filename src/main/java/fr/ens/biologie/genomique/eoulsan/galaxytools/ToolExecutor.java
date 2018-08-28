@@ -67,17 +67,19 @@ public class ToolExecutor {
     checkArgument(!this.commandLine.isEmpty(),
         "Command line for Galaxy tool is empty");
 
-    final String interpreter = this.toolData.getInterpreter();
+    final String interpreter = this.toolData.getInterpreter(
+        this.stepContext.getSettings().isDockerConnectionDefined());
 
     // Define the interpreter to use
     final ExecutorInterpreter ti;
     switch (interpreter) {
 
     case "":
+    case DefaultExecutorInterpreter.INTERPRETER_NAME:
       ti = new DefaultExecutorInterpreter();
       break;
 
-    case "docker":
+    case DockerExecutorInterpreter.INTERPRETER_NAME:
       ti = new DockerExecutorInterpreter(this.toolData.getDockerImage());
       break;
 

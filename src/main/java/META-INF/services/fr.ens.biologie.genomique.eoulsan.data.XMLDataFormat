@@ -35,3 +35,5 @@ cutadapt_adapter_fasta.xml
 minimap2_index_zip.xml
 multiqc_report_html.xml
 featurecounts_summary_txt.xml
+expression_matrix_tsv.xml
+singlecellexperiment_rds.xml

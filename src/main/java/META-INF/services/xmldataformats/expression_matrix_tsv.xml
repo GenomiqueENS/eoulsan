@@ -1,0 +1,12 @@
+<dataformat>
+    <name>expression_matrix_tsv</name>
+    <description>expression matrix format</description>
+    <prefix>expressionmatrix</prefix>
+    <extensions>
+        <extension default="true">.matrix</extension>
+    </extensions>
+    <galaxy>
+        <formatname>matrix</formatname>
+    </galaxy>
+</dataformat>
+

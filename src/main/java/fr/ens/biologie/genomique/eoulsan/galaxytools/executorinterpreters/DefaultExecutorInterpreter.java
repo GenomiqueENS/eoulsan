@@ -15,10 +15,12 @@ import com.google.common.base.Objects;
  */
 public class DefaultExecutorInterpreter extends AbstractExecutorInterpreter {
 
+  public static final String INTERPRETER_NAME = "default";
+
   @Override
   public String getName() {
 
-    return "default";
+    return INTERPRETER_NAME;
   }
 
   @Override
