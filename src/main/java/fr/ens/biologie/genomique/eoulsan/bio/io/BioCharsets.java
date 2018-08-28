@@ -57,6 +57,12 @@ public class BioCharsets {
   /** GFF Charset. */
   public static final Charset GFF_CHARSET = Charset.forName(GFF_ENCODING);
 
+  /** GFF encoding. */
+  public static final String BED_ENCODING = "ISO-8859-1";
+
+  /** BED Charset. */
+  public static final Charset BED_CHARSET = Charset.forName(BED_ENCODING);
+
   /** Expression files encoding. */
   public static final String EXPRESSION_ENCODING = "UTF-8";
 

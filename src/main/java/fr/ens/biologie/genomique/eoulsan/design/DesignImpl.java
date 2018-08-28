@@ -34,6 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 
@@ -47,9 +48,9 @@ class DesignImpl implements Serializable, Design {
   /** Serialization version UID. */
   private static final long serialVersionUID = 7250832351983922161L;
 
-  private static int instanceCount;
+  private static AtomicInteger instanceCount = new AtomicInteger(0);
 
-  private final int designNumber = ++instanceCount;
+  private final int designNumber = instanceCount.incrementAndGet();
   private String designName = "Design" + designNumber;
   private final Map<String, Sample> samples = new LinkedHashMap<>();
   private final Map<String, Experiment> experiments = new LinkedHashMap<>();

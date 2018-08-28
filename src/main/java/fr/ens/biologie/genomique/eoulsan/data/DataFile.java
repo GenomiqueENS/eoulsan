@@ -265,6 +265,40 @@ public class DataFile implements Comparable<DataFile>, Serializable {
     }
   }
 
+  /**
+   * Convert the the DataFile to a DataFile where all the indirection has been
+   * solved. This method use the JDK Path.toRealPath() method. This method has
+   * only an effect for local DataFiles.
+   * @return a DataFile
+   */
+  public DataFile toRealDataFile() {
+
+    if (!isLocalFile()) {
+      return this;
+    }
+
+    try {
+      return new DataFile(toFile().toPath().toRealPath());
+    } catch (IOException e) {
+      return this;
+    }
+  }
+
+  /**
+   * Convert the the DataFile to a absolute DataFile. This method use the JDK
+   * File.getAbsoluteFile() method. This method has only an effect for local
+   * DataFiles.
+   * @return a DataFile
+   */
+  public DataFile toAbsoluteDataFile() {
+
+    if (!isLocalFile()) {
+      return this;
+    }
+
+    return new DataFile(toFile().getAbsoluteFile());
+  }
+
   //
   // Other methods
   //

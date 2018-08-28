@@ -55,7 +55,7 @@ public class TaskStatusImpl implements TaskStatus {
   private String taskDescription;
   private double progress;
 
-  private TaskResultImpl result;
+  private volatile boolean done;
 
   private Date startDate;
   private Date endDate;
@@ -141,8 +141,10 @@ public class TaskStatusImpl implements TaskStatus {
   @Override
   public void setProgress(final double progress) {
 
-    // Check result state
-    checkResultState();
+    // Do nothing if the task is done
+    if (this.done) {
+      return;
+    }
 
     // Check progress value
     checkProgress(progress);
@@ -202,36 +204,28 @@ public class TaskStatusImpl implements TaskStatus {
   @Override
   public TaskResult createTaskResult(final boolean success) {
 
-    // Check result state
-    checkResultState();
-
     // Get the duration of the context execution
     final long duration = endOfStep();
+    this.done = true;
 
     // Create the context result
-    this.result = new TaskResultImpl(this.context, this.startDate, this.endDate,
+    return new TaskResultImpl(this.context, this.startDate, this.endDate,
         duration, this.message,
         this.taskDescription == null ? "" : this.taskDescription, this.counters,
         success);
-
-    return this.result;
   }
 
   @Override
   public TaskResult createTaskResult(final Throwable exception,
       final String exceptionMessage) {
 
-    // Check result state
-    checkResultState();
-
     // Get the duration of the context execution
     final long duration = endOfStep();
+    this.done = true;
 
     // Create the context result
-    this.result = new TaskResultImpl(this.context, this.startDate, this.endDate,
+    return new TaskResultImpl(this.context, this.startDate, this.endDate,
         duration, exception, exceptionMessage);
-
-    return this.result;
   }
 
   @Override
@@ -243,14 +237,6 @@ public class TaskStatusImpl implements TaskStatus {
   //
   // Utility methods
   //
-
-  /**
-   * Check the state of the result creation.
-   */
-  private void checkResultState() {
-
-    checkState(this.result == null, "Step result has been created");
-  }
 
   /**
    * Check progress value.

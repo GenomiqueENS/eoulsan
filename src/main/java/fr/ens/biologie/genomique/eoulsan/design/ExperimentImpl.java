@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 
@@ -47,11 +48,11 @@ public class ExperimentImpl implements Serializable, Experiment {
   /** Serialization version UID. */
   private static final long serialVersionUID = -2644491674956956116L;
 
-  private static int instanceCount;
+  private static AtomicInteger instanceCount = new AtomicInteger(0);
 
   private final Design design;
   private final String experimentId;
-  private final int experimentNumber = ++instanceCount;
+  private final int experimentNumber = instanceCount.incrementAndGet();
   private String experimentName = "Experiment" + experimentNumber;
   private final ExperimentMetadataImpl metadata = new ExperimentMetadataImpl();
   private final List<ExperimentSample> samples = new ArrayList<>();
@@ -112,9 +113,13 @@ public class ExperimentImpl implements Serializable, Experiment {
   @Override
   public ExperimentSample getExperimentSample(final Sample sample) {
 
+    if (sample == null) {
+      return null;
+    }
+
     for (ExperimentSample eSample : this.samples) {
 
-      if (eSample.getSample() == sample) {
+      if (eSample.getSample().getId() == sample.getId()) {
         return eSample;
       }
     }
@@ -140,7 +145,7 @@ public class ExperimentImpl implements Serializable, Experiment {
     }
 
     checkArgument(!this.design.containsExperimentName(name),
-        "The sample name already exists in the design: " + name);
+        "The experiment name already exists in the design: " + name);
 
     this.experimentName = name;
   }

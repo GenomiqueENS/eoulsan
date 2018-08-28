@@ -24,21 +24,11 @@
 
 package fr.ens.biologie.genomique.eoulsan.checkers;
 
+import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.ATTRIBUTE_ID_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.GENOMIC_TYPE_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.STRANDED_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GTF;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.ATTRIBUTE_ID_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.COUNTER_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.FEATURES_FILE_FORMAT;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.GENOMIC_TYPE_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.OLD_ATTRIBUTE_ID_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.OLD_GENOMIC_TYPE_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.OLD_OVERLAP_MODE_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.OLD_REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.OLD_SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.OVERLAP_MODE_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule.STRANDED_PARAMETER_NAME;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -103,12 +93,10 @@ public class GFFChecker implements Checker {
 
       switch (p.getName()) {
 
-      case OLD_GENOMIC_TYPE_PARAMETER_NAME:
       case GENOMIC_TYPE_PARAMETER_NAME:
         this.genomicType = p.getStringValue();
         break;
 
-      case OLD_ATTRIBUTE_ID_PARAMETER_NAME:
       case ATTRIBUTE_ID_PARAMETER_NAME:
         this.attributeId = p.getStringValue();
         break;
@@ -119,20 +107,7 @@ public class GFFChecker implements Checker {
         break;
 
       default:
-
-        if (!FEATURES_FILE_FORMAT.equals(p.getName())
-            && !COUNTER_PARAMETER_NAME.equals(p.getName())
-            && !OVERLAP_MODE_PARAMETER_NAME.equals(p.getName())
-            && !REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME.equals(p.getName())
-            && !SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME.equals(p.getName())
-            && !OLD_OVERLAP_MODE_PARAMETER_NAME.equals(p.getName())
-            && !OLD_REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME.equals(p.getName())
-            && !OLD_SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME.equals(p.getName())) {
-          throw new EoulsanException(
-              "Unknown parameter for " + getName() + " step: " + p.getName());
-
-        }
-
+        break;
       }
     }
   }
@@ -354,7 +329,7 @@ public class GFFChecker implements Checker {
     final Map<String, long[]> result = new HashMap<>();
 
     final List<String> sequenceRegions =
-        entry.getMetadataEntryValues("sequence-region");
+        entry.getMetadata().get("sequence-region");
 
     if (sequenceRegions == null) {
       return null;

@@ -1,5 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.modules.multiqc;
 
+import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.filenameWithoutExtension;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -8,7 +10,6 @@ import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 
 /**
  * This class define a preprocessor for mapper reports.
@@ -44,15 +45,20 @@ public class MapperInputPreprocessor implements InputPreprocessor {
     // Define target log file
     DataFile logFile = data.getDataFile();
 
-    // Create symbolic link
-    if (logFile.exists()) {
-      logFile.symlink(symlink);
+    // Exits if the log file does not exists
+    if (!logFile.exists()) {
+      return;
     }
 
+    // Resolve symbolic links
+    logFile = logFile.toRealDataFile();
+
+    // Create symbolic link
+    logFile.symlink(symlink);
+
     // STAR log
-    DataFile starLog = new DataFile(logFile.getParent(),
-        StringUtils.filenameWithoutExtension(logFile.getName())
-            + '.' + STAR_LOG_SUFFIX);
+    final DataFile starLog = new DataFile(logFile.getParent(),
+        filenameWithoutExtension(logFile.getName()) + '.' + STAR_LOG_SUFFIX);
 
     // If STAR log exists create symbolic link to this log file
     if (starLog.exists()) {

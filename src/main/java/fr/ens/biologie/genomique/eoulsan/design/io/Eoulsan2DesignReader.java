@@ -330,7 +330,7 @@ public class Eoulsan2DesignReader implements DesignReader {
     if (expField.size() != 3) {
 
       // Check if the experiment key doesn't contain more that 3 entry
-      throw new IOException("The experiment key is invalide.");
+      throw new IOException("The experiment key is invalid.");
     }
 
     // getters

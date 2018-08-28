@@ -43,7 +43,7 @@
 
 <source>
 [Header]
-FormatVersion=2
+DesignFormatVersion=2
 Project=finalDesignExample
 ProjectDescription=Example of the final version of the new design for Eoulsan
 Owner=Xavier Bauquet
@@ -137,7 +137,7 @@ WT2_vs_KO2:typeWT%dayday2_vs_typeKO%dayday2
 
 		You can add any other keys. Here are some examples:
 			<ul>
-				<li><b>FormatVersion</b></li>
+				<li><b>DesignFormatVersion</b></li>
 				<li><b>Project</b></li>
 				<li><b>ProjectDescription</b></li>
 				<li><b>Owner</b></li>

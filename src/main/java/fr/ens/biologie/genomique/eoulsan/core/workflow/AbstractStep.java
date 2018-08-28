@@ -33,9 +33,11 @@ import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.noInputPo
 import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.noOutputPort;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.GENERATOR_STEP;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.STANDARD_STEP;
+import static java.util.Objects.requireNonNull;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.common.collect.Sets;
 
@@ -67,7 +69,7 @@ public abstract class AbstractStep implements Step {
   /** Serialization version UID. */
   private static final long serialVersionUID = 2040628014465126384L;
 
-  private static int instanceCounter;
+  private static AtomicInteger instanceCount = new AtomicInteger(0);
 
   private final AbstractWorkflow workflow;
 
@@ -97,7 +99,7 @@ public abstract class AbstractStep implements Step {
   private final DataProduct dataProduct = new DefaultDataProduct();
   private final String dataProductConfiguration;
 
-  private final StepStateObserver observer;
+  private final StepStateDependencies stepStateDependencies;
 
   private final DataFile outputDir;
 
@@ -196,7 +198,7 @@ public abstract class AbstractStep implements Step {
   @Override
   public StepState getState() {
 
-    return this.observer != null ? this.observer.getState() : null;
+    return this.stepStateDependencies != null ? this.stepStateDependencies.getState() : null;
   }
 
   @Override
@@ -269,9 +271,9 @@ public abstract class AbstractStep implements Step {
    * Get the state observer object related to this step.
    * @return a StepStateObserver
    */
-  StepStateObserver getStepStateObserver() {
+  StepStateDependencies getStepStateDependencies() {
 
-    return this.observer;
+    return this.stepStateDependencies;
   }
 
   /**
@@ -307,9 +309,12 @@ public abstract class AbstractStep implements Step {
    * Set the state of the step.
    * @param state the new state of the step
    */
-  public void setState(final StepState state) {
+  private void setState(final StepState state) {
 
-    this.observer.setState(state);
+    requireNonNull(state, "state argument cannot be null");
+
+    // Send the message
+    WorkflowEventBus.getInstance().postStepStateChange(this, state);
   }
 
   /**
@@ -390,7 +395,7 @@ public abstract class AbstractStep implements Step {
     }
 
     // Add step dependency
-    this.observer.addDependency(step);
+    this.stepStateDependencies.addDependency(step);
   }
 
   //
@@ -443,45 +448,6 @@ public abstract class AbstractStep implements Step {
   }
 
   //
-  // Token handling
-  //
-
-  /**
-   * Send a token to the next steps.
-   * @param token token to send
-   */
-  void sendToken(final Token token) {
-
-    checkNotNull(token, "token cannot be null");
-
-    final String outputPortName = token.getOrigin().getName();
-
-    for (StepInputPort inputPort : this.outputPorts.getPort(outputPortName)
-        .getLinks()) {
-
-      inputPort.getStep().postToken(inputPort, token);
-    }
-
-    // Log token sending
-    TokenManagerRegistry.getInstance().getTokenManager(this)
-        .logSendingToken(token.getOrigin(), token);
-  }
-
-  /**
-   * Receive a token.
-   * @param inputPort destination of the token
-   * @param token the token
-   */
-  private void postToken(final StepInputPort inputPort, final Token token) {
-
-    checkNotNull(inputPort, "inputPort cannot be null");
-    checkNotNull(token, "token cannot be null");
-
-    TokenManagerRegistry.getInstance().getTokenManager(this)
-        .postToken(inputPort, token);
-  }
-
-  //
   // Other methods
   //
 
@@ -525,7 +491,7 @@ public abstract class AbstractStep implements Step {
     checkNotNull(type, "Type argument cannot be null");
 
     this.workflow = workflow;
-    this.number = instanceCounter++;
+    this.number = instanceCount.incrementAndGet();
     this.id = type.getDefaultStepId();
     this.skip = false;
     this.terminalStep = false;
@@ -589,7 +555,7 @@ public abstract class AbstractStep implements Step {
     }
 
     // Set state observer
-    this.observer = new StepStateObserver(this);
+    this.stepStateDependencies = new StepStateDependencies(this);
 
     // Register this step in the workflow
     this.workflow.register(this);
@@ -613,7 +579,7 @@ public abstract class AbstractStep implements Step {
     checkNotNull(generatorModule, "The generator module is null");
 
     this.workflow = workflow;
-    this.number = instanceCounter++;
+    this.number = instanceCount.incrementAndGet();
     this.id = generatorModule.getName();
     this.skip = false;
     this.terminalStep = false;
@@ -634,7 +600,7 @@ public abstract class AbstractStep implements Step {
         .defaultDirectory(workflow, this, generatorModule, false);
 
     // Set state observer
-    this.observer = new StepStateObserver(this);
+    this.stepStateDependencies = new StepStateDependencies(this);
 
     // Register this step in the workflow
     this.workflow.register(this);
@@ -693,7 +659,7 @@ public abstract class AbstractStep implements Step {
     checkNotNull(dataProduct, "dataProduct argument cannot be null");
 
     this.workflow = workflow;
-    this.number = instanceCounter++;
+    this.number = instanceCount.incrementAndGet();
     this.id = id;
     this.skip = skip;
     this.moduleName = moduleName;
@@ -719,7 +685,7 @@ public abstract class AbstractStep implements Step {
             workflow, this, module, discardOutput.isCopyResultsToOutput());
 
     // Set state observer
-    this.observer = new StepStateObserver(this);
+    this.stepStateDependencies = new StepStateDependencies(this);
 
     // Register this step in the workflow
     this.workflow.register(this);

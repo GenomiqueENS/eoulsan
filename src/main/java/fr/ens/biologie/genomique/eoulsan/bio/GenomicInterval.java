@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.bio;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.util.Utils;
 
@@ -101,7 +102,8 @@ public class GenomicInterval
    */
   public final boolean include(final int start, final int end) {
 
-    return start >= this.start && end <= this.end;
+    return Math.min(start, end) >= this.start
+        && Math.max(start, end) <= this.end;
   }
 
   /**
@@ -112,9 +114,61 @@ public class GenomicInterval
    */
   public final boolean intersect(final int start, final int end) {
 
-    return (start >= this.start && start <= this.end)
-        || (end >= this.start && end <= this.end)
-        || (start < this.start && end > this.end);
+    final int minStart = Math.min(start, end);
+    final int maxEnd = Math.max(start, end);
+
+    return (minStart >= this.start && minStart <= this.end)
+        || (maxEnd >= this.start && maxEnd <= this.end)
+        || (minStart < this.start && maxEnd > this.end);
+  }
+
+  /**
+   * Test if two genomic intervals have an intersection.
+   * @param interval the genomic interval to compare
+   * @return true if the two genomic intervals have an intersection
+   */
+  public final boolean intersect(final GenomicInterval interval) {
+
+    if (interval == null || !this.chromosome.equals(interval.chromosome)) {
+      return false;
+    }
+
+    if (this.strand != interval.strand
+        && this.strand != '.' && interval.strand != '.') {
+      return false;
+    }
+
+    return intersect(interval.getStart(), interval.getEnd());
+  }
+
+  /**
+   * Get the intersection length.
+   * @param start start position of a sequence
+   * @param end end position of a sequence
+   * @return the length of the intersection
+   */
+  public final int intersectLength(final int start, final int end) {
+
+    if (!intersect(start, end)) {
+      return 0;
+    }
+
+    return Math.min(this.end, Math.max(start, end))
+        - Math.max(this.start, Math.min(start, end)) + 1;
+  }
+
+  /**
+   * Get the intersection length.
+   * @param interval the genomic interval to compare
+   * @return the length of the intersection
+   */
+  public final int intersectLength(final GenomicInterval interval) {
+
+    if (interval == null || !intersect(interval)) {
+      return 0;
+    }
+
+    return intersectLength(interval.getStart(), interval.getEnd());
   }
 
   @Override
@@ -154,7 +208,7 @@ public class GenomicInterval
 
     final GenomicInterval that = (GenomicInterval) o;
 
-    return Utils.equal(this.chromosome, that.chromosome)
+    return Objects.equals(this.chromosome, that.chromosome)
         && this.start == that.start && this.end == that.end
         && this.strand == that.strand;
 
@@ -236,17 +290,5 @@ public class GenomicInterval
     this(gffEntry.getSeqId(), gffEntry.getStart(), gffEntry.getEnd(),
         saveStrandInfo ? gffEntry.getStrand() : '.');
   }
-
-  // /**
-  // * Public constructor
-  // * @param gffEntry GFF entry
-  // * @param stranded save the strand information if "true" or "reverse"
-  // */
-  // public GenomicInterval(final GFFEntry gffEntry, final String stranded) {
-  //
-  // this(gffEntry.getSeqId(), gffEntry.getStart(), gffEntry.getEnd(), stranded
-  // .equals("yes") || stranded.equals("reverse")
-  // ? gffEntry.getStrand() : '.');
-  // }
 
 }

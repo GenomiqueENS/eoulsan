@@ -24,12 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,7 +34,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.Utils;
 
 /**
@@ -49,7 +42,9 @@ import fr.ens.biologie.genomique.eoulsan.util.Utils;
  * @since 1.2
  * @author Laurent Jourdren
  */
-public class GenomicArray<T> {
+public class GenomicArray<T> implements Serializable{
+
+  private static final long serialVersionUID = 539825064205425262L;
 
   private Map<String, ChromosomeZones<T>> chromosomes = new HashMap<>();
 
@@ -820,76 +815,6 @@ public class GenomicArray<T> {
   public Set<String> getChromosomesNames() {
 
     return Collections.unmodifiableSet(this.chromosomes.keySet());
-  }
-
-  //
-  // Save
-  //
-
-  /**
-   * Save the annotation.
-   * @param os Output stream
-   */
-  public void save(final OutputStream os) throws IOException {
-
-    if (os == null) {
-      throw new NullPointerException("os argument cannot be null");
-    }
-
-    final ObjectOutputStream oos = new ObjectOutputStream(os);
-    oos.writeObject(this.chromosomes);
-    oos.close();
-  }
-
-  /**
-   * Save the annotation.
-   * @param outputFile Output file
-   */
-  public void save(final File outputFile) throws IOException {
-
-    if (outputFile == null) {
-      throw new NullPointerException("outputFile argument cannot be null");
-    }
-
-    save(FileUtils.createOutputStream(outputFile));
-  }
-
-  //
-  // Load
-  //
-
-  /**
-   * Load the annotation.
-   * @param is InputStream input stream
-   */
-  @SuppressWarnings(value = "unchecked")
-  public void load(final InputStream is) throws IOException {
-
-    if (is == null) {
-      throw new NullPointerException("is argument cannot be null");
-    }
-
-    final ObjectInputStream ois = new ObjectInputStream(is);
-    try {
-      this.chromosomes = (Map<String, ChromosomeZones<T>>) ois.readObject();
-
-    } catch (ClassNotFoundException e) {
-      throw new IOException("Unable to load data.");
-    }
-    ois.close();
-  }
-
-  /**
-   * Load the annotation.
-   * @param inputFile input file
-   */
-  public void load(final File inputFile) throws IOException {
-
-    if (inputFile == null) {
-      throw new NullPointerException("inputFile argument cannot be null");
-    }
-
-    load(FileUtils.createInputStream(inputFile));
   }
 
   //

@@ -307,7 +307,7 @@ public final class Common {
     }
 
     // Currently only print warning messages when no UI has been set
-    if (StepObserverRegistry.getInstance().getObservers().isEmpty()) {
+    if (StepObserverRegistry.getInstance().isNoObserverRegistered()) {
       System.err.println(message);
     }
   }

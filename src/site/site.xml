@@ -80,6 +80,7 @@
 				<item name="Sam2Bam" href="module-sam2bam.html" />
 				<item name="Bam2Sam" href="module-bam2sam.html" />
 				<item name="Sam2Fastq" href="module-sam2fastq.html" />
+				<item name="Splice2Bed" href="module-splice2bed.html" />
 				<item name="Expression" href="/module-expression.html" />
 				<item name="Expression annotation" href="/module-expressionresultsannotation.html" />
 				<item name="MultiQC" href="/module-multiqc.html" />

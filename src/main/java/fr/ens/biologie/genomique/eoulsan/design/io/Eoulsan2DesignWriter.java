@@ -195,18 +195,21 @@ public class Eoulsan2DesignWriter implements DesignWriter {
 
       for (Experiment experiment : design.getExperiments()) {
 
-        final ExperimentSampleMetadata expSampleMetadata =
-            experiment.getExperimentSample(sample).getMetadata();
+        if (experiment.containsSample(sample)) {
 
-        final List<String> experimentMDKeys =
-            getExperimentSampleAllMetadataKeys(experiment);
+          final ExperimentSampleMetadata expSampleMetadata =
+              experiment.getExperimentSample(sample).getMetadata();
 
-        for (String key : experimentMDKeys) {
+          final List<String> experimentMDKeys =
+              getExperimentSampleAllMetadataKeys(experiment);
 
-          bw.append(TAB_SEPARATOR);
+          for (String key : experimentMDKeys) {
 
-          if (expSampleMetadata.contains(key)) {
-            bw.append(expSampleMetadata.get(key));
+            bw.append(TAB_SEPARATOR);
+
+            if (expSampleMetadata.contains(key)) {
+              bw.append(expSampleMetadata.get(key));
+            }
           }
         }
 

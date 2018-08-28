@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.ui;
 
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.Workflow;
+import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
 
 /**
  * This class define an UI that do nothing.
@@ -46,7 +47,7 @@ public class NoUI extends AbstractUI {
   }
 
   @Override
-  public void notifyStepState(final Step step) {
+  public void notifyStepState(final Step step, final StepState stepState) {
     // Do nothing
   }
 

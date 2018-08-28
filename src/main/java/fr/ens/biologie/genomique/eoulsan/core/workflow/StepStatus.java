@@ -29,9 +29,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import com.google.common.base.Preconditions;
+
+import fr.ens.biologie.genomique.eoulsan.core.workflow.UITaskEvent.TaskStatusMessage;
 
 /**
  * This class define a step status.
@@ -46,9 +47,6 @@ public class StepStatus {
   private final Map<Integer, String> taskNames = new HashMap<>();
   private double progress = Double.NaN;
   private String note;
-
-  private final Set<StepObserver> observers =
-      StepObserverRegistry.getInstance().getObservers();
 
   //
   // Progress Methods
@@ -242,10 +240,8 @@ public class StepStatus {
    */
   public void setTaskSubmitted(final int contextId) {
 
-    // Inform listeners
-    for (StepObserver o : this.observers) {
-      o.notifyTaskSubmitted(this.step, contextId);
-    }
+    WorkflowEventBus.getInstance().postUIEvent(
+        new UITaskEvent(this.step, TaskStatusMessage.SUBMITTED, contextId));
   }
 
   /**
@@ -254,10 +250,8 @@ public class StepStatus {
    */
   public void setTaskRunning(final int contextId) {
 
-    // Inform listeners
-    for (StepObserver o : this.observers) {
-      o.notifyTaskRunning(this.step, contextId);
-    }
+    WorkflowEventBus.getInstance().postUIEvent(
+        new UITaskEvent(this.step, TaskStatusMessage.RUNNING, contextId));
   }
 
   /**
@@ -266,10 +260,8 @@ public class StepStatus {
    */
   public void setTaskDone(final int contextId) {
 
-    // Inform listeners
-    for (StepObserver o : this.observers) {
-      o.notifyTaskDone(this.step, contextId);
-    }
+    WorkflowEventBus.getInstance().postUIEvent(
+        new UITaskEvent(this.step, TaskStatusMessage.DONE, contextId));
   }
 
   //
@@ -285,10 +277,8 @@ public class StepStatus {
   private void progressTaskStatusUpdated(final int contextId,
       final String contextName, final double progress) {
 
-    // Inform listeners
-    for (StepObserver o : this.observers) {
-      o.notifyStepState(this.step, contextId, contextName, progress);
-    }
+    WorkflowEventBus.getInstance().postUIEvent(
+        new UIStepEvent(this.step, contextId, contextName, progress));
   }
 
   /**
@@ -296,11 +286,8 @@ public class StepStatus {
    */
   private void progressStatusUpdated() {
 
-    // Inform listeners
-    for (StepObserver o : this.observers) {
-      o.notifyStepState(this.step, getTerminatedTasks(), getSubmittedTasks(),
-          getProgress());
-    }
+    WorkflowEventBus.getInstance().postUIEvent(new UIStepEvent(this.step,
+        getTerminatedTasks(), getSubmittedTasks(), getProgress()));
   }
 
   /**
@@ -308,10 +295,8 @@ public class StepStatus {
    */
   private void noteStatusUpdated() {
 
-    // Inform listeners
-    for (StepObserver o : this.observers) {
-      o.notifyStepState(this.step, this.note);
-    }
+    WorkflowEventBus.getInstance()
+        .postUIEvent(new UIStepEvent(this.step, this.note));
   }
 
   //

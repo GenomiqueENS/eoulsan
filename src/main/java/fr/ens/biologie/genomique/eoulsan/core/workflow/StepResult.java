@@ -292,7 +292,8 @@ public class StepResult {
         }
 
         // Set the state of the step as fail
-        context.getStep().setState(FAILED);
+        WorkflowEventBus.getInstance().postStepStateChange(context.getStep(),
+            FAILED);
       }
 
     }

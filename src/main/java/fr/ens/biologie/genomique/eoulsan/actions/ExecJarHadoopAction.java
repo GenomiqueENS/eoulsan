@@ -75,6 +75,8 @@ public class ExecJarHadoopAction extends AbstractAction {
       final Path workingPath = new Path(jobPath, "working");
       final Path taskPath = new Path(jobPath, "tasks");
       final Path tmpDir = new Path(jobPath, "tmp");
+      final Path dataPath =
+          new Path(outputPath, Globals.APP_NAME_LOWER_CASE + "-data");
 
       // Set log pathname
       setJobPathname(jobPath.toString());
@@ -96,6 +98,9 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // Set Hadoop working pathname
       setHadoopWorkingPathname(destPath.toString());
+
+      // Set the data path
+      setDataPathname(dataPath.toString());
 
       // Set the temporary directory
       setTemporaryPathname(tmpDir.toString());

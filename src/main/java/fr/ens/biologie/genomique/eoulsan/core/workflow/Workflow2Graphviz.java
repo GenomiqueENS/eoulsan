@@ -182,7 +182,8 @@ public class Workflow2Graphviz {
 
       AbstractStep abstractStep = (AbstractStep) step;
 
-      StepStateObserver observer = ((AbstractStep) step).getStepStateObserver();
+      StepStateDependencies observer =
+          ((AbstractStep) step).getStepStateDependencies();
       Set<AbstractStep> requiredSteps =
           new HashSet<>(observer.getRequiredSteps());
 

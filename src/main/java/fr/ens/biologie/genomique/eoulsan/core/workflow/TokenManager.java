@@ -29,7 +29,6 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.Globals.STEP_RESULT_EXTENSION;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.ABORTED;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.DONE;
-import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.FAILED;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.READY;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.DESIGN_STEP;
@@ -50,8 +49,10 @@ import java.util.Set;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
+import com.google.common.eventbus.Subscribe;
 
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.Common;
@@ -89,6 +90,11 @@ public class TokenManager implements Runnable {
   private final StepOutputPorts outputPorts;
 
   private final Set<Integer> receivedTokens = new HashSet<>();
+  private final HashMultiset<StepInputPort> receivedPortTokens =
+      HashMultiset.create();
+  private final HashMultiset<StepInputPort> expectedPortTokens =
+      HashMultiset.create();
+  private int contextCount;
   private final Multimap<InputPort, Data> inputTokens =
       ArrayListMultimap.create();
   private final Multimap<OutputPort, Data> outputTokens =
@@ -178,7 +184,7 @@ public class TokenManager implements Runnable {
    * @param outputPort the output port
    * @param token the token sent
    */
-  public void logSendingToken(final StepOutputPort outputPort,
+  private void logSendingToken(final StepOutputPort outputPort,
       final Token token) {
 
     Objects.requireNonNull(token);
@@ -314,12 +320,45 @@ public class TokenManager implements Runnable {
     }
   }
 
+  @Subscribe
+  public void tokenEvent(final Token token) {
+
+    Objects.requireNonNull(token);
+
+    final StepOutputPort tokenOrigin = token.getOrigin();
+    final AbstractStep stepOrigin = tokenOrigin.getStep();
+    final int currentStepNumber = this.step.getNumber();
+
+    // Post the token if the token must be post to the current step
+    for (StepInputPort linkInputPort : tokenOrigin.getLinks()) {
+
+      // Check if the link is linked to the current step
+      if (linkInputPort.getStep().getNumber() != currentStepNumber) {
+        continue;
+      }
+
+      // Find the linked port(s)
+      for (StepInputPort sip : this.inputPorts) {
+
+        if (sip.getName().equals(linkInputPort.getName())) {
+          postToken(linkInputPort, token);
+        }
+      }
+    }
+
+    // Log token sending by the step that created the token
+    if (this.step.getNumber() == stepOrigin.getNumber()) {
+      logSendingToken(tokenOrigin, token);
+      return;
+    }
+  }
+
   /**
    * Post a token to the the token manager.
    * @param inputPort port where the token must be posted
    * @param token the token to post
    */
-  public void postToken(final StepInputPort inputPort, final Token token) {
+  private void postToken(final StepInputPort inputPort, final Token token) {
 
     Objects.requireNonNull(token);
     Objects.requireNonNull(inputPort);
@@ -355,15 +394,23 @@ public class TokenManager implements Runnable {
     // Test if the token is an end token
     if (token.isEndOfStepToken()) {
 
-      // Check if input port is empty for non skipped steps
-      checkState(
-          !(!this.step.isSkip() && this.inputTokens.get(inputPort).isEmpty()),
-          "No data receive for port on step "
-              + this.step.getId() + ": " + inputPort.getName());
+      checkState(token.getTokenCount() > -1,
+          "the number of expected token is not set");
 
-      // The input port must be closed
-      this.closedPorts.add(inputPort);
+      checkState(expectedPortTokens.count(inputPort) == 0,
+          "the number of expected token has been already set");
+
+      // Set the number of expected tokens
+      synchronized (this.expectedPortTokens) {
+        this.expectedPortTokens.setCount(inputPort, token.getTokenCount());
+      }
+
     } else {
+
+      // Count the number of tokens received for the input port
+      synchronized(this.receivedPortTokens) {
+        this.receivedPortTokens.add(inputPort);
+      }
 
       // Register data to process
       final Data data = token.getData();
@@ -382,6 +429,23 @@ public class TokenManager implements Runnable {
         }
       }
     }
+
+    // Close ports if all the expected tokens has been received
+    if (this.step.isSkip()
+        || (this.expectedPortTokens.contains(inputPort)
+            && this.receivedPortTokens.count(
+                inputPort) == this.expectedPortTokens.count(inputPort))) {
+
+      // Check if input port is empty for non skipped steps
+      checkState(
+          !(!this.step.isSkip() && this.inputTokens.get(inputPort).isEmpty()),
+          "No data receive for port on step "
+              + this.step.getId() + ": " + inputPort.getName());
+
+      // The input port must be closed
+      this.closedPorts.add(inputPort);
+    }
+
   }
 
   /**
@@ -428,7 +492,9 @@ public class TokenManager implements Runnable {
   private void sendEndOfStepTokens() {
 
     for (StepOutputPort outputPort : this.outputPorts) {
-      this.step.sendToken(new Token(outputPort));
+
+      // Send the token on the event bus
+      WorkflowEventBus.getInstance().postToken(outputPort, this.contextCount);
     }
   }
 
@@ -443,6 +509,8 @@ public class TokenManager implements Runnable {
       samples.put(Naming.toValidName(sample.getId()), sample);
     }
 
+    int maxExistingDataCount = 0;
+
     for (StepOutputPort port : this.outputPorts) {
 
       // If port is not linked or only connected to skipped steps there is need
@@ -452,12 +520,14 @@ public class TokenManager implements Runnable {
       }
 
       final Set<Data> existingData = port.getExistingData();
+      maxExistingDataCount = Math.max(maxExistingDataCount, existingData.size());
 
       if (existingData.size() == 0) {
         throw new EoulsanRuntimeException("No output files of the step \""
             + this.step.getId() + "\" matching with "
             + WorkflowFileNaming.glob(port) + " found");
       }
+
 
       for (Data data : existingData) {
 
@@ -476,11 +546,17 @@ public class TokenManager implements Runnable {
             WorkflowDataUtils.setDataMetaData(data,
                 samples.get(data.getName()));
           }
-
         }
 
-        this.step.sendToken(new Token(port, data));
+        // Send the token on the event bus
+        WorkflowEventBus.getInstance().postToken(port, data);
       }
+    }
+
+    // Save the number of context if the step was not skipped
+    // This number is equals to the number of posted data
+    synchronized(this) {
+      this.contextCount = maxExistingDataCount;
     }
 
     // Send end of step token
@@ -876,6 +952,7 @@ public class TokenManager implements Runnable {
     try {
 
       boolean firstSubmission = true;
+      final WorkflowEventBus eventBus = WorkflowEventBus.getInstance();
 
       do {
 
@@ -893,7 +970,7 @@ public class TokenManager implements Runnable {
 
         // Set the step to the working state
         if (state == READY) {
-          this.step.setState(WORKING);
+          eventBus.postStepStateChange(this.step, WORKING);
         }
 
         // Create new contexts to submit
@@ -913,6 +990,11 @@ public class TokenManager implements Runnable {
             // When the step has no input port
             contexts = createContextWhenNoInputPortExist(workflowContext);
           }
+        }
+
+        // Save the number of tasks of the step
+        synchronized (this) {
+          this.contextCount += contexts.size();
         }
 
         // Submit execution of the available contexts
@@ -953,7 +1035,7 @@ public class TokenManager implements Runnable {
 
               // Change Step state
               if (result.isSuccess()) {
-                this.step.setState(DONE);
+                eventBus.postStepStateChange(this.step, DONE);
 
                 // Write step result
                 if (this.step.isCreateLogFiles()) {
@@ -963,13 +1045,11 @@ public class TokenManager implements Runnable {
                 // Send end of step tokens
                 sendEndOfStepTokens();
               }
-            } else {
-              this.step.setState(FAILED);
             }
           } else {
 
             // If the step is skip the result is always OK
-            this.step.setState(DONE);
+            eventBus.postStepStateChange(this.step, DONE);
 
             // Send all the tokens of step tokens
             sendSkipStepTokens();
@@ -989,6 +1069,9 @@ public class TokenManager implements Runnable {
       this.step.getAbstractWorkflow().emergencyStop(exception,
           "Error while executing the workflow");
     }
+
+    // Register the token manager to the event bus
+    WorkflowEventBus.getInstance().register(this);
 
     // Remove inputs of the step if required by user
     removeInputsIfRequired();
@@ -1063,6 +1146,9 @@ public class TokenManager implements Runnable {
 
     // Get the scheduler
     this.scheduler = TaskSchedulerFactory.getScheduler();
+
+    // Register the token manager to the event bus
+    WorkflowEventBus.getInstance().register(this);
   }
 
 }

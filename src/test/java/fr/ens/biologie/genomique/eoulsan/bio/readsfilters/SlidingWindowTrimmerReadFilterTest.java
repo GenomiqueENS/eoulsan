@@ -16,7 +16,7 @@ public class SlidingWindowTrimmerReadFilterTest {
     filter.setParameter("arguments", "4:29");
     filter.init();
     assertFalse(filter.accept(null));
-    ReadSequence read = new ReadSequence(0, "read1", "AGGT", "AA;;");
+    ReadSequence read = new ReadSequence("read1", "AGGT", "AA;;");
     assertTrue(filter.accept(read));
     assertEquals("read1", read.getName());
     assertEquals("AG", read.getSequence());
@@ -25,7 +25,7 @@ public class SlidingWindowTrimmerReadFilterTest {
     filter = new SlidingWindowTrimmerReadFilter();
     filter.setParameter("arguments", "6:29");
     filter.init();
-    read = new ReadSequence(0, "read2", "ATCTGGT", "A;;AA;;");
+    read = new ReadSequence("read2", "ATCTGGT", "A;;AA;;");
     assertTrue(filter.accept(read));
     assertEquals("read2", read.getName());
     assertEquals("ATCTG", read.getSequence());
@@ -34,7 +34,7 @@ public class SlidingWindowTrimmerReadFilterTest {
     filter = new SlidingWindowTrimmerReadFilter();
     filter.setParameter("arguments", "9:27.3");
     filter.init();
-    read = new ReadSequence(0, "read3", "ATATCTGGT", ";;A;;AA;;");
+    read = new ReadSequence("read3", "ATATCTGGT", ";;A;;AA;;");
     assertTrue(filter.accept(read));
     assertEquals("read3", read.getName());
     assertEquals("ATATCTG", read.getSequence());
@@ -43,13 +43,13 @@ public class SlidingWindowTrimmerReadFilterTest {
     filter = new SlidingWindowTrimmerReadFilter();
     filter.setParameter("arguments", "9:27");
     filter.init();
-    read = new ReadSequence(0, "read3", "ATATCTGGT", "AA;;;;;;;");
+    read = new ReadSequence("read3", "ATATCTGGT", "AA;;;;;;;");
     assertTrue(filter.accept(read));
     assertEquals("read3", read.getName());
     assertEquals("AT", read.getSequence());
     assertEquals("AA", read.getQuality());
 
-    read = new ReadSequence(0, "read3", "ATATCTGGT", ";;;;;;;AA");
+    read = new ReadSequence("read3", "ATATCTGGT", ";;;;;;;AA");
     assertTrue(filter.accept(read));
     assertEquals("read3", read.getName());
     assertEquals("ATATCTGGT", read.getSequence());

@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.bio;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.md5DigestToString;
 import static fr.ens.biologie.genomique.eoulsan.util.Utils.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.util.Utils.newArrayList;
 import static java.util.Arrays.asList;
@@ -35,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
@@ -425,7 +425,7 @@ public class GenomeDescription {
 
     // Compute final MD5 sum
     if (md5Digest != null) {
-      result.setMD5Sum(digestToString(md5Digest));
+      result.setMD5Sum(md5DigestToString(md5Digest));
     }
 
     genomeFastaIs.close();
@@ -476,17 +476,6 @@ public class GenomeDescription {
     }
 
     return sequence.length();
-  }
-
-  private static String digestToString(final MessageDigest md) {
-
-    if (md == null) {
-      return null;
-    }
-
-    final BigInteger bigInt = new BigInteger(1, md.digest());
-
-    return bigInt.toString(16);
   }
 
   //

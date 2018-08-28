@@ -157,4 +157,9 @@ public class DataFormats {
   /** R single cell experiment. */
   public static final DataFormat SINGLE_CELL_EXPERMIMENT_RDS =
       registry.getDataFormatFromName("singlecellexperiment_rds");
+
+  /** BED format. */
+  public static final DataFormat MAPPER_RESULT_BED =
+      registry.getDataFormatFromName("mapper_results_bed");
+
 }

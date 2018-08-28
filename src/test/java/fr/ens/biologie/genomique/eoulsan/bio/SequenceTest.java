@@ -36,19 +36,6 @@ import org.junit.Test;
 public class SequenceTest {
 
   @Test
-  public void testGetSetId() {
-
-    Sequence s = new Sequence();
-    assertEquals(0, s.getId());
-
-    s.setId(1);
-    assertEquals(1, s.getId());
-
-    s.setId(30);
-    assertEquals(30, s.getId());
-  }
-
-  @Test
   public void testGetSetName() {
 
     Sequence s = new Sequence();
@@ -211,36 +198,31 @@ public class SequenceTest {
   public void testSet() {
 
     Sequence s1 = new Sequence();
-    assertEquals(0, s1.getId());
     assertNull(s1.getName());
     assertNull(s1.getDescription());
     assertEquals(Alphabets.AMBIGUOUS_DNA_ALPHABET, s1.getAlphabet());
     assertNull(s1.getSequence());
 
-    Sequence s2 = new Sequence(1, "toto", "ATGC", "test sequence");
+    Sequence s2 = new Sequence("toto", "ATGC", "test sequence");
     s2.setAlphabet(Alphabets.UNAMBIGUOUS_DNA_ALPHABET);
-    assertEquals(1, s2.getId());
     assertEquals("toto", s2.getName());
     assertEquals("test sequence", s2.getDescription());
     assertEquals(Alphabets.UNAMBIGUOUS_DNA_ALPHABET, s2.getAlphabet());
     assertEquals("ATGC", s2.getSequence());
 
     // Test if there is no change in s1
-    assertEquals(0, s1.getId());
     assertNull(s1.getName());
     assertNull(s1.getDescription());
     assertEquals(Alphabets.AMBIGUOUS_DNA_ALPHABET, s1.getAlphabet());
     assertNull(s1.getSequence());
 
     s1.set(s2);
-    assertEquals(1, s1.getId());
     assertEquals("toto", s1.getName());
     assertEquals("test sequence", s1.getDescription());
     assertEquals(Alphabets.UNAMBIGUOUS_DNA_ALPHABET, s1.getAlphabet());
     assertEquals("ATGC", s1.getSequence());
 
     Sequence s3 = new Sequence(s2);
-    assertEquals(1, s3.getId());
     assertEquals("toto", s3.getName());
     assertEquals("test sequence", s3.getDescription());
     assertEquals(Alphabets.UNAMBIGUOUS_DNA_ALPHABET, s3.getAlphabet());
@@ -276,7 +258,7 @@ public class SequenceTest {
   @Test
   public void testSubSequence() {
 
-    Sequence s1 = new Sequence(1, "toto", "ATGC");
+    Sequence s1 = new Sequence("toto", "ATGC");
 
     try {
       s1.subSequence(-1, 2);
@@ -304,7 +286,6 @@ public class SequenceTest {
 
     s2 = s1.subSequence(1, 4);
     assertEquals("TGC", s2.getSequence());
-    assertEquals(-1, s2.getId());
     assertEquals("toto[part]", s2.getName());
 
     s1.setName(null);
@@ -319,8 +300,8 @@ public class SequenceTest {
   @Test
   public void testConcat() {
 
-    Sequence s1 = new Sequence(1, "toto", "AATT");
-    Sequence s2 = new Sequence(2, "titi", "GGCC");
+    Sequence s1 = new Sequence("toto", "AATT");
+    Sequence s2 = new Sequence("titi", "GGCC");
 
     Sequence s3 = s1.concat(s2);
     assertEquals("AATTGGCC", s3.getSequence());
@@ -338,7 +319,6 @@ public class SequenceTest {
     assertEquals(Alphabets.UNAMBIGUOUS_DNA_ALPHABET, s3.getAlphabet());
 
     s3 = s1.concat(null);
-    assertEquals(s1.getId(), s3.getId());
     assertEquals(s1.getName(), s3.getName());
     assertEquals(s1.getAlphabet(), s3.getAlphabet());
     assertEquals(s1.getSequence(), s3.getSequence());
@@ -348,15 +328,15 @@ public class SequenceTest {
   @Test
   public void testCountSequenceSequence() {
 
-    Sequence s1 = new Sequence(1, "toto", "AATTGGTT");
-    Sequence s2 = new Sequence(1, "titi", "TT");
+    Sequence s1 = new Sequence("toto", "AATTGGTT");
+    Sequence s2 = new Sequence("titi", "TT");
 
     assertEquals(2, s1.countSequence(s2));
-    s2 = new Sequence(1, "titi", "AA");
+    s2 = new Sequence("titi", "AA");
     assertEquals(1, s1.countSequence(s2));
-    s2 = new Sequence(1, "titi", "GG");
+    s2 = new Sequence("titi", "GG");
     assertEquals(1, s1.countSequence(s2));
-    s2 = new Sequence(1, "titi", "CC");
+    s2 = new Sequence("titi", "CC");
     assertEquals(0, s1.countSequence(s2));
 
     assertEquals(0, s1.countSequence((Sequence) null));
@@ -365,7 +345,7 @@ public class SequenceTest {
   @Test
   public void testCountSequenceString() {
 
-    Sequence s = new Sequence(1, "toto", "AATTGGTT");
+    Sequence s = new Sequence("toto", "AATTGGTT");
     assertEquals(2, s.countSequence("A"));
     assertEquals(1, s.countSequence("AA"));
     assertEquals(4, s.countSequence("T"));
@@ -374,16 +354,16 @@ public class SequenceTest {
     assertEquals(0, s.countSequence(""));
     assertEquals(0, s.countSequence((String) null));
 
-    s = new Sequence(1, "toto", null);
+    s = new Sequence("toto", null);
     assertEquals(0, s.countSequence("TT"));
 
-    s = new Sequence(1, "toto", "");
+    s = new Sequence("toto", "");
     assertEquals(0, s.countSequence("TT"));
 
-    s = new Sequence(1, "toto", "AATTTGGTT");
+    s = new Sequence("toto", "AATTTGGTT");
     assertEquals(2, s.countSequence("TT"));
 
-    s = new Sequence(1, "toto", "AATTTTGGTT");
+    s = new Sequence("toto", "AATTTTGGTT");
     assertEquals(3, s.countSequence("TT"));
 
   }
@@ -391,38 +371,38 @@ public class SequenceTest {
   @Test
   public void testGettm() {
 
-    Sequence s = new Sequence(1, "toto", "AATTGGTT");
+    Sequence s = new Sequence("toto", "AATTGGTT");
     assertEquals(s.getTm(50.0f, 50.0f), s.getTm(), 0.1);
   }
 
   @Test
   public void testGetGCPercent() {
 
-    Sequence s = new Sequence(1, "toto", "AATTGGTT");
+    Sequence s = new Sequence("toto", "AATTGGTT");
     assertEquals(2.0 / 8.0, s.getGCPercent(), 0.1);
 
-    s = new Sequence(1, "toto", "");
+    s = new Sequence("toto", "");
     assertEquals(Double.NaN, s.getGCPercent(), 0.1);
 
-    s = new Sequence(1, "toto", null);
+    s = new Sequence("toto", null);
     assertEquals(Double.NaN, s.getGCPercent(), 0.1);
 
-    s = new Sequence(1, "toto", "AATTAATT");
+    s = new Sequence("toto", "AATTAATT");
     assertEquals(0.0 / 8.0, s.getGCPercent(), 0.1);
 
-    s = new Sequence(1, "toto", "AATTGGCC");
+    s = new Sequence("toto", "AATTGGCC");
     assertEquals(4.0 / 8.0, s.getGCPercent(), 0.1);
   }
 
   @Test
   public void testReverse() {
 
-    Sequence s = new Sequence(0, "toto", "ATGC");
+    Sequence s = new Sequence("toto", "ATGC");
     assertEquals("ATGC", s.getSequence());
     s.reverse();
     assertEquals("CGTA", s.getSequence());
 
-    s = new Sequence(0, "toto", null);
+    s = new Sequence("toto", null);
     assertNull(s.getSequence());
   }
 
@@ -437,12 +417,12 @@ public class SequenceTest {
   @Test
   public void testComplement() {
 
-    Sequence s = new Sequence(0, "toto", "ATGC");
+    Sequence s = new Sequence("toto", "ATGC");
     assertEquals("ATGC", s.getSequence());
     s.complement();
     assertEquals("TACG", s.getSequence());
 
-    s = new Sequence(0, "toto", null);
+    s = new Sequence("toto", null);
     assertNull(s.getSequence());
   }
 
@@ -459,12 +439,12 @@ public class SequenceTest {
   @Test
   public void testReverseComplement() {
 
-    Sequence s = new Sequence(0, "toto", "ATGC");
+    Sequence s = new Sequence("toto", "ATGC");
     assertEquals("ATGC", s.getSequence());
     s.reverseComplement();
     assertEquals("GCAT", s.getSequence());
 
-    s = new Sequence(0, "toto", null);
+    s = new Sequence("toto", null);
     assertNull(s.getSequence());
   }
 
@@ -482,11 +462,11 @@ public class SequenceTest {
   @Test
   public void testToFasta() {
 
-    Sequence s = new Sequence(0, "toto", "ATGC");
-    assertEquals(">toto\nATGC\n", s.toFasta());
-    s = new Sequence(0, null, "ATGC");
-    assertEquals(">\nATGC\n", s.toFasta());
-    s = new Sequence(0, "toto", null);
+    Sequence s = new Sequence("toto", "ATGC");
+    assertEquals(">toto\nATGC", s.toFasta());
+    s = new Sequence(null, "ATGC");
+    assertEquals(">\nATGC", s.toFasta());
+    s = new Sequence("toto", null);
     assertEquals(">toto\n", s.toFasta());
 
   }
@@ -494,13 +474,13 @@ public class SequenceTest {
   @Test
   public void testToFastaInt() {
 
-    Sequence s = new Sequence(0, "toto", "ATGC");
-    assertEquals(">toto\nATGC\n", s.toFasta(0));
-    assertEquals(">toto\nATGC\n", s.toFasta(60));
+    Sequence s = new Sequence("toto", "ATGC");
+    assertEquals(">toto\nATGC", s.toFasta(0));
+    assertEquals(">toto\nATGC", s.toFasta(60));
 
-    s = new Sequence(0, "toto", "ATGCATGCAT");
+    s = new Sequence("toto", "ATGCATGCAT");
     assertEquals(">toto\nATGCA\nTGCAT\n", s.toFasta(5));
-    assertEquals(">toto\nATGCAT\nGCAT\n", s.toFasta(6));
+    assertEquals(">toto\nATGCAT\nGCAT", s.toFasta(6));
   }
 
   @Test
@@ -546,28 +526,28 @@ public class SequenceTest {
   @Test
   public void testValidate() {
 
-    Sequence s = new Sequence(0, "toto", "ATGC");
+    Sequence s = new Sequence("toto", "ATGC");
     assertTrue(s.validate());
 
-    s = new Sequence(-1, "toto", "ATGC");
+    s = new Sequence("toto", "ATGC");
     assertTrue(s.validate());
 
-    s = new Sequence(0, "toto", "A#GC");
+    s = new Sequence("toto", "A#GC");
     assertFalse(s.validate());
-    s = new Sequence(0, "toto", null);
+    s = new Sequence("toto", null);
     assertFalse(s.validate());
-    s = new Sequence(0, null, "ATGC");
+    s = new Sequence(null, "ATGC");
     assertFalse(s.validate());
-    s = new Sequence(0, "toto", "");
+    s = new Sequence("toto", "");
     assertFalse(s.validate());
   }
 
   @Test
   public void testEqualsObject() {
 
-    Sequence s1 = new Sequence(0, "toto", "ATGC", "desc");
-    Sequence s2 = new Sequence(0, "toto", "ATGC", "desc");
-    Sequence s3 = new Sequence(0, "titi", "ATGC", "desc");
+    Sequence s1 = new Sequence("toto", "ATGC", "desc");
+    Sequence s2 = new Sequence("toto", "ATGC", "desc");
+    Sequence s3 = new Sequence("titi", "ATGC", "desc");
 
     assertTrue(s1.equals(s1));
     assertFalse(s1.equals(null));
@@ -601,17 +581,14 @@ public class SequenceTest {
     assertFalse(s1.equals(s2));
     s2.setSequence("ATGC");
     assertTrue(s1.equals(s2));
-
-    s2.setId(5);
-    assertFalse(s1.equals(s2));
   }
 
   @Test
   public void testHashCode() {
 
-    Sequence s1 = new Sequence(0, "toto", "ATGC", "desc");
-    Sequence s2 = new Sequence(0, "toto", "ATGC", "desc");
-    Sequence s3 = new Sequence(0, "titi", "ATGC", "desc");
+    Sequence s1 = new Sequence("toto", "ATGC", "desc");
+    Sequence s2 = new Sequence("toto", "ATGC", "desc");
+    Sequence s3 = new Sequence("titi", "ATGC", "desc");
 
     assertEquals(s1.hashCode(), s2.hashCode());
     assertNotSame(s1.hashCode(), s3.hashCode());
@@ -629,16 +606,15 @@ public class SequenceTest {
     s2.setAlphabet(Alphabets.AMBIGUOUS_DNA_ALPHABET);
     assertEquals(s1.hashCode(), s2.hashCode());
 
-    s2.setId(5);
     assertNotSame(s1.hashCode(), s2.hashCode());
   }
 
   @Test
   public void testToString() {
 
-    Sequence s = new Sequence(1, "toto", "ATGC", "desc");
+    Sequence s = new Sequence("toto", "ATGC", "desc");
     assertEquals(
-        "Sequence{id=1, name=toto, description=desc, alphabet=AmbiguousDNA, sequence=ATGC}",
+        "Sequence{name=toto, description=desc, alphabet=AmbiguousDNA, sequence=ATGC}",
         s.toString());
 
   }
