@@ -102,10 +102,18 @@ public class DockerManager {
   private DockerManager() throws IOException {
 
     if (EoulsanRuntime.isRuntime()
-        && EoulsanRuntime.getRuntime().getMode().isHadoopMode()) {
-      this.client = new FallBackDockerClient();
+        && EoulsanRuntime.getSettings().isDockerBySingularityEnabled()) {
+
+      this.client = new SingularityDockerClient();
+
     } else {
-      this.client = new SpotifyDockerClient();
+
+      if (EoulsanRuntime.isRuntime()
+          && EoulsanRuntime.getRuntime().getMode().isHadoopMode()) {
+        this.client = new FallBackDockerClient();
+      } else {
+        this.client = new SpotifyDockerClient();
+      }
     }
 
     this.client
