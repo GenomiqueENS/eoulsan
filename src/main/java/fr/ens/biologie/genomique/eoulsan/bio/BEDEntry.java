@@ -488,7 +488,7 @@ public class BEDEntry {
     sb.append('\t');
     sb.append(this.start == -1 ? 0 : this.start - 1);
     sb.append('\t');
-    sb.append(this.end == -1 ? 0 : this.end + 1);
+    sb.append(this.end == -1 ? 0 : this.end);
 
     if (fieldCount == 3) {
       return sb.toString();
@@ -502,7 +502,7 @@ public class BEDEntry {
     }
 
     sb.append('\t');
-    sb.append("".equals(this.score) ? this.score : '0');
+    sb.append(this.score);
 
     if (fieldCount == 5) {
       return sb.toString();
@@ -519,7 +519,7 @@ public class BEDEntry {
     sb.append(this.getThickStart() == -1 ? "0" : this.thickStart - 1);
 
     sb.append('\t');
-    sb.append(this.getThickEnd() == -1 ? "0" : this.thickEnd + 1);
+    sb.append(this.getThickEnd() == -1 ? "0" : this.thickEnd);
 
     if (fieldCount == 8) {
       return sb.toString();
@@ -536,14 +536,14 @@ public class BEDEntry {
     sb.append(getBlockCount());
     sb.append('\t');
 
-    for (int i : getBlockStarts()) {
+    for (int i : getBlockSizes()) {
       sb.append(i - 1);
       sb.append(',');
     }
     sb.append('\t');
 
-    for (int i : getBlockSizes()) {
-      sb.append(i - 1);
+    for (int i : getBlockStarts()) {
+      sb.append(i - this.start);
       sb.append(',');
     }
 
@@ -639,7 +639,7 @@ public class BEDEntry {
     }
 
     this.start = parseCoordinate(fields.get(1), 1, Integer.MIN_VALUE);
-    this.end = parseCoordinate(fields.get(2), -1, Integer.MAX_VALUE);
+    this.end = parseCoordinate(fields.get(2), 0, Integer.MAX_VALUE);
 
     if (requiredFieldCount == 3) {
       return;
@@ -673,7 +673,7 @@ public class BEDEntry {
     }
 
     this.thickStart = parseCoordinate(fields.get(6), 1, Integer.MIN_VALUE);
-    this.thickEnd = parseCoordinate(fields.get(7), -1, Integer.MAX_VALUE);
+    this.thickEnd = parseCoordinate(fields.get(7), 0, Integer.MAX_VALUE);
 
     if (requiredFieldCount == 8) {
       return;
@@ -693,8 +693,9 @@ public class BEDEntry {
           s);
     }
 
-    List<Integer> starts = parseIntList(fields.get(10));
-    List<Integer> sizes = parseIntList(fields.get(11));
+    List<Integer> sizes = parseIntList(fields.get(10));
+    List<Integer> starts = parseIntList(fields.get(11));
+
 
     if (starts.size() != blockCount) {
       throw new BadBioEntryException("Invalid block starts: "
@@ -706,7 +707,8 @@ public class BEDEntry {
     }
 
     for (int i = 0; i < blockCount; i++) {
-      addBlock(starts.get(i) + 1, starts.get(i) + 1 + sizes.get(i));
+      addBlock(this.start + starts.get(i),
+          this.start + starts.get(i) + sizes.get(i));
     }
 
   }

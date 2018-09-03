@@ -45,7 +45,7 @@ public class BEDEntryTest {
     BEDEntry e = new BEDEntry();
     e.parse("chr1\t11873\t14409\tuc001aaa.3\t0\t+", 6);
 
-    assertEquals(14408, e.getEnd());
+    assertEquals(14409, e.getEnd());
   }
 
   @Test
@@ -54,7 +54,7 @@ public class BEDEntryTest {
     BEDEntry e = new BEDEntry();
     e.parse("chr1\t1000\t2001\tuc001aaa.3\t0\t+", 6);
 
-    assertEquals(1000, e.getLength());
+    assertEquals(1001, e.getLength());
   }
 
   @Test
@@ -105,7 +105,7 @@ public class BEDEntryTest {
         "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t21873\t0\t3\t354,109,1189,\t0,739,1347,";
 
     e.parse(s, 12);
-    assertEquals(21872, e.getThickEnd());
+    assertEquals(21873, e.getThickEnd());
   }
 
   @Test
@@ -134,7 +134,7 @@ public class BEDEntryTest {
         "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t1000\t2001\t0\t3\t354,109,1189,\t0,739,1347,";
 
     e.parse(s, 12);
-    assertEquals(1000, e.getThickLength());
+    assertEquals(1001, e.getThickLength());
 
     s = "chr1\t11873\t14409";
     e.parse(s);
