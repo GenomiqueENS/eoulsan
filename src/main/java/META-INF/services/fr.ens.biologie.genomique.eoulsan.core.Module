@@ -11,8 +11,6 @@ fr.ens.biologie.genomique.eoulsan.modules.mapping.local.SAM2BAMLocalModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAM2BAMHadoopModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.local.BAM2SAMLocalModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.local.SAM2FASTQLocalModule
-fr.ens.biologie.genomique.eoulsan.modules.mapping.local.RmDupLocalModule
-fr.ens.biologie.genomique.eoulsan.modules.mapping.local.MergeInputRepLocalModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.local.Splice2BEDModule
 
 # Filter and mapping steps
@@ -62,7 +60,11 @@ fr.ens.biologie.genomique.eoulsan.modules.ImportModule
 fr.ens.biologie.genomique.eoulsan.modules.FailModule
 fr.ens.biologie.genomique.eoulsan.modules.RequirementInstallerModule
 
-# Chip-Seq QC
+# Chip-Seq mapping steps
+fr.ens.biologie.genomique.eoulsan.modules.mapping.chipseq.RmDupLocalModule
+fr.ens.biologie.genomique.eoulsan.modules.mapping.chipseq.MergeInputRepLocalModule
+
+# Chip-Seq QC steps
 fr.ens.biologie.genomique.eoulsan.modules.chipseq.qc.CountSplicedReadsModule
 fr.ens.biologie.genomique.eoulsan.modules.chipseq.qc.IDRModule
 
