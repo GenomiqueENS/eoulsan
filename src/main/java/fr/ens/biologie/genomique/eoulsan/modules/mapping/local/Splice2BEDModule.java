@@ -53,8 +53,10 @@ public class Splice2BEDModule extends AbstractSplice2BEDModule {
 
       String trackName = inData.getName();
       String trackDescription = inData.getMetadata().get("Description");
+      String trackColor = inData.getMetadata().get("TrackColor");
 
-      convert(samFile, bedFile, trackName, trackDescription, reporter);
+      convert(samFile, bedFile, trackName, trackDescription, trackColor,
+          reporter);
 
       // Set the description of the context
       status.setDescription("Convert alignments to BED format ("
@@ -74,8 +76,8 @@ public class Splice2BEDModule extends AbstractSplice2BEDModule {
 
   private static void convert(final DataFile samDataFile,
       final DataFile bedDataFile, final String trackName,
-      final String trackDescription, final Reporter reporter)
-      throws IOException {
+      final String trackDescription, final String trackColor,
+      final Reporter reporter) throws IOException {
 
     try (
         final SamReader samReader = SamReaderFactory.makeDefault()
@@ -93,13 +95,26 @@ public class Splice2BEDModule extends AbstractSplice2BEDModule {
 
       for (final SAMRecord samRecord : samReader) {
 
+        // Discard unmapped alignments
+        if (samRecord.getReadUnmappedFlag()) {
+          continue;
+        }
+
         // Parse splice
         BEDEntry entry = parseIntervalsToBEDEntry(samRecord, metadata);
 
-        if (entry.getStrand() == '+') {
-          entry.setRgbItem(PLUS_COLOR);
-        } else if (entry.getStrand() == '-') {
-          entry.setRgbItem(MINUS_COLOR);
+        // Set score
+        entry.setScore(1000);
+
+        // Set track color
+        if (trackColor != null && !"".equals(trackColor.trim())) {
+          entry.setRgbItem(trackColor.trim());
+        } else {
+          if (entry.getStrand() == '+') {
+            entry.setRgbItem(PLUS_COLOR);
+          } else if (entry.getStrand() == '-') {
+            entry.setRgbItem(MINUS_COLOR);
+          }
         }
 
         // Write BED entry
