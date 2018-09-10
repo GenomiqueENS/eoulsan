@@ -18,6 +18,7 @@ import com.google.common.base.Splitter;
 import fr.ens.biologie.genomique.eoulsan.bio.DenseExpressionMatrix;
 import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 
 /**
  * This class define an ExpressionMatrix reader for TSV format.
@@ -53,7 +54,7 @@ public class ExpressionMatrixTSVReader implements ExpressionMatrixReader {
         continue;
       }
 
-      List<String> fields = splitter.splitToList(line);
+      List<String> fields = GuavaCompatibility.splitToList(splitter, line);
 
       if (first) {
         if (fields.size() == 1) {

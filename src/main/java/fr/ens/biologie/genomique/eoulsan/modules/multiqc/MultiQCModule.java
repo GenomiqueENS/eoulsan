@@ -37,6 +37,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
 import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
 import fr.ens.biologie.genomique.eoulsan.util.process.SystemSimpleProcess;
@@ -203,8 +204,9 @@ public class MultiQCModule extends AbstractModule {
 
     final Map<String, InputPreprocessor> result = new HashMap<>();
 
-    for (String report : Splitter.on(',').trimResults().omitEmptyStrings()
-        .splitToList(reports.toLowerCase())) {
+    for (String report : GuavaCompatibility.splitToList(
+        Splitter.on(',').trimResults().omitEmptyStrings(),
+        reports.toLowerCase())) {
 
       // Only process each report type once
       if (result.containsKey(report)) {

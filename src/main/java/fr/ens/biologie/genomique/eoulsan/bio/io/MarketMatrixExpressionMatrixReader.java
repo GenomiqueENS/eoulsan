@@ -16,6 +16,7 @@ import com.google.common.base.Splitter;
 import fr.ens.biologie.genomique.eoulsan.bio.DenseExpressionMatrix;
 import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 
 /**
  * This class define a reader for matrix saved at Market Matrix format.
@@ -77,8 +78,8 @@ public class MarketMatrixExpressionMatrixReader
           throw new IOException("Invalid Market Matrice header: " + line);
         }
 
-        List<String> fields =
-            Splitter.on(' ').trimResults().omitEmptyStrings().splitToList(line);
+        List<String> fields = GuavaCompatibility.splitToList(
+            Splitter.on(' ').trimResults().omitEmptyStrings(), line);
 
         if (fields.size() < 2) {
           throw new IOException("Invalid Market Matrice header: " + line);
@@ -125,7 +126,8 @@ public class MarketMatrixExpressionMatrixReader
         continue;
       }
 
-      List<String> fields = Splitter.on(' ').splitToList(line);
+      List<String> fields =
+          GuavaCompatibility.splitToList(Splitter.on(' '), line);
       if (fields.size() != 3) {
         throw new IOException(
             "3 values are expected line #" + lineCount + ": " + line);

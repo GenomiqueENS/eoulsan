@@ -10,6 +10,8 @@ import java.util.List;
 
 import com.google.common.base.Splitter;
 
+import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
+
 /**
  * This class define a reader for CellRanger output matrix.
  * @author Laurent Jourdren
@@ -62,7 +64,7 @@ public class CellRangerExpressionMatrixReader
           continue;
         }
 
-        List<String> fields = splitter.splitToList(line);
+        List<String> fields = GuavaCompatibility.splitToList(splitter, line);
         list.add(fields.get(0));
       }
 
