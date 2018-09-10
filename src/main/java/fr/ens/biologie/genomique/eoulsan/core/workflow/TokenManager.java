@@ -408,7 +408,7 @@ public class TokenManager implements Runnable {
     } else {
 
       // Count the number of tokens received for the input port
-      synchronized(this.receivedPortTokens) {
+      synchronized (this.receivedPortTokens) {
         this.receivedPortTokens.add(inputPort);
       }
 
@@ -520,14 +520,14 @@ public class TokenManager implements Runnable {
       }
 
       final Set<Data> existingData = port.getExistingData();
-      maxExistingDataCount = Math.max(maxExistingDataCount, existingData.size());
+      maxExistingDataCount =
+          Math.max(maxExistingDataCount, existingData.size());
 
       if (existingData.size() == 0) {
         throw new EoulsanRuntimeException("No output files of the step \""
             + this.step.getId() + "\" matching with "
             + WorkflowFileNaming.glob(port) + " found");
       }
-
 
       for (Data data : existingData) {
 
@@ -555,7 +555,7 @@ public class TokenManager implements Runnable {
 
     // Save the number of context if the step was not skipped
     // This number is equals to the number of posted data
-    synchronized(this) {
+    synchronized (this) {
       this.contextCount = maxExistingDataCount;
     }
 

@@ -405,8 +405,7 @@ public class ImportModule extends AbstractModule {
     Finder finder = new Finder(workingDirectory.toFile(), pattern);
 
     Path baseDir = pattern.startsWith("/")
-        ? getMinExistingPath(pattern)
-        : workingDirectory.toFile().toPath();
+        ? getMinExistingPath(pattern) : workingDirectory.toFile().toPath();
 
     Files.walkFileTree(baseDir, finder);
     return finder.getFiles();

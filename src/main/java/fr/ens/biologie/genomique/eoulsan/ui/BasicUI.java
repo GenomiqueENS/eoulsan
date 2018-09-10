@@ -48,7 +48,6 @@ public class BasicUI extends AbstractUI {
   private final Map<Step, Double> steps = new HashMap<>();
   private final Map<Step, StepState> stepState = new HashMap<>();
 
-
   private int lastMessageLength = 0;
 
   //

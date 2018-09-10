@@ -30,7 +30,8 @@ public class ExpressionMatrixSparseReader implements ExpressionMatrixReader {
   @Override
   public ExpressionMatrix read() throws IOException {
 
-    // TODO Create a Factory for ExpressionMatrix with newMatrix() for the default one
+    // TODO Create a Factory for ExpressionMatrix with newMatrix() for the
+    // default one
     return read(new DenseExpressionMatrix());
   }
 

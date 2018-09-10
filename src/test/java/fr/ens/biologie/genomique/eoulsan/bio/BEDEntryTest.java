@@ -747,8 +747,9 @@ public class BEDEntryTest {
         e.getMetadataKeyNames());
     assertEquals(Arrays.asList("position chr7:127471196-127495720", "hide all"),
         e.getMetadataEntryValues("browser"));
-    assertEquals(Arrays.asList(
-        "name=\"ItemRGBDemo\" description=\"Item RGB demonstration\" visibility=2 itemRgb=\"On\""),
+    assertEquals(
+        Arrays.asList(
+            "name=\"ItemRGBDemo\" description=\"Item RGB demonstration\" visibility=2 itemRgb=\"On\""),
         e.getMetadataEntryValues("track"));
   }
 

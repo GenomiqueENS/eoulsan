@@ -80,8 +80,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
       "remove.supplementary.alignments";
   public static final String REMOVE_NON_ASSIGNED_FEATURES_SAM_TAGS_PARAMETER_NAME =
       "remove.non.assigned.sam.tags";
-  public static final String SAM_TAG_TO_USE_PARAMETER_NAME =
-      "sam.tag.to.use";
+  public static final String SAM_TAG_TO_USE_PARAMETER_NAME = "sam.tag.to.use";
 
   public static final String SAM_TAG_DEFAULT = "XF";
 
@@ -95,7 +94,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
   private boolean removeNonUnique = true;
   private boolean removeSecondaryAlignments = false;
   private boolean removeSupplementaryAlignments = false;
-  private boolean removeNonAssignedFeatureSamTags =false;
+  private boolean removeNonAssignedFeatureSamTags = false;
 
   private String samTag = SAM_TAG_DEFAULT;
 
@@ -664,8 +663,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
     List<String> list = new ArrayList<>(features);
     Collections.sort(list);
 
-    assignment(samRecord1, samRecord2,
-        "__ambiguous[" + join(list, "+") + ']');
+    assignment(samRecord1, samRecord2, "__ambiguous[" + join(list, "+") + ']');
   }
 
   @Override
@@ -686,7 +684,6 @@ public class HTSeqCounter extends AbstractExpressionCounter
       }
     }
   }
-
 
   @Override
   public String toString() {

@@ -696,7 +696,6 @@ public class BEDEntry {
     List<Integer> sizes = parseIntList(fields.get(10));
     List<Integer> starts = parseIntList(fields.get(11));
 
-
     if (starts.size() != blockCount) {
       throw new BadBioEntryException("Invalid block starts: "
           + blockCount + "\t" + starts.size() + "\t" + fields.get(10), s);

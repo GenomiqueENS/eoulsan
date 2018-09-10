@@ -126,8 +126,8 @@ public abstract class AbstractToolElement implements ToolElement {
   @Override
   public int hashCode() {
 
-    return Objects.hash(this.help, this.isOptional, this.label,
-        this.shortName, this.type);
+    return Objects.hash(this.help, this.isOptional, this.label, this.shortName,
+        this.type);
   }
 
   @Override

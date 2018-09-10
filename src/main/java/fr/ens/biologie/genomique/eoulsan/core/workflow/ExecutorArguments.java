@@ -415,7 +415,8 @@ public class ExecutorArguments {
     final File jobDir = new File(outputDir, getJobId());
     final File workingDir = new File(jobDir, "working");
     final File taskDir = new File(jobDir, "tasks");
-    final File dataDir = new File(outputDir, Globals.APP_NAME_LOWER_CASE + "-data");
+    final File dataDir =
+        new File(outputDir, Globals.APP_NAME_LOWER_CASE + "-data");
     final File tmpDir = new File(jobDir, "tmp");
 
     // Set the local working path

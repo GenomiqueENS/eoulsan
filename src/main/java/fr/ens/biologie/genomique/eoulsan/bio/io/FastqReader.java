@@ -78,7 +78,6 @@ public class FastqReader implements ReadSequenceReader {
 
     this.nextCallDone = false;
 
-
     String line = null;
     int entryLine = 0;
 

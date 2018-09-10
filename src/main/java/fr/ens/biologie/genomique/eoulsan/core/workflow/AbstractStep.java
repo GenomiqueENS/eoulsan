@@ -198,7 +198,8 @@ public abstract class AbstractStep implements Step {
   @Override
   public StepState getState() {
 
-    return this.stepStateDependencies != null ? this.stepStateDependencies.getState() : null;
+    return this.stepStateDependencies != null
+        ? this.stepStateDependencies.getState() : null;
   }
 
   @Override

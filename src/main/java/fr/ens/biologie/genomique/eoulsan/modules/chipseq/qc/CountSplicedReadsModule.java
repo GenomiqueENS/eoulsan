@@ -188,8 +188,8 @@ public class CountSplicedReadsModule extends AbstractModule {
       // Create the reporter. The reporter collect information about the
       // process of the data (e.g. the number of reads, the number of
       // alignments generated...)
-      getLogger().info(reporter.countersValuesToString(COUNTER_GROUP,
-          " (" + inData.getName() + ", " + samFile.getName() + ") "));
+      getLogger().info(reporter.countersValuesToString(COUNTER_GROUP, " ("
+          + inData.getName() + ", " + samFile.getName() + ") "));
 
     } catch (IOException ioe) {
       getLogger().severe("Could not open SAM file ("

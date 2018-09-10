@@ -42,7 +42,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Utils;
  * @since 1.2
  * @author Laurent Jourdren
  */
-public class GenomicArray<T> implements Serializable{
+public class GenomicArray<T> implements Serializable {
 
   private static final long serialVersionUID = 539825064205425262L;
 

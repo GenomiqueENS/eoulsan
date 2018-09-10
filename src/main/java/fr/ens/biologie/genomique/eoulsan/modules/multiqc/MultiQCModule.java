@@ -213,7 +213,8 @@ public class MultiQCModule extends AbstractModule {
 
       if (!service.isService(report)) {
         throw new EoulsanException("In step \""
-            + stepId + "\", invalid MultiQC configuration: unknown report type: "
+            + stepId
+            + "\", invalid MultiQC configuration: unknown report type: "
             + report);
       }
 
