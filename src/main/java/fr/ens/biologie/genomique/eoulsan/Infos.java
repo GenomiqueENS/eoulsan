@@ -466,6 +466,7 @@ public class Infos {
     li.add("Java vendor", System.getProperty("java.vendor"));
     li.add("Java vm name", System.getProperty("java.vm.name"));
     li.add("Java version", System.getProperty("java.version"));
+    li.add("Java max memory", "" + Runtime.getRuntime().maxMemory());
 
     return li.getList();
   }
