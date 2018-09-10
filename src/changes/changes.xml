@@ -1626,5 +1626,114 @@ of reads that reject each filter like in local mode.
 
          </release>
 
-	</body>
+         <release version="2.3" description="Eoulsan 2.3 release" date="TBD">
+
+            <action dev="jourdren" type="fix">
+               Now use findbugs-maven-plugin 3.0.1 instead of 2.5.5, due to issue with JD8 while launching findbugs with Maven.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               Add new option named "max.entries.in.ram" in the sam2bam module to avoid out of memory errors when converting alignments of long reads.
+            </action>
+
+            <action dev="jourdren" type="fix">
+               Now use Javassit 3.23.1 to avoid Warning message with Java > 8.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add many dedicated ChIP-Seq modules. This modules are experimentals and are not currently documentated.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add a new module named "RSingleCellExperimentCreator" that allow to create a Bioconductor SingleCellExperiment data structure for single cell experiment analysis.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Eoulsan now creates a "eoulsan-data" directory that will store this data to avoid a new computation when relaunching the workflow.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add a new action named "info" that display the System and Eoulsan configuration.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add a new action named "formats" that display the available formats.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add a new action named "modules" that display the available modules.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add a new module named "splice2bed" than convert SAM alignments into BED entries.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add new APIs to handle BED files.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Heavy refactoring of the workflow engine that is now based on the Guava event bus. This refactoring will avoid some rare bugs.
+            </action>
+
+            <action dev="jourdren" type="update">
+               The counter API has been refactored. The excuted code in local and Hadoop is now the same. With this new API, it will be easier to implements new counters.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Add many options to the HTSeq-count counter to have the same features ad original HTSeq-count implementation. The same unit tests as original HTSeq-count implementation are now used to validate the Java implementation.
+            </action>
+
+            <action dev="jourdren" type="update">
+               The expression step can now produce SAM files as output like HTSeq-count or FeatureCounts.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Add a "indexer.arguments" to the "starindexgenerator" module to allow additional index arguments.
+            </action>
+
+            <action dev="jourdren" type="update">
+               In Galaxy tools, a fallback interpreter can be defined if Docker is not available.
+            </action>
+
+            <action dev="jourdren" type="update">
+               The "import" module can now be configured to define the format of the data to import. The "directory" option of this module has been removed as the "file" option can now handle paths.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Many unit tests have been enhanced for FASTA, FASTQ, GFF, GTF and BED format readers and writers.
+            </action>
+
+            <action dev="jourdren" type="update">
+               FastaReader, FastqReader, TFQReader classes now do not reuse (Read)Sequence object when parsing a file.
+            </action>
+
+            <action dev="jourdren" type="update">
+               The GenomicInterval class is now fully covered by unit tests.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Eoulsan can now works using Java 9.
+            </action>
+
+            <action dev="jourdren" type="update">
+               In workflow file, now the value of the attributes can be evaluated by a shell command.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Add the max memory allocated for JVM in the Eoulsan log.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Add STAR 2.5.1b in addition of previous version.
+            </action>
+
+            <action dev="jourdren" type="update">
+               Add Minimap 2.12 in addition of previous version.
+            </action>
+
+        </release>
+
+    </body>
+
 </document>
