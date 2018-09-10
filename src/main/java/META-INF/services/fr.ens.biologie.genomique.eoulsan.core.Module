@@ -61,8 +61,8 @@ fr.ens.biologie.genomique.eoulsan.modules.FailModule
 fr.ens.biologie.genomique.eoulsan.modules.RequirementInstallerModule
 
 # Chip-Seq mapping steps
-#fr.ens.biologie.genomique.eoulsan.modules.mapping.chipseq.RmDupLocalModule
-fr.ens.biologie.genomique.eoulsan.modules.mapping.chipseq.MergeInputRepLocalModule
+#fr.ens.biologie.genomique.eoulsan.modules.chipseq.RmDupLocalModule
+fr.ens.biologie.genomique.eoulsan.modules.chipseq.MergeInputRepLocalModule
 
 # Chip-Seq QC steps
 fr.ens.biologie.genomique.eoulsan.modules.chipseq.qc.CountSplicedReadsModule
