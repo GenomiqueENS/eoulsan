@@ -1626,7 +1626,7 @@ of reads that reject each filter like in local mode.
 
          </release>
 
-         <release version="2.3" description="Eoulsan 2.3 release" date="TBD">
+         <release version="2.3" description="Eoulsan 2.3 release" date="2018-09-13">
 
             <action dev="jourdren" type="fix">
                Now use findbugs-maven-plugin 3.0.1 instead of 2.5.5, due to issue with JD8 while launching findbugs with Maven.
@@ -1689,7 +1689,7 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="update">
-               Add a "indexer.arguments" to the "starindexgenerator" module to allow additional index arguments.
+               Add a "indexer.arguments" parameter to the "starindexgenerator" module to allow additional index arguments.
             </action>
 
             <action dev="jourdren" type="update">
@@ -1697,7 +1697,7 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="update">
-               The "import" module can now be configured to define the format of the data to import. The "directory" option of this module has been removed as the "file" option can now handle paths.
+               The "import" module can now be configured to define the format of the data to import. The "directory" option of this module has been removed as the "files" option can now handle paths.
             </action>
 
             <action dev="jourdren" type="update">
@@ -1717,19 +1717,19 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="update">
-               In workflow file, now the value of the attributes can be evaluated by a shell command.
+               In the workflow files, the values of the attributes can be now evaluated by a shell command.
             </action>
 
             <action dev="jourdren" type="update">
-               Add the max memory allocated for JVM in the Eoulsan log.
+               The maximal memory allocated for JVM is now logged in the Eoulsan log file.
             </action>
 
             <action dev="jourdren" type="update">
-               Add STAR 2.5.1b in addition of previous version.
+               Add STAR 2.5.1b in addition of previous versions.
             </action>
 
             <action dev="jourdren" type="update">
-               Add Minimap 2.12 in addition of previous version.
+               Add Minimap 2.12 in addition of previous versions.
             </action>
 
         </release>
