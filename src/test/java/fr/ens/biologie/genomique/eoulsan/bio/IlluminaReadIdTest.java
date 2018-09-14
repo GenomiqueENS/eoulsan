@@ -354,7 +354,7 @@ public class IlluminaReadIdTest {
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
     assertTrue(ii.isSequenceIndexField());
     assertEquals("0", ii.getSequenceIndex());
-    assertEquals(Collections.EMPTY_LIST, ii.getSequenceIndexList());
+    assertEquals(Collections.emptyList(), ii.getSequenceIndexList());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#ATCACG/1");
     assertTrue(ii.isSequenceIndexField());
@@ -364,22 +364,22 @@ public class IlluminaReadIdTest {
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
     assertFalse(ii.isSequenceIndexField());
     assertEquals("0", ii.getSequenceIndex());
-    assertEquals(Collections.EMPTY_LIST, ii.getSequenceIndexList());
+    assertEquals(Collections.emptyList(), ii.getSequenceIndexList());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
     assertFalse(ii.isSequenceIndexField());
     assertEquals("0", ii.getSequenceIndex());
-    assertEquals(Collections.EMPTY_LIST, ii.getSequenceIndexList());
+    assertEquals(Collections.emptyList(), ii.getSequenceIndexList());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
     assertFalse(ii.isSequenceIndexField());
     assertEquals("0", ii.getSequenceIndex());
-    assertEquals(Collections.EMPTY_LIST, ii.getSequenceIndexList());
+    assertEquals(Collections.emptyList(), ii.getSequenceIndexList());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
     assertFalse(ii.isSequenceIndexField());
     assertEquals("0", ii.getSequenceIndex());
-    assertEquals(Collections.EMPTY_LIST, ii.getSequenceIndexList());
+    assertEquals(Collections.emptyList(), ii.getSequenceIndexList());
 
     ii = new IlluminaReadId(
         "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
