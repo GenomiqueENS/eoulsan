@@ -35,7 +35,9 @@
 
     <section name="Splice2bed module">
 
-      <p>This module allow to convert a SAM file into a BED file and keep splicing information.</p>
+      <p>This module allow to convert a SAM file into a BED file and keep splicing information.
+         If a "<b>TrackColor</b>" column is defined in the design file, the BED entries will use the color defined for the related sample.
+         In other cases, BED entries will be colored against the mapped strand.</p>
 
       <ul>
         <li><b>Internal name</b>: splice2bed</li>
