@@ -1,6 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.util;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,8 +29,8 @@ public class GuavaCompatibility {
   public static List<String> splitToList(final Splitter splitter,
       final CharSequence sequence) {
 
-    checkNotNull(splitter, "splitter argument cannot be null");
-    checkNotNull(sequence, "sequence argument cannot be null");
+    requireNonNull(splitter, "splitter argument cannot be null");
+    requireNonNull(sequence, "sequence argument cannot be null");
 
     List<String> result = new ArrayList<>();
 

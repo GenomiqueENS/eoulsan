@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.requirements;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -96,7 +96,7 @@ public abstract class AbstractRequirement implements Requirement {
   public void configure(final Set<Parameter> parameters)
       throws EoulsanException {
 
-    checkNotNull(parameters, "parameter argument cannot be null");
+    requireNonNull(parameters, "parameter argument cannot be null");
 
     for (Parameter p : parameters) {
 

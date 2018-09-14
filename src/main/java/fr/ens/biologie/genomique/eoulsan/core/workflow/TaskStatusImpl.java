@@ -25,16 +25,14 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.requireNonNull;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import com.google.common.base.Preconditions;
 
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
@@ -104,7 +102,7 @@ public class TaskStatusImpl implements TaskStatus {
   @Override
   public void setDescription(final String description) {
 
-    checkNotNull(description, "the description argument cannot be null");
+    requireNonNull(description, "the description argument cannot be null");
 
     synchronized (this) {
       this.taskDescription = description;
@@ -114,8 +112,8 @@ public class TaskStatusImpl implements TaskStatus {
   @Override
   public void setCounters(final Reporter reporter, final String counterGroup) {
 
-    checkNotNull(reporter, "Reporter is null");
-    checkNotNull(counterGroup, "Counter group is null");
+    requireNonNull(reporter, "Reporter is null");
+    requireNonNull(counterGroup, "Counter group is null");
 
     // Add all counters
     for (String counterName : reporter.getCounterNames(counterGroup)) {
@@ -291,7 +289,7 @@ public class TaskStatusImpl implements TaskStatus {
    */
   TaskStatusImpl(final TaskContextImpl taskContext, final StepStatus status) {
 
-    Preconditions.checkNotNull(taskContext, "context cannot be null");
+    requireNonNull(taskContext, "context cannot be null");
 
     this.context = taskContext;
     this.status = status;

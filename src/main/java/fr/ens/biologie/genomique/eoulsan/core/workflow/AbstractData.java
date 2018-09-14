@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -97,7 +97,7 @@ abstract class AbstractData implements Data, Serializable {
    */
   void setName(final String name, final boolean defaultName) {
 
-    checkNotNull(name, "The name of the data cannot be null");
+    requireNonNull(name, "The name of the data cannot be null");
     checkArgument(FileNaming.isDataNameValid(name),
         "The name of data can only contains letters and digit: " + name);
 
@@ -138,7 +138,7 @@ abstract class AbstractData implements Data, Serializable {
    */
   protected AbstractData(final DataFormat format) {
 
-    checkNotNull(format, "format argument cannot be null");
+    requireNonNull(format, "format argument cannot be null");
 
     this.id = instanceCount.incrementAndGet();
 

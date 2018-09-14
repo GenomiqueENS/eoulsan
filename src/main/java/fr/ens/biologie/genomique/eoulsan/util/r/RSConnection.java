@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.util.r;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -171,8 +171,8 @@ public class RSConnection {
   public void putFile(final File inputFile, final String rServeFilename)
       throws REngineException {
 
-    checkNotNull(inputFile, "inputFile argument cannot be null");
-    checkNotNull(rServeFilename, "rServeFilename argument cannot be null");
+    requireNonNull(inputFile, "inputFile argument cannot be null");
+    requireNonNull(rServeFilename, "rServeFilename argument cannot be null");
 
     try {
       putFile(new FileInputStream(inputFile), rServeFilename);
@@ -191,8 +191,8 @@ public class RSConnection {
   public void putFile(final InputStream is, final String rServeFilename)
       throws REngineException {
 
-    checkNotNull(is, "inputFile argument cannot be null");
-    checkNotNull(rServeFilename, "rServeFilename argument cannot be null");
+    requireNonNull(is, "inputFile argument cannot be null");
+    requireNonNull(rServeFilename, "rServeFilename argument cannot be null");
 
     try {
 

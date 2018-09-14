@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,7 +57,7 @@ public final class DesignUtils {
    */
   public static void showDesign(final Design design) {
 
-    checkNotNull(design, "design argument cannot be null");
+    requireNonNull(design, "design argument cannot be null");
 
     final StringBuilder sb = new StringBuilder();
 
@@ -182,7 +182,7 @@ public final class DesignUtils {
    */
   public static List<String> getAllSamplesMetadataKeys(final Design design) {
 
-    checkNotNull(design, "design argument cannot be null");
+    requireNonNull(design, "design argument cannot be null");
 
     final List<String> result = new ArrayList<>();
     final Set<String> keys = new HashSet<>();
@@ -210,7 +210,7 @@ public final class DesignUtils {
   public static List<String> getExperimentSampleAllMetadataKeys(
       final Experiment experiment) {
 
-    checkNotNull(experiment, "design argument cannot be null");
+    requireNonNull(experiment, "design argument cannot be null");
 
     final List<String> result = new ArrayList<>();
     final Set<String> keys = new HashSet<>();
@@ -611,8 +611,8 @@ public final class DesignUtils {
   public static String getCondition(final Experiment experiment,
       final Sample sample) {
 
-    checkNotNull(experiment, "experiment argument cannot be null");
-    checkNotNull(sample, "sample argument cannot be null");
+    requireNonNull(experiment, "experiment argument cannot be null");
+    requireNonNull(sample, "sample argument cannot be null");
 
     final ExperimentSample es = experiment.getExperimentSample(sample);
 
@@ -626,7 +626,7 @@ public final class DesignUtils {
    */
   public static String getCondition(final ExperimentSample experimentSample) {
 
-    checkNotNull(experimentSample, "experimentSample argument cannot be null");
+    requireNonNull(experimentSample, "experimentSample argument cannot be null");
 
     final ExperimentSampleMetadata esm = experimentSample.getMetadata();
 
@@ -650,8 +650,8 @@ public final class DesignUtils {
   public static String getRepTechGroup(final Experiment experiment,
       final Sample sample) {
 
-    checkNotNull(experiment, "experiment argument cannot be null");
-    checkNotNull(sample, "sample argument cannot be null");
+    requireNonNull(experiment, "experiment argument cannot be null");
+    requireNonNull(sample, "sample argument cannot be null");
 
     final ExperimentSample es = experiment.getExperimentSample(sample);
 
@@ -666,7 +666,7 @@ public final class DesignUtils {
   public static String getRepTechGroup(
       final ExperimentSample experimentSample) {
 
-    checkNotNull(experimentSample, "experimentSample argument cannot be null");
+    requireNonNull(experimentSample, "experimentSample argument cannot be null");
 
     final ExperimentSampleMetadata esm = experimentSample.getMetadata();
 
@@ -688,7 +688,7 @@ public final class DesignUtils {
    */
   public static boolean isSkipped(final Experiment experiment) {
 
-    checkNotNull(experiment, "experiment argument cannot be null");
+    requireNonNull(experiment, "experiment argument cannot be null");
 
     final ExperimentMetadata emd = experiment.getMetadata();
 
@@ -701,7 +701,7 @@ public final class DesignUtils {
    */
   public static boolean containsReferenceField(final Experiment experiment) {
 
-    checkNotNull(experiment, "experiment argument cannot be null");
+    requireNonNull(experiment, "experiment argument cannot be null");
 
     for (ExperimentSample es : experiment.getExperimentSamples()) {
 
@@ -730,8 +730,8 @@ public final class DesignUtils {
   public static String getReference(final Experiment experiment,
       final Sample sample) {
 
-    checkNotNull(experiment, "experiment argument cannot be null");
-    checkNotNull(sample, "sample argument cannot be null");
+    requireNonNull(experiment, "experiment argument cannot be null");
+    requireNonNull(sample, "sample argument cannot be null");
 
     final ExperimentSample es = experiment.getExperimentSample(sample);
 
@@ -745,7 +745,7 @@ public final class DesignUtils {
    */
   public static String getReference(final ExperimentSample experimentSample) {
 
-    checkNotNull(experimentSample, "experimentSample argument cannot be null");
+    requireNonNull(experimentSample, "experimentSample argument cannot be null");
 
     final ExperimentSampleMetadata esmd = experimentSample.getMetadata();
 

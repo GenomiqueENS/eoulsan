@@ -24,12 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanRuntime.getSettings;
 import static fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode.HADOOP_COMPATIBLE;
 import static fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode.HADOOP_ONLY;
 import static fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode.LOCAL_ONLY;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -92,7 +92,7 @@ public class ModuleRegistry {
     protected GalaxyToolModule load(final InputStream in, final String source)
         throws IOException, EoulsanException {
 
-      checkNotNull(in, "in argument cannot be null");
+      requireNonNull(in, "in argument cannot be null");
 
       try {
         return new GalaxyToolModule(in, source);
@@ -121,7 +121,7 @@ public class ModuleRegistry {
     @Override
     protected String getResourceName(final GalaxyToolModule resource) {
 
-      checkNotNull(resource, "resource argument cannot be null");
+      requireNonNull(resource, "resource argument cannot be null");
 
       return resource.getName();
     }
@@ -161,7 +161,7 @@ public class ModuleRegistry {
     @Override
     protected String getResourceName(final GalaxyToolModule resource) {
 
-      checkNotNull(resource, "resource argument cannot be null");
+      requireNonNull(resource, "resource argument cannot be null");
 
       return resource.getName();
     }

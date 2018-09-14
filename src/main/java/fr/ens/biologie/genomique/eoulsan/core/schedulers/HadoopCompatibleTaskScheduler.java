@@ -24,13 +24,13 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.schedulers;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.CommonHadoop.createConfiguration;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_DATA_EXTENSION;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_DONE_EXTENSION;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_RESULT_EXTENSION;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toTimeHumanReadable;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -314,8 +314,8 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
      */
     TaskThread(final Configuration conf, final TaskContextImpl context) {
 
-      checkNotNull(conf, "conf argument cannot be null");
-      checkNotNull(context, "context argument cannot be null");
+      requireNonNull(conf, "conf argument cannot be null");
+      requireNonNull(context, "context argument cannot be null");
 
       final DataFile hadoopWorkDir = context.getHadoopWorkingPathname();
 

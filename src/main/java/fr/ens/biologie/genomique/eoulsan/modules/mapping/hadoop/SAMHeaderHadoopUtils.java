@@ -1,7 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.bio.io.BioCharsets.SAM_CHARSET;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -50,7 +50,7 @@ public class SAMHeaderHadoopUtils {
     public boolean writeIfHeaderLine(final JobContext context,
         final String line) throws IOException {
 
-      checkNotNull(line, "line argument cannot be null");
+      requireNonNull(line, "line argument cannot be null");
 
       // Test empty line
       if (line.length() == 0) {
@@ -85,7 +85,7 @@ public class SAMHeaderHadoopUtils {
 
         // Save headers
 
-        checkNotNull(context, "context argument cannot be null");
+        requireNonNull(context, "context argument cannot be null");
 
         final Path outputPath = new Path(context.getConfiguration()
             .get("mapreduce.output.fileoutputformat.outputdir"));
@@ -112,7 +112,7 @@ public class SAMHeaderHadoopUtils {
      */
     public SAMHeaderWriter(final String attemptId) {
 
-      checkNotNull(attemptId, "attemptId argument cannot be null");
+      requireNonNull(attemptId, "attemptId argument cannot be null");
       this.attemptId = attemptId;
     }
 
@@ -127,7 +127,7 @@ public class SAMHeaderHadoopUtils {
   public static List<String> loadSAMHeaders(final JobContext context)
       throws IOException {
 
-    checkNotNull(context, "context argument cannot be null");
+    requireNonNull(context, "context argument cannot be null");
 
     final List<String> result = new ArrayList<>();
 
@@ -182,7 +182,7 @@ public class SAMHeaderHadoopUtils {
   public static SAMSequenceDictionary createSAMSequenceDictionaryFromSAMHeader(
       final List<String> headers) {
 
-    checkNotNull(headers, "headers argument cannot be null");
+    requireNonNull(headers, "headers argument cannot be null");
 
     final Splitter spliter = Splitter.on('\t');
 

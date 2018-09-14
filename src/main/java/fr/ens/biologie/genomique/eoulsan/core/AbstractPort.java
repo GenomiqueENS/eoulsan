@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.core;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -81,8 +81,8 @@ public abstract class AbstractPort implements Port, Serializable {
    */
   AbstractPort(final String name, final boolean list, final DataFormat format) {
 
-    checkNotNull(name, "The name of the port is null");
-    checkNotNull(format, "The format of the port " + name + " is null");
+    requireNonNull(name, "The name of the port is null");
+    requireNonNull(format, "The format of the port " + name + " is null");
     checkArgument(FileNaming.isPortNameValid(name),
         "Invalid port name (only ascii letters and digits are allowed): "
             + name.trim());

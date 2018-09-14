@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.generators;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -176,8 +176,8 @@ public final class GenomeMapperIndexer {
       final String additionalArguments,
       final Map<String, String> additionalDescription, final int threads) {
 
-    checkNotNull(mapperInstance, "Mapper is null");
-    checkNotNull(additionalDescription, "additionalDescription is null");
+    requireNonNull(mapperInstance, "Mapper is null");
+    requireNonNull(additionalDescription, "additionalDescription is null");
 
     // Set the mapper
     this.mapperInstance = mapperInstance;

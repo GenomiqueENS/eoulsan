@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.util.Set;
@@ -305,7 +305,7 @@ public class StepConfigurationContextImpl implements StepConfigurationContext {
    */
   StepConfigurationContextImpl(final AbstractStep step) {
 
-    checkNotNull(step, "step cannot be null");
+    requireNonNull(step, "step cannot be null");
 
     this.workflowContext = step.getAbstractWorkflow().getWorkflowContext();
     this.step = step;

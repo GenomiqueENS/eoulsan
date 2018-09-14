@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,8 +39,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.google.common.base.Preconditions;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
@@ -123,7 +121,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
    */
   public void serialize(final File file) throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     serialize(new FileOutputStream(file));
   }
@@ -135,7 +133,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
    */
   public void serialize(final DataFile file) throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     serialize(file.create());
   }
@@ -147,7 +145,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
    */
   public final void serialize(final OutputStream out) throws IOException {
 
-    checkNotNull(out, "out argument cannot be null");
+    requireNonNull(out, "out argument cannot be null");
 
     final ObjectOutputStream oos = new ObjectOutputStream(out);
     oos.writeObject(this);
@@ -161,7 +159,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
    */
   public static TaskResultImpl deserialize(final File file) throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     return deserialize(new FileInputStream(file));
   }
@@ -174,7 +172,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
   public static TaskResultImpl deserialize(final DataFile file)
       throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     return deserialize(file.open());
   }
@@ -187,7 +185,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
   public static TaskResultImpl deserialize(final InputStream in)
       throws IOException {
 
-    checkNotNull(in, "in argument cannot be null");
+    requireNonNull(in, "in argument cannot be null");
 
     try (final ObjectInputStream ois = new ClassLoaderObjectInputStream(in)) {
 
@@ -208,12 +206,12 @@ public class TaskResultImpl implements TaskResult, Serializable {
       final String contextDescription, final Map<String, Long> counters,
       final boolean success) {
 
-    Preconditions.checkNotNull(context, "context argument cannot be null");
-    Preconditions.checkNotNull(startTime, "startTime argument cannot be null");
-    Preconditions.checkNotNull(endTime, "endTime argument cannot be null");
-    Preconditions.checkNotNull(contextDescription,
+    requireNonNull(context, "context argument cannot be null");
+    requireNonNull(startTime, "startTime argument cannot be null");
+    requireNonNull(endTime, "endTime argument cannot be null");
+    requireNonNull(contextDescription,
         "contextDescription argument cannot be null");
-    Preconditions.checkNotNull(counters, "counter argument cannot be null");
+    requireNonNull(counters, "counter argument cannot be null");
 
     this.context = context;
     this.startTime = startTime;
@@ -231,7 +229,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
       final Date endTime, final long duration, final Throwable exception,
       final String errorMessage) {
 
-    Preconditions.checkNotNull(context, "context argument cannot be null");
+    requireNonNull(context, "context argument cannot be null");
 
     this.context = context;
     this.startTime = startTime == null ? null : new Date(startTime.getTime());

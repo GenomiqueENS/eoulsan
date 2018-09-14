@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.util.hadoop;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -112,7 +112,7 @@ public class HadoopReporter implements Reporter {
    */
   public HadoopReporter(final TaskInputOutputContext context) {
 
-    checkNotNull(context, "context is null");
+    requireNonNull(context, "context is null");
 
     this.counters = null;
     this.context = context;
@@ -124,7 +124,7 @@ public class HadoopReporter implements Reporter {
    */
   public HadoopReporter(final Counters counters) {
 
-    checkNotNull(counters, "counters is null");
+    requireNonNull(counters, "counters is null");
 
     this.counters = counters;
     this.context = null;

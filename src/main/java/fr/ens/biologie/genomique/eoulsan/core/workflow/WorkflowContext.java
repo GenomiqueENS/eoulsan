@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.logging.Logger;
@@ -317,9 +317,9 @@ public class WorkflowContext implements Serializable {
   WorkflowContext(final ExecutorArguments arguments,
       final AbstractWorkflow workflow) {
 
-    checkNotNull(arguments.getLocalWorkingPathname(),
+    requireNonNull(arguments.getLocalWorkingPathname(),
         "arguments cannot be null");
-    checkNotNull(workflow, "workflow cannot be null");
+    requireNonNull(workflow, "workflow cannot be null");
 
     this.workflow = workflow;
     this.jobId = arguments.getJobId();
@@ -327,16 +327,16 @@ public class WorkflowContext implements Serializable {
     this.contextCreationTime = arguments.getCreationTime();
     this.host = SystemUtils.getHostName();
 
-    checkNotNull(arguments.getLocalWorkingPathname(),
+    requireNonNull(arguments.getLocalWorkingPathname(),
         "base path cannot be null");
-    checkNotNull(arguments.getWorkflowPathname(),
+    requireNonNull(arguments.getWorkflowPathname(),
         "parameter path cannot be null");
-    checkNotNull(arguments.getDesignPathname(), "design cannot be null");
-    checkNotNull(arguments.getOutputPathname(), "output path cannot be null");
-    checkNotNull(arguments.getJobPathname(), "log path cannot be null");
-    checkNotNull(arguments.getJobDescription(),
+    requireNonNull(arguments.getDesignPathname(), "design cannot be null");
+    requireNonNull(arguments.getOutputPathname(), "output path cannot be null");
+    requireNonNull(arguments.getJobPathname(), "log path cannot be null");
+    requireNonNull(arguments.getJobDescription(),
         "job description cannot be null");
-    checkNotNull(arguments.getJobEnvironment(),
+    requireNonNull(arguments.getJobEnvironment(),
         "job environment cannot be null");
 
     this.workflowFile = new DataFile(arguments.getWorkflowPathname());

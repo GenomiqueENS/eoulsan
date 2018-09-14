@@ -23,9 +23,9 @@
  */
 package fr.ens.biologie.genomique.eoulsan.it;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toTimeHumanReadable;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -284,9 +284,9 @@ public class ITCommandExecutor {
     CopyProcessOutput(final InputStream in, final File file,
         final String desc) {
 
-      checkNotNull(in, "in argument cannot be null");
-      checkNotNull(file, "file argument cannot be null");
-      checkNotNull(desc, "desc argument cannot be null");
+      requireNonNull(in, "in argument cannot be null");
+      requireNonNull(file, "file argument cannot be null");
+      requireNonNull(desc, "desc argument cannot be null");
 
       this.in = in;
       this.path = file.toPath();

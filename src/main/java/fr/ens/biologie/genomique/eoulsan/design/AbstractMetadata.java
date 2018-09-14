@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -55,7 +55,7 @@ public abstract class AbstractMetadata implements Metadata, Serializable {
   @Override
   public String get(final String key) {
 
-    checkNotNull(key, "key argument cannot be null");
+    requireNonNull(key, "key argument cannot be null");
 
     return this.metadata.get(key.trim());
   }
@@ -71,8 +71,8 @@ public abstract class AbstractMetadata implements Metadata, Serializable {
   @Override
   public void set(final String key, final String value) {
 
-    checkNotNull(key, "key argument cannot be null");
-    checkNotNull(value, "value argument cannot be null");
+    requireNonNull(key, "key argument cannot be null");
+    requireNonNull(value, "value argument cannot be null");
 
     this.metadata.put(key, value);
   }
@@ -80,8 +80,8 @@ public abstract class AbstractMetadata implements Metadata, Serializable {
   @Override
   public void set(final String key, final List<String> value) {
 
-    checkNotNull(key, "key argument cannot be null");
-    checkNotNull(value, "value argument cannot be null");
+    requireNonNull(key, "key argument cannot be null");
+    requireNonNull(value, "value argument cannot be null");
 
     switch (value.size()) {
 
@@ -113,7 +113,7 @@ public abstract class AbstractMetadata implements Metadata, Serializable {
   @Override
   public boolean contains(final String key) {
 
-    checkNotNull(key, "key argument cannot be null");
+    requireNonNull(key, "key argument cannot be null");
 
     return this.metadata.containsKey(key.trim());
   }
@@ -121,7 +121,7 @@ public abstract class AbstractMetadata implements Metadata, Serializable {
   @Override
   public List<String> getAsList(final String key) {
 
-    checkNotNull(key, "key argument cannot be null");
+    requireNonNull(key, "key argument cannot be null");
 
     return StringUtils.deserializeStringArray(get(key.trim()));
   }
@@ -129,7 +129,7 @@ public abstract class AbstractMetadata implements Metadata, Serializable {
   @Override
   public boolean getAsBoolean(final String key) {
 
-    checkNotNull(key, "key argument cannot be null");
+    requireNonNull(key, "key argument cannot be null");
 
     return Boolean.parseBoolean(get(key.trim()).toLowerCase());
   }
@@ -149,7 +149,7 @@ public abstract class AbstractMetadata implements Metadata, Serializable {
   @Override
   public void remove(final String key) {
 
-    checkNotNull(key, "key argument cannot be null");
+    requireNonNull(key, "key argument cannot be null");
 
     this.metadata.remove(key.trim());
   }

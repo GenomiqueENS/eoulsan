@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 
@@ -79,7 +79,7 @@ abstract class AbstractDataMetadata implements DataMetadata, Serializable {
   @Override
   public void setFastqFormat(final FastqFormat fastqFormat) {
 
-    checkNotNull(fastqFormat, "fastqFormat argument cannot be null");
+    requireNonNull(fastqFormat, "fastqFormat argument cannot be null");
 
     set(FASTQ_FORMAT_KEY, fastqFormat.getName());
   }
@@ -93,7 +93,7 @@ abstract class AbstractDataMetadata implements DataMetadata, Serializable {
   @Override
   public void setSampleName(final String sampleName) {
 
-    checkNotNull(sampleName, "sampleName argument cannot be null");
+    requireNonNull(sampleName, "sampleName argument cannot be null");
 
     set(SAMPLE_NAME_KEY, sampleName);
   }
@@ -111,7 +111,7 @@ abstract class AbstractDataMetadata implements DataMetadata, Serializable {
   @Override
   public void setSampleId(final String sampleId) {
 
-    checkNotNull(sampleId, "sampleId argument cannot be null");
+    requireNonNull(sampleId, "sampleId argument cannot be null");
 
     set(SAMPLE_ID_KEY, sampleId);
   }

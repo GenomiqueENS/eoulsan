@@ -1,7 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 
@@ -101,8 +101,8 @@ public class ClusterJobEmergencyStopTask implements EmergencyStopTask {
   public ClusterJobEmergencyStopTask(final ClusterTaskScheduler scheduler,
       final String jobId) {
 
-    checkNotNull(scheduler, "scheduler argument cannot be null");
-    checkNotNull(jobId, "jobId argument cannot be null");
+    requireNonNull(scheduler, "scheduler argument cannot be null");
+    requireNonNull(jobId, "jobId argument cannot be null");
 
     this.scheduler = scheduler;
     this.jobId = jobId;

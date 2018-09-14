@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.io;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -77,8 +77,8 @@ public class PathConcatInputStream extends AbstractConcatInputStream {
   public PathConcatInputStream(final List<Path> paths,
       final Configuration conf) {
 
-    checkNotNull(paths, "paths is null");
-    checkNotNull(conf, "conf is null");
+    requireNonNull(paths, "paths is null");
+    requireNonNull(conf, "conf is null");
 
     this.it = paths.iterator();
     this.conf = conf;

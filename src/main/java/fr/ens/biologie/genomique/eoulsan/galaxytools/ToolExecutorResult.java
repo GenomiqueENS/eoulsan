@@ -24,7 +24,7 @@
 package fr.ens.biologie.genomique.eoulsan.galaxytools;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
@@ -107,7 +107,7 @@ public class ToolExecutorResult {
   public ToolExecutorResult(final List<String> commandLineTool,
       final int exitValue) {
 
-    checkNotNull(commandLineTool, "Command line can not be null");
+    requireNonNull(commandLineTool, "Command line can not be null");
     checkArgument(!commandLineTool.isEmpty(), "Command line can not be empty");
 
     this.commandLineTool = commandLineTool;
@@ -123,7 +123,7 @@ public class ToolExecutorResult {
   public ToolExecutorResult(final List<String> commandLineTool,
       final Throwable e) {
 
-    checkNotNull(commandLineTool, "Command line can not be null.");
+    requireNonNull(commandLineTool, "Command line can not be null.");
     checkArgument(!commandLineTool.isEmpty(), "Command line can not be empty");
 
     this.commandLineTool = commandLineTool;

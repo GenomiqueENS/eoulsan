@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.data;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 
@@ -48,8 +48,8 @@ public class DataFiles {
   public static void copy(final DataFile input, final DataFile output)
       throws IOException {
 
-    checkNotNull(input, "input file cannot be null");
-    checkNotNull(output, "output file cannot be null");
+    requireNonNull(input, "input file cannot be null");
+    requireNonNull(output, "output file cannot be null");
 
     // Do not (un)compress data if the input and output has the same compression
     // type
@@ -69,8 +69,8 @@ public class DataFiles {
   public static void rawCopy(final DataFile input, final DataFile output)
       throws IOException {
 
-    checkNotNull(input, "input file cannot be null");
-    checkNotNull(output, "output file cannot be null");
+    requireNonNull(input, "input file cannot be null");
+    requireNonNull(output, "output file cannot be null");
 
     FileUtils.copy(input.rawOpen(), output.rawCreate());
   }
@@ -103,8 +103,8 @@ public class DataFiles {
   public static void symlinkOrCopy(final DataFile input, final DataFile output,
       final boolean relativize) throws IOException {
 
-    checkNotNull(input, "input file cannot be null");
-    checkNotNull(output, "output file cannot be null");
+    requireNonNull(input, "input file cannot be null");
+    requireNonNull(output, "output file cannot be null");
 
     // If compression of input and output is not the same, copy data
     if (input.getCompressionType() != output.getCompressionType()) {

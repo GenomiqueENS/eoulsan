@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.ABORTED;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.FAILED;
@@ -33,6 +32,7 @@ import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.READY;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WAITING;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.stackTraceToString;
+import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.io.File;
@@ -49,7 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -220,7 +219,7 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   protected void register(final AbstractStep step) {
 
-    Preconditions.checkNotNull(step, "step cannot be null");
+    requireNonNull(step, "step cannot be null");
 
     if (step.getWorkflow() != this) {
       throw new IllegalStateException(
@@ -317,7 +316,7 @@ public abstract class AbstractWorkflow implements Workflow {
   @Override
   public void deleteOnExit(final DataFile file) {
 
-    Preconditions.checkNotNull(file, "file argument is null");
+    requireNonNull(file, "file argument is null");
     this.deleteOnExitFiles.add(file);
   }
 
@@ -716,7 +715,7 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   private List<AbstractStep> getSortedStepsByState(final StepState... states) {
 
-    Preconditions.checkNotNull(states, "states argument is null");
+    requireNonNull(states, "states argument is null");
 
     final List<AbstractStep> result = new ArrayList<>();
 
@@ -737,7 +736,7 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   private List<AbstractStep> getSortedStepsByState(final StepState state) {
 
-    Preconditions.checkNotNull(state, "state argument is null");
+    requireNonNull(state, "state argument is null");
 
     final List<AbstractStep> result;
 
@@ -798,10 +797,10 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   public void checkDirectories() throws EoulsanException {
 
-    checkNotNull(this.jobDir, "the job directory is null");
-    checkNotNull(this.taskDir, "the task directory is null");
-    checkNotNull(this.outputDir, "the output directory is null");
-    checkNotNull(this.localWorkingDir, "the local working directory is null");
+    requireNonNull(this.jobDir, "the job directory is null");
+    requireNonNull(this.taskDir, "the task directory is null");
+    requireNonNull(this.outputDir, "the output directory is null");
+    requireNonNull(this.localWorkingDir, "the local working directory is null");
 
     // Get Eoulsan settings
     final Settings settings = EoulsanRuntime.getSettings();
@@ -815,7 +814,7 @@ public abstract class AbstractWorkflow implements Workflow {
     if (!settings.isUserDefinedTempDirectory()) {
 
       // Set the temporary directory
-      checkNotNull(this.tmpDir, "The temporary directory is null");
+      requireNonNull(this.tmpDir, "The temporary directory is null");
       settings.setTempDirectory(this.tmpDir.toFile().toString());
       dirsToCheck.add(this.tmpDir);
     }
@@ -1000,8 +999,8 @@ public abstract class AbstractWorkflow implements Workflow {
   protected AbstractWorkflow(final ExecutorArguments executionArguments,
       final Design design) throws EoulsanException {
 
-    Preconditions.checkNotNull(executionArguments, "Argument cannot be null");
-    Preconditions.checkNotNull(design, "Design argument cannot be null");
+    requireNonNull(executionArguments, "Argument cannot be null");
+    requireNonNull(design, "Design argument cannot be null");
 
     this.design = design;
 

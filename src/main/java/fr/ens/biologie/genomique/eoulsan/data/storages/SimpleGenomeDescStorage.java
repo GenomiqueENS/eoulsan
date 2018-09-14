@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.data.storages;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.util.Utils.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -232,7 +232,7 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
   @Override
   public GenomeDescription get(final DataFile genomeFile) {
 
-    checkNotNull(genomeFile, "Genome file is null");
+    requireNonNull(genomeFile, "Genome file is null");
 
     final IndexEntry entry = this.entries.get(createKey(genomeFile));
 
@@ -253,8 +253,8 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
   public void put(final DataFile genomeFile,
       final GenomeDescription genomeDesc) {
 
-    checkNotNull(genomeFile, "GenomeFile is null");
-    checkNotNull(genomeDesc, "Genome description is null");
+    requireNonNull(genomeFile, "GenomeFile is null");
+    requireNonNull(genomeDesc, "Genome description is null");
 
     final String key = createKey(genomeFile);
 
@@ -317,7 +317,7 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
    */
   private SimpleGenomeDescStorage(final DataFile dir) throws IOException {
 
-    checkNotNull(dir, "Index directory is null");
+    requireNonNull(dir, "Index directory is null");
 
     this.dir = dir;
     load();

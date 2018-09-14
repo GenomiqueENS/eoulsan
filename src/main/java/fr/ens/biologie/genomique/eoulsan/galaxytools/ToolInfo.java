@@ -23,7 +23,6 @@
  */
 package fr.ens.biologie.genomique.eoulsan.galaxytools;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractCheetahScript;
@@ -196,7 +195,7 @@ public class ToolInfo {
   ToolInfo(final Document document, final String toolSource)
       throws EoulsanException {
 
-    checkNotNull(document, "doc argument cannot be null");
+    java.util.Objects.requireNonNull(document, "doc argument cannot be null");
 
     // Set tool name
     this.toolID = extractToolID(document);

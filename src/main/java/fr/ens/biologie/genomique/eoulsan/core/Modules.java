@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.core;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
 
@@ -63,8 +63,8 @@ public class Modules {
       final Parameter parameter, final boolean throwException)
       throws EoulsanException {
 
-    checkNotNull(context, "context argument cannot be null");
-    checkNotNull(parameter, "parameter argument cannot be null");
+    requireNonNull(context, "context argument cannot be null");
+    requireNonNull(parameter, "parameter argument cannot be null");
 
     final String message = "The parameter \""
         + parameter.getName() + "\" in the \""
@@ -106,9 +106,9 @@ public class Modules {
       final Parameter parameter, final String newParameterName,
       final boolean throwException) throws EoulsanException {
 
-    checkNotNull(context, "context argument cannot be null");
-    checkNotNull(parameter, "parameter argument cannot be null");
-    checkNotNull(newParameterName, "newName argument cannot be null");
+    requireNonNull(context, "context argument cannot be null");
+    requireNonNull(parameter, "parameter argument cannot be null");
+    requireNonNull(newParameterName, "newName argument cannot be null");
 
     final String message = "The parameter \""
         + parameter.getName() + "\" in the \""
@@ -131,8 +131,8 @@ public class Modules {
   public static void removedParameter(final StepConfigurationContext context,
       final Parameter parameter) throws EoulsanException {
 
-    checkNotNull(context, "context argument cannot be null");
-    checkNotNull(parameter, "parameter argument cannot be null");
+    requireNonNull(context, "context argument cannot be null");
+    requireNonNull(parameter, "parameter argument cannot be null");
 
     throw new EoulsanException("The parameter \""
         + parameter.getName() + "\" in the \""
@@ -147,8 +147,8 @@ public class Modules {
   public static void unknownParameter(final StepConfigurationContext context,
       final Parameter parameter) throws EoulsanException {
 
-    checkNotNull(context, "context argument cannot be null");
-    checkNotNull(parameter, "parameter argument cannot be null");
+    requireNonNull(context, "context argument cannot be null");
+    requireNonNull(parameter, "parameter argument cannot be null");
 
     throw new EoulsanException("Unknown \""
         + parameter.getName() + "\" parameter for the \""
@@ -164,9 +164,9 @@ public class Modules {
   public static void badParameterValue(final StepConfigurationContext context,
       final Parameter parameter, final String message) throws EoulsanException {
 
-    checkNotNull(context, "context argument cannot be null");
-    checkNotNull(parameter, "parameter argument cannot be null");
-    checkNotNull(message, "message argument cannot be null");
+    requireNonNull(context, "context argument cannot be null");
+    requireNonNull(parameter, "parameter argument cannot be null");
+    requireNonNull(message, "message argument cannot be null");
 
     throw new EoulsanException("The invalid value ("
         + parameter.getValue() + ") for \"" + parameter.getName()
@@ -183,8 +183,8 @@ public class Modules {
       final StepConfigurationContext context, final String message)
       throws EoulsanException {
 
-    checkNotNull(context, "context argument cannot be null");
-    checkNotNull(message, "message argument cannot be null");
+    requireNonNull(context, "context argument cannot be null");
+    requireNonNull(message, "message argument cannot be null");
 
     throw new EoulsanException("The invalid configuration for the \""
         + context.getCurrentStep().getId() + "\" step: " + message);
@@ -199,8 +199,8 @@ public class Modules {
   public static Parameter getParameter(final Set<Parameter> parameters,
       final String parameterName) {
 
-    checkNotNull(parameters, "parameters argument cannot be null");
-    checkNotNull(parameterName, "parameterName argument cannot be null");
+    requireNonNull(parameters, "parameters argument cannot be null");
+    requireNonNull(parameterName, "parameterName argument cannot be null");
 
     Parameter result = null;
 
@@ -222,8 +222,8 @@ public class Modules {
   public static boolean containsParameter(final Set<Parameter> parameters,
       final String parameterName) {
 
-    checkNotNull(parameters, "parameters argument cannot be null");
-    checkNotNull(parameterName, "parameterName argument cannot be null");
+    requireNonNull(parameters, "parameters argument cannot be null");
+    requireNonNull(parameterName, "parameterName argument cannot be null");
 
     for (Parameter p : parameters) {
       if (parameterName.equals(p.getName())) {

@@ -25,9 +25,9 @@
 package fr.ens.biologie.genomique.eoulsan.core;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.core.Naming.ASCII_LETTER_OR_DIGIT;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toLetter;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.util.Objects;
@@ -178,7 +178,7 @@ public class FileNaming {
    */
   public void setFormat(final DataFormat format) {
 
-    checkNotNull(format, "format argument cannot be null");
+    requireNonNull(format, "format argument cannot be null");
     this.format = format;
   }
 
@@ -206,7 +206,7 @@ public class FileNaming {
    */
   public void setCompression(final CompressionType compression) {
 
-    checkNotNull(compression, "compression argument cannot be null");
+    requireNonNull(compression, "compression argument cannot be null");
     this.compression = compression;
   }
 
@@ -216,7 +216,7 @@ public class FileNaming {
    */
   protected void set(final Data data) {
 
-    checkNotNull(data, "port argument cannot be null");
+    requireNonNull(data, "port argument cannot be null");
 
     setDataName(data.getName());
     setPart(data.getPart());
@@ -232,9 +232,9 @@ public class FileNaming {
    */
   public String filePrefix() {
 
-    checkNotNull(this.stepId, "stepId has not been set");
-    checkNotNull(this.portName, "portName has not been set");
-    checkNotNull(this.format, "format has not been set");
+    requireNonNull(this.stepId, "stepId has not been set");
+    requireNonNull(this.portName, "portName has not been set");
+    requireNonNull(this.format, "format has not been set");
 
     return filePrefix(this.stepId, this.portName, this.format.getPrefix());
   }
@@ -245,8 +245,8 @@ public class FileNaming {
    */
   public String fileSuffix() {
 
-    checkNotNull(this.format, "format has not been set");
-    checkNotNull(this.compression, "compression has not been set");
+    requireNonNull(this.format, "format has not been set");
+    requireNonNull(this.compression, "compression has not been set");
 
     return fileSuffix(this.format.getDefaultExtension(),
         this.compression.getExtension());
@@ -258,7 +258,7 @@ public class FileNaming {
    */
   public String fileMiddle() {
 
-    checkNotNull(this.dataName, "datName has not been set");
+    requireNonNull(this.dataName, "datName has not been set");
 
     checkFormatAndFileIndex();
 
@@ -271,11 +271,11 @@ public class FileNaming {
    */
   public String filename() {
 
-    checkNotNull(this.stepId, "stepId has not been set");
-    checkNotNull(this.portName, "portName has not been set");
-    checkNotNull(this.format, "format has not been set");
-    checkNotNull(this.dataName, "datName has not been set");
-    checkNotNull(this.compression, "compression has not been set");
+    requireNonNull(this.stepId, "stepId has not been set");
+    requireNonNull(this.portName, "portName has not been set");
+    requireNonNull(this.format, "format has not been set");
+    requireNonNull(this.dataName, "datName has not been set");
+    requireNonNull(this.compression, "compression has not been set");
 
     checkFormatAndFileIndex();
 
@@ -298,11 +298,11 @@ public class FileNaming {
    */
   public String compatibilityFilename() {
 
-    checkNotNull(this.stepId, "stepId has not been set");
-    checkNotNull(this.portName, "portName has not been set");
-    checkNotNull(this.format, "format has not been set");
-    checkNotNull(this.dataName, "datName has not been set");
-    checkNotNull(this.compression, "compression has not been set");
+    requireNonNull(this.stepId, "stepId has not been set");
+    requireNonNull(this.portName, "portName has not been set");
+    requireNonNull(this.format, "format has not been set");
+    requireNonNull(this.dataName, "datName has not been set");
+    requireNonNull(this.compression, "compression has not been set");
 
     checkFormatAndFileIndex();
 
@@ -526,7 +526,7 @@ public class FileNaming {
    */
   public static FileNaming parse(final File file) {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     return parse(file.getName());
   }
@@ -538,7 +538,7 @@ public class FileNaming {
    */
   public static FileNaming parse(final DataFile file) {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     return parse(file.getName());
   }
@@ -550,7 +550,7 @@ public class FileNaming {
    */
   public static FileNaming parse(final String filename) {
 
-    checkNotNull(filename, "filename argument cannot be null");
+    requireNonNull(filename, "filename argument cannot be null");
 
     final FileNaming result = new FileNaming();
 
@@ -707,7 +707,7 @@ public class FileNaming {
    */
   public static final boolean isFilenameValid(final DataFile file) {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     return isFilenameValid(file.getName());
   }
@@ -719,7 +719,7 @@ public class FileNaming {
    */
   public static final boolean isFilenameValid(final File file) {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     return isFilenameValid(file.getName());
   }
@@ -748,8 +748,8 @@ public class FileNaming {
    */
   public static boolean dataEquals(final File file1, final File file2) {
 
-    checkNotNull(file1, "file1 argument cannot be null");
-    checkNotNull(file2, "file2 argument cannot be null");
+    requireNonNull(file1, "file1 argument cannot be null");
+    requireNonNull(file2, "file2 argument cannot be null");
 
     return dataEquals(file1.getName(), file2.getName());
   }
@@ -762,8 +762,8 @@ public class FileNaming {
    */
   public static boolean dataEquals(final DataFile file1, final DataFile file2) {
 
-    checkNotNull(file1, "file1 argument cannot be null");
-    checkNotNull(file2, "file2 argument cannot be null");
+    requireNonNull(file1, "file1 argument cannot be null");
+    requireNonNull(file2, "file2 argument cannot be null");
 
     return dataEquals(file1.getName(), file2.getName());
   }
@@ -777,8 +777,8 @@ public class FileNaming {
   public static boolean dataEquals(final String filename1,
       final String filename2) {
 
-    checkNotNull(filename1, "filename1 argument cannot be null");
-    checkNotNull(filename2, "filename2 argument cannot be null");
+    requireNonNull(filename1, "filename1 argument cannot be null");
+    requireNonNull(filename2, "filename2 argument cannot be null");
 
     final FileNaming fn1;
     final FileNaming fn2;
@@ -803,7 +803,7 @@ public class FileNaming {
    */
   private static void checkStepId(final String stepId) {
 
-    checkNotNull(stepId, "stepId argument cannot be null");
+    requireNonNull(stepId, "stepId argument cannot be null");
     checkArgument(!stepId.isEmpty(), "stepId is empty");
     checkArgument(isStepIdValid(stepId),
         "The step id of the file name can only contains letters or digit: "
@@ -816,7 +816,7 @@ public class FileNaming {
    */
   private static void checkPortName(final String portName) {
 
-    checkNotNull(portName, "portName argument cannot be null");
+    requireNonNull(portName, "portName argument cannot be null");
     checkArgument(!portName.isEmpty(), "portName argument is empty");
     checkArgument(isPortNameValid(portName),
         "The port name of the file name can only contains letters or digit: "
@@ -829,7 +829,7 @@ public class FileNaming {
    */
   private static void checkFormatPrefix(final String formatPrefix) {
 
-    checkNotNull(formatPrefix, "formatPrefix argument cannot be null");
+    requireNonNull(formatPrefix, "formatPrefix argument cannot be null");
     checkArgument(!formatPrefix.isEmpty(), "formatPrefix is empty");
     checkArgument(isFormatPrefixValid(formatPrefix),
         "The format prefix of the file name can only contains letters or digit: "
@@ -842,7 +842,7 @@ public class FileNaming {
    */
   private static void checkDataName(final String dataName) {
 
-    checkNotNull(dataName, "dataName argument cannot be null");
+    requireNonNull(dataName, "dataName argument cannot be null");
     checkArgument(!dataName.isEmpty(), "dataName is empty");
     checkArgument(isFormatPrefixValid(dataName),
         "The data name of the file name can only contains letters or digit: "
@@ -855,7 +855,7 @@ public class FileNaming {
    */
   private static void checkExtension(final String extension) {
 
-    checkNotNull(extension, "extension argument cannot be null");
+    requireNonNull(extension, "extension argument cannot be null");
     checkArgument(!extension.isEmpty(), "A part of the file name is empty");
     checkArgument(extension.charAt(0) == '.',
         "The extension do not starts with a dot: " + extension);
@@ -870,7 +870,7 @@ public class FileNaming {
    */
   private static void checkCompression(final String compression) {
 
-    checkNotNull(compression, "compression argument cannot be null");
+    requireNonNull(compression, "compression argument cannot be null");
 
     // Empty compression string is allowed
     if (compression.isEmpty()) {

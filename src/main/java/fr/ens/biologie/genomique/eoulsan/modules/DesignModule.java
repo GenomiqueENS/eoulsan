@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -314,8 +314,8 @@ public class DesignModule extends AbstractModule {
   private List<DataFile> getSampleDatafilesPort(final Sample sample,
       final OutputPort port) {
 
-    checkNotNull(sample, "sample argument cannot be null");
-    checkNotNull(port, "port argument cannot be null");
+    requireNonNull(sample, "sample argument cannot be null");
+    requireNonNull(port, "port argument cannot be null");
 
     final List<DataFile> result = new ArrayList<>();
 
@@ -347,8 +347,8 @@ public class DesignModule extends AbstractModule {
   private List<DataFile> getDesignDatafilesPort(final Design design,
       final OutputPort port) {
 
-    checkNotNull(design, "design argument cannot be null");
-    checkNotNull(port, "port argument cannot be null");
+    requireNonNull(design, "design argument cannot be null");
+    requireNonNull(port, "port argument cannot be null");
 
     final List<DataFile> result = new ArrayList<>();
 
@@ -407,8 +407,8 @@ public class DesignModule extends AbstractModule {
    */
   public DesignModule(final Design design, final CheckerModule checkeModule) {
 
-    checkNotNull(design, "design argument cannot be null");
-    checkNotNull(checkeModule, "checkerModule argument cannot be null");
+    requireNonNull(design, "design argument cannot be null");
+    requireNonNull(checkeModule, "checkerModule argument cannot be null");
 
     this.design = design;
     this.checkerModule = checkeModule;

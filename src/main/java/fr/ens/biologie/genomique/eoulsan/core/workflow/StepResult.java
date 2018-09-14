@@ -57,7 +57,6 @@ import javax.json.JsonValue;
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonGeneratorFactory;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
@@ -674,7 +673,7 @@ public class StepResult {
    */
   public StepResult(final AbstractStep step) {
 
-    Preconditions.checkNotNull(step, "step is null");
+    requireNonNull(step, "step is null");
 
     final WorkflowContext workflowContext =
         step.getAbstractWorkflow().getWorkflowContext();

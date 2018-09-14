@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.design;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -134,7 +134,7 @@ public class ExperimentImpl implements Serializable, Experiment {
   @Override
   public void setName(String newExperimentName) {
 
-    checkNotNull(newExperimentName,
+    requireNonNull(newExperimentName,
         "newExperimentName argument cannot be null");
 
     final String name = newExperimentName.trim();
@@ -157,7 +157,7 @@ public class ExperimentImpl implements Serializable, Experiment {
   @Override
   public ExperimentSample addSample(final Sample sample) {
 
-    checkNotNull(sample, "sample argument cannot be null");
+    requireNonNull(sample, "sample argument cannot be null");
     checkArgument(!this.sampleNames.contains(sample.getId()),
         "The sample already exists in the experiment: " + sample.getId());
     checkArgument(sample.getDesign() == this.design,
@@ -180,7 +180,7 @@ public class ExperimentImpl implements Serializable, Experiment {
   @Override
   public void removeSample(final Sample sample) {
 
-    checkNotNull(sample, "sample argument cannot be null");
+    requireNonNull(sample, "sample argument cannot be null");
     checkArgument(this.sampleNames.contains(sample.getId()),
         "The sample does not exists in the experiment: " + sample.getId());
     checkArgument(sample.getDesign() == this.design,
@@ -198,7 +198,7 @@ public class ExperimentImpl implements Serializable, Experiment {
   @Override
   public boolean containsSample(final Sample sample) {
 
-    checkNotNull(sample, "sample argument cannot be null");
+    requireNonNull(sample, "sample argument cannot be null");
 
     return this.sampleNames.contains(sample.getId());
   }
@@ -255,8 +255,8 @@ public class ExperimentImpl implements Serializable, Experiment {
    */
   ExperimentImpl(Design design, String experimentId) {
 
-    checkNotNull(design, "design argument cannot be null");
-    checkNotNull(experimentId, "sampleId argument cannot be null");
+    requireNonNull(design, "design argument cannot be null");
+    requireNonNull(experimentId, "sampleId argument cannot be null");
     checkArgument(FileNaming.isDataNameValid(experimentId),
         "The id of an experiment can only contains letters and digit: "
             + experimentId);

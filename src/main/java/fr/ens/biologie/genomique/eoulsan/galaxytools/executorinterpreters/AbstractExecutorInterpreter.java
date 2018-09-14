@@ -1,7 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,11 +37,11 @@ public abstract class AbstractExecutorInterpreter
       final File stdoutFile, final File stderrFile, final File... filesUsed)
       throws IOException {
 
-    checkNotNull(commandLine, "commandLine argument cannot be null");
-    checkNotNull(executionDirectory,
+    requireNonNull(commandLine, "commandLine argument cannot be null");
+    requireNonNull(executionDirectory,
         "executionDirectory argument cannot be null");
-    checkNotNull(stdoutFile, "stdoutFile argument cannot be null");
-    checkNotNull(stderrFile, "stderrFile argument cannot be null");
+    requireNonNull(stdoutFile, "stdoutFile argument cannot be null");
+    requireNonNull(stderrFile, "stderrFile argument cannot be null");
 
     checkArgument(!commandLine.isEmpty(),
         "commandLine argument cannot be empty");

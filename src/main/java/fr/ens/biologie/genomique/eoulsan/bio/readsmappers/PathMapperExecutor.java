@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class PathMapperExecutor implements MapperExecutor {
   @Override
   public boolean isExecutable(String executable) {
 
-    checkNotNull(executable, "executable argument cannot be null");
+    requireNonNull(executable, "executable argument cannot be null");
 
     return FileUtils.checkIfExecutableIsInPATH(executable);
   }
@@ -60,7 +60,7 @@ public class PathMapperExecutor implements MapperExecutor {
   @Override
   public String install(final String executable) throws IOException {
 
-    checkNotNull(executable, "executable argument cannot be null");
+    requireNonNull(executable, "executable argument cannot be null");
 
     return executable;
   }

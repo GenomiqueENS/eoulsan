@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.fastqc;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -103,7 +103,7 @@ public class FastqSequenceFile implements CounterSequenceFile {
    */
   public FastqSequenceFile(final DataFile fastqFile) throws IOException {
 
-    checkNotNull(fastqFile, "file argument cannot be null");
+    requireNonNull(fastqFile, "file argument cannot be null");
 
     this.file = fastqFile;
     this.reader = new FastqReader(fastqFile.open());

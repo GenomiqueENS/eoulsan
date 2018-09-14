@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.ui;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +62,7 @@ public class BasicUI extends AbstractUI {
   @Override
   public void init(final Workflow workflow) {
 
-    checkNotNull(workflow, "workflow is null");
+    requireNonNull(workflow, "workflow is null");
     this.workflow = workflow;
 
     // Search step to follow

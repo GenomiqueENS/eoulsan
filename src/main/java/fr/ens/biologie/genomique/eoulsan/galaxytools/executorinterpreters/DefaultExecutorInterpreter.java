@@ -1,6 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +26,7 @@ public class DefaultExecutorInterpreter extends AbstractExecutorInterpreter {
   @Override
   public List<String> createCommandLine(final String arguments) {
 
-    checkNotNull(arguments, "arguments argument cannot be null");
+    requireNonNull(arguments, "arguments argument cannot be null");
 
     return Arrays.asList("/bin/sh", "-c", arguments);
   }

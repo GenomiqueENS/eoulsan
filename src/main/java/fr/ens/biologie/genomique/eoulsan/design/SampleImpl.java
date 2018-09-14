@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.design;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -92,7 +92,7 @@ class SampleImpl implements Serializable, Sample {
   @Override
   public void setName(String newSampleName) {
 
-    checkNotNull(newSampleName, "newSampleName argument cannot be null");
+    requireNonNull(newSampleName, "newSampleName argument cannot be null");
 
     final String name = newSampleName.trim();
 
@@ -156,8 +156,8 @@ class SampleImpl implements Serializable, Sample {
    */
   SampleImpl(final Design design, final String sampleId) {
 
-    checkNotNull(design, "design argument cannot be null");
-    checkNotNull(sampleId, "sampleId argument cannot be null");
+    requireNonNull(design, "design argument cannot be null");
+    requireNonNull(sampleId, "sampleId argument cannot be null");
     checkArgument(FileNaming.isDataNameValid(sampleId),
         "The id of a sample can only contains letters and digit: " + sampleId);
 

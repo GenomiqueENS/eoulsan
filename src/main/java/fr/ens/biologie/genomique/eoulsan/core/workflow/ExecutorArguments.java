@@ -25,8 +25,8 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toCompactTime;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -405,8 +405,8 @@ public class ExecutorArguments {
 
     this();
 
-    checkNotNull(workflowFile, "The workflow file is null");
-    checkNotNull(designFile, "The design file is null");
+    requireNonNull(workflowFile, "The workflow file is null");
+    requireNonNull(designFile, "The design file is null");
     checkArgument(workflowFile.exists(), "The workflow file does not exists");
     checkArgument(designFile.exists(), "The design file does not exists");
 

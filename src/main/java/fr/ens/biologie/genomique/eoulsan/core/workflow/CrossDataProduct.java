@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -79,8 +79,8 @@ class CrossDataProduct implements DataProduct, Serializable {
       final StepInputPorts inputPorts,
       final Multimap<InputPort, Data> inputTokens) {
 
-    checkNotNull(inputPorts, "inputPorts argument cannot be null");
-    checkNotNull(inputTokens, "inputTokens argument cannot be null");
+    requireNonNull(inputPorts, "inputPorts argument cannot be null");
+    requireNonNull(inputTokens, "inputTokens argument cannot be null");
 
     final Set<ImmutableMap<InputPort, Data>> result = new HashSet<>();
     final List<StepInputPort> portsList =

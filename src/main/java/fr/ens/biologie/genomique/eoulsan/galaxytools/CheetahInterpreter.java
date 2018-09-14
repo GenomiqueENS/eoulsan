@@ -23,8 +23,8 @@
  */
 package fr.ens.biologie.genomique.eoulsan.galaxytools;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -208,7 +208,7 @@ public class CheetahInterpreter {
   public CheetahInterpreter(final String cheetahScript,
       final Map<String, String> variables) throws EoulsanException {
 
-    checkNotNull(variables, "No variable set for Cheetah interpreter");
+    requireNonNull(variables, "No variable set for Cheetah interpreter");
 
     checkState(!variables.isEmpty(),
         "Tool instance from Galaxy Tool not found variables for interpretation");
