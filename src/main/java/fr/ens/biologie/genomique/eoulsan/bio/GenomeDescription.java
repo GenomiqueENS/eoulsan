@@ -25,9 +25,10 @@
 package fr.ens.biologie.genomique.eoulsan.bio;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.util.Utils.checkNotNull;
+import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.md5DigestToString;
 import static fr.ens.biologie.genomique.eoulsan.util.Utils.newArrayList;
 import static java.util.Arrays.asList;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
@@ -192,7 +192,7 @@ public class GenomeDescription {
    */
   public void save(final OutputStream os) throws IOException {
 
-    checkNotNull(os, "OutputStream is null");
+    requireNonNull(os, "OutputStream is null");
 
     final Writer writer = FileUtils.createFastBufferedWriter(os);
 
@@ -223,7 +223,7 @@ public class GenomeDescription {
    */
   public void save(final File file) throws IOException {
 
-    checkNotNull(file, "File is null");
+    requireNonNull(file, "File is null");
     save(FileUtils.createOutputStream(file));
   }
 
@@ -238,7 +238,7 @@ public class GenomeDescription {
   public static GenomeDescription load(final InputStream is)
       throws IOException {
 
-    checkNotNull(is, "InputStream is null");
+    requireNonNull(is, "InputStream is null");
 
     final GenomeDescription result = new GenomeDescription();
 
@@ -283,7 +283,7 @@ public class GenomeDescription {
    */
   public static GenomeDescription load(final File file) throws IOException {
 
-    checkNotNull(file, "File is null");
+    requireNonNull(file, "File is null");
     return load(FileUtils.createInputStream(file));
   }
 
@@ -298,7 +298,7 @@ public class GenomeDescription {
   public static GenomeDescription createGenomeDescFromFasta(
       final File genomeFastaFile) throws BadBioEntryException, IOException {
 
-    checkNotNull(genomeFastaFile, "The genome file is null");
+    requireNonNull(genomeFastaFile, "The genome file is null");
 
     return createGenomeDescFromFasta(
         FileUtils.createInputStream(genomeFastaFile),
@@ -324,7 +324,7 @@ public class GenomeDescription {
   public static GenomeDescription createGenomeDescFromGFF(final File gffFile)
       throws BadBioEntryException, IOException {
 
-    checkNotNull(gffFile, "The genome file is null");
+    requireNonNull(gffFile, "The genome file is null");
 
     return createGenomeDescFromGFF(FileUtils.createInputStream(gffFile),
         gffFile.getName());
@@ -352,7 +352,7 @@ public class GenomeDescription {
       final InputStream genomeFastaIs, final String filename,
       final boolean gffFormat) throws BadBioEntryException, IOException {
 
-    checkNotNull(genomeFastaIs, "The input stream of the genome is null");
+    requireNonNull(genomeFastaIs, "The input stream of the genome is null");
 
     getLogger().fine("Compute genome description from genome fasta file.");
 
@@ -425,7 +425,7 @@ public class GenomeDescription {
 
     // Compute final MD5 sum
     if (md5Digest != null) {
-      result.setMD5Sum(digestToString(md5Digest));
+      result.setMD5Sum(md5DigestToString(md5Digest));
     }
 
     genomeFastaIs.close();
@@ -476,17 +476,6 @@ public class GenomeDescription {
     }
 
     return sequence.length();
-  }
-
-  private static String digestToString(final MessageDigest md) {
-
-    if (md == null) {
-      return null;
-    }
-
-    final BigInteger bigInt = new BigInteger(1, md.digest());
-
-    return bigInt.toString(16);
   }
 
   //

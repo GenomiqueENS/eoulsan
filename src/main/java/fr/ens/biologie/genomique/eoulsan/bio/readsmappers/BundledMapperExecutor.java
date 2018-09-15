@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +37,6 @@ import java.util.List;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
 
 import fr.ens.biologie.genomique.eoulsan.util.BinariesInstaller;
 
@@ -88,7 +87,7 @@ public class BundledMapperExecutor implements MapperExecutor {
      */
     ProcessResult(final Process process) {
 
-      Preconditions.checkNotNull(process, "process argument cannot be null");
+      requireNonNull(process, "process argument cannot be null");
 
       this.process = process;
     }
@@ -97,7 +96,7 @@ public class BundledMapperExecutor implements MapperExecutor {
   @Override
   public String install(final String executable) throws IOException {
 
-    checkNotNull(executable, "executable argument cannot be null");
+    requireNonNull(executable, "executable argument cannot be null");
 
     // Define the lock file
     File lockFile =
@@ -136,7 +135,7 @@ public class BundledMapperExecutor implements MapperExecutor {
   @Override
   public boolean isExecutable(final String executable) {
 
-    checkNotNull(executable, "executable argument cannot be null");
+    requireNonNull(executable, "executable argument cannot be null");
 
     return BinariesInstaller.check(this.softwarePackage, this.version,
         executable);
@@ -148,7 +147,7 @@ public class BundledMapperExecutor implements MapperExecutor {
       final File stdErrFile, final boolean redirectStderr,
       final File... fileUsed) throws IOException {
 
-    checkNotNull(command, "command argument cannot be null");
+    requireNonNull(command, "command argument cannot be null");
 
     final ProcessBuilder builder = new ProcessBuilder(command);
     builder.redirectErrorStream(redirectStderr);
@@ -200,9 +199,9 @@ public class BundledMapperExecutor implements MapperExecutor {
   BundledMapperExecutor(final String softwarePackage, final String version,
       final File executablesTemporaryDirectory) {
 
-    checkNotNull(softwarePackage, "dockerConnection argument cannot be null");
-    checkNotNull(version, "dockerConnection argument cannot be null");
-    checkNotNull(executablesTemporaryDirectory,
+    requireNonNull(softwarePackage, "dockerConnection argument cannot be null");
+    requireNonNull(version, "dockerConnection argument cannot be null");
+    requireNonNull(executablesTemporaryDirectory,
         "dockerConnection argument cannot be null");
 
     this.softwarePackage = softwarePackage;

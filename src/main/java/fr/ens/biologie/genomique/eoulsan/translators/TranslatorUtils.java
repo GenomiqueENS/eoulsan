@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.translators;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -237,7 +237,7 @@ public class TranslatorUtils {
   public static Translator loadTranslator(final DataFile annotationFile,
       final DataFile linksFile) throws IOException {
 
-    checkNotNull(annotationFile, "annotationFile argument cannot be null");
+    requireNonNull(annotationFile, "annotationFile argument cannot be null");
 
     final Translator did = createDuplicatedEnsemblIdTranslator();
 

@@ -24,9 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.util.hadoop;
 
-import org.apache.hadoop.mapreduce.TaskInputOutputContext;
+import static java.util.Objects.requireNonNull;
 
-import com.google.common.base.Preconditions;
+import org.apache.hadoop.mapreduce.TaskInputOutputContext;
 
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 
@@ -57,7 +57,7 @@ public class HadoopReporterIncrementer implements ReporterIncrementer {
    */
   public HadoopReporterIncrementer(final TaskInputOutputContext context) {
 
-    Preconditions.checkNotNull(context, "Context is null");
+    requireNonNull(context, "Context is null");
 
     this.context = context;
   }

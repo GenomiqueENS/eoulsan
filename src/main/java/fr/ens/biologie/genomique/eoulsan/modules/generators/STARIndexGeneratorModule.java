@@ -24,21 +24,16 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.generators;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GTF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_FASTA;
+import static fr.ens.biologie.genomique.eoulsan.util.FileUtils.computeMD5Sum;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
 import java.nio.file.Files;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -96,6 +91,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
   private Integer genomeSAindexNbases;
   private Integer genomeChrBinNbits;
   private boolean useExpressionStepParameters;
+  private String indexerArguments;
 
   @Override
   public String getName() {
@@ -180,6 +176,10 @@ public class STARIndexGeneratorModule extends AbstractModule {
 
       case "use.expression.step.parameters":
         this.useExpressionStepParameters = p.getBooleanValue();
+        break;
+
+      case "indexer.arguments":
+        this.indexerArguments = p.getStringValue();
         break;
 
       case "local.threads":
@@ -293,8 +293,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
         additionalArguments.append(' ');
         additionalArguments.append(gffFilePath.getAbsolutePath());
         additionalArguments.append(' ');
-        additionalDescription.put("sjdbGTFfile",
-            computeMD5SumFile(gffFilePath));
+        additionalDescription.put("sjdbGTFfile", computeMD5Sum(gffFilePath));
       }
 
       if (this.overhang != null) {
@@ -342,7 +341,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
         additionalArguments.append(chrStartEndFilePath.getAbsolutePath());
         additionalArguments.append(' ');
         additionalDescription.put("sjdbFileChrStartEnd",
-            computeMD5SumFile(chrStartEndFilePath));
+            computeMD5Sum(chrStartEndFilePath));
       }
 
       if (this.genomeSAindexNbases != null) {
@@ -362,6 +361,11 @@ public class STARIndexGeneratorModule extends AbstractModule {
         additionalArguments.append(' ');
         additionalDescription.put("genomeChrBinNbits",
             this.genomeChrBinNbits.toString());
+      }
+
+      if (this.indexerArguments != null && !this.indexerArguments.isEmpty()) {
+        additionalArguments.append(this.indexerArguments);
+        additionalDescription.put("indexerArguments", this.indexerArguments);
       }
 
       status.setProgressMessage(this.mapper.getName() + " index creation");
@@ -404,7 +408,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
   private File uncompressFileIfNecessary(final TaskContext context,
       List<File> temporaryFiles, final DataFile file) throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     final File result;
 
@@ -435,7 +439,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
   private File uncompressFile(final TaskContext context, final DataFile file)
       throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     final DataFile realFile;
     final DataProtocol protocol = file.getProtocol();
@@ -458,27 +462,6 @@ public class STARIndexGeneratorModule extends AbstractModule {
     DataFiles.copy(realFile, new DataFile(outputFile));
 
     return outputFile;
-  }
-
-  /**
-   * Compute the md5 sum of a file.
-   * @param file the file
-   * @return a string with the md5sum of a file
-   * @throws IOException if an error occurs while computing the md5sum
-   */
-  private static String computeMD5SumFile(File file) throws IOException {
-
-    MessageDigest md5Digest;
-    try {
-      md5Digest = MessageDigest.getInstance("MD5");
-    } catch (NoSuchAlgorithmException e) {
-      throw new IOException(e);
-    }
-    try (InputStream is = new FileInputStream(file)) {
-      new DigestInputStream(is, md5Digest);
-    }
-
-    return new BigInteger(1, md5Digest.digest()).toString(16);
   }
 
 }

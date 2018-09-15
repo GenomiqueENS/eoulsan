@@ -23,19 +23,19 @@ public class NanoporeSequenceTypeFilterTest {
 
     assertFalse(filter.accept(null));
 
-    ReadSequence read = new ReadSequence(0,
+    ReadSequence read = new ReadSequence(
         "e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd_t", "ATG", "ABC");
     assertTrue(filter.accept(read));
 
-    read = new ReadSequence(0, "e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd_c", "ATG",
+    read = new ReadSequence("e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd_c", "ATG",
         "ABC");
     assertFalse(filter.accept(read));
 
-    read = new ReadSequence(0, "e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd", "ATG",
-        "ABC");
+    read =
+        new ReadSequence("e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd", "ATG", "ABC");
     assertFalse(filter.accept(read));
 
-    read = new ReadSequence(0, "foobar", "ATG", "ABC");
+    read = new ReadSequence("foobar", "ATG", "ABC");
     assertFalse(filter.accept(read));
 
     //
@@ -48,19 +48,19 @@ public class NanoporeSequenceTypeFilterTest {
 
     assertFalse(filter.accept(null));
 
-    read = new ReadSequence(0, "e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd_t", "ATG",
+    read = new ReadSequence("e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd_t", "ATG",
         "ABC");
     assertFalse(filter.accept(read));
 
-    read = new ReadSequence(0, "e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd_c", "ATG",
+    read = new ReadSequence("e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd_c", "ATG",
         "ABC");
     assertTrue(filter.accept(read));
 
-    read = new ReadSequence(0, "e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd", "ATG",
-        "ABC");
+    read =
+        new ReadSequence("e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd", "ATG", "ABC");
     assertFalse(filter.accept(read));
 
-    read = new ReadSequence(0, "foobar", "ATG", "ABC");
+    read = new ReadSequence("foobar", "ATG", "ABC");
     assertFalse(filter.accept(read));
 
     // Consensus
@@ -71,19 +71,19 @@ public class NanoporeSequenceTypeFilterTest {
 
     assertFalse(filter.accept(null));
 
-    read = new ReadSequence(0, "e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd_t", "ATG",
+    read = new ReadSequence("e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd_t", "ATG",
         "ABC");
     assertFalse(filter.accept(read));
 
-    read = new ReadSequence(0, "e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd_c", "ATG",
+    read = new ReadSequence("e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd_c", "ATG",
         "ABC");
     assertFalse(filter.accept(read));
 
-    read = new ReadSequence(0, "e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd", "ATG",
-        "ABC");
+    read =
+        new ReadSequence("e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd", "ATG", "ABC");
     assertTrue(filter.accept(read));
 
-    read = new ReadSequence(0, "foobar", "ATG", "ABC");
+    read = new ReadSequence("foobar", "ATG", "ABC");
     assertTrue(filter.accept(read));
 
     filter = new QualityReadFilter();

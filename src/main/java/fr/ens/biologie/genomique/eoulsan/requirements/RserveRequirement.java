@@ -1,7 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.requirements;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.util.Collections;
 import java.util.Set;
@@ -103,7 +103,7 @@ public class RserveRequirement extends AbstractRequirement {
   public static Requirement newRserveRequirement(final String rserveServerName,
       final boolean optional) {
 
-    checkNotNull(rserveServerName, "rserveServerName argument cannot be null");
+    requireNonNull(rserveServerName, "rserveServerName argument cannot be null");
     checkArgument(!rserveServerName.trim().isEmpty(),
         "rserveServerName argument cannot be empty");
 

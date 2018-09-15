@@ -25,9 +25,9 @@
 package fr.ens.biologie.genomique.eoulsan.core.schedulers;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
 
@@ -61,7 +61,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
   @Override
   public void submit(final Step step, final Set<TaskContextImpl> contexts) {
 
-    checkNotNull(contexts, "contexts argument cannot be null");
+    requireNonNull(contexts, "contexts argument cannot be null");
 
     // Check execution state
     checkExecutionState();
@@ -74,8 +74,8 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
   @Override
   public void submit(final Step step, final TaskContextImpl context) {
 
-    checkNotNull(step, "step argument cannot be null");
-    checkNotNull(context, "context argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
+    requireNonNull(context, "context argument cannot be null");
 
     // Check execution state
     checkExecutionState();
@@ -86,7 +86,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
   @Override
   public StepStatus getStatus(final Step step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     return getTaskScheduler(step).getStatus(step);
   }
@@ -94,7 +94,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
   @Override
   public StepResult getResult(final Step step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     return getTaskScheduler(step).getResult(step);
   }
@@ -102,7 +102,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
   @Override
   public int getTaskSubmittedCount(final Step step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     return getTaskScheduler(step).getTaskSubmittedCount(step);
   }
@@ -110,7 +110,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
   @Override
   public int getTaskRunningCount(final Step step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     return getTaskScheduler(step).getTaskRunningCount(step);
   }
@@ -118,7 +118,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
   @Override
   public int getTaskDoneCount(final Step step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     return getTaskScheduler(step).getTaskDoneCount(step);
   }
@@ -126,7 +126,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
   @Override
   public void waitEndOfTasks(final Step step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     // Check execution state
     checkExecutionState();
@@ -231,7 +231,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
    */
   private static ParallelizationMode getParallelizationMode(final Step step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     return ((AbstractStep) step).getParallelizationMode();
   }
@@ -243,7 +243,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
    */
   private static ExecutionMode getEoulsanMode(final Step step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     return ((AbstractStep) step).getEoulsanMode();
   }

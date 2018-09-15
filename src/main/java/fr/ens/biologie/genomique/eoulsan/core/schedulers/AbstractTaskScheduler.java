@@ -24,11 +24,11 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.schedulers;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Multimaps.synchronizedMultimap;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Collections.synchronizedMap;
+import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -87,7 +87,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
    */
   protected Step getStep(final TaskContextImpl context) {
 
-    checkNotNull(context, "context argument cannot be null");
+    requireNonNull(context, "context argument cannot be null");
 
     return getStep(context.getId());
   }
@@ -112,7 +112,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
    */
   private void addRunningContext(final TaskContextImpl context) {
 
-    checkNotNull(context, "context argument cannot be null");
+    requireNonNull(context, "context argument cannot be null");
 
     addRunningContext(context.getId());
   }
@@ -157,7 +157,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
    */
   private void addDoneContext(final TaskContextImpl context) {
 
-    checkNotNull(context, "context argument cannot be null");
+    requireNonNull(context, "context argument cannot be null");
 
     addDoneContext(context.getId());
   }
@@ -204,7 +204,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
    */
   protected void beforeExecuteTask(final TaskContextImpl context) {
 
-    checkNotNull(context, "context argument is null");
+    requireNonNull(context, "context argument is null");
 
     // Check execution state
     checkExecutionState();
@@ -220,8 +220,8 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
   protected void afterExecuteTask(final TaskContextImpl context,
       final TaskResultImpl result) {
 
-    checkNotNull(context, "context argument is null");
-    checkNotNull(result, "result argument is null");
+    requireNonNull(context, "context argument is null");
+    requireNonNull(result, "result argument is null");
 
     // Add the context result to the step result
     addResult(context, result);
@@ -237,7 +237,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
    */
   protected TaskResultImpl executeTask(final TaskContextImpl context) {
 
-    checkNotNull(context, "context argument is null");
+    requireNonNull(context, "context argument is null");
 
     // Get the step of the context
     final Step step = getStep(context.getId());
@@ -259,7 +259,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
   @Override
   public void submit(final Step step, final Set<TaskContextImpl> contexts) {
 
-    checkNotNull(contexts, "contexts argument cannot be null");
+    requireNonNull(contexts, "contexts argument cannot be null");
 
     for (TaskContextImpl context : contexts) {
       submit(step, context);
@@ -272,8 +272,8 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
     // Check execution state
     checkExecutionState();
 
-    checkNotNull(step, "step argument cannot be null");
-    checkNotNull(context, "context argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
+    requireNonNull(context, "context argument cannot be null");
 
     // Test if the context has been already submitted
     checkState(!this.submittedContexts.containsEntry(step, context.getId()),
@@ -315,7 +315,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
   @Override
   public int getTaskSubmittedCount(final Step step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     // Test if contexts for the step has been submitted
     if (!this.submittedContexts.containsKey(step)) {
@@ -328,7 +328,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
   @Override
   public int getTaskRunningCount(final Step step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     // Test if contexts for the step has been submitted
     if (!this.runningContexts.containsKey(step)) {
@@ -341,7 +341,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
   @Override
   public int getTaskDoneCount(final Step step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     // Test if contexts for the step has been submitted
     if (!this.doneContexts.containsKey(step)) {

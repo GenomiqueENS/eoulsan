@@ -24,13 +24,13 @@
 
 package fr.ens.biologie.genomique.eoulsan.io;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
-
-import com.google.common.base.Preconditions;
 
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 
@@ -65,7 +65,7 @@ public class FileConcatInputStream extends AbstractConcatInputStream {
    */
   public FileConcatInputStream(final List<File> files) {
 
-    Preconditions.checkNotNull(files, "files is null");
+    requireNonNull(files, "files is null");
 
     this.it = files.iterator();
   }

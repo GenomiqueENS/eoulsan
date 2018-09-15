@@ -112,6 +112,26 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   }
 
   @Override
+  public void init(final GenomeDescription genomeDesc,
+      final DataFile annotationFile, final boolean gtfFormat)
+      throws EoulsanException, IOException {
+
+    init(genomeDesc, annotationFile.open(), gtfFormat);
+  }
+
+  @Override
+  public void init(final GenomeDescription genomeDesc,
+      final InputStream annotationIs, final boolean gtfFormat)
+      throws EoulsanException, IOException {
+
+    try (GFFReader gffReader =
+        gtfFormat ? new GTFReader(annotationIs) : new GFFReader(annotationIs)) {
+
+      init(genomeDesc, gffReader);
+    }
+  }
+
+  @Override
   public void init(final DataFile genomeDescFile, final DataFile annotationFile,
       final boolean gtfFormat) throws EoulsanException, IOException {
 

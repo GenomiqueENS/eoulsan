@@ -25,7 +25,6 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_LOG_EXTENSION;
@@ -35,6 +34,7 @@ import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.PARTIALLY_DO
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.stackTraceToString;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toTimeHumanReadable;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -338,7 +338,6 @@ public class TaskRunner {
       final Data data = this.context.getOutputData(port);
 
       // Send the token
-      //this.context.getStep().sendToken(new Token(port, data));
       WorkflowEventBus.getInstance().postToken(port, data);
     }
 
@@ -520,7 +519,7 @@ public class TaskRunner {
   public TaskRunner(final TaskContextImpl taskContext,
       final StepStatus stepStatus) {
 
-    checkNotNull(taskContext, "taskContext cannot be null");
+    requireNonNull(taskContext, "taskContext cannot be null");
 
     this.context = taskContext;
     this.module =
@@ -540,8 +539,8 @@ public class TaskRunner {
   private TaskRunner(final TaskContextImpl taskContext,
       final TaskResultImpl taskResult) {
 
-    checkNotNull(taskContext, "taskContext cannot be null");
-    checkNotNull(taskResult, "taskResult cannot be null");
+    requireNonNull(taskContext, "taskContext cannot be null");
+    requireNonNull(taskResult, "taskResult cannot be null");
 
     // Check if the task result has been created for the task context
     checkArgument(taskContext.getId() == taskResult.getContext().getId(), "");

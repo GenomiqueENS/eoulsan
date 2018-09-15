@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.design.io;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -330,7 +330,7 @@ public class Eoulsan2DesignReader implements DesignReader {
     if (expField.size() != 3) {
 
       // Check if the experiment key doesn't contain more that 3 entry
-      throw new IOException("The experiment key is invalide.");
+      throw new IOException("The experiment key is invalid.");
     }
 
     // getters
@@ -459,7 +459,7 @@ public class Eoulsan2DesignReader implements DesignReader {
    */
   public Eoulsan2DesignReader(final File file) throws FileNotFoundException {
 
-    checkNotNull(file, "the file argument cannot be null");
+    requireNonNull(file, "the file argument cannot be null");
 
     this.is = new FileInputStream(file);
   }
@@ -471,7 +471,7 @@ public class Eoulsan2DesignReader implements DesignReader {
    */
   public Eoulsan2DesignReader(final DataFile file) throws IOException {
 
-    checkNotNull(file, "the file argument cannot be null");
+    requireNonNull(file, "the file argument cannot be null");
 
     this.is = file.open();
   }
@@ -483,7 +483,7 @@ public class Eoulsan2DesignReader implements DesignReader {
    */
   public Eoulsan2DesignReader(final InputStream is) throws IOException {
 
-    checkNotNull(is, "the is argument cannot be null");
+    requireNonNull(is, "the is argument cannot be null");
 
     this.is = is;
   }
@@ -496,7 +496,7 @@ public class Eoulsan2DesignReader implements DesignReader {
   public Eoulsan2DesignReader(final String filename)
       throws FileNotFoundException {
 
-    checkNotNull(filename, "the filename argument cannot be null");
+    requireNonNull(filename, "the filename argument cannot be null");
 
     this.is = new FileInputStream(filename);
   }

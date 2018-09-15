@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.util;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,7 +53,7 @@ public abstract class ClassPathResourceLoader<S>
   protected InputStream getResourceAsStream(final String resourcePath)
       throws IOException {
 
-    checkNotNull(resourcePath, "resourcePath argument cannot be null");
+    requireNonNull(resourcePath, "resourcePath argument cannot be null");
 
     // Get the classloader
     final ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -106,8 +106,8 @@ public abstract class ClassPathResourceLoader<S>
   public ClassPathResourceLoader(final Class<S> clazz,
       final String resourcePath) {
 
-    checkNotNull(clazz, "clazz argument cannot be null");
-    checkNotNull(resourcePath, "resourcePath argument cannot be null");
+    requireNonNull(clazz, "clazz argument cannot be null");
+    requireNonNull(resourcePath, "resourcePath argument cannot be null");
 
     this.clazz = clazz;
     this.resourceBasePath = resourcePath;

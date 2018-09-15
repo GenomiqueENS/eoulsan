@@ -24,12 +24,13 @@
 
 package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
+import java.util.Objects;
+
 import org.w3c.dom.Element;
 
 import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.core.Naming;
-import com.google.common.base.Objects;
 
 /**
  * This class define an abstract tool element.
@@ -125,8 +126,8 @@ public abstract class AbstractToolElement implements ToolElement {
   @Override
   public int hashCode() {
 
-    return Objects.hashCode(this.help, this.isOptional, this.label,
-        this.shortName, this.type);
+    return Objects.hash(this.help, this.isOptional, this.label, this.shortName,
+        this.type);
   }
 
   @Override
@@ -142,23 +143,23 @@ public abstract class AbstractToolElement implements ToolElement {
 
     final AbstractToolElement that = (AbstractToolElement) obj;
 
-    if (!Objects.equal(this.help, that.help)) {
+    if (!Objects.equals(this.help, that.help)) {
       return false;
     }
 
-    if (!Objects.equal(this.isOptional, that.isOptional)) {
+    if (!Objects.equals(this.isOptional, that.isOptional)) {
       return false;
     }
 
-    if (!Objects.equal(this.label, that.label)) {
+    if (!Objects.equals(this.label, that.label)) {
       return false;
     }
 
-    if (!Objects.equal(this.shortName, that.shortName)) {
+    if (!Objects.equals(this.shortName, that.shortName)) {
       return false;
     }
 
-    if (!Objects.equal(this.type, that.type)) {
+    if (!Objects.equals(this.type, that.type)) {
       return false;
     }
     return true;

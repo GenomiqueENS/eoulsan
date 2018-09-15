@@ -24,11 +24,15 @@
 
 package fr.ens.biologie.genomique.eoulsan.util;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -1172,6 +1176,24 @@ public final class StringUtils {
     }
 
     return sb.toString();
+  }
+
+  /**
+   * Convert a MD5 message digest to a string.
+   * @param md5Digest the message digest
+   * @return the MD5 digest as a string
+   */
+  public static String md5DigestToString(final MessageDigest md5Digest) {
+
+    requireNonNull(md5Digest, "md argument cannot be null");
+
+    if (!"MD5".equals(md5Digest.getAlgorithm())) {
+      throw new IllegalArgumentException(
+          "the md argument must be a MD5 MessageDigest but found: "
+              + md5Digest.getAlgorithm());
+    }
+
+    return new BigInteger(1, md5Digest.digest()).toString(16);
   }
 
   //

@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.xmlEscape;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -349,9 +349,9 @@ public class Workflow2Graphviz {
   public Workflow2Graphviz(final AbstractWorkflow workflow,
       final DataFile dotFile, final DataFile imageFile) {
 
-    checkNotNull(workflow, "workflow parameter cannot be null");
-    checkNotNull(dotFile, "dotFile parameter cannot be null");
-    checkNotNull(imageFile, "imageFile parameter cannot be null");
+    requireNonNull(workflow, "workflow parameter cannot be null");
+    requireNonNull(dotFile, "dotFile parameter cannot be null");
+    requireNonNull(imageFile, "imageFile parameter cannot be null");
 
     this.workflow = workflow;
     this.dotFile = dotFile;

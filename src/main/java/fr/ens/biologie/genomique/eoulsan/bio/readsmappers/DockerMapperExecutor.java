@@ -25,9 +25,9 @@
 package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Lists.newArrayList;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -137,7 +137,7 @@ public class DockerMapperExecutor implements MapperExecutor {
         final File executionDirectory, boolean stdout, final File stdErrFile,
         final boolean redirectStderr, File... filesUsed) throws IOException {
 
-      checkNotNull(command, "command argument cannot be null");
+      requireNonNull(command, "command argument cannot be null");
 
       // Pull image if needed
       dockerConnection.pullImageIfNotExists();
@@ -185,7 +185,7 @@ public class DockerMapperExecutor implements MapperExecutor {
   @Override
   public boolean isExecutable(final String executable) throws IOException {
 
-    checkNotNull(executable, "binaryFilename argument cannot be null");
+    requireNonNull(executable, "binaryFilename argument cannot be null");
     checkArgument(!executable.isEmpty(),
         "binaryFilename argument cannot be empty");
 
@@ -200,7 +200,7 @@ public class DockerMapperExecutor implements MapperExecutor {
   @Override
   public String install(final String executable) throws IOException {
 
-    checkNotNull(executable, "executable argument cannot be null");
+    requireNonNull(executable, "executable argument cannot be null");
 
     return executable;
   }
@@ -211,7 +211,7 @@ public class DockerMapperExecutor implements MapperExecutor {
       final File stdErrFile, final boolean redirectStderr,
       final File... filesUsed) throws IOException {
 
-    checkNotNull(command, "executable argument cannot be null");
+    requireNonNull(command, "executable argument cannot be null");
 
     return new DockerResult(command, executionDirectory, stdout, stdErrFile,
         redirectStderr, filesUsed);
@@ -231,7 +231,7 @@ public class DockerMapperExecutor implements MapperExecutor {
   private List<String> convertCommand(final List<String> command,
       final File stdout, final boolean redirectStderr) {
 
-    checkNotNull(command, "command argument cannot be null");
+    requireNonNull(command, "command argument cannot be null");
 
     if (stdout == null) {
       return command;
@@ -284,8 +284,8 @@ public class DockerMapperExecutor implements MapperExecutor {
   DockerMapperExecutor(final String dockerImage, final File temporaryDirectory)
       throws IOException {
 
-    checkNotNull(dockerImage, "dockerImage argument cannot be null");
-    checkNotNull(temporaryDirectory,
+    requireNonNull(dockerImage, "dockerImage argument cannot be null");
+    requireNonNull(temporaryDirectory,
         "temporaryDirectory argument cannot be null");
 
     this.temporaryDirectory = temporaryDirectory;

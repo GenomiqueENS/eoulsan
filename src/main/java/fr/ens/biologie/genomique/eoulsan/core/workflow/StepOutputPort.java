@@ -25,8 +25,8 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Collections.emptySet;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -96,7 +96,7 @@ class StepOutputPort extends SimpleOutputPort {
   public void addLink(final StepInputPort inputPort) {
 
     // Check if argument is null
-    checkNotNull(inputPort, "inputPort argument cannot be null");
+    requireNonNull(inputPort, "inputPort argument cannot be null");
 
     // Check the ports are not on the same step
     checkArgument(inputPort.getStep() != this.step,

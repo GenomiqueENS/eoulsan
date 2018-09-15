@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.actions;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -168,9 +168,9 @@ public class UploadS3Action extends AbstractAction {
   private static void run(final File workflowFile, final File designFile,
       final DataFile s3Path, final String jobDescription) {
 
-    checkNotNull(workflowFile, "paramFile is null");
-    checkNotNull(designFile, "designFile is null");
-    checkNotNull(s3Path, "s3Path is null");
+    requireNonNull(workflowFile, "paramFile is null");
+    requireNonNull(designFile, "designFile is null");
+    requireNonNull(s3Path, "s3Path is null");
 
     getLogger().info("Parameter file: " + workflowFile);
     getLogger().info("Design file: " + designFile);

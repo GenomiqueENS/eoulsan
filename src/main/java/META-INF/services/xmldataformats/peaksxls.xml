@@ -1,0 +1,8 @@
+<dataformat>
+  <name>peaksxls</name>
+  <description>peaks in xls format</description>
+  <prefix>peaksxls</prefix>
+  <extensions>
+    <extension default="true">.xls</extension>
+  </extensions>
+</dataformat>

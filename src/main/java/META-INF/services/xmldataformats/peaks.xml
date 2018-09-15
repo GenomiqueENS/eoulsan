@@ -1,0 +1,12 @@
+<dataformat>
+  <name>peaks</name>
+  <description>peak format</description>
+  <prefix>peaks</prefix>
+  <extensions>
+    <extension default="true">.peak</extension>
+  </extensions>
+  <toolshedgalaxy>
+    <extension>peaks</extension>
+  </toolshedgalaxy>
+
+</dataformat>

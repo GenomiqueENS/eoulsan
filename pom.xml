@@ -5,7 +5,7 @@
 	<groupId>fr.ens.biologie.genomique</groupId>
 	<artifactId>eoulsan</artifactId>
 	<packaging>jar</packaging>
-	<version>2.3-SNAPSHOT</version>
+	<version>2.4-SNAPSHOT</version>
 	<name>Eoulsan</name>
 	<description>
 		A pipeline for NGS analysis.
@@ -17,7 +17,7 @@
 		<didyouknow>Did you know that eoulsan is the breton word for pipeline?
 		</didyouknow>
 
-		<java.version>1.7</java.version>
+		<java.version>1.8</java.version>
 		<hadoop.version>2.3.0</hadoop.version>
 		<htsjdk.version>1.118</htsjdk.version>
 
@@ -411,6 +411,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>net.sourceforge.picard</groupId>
+			<artifactId>picard</artifactId>
+			<version>${htsjdk.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.nuiton.thirdparty</groupId>
 			<artifactId>REngine</artifactId>
 			<version>0.6-1</version>
@@ -566,9 +572,9 @@
 
 		<!-- Required to patch FastQC at runtime -->
 		<dependency>
-			<groupId>javassist</groupId>
+			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
-			<version>3.12.1.GA</version>
+			<version>3.23.1-GA</version>
 			<scope>compile</scope>
 		</dependency>
 
@@ -1111,7 +1117,7 @@ o
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>2.5.5</version>
+				<version>3.0.1</version>
 				<configuration>
 					<effort>Max</effort>
 					<xmlOutput>true</xmlOutput>
@@ -1144,7 +1150,7 @@ o
 			<plugin>
 				<groupId>org.gaul</groupId>
 				<artifactId>modernizer-maven-plugin</artifactId>
-				<version>1.4.0</version>
+				<version>1.6.0</version>
 				<executions>
 					<execution>
 						<id>modernizer</id>

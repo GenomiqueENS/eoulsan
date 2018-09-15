@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.actions;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -75,6 +75,8 @@ public class ExecJarHadoopAction extends AbstractAction {
       final Path workingPath = new Path(jobPath, "working");
       final Path taskPath = new Path(jobPath, "tasks");
       final Path tmpDir = new Path(jobPath, "tmp");
+      final Path dataPath =
+          new Path(outputPath, Globals.APP_NAME_LOWER_CASE + "-data");
 
       // Set log pathname
       setJobPathname(jobPath.toString());
@@ -96,6 +98,9 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // Set Hadoop working pathname
       setHadoopWorkingPathname(destPath.toString());
+
+      // Set the data path
+      setDataPathname(dataPath.toString());
 
       // Set the temporary directory
       setTemporaryPathname(tmpDir.toString());
@@ -265,9 +270,9 @@ public class ExecJarHadoopAction extends AbstractAction {
       final String jobDescription, final String jobEnvironment,
       final long millisSinceEpoch) {
 
-    checkNotNull(workflowPathname, "workflowPathname is null");
-    checkNotNull(designPathname, "designPathname is null");
-    checkNotNull(destPathname, "destPathname is null");
+    requireNonNull(workflowPathname, "workflowPathname is null");
+    requireNonNull(designPathname, "designPathname is null");
+    requireNonNull(destPathname, "destPathname is null");
 
     final String desc;
     final String env;

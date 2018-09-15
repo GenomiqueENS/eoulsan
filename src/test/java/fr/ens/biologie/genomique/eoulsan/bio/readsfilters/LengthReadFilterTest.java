@@ -52,19 +52,19 @@ public class LengthReadFilterTest {
     read.setQuality("xxxxxxxx");
     assertFalse(filter.accept(read));
 
-    read = new ReadSequence(0, "toto", "ATGCATGC", "xxxxxxxx");
+    read = new ReadSequence("toto", "ATGCATGC", "xxxxxxxx");
     assertTrue(filter.accept(read));
 
-    read = new ReadSequence(0, "toto", "ATGCATG", "xxxxxxx");
+    read = new ReadSequence("toto", "ATGCATG", "xxxxxxx");
     assertTrue(filter.accept(read));
 
-    read = new ReadSequence(0, "toto", "ATGCAT", "xxxxxx");
+    read = new ReadSequence("toto", "ATGCAT", "xxxxxx");
     assertTrue(filter.accept(read));
 
-    read = new ReadSequence(0, "toto", "ATGCA", "xxxxx");
+    read = new ReadSequence("toto", "ATGCA", "xxxxx");
     assertFalse(filter.accept(read));
 
-    read = new ReadSequence(0, "toto", "ATGC", "xxxx");
+    read = new ReadSequence("toto", "ATGC", "xxxx");
     assertFalse(filter.accept(read));
   }
 

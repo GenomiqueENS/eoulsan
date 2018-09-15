@@ -1,7 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.core;
 
 import static com.google.common.base.CharMatcher.inRange;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import com.google.common.base.CharMatcher;
 
@@ -24,7 +24,7 @@ public class Naming {
    */
   public static final String toValidName(final String name) {
 
-    checkNotNull(name, "name argument cannot be null");
+    requireNonNull(name, "name argument cannot be null");
 
     StringBuilder sb = new StringBuilder();
 

@@ -24,9 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.schedulers;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.GENERATOR_STEP;
+import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
 
@@ -55,7 +55,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   @Override
   public void submit(final Step step, final Set<TaskContextImpl> contexts) {
 
-    checkNotNull(contexts, "contexts argument cannot be null");
+    requireNonNull(contexts, "contexts argument cannot be null");
 
     // Check execution state
     checkExecutionState();
@@ -68,8 +68,8 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   @Override
   public void submit(final Step step, final TaskContextImpl context) {
 
-    checkNotNull(step, "step argument cannot be null");
-    checkNotNull(context, "context argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
+    requireNonNull(context, "context argument cannot be null");
 
     // Check execution state
     checkExecutionState();
@@ -80,7 +80,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   @Override
   public StepStatus getStatus(final Step step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     return getTaskScheduler(step).getStatus(step);
   }
@@ -88,7 +88,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   @Override
   public StepResult getResult(final Step step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     return getTaskScheduler(step).getResult(step);
   }
@@ -96,7 +96,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   @Override
   public int getTaskSubmittedCount(final Step step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     return getTaskScheduler(step).getTaskSubmittedCount(step);
   }
@@ -104,7 +104,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   @Override
   public int getTaskRunningCount(final Step step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     return getTaskScheduler(step).getTaskRunningCount(step);
   }
@@ -112,7 +112,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   @Override
   public int getTaskDoneCount(final Step step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     return getTaskScheduler(step).getTaskDoneCount(step);
   }
@@ -120,7 +120,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   @Override
   public void waitEndOfTasks(final Step step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     // Check execution state
     checkExecutionState();
@@ -205,7 +205,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
    */
   private static ParallelizationMode getParallelizationMode(final Step step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     return ((AbstractStep) step).getParallelizationMode();
   }
@@ -247,7 +247,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   public ClusterCombinedTaskScheduler(final int threadNumber,
       final ClusterTaskScheduler clusterScheduler) {
 
-    checkNotNull(clusterScheduler, "clusterScheduler argument cannot be null");
+    requireNonNull(clusterScheduler, "clusterScheduler argument cannot be null");
 
     // Create the schedulers
     this.noTaskScheduler = new MonoThreadTaskScheduler();

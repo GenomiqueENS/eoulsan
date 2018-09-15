@@ -138,6 +138,14 @@ public class DataFormats {
   public static final DataFormat DUMMY_TXT =
       registry.getDataFormatFromName("dummy_txt");
 
+  /** BigBed format. */
+  public static final DataFormat BIGBED =
+      registry.getDataFormatFromName("bigbed");
+
+  /** BigWig format. */
+  public static final DataFormat BIGWIG =
+      registry.getDataFormatFromName("bigwig_bw");
+
   /** Cutadapt adapters format. */
   public static final DataFormat CUTADAPT_ADAPTER_FASTA =
       registry.getDataFormatFromName("cutadapt_adapter");
@@ -149,4 +157,17 @@ public class DataFormats {
   /** FeatureCounts summary format. */
   public static final DataFormat FEATURECOUNTS_SUMMARY_TXT =
       registry.getDataFormatFromName("featurecounts_summary_txt");
+
+  /** Expression matrix. */
+  public static final DataFormat EXPRESSION_MATRIX_TSV =
+      registry.getDataFormatFromName("expression_matrix_tsv");
+
+  /** R single cell experiment. */
+  public static final DataFormat SINGLE_CELL_EXPERMIMENT_RDS =
+      registry.getDataFormatFromName("singlecellexperiment_rds");
+
+  /** BED format. */
+  public static final DataFormat MAPPER_RESULT_BED =
+      registry.getDataFormatFromName("mapper_results_bed");
+
 }

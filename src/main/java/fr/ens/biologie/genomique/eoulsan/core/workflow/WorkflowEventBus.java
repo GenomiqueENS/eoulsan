@@ -60,10 +60,11 @@ public class WorkflowEventBus {
   /**
    * Post a token.
    * @param fromPort the port emiting the token
+   * @param tokenCount number of tokens sent for the port
    */
-  void postToken(final StepOutputPort fromPort) {
+  void postToken(final StepOutputPort fromPort, final int tokenCount) {
 
-    post(new Token(fromPort));
+    post(new Token(fromPort, tokenCount));
   }
 
   /**

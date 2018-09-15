@@ -52,27 +52,27 @@ public class TrimPolyNEndReadFilterTest {
     read.setQuality("xxxxxxxx");
     assertFalse(filter.accept(read));
 
-    read = new ReadSequence(0, "toto", "ATGCATGC", "xxxxxxxx");
+    read = new ReadSequence("toto", "ATGCATGC", "xxxxxxxx");
     assertTrue(filter.accept(read));
     assertEquals("ATGCATGC", read.getSequence());
     assertEquals("xxxxxxxx", read.getQuality());
 
-    read = new ReadSequence(0, "toto", "ATGCATGN", "xxxxxxxx");
+    read = new ReadSequence("toto", "ATGCATGN", "xxxxxxxx");
     assertTrue(filter.accept(read));
     assertEquals("ATGCATGN", read.getSequence());
     assertEquals("xxxxxxxx", read.getQuality());
 
-    read = new ReadSequence(0, "toto", "ATGCATNN", "xxxxxxxx");
+    read = new ReadSequence("toto", "ATGCATNN", "xxxxxxxx");
     assertTrue(filter.accept(read));
     assertEquals("ATGCAT", read.getSequence());
     assertEquals("xxxxxx", read.getQuality());
 
-    read = new ReadSequence(0, "toto", "ATGCANNN", "xxxxxxxx");
+    read = new ReadSequence("toto", "ATGCANNN", "xxxxxxxx");
     assertTrue(filter.accept(read));
     assertEquals("ATGCA", read.getSequence());
     assertEquals("xxxxx", read.getQuality());
 
-    read = new ReadSequence(0, "toto", "ATGCNNNN", "xxxxxxxx");
+    read = new ReadSequence("toto", "ATGCNNNN", "xxxxxxxx");
     assertTrue(filter.accept(read));
     assertEquals("ATGC", read.getSequence());
     assertEquals("xxxx", read.getQuality());

@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.actions;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -167,8 +167,8 @@ public class ExecAction extends AbstractAction {
   private static void run(final File workflowFile, final File designFile,
       final String jobDescription) {
 
-    checkNotNull(workflowFile, "paramFile is null");
-    checkNotNull(designFile, "designFile is null");
+    requireNonNull(workflowFile, "paramFile is null");
+    requireNonNull(designFile, "designFile is null");
 
     final String desc;
 

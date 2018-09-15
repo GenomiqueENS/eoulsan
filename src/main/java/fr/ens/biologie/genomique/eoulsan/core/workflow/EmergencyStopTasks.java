@@ -1,6 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -25,7 +25,7 @@ public class EmergencyStopTasks {
    */
   public void add(final EmergencyStopTask task) {
 
-    checkNotNull(task, "task argument cannot be null");
+    requireNonNull(task, "task argument cannot be null");
 
     // If stopped, stop immediately the new task
     if (stopped) {
@@ -41,7 +41,7 @@ public class EmergencyStopTasks {
    */
   public void remove(final EmergencyStopTask task) {
 
-    checkNotNull(task, "task argument cannot be null");
+    requireNonNull(task, "task argument cannot be null");
 
     // Only remove task if not stopped
     if (!stopped) {

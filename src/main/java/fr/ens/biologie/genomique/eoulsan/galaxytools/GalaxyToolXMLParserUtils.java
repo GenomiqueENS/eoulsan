@@ -36,6 +36,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.google.common.base.Splitter;
+
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ConditionalToolElement;
@@ -439,10 +441,18 @@ public final class GalaxyToolXMLParserUtils {
   /**
    * Extract interpreter attribute in string.
    * @param doc document represented tool xml
-   * @return interpreter name
+   * @return interpreter names
    */
-  public static String extractInterpreter(final Document doc) {
-    return extractValueFromElement(doc, COMMAND_TAG, 0, INTERPRETER_TAG);
+  public static List<String> extractInterpreters(final Document doc) {
+
+    List<String> result = new ArrayList<>();
+
+    for (String s : Splitter.on(',').trimResults()
+        .split(extractValueFromElement(doc, COMMAND_TAG, 0, INTERPRETER_TAG))) {
+      result.add(s);
+    }
+
+    return result;
   }
 
   /**

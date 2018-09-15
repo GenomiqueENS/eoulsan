@@ -33,14 +33,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
+import fr.ens.biologie.genomique.eoulsan.bio.EntryMetadata;
 import fr.ens.biologie.genomique.eoulsan.bio.GFFEntry;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 
@@ -54,11 +51,10 @@ public class GFFReader
 
   private final BufferedReader reader;
   private GFFEntry result = null;
-  private int count;
   private boolean end;
   private boolean fastaSectionFound;
 
-  private final Map<String, List<String>> metadata = new LinkedHashMap<>();
+  private final EntryMetadata metadata = new EntryMetadata();
   private boolean nextCallDone = true;
   protected IOException ioException;
   protected BadBioEntryException bbeException;
@@ -89,8 +85,6 @@ public class GFFReader
 
     String line = null;
 
-    this.result = new GFFEntry();
-
     try {
       while ((line = this.reader.readLine()) != null) {
 
@@ -113,30 +107,20 @@ public class GFFReader
 
           final String mdKey = line.substring(2, posTab).trim();
           final String mdValue = line.substring(posTab + 1).trim();
-
-          final List<String> list;
-          if (!this.metadata.containsKey(mdKey)) {
-            list = new ArrayList<>();
-            this.metadata.put(mdKey, list);
-          } else {
-            list = this.metadata.get(mdKey);
-          }
-
-          list.add(mdValue);
+          this.metadata.add(mdKey, mdValue);
 
         } else if (line.startsWith("#")) {
           continue;
         } else {
+
+          // Create a new object with metadata
+          this.result = new GFFEntry(this.metadata);
 
           if (this.gff3Format) {
             this.result.parseGFF3(line.trim());
           } else {
             this.result.parseGTF(line.trim());
           }
-          this.result.setId(this.count++);
-
-          // Add metadata if not reuse result object
-          this.result.addMetaDataEntries(this.metadata);
 
           this.nextCallDone = false;
           return true;

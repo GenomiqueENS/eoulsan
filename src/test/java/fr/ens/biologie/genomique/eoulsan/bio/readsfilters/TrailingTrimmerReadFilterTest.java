@@ -17,7 +17,7 @@ public class TrailingTrimmerReadFilterTest {
     filter.setParameter("arguments", "33");
     filter.init();
     assertFalse(filter.accept(null));
-    ReadSequence read = new ReadSequence(0, "read1", "AGG", "CBA");
+    ReadSequence read = new ReadSequence("read1", "AGG", "CBA");
     assertTrue(filter.accept(read));
     assertEquals("read1", read.getName());
     assertEquals("AG", read.getSequence());
@@ -26,7 +26,7 @@ public class TrailingTrimmerReadFilterTest {
     filter = new TrailingTrimmerReadFilter();
     filter.setParameter("arguments", "33");
     filter.init();
-    read = new ReadSequence(0, "read2", "AAGGCTT", "CABA;:9");
+    read = new ReadSequence("read2", "AAGGCTT", "CABA;:9");
     assertTrue(filter.accept(read));
     assertEquals("read2", read.getName());
     assertEquals("AAG", read.getSequence());

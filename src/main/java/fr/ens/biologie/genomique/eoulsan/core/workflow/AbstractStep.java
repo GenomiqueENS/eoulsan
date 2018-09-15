@@ -25,7 +25,6 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUtils.isGenerator;
 import static fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUtils.isNoLog;
@@ -37,6 +36,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.common.collect.Sets;
 
@@ -68,7 +68,7 @@ public abstract class AbstractStep implements Step {
   /** Serialization version UID. */
   private static final long serialVersionUID = 2040628014465126384L;
 
-  private static int instanceCounter;
+  private static AtomicInteger instanceCount = new AtomicInteger(0);
 
   private final AbstractWorkflow workflow;
 
@@ -197,7 +197,8 @@ public abstract class AbstractStep implements Step {
   @Override
   public StepState getState() {
 
-    return this.stepStateDependencies != null ? this.stepStateDependencies.getState() : null;
+    return this.stepStateDependencies != null
+        ? this.stepStateDependencies.getState() : null;
   }
 
   @Override
@@ -330,7 +331,7 @@ public abstract class AbstractStep implements Step {
 
   protected void registerInputAndOutputPorts(final Module module) {
 
-    checkNotNull(module, "module cannot be null");
+    requireNonNull(module, "module cannot be null");
 
     // Get output ports
     this.outputPortsParameter = module.getOutputPorts();
@@ -353,8 +354,8 @@ public abstract class AbstractStep implements Step {
   protected void addDependency(final StepInputPort inputPort,
       final StepOutputPort dependencyOutputPort) {
 
-    checkNotNull(inputPort, "inputPort argument cannot be null");
-    checkNotNull(dependencyOutputPort,
+    requireNonNull(inputPort, "inputPort argument cannot be null");
+    requireNonNull(dependencyOutputPort,
         "dependencyOutputPort argument cannot be null");
 
     final AbstractStep step = inputPort.getStep();
@@ -379,7 +380,7 @@ public abstract class AbstractStep implements Step {
    */
   protected void addDependency(final AbstractStep step) {
 
-    checkNotNull(step, "step argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
 
     // Check if try to link a step to itself
     if (step == this) {
@@ -486,11 +487,11 @@ public abstract class AbstractStep implements Step {
     checkArgument(type != StepType.GENERATOR_STEP,
         "This constructor cannot be used for standard steps");
 
-    checkNotNull(workflow, "Workflow argument cannot be null");
-    checkNotNull(type, "Type argument cannot be null");
+    requireNonNull(workflow, "Workflow argument cannot be null");
+    requireNonNull(type, "Type argument cannot be null");
 
     this.workflow = workflow;
-    this.number = instanceCounter++;
+    this.number = instanceCount.incrementAndGet();
     this.id = type.getDefaultStepId();
     this.skip = false;
     this.terminalStep = false;
@@ -569,16 +570,16 @@ public abstract class AbstractStep implements Step {
   AbstractStep(final AbstractWorkflow workflow, final DataFormat format)
       throws EoulsanException {
 
-    checkNotNull(workflow, "Workflow argument cannot be null");
-    checkNotNull(format, "Format argument cannot be null");
+    requireNonNull(workflow, "Workflow argument cannot be null");
+    requireNonNull(format, "Format argument cannot be null");
 
     final Module generatorModule = format.getGenerator();
     StepInstances.getInstance().registerStep(this, generatorModule);
 
-    checkNotNull(generatorModule, "The generator module is null");
+    requireNonNull(generatorModule, "The generator module is null");
 
     this.workflow = workflow;
-    this.number = instanceCounter++;
+    this.number = instanceCount.incrementAndGet();
     this.id = generatorModule.getName();
     this.skip = false;
     this.terminalStep = false;
@@ -651,14 +652,14 @@ public abstract class AbstractStep implements Step {
       final String dataProduct, final DataFile outputDirectory)
       throws EoulsanException {
 
-    checkNotNull(workflow, "Workflow argument cannot be null");
-    checkNotNull(id, "Step id argument cannot be null");
-    checkNotNull(moduleName, "Step module argument cannot be null");
-    checkNotNull(parameters, "parameters argument cannot be null");
-    checkNotNull(dataProduct, "dataProduct argument cannot be null");
+    requireNonNull(workflow, "Workflow argument cannot be null");
+    requireNonNull(id, "Step id argument cannot be null");
+    requireNonNull(moduleName, "Step module argument cannot be null");
+    requireNonNull(parameters, "parameters argument cannot be null");
+    requireNonNull(dataProduct, "dataProduct argument cannot be null");
 
     this.workflow = workflow;
-    this.number = instanceCounter++;
+    this.number = instanceCount.incrementAndGet();
     this.id = id;
     this.skip = skip;
     this.moduleName = moduleName;

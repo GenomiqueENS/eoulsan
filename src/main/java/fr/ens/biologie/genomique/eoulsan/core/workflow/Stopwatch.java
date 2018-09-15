@@ -16,8 +16,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.HOURS;
 import static java.util.concurrent.TimeUnit.MICROSECONDS;
@@ -135,7 +135,7 @@ final class Stopwatch {
    */
   @Deprecated
   Stopwatch(final Ticker ticker) {
-    this.ticker = checkNotNull(ticker, "ticker");
+    this.ticker = requireNonNull(ticker, "ticker");
   }
 
   /**

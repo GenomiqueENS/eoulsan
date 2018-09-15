@@ -23,22 +23,24 @@
  */
 package fr.ens.biologie.genomique.eoulsan.galaxytools;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.nullToEmpty;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractCheetahScript;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractDescription;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractDockerImage;
-import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractInterpreter;
+import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractInterpreters;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractToolID;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractToolName;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractToolVersion;
+
+import java.util.List;
 
 import org.w3c.dom.Document;
 
 import com.google.common.base.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.DockerExecutorInterpreter;
 
 /**
  * The class define a tool data which contains all data extracted from XML file.
@@ -64,8 +66,8 @@ public class ToolInfo {
   /** The description. */
   private final String description;
 
-  /** The interpreter. */
-  private final String interpreter;
+  /** The interpreters. */
+  private final List<String> interpreters;
 
   /** The command script. */
   private final String cheetahScript;
@@ -121,8 +123,8 @@ public class ToolInfo {
    * Get the interpreter.
    * @return the interpreter
    */
-  public String getInterpreter() {
-    return this.interpreter;
+  public String getInterpreter(final boolean dockerEnabled) {
+    return selectInterpreter(this.interpreters, dockerEnabled);
   }
 
   /**
@@ -141,6 +143,30 @@ public class ToolInfo {
     return this.dockerImage;
   }
 
+  /**
+   * Select the interpreter.
+   * @param interpreters interpreters to checks
+   * @return the interpreter to use
+   * @throws EoulsanException if a bad couple of interpreter has been chosen
+   */
+  private static String selectInterpreter(List<String> interpreters,
+      boolean dockerEnabled) {
+
+    if (interpreters == null || interpreters.isEmpty()) {
+      return "";
+    }
+
+    if (interpreters.size() == 1) {
+      return interpreters.get(0);
+    }
+
+    if (DockerExecutorInterpreter.INTERPRETER_NAME.equals(interpreters.get(0))
+        && !dockerEnabled) {
+      return interpreters.get(1);
+    }
+    return interpreters.get(0);
+  }
+
   //
   // Object method
   //
@@ -151,7 +177,7 @@ public class ToolInfo {
     return Objects.toStringHelper(this).add("toolID", this.toolID)
         .add("toolName", this.toolName).add("toolVersion", this.toolVersion)
         .add("description", this.description)
-        .add("interpreter", this.interpreter)
+        .add("interpreters", this.interpreters)
         .add("dockerImage", this.dockerImage)
         .add("commandScript", this.cheetahScript).toString();
   }
@@ -169,13 +195,13 @@ public class ToolInfo {
   ToolInfo(final Document document, final String toolSource)
       throws EoulsanException {
 
-    checkNotNull(document, "doc argument cannot be null");
+    java.util.Objects.requireNonNull(document, "doc argument cannot be null");
 
     // Set tool name
     this.toolID = extractToolID(document);
     this.toolName = extractToolName(document);
     this.description = extractDescription(document);
-    this.interpreter = extractInterpreter(document);
+    this.interpreters = extractInterpreters(document);
     this.dockerImage = emptyToNull(extractDockerImage(document));
     this.cheetahScript = emptyToNull(extractCheetahScript(document));
 

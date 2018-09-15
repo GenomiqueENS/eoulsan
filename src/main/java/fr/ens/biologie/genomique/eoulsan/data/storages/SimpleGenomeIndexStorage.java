@@ -26,14 +26,13 @@ package fr.ens.biologie.genomique.eoulsan.data.storages;
 
 import static com.google.common.base.Strings.nullToEmpty;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.util.Utils.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -48,6 +47,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperInstance;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 
 /**
  * This class define a basic GenomeIndexStorage based on an index file.
@@ -97,9 +97,9 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
       final GenomeDescription genome,
       final Map<String, String> additionalDescription) {
 
-    checkNotNull(mapperInstance, "Mapper is null");
-    checkNotNull(genome, "Genome description is null");
-    checkNotNull(additionalDescription, "additionalDescription is null");
+    requireNonNull(mapperInstance, "Mapper is null");
+    requireNonNull(genome, "Genome description is null");
+    requireNonNull(additionalDescription, "additionalDescription is null");
 
     final IndexEntry entry = this.entries
         .get(createKey(mapperInstance, genome, additionalDescription));
@@ -112,10 +112,10 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
       final Map<String, String> additionalDescription,
       final DataFile indexArchive) {
 
-    checkNotNull(mapper, "Mapper is null");
-    checkNotNull(genome, "Genome description is null");
-    checkNotNull(additionalDescription, "additionalDescription is null");
-    checkNotNull(indexArchive, "IndexArchive is null");
+    requireNonNull(mapper, "Mapper is null");
+    requireNonNull(genome, "Genome description is null");
+    requireNonNull(additionalDescription, "additionalDescription is null");
+    requireNonNull(indexArchive, "IndexArchive is null");
 
     // Update the index to avoid to lost entries when several instances of
     // Eoulsan are running
@@ -217,9 +217,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
       md5Digest.update(e.getValue().getBytes(Globals.DEFAULT_CHARSET));
     }
 
-    final BigInteger bigInt = new BigInteger(1, md5Digest.digest());
-
-    return bigInt.toString(16);
+    return StringUtils.md5DigestToString(md5Digest);
   }
 
   //
@@ -379,7 +377,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
    */
   private SimpleGenomeIndexStorage(final DataFile dir) throws IOException {
 
-    checkNotNull(dir, "Index directory is null");
+    requireNonNull(dir, "Index directory is null");
 
     this.dir = dir;
     load();

@@ -1,0 +1,8 @@
+<dataformat>
+  <name>macs2rmodel</name>
+  <description>macs2 generated R model</description>
+  <prefix>rmodel</prefix>
+  <extensions>
+    <extension default="true">.R</extension>
+  </extensions>
+</dataformat>

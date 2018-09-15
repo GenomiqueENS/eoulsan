@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École normale supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
+ *
+ */
+-->
+<document>
+
+  <properties>
+    <title>Splice to BED module</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
+
+  <body>
+
+    <section name="Splice2bed module">
+
+      <p>This module allow to convert a SAM file into a BED file and keep splicing information.
+         If a "<b>TrackColor</b>" column is defined in the design file, the BED entries will use the color defined for the related sample.
+         In other cases, BED entries will be colored against the mapped strand.</p>
+
+      <ul>
+        <li><b>Internal name</b>: splice2bed</li>
+        <li><b>Available</b>: Both local and distributed mode</li>
+
+        <br/>
+         <li><b>Input port</b>:
+           <ul>
+             <li><b>input</b>: data to convert (in SAM format)</li>
+           </ul>
+         </li>
+
+         <br/>
+        <li><b>Output ports</b>:
+           <ul>
+             <li><b>output</b>: converted data (in BED format)</li>
+           </ul>
+        </li>
+	    <br/>
+
+        <br/>
+        <li><b>Mandatory parameter</b>: None</li>
+        <br/>
+
+        <li><b>Optional parameter</b>: None</li>
+
+        <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!-- Create BED with splicings step --&gt;
+&lt;step id="mysplice2bedstep" skip="false" discardoutput="false"&gt;
+	&lt;module&gt;splice2bed&lt;/module&gt;
+	&lt;parameters&gt;
+	&lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
+      </ul>
+
+
+    </section>
+
+  </body>
+
+</document>

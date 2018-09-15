@@ -26,7 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.util.FileUtils.checkExistingStandardFile;
-import static fr.ens.biologie.genomique.eoulsan.util.Utils.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -82,8 +82,8 @@ public class FileMapping extends EntryMapping {
       final DataFile readsFile2, final File errorFile, final File logFile)
       throws IOException {
 
-    checkNotNull(readsFile1, "readsFile1 is null");
-    checkNotNull(readsFile2, "readsFile2 is null");
+    requireNonNull(readsFile1, "readsFile1 is null");
+    requireNonNull(readsFile2, "readsFile2 is null");
 
     if (!readsFile1.exists()) {
       throw new IOException("readsFile1 not exits");
@@ -120,8 +120,8 @@ public class FileMapping extends EntryMapping {
   public final MapperProcess mapPE(final File readsFile1, final File readsFile2,
       final File errorFile, final File logFile) throws IOException {
 
-    checkNotNull(readsFile1, "readsFile1 is null");
-    checkNotNull(readsFile2, "readsFile2 is null");
+    requireNonNull(readsFile1, "readsFile1 is null");
+    requireNonNull(readsFile2, "readsFile2 is null");
 
     checkExistingStandardFile(readsFile1,
         "readsFile1 not exits or is not a standard file.");
@@ -158,14 +158,14 @@ public class FileMapping extends EntryMapping {
   private MapperProcess mapPE(final InputStream in1, final InputStream in2,
       final File errorFile, final File logFile) throws IOException {
 
-    checkNotNull(in1, "in1 argument is null");
-    checkNotNull(in2, "in2 argument is null");
+    requireNonNull(in1, "in1 argument is null");
+    requireNonNull(in2, "in2 argument is null");
 
     getLogger().fine("Mapping with "
         + this.mapperIndex.getMapperName() + " in paired-end mode");
 
-    checkNotNull(in1, "readsFile1 is null");
-    checkNotNull(in2, "readsFile2 is null");
+    requireNonNull(in1, "readsFile1 is null");
+    requireNonNull(in2, "readsFile2 is null");
 
     // Process to mapping
     final MapperProcess mapperProcess = super.mapPE(errorFile, logFile);
@@ -188,7 +188,7 @@ public class FileMapping extends EntryMapping {
   public final MapperProcess mapSE(final DataFile readsFile,
       final File errorFile, final File logFile) throws IOException {
 
-    checkNotNull(readsFile, "readsFile is null");
+    requireNonNull(readsFile, "readsFile is null");
 
     if (!readsFile.exists()) {
       throw new IOException("readsFile1 not exits");
@@ -216,7 +216,7 @@ public class FileMapping extends EntryMapping {
   private MapperProcess mapSE(final InputStream in, final File errorFile,
       final File logFile) throws IOException {
 
-    checkNotNull(in, "in argument is null");
+    requireNonNull(in, "in argument is null");
 
     getLogger().fine("Mapping with "
         + this.mapperIndex.getMapperName() + " in single-end mode");
@@ -241,7 +241,7 @@ public class FileMapping extends EntryMapping {
   public MapperProcess mapSE(final File readsFile, final File errorFile,
       final File logFile) throws IOException {
 
-    checkNotNull(readsFile, "readsFile is null");
+    requireNonNull(readsFile, "readsFile is null");
 
     checkExistingStandardFile(readsFile,
         "reads File not exits or is not a standard file.");
@@ -272,8 +272,8 @@ public class FileMapping extends EntryMapping {
   private void writeFirstPairEntries(final InputStream in,
       final MapperProcess mp) throws FileNotFoundException {
 
-    checkNotNull(in, "in argument cannot be null");
-    checkNotNull(mp, "mp argument cannot be null");
+    requireNonNull(in, "in argument cannot be null");
+    requireNonNull(mp, "mp argument cannot be null");
 
     final Thread t = new Thread(new Runnable() {
 
@@ -308,8 +308,8 @@ public class FileMapping extends EntryMapping {
   private void writeSecondPairEntries(final InputStream in,
       final MapperProcess mp) throws FileNotFoundException {
 
-    checkNotNull(in, "in argument cannot be null");
-    checkNotNull(mp, "mp argument cannot be null");
+    requireNonNull(in, "in argument cannot be null");
+    requireNonNull(mp, "mp argument cannot be null");
 
     final Thread t = new Thread(new Runnable() {
 

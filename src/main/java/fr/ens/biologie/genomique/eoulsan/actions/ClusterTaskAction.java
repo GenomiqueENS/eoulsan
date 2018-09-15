@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.actions;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -145,7 +145,7 @@ public class ClusterTaskAction extends AbstractAction {
    */
   private static void run(final DataFile taskContextFile) {
 
-    checkNotNull(taskContextFile, "contextFile is null");
+    requireNonNull(taskContextFile, "contextFile is null");
 
     // Get Eoulsan runtime
     final LocalEoulsanRuntime localRuntime =

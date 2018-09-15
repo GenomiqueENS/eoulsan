@@ -165,6 +165,14 @@ public final class SystemUtils {
     final String version = System.getProperty("java.version");
 
     final int pos1 = version.indexOf('.') + 1;
+
+    // Java >= 9
+    int major = Integer.parseInt(version.substring(0, pos1 - 1));
+    if (major > 1) {
+      return major;
+    }
+
+    // Java < 9
     final int pos2 = version.indexOf('.', pos1);
     return Integer.parseInt(version.substring(pos1, pos2));
   }

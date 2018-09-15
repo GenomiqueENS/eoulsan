@@ -23,6 +23,7 @@
  */
 package fr.ens.biologie.genomique.eoulsan.galaxytools;
 
+import static java.util.Objects.requireNonNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -42,7 +43,6 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
@@ -372,7 +372,7 @@ public class GalaxyToolInterpreterTest {
      */
     private void addParam(final String key, final String value) {
 
-      Preconditions.checkNotNull(key, "key for parameter");
+      requireNonNull(key, "key for parameter");
 
       this.setStepParameters.add(new Parameter(key, value));
 

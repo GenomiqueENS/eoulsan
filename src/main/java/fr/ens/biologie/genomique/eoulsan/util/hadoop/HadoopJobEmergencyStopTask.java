@@ -1,8 +1,8 @@
 package fr.ens.biologie.genomique.eoulsan.util.hadoop;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.CommonHadoop.createConfiguration;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 
@@ -119,7 +119,7 @@ public class HadoopJobEmergencyStopTask implements EmergencyStopTask {
   public HadoopJobEmergencyStopTask(final Job job)
       throws IOException, InterruptedException {
 
-    checkNotNull(job, "job argument cannot be null");
+    requireNonNull(job, "job argument cannot be null");
 
     this.jobId = job.getStatus().getJobID().toString();
   }

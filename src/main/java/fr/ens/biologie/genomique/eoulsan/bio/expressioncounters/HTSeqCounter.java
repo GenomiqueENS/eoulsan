@@ -80,8 +80,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
       "remove.supplementary.alignments";
   public static final String REMOVE_NON_ASSIGNED_FEATURES_SAM_TAGS_PARAMETER_NAME =
       "remove.non.assigned.sam.tags";
-  public static final String SAM_TAG_TO_USE_PARAMETER_NAME =
-      "sam.tag.to.use";
+  public static final String SAM_TAG_TO_USE_PARAMETER_NAME = "sam.tag.to.use";
 
   public static final String SAM_TAG_DEFAULT = "XF";
 
@@ -95,11 +94,12 @@ public class HTSeqCounter extends AbstractExpressionCounter
   private boolean removeNonUnique = true;
   private boolean removeSecondaryAlignments = false;
   private boolean removeSupplementaryAlignments = false;
-  private boolean removeNonAssignedFeatureSamTags =false;
+  private boolean removeNonAssignedFeatureSamTags = false;
 
   private String samTag = SAM_TAG_DEFAULT;
 
-  private GenomicArray<String> features;
+  private final GenomicArray<String> features = new GenomicArray<>();
+  private boolean initialized;
 
   /**
    * Internal class for counters
@@ -293,7 +293,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
       throw new NullPointerException("the annotations argument is null");
     }
 
-    if (isInitialized()) {
+    if (this.initialized) {
       throw new IllegalStateException(
           "the counter has been already initialized");
     }
@@ -301,7 +301,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
     // Check configuration
     checkConfiguration();
 
-    this.features = new GenomicArray<>(desc);
+    this.features.addChromosomes(desc);
 
     final Splitter splitter = Splitter.on(',').omitEmptyStrings().trimResults();
 
@@ -351,6 +351,9 @@ public class HTSeqCounter extends AbstractExpressionCounter
       throw new EoulsanException(
           "Warning: No features of type '" + this.genomicType + "' found.\n");
     }
+
+    // The counter is now initialized
+    this.initialized = true;
   }
 
   @Override
@@ -366,7 +369,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
       throw new NullPointerException("the counterGroup argument is null");
     }
 
-    if (!isInitialized()) {
+    if (!this.initialized) {
       throw new IllegalStateException("the counter has not been initialized");
     }
 
@@ -660,8 +663,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
     List<String> list = new ArrayList<>(features);
     Collections.sort(list);
 
-    assignment(samRecord1, samRecord2,
-        "__ambiguous[" + join(list, "+") + ']');
+    assignment(samRecord1, samRecord2, "__ambiguous[" + join(list, "+") + ']');
   }
 
   @Override
@@ -671,7 +673,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
       throw new NullPointerException("The counts arguments cannot be null");
     }
 
-    if (!isInitialized()) {
+    if (!this.initialized) {
       throw new IllegalStateException("the counter has not been initialized");
     }
 
@@ -681,15 +683,6 @@ public class HTSeqCounter extends AbstractExpressionCounter
         counts.put(feature, 0);
       }
     }
-  }
-
-  /**
-   * Test if the counter has been initialized.
-   * @return true if the counter has been initialized
-   */
-  private boolean isInitialized() {
-
-    return this.features != null;
   }
 
   @Override
@@ -704,7 +697,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
         + ", removeSecondaryAlignments=" + this.removeSecondaryAlignments
         + ", removeSupplementaryAlignments="
         + this.removeSupplementaryAlignments + " minAverageQuality="
-        + this.minimalQuality + ", initialized=" + isInitialized() + "}";
+        + this.minimalQuality + ", initialized=" + this.initialized + "}";
   }
 
 }

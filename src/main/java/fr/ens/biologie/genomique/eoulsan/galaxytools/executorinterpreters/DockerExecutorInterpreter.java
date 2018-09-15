@@ -1,6 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,7 +31,7 @@ public class DockerExecutorInterpreter extends AbstractExecutorInterpreter {
   @Override
   public List<String> createCommandLine(final String arguments) {
 
-    checkNotNull(arguments, "arguments argument cannot be null");
+    requireNonNull(arguments, "arguments argument cannot be null");
 
     return StringUtils.splitShellCommandLine(arguments);
   }
@@ -63,7 +63,7 @@ public class DockerExecutorInterpreter extends AbstractExecutorInterpreter {
    */
   public DockerExecutorInterpreter(final String dockerImage) {
 
-    checkNotNull(dockerImage, "dockerImage argument cannot be null");
+    requireNonNull(dockerImage, "dockerImage argument cannot be null");
 
     this.dockerImage = dockerImage;
   }

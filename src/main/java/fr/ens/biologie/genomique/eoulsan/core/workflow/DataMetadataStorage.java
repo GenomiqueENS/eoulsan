@@ -1,7 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -42,7 +42,7 @@ public class DataMetadataStorage {
    */
   public boolean loadMetadata(final Data data) {
 
-    checkNotNull(data, "data argument cannot be null");
+    requireNonNull(data, "data argument cannot be null");
 
     return loadMetadata(data, WorkflowDataUtils.getDataFiles(data));
   }
@@ -56,8 +56,8 @@ public class DataMetadataStorage {
    */
   public boolean loadMetadata(final Data data, final List<DataFile> files) {
 
-    checkNotNull(data, "data argument cannot be null");
-    checkNotNull(files, "files argument cannot be null");
+    requireNonNull(data, "data argument cannot be null");
+    requireNonNull(files, "files argument cannot be null");
 
     final SimpleDataMetadata metadata =
         WorkflowDataUtils.getSimpleMetadata(data.getMetadata());
@@ -96,7 +96,7 @@ public class DataMetadataStorage {
    */
   public void saveMetaData(final Data data) {
 
-    checkNotNull(data, "data argument cannot be null");
+    requireNonNull(data, "data argument cannot be null");
 
     // If data is a list process of data elements by recursion
     if (data.isList()) {
@@ -247,7 +247,7 @@ public class DataMetadataStorage {
    */
   private DataMetadataStorage(final DataFile metadataDir) {
 
-    checkNotNull(metadataDir, "metadataDir argument cannot be null");
+    requireNonNull(metadataDir, "metadataDir argument cannot be null");
 
     // Set the metadata storage file
     this.metadataFile = new DataFile(metadataDir, METADATA_FILENAME);

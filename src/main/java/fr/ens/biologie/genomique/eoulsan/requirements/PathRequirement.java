@@ -25,8 +25,8 @@
 package fr.ens.biologie.genomique.eoulsan.requirements;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.util.SystemUtils.searchExecutableInPATH;
+import static java.util.Objects.requireNonNull;
 
 import java.util.Collections;
 import java.util.Set;
@@ -118,7 +118,7 @@ public class PathRequirement extends AbstractRequirement {
   public static Requirement newPathRequirement(final String executableName,
       final boolean optional) {
 
-    checkNotNull(executableName, "executableName argument cannot be null");
+    requireNonNull(executableName, "executableName argument cannot be null");
     checkArgument(!executableName.trim().isEmpty(),
         "executableName argument cannot be empty");
 

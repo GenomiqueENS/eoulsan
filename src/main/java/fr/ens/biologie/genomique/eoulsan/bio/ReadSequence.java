@@ -96,7 +96,6 @@ public final class ReadSequence extends Sequence {
       return;
     }
 
-    this.setId(rs.getId());
     this.setName(rs.getName());
     this.setSequence(rs.getSequence());
     this.setQuality(rs.getQuality());
@@ -176,7 +175,7 @@ public final class ReadSequence extends Sequence {
     }
 
     final ReadSequence result =
-        new ReadSequence(-1, this.name == null ? null : this.name + "[part]",
+        new ReadSequence(this.name == null ? null : this.name + "[part]",
             this.sequence.substring(beginIndex, endIndex),
             this.quality.substring(beginIndex, endIndex));
 
@@ -460,7 +459,7 @@ public final class ReadSequence extends Sequence {
   @Override
   public int hashCode() {
 
-    return Utils.hashCode(this.id, this.name, this.description, this.alphabet,
+    return Utils.hashCode(this.name, this.description, this.alphabet,
         this.sequence, this.quality, this.fastqFormat);
   }
 
@@ -485,10 +484,10 @@ public final class ReadSequence extends Sequence {
   public String toString() {
 
     return this.getClass().getSimpleName()
-        + "{id=" + this.id + ", name=" + this.name + ", description="
-        + this.description + ", alphabet=" + this.alphabet + ", sequence="
-        + this.sequence + ", fastqFormat=" + this.fastqFormat + ", quality="
-        + this.quality + "}";
+        + "{name=" + this.name + ", description=" + this.description
+        + ", alphabet=" + this.alphabet + ", sequence=" + this.sequence
+        + ", fastqFormat=" + this.fastqFormat + ", quality=" + this.quality
+        + "}";
   }
 
   //
@@ -505,15 +504,29 @@ public final class ReadSequence extends Sequence {
 
   /**
    * Public constructor.
-   * @param id identifier
    * @param name Name of the read
    * @param sequence Sequence of the read
    * @param quality Quality of the read
    */
-  public ReadSequence(final int id, final String name, final String sequence,
+  public ReadSequence(final String name, final String sequence,
       final String quality) {
 
-    this(id, name, sequence, quality, FastqFormat.FASTQ_SANGER);
+    this(name, sequence, quality, FastqFormat.FASTQ_SANGER);
+  }
+
+  /**
+   * Public constructor.
+   * @param name Name of the read
+   * @param sequence Sequence of the read
+   * @param quality Quality of the read
+   */
+  public ReadSequence(final String name, final String sequence,
+      final String quality, final FastqFormat fastqFormat) {
+
+    super(name, sequence);
+    this.quality = quality;
+    this.fastqFormat = fastqFormat;
+    this.alphabet = Alphabets.READ_DNA_ALPHABET;
   }
 
   /**
@@ -523,13 +536,25 @@ public final class ReadSequence extends Sequence {
    * @param sequence Sequence of the read
    * @param quality Quality of the read
    */
+  @Deprecated
+  public ReadSequence(final int id, final String name, final String sequence,
+      final String quality) {
+
+    this(name, sequence, quality);
+  }
+
+  /**
+   * Public constructor.
+   * @param id identifier
+   * @param name Name of the read
+   * @param sequence Sequence of the read
+   * @param quality Quality of the read
+   */
+  @Deprecated
   public ReadSequence(final int id, final String name, final String sequence,
       final String quality, final FastqFormat fastqFormat) {
 
-    super(id, name, sequence);
-    this.quality = quality;
-    this.fastqFormat = fastqFormat;
-    this.alphabet = Alphabets.READ_DNA_ALPHABET;
+    this(name, sequence, quality, fastqFormat);
   }
 
 }

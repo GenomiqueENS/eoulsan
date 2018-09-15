@@ -11,6 +11,7 @@ fr.ens.biologie.genomique.eoulsan.modules.mapping.local.SAM2BAMLocalModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAM2BAMHadoopModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.local.BAM2SAMLocalModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.local.SAM2FASTQLocalModule
+fr.ens.biologie.genomique.eoulsan.modules.mapping.local.Splice2BEDModule
 
 # Filter and mapping steps
 fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.FilterAndMapReadsHadoopModule
@@ -51,8 +52,27 @@ fr.ens.biologie.genomique.eoulsan.modules.ShellModule
 fr.ens.biologie.genomique.eoulsan.modules.fastqc.FastQCModule
 fr.ens.biologie.genomique.eoulsan.modules.multiqc.MultiQCModule
 
+# Single cell RNA-Seq
+fr.ens.biologie.genomique.eoulsan.modules.singlecell.RSingleCellExperimentCreator
+
 # Other steps
 fr.ens.biologie.genomique.eoulsan.modules.ImportModule
 fr.ens.biologie.genomique.eoulsan.modules.FailModule
 fr.ens.biologie.genomique.eoulsan.modules.RequirementInstallerModule
 
+# Chip-Seq mapping steps
+#fr.ens.biologie.genomique.eoulsan.modules.chipseq.RmDupLocalModule
+fr.ens.biologie.genomique.eoulsan.modules.chipseq.MergeInputRepLocalModule
+
+# Chip-Seq QC steps
+fr.ens.biologie.genomique.eoulsan.modules.chipseq.qc.CountSplicedReadsModule
+fr.ens.biologie.genomique.eoulsan.modules.chipseq.qc.IDRModule
+
+# Chip-Seq Peak calling steps
+fr.ens.biologie.genomique.eoulsan.modules.chipseq.peakcalling.BedToolsModule
+fr.ens.biologie.genomique.eoulsan.modules.chipseq.peakcalling.DeepToolsModule
+fr.ens.biologie.genomique.eoulsan.modules.chipseq.peakcalling.MACS2Module
+fr.ens.biologie.genomique.eoulsan.modules.chipseq.peakcalling.MergePeaksModule
+
+# Chip-Seq other steps
+fr.ens.biologie.genomique.eoulsan.modules.chipseq.TrackHubModule

@@ -25,9 +25,10 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
@@ -42,7 +43,7 @@ abstract class AbstractData implements Data, Serializable {
 
   private static final long serialVersionUID = 2363270050921101143L;
 
-  private static int instanceCount;
+  private static AtomicInteger instanceCount = new AtomicInteger(0);
 
   private final int id;
   private String name;
@@ -96,7 +97,7 @@ abstract class AbstractData implements Data, Serializable {
    */
   void setName(final String name, final boolean defaultName) {
 
-    checkNotNull(name, "The name of the data cannot be null");
+    requireNonNull(name, "The name of the data cannot be null");
     checkArgument(FileNaming.isDataNameValid(name),
         "The name of data can only contains letters and digit: " + name);
 
@@ -137,13 +138,11 @@ abstract class AbstractData implements Data, Serializable {
    */
   protected AbstractData(final DataFormat format) {
 
-    checkNotNull(format, "format argument cannot be null");
+    requireNonNull(format, "format argument cannot be null");
 
-    synchronized (AbstractData.class) {
-      this.id = ++instanceCount;
-    }
+    this.id = instanceCount.incrementAndGet();
 
-    this.name = "data" + (++instanceCount);
+    this.name = "data" + this.id;
     this.format = format;
   }
 

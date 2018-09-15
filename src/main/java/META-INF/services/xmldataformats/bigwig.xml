@@ -1,0 +1,13 @@
+<dataformat>
+  <name>bigwig_bw</name>
+  <description>bigwig format</description>
+  <alias>bigwig</alias>
+  <prefix>bigwig</prefix>
+  <extensions>
+  	<extension default="true">.bw</extension>
+  </extensions>
+
+  <toolshedgalaxy>
+  	<extension>bigwig</extension> 	
+  </toolshedgalaxy>
+</dataformat>

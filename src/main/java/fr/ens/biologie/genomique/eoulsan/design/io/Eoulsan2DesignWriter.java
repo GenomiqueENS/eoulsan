@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.design.io;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.getAllSamplesMetadataKeys;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.getExperimentSampleAllMetadataKeys;
 import static fr.ens.biologie.genomique.eoulsan.design.SampleMetadata.UUID_KEY;
@@ -35,6 +34,7 @@ import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignReader.E
 import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignReader.SAMPLE_ID_FIELDNAME;
 import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignReader.SAMPLE_NAME_FIELDNAME;
 import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignReader.TAB_SEPARATOR;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -73,12 +73,12 @@ public class Eoulsan2DesignWriter implements DesignWriter {
   @Override
   public void write(final Design design) throws IOException {
 
-    checkNotNull(design, "Design argument cannot be null");
+    requireNonNull(design, "Design argument cannot be null");
 
     final BufferedWriter bw = new BufferedWriter(
         new OutputStreamWriter(this.out, Globals.DEFAULT_CHARSET));
 
-    checkNotNull(design, "design argument cannot be null");
+    requireNonNull(design, "design argument cannot be null");
 
     // Write design metadata
     bw.append(HEADER_SECTION);
@@ -195,18 +195,21 @@ public class Eoulsan2DesignWriter implements DesignWriter {
 
       for (Experiment experiment : design.getExperiments()) {
 
-        final ExperimentSampleMetadata expSampleMetadata =
-            experiment.getExperimentSample(sample).getMetadata();
+        if (experiment.containsSample(sample)) {
 
-        final List<String> experimentMDKeys =
-            getExperimentSampleAllMetadataKeys(experiment);
+          final ExperimentSampleMetadata expSampleMetadata =
+              experiment.getExperimentSample(sample).getMetadata();
 
-        for (String key : experimentMDKeys) {
+          final List<String> experimentMDKeys =
+              getExperimentSampleAllMetadataKeys(experiment);
 
-          bw.append(TAB_SEPARATOR);
+          for (String key : experimentMDKeys) {
 
-          if (expSampleMetadata.contains(key)) {
-            bw.append(expSampleMetadata.get(key));
+            bw.append(TAB_SEPARATOR);
+
+            if (expSampleMetadata.contains(key)) {
+              bw.append(expSampleMetadata.get(key));
+            }
           }
         }
 
@@ -235,7 +238,7 @@ public class Eoulsan2DesignWriter implements DesignWriter {
    */
   public Eoulsan2DesignWriter(final File file) throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     this.out = new FileOutputStream(file);
   }
@@ -247,7 +250,7 @@ public class Eoulsan2DesignWriter implements DesignWriter {
    */
   public Eoulsan2DesignWriter(final DataFile file) throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     this.out = file.create();
   }
@@ -259,7 +262,7 @@ public class Eoulsan2DesignWriter implements DesignWriter {
    */
   public Eoulsan2DesignWriter(final OutputStream out) throws IOException {
 
-    checkNotNull(out, "out argument cannot be null");
+    requireNonNull(out, "out argument cannot be null");
 
     this.out = out;
   }
@@ -272,7 +275,7 @@ public class Eoulsan2DesignWriter implements DesignWriter {
   public Eoulsan2DesignWriter(final String filename)
       throws FileNotFoundException {
 
-    checkNotNull(filename, "filename argument cannot be null");
+    requireNonNull(filename, "filename argument cannot be null");
 
     this.out = new FileOutputStream(filename);
   }

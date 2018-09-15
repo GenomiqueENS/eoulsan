@@ -24,9 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toCompactTime;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -647,7 +647,7 @@ public class Normalization {
   public Normalization(final RExecutor executor, final Design design)
       throws EoulsanException {
 
-    checkNotNull(design, "design is null.");
+    requireNonNull(design, "design is null.");
 
     this.design = design;
 

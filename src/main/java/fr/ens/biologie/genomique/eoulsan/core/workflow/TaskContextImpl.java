@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,6 +39,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 import com.google.common.base.Objects;
@@ -67,7 +68,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
   /** Serialization version UID. */
   private static final long serialVersionUID = 8288158811122533646L;
 
-  private static int instanceCounter;
+  private static AtomicInteger instanceCount = new AtomicInteger(0);
 
   private final int id;
   private final WorkflowContext workflowContext;
@@ -228,7 +229,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
   @Override
   public void setContextName(final String contextName) {
 
-    checkNotNull(contextName, "contextName argument cannot be null");
+    requireNonNull(contextName, "contextName argument cannot be null");
 
     // TODO Check if the context name is unique for the step
 
@@ -260,7 +261,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
   @Override
   public Data getInputData(final String portName) {
 
-    checkNotNull(portName, "portName cannot be null");
+    requireNonNull(portName, "portName cannot be null");
     checkArgument(this.inputData.containsKey(portName),
         "unknown input port name: " + portName);
 
@@ -282,7 +283,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
   public Data getOutputData(final String portName, final String dataName,
       final int part) {
 
-    checkNotNull(portName, "portName cannot be null");
+    requireNonNull(portName, "portName cannot be null");
     checkArgument(this.outputData.containsKey(portName),
         "unknown output port name: " + portName);
 
@@ -296,8 +297,8 @@ public class TaskContextImpl implements TaskContext, Serializable {
   @Override
   public Data getOutputData(final String portName, final Data origin) {
 
-    checkNotNull(origin, "origin cannot be null");
-    checkNotNull(portName, "portName cannot be null");
+    requireNonNull(origin, "origin cannot be null");
+    requireNonNull(portName, "portName cannot be null");
     checkArgument(this.outputData.containsKey(portName),
         "unknown output port name: " + portName);
 
@@ -343,7 +344,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    */
   private void updateOutputData(final Map<String, AbstractData> data) {
 
-    checkNotNull(data, "data argument cannot be null");
+    requireNonNull(data, "data argument cannot be null");
     checkArgument(data.size() == this.outputData.size(),
         "Unexpected number of output data ("
             + this.outputData.size() + " was expected): " + data.size());
@@ -384,7 +385,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    */
   public Data getInputData(final InputPort port) {
 
-    checkNotNull(port, "port cannot be null");
+    requireNonNull(port, "port cannot be null");
 
     if (!this.inputData.containsKey(port.getName())) {
       throw new EoulsanRuntimeException(
@@ -401,7 +402,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    */
   Data getOutputData(final OutputPort port) {
 
-    checkNotNull(port, "port cannot be null");
+    requireNonNull(port, "port cannot be null");
 
     if (!this.outputData.containsKey(port.getName())) {
       throw new EoulsanRuntimeException(
@@ -427,7 +428,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    */
   private String getInputPortNameForFormat(final DataFormat format) {
 
-    checkNotNull(format, "The format is null");
+    requireNonNull(format, "The format is null");
 
     final List<StepInputPort> ports =
         this.step.getWorkflowInputPorts().getPortsWithDataFormat(format);
@@ -455,7 +456,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    */
   private String getOutputPortNameForFormat(final DataFormat format) {
 
-    checkNotNull(format, "The format is null");
+    requireNonNull(format, "The format is null");
 
     final List<StepOutputPort> ports =
         this.step.getWorkflowOutputPorts().getPortsWithDataFormat(format);
@@ -498,7 +499,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    */
   public void serialize(final File file) throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     try (OutputStream out = new FileOutputStream(file)) {
       serialize(out);
@@ -512,7 +513,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    */
   public void serialize(final DataFile file) throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     try (OutputStream out = file.create()) {
       serialize(out);
@@ -526,7 +527,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    */
   public void serialize(final OutputStream out) throws IOException {
 
-    checkNotNull(out, "out argument cannot be null");
+    requireNonNull(out, "out argument cannot be null");
 
     try (final ObjectOutputStream oos = new ObjectOutputStream(out)) {
 
@@ -545,7 +546,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
   public static TaskContextImpl deserialize(final File file)
       throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     try (InputStream in = new FileInputStream(file)) {
       return deserialize(in);
@@ -561,7 +562,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
   public static TaskContextImpl deserialize(final DataFile file)
       throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     try (InputStream in = file.open()) {
       return deserialize(in);
@@ -577,7 +578,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
   public static TaskContextImpl deserialize(final InputStream in)
       throws IOException {
 
-    checkNotNull(in, "in argument cannot be null");
+    requireNonNull(in, "in argument cannot be null");
 
     try (final ObjectInputStream ois = new ClassLoaderObjectInputStream(in)) {
 
@@ -604,7 +605,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    */
   public void serializeOutputData(final File file) throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     serializeOutputData(new FileOutputStream(file));
   }
@@ -616,7 +617,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    */
   public void serializeOutputData(final DataFile file) throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     serializeOutputData(file.create());
   }
@@ -628,7 +629,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    */
   public void serializeOutputData(final OutputStream out) throws IOException {
 
-    checkNotNull(out, "out argument cannot be null");
+    requireNonNull(out, "out argument cannot be null");
 
     final ObjectOutputStream oos = new ObjectOutputStream(out);
 
@@ -643,7 +644,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    */
   public void deserializeOutputData(final DataFile file) throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     deserializeOutputData(file.open());
   }
@@ -655,7 +656,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    */
   public void deserializeOutputData(final File file) throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     deserializeOutputData(new FileInputStream(file));
   }
@@ -667,7 +668,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    */
   public void deserializeOutputData(final InputStream in) throws IOException {
 
-    checkNotNull(in, "in argument cannot be null");
+    requireNonNull(in, "in argument cannot be null");
 
     try {
       final ObjectInputStream ois = new ClassLoaderObjectInputStream(in);
@@ -699,12 +700,10 @@ public class TaskContextImpl implements TaskContext, Serializable {
       final AbstractStep step, final Map<InputPort, Data> inputData,
       final Map<OutputPort, AbstractData> outputData) {
 
-    checkNotNull(workflowContext, "workflow context cannot be null");
-    checkNotNull(step, "step cannot be null");
+    requireNonNull(workflowContext, "workflow context cannot be null");
+    requireNonNull(step, "step cannot be null");
 
-    synchronized (TaskContextImpl.class) {
-      this.id = (++instanceCounter);
-    }
+    this.id = instanceCount.incrementAndGet();
     this.contextName = "context" + this.id;
 
     this.workflowContext = workflowContext;

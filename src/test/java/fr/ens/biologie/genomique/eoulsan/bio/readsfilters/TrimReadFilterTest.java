@@ -53,21 +53,21 @@ public class TrimReadFilterTest {
     read.setQuality("xxxxxxxx");
     assertFalse(filter.accept(read));
 
-    read = new ReadSequence(0, "toto", "ATGCATGC", "xxxxxxxx");
+    read = new ReadSequence("toto", "ATGCATGC", "xxxxxxxx");
     assertTrue(filter.accept(read));
 
-    read = new ReadSequence(0, "toto", "ATGCATGN", "xxxxxxxx");
+    read = new ReadSequence("toto", "ATGCATGN", "xxxxxxxx");
     assertTrue(filter.accept(read));
     assertEquals("ATGCATGN", read.getSequence());
 
-    read = new ReadSequence(0, "toto", "ATGCATNN", "xxxxxxxx");
+    read = new ReadSequence("toto", "ATGCATNN", "xxxxxxxx");
     assertTrue(filter.accept(read));
     assertEquals("ATGCAT", read.getSequence());
 
-    read = new ReadSequence(0, "toto", "ATGCANNN", "xxxxxxxx");
+    read = new ReadSequence("toto", "ATGCANNN", "xxxxxxxx");
     assertFalse(filter.accept(read));
 
-    read = new ReadSequence(0, "toto", "ATGCNNNN", "xxxxxxxx");
+    read = new ReadSequence("toto", "ATGCNNNN", "xxxxxxxx");
     assertFalse(filter.accept(read));
   }
 

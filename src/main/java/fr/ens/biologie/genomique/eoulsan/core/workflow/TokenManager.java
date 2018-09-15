@@ -49,6 +49,7 @@ import java.util.Set;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
@@ -89,6 +90,11 @@ public class TokenManager implements Runnable {
   private final StepOutputPorts outputPorts;
 
   private final Set<Integer> receivedTokens = new HashSet<>();
+  private final HashMultiset<StepInputPort> receivedPortTokens =
+      HashMultiset.create();
+  private final HashMultiset<StepInputPort> expectedPortTokens =
+      HashMultiset.create();
+  private int contextCount;
   private final Multimap<InputPort, Data> inputTokens =
       ArrayListMultimap.create();
   private final Multimap<OutputPort, Data> outputTokens =
@@ -388,15 +394,23 @@ public class TokenManager implements Runnable {
     // Test if the token is an end token
     if (token.isEndOfStepToken()) {
 
-      // Check if input port is empty for non skipped steps
-      checkState(
-          !(!this.step.isSkip() && this.inputTokens.get(inputPort).isEmpty()),
-          "No data receive for port on step "
-              + this.step.getId() + ": " + inputPort.getName());
+      checkState(token.getTokenCount() > -1,
+          "the number of expected token is not set");
 
-      // The input port must be closed
-      this.closedPorts.add(inputPort);
+      checkState(expectedPortTokens.count(inputPort) == 0,
+          "the number of expected token has been already set");
+
+      // Set the number of expected tokens
+      synchronized (this.expectedPortTokens) {
+        this.expectedPortTokens.setCount(inputPort, token.getTokenCount());
+      }
+
     } else {
+
+      // Count the number of tokens received for the input port
+      synchronized (this.receivedPortTokens) {
+        this.receivedPortTokens.add(inputPort);
+      }
 
       // Register data to process
       final Data data = token.getData();
@@ -415,6 +429,23 @@ public class TokenManager implements Runnable {
         }
       }
     }
+
+    // Close ports if all the expected tokens has been received
+    if (this.step.isSkip()
+        || (this.expectedPortTokens.contains(inputPort)
+            && this.receivedPortTokens.count(
+                inputPort) == this.expectedPortTokens.count(inputPort))) {
+
+      // Check if input port is empty for non skipped steps
+      checkState(
+          !(!this.step.isSkip() && this.inputTokens.get(inputPort).isEmpty()),
+          "No data receive for port on step "
+              + this.step.getId() + ": " + inputPort.getName());
+
+      // The input port must be closed
+      this.closedPorts.add(inputPort);
+    }
+
   }
 
   /**
@@ -463,7 +494,7 @@ public class TokenManager implements Runnable {
     for (StepOutputPort outputPort : this.outputPorts) {
 
       // Send the token on the event bus
-      WorkflowEventBus.getInstance().postToken(outputPort);
+      WorkflowEventBus.getInstance().postToken(outputPort, this.contextCount);
     }
   }
 
@@ -478,6 +509,8 @@ public class TokenManager implements Runnable {
       samples.put(Naming.toValidName(sample.getId()), sample);
     }
 
+    int maxExistingDataCount = 0;
+
     for (StepOutputPort port : this.outputPorts) {
 
       // If port is not linked or only connected to skipped steps there is need
@@ -487,6 +520,8 @@ public class TokenManager implements Runnable {
       }
 
       final Set<Data> existingData = port.getExistingData();
+      maxExistingDataCount =
+          Math.max(maxExistingDataCount, existingData.size());
 
       if (existingData.size() == 0) {
         throw new EoulsanRuntimeException("No output files of the step \""
@@ -511,12 +546,17 @@ public class TokenManager implements Runnable {
             WorkflowDataUtils.setDataMetaData(data,
                 samples.get(data.getName()));
           }
-
         }
 
         // Send the token on the event bus
         WorkflowEventBus.getInstance().postToken(port, data);
       }
+    }
+
+    // Save the number of context if the step was not skipped
+    // This number is equals to the number of posted data
+    synchronized (this) {
+      this.contextCount = maxExistingDataCount;
     }
 
     // Send end of step token
@@ -950,6 +990,11 @@ public class TokenManager implements Runnable {
             // When the step has no input port
             contexts = createContextWhenNoInputPortExist(workflowContext);
           }
+        }
+
+        // Save the number of tasks of the step
+        synchronized (this) {
+          this.contextCount += contexts.size();
         }
 
         // Submit execution of the available contexts

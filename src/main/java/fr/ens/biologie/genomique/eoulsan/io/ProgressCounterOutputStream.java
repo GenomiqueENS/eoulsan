@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.io;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -106,8 +106,8 @@ public final class ProgressCounterOutputStream extends OutputStream {
   public ProgressCounterOutputStream(final OutputStream os,
       final Counter counter) {
 
-    checkNotNull(os, "OutputStream is null");
-    checkNotNull(counter, "The counter to use is null.");
+    requireNonNull(os, "OutputStream is null");
+    requireNonNull(counter, "The counter to use is null.");
 
     this.out = os;
     this.counter = counter;

@@ -25,7 +25,6 @@
 package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.util.Utils.checkNotNull;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -152,8 +151,8 @@ public class MapperInstance {
       final File archiveOutputFile, final List<String> indexerArguments,
       final int threads) throws IOException {
 
-    checkNotNull(genomeIs, "Input steam is null");
-    checkNotNull(archiveOutputFile, "Archive output file is null");
+    requireNonNull(genomeIs, "Input steam is null");
+    requireNonNull(archiveOutputFile, "Archive output file is null");
 
     getLogger().fine("Copy genome to local disk before computing index");
 
@@ -247,8 +246,8 @@ public class MapperInstance {
       final List<String> indexerArguments, final int threads,
       final File stdOutFile, final File stdErrorFile) throws IOException {
 
-    checkNotNull(genomeFile, "genome file is null");
-    checkNotNull(outputDir, "output directory is null");
+    requireNonNull(genomeFile, "genome file is null");
+    requireNonNull(outputDir, "output directory is null");
 
     getLogger().fine("Start computing "
         + this.mapper.getName() + " index for " + genomeFile);

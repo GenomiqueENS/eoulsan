@@ -24,8 +24,8 @@
 package fr.ens.biologie.genomique.eoulsan.galaxytools;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,17 +67,19 @@ public class ToolExecutor {
     checkArgument(!this.commandLine.isEmpty(),
         "Command line for Galaxy tool is empty");
 
-    final String interpreter = this.toolData.getInterpreter();
+    final String interpreter = this.toolData.getInterpreter(
+        this.stepContext.getSettings().isDockerConnectionDefined());
 
     // Define the interpreter to use
     final ExecutorInterpreter ti;
     switch (interpreter) {
 
     case "":
+    case DefaultExecutorInterpreter.INTERPRETER_NAME:
       ti = new DefaultExecutorInterpreter();
       break;
 
-    case "docker":
+    case DockerExecutorInterpreter.INTERPRETER_NAME:
       ti = new DockerExecutorInterpreter(this.toolData.getDockerImage());
       break;
 
@@ -145,8 +147,8 @@ public class ToolExecutor {
   public ToolExecutor(final TaskContext context, final ToolInfo toolData,
       final String commandLine, final Set<File> inputFiles) throws IOException {
 
-    checkNotNull(commandLine, "commandLine is null.");
-    checkNotNull(context, "Step context is null.");
+    requireNonNull(commandLine, "commandLine is null.");
+    requireNonNull(context, "Step context is null.");
 
     this.toolData = toolData;
     this.commandLine = commandLine.trim();

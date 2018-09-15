@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.design;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 
@@ -47,11 +48,11 @@ public class ExperimentImpl implements Serializable, Experiment {
   /** Serialization version UID. */
   private static final long serialVersionUID = -2644491674956956116L;
 
-  private static int instanceCount;
+  private static AtomicInteger instanceCount = new AtomicInteger(0);
 
   private final Design design;
   private final String experimentId;
-  private final int experimentNumber = ++instanceCount;
+  private final int experimentNumber = instanceCount.incrementAndGet();
   private String experimentName = "Experiment" + experimentNumber;
   private final ExperimentMetadataImpl metadata = new ExperimentMetadataImpl();
   private final List<ExperimentSample> samples = new ArrayList<>();
@@ -112,9 +113,13 @@ public class ExperimentImpl implements Serializable, Experiment {
   @Override
   public ExperimentSample getExperimentSample(final Sample sample) {
 
+    if (sample == null) {
+      return null;
+    }
+
     for (ExperimentSample eSample : this.samples) {
 
-      if (eSample.getSample() == sample) {
+      if (eSample.getSample().getId() == sample.getId()) {
         return eSample;
       }
     }
@@ -129,7 +134,7 @@ public class ExperimentImpl implements Serializable, Experiment {
   @Override
   public void setName(String newExperimentName) {
 
-    checkNotNull(newExperimentName,
+    requireNonNull(newExperimentName,
         "newExperimentName argument cannot be null");
 
     final String name = newExperimentName.trim();
@@ -140,7 +145,7 @@ public class ExperimentImpl implements Serializable, Experiment {
     }
 
     checkArgument(!this.design.containsExperimentName(name),
-        "The sample name already exists in the design: " + name);
+        "The experiment name already exists in the design: " + name);
 
     this.experimentName = name;
   }
@@ -152,7 +157,7 @@ public class ExperimentImpl implements Serializable, Experiment {
   @Override
   public ExperimentSample addSample(final Sample sample) {
 
-    checkNotNull(sample, "sample argument cannot be null");
+    requireNonNull(sample, "sample argument cannot be null");
     checkArgument(!this.sampleNames.contains(sample.getId()),
         "The sample already exists in the experiment: " + sample.getId());
     checkArgument(sample.getDesign() == this.design,
@@ -175,7 +180,7 @@ public class ExperimentImpl implements Serializable, Experiment {
   @Override
   public void removeSample(final Sample sample) {
 
-    checkNotNull(sample, "sample argument cannot be null");
+    requireNonNull(sample, "sample argument cannot be null");
     checkArgument(this.sampleNames.contains(sample.getId()),
         "The sample does not exists in the experiment: " + sample.getId());
     checkArgument(sample.getDesign() == this.design,
@@ -193,7 +198,7 @@ public class ExperimentImpl implements Serializable, Experiment {
   @Override
   public boolean containsSample(final Sample sample) {
 
-    checkNotNull(sample, "sample argument cannot be null");
+    requireNonNull(sample, "sample argument cannot be null");
 
     return this.sampleNames.contains(sample.getId());
   }
@@ -250,8 +255,8 @@ public class ExperimentImpl implements Serializable, Experiment {
    */
   ExperimentImpl(Design design, String experimentId) {
 
-    checkNotNull(design, "design argument cannot be null");
-    checkNotNull(experimentId, "sampleId argument cannot be null");
+    requireNonNull(design, "design argument cannot be null");
+    requireNonNull(experimentId, "sampleId argument cannot be null");
     checkArgument(FileNaming.isDataNameValid(experimentId),
         "The id of an experiment can only contains letters and digit: "
             + experimentId);

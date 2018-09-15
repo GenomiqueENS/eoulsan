@@ -24,6 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.util;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -41,7 +43,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.math.BigInteger;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
@@ -1560,34 +1561,35 @@ public class FileUtils {
 
   /**
    * Compute MD5 sum of a file.
-   * @param input the InputStream to read from
+   * @param inputStream the InputStream to read from
    * @return a string with the MD5 sum
    * @throws IOException In case of an I/O problem or digest error
    */
-  public static String computeMD5Sum(final InputStream input)
+  public static String computeMD5Sum(final InputStream inputStream)
       throws IOException {
 
+    requireNonNull(inputStream, "inputStream argument cannot be null");
+
     final MessageDigest md5Digest;
+
+    // Get the algorithm
     try {
       md5Digest = MessageDigest.getInstance("MD5");
-
-      byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-
-      int n = 0;
-
-      while (-1 != (n = input.read(buffer))) {
-        md5Digest.update(buffer, 0, n);
-      }
-
     } catch (NoSuchAlgorithmException e) {
       throw new IOException("No MD5 digest algorithm found: " + e.getMessage());
     }
 
-    input.close();
+    try (InputStream in = inputStream) {
+      byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
 
-    final BigInteger bigInt = new BigInteger(1, md5Digest.digest());
+      int n = 0;
 
-    return bigInt.toString(16);
+      while (-1 != (n = in.read(buffer))) {
+        md5Digest.update(buffer, 0, n);
+      }
+    }
+
+    return StringUtils.md5DigestToString(md5Digest);
   }
 
   /**

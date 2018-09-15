@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -124,6 +124,9 @@ public class Executor {
     // Check directories (log, working, output, temporary...)
     workflow.checkDirectories();
 
+    // Create a "eoulsan-data" directory if required
+    workflow.createEoulsanDataDirectoryIfRequired();
+
     // Get UI
     final UI ui = startUI(workflow);
 
@@ -208,13 +211,14 @@ public class Executor {
 
       // Get input stream of design file from arguments object
       final InputStream is = arguments.openDesignFile();
-      checkNotNull(is, "The input stream for design file is null");
+      requireNonNull(is, "The input stream for design file is null");
 
       // Read design file and return the design object
       return new DefaultDesignReader(is).read();
 
     } catch (IOException e) {
-      throw new EoulsanException(e);
+      throw new EoulsanException(
+          "Error while reading design file: " + e.getMessage(), e);
     }
   }
 
@@ -225,7 +229,7 @@ public class Executor {
 
       // Get input stream of workflow file from arguments object
       final InputStream is = arguments.openParamFile();
-      checkNotNull(is, "The input stream for workflow file is null");
+      requireNonNull(is, "The input stream for workflow file is null");
 
       // Parse workflow file
       final CommandWorkflowParser pp = new CommandWorkflowParser(is);
@@ -249,7 +253,7 @@ public class Executor {
    */
   public Executor(final ExecutorArguments arguments) throws EoulsanException {
 
-    checkNotNull(arguments, "The arguments of the executor is null");
+    requireNonNull(arguments, "The arguments of the executor is null");
 
     this.arguments = arguments;
     this.design = loadDesign(arguments);

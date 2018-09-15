@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
 
-
 /**
  * This class define a StepState event.
  * @since 2.3

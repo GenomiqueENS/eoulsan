@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
 
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -64,7 +63,7 @@ public class DataList extends AbstractData implements Serializable {
   @Override
   public Data addDataToList(final String name, final int part) {
 
-    Preconditions.checkNotNull(name, "name argument cannot be null");
+    requireNonNull(name, "name argument cannot be null");
 
     if (this.port == null) {
       throw new UnsupportedOperationException();
@@ -157,7 +156,7 @@ public class DataList extends AbstractData implements Serializable {
 
     super(port.getFormat());
 
-    checkNotNull(design, "design argument cannot be null");
+    requireNonNull(design, "design argument cannot be null");
 
     this.port = null;
     this.design = design;
@@ -172,7 +171,7 @@ public class DataList extends AbstractData implements Serializable {
 
     super(port.getFormat());
 
-    checkNotNull(design, "design argument cannot be null");
+    requireNonNull(design, "design argument cannot be null");
 
     this.port = port;
     this.design = design;

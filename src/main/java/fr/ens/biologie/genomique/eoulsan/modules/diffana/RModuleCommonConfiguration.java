@@ -1,8 +1,8 @@
 package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement.newDockerRequirement;
 import static fr.ens.biologie.genomique.eoulsan.util.r.ProcessRExecutor.RSCRIPT_EXECUTABLE;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -48,10 +48,10 @@ public class RModuleCommonConfiguration {
       final Set<Parameter> stepParameters, final Set<Requirement> requirements,
       final String defaultDockerImage) throws EoulsanException {
 
-    checkNotNull(context, "context argument cannot be null");
-    checkNotNull(stepParameters, "stepParameters argument cannot be null");
-    checkNotNull(requirements, "requirements argument cannot be null");
-    checkNotNull(defaultDockerImage,
+    requireNonNull(context, "context argument cannot be null");
+    requireNonNull(stepParameters, "stepParameters argument cannot be null");
+    requireNonNull(requirements, "requirements argument cannot be null");
+    requireNonNull(defaultDockerImage,
         "defaultDockerImage argument cannot be null");
 
     final Set<Parameter> toRemove = new HashSet<>();

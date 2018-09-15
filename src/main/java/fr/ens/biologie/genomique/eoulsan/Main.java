@@ -716,7 +716,8 @@ public abstract class Main {
     if (getJavaVersion() < MINIMAL_JAVA_VERSION_REQUIRED) {
       Common.showErrorMessageAndExit(Globals.WELCOME_MSG
           + "\nError: " + Globals.APP_NAME + " requires Java "
-          + MINIMAL_JAVA_VERSION_REQUIRED + ".");
+          + MINIMAL_JAVA_VERSION_REQUIRED + " (found Java " + getJavaVersion()
+          + ").");
     }
 
     // Select the application execution mode
