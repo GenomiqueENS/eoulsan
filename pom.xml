@@ -17,7 +17,7 @@
 		<didyouknow>Did you know that eoulsan is the breton word for pipeline?
 		</didyouknow>
 
-		<java.version>8</java.version>
+		<java.version>1.8</java.version>
 		<hadoop.version>2.3.0</hadoop.version>
 		<htsjdk.version>1.118</htsjdk.version>
 
@@ -1128,7 +1128,7 @@ o
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.0.1</version>
+				<version>3.10.0</version>
 				<configuration>
 					<!-- PMD options -->
 					<targetJdk>${java.version}</targetJdk>
