@@ -108,7 +108,7 @@ public final class Globals {
   public static final boolean BYPASS_PLATFORM_CHECKING = false;
 
   /** Minimal java version required by Eoulsan. */
-  public static final int MINIMAL_JAVA_VERSION_REQUIRED = 7;
+  public static final int MINIMAL_JAVA_VERSION_REQUIRED = 8;
 
   /** Platforms where the application is available. */
   public static final Set<String> AVAILABLE_BINARY_ARCH =
