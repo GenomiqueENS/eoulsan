@@ -69,6 +69,12 @@ public class ClusterTaskAction extends AbstractAction {
   }
 
   @Override
+  public boolean isHidden() {
+
+    return true;
+  }
+
+  @Override
   public void action(final List<String> arguments) {
 
     final Options options = makeOptions();
