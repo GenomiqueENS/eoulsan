@@ -46,6 +46,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.python.google.common.base.Strings;
 
 import fr.ens.biologie.genomique.eoulsan.actions.Action;
 import fr.ens.biologie.genomique.eoulsan.actions.ActionService;
@@ -268,9 +269,8 @@ public abstract class Main {
 
       if (!action.isHadoopJarMode() && !action.isHidden()) {
 
-        System.out.println(" - "
-            + action.getName() + "\t" + action.getDescription()
-            + (!action.isCurrentArchCompatible()
+        System.out.println(Strings.padEnd(" - " + action.getName(), 23, ' ')
+            + action.getDescription() + (!action.isCurrentArchCompatible()
                 ? " (not available for your platform)." : ""));
       }
     }
