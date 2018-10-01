@@ -65,7 +65,7 @@ public class ClusterTaskAction extends AbstractAction {
   @Override
   public String getDescription() {
 
-    return "Execute a cluster task";
+    return "execute a cluster task";
   }
 
   @Override

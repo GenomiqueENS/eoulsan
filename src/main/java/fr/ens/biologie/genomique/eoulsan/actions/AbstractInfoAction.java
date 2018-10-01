@@ -30,7 +30,7 @@ public abstract class AbstractInfoAction extends AbstractAction {
   @Override
   public String getDescription() {
 
-    return "Get information about " + getName() + " configuration.";
+    return "show information about " + getName() + " configuration.";
   }
 
   @Override
