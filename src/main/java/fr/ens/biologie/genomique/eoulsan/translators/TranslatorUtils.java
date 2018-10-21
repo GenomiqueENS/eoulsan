@@ -41,8 +41,9 @@ import java.util.regex.Pattern;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Settings;
+import fr.ens.biologie.genomique.eoulsan.bio.AnnotationMatrix;
+import fr.ens.biologie.genomique.eoulsan.bio.io.AnnotationMatrixTSVReader;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.translators.io.MultiColumnTranslatorReader;
 import fr.ens.biologie.genomique.eoulsan.translators.io.TranslatorOutputFormat;
 
 /**
@@ -241,9 +242,11 @@ public class TranslatorUtils {
 
     final Translator did = createDuplicatedEnsemblIdTranslator();
 
-    final CommonLinksInfoTranslator translator =
-        new CommonLinksInfoTranslator(new ConcatTranslator(did,
-            new MultiColumnTranslatorReader(annotationFile.open()).read()));
+    AnnotationMatrix matrix =
+        new AnnotationMatrixTSVReader(annotationFile.open()).read();
+
+    final CommonLinksInfoTranslator translator = new CommonLinksInfoTranslator(
+        new ConcatTranslator(did, new AnnotationMatrixTranslator(matrix)));
 
     // Load hypertext links
     updateLinks(translator, linksFile);
