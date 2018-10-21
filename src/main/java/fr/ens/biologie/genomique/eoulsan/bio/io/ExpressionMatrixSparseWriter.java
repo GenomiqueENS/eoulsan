@@ -10,7 +10,7 @@ import java.io.Writer;
 import java.util.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix;
-import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix.Entry;
+import fr.ens.biologie.genomique.eoulsan.bio.Matrix;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 
 /**
@@ -30,7 +30,7 @@ public class ExpressionMatrixSparseWriter implements ExpressionMatrixWriter {
     // Write header
     this.writer.write("gene\tcell\tcount\n");
 
-    for (Entry e : matrix.nonZeroValues()) {
+    for (Matrix.Entry<Double> e : matrix.nonZeroValues()) {
 
       double d = e.getValue();
 

@@ -11,13 +11,14 @@ import java.util.Objects;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public abstract class AbstractExpressionMatrix implements ExpressionMatrix {
+public abstract class AbstractMatrix<E>
+    implements Matrix<E> {
 
-  static class BasicEntry implements Entry {
+  static class BasicEntry<E> implements Entry<E> {
 
     final String rowName;
     final String columnName;
-    final Double value;
+    final E value;
 
     @Override
     public String getRowName() {
@@ -30,7 +31,7 @@ public abstract class AbstractExpressionMatrix implements ExpressionMatrix {
     }
 
     @Override
-    public Double getValue() {
+    public E getValue() {
       return this.value;
     }
 
@@ -50,7 +51,8 @@ public abstract class AbstractExpressionMatrix implements ExpressionMatrix {
         return false;
       }
 
-      final BasicEntry that = (BasicEntry) o;
+      @SuppressWarnings("unchecked")
+      final BasicEntry<E> that = (BasicEntry<E>) o;
 
       return equal(this.rowName, that.rowName)
           && equal(this.columnName, that.columnName)
@@ -62,8 +64,7 @@ public abstract class AbstractExpressionMatrix implements ExpressionMatrix {
       return rowName + ':' + this.columnName + '=' + this.value;
     }
 
-    BasicEntry(final String rowName, final String columnName,
-        final Double value) {
+    BasicEntry(final String rowName, final String columnName, final E value) {
       this.rowName = rowName;
       this.columnName = columnName;
       this.value = value;
@@ -72,17 +73,17 @@ public abstract class AbstractExpressionMatrix implements ExpressionMatrix {
   }
 
   @Override
-  public Iterable<Entry> values() {
+  public Iterable<Entry<E>> values() {
 
-    return new Iterable<Entry>() {
+    return new Iterable<Entry<E>>() {
 
       @Override
-      public Iterator<Entry> iterator() {
+      public Iterator<Entry<E>> iterator() {
 
         final Iterator<String> rowNames = getRowNames().iterator();
         final List<String> columnNames = getColumnNames();
 
-        return new Iterator<Entry>() {
+        return new Iterator<Entry<E>>() {
 
           Iterator<String> columnIterator = columnNames.iterator();
           String columnName;
@@ -101,7 +102,7 @@ public abstract class AbstractExpressionMatrix implements ExpressionMatrix {
           }
 
           @Override
-          public Entry next() {
+          public Entry<E> next() {
 
             if (first) {
               this.rowName = rowNames.next();
@@ -110,7 +111,7 @@ public abstract class AbstractExpressionMatrix implements ExpressionMatrix {
 
             this.columnName = this.columnIterator.next();
 
-            Entry result = new BasicEntry(this.rowName, this.columnName,
+            Entry<E> result = new BasicEntry<E>(this.rowName, this.columnName,
                 getValue(this.rowName, this.columnName));
 
             if (!this.columnIterator.hasNext() && rowNames.hasNext()) {
@@ -126,18 +127,18 @@ public abstract class AbstractExpressionMatrix implements ExpressionMatrix {
   }
 
   @Override
-  public Iterable<Entry> nonZeroValues() {
+  public Iterable<Entry<E>> nonZeroValues() {
 
-    return new Iterable<Entry>() {
+    return new Iterable<Entry<E>>() {
 
-      private Iterator<Entry> values = values().iterator();
+      private Iterator<Entry<E>> values = values().iterator();
 
       @Override
-      public Iterator<Entry> iterator() {
+      public Iterator<Entry<E>> iterator() {
 
-        return new Iterator<Entry>() {
+        return new Iterator<Entry<E>>() {
 
-          Entry nextValue;
+          Entry<E> nextValue;
 
           @Override
           public void remove() {
@@ -150,7 +151,7 @@ public abstract class AbstractExpressionMatrix implements ExpressionMatrix {
             while (values.hasNext()) {
 
               this.nextValue = values.next();
-              if (this.nextValue.getValue() != 0.0) {
+              if (this.nextValue.getValue() != getDefaultValue()) {
                 return true;
               }
             }
@@ -159,7 +160,7 @@ public abstract class AbstractExpressionMatrix implements ExpressionMatrix {
           }
 
           @Override
-          public Entry next() {
+          public Entry<E> next() {
             return this.nextValue;
           }
         };
@@ -208,7 +209,7 @@ public abstract class AbstractExpressionMatrix implements ExpressionMatrix {
   }
 
   @Override
-  public void add(final ExpressionMatrix matrix) {
+  public void add(final Matrix<E> matrix) {
 
     Objects.requireNonNull(matrix, "matrix argument cannot be null");
 
@@ -249,7 +250,7 @@ public abstract class AbstractExpressionMatrix implements ExpressionMatrix {
 
       sb.append(rowName);
 
-      for (Double value : getRowValues(rowName)) {
+      for (E value : getRowValues(rowName)) {
         sb.append('\t');
         sb.append(value);
       }
