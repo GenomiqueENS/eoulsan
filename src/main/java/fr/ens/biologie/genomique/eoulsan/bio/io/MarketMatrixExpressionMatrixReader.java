@@ -24,7 +24,7 @@ import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 public class MarketMatrixExpressionMatrixReader
     implements ExpressionMatrixReader {
 
-  private String MAGIC_KEY = "%%MatrixMarket ";
+  static String MAGIC_KEY = "%%MatrixMarket ";
 
   // private final BufferedReader reader;
   private final InputStream is;

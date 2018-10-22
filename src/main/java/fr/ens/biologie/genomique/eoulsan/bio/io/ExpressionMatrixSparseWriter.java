@@ -20,6 +20,8 @@ import fr.ens.biologie.genomique.eoulsan.bio.Matrix;
  */
 public class ExpressionMatrixSparseWriter implements ExpressionMatrixWriter {
 
+  static String HEADER = "gene\tcell\tcount";
+
   private final OutputStream os;
 
   @Override
@@ -41,7 +43,7 @@ public class ExpressionMatrixSparseWriter implements ExpressionMatrixWriter {
     try (Writer writer = new OutputStreamWriter(this.os)) {
 
       // Write header
-      writer.write("gene\tcell\tcount\n");
+      writer.write(HEADER + '\n');
 
       for (Matrix.Entry<Double> e : matrix.nonZeroValues()) {
 
