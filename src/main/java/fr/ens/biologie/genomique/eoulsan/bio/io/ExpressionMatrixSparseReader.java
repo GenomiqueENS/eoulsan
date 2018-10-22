@@ -1,13 +1,11 @@
 package fr.ens.biologie.genomique.eoulsan.bio.io;
 
-import static fr.ens.biologie.genomique.eoulsan.bio.io.BioCharsets.GFF_CHARSET;
-
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,7 +24,7 @@ import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
  */
 public class ExpressionMatrixSparseReader implements ExpressionMatrixReader {
 
-  private final BufferedReader reader;
+  private final InputStream is;
 
   @Override
   public ExpressionMatrix read() throws IOException {
@@ -46,42 +44,50 @@ public class ExpressionMatrixSparseReader implements ExpressionMatrixReader {
     Splitter splitter = Splitter.on('\t');
     int lineCount = 0;
 
-    while ((line = reader.readLine()) != null) {
+    try (BufferedReader reader = FileUtils.createBufferedReader(this.is)) {
+      while ((line = reader.readLine()) != null) {
 
-      line = line.trim();
-      lineCount++;
+        line = line.trim();
+        lineCount++;
 
-      if (line.isEmpty() || line.startsWith("#")) {
-        continue;
-      }
-
-      if (first) {
-
-        if (!"gene\tcell\tcount".equals(line.trim().toLowerCase())) {
-          throw new IOException("Invalid header: " + line);
+        if (line.isEmpty() || line.startsWith("#")) {
+          continue;
         }
-        first = false;
-        continue;
-      }
 
-      List<String> fields = GuavaCompatibility.splitToList(splitter, line);
+        if (first) {
 
-      if (fields.size() != 3) {
-        throw new IOException("Invalid field count ("
-            + fields.size() + ") at line " + lineCount + ", expected 3 fields: "
-            + line);
-      }
+          if (!"gene\tcell\tcount".equals(line.trim().toLowerCase())) {
+            throw new IOException("Invalid header: " + line);
+          }
+          first = false;
+          continue;
+        }
 
-      try {
-        matrix.setValue(fields.get(0), fields.get(1),
-            Integer.parseInt(fields.get(2)));
-      } catch (NumberFormatException e) {
-        throw new IOException(
-            "Invalid count at line " + lineCount + ": " + line);
+        List<String> fields = GuavaCompatibility.splitToList(splitter, line);
+
+        if (fields.size() != 3) {
+          throw new IOException("Invalid field count ("
+              + fields.size() + ") at line " + lineCount
+              + ", expected 3 fields: " + line);
+        }
+
+        try {
+          matrix.setValue(fields.get(0), fields.get(1),
+              Integer.parseInt(fields.get(2)));
+        } catch (NumberFormatException e) {
+          throw new IOException(
+              "Invalid count at line " + lineCount + ": " + line);
+        }
       }
     }
 
     return matrix;
+  }
+
+  @Override
+  public void close() throws IOException {
+
+    this.is.close();
   }
 
   //
@@ -94,11 +100,9 @@ public class ExpressionMatrixSparseReader implements ExpressionMatrixReader {
    */
   public ExpressionMatrixSparseReader(final InputStream is) {
 
-    if (is == null) {
-      throw new NullPointerException("InputStream is null");
-    }
+    Objects.requireNonNull(is, "is argument cannot be null");
 
-    this.reader = new BufferedReader(new InputStreamReader(is, GFF_CHARSET));
+    this.is = is;
   }
 
   /**
@@ -108,11 +112,9 @@ public class ExpressionMatrixSparseReader implements ExpressionMatrixReader {
   public ExpressionMatrixSparseReader(final File file)
       throws FileNotFoundException {
 
-    if (file == null) {
-      throw new NullPointerException("File is null");
-    }
+    Objects.requireNonNull(file, "file argument cannot be null");
 
-    this.reader = FileUtils.createBufferedReader(file, GFF_CHARSET);
+    this.is = new FileInputStream(file);
   }
 
   /**
@@ -122,7 +124,10 @@ public class ExpressionMatrixSparseReader implements ExpressionMatrixReader {
   public ExpressionMatrixSparseReader(final String filename)
       throws FileNotFoundException {
 
-    this.reader = FileUtils.createBufferedReader(filename, GFF_CHARSET);
+    Objects.requireNonNull(filename, "filename argument cannot be null");
+
+    this.is = new FileInputStream(filename);
+
   }
 
 }

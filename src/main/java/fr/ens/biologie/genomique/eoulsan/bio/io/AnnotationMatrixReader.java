@@ -1,5 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.bio.io;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 import fr.ens.biologie.genomique.eoulsan.bio.AnnotationMatrix;
@@ -9,7 +10,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.AnnotationMatrix;
  * @author Laurent Jourdren
  * @since 2.4
  */
-public interface AnnotationMatrixReader {
+public interface AnnotationMatrixReader extends Closeable {
 
   /**
    * Read an AnnotationMatrix object.

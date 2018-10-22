@@ -1,16 +1,15 @@
 package fr.ens.biologie.genomique.eoulsan.bio.io;
 
-import static fr.ens.biologie.genomique.eoulsan.bio.io.BioCharsets.GFF_CHARSET;
-
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix;
-import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 
 /**
  * This class define an ExpressionMatrix writer for TSV format.
@@ -19,43 +18,50 @@ import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
  */
 public class ExpressionMatrixTSVWriter implements ExpressionMatrixWriter {
 
-  private final Writer writer;
+  private final OutputStream os;
 
   @Override
   public void write(final ExpressionMatrix matrix) throws IOException {
 
     Objects.requireNonNull(matrix, "matrix argument cannot be null");
 
-    StringBuilder sb = new StringBuilder();
+    try (Writer writer = new OutputStreamWriter(this.os)) {
 
-    for (String columnName : matrix.getColumnNames()) {
-      sb.append('\t');
-      sb.append(columnName);
-    }
-    sb.append('\n');
-    this.writer.write(sb.toString());
+      StringBuilder sb = new StringBuilder();
 
-    for (String rowName : matrix.getRowNames()) {
-      sb.setLength(0);
-
-      sb.append(rowName);
-
-      for (Double value : matrix.getRowValues(rowName)) {
+      for (String columnName : matrix.getColumnNames()) {
         sb.append('\t');
-
-        double d = value;
-        if (!(Double.isNaN(d) || Double.isInfinite(d))
-            && Math.floor(d) - d == 0.0) {
-          sb.append((int) d);
-        } else {
-          sb.append(value);
-        }
+        sb.append(columnName);
       }
       sb.append('\n');
-      this.writer.write((sb.toString()));
-    }
+      writer.write(sb.toString());
 
-    this.writer.close();
+      for (String rowName : matrix.getRowNames()) {
+        sb.setLength(0);
+
+        sb.append(rowName);
+
+        for (Double value : matrix.getRowValues(rowName)) {
+          sb.append('\t');
+
+          double d = value;
+          if (!(Double.isNaN(d) || Double.isInfinite(d))
+              && Math.floor(d) - d == 0.0) {
+            sb.append((int) d);
+          } else {
+            sb.append(value);
+          }
+        }
+        sb.append('\n');
+        writer.write((sb.toString()));
+      }
+    }
+  }
+
+  @Override
+  public void close() throws IOException {
+
+    this.os.close();
   }
 
   //
@@ -64,25 +70,14 @@ public class ExpressionMatrixTSVWriter implements ExpressionMatrixWriter {
 
   /**
    * Public constructor.
-   * @param writer Writer to use
-   */
-  public ExpressionMatrixTSVWriter(final Writer writer) {
-
-    if (writer == null) {
-      throw new NullPointerException("The writer is null.");
-    }
-
-    this.writer = writer;
-  }
-
-  /**
-   * Public constructor.
    * @param os OutputStream to use
    */
   public ExpressionMatrixTSVWriter(final OutputStream os)
       throws FileNotFoundException {
 
-    this.writer = FileUtils.createFastBufferedWriter(os, GFF_CHARSET);
+    Objects.requireNonNull(os, "os argument cannot be null");
+
+    this.os = os;
   }
 
   /**
@@ -91,7 +86,9 @@ public class ExpressionMatrixTSVWriter implements ExpressionMatrixWriter {
    */
   public ExpressionMatrixTSVWriter(final File outputFile) throws IOException {
 
-    this.writer = FileUtils.createFastBufferedWriter(outputFile, GFF_CHARSET);
+    Objects.requireNonNull(outputFile, "os argument cannot be null");
+
+    this.os = new FileOutputStream(outputFile);
   }
 
   /**
@@ -101,8 +98,9 @@ public class ExpressionMatrixTSVWriter implements ExpressionMatrixWriter {
   public ExpressionMatrixTSVWriter(final String outputFilename)
       throws IOException {
 
-    this.writer =
-        FileUtils.createFastBufferedWriter(outputFilename, GFF_CHARSET);
+    Objects.requireNonNull(outputFilename, "os argument cannot be null");
+
+    this.os = new FileOutputStream(outputFilename);
   }
 
 }

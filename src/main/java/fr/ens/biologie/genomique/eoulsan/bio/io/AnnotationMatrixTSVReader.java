@@ -102,9 +102,11 @@ public class AnnotationMatrixTSVReader implements AnnotationMatrixReader {
     return matrix;
   }
 
-  //
-  // Other mmethods
-  //
+  @Override
+  public void close() throws IOException {
+
+    this.is.close();
+  }
 
   //
   // Utility methods

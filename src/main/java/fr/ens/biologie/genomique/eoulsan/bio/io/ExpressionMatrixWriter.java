@@ -1,5 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.bio.io;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix;
@@ -9,7 +10,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public interface ExpressionMatrixWriter {
+public interface ExpressionMatrixWriter extends Closeable {
 
   /**
    * Write an ExpressionMatrix object.

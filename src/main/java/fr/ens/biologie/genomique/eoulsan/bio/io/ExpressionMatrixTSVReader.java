@@ -1,13 +1,11 @@
 package fr.ens.biologie.genomique.eoulsan.bio.io;
 
-import static fr.ens.biologie.genomique.eoulsan.bio.io.BioCharsets.GFF_CHARSET;
-
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +25,7 @@ import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
  */
 public class ExpressionMatrixTSVReader implements ExpressionMatrixReader {
 
-  private final BufferedReader reader;
+  private final InputStream is;
 
   @Override
   public ExpressionMatrix read() throws IOException {
@@ -46,49 +44,56 @@ public class ExpressionMatrixTSVReader implements ExpressionMatrixReader {
     Splitter splitter = Splitter.on('\t');
     List<String> columnNames = null;
 
-    while ((line = reader.readLine()) != null) {
+    try (BufferedReader reader = FileUtils.createBufferedReader(this.is)) {
 
-      line = line.trim();
+      while ((line = reader.readLine()) != null) {
 
-      if (line.isEmpty() || line.startsWith("#")) {
-        continue;
-      }
+        line = line.trim();
 
-      List<String> fields = GuavaCompatibility.splitToList(splitter, line);
-
-      if (first) {
-        if (fields.size() == 1) {
+        if (line.isEmpty() || line.startsWith("#")) {
           continue;
         }
 
-        // Remove first (unused element)
-        columnNames = new ArrayList<>(fields);
-        columnNames.remove(0);
+        List<String> fields = GuavaCompatibility.splitToList(splitter, line);
 
-        first = false;
-      } else {
+        if (first) {
+          if (fields.size() == 1) {
+            continue;
+          }
 
-        if (fields.size() > columnNames.size() + 1) {
-          throw new IOException(
-              "Found a line with invalid number of column: " + line);
-        }
+          // Remove first (unused element)
+          columnNames = new ArrayList<>(fields);
+          columnNames.remove(0);
 
-        Iterator<String> it = columnNames.iterator();
-        String rowName = null;
-        for (String s : fields) {
-          if (rowName == null) {
-            rowName = s;
-          } else {
-            matrix.setValue(rowName, it.next(), Double.parseDouble(s));
+          first = false;
+        } else {
+
+          if (fields.size() > columnNames.size() + 1) {
+            throw new IOException(
+                "Found a line with invalid number of column: " + line);
+          }
+
+          Iterator<String> it = columnNames.iterator();
+          String rowName = null;
+          for (String s : fields) {
+            if (rowName == null) {
+              rowName = s;
+            } else {
+              matrix.setValue(rowName, it.next(), Double.parseDouble(s));
+            }
           }
         }
       }
+
     }
 
-    // Close the reader
-    this.reader.close();
-
     return matrix;
+  }
+
+  @Override
+  public void close() throws IOException {
+
+    this.is.close();
   }
 
   //
@@ -101,11 +106,9 @@ public class ExpressionMatrixTSVReader implements ExpressionMatrixReader {
    */
   public ExpressionMatrixTSVReader(final InputStream is) {
 
-    if (is == null) {
-      throw new NullPointerException("InputStream is null");
-    }
+    Objects.requireNonNull(is, "is argument cannot be null");
 
-    this.reader = new BufferedReader(new InputStreamReader(is, GFF_CHARSET));
+    this.is = is;
   }
 
   /**
@@ -115,11 +118,9 @@ public class ExpressionMatrixTSVReader implements ExpressionMatrixReader {
   public ExpressionMatrixTSVReader(final File file)
       throws FileNotFoundException {
 
-    if (file == null) {
-      throw new NullPointerException("File is null");
-    }
+    Objects.requireNonNull(file, "file argument cannot be null");
 
-    this.reader = FileUtils.createBufferedReader(file, GFF_CHARSET);
+    this.is = new FileInputStream(file);
   }
 
   /**
@@ -129,7 +130,10 @@ public class ExpressionMatrixTSVReader implements ExpressionMatrixReader {
   public ExpressionMatrixTSVReader(final String filename)
       throws FileNotFoundException {
 
-    this.reader = FileUtils.createBufferedReader(filename, GFF_CHARSET);
+    Objects.requireNonNull(filename, "filename argument cannot be null");
+
+    this.is = new FileInputStream(filename);
+
   }
 
 }

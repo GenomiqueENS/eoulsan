@@ -1,17 +1,16 @@
 package fr.ens.biologie.genomique.eoulsan.bio.io;
 
-import static fr.ens.biologie.genomique.eoulsan.bio.io.BioCharsets.GFF_CHARSET;
-
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix;
 import fr.ens.biologie.genomique.eoulsan.bio.Matrix;
-import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 
 /**
  * This class define an ExpressionMatrix writer for sparse format.
@@ -20,36 +19,43 @@ import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
  */
 public class ExpressionMatrixSparseWriter implements ExpressionMatrixWriter {
 
-  private final Writer writer;
+  private final OutputStream os;
 
   @Override
   public void write(final ExpressionMatrix matrix) throws IOException {
 
     Objects.requireNonNull(matrix, "matrix argument cannot be null");
 
-    // Write header
-    this.writer.write("gene\tcell\tcount\n");
+    try (Writer writer = new OutputStreamWriter(this.os)) {
 
-    for (Matrix.Entry<Double> e : matrix.nonZeroValues()) {
+      // Write header
+      writer.write("gene\tcell\tcount\n");
 
-      double d = e.getValue();
+      for (Matrix.Entry<Double> e : matrix.nonZeroValues()) {
 
-      if (!(Double.isNaN(d) || Double.isInfinite(d))
-          && Math.floor(d) - d == 0.0) {
+        double d = e.getValue();
 
-        int intValue = (int) d;
+        if (!(Double.isNaN(d) || Double.isInfinite(d))
+            && Math.floor(d) - d == 0.0) {
 
-        this.writer.write(
-            e.getRowName() + '\t' + e.getColumnName() + '\t' + intValue + '\n');
+          int intValue = (int) d;
 
-      } else {
-        this.writer
-            .write(e.getRowName() + '\t' + e.getColumnName() + '\t' + d + '\n');
+          writer.write(e.getRowName()
+              + '\t' + e.getColumnName() + '\t' + intValue + '\n');
+
+        } else {
+          writer.write(
+              e.getRowName() + '\t' + e.getColumnName() + '\t' + d + '\n');
+        }
+
       }
-
     }
+  }
 
-    this.writer.close();
+  @Override
+  public void close() throws IOException {
+
+    this.os.close();
   }
 
   //
@@ -58,25 +64,14 @@ public class ExpressionMatrixSparseWriter implements ExpressionMatrixWriter {
 
   /**
    * Public constructor.
-   * @param writer Writer to use
-   */
-  public ExpressionMatrixSparseWriter(final Writer writer) {
-
-    if (writer == null) {
-      throw new NullPointerException("The writer is null.");
-    }
-
-    this.writer = writer;
-  }
-
-  /**
-   * Public constructor.
    * @param os OutputStream to use
    */
   public ExpressionMatrixSparseWriter(final OutputStream os)
       throws FileNotFoundException {
 
-    this.writer = FileUtils.createFastBufferedWriter(os, GFF_CHARSET);
+    Objects.requireNonNull(os, "os argument cannot be null");
+
+    this.os = os;
   }
 
   /**
@@ -86,7 +81,9 @@ public class ExpressionMatrixSparseWriter implements ExpressionMatrixWriter {
   public ExpressionMatrixSparseWriter(final File outputFile)
       throws IOException {
 
-    this.writer = FileUtils.createFastBufferedWriter(outputFile, GFF_CHARSET);
+    Objects.requireNonNull(outputFile, "os argument cannot be null");
+
+    this.os = new FileOutputStream(outputFile);
   }
 
   /**
@@ -96,8 +93,9 @@ public class ExpressionMatrixSparseWriter implements ExpressionMatrixWriter {
   public ExpressionMatrixSparseWriter(final String outputFilename)
       throws IOException {
 
-    this.writer =
-        FileUtils.createFastBufferedWriter(outputFilename, GFF_CHARSET);
+    Objects.requireNonNull(outputFilename, "os argument cannot be null");
+
+    this.os = new FileOutputStream(outputFilename);
   }
 
 }
