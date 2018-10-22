@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.bio.AnnotationMatrix;
@@ -26,6 +27,17 @@ public class AnnotationMatrixTSVWriter implements AnnotationMatrixWriter {
 
     Objects.requireNonNull(matrix, "matrix argument cannot be null");
 
+    write(matrix, matrix.getRowNames());
+  }
+
+  @Override
+  public void write(final AnnotationMatrix matrix,
+      final Collection<String> rowNamesToWrite) throws IOException {
+
+    Objects.requireNonNull(matrix, "matrix argument cannot be null");
+    Objects.requireNonNull(rowNamesToWrite,
+        "rowNamesToWrite argument cannot be null");
+
     try (Writer writer = new OutputStreamWriter(this.os)) {
 
       StringBuilder sb = new StringBuilder();
@@ -37,7 +49,7 @@ public class AnnotationMatrixTSVWriter implements AnnotationMatrixWriter {
       sb.append('\n');
       writer.write(sb.toString());
 
-      for (String rowName : matrix.getRowNames()) {
+      for (String rowName : rowNamesToWrite) {
         sb.setLength(0);
 
         sb.append(rowName);

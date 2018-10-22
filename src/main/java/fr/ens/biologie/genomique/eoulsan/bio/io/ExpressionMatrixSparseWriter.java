@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix;
@@ -22,9 +23,20 @@ public class ExpressionMatrixSparseWriter implements ExpressionMatrixWriter {
   private final OutputStream os;
 
   @Override
-  public void write(final ExpressionMatrix matrix) throws IOException {
+  public void write(ExpressionMatrix matrix) throws IOException {
 
     Objects.requireNonNull(matrix, "matrix argument cannot be null");
+
+    write(matrix, matrix.getRowNames());
+  }
+
+  @Override
+  public void write(final ExpressionMatrix matrix,
+      final Collection<String> rowNamesToWrite) throws IOException {
+
+    Objects.requireNonNull(matrix, "matrix argument cannot be null");
+    Objects.requireNonNull(rowNamesToWrite,
+        "rowNamesToWrite argument cannot be null");
 
     try (Writer writer = new OutputStreamWriter(this.os)) {
 
@@ -32,6 +44,10 @@ public class ExpressionMatrixSparseWriter implements ExpressionMatrixWriter {
       writer.write("gene\tcell\tcount\n");
 
       for (Matrix.Entry<Double> e : matrix.nonZeroValues()) {
+
+        if (!rowNamesToWrite.contains(e.getRowName())) {
+          continue;
+        }
 
         double d = e.getValue();
 
