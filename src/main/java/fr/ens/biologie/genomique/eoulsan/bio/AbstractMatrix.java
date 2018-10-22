@@ -2,6 +2,8 @@ package fr.ens.biologie.genomique.eoulsan.bio;
 
 import static fr.ens.biologie.genomique.eoulsan.util.Utils.equal;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -11,8 +13,7 @@ import java.util.Objects;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public abstract class AbstractMatrix<E>
-    implements Matrix<E> {
+public abstract class AbstractMatrix<E> implements Matrix<E> {
 
   static class BasicEntry<E> implements Entry<E> {
 
@@ -222,6 +223,48 @@ public abstract class AbstractMatrix<E>
         setValue(rowName, columnName, matrix.getValue(rowName, columnName));
       }
     }
+  }
+
+  @Override
+  public void removeRows(final Collection<String> rowNames) {
+
+    Objects.requireNonNull(rowNames);
+
+    for (String rowName : rowNames) {
+      removeRow(rowName);
+    }
+  }
+
+  @Override
+  public void removeColumns(Collection<String> columnNames) {
+
+    Objects.requireNonNull(columnNames);
+
+    for (String columnName : columnNames) {
+      removeColumn(columnName);
+    }
+  }
+
+  @Override
+  public void retainRows(final Collection<String> rowNames) {
+
+    Objects.requireNonNull(rowNames);
+
+    List<String> rowsToRemove = new ArrayList<>(getRowNames());
+    rowsToRemove.removeAll(rowNames);
+
+    removeRows(rowsToRemove);
+  }
+
+  @Override
+  public void retainColumns(final Collection<String> columnNames) {
+
+    Objects.requireNonNull(columnNames);
+
+    List<String> columnsToRemove = new ArrayList<>(getColumnNames());
+    columnsToRemove.removeAll(columnNames);
+
+    removeColumns(columnsToRemove);
   }
 
   @Override

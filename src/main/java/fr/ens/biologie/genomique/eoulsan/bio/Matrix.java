@@ -1,5 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.bio;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -167,10 +168,34 @@ public interface Matrix<E> {
   void removeColumn(String columnName);
 
   /**
+   * Remove columns of the matrix.
+   * @param columnNames the names of the columns to remove
+   */
+  void removeColumns(Collection<String> columnNames);
+
+  /**
    * Remove a row of the matrix.
    * @param rowName the name of the row to remove
    */
   void removeRow(String rowName);
+
+  /**
+   * Remove rows of the matrix.
+   * @param rowNames the names of the rows to remove
+   */
+  void removeRows(Collection<String> rowNames);
+
+  /**
+   * Retain row of the matrix.
+   * @param rowNames a collection with the row of the matrix to retain
+   */
+  void retainRows(Collection<String> rowNames);
+
+  /**
+   * Retain row of the matrix.
+   * @param rowNames a collection with the row of the matrix to retain
+   */
+  void retainColumns(Collection<String> columnNames);
 
   /**
    * Get the default value of a cell.

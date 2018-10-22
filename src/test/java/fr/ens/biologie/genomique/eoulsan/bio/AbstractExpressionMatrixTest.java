@@ -393,6 +393,64 @@ public abstract class AbstractExpressionMatrixTest {
   }
 
   @Test
+  public void testRemoveRows() {
+
+    ExpressionMatrix matrix = createMatrix();
+    matrix.addColumns("col1", "col2");
+    matrix.addRows("row1", "row2", "row3");
+    assertEquals(6, matrix.size());
+
+    matrix.setValue("row1", "col1", 1);
+    matrix.setValue("row2", "col1", 2);
+    matrix.setValue("row3", "col1", 3);
+    matrix.setValue("row1", "col2", 4);
+    matrix.setValue("row2", "col2", 5);
+    matrix.setValue("row3", "col2", 6);
+    assertEquals(6, matrix.size());
+
+    assertEquals(3, matrix.getRowCount());
+    assertEquals(2, matrix.getColumnCount());
+
+    matrix.removeRows(Arrays.asList("row2", "row3"));
+    assertEquals(2, matrix.size());
+
+    assertEquals(1, matrix.getRowCount());
+    assertEquals(2, matrix.getColumnCount());
+
+    assertEquals(1.0, matrix.getValue("row1", "col1"), 0.0);
+    assertEquals(4.0, matrix.getValue("row1", "col2"), 0.0);
+  }
+
+  @Test
+  public void testRetainRows() {
+
+    ExpressionMatrix matrix = createMatrix();
+    matrix.addColumns("col1", "col2");
+    matrix.addRows("row1", "row2", "row3");
+    assertEquals(6, matrix.size());
+
+    matrix.setValue("row1", "col1", 1);
+    matrix.setValue("row2", "col1", 2);
+    matrix.setValue("row3", "col1", 3);
+    matrix.setValue("row1", "col2", 4);
+    matrix.setValue("row2", "col2", 5);
+    matrix.setValue("row3", "col2", 6);
+    assertEquals(6, matrix.size());
+
+    assertEquals(3, matrix.getRowCount());
+    assertEquals(2, matrix.getColumnCount());
+
+    matrix.retainRows(Arrays.asList("row1"));
+    assertEquals(2, matrix.size());
+
+    assertEquals(1, matrix.getRowCount());
+    assertEquals(2, matrix.getColumnCount());
+
+    assertEquals(1.0, matrix.getValue("row1", "col1"), 0.0);
+    assertEquals(4.0, matrix.getValue("row1", "col2"), 0.0);
+  }
+
+  @Test
   public void testRemoveColumn() {
 
     ExpressionMatrix matrix = createMatrix();
@@ -411,6 +469,64 @@ public abstract class AbstractExpressionMatrixTest {
     assertEquals(2, matrix.getColumnCount());
 
     matrix.removeColumn("col2");
+    assertEquals(3, matrix.size());
+
+    assertEquals(3, matrix.getRowCount());
+    assertEquals(1, matrix.getColumnCount());
+
+    assertEquals(1.0, matrix.getValue("row1", "col1"), 0.0);
+    assertEquals(2.0, matrix.getValue("row2", "col1"), 0.0);
+    assertEquals(3.0, matrix.getValue("row3", "col1"), 0.0);
+  }
+
+  @Test
+  public void testRemoveColumns() {
+
+    ExpressionMatrix matrix = createMatrix();
+    matrix.addColumns("col1", "col2");
+    matrix.addRows("row1", "row2", "row3");
+    assertEquals(6, matrix.size());
+
+    matrix.setValue("row1", "col1", 1);
+    matrix.setValue("row2", "col1", 2);
+    matrix.setValue("row3", "col1", 3);
+    matrix.setValue("row1", "col2", 4);
+    matrix.setValue("row2", "col2", 5);
+    matrix.setValue("row3", "col2", 6);
+
+    assertEquals(3, matrix.getRowCount());
+    assertEquals(2, matrix.getColumnCount());
+
+    matrix.removeColumns(Arrays.asList("col2"));
+    assertEquals(3, matrix.size());
+
+    assertEquals(3, matrix.getRowCount());
+    assertEquals(1, matrix.getColumnCount());
+
+    assertEquals(1.0, matrix.getValue("row1", "col1"), 0.0);
+    assertEquals(2.0, matrix.getValue("row2", "col1"), 0.0);
+    assertEquals(3.0, matrix.getValue("row3", "col1"), 0.0);
+  }
+
+  @Test
+  public void testRetainsColumns() {
+
+    ExpressionMatrix matrix = createMatrix();
+    matrix.addColumns("col1", "col2");
+    matrix.addRows("row1", "row2", "row3");
+    assertEquals(6, matrix.size());
+
+    matrix.setValue("row1", "col1", 1);
+    matrix.setValue("row2", "col1", 2);
+    matrix.setValue("row3", "col1", 3);
+    matrix.setValue("row1", "col2", 4);
+    matrix.setValue("row2", "col2", 5);
+    matrix.setValue("row3", "col2", 6);
+
+    assertEquals(3, matrix.getRowCount());
+    assertEquals(2, matrix.getColumnCount());
+
+    matrix.retainColumns(Arrays.asList("col1"));
     assertEquals(3, matrix.size());
 
     assertEquals(3, matrix.getRowCount());
