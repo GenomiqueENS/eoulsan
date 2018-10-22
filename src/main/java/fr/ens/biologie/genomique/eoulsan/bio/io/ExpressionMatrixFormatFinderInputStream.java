@@ -64,7 +64,7 @@ public class ExpressionMatrixFormatFinderInputStream extends InputStream {
           continue;
         }
 
-        if (line.startsWith(ExpressionMatrixSparseWriter.HEADER)) {
+        if (line.startsWith(SparseExpressionMatrixWriter.HEADER)) {
           return MatrixFormat.SPARSE;
         }
 
@@ -106,10 +106,10 @@ public class ExpressionMatrixFormatFinderInputStream extends InputStream {
     switch (getExpressionMatrixFormat()) {
 
     case TSV:
-      return new ExpressionMatrixTSVReader(this);
+      return new TSVExpressionMatrixReader(this);
 
     case SPARSE:
-      return new ExpressionMatrixSparseReader(this);
+      return new SparseExpressionMatrixReader(this);
 
     case MARKET_MATRIX:
       return new MarketMatrixExpressionMatrixReader(this);

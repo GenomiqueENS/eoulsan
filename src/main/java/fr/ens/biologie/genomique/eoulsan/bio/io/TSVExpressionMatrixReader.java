@@ -23,7 +23,7 @@ import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class ExpressionMatrixTSVReader implements ExpressionMatrixReader {
+public class TSVExpressionMatrixReader implements ExpressionMatrixReader {
 
   private final InputStream is;
 
@@ -104,7 +104,7 @@ public class ExpressionMatrixTSVReader implements ExpressionMatrixReader {
    * Public constructor
    * @param is InputStream to use
    */
-  public ExpressionMatrixTSVReader(final InputStream is) {
+  public TSVExpressionMatrixReader(final InputStream is) {
 
     Objects.requireNonNull(is, "is argument cannot be null");
 
@@ -115,7 +115,7 @@ public class ExpressionMatrixTSVReader implements ExpressionMatrixReader {
    * Public constructor
    * @param file File to use
    */
-  public ExpressionMatrixTSVReader(final File file)
+  public TSVExpressionMatrixReader(final File file)
       throws FileNotFoundException {
 
     Objects.requireNonNull(file, "file argument cannot be null");
@@ -127,7 +127,7 @@ public class ExpressionMatrixTSVReader implements ExpressionMatrixReader {
    * Public constructor.
    * @param filename File to use
    */
-  public ExpressionMatrixTSVReader(final String filename)
+  public TSVExpressionMatrixReader(final String filename)
       throws FileNotFoundException {
 
     Objects.requireNonNull(filename, "filename argument cannot be null");

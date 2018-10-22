@@ -37,7 +37,7 @@ import java.util.Map;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.ExpressionCounter;
-import fr.ens.biologie.genomique.eoulsan.bio.io.CountsTSVWriter;
+import fr.ens.biologie.genomique.eoulsan.bio.io.TSVCountsWriter;
 import fr.ens.biologie.genomique.eoulsan.bio.io.CountsWriter;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
@@ -112,7 +112,7 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
 
         // Save result
         try (CountsWriter writer =
-            new CountsTSVWriter(expressionFile.create())) {
+            new TSVCountsWriter(expressionFile.create())) {
           writer.write(result);
         }
       }

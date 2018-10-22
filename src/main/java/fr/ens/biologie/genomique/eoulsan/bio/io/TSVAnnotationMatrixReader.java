@@ -22,7 +22,7 @@ import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
  * @author Laurent Jourdren
  * @since 2.4
  */
-public class AnnotationMatrixTSVReader implements AnnotationMatrixReader {
+public class TSVAnnotationMatrixReader implements AnnotationMatrixReader {
 
   private InputStream is;
 
@@ -159,7 +159,7 @@ public class AnnotationMatrixTSVReader implements AnnotationMatrixReader {
    * @throws IOException if an error occurs while reading the file or if the
    *           file is null.
    */
-  public AnnotationMatrixTSVReader(final String filename) throws IOException {
+  public TSVAnnotationMatrixReader(final String filename) throws IOException {
 
     this(new File(filename), false);
   }
@@ -171,7 +171,7 @@ public class AnnotationMatrixTSVReader implements AnnotationMatrixReader {
    * @throws IOException if an error occurs while reading the file or if the
    *           file is null.
    */
-  public AnnotationMatrixTSVReader(final String filename,
+  public TSVAnnotationMatrixReader(final String filename,
       final boolean noHeader) throws IOException {
 
     this(new File(filename), noHeader);
@@ -183,7 +183,7 @@ public class AnnotationMatrixTSVReader implements AnnotationMatrixReader {
    * @throws IOException if an error occurs while reading the file or if the
    *           file is null.
    */
-  public AnnotationMatrixTSVReader(final File file) throws IOException {
+  public TSVAnnotationMatrixReader(final File file) throws IOException {
 
     this(file, false);
   }
@@ -195,7 +195,7 @@ public class AnnotationMatrixTSVReader implements AnnotationMatrixReader {
    * @throws IOException if an error occurs while reading the file or if the
    *           file is null.
    */
-  public AnnotationMatrixTSVReader(final File file, final boolean noHeader)
+  public TSVAnnotationMatrixReader(final File file, final boolean noHeader)
       throws IOException {
 
     if (file == null) {
@@ -210,7 +210,7 @@ public class AnnotationMatrixTSVReader implements AnnotationMatrixReader {
    * @param is Input stream to read
    * @throws IOException if the stream is null
    */
-  public AnnotationMatrixTSVReader(final InputStream is) throws IOException {
+  public TSVAnnotationMatrixReader(final InputStream is) throws IOException {
 
     this(is, false);
   }
@@ -221,7 +221,7 @@ public class AnnotationMatrixTSVReader implements AnnotationMatrixReader {
    * @param noHeader true if there is no header for column names
    * @throws IOException if the stream is null
    */
-  public AnnotationMatrixTSVReader(final InputStream is, final boolean noHeader)
+  public TSVAnnotationMatrixReader(final InputStream is, final boolean noHeader)
       throws IOException {
 
     this.is = is;

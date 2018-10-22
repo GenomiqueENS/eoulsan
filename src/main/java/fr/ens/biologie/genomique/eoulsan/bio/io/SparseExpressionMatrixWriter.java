@@ -11,13 +11,16 @@ import java.util.Collection;
 import java.util.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix;
+import fr.ens.biologie.genomique.eoulsan.bio.Matrix;
 
 /**
- * This class define an ExpressionMatrix writer for TSV format.
+ * This class define an ExpressionMatrix writer for sparse format.
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class ExpressionMatrixTSVWriter implements ExpressionMatrixWriter {
+public class SparseExpressionMatrixWriter implements ExpressionMatrixWriter {
+
+  static String HEADER = "gene\tcell\tcount";
 
   private final OutputStream os;
 
@@ -39,33 +42,30 @@ public class ExpressionMatrixTSVWriter implements ExpressionMatrixWriter {
 
     try (Writer writer = new OutputStreamWriter(this.os)) {
 
-      StringBuilder sb = new StringBuilder();
+      // Write header
+      writer.write(HEADER + '\n');
 
-      for (String columnName : matrix.getColumnNames()) {
-        sb.append('\t');
-        sb.append(columnName);
-      }
-      sb.append('\n');
-      writer.write(sb.toString());
+      for (Matrix.Entry<Double> e : matrix.nonZeroValues()) {
 
-      for (String rowName : rowNamesToWrite) {
-        sb.setLength(0);
-
-        sb.append(rowName);
-
-        for (Double value : matrix.getRowValues(rowName)) {
-          sb.append('\t');
-
-          double d = value;
-          if (!(Double.isNaN(d) || Double.isInfinite(d))
-              && Math.floor(d) - d == 0.0) {
-            sb.append((int) d);
-          } else {
-            sb.append(value);
-          }
+        if (!rowNamesToWrite.contains(e.getRowName())) {
+          continue;
         }
-        sb.append('\n');
-        writer.write((sb.toString()));
+
+        double d = e.getValue();
+
+        if (!(Double.isNaN(d) || Double.isInfinite(d))
+            && Math.floor(d) - d == 0.0) {
+
+          int intValue = (int) d;
+
+          writer.write(e.getRowName()
+              + '\t' + e.getColumnName() + '\t' + intValue + '\n');
+
+        } else {
+          writer.write(
+              e.getRowName() + '\t' + e.getColumnName() + '\t' + d + '\n');
+        }
+
       }
     }
   }
@@ -84,7 +84,7 @@ public class ExpressionMatrixTSVWriter implements ExpressionMatrixWriter {
    * Public constructor.
    * @param os OutputStream to use
    */
-  public ExpressionMatrixTSVWriter(final OutputStream os)
+  public SparseExpressionMatrixWriter(final OutputStream os)
       throws FileNotFoundException {
 
     Objects.requireNonNull(os, "os argument cannot be null");
@@ -96,7 +96,8 @@ public class ExpressionMatrixTSVWriter implements ExpressionMatrixWriter {
    * Public constructor.
    * @param outputFile file to use
    */
-  public ExpressionMatrixTSVWriter(final File outputFile) throws IOException {
+  public SparseExpressionMatrixWriter(final File outputFile)
+      throws IOException {
 
     Objects.requireNonNull(outputFile, "os argument cannot be null");
 
@@ -107,7 +108,7 @@ public class ExpressionMatrixTSVWriter implements ExpressionMatrixWriter {
    * Public constructor.
    * @param outputFilename name of the file to use
    */
-  public ExpressionMatrixTSVWriter(final String outputFilename)
+  public SparseExpressionMatrixWriter(final String outputFilename)
       throws IOException {
 
     Objects.requireNonNull(outputFilename, "os argument cannot be null");

@@ -18,7 +18,7 @@ import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
  * @author Laurent Jourdren
  * @since 2.4
  */
-public class AnnotationMatrixTSVWriter implements AnnotationMatrixWriter {
+public class TSVAnnotationMatrixWriter implements AnnotationMatrixWriter {
 
   private final OutputStream os;
 
@@ -81,7 +81,7 @@ public class AnnotationMatrixTSVWriter implements AnnotationMatrixWriter {
    * Public constructor.
    * @param os OutputStream to use
    */
-  public AnnotationMatrixTSVWriter(final OutputStream os)
+  public TSVAnnotationMatrixWriter(final OutputStream os)
       throws FileNotFoundException {
 
     Objects.requireNonNull(os, "the os argument cannot be null");
@@ -93,7 +93,7 @@ public class AnnotationMatrixTSVWriter implements AnnotationMatrixWriter {
    * Public constructor.
    * @param outputFile file to use
    */
-  public AnnotationMatrixTSVWriter(final File outputFile) throws IOException {
+  public TSVAnnotationMatrixWriter(final File outputFile) throws IOException {
 
     Objects.requireNonNull(outputFile,
         "the outputFile argument cannot be null");
@@ -106,7 +106,7 @@ public class AnnotationMatrixTSVWriter implements AnnotationMatrixWriter {
    * Public constructor.
    * @param outputFilename name of the file to use
    */
-  public AnnotationMatrixTSVWriter(final String outputFilename)
+  public TSVAnnotationMatrixWriter(final String outputFilename)
       throws IOException {
 
     Objects.requireNonNull(outputFilename,

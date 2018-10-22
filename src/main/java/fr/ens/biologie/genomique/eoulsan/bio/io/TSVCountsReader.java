@@ -21,7 +21,7 @@ import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
  * @author Laurent Jourdren
  * @since 2.4
  */
-public class CountsTSVReader implements CountsReader {
+public class TSVCountsReader implements CountsReader {
 
   private InputStream is;
 
@@ -86,7 +86,7 @@ public class CountsTSVReader implements CountsReader {
    * Public constructor
    * @param is InputStream to use
    */
-  public CountsTSVReader(final InputStream is) {
+  public TSVCountsReader(final InputStream is) {
 
     Objects.requireNonNull(is, "InputStream is null");
 
@@ -97,7 +97,7 @@ public class CountsTSVReader implements CountsReader {
    * Public constructor
    * @param file File to use
    */
-  public CountsTSVReader(final File file) throws FileNotFoundException {
+  public TSVCountsReader(final File file) throws FileNotFoundException {
 
     Objects.requireNonNull(file, "file argument is null");
 
@@ -108,7 +108,7 @@ public class CountsTSVReader implements CountsReader {
    * Public constructor.
    * @param filename File to use
    */
-  public CountsTSVReader(final String filename) throws FileNotFoundException {
+  public TSVCountsReader(final String filename) throws FileNotFoundException {
 
     Objects.requireNonNull(filename, "filename argument is null");
 

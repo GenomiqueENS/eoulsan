@@ -22,7 +22,7 @@ import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class ExpressionMatrixSparseReader implements ExpressionMatrixReader {
+public class SparseExpressionMatrixReader implements ExpressionMatrixReader {
 
   private final InputStream is;
 
@@ -98,7 +98,7 @@ public class ExpressionMatrixSparseReader implements ExpressionMatrixReader {
    * Public constructor
    * @param is InputStream to use
    */
-  public ExpressionMatrixSparseReader(final InputStream is) {
+  public SparseExpressionMatrixReader(final InputStream is) {
 
     Objects.requireNonNull(is, "is argument cannot be null");
 
@@ -109,7 +109,7 @@ public class ExpressionMatrixSparseReader implements ExpressionMatrixReader {
    * Public constructor
    * @param file File to use
    */
-  public ExpressionMatrixSparseReader(final File file)
+  public SparseExpressionMatrixReader(final File file)
       throws FileNotFoundException {
 
     Objects.requireNonNull(file, "file argument cannot be null");
@@ -121,7 +121,7 @@ public class ExpressionMatrixSparseReader implements ExpressionMatrixReader {
    * Public constructor.
    * @param filename File to use
    */
-  public ExpressionMatrixSparseReader(final String filename)
+  public SparseExpressionMatrixReader(final String filename)
       throws FileNotFoundException {
 
     Objects.requireNonNull(filename, "filename argument cannot be null");

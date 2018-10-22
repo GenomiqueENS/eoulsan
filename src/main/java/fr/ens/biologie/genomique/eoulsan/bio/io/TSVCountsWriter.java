@@ -18,7 +18,7 @@ import java.util.Objects;
  * @author Laurent Jourdren
  * @since 2.4
  */
-public class CountsTSVWriter implements CountsWriter {
+public class TSVCountsWriter implements CountsWriter {
 
   private final OutputStream os;
 
@@ -53,7 +53,7 @@ public class CountsTSVWriter implements CountsWriter {
    * Public constructor.
    * @param os OutputStream to use
    */
-  public CountsTSVWriter(final OutputStream os) throws FileNotFoundException {
+  public TSVCountsWriter(final OutputStream os) throws FileNotFoundException {
 
     Objects.requireNonNull(os, "os argument cannot be null");
 
@@ -64,7 +64,7 @@ public class CountsTSVWriter implements CountsWriter {
    * Public constructor.
    * @param outputFile file to use
    */
-  public CountsTSVWriter(final File outputFile) throws IOException {
+  public TSVCountsWriter(final File outputFile) throws IOException {
 
     Objects.requireNonNull(outputFile, "outputFile argument cannot be null");
 
@@ -75,7 +75,7 @@ public class CountsTSVWriter implements CountsWriter {
    * Public constructor.
    * @param outputFilename name of the file to use
    */
-  public CountsTSVWriter(final String outputFilename) throws IOException {
+  public TSVCountsWriter(final String outputFilename) throws IOException {
 
     Objects.requireNonNull(outputFilename,
         "outputFilename argument cannot be null");
