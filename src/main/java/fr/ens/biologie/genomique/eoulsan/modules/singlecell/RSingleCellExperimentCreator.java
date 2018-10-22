@@ -9,32 +9,33 @@ import static fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement.n
 import static fr.ens.biologie.genomique.eoulsan.requirements.PathRequirement.newPathRequirement;
 import static java.util.Collections.unmodifiableSet;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
+import fr.ens.biologie.genomique.eoulsan.bio.AnnotationMatrix;
+import fr.ens.biologie.genomique.eoulsan.bio.DenseAnnotationMatrix;
 import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix;
 import fr.ens.biologie.genomique.eoulsan.bio.SparseExpressionMatrix;
+import fr.ens.biologie.genomique.eoulsan.bio.io.AnnotationMatrixReader;
+import fr.ens.biologie.genomique.eoulsan.bio.io.TSVAnnotationMatrixReader;
+import fr.ens.biologie.genomique.eoulsan.bio.io.TSVAnnotationMatrixWriter;
+import fr.ens.biologie.genomique.eoulsan.bio.io.AnnotationMatrixWriter;
+import fr.ens.biologie.genomique.eoulsan.bio.io.CountsReader;
+import fr.ens.biologie.genomique.eoulsan.bio.io.TSVCountsReader;
+import fr.ens.biologie.genomique.eoulsan.bio.io.ExpressionMatrixFormatFinderInputStream;
 import fr.ens.biologie.genomique.eoulsan.bio.io.ExpressionMatrixReader;
-import fr.ens.biologie.genomique.eoulsan.bio.io.ExpressionMatrixSparseReader;
-import fr.ens.biologie.genomique.eoulsan.bio.io.ExpressionMatrixTSVWriter;
+import fr.ens.biologie.genomique.eoulsan.bio.io.TSVExpressionMatrixWriter;
+import fr.ens.biologie.genomique.eoulsan.bio.io.ExpressionMatrixWriter;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
@@ -48,10 +49,8 @@ import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
-import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
-import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
 import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
 import fr.ens.biologie.genomique.eoulsan.util.process.SystemSimpleProcess;
@@ -80,26 +79,6 @@ public class RSingleCellExperimentCreator extends AbstractModule {
 
   private boolean inputMatrices = true;
   private String designPrefix = "Cell.";
-
-  /**
-   * This class store annotation.
-   */
-  private static class Annotation {
-
-    private final List<String> fieldNames = new ArrayList<>();
-    private final Map<String, List<String>> values = new LinkedHashMap<>();
-
-    private void retainGenes(final Collection<String> geneNames) {
-
-      Set<String> keys = new HashSet<>(this.values.keySet());
-      keys.removeAll(geneNames);
-
-      for (String geneName : keys) {
-        this.values.remove(geneName);
-      }
-    }
-
-  }
 
   //
   // Module methods
@@ -200,15 +179,19 @@ public class RSingleCellExperimentCreator extends AbstractModule {
           ? mergeMatrices(matrices) : mergeExpressionResults(matrices);
 
       // Load gene annotation from additional annotation
-      final Annotation geneAnnotation = readTSVAnnotation(
-          context.getInputData(ADDITIONAL_ANNOTATION_TSV).getDataFile().open());
+      final AnnotationMatrix geneAnnotation;
+      try (AnnotationMatrixReader reader = new TSVAnnotationMatrixReader(context
+          .getInputData(ADDITIONAL_ANNOTATION_TSV).getDataFile().open())) {
+
+        geneAnnotation = reader.read();
+      }
 
       // Filter gene annotations
-      geneAnnotation.retainGenes(matrix.getRowNames());
+      geneAnnotation.retainRows(matrix.getRowNames());
 
       // Parse the design to get cell annotation
-      Annotation cellAnnotation =
-          parseDesign(context.getWorkflow().getDesign(), this.designPrefix);
+      AnnotationMatrix cellAnnotation = getCellAnnotation(matrices,
+          context.getWorkflow().getDesign(), this.designPrefix);
 
       // Duplicate cell annotation for each cell for 10X
       if (this.inputMatrices) {
@@ -225,10 +208,23 @@ public class RSingleCellExperimentCreator extends AbstractModule {
           context.getOutputData(SINGLE_CELL_EXPERMIMENT_RDS, "matrix")
               .getDataFile().toFile();
 
-      // Save data
-      saveMatrix(matrix, matrixFile);
-      saveAnnotation(geneAnnotation, matrix.getRowNames(), genesFile);
-      saveAnnotation(cellAnnotation, matrix.getColumnNames(), cellsFile);
+      // Save matrix data
+      try (ExpressionMatrixWriter writer =
+          new TSVExpressionMatrixWriter(matrixFile)) {
+        writer.write(matrix);
+      }
+
+      // Save gene annotation
+      try (AnnotationMatrixWriter writer =
+          new TSVAnnotationMatrixWriter(genesFile)) {
+        writer.write(geneAnnotation, matrix.getRowNames());
+      }
+
+      // Save cell annotation
+      try (AnnotationMatrixWriter writer =
+          new TSVAnnotationMatrixWriter(cellsFile)) {
+        writer.write(cellAnnotation, matrix.getColumnNames());
+      }
 
       // Launch R and create RDS file
 
@@ -265,26 +261,29 @@ public class RSingleCellExperimentCreator extends AbstractModule {
 
     for (Data matrixData : matrices.getListElements()) {
 
-      // TODO Create a Reader that can determine the format of the input
-      // expression matrix
+      // Determine the format of the input expression matrix
+      try (ExpressionMatrixFormatFinderInputStream in =
+          new ExpressionMatrixFormatFinderInputStream(
+              matrixData.getDataFile().open())) {
 
-      // Create reader
-      ExpressionMatrixReader reader =
-          new ExpressionMatrixSparseReader(matrixData.getDataFile().open());
+        // Create reader
+        try (ExpressionMatrixReader reader = in.getExpressionMatrixReader()) {
 
-      // Read matrix
-      ExpressionMatrix matrix = reader.read(new SparseExpressionMatrix());
+          // Read matrix
+          ExpressionMatrix matrix = reader.read(new SparseExpressionMatrix());
 
-      // Get sample name
-      String sampleName = matrixData.getName();
+          // Get sample name
+          String sampleName = matrixData.getName();
 
-      // Rename the column with sample name
-      for (String colName : matrix.getColumnNames()) {
-        matrix.renameColumn(colName, sampleName + CELL_SEPARATOR + colName);
+          // Rename the column with sample name
+          for (String colName : matrix.getColumnNames()) {
+            matrix.renameColumn(colName, sampleName + CELL_SEPARATOR + colName);
+          }
+
+          // Add matrix to the final matrix
+          result.add(matrix);
+        }
       }
-
-      // Add matrix to the final matrix
-      result.add(matrix);
     }
 
     return result;
@@ -306,11 +305,14 @@ public class RSingleCellExperimentCreator extends AbstractModule {
       // Get the sample name
       String sampleName = matrixData.getName();
 
-      // Put the expression results in the matrix
-      for (Map.Entry<String, Integer> e : readExpressionResults(
-          matrixData.getDataFile().open()).entrySet()) {
+      try (CountsReader reader =
+          new TSVCountsReader(matrixData.getDataFile().open())) {
 
-        result.setValue(e.getKey(), sampleName, e.getValue());
+        // Put the expression results in the matrix
+        for (Map.Entry<String, Integer> e : reader.read().entrySet()) {
+
+          result.setValue(e.getKey(), sampleName, e.getValue());
+        }
       }
     }
 
@@ -318,50 +320,45 @@ public class RSingleCellExperimentCreator extends AbstractModule {
   }
 
   /**
-   * Parse Design to generate cell annotation.
+   * Get cell annotation from data metadata or if not found from the design.
+   * @param matrices the matrices
    * @param design design to parse
    * @param prefix prefix for sample metadata to use
    * @return an Annotation object
    */
-  private static Annotation parseDesign(final Design design,
-      final String prefix) {
+  private static AnnotationMatrix getCellAnnotation(final Data matrices,
+      final Design design, final String prefix) {
 
-    final Annotation result = new Annotation();
+    final AnnotationMatrix result = new DenseAnnotationMatrix();
 
-    // Search for metadata starting with the prefix
-    for (Sample s : design.getSamples()) {
-      for (String k : s.getMetadata().keySet()) {
+    // Get Cell annotation from data metadata if exists
+    for (Data d : matrices.getListElements()) {
 
-        if (k.startsWith(prefix) && !result.fieldNames.contains(k)) {
-          result.fieldNames.add(k);
+      for (String key : d.getMetadata().keySet()) {
+
+        if (key.startsWith(prefix)) {
+          result.setValue(d.getName(), key.substring(prefix.length()),
+              d.getMetadata().get(key));
         }
       }
     }
 
-    // Fill the value
-    for (Sample s : design.getSamples()) {
+    // Get Cell annotation from design
+    for (Data d : matrices.getListElements()) {
 
-      String id = s.getId();
-      List<String> values = new ArrayList<>();
+      if (!result.containsRow(d.getName())
+          && design.containsSample(d.getName())) {
 
-      for (String field : result.fieldNames) {
+        Sample s = design.getSample(d.getName());
 
-        SampleMetadata sm = s.getMetadata();
+        for (String key : s.getMetadata().keySet()) {
 
-        if (sm.contains(field)) {
-          values.add(sm.get(field));
-        } else {
-          values.add("");
+          if (key.startsWith(prefix)) {
+            result.setValue(d.getName(), key.substring(prefix.length()),
+                d.getMetadata().get(key));
+          }
         }
-
       }
-      result.values.put(id, values);
-    }
-
-    // Remove the prefix to the fieldnames
-    for (int i = 0; i < result.fieldNames.size(); i++) {
-      result.fieldNames.set(i,
-          result.fieldNames.get(i).substring(prefix.length()));
     }
 
     return result;
@@ -370,182 +367,27 @@ public class RSingleCellExperimentCreator extends AbstractModule {
   /**
    * Duplicate cell annotation for 10X data.
    * @param cellAnnotation cell annotation
-   * @param cellIds cell identifiers
+   * @param cellUMI cell identifiers
    */
-  private static void duplicateCellAnnotation(final Annotation cellAnnotation,
-      final Collection<String> cellIds) {
+  private static void duplicateCellAnnotation(
+      final AnnotationMatrix cellAnnotation, final Collection<String> cellUMI) {
 
-    Set<String> oriKeys = new HashSet<>(cellAnnotation.values.keySet());
+    for (String rowName : cellAnnotation.getRowNames()) {
 
-    for (String key : oriKeys) {
+      for (String cellId : cellUMI) {
 
-      for (String cellId : cellIds) {
+        if (cellId.startsWith(rowName + CELL_SEPARATOR)) {
 
-        if (cellId.startsWith(key + CELL_SEPARATOR)) {
-          cellAnnotation.values.put(cellId, cellAnnotation.values.get(key));
+          for (String colName : cellAnnotation.getColumnNames()) {
+
+            cellAnnotation.setValue(cellId, colName,
+                cellAnnotation.getValue(rowName, colName));
+          }
         }
       }
     }
 
-    cellAnnotation.retainGenes(cellIds);
-  }
-
-  //
-  // Files reading and saving
-  //
-
-  /**
-   * Read annotation in TSV format.
-   * @param in input stream
-   * @return an Annotation object
-   * @throws IOException if an error occurs while reading the file
-   */
-  private static final Annotation readTSVAnnotation(final InputStream in)
-      throws IOException {
-
-    final Annotation result = new Annotation();
-
-    String line = null;
-    int lineCount = 0;
-
-    try (
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
-
-      Splitter splitter = Splitter.on('\t').trimResults();
-      boolean first = true;
-      int expectedFieldCount = 0;
-      while ((line = reader.readLine()) != null) {
-
-        line = line.trim();
-        lineCount++;
-
-        if (line.isEmpty() || line.startsWith("#")) {
-          continue;
-        }
-
-        List<String> fields = GuavaCompatibility.splitToList(splitter, line);
-
-        if (first) {
-          first = false;
-          result.fieldNames.addAll(fields.subList(1, fields.size() - 1));
-          expectedFieldCount = fields.size();
-          continue;
-        }
-
-        // Add missing fields
-        if (fields.size() < expectedFieldCount) {
-          fields = new ArrayList<>(fields);
-          fields.addAll(
-              Collections.nCopies(expectedFieldCount - fields.size(), ""));
-        }
-
-        if (fields.size() != expectedFieldCount) {
-          throw new IOException("Invalid number of fields ("
-              + fields.size() + ") found line " + lineCount + ", "
-              + expectedFieldCount + " fields are expected: " + line);
-        }
-
-        result.values.put(fields.get(0),
-            fields.subList(1, expectedFieldCount - 1));
-      }
-    }
-
-    return result;
-  }
-
-  /**
-   * Load the content of an expression file.
-   * @param in input stream of the expression file
-   * @return a map with the counts
-   * @throws IOException if an error occurs while reading the counts
-   */
-  private static Map<String, Integer> readExpressionResults(
-      final InputStream in) throws IOException {
-
-    // TODO Create an Expression(Result)TSVReader Expression(Result)TSVWriter
-    // that handle Map<String,Integer>
-
-    final Map<String, Integer> result = new LinkedHashMap<>();
-
-    String line = null;
-    int lineCount = 0;
-
-    try (
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
-
-      Splitter splitter = Splitter.on('\t').trimResults();
-
-      boolean first = true;
-      while ((line = reader.readLine()) != null) {
-
-        line = line.trim();
-        lineCount++;
-
-        if (line.isEmpty() || line.startsWith("#")) {
-          continue;
-        }
-
-        if (first) {
-          first = false;
-          continue;
-        }
-
-        List<String> fields = GuavaCompatibility.splitToList(splitter, line);
-        if (fields.size() != 2) {
-          throw new IOException("Invalid number of fields found line "
-              + lineCount + ", 2 fields are expected: " + line);
-        }
-
-        try {
-          result.put(fields.get(0), Integer.parseInt(fields.get(1)));
-        } catch (NumberFormatException e) {
-          throw new IOException(
-              "Invalid count found line " + lineCount + ": " + line);
-        }
-      }
-    }
-
-    return result;
-  }
-
-  /**
-   * Save matrix.
-   * @param matrix matrix to save
-   * @param outputFile output file
-   * @throws IOException if an error occurs while saving the file
-   */
-  private static void saveMatrix(final ExpressionMatrix matrix,
-      final File outputFile) throws IOException {
-
-    // TODO Writer and Readers for expression matrix must be autoclosable
-    new ExpressionMatrixTSVWriter(outputFile).write(matrix);
-  }
-
-  /**
-   * Save annotation.
-   * @param annotation annotation to save
-   * @param entryOrder order of the entries to save
-   * @param outputFile output file
-   * @throws IOException if an error occurs while saving file
-   */
-  private static void saveAnnotation(Annotation annotation,
-      List<String> entryOrder, File outputFile) throws IOException {
-
-    try (FileWriter writer = new FileWriter(outputFile)) {
-
-      Joiner joiner = Joiner.on('\t');
-
-      writer.write('\t' + joiner.join(annotation.fieldNames) + '\n');
-
-      for (String id : entryOrder) {
-
-        if (annotation.values.containsKey(id)) {
-
-          writer
-              .write(id + '\t' + joiner.join(annotation.values.get(id)) + '\n');
-        }
-      }
-    }
+    cellAnnotation.retainRows(cellUMI);
   }
 
   //
