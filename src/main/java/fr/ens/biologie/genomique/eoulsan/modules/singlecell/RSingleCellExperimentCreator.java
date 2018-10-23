@@ -64,6 +64,9 @@ import fr.ens.biologie.genomique.eoulsan.util.process.SystemSimpleProcess;
 @LocalOnly
 public class RSingleCellExperimentCreator extends AbstractModule {
 
+  // TODO Use of cell annotation and gene annotation (input port) must be
+  // optional
+
   /** Module name */
   private static final String MODULE_NAME = "rsinglecellexperimentcreator";
 
@@ -169,34 +172,7 @@ public class RSingleCellExperimentCreator extends AbstractModule {
   public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
-    Data matrices = context.getInputData(
-        this.inputMatrices ? EXPRESSION_MATRIX_TSV : EXPRESSION_RESULTS_TSV);
-
     try {
-
-      // Create final matrix
-      final ExpressionMatrix matrix = this.inputMatrices
-          ? mergeMatrices(matrices) : mergeExpressionResults(matrices);
-
-      // Load gene annotation from additional annotation
-      final AnnotationMatrix geneAnnotation;
-      try (AnnotationMatrixReader reader = new TSVAnnotationMatrixReader(context
-          .getInputData(ADDITIONAL_ANNOTATION_TSV).getDataFile().open())) {
-
-        geneAnnotation = reader.read();
-      }
-
-      // Filter gene annotations
-      geneAnnotation.retainRows(matrix.getRowNames());
-
-      // Parse the design to get cell annotation
-      AnnotationMatrix cellAnnotation = getCellAnnotation(matrices,
-          context.getWorkflow().getDesign(), this.designPrefix);
-
-      // Duplicate cell annotation for each cell for 10X
-      if (this.inputMatrices) {
-        duplicateCellAnnotation(cellAnnotation, matrix.getColumnNames());
-      }
 
       // Define output files
       File temporaryDirectory = context.getLocalTempDirectory();
@@ -208,27 +184,11 @@ public class RSingleCellExperimentCreator extends AbstractModule {
           context.getOutputData(SINGLE_CELL_EXPERMIMENT_RDS, "matrix")
               .getDataFile().toFile();
 
-      // Save matrix data
-      try (ExpressionMatrixWriter writer =
-          new TSVExpressionMatrixWriter(matrixFile)) {
-        writer.write(matrix);
-      }
-
-      // Save gene annotation
-      try (AnnotationMatrixWriter writer =
-          new TSVAnnotationMatrixWriter(genesFile)) {
-        writer.write(geneAnnotation, matrix.getRowNames());
-      }
-
-      // Save cell annotation
-      try (AnnotationMatrixWriter writer =
-          new TSVAnnotationMatrixWriter(cellsFile)) {
-        writer.write(cellAnnotation, matrix.getColumnNames());
-      }
+      // Create R Input files
+      createRInputFiles(context, matrixFile, genesFile, cellsFile);
 
       // Launch R and create RDS file
-
-      // Launch R
+      context.getLogger().fine("Launch R");
       if (this.dockerMode) {
         createRDSWithDocker(dockerImage, matrixFile, cellsFile, genesFile,
             rdsFile, temporaryDirectory);
@@ -242,6 +202,65 @@ public class RSingleCellExperimentCreator extends AbstractModule {
     }
 
     return status.createTaskResult();
+  }
+
+  private void createRInputFiles(final TaskContext context,
+      final File matrixFile, final File genesFile, final File cellsFile)
+      throws IOException {
+
+    Data matrices = context.getInputData(
+        this.inputMatrices ? EXPRESSION_MATRIX_TSV : EXPRESSION_RESULTS_TSV);
+
+    // Create final matrix
+    context.getLogger().fine("Load matrix");
+    final ExpressionMatrix matrix = this.inputMatrices
+        ? mergeMatrices(matrices) : mergeExpressionResults(matrices);
+
+    // Load gene annotation from additional annotation
+    context.getLogger().fine("Load additional annotation");
+    final AnnotationMatrix geneAnnotation;
+    try (AnnotationMatrixReader reader = new TSVAnnotationMatrixReader(
+        context.getInputData(ADDITIONAL_ANNOTATION_TSV).getDataFile().open())) {
+
+      geneAnnotation = reader.read();
+    }
+
+    // Filter gene annotations
+    context.getLogger().fine("Filter gene annotation");
+    geneAnnotation.retainRows(matrix.getRowNames());
+
+    // Parse the design to get cell annotation
+    context.getLogger().fine("Get cell annotation");
+    AnnotationMatrix cellAnnotation = getCellAnnotation(matrices,
+        context.getWorkflow().getDesign(), this.designPrefix);
+
+    // Duplicate cell annotation for each cell for 10X
+    if (this.inputMatrices) {
+      context.getLogger().fine("Duplicate cell annotation");
+      duplicateCellAnnotation(cellAnnotation, matrix.getColumnNames());
+    }
+
+    // Save matrix data
+    context.getLogger().fine("Save matrix");
+    try (ExpressionMatrixWriter writer =
+        new TSVExpressionMatrixWriter(matrixFile)) {
+      writer.write(matrix);
+    }
+
+    // Save gene annotation
+    context.getLogger().fine("Save gene annotation");
+    try (AnnotationMatrixWriter writer =
+        new TSVAnnotationMatrixWriter(genesFile)) {
+      writer.write(geneAnnotation, matrix.getRowNames());
+    }
+
+    // Save cell annotation
+    context.getLogger().fine("Save cell annotation");
+    try (AnnotationMatrixWriter writer =
+        new TSVAnnotationMatrixWriter(cellsFile)) {
+      writer.write(cellAnnotation, matrix.getColumnNames());
+    }
+
   }
 
   //
@@ -259,6 +278,9 @@ public class RSingleCellExperimentCreator extends AbstractModule {
 
     final ExpressionMatrix result = new SparseExpressionMatrix();
 
+    // Do not copy matrix when there is only one matrix file
+    final boolean oneMatrix = matrices.getListElements().size() == 1;
+
     for (Data matrixData : matrices.getListElements()) {
 
       // Determine the format of the input expression matrix
@@ -270,7 +292,8 @@ public class RSingleCellExperimentCreator extends AbstractModule {
         try (ExpressionMatrixReader reader = in.getExpressionMatrixReader()) {
 
           // Read matrix
-          ExpressionMatrix matrix = reader.read(new SparseExpressionMatrix());
+          ExpressionMatrix matrix =
+              reader.read(oneMatrix ? result : new SparseExpressionMatrix());
 
           // Get sample name
           String sampleName = matrixData.getName();
@@ -281,7 +304,9 @@ public class RSingleCellExperimentCreator extends AbstractModule {
           }
 
           // Add matrix to the final matrix
-          result.add(matrix);
+          if (!oneMatrix) {
+            result.add(matrix);
+          }
         }
       }
     }
