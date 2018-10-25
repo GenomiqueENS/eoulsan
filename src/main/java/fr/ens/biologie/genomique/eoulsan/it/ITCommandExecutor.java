@@ -38,8 +38,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.compress.utils.Charsets;
-
+import com.google.common.base.Charsets;
 import com.google.common.base.Stopwatch;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;

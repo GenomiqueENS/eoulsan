@@ -53,9 +53,9 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.compress.utils.Charsets;
 import org.testng.annotations.Test;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Stopwatch;
@@ -634,8 +634,7 @@ public class IT {
     final Properties props = new Properties();
     props.putAll(globalsConf);
 
-    final BufferedReader br = newReader(testConfFile,
-        Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING));
+    final BufferedReader br = newReader(testConfFile, Globals.DEFAULT_CHARSET);
 
     String line = null;
 
