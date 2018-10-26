@@ -56,9 +56,7 @@ public class TSVAnnotationMatrixWriter implements AnnotationMatrixWriter {
 
         for (String value : matrix.getRowValues(rowName)) {
           sb.append('\t');
-
-          sb.append(value.indexOf(' ') != -1
-              ? StringUtils.doubleQuotes(value) : value);
+          sb.append(value);
 
         }
         sb.append('\n');
