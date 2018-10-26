@@ -26,7 +26,6 @@ public class MarketMatrixExpressionMatrixReader
 
   static String MAGIC_KEY = "%%MatrixMarket ";
 
-  // private final BufferedReader reader;
   private final InputStream is;
 
   /**
