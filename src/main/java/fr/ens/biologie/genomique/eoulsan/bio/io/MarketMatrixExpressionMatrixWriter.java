@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.google.common.math.DoubleMath;
+
 import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix;
 import fr.ens.biologie.genomique.eoulsan.bio.Matrix;
 
@@ -47,16 +49,21 @@ public class MarketMatrixExpressionMatrixWriter
     Set<String> rowNames = rowNamesToWrite instanceof Set
         ? (Set<String>) rowNamesToWrite : new HashSet<String>(rowNamesToWrite);
 
+    int entryCount = entryCount(matrix, rowNames);
+    boolean intMatrix = entryCount < -1;
+    entryCount = Math.abs(entryCount);
+
     try (Writer writer = new OutputStreamWriter(this.os)) {
 
       // Write header
       writer.write(MarketMatrixExpressionMatrixReader.MAGIC_KEY);
-      writer.write("matrix coordinate real general\n");
+      writer.write("matrix coordinate "
+          + (intMatrix ? "integer" : "real") + " general\n");
 
       // Write the size of the matrix
       writer.write(""
           + matrix.getRowCount() + ' ' + matrix.getColumnCount() + ' '
-          + entryCount(matrix, rowNames) + '\n');
+          + entryCount + '\n');
 
       Map<String, Integer> rowPositions = keyPositions(matrix.getRowNames());
       Map<String, Integer> columnPositions =
@@ -64,10 +71,11 @@ public class MarketMatrixExpressionMatrixWriter
 
       for (Matrix.Entry<Double> e : matrix.nonZeroValues()) {
         if (rowNames.contains(e.getRowName())) {
+          String value = intMatrix
+              ? "" + e.getValue().intValue() : "" + e.getValue().doubleValue();
           writer.write(""
               + rowPositions.get(e.getRowName()) + ' '
-              + columnPositions.get(e.getColumnName()) + ' ' + e.getValue()
-              + '\n');
+              + columnPositions.get(e.getColumnName()) + ' ' + value + '\n');
         }
       }
     }
@@ -95,20 +103,25 @@ public class MarketMatrixExpressionMatrixWriter
    * Count the number of entries in the matrix.
    * @param matrix the matrix
    * @param rowNames the row names to write
-   * @return the number of the entries in the matrix
+   * @return the number of the entries in the matrix. If the result is negative
+   *         the matrix is an integer matrix
    */
   private static int entryCount(ExpressionMatrix matrix, Set<String> rowNames) {
 
     int entryCount = 0;
+    boolean intMatrix = true;
 
     for (Matrix.Entry<Double> e : matrix.nonZeroValues()) {
 
       if (rowNames.contains(e.getRowName())) {
+        if (!intMatrix && DoubleMath.isMathematicalInteger(e.getValue())) {
+          intMatrix = false;
+        }
         entryCount++;
       }
     }
 
-    return entryCount;
+    return entryCount * (intMatrix ? -1 : 1);
   }
 
   @Override
