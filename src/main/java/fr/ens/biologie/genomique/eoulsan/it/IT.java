@@ -43,6 +43,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -55,7 +56,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.testng.annotations.Test;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Stopwatch;
@@ -366,7 +366,8 @@ public class IT {
           Joiner.on("\n").join(this.environmentVariables);
 
       try {
-        com.google.common.io.Files.write(envToString, envFile, Charsets.UTF_8);
+        com.google.common.io.Files.write(envToString, envFile,
+            StandardCharsets.UTF_8);
 
       } catch (final IOException e) {
         getLogger()

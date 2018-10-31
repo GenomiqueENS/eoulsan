@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -38,7 +39,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Stopwatch;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
@@ -108,7 +108,7 @@ public class ITCommandExecutor {
       try {
 
         com.google.common.io.Files.write(cmdLine + "\n", this.cmdLineFile,
-            Charsets.UTF_8);
+            StandardCharsets.UTF_8);
 
       } catch (final IOException e) {
 
