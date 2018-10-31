@@ -8,6 +8,7 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.SINGLE_CELL_EXP
 import static fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement.newDockerRequirement;
 import static fr.ens.biologie.genomique.eoulsan.requirements.PathRequirement.newPathRequirement;
 import static java.util.Collections.unmodifiableSet;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -27,15 +28,15 @@ import fr.ens.biologie.genomique.eoulsan.bio.DenseAnnotationMatrix;
 import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix;
 import fr.ens.biologie.genomique.eoulsan.bio.SparseExpressionMatrix;
 import fr.ens.biologie.genomique.eoulsan.bio.io.AnnotationMatrixReader;
-import fr.ens.biologie.genomique.eoulsan.bio.io.TSVAnnotationMatrixReader;
-import fr.ens.biologie.genomique.eoulsan.bio.io.TSVAnnotationMatrixWriter;
 import fr.ens.biologie.genomique.eoulsan.bio.io.AnnotationMatrixWriter;
 import fr.ens.biologie.genomique.eoulsan.bio.io.CountsReader;
-import fr.ens.biologie.genomique.eoulsan.bio.io.TSVCountsReader;
 import fr.ens.biologie.genomique.eoulsan.bio.io.ExpressionMatrixFormatFinderInputStream;
 import fr.ens.biologie.genomique.eoulsan.bio.io.ExpressionMatrixReader;
-import fr.ens.biologie.genomique.eoulsan.bio.io.TSVExpressionMatrixWriter;
 import fr.ens.biologie.genomique.eoulsan.bio.io.ExpressionMatrixWriter;
+import fr.ens.biologie.genomique.eoulsan.bio.io.TSVAnnotationMatrixReader;
+import fr.ens.biologie.genomique.eoulsan.bio.io.TSVAnnotationMatrixWriter;
+import fr.ens.biologie.genomique.eoulsan.bio.io.TSVCountsReader;
+import fr.ens.biologie.genomique.eoulsan.bio.io.TSVExpressionMatrixWriter;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
@@ -64,9 +65,6 @@ import fr.ens.biologie.genomique.eoulsan.util.process.SystemSimpleProcess;
 @LocalOnly
 public class RSingleCellExperimentCreator extends AbstractModule {
 
-  // TODO Use of cell annotation and gene annotation (input port) must be
-  // optional
-
   /** Module name */
   private static final String MODULE_NAME = "rsinglecellexperimentcreator";
 
@@ -82,6 +80,7 @@ public class RSingleCellExperimentCreator extends AbstractModule {
 
   private boolean inputMatrices = true;
   private String designPrefix = "Cell.";
+  private boolean useAdditionnalAnnotation = true;
 
   //
   // Module methods
@@ -109,7 +108,9 @@ public class RSingleCellExperimentCreator extends AbstractModule {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
 
-    builder.addPort("additionalannotation", ADDITIONAL_ANNOTATION_TSV);
+    if (this.useAdditionnalAnnotation) {
+      builder.addPort("additionalannotation", ADDITIONAL_ANNOTATION_TSV);
+    }
 
     if (this.inputMatrices) {
       builder.addPort("matrix", true, EXPRESSION_MATRIX_TSV);
@@ -151,7 +152,12 @@ public class RSingleCellExperimentCreator extends AbstractModule {
         break;
 
       case "design.prefix":
+      case "design.prefix.for.cell.annotation":
         this.designPrefix = p.getStringValue();
+        break;
+
+      case "use.gene.annotation":
+        this.useAdditionnalAnnotation = p.getBooleanValue();
         break;
 
       default:
@@ -178,8 +184,10 @@ public class RSingleCellExperimentCreator extends AbstractModule {
       File temporaryDirectory = context.getLocalTempDirectory();
       File outputDir = context.getStepOutputDirectory().toFile();
       File matrixFile = new File(outputDir, "matrix.tsv");
-      File genesFile = new File(outputDir, "genes.tsv");
-      File cellsFile = new File(outputDir, "cells.tsv");
+      File genesFile = this.useAdditionnalAnnotation
+          ? new File(outputDir, "genes.tsv") : null;
+      File cellsFile =
+          this.designPrefix.isEmpty() ? null : new File(outputDir, "cells.tsv");
       File rdsFile =
           context.getOutputData(SINGLE_CELL_EXPERMIMENT_RDS, "matrix")
               .getDataFile().toFile();
@@ -211,31 +219,39 @@ public class RSingleCellExperimentCreator extends AbstractModule {
     Data matrices = context.getInputData(
         this.inputMatrices ? EXPRESSION_MATRIX_TSV : EXPRESSION_RESULTS_TSV);
 
+    AnnotationMatrix geneAnnotation = null;
+    AnnotationMatrix cellAnnotation = null;
+
     // Create final matrix
     context.getLogger().fine("Load matrix");
     final ExpressionMatrix matrix = this.inputMatrices
         ? mergeMatrices(matrices) : mergeExpressionResults(matrices);
 
     // Load gene annotation from additional annotation
-    context.getLogger().fine("Load additional annotation");
-    final AnnotationMatrix geneAnnotation;
-    try (AnnotationMatrixReader reader = new TSVAnnotationMatrixReader(
-        context.getInputData(ADDITIONAL_ANNOTATION_TSV).getDataFile().open())) {
 
-      geneAnnotation = reader.read();
+    if (genesFile != null) {
+      context.getLogger().fine("Load additional annotation");
+
+      try (AnnotationMatrixReader reader = new TSVAnnotationMatrixReader(context
+          .getInputData(ADDITIONAL_ANNOTATION_TSV).getDataFile().open())) {
+
+        geneAnnotation = reader.read();
+      }
+
+      // Filter gene annotations
+      context.getLogger().fine("Filter gene annotation");
+      geneAnnotation.retainRows(matrix.getRowNames());
     }
 
-    // Filter gene annotations
-    context.getLogger().fine("Filter gene annotation");
-    geneAnnotation.retainRows(matrix.getRowNames());
-
     // Parse the design to get cell annotation
-    context.getLogger().fine("Get cell annotation");
-    AnnotationMatrix cellAnnotation = getCellAnnotation(matrices,
-        context.getWorkflow().getDesign(), this.designPrefix);
+    if (cellsFile != null) {
+      context.getLogger().fine("Get cell annotation");
+      cellAnnotation = getCellAnnotation(matrices,
+          context.getWorkflow().getDesign(), this.designPrefix);
+    }
 
     // Duplicate cell annotation for each cell for 10X
-    if (this.inputMatrices) {
+    if (this.inputMatrices && cellAnnotation != null) {
       context.getLogger().fine("Duplicate cell annotation");
       duplicateCellAnnotation(cellAnnotation, matrix.getColumnNames());
     }
@@ -248,17 +264,21 @@ public class RSingleCellExperimentCreator extends AbstractModule {
     }
 
     // Save gene annotation
-    context.getLogger().fine("Save gene annotation");
-    try (AnnotationMatrixWriter writer =
-        new TSVAnnotationMatrixWriter(genesFile)) {
-      writer.write(geneAnnotation, matrix.getRowNames());
+    if (geneAnnotation != null) {
+      context.getLogger().fine("Save gene annotation");
+      try (AnnotationMatrixWriter writer =
+          new TSVAnnotationMatrixWriter(genesFile)) {
+        writer.write(geneAnnotation, matrix.getRowNames());
+      }
     }
 
     // Save cell annotation
-    context.getLogger().fine("Save cell annotation");
-    try (AnnotationMatrixWriter writer =
-        new TSVAnnotationMatrixWriter(cellsFile)) {
-      writer.write(cellAnnotation, matrix.getColumnNames());
+    if (cellAnnotation != null) {
+      context.getLogger().fine("Save cell annotation");
+      try (AnnotationMatrixWriter writer =
+          new TSVAnnotationMatrixWriter(cellsFile)) {
+        writer.write(cellAnnotation, matrix.getColumnNames());
+      }
     }
 
   }
@@ -273,8 +293,10 @@ public class RSingleCellExperimentCreator extends AbstractModule {
    * @return an Expression matrix object
    * @throws IOException if an error occurs while reading the input files
    */
-  private static ExpressionMatrix mergeMatrices(final Data matrices)
+  static ExpressionMatrix mergeMatrices(final Data matrices)
       throws IOException {
+
+    requireNonNull(matrices, "matrices argument cannot be null");
 
     final ExpressionMatrix result = new SparseExpressionMatrix();
 
@@ -320,8 +342,10 @@ public class RSingleCellExperimentCreator extends AbstractModule {
    * @return an Expression matrix object
    * @throws IOException if an error occurs while reading the input files
    */
-  private static ExpressionMatrix mergeExpressionResults(final Data matrices)
+  static ExpressionMatrix mergeExpressionResults(final Data matrices)
       throws IOException {
+
+    requireNonNull(matrices, "matrices argument cannot be null");
 
     final ExpressionMatrix result = new SparseExpressionMatrix();
 
@@ -451,14 +475,21 @@ public class RSingleCellExperimentCreator extends AbstractModule {
     filesUsed.add(temporaryDirectory);
     filesUsed.add(rScriptFile);
     filesUsed.add(matrixFile);
-    filesUsed.add(cellsFile);
-    filesUsed.add(genesFile);
+
+    if (cellsFile != null) {
+      filesUsed.add(cellsFile);
+    }
+
+    if (cellsFile != null) {
+      filesUsed.add(genesFile);
+    }
+
     filesUsed.add(rdsFile);
 
     // Launch Docker container
     final int exitValue = process.execute(createRCommand(rScriptFile),
         executionDirectory, temporaryDirectory, stdoutFile, stderrFile,
-        rScriptFile, matrixFile, cellsFile, genesFile);
+        filesUsed.toArray(new File[0]));
 
     if (exitValue > 0) {
       throw new IOException("Invalid exit code of R: " + exitValue);
@@ -526,21 +557,38 @@ public class RSingleCellExperimentCreator extends AbstractModule {
           + matrixFile.getAbsolutePath()
           + "\", header=TRUE, row.names=1, sep=\"\\t\")\n");
 
-      writer.write("\n# Load cell annotations\n");
-      writer.write("cells <-read.delim(\""
-          + cellsFile.getAbsolutePath()
-          + "\", header=TRUE, row.names=1, sep=\"\\t\")");
+      // Load cell annotations if required
+      if (cellsFile != null) {
+        writer.write("\n# Load cell annotations\n");
+        writer.write("cells <-read.delim(\""
+            + cellsFile.getAbsolutePath()
+            + "\", header=TRUE, row.names=1, sep=\"\\t\")");
+      }
 
-      writer.write("\n# Load gene annotations\n");
-      writer.write("genes <- read.delim(\""
-          + genesFile.getAbsolutePath()
-          + "\", header=TRUE, row.names=1, sep=\"\\t\")\n");
+      // Load gene annotations if required
+      if (genesFile != null) {
+        writer.write("\n# Load gene annotations\n");
+        writer.write("genes <- read.delim(\""
+            + genesFile.getAbsolutePath()
+            + "\", header=TRUE, row.names=1, sep=\"\\t\")\n");
+      }
 
+      // Create SingleCellExperiment object
       writer.write("\n# Create SingleCellExperiment object\n");
       writer.write("sce <- SingleCellExperiment("
-          + "assays = list(counts = as.matrix(values)), "
-          + "colData = data.frame(cells), " + "rowData = data.frame(genes))\n");
+          + "assays = list(counts = as.matrix(values))");
 
+      if (cellsFile != null) {
+        writer.write(", colData = data.frame(cells)");
+      }
+
+      if (genesFile != null) {
+        writer.write(", rowData = data.frame(genes)");
+      }
+
+      writer.write(")\n");
+
+      // Save SingleCellExperiment object in a RDS file
       writer.write("\n# Create RDS file\n");
       writer.write("saveRDS(sce, \"" + rdsFile.getAbsolutePath() + "\")\n");
     }
