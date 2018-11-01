@@ -555,14 +555,14 @@ public class RSingleCellExperimentCreator extends AbstractModule {
       writer.write("\n# Load counts\n");
       writer.write("values <- read.table(\""
           + matrixFile.getAbsolutePath()
-          + "\", header=TRUE, row.names=1, sep=\"\\t\")\n");
+          + "\", header=TRUE, row.names=1, check.names=FALSE, sep=\"\\t\")\n");
 
       // Load cell annotations if required
       if (cellsFile != null) {
         writer.write("\n# Load cell annotations\n");
         writer.write("cells <-read.delim(\""
             + cellsFile.getAbsolutePath()
-            + "\", header=TRUE, row.names=1, sep=\"\\t\")");
+            + "\", header=TRUE, row.names=1, check.names=FALSE, sep=\"\\t\")\n");
       }
 
       // Load gene annotations if required
@@ -570,7 +570,7 @@ public class RSingleCellExperimentCreator extends AbstractModule {
         writer.write("\n# Load gene annotations\n");
         writer.write("genes <- read.delim(\""
             + genesFile.getAbsolutePath()
-            + "\", header=TRUE, row.names=1, sep=\"\\t\")\n");
+            + "\", header=TRUE, row.names=1, check.names=FALSE, sep=\"\\t\")\n");
       }
 
       // Create SingleCellExperiment object
@@ -585,7 +585,6 @@ public class RSingleCellExperimentCreator extends AbstractModule {
       if (genesFile != null) {
         writer.write(", rowData = data.frame(genes)");
       }
-
       writer.write(")\n");
 
       // Save SingleCellExperiment object in a RDS file
