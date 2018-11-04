@@ -68,7 +68,7 @@ public enum ExpressionCounterCounter {
    */
   public String htSeqCountCounterName() {
 
-    return this.counterName;
+    return this.htseqName;
   }
 
   /**
