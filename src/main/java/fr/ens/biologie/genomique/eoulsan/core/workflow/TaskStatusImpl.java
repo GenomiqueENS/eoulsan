@@ -51,6 +51,7 @@ public class TaskStatusImpl implements TaskStatus {
   private String message;
   private final Map<String, Long> counters = new HashMap<>();
   private String taskDescription;
+  private String taskCommandLine;
   private double progress;
 
   private volatile boolean done;
@@ -82,6 +83,12 @@ public class TaskStatusImpl implements TaskStatus {
   }
 
   @Override
+  public String getCommandLine() {
+
+    return this.taskCommandLine;
+  }
+
+  @Override
   public double getProgress() {
 
     return this.progress;
@@ -106,6 +113,16 @@ public class TaskStatusImpl implements TaskStatus {
 
     synchronized (this) {
       this.taskDescription = description;
+    }
+  }
+
+  @Override
+  public void setCommandLine(final String commandLine) {
+
+    requireNonNull(commandLine, "the commandLine argument cannot be null");
+
+    synchronized (this) {
+      this.taskCommandLine = commandLine;
     }
   }
 
@@ -209,7 +226,8 @@ public class TaskStatusImpl implements TaskStatus {
     // Create the context result
     return new TaskResultImpl(this.context, this.startDate, this.endDate,
         duration, this.message,
-        this.taskDescription == null ? "" : this.taskDescription, this.counters,
+        this.taskDescription == null ? "" : this.taskDescription,
+        this.taskCommandLine == null ? "" : this.taskCommandLine, this.counters,
         success);
   }
 

@@ -111,10 +111,13 @@ public class ShellModule extends AbstractModule {
       getLogger().info("Execute: " + this.command);
       getLogger().info("Shell interpreter: " + shellInterpreter);
 
-      final Process p =
-          new ProcessBuilder(shellInterpreter, "-c", this.command).start();
+      final ProcessBuilder pb =
+          new ProcessBuilder(shellInterpreter, "-c", this.command);
 
-      final int exitCode = p.waitFor();
+      // Set command line in status
+      status.setCommandLine(String.join(" ", pb.command()));
+
+      final int exitCode = pb.start().waitFor();
 
       // If exit code is not 0 throw an exception
       if (exitCode != 0) {

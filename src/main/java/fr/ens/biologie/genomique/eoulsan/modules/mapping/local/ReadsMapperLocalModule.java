@@ -175,6 +175,9 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
         // Single read mapping
         final MapperProcess process = mapper.mapSE(inFile, errorFile, logFile);
 
+        // Set executed command line in status
+        status.setCommandLine(process.getCommandLine());
+
         // Parse output of the mapper
         parseSAMResults(process.getStout(), samFile, reporter);
 

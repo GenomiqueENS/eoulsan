@@ -168,15 +168,20 @@ public class MultiQCModule extends AbstractModule {
         }
       }
 
+      List<String> commandLine;
+
       // Launch MultiQC
       if (this.dockerMode) {
-        createMultiQCReportWithDocker(this.dockerImage, multiQCInputDir,
-            multiQCReportFile, context.getCommandName(),
+        commandLine = createMultiQCReportWithDocker(this.dockerImage,
+            multiQCInputDir, multiQCReportFile, context.getCommandName(),
             context.getLocalTempDirectory());
       } else {
-        createMultiQCReport(multiQCInputDir, multiQCReportFile,
+        commandLine = createMultiQCReport(multiQCInputDir, multiQCReportFile,
             context.getCommandName(), context.getLocalTempDirectory());
       }
+
+      // Set command line in status
+      status.setCommandLine(String.join(" ", commandLine));
 
       // Cleanup temporary directory
       new DataFile(multiQCInputDir).delete(true);
@@ -237,10 +242,11 @@ public class MultiQCModule extends AbstractModule {
    * @param inputDirectory input directory
    * @param multiQCReportFile output report
    * @param projectName project name
+   * @return the command line
    * @throws IOException if an error occurs while creating the report
    * @throws EoulsanException if MultiQC execution fails
    */
-  private static void createMultiQCReportWithDocker(final String dockerImage,
+  private List<String> createMultiQCReportWithDocker(final String dockerImage,
       final File inputDirectory, final File multiQCReportFile,
       final String projectName, final File temporaryDirectory)
       throws IOException, EoulsanException {
@@ -266,15 +272,20 @@ public class MultiQCModule extends AbstractModule {
       }
     }
 
+    // Create command line
+    List<String> commandLine =
+        createCommandLine(inputDirectory, multiQCReportFile, projectName);
+
     // Launch Docker container
-    final int exitValue = process.execute(
-        createMultiQCOptions(inputDirectory, multiQCReportFile, projectName),
-        executionDirectory, temporaryDirectory, stdoutFile, stderrFile,
-        filesUsed.toArray(new File[0]));
+    final int exitValue =
+        process.execute(commandLine, executionDirectory, temporaryDirectory,
+            stdoutFile, stderrFile, filesUsed.toArray(new File[0]));
 
     if (exitValue > 0) {
       throw new EoulsanException("Invalid exit code of MultiQC: " + exitValue);
     }
+
+    return commandLine;
   }
 
   /**
@@ -282,10 +293,11 @@ public class MultiQCModule extends AbstractModule {
    * @param inputDirectory input directory
    * @param multiQCReportFile output report
    * @param projectName project name
+   * @return command line
    * @throws IOException if an error occurs while creating the report
    * @throws EoulsanException if MultiQC execution fails
    */
-  private void createMultiQCReport(final File inputDirectory,
+  private List<String> createMultiQCReport(final File inputDirectory,
       final File multiQCReportFile, final String projectName,
       final File temporaryDirectory) throws IOException, EoulsanException {
 
@@ -295,14 +307,19 @@ public class MultiQCModule extends AbstractModule {
     File stdoutFile = new File(executionDirectory, "multiqc.stdout");
     File stderrFile = new File(executionDirectory, "multiqc.stderr");
 
+    // Create command line
+    List<String> commandLine =
+        createCommandLine(inputDirectory, multiQCReportFile, projectName);
+
     // Launch Docker container
-    int exitValue = process.execute(
-        createMultiQCOptions(inputDirectory, multiQCReportFile, projectName),
-        executionDirectory, temporaryDirectory, stdoutFile, stderrFile);
+    int exitValue = process.execute(commandLine, executionDirectory,
+        temporaryDirectory, stdoutFile, stderrFile);
 
     if (exitValue > 0) {
       throw new EoulsanException("Invalid exit code of MultiQC: " + exitValue);
     }
+
+    return commandLine;
   }
 
   /**
@@ -312,7 +329,7 @@ public class MultiQCModule extends AbstractModule {
    * @param projectName project name
    * @return a list with the MultiQC arguments
    */
-  private static List<String> createMultiQCOptions(final File inputDirectory,
+  private static List<String> createCommandLine(final File inputDirectory,
       final File multiQCReportFile, final String projectName) {
 
     List<String> result = new ArrayList<>();

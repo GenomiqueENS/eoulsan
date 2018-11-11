@@ -54,6 +54,18 @@ public interface TaskStatus extends Progress {
   void setDescription(String description);
 
   /**
+   * Get the context command line.
+   * @return a String with the context command line
+   */
+  String getCommandLine();
+
+  /**
+   * Set the context command line.
+   * @param description the command line to set
+   */
+  void setCommandLine(String commandLine);
+
+  /**
    * Set the context counters.
    * @param reporter the reporter
    * @param counterGroup counter group to use with the reporter

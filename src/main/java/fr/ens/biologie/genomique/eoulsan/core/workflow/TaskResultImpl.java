@@ -65,6 +65,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
   private final Map<String, Long> counters = new HashMap<>();
   private final String taskMessage;
   private final String taskDescription;
+  private final String taskCommandLine;
 
   TaskContextImpl getContext() {
     return this.context;
@@ -84,6 +85,10 @@ public class TaskResultImpl implements TaskResult, Serializable {
 
   String getDescription() {
     return this.taskDescription;
+  }
+
+  String getCommandLine() {
+    return this.taskCommandLine;
   }
 
   String getMessage() {
@@ -203,14 +208,16 @@ public class TaskResultImpl implements TaskResult, Serializable {
 
   TaskResultImpl(final TaskContextImpl context, final Date startTime,
       final Date endTime, final long duration, final String contextMessage,
-      final String contextDescription, final Map<String, Long> counters,
-      final boolean success) {
+      final String contextDescription, final String contextCommandLine,
+      final Map<String, Long> counters, final boolean success) {
 
     requireNonNull(context, "context argument cannot be null");
     requireNonNull(startTime, "startTime argument cannot be null");
     requireNonNull(endTime, "endTime argument cannot be null");
     requireNonNull(contextDescription,
         "contextDescription argument cannot be null");
+    requireNonNull(contextCommandLine,
+        "contextCommandLine argument cannot be null");
     requireNonNull(counters, "counter argument cannot be null");
 
     this.context = context;
@@ -220,6 +227,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
     this.success = success;
     this.taskMessage = contextMessage;
     this.taskDescription = contextDescription;
+    this.taskCommandLine = contextCommandLine;
     this.counters.putAll(counters);
     this.exception = null;
     this.errorMessage = null;
@@ -238,6 +246,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
     this.success = false;
     this.taskMessage = null;
     this.taskDescription = null;
+    this.taskCommandLine = null;
     this.exception = exception;
     this.errorMessage = errorMessage;
   }
