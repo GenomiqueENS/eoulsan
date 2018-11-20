@@ -40,6 +40,7 @@ import com.spotify.docker.client.messages.ProgressMessage;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
+import fr.ens.biologie.genomique.eoulsan.util.Utils;
 
 /**
  * This class define a Docker image instance using the Spotify Docker client
@@ -114,7 +115,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
       // File/directories to mount
       final List<File> toBind = new ArrayList<>();
       if (filesUsed != null) {
-        toBind.addAll(Arrays.asList(filesUsed));
+        toBind.addAll(Arrays.asList(Utils.filterNull(filesUsed)));
       }
 
       // Define temporary directory

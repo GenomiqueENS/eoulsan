@@ -17,6 +17,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
+import fr.ens.biologie.genomique.eoulsan.util.Utils;
 
 /**
  * This class define a Docker image instance using the Docker command line.
@@ -66,7 +67,7 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
     // File/directories to mount
     List<File> directoriesToBind = new ArrayList<>();
     if (filesUsed != null) {
-      directoriesToBind.addAll(Arrays.asList(filesUsed));
+      directoriesToBind.addAll(Arrays.asList(Utils.filterNull(filesUsed)));
     }
 
     // Execution directory
