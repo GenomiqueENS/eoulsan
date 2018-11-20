@@ -245,4 +245,87 @@ public class Utils {
     };
   }
 
+  /**
+   * Filter null value from an array.
+   * @param array array to filter
+   * @return an array without null elements
+   */
+  @SuppressWarnings("unchecked")
+  public static <E> E[] filterNull(E[] array) {
+
+    if (array == null) {
+      return null;
+    }
+
+    List<E> list = new ArrayList<>(array.length);
+
+    for (E e : array) {
+      if (e != null) {
+        list.add(e);
+      }
+    }
+
+    return (E[]) list.toArray(new Object[0]);
+  }
+
+  /**
+   * Filter null value from a list.
+   * @param list list to filter
+   * @return a list without null elements
+   */
+  public static <E> List<E> filterNull(List<E> list) {
+
+    if (list == null) {
+      return null;
+    }
+
+    List<E> result = new ArrayList<>(list.size());
+
+    for (E e : list) {
+      if (e != null) {
+        result.add(e);
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Filter null value from a set.
+   * @param set set to filter
+   * @return a set without null element
+   */
+  public static <E> Set<E> filterNull(Set<E> set) {
+
+    if (set == null) {
+      return null;
+    }
+
+    Set<E> result = new HashSet<>(set.size());
+    result.remove(null);
+
+    return result;
+  }
+
+  /**
+   * Remove null values from a collection.
+   * @param collection collection to filter
+   */
+  public static <E> void removeAllNull(Collection<E> collection) {
+
+    if (collection == null) {
+      return;
+    }
+
+    List<E> toRemove = new ArrayList<>();
+
+    for (E e : collection) {
+      if (e == null) {
+        toRemove.add(e);
+      }
+    }
+
+    collection.removeAll(toRemove);
+  }
+
 }
