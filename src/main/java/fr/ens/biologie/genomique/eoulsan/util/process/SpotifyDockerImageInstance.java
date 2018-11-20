@@ -74,7 +74,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
         + executionDirectory + ", environmentVariables=" + environmentVariables
         + ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile="
         + stdoutFile + ", stderrFile=" + stderrFile + ", redirectErrorStream="
-        + redirectErrorStream + ", filesUsed" + Arrays.toString(filesUsed));
+        + redirectErrorStream + ", filesUsed=" + Arrays.toString(filesUsed));
 
     if (executionDirectory != null) {
       checkArgument(executionDirectory.isDirectory(),

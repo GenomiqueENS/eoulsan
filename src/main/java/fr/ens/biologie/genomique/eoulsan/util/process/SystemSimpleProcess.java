@@ -29,7 +29,7 @@ public class SystemSimpleProcess extends AbstractSimpleProcess {
         + executionDirectory + ", environmentVariables=" + environmentVariables
         + ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile="
         + stdoutFile + ", stderrFile=" + stderrFile + ", redirectErrorStream="
-        + redirectErrorStream + ", filesUsed" + Arrays.toString(filesUsed));
+        + redirectErrorStream + ", filesUsed=" + Arrays.toString(filesUsed));
 
     final ProcessBuilder pb = new ProcessBuilder(commandLine);
     // Set execution directory
