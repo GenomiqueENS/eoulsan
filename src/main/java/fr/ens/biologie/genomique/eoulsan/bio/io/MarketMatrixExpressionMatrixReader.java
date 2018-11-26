@@ -3,11 +3,11 @@ package fr.ens.biologie.genomique.eoulsan.bio.io;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
+import java.util.zip.GZIPInputStream;
 
 import com.google.common.base.Splitter;
 
@@ -176,12 +176,48 @@ public class MarketMatrixExpressionMatrixReader
     this.is.close();
   }
 
+  /**
+   * Create an InputStream that can read GZipped files if filename ends with
+   * ".gz" extension.
+   * @param file the file to read
+   * @return a InputStream object
+   * @throws IOException if an error occurs when opening the file
+   */
+  private static InputStream createInputstream(final String filename)
+      throws IOException {
+
+    if (filename.endsWith(".gz")) {
+
+      return new GZIPInputStream(new FileInputStream(filename));
+    }
+
+    return new FileInputStream(filename);
+  }
+
+  /**
+   * Create an InputStream that can read GZipped files if filename ends with
+   * ".gz" extension.
+   * @param file the file to read
+   * @return a InputStream object
+   * @throws IOException if an error occurs when opening the file
+   */
+  private static InputStream createInputstream(final File file)
+      throws IOException {
+
+    if (file.getName().endsWith(".gz")) {
+
+      return new GZIPInputStream(new FileInputStream(file));
+    }
+
+    return new FileInputStream(file);
+  }
+
   //
   // Constructors
   //
 
   /**
-   * Public constructor
+   * Public constructor.
    * @param is InputStream to use
    */
   public MarketMatrixExpressionMatrixReader(final InputStream is) {
@@ -192,27 +228,31 @@ public class MarketMatrixExpressionMatrixReader
   }
 
   /**
-   * Public constructor
+   * Public constructor. If the filename ends with ".gz" the file will be
+   * uncompressed while reading.
    * @param file File to use
+   * @throws IOException if an error occurs while opening the file
    */
   public MarketMatrixExpressionMatrixReader(final File file)
-      throws FileNotFoundException {
+      throws IOException {
 
     Objects.requireNonNull(file, "file argument cannot be null");
 
-    this.is = new FileInputStream(file);
+    this.is = createInputstream(file);
   }
 
   /**
-   * Public constructor.
+   * Public constructor. If the filename ends with ".gz" the file will be
+   * uncompressed while reading.
    * @param filename File to use
+   * @throws IOException if an error occurs while opening the file
    */
   public MarketMatrixExpressionMatrixReader(final String filename)
-      throws FileNotFoundException {
+      throws IOException {
 
     Objects.requireNonNull(filename, "filename argument cannot be null");
 
-    this.is = new FileInputStream(filename);
+    this.is = createInputstream(filename);
 
   }
 

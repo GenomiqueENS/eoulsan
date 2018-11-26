@@ -1,7 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.bio.io;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -14,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.zip.GZIPOutputStream;
 
 import com.google.common.math.DoubleMath;
 
@@ -29,6 +29,7 @@ public class MarketMatrixExpressionMatrixWriter
     implements ExpressionMatrixWriter {
 
   private final OutputStream os;
+
 
   @Override
   public void write(final ExpressionMatrix matrix) throws IOException {
@@ -130,6 +131,42 @@ public class MarketMatrixExpressionMatrixWriter
     this.os.close();
   }
 
+  /**
+   * Create an OutputStream that can write GZipped files if filename ends with
+   * ".gz" extension.
+   * @param filename the file to read
+   * @return a OutputStream object
+   * @throws IOException if an error occurs when creating the file
+   */
+  private static OutputStream createOutputstream(final String filename)
+      throws IOException {
+
+    if (filename.endsWith(".gz")) {
+
+      return new GZIPOutputStream(new FileOutputStream(filename));
+    }
+
+    return new FileOutputStream(filename);
+  }
+
+  /**
+   * Create an OutputStream that can write GZipped files if filename ends with
+   * ".gz" extension.
+   * @param file the file to read
+   * @return a OutputStream object
+   * @throws IOException if an error occurs when creating the file
+   */
+  private static OutputStream createOutputstream(final File file)
+      throws IOException {
+
+    if (file.getName().endsWith(".gz")) {
+
+      return new GZIPOutputStream(new FileOutputStream(file));
+    }
+
+    return new FileOutputStream(file);
+  }
+
   //
   // Constructors
   //
@@ -148,25 +185,27 @@ public class MarketMatrixExpressionMatrixWriter
   /**
    * Public constructor
    * @param file File to use
+   * @throws IOException if an error occurs when writing the file
    */
   public MarketMatrixExpressionMatrixWriter(final File file)
-      throws FileNotFoundException {
+      throws IOException {
 
     Objects.requireNonNull(file, "file argument cannot be null");
 
-    this.os = new FileOutputStream(file);
+    this.os = createOutputstream(file);
   }
 
   /**
    * Public constructor.
    * @param filename File to use
+   * @throws IOException if an error occurs when writing the file
    */
   public MarketMatrixExpressionMatrixWriter(final String filename)
-      throws FileNotFoundException {
+      throws IOException {
 
     Objects.requireNonNull(filename, "filename argument cannot be null");
 
-    this.os = new FileOutputStream(filename);
+    this.os = createOutputstream(filename);
 
   }
 

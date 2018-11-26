@@ -2,13 +2,16 @@ package fr.ens.biologie.genomique.eoulsan.bio.io;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 import com.google.common.base.Splitter;
 
@@ -22,9 +25,15 @@ import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 public class CellRangerExpressionMatrixReader
     extends MarketMatrixExpressionMatrixReader {
 
+  static final int DEFAULT_CELL_RANGER_FORMAT = 1;
+
   static final String MATRIX_FILENAME = "matrix.mtx";
   static final String GENES_FILENAME = "genes.tsv";
   static final String BARCODES_FILENAME = "barcodes.tsv";
+
+  static final String MATRIX_V3_FILENAME = "matrix.mtx.gz";
+  static final String GENES_V3_FILENAME = "features.tsv.gz";
+  static final String BARCODES_V3_FILENAME = "barcodes.tsv.gz";
 
   private List<String> geneNames = new ArrayList<>();
   private List<String> barcodesNames = new ArrayList<>();
@@ -64,8 +73,7 @@ public class CellRangerExpressionMatrixReader
 
     final Splitter splitter = Splitter.on('\t').trimResults();
 
-    try (final BufferedReader reader =
-        new BufferedReader(new FileReader(file))) {
+    try (final BufferedReader reader = createReader(file)) {
 
       String line;
 
@@ -88,6 +96,40 @@ public class CellRangerExpressionMatrixReader
 
   }
 
+  /**
+   * Create a reader that can read GZipped files if filename ends with ".gz"
+   * extension.
+   * @param file the file to read
+   * @return a BufferedReader object
+   * @throws IOException
+   */
+  private static BufferedReader createReader(final File file)
+      throws IOException {
+
+    if (file.getName().endsWith(".gz")) {
+
+      return new BufferedReader(new InputStreamReader(
+          new GZIPInputStream(new FileInputStream(file))));
+    }
+
+    return new BufferedReader(new FileReader(file));
+  }
+
+  /**
+   * Check format version.
+   * @param formatVersion the format version
+   * @return the format version if valid
+   */
+  static int checkCellRangerFormatVersion(int formatVersion) {
+
+    if (formatVersion < 1 || formatVersion > 3) {
+      throw new IllegalArgumentException(
+          "Invalid format version: " + formatVersion);
+    }
+
+    return formatVersion;
+  }
+
   //
   // Constructor
   //
@@ -100,12 +142,30 @@ public class CellRangerExpressionMatrixReader
   public CellRangerExpressionMatrixReader(final File directory)
       throws IOException {
 
-    super(new File(directory, MATRIX_FILENAME));
+    this(directory, DEFAULT_CELL_RANGER_FORMAT);
+  }
+
+  /**
+   * Public constructor
+   * @param directory CellRanger matrix directory
+   * @param formatVersion Cell Ranger format version
+   * @throws IOException if an error occurs while reading the TSV files
+   */
+  public CellRangerExpressionMatrixReader(final File directory,
+      final int formatVersion) throws IOException {
+
+    super(new File(directory, checkCellRangerFormatVersion(formatVersion) == 3
+        ? MATRIX_V3_FILENAME : MATRIX_FILENAME));
 
     // Load row and column names
-    loadList(new File(directory, GENES_FILENAME), this.geneNames,
-        this.geneAliases);
-    loadList(new File(directory, BARCODES_FILENAME), this.barcodesNames, null);
+    loadList(
+        new File(directory,
+            formatVersion == 3 ? GENES_V3_FILENAME : GENES_FILENAME),
+        this.geneNames, this.geneAliases);
+    loadList(
+        new File(directory,
+            formatVersion == 3 ? BARCODES_V3_FILENAME : BARCODES_FILENAME),
+        this.barcodesNames, null);
   }
 
 }
