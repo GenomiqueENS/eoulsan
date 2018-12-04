@@ -246,7 +246,8 @@ public class MACS2Module extends AbstractModule {
         List<String> commandLine = new ArrayList<String>();
 
         // Get sample name
-        String sampleName = nameMap.get(expSam2.getSample().getName()).getName();
+        String sampleName =
+            nameMap.get(expSam2.getSample().getName()).getName();
         getLogger().info("sampleName: " + sampleName);
 
         // Define file variables
@@ -372,53 +373,44 @@ public class MACS2Module extends AbstractModule {
         // If the file does exist, rename it to the name created by Eoulsan and
         // stored in data.getDataFile()
 
-        try {
-          DataFile sampleDataFolder = nameMap.get(expSam2.getSample().getName())
-              .getDataFile().getParent();
+        DataFile sampleDataFolder = context.getStepOutputDirectory();
 
-          // R model
-          final DataFile tmpRmodelFile =
-              new DataFile(sampleDataFolder, prefixOutputFiles + "_model.r");
-          if (tmpRmodelFile.exists()) {
-            tmpRmodelFile.toFile().renameTo(rModelData.getDataFile().toFile());
-          }
-
-          // Gapped peak
-          final DataFile tmpGappedPeakFile = new DataFile(sampleDataFolder,
-              prefixOutputFiles + "_peaks.gappedPeak");
-          if (tmpGappedPeakFile.exists()) {
-            tmpGappedPeakFile.toFile()
-                .renameTo(gappedPeakData.getDataFile().toFile());
-          }
-
-          // Peaks (Excel format)
-          final DataFile tmpPeakXlsFile =
-              new DataFile(sampleDataFolder, prefixOutputFiles + "_peaks.xls");
-          if (tmpPeakXlsFile.exists()) {
-            tmpPeakXlsFile.toFile()
-                .renameTo(peakXlsData.getDataFile().toFile());
-          }
-
-          // Peak
-          // Peak file extension depends on one of the command line options
-          final DataFile tmpPeakFile;
-          if (isBroad) {
-            tmpPeakFile = new DataFile(sampleDataFolder,
-                prefixOutputFiles + "_peaks.broadPeak");
-          } else {
-            tmpPeakFile = new DataFile(sampleDataFolder,
-                prefixOutputFiles + "_peaks.narrowPeak");
-          }
-          if (tmpPeakFile.exists()) {
-            tmpPeakFile.toFile().renameTo(peakData.getDataFile().toFile());
-          }
-
-        } catch (java.io.IOException err) {
-          getLogger().severe("Could not determine folder of sample data file "
-              + nameMap.get(expSam2.getSample().getName()).getDataFile()
-              + ". Error:" + err.toString()
-              + " \nMACS2 output files will not be renamed.");
+        // R model
+        final DataFile tmpRmodelFile =
+            new DataFile(sampleDataFolder, prefixOutputFiles + "_model.r");
+        if (tmpRmodelFile.exists()) {
+          tmpRmodelFile.toFile().renameTo(rModelData.getDataFile().toFile());
         }
+
+        // Gapped peak
+        final DataFile tmpGappedPeakFile = new DataFile(sampleDataFolder,
+            prefixOutputFiles + "_peaks.gappedPeak");
+        if (tmpGappedPeakFile.exists()) {
+          tmpGappedPeakFile.toFile()
+              .renameTo(gappedPeakData.getDataFile().toFile());
+        }
+
+        // Peaks (Excel format)
+        final DataFile tmpPeakXlsFile =
+            new DataFile(sampleDataFolder, prefixOutputFiles + "_peaks.xls");
+        if (tmpPeakXlsFile.exists()) {
+          tmpPeakXlsFile.toFile().renameTo(peakXlsData.getDataFile().toFile());
+        }
+
+        // Peak
+        // Peak file extension depends on one of the command line options
+        final DataFile tmpPeakFile;
+        if (isBroad) {
+          tmpPeakFile = new DataFile(sampleDataFolder,
+              prefixOutputFiles + "_peaks.broadPeak");
+        } else {
+          tmpPeakFile = new DataFile(sampleDataFolder,
+              prefixOutputFiles + "_peaks.narrowPeak");
+        }
+        if (tmpPeakFile.exists()) {
+          tmpPeakFile.toFile().renameTo(peakData.getDataFile().toFile());
+        }
+
       }
     }
 
