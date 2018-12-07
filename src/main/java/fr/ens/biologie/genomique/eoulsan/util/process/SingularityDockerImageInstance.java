@@ -6,8 +6,11 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.util.process.SpotifyDockerImageInstance.convertNFSFileToMountPoint;
 import static fr.ens.biologie.genomique.eoulsan.util.process.SpotifyDockerImageInstance.fileIndirections;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +23,7 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
     implements DockerImageInstance {
 
   private final String dockerImage;
+  private final File imageDirectory;
   private final boolean convertNFSFilesToMountRoots;
 
   @Override
@@ -68,7 +72,6 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
       command.add(executionDirectory.getAbsolutePath());
     }
 
-
     // Temporary directory
     if (temporaryDirectory != null && temporaryDirectory.isDirectory()) {
       directoriesToBind.add(temporaryDirectory);
@@ -78,18 +81,22 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
     toBind(command, directoriesToBind, this.convertNFSFilesToMountRoots);
 
     // Remove container at the end of the execution
-    command.add("--rm");
+    // command.add("--rm");
 
     // TODO The container must be writable as Docker images
-    command.add("--writable");
+    // command.add("--writable");
 
     // Docker image to use
-    command.add("docker://" + this.dockerImage);
+    // command.add("docker://" + this.dockerImage);
+    command.add(new File(this.imageDirectory,
+        dockerImageNameToSingularityImageName(this.dockerImage))
+            .getAbsolutePath());
 
     command.addAll(commandLine);
 
     // Redirect outputs
     final ProcessBuilder pb = new ProcessBuilder(command);
+
     pb.redirectOutput(stdoutFile);
     pb.redirectErrorStream(redirectErrorStream);
     if (!redirectErrorStream) {
@@ -141,9 +148,15 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
   @Override
   public void pullImageIfNotExists() throws IOException {
 
+    // Do nothing if the image has been already downloaded
+    if (new File(this.imageDirectory,
+        dockerImageNameToSingularityImageName(this.dockerImage)).exists()) {
+      return;
+    }
+
     getLogger().fine("Pull Docker image: " + this.dockerImage);
     Process p = new ProcessBuilder("singularity", "pull",
-        "docker://" + this.dockerImage).start();
+        "docker://" + this.dockerImage).directory(this.imageDirectory).start();
     int exitCode;
     try {
       exitCode = p.waitFor();
@@ -156,6 +169,9 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
       throw new IOException(
           "Error while pulling Docker image: " + this.dockerImage);
     }
+
+    // Add the image to the image list
+    addImageToImageListFile(this.dockerImage);
   }
 
   @Override
@@ -173,6 +189,45 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
     }
   }
 
+  /**
+   * Add an image name the image list file.
+   * @param dockerImage the name of the docker image
+   * @throws IOException if an error occurs while adding the image name to the
+   *           image list file
+   */
+  private void addImageToImageListFile(final String dockerImage)
+      throws IOException {
+
+    File f = new File(this.imageDirectory, "image.list");
+
+    try (FileWriter fw = new FileWriter(f, true);
+        BufferedWriter bw = new BufferedWriter(fw);
+        PrintWriter out = new PrintWriter(bw)) {
+
+      out.println(dockerImage
+          + '\t' + dockerImageNameToSingularityImageName(dockerImage));
+    }
+  }
+
+  private static String dockerImageNameToSingularityImageName(
+      final String dockerImage) {
+
+    if (dockerImage == null) {
+      return null;
+    }
+
+    String result;
+    int pos = dockerImage.indexOf('/');
+
+    if (pos != -1) {
+      result = dockerImage.substring(pos + 1);
+    } else {
+      result = dockerImage;
+    }
+
+    return result.replace(':', '-') + ".simg";
+  }
+
   //
   // Constructor
   //
@@ -181,14 +236,17 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
    * Constructor.
    * @param dockerImage Docker image
    */
-  SingularityDockerImageInstance(final String dockerImage) {
+  SingularityDockerImageInstance(final String dockerImage,
+      final File imageDirectory) {
 
     checkNotNull(dockerImage, "dockerImage argument cannot be null");
+    checkNotNull(imageDirectory, "imageDirectory argument cannot be null");
 
     EoulsanLogger.getLogger().fine(
         getClass().getSimpleName() + " docker image used: " + dockerImage);
 
     this.dockerImage = dockerImage;
+    this.imageDirectory = imageDirectory;
 
     this.convertNFSFilesToMountRoots = EoulsanRuntime.isRuntime()
         ? EoulsanRuntime.getSettings().isDockerMountNFSRoots() : false;
