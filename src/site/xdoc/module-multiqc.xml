@@ -35,7 +35,7 @@
 
   <body>
 
-    <section name="FastQC module">
+    <section name="MultiQC module">
 
       <p>This module allow to run <a href="http://multiqc.info/">MultiQC</a> on Eoulsan step output to generate a quality control report in HTML.</p>
 
