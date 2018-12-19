@@ -99,6 +99,14 @@ public class BundledMapperExecutor implements MapperExecutor {
 
     checkNotNull(executable, "executable argument cannot be null");
 
+    // Check if temporary directory for executables exists
+    if (!this.executablesTemporaryDirectory.isDirectory()) {
+      throw new IOException(
+          "The temporary directory for executables does not exists or "
+              + "is not a directory: "
+              + this.executablesTemporaryDirectory.getAbsolutePath());
+    }
+
     // Define the lock file
     File lockFile =
         new File(this.executablesTemporaryDirectory, executable + ".lock");
