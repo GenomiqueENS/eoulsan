@@ -326,7 +326,7 @@ public class CommandWorkflow extends AbstractWorkflow {
           continue;
         } else {
           throw new EoulsanException("Requirement for step \""
-              + e.getKey().getId() + "\" is not available: " + r.getName());
+              + e.getKey().getId() + "\" is not available: " + r.toString());
         }
       }
 
