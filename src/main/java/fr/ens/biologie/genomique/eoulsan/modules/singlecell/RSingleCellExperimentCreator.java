@@ -182,7 +182,7 @@ public class RSingleCellExperimentCreator extends AbstractModule {
     if (this.dockerMode) {
       this.requirements.add(newDockerRequirement(this.dockerImage));
     } else {
-      this.requirements.add(newPathRequirement(R_DOCKER_IMAGE));
+      this.requirements.add(newPathRequirement(R_EXECUTABLE));
     }
   }
 
