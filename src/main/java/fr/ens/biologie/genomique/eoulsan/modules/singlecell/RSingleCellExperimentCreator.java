@@ -569,7 +569,7 @@ public class RSingleCellExperimentCreator extends AbstractModule {
         writer.write("\n# Load cell annotations\n");
         writer.write("cells <-read.delim(\""
             + cellsFile.getAbsolutePath()
-            + "\", header=TRUE, row.names=1, check.names=FALSE, sep=\"\\t\")\n");
+            + "\", header=FALSE, row.names=1, check.names=FALSE, sep=\"\\t\")\n");
       }
 
       // Load gene annotations if required
