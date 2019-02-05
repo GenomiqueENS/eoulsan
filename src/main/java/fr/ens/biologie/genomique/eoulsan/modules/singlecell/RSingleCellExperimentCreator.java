@@ -597,9 +597,13 @@ public class RSingleCellExperimentCreator extends AbstractModule {
       // Save SingleCellExperiment object in a RDS file
       writer.write("\n# Create RDS file from SingleCellExperiment object\n");
       writer.write("saveRDS(sce, \"" + rdsFile.getAbsolutePath() + "\")\n");
+
+      // Print information about the R session
+      writer.write("\nsessionInfo()\n");
+ 
     }
 
-    return rScriptFile;
+   return rScriptFile;
   }
 
 }
