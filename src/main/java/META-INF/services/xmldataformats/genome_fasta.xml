@@ -9,6 +9,7 @@
   <extensions>
     <extension default="true">.fasta</extension>
     <extension>.fa</extension>
+    <extension>.fna</extension>
   </extensions>
   <galaxy>
     <formatname>fasta</formatname>
