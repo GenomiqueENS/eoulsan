@@ -31,6 +31,13 @@ public interface RExecutor {
   void closeConnection() throws IOException;
 
   /**
+   * Put a file for the analysis.
+   * @param inputFile the input file
+   * @throws IOException if an error occurs while putting the file
+   */
+  void putInputFile(DataFile inputFile) throws IOException;
+
+  /**
    * Put a file.
    * @param inputFile the file to put
    * @param outputFilename the output filename
