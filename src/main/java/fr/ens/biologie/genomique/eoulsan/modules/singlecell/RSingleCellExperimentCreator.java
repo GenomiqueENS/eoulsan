@@ -5,19 +5,14 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ADDITIONAL_ANNO
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_MATRIX_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.SINGLE_CELL_EXPERMIMENT_RDS;
-import static fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement.newDockerRequirement;
-import static fr.ens.biologie.genomique.eoulsan.requirements.PathRequirement.newPathRequirement;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,13 +44,13 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
+import fr.ens.biologie.genomique.eoulsan.modules.diffana.RModuleCommonConfiguration;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
-import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
-import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
-import fr.ens.biologie.genomique.eoulsan.util.process.SystemSimpleProcess;
+import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 
 /**
  * This class define a class that allow to create a SingleCellExperiment
@@ -69,13 +64,11 @@ public class RSingleCellExperimentCreator extends AbstractModule {
   /** Module name */
   private static final String MODULE_NAME = "rsinglecellexperimentcreator";
 
-  private static final String R_DOCKER_IMAGE =
+  private static final String R_DOCKER_IMAGE_DEFAULT =
       "genomicpariscentre/singlecellexperiment:3.7";
-  private static final String R_EXECUTABLE = "R";
 
-  private boolean dockerMode;
-  private String dockerImage = R_DOCKER_IMAGE;
   private final Set<Requirement> requirements = new HashSet<>();
+  private RExecutor executor;
 
   private static final char CELL_SEPARATOR = '_';
 
@@ -132,20 +125,18 @@ public class RSingleCellExperimentCreator extends AbstractModule {
   public void configure(StepConfigurationContext context,
       Set<Parameter> stepParameters) throws EoulsanException {
 
-    for (Parameter p : stepParameters) {
+    // Parse R executor parameters
+    final Set<Parameter> parameters = new HashSet<>(stepParameters);
+    this.executor = RModuleCommonConfiguration.parseRExecutorParameter(context,
+        parameters, this.requirements, R_DOCKER_IMAGE_DEFAULT);
+
+    for (Parameter p : parameters) {
 
       switch (p.getName()) {
 
       case "use.docker":
-        this.dockerMode = p.getBooleanValue();
-        break;
-
-      case "docker.image":
-        this.dockerImage = p.getStringValue().trim();
-        if (this.dockerImage.isEmpty()) {
-          Modules.badParameterValue(context, p,
-              "The docker image name is empty");
-        }
+        Modules.renamedParameter(context, p,
+            RModuleCommonConfiguration.EXECUTION_MODE_PARAMETER, true);
         break;
 
       case "input.matrices":
@@ -167,12 +158,6 @@ public class RSingleCellExperimentCreator extends AbstractModule {
       }
     }
 
-    // Define requirements
-    if (this.dockerMode) {
-      this.requirements.add(newDockerRequirement(this.dockerImage));
-    } else {
-      this.requirements.add(newPathRequirement(R_DOCKER_IMAGE));
-    }
   }
 
   @Override
@@ -193,18 +178,15 @@ public class RSingleCellExperimentCreator extends AbstractModule {
           context.getOutputData(SINGLE_CELL_EXPERMIMENT_RDS, "matrix")
               .getDataFile().toFile();
 
+      // Save R script ?
+      boolean saveRScript = context.getSettings().isSaveRscripts();
+
       // Create R Input files
       createRInputFiles(context, matrixFile, genesFile, cellsFile);
 
       // Launch R and create RDS file
-      context.getLogger().fine("Launch R");
-      if (this.dockerMode) {
-        createRDSWithDocker(dockerImage, matrixFile, cellsFile, genesFile,
-            rdsFile, temporaryDirectory);
-      } else {
-        createRDS(matrixFile, cellsFile, genesFile, rdsFile,
-            temporaryDirectory);
-      }
+      createRDS(matrixFile, cellsFile, genesFile, rdsFile,
+          temporaryDirectory, saveRScript, context.getStepOutputDirectory());
 
     } catch (IOException e) {
       return status.createTaskResult(e);
@@ -445,93 +427,48 @@ public class RSingleCellExperimentCreator extends AbstractModule {
   //
 
   /**
-   * Create the RDS file with R installed in the user path.
-   * @param dockerImage docker image to use
+   * Create the RDS file.
    * @param matrixFile matrix file
    * @param cellsFile cell annotations file
    * @param genesFile gene annotations file
    * @param rdsFile RDS output file
    * @param temporaryDirectory temporary directory
-   * @throws IOException if an error occurs while executing the command
-   */
-  private static void createRDSWithDocker(final String dockerImage,
-      final File matrixFile, final File cellsFile, final File genesFile,
-      final File rdsFile, final File temporaryDirectory) throws IOException {
-
-    // Create R script
-    final File rScriptFile =
-        createRScript(matrixFile, cellsFile, genesFile, rdsFile);
-
-    SimpleProcess process = dockerImage == null
-        ? new SystemSimpleProcess()
-        : DockerManager.getInstance().createImageInstance(dockerImage);
-
-    File executionDirectory = rdsFile.getParentFile();
-    File stdoutFile = new File(executionDirectory, "r.stdout");
-    File stderrFile = new File(executionDirectory, "r.stderr");
-
-    // Define the list of the files/directory to mount in the Docker instance
-    List<File> filesUsed = new ArrayList<>();
-    filesUsed.add(executionDirectory);
-    filesUsed.add(temporaryDirectory);
-    filesUsed.add(rScriptFile);
-    filesUsed.add(matrixFile);
-
-    if (cellsFile != null) {
-      filesUsed.add(cellsFile);
-    }
-
-    if (cellsFile != null) {
-      filesUsed.add(genesFile);
-    }
-
-    filesUsed.add(rdsFile);
-
-    // Launch Docker container
-    final int exitValue = process.execute(createRCommand(rScriptFile),
-        executionDirectory, temporaryDirectory, stdoutFile, stderrFile,
-        filesUsed.toArray(new File[0]));
-
-    if (exitValue > 0) {
-      throw new IOException("Invalid exit code of R: " + exitValue);
-    }
-  }
-
-  /**
-   * Create the RDS file with R installed in the user path.
-   * @param matrixFile matrix file
-   * @param cellsFile cell annotations file
-   * @param genesFile gene annotations file
-   * @param rdsFile RDS output file
-   * @param temporaryDirectory temporary directory
+   * @param saveRScript if R script must be saved
+   * @param RExecutionDirectory R execution directory
    * @throws IOException if an error occurs while executing the command
    */
   private void createRDS(final File matrixFile, final File cellsFile,
-      final File genesFile, final File rdsFile, final File temporaryDirectory)
+      final File genesFile, final File rdsFile, final File temporaryDirectory,
+      final boolean saveRScript, final DataFile RExecutionDirectory)
       throws IOException {
 
-    createRDSWithDocker(null, matrixFile, cellsFile, genesFile, rdsFile,
-        temporaryDirectory);
-  }
+    // Open executor connection
+    this.executor.openConnection();
 
-  /**
-   * Create execution command.
-   * @param rScriptFile the path to the R script
-   * @return a list with the arguments of the command to launch
-   */
-  private static List<String> createRCommand(final File rScriptFile) {
+    // Put input files
+    this.executor.putInputFile(new DataFile(matrixFile));
+    if (cellsFile != null) {
+      this.executor.putInputFile(new DataFile(cellsFile));
+    }
+    if (genesFile != null) {
+      this.executor.putInputFile(new DataFile(genesFile));
+    }
 
-    List<String> result = new ArrayList<>();
+    // Create R script
+    final String rScriptSource =
+        createRScriptSource(matrixFile, cellsFile, genesFile, rdsFile);
 
-    // The executable name
-    result.add(R_EXECUTABLE);
+    this.executor.executeRScript(rScriptSource, false, null, saveRScript,
+        "sce-rds", RExecutionDirectory);
 
-    // The command arguments
-    result.add("--no-save");
-    result.add("-e");
-    result.add("source(\"" + rScriptFile.getAbsolutePath() + "\")");
+    // Remove input files
+    this.executor.removeInputFiles();
 
-    return result;
+    // Retrieve output files
+    this.executor.getOutputFiles();
+
+    // Close executor connection
+    this.executor.closeConnection();
   }
 
   /**
@@ -543,63 +480,61 @@ public class RSingleCellExperimentCreator extends AbstractModule {
    * @return the R script file
    * @throws IOException if an error occurs while creating the file
    */
-  private static File createRScript(final File matrixFile, final File cellsFile,
-      final File genesFile, final File rdsFile) throws IOException {
+  private static String createRScriptSource(final File matrixFile,
+      final File cellsFile, final File genesFile, final File rdsFile)
+      throws IOException {
 
-    File rScriptFile = new File(rdsFile.getParentFile(), "sce-rds.R");
+    StringBuilder sb = new StringBuilder();
 
-    try (FileWriter writer = new FileWriter(rScriptFile)) {
+    sb.append("#!/usr/bin/env Rscript\n");
 
-      writer.write("#!/usr/bin/env Rscript\n");
+    sb.append("\n# Generated by "
+        + Globals.APP_NAME + " " + Globals.APP_VERSION_STRING + "\n");
+    sb.append("# Generated on " + new Date() + "\n");
 
-      writer.write("\n# Generated by "
-          + Globals.APP_NAME + " " + Globals.APP_VERSION_STRING + "\n");
-      writer.write("# Generated on " + new Date() + "\n");
+    sb.append("\n# Import SingleCellExperiment package\n");
+    sb.append("library(SingleCellExperiment)\n");
 
-      writer.write("\n# Import SingleCellExperiment package\n");
-      writer.write("library(SingleCellExperiment)\n");
+    sb.append("\n# Load counts\n");
+    sb.append("values <- read.table(\""
+        + matrixFile.getName()
+        + "\", header=TRUE, row.names=1, check.names=FALSE, sep=\"\\t\")\n");
 
-      writer.write("\n# Load counts\n");
-      writer.write("values <- read.table(\""
-          + matrixFile.getAbsolutePath()
+    // Load cell annotations if required
+    if (cellsFile != null) {
+      sb.append("\n# Load cell annotations\n");
+      sb.append("cells <-read.delim(\""
+          + cellsFile.getName()
           + "\", header=TRUE, row.names=1, check.names=FALSE, sep=\"\\t\")\n");
-
-      // Load cell annotations if required
-      if (cellsFile != null) {
-        writer.write("\n# Load cell annotations\n");
-        writer.write("cells <-read.delim(\""
-            + cellsFile.getAbsolutePath()
-            + "\", header=TRUE, row.names=1, check.names=FALSE, sep=\"\\t\")\n");
-      }
-
-      // Load gene annotations if required
-      if (genesFile != null) {
-        writer.write("\n# Load gene annotations\n");
-        writer.write("genes <- read.delim(\""
-            + genesFile.getAbsolutePath()
-            + "\", header=TRUE, row.names=1, check.names=FALSE, sep=\"\\t\")\n");
-      }
-
-      // Create SingleCellExperiment object
-      writer.write("\n# Create SingleCellExperiment object\n");
-      writer.write("sce <- SingleCellExperiment("
-          + "assays = list(counts = as.matrix(values))");
-
-      if (cellsFile != null) {
-        writer.write(", colData = data.frame(cells)");
-      }
-
-      if (genesFile != null) {
-        writer.write(", rowData = data.frame(genes)");
-      }
-      writer.write(")\n");
-
-      // Save SingleCellExperiment object in a RDS file
-      writer.write("\n# Create RDS file from SingleCellExperiment object\n");
-      writer.write("saveRDS(sce, \"" + rdsFile.getAbsolutePath() + "\")\n");
     }
 
-    return rScriptFile;
+    // Load gene annotations if required
+    if (genesFile != null) {
+      sb.append("\n# Load gene annotations\n");
+      sb.append("genes <- read.delim(\""
+          + genesFile.getName()
+          + "\", header=TRUE, row.names=1, check.names=FALSE, sep=\"\\t\")\n");
+    }
+
+    // Create SingleCellExperiment object
+    sb.append("\n# Create SingleCellExperiment object\n");
+    sb.append("sce <- SingleCellExperiment("
+        + "assays = list(counts = as.matrix(values))");
+
+    if (cellsFile != null) {
+      sb.append(", colData = data.frame(cells)");
+    }
+
+    if (genesFile != null) {
+      sb.append(", rowData = data.frame(genes)");
+    }
+    sb.append(")\n");
+
+    // Save SingleCellExperiment object in a RDS file
+    sb.append("\n# Create RDS file from SingleCellExperiment object\n");
+    sb.append("saveRDS(sce, \"" + rdsFile.getName() + "\")\n");
+
+    return sb.toString();
   }
 
 }
