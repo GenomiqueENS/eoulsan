@@ -59,7 +59,7 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
  * @since 2.3
  */
 @LocalOnly
-public class RSingleCellExperimentCreator extends AbstractModule {
+public class RSingleCellExperimentCreatorModule extends AbstractModule {
 
   /** Module name */
   private static final String MODULE_NAME = "rsinglecellexperimentcreator";

@@ -53,7 +53,7 @@ fr.ens.biologie.genomique.eoulsan.modules.fastqc.FastQCModule
 fr.ens.biologie.genomique.eoulsan.modules.multiqc.MultiQCModule
 
 # Single cell RNA-Seq
-fr.ens.biologie.genomique.eoulsan.modules.singlecell.RSingleCellExperimentCreator
+fr.ens.biologie.genomique.eoulsan.modules.singlecell.RSingleCellExperimentCreatorModule
 fr.ens.biologie.genomique.eoulsan.modules.singlecell.MatrixToCellRangerMatrixModule
 fr.ens.biologie.genomique.eoulsan.modules.singlecell.ExpressionToMatrixModule
 

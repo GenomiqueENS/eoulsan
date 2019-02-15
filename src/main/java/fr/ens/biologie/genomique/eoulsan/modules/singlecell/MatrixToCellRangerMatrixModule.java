@@ -4,8 +4,8 @@ import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.noOutput
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ADDITIONAL_ANNOTATION_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_MATRIX_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
-import static fr.ens.biologie.genomique.eoulsan.modules.singlecell.RSingleCellExperimentCreator.mergeExpressionResults;
-import static fr.ens.biologie.genomique.eoulsan.modules.singlecell.RSingleCellExperimentCreator.mergeMatrices;
+import static fr.ens.biologie.genomique.eoulsan.modules.singlecell.RSingleCellExperimentCreatorModule.mergeExpressionResults;
+import static fr.ens.biologie.genomique.eoulsan.modules.singlecell.RSingleCellExperimentCreatorModule.mergeMatrices;
 
 import java.io.IOException;
 import java.util.Set;

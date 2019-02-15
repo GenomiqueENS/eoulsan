@@ -3,7 +3,7 @@ package fr.ens.biologie.genomique.eoulsan.modules.singlecell;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.singleInputPort;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_MATRIX_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
-import static fr.ens.biologie.genomique.eoulsan.modules.singlecell.RSingleCellExperimentCreator.mergeExpressionResults;
+import static fr.ens.biologie.genomique.eoulsan.modules.singlecell.RSingleCellExperimentCreatorModule.mergeExpressionResults;
 
 import java.io.IOException;
 import java.util.Set;
