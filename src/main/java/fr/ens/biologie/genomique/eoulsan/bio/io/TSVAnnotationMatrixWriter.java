@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.bio.AnnotationMatrix;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 
 /**
  * This class define an AnnotationMatrix writer for TSV format.
@@ -42,6 +41,7 @@ public class TSVAnnotationMatrixWriter implements AnnotationMatrixWriter {
 
       StringBuilder sb = new StringBuilder();
 
+      sb.append("Id");
       for (String columnName : matrix.getColumnNames()) {
         sb.append('\t');
         sb.append(columnName);
