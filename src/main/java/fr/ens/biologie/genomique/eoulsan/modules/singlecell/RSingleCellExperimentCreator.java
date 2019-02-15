@@ -185,8 +185,8 @@ public class RSingleCellExperimentCreator extends AbstractModule {
       createRInputFiles(context, matrixFile, genesFile, cellsFile);
 
       // Launch R and create RDS file
-      createRDS(matrixFile, cellsFile, genesFile, rdsFile,
-          temporaryDirectory, saveRScript, context.getStepOutputDirectory());
+      createRDS(matrixFile, cellsFile, genesFile, rdsFile, temporaryDirectory,
+          saveRScript, context.getStepOutputDirectory());
 
     } catch (IOException e) {
       return status.createTaskResult(e);
@@ -525,14 +525,15 @@ public class RSingleCellExperimentCreator extends AbstractModule {
       sb.append(", colData = data.frame(cells)");
     }
 
-    if (genesFile != null) {
-      sb.append(", rowData = data.frame(genes)");
-    }
     sb.append(")\n");
 
     // Save SingleCellExperiment object in a RDS file
     sb.append("\n# Create RDS file from SingleCellExperiment object\n");
     sb.append("saveRDS(sce, \"" + rdsFile.getName() + "\")\n");
+
+    // Print information about the R session
+    sb.append("\n# Print session info\n");
+    sb.append("sessionInfo()\n");
 
     return sb.toString();
   }
