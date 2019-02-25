@@ -79,6 +79,7 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
   private static final char CELL_SEPARATOR = '_';
 
   private boolean inputMatrices = true;
+  private boolean mergeMatrices = true;
   private String designPrefix = "Cell.";
   private boolean useAdditionnalAnnotation = true;
 
@@ -113,7 +114,7 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
     }
 
     if (this.inputMatrices) {
-      builder.addPort("matrix", true, EXPRESSION_MATRIX_TSV);
+      builder.addPort("matrix", this.mergeMatrices, EXPRESSION_MATRIX_TSV);
     } else {
       builder.addPort("expression", true, EXPRESSION_RESULTS_TSV);
     }
@@ -149,6 +150,10 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
         this.inputMatrices = p.getBooleanValue();
         break;
 
+      case "merge.matrices":
+        this.mergeMatrices = p.getBooleanValue();
+        break;
+
       case "design.prefix":
       case "design.prefix.for.cell.annotation":
         this.designPrefix = p.getStringValue();
@@ -164,6 +169,10 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
       }
     }
 
+    // Always merge matrices when input files are expression files
+    if (!inputMatrices) {
+      this.mergeMatrices = true;
+    }
   }
 
   @Override
@@ -172,9 +181,13 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
 
     try {
 
+      Data inputData = context.getInputData(
+          this.inputMatrices ? EXPRESSION_MATRIX_TSV : EXPRESSION_RESULTS_TSV);
+
       // Define RDS output file
-      Data rdsData =
-          context.getOutputData(SINGLE_CELL_EXPERMIMENT_RDS, "matrix");
+      Data rdsData = this.mergeMatrices
+          ? context.getOutputData(SINGLE_CELL_EXPERMIMENT_RDS, "matrix")
+          : context.getOutputData(SINGLE_CELL_EXPERMIMENT_RDS, inputData);
       File rdsFile = rdsData.getDataFile().toFile();
 
       // Define R script input files
@@ -183,9 +196,9 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
       File matrixFile =
           new File(outputDir, "matrix-" + rdsData.getName() + ".tsv");
       File genesFile = this.useAdditionnalAnnotation
-          ? new File(outputDir, "genes.tsv") : null;
-      File cellsFile =
-          this.designPrefix.isEmpty() ? null : new File(outputDir, "cells.tsv");
+          ? new File(outputDir, "genes-" + rdsData.getName() + ".tsv") : null;
+      File cellsFile = this.designPrefix.isEmpty()
+          ? null : new File(outputDir, "cells-" + rdsData.getName() + ".tsv");
 
       // Save R script ?
       boolean saveRScript = context.getSettings().isSaveRscripts();
@@ -195,7 +208,8 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
 
       // Launch R and create RDS file
       createRDS(matrixFile, cellsFile, genesFile, rdsFile, temporaryDirectory,
-          saveRScript, context.getStepOutputDirectory());
+          saveRScript, context.getStepOutputDirectory(),
+          R_SCRIPT_NAME + "-" + rdsData.getName());
 
     } catch (IOException e) {
       return status.createTaskResult(e);
@@ -216,8 +230,7 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
 
     // Create final matrix
     context.getLogger().fine("Load matrix");
-    final ExpressionMatrix matrix = this.inputMatrices
-        ? mergeMatrices(matrices) : mergeExpressionResults(matrices);
+    final ExpressionMatrix matrix = createMatrix(matrices);
 
     // Load gene annotation from additional annotation
 
@@ -280,6 +293,26 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
   //
 
   /**
+   * Create the matrix object.
+   * @param matrix matrix data
+   * @return an ExpressionMatrix object
+   */
+  private ExpressionMatrix createMatrix(final Data matrices)
+      throws IOException {
+
+    if (this.inputMatrices) {
+
+      if (this.mergeMatrices) {
+        return mergeMatrices(matrices);
+      } else {
+        return loadMatrix(matrices, new SparseExpressionMatrix());
+      }
+    } else {
+      return mergeExpressionResults(matrices);
+    }
+  }
+
+  /**
    * Merge the matrices in one matrix
    * @param matrices the input data matrices
    * @return an Expression matrix object
@@ -292,40 +325,51 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
 
     final ExpressionMatrix result = new SparseExpressionMatrix();
 
-    // Do not copy matrix when there is only one matrix file
-    final boolean oneMatrix = matrices.getListElements().size() == 1;
-
     for (Data matrixData : matrices.getListElements()) {
+      loadMatrix(matrixData, result);
+    }
 
-      // Determine the format of the input expression matrix
-      try (ExpressionMatrixFormatFinderInputStream in =
-          new ExpressionMatrixFormatFinderInputStream(
-              matrixData.getDataFile().open())) {
+    return result;
+  }
 
-        // Create reader
-        try (ExpressionMatrixReader reader = in.getExpressionMatrixReader()) {
+  /**
+   * Load a matrix.
+   * @param matrixData matrix data
+   * @param resultMatrix result matrix
+   * @return the result matrix
+   * @throws IOException if an error occurs while reading the matrix
+   */
+  private static ExpressionMatrix loadMatrix(final Data matrixData,
+      final ExpressionMatrix resultMatrix) throws IOException {
 
-          // Read matrix
-          ExpressionMatrix matrix =
-              reader.read(oneMatrix ? result : new SparseExpressionMatrix());
+    // Determine the format of the input expression matrix
+    try (ExpressionMatrixFormatFinderInputStream in =
+        new ExpressionMatrixFormatFinderInputStream(
+            matrixData.getDataFile().open())) {
 
-          // Get sample name
-          String sampleName = matrixData.getName();
+      // Create reader
+      try (ExpressionMatrixReader reader = in.getExpressionMatrixReader()) {
 
-          // Rename the column with sample name
-          for (String colName : matrix.getColumnNames()) {
-            matrix.renameColumn(colName, sampleName + CELL_SEPARATOR + colName);
-          }
+        // Read matrix
+        ExpressionMatrix matrix = reader.read(resultMatrix.isEmpty()
+            ? resultMatrix : new SparseExpressionMatrix());
 
-          // Add matrix to the final matrix
-          if (!oneMatrix) {
-            result.add(matrix);
-          }
+        // Get sample name
+        String sampleName = matrixData.getName();
+
+        // Rename the column with sample name
+        for (String colName : matrix.getColumnNames()) {
+          matrix.renameColumn(colName, sampleName + CELL_SEPARATOR + colName);
+        }
+
+        // Add matrix to the final matrix
+        if (resultMatrix.isEmpty()) {
+          resultMatrix.add(matrix);
         }
       }
     }
 
-    return result;
+    return resultMatrix;
   }
 
   /**
@@ -444,12 +488,13 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
    * @param temporaryDirectory temporary directory
    * @param saveRScript if R script must be saved
    * @param RExecutionDirectory R execution directory
+   * @param scriptName script name
    * @throws IOException if an error occurs while executing the command
    */
   private void createRDS(final File matrixFile, final File cellsFile,
       final File genesFile, final File rdsFile, final File temporaryDirectory,
-      final boolean saveRScript, final DataFile RExecutionDirectory)
-      throws IOException {
+      final boolean saveRScript, final DataFile RExecutionDirectory,
+      final String scriptName) throws IOException {
 
     // Open executor connection
     this.executor.openConnection();
@@ -467,7 +512,7 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
     final String rScriptSource = readFromJar(R_SCRIPT_PATH);
 
     this.executor.executeRScript(rScriptSource, false, null, saveRScript,
-        R_SCRIPT_NAME, RExecutionDirectory, matrixFile.getName(),
+        scriptName, RExecutionDirectory, matrixFile.getName(),
         cellsFile.getName(), genesFile.getName(), rdsFile.getName());
 
     // Remove input files

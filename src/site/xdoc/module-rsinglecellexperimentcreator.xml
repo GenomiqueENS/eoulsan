@@ -67,6 +67,7 @@
                 <tr><td>rserve.servername</td><td>string</td><td>The Rserve server name to use in rserve execution mode</td><td>not set</td></tr>
                 <tr><td>docker.image</td><td>string</td><td>The Docker image to use in Docker execution mode.</td><td>genomicpariscentre/singlecellexperiment:3.7</td></tr>
 		<tr><td>input.matrices</td><td>boolean</td><td>The input of the module is a matrix (e.g. 10X Genomics data). For SmartSeq2, this parameter is usually set to false</td><td>true</td></tr>
+		<tr><td>merge.matrices</td><td>boolean</td><td>When the input of the module is matrices, this option allow to merge all the input matrices in one output matrix</td><td>true</td></tr>
 		<tr><td>design.prefix</td><td>string</td><td>This parameter define the prefix of Eoulsan design columns that contains annotations about the cells. This cell annotations will be copied in the output Bioconductor object</td><td>Not set</td></tr>
           </table>
          <br/>
