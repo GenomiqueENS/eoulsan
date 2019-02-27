@@ -274,7 +274,7 @@ public abstract class AbstractMatrix<E> implements Matrix<E> {
 
   @Override
   public boolean isEmpty() {
-    return size() == 0 && getColumnCount() == 0 && getRowCount() == 0;
+    return getColumnCount() == 0 && getRowCount() == 0;
   }
 
   //
