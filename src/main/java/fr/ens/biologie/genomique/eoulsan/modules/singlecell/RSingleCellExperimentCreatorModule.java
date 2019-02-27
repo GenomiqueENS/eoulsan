@@ -13,8 +13,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -512,8 +514,8 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
     final String rScriptSource = readFromJar(R_SCRIPT_PATH);
 
     this.executor.executeRScript(rScriptSource, false, null, saveRScript,
-        scriptName, RExecutionDirectory, matrixFile.getName(),
-        cellsFile.getName(), genesFile.getName(), rdsFile.getName());
+        scriptName, RExecutionDirectory,
+        createCommandLineArguments(matrixFile, cellsFile, featuresFile, rdsFile));
 
     // Remove input files
     this.executor.removeInputFiles();
@@ -555,6 +557,38 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
     }
 
     return sb.toString();
+  }
+
+  /**
+   * Create R script arguments.
+   * @param matrixFile matrix file
+   * @param cellsFile cell file
+   * @param featuresFile features files
+   * @param rdsFile output file
+   * @return an array with the R script arguments
+   */
+  private static String[] createCommandLineArguments(final File matrixFile,
+      final File cellsFile, final File featuresFile, final File rdsFile) {
+
+    List<String> result = new ArrayList<>();
+    result.add(matrixFile.getName());
+    result.add(rdsFile.getName());
+
+    if (cellsFile == null) {
+      result.add("FALSE");
+    } else {
+      result.add("TRUE");
+      result.add(cellsFile.getName());
+    }
+
+    if (featuresFile == null) {
+      result.add("FALSE");
+    } else {
+      result.add("TRUE");
+      result.add(featuresFile.getName());
+    }
+
+    return result.toArray(new String[0]);
   }
 
 }
