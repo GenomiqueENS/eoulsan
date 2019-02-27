@@ -162,6 +162,8 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
         break;
 
       case "use.gene.annotation":
+        Modules.renamedParameter(context, p, "use.additional.annotation");
+      case "use.additional.annotation":
         this.useAdditionnalAnnotation = p.getBooleanValue();
         break;
 
@@ -197,8 +199,8 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
       File outputDir = context.getStepOutputDirectory().toFile();
       File matrixFile =
           new File(outputDir, "matrix-" + rdsData.getName() + ".tsv");
-      File genesFile = this.useAdditionnalAnnotation
-          ? new File(outputDir, "genes-" + rdsData.getName() + ".tsv") : null;
+      File featuresFile = this.useAdditionnalAnnotation
+          ? new File(outputDir, "features-" + rdsData.getName() + ".tsv") : null;
       File cellsFile = this.designPrefix.isEmpty()
           ? null : new File(outputDir, "cells-" + rdsData.getName() + ".tsv");
 
@@ -206,10 +208,10 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
       boolean saveRScript = context.getSettings().isSaveRscripts();
 
       // Create R Input files
-      createRInputFiles(context, matrixFile, genesFile, cellsFile);
+      createRInputFiles(context, matrixFile, featuresFile, cellsFile);
 
       // Launch R and create RDS file
-      createRDS(matrixFile, cellsFile, genesFile, rdsFile, temporaryDirectory,
+      createRDS(matrixFile, cellsFile, featuresFile, rdsFile, temporaryDirectory,
           saveRScript, context.getStepOutputDirectory(),
           R_SCRIPT_NAME + "-" + rdsData.getName());
 
@@ -221,46 +223,46 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
   }
 
   private void createRInputFiles(final TaskContext context,
-      final File matrixFile, final File genesFile, final File cellsFile)
+      final File matrixFile, final File featuresFile, final File cellsFile)
       throws IOException {
 
     Data matrices = context.getInputData(
         this.inputMatrices ? EXPRESSION_MATRIX_TSV : EXPRESSION_RESULTS_TSV);
 
-    AnnotationMatrix geneAnnotation = null;
-    AnnotationMatrix cellAnnotation = null;
+    AnnotationMatrix featureAnnotations = null;
+    AnnotationMatrix cellAnnotations = null;
 
     // Create final matrix
     context.getLogger().fine("Load matrix");
     final ExpressionMatrix matrix = createMatrix(matrices);
 
-    // Load gene annotation from additional annotation
+    // Load feature annotations from additional annotation
 
-    if (genesFile != null) {
+    if (featuresFile != null) {
       context.getLogger().fine("Load additional annotation");
 
       try (AnnotationMatrixReader reader = new TSVAnnotationMatrixReader(context
           .getInputData(ADDITIONAL_ANNOTATION_TSV).getDataFile().open())) {
 
-        geneAnnotation = reader.read();
+        featureAnnotations = reader.read();
       }
 
-      // Filter gene annotations
-      context.getLogger().fine("Filter gene annotation");
-      geneAnnotation.retainRows(matrix.getRowNames());
+      // Filter features annotations
+      context.getLogger().fine("Filter features annotation");
+      featureAnnotations.retainRows(matrix.getRowNames());
     }
 
     // Parse the design to get cell annotation
     if (cellsFile != null) {
       context.getLogger().fine("Get cell annotation");
-      cellAnnotation = getCellAnnotation(matrices,
+      cellAnnotations = getCellAnnotation(matrices,
           context.getWorkflow().getDesign(), this.designPrefix);
     }
 
     // Duplicate cell annotation for each cell for 10X
-    if (this.inputMatrices && cellAnnotation != null) {
+    if (this.inputMatrices && cellAnnotations != null) {
       context.getLogger().fine("Duplicate cell annotation");
-      duplicateCellAnnotation(cellAnnotation, matrix.getColumnNames());
+      duplicateCellAnnotation(cellAnnotations, matrix.getColumnNames());
     }
 
     // Save matrix data
@@ -270,21 +272,21 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
       writer.write(matrix);
     }
 
-    // Save gene annotation
-    if (geneAnnotation != null) {
-      context.getLogger().fine("Save gene annotation");
+    // Save feature annotations
+    if (featureAnnotations != null) {
+      context.getLogger().fine("Save feature annotations");
       try (AnnotationMatrixWriter writer =
-          new TSVAnnotationMatrixWriter(genesFile)) {
-        writer.write(geneAnnotation, matrix.getRowNames());
+          new TSVAnnotationMatrixWriter(featuresFile)) {
+        writer.write(featureAnnotations, matrix.getRowNames());
       }
     }
 
     // Save cell annotation
-    if (cellAnnotation != null) {
-      context.getLogger().fine("Save cell annotation");
+    if (cellAnnotations != null) {
+      context.getLogger().fine("Save cell annotations");
       try (AnnotationMatrixWriter writer =
           new TSVAnnotationMatrixWriter(cellsFile)) {
-        writer.write(cellAnnotation, matrix.getColumnNames());
+        writer.write(cellAnnotations, matrix.getColumnNames());
       }
     }
 
@@ -485,7 +487,7 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
    * Create the RDS file.
    * @param matrixFile matrix file
    * @param cellsFile cell annotations file
-   * @param genesFile gene annotations file
+   * @param featuresFile feature annotations file
    * @param rdsFile RDS output file
    * @param temporaryDirectory temporary directory
    * @param saveRScript if R script must be saved
@@ -494,7 +496,7 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
    * @throws IOException if an error occurs while executing the command
    */
   private void createRDS(final File matrixFile, final File cellsFile,
-      final File genesFile, final File rdsFile, final File temporaryDirectory,
+      final File featuresFile, final File rdsFile, final File temporaryDirectory,
       final boolean saveRScript, final DataFile RExecutionDirectory,
       final String scriptName) throws IOException {
 
@@ -506,8 +508,8 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
     if (cellsFile != null) {
       this.executor.putInputFile(new DataFile(cellsFile));
     }
-    if (genesFile != null) {
-      this.executor.putInputFile(new DataFile(genesFile));
+    if (featuresFile != null) {
+      this.executor.putInputFile(new DataFile(featuresFile));
     }
 
     // Read the R script to execute
