@@ -11,6 +11,9 @@ import java.util.Set;
 import com.google.common.base.Splitter;
 import com.google.common.io.Files;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
+import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.io.FileCharsets;
 import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 
@@ -21,26 +24,18 @@ import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
  */
 public class SingularityDockerClient implements DockerClient {
 
-  private File imageDirectory = new File("singularity");
+  private File imageDirectory;
 
   @Override
   public void initialize(URI dockerConnectionURI) throws IOException {
-
-    // Create a directory for singularity images if not exists
-    if (!this.imageDirectory.exists()) {
-      if (!this.imageDirectory.mkdirs()) {
-        throw new IOException(
-            "Unable to create directory for singularity images: "
-                + this.imageDirectory);
-      }
-    }
-
   }
 
   @Override
-  public DockerImageInstance createConnection(String dockerImage) {
+  public DockerImageInstance createConnection(String dockerImage)
+      throws IOException {
 
-    return new SingularityDockerImageInstance(dockerImage, this.imageDirectory);
+    return new SingularityDockerImageInstance(dockerImage,
+        getStorageDirectory());
   }
 
   @Override
@@ -51,7 +46,7 @@ public class SingularityDockerClient implements DockerClient {
   @Override
   public Set<String> listImageTags() throws IOException {
 
-    return loadImageList(this.imageDirectory).keySet();
+    return loadImageList(getStorageDirectory()).keySet();
   }
 
   /**
@@ -88,6 +83,41 @@ public class SingularityDockerClient implements DockerClient {
     }
 
     return result;
+  }
+
+  /**
+   * Get storage directory.
+   * @return the storage directory
+   * @throws IOException
+   */
+  private File getStorageDirectory() throws IOException {
+
+    if (this.imageDirectory == null) {
+
+      Settings settings = EoulsanRuntime.getSettings();
+
+      File directory;
+
+      // Use the configuration to define the path to singularity images
+      if (settings.getDockerSingularityStoragePath() != null) {
+        directory = new File(settings.getDockerSingularityStoragePath());
+      } else {
+        directory = new File("singularity");
+      }
+
+      // Create a directory for singularity images if not exists
+      if (!directory.exists()) {
+        if (!directory.mkdirs()) {
+          throw new IOException(
+              "Unable to create directory for singularity images: "
+                  + directory);
+        }
+      }
+
+      this.imageDirectory = directory;
+    }
+
+    return this.imageDirectory;
   }
 
 }

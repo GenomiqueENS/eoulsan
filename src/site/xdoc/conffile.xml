@@ -84,6 +84,10 @@
 		
 		<tr><td>main.docker.uri</td><td>string</td><td>Not set</td><td>The Docker server URI. Usually the value is <tt>unix:///var/run/docker.sock</tt></td></tr>
 		<tr><td>main.docker.mount.nfs.roots</td><td>boolean</td><td>false</td><td>If this option is enabled, when mounted data in a Docker container are stored in a NFS volume, mount the root the of NFS volume instead of data path. This option avoid some right issues with NFS root squash</td></tr>
+
+		<tr><td>main.docker.singularity.enabled</td><td>boolean</td><td>False</td><td>If true, Docker images will be executed using Singularity<tt></tt></td></tr>
+		<tr><td>main.docker.singularity.storage.path</td><td>string</td><td>Not set</td><td>Path to the Singularity images directory</td></tr>
+
 		<tr><td>main.mail.send.result.mail</td><td>boolean</td><td>false</td><td>Enable send mail to user at the end of analysis</td></tr>
 		<tr><td>main.mail.send.result.mail.to</td><td>string</td><td>Not set</td><td>Mail address where send result message</td></tr>
 		<tr><td>main.mail.smtp.host</td><td>string</td><td>Not set</td><td>SMTP server to use to send mails. See the <a href="#smtp">SMTP section</a> for more information</td></tr>
