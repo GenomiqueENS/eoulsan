@@ -1,10 +1,10 @@
 package fr.ens.biologie.genomique.eoulsan.util.process;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.util.process.SpotifyDockerImageInstance.convertNFSFileToMountPoint;
 import static fr.ens.biologie.genomique.eoulsan.util.process.SpotifyDockerImageInstance.fileIndirections;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -34,9 +34,9 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
       final File stderrFile, final boolean redirectErrorStream,
       final File... filesUsed) throws IOException {
 
-    checkNotNull(commandLine, "commandLine argument cannot be null");
-    checkNotNull(stdoutFile, "stdoutFile argument cannot be null");
-    checkNotNull(stderrFile, "stderrFile argument cannot be null");
+    requireNonNull(commandLine, "commandLine argument cannot be null");
+    requireNonNull(stdoutFile, "stdoutFile argument cannot be null");
+    requireNonNull(stderrFile, "stderrFile argument cannot be null");
 
     EoulsanLogger.getLogger().fine(getClass().getSimpleName()
         + ": commandLine=" + commandLine + ", executionDirectory="
@@ -57,7 +57,13 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
     final List<String> command = new ArrayList<>();
     command.add("singularity");
     command.add("exec");
-    command.add("--contain");
+
+    // The "--pwd" and "--contain" options are incompatible in 2.4.2. Need
+    // Singularity 2.4.3+
+    if (!EoulsanRuntime.getSettings()
+        .getBooleanSetting("debug.docker.singularity.disable.contain")) {
+      command.add("--contain");
+    }
 
     // File/directories to mount
     List<File> directoriesToBind = new ArrayList<>();
@@ -68,13 +74,15 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
     // Execution directory
     if (executionDirectory != null) {
       directoriesToBind.add(executionDirectory);
-      command.add("--workdir");
+      command.add("--pwd");
       command.add(executionDirectory.getAbsolutePath());
     }
 
     // Temporary directory
     if (temporaryDirectory != null && temporaryDirectory.isDirectory()) {
       directoriesToBind.add(temporaryDirectory);
+      command.add("--workdir");
+      command.add(temporaryDirectory.getAbsolutePath());
     }
 
     // Bind directories
@@ -108,6 +116,9 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
         pb.environment().put(e.getKey(), e.getValue());
       }
     }
+
+    EoulsanLogger.getLogger().fine(getClass().getSimpleName()
+        + ": singularity command line: " + pb.command());
 
     final Process process = pb.start();
 
@@ -237,8 +248,8 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
   SingularityDockerImageInstance(final String dockerImage,
       final File imageDirectory) {
 
-    checkNotNull(dockerImage, "dockerImage argument cannot be null");
-    checkNotNull(imageDirectory, "imageDirectory argument cannot be null");
+    requireNonNull(dockerImage, "dockerImage argument cannot be null");
+    requireNonNull(imageDirectory, "imageDirectory argument cannot be null");
 
     EoulsanLogger.getLogger().fine(
         getClass().getSimpleName() + " docker image used: " + dockerImage);
