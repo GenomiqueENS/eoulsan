@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
 
@@ -114,7 +114,7 @@ class UnmodifiableDataMetadata extends AbstractDataMetadata {
    */
   UnmodifiableDataMetadata(final DataMetadata metadata) {
 
-    checkNotNull(metadata, "metadata argument cannot be null");
+    requireNonNull(metadata, "metadata argument cannot be null");
 
     this.metadata = metadata;
   }

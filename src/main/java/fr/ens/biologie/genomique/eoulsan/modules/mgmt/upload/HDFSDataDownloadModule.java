@@ -297,7 +297,7 @@ public class HDFSDataDownloadModule extends AbstractModule {
       argsList.add(e.getKey().toString());
 
       // Convert arguments in a n array
-      final String[] args = argsList.toArray(new String[argsList.size()]);
+      final String[] args = argsList.toArray(new String[0]);
 
       // Run distcp
       distcp.runWithException(args);

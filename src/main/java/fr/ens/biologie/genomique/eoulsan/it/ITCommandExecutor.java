@@ -23,22 +23,21 @@
  */
 package fr.ens.biologie.genomique.eoulsan.it;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toTimeHumanReadable;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.compress.utils.Charsets;
 
 import com.google.common.base.Stopwatch;
 
@@ -109,7 +108,7 @@ public class ITCommandExecutor {
       try {
 
         com.google.common.io.Files.write(cmdLine + "\n", this.cmdLineFile,
-            Charsets.UTF_8);
+            StandardCharsets.UTF_8);
 
       } catch (final IOException e) {
 
@@ -237,7 +236,7 @@ public class ITCommandExecutor {
 
     // Extract environment variable from current context and configuration test
     this.environmentVariables =
-        environmentVariables.toArray(new String[environmentVariables.size()]);
+        environmentVariables.toArray(new String[0]);
     this.cmdLineFile = new File(this.outputTestDirectory, CMDLINE_FILENAME);
 
     this.durationMax = durationMax;
@@ -284,9 +283,9 @@ public class ITCommandExecutor {
     CopyProcessOutput(final InputStream in, final File file,
         final String desc) {
 
-      checkNotNull(in, "in argument cannot be null");
-      checkNotNull(file, "file argument cannot be null");
-      checkNotNull(desc, "desc argument cannot be null");
+      requireNonNull(in, "in argument cannot be null");
+      requireNonNull(file, "file argument cannot be null");
+      requireNonNull(desc, "desc argument cannot be null");
 
       this.in = in;
       this.path = file.toPath();

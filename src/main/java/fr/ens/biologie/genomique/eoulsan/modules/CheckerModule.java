@@ -25,8 +25,8 @@
 package fr.ens.biologie.genomique.eoulsan.modules;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,8 +116,8 @@ public class CheckerModule extends AbstractModule {
   public static final void configureChecker(final DataFormat format,
       final Set<Parameter> parameters) {
 
-    checkNotNull(format, "format argument cannot be null");
-    checkNotNull(parameters, "parameter argument cannot be null");
+    requireNonNull(format, "format argument cannot be null");
+    requireNonNull(parameters, "parameter argument cannot be null");
     checkArgument(format.isChecker(),
         "No checker exists for format: " + format.getName());
     checkState(instance != null,

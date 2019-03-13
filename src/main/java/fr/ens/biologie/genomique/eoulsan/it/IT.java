@@ -43,6 +43,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -53,7 +54,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.compress.utils.Charsets;
 import org.testng.annotations.Test;
 
 import com.google.common.base.Joiner;
@@ -366,7 +366,8 @@ public class IT {
           Joiner.on("\n").join(this.environmentVariables);
 
       try {
-        com.google.common.io.Files.write(envToString, envFile, Charsets.UTF_8);
+        com.google.common.io.Files.write(envToString, envFile,
+            StandardCharsets.UTF_8);
 
       } catch (final IOException e) {
         getLogger()
@@ -634,8 +635,7 @@ public class IT {
     final Properties props = new Properties();
     props.putAll(globalsConf);
 
-    final BufferedReader br = newReader(testConfFile,
-        Charsets.toCharset(Globals.DEFAULT_FILE_ENCODING));
+    final BufferedReader br = newReader(testConfFile, Globals.DEFAULT_CHARSET);
 
     String line = null;
 

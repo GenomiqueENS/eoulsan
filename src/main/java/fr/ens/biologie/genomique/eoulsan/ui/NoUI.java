@@ -25,8 +25,8 @@
 package fr.ens.biologie.genomique.eoulsan.ui;
 
 import fr.ens.biologie.genomique.eoulsan.core.Step;
-import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
+import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 
 /**
  * This class define an UI that do nothing.

@@ -118,6 +118,12 @@ make_htcondor_description_file () {
       concurrency_limits="concurrency_limits = ${CONCURRENCY_LIMITS}"
    fi
 
+   if [[ -z $NICE_USER ]]; then
+      nice_user="False"
+   else
+      nice_user=${NICE_USER}
+   fi
+
    # set the job directory if needed
    if [[ -n $JOBDIR ]]; then
       # check if the directory already exists
@@ -151,6 +157,7 @@ output = $job_script_dir/script-$JOB_SCRIPT_ID.stdout
 error = $job_script_dir/script-$JOB_SCRIPT_ID.stderr
 arguments = $ARGUMENTS
 $concurrency_limits
+nice_user = $nice_user
 queue
 HERE
 

@@ -230,6 +230,9 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
   public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
+    // Avoid issue with AWT in ODF Toolkit
+    System.setProperty("javax.accessibility.assistive_technologies", "");
+
     // Get hypertext links file
     final DataFile linksFile =
         TranslatorUtils.getLinksFileFromSettings(context.getSettings());

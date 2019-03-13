@@ -36,6 +36,7 @@ import java.nio.file.PathMatcher;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -225,7 +226,6 @@ public class ImportModule extends AbstractModule {
 
       // Get the list of the files to import
       this.files = findFiles(baseDir, pattern);
-      // this.files = listFilesFromPatterns(baseDir, pattern);
 
       // Check if some files has been found
       if (this.files.isEmpty()) {
@@ -402,11 +402,19 @@ public class ImportModule extends AbstractModule {
         "workingDirectory argument cannot be null");
     Objects.requireNonNull(pattern, "pattern argument cannot be null");
 
-    Finder finder = new Finder(workingDirectory.toFile(), pattern);
+    File dir = workingDirectory.toFile();
+    String finalPattern = pattern;
+    String dirSuffix = patternPrefix(pattern);
 
-    Path baseDir = pattern.startsWith("/")
-        ? getMinExistingPath(pattern)
-        : workingDirectory.toFile().toPath();
+    if (!dirSuffix.isEmpty()) {
+      dir = new File(dir, dirSuffix);
+      finalPattern = finalPattern.substring(dirSuffix.length() + 1);
+    }
+
+    Finder finder = new Finder(dir, finalPattern);
+
+    Path baseDir = finalPattern.startsWith("/")
+        ? getMinExistingPath(finalPattern) : dir.toPath();
 
     Files.walkFileTree(baseDir, finder);
     return finder.getFiles();
@@ -518,8 +526,7 @@ public class ImportModule extends AbstractModule {
     DataFile previous = null;
 
     // Sort files
-    List<DataFile> sortedFiles = new ArrayList<>();
-    sortedFiles.addAll(files);
+    List<DataFile> sortedFiles = new ArrayList<>(files);
     Collections.sort(sortedFiles);
 
     // For each files
@@ -542,6 +549,29 @@ public class ImportModule extends AbstractModule {
     }
 
     return Collections.unmodifiableSet(result);
+  }
+
+  /**
+   * Test if the base directory must be change if pattern is relative and if a
+   * parent directory is in the path.
+   * @param pattern the pattern
+   * @return the part of the pattern that must be added to the base directory
+   */
+  private static String patternPrefix(String pattern) {
+
+    if (pattern == null || pattern.startsWith("/")) {
+      return "";
+    }
+
+    List<String> elements = Arrays.asList(pattern.split("/"));
+
+    int index = elements.lastIndexOf("..");
+
+    if (index == -1) {
+      return "";
+    }
+
+    return String.join("/", elements.subList(0, index + 1));
   }
 
 }

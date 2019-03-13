@@ -25,8 +25,8 @@
 package fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -73,9 +73,9 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
       final int requiredMemory, final int requiredProcessors)
       throws IOException {
 
-    checkNotNull(jobName, "jobName argument cannot be null");
-    checkNotNull(jobCommand, "jobCommand argument cannot be null");
-    checkNotNull(jobDirectory, "jobDirectory argument cannot be null");
+    requireNonNull(jobName, "jobName argument cannot be null");
+    requireNonNull(jobCommand, "jobCommand argument cannot be null");
+    requireNonNull(jobDirectory, "jobDirectory argument cannot be null");
     checkArgument(jobDirectory.isDirectory(),
         "The job directory does not exists or is not a directory: "
             + jobDirectory);
@@ -120,7 +120,7 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
   @Override
   public void stopJob(final String jobId) throws IOException {
 
-    checkNotNull(jobId, "jobId argument cannot be null");
+    requireNonNull(jobId, "jobId argument cannot be null");
 
     try {
       final Process process = stopJobProcess(jobId);
@@ -142,7 +142,7 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
   @Override
   public StatusResult statusJob(final String jobId) throws IOException {
 
-    checkNotNull(jobId, "jobId argument cannot be null");
+    requireNonNull(jobId, "jobId argument cannot be null");
 
     try {
       final Process process = statusJobProcess(jobId);

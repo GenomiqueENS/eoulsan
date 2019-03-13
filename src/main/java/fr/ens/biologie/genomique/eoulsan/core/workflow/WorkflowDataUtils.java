@@ -1,16 +1,14 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.core.Naming.toValidName;
+import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.google.common.base.Preconditions;
 
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -35,7 +33,7 @@ public class WorkflowDataUtils {
    */
   public static void setDataFile(final Data data, final DataFile dataFile) {
 
-    Preconditions.checkNotNull(data, "data cannot be null");
+    requireNonNull(data, "data cannot be null");
 
     if (data.isList()) {
       throw new IllegalArgumentException(
@@ -55,7 +53,7 @@ public class WorkflowDataUtils {
   public static void setDataFile(final Data data, final int fileIndex,
       final DataFile dataFile) {
 
-    checkNotNull(data, "data argument cannot be null");
+    requireNonNull(data, "data argument cannot be null");
 
     if (data.isList()) {
       throw new IllegalArgumentException(
@@ -74,7 +72,7 @@ public class WorkflowDataUtils {
   public static void setDataFiles(final Data data,
       final List<DataFile> dataFiles) {
 
-    checkNotNull(data, "data argument cannot be null");
+    requireNonNull(data, "data argument cannot be null");
 
     if (data.isList()) {
       throw new IllegalArgumentException(
@@ -92,7 +90,7 @@ public class WorkflowDataUtils {
    */
   public static final List<DataFile> getDataFiles(final Data data) {
 
-    checkNotNull(data, "data argument cannot be null");
+    requireNonNull(data, "data argument cannot be null");
 
     if (data.isList()) {
       return Collections.emptyList();
@@ -110,8 +108,8 @@ public class WorkflowDataUtils {
   public static final void setDataMetaData(final Data data,
       final Sample sample) {
 
-    checkNotNull(data, "data argument cannot be null");
-    checkNotNull(sample, "sample argument cannot be null");
+    requireNonNull(data, "data argument cannot be null");
+    requireNonNull(sample, "sample argument cannot be null");
     checkArgument(data.getName().equals(toValidName(sample.getId())),
         "The sample name ("
             + sample.getId() + ") does not match with data id ("
@@ -193,7 +191,7 @@ public class WorkflowDataUtils {
    */
   static SimpleDataMetadata getSimpleMetadata(final DataMetadata metadata) {
 
-    checkNotNull(metadata, "metadata argument cannot be null");
+    requireNonNull(metadata, "metadata argument cannot be null");
 
     DataMetadata md = metadata;
 
@@ -219,8 +217,8 @@ public class WorkflowDataUtils {
   public static void setDataMetadata(final Data data,
       final Collection<Data> dataSourceOfMetadata) {
 
-    checkNotNull(data, "data argument cannot be null");
-    checkNotNull(dataSourceOfMetadata,
+    requireNonNull(data, "data argument cannot be null");
+    requireNonNull(dataSourceOfMetadata,
         "dataForMetaData argument cannot be null");
 
     for (Data d : dataSourceOfMetadata) {
@@ -237,8 +235,8 @@ public class WorkflowDataUtils {
   public static void setDataMetadata(final Data data,
       final Data dataSourceOfMetadata) {
 
-    checkNotNull(data, "data argument cannot be null");
-    checkNotNull(dataSourceOfMetadata,
+    requireNonNull(data, "data argument cannot be null");
+    requireNonNull(dataSourceOfMetadata,
         "dataForMetaData argument cannot be null");
 
     // If data is a list do nothing

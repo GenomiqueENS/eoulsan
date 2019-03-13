@@ -1,7 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class DataMetadataStorage {
    */
   public boolean loadMetadata(final Data data) {
 
-    checkNotNull(data, "data argument cannot be null");
+    requireNonNull(data, "data argument cannot be null");
 
     return loadMetadata(data, WorkflowDataUtils.getDataFiles(data));
   }
@@ -56,8 +57,8 @@ public class DataMetadataStorage {
    */
   public boolean loadMetadata(final Data data, final List<DataFile> files) {
 
-    checkNotNull(data, "data argument cannot be null");
-    checkNotNull(files, "files argument cannot be null");
+    requireNonNull(data, "data argument cannot be null");
+    requireNonNull(files, "files argument cannot be null");
 
     final SimpleDataMetadata metadata =
         WorkflowDataUtils.getSimpleMetadata(data.getMetadata());
@@ -91,12 +92,30 @@ public class DataMetadataStorage {
   }
 
   /**
+   * Get the metadata of a file.
+   * @param file the file
+   * @return the metadata of the file in a Map
+   */
+  public Map<String, String> getMetadata(final DataFile file) {
+
+    requireNonNull(file, "file argument cannot be null");
+
+    final Map<String, String> entries = this.metadata.get(file.getName());
+
+    if (entries == null) {
+      return Collections.emptyMap();
+    }
+
+    return Collections.unmodifiableMap(entries);
+  }
+
+  /**
    * Save metadata of a Data object.
    * @param data the data object
    */
   public void saveMetaData(final Data data) {
 
-    checkNotNull(data, "data argument cannot be null");
+    requireNonNull(data, "data argument cannot be null");
 
     // If data is a list process of data elements by recursion
     if (data.isList()) {
@@ -247,7 +266,7 @@ public class DataMetadataStorage {
    */
   private DataMetadataStorage(final DataFile metadataDir) {
 
-    checkNotNull(metadataDir, "metadataDir argument cannot be null");
+    requireNonNull(metadataDir, "metadataDir argument cannot be null");
 
     // Set the metadata storage file
     this.metadataFile = new DataFile(metadataDir, METADATA_FILENAME);

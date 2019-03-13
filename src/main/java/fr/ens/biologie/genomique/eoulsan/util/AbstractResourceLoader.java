@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.util;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -92,8 +92,8 @@ public abstract class AbstractResourceLoader<S> implements ResourceLoader<S> {
   protected void addResource(final String resourceName,
       final String resourcePath) {
 
-    checkNotNull(resourceName, "resourceName argument cannot be null");
-    checkNotNull(resourcePath, "resourcePath argument cannot be null");
+    requireNonNull(resourceName, "resourceName argument cannot be null");
+    requireNonNull(resourcePath, "resourcePath argument cannot be null");
 
     this.resources.put(resourceName, resourcePath);
   }
@@ -118,7 +118,7 @@ public abstract class AbstractResourceLoader<S> implements ResourceLoader<S> {
   @Override
   public List<S> loadResources(final String resourceName) {
 
-    checkNotNull(resourceName, "resourceName argument cannot be null");
+    requireNonNull(resourceName, "resourceName argument cannot be null");
 
     if (!this.resources.containsKey(resourceName)) {
       return Collections.emptyList();

@@ -25,9 +25,9 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.EnumSet;
@@ -88,7 +88,7 @@ class StepInputPort extends SimpleInputPort implements Serializable {
   public void setLink(final StepOutputPort outputPort) {
 
     // Check if argument is null
-    checkNotNull(outputPort, "outputPort argument cannot be null");
+    requireNonNull(outputPort, "outputPort argument cannot be null");
 
     // Check the ports are not on the same step
     checkArgument(outputPort.getStep() != this.step,

@@ -58,11 +58,12 @@
 		<li>System environment variables (e.g. <code>${PATH}</code>, <code>${PWD}</code>)</li>
 		<li><a href="#constantssection">user defined constants</a></li>
 	</ul>
-	<p>User can also insert in parameter values the output of a shell command with expression between "<b>`</b>":</p>
+	<p>User can also insert in parameter or attribute values the output of a shell command with expression between "<b>`</b>":</p>
 	<source>
 	 &lt;value&gt;`cat /proc/cpuinfo | grep processor | wc -l`&lt;/value&gt;
 	 &lt;value&gt;`pwd`/tmp&lt;/value&gt;
-	 &lt;value&gt;`basedir ${user.home}`/tmp&lt;/value&gt;</source>
+	 &lt;value&gt;`basedir ${user.home}`/tmp&lt;/value&gt;
+	 &lt;step&gt; skip="false" discardoutput="true" requiredprocs="`nprocs`"&lt;/step&gt;</source>
 
 	<p>All the tags must be in lower case. The following source show the structure of a typical <b>workflow.xml</b> file:</p>
 

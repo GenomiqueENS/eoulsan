@@ -24,12 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.design.io;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.design.SampleMetadata.UUID_KEY;
 import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan1DesignReader.EXPERIMENT_FIELD;
 import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan1DesignReader.SAMPLE_NAME_FIELD;
 import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan1DesignReader.SAMPLE_NUMBER_FIELD;
 import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignReader.TAB_SEPARATOR;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -255,7 +255,7 @@ public class Eoulsan1DesignWriter implements DesignWriter {
    */
   public Eoulsan1DesignWriter(final File file) throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     this.out = new FileOutputStream(file);
   }
@@ -268,7 +268,7 @@ public class Eoulsan1DesignWriter implements DesignWriter {
    */
   public Eoulsan1DesignWriter(final DataFile file) throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     this.out = file.create();
   }
@@ -280,7 +280,7 @@ public class Eoulsan1DesignWriter implements DesignWriter {
    */
   public Eoulsan1DesignWriter(final OutputStream out) throws IOException {
 
-    checkNotNull(out, "out argument cannot be null");
+    requireNonNull(out, "out argument cannot be null");
 
     this.out = out;
   }
@@ -293,7 +293,7 @@ public class Eoulsan1DesignWriter implements DesignWriter {
   public Eoulsan1DesignWriter(final String filename)
       throws FileNotFoundException {
 
-    checkNotNull(filename, "filename argument cannot be null");
+    requireNonNull(filename, "filename argument cannot be null");
 
     this.out = new FileOutputStream(filename);
   }

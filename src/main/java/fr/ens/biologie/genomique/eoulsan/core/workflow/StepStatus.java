@@ -25,12 +25,10 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import com.google.common.base.Preconditions;
 
 import fr.ens.biologie.genomique.eoulsan.core.workflow.UITaskEvent.TaskStatusMessage;
 
@@ -306,7 +304,7 @@ public class StepStatus {
   private static void checkContext(final int contextId,
       final String contextName) {
 
-    checkNotNull(contextName, "contextName cannot be null");
+    requireNonNull(contextName, "contextName cannot be null");
   }
 
   private static void checkProgress(final double progress) {
@@ -331,7 +329,7 @@ public class StepStatus {
 
   public StepStatus(final AbstractStep step) {
 
-    Preconditions.checkNotNull(step, "Step is null");
+    requireNonNull(step, "Step is null");
 
     this.step = step;
 

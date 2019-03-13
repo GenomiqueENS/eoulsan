@@ -1,6 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -22,7 +22,7 @@ public class WorkflowFileNaming extends FileNaming {
    */
   private void set(final StepOutputPort port) {
 
-    checkNotNull(port, "port argument cannot be null");
+    requireNonNull(port, "port argument cannot be null");
 
     setStepId(port.getStep().getId());
     setPortName(port.getName());

@@ -46,6 +46,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.python.google.common.base.Strings;
 
 import fr.ens.biologie.genomique.eoulsan.actions.Action;
 import fr.ens.biologie.genomique.eoulsan.actions.ActionService;
@@ -268,9 +269,8 @@ public abstract class Main {
 
       if (!action.isHadoopJarMode() && !action.isHidden()) {
 
-        System.out.println(" - "
-            + action.getName() + "\t" + action.getDescription()
-            + (!action.isCurrentArchCompatible()
+        System.out.println(Strings.padEnd(" - " + action.getName(), 23, ' ')
+            + action.getDescription() + (!action.isCurrentArchCompatible()
                 ? " (not available for your platform)." : ""));
       }
     }
@@ -320,7 +320,7 @@ public abstract class Main {
 
     final Options options = makeOptions();
     final CommandLineParser parser = new GnuParser();
-    final String[] argsArray = this.args.toArray(new String[this.args.size()]);
+    final String[] argsArray = this.args.toArray(new String[0]);
 
     int argsOptions = 0;
 
@@ -716,7 +716,8 @@ public abstract class Main {
     if (getJavaVersion() < MINIMAL_JAVA_VERSION_REQUIRED) {
       Common.showErrorMessageAndExit(Globals.WELCOME_MSG
           + "\nError: " + Globals.APP_NAME + " requires Java "
-          + MINIMAL_JAVA_VERSION_REQUIRED + ".");
+          + MINIMAL_JAVA_VERSION_REQUIRED + " (found Java " + getJavaVersion()
+          + ").");
     }
 
     // Select the application execution mode

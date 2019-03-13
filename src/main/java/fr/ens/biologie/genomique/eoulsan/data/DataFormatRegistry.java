@@ -24,9 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.data;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanRuntime.getSettings;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -94,7 +94,7 @@ public class DataFormatRegistry {
     @Override
     protected String getResourceName(final XMLDataFormat resource) {
 
-      checkNotNull(resource, "resource argument cannot be null");
+      requireNonNull(resource, "resource argument cannot be null");
 
       return resource.getName();
     }
@@ -149,7 +149,7 @@ public class DataFormatRegistry {
     @Override
     protected String getResourceName(final XMLDataFormat resource) {
 
-      checkNotNull(resource, "resource argument cannot be null");
+      requireNonNull(resource, "resource argument cannot be null");
 
       return resource.getName();
     }
@@ -631,13 +631,12 @@ public class DataFormatRegistry {
 
     try {
 
-      final List<DataFormat> formats = new ArrayList<>();
-
       // Load XML formats from the Jar
       DataFormatClassPathLoader formatClassLoader =
           new DataFormatClassPathLoader();
       formatClassLoader.reload();
-      formats.addAll(formatClassLoader.loadAllResources());
+      final List<DataFormat> formats =
+        new ArrayList<DataFormat>(formatClassLoader.loadAllResources());
 
       // Load XML formats from external resources (files...)
       DataFormatFileResourceLoader formatFileLoader =

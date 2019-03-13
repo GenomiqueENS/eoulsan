@@ -122,7 +122,6 @@ public class GFFReader
             this.result.parseGTF(line.trim());
           }
 
-
           this.nextCallDone = false;
           return true;
         }

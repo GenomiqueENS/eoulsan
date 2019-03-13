@@ -6,12 +6,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.bio.AbstractExpressionMatrix.BasicEntry;
-import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix.Entry;
+import fr.ens.biologie.genomique.eoulsan.bio.AbstractMatrix.BasicEntry;
 
 public abstract class AbstractExpressionMatrixTest {
 
@@ -30,7 +30,7 @@ public abstract class AbstractExpressionMatrixTest {
     assertEquals(1, matrix.getRowCount());
     assertTrue(matrix.containsRow("row1"));
     assertFalse(matrix.containsRow("row2"));
-    assertEquals(Arrays.asList("row1"), matrix.getRowNames());
+    assertEquals(Collections.singletonList("row1"), matrix.getRowNames());
     assertEquals(0, matrix.size());
 
     matrix.addRow("row2");
@@ -199,20 +199,20 @@ public abstract class AbstractExpressionMatrixTest {
 
     matrix.setValue("row3", "col2", 6);
 
-    List<Entry> result = new ArrayList<>();
-    for (Entry e : matrix.values()) {
+    List<Matrix.Entry<Double>> result = new ArrayList<>();
+    for (Matrix.Entry<Double> e : matrix.values()) {
       result.add(e);
     }
 
-    assertEquals(Arrays.asList(new BasicEntry("row1", "col1", 0.0),
-        new BasicEntry("row1", "col2", 0.0),
-        new BasicEntry("row1", "col3", 0.0),
-        new BasicEntry("row2", "col1", 2.0),
-        new BasicEntry("row2", "col2", 5.0),
-        new BasicEntry("row2", "col3", 0.0),
-        new BasicEntry("row3", "col1", 0.0),
-        new BasicEntry("row3", "col2", 6.0),
-        new BasicEntry("row3", "col3", 0.0)), result);
+    assertEquals(Arrays.asList(new BasicEntry<Double>("row1", "col1", 0.0),
+        new BasicEntry<Double>("row1", "col2", 0.0),
+        new BasicEntry<Double>("row1", "col3", 0.0),
+        new BasicEntry<Double>("row2", "col1", 2.0),
+        new BasicEntry<Double>("row2", "col2", 5.0),
+        new BasicEntry<Double>("row2", "col3", 0.0),
+        new BasicEntry<Double>("row3", "col1", 0.0),
+        new BasicEntry<Double>("row3", "col2", 6.0),
+        new BasicEntry<Double>("row3", "col3", 0.0)), result);
   }
 
   @Test
@@ -229,14 +229,14 @@ public abstract class AbstractExpressionMatrixTest {
 
     matrix.setValue("row3", "col2", 6);
 
-    List<Entry> result = new ArrayList<>();
-    for (Entry e : matrix.nonZeroValues()) {
+    List<Matrix.Entry<Double>> result = new ArrayList<>();
+    for (Matrix.Entry<Double> e : matrix.nonZeroValues()) {
       result.add(e);
     }
 
-    assertEquals(Arrays.asList(new BasicEntry("row2", "col1", 2.0),
-        new BasicEntry("row2", "col2", 5.0),
-        new BasicEntry("row3", "col2", 6.0)), result);
+    assertEquals(Arrays.asList(new BasicEntry<Double>("row2", "col1", 2.0),
+        new BasicEntry<Double>("row2", "col2", 5.0),
+        new BasicEntry<Double>("row3", "col2", 6.0)), result);
   }
 
   @Test
@@ -393,6 +393,64 @@ public abstract class AbstractExpressionMatrixTest {
   }
 
   @Test
+  public void testRemoveRows() {
+
+    ExpressionMatrix matrix = createMatrix();
+    matrix.addColumns("col1", "col2");
+    matrix.addRows("row1", "row2", "row3");
+    assertEquals(6, matrix.size());
+
+    matrix.setValue("row1", "col1", 1);
+    matrix.setValue("row2", "col1", 2);
+    matrix.setValue("row3", "col1", 3);
+    matrix.setValue("row1", "col2", 4);
+    matrix.setValue("row2", "col2", 5);
+    matrix.setValue("row3", "col2", 6);
+    assertEquals(6, matrix.size());
+
+    assertEquals(3, matrix.getRowCount());
+    assertEquals(2, matrix.getColumnCount());
+
+    matrix.removeRows(Arrays.asList("row2", "row3"));
+    assertEquals(2, matrix.size());
+
+    assertEquals(1, matrix.getRowCount());
+    assertEquals(2, matrix.getColumnCount());
+
+    assertEquals(1.0, matrix.getValue("row1", "col1"), 0.0);
+    assertEquals(4.0, matrix.getValue("row1", "col2"), 0.0);
+  }
+
+  @Test
+  public void testRetainRows() {
+
+    ExpressionMatrix matrix = createMatrix();
+    matrix.addColumns("col1", "col2");
+    matrix.addRows("row1", "row2", "row3");
+    assertEquals(6, matrix.size());
+
+    matrix.setValue("row1", "col1", 1);
+    matrix.setValue("row2", "col1", 2);
+    matrix.setValue("row3", "col1", 3);
+    matrix.setValue("row1", "col2", 4);
+    matrix.setValue("row2", "col2", 5);
+    matrix.setValue("row3", "col2", 6);
+    assertEquals(6, matrix.size());
+
+    assertEquals(3, matrix.getRowCount());
+    assertEquals(2, matrix.getColumnCount());
+
+    matrix.retainRows(Arrays.asList("row1"));
+    assertEquals(2, matrix.size());
+
+    assertEquals(1, matrix.getRowCount());
+    assertEquals(2, matrix.getColumnCount());
+
+    assertEquals(1.0, matrix.getValue("row1", "col1"), 0.0);
+    assertEquals(4.0, matrix.getValue("row1", "col2"), 0.0);
+  }
+
+  @Test
   public void testRemoveColumn() {
 
     ExpressionMatrix matrix = createMatrix();
@@ -411,6 +469,64 @@ public abstract class AbstractExpressionMatrixTest {
     assertEquals(2, matrix.getColumnCount());
 
     matrix.removeColumn("col2");
+    assertEquals(3, matrix.size());
+
+    assertEquals(3, matrix.getRowCount());
+    assertEquals(1, matrix.getColumnCount());
+
+    assertEquals(1.0, matrix.getValue("row1", "col1"), 0.0);
+    assertEquals(2.0, matrix.getValue("row2", "col1"), 0.0);
+    assertEquals(3.0, matrix.getValue("row3", "col1"), 0.0);
+  }
+
+  @Test
+  public void testRemoveColumns() {
+
+    ExpressionMatrix matrix = createMatrix();
+    matrix.addColumns("col1", "col2");
+    matrix.addRows("row1", "row2", "row3");
+    assertEquals(6, matrix.size());
+
+    matrix.setValue("row1", "col1", 1);
+    matrix.setValue("row2", "col1", 2);
+    matrix.setValue("row3", "col1", 3);
+    matrix.setValue("row1", "col2", 4);
+    matrix.setValue("row2", "col2", 5);
+    matrix.setValue("row3", "col2", 6);
+
+    assertEquals(3, matrix.getRowCount());
+    assertEquals(2, matrix.getColumnCount());
+
+    matrix.removeColumns(Arrays.asList("col2"));
+    assertEquals(3, matrix.size());
+
+    assertEquals(3, matrix.getRowCount());
+    assertEquals(1, matrix.getColumnCount());
+
+    assertEquals(1.0, matrix.getValue("row1", "col1"), 0.0);
+    assertEquals(2.0, matrix.getValue("row2", "col1"), 0.0);
+    assertEquals(3.0, matrix.getValue("row3", "col1"), 0.0);
+  }
+
+  @Test
+  public void testRetainsColumns() {
+
+    ExpressionMatrix matrix = createMatrix();
+    matrix.addColumns("col1", "col2");
+    matrix.addRows("row1", "row2", "row3");
+    assertEquals(6, matrix.size());
+
+    matrix.setValue("row1", "col1", 1);
+    matrix.setValue("row2", "col1", 2);
+    matrix.setValue("row3", "col1", 3);
+    matrix.setValue("row1", "col2", 4);
+    matrix.setValue("row2", "col2", 5);
+    matrix.setValue("row3", "col2", 6);
+
+    assertEquals(3, matrix.getRowCount());
+    assertEquals(2, matrix.getColumnCount());
+
+    matrix.retainColumns(Arrays.asList("col1"));
     assertEquals(3, matrix.size());
 
     assertEquals(3, matrix.getRowCount());

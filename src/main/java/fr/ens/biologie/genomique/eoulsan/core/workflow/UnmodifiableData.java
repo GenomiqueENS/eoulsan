@@ -24,11 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.Serializable;
 import java.util.List;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
 
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -156,7 +157,7 @@ public class UnmodifiableData implements Data, Serializable {
 
   UnmodifiableData(final Data data) {
 
-    Preconditions.checkNotNull(data, "data argument cannot be null");
+    requireNonNull(data, "data argument cannot be null");
 
     this.data = data;
   }

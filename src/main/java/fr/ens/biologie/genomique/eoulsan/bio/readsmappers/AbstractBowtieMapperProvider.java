@@ -216,11 +216,9 @@ public abstract class AbstractBowtieMapperProvider
       @Override
       protected List<List<String>> createCommandLines() {
 
-        // Build the command line
-        final List<String> cmd = new ArrayList<>();
-
-        // Add common arguments
-        cmd.addAll(createCommonArgs(mapping, bowtiePath, index));
+        // Build the command line and add common arguments
+        final List<String> cmd =
+          new ArrayList<>(createCommonArgs(mapping, bowtiePath, index));
 
         // Enable Index memory mapped in streaming mode
         if (mapping.isMultipleInstancesEnabled()) {
@@ -266,11 +264,9 @@ public abstract class AbstractBowtieMapperProvider
       @Override
       protected List<List<String>> createCommandLines() {
 
-        // Build the command line
-        final List<String> cmd = new ArrayList<>();
-
-        // Add common arguments
-        cmd.addAll(createCommonArgs(mapping, bowtiePath, index));
+        // Build the command line and add common arguments
+        final List<String> cmd =
+          new ArrayList<>(createCommonArgs(mapping, bowtiePath, index));
 
         // Enable Index memory mapped in streaming mode
         if (mapping.isMultipleInstancesEnabled()) {
@@ -300,7 +296,7 @@ public abstract class AbstractBowtieMapperProvider
 
   /**
    * Get the index argument for bowtie from the archive index directory path
-   * @param archiveIndexDir archive index directory
+   * @param mapping mapping object
    * @return the Bowtie index argument
    * @throws IOException if an error occurs when getting directory path
    */

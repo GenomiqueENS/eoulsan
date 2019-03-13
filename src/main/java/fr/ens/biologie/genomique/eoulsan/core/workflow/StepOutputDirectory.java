@@ -1,7 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.Globals.STEP_OUTPUT_DIRECTORY_SUFFIX;
+import static java.util.Objects.requireNonNull;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -71,9 +71,9 @@ class StepOutputDirectory {
       final AbstractStep step, final Module module,
       final boolean copyResultsToOutput) {
 
-    checkNotNull(workflow, "workflow argument cannot be null");
-    checkNotNull(step, "step argument cannot be null");
-    checkNotNull(module, "module argument cannot be null");
+    requireNonNull(workflow, "workflow argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
+    requireNonNull(module, "module argument cannot be null");
 
     if (this.hadoopMode
         && ExecutionMode.getExecutionMode(module.getClass())
@@ -98,9 +98,9 @@ class StepOutputDirectory {
   public DataFile workingDirectory(final AbstractWorkflow workflow,
       final AbstractStep step, final Module module) {
 
-    checkNotNull(workflow, "workflow argument cannot be null");
-    checkNotNull(step, "step argument cannot be null");
-    checkNotNull(module, "module argument cannot be null");
+    requireNonNull(workflow, "workflow argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
+    requireNonNull(module, "module argument cannot be null");
 
     if (this.hadoopMode
         && ExecutionMode.getExecutionMode(module.getClass())
@@ -121,9 +121,9 @@ class StepOutputDirectory {
   public DataFile workflowDirectory(final AbstractWorkflow workflow,
       final AbstractStep step, final Module module) {
 
-    checkNotNull(workflow, "workflow argument cannot be null");
-    checkNotNull(step, "step argument cannot be null");
-    checkNotNull(module, "module argument cannot be null");
+    requireNonNull(workflow, "workflow argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
+    requireNonNull(module, "module argument cannot be null");
 
     if (EoulsanAnnotationUtils.isNoOutputDirectory(module)) {
       return workflow.getOutputDirectory();

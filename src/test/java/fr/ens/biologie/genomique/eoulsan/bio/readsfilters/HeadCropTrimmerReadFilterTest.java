@@ -20,8 +20,7 @@ public class HeadCropTrimmerReadFilterTest {
     filter.setParameter("arguments", "5");
     filter.init();
 
-    ReadSequence read =
-        new ReadSequence("read1", "AGGGGGCAAA", "xwxwxxabcd");
+    ReadSequence read = new ReadSequence("read1", "AGGGGGCAAA", "xwxwxxabcd");
     assertTrue(filter.accept(read));
     assertEquals("read1", read.getName());
     assertEquals("GCAAA", read.getSequence());

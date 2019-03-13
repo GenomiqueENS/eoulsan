@@ -74,6 +74,7 @@ public abstract class MapperProcess {
 
   private final File temporaryDirectory;
 
+  private String commandLine;
   private ReporterIncrementer incrementer;
   private String counterGroup;
 
@@ -520,6 +521,14 @@ public abstract class MapperProcess {
     }
   }
 
+  /**
+   * Return the executed command line.
+   * @return the executed command line
+   */
+  public String getCommandLine() {
+    return this.commandLine;
+  }
+
   //
   // Setters
   //
@@ -745,6 +754,7 @@ public abstract class MapperProcess {
       throws IOException, InterruptedException {
 
     final List<List<String>> cmds = createCommandLines();
+    this.commandLine = commandLinesToString(cmds);
     final File executionDirectory =
         executionDirectory() == null ? tmpDirectory : executionDirectory();
 
@@ -841,6 +851,40 @@ public abstract class MapperProcess {
 
   protected void additionalInit() throws IOException {
 
+  }
+
+  /**
+   * Convert command lines to a String.
+   * @param cmds the command lines
+   * @return a String with the command lines
+   */
+  private static String commandLinesToString(List<List<String>> cmds) {
+
+    if (cmds == null) {
+      return "";
+    }
+
+    boolean first = true;
+
+    StringBuilder sb = new StringBuilder();
+
+    for (List<String> cmd : cmds) {
+
+      if (cmd == null) {
+        continue;
+      }
+
+      if (first) {
+        first = false;
+      } else {
+        sb.append(" ; ");
+      }
+
+      sb.append(String.join(" ", cmd));
+
+    }
+
+    return sb.toString();
   }
 
   //

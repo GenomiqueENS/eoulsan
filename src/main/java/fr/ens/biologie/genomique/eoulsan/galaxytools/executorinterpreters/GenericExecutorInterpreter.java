@@ -1,7 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanRuntime.getSettings;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class GenericExecutorInterpreter extends AbstractExecutorInterpreter {
   @Override
   public List<String> createCommandLine(final String arguments) {
 
-    checkNotNull(arguments, "arguments argument cannot be null");
+    requireNonNull(arguments, "arguments argument cannot be null");
 
     final List<String> result = new ArrayList<>();
     result.add(getInterpreterPath().getAbsolutePath());
@@ -95,7 +95,7 @@ public class GenericExecutorInterpreter extends AbstractExecutorInterpreter {
    */
   public GenericExecutorInterpreter(final String interpreterName) {
 
-    checkNotNull(interpreterName, "interpreterName argument cannot be null");
+    requireNonNull(interpreterName, "interpreterName argument cannot be null");
 
     this.name = interpreterName;
 

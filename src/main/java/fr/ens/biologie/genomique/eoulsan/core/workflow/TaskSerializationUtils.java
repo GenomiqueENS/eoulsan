@@ -24,10 +24,10 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_DATA_EXTENSION;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_RESULT_EXTENSION;
+import static java.util.Objects.requireNonNull;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -58,7 +58,7 @@ public class TaskSerializationUtils {
   public static final TaskResultImpl execute(final DataFile taskContextFile)
       throws IOException, EoulsanException {
 
-    checkNotNull(taskContextFile, "contextFile argument cannot be null");
+    requireNonNull(taskContextFile, "contextFile argument cannot be null");
 
     return execute(taskContextFile, taskContextFile.getParent());
   }
@@ -75,8 +75,8 @@ public class TaskSerializationUtils {
   public static final TaskResultImpl execute(final DataFile taskContextFile,
       final DataFile outputDir) throws IOException, EoulsanException {
 
-    checkNotNull(taskContextFile, "contextFile argument cannot be null");
-    checkNotNull(outputDir, "taskResultFile argument cannot be null");
+    requireNonNull(taskContextFile, "contextFile argument cannot be null");
+    requireNonNull(outputDir, "taskResultFile argument cannot be null");
 
     if (!taskContextFile.exists()) {
       throw new FileNotFoundException(

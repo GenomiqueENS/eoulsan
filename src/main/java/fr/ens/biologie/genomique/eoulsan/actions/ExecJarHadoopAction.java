@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.actions;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -142,7 +142,7 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // parse the command line arguments
       final CommandLine line = parser.parse(options,
-          arguments.toArray(new String[arguments.size()]), true);
+          arguments.toArray(new String[0]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -270,9 +270,9 @@ public class ExecJarHadoopAction extends AbstractAction {
       final String jobDescription, final String jobEnvironment,
       final long millisSinceEpoch) {
 
-    checkNotNull(workflowPathname, "workflowPathname is null");
-    checkNotNull(designPathname, "designPathname is null");
-    checkNotNull(destPathname, "destPathname is null");
+    requireNonNull(workflowPathname, "workflowPathname is null");
+    requireNonNull(designPathname, "designPathname is null");
+    requireNonNull(destPathname, "destPathname is null");
 
     final String desc;
     final String env;

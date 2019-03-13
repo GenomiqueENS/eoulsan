@@ -346,7 +346,7 @@ public class Infos {
   /**
    * Log a list of Info.
    * @param level Log level
-   * @param listInfos the list of info to log
+   * @param info info to log
    */
   public static void log(final Level level, final Info info) {
 
@@ -466,6 +466,7 @@ public class Infos {
     li.add("Java vendor", System.getProperty("java.vendor"));
     li.add("Java vm name", System.getProperty("java.vm.name"));
     li.add("Java version", System.getProperty("java.version"));
+    li.add("Java max memory", "" + Runtime.getRuntime().maxMemory());
 
     return li.getList();
   }
@@ -714,7 +715,7 @@ public class Infos {
 
     Set<Info> set = new LinkedHashSet<>();
 
-    for (String p : new HashSet<String>(Arrays.asList("/", "/tmp", "/var",
+    for (String p : new HashSet<>(Arrays.asList("/", "/tmp", "/var",
         settings.getTempDirectory(), settings.getExecutablesTempDirectory()))) {
 
       if (p != null) {

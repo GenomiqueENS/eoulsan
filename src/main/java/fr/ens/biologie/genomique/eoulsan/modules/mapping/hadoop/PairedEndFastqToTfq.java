@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -93,10 +93,10 @@ public class PairedEndFastqToTfq {
       final DataFile outputFile, final int reducerTaskCount)
       throws IOException {
 
-    checkNotNull(parentConf, "parentConf argument cannot be null");
-    checkNotNull(fastqFile1, "fastqFile1 argument cannot be null");
-    checkNotNull(fastqFile2, "fastqFile2 argument cannot be null");
-    checkNotNull(outputFile, "outputFile argument cannot be null");
+    requireNonNull(parentConf, "parentConf argument cannot be null");
+    requireNonNull(fastqFile1, "fastqFile1 argument cannot be null");
+    requireNonNull(fastqFile2, "fastqFile2 argument cannot be null");
+    requireNonNull(outputFile, "outputFile argument cannot be null");
 
     return convert(parentConf, new Path(fastqFile1.getSource()),
         new Path(fastqFile2.getSource()), new Path(outputFile.getSource()),
@@ -117,10 +117,10 @@ public class PairedEndFastqToTfq {
       final Path fastqFile1, final Path fastqFile2, final Path outputFile,
       final int reducerTaskCount) throws IOException {
 
-    checkNotNull(parentConf, "parentConf argument cannot be null");
-    checkNotNull(fastqFile1, "fastqFile1 argument cannot be null");
-    checkNotNull(fastqFile2, "fastqFile2 argument cannot be null");
-    checkNotNull(outputFile, "outputFile argument cannot be null");
+    requireNonNull(parentConf, "parentConf argument cannot be null");
+    requireNonNull(fastqFile1, "fastqFile1 argument cannot be null");
+    requireNonNull(fastqFile2, "fastqFile2 argument cannot be null");
+    requireNonNull(outputFile, "outputFile argument cannot be null");
 
     final Configuration jobConf = new Configuration(parentConf);
 

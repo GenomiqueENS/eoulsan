@@ -24,11 +24,11 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.generators;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_FASTA;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsMapperModule.MAPPER_FLAVOR_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsMapperModule.MAPPER_VERSION_PARAMETER_NAME;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -199,8 +199,8 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
       final Map<String, String> additionalDescription, final int threadCount)
       throws IOException, EoulsanException {
 
-    checkNotNull(mapper, "mapper argument cannot be null");
-    checkNotNull(context, "context argument cannot be null");
+    requireNonNull(mapper, "mapper argument cannot be null");
+    requireNonNull(context, "context argument cannot be null");
 
     // Set default value for arguments if needed
     final String args = additionalArguments != null ? additionalArguments : "";

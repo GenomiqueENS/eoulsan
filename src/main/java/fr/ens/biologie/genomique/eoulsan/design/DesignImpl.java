@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.design;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ class DesignImpl implements Serializable, Design {
   @Override
   public void setName(String newDesignName) {
 
-    checkNotNull(newDesignName, "newDesignName argument cannot be null");
+    requireNonNull(newDesignName, "newDesignName argument cannot be null");
 
     this.designName = newDesignName.trim();
   }
@@ -71,7 +71,7 @@ class DesignImpl implements Serializable, Design {
   @Override
   public Sample getSample(final String sampleId) {
 
-    checkNotNull(sampleId, "sampleId argument cannot be null");
+    requireNonNull(sampleId, "sampleId argument cannot be null");
 
     final String id = sampleId.trim();
 
@@ -90,7 +90,7 @@ class DesignImpl implements Serializable, Design {
   @Override
   public Experiment getExperiment(String experimentId) {
 
-    checkNotNull(experimentId, "experimentId argument cannot be null");
+    requireNonNull(experimentId, "experimentId argument cannot be null");
 
     final String id = experimentId.trim();
 
@@ -132,7 +132,7 @@ class DesignImpl implements Serializable, Design {
   @Override
   public void removeSample(String sampleId) {
 
-    checkNotNull(sampleId, "sampleId argument cannot be null");
+    requireNonNull(sampleId, "sampleId argument cannot be null");
     checkArgument(this.samples.containsKey(sampleId),
         "The sample does not exists in the design: " + sampleId);
 
@@ -142,7 +142,7 @@ class DesignImpl implements Serializable, Design {
   @Override
   public void removeExperiment(String experimentId) {
 
-    checkNotNull(experimentId, "experimentId argument cannot be null");
+    requireNonNull(experimentId, "experimentId argument cannot be null");
     checkArgument(this.experiments.containsKey(experimentId.trim()),
         "The experiment does not exists in the design: " + experimentId);
 
@@ -168,7 +168,7 @@ class DesignImpl implements Serializable, Design {
   @Override
   public boolean containsSampleName(final String sampleName) {
 
-    checkNotNull(sampleName, "sampleName argument cannot be null");
+    requireNonNull(sampleName, "sampleName argument cannot be null");
 
     final String name = sampleName.trim();
 
@@ -185,7 +185,7 @@ class DesignImpl implements Serializable, Design {
   @Override
   public boolean containsExperimentName(final String experimentName) {
 
-    checkNotNull(experimentName, "sampleName argument cannot be null");
+    requireNonNull(experimentName, "sampleName argument cannot be null");
 
     final String name = experimentName.trim();
 
@@ -206,7 +206,7 @@ class DesignImpl implements Serializable, Design {
   @Override
   public SampleImpl addSample(String sampleId) {
 
-    checkNotNull(sampleId, "sampleId argument cannot be null");
+    requireNonNull(sampleId, "sampleId argument cannot be null");
 
     final String id = sampleId.trim();
 
@@ -225,7 +225,7 @@ class DesignImpl implements Serializable, Design {
   @Override
   public Experiment addExperiment(String experimentId) {
 
-    checkNotNull(experimentId, "experimentId argument cannot be null");
+    requireNonNull(experimentId, "experimentId argument cannot be null");
 
     final String id = experimentId.trim();
 
@@ -249,7 +249,7 @@ class DesignImpl implements Serializable, Design {
   @Override
   public List<Experiment> getExperimentsUsingASample(final Sample sample) {
 
-    checkNotNull(sample, "sample argument cannot be null");
+    requireNonNull(sample, "sample argument cannot be null");
 
     final List<Experiment> result = new ArrayList<>();
 

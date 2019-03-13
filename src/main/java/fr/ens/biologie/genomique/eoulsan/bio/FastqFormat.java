@@ -30,7 +30,6 @@ import static java.lang.Math.log10;
 import static java.lang.Math.max;
 import static java.lang.Math.pow;
 import static java.lang.Math.round;
-import static java.util.Collections.EMPTY_SET;
 import static java.util.Collections.unmodifiableSet;
 
 import java.io.IOException;
@@ -93,11 +92,10 @@ public enum FastqFormat {
    * Get the alias for the name of this format.
    * @return a set of string with the alias names
    */
-  @SuppressWarnings("unchecked")
   public Set<String> getAlias() {
 
     if (this.alias == null) {
-      return EMPTY_SET;
+      return Collections.emptySet();
     }
 
     return unmodifiableSet(this.alias);

@@ -108,6 +108,7 @@
                       <li>FastQC</li>
                       <li>MultiQC</li>
                       <li>sam2bam</li>
+                      <li>splice2bed</li>
                       <li>bam2sam</li>
                       <li>sam2fastq</li>
                       <li>shell</li>
@@ -115,6 +116,7 @@
                       <li>diffana additional annotation</li>
                       <li>import</li>
                       <li>technicalreplicatemerger</li>
+                      <li>Bioconductor SingleCellExperiment object creator</li>
                     </ul>
                   </li>
 		  <li>Separate log file for each step</li>
@@ -132,6 +134,10 @@
 		  <li>New enhanced design file format</li>
 		  <li>New step for normalization and differential analysis using DESeq2</li>
 		  <li>R code can be executed on local system, on a Rserve server or in a Docker container</li>
+		  <li>New Eoulsan actions: info, modules and formats to get the Eoulsan configuration and the list of available modules and formats.</li>
+		  <li>A "eoulsan-data" directory is now created when no repository for mapper indexes or genome description are defined. This new directory avoid to relaunch the index or genome description computation.</li>
+		  <li>Support for Java 8, 9 and 10.</li>
+		  <li>The Eoulsan HTSeq-count implementation has now the same features as the original HTSeq-count.</li>
 		  <li>And many other enhancements,  see the <a href="changes-report.html#@@@VERSION@@@">full changelog</a> for more information</li>
 		</ul>
 		

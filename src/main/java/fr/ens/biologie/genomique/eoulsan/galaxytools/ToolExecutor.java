@@ -24,8 +24,8 @@
 package fr.ens.biologie.genomique.eoulsan.galaxytools;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -123,14 +123,13 @@ public class ToolExecutor {
    */
   private static File[] toArray(Collection<File> collection, File... files) {
 
-    final List<File> list = new ArrayList<>();
-    list.addAll(collection);
+    final List<File> list = new ArrayList<>(collection);
 
     if (files != null) {
       list.addAll(Arrays.asList(files));
     }
 
-    return list.toArray(new File[list.size()]);
+    return list.toArray(new File[0]);
   }
 
   //
@@ -148,8 +147,8 @@ public class ToolExecutor {
   public ToolExecutor(final TaskContext context, final ToolInfo toolData,
       final String commandLine, final Set<File> inputFiles) throws IOException {
 
-    checkNotNull(commandLine, "commandLine is null.");
-    checkNotNull(context, "Step context is null.");
+    requireNonNull(commandLine, "commandLine is null.");
+    requireNonNull(context, "Step context is null.");
 
     this.toolData = toolData;
     this.commandLine = commandLine.trim();

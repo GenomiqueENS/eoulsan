@@ -24,13 +24,13 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.CONFIGURED;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.CREATED;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.DONE;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.READY;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WAITING;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -240,7 +240,7 @@ public class StepStateDependencies implements Serializable {
    */
   public StepStateDependencies(final AbstractStep step) {
 
-    checkNotNull(step, "step cannot be null");
+    requireNonNull(step, "step cannot be null");
 
     this.step = step;
 

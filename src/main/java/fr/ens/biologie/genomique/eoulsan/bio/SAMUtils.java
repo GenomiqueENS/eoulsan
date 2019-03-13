@@ -307,6 +307,8 @@ public class SAMUtils {
     result.setStart(record.getAlignmentStart());
     result.setEnd(record.getAlignmentEnd());
     result.setName(record.getReadName());
+    result.setThickStart(record.getAlignmentStart());
+    result.setThickEnd(record.getAlignmentEnd());
 
     if (!record.getReadUnmappedFlag()) {
       result.setStrand(record.getReadNegativeStrandFlag() ? '-' : '+');

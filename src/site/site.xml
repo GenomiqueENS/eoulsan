@@ -88,6 +88,7 @@
 				<item name="Differential analysis" href="/module-diffana.html" />
 				<item name="Differential analysis annotation" href="/module-diffanaresultsannotation.html" />
 				<item name="Differential analysis with DESeq2" href="/module-DESeq2.html" />
+				<item name="R SingleCellExperiment creator" href="/module-rsinglecellexperimentcreator.html" />
 				<item name="Splitters and mergers" href="/module-splitters-mergers.html" />
 				<item name="Shell" href="module-shell.html" />
 				<item name="Import" href="module-import.html" />

@@ -24,10 +24,10 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.google.common.base.Preconditions;
 
 /**
  * This class store all the TokenManager instances.
@@ -47,7 +47,7 @@ public class TokenManagerRegistry {
    */
   TokenManager getTokenManager(final AbstractStep step) {
 
-    Preconditions.checkNotNull(step, "step cannot be null");
+    requireNonNull(step, "step cannot be null");
 
     if (!this.map.containsKey(step)) {
       this.map.put(step, new TokenManager(step));

@@ -485,7 +485,7 @@ public class HTSeqCountTest {
     for (GFFEntry e : annotation) {
 
       String chromosome = e.getSeqId();
-      Integer max = Integer.valueOf(Math.max(e.getStart(), e.getEnd()));
+      Integer max = Math.max(e.getStart(), e.getEnd());
 
       if (!chromosomeSizes.containsKey(chromosome)) {
         chromosomeSizes.put(chromosome, max);

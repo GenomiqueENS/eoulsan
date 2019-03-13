@@ -31,8 +31,8 @@ public class NanoporeSequenceTypeFilterTest {
         "ABC");
     assertFalse(filter.accept(read));
 
-    read = new ReadSequence("e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd", "ATG",
-        "ABC");
+    read =
+        new ReadSequence("e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd", "ATG", "ABC");
     assertFalse(filter.accept(read));
 
     read = new ReadSequence("foobar", "ATG", "ABC");
@@ -56,8 +56,8 @@ public class NanoporeSequenceTypeFilterTest {
         "ABC");
     assertTrue(filter.accept(read));
 
-    read = new ReadSequence("e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd", "ATG",
-        "ABC");
+    read =
+        new ReadSequence("e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd", "ATG", "ABC");
     assertFalse(filter.accept(read));
 
     read = new ReadSequence("foobar", "ATG", "ABC");
@@ -79,8 +79,8 @@ public class NanoporeSequenceTypeFilterTest {
         "ABC");
     assertFalse(filter.accept(read));
 
-    read = new ReadSequence("e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd", "ATG",
-        "ABC");
+    read =
+        new ReadSequence("e122e34a-80bf-4fd6-bdbf-d1d3cb44f3bd", "ATG", "ABC");
     assertTrue(filter.accept(read));
 
     read = new ReadSequence("foobar", "ATG", "ABC");

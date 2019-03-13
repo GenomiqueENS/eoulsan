@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.annotations;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 
@@ -116,8 +116,8 @@ public class EoulsanAnnotationUtils {
   private static boolean isAnnotation(final Module module,
       Class<? extends Annotation> clazz) {
 
-    checkNotNull(module, "module argument cannot be null");
-    checkNotNull(clazz, "clazz argument cannot be null");
+    requireNonNull(module, "module argument cannot be null");
+    requireNonNull(clazz, "clazz argument cannot be null");
 
     return module.getClass().getAnnotation(clazz) != null;
   }

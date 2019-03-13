@@ -24,12 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.getAllSamplesMetadataKeys;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.getExperimentSampleAllMetadataKeys;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.referenceValueToInt;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toCompactTime;
 import static java.util.Arrays.asList;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -138,7 +138,7 @@ public class DESeq2 {
     public static SizeFactorsType get(final Parameter parameter)
         throws EoulsanException {
 
-      checkNotNull(parameter, "parameter argument cannot be null");
+      requireNonNull(parameter, "parameter argument cannot be null");
 
       final String lowerName = parameter.getLowerStringValue().trim();
 
@@ -180,7 +180,7 @@ public class DESeq2 {
      */
     public static FitType get(final String name) throws EoulsanException {
 
-      checkNotNull(name, "fitType argument cannot be null");
+      requireNonNull(name, "fitType argument cannot be null");
 
       final String lowerName = name.trim().toLowerCase();
 
@@ -229,7 +229,7 @@ public class DESeq2 {
      */
     public static StatisticTest get(final String name) throws EoulsanException {
 
-      checkNotNull(name, "statisticTest cargument annot be null");
+      requireNonNull(name, "statisticTest cargument annot be null");
 
       final String lowerName = name.trim().toLowerCase();
 
@@ -443,8 +443,8 @@ public class DESeq2 {
   private String[] createNormDiffanaCommandLine(
       final String deseq2DesignFileName, final String contrastFilename) {
 
-    final List<String> command = new ArrayList<>();
-    command.addAll(asList(booleanParameter(normFig), booleanParameter(diffana),
+    final List<String> command = new ArrayList<>(
+      asList(booleanParameter(normFig), booleanParameter(diffana),
         booleanParameter(diffanaFig)));
 
     // Define contrast file
@@ -462,7 +462,7 @@ public class DESeq2 {
         this.statisticTest.toDESeq2Value(), contrastFilename,
         this.stepId + "_"));
 
-    return command.toArray(new String[command.size()]);
+    return command.toArray(new String[0]);
   }
 
   /**
@@ -659,15 +659,15 @@ public class DESeq2 {
       final FitType fitType, final StatisticTest statisticTest,
       boolean saveRScripts) {
 
-    checkNotNull(stepId, "stepId argument cannot be null");
-    checkNotNull(executor, "executor argument cannot be null");
-    checkNotNull(design, "design argument cannot be null");
-    checkNotNull(experiment, "experiment argument cannot be null");
-    checkNotNull(sampleFiles, "sampleFiles argument cannot be null");
+    requireNonNull(stepId, "stepId argument cannot be null");
+    requireNonNull(executor, "executor argument cannot be null");
+    requireNonNull(design, "design argument cannot be null");
+    requireNonNull(experiment, "experiment argument cannot be null");
+    requireNonNull(sampleFiles, "sampleFiles argument cannot be null");
 
-    checkNotNull(sizeFactorsType, "sizeFactorsType argument cannot be null");
-    checkNotNull(fitType, "fitType argument cannot be null");
-    checkNotNull(statisticTest, "statisticTest argument cannot be null");
+    requireNonNull(sizeFactorsType, "sizeFactorsType argument cannot be null");
+    requireNonNull(fitType, "fitType argument cannot be null");
+    requireNonNull(statisticTest, "statisticTest argument cannot be null");
 
     this.stepId = stepId;
 

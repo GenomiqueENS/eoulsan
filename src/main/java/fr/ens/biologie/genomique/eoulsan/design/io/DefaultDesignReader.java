@@ -1,6 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.design.io;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,7 +41,7 @@ public class DefaultDesignReader implements DesignReader {
    */
   public DefaultDesignReader(final File file) throws FileNotFoundException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     this.is = new FileInputStream(file);
   }
@@ -53,7 +53,7 @@ public class DefaultDesignReader implements DesignReader {
    */
   public DefaultDesignReader(final DataFile file) throws IOException {
 
-    checkNotNull(file, "file argument cannot be null");
+    requireNonNull(file, "file argument cannot be null");
 
     this.is = file.open();
   }
@@ -65,7 +65,7 @@ public class DefaultDesignReader implements DesignReader {
    */
   public DefaultDesignReader(final InputStream is) throws IOException {
 
-    checkNotNull(is, "is argument cannot be null");
+    requireNonNull(is, "is argument cannot be null");
 
     this.is = is;
   }
@@ -78,7 +78,7 @@ public class DefaultDesignReader implements DesignReader {
   public DefaultDesignReader(final String filename)
       throws FileNotFoundException {
 
-    checkNotNull(filename, "filename argument cannot be null");
+    requireNonNull(filename, "filename argument cannot be null");
 
     this.is = new FileInputStream(filename);
   }

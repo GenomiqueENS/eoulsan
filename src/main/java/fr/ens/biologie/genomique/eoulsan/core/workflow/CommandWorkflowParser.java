@@ -258,25 +258,29 @@ public class CommandWorkflowParser {
                     STEPNAME_TAG_NAME, NAME_TAG_NAME, VERSION_TAG,
                     INPUTS_TAG_NAME, PARAMETERS_TAG_NAME);
 
-                final String stepId = eStepElement
-                    .getAttribute(ID_ATTR_NAME_STEP_TAG).trim().toLowerCase();
+                final String stepId =
+                    getAttribute(eStepElement, ID_ATTR_NAME_STEP_TAG).trim()
+                        .toLowerCase();
 
                 final boolean skip = Boolean.parseBoolean(
-                    eStepElement.getAttribute(SKIP_ATTR_NAME_STEP_TAG).trim()
+                    getAttribute(eStepElement, SKIP_ATTR_NAME_STEP_TAG).trim()
                         .toLowerCase());
 
-                final int requiredMemory = parseMemory(
-                    eStepElement.getAttribute(REQUIRED_MEM_ATTR_NAME_STEP_TAG));
+                final int requiredMemory =
+                    parseMemory(getAttribute(eStepElement,
+                        REQUIRED_MEM_ATTR_NAME_STEP_TAG));
 
-                final int requiredProcs = parseProcessors(
-                    eStepElement.getAttribute(REQUIRED_CPU_ATTR_NAME_STEP_TAG));
+                final int requiredProcs =
+                    parseProcessors(getAttribute(eStepElement,
+                        REQUIRED_CPU_ATTR_NAME_STEP_TAG));
 
                 final Step.DiscardOutput discardOutput =
-                    Step.DiscardOutput.parse(eStepElement
-                        .getAttribute(DISCARDOUTPUT_ATTR_NAME_STEP_TAG));
+                    Step.DiscardOutput.parse(getAttribute(eStepElement,
+                        DISCARDOUTPUT_ATTR_NAME_STEP_TAG));
 
-                final String dataProduct = eStepElement
-                    .getAttribute(DATAPRODUCT_ATTR_NAME_STEP_TAG).trim();
+                final String dataProduct =
+                    getAttribute(eStepElement, DATAPRODUCT_ATTR_NAME_STEP_TAG)
+                        .trim();
 
                 // Parse the module tags
                 String module = getTagValue(MODULE_TAG_NAME, eStepElement);
@@ -779,6 +783,20 @@ public class CommandWorkflowParser {
   //
   // Parsing methods
   //
+
+  /**
+   * Get the value of an XML tag attribute and evaluate it if necessary.
+   * @param eStepElement the XML tag element
+   * @param name the name of the attribute
+   * @return the value of the attribute
+   * @throws EoulsanException if an error occurs while getting the value of the
+   *           attribute
+   */
+  private String getAttribute(Element eStepElement, final String name)
+      throws EoulsanException {
+
+    return evaluateExpressions(eStepElement.getAttribute(name), true);
+  }
 
   /**
    * Parse the required processors attribute.

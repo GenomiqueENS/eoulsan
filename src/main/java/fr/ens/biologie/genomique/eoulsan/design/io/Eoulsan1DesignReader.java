@@ -24,12 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.design.io;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignMetadata.ADDITIONAL_ANNOTATION_FILE_KEY;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignMetadata.GENOME_FILE_KEY;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignMetadata.GFF_FILE_KEY;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignMetadata.GTF_FILE_KEY;
 import static java.util.Collections.unmodifiableMap;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -268,7 +268,7 @@ public class Eoulsan1DesignReader implements DesignReader {
    */
   public Eoulsan1DesignReader(final File file) throws FileNotFoundException {
 
-    checkNotNull(file, "the file argument cannot be null");
+    requireNonNull(file, "the file argument cannot be null");
 
     this.is = new FileInputStream(file);
   }
@@ -280,7 +280,7 @@ public class Eoulsan1DesignReader implements DesignReader {
    */
   public Eoulsan1DesignReader(final InputStream is) throws IOException {
 
-    checkNotNull(is, "the is argument cannot be null");
+    requireNonNull(is, "the is argument cannot be null");
 
     this.is = is;
   }
@@ -292,7 +292,7 @@ public class Eoulsan1DesignReader implements DesignReader {
    */
   public Eoulsan1DesignReader(final DataFile file) throws IOException {
 
-    checkNotNull(file, "the file argument cannot be null");
+    requireNonNull(file, "the file argument cannot be null");
 
     this.is = file.open();
   }
@@ -305,7 +305,7 @@ public class Eoulsan1DesignReader implements DesignReader {
   public Eoulsan1DesignReader(final String filename)
       throws FileNotFoundException {
 
-    checkNotNull(filename, "the filename argument cannot be null");
+    requireNonNull(filename, "the filename argument cannot be null");
 
     this.is = new FileInputStream(filename);
   }

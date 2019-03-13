@@ -24,13 +24,13 @@
 
 package fr.ens.biologie.genomique.eoulsan.ui;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.ABORTED;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.DONE;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.FAILED;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.PARTIALLY_DONE;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
 import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,7 +83,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   @Override
   public void init(final Workflow workflow) {
 
-    checkNotNull(workflow, "workflow is null");
+    requireNonNull(workflow, "workflow is null");
     this.workflow = workflow;
 
     // Search step to follow

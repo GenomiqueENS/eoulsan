@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.List;
@@ -169,7 +169,7 @@ class SampleMetadataImpl extends AbstractMetadata
   @Override
   public void setFastqFormat(FastqFormat newfastqFormat) {
 
-    checkNotNull(newfastqFormat, "FastqFormat is null");
+    requireNonNull(newfastqFormat, "FastqFormat is null");
 
     set(FASTQ_FORMAT_KEY, newfastqFormat.getName());
   }

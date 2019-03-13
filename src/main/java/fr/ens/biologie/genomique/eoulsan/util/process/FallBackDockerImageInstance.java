@@ -1,10 +1,10 @@
 package fr.ens.biologie.genomique.eoulsan.util.process;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.util.process.SpotifyDockerImageInstance.convertNFSFileToMountPoint;
 import static fr.ens.biologie.genomique.eoulsan.util.process.SpotifyDockerImageInstance.fileIndirections;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +17,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
+import fr.ens.biologie.genomique.eoulsan.util.Utils;
 
 /**
  * This class define a Docker image instance using the Docker command line.
@@ -39,16 +40,16 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
       final File stderrFile, final boolean redirectErrorStream,
       final File... filesUsed) throws IOException {
 
-    checkNotNull(commandLine, "commandLine argument cannot be null");
-    checkNotNull(stdoutFile, "stdoutFile argument cannot be null");
-    checkNotNull(stderrFile, "stderrFile argument cannot be null");
+    requireNonNull(commandLine, "commandLine argument cannot be null");
+    requireNonNull(stdoutFile, "stdoutFile argument cannot be null");
+    requireNonNull(stderrFile, "stderrFile argument cannot be null");
 
     EoulsanLogger.getLogger().fine(getClass().getSimpleName()
         + ": commandLine=" + commandLine + ", executionDirectory="
         + executionDirectory + ", environmentVariables=" + environmentVariables
         + ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile="
         + stdoutFile + ", stderrFile=" + stderrFile + ", redirectErrorStream="
-        + redirectErrorStream + ", filesUsed" + Arrays.toString(filesUsed));
+        + redirectErrorStream + ", filesUsed=" + Arrays.toString(filesUsed));
 
     if (executionDirectory != null) {
       checkArgument(executionDirectory.isDirectory(),
@@ -66,7 +67,7 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
     // File/directories to mount
     List<File> directoriesToBind = new ArrayList<>();
     if (filesUsed != null) {
-      directoriesToBind.addAll(Arrays.asList(filesUsed));
+      directoriesToBind.addAll(Arrays.asList(Utils.filterNull(filesUsed)));
     }
 
     // Execution directory
@@ -203,7 +204,7 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
    */
   FallBackDockerImageInstance(final String dockerImage) {
 
-    checkNotNull(dockerImage, "dockerImage argument cannot be null");
+    requireNonNull(dockerImage, "dockerImage argument cannot be null");
 
     EoulsanLogger.getLogger().fine(
         getClass().getSimpleName() + " docker image used: " + dockerImage);

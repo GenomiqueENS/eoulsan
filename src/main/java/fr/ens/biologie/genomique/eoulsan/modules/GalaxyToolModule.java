@@ -164,6 +164,9 @@ public class GalaxyToolModule extends AbstractModule {
               + e.getMessage());
     }
 
+    // Set executed command line in status
+    status.setCommandLine(result.getCommandLineAsString());
+
     // Execution script fail, create an exception
     if (!result.isException()) {
       final Throwable e = result.getException();

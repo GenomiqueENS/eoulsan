@@ -3,6 +3,7 @@ package fr.ens.biologie.genomique.eoulsan.bio;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Test;
 
@@ -35,7 +36,7 @@ public class ExpressionMatricesTest {
 
     assertEquals(2, dest.getRowCount());
     assertEquals(1, dest.getColumnCount());
-    assertEquals(Arrays.asList("a"), dest.getColumnNames());
+    assertEquals(Collections.singletonList("a"), dest.getColumnNames());
 
     assertEquals(7.0, dest.getValue("row1", "a"), 0.0);
     assertEquals(307.0, dest.getValue("row2", "a"), 0.0);

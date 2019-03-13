@@ -1,7 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.util;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -45,7 +45,7 @@ public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
   protected InputStream getResourceAsStream(final String resourcePath)
       throws IOException {
 
-    checkNotNull(resourcePath, "resourcePath argument cannot be null");
+    requireNonNull(resourcePath, "resourcePath argument cannot be null");
 
     return new DataFile(resourcePath).open();
   }
@@ -174,7 +174,7 @@ public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
    */
   public void addResourcePaths(final Collection<String> resourcePaths) {
 
-    checkNotNull(resourcePaths, "resourcePaths argument cannot be null");
+    requireNonNull(resourcePaths, "resourcePaths argument cannot be null");
 
     for (String directory : resourcePaths) {
 
@@ -192,7 +192,7 @@ public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
    */
   public void addResourcePath(final DataFile resourcePath) {
 
-    checkNotNull(resourcePath, "baseDir argument cannot be null");
+    requireNonNull(resourcePath, "baseDir argument cannot be null");
 
     this.directories.add(resourcePath);
   }
@@ -204,7 +204,7 @@ public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
    */
   public boolean removeResourcePath(final DataFile resourcePath) {
 
-    checkNotNull(resourcePath, "baseDir argument cannot be null");
+    requireNonNull(resourcePath, "baseDir argument cannot be null");
 
     return this.directories.remove(resourcePath);
   }
@@ -220,7 +220,7 @@ public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
    */
   public FileResourceLoader(final Class<S> clazz, final DataFile resourcePath) {
 
-    checkNotNull(clazz, "clazz argument cannot be null");
+    requireNonNull(clazz, "clazz argument cannot be null");
 
     this.clazz = clazz;
     addResourcePath(resourcePath);

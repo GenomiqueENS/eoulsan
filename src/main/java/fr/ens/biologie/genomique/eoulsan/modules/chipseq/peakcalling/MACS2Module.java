@@ -41,6 +41,7 @@ import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
+import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
 import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
 
@@ -202,7 +203,7 @@ public class MACS2Module extends AbstractModule {
     }
 
     // The refSampleName correspond to the control (reference) of an experiment.
-    String refSampleName = "null";
+    String refSampleName = null;
 
     // First loop on Experiments.
     for (Experiment e : design.getExperiments()) {
@@ -224,7 +225,7 @@ public class MACS2Module extends AbstractModule {
         }
       }
 
-      if (refSampleName == "null") {
+      if (refSampleName == null) {
         getLogger().warning("No control for experiment : " + e.getName());
       }
 
@@ -236,7 +237,7 @@ public class MACS2Module extends AbstractModule {
           continue;
         }
 
-        if (refSampleName == expSam2.getSample().getName()) {
+        if (refSampleName.equals(expSam2.getSample().getName())) {
           getLogger().info("Skipping control file.");
           continue;
         }
@@ -244,23 +245,31 @@ public class MACS2Module extends AbstractModule {
         // Construct the command line
         List<String> commandLine = new ArrayList<String>();
 
+        // Get sample name
+        String sampleName =
+            nameMap.get(expSam2.getSample().getName()).getName();
+        getLogger().info("sampleName: " + sampleName);
+
+        // Define file variables
+        File sampleFile =
+            nameMap.get(expSam2.getSample().getName()).getDataFile().toFile();
+        File refFile = null;
+
         // First part of macs2 command
         commandLine.add("macs2");
         commandLine.add("callpeak");
 
         // Provide control and sample files
         commandLine.add("-t");
-        getLogger()
-            .info("nomSample : " + nameMap.get(expSam2.getSample().getName()));
-        commandLine
-            .add(nameMap.get(expSam2.getSample().getName()).getDataFilename());
+        commandLine.add(sampleFile.getAbsolutePath());
 
         // Test if there is a control for the experiment, if not the peak
         // calling will be performed
         // without control.
-        if (refSampleName != "null") {
+        if (refSampleName != null) {
           commandLine.add("-c");
-          commandLine.add(nameMap.get(refSampleName).getDataFilename());
+          refFile = nameMap.get(refSampleName).getDataFile().toFile();
+          commandLine.add(refFile.getAbsolutePath());
         }
 
         // If paired end
@@ -296,12 +305,16 @@ public class MACS2Module extends AbstractModule {
           commandLine.add("--bdg");
         }
 
-        commandLine.add(String.format("%s", extraArgs));
+        if (!this.extraArgs.trim().isEmpty()) {
+          commandLine.addAll(StringUtils.splitShellCommandLine(extraArgs));
+        }
 
         String commandLine2 = Joiner.on(" ").join(commandLine);
 
-        final File stdoutFile = new File("docker.out");
-        final File stderrFile = new File("docker.err");
+        final File stdoutFile =
+            new File(context.getStepOutputDirectory().toFile(), "macs2.out");
+        final File stderrFile =
+            new File(context.getStepOutputDirectory().toFile(), "macs2.err");
 
         getLogger().info("Run command line : " + commandLine2);
         try {
@@ -309,7 +322,8 @@ public class MACS2Module extends AbstractModule {
               DockerManager.getInstance().createImageInstance(dockerImage);
           final int exitValue = process.execute(commandLine,
               context.getStepOutputDirectory().toFile(),
-              context.getLocalTempDirectory(), stdoutFile, stderrFile);
+              context.getLocalTempDirectory(), stdoutFile, stderrFile,
+              sampleFile, refFile);
 
           ProcessUtils.throwExitCodeException(exitValue,
               Joiner.on(' ').join(commandLine));
@@ -359,53 +373,44 @@ public class MACS2Module extends AbstractModule {
         // If the file does exist, rename it to the name created by Eoulsan and
         // stored in data.getDataFile()
 
-        try {
-          DataFile sampleDataFolder = nameMap.get(expSam2.getSample().getName())
-              .getDataFile().getParent();
+        DataFile sampleDataFolder = context.getStepOutputDirectory();
 
-          // R model
-          final DataFile tmpRmodelFile =
-              new DataFile(sampleDataFolder, prefixOutputFiles + "_model.r");
-          if (tmpRmodelFile.exists()) {
-            tmpRmodelFile.toFile().renameTo(rModelData.getDataFile().toFile());
-          }
-
-          // Gapped peak
-          final DataFile tmpGappedPeakFile = new DataFile(sampleDataFolder,
-              prefixOutputFiles + "_peaks.gappedPeak");
-          if (tmpGappedPeakFile.exists()) {
-            tmpGappedPeakFile.toFile()
-                .renameTo(gappedPeakData.getDataFile().toFile());
-          }
-
-          // Peaks (Excel format)
-          final DataFile tmpPeakXlsFile =
-              new DataFile(sampleDataFolder, prefixOutputFiles + "_peaks.xls");
-          if (tmpPeakXlsFile.exists()) {
-            tmpPeakXlsFile.toFile()
-                .renameTo(peakXlsData.getDataFile().toFile());
-          }
-
-          // Peak
-          // Peak file extension depends on one of the command line options
-          final DataFile tmpPeakFile;
-          if (isBroad) {
-            tmpPeakFile = new DataFile(sampleDataFolder,
-                prefixOutputFiles + "_peaks.broadPeak");
-          } else {
-            tmpPeakFile = new DataFile(sampleDataFolder,
-                prefixOutputFiles + "_peaks.narrowPeak");
-          }
-          if (tmpPeakFile.exists()) {
-            tmpPeakFile.toFile().renameTo(peakData.getDataFile().toFile());
-          }
-
-        } catch (java.io.IOException err) {
-          getLogger().severe("Could not determine folder of sample data file "
-              + nameMap.get(expSam2.getSample().getName()).getDataFile()
-              + ". Error:" + err.toString()
-              + " \nMACS2 output files will not be renamed.");
+        // R model
+        final DataFile tmpRmodelFile =
+            new DataFile(sampleDataFolder, prefixOutputFiles + "_model.r");
+        if (tmpRmodelFile.exists()) {
+          tmpRmodelFile.toFile().renameTo(rModelData.getDataFile().toFile());
         }
+
+        // Gapped peak
+        final DataFile tmpGappedPeakFile = new DataFile(sampleDataFolder,
+            prefixOutputFiles + "_peaks.gappedPeak");
+        if (tmpGappedPeakFile.exists()) {
+          tmpGappedPeakFile.toFile()
+              .renameTo(gappedPeakData.getDataFile().toFile());
+        }
+
+        // Peaks (Excel format)
+        final DataFile tmpPeakXlsFile =
+            new DataFile(sampleDataFolder, prefixOutputFiles + "_peaks.xls");
+        if (tmpPeakXlsFile.exists()) {
+          tmpPeakXlsFile.toFile().renameTo(peakXlsData.getDataFile().toFile());
+        }
+
+        // Peak
+        // Peak file extension depends on one of the command line options
+        final DataFile tmpPeakFile;
+        if (isBroad) {
+          tmpPeakFile = new DataFile(sampleDataFolder,
+              prefixOutputFiles + "_peaks.broadPeak");
+        } else {
+          tmpPeakFile = new DataFile(sampleDataFolder,
+              prefixOutputFiles + "_peaks.narrowPeak");
+        }
+        if (tmpPeakFile.exists()) {
+          tmpPeakFile.toFile().renameTo(peakData.getDataFile().toFile());
+        }
+
       }
     }
 

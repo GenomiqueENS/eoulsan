@@ -30,7 +30,7 @@ public abstract class AbstractInfoAction extends AbstractAction {
   @Override
   public String getDescription() {
 
-    return "Get information about " + getName() + " configuration.";
+    return "show information about " + getName() + " configuration.";
   }
 
   @Override
@@ -43,7 +43,7 @@ public abstract class AbstractInfoAction extends AbstractAction {
 
       // parse the command line arguments
       final CommandLine line = parser.parse(options,
-          arguments.toArray(new String[arguments.size()]), true);
+          arguments.toArray(new String[0]), true);
 
       // Help option
       if (line.hasOption("help")) {

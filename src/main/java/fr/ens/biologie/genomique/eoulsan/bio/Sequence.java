@@ -357,18 +357,15 @@ public class Sequence {
       return Double.NaN;
     }
 
-    final int len = this.sequence.length();
-
     int count = 0;
 
-    for (int i = 0; i < len; i++) {
-
-      if (this.sequence.charAt(i) == 'G' || this.sequence.charAt(i) == 'C') {
+    for (char base : this.sequence.toCharArray()) {
+      if (base == 'G' || base == 'C') {
         count++;
       }
     }
 
-    return (double) count / (double) len;
+    return (double) count / (double) this.sequence.length();
   }
 
   /**
@@ -429,8 +426,8 @@ public class Sequence {
 
     final StringBuilder sb = new StringBuilder(len);
 
-    for (int i = 0; i < array.length; i++) {
-      sb.append(alphabet.getComplement(array[i]));
+    for (char base : array) {
+      sb.append(alphabet.getComplement(base));
     }
 
     return sb.toString();

@@ -26,7 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.data.storages;
 
 import static com.google.common.base.Strings.nullToEmpty;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.util.Utils.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -97,9 +97,9 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
       final GenomeDescription genome,
       final Map<String, String> additionalDescription) {
 
-    checkNotNull(mapperInstance, "Mapper is null");
-    checkNotNull(genome, "Genome description is null");
-    checkNotNull(additionalDescription, "additionalDescription is null");
+    requireNonNull(mapperInstance, "Mapper is null");
+    requireNonNull(genome, "Genome description is null");
+    requireNonNull(additionalDescription, "additionalDescription is null");
 
     final IndexEntry entry = this.entries
         .get(createKey(mapperInstance, genome, additionalDescription));
@@ -112,10 +112,10 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
       final Map<String, String> additionalDescription,
       final DataFile indexArchive) {
 
-    checkNotNull(mapper, "Mapper is null");
-    checkNotNull(genome, "Genome description is null");
-    checkNotNull(additionalDescription, "additionalDescription is null");
-    checkNotNull(indexArchive, "IndexArchive is null");
+    requireNonNull(mapper, "Mapper is null");
+    requireNonNull(genome, "Genome description is null");
+    requireNonNull(additionalDescription, "additionalDescription is null");
+    requireNonNull(indexArchive, "IndexArchive is null");
 
     // Update the index to avoid to lost entries when several instances of
     // Eoulsan are running
@@ -377,7 +377,7 @@ public class SimpleGenomeIndexStorage implements GenomeIndexStorage {
    */
   private SimpleGenomeIndexStorage(final DataFile dir) throws IOException {
 
-    checkNotNull(dir, "Index directory is null");
+    requireNonNull(dir, "Index directory is null");
 
     this.dir = dir;
     load();

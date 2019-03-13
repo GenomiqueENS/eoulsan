@@ -163,6 +163,7 @@ public class FastQCModule extends AbstractModule {
     // Define parameters of FastQC
     System.setProperty("java.awt.headless", "true");
     System.setProperty("fastqc.unzip", "true");
+    System.setProperty("javax.accessibility.assistive_technologies", "");
 
     // Parse step parameters to initialize module
     for (final Parameter p : stepParameters) {
@@ -374,7 +375,7 @@ public class FastQCModule extends AbstractModule {
    * @param modules the modules
    * @param seqFile the sequence file
    * @param htmlReportFile the report file
-   * @param zipReportFile the report file
+   * @param zipOutputFile the report file
    * @param tempDirectory temporary directory
    * @throws IOException Signals that an I/O exception has occurred.
    * @throws XMLStreamException the XML stream exception
@@ -394,7 +395,7 @@ public class FastQCModule extends AbstractModule {
 
     // Create the output report
     new HTMLReportArchive(seqFile,
-        modules.toArray(new QCModule[modules.size()]), reportTempFile);
+        modules.toArray(new QCModule[0]), reportTempFile);
 
     // Report zip filename
     final String baseFilename =

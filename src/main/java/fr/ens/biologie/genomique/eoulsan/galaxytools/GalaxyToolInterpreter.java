@@ -24,10 +24,10 @@
 
 package fr.ens.biologie.genomique.eoulsan.galaxytools;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractInputs;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractOutputs;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -608,7 +608,7 @@ public class GalaxyToolInterpreter {
   public GalaxyToolInterpreter(final InputStream in, final String toolSource)
       throws EoulsanException {
 
-    checkNotNull(in, "in argument cannot be null");
+    requireNonNull(in, "in argument cannot be null");
 
     this.toolXMLis = in;
     this.doc = buildDOM();

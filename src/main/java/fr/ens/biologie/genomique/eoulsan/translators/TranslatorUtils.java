@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.translators;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -41,8 +41,9 @@ import java.util.regex.Pattern;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Settings;
+import fr.ens.biologie.genomique.eoulsan.bio.AnnotationMatrix;
+import fr.ens.biologie.genomique.eoulsan.bio.io.TSVAnnotationMatrixReader;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.translators.io.MultiColumnTranslatorReader;
 import fr.ens.biologie.genomique.eoulsan.translators.io.TranslatorOutputFormat;
 
 /**
@@ -237,13 +238,15 @@ public class TranslatorUtils {
   public static Translator loadTranslator(final DataFile annotationFile,
       final DataFile linksFile) throws IOException {
 
-    checkNotNull(annotationFile, "annotationFile argument cannot be null");
+    requireNonNull(annotationFile, "annotationFile argument cannot be null");
 
     final Translator did = createDuplicatedEnsemblIdTranslator();
 
-    final CommonLinksInfoTranslator translator =
-        new CommonLinksInfoTranslator(new ConcatTranslator(did,
-            new MultiColumnTranslatorReader(annotationFile.open()).read()));
+    AnnotationMatrix matrix =
+        new TSVAnnotationMatrixReader(annotationFile.open()).read();
+
+    final CommonLinksInfoTranslator translator = new CommonLinksInfoTranslator(
+        new ConcatTranslator(did, new AnnotationMatrixTranslator(matrix)));
 
     // Load hypertext links
     updateLinks(translator, linksFile);

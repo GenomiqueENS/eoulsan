@@ -771,19 +771,9 @@ public class FileUtils {
 
     }
 
-    final FileChannel inChannel = new FileInputStream(srcFile).getChannel();
-    final FileChannel outChannel =
-        new FileOutputStream(myDestFile).getChannel();
-
-    try {
+    try (FileChannel inChannel = new FileInputStream(srcFile).getChannel();
+      FileChannel outChannel = new FileOutputStream(myDestFile).getChannel()) {
       inChannel.transferTo(0, inChannel.size(), outChannel);
-    } finally {
-      if (inChannel != null) {
-        inChannel.close();
-      }
-      if (outChannel != null) {
-        outChannel.close();
-      }
     }
 
     return true;

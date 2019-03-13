@@ -326,7 +326,7 @@ public class CommandWorkflow extends AbstractWorkflow {
           continue;
         } else {
           throw new EoulsanException("Requirement for step \""
-              + e.getKey().getId() + "\" is not available: " + r.getName());
+              + e.getKey().getId() + "\" is not available: " + r.toString());
         }
       }
 
@@ -871,8 +871,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
         // Remove indirect dependencies of the step to the set of the new
         // dependencies
-        Set<AbstractStep> newDependencies = new HashSet<>();
-        newDependencies.addAll(steps);
+        Set<AbstractStep> newDependencies = new HashSet<AbstractStep>(steps);
         newDependencies.removeAll(dependencies);
 
         // Remove steps after the current step

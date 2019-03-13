@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -101,7 +101,7 @@ public class ExperimentSampleImpl implements Serializable, ExperimentSample {
    */
   ExperimentSampleImpl(final Sample sample) {
 
-    checkNotNull(sample, "The sample argument cannot be null");
+    requireNonNull(sample, "The sample argument cannot be null");
 
     this.sample = sample;
   }

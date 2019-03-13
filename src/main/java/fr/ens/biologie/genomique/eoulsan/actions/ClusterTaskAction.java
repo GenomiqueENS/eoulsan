@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.actions;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -65,7 +65,13 @@ public class ClusterTaskAction extends AbstractAction {
   @Override
   public String getDescription() {
 
-    return "Execute a cluster task";
+    return "execute a cluster task";
+  }
+
+  @Override
+  public boolean isHidden() {
+
+    return true;
   }
 
   @Override
@@ -80,7 +86,7 @@ public class ClusterTaskAction extends AbstractAction {
 
       // parse the command line arguments
       final CommandLine line = parser.parse(options,
-          arguments.toArray(new String[arguments.size()]), true);
+          arguments.toArray(new String[0]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -145,7 +151,7 @@ public class ClusterTaskAction extends AbstractAction {
    */
   private static void run(final DataFile taskContextFile) {
 
-    checkNotNull(taskContextFile, "contextFile is null");
+    requireNonNull(taskContextFile, "contextFile is null");
 
     // Get Eoulsan runtime
     final LocalEoulsanRuntime localRuntime =

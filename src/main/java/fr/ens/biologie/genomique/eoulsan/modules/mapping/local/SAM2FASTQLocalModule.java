@@ -128,8 +128,8 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
 
     if (seq1 != null && seq2 != null) {
       reporter.incrCounter(COUNTER_GROUP, "sorted records", 1);
-      writeFastq(fastqWriter1, fastqWriter2, currentRecordId, seq1, qual1,
-          seq2, qual2);
+      writeFastq(fastqWriter1, fastqWriter2, currentRecordId, seq1, qual1, seq2,
+          qual2);
 
     }
     samReader.close();
@@ -196,10 +196,10 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
       FastqWriter fastqWriter2, String currentRecordId, String seq1,
       String qual1, String seq2, String qual2) throws IOException {
 
-    ReadSequence read1 = seq1 == null
-        ? null : new ReadSequence(currentRecordId, seq1, qual1);
-    ReadSequence read2 = seq2 == null
-        ? null : new ReadSequence(currentRecordId, seq2, qual2);
+    ReadSequence read1 =
+        seq1 == null ? null : new ReadSequence(currentRecordId, seq1, qual1);
+    ReadSequence read2 =
+        seq2 == null ? null : new ReadSequence(currentRecordId, seq2, qual2);
 
     if (fastqWriter2 != null) {
       if (seq1 != null && seq2 != null) {

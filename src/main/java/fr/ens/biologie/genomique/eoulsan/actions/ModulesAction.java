@@ -154,7 +154,7 @@ public class ModulesAction extends AbstractInfoAction {
     for (List<String> v : vals) {
 
       if (result == null) {
-        result = new ArrayList<>(nCopies(v.size(), Integer.valueOf(-1)));
+        result = new ArrayList<>(nCopies(v.size(), -1));
       }
 
       for (int j = 0; j < v.size(); j++) {

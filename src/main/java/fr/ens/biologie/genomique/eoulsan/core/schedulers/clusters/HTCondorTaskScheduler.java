@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -40,16 +40,19 @@ public class HTCondorTaskScheduler extends BundledScriptBpipeTaskScheduler {
   private static final String COMMAND_WRAPPER_SCRIPT = "bpipe-htcondor.sh";
 
   private final String concurrencyLimits;
+  private final boolean niceUser;
 
   @Override
   protected Map<String, String> additionalScriptEnvironment() {
 
+    final Map<String, String> result = new HashMap<>();
+    result.put("NICE_USER", this.niceUser ? "True" : "False");
+
     if (this.concurrencyLimits != null) {
-      return Collections.singletonMap("CONCURRENCY_LIMITS",
-          this.concurrencyLimits);
+      result.put("CONCURRENCY_LIMITS", this.concurrencyLimits);
     }
 
-    return Collections.emptyMap();
+    return result;
   }
 
   //
@@ -65,6 +68,10 @@ public class HTCondorTaskScheduler extends BundledScriptBpipeTaskScheduler {
     // Get the concurrency limits
     this.concurrencyLimits = EoulsanRuntime.getRuntime().getSettings()
         .getSetting("htcondor.concurrency.limits");
+
+    // Get nice user priority
+    this.niceUser = EoulsanRuntime.getRuntime().getSettings()
+        .getBooleanSetting("htcondor.nice.user");
   }
 
 }

@@ -160,7 +160,7 @@ public class ExpressionInputPreprocessor implements InputPreprocessor {
 
       if (stats != null) {
         for (Map.Entry<String, Integer> e : stats.entrySet()) {
-          writer.write("__\t" + e.getKey() + "\t" + e.getValue() + "\n");
+          writer.write("__" + e.getKey() + "\t" + e.getValue() + "\n");
         }
       }
     }

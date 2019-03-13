@@ -114,7 +114,7 @@ public class DefineDataFormatToDownload extends AbstractModule {
       formats.add(df);
     }
 
-    this.inFormats = formats.toArray(new DataFormat[formats.size()]);
+    this.inFormats = formats.toArray(new DataFormat[0]);
   }
 
   @Override

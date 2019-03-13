@@ -1,9 +1,9 @@
 package fr.ens.biologie.genomique.eoulsan.util.process;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.util.CollectionUtils.nullToEmpty;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -40,6 +40,7 @@ import com.spotify.docker.client.messages.ProgressMessage;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
+import fr.ens.biologie.genomique.eoulsan.util.Utils;
 
 /**
  * This class define a Docker image instance using the Spotify Docker client
@@ -64,16 +65,16 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
       File temporaryDirectory, File stdoutFile, File stderrFile,
       boolean redirectErrorStream, File... filesUsed) throws IOException {
 
-    checkNotNull(commandLine, "commandLine argument cannot be null");
-    checkNotNull(stdoutFile, "stdoutFile argument cannot be null");
-    checkNotNull(stderrFile, "stderrFile argument cannot be null");
+    requireNonNull(commandLine, "commandLine argument cannot be null");
+    requireNonNull(stdoutFile, "stdoutFile argument cannot be null");
+    requireNonNull(stderrFile, "stderrFile argument cannot be null");
 
     EoulsanLogger.getLogger().fine(getClass().getSimpleName()
         + ": commandLine=" + commandLine + ", executionDirectory="
         + executionDirectory + ", environmentVariables=" + environmentVariables
         + ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile="
         + stdoutFile + ", stderrFile=" + stderrFile + ", redirectErrorStream="
-        + redirectErrorStream + ", filesUsed" + Arrays.toString(filesUsed));
+        + redirectErrorStream + ", filesUsed=" + Arrays.toString(filesUsed));
 
     if (executionDirectory != null) {
       checkArgument(executionDirectory.isDirectory(),
@@ -114,7 +115,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
       // File/directories to mount
       final List<File> toBind = new ArrayList<>();
       if (filesUsed != null) {
-        toBind.addAll(Arrays.asList(filesUsed));
+        toBind.addAll(Arrays.asList(Utils.filterNull(filesUsed)));
       }
 
       // Define temporary directory
@@ -461,7 +462,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
 
   /**
    * Convert a file path to a mount point path if the file is on a NFS server.
-   * @param files the file to convert
+   * @param file the file to convert
    * @return a converted file
    * @throws IOException if mount of a file cannot be found
    */
@@ -621,8 +622,8 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
   SpotifyDockerImageInstance(final DockerClient dockerClient,
       final String dockerImage) {
 
-    checkNotNull(dockerClient, "dockerClient argument cannot be null");
-    checkNotNull(dockerImage, "dockerImage argument cannot be null");
+    requireNonNull(dockerClient, "dockerClient argument cannot be null");
+    requireNonNull(dockerImage, "dockerImage argument cannot be null");
 
     EoulsanLogger.getLogger().fine(
         getClass().getSimpleName() + " docker image used: " + dockerImage);

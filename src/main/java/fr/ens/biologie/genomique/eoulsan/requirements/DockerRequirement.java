@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.requirements;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -154,7 +154,7 @@ public class DockerRequirement extends AbstractRequirement {
   public static Requirement newDockerRequirement(final String dockerImage,
       final boolean optional) throws EoulsanException {
 
-    checkNotNull(dockerImage, "dockerImage argument cannot be null");
+    requireNonNull(dockerImage, "dockerImage argument cannot be null");
     checkArgument(!dockerImage.trim().isEmpty(),
         "dockerImage argument cannot be empty");
 

@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -146,7 +146,7 @@ class DataElement extends AbstractData implements Serializable {
    */
   void setDataFile(final DataFile dataFile) {
 
-    checkNotNull(dataFile, "DataFile to set cannot be null");
+    requireNonNull(dataFile, "DataFile to set cannot be null");
 
     if (this.files.size() == 0) {
       throw new IllegalStateException(
@@ -164,7 +164,7 @@ class DataElement extends AbstractData implements Serializable {
   void setDataFile(final int fileIndex, final DataFile dataFile) {
 
     checkArgument(fileIndex >= 0, "fileIndex argument must be >=0");
-    checkNotNull(dataFile, "DataFile to set cannot be null");
+    requireNonNull(dataFile, "DataFile to set cannot be null");
 
     if (fileIndex >= this.files.size()) {
       throw new IllegalStateException(
@@ -180,7 +180,7 @@ class DataElement extends AbstractData implements Serializable {
    */
   void setDataFiles(final List<DataFile> dataFiles) {
 
-    checkNotNull(dataFiles, "dataFiles to set cannot be null");
+    requireNonNull(dataFiles, "dataFiles to set cannot be null");
 
     for (DataFile file : dataFiles) {
 
@@ -289,9 +289,9 @@ class DataElement extends AbstractData implements Serializable {
 
     this.metadata = new SimpleDataMetadata(design);
 
-    checkNotNull(format, "format argument cannot be null");
-    checkNotNull(files, "files argument cannot be null");
-    checkNotNull(design, "design argument cannot be null");
+    requireNonNull(format, "format argument cannot be null");
+    requireNonNull(files, "files argument cannot be null");
+    requireNonNull(design, "design argument cannot be null");
 
     for (DataFile f : files) {
       if (f == null) {
@@ -314,8 +314,8 @@ class DataElement extends AbstractData implements Serializable {
 
     super(port.getFormat());
 
-    checkNotNull(port, "port argument cannot be null");
-    checkNotNull(design, "design argument cannot be null");
+    requireNonNull(port, "port argument cannot be null");
+    requireNonNull(design, "design argument cannot be null");
 
     this.metadata = new SimpleDataMetadata(design);
 

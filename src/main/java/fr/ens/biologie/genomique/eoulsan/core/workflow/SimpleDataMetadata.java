@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -133,7 +133,7 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
   void setRaw(final String key, final String value) {
 
     checkKey(key);
-    checkNotNull(value, "value argument cannot be null");
+    requireNonNull(value, "value argument cannot be null");
 
     this.map.put(key, value);
   }
@@ -141,14 +141,14 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
   @Override
   public void set(final String key, final String value) {
 
-    checkNotNull(value, "value argument cannot be null");
+    requireNonNull(value, "value argument cannot be null");
 
     setRaw(key, STRING_TYPE + SEPARATOR + value);
   }
 
   void setSampleName(final Sample sample) {
 
-    checkNotNull(sample, "sample argument cannot be null");
+    requireNonNull(sample, "sample argument cannot be null");
 
     final String value = SAMPLE_NAME_TYPE + SEPARATOR + sample.getId();
 
@@ -157,7 +157,7 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
 
   void setSampleNumber(final Sample sample) {
 
-    checkNotNull(sample, "sample argument cannot be null");
+    requireNonNull(sample, "sample argument cannot be null");
 
     final String value = SAMPLE_NUMBER_TYPE + SEPARATOR + sample.getId();
 
@@ -166,8 +166,8 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
 
   void setSampleMetadata(final Sample sample, final String key) {
 
-    checkNotNull(sample, "sample argument cannot be null");
-    checkNotNull(key, "key argument cannot be null");
+    requireNonNull(sample, "sample argument cannot be null");
+    requireNonNull(key, "key argument cannot be null");
     checkArgument(sample.getMetadata().contains(key));
 
     final String value =
@@ -178,8 +178,8 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
 
   void setDesignMetadata(final Design design, final String key) {
 
-    checkNotNull(design, "sample argument cannot be null");
-    checkNotNull(key, "key argument cannot be null");
+    requireNonNull(design, "sample argument cannot be null");
+    requireNonNull(key, "key argument cannot be null");
     checkArgument(design.getMetadata().contains(key));
 
     final String value = DESIGN_METADATA_TYPE + SEPARATOR + key;
@@ -189,8 +189,8 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
 
   void setExperimentMetadata(final Experiment experiment, final String key) {
 
-    checkNotNull(experiment, "sample argument cannot be null");
-    checkNotNull(key, "key argument cannot be null");
+    requireNonNull(experiment, "sample argument cannot be null");
+    requireNonNull(key, "key argument cannot be null");
     checkArgument(experiment.getMetadata().contains(key));
 
     final String value = EXPERIMENT_METADATA_TYPE + SEPARATOR + key;
@@ -219,7 +219,7 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
   @Override
   public void set(final DataMetadata metadata) {
 
-    checkNotNull(metadata, "metadata argument cannot be null");
+    requireNonNull(metadata, "metadata argument cannot be null");
 
     final SimpleDataMetadata md = WorkflowDataUtils.getSimpleMetadata(metadata);
 
@@ -259,7 +259,7 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
 
   private void checkKey(final String key) {
 
-    checkNotNull(key, "key argument cannot be null");
+    requireNonNull(key, "key argument cannot be null");
 
     for (int i = 0; i < key.length(); i++) {
 

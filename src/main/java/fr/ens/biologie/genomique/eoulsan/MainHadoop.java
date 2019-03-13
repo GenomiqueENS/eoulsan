@@ -104,7 +104,8 @@ public final class MainHadoop extends Main {
       // Log the usage of the hadoop temporary directory partition
       final String hadoopTmp = this.conf.get("hadoop.tmp.dir");
       if (hadoopTmp != null) {
-        Infos.log(Level.INFO, singletonList(Infos.diskFreeInfo(new File(hadoopTmp))));
+        Infos.log(Level.INFO,
+            singletonList(Infos.diskFreeInfo(new File(hadoopTmp))));
       }
 
       // Log the usage of the Java temporary directory partition

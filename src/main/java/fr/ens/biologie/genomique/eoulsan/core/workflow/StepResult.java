@@ -57,7 +57,6 @@ import javax.json.JsonValue;
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonGeneratorFactory;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
@@ -76,6 +75,7 @@ public class StepResult {
   private static final String TASK_COUNTERS_TAG = "Task counters";
   private static final String TASK_MESSAGE_TAG = "Task message";
   private static final String TASK_DESCRIPTION_TAG = "Task description";
+  private static final String TASK_COMMAND_LINE_TAG = "Task command line";
   private static final String TASK_NAME_TAG = "Task name";
   private static final String TASK_ID_TAG = "Task id";
   private static final String TASKS_TAG = "Tasks";
@@ -117,6 +117,7 @@ public class StepResult {
   private final Map<String, Map<String, Long>> counters = new HashMap<>();
   private final Map<Integer, String> taskDescriptions = new HashMap<>();
   private final Map<Integer, String> taskMessages = new HashMap<>();
+  private final Map<Integer, String> taskCommandLines = new HashMap<>();
   private final Map<String, Long> stepCounters = new HashMap<>();
   private String stepMessage;
 
@@ -279,6 +280,7 @@ public class StepResult {
     // Set counters information
     this.taskCounters.put(contextId, result.getCounters());
     this.taskDescriptions.put(contextId, result.getDescription());
+    this.taskCommandLines.put(contextId, result.getCommandLine());
     addCounters(taskName, result.getCounters());
 
     // Set success (Keep only the first error)
@@ -421,6 +423,8 @@ public class StepResult {
       jg.write(TASK_DESCRIPTION_TAG,
           nullToEmpty(this.taskDescriptions.get(contextId)));
       jg.write(TASK_MESSAGE_TAG, nullToEmpty(this.taskMessages.get(contextId)));
+      jg.write(TASK_COMMAND_LINE_TAG,
+          nullToEmpty(this.taskCommandLines.get(contextId)));
 
       // contextName counters
       jg.writeStartObject(TASK_COUNTERS_TAG);
@@ -674,7 +678,7 @@ public class StepResult {
    */
   public StepResult(final AbstractStep step) {
 
-    Preconditions.checkNotNull(step, "step is null");
+    requireNonNull(step, "step is null");
 
     final WorkflowContext workflowContext =
         step.getAbstractWorkflow().getWorkflowContext();

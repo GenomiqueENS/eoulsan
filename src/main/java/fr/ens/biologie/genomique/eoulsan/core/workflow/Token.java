@@ -94,8 +94,7 @@ class Token {
 
     return com.google.common.base.Objects.toStringHelper(this)
         .add("id", this.id).add("fromPort", this.fromPort)
-        .add("tokensSent", this.tokensCount).add("data", this.data)
-        .toString();
+        .add("tokensSent", this.tokensCount).add("data", this.data).toString();
   }
 
   //

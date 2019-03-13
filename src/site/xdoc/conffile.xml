@@ -113,7 +113,9 @@
 
 		<tr><td>main.cluster.scheduler.name</td><td>string</td><td>Not set</td><td>The name of the cluster scheduler to use</td></tr>
 		<tr><td>main.cluster.default.required.memory</td><td>integer</td><td>Not set</td><td>The default amount of memory in MB required to launch a step on the cluster</td></tr>
-		<tr><td>htcondor.concurrency.limits</td><td>value</td><td>Not set</td><td>HTCondor concurrency limits values to use if user wants to limit the number of simultaneous running jobs (e.g. eoulsan:2500)</td></tr>
+		<tr><td>htcondor.concurrency.limits</td><td>string</td><td>Not set</td><td>HTCondor concurrency limits values to use if user wants to limit the number of simultaneous running jobs (e.g. eoulsan:2500)</td></tr>
+		<tr><td>htcondor.nice.user</td><td>boolean</td><td>False</td><td>Enable HTCondor "nice user" mode for the submitted jobs</td></tr>
+
 
 	</table>
 

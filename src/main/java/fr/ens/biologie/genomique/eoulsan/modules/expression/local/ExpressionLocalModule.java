@@ -32,16 +32,13 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.ExpressionCounter;
+import fr.ens.biologie.genomique.eoulsan.bio.io.TSVCountsWriter;
+import fr.ens.biologie.genomique.eoulsan.bio.io.CountsWriter;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
@@ -114,7 +111,10 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
         counter.addZeroCountFeatures(result);
 
         // Save result
-        writeResult(result, expressionFile);
+        try (CountsWriter writer =
+            new TSVCountsWriter(expressionFile.create())) {
+          writer.write(result);
+        }
       }
 
       status.setCounters(reporter, COUNTER_GROUP);
@@ -133,27 +133,6 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
       return status.createTaskResult(e,
           "Error while reading the annotation file: " + e.getMessage());
     }
-  }
-
-  /**
-   * Write the results.
-   * @param counts map with the counts to write
-   * @param expressionFile the output file
-   * @throws IOException if an error occurs while writing the the file
-   */
-  private static final void writeResult(final Map<String, Integer> counts,
-      final DataFile expressionFile) throws IOException {
-
-    try (Writer writer = new OutputStreamWriter(expressionFile.create())) {
-      final List<String> keysSorted = new ArrayList<>(counts.keySet());
-      Collections.sort(keysSorted);
-
-      writer.write("Id\tCount\n");
-      for (String key : keysSorted) {
-        writer.write(key + "\t" + counts.get(key) + "\n");
-      }
-    }
-
   }
 
 }

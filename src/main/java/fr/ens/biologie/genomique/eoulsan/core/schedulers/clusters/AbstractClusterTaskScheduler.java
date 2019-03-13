@@ -24,13 +24,13 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_CONTEXT_EXTENSION;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_DATA_EXTENSION;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_DONE_EXTENSION;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_JOB_ID;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_RESULT_EXTENSION;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -355,7 +355,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
      */
     TaskThread(final TaskContextImpl context) {
 
-      checkNotNull(context, "context argument cannot be null");
+      requireNonNull(context, "context argument cannot be null");
 
       this.context = context;
       this.taskDir = context.getTaskOutputDirectory().toFile();

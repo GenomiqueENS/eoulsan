@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École normale supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
+ *
+ */
+-->
+<document>
+
+  <properties>
+    <title>RSingleCellExperimentCreator module</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
+
+
+
+  <body>
+
+    <section name="RSingleCellExperimentCreator module">
+
+      <p>This module allow to create a <a href="https://www.bioconductor.org/packages/release/bioc/html/SingleCellExperiment.html">Bioconductor SingleCellExperiment</a> from expression or matrix data.</p>
+
+      <ul>
+         <li><b>Internal name</b>: rsinglecellexperimentcreator</li>
+         <li><b>Available</b>: Only in local mode</li>
+
+         <br/>
+         <li><b>Input port</b>:
+           <ul>
+		   <li><b>additionalannotation</b>: Additionnal annotation data (format: additional_annotation_tsv) from the design file. This data allow to describe the genes/features of the Bioconductor SingleCellExperiment object</li>
+             <li><b>matrix</b>: Matrix data (format: expression_matrix_tsv) if matrix input is enabled</li>
+             <li><b>expression</b>: Expression step output (format: expression_results_tsv) if matrix input is not enabled</li>
+           </ul>
+         </li>
+
+         <br/>
+         <li><b>Output port</b>:
+           <ul>
+             <li><b>output</b>: A Bioconductor SingleCellExperiment object in a RDS file (format: singlecellexperiment_rds)</li>
+           </ul>
+         </li>
+         <br/>
+
+         <li><b>Optional parameters</b>:</li>
+           <table>
+                <tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
+                <tr><td>r.execution.mode</td><td>string</td><td>The R execution mode. The available mode values are: process, rserve and docker.</td><td>process</td></tr>
+                <tr><td>rserve.servername</td><td>string</td><td>The Rserve server name to use in rserve execution mode</td><td>not set</td></tr>
+                <tr><td>docker.image</td><td>string</td><td>The Docker image to use in Docker execution mode.</td><td>genomicpariscentre/singlecellexperiment:3.7</td></tr>
+		<tr><td>input.matrices</td><td>boolean</td><td>The input of the module is a matrix (e.g. 10X Genomics data). For SmartSeq2, this parameter is usually set to false</td><td>true</td></tr>
+		<tr><td>merge.matrices</td><td>boolean</td><td>When the input of the module is matrices, this option allow to merge all the input matrices in one output matrix</td><td>true</td></tr>
+		<tr><td>design.prefix</td><td>string</td><td>This parameter define the prefix of Eoulsan design columns that contains annotations about the cells. This cell annotations will be copied in the output Bioconductor object</td><td>Not set</td></tr>
+		<tr><td>use.additionnal.annotation</td><td>boolean</td><td>When this parameter is enabled, feature annotations will be copied in the output Bioconductor object to describe the genes/features of the Bioconductor SingleCellExperiment object</td><td>true</td></tr>
+          </table>
+         <br/>
+
+
+
+          <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!--  RSingleCellExperimentCreato step --&gt;
+&lt;step id="myrsinglecellexperimentcreator" skip="false" discardoutput="false"&gt;
+        &lt;module&gt;rsinglecellexperimentcreator&lt;/module&gt;
+        &lt;parameters&gt;
+                &lt;parameter&gt;
+                        &lt;name&gt;input.matrices&lt;/name&gt;
+                        &lt;value&gt;true&lt;/value&gt;
+                &lt;/parameter&gt;
+                &lt;parameter&gt;
+                        &lt;name&gt;r.execution.mode&lt;/name&gt;
+                        &lt;value&gt;docker&lt;/value&gt;
+                &lt;/parameter&gt;
+        &lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
+
+      </ul>
+    </section>
+
+  </body>
+
+</document>

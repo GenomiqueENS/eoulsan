@@ -1,8 +1,8 @@
 package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement.newDockerRequirement;
 import static fr.ens.biologie.genomique.eoulsan.util.r.ProcessRExecutor.RSCRIPT_EXECUTABLE;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -31,9 +31,9 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RserveRExecutor;
  */
 public class RModuleCommonConfiguration {
 
-  private static final String EXECUTION_MODE = "r.execution.mode";
-  private static final String RSERVE_SERVER = "rserve.servername";
-  private static final String DOCKER_IMAGE = "docker.image";
+  public static final String EXECUTION_MODE_PARAMETER = "r.execution.mode";
+  public static final String RSERVE_SERVER_PARAMETER = "rserve.servername";
+  public static final String DOCKER_IMAGE_PARAMETER = "docker.image";
 
   /**
    * Parse the step parameter and create a configured RExecutor object.
@@ -48,10 +48,10 @@ public class RModuleCommonConfiguration {
       final Set<Parameter> stepParameters, final Set<Requirement> requirements,
       final String defaultDockerImage) throws EoulsanException {
 
-    checkNotNull(context, "context argument cannot be null");
-    checkNotNull(stepParameters, "stepParameters argument cannot be null");
-    checkNotNull(requirements, "requirements argument cannot be null");
-    checkNotNull(defaultDockerImage,
+    requireNonNull(context, "context argument cannot be null");
+    requireNonNull(stepParameters, "stepParameters argument cannot be null");
+    requireNonNull(requirements, "requirements argument cannot be null");
+    requireNonNull(defaultDockerImage,
         "defaultDockerImage argument cannot be null");
 
     final Set<Parameter> toRemove = new HashSet<>();
@@ -66,7 +66,7 @@ public class RModuleCommonConfiguration {
 
       switch (p.getName()) {
 
-      case EXECUTION_MODE:
+      case EXECUTION_MODE_PARAMETER:
         executionMode = Mode.parse(p.getStringValue());
 
         if (executionMode == null) {
@@ -75,12 +75,12 @@ public class RModuleCommonConfiguration {
         toRemove.add(p);
         break;
 
-      case RSERVE_SERVER:
+      case RSERVE_SERVER_PARAMETER:
         rserveServer = p.getStringValue();
         toRemove.add(p);
         break;
 
-      case DOCKER_IMAGE:
+      case DOCKER_IMAGE_PARAMETER:
         dockerImage = p.getStringValue();
         toRemove.add(p);
         break;

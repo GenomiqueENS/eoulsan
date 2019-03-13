@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.actions;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -83,7 +83,7 @@ public class HadoopExecAction extends AbstractAction {
 
       // parse the command line arguments
       final CommandLine line = parser.parse(options,
-          arguments.toArray(new String[arguments.size()]), true);
+          arguments.toArray(new String[0]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -197,9 +197,9 @@ public class HadoopExecAction extends AbstractAction {
   private static void run(final File workflowFile, final File designFile,
       final String hdfsPath, final String jobDescription) {
 
-    checkNotNull(workflowFile, "paramFile is null");
-    checkNotNull(designFile, "designFile is null");
-    checkNotNull(hdfsPath, "hdfsPath is null");
+    requireNonNull(workflowFile, "paramFile is null");
+    requireNonNull(designFile, "designFile is null");
+    requireNonNull(hdfsPath, "hdfsPath is null");
 
     // Write log entries
     Main.getInstance().flushLog();

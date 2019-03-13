@@ -27,11 +27,10 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toLetter;
 import static fr.ens.biologie.genomique.eoulsan.util.Utils.equal;
+import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.util.List;
-
-import com.google.common.base.Preconditions;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
@@ -135,8 +134,8 @@ public final class StepOutputDataFile
       final String portName, final DataFormat format, final Sample sample,
       final int fileIndex) {
 
-    Preconditions.checkNotNull(format, "Format argument cannot be null");
-    Preconditions.checkNotNull(sample, "Sample argument cannot be null");
+    requireNonNull(format, "Format argument cannot be null");
+    requireNonNull(sample, "Sample argument cannot be null");
 
     switch (step.getType()) {
 
@@ -302,7 +301,7 @@ public final class StepOutputDataFile
   @Override
   public int compareTo(final StepOutputDataFile o) {
 
-    Preconditions.checkNotNull(o, "o is null");
+    requireNonNull(o, "o is null");
 
     return this.file.compareTo(o.file);
   }
@@ -347,12 +346,11 @@ public final class StepOutputDataFile
       final String portName, final DataFormat format, final Sample sample,
       final int fileIndex, final CompressionType compression) {
 
-    Preconditions.checkNotNull(step, "step argument cannot be null");
-    Preconditions.checkNotNull(portName, "portName argument cannot be null");
-    Preconditions.checkNotNull(format, "format argument cannot be null");
-    Preconditions.checkNotNull(sample, "sample argument cannot be null");
-    Preconditions.checkNotNull(compression,
-        "compression argument cannot be null");
+    requireNonNull(step, "step argument cannot be null");
+    requireNonNull(portName, "portName argument cannot be null");
+    requireNonNull(format, "format argument cannot be null");
+    requireNonNull(sample, "sample argument cannot be null");
+    requireNonNull(compression, "compression argument cannot be null");
 
     final StringBuilder sb = new StringBuilder();
 
@@ -401,8 +399,8 @@ public final class StepOutputDataFile
   public static int dataFileCount(final StepOutputPort outputPort,
       final Sample sample, final boolean existingFiles) {
 
-    Preconditions.checkNotNull(outputPort, "outputPort cannot be null");
-    Preconditions.checkNotNull(sample, "Sample argument cannot be null");
+    requireNonNull(outputPort, "outputPort cannot be null");
+    requireNonNull(sample, "Sample argument cannot be null");
 
     final AbstractStep step = outputPort.getStep();
     final DataFormat format = outputPort.getFormat();
@@ -472,8 +470,8 @@ public final class StepOutputDataFile
   public StepOutputDataFile(final StepOutputPort outputPort,
       final Sample sample, final int fileIndex) {
 
-    Preconditions.checkNotNull(outputPort, "outputPort cannot be null");
-    Preconditions.checkNotNull(sample, "sample cannot be null");
+    requireNonNull(outputPort, "outputPort cannot be null");
+    requireNonNull(sample, "sample cannot be null");
 
     final DataFormat format = outputPort.getFormat();
 
