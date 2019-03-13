@@ -11,7 +11,6 @@ import java.util.Set;
 import com.google.common.base.Splitter;
 import com.google.common.io.Files;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.io.FileCharsets;

@@ -155,7 +155,7 @@ public final class Settings implements Serializable {
   private static final String DOCKER_URI_KEY = MAIN_PREFIX_KEY + "docker.uri";
 
   private static final String DOCKER_SINGULARITY_ENABLED_KEY =
-      MAIN_PREFIX_KEY + "docker.by.singularity.enabled";
+      MAIN_PREFIX_KEY + "docker.singularity.enabled";
 
   private static final String DOCKER_SINGULARITY_STORAGE_KEY =
       MAIN_PREFIX_KEY + "docker.singularity.storage.path";

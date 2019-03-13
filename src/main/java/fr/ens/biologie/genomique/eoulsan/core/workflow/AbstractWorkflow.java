@@ -870,7 +870,6 @@ public abstract class AbstractWorkflow implements Workflow {
         DataFile singularityDir = new DataFile(this.dataDir, "singularity");
         settings.setDockerSingularityStoragePath(singularityDir.getSource());
       }
-      EoulsanLogger.getLogger().info("getDockerSingularityStoragePath(): " + settings.getDockerSingularityStoragePath());
 
     } catch (IOException e) {
       throw new EoulsanException(e);
