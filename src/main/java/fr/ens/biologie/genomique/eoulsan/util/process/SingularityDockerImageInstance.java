@@ -56,7 +56,7 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
 
     final List<String> command = new ArrayList<>();
     command.add("singularity");
-    command.add("run");
+    command.add("exec");
     command.add("--contain");
 
     // File/directories to mount
@@ -80,10 +80,8 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
     // Bind directories
     toBind(command, directoriesToBind, this.convertNFSFilesToMountRoots);
 
-    // Remove container at the end of the execution
-    // command.add("--rm");
-
-    // TODO The container must be writable as Docker images
+    // TODO The container must be writable as Docker images but it cannot work
+    // with Singularity Docker image compatibility mode
     // command.add("--writable");
 
     // Docker image to use
