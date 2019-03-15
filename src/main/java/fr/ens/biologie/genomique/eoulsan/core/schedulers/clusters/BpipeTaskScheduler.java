@@ -52,6 +52,8 @@ import fr.ens.biologie.genomique.eoulsan.Settings;
  */
 public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
 
+  private static final int MAX_JOB_STATUS_ATTEMPTS = 3;
+
   /**
    * Get the path to the Bpipe command wrapper.
    * @return the File object with the path to the Bpipe command wrapper
@@ -142,20 +144,61 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
   @Override
   public StatusResult statusJob(final String jobId) throws IOException {
 
+    return statusJob(jobId, 0);
+  }
+
+  /**
+   * Get the status of a job.
+   * @param jobId job id
+   * @param callCount the number of time that job status has been called
+   * @throws IOException if an error occurs while getting the status of the job
+   */
+  private StatusResult statusJob(final String jobId, final int callCount)
+      throws IOException {
+
     checkNotNull(jobId, "jobId argument cannot be null");
+
+    // Fail if cannot get job status after multiple attemtps
+    if (callCount == MAX_JOB_STATUS_ATTEMPTS && MAX_JOB_STATUS_ATTEMPTS > 0) {
+
+      throw new IOException("Job status failed for job "
+          + jobId + " after " + MAX_JOB_STATUS_ATTEMPTS
+          + " multiple attempts, exit code: 0");
+    }
+
+    // Sleep before a new job status attempt
+    if (callCount > 0) {
+      try {
+        Thread.sleep(5000);
+      } catch (InterruptedException e) {
+        // Do nothing
+      }
+    }
 
     try {
       final Process process = statusJobProcess(jobId);
 
       // Read output of the submit command
-      final BufferedReader reader =
-          new BufferedReader(new InputStreamReader(process.getInputStream()));
-      final String jobStatus = reader.readLine();
-      reader.close();
+      final String jobStatus;
+      try (BufferedReader reader =
+          new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+        jobStatus = reader.readLine();
+      }
 
       final int exitCode = process.waitFor();
 
       if (exitCode == 0) {
+
+        // Try to get job status another time
+        if (jobStatus == null || jobStatus.trim().isEmpty()) {
+
+          getLogger().fine("Job "
+              + jobId + " status on " + getSchedulerName()
+              + " scheduler. Job status: " + jobStatus + " (try "
+              + (callCount + 1) + ")");
+
+          return statusJob(jobId, callCount + 1);
+        }
 
         getLogger().fine("Job "
             + jobId + " status on " + getSchedulerName()
