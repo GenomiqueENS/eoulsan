@@ -1,5 +1,4 @@
-Eoulsan
-=======
+![Eoulsan Logo](/src/site/resources/images/eoulsan.png)
 
 This is the Eoulsan git reference repository.
 
