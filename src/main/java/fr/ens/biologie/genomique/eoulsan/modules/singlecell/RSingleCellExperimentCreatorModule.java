@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -200,7 +201,8 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
       File matrixFile =
           new File(outputDir, "matrix-" + rdsData.getName() + ".tsv");
       File featuresFile = this.useAdditionnalAnnotation
-          ? new File(outputDir, "features-" + rdsData.getName() + ".tsv") : null;
+          ? new File(outputDir, "features-" + rdsData.getName() + ".tsv")
+          : null;
       File cellsFile = this.designPrefix.isEmpty()
           ? null : new File(outputDir, "cells-" + rdsData.getName() + ".tsv");
 
@@ -208,11 +210,12 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
       boolean saveRScript = context.getSettings().isSaveRscripts();
 
       // Create R Input files
-      createRInputFiles(context, matrixFile, featuresFile, cellsFile);
+      createRInputFiles(context, inputData, matrixFile, featuresFile,
+          cellsFile);
 
       // Launch R and create RDS file
-      createRDS(matrixFile, cellsFile, featuresFile, rdsFile, temporaryDirectory,
-          saveRScript, context.getStepOutputDirectory(),
+      createRDS(matrixFile, cellsFile, featuresFile, rdsFile,
+          temporaryDirectory, saveRScript, context.getStepOutputDirectory(),
           R_SCRIPT_NAME + "-" + rdsData.getName());
 
     } catch (IOException e) {
@@ -222,12 +225,9 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
     return status.createTaskResult();
   }
 
-  private void createRInputFiles(final TaskContext context,
+  private void createRInputFiles(final TaskContext context, final Data matrices,
       final File matrixFile, final File featuresFile, final File cellsFile)
       throws IOException {
-
-    Data matrices = context.getInputData(
-        this.inputMatrices ? EXPRESSION_MATRIX_TSV : EXPRESSION_RESULTS_TSV);
 
     AnnotationMatrix featureAnnotations = null;
     AnnotationMatrix cellAnnotations = null;
@@ -309,7 +309,7 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
       if (this.mergeMatrices) {
         return mergeMatrices(matrices);
       } else {
-        return loadMatrix(matrices, new SparseExpressionMatrix());
+        return loadMatrix(matrices, null);
       }
     } else {
       return mergeExpressionResults(matrices);
@@ -354,21 +354,31 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
       // Create reader
       try (ExpressionMatrixReader reader = in.getExpressionMatrixReader()) {
 
-        // Read matrix
-        ExpressionMatrix matrix = reader.read(resultMatrix.isEmpty()
-            ? resultMatrix : new SparseExpressionMatrix());
-
         // Get sample name
         String sampleName = matrixData.getName();
 
+        // Get existing column names
+        Set<String> existingColumnNames = resultMatrix == null
+            ? Collections.emptySet()
+            : new HashSet<>(resultMatrix.getColumnNames());
+
+        // Read matrix
+        ExpressionMatrix loadedMatrix = reader.read(
+            resultMatrix == null ? new SparseExpressionMatrix() : resultMatrix);
+
         // Rename the column with sample name
-        for (String colName : matrix.getColumnNames()) {
-          matrix.renameColumn(colName, sampleName + CELL_SEPARATOR + colName);
+        for (String colName : loadedMatrix.getColumnNames()) {
+
+          // Do not rename already renamed columns
+          if (!existingColumnNames.contains(colName)) {
+            String newColName = sampleName + CELL_SEPARATOR + colName;
+            loadedMatrix.renameColumn(colName, newColName);
+          }
         }
 
-        // Add matrix to the final matrix
-        if (resultMatrix.isEmpty()) {
-          resultMatrix.add(matrix);
+        // Add loaded matrix to the final matrix
+        if (resultMatrix == null) {
+          return loadedMatrix;
         }
       }
     }
@@ -496,9 +506,10 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
    * @throws IOException if an error occurs while executing the command
    */
   private void createRDS(final File matrixFile, final File cellsFile,
-      final File featuresFile, final File rdsFile, final File temporaryDirectory,
-      final boolean saveRScript, final DataFile RExecutionDirectory,
-      final String scriptName) throws IOException {
+      final File featuresFile, final File rdsFile,
+      final File temporaryDirectory, final boolean saveRScript,
+      final DataFile RExecutionDirectory, final String scriptName)
+      throws IOException {
 
     // Open executor connection
     this.executor.openConnection();
@@ -516,8 +527,8 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
     final String rScriptSource = readFromJar(R_SCRIPT_PATH);
 
     this.executor.executeRScript(rScriptSource, false, null, saveRScript,
-        scriptName, RExecutionDirectory,
-        createCommandLineArguments(matrixFile, cellsFile, featuresFile, rdsFile));
+        scriptName, RExecutionDirectory, createCommandLineArguments(matrixFile,
+            cellsFile, featuresFile, rdsFile));
 
     // Remove input files
     this.executor.removeInputFiles();
