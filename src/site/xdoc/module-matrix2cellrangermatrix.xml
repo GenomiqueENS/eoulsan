@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/*
+ *                  Eoulsan development code
+ *
+ * This code may be freely distributed and modified under the
+ * terms of the GNU Lesser General Public License version 2.1 or
+ * later and CeCILL-C. This should be distributed with the code.
+ * If you do not have a copy, see:
+ *
+ *      http://www.gnu.org/licenses/lgpl-2.1.txt
+ *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+ *
+ * Copyright for this code is held jointly by the Genomic platform
+ * of the Institut de Biologie de l'École normale supérieure and
+ * the individual authors. These should be listed in @author doc
+ * comments.
+ *
+ * For more information on the Eoulsan project and its aims,
+ * or to join the Eoulsan Google group, visit the home page
+ * at:
+ *
+ *      http://outils.genomique.biologie.ens.fr/eoulsan
+ *
+ */
+-->
+<document>
+
+  <properties>
+    <title>Matrix to Cell Ranger matrix module</title>
+    <author email="jourdren@biologie.ens.fr">Laurent Jourdren</author>
+  </properties>
+
+
+
+  <body>
+
+    <section name="Matrix to Cell Ranger matrix module">
+
+      <p>This module allow to create a Cell Ranger matrix (version 1 or 2) from expression or matrix data.</p>
+
+      <ul>
+         <li><b>Internal name</b>: matrix2cellrangermatrix</li>
+         <li><b>Available</b>: Only in local mode</li>
+
+         <br/>
+         <li><b>Input port</b>:
+           <ul>
+             <li><b>additionalannotation</b>: Additionnal annotation data (format: additional_annotation_tsv) from the design file. This data allow to describe the genes/features of the Bioconductor SingleCellExperiment object</li>
+             <li><b>matrix</b>: Matrix data (format: expression_matrix_tsv) if matrix input is enabled</li>
+             <li><b>expression</b>: Expression step output (format: expression_results_tsv) if matrix input is not enabled</li>
+           </ul>
+         </li>
+
+         <br/>
+         <li><b>Output port</b>: A Cell Ranger matrix.</li>
+         <br/>
+
+         <li><b>Optional parameters</b>:</li>
+           <table>
+                <tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
+		<tr><td>input.matrices</td><td>boolean</td><td>The input of the module is a matrix (e.g. 10X Genomics data). For SmartSeq2, this parameter is usually set to false.</td><td>true</td></tr>
+		<tr><td>use.additionnal.annotation</td><td>boolean</td><td>When this parameter is enabled, feature annotations will be used for the second column of the feature/gene file of the Cell Ranger matrix output.</td><td>true</td></tr>
+		<tr><td>additionnal.annotation.field.name</td><td>string</td><td>The name of the field in the additional annotation to use for the second column of the feature/gene file of the Cell Ranger matrix output.</td><td>Gene name</td></tr>
+		<tr><td>additionnal.annotation.type</td><td>string</td><td>Value of the third column of the feature file of the Cell Ranger matrix output (Cell Ranger matrix format version 2 only).</td><td>Gene Expression.</td></tr>
+		<tr><td>cell.ranger.matrix.format</td><td>integer</td><td>Version of the Cell Ranger format output to use. Currently only version 1 (Cell Ranger version 1 and 2) and 2 (Cell Ranger version 3) are supported.</td><td>2</td></tr>
+          </table>
+         <br/>
+
+
+
+          <li><b>Configuration example</b>:</li>
+<pre>
+&lt;!--  Matrix to Cell Ranger matrix step --&gt;
+&lt;step id="mymatrix2cellrangermatrix" skip="false" discardoutput="false"&gt;
+        &lt;module&gt;matrix2cellrangermatrix&lt;/module&gt;
+        &lt;parameters&gt;
+                &lt;parameter&gt;
+                        &lt;name&gt;input.matrices&lt;/name&gt;
+                        &lt;value&gt;true&lt;/value&gt;
+                &lt;/parameter&gt;
+                &lt;parameter&gt;
+                        &lt;name&gt;use.additionnal.annotation&lt;/name&gt;
+                        &lt;value&gt;true&lt;/value&gt;
+                &lt;/parameter&gt;
+                &lt;parameter&gt;
+                        &lt;name&gt;additionnal.annotation.field.name&lt;/name&gt;
+                        &lt;value&gt;Gene name&lt;/value&gt;
+                &lt;/parameter&gt;
+                &lt;parameter&gt;
+                        &lt;name&gt;additionnal.annotation.type&lt;/name&gt;
+                        &lt;value&gt;Gene Expression&lt;/value&gt;
+                &lt;/parameter&gt;
+                &lt;parameter&gt;
+                        &lt;name&gt;cell.ranger.matrix.format&lt;/name&gt;
+                        &lt;value&gt;2&lt;/value&gt;
+                &lt;/parameter&gt;
+        &lt;/parameters&gt;
+&lt;/step&gt;
+</pre>
+
+      </ul>
+    </section>
+
+  </body>
+
+</document>
