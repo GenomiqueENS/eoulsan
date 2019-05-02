@@ -32,15 +32,16 @@ import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.googlecode.lanterna.TerminalFacade;
+import com.googlecode.lanterna.SGR;
+import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.terminal.Terminal;
-import com.googlecode.lanterna.terminal.Terminal.Color;
-import com.googlecode.lanterna.terminal.Terminal.SGR;
-import com.googlecode.lanterna.terminal.TerminalSize;
-import com.googlecode.lanterna.terminal.text.UnixTerminal;
+import com.googlecode.lanterna.terminal.TerminalResizeListener;
+import com.googlecode.lanterna.terminal.ansi.UnixTerminal;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
@@ -52,7 +53,7 @@ import fr.ens.biologie.genomique.eoulsan.core.Workflow;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
+public class LanternaUI extends AbstractUI implements TerminalResizeListener {
 
   private Workflow workflow;
   private final Map<Step, Double> steps = new HashMap<>();
@@ -67,6 +68,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   private TerminalSize terminalSize;
 
   private final Map<Step, Integer> stepLines = new HashMap<>();
+  private int lastLineYPos;
   private int lineCount;
 
   private boolean jobDone;
@@ -94,19 +96,31 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
       return;
     }
 
-    // Set terminal object
-    this.terminal = TerminalFacade.createUnixTerminal();
+    try {
 
-    // Get terminal size
-    this.terminal.enterPrivateMode();
-    this.terminalSize = this.terminal.getTerminalSize();
-    this.terminal.exitPrivateMode();
+      // Ctrl-c must not be handled by Lanterna
+      System.setProperty(
+          "com.googlecode.lanterna.terminal.UnixTerminal.catchSpecialCharacters",
+          "false");
 
-    // Add resize listener
-    this.terminal.addResizeListener(this);
+      // Set terminal object
+      this.terminal = new UnixTerminal();
 
-    // Show Welcome message
-    System.out.println(Globals.WELCOME_MSG);
+      // Get terminal size
+      this.terminalSize = this.terminal.getTerminalSize();
+
+      // Add resize listener
+      this.terminal.addResizeListener(this);
+
+      // Show Welcome message
+      System.out.println(Globals.WELCOME_MSG);
+
+      // Define last line Y position
+      this.lastLineYPos = terminal.getCursorPosition().getRow();
+
+    } catch (IOException e) {
+      lanternaError(e);
+    }
   }
 
   @Override
@@ -192,8 +206,14 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
         return;
       }
       print(null, true, success, message);
-    }
 
+      // Close terminal
+      try {
+        this.terminal.close();
+      } catch (IOException e) {
+        lanternaError(e);
+      }
+    }
   }
 
   @Override
@@ -281,51 +301,64 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
   private synchronized void print(final Step step, final boolean endWorkflow,
       final boolean success, final String successMessage) {
 
-    this.terminal.setCursorVisible(false);
+    try {
 
-    if (endWorkflow) {
+      this.terminal.setCursorVisible(false);
 
-      if (this.jobDone) {
+      if (endWorkflow) {
+
+        if (this.jobDone) {
+          return;
+        }
+
+        this.terminal.setCursorVisible(false);
+
+        // Update workflow progress
+        showWorkflowProgress(this.lastLineYPos, 1.0, success, successMessage);
+
+        this.terminal.setCursorPosition(0, this.lastLineYPos);
+        this.jobDone = true;
+        this.terminal.setCursorVisible(true);
         return;
       }
 
-      final int lastLineY = this.terminalSize.getRows() - 1;
+      this.terminal.setCursorVisible(false);
+
+      if (!this.stepLines.containsKey(step)) {
+        this.stepLines.put(step, this.lineCount);
+        this.lineCount++;
+        this.terminal.putCharacter('\n');
+
+        // Change lastLineYPos only the bottom of the screen has not been reach
+        if (this.lastLineYPos < this.terminalSize.getRows() - 1) {
+          this.lastLineYPos++;
+        }
+      }
+
+      final int stepLineY =
+          this.lastLineYPos - this.lineCount + this.stepLines.get(step);
+
+      final Integer submittedTasks = this.submittedTasks.get(step);
+      final Integer runningTasks = this.runningTasks.get(step);
+      final Integer doneTasks = this.doneTasks.get(step);
+      final Double stepProgress = this.stepProgress.get(step);
+
+      // Update step progress
+      showStepProgress(stepLineY, step.getId(),
+          submittedTasks == null ? 0 : submittedTasks,
+          runningTasks == null ? 0 : runningTasks,
+          doneTasks == null ? 0 : doneTasks,
+          stepProgress == null ? 0.0 : stepProgress, this.stepState.get(step));
 
       // Update workflow progress
-      showWorkflowProgress(lastLineY, 1.0, success, successMessage);
+      showWorkflowProgress(this.lastLineYPos, globalProgress, null, null);
 
-      this.terminal.moveCursor(0, lastLineY);
+      this.terminal.setCursorPosition(0, this.lastLineYPos);
       this.terminal.setCursorVisible(true);
-      this.jobDone = true;
-      return;
+
+    } catch (IOException e) {
+      lanternaError(e);
     }
-
-    if (!this.stepLines.containsKey(step)) {
-      this.stepLines.put(step, this.lineCount);
-      this.lineCount++;
-      this.terminal.putCharacter('\n');
-    }
-
-    final int lastLineY = this.terminalSize.getRows() - 1;
-    final int stepLineY = lastLineY - this.lineCount + this.stepLines.get(step);
-
-    final Integer submittedTasks = this.submittedTasks.get(step);
-    final Integer runningTasks = this.runningTasks.get(step);
-    final Integer doneTasks = this.doneTasks.get(step);
-    final Double stepProgress = this.stepProgress.get(step);
-
-    // Update step progress
-    showStepProgress(stepLineY, step.getId(),
-        submittedTasks == null ? 0 : submittedTasks,
-        runningTasks == null ? 0 : runningTasks,
-        doneTasks == null ? 0 : doneTasks,
-        stepProgress == null ? 0.0 : stepProgress, this.stepState.get(step));
-
-    // Update workflow progress
-    showWorkflowProgress(lastLineY, globalProgress, null, null);
-
-    this.terminal.moveCursor(0, lastLineY);
-    this.terminal.setCursorVisible(true);
   }
 
   /**
@@ -335,14 +368,16 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
    * @param terminatedTasks the terminated tasks count
    * @param submittedTasks the submitted tasks count
    * @param progress progress of the step
+   * @throws IOException if an error occurs when writing the message
    */
   private void showStepProgress(final int y, final String stepId,
       final int submittedTasks, final int runningTasks,
-      final int terminatedTasks, final double progress, final StepState state) {
+      final int terminatedTasks, final double progress, final StepState state)
+      throws IOException {
 
     int x = 0;
     x = putString(x, y, " * Step ");
-    x = putStringSGR(x, y, String.format("%-40s", stepId), SGR.ENTER_BOLD);
+    x = putStringSGR(x, y, String.format("%-40s", stepId), SGR.BOLD);
     x = putString(x, y, " ");
 
     switch (state) {
@@ -358,12 +393,12 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
       break;
 
     case DONE:
-      x = putStringColor(x, y, state.name(), Color.GREEN);
+      x = putStringColor(x, y, state.name(), TextColor.ANSI.GREEN);
       break;
 
     case ABORTED:
     case FAILED:
-      x = putStringColor(x, y, state.name(), Color.RED);
+      x = putStringColor(x, y, state.name(), TextColor.ANSI.RED);
       break;
 
     default:
@@ -379,9 +414,10 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
    * @param progress progress of the workflow
    * @param success success of the workflow
    * @param message successMessage
+   * @throws IOException if an error occurs when writing the message
    */
   private void showWorkflowProgress(final int y, final double progress,
-      final Boolean success, final String message) {
+      final Boolean success, final String message) throws IOException {
 
     int x = 0;
 
@@ -390,10 +426,10 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
       x = putString(x, y, " * Workflow                                      ");
 
       if (success) {
-        x = putStringColor(x, y, "DONE  ", Color.GREEN);
+        x = putStringColor(x, y, "DONE  ", TextColor.ANSI.GREEN);
 
       } else {
-        x = putStringColor(x, y, "FAILED", Color.RED);
+        x = putStringColor(x, y, "FAILED", TextColor.ANSI.RED);
       }
 
       x = putString(x, y, "  " + message);
@@ -418,8 +454,10 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
    * @param y y position of the string
    * @param s the string to print
    * @return x position after printing the line
+   * @throws IOException if an error occurs when writing the message
    */
-  private int putString(final int x, final int y, final String s) {
+  private int putString(final int x, final int y, final String s)
+      throws IOException {
 
     // Do nothing if the string is null
     if (s == null) {
@@ -431,7 +469,7 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
 
     for (int i = 0; i < max; i++) {
 
-      this.terminal.moveCursor(currentX, y);
+      this.terminal.setCursorPosition(currentX, y);
       this.terminal.putCharacter(s.charAt(i));
       currentX++;
     }
@@ -446,18 +484,19 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
    * @param s the string to print
    * @param color the foreground color of the string
    * @return x position after printing the line
+   * @throws IOException if an error occurs when writing the message
    */
   private int putStringColor(final int x, final int y, final String s,
-      final Terminal.Color color) {
+      final TextColor color) throws IOException {
 
     if (color != null) {
-      this.terminal.applyForegroundColor(color);
+      this.terminal.setForegroundColor(color);
     }
 
     final int result = putString(x, y, s);
 
     if (color != null) {
-      this.terminal.applyForegroundColor(Color.DEFAULT);
+      this.terminal.resetColorAndSGR();
     }
 
     return result;
@@ -470,42 +509,19 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
    * @param s the string to print
    * @param sgr the formatting attribute to use
    * @return x position after printing the line
+   * @throws IOException if an error occurs when writing the message
    */
   private int putStringSGR(final int x, final int y, final String s,
-      final Terminal.SGR sgr) {
+      final SGR sgr) throws IOException {
 
     if (sgr != null) {
-      this.terminal.applySGR(sgr);
+      this.terminal.enableSGR(sgr);
     }
 
     final int result = putString(x, y, s);
 
     if (sgr != null) {
-
-      final Terminal.SGR exitSGR;
-
-      switch (sgr) {
-
-      case ENTER_BLINK:
-        exitSGR = Terminal.SGR.EXIT_BLINK;
-        break;
-
-      case ENTER_BOLD:
-        exitSGR = Terminal.SGR.EXIT_BOLD;
-        break;
-      case ENTER_REVERSE:
-        exitSGR = Terminal.SGR.EXIT_REVERSE;
-        break;
-      case ENTER_UNDERLINE:
-        exitSGR = Terminal.SGR.EXIT_UNDERLINE;
-        break;
-
-      default:
-        exitSGR = Terminal.SGR.RESET_ALL;
-        break;
-      }
-
-      this.terminal.applySGR(exitSGR);
+      this.terminal.disableSGR(sgr);
     }
 
     return result;
@@ -515,13 +531,14 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
    * Clear the end of a terminal line.
    * @param x x position where to start cleaning
    * @param y y position of the line
+   * @throws IOException if an error occurs when clearing the end of line
    */
-  private void clearEndOfLine(final int x, final int y) {
+  private void clearEndOfLine(final int x, final int y) throws IOException {
 
     final int max = this.terminalSize.getColumns();
 
     for (int i = x; i < max; i++) {
-      this.terminal.moveCursor(i, y);
+      this.terminal.setCursorPosition(i, y);
       this.terminal.putCharacter(' ');
     }
   }
@@ -581,15 +598,29 @@ public class LanternaUI extends AbstractUI implements Terminal.ResizeListener {
     return sum / this.steps.size();
   }
 
+  /**
+   * Print exception if an error occurs with Lanterna
+   * @param e exception
+   */
+  private static final void lanternaError(IOException e) {
+    System.err.println(e.getMessage());
+    e.printStackTrace();
+  }
+
   //
   // Listener
   //
 
   @Override
-  public void onResized(final TerminalSize terminalSize) {
+  public void onResized(Terminal terminal, TerminalSize newSize) {
 
     synchronized (this) {
-      this.terminalSize = terminalSize;
+      this.terminalSize = newSize;
+      try {
+        this.lastLineYPos = terminal.getCursorPosition().getRow();
+      } catch (IOException e) {
+        lanternaError(e);
+      }
     }
   }
 

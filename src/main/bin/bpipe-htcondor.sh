@@ -177,8 +177,10 @@ start () {
    if [[ -f $job_script_name ]]
       then
          # launch the job and get its id
-         job_id_full=`condor_submit -terse $job_script_name`
+         job_id_full=`/usr/bin/time -v -o ${job_script_name}.submit.time condor_submit -terse $job_script_name 2> ${job_script_name}.submit.err`
          condor_submit_exit_status=$?
+         echo $job_id_full > ${job_script_name}.submit.out
+
          if [[ $condor_submit_exit_status -eq 0 ]]
             then
                job_id_number=`echo $job_id_full | tr -s ' ' | cut -f 1 -d ' '`

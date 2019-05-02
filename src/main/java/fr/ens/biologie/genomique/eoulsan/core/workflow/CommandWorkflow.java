@@ -1034,6 +1034,9 @@ public class CommandWorkflow extends AbstractWorkflow {
     // Set the globals parameter in the Eoulsan settings
     initializeSettings();
 
+    // Create a "eoulsan-data" directory if required
+    createEoulsanDataDirectoryIfRequired();
+
     // Convert s3:// urls to s3n:// urls
     convertDesignS3URLs();
 

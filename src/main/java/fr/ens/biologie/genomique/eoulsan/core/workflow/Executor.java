@@ -124,9 +124,6 @@ public class Executor {
     // Check directories (log, working, output, temporary...)
     workflow.checkDirectories();
 
-    // Create a "eoulsan-data" directory if required
-    workflow.createEoulsanDataDirectoryIfRequired();
-
     // Get UI
     final UI ui = startUI(workflow);
 

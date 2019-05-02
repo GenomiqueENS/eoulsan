@@ -98,35 +98,48 @@ public class BundledMapperExecutor implements MapperExecutor {
 
     requireNonNull(executable, "executable argument cannot be null");
 
+    // Check if temporary directory for executables exists
+    if (!this.executablesTemporaryDirectory.isDirectory()) {
+      throw new IOException(
+          "The temporary directory for executables does not exists or "
+              + "is not a directory: "
+              + this.executablesTemporaryDirectory.getAbsolutePath());
+    }
+
     // Define the lock file
     File lockFile =
         new File(this.executablesTemporaryDirectory, executable + ".lock");
 
     String result;
 
-    try {
+    // Install binary
+    try (RandomAccessFile raf = new RandomAccessFile(lockFile, "rw");
+        FileChannel channel = raf.getChannel()) {
 
-      FileLock lock = null;
-      try (RandomAccessFile raf = new RandomAccessFile(lockFile, "rw")) {
+      // Lock
+      FileLock lock = channel.lock();
 
-        FileChannel channel = raf.getChannel();
+      result = BinariesInstaller.install(this.softwarePackage, this.version,
+          executable, this.executablesTemporaryDirectory.getAbsolutePath());
 
-        // Lock
-        lock = channel.tryLock();
+      // Unlock
+      lock.release();
+    }
 
-        result = BinariesInstaller.install(this.softwarePackage, this.version,
-            executable, this.executablesTemporaryDirectory.getAbsolutePath());
+    // Remove lock file if not used
+    try (RandomAccessFile raf = new RandomAccessFile(lockFile, "rw");
+        FileChannel channel = raf.getChannel()) {
+
+      // Lock
+      FileLock lock = channel.tryLock();
+
+      // Remove lock file if it was unused
+      if (lock != null) {
+        lockFile.delete();
 
         // Unlock
-        if (lock != null) {
-          lock.release();
-        }
-
-        channel.close();
+        lock.release();
       }
-
-    } finally {
-      lockFile.delete();
     }
 
     return result;

@@ -31,9 +31,9 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RserveRExecutor;
  */
 public class RModuleCommonConfiguration {
 
-  private static final String EXECUTION_MODE = "r.execution.mode";
-  private static final String RSERVE_SERVER = "rserve.servername";
-  private static final String DOCKER_IMAGE = "docker.image";
+  public static final String EXECUTION_MODE_PARAMETER = "r.execution.mode";
+  public static final String RSERVE_SERVER_PARAMETER = "rserve.servername";
+  public static final String DOCKER_IMAGE_PARAMETER = "docker.image";
 
   /**
    * Parse the step parameter and create a configured RExecutor object.
@@ -66,7 +66,7 @@ public class RModuleCommonConfiguration {
 
       switch (p.getName()) {
 
-      case EXECUTION_MODE:
+      case EXECUTION_MODE_PARAMETER:
         executionMode = Mode.parse(p.getStringValue());
 
         if (executionMode == null) {
@@ -75,12 +75,12 @@ public class RModuleCommonConfiguration {
         toRemove.add(p);
         break;
 
-      case RSERVE_SERVER:
+      case RSERVE_SERVER_PARAMETER:
         rserveServer = p.getStringValue();
         toRemove.add(p);
         break;
 
-      case DOCKER_IMAGE:
+      case DOCKER_IMAGE_PARAMETER:
         dockerImage = p.getStringValue();
         toRemove.add(p);
         break;

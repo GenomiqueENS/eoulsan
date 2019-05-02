@@ -1,5 +1,4 @@
-Eoulsan
-=======
+![Eoulsan Logo](/src/site/resources/images/eoulsan.png)
 
 This is the Eoulsan git reference repository.
 
@@ -15,3 +14,5 @@ Here is a quick access to the main pages:
   - ChIP-seq / ATAC-seq [_in progress_]
 - [Reference website](http://outils.genomique.biologie.ens.fr/eoulsan/) to get the complete documentation.
 - [Developers wiki](https://github.com/GenomicParisCentre/eoulsan/wiki/HomeDeveloper) to get information on how to contribute to the Eoulsan project and develop plug-ins.
+
+![Eoulsan single-cell workflows graphics](https://github.com/GenomicParisCentre/eoulsan/blob/master/src/main/java/files/Eoulsan_single_cell_workflow.png)

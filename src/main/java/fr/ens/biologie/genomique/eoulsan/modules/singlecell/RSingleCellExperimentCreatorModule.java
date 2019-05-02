@@ -5,17 +5,17 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ADDITIONAL_ANNO
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_MATRIX_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.SINGLE_CELL_EXPERMIMENT_RDS;
-import static fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement.newDockerRequirement;
-import static fr.ens.biologie.genomique.eoulsan.requirements.PathRequirement.newPathRequirement;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -49,13 +49,13 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
+import fr.ens.biologie.genomique.eoulsan.modules.diffana.RModuleCommonConfiguration;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
-import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
-import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
-import fr.ens.biologie.genomique.eoulsan.util.process.SystemSimpleProcess;
+import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 
 /**
  * This class define a class that allow to create a SingleCellExperiment
@@ -64,22 +64,25 @@ import fr.ens.biologie.genomique.eoulsan.util.process.SystemSimpleProcess;
  * @since 2.3
  */
 @LocalOnly
-public class RSingleCellExperimentCreator extends AbstractModule {
+public class RSingleCellExperimentCreatorModule extends AbstractModule {
 
   /** Module name */
   private static final String MODULE_NAME = "rsinglecellexperimentcreator";
 
-  private static final String R_DOCKER_IMAGE =
+  private static final String R_DOCKER_IMAGE_DEFAULT =
       "genomicpariscentre/singlecellexperiment:3.7";
-  private static final String R_EXECUTABLE = "R";
 
-  private boolean dockerMode;
-  private String dockerImage = R_DOCKER_IMAGE;
+  private static final String R_SCRIPT_NAME = "sce-rds";
+  private static final String R_SCRIPT_PATH =
+      "/singlecell/" + R_SCRIPT_NAME + ".R";
+
   private final Set<Requirement> requirements = new HashSet<>();
+  private RExecutor executor;
 
   private static final char CELL_SEPARATOR = '_';
 
   private boolean inputMatrices = true;
+  private boolean mergeMatrices = true;
   private String designPrefix = "Cell.";
   private boolean useAdditionnalAnnotation = true;
 
@@ -114,7 +117,7 @@ public class RSingleCellExperimentCreator extends AbstractModule {
     }
 
     if (this.inputMatrices) {
-      builder.addPort("matrix", true, EXPRESSION_MATRIX_TSV);
+      builder.addPort("matrix", this.mergeMatrices, EXPRESSION_MATRIX_TSV);
     } else {
       builder.addPort("expression", true, EXPRESSION_RESULTS_TSV);
     }
@@ -132,24 +135,26 @@ public class RSingleCellExperimentCreator extends AbstractModule {
   public void configure(StepConfigurationContext context,
       Set<Parameter> stepParameters) throws EoulsanException {
 
-    for (Parameter p : stepParameters) {
+    // Parse R executor parameters
+    final Set<Parameter> parameters = new HashSet<>(stepParameters);
+    this.executor = RModuleCommonConfiguration.parseRExecutorParameter(context,
+        parameters, this.requirements, R_DOCKER_IMAGE_DEFAULT);
+
+    for (Parameter p : parameters) {
 
       switch (p.getName()) {
 
       case "use.docker":
-        this.dockerMode = p.getBooleanValue();
-        break;
-
-      case "docker.image":
-        this.dockerImage = p.getStringValue().trim();
-        if (this.dockerImage.isEmpty()) {
-          Modules.badParameterValue(context, p,
-              "The docker image name is empty");
-        }
+        Modules.renamedParameter(context, p,
+            RModuleCommonConfiguration.EXECUTION_MODE_PARAMETER, true);
         break;
 
       case "input.matrices":
         this.inputMatrices = p.getBooleanValue();
+        break;
+
+      case "merge.matrices":
+        this.mergeMatrices = p.getBooleanValue();
         break;
 
       case "design.prefix":
@@ -158,6 +163,8 @@ public class RSingleCellExperimentCreator extends AbstractModule {
         break;
 
       case "use.gene.annotation":
+        Modules.renamedParameter(context, p, "use.additional.annotation");
+      case "use.additional.annotation":
         this.useAdditionnalAnnotation = p.getBooleanValue();
         break;
 
@@ -167,11 +174,9 @@ public class RSingleCellExperimentCreator extends AbstractModule {
       }
     }
 
-    // Define requirements
-    if (this.dockerMode) {
-      this.requirements.add(newDockerRequirement(this.dockerImage));
-    } else {
-      this.requirements.add(newPathRequirement(R_DOCKER_IMAGE));
+    // Always merge matrices when input files are expression files
+    if (!inputMatrices) {
+      this.mergeMatrices = true;
     }
   }
 
@@ -181,30 +186,37 @@ public class RSingleCellExperimentCreator extends AbstractModule {
 
     try {
 
-      // Define output files
+      Data inputData = context.getInputData(
+          this.inputMatrices ? EXPRESSION_MATRIX_TSV : EXPRESSION_RESULTS_TSV);
+
+      // Define RDS output file
+      Data rdsData = this.mergeMatrices
+          ? context.getOutputData(SINGLE_CELL_EXPERMIMENT_RDS, "matrix")
+          : context.getOutputData(SINGLE_CELL_EXPERMIMENT_RDS, inputData);
+      File rdsFile = rdsData.getDataFile().toFile();
+
+      // Define R script input files
       File temporaryDirectory = context.getLocalTempDirectory();
       File outputDir = context.getStepOutputDirectory().toFile();
-      File matrixFile = new File(outputDir, "matrix.tsv");
-      File genesFile = this.useAdditionnalAnnotation
-          ? new File(outputDir, "genes.tsv") : null;
-      File cellsFile =
-          this.designPrefix.isEmpty() ? null : new File(outputDir, "cells.tsv");
-      File rdsFile =
-          context.getOutputData(SINGLE_CELL_EXPERMIMENT_RDS, "matrix")
-              .getDataFile().toFile();
+      File matrixFile =
+          new File(outputDir, "matrix-" + rdsData.getName() + ".tsv");
+      File featuresFile = this.useAdditionnalAnnotation
+          ? new File(outputDir, "features-" + rdsData.getName() + ".tsv")
+          : null;
+      File cellsFile = this.designPrefix.isEmpty()
+          ? null : new File(outputDir, "cells-" + rdsData.getName() + ".tsv");
+
+      // Save R script ?
+      boolean saveRScript = context.getSettings().isSaveRscripts();
 
       // Create R Input files
-      createRInputFiles(context, matrixFile, genesFile, cellsFile);
+      createRInputFiles(context, inputData, matrixFile, featuresFile,
+          cellsFile);
 
       // Launch R and create RDS file
-      context.getLogger().fine("Launch R");
-      if (this.dockerMode) {
-        createRDSWithDocker(dockerImage, matrixFile, cellsFile, genesFile,
-            rdsFile, temporaryDirectory);
-      } else {
-        createRDS(matrixFile, cellsFile, genesFile, rdsFile,
-            temporaryDirectory);
-      }
+      createRDS(matrixFile, cellsFile, featuresFile, rdsFile,
+          temporaryDirectory, saveRScript, context.getStepOutputDirectory(),
+          R_SCRIPT_NAME + "-" + rdsData.getName());
 
     } catch (IOException e) {
       return status.createTaskResult(e);
@@ -213,48 +225,44 @@ public class RSingleCellExperimentCreator extends AbstractModule {
     return status.createTaskResult();
   }
 
-  private void createRInputFiles(final TaskContext context,
-      final File matrixFile, final File genesFile, final File cellsFile)
+  private void createRInputFiles(final TaskContext context, final Data matrices,
+      final File matrixFile, final File featuresFile, final File cellsFile)
       throws IOException {
 
-    Data matrices = context.getInputData(
-        this.inputMatrices ? EXPRESSION_MATRIX_TSV : EXPRESSION_RESULTS_TSV);
-
-    AnnotationMatrix geneAnnotation = null;
-    AnnotationMatrix cellAnnotation = null;
+    AnnotationMatrix featureAnnotations = null;
+    AnnotationMatrix cellAnnotations = null;
 
     // Create final matrix
     context.getLogger().fine("Load matrix");
-    final ExpressionMatrix matrix = this.inputMatrices
-        ? mergeMatrices(matrices) : mergeExpressionResults(matrices);
+    final ExpressionMatrix matrix = createMatrix(matrices);
 
-    // Load gene annotation from additional annotation
+    // Load feature annotations from additional annotation
 
-    if (genesFile != null) {
+    if (featuresFile != null) {
       context.getLogger().fine("Load additional annotation");
 
       try (AnnotationMatrixReader reader = new TSVAnnotationMatrixReader(context
           .getInputData(ADDITIONAL_ANNOTATION_TSV).getDataFile().open())) {
 
-        geneAnnotation = reader.read();
+        featureAnnotations = reader.read();
       }
 
-      // Filter gene annotations
-      context.getLogger().fine("Filter gene annotation");
-      geneAnnotation.retainRows(matrix.getRowNames());
+      // Filter features annotations
+      context.getLogger().fine("Filter features annotation");
+      featureAnnotations.retainRows(matrix.getRowNames());
     }
 
     // Parse the design to get cell annotation
     if (cellsFile != null) {
       context.getLogger().fine("Get cell annotation");
-      cellAnnotation = getCellAnnotation(matrices,
+      cellAnnotations = getCellAnnotation(matrices,
           context.getWorkflow().getDesign(), this.designPrefix);
     }
 
     // Duplicate cell annotation for each cell for 10X
-    if (this.inputMatrices && cellAnnotation != null) {
+    if (this.inputMatrices && cellAnnotations != null) {
       context.getLogger().fine("Duplicate cell annotation");
-      duplicateCellAnnotation(cellAnnotation, matrix.getColumnNames());
+      duplicateCellAnnotation(cellAnnotations, matrix.getColumnNames());
     }
 
     // Save matrix data
@@ -264,21 +272,21 @@ public class RSingleCellExperimentCreator extends AbstractModule {
       writer.write(matrix);
     }
 
-    // Save gene annotation
-    if (geneAnnotation != null) {
-      context.getLogger().fine("Save gene annotation");
+    // Save feature annotations
+    if (featureAnnotations != null) {
+      context.getLogger().fine("Save feature annotations");
       try (AnnotationMatrixWriter writer =
-          new TSVAnnotationMatrixWriter(genesFile)) {
-        writer.write(geneAnnotation, matrix.getRowNames());
+          new TSVAnnotationMatrixWriter(featuresFile)) {
+        writer.write(featureAnnotations, matrix.getRowNames());
       }
     }
 
     // Save cell annotation
-    if (cellAnnotation != null) {
-      context.getLogger().fine("Save cell annotation");
+    if (cellAnnotations != null) {
+      context.getLogger().fine("Save cell annotations");
       try (AnnotationMatrixWriter writer =
           new TSVAnnotationMatrixWriter(cellsFile)) {
-        writer.write(cellAnnotation, matrix.getColumnNames());
+        writer.write(cellAnnotations, matrix.getColumnNames());
       }
     }
 
@@ -287,6 +295,26 @@ public class RSingleCellExperimentCreator extends AbstractModule {
   //
   // Matrix and annotation management
   //
+
+  /**
+   * Create the matrix object.
+   * @param matrix matrix data
+   * @return an ExpressionMatrix object
+   */
+  private ExpressionMatrix createMatrix(final Data matrices)
+      throws IOException {
+
+    if (this.inputMatrices) {
+
+      if (this.mergeMatrices) {
+        return mergeMatrices(matrices);
+      } else {
+        return loadMatrix(matrices, null);
+      }
+    } else {
+      return mergeExpressionResults(matrices);
+    }
+  }
 
   /**
    * Merge the matrices in one matrix
@@ -301,40 +329,61 @@ public class RSingleCellExperimentCreator extends AbstractModule {
 
     final ExpressionMatrix result = new SparseExpressionMatrix();
 
-    // Do not copy matrix when there is only one matrix file
-    final boolean oneMatrix = matrices.getListElements().size() == 1;
-
     for (Data matrixData : matrices.getListElements()) {
+      loadMatrix(matrixData, result);
+    }
 
-      // Determine the format of the input expression matrix
-      try (ExpressionMatrixFormatFinderInputStream in =
-          new ExpressionMatrixFormatFinderInputStream(
-              matrixData.getDataFile().open())) {
+    return result;
+  }
 
-        // Create reader
-        try (ExpressionMatrixReader reader = in.getExpressionMatrixReader()) {
+  /**
+   * Load a matrix.
+   * @param matrixData matrix data
+   * @param resultMatrix result matrix
+   * @return the result matrix
+   * @throws IOException if an error occurs while reading the matrix
+   */
+  private static ExpressionMatrix loadMatrix(final Data matrixData,
+      final ExpressionMatrix resultMatrix) throws IOException {
 
-          // Read matrix
-          ExpressionMatrix matrix =
-              reader.read(oneMatrix ? result : new SparseExpressionMatrix());
+    // Determine the format of the input expression matrix
+    try (ExpressionMatrixFormatFinderInputStream in =
+        new ExpressionMatrixFormatFinderInputStream(
+            matrixData.getDataFile().open())) {
 
-          // Get sample name
-          String sampleName = matrixData.getName();
+      // Create reader
+      try (ExpressionMatrixReader reader = in.getExpressionMatrixReader()) {
 
-          // Rename the column with sample name
-          for (String colName : matrix.getColumnNames()) {
-            matrix.renameColumn(colName, sampleName + CELL_SEPARATOR + colName);
+        // Get sample name
+        String sampleName = matrixData.getName();
+
+        // Get existing column names
+        Set<String> existingColumnNames = resultMatrix == null
+            ? Collections.emptySet()
+            : new HashSet<>(resultMatrix.getColumnNames());
+
+        // Read matrix
+        ExpressionMatrix loadedMatrix = reader.read(
+            resultMatrix == null ? new SparseExpressionMatrix() : resultMatrix);
+
+        // Rename the column with sample name
+        for (String colName : loadedMatrix.getColumnNames()) {
+
+          // Do not rename already renamed columns
+          if (!existingColumnNames.contains(colName)) {
+            String newColName = sampleName + CELL_SEPARATOR + colName;
+            loadedMatrix.renameColumn(colName, newColName);
           }
+        }
 
-          // Add matrix to the final matrix
-          if (!oneMatrix) {
-            result.add(matrix);
-          }
+        // Add loaded matrix to the final matrix
+        if (resultMatrix == null) {
+          return loadedMatrix;
         }
       }
     }
 
-    return result;
+    return resultMatrix;
   }
 
   /**
@@ -445,161 +494,114 @@ public class RSingleCellExperimentCreator extends AbstractModule {
   //
 
   /**
-   * Create the RDS file with R installed in the user path.
-   * @param dockerImage docker image to use
+   * Create the RDS file.
    * @param matrixFile matrix file
    * @param cellsFile cell annotations file
-   * @param genesFile gene annotations file
+   * @param featuresFile feature annotations file
    * @param rdsFile RDS output file
    * @param temporaryDirectory temporary directory
-   * @throws IOException if an error occurs while executing the command
-   */
-  private static void createRDSWithDocker(final String dockerImage,
-      final File matrixFile, final File cellsFile, final File genesFile,
-      final File rdsFile, final File temporaryDirectory) throws IOException {
-
-    // Create R script
-    final File rScriptFile =
-        createRScript(matrixFile, cellsFile, genesFile, rdsFile);
-
-    SimpleProcess process = dockerImage == null
-        ? new SystemSimpleProcess()
-        : DockerManager.getInstance().createImageInstance(dockerImage);
-
-    File executionDirectory = rdsFile.getParentFile();
-    File stdoutFile = new File(executionDirectory, "r.stdout");
-    File stderrFile = new File(executionDirectory, "r.stderr");
-
-    // Define the list of the files/directory to mount in the Docker instance
-    List<File> filesUsed = new ArrayList<>();
-    filesUsed.add(executionDirectory);
-    filesUsed.add(temporaryDirectory);
-    filesUsed.add(rScriptFile);
-    filesUsed.add(matrixFile);
-
-    if (cellsFile != null) {
-      filesUsed.add(cellsFile);
-    }
-
-    if (cellsFile != null) {
-      filesUsed.add(genesFile);
-    }
-
-    filesUsed.add(rdsFile);
-
-    // Launch Docker container
-    final int exitValue = process.execute(createRCommand(rScriptFile),
-        executionDirectory, temporaryDirectory, stdoutFile, stderrFile,
-        filesUsed.toArray(new File[0]));
-
-    if (exitValue > 0) {
-      throw new IOException("Invalid exit code of R: " + exitValue);
-    }
-  }
-
-  /**
-   * Create the RDS file with R installed in the user path.
-   * @param matrixFile matrix file
-   * @param cellsFile cell annotations file
-   * @param genesFile gene annotations file
-   * @param rdsFile RDS output file
-   * @param temporaryDirectory temporary directory
+   * @param saveRScript if R script must be saved
+   * @param RExecutionDirectory R execution directory
+   * @param scriptName script name
    * @throws IOException if an error occurs while executing the command
    */
   private void createRDS(final File matrixFile, final File cellsFile,
-      final File genesFile, final File rdsFile, final File temporaryDirectory)
+      final File featuresFile, final File rdsFile,
+      final File temporaryDirectory, final boolean saveRScript,
+      final DataFile RExecutionDirectory, final String scriptName)
       throws IOException {
 
-    createRDSWithDocker(null, matrixFile, cellsFile, genesFile, rdsFile,
-        temporaryDirectory);
-  }
+    // Open executor connection
+    this.executor.openConnection();
 
-  /**
-   * Create execution command.
-   * @param rScriptFile the path to the R script
-   * @return a list with the arguments of the command to launch
-   */
-  private static List<String> createRCommand(final File rScriptFile) {
-
-    List<String> result = new ArrayList<>();
-
-    // The executable name
-    result.add(R_EXECUTABLE);
-
-    // The command arguments
-    result.add("--no-save");
-    result.add("-e");
-    result.add("source(\"" + rScriptFile.getAbsolutePath() + "\")");
-
-    return result;
-  }
-
-  /**
-   * Create R script.
-   * @param matrixFile matrix file
-   * @param cellsFile cell annotations file
-   * @param genesFile gene annotations file
-   * @param rdsFile RDS output file
-   * @return the R script file
-   * @throws IOException if an error occurs while creating the file
-   */
-  private static File createRScript(final File matrixFile, final File cellsFile,
-      final File genesFile, final File rdsFile) throws IOException {
-
-    File rScriptFile = new File(rdsFile.getParentFile(), "sce-rds.R");
-
-    try (FileWriter writer = new FileWriter(rScriptFile)) {
-
-      writer.write("#!/usr/bin/env Rscript\n");
-
-      writer.write("\n# Generated by "
-          + Globals.APP_NAME + " " + Globals.APP_VERSION_STRING + "\n");
-      writer.write("# Generated on " + new Date() + "\n");
-
-      writer.write("\n# Import SingleCellExperiment package\n");
-      writer.write("library(SingleCellExperiment)\n");
-
-      writer.write("\n# Load counts\n");
-      writer.write("values <- read.table(\""
-          + matrixFile.getAbsolutePath()
-          + "\", header=TRUE, row.names=1, check.names=FALSE, sep=\"\\t\")\n");
-
-      // Load cell annotations if required
-      if (cellsFile != null) {
-        writer.write("\n# Load cell annotations\n");
-        writer.write("cells <-read.delim(\""
-            + cellsFile.getAbsolutePath()
-            + "\", header=TRUE, row.names=1, check.names=FALSE, sep=\"\\t\")\n");
-      }
-
-      // Load gene annotations if required
-      if (genesFile != null) {
-        writer.write("\n# Load gene annotations\n");
-        writer.write("genes <- read.delim(\""
-            + genesFile.getAbsolutePath()
-            + "\", header=TRUE, row.names=1, check.names=FALSE, sep=\"\\t\")\n");
-      }
-
-      // Create SingleCellExperiment object
-      writer.write("\n# Create SingleCellExperiment object\n");
-      writer.write("sce <- SingleCellExperiment("
-          + "assays = list(counts = as.matrix(values))");
-
-      if (cellsFile != null) {
-        writer.write(", colData = data.frame(cells)");
-      }
-
-      if (genesFile != null) {
-        writer.write(", rowData = data.frame(genes)");
-      }
-      writer.write(")\n");
-
-      // Save SingleCellExperiment object in a RDS file
-      writer.write("\n# Create RDS file from SingleCellExperiment object\n");
-      writer.write("saveRDS(sce, \"" + rdsFile.getAbsolutePath() + "\")\n");
+    // Put input files
+    this.executor.putInputFile(new DataFile(matrixFile));
+    if (cellsFile != null) {
+      this.executor.putInputFile(new DataFile(cellsFile));
+    }
+    if (featuresFile != null) {
+      this.executor.putInputFile(new DataFile(featuresFile));
     }
 
-    return rScriptFile;
+    // Read the R script to execute
+    final String rScriptSource = readFromJar(R_SCRIPT_PATH);
+
+    this.executor.executeRScript(rScriptSource, false, null, saveRScript,
+        scriptName, RExecutionDirectory, createCommandLineArguments(matrixFile,
+            cellsFile, featuresFile, rdsFile));
+
+    // Remove input files
+    this.executor.removeInputFiles();
+
+    // Retrieve output files
+    this.executor.getOutputFiles();
+
+    // Close executor connection
+    this.executor.closeConnection();
+  }
+
+  //
+  // Static methods
+  //
+
+  /**
+   * Read a file from the Jar.
+   * @param filePathInJar, path to the file to copy from the Jar
+   * @return a String with the content of the file
+   * @throws IOException if reading fails
+   */
+  private static String readFromJar(final String filePathInJar)
+      throws IOException {
+
+    final InputStream is = RSingleCellExperimentCreatorModule.class
+        .getResourceAsStream(filePathInJar);
+
+    final StringBuilder sb = new StringBuilder();
+    String line = null;
+
+    try (
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+
+      while ((line = reader.readLine()) != null) {
+
+        sb.append(line);
+        sb.append('\n');
+      }
+    }
+
+    return sb.toString();
+  }
+
+  /**
+   * Create R script arguments.
+   * @param matrixFile matrix file
+   * @param cellsFile cell file
+   * @param featuresFile features files
+   * @param rdsFile output file
+   * @return an array with the R script arguments
+   */
+  private static String[] createCommandLineArguments(final File matrixFile,
+      final File cellsFile, final File featuresFile, final File rdsFile) {
+
+    List<String> result = new ArrayList<>();
+    result.add(matrixFile.getName());
+    result.add(rdsFile.getName());
+
+    if (cellsFile == null) {
+      result.add("FALSE");
+    } else {
+      result.add("TRUE");
+      result.add(cellsFile.getName());
+    }
+
+    if (featuresFile == null) {
+      result.add("FALSE");
+    } else {
+      result.add("TRUE");
+      result.add(featuresFile.getName());
+    }
+
+    return result.toArray(new String[0]);
   }
 
 }

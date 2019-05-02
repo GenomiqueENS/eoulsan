@@ -46,7 +46,7 @@
          <br/>
          <li><b>Input port</b>:
            <ul>
-             <li><b>additionalannotation</b>: Additionnal annotation data (format: additional_annotation_tsv) from the design file. This data allow to describe the genes of the Bioconductor SingleCellExperiment object</li>
+		   <li><b>additionalannotation</b>: Additionnal annotation data (format: additional_annotation_tsv) from the design file. This data allow to describe the genes/features of the Bioconductor SingleCellExperiment object</li>
              <li><b>matrix</b>: Matrix data (format: expression_matrix_tsv) if matrix input is enabled</li>
              <li><b>expression</b>: Expression step output (format: expression_results_tsv) if matrix input is not enabled</li>
            </ul>
@@ -63,10 +63,13 @@
          <li><b>Optional parameters</b>:</li>
            <table>
                 <tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
-                <tr><td>use.docker</td><td>boolean</td><td>Enable Docker usage to execute R</td><td>false</td></tr>
-                <tr><td>docker.image</td><td>string</td><td>The docker image to use when Docker is enabled</td><td>genomicpariscentre/singlecellexperiment:3.7</td></tr>
+                <tr><td>r.execution.mode</td><td>string</td><td>The R execution mode. The available mode values are: process, rserve and docker.</td><td>process</td></tr>
+                <tr><td>rserve.servername</td><td>string</td><td>The Rserve server name to use in rserve execution mode</td><td>not set</td></tr>
+                <tr><td>docker.image</td><td>string</td><td>The Docker image to use in Docker execution mode.</td><td>genomicpariscentre/singlecellexperiment:3.7</td></tr>
 		<tr><td>input.matrices</td><td>boolean</td><td>The input of the module is a matrix (e.g. 10X Genomics data). For SmartSeq2, this parameter is usually set to false</td><td>true</td></tr>
+		<tr><td>merge.matrices</td><td>boolean</td><td>When the input of the module is matrices, this option allow to merge all the input matrices in one output matrix</td><td>true</td></tr>
 		<tr><td>design.prefix</td><td>string</td><td>This parameter define the prefix of Eoulsan design columns that contains annotations about the cells. This cell annotations will be copied in the output Bioconductor object</td><td>Not set</td></tr>
+		<tr><td>use.additionnal.annotation</td><td>boolean</td><td>When this parameter is enabled, feature annotations will be copied in the output Bioconductor object to describe the genes/features of the Bioconductor SingleCellExperiment object</td><td>true</td></tr>
           </table>
          <br/>
 
@@ -83,8 +86,8 @@
                         &lt;value&gt;true&lt;/value&gt;
                 &lt;/parameter&gt;
                 &lt;parameter&gt;
-                        &lt;name&gt;use.docker&lt;/name&gt;
-                        &lt;value&gt;false&lt;/value&gt;
+                        &lt;name&gt;r.execution.mode&lt;/name&gt;
+                        &lt;value&gt;docker&lt;/value&gt;
                 &lt;/parameter&gt;
         &lt;/parameters&gt;
 &lt;/step&gt;

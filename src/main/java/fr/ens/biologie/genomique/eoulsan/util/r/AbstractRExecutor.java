@@ -108,6 +108,16 @@ public abstract class AbstractRExecutor implements RExecutor {
   }
 
   @Override
+  public void putInputFile(DataFile inputFile) throws IOException {
+
+    if (inputFile == null) {
+      throw new NullPointerException("inputFile argument cannot be null");
+    }
+
+    putFile(inputFile, inputFile.getName());
+  }
+
+  @Override
   public void putInputFile(DataFile inputFile, String outputFilename)
       throws IOException {
 

@@ -154,6 +154,12 @@ public final class Settings implements Serializable {
 
   private static final String DOCKER_URI_KEY = MAIN_PREFIX_KEY + "docker.uri";
 
+  private static final String DOCKER_SINGULARITY_ENABLED_KEY =
+      MAIN_PREFIX_KEY + "docker.singularity.enabled";
+
+  private static final String DOCKER_SINGULARITY_STORAGE_KEY =
+      MAIN_PREFIX_KEY + "docker.singularity.storage.path";
+
   private static final String DOCKER_MOUNT_NFS_ROOTS_KEY =
       MAIN_PREFIX_KEY + "docker.mount.nfs.roots";
 
@@ -559,6 +565,25 @@ public final class Settings implements Serializable {
   public String getDockerConnection() {
 
     return this.properties.getProperty(DOCKER_URI_KEY);
+  }
+
+  /**
+   * Is Docker features are enabled using singularity.
+   * @return true if the Docker features are enabled using Singularity
+   */
+  public boolean isDockerBySingularityEnabled() {
+
+    return Boolean.parseBoolean(
+        this.properties.getProperty(DOCKER_SINGULARITY_ENABLED_KEY));
+  }
+
+  /**
+   * Get the Docker singularity storage path.
+   * @return the path to GFF storage path
+   */
+  public String getDockerSingularityStoragePath() {
+
+    return this.properties.getProperty(DOCKER_SINGULARITY_STORAGE_KEY);
   }
 
   /**
@@ -1130,6 +1155,24 @@ public final class Settings implements Serializable {
   public void setDockerConnectionURI(final String uri) {
 
     this.properties.setProperty(DOCKER_URI_KEY, uri);
+  }
+
+  /**
+   * Enable Docker features using Singularity
+   * @param enable true to enable the feature
+   */
+  public void setDockerBySingularityEnabled(final boolean enabled) {
+
+    this.properties.setProperty(DOCKER_SINGULARITY_ENABLED_KEY, "" + enabled);
+  }
+
+  /**
+   * Set the Docker singularity storage path.
+   * @param storagePath the path to Docker singularity storage path
+   */
+  public void setDockerSingularityStoragePath(final String storagePath) {
+
+    this.properties.setProperty(DOCKER_SINGULARITY_STORAGE_KEY, storagePath);
   }
 
   /**

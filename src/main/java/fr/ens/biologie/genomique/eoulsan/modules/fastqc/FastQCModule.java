@@ -163,6 +163,7 @@ public class FastQCModule extends AbstractModule {
     // Define parameters of FastQC
     System.setProperty("java.awt.headless", "true");
     System.setProperty("fastqc.unzip", "true");
+    System.setProperty("javax.accessibility.assistive_technologies", "");
 
     // Parse step parameters to initialize module
     for (final Parameter p : stepParameters) {

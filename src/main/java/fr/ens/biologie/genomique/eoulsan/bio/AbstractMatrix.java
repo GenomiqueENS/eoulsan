@@ -272,6 +272,11 @@ public abstract class AbstractMatrix<E> implements Matrix<E> {
     return getRowCount() * getColumnCount();
   }
 
+  @Override
+  public boolean isEmpty() {
+    return getColumnCount() == 0 && getRowCount() == 0;
+  }
+
   //
   // Object methods
   //

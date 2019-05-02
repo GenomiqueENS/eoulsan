@@ -209,4 +209,11 @@ public interface Matrix<E> {
    */
   int size();
 
+  /**
+   * Test if the matrix is empty. A matrix is empty when the size of the matrix
+   * is 0, and no row or column has been created.
+   * @return
+   */
+  boolean isEmpty();
+
 }

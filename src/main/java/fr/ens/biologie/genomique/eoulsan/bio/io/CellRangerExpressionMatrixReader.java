@@ -31,9 +31,9 @@ public class CellRangerExpressionMatrixReader
   static final String GENES_FILENAME = "genes.tsv";
   static final String BARCODES_FILENAME = "barcodes.tsv";
 
-  static final String MATRIX_V3_FILENAME = "matrix.mtx.gz";
-  static final String GENES_V3_FILENAME = "features.tsv.gz";
-  static final String BARCODES_V3_FILENAME = "barcodes.tsv.gz";
+  static final String MATRIX_V2_FILENAME = "matrix.mtx.gz";
+  static final String GENES_V2_FILENAME = "features.tsv.gz";
+  static final String BARCODES_V2_FILENAME = "barcodes.tsv.gz";
 
   private List<String> geneNames = new ArrayList<>();
   private List<String> barcodesNames = new ArrayList<>();
@@ -122,7 +122,7 @@ public class CellRangerExpressionMatrixReader
    */
   static int checkCellRangerFormatVersion(int formatVersion) {
 
-    if (formatVersion < 1 || formatVersion > 3) {
+    if (formatVersion < 1 || formatVersion > 2) {
       throw new IllegalArgumentException(
           "Invalid format version: " + formatVersion);
     }
@@ -154,17 +154,17 @@ public class CellRangerExpressionMatrixReader
   public CellRangerExpressionMatrixReader(final File directory,
       final int formatVersion) throws IOException {
 
-    super(new File(directory, checkCellRangerFormatVersion(formatVersion) == 3
-        ? MATRIX_V3_FILENAME : MATRIX_FILENAME));
+    super(new File(directory, checkCellRangerFormatVersion(formatVersion) == 2
+        ? MATRIX_V2_FILENAME : MATRIX_FILENAME));
 
     // Load row and column names
     loadList(
         new File(directory,
-            formatVersion == 3 ? GENES_V3_FILENAME : GENES_FILENAME),
+            formatVersion == 2 ? GENES_V2_FILENAME : GENES_FILENAME),
         this.geneNames, this.geneAliases);
     loadList(
         new File(directory,
-            formatVersion == 3 ? BARCODES_V3_FILENAME : BARCODES_FILENAME),
+            formatVersion == 2 ? BARCODES_V2_FILENAME : BARCODES_FILENAME),
         this.barcodesNames, null);
   }
 

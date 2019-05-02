@@ -1,11 +1,12 @@
 package fr.ens.biologie.genomique.eoulsan.modules.singlecell;
 
+import static fr.ens.biologie.genomique.eoulsan.bio.io.CellRangerExpressionMatrixWriter.DEFAULT_FEATURE_TYPE;
 import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.noOutputPort;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ADDITIONAL_ANNOTATION_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_MATRIX_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
-import static fr.ens.biologie.genomique.eoulsan.modules.singlecell.RSingleCellExperimentCreator.mergeExpressionResults;
-import static fr.ens.biologie.genomique.eoulsan.modules.singlecell.RSingleCellExperimentCreator.mergeMatrices;
+import static fr.ens.biologie.genomique.eoulsan.modules.singlecell.RSingleCellExperimentCreatorModule.mergeExpressionResults;
+import static fr.ens.biologie.genomique.eoulsan.modules.singlecell.RSingleCellExperimentCreatorModule.mergeMatrices;
 
 import java.io.IOException;
 import java.util.Set;
@@ -45,7 +46,9 @@ public class MatrixToCellRangerMatrixModule extends AbstractModule {
 
   private boolean inputMatrices = true;
   private boolean useAdditionnalAnnotation = true;
-  private String geneNameFieldName = "Gene name";
+  private String featureAnnotationFieldName = "Gene name";
+  private String featureAnnotationType = DEFAULT_FEATURE_TYPE;
+  private int cellRangerMatrixFormat = 2;
 
   @Override
   public String getName() {
@@ -94,12 +97,20 @@ public class MatrixToCellRangerMatrixModule extends AbstractModule {
         this.inputMatrices = p.getBooleanValue();
         break;
 
-      case "use.gene.annotation":
+      case "use.additionnal.annotation":
         this.useAdditionnalAnnotation = p.getBooleanValue();
         break;
 
-      case "gene.annotation.field.name":
-        this.geneNameFieldName = p.getValue();
+      case "additionnal.annotation.field.name":
+        this.featureAnnotationFieldName = p.getValue();
+        break;
+
+      case "additionnal.annotation.type":
+        this.featureAnnotationType = p.getValue();
+        break;
+
+      case "cell.ranger.matrix.format":
+        this.cellRangerMatrixFormat = p.getIntValueInRange(1, 2);
         break;
 
       default:
@@ -141,7 +152,8 @@ public class MatrixToCellRangerMatrixModule extends AbstractModule {
       try (CellRangerExpressionMatrixWriter writer =
           new CellRangerExpressionMatrixWriter(
               context.getStepOutputDirectory().toFile(), geneAnnotation,
-              geneNameFieldName)) {
+              this.featureAnnotationFieldName, this.cellRangerMatrixFormat,
+              this.featureAnnotationType)) {
         writer.write(matrix);
       }
 
