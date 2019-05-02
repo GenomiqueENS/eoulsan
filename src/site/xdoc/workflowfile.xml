@@ -54,6 +54,7 @@
 		  <code>${design.file.path}</code>, <code>${workflow.file.path}</code>,
 		  <code>${output.path}</code>, <code>${job.path}</code>,
 		  <code>${job.id}</code>, <code>${job.uuid}</code> and <code>${available.processors}</code>)</li>
+		<li>Design header entries (e.g. <code>${design.header.Project}</code>, <code>${design.header.GenomeFile}</code>...)</li>
 		<li><a href="http://docs.oracle.com/javase/6/docs/api/java/lang/System.html#getProperty(java.lang.String)">java properties</a> (e.g. <code>${java.version}</code>)</li>
 		<li>System environment variables (e.g. <code>${PATH}</code>, <code>${PWD}</code>)</li>
 		<li><a href="#constantssection">user defined constants</a></li>

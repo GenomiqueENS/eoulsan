@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -198,6 +199,12 @@ public class Executor {
     getLogger().info("Job Log path: " + execArgs.getJobPathname());
   }
 
+  /**
+   * Load the design.
+   * @param arguments executor arguments
+   * @return the design
+   * @throws EoulsanException if an error occurs while loading the design
+   */
   private static Design loadDesign(final ExecutorArguments arguments)
       throws EoulsanException {
 
@@ -219,8 +226,16 @@ public class Executor {
     }
   }
 
+  /**
+   * Load workflow model.
+   * @param arguments executor arguments
+   * @param design design
+   * @return the workflow model
+   * @throws EoulsanException if an error occurs while creating the model
+   */
   private static CommandWorkflowModel loadCommand(
-      final ExecutorArguments arguments) throws EoulsanException {
+      final ExecutorArguments arguments, final Design design)
+      throws EoulsanException {
 
     try {
 
@@ -230,7 +245,14 @@ public class Executor {
 
       // Parse workflow file
       final CommandWorkflowParser pp = new CommandWorkflowParser(is);
+
+      // Add command constants
       pp.addConstants(arguments);
+
+      // Add design header entries
+      for (Map.Entry<String, String> e : design.getMetadata().entrySet()) {
+        pp.addConstant("design.header." + e.getKey(), e.getValue());
+      }
 
       return pp.parse();
     } catch (IOException e) {
@@ -254,7 +276,7 @@ public class Executor {
 
     this.arguments = arguments;
     this.design = loadDesign(arguments);
-    this.command = loadCommand(arguments);
+    this.command = loadCommand(arguments, this.design);
   }
 
 }
