@@ -1,5 +1,8 @@
 package fr.ens.biologie.genomique.eoulsan.modules.generators;
 
+import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_DESC_TXT;
+import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_FASTA;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -7,7 +10,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -21,9 +23,11 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
+import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.core.InputPort;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
+import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
@@ -36,6 +40,7 @@ import fr.ens.biologie.genomique.eoulsan.core.workflow.ModuleRegistry;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
@@ -55,6 +60,7 @@ public class GenericStorageGeneratorModule extends AbstractModule {
   private Module module;
   private List<Parameter> moduleParameter = new ArrayList<>();
   private boolean storeResult = true;
+  private boolean useGenomeDescriptionForGenome;
 
   @Override
   public String getName() {
@@ -71,7 +77,34 @@ public class GenericStorageGeneratorModule extends AbstractModule {
   @Override
   public InputPorts getInputPorts() {
 
-    return this.module.getInputPorts();
+    boolean genomeFound = false;
+    boolean genomeDescFound = false;
+
+    InputPortsBuilder builder = new InputPortsBuilder();
+
+    for (InputPort p : this.module.getInputPorts()) {
+
+      DataFormat format = p.getFormat();
+
+      if (GENOME_FASTA.equals(format)) {
+        genomeFound = true;
+      }
+
+      if (GENOME_DESC_TXT.equals(format)) {
+        genomeDescFound = true;
+      }
+
+      builder.addPort(p.getName(), p.isList(), format,
+          p.getCompressionsAccepted(), p.isRequiredInWorkingDirectory());
+    }
+
+    // Add Genome description if genome format is in inputs
+    if (!genomeDescFound && genomeFound) {
+      builder.addPort("genomedescription", GENOME_DESC_TXT);
+      this.useGenomeDescriptionForGenome = true;
+    }
+
+    return builder.create();
   }
 
   @Override
@@ -139,7 +172,6 @@ public class GenericStorageGeneratorModule extends AbstractModule {
 
     // Sort parameters
     this.moduleParameter.sort(Comparator.naturalOrder());
-
   }
 
   @Override
@@ -159,8 +191,6 @@ public class GenericStorageGeneratorModule extends AbstractModule {
 
       // Get storage path
       DataFile storageDirectory = getRepositoryDirectory(storageName, context);
-
-      // TODO use GenomeDescStorage for Genome DataFormat
 
       // Compute MD5
       String md5 = computeMD5(context);
@@ -254,12 +284,15 @@ public class GenericStorageGeneratorModule extends AbstractModule {
    * @throws IOException if an error occurs while computing MD5 sums
    */
   private static List<String> computeAndSortInputFileMD5(
-      Set<DataFile> inputFiles) throws IOException {
+      final Set<DataFile> inputFiles, final TaskContext context)
+      throws IOException {
 
     List<String> result = new ArrayList<>();
 
     for (DataFile f : inputFiles) {
-      result.add(FileUtils.computeMD5Sum(f.rawOpen()));
+      String md5 = FileUtils.computeMD5Sum(f.rawOpen());
+      result.add(md5);
+      context.getLogger().info("MD5 sum of " + f + " file: " + md5);
     }
 
     result.sort(Comparator.naturalOrder());
@@ -310,12 +343,18 @@ public class GenericStorageGeneratorModule extends AbstractModule {
 
     // Get the list of input datafiles
     Set<DataFile> inputFiles = new HashSet<>();
-    for (InputPort port : getInputPorts()) {
+    for (InputPort port : this.module.getInputPorts()) {
 
       Data data = context.getInputData(port.getName());
+      DataFormat format = data.getFormat();
+
+      if (this.useGenomeDescriptionForGenome
+          && (GENOME_FASTA.equals(format) || GENOME_DESC_TXT.equals(format))) {
+        continue;
+      }
 
       for (Data d : data.getListElements()) {
-        if (d.getFormat().getMaxFilesCount() > 1) {
+        if (format.getMaxFilesCount() > 1) {
 
           for (int i = 0; i < d.getDataFileCount(); i++) {
             inputFiles.add(d.getDataFile(i));
@@ -337,8 +376,19 @@ public class GenericStorageGeneratorModule extends AbstractModule {
       md5Digest.update(p.getStringValue().getBytes(Globals.DEFAULT_CHARSET));
     }
 
+    // Genome MD5 sum
+    if (this.useGenomeDescriptionForGenome) {
+
+      context.getLogger().info("Load Genome description to get genome MD5 sum");
+      // Load Genome description
+      final GenomeDescription desc = GenomeDescription
+          .load(context.getInputData(GENOME_DESC_TXT).getDataFile().open());
+      context.getLogger().info("Genome MD5 sum: " + desc.getMD5Sum());
+      md5Digest.update(desc.getMD5Sum().getBytes(Globals.DEFAULT_CHARSET));
+    }
+
     // Input file MD5 sums
-    for (String md5Sum : computeAndSortInputFileMD5(inputFiles)) {
+    for (String md5Sum : computeAndSortInputFileMD5(inputFiles, context)) {
       md5Digest.update(md5Sum.getBytes(Globals.DEFAULT_CHARSET));
     }
 
@@ -358,10 +408,10 @@ public class GenericStorageGeneratorModule extends AbstractModule {
     List<String> result = new ArrayList<>();
 
     try (ZipFile zipFile = new ZipFile(zipDataFile.toFile())) {
-      Enumeration zipEntries = zipFile.entries();
+      Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
 
       while (zipEntries.hasMoreElements()) {
-        String fileName = ((ZipEntry) zipEntries.nextElement()).getName();
+        String fileName = zipEntries.nextElement().getName();
         result.add(fileName);
       }
     }
