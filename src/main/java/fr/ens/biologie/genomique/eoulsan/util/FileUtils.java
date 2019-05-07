@@ -49,6 +49,7 @@ import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -772,7 +773,8 @@ public class FileUtils {
     }
 
     try (FileChannel inChannel = new FileInputStream(srcFile).getChannel();
-      FileChannel outChannel = new FileOutputStream(myDestFile).getChannel()) {
+        FileChannel outChannel =
+            new FileOutputStream(myDestFile).getChannel()) {
       inChannel.transferTo(0, inChannel.size(), outChannel);
     }
 
@@ -824,6 +826,20 @@ public class FileUtils {
   public static void createZip(final File directory, final File zipFile,
       final boolean store) throws IOException {
 
+    createZip(directory, null, zipFile, store);
+  }
+
+  /**
+   * Create a zip archive with the content of a directory.
+   * @param directory directory to compress
+   * @param rootFileToStore root files to store
+   * @param zipFile output file
+   * @throws IOException if an error occurs while compressing data
+   */
+  public static void createZip(final File directory,
+      final Collection<File> rootFilesToStore, final File zipFile,
+      final boolean store) throws IOException {
+
     if (directory == null) {
       throw new IOException("Input directory is null");
     }
@@ -839,7 +855,7 @@ public class FileUtils {
     final ZipOutputStream out =
         new ZipOutputStream(new FileOutputStream(zipFile));
 
-    zipFolder(directory, "", out, store);
+    zipFolder(directory, "", rootFilesToStore, out, store);
 
     out.close();
   }
@@ -853,6 +869,21 @@ public class FileUtils {
    */
   public static void zipFolder(final File directory, final String path,
       final ZipOutputStream out, boolean store) throws IOException {
+
+    zipFolder(directory, path, out, store);
+  }
+
+  /**
+   * Add a directory to a ZipOutputStream.
+   * @param directory directory to add to the ZIP file
+   * @param path path of the directory in the ZIP file
+   * @param rootFileToStore root files to store
+   * @param out ZipOutputStream stream
+   * @param store compress or store the files to add to the ZIP file
+   */
+  public static void zipFolder(final File directory, final String path,
+      final Collection<File> rootFilesToStore, final ZipOutputStream out,
+      boolean store) throws IOException {
 
     if (directory == null) {
       throw new IOException("Input directory is null");
@@ -878,7 +909,11 @@ public class FileUtils {
     final File[] filesToAdd = directory.listFiles(new FileFilter() {
       @Override
       public boolean accept(final File file) {
-        return file.isFile();
+        if (rootFilesToStore == null) {
+          return file.isFile();
+        } else {
+          return rootFilesToStore.contains(file) && file.isFile();
+        }
       }
     });
 
@@ -929,14 +964,18 @@ public class FileUtils {
       @Override
       public boolean accept(final File file) {
 
-        return file.isDirectory();
+        if (rootFilesToStore == null) {
+          return file.isDirectory();
+        } else {
+          return rootFilesToStore.contains(file) && file.isDirectory();
+        }
       }
     });
 
     // Add directories
     if (directoriesToAdd != null) {
       for (final File dir : directoriesToAdd) {
-        zipFolder(dir, path + dir.getName() + File.separator, out, store);
+        zipFolder(dir, path + dir.getName() + File.separator, null, out, store);
       }
     }
 

@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
@@ -124,8 +125,10 @@ public class GalaxyToolModule extends AbstractModule {
     // Configure tool interpreter
     this.toolInterpreter.configure(stepParameters);
 
-    // Check if Docker is enabled
-    boolean dockerEnabled = context.getSettings().isDockerConnectionDefined();
+    // Check if Docker is enabled. Do not use context because in some case this
+    // module is used by a generator where context is null
+    boolean dockerEnabled =
+        EoulsanRuntime.getSettings().isDockerConnectionDefined();
 
     // If the interpreter of the tool is Docker, add the Docker image to the
     // list of the Docker image to fetch
