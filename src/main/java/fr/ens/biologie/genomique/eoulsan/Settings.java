@@ -1159,7 +1159,7 @@ public final class Settings implements Serializable {
 
   /**
    * Enable Docker features using Singularity
-   * @param enable true to enable the feature
+   * @param enabled true to enable the feature
    */
   public void setDockerBySingularityEnabled(final boolean enabled) {
 

@@ -179,7 +179,7 @@ public class MarketMatrixExpressionMatrixReader
   /**
    * Create an InputStream that can read GZipped files if filename ends with
    * ".gz" extension.
-   * @param file the file to read
+   * @param filename the name of file to read
    * @return a InputStream object
    * @throws IOException if an error occurs when opening the file
    */

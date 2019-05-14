@@ -166,7 +166,6 @@ public class CellRangerExpressionMatrixWriter
    * Public constructor
    * @param directory CellRanger matrix directory
    * @param geneAliases gene aliases
-   * @param formatVersion format version
    * @throws IOException if an error occurs while reading the TSV files
    */
   public CellRangerExpressionMatrixWriter(final File directory,

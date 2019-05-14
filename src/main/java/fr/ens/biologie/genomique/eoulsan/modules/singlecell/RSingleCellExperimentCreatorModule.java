@@ -298,7 +298,7 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
 
   /**
    * Create the matrix object.
-   * @param matrix matrix data
+   * @param matrices matrices data
    * @return an ExpressionMatrix object
    */
   private ExpressionMatrix createMatrix(final Data matrices)

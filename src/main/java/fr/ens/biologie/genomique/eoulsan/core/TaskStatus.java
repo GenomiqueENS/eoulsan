@@ -61,7 +61,7 @@ public interface TaskStatus extends Progress {
 
   /**
    * Set the context command line.
-   * @param description the command line to set
+   * @param commandLine the command line to set
    */
   void setCommandLine(String commandLine);
 
