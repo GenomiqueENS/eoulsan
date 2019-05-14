@@ -364,7 +364,7 @@ public class GenomicArray<T> implements Serializable {
       // Create an empty zone if the interval is after the end of the
       // last chromosome zone
       if (intervalEnd > this.length) {
-        add(new Zone<T>(this.length + 1, intervalEnd, interval.getStrand()));
+        add(new Zone<>(this.length + 1, intervalEnd, interval.getStrand()));
         this.length = intervalEnd;
       }
 
@@ -467,17 +467,17 @@ public class GenomicArray<T> implements Serializable {
           if (r != null) {
             result.put(iv, Collections.unmodifiableSet(r));
           } else {
-            result.put(iv, new HashSet<T>());
+            result.put(iv, new HashSet<>());
           }
         }
       }
 
       if (stop > get(to).end && start > get(to).start) {
         result.put(new GenomicInterval(this.chromosomeName, start, stop,
-            get(to).strand), new HashSet<T>());
+            get(to).strand), new HashSet<>());
       } else if (stop > get(to).end) {
         result.put(new GenomicInterval(this.chromosomeName, get(to).end + 1,
-            stop, get(to).strand), new HashSet<T>());
+            stop, get(to).strand), new HashSet<>());
       }
 
       return result;
@@ -702,8 +702,7 @@ public class GenomicArray<T> implements Serializable {
       return;
     }
 
-    this.chromosomes.put(chromosomeName,
-        new ChromosomeZones<T>(chromosomeName));
+    this.chromosomes.put(chromosomeName, new ChromosomeZones<>(chromosomeName));
   }
 
   /**
