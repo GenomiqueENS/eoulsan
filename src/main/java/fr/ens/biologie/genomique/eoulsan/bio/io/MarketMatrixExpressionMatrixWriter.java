@@ -73,7 +73,7 @@ public class MarketMatrixExpressionMatrixWriter
       for (Matrix.Entry<Double> e : matrix.nonZeroValues()) {
         if (rowNames.contains(e.getRowName())) {
           String value = intMatrix
-              ? "" + e.getValue().intValue() : "" + e.getValue().doubleValue();
+              ? "" + e.getValue().intValue() : "" + e.getValue();
           writer.write(""
               + rowPositions.get(e.getRowName()) + ' '
               + columnPositions.get(e.getColumnName()) + ' ' + value + '\n');

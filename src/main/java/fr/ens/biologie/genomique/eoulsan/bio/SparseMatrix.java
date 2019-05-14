@@ -203,7 +203,7 @@ public class SparseMatrix<E> extends AbstractMatrix<E> {
     Integer columnId = this.columnNames.get(columnName);
     if (columnId == null) {
       addColumn(columnName);
-      columnId = Integer.valueOf(this.columnCount - 1);
+      columnId = this.columnCount - 1;
     }
 
     // Set the value
@@ -360,7 +360,7 @@ public class SparseMatrix<E> extends AbstractMatrix<E> {
 
   private static Long getCellId(final Integer rowId, final Integer columnId) {
 
-    return Long.valueOf(rowId.longValue() << 32) + (columnId.longValue());
+    return (rowId.longValue() << 32) + (columnId.longValue());
   }
 
   @SuppressWarnings("unused")
