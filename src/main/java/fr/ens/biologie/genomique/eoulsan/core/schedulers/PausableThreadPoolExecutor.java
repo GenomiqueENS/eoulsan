@@ -171,7 +171,7 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
   public PausableThreadPoolExecutor(final int threadNumber) {
 
     super(threadNumber, threadNumber, 0L, TimeUnit.MILLISECONDS,
-        new LinkedBlockingQueue<Runnable>());
+      new LinkedBlockingQueue<>());
 
     this.maxThreads = threadNumber < 1 ? 1 : threadNumber;
     this.threadsAvailable = this.maxThreads;

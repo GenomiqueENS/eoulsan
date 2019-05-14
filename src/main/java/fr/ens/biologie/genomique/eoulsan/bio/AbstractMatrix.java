@@ -112,8 +112,8 @@ public abstract class AbstractMatrix<E> implements Matrix<E> {
 
             this.columnName = this.columnIterator.next();
 
-            Entry<E> result = new BasicEntry<E>(this.rowName, this.columnName,
-                getValue(this.rowName, this.columnName));
+            Entry<E> result = new BasicEntry<>(this.rowName, this.columnName,
+              getValue(this.rowName, this.columnName));
 
             if (!this.columnIterator.hasNext() && rowNames.hasNext()) {
               this.rowName = rowNames.next();

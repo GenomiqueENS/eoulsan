@@ -71,7 +71,7 @@ public class MultiColumnTranslatorTest {
 
     try {
 
-      new MultiColumnTranslator(new ArrayList<String>());
+      new MultiColumnTranslator(new ArrayList<>());
       assertTrue(false);
     } catch (RuntimeException e) {
 

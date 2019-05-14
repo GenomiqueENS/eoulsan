@@ -16,7 +16,7 @@ public class EmergencyStopTasks {
   private static EmergencyStopTasks instance;
 
   private final Set<EmergencyStopTask> tasks =
-      Collections.synchronizedSet(new HashSet<EmergencyStopTask>());
+      Collections.synchronizedSet(new HashSet<>());
   private volatile boolean stopped;
 
   /**

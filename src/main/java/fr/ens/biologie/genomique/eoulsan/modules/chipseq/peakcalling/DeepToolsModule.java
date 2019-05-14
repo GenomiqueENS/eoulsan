@@ -256,7 +256,7 @@ public class DeepToolsModule extends AbstractModule {
       }
 
       // Build command line to generate the multibamSummary file.
-      List<String> cmd1multibamSummary = new ArrayList<String>();
+      List<String> cmd1multibamSummary = new ArrayList<>();
 
       // Executable
       cmd1multibamSummary.add("multiBamSummary");
@@ -301,7 +301,7 @@ public class DeepToolsModule extends AbstractModule {
       }
 
       // Build command line for bamCorrelate: whole genome
-      List<String> cmd2bamCorrelate = new ArrayList<String>();
+      List<String> cmd2bamCorrelate = new ArrayList<>();
 
       // Executable
       cmd2bamCorrelate.add("plotCorrelation");
@@ -349,7 +349,7 @@ public class DeepToolsModule extends AbstractModule {
 
         // Build command line to generate the second multibamSummary file.
 
-        List<String> cmd3multibamSummary = new ArrayList<String>();
+        List<String> cmd3multibamSummary = new ArrayList<>();
 
         // Executable
         cmd3multibamSummary.add("multiBamSummary");
@@ -396,7 +396,7 @@ public class DeepToolsModule extends AbstractModule {
         }
 
         // Build command line for bamCorrelate: bed file used
-        List<String> cmd4bamCorrelate = new ArrayList<String>();
+        List<String> cmd4bamCorrelate = new ArrayList<>();
 
         // Executable
         cmd4bamCorrelate.add("plotCorrelation");
@@ -445,7 +445,7 @@ public class DeepToolsModule extends AbstractModule {
 
       // Build command line for bamFingerprint: whole genome
 
-      List<String> cmd5bamFingerprint = new ArrayList<String>();
+      List<String> cmd5bamFingerprint = new ArrayList<>();
 
       // Executable
       cmd5bamFingerprint.add("plotFingerprint");

@@ -826,7 +826,7 @@ public class BEDEntryTest {
     entries.put("key0", null);
     assertFalse(e.addMetaDataEntries(entries));
     entries.clear();
-    List<String> l = new ArrayList<String>();
+    List<String> l = new ArrayList<>();
     l.add(null);
     entries.put("key00", l);
     assertFalse(e.addMetaDataEntries(entries));
@@ -847,13 +847,13 @@ public class BEDEntryTest {
     e.addMetaDataEntry("key1", "value1");
     assertEquals(Collections.singleton("key1"), e.getMetadataKeyNames());
     e.addMetaDataEntry("key2", "value2");
-    assertEquals(new HashSet<String>(asList("key1", "key2")),
+    assertEquals(new HashSet<>(asList("key1", "key2")),
         e.getMetadataKeyNames());
     assertFalse(e.removeMetaDataEntry("key3"));
-    assertEquals(new HashSet<String>(asList("key1", "key2")),
+    assertEquals(new HashSet<>(asList("key1", "key2")),
         e.getMetadataKeyNames());
     assertFalse(e.removeMetaDataEntry(null));
-    assertEquals(new HashSet<String>(asList("key1", "key2")),
+    assertEquals(new HashSet<>(asList("key1", "key2")),
         e.getMetadataKeyNames());
     assertTrue(e.removeMetaDataEntry("key1"));
     assertEquals(Collections.singleton("key2"), e.getMetadataKeyNames());

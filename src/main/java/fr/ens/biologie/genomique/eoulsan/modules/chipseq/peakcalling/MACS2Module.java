@@ -196,7 +196,7 @@ public class MACS2Module extends AbstractModule {
     // Construction of a HashMap containing a SampleName as String corresponding
     // to a specific Data.
     HashMap<String, Data> nameMap =
-        new HashMap<String, Data>(inData.getListElements().size() / 2);
+      new HashMap<>(inData.getListElements().size() / 2);
     for (Data anInputData : inData.getListElements()) {
       String name = anInputData.getMetadata().getSampleName();
       nameMap.put(name, anInputData);
@@ -243,7 +243,7 @@ public class MACS2Module extends AbstractModule {
         }
 
         // Construct the command line
-        List<String> commandLine = new ArrayList<String>();
+        List<String> commandLine = new ArrayList<>();
 
         // Get sample name
         String sampleName =

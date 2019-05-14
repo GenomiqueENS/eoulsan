@@ -69,7 +69,7 @@ public class UniqueIdentifierTranslatorTest {
   public void testUniqueIdentifierTranslator() {
     try {
 
-      new UniqueIdentifierTranslator(new ArrayList<String>(), null);
+      new UniqueIdentifierTranslator(new ArrayList<>(), null);
       assertTrue(false);
     } catch (NullPointerException e) {
 

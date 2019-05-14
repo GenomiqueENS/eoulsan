@@ -140,7 +140,7 @@ public class MergeInputRepLocalModule extends AbstractModule {
             && referenceSamples.get(experimentName) != null) {
           referenceSamples.get(experimentName).add(anInputData);
         } else {
-          List<Data> tmpList = new ArrayList<Data>();
+          List<Data> tmpList = new ArrayList<>();
           tmpList.add(anInputData);
           referenceSamples.put(experimentName, tmpList);
         }

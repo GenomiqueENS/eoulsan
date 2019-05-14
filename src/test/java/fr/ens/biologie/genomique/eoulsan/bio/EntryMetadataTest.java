@@ -40,7 +40,7 @@ public class EntryMetadataTest {
     assertEquals(Arrays.asList("val1", "val2"), e.get("key"));
 
     assertTrue(e.add("key2", "val3"));
-    assertEquals(new HashSet<String>(Arrays.asList("key", "key2")), e.keySet());
+    assertEquals(new HashSet<>(Arrays.asList("key", "key2")), e.keySet());
     assertEquals(Arrays.asList("val3"), e.get("key2"));
   }
 
@@ -58,7 +58,7 @@ public class EntryMetadataTest {
     e2.add("key3", "value3");
     assertTrue(e.add(e2));
 
-    assertEquals(new HashSet<String>(Arrays.asList("key1", "key2", "key3")),
+    assertEquals(new HashSet<>(Arrays.asList("key1", "key2", "key3")),
         e.keySet());
   }
 
@@ -73,7 +73,7 @@ public class EntryMetadataTest {
     entries.put("key0", null);
     assertFalse(e.add(entries));
     entries.clear();
-    List<String> l = new ArrayList<String>();
+    List<String> l = new ArrayList<>();
     l.add(null);
     entries.put("key00", l);
     assertFalse(e.add(entries));
@@ -176,11 +176,11 @@ public class EntryMetadataTest {
     e.add("key1", "value1");
     assertEquals(Collections.singleton("key1"), e.keySet());
     e.add("key2", "value2");
-    assertEquals(new HashSet<String>(asList("key1", "key2")), e.keySet());
+    assertEquals(new HashSet<>(asList("key1", "key2")), e.keySet());
     assertFalse(e.remove("key3"));
-    assertEquals(new HashSet<String>(asList("key1", "key2")), e.keySet());
+    assertEquals(new HashSet<>(asList("key1", "key2")), e.keySet());
     assertFalse(e.remove(null));
-    assertEquals(new HashSet<String>(asList("key1", "key2")), e.keySet());
+    assertEquals(new HashSet<>(asList("key1", "key2")), e.keySet());
     assertTrue(e.remove("key1"));
     assertEquals(Collections.singleton("key2"), e.keySet());
   }
@@ -247,7 +247,7 @@ public class EntryMetadataTest {
     e2.add("key3", "value3");
 
     EntryMetadata e = new EntryMetadata(e2);
-    assertEquals(new HashSet<String>(Arrays.asList("key2", "key3")),
+    assertEquals(new HashSet<>(Arrays.asList("key2", "key3")),
         e.keySet());
   }
 

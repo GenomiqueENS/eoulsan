@@ -568,7 +568,7 @@ public class StepResult {
     for (String group : countersObj.keySet()) {
 
       if (!this.counters.containsKey(group)) {
-        this.counters.put(group, new HashMap<String, Long>());
+        this.counters.put(group, new HashMap<>());
       }
       final Map<String, Long> map = this.counters.get(group);
 

@@ -187,7 +187,7 @@ public class BedToolsModule extends AbstractModule {
         // Store current sample in expmap
         // If it's the first in its category, create a new container before
         if (expMap.get(sortingKey) == null) {
-          List<Data> tmpList = new ArrayList<Data>();
+          List<Data> tmpList = new ArrayList<>();
           tmpList.add(nameMap.get(expSam.getSample().getName()));
           expMap.put(sortingKey, tmpList);
         } else {
@@ -207,7 +207,7 @@ public class BedToolsModule extends AbstractModule {
 
       // Get all samples of current category
       List<Data> expDataList = expMap.get(experimentName);
-      List<Data> expDataList2 = new ArrayList<Data>();
+      List<Data> expDataList2 = new ArrayList<>();
 
       for (int i = 0; i < expDataList.size(); i++) {
         getLogger().info("for "
@@ -254,7 +254,7 @@ public class BedToolsModule extends AbstractModule {
       // Create command line
 
       // Executable
-      List<String> cmd = new ArrayList<String>();
+      List<String> cmd = new ArrayList<>();
 
       cmd.add("bedtools");
       cmd.add("multiinter");

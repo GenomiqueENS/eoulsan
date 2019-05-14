@@ -636,7 +636,7 @@ public class DataFormatRegistry {
           new DataFormatClassPathLoader();
       formatClassLoader.reload();
       final List<DataFormat> formats =
-        new ArrayList<DataFormat>(formatClassLoader.loadAllResources());
+        new ArrayList<>(formatClassLoader.loadAllResources());
 
       // Load XML formats from external resources (files...)
       DataFormatFileResourceLoader formatFileLoader =

@@ -61,7 +61,7 @@ public class IDRModule extends AbstractModule {
   private static final Map<String, String> ACCEPTED_ASSEMBLIES_FILES;
 
   static {
-    Map<String, String> tempMap = new HashMap<String, String>(4);
+    Map<String, String> tempMap = new HashMap<>(4);
     tempMap.put("human.hg19", "./genome_tables/genome_table.human.hg19.txt");
     tempMap.put("human.hg18", "./genome_tables/genome_table.human.hg18.txt");
     tempMap.put("mm9", "./genome_tables/genome_table.mm9.txt");
@@ -259,8 +259,7 @@ public class IDRModule extends AbstractModule {
 
     // List all samples per experiment, skip reference files
     HashMap<String, ArrayList<Data>> expMap =
-        new HashMap<String, ArrayList<Data>>(
-            inData.getListElements().size() / 2);
+      new HashMap<>(inData.getListElements().size() / 2);
     for (Data anInputData : inData.getListElements()) {
 
       // getLogger().info("One input file : " +
@@ -283,7 +282,7 @@ public class IDRModule extends AbstractModule {
       // if we have a sample
       getLogger().info("Not a reference file. Proceeding.");
       if (expMap.get(experimentName) == null) {
-        ArrayList<Data> tmpList = new ArrayList<Data>();
+        ArrayList<Data> tmpList = new ArrayList<>();
         tmpList.add(anInputData);
         expMap.put(experimentName, tmpList);
       } else {
@@ -302,13 +301,13 @@ public class IDRModule extends AbstractModule {
 
       // Get all Data split into different replicate groups
       HashMap<String, ArrayList<Data>> replicatesMap =
-          new HashMap<String, ArrayList<Data>>(expDataList.size() / 2);
+        new HashMap<>(expDataList.size() / 2);
       for (Data sample : expDataList) {
 
         String replicateGroupName = sample.getMetadata().get("RepTechGroup");
 
         if (replicatesMap.get(replicateGroupName) == null) {
-          ArrayList<Data> tmpList = new ArrayList<Data>();
+          ArrayList<Data> tmpList = new ArrayList<>();
           tmpList.add(sample);
           replicatesMap.put(replicateGroupName, tmpList);
         } else {
@@ -350,7 +349,7 @@ public class IDRModule extends AbstractModule {
         }
 
         // Loop through all samples and run the analysis for each couple
-        ArrayList<String> outputs = new ArrayList<String>();
+        ArrayList<String> outputs = new ArrayList<>();
         for (int i = 0; i < nbSameReplicates; i++) {
           for (int j = i + 1; j < nbSameReplicates; j++) {
 

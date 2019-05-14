@@ -81,8 +81,7 @@ public class MergePeaksModule extends AbstractModule {
     // First sort data into experiments/replicate groups before we can
     // concatenate what is inside each group
     HashMap<String, ArrayList<Data>> expMap =
-        new HashMap<String, ArrayList<Data>>(
-            inData.getListElements().size() / 2);
+      new HashMap<>(inData.getListElements().size() / 2);
     for (Data anInputData : inData.getListElements()) {
 
       getLogger().finest("Input file. ref : "
@@ -106,7 +105,7 @@ public class MergePeaksModule extends AbstractModule {
       // if we have a sample
       String sortingKey = experimentName + replicateGroupName;
       if (expMap.get(sortingKey) == null) {
-        ArrayList<Data> tmpList = new ArrayList<Data>();
+        ArrayList<Data> tmpList = new ArrayList<>();
         tmpList.add(anInputData);
         expMap.put(sortingKey, tmpList);
       } else {

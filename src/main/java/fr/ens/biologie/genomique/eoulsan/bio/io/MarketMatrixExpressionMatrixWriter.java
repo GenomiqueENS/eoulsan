@@ -48,7 +48,7 @@ public class MarketMatrixExpressionMatrixWriter
         "rowNamesToWrite argument cannot be null");
 
     Set<String> rowNames = rowNamesToWrite instanceof Set
-        ? (Set<String>) rowNamesToWrite : new HashSet<String>(rowNamesToWrite);
+        ? (Set<String>) rowNamesToWrite : new HashSet<>(rowNamesToWrite);
 
     int entryCount = entryCount(matrix, rowNames);
     boolean intMatrix = entryCount < -1;

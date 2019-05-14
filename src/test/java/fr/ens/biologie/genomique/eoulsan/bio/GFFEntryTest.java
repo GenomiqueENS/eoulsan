@@ -672,7 +672,7 @@ public class GFFEntryTest {
         e.getMetadataEntryValues("key"));
 
     assertTrue(e.addMetaDataEntry("key2", "val3"));
-    assertEquals(new HashSet<String>(Arrays.asList("key", "key2")),
+    assertEquals(new HashSet<>(Arrays.asList("key", "key2")),
         e.getMetadataKeyNames());
     assertEquals(Arrays.asList("val3"), e.getMetadataEntryValues("key2"));
   }
@@ -688,7 +688,7 @@ public class GFFEntryTest {
     entries.put("key0", null);
     assertFalse(e.addMetaDataEntries(entries));
     entries.clear();
-    List<String> l = new ArrayList<String>();
+    List<String> l = new ArrayList<>();
     l.add(null);
     entries.put("key00", l);
     assertFalse(e.addMetaDataEntries(entries));
@@ -721,13 +721,13 @@ public class GFFEntryTest {
     e.addMetaDataEntry("key1", "value1");
     assertEquals(Collections.singleton("key1"), e.getMetadataKeyNames());
     e.addMetaDataEntry("key2", "value2");
-    assertEquals(new HashSet<String>(asList("key1", "key2")),
+    assertEquals(new HashSet<>(asList("key1", "key2")),
         e.getMetadataKeyNames());
     assertFalse(e.removeMetaDataEntry("key3"));
-    assertEquals(new HashSet<String>(asList("key1", "key2")),
+    assertEquals(new HashSet<>(asList("key1", "key2")),
         e.getMetadataKeyNames());
     assertFalse(e.removeMetaDataEntry(null));
-    assertEquals(new HashSet<String>(asList("key1", "key2")),
+    assertEquals(new HashSet<>(asList("key1", "key2")),
         e.getMetadataKeyNames());
     assertTrue(e.removeMetaDataEntry("key1"));
     assertEquals(Collections.singleton("key2"), e.getMetadataKeyNames());
@@ -746,15 +746,15 @@ public class GFFEntryTest {
     assertEquals(Collections.singleton("key1"), e.getAttributesNames());
 
     e.setAttributeValue("key2", "value2");
-    assertEquals(new HashSet<String>(asList("key1", "key2")),
+    assertEquals(new HashSet<>(asList("key1", "key2")),
         e.getAttributesNames());
 
     assertFalse(e.removeAttribute("key3"));
-    assertEquals(new HashSet<String>(asList("key1", "key2")),
+    assertEquals(new HashSet<>(asList("key1", "key2")),
         e.getAttributesNames());
 
     assertFalse(e.removeAttribute(null));
-    assertEquals(new HashSet<String>(asList("key1", "key2")),
+    assertEquals(new HashSet<>(asList("key1", "key2")),
         e.getAttributesNames());
 
     assertTrue(e.removeAttribute("key1"));
@@ -806,7 +806,7 @@ public class GFFEntryTest {
     assertEquals(111.11, e.getScore(), 0.0);
     assertEquals('+', e.getStrand());
     assertEquals(2, e.getPhase());
-    assertEquals(new HashSet<String>(asList("ID", "Name")),
+    assertEquals(new HashSet<>(asList("ID", "Name")),
         e.getAttributesNames());
 
     e.clear();
