@@ -123,7 +123,7 @@ public class Utils {
    */
   public static boolean equal(final Object a, final Object b) {
 
-    return a == b || (a != null && a.equals(b));
+    return Objects.equals(a, b);
   }
 
   /**
