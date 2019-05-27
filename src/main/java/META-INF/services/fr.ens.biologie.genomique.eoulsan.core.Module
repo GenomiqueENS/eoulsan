@@ -47,6 +47,7 @@ fr.ens.biologie.genomique.eoulsan.modules.TechnicalReplicateMergerModule
 
 # Common steps
 fr.ens.biologie.genomique.eoulsan.modules.ShellModule
+fr.ens.biologie.genomique.eoulsan.modules.generators.GenericStorageGeneratorModule
 
 # QC steps
 fr.ens.biologie.genomique.eoulsan.modules.fastqc.FastQCModule

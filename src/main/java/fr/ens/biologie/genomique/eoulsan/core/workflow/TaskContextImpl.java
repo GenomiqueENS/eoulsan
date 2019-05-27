@@ -128,6 +128,15 @@ public class TaskContextImpl implements TaskContext, Serializable {
     return this.workflowContext.getTaskDirectory();
   }
 
+  /**
+   * Get the data repository directory.
+   * @return Returns the data repository directory
+   */
+  public DataFile getDataRepositoryDirectory() {
+
+    return this.workflowContext.getDataRepositoryDirectory();
+  }
+
   @Override
   public DataFile getOutputDirectory() {
     return this.workflowContext.getOutputDirectory();

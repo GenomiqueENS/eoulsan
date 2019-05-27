@@ -112,6 +112,15 @@ public class WorkflowContext implements Serializable {
   }
 
   /**
+   * Get the data repository directory.
+   * @return Returns the data repository directory
+   */
+  public DataFile getDataRepositoryDirectory() {
+
+    return this.workflow.getDataRepositoryDirectory();
+  }
+
+  /**
    * Get the job id.
    * @return the job id
    */

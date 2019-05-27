@@ -157,6 +157,14 @@ public abstract class AbstractWorkflow implements Workflow {
     return this.taskDir;
   }
 
+  /**
+   * Get the data repository directory.
+   * @return Returns the data repository directory
+   */
+  DataFile getDataRepositoryDirectory() {
+    return this.dataDir;
+  }
+
   @Override
   public Design getDesign() {
 
