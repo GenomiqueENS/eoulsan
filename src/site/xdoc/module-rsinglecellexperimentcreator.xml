@@ -46,7 +46,7 @@
          <br/>
          <li><b>Input port</b>:
            <ul>
-		   <li><b>additionalannotation</b>: Additionnal annotation data (format: additional_annotation_tsv) from the design file. This data allow to describe the genes/features of the Bioconductor SingleCellExperiment object</li>
+		   <li><b>additionalannotation</b>: Additional annotation data (format: additional_annotation_tsv) from the design file. This data allow to describe the genes/features of the Bioconductor SingleCellExperiment object</li>
              <li><b>matrix</b>: Matrix data (format: expression_matrix_tsv) if matrix input is enabled</li>
              <li><b>expression</b>: Expression step output (format: expression_results_tsv) if matrix input is not enabled</li>
            </ul>
@@ -69,7 +69,7 @@
 		<tr><td>input.matrices</td><td>boolean</td><td>The input of the module is a matrix (e.g. 10X Genomics data). For SmartSeq2, this parameter is usually set to false</td><td>true</td></tr>
 		<tr><td>merge.matrices</td><td>boolean</td><td>When the input of the module is matrices, this option allow to merge all the input matrices in one output matrix</td><td>true</td></tr>
 		<tr><td>design.prefix</td><td>string</td><td>This parameter define the prefix of Eoulsan design columns that contains annotations about the cells. This cell annotations will be copied in the output Bioconductor object</td><td>Not set</td></tr>
-		<tr><td>use.additionnal.annotation</td><td>boolean</td><td>When this parameter is enabled, feature annotations will be copied in the output Bioconductor object to describe the genes/features of the Bioconductor SingleCellExperiment object</td><td>true</td></tr>
+		<tr><td>use.additional.annotation</td><td>boolean</td><td>When this parameter is enabled, feature annotations will be copied in the output Bioconductor object to describe the genes/features of the Bioconductor SingleCellExperiment object</td><td>true</td></tr>
           </table>
          <br/>
 

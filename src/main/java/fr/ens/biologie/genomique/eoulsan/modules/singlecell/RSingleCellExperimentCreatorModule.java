@@ -84,7 +84,7 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
   private boolean inputMatrices = true;
   private boolean mergeMatrices = true;
   private String designPrefix = "Cell.";
-  private boolean useAdditionnalAnnotation = true;
+  private boolean useAdditionalAnnotation = true;
 
   //
   // Module methods
@@ -112,7 +112,7 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
 
-    if (this.useAdditionnalAnnotation) {
+    if (this.useAdditionalAnnotation) {
       builder.addPort("additionalannotation", ADDITIONAL_ANNOTATION_TSV);
     }
 
@@ -165,7 +165,7 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
       case "use.gene.annotation":
         Modules.renamedParameter(context, p, "use.additional.annotation");
       case "use.additional.annotation":
-        this.useAdditionnalAnnotation = p.getBooleanValue();
+        this.useAdditionalAnnotation = p.getBooleanValue();
         break;
 
       default:
@@ -200,7 +200,7 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
       File outputDir = context.getStepOutputDirectory().toFile();
       File matrixFile =
           new File(outputDir, "matrix-" + rdsData.getName() + ".tsv");
-      File featuresFile = this.useAdditionnalAnnotation
+      File featuresFile = this.useAdditionalAnnotation
           ? new File(outputDir, "features-" + rdsData.getName() + ".tsv")
           : null;
       File cellsFile = this.designPrefix.isEmpty()
