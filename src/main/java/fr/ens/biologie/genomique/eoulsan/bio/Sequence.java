@@ -415,7 +415,7 @@ public class Sequence {
    * @return the reverse complement sequence
    */
   public static String complement(final String sequence,
-                                  final Alphabet alphabet) {
+      final Alphabet alphabet) {
 
     if (sequence == null || alphabet == null) {
       return null;
@@ -449,7 +449,7 @@ public class Sequence {
    * @return the reverse complement sequence
    */
   public static String reverseComplement(final String sequence,
-                                         final Alphabet alphabet) {
+      final Alphabet alphabet) {
 
     if (sequence == null || alphabet == null) {
       return null;

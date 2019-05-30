@@ -24,9 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class ExperimentTest {
 
@@ -59,7 +62,7 @@ public class ExperimentTest {
     // set an exception off
     try {
       d.getExperiment("2").setName("toto");
-        fail();
+      fail();
     } catch (IllegalArgumentException e) {
       assertTrue(true);
     }
@@ -68,7 +71,7 @@ public class ExperimentTest {
       d.getExperiment("2").setName("titi");
       assertTrue(true);
     } catch (IllegalArgumentException e) {
-        fail();
+      fail();
     }
   }
 

@@ -1,13 +1,17 @@
 package fr.ens.biologie.genomique.eoulsan.translator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.List;
 
 import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.translators.AddIdentifierTranslator;
 import fr.ens.biologie.genomique.eoulsan.translators.MultiColumnTranslator;
-
-import static org.junit.Assert.*;
 
 public class AbstractTranslatorTest {
 
@@ -32,7 +36,7 @@ public class AbstractTranslatorTest {
     try {
 
       AddIdTransl.isField(null);
-        fail();
+      fail();
     } catch (NullPointerException e) {
 
       assertTrue(true);
@@ -47,7 +51,7 @@ public class AbstractTranslatorTest {
     try {
 
       transl.setDefaultField(null);
-        fail();
+      fail();
     } catch (RuntimeException e) {
 
       assertTrue(true);
@@ -67,7 +71,7 @@ public class AbstractTranslatorTest {
     try {
 
       transl.isField(null);
-        fail();
+      fail();
     } catch (NullPointerException e) {
 
       assertTrue(true);
@@ -103,7 +107,7 @@ public class AbstractTranslatorTest {
     try {
 
       transl.translate("").get(3);
-        fail();
+      fail();
     } catch (NullPointerException e) {
 
       assertTrue(true);
@@ -113,7 +117,7 @@ public class AbstractTranslatorTest {
 
       transl.translate("B").get(3);
 
-        fail();
+      fail();
     } catch (IndexOutOfBoundsException e) {
 
       assertTrue(true);

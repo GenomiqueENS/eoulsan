@@ -73,7 +73,7 @@ public class TaskSerializationUtils {
    * @throws EoulsanException if an error occurs while executing the task
    */
   public static TaskResultImpl execute(final DataFile taskContextFile,
-                                       final DataFile outputDir) throws IOException, EoulsanException {
+      final DataFile outputDir) throws IOException, EoulsanException {
 
     requireNonNull(taskContextFile, "contextFile argument cannot be null");
     requireNonNull(outputDir, "taskResultFile argument cannot be null");

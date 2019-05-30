@@ -180,7 +180,7 @@ public class TicketSchedulerServer implements TicketScheduler {
   //
 
   public static synchronized void newServer(final Set<Ticket> tickets,
-                                            final String lockerName, final int port) {
+      final String lockerName, final int port) {
 
     // If the server already exists do nothing
     if (serverInstance != null) {

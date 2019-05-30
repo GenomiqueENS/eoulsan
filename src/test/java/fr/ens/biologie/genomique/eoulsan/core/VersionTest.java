@@ -1,10 +1,13 @@
 package fr.ens.biologie.genomique.eoulsan.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
-
-import static org.junit.Assert.*;
 
 public class VersionTest {
 
@@ -150,7 +153,7 @@ public class VersionTest {
     Version v3 = new Version(2, 0, 0, "");
 
     assertTrue(v2.compareTo(v1) > 0);
-      assertEquals(0, v2.compareTo(v2));
+    assertEquals(0, v2.compareTo(v2));
     assertTrue(v2.compareTo(v3) < 0);
 
     v1.setVersion(1, 0, 0, "");
@@ -158,7 +161,7 @@ public class VersionTest {
     v3.setVersion(1, 2, 0, "");
 
     assertTrue(v2.compareTo(v1) > 0);
-      assertEquals(0, v2.compareTo(v2));
+    assertEquals(0, v2.compareTo(v2));
     assertTrue(v2.compareTo(v3) < 0);
 
     v1.setVersion(1, 1, 0, "");
@@ -166,7 +169,7 @@ public class VersionTest {
     v3.setVersion(1, 1, 2, "");
 
     assertTrue(v2.compareTo(v1) > 0);
-      assertEquals(0, v2.compareTo(v2));
+    assertEquals(0, v2.compareTo(v2));
     assertTrue(v2.compareTo(v3) < 0);
 
     v1.setVersion(1, 1, 1, "alpha");
@@ -174,7 +177,7 @@ public class VersionTest {
     v3.setVersion(1, 1, 1, "rc");
 
     assertTrue(v2.compareTo(v1) > 0);
-      assertEquals(0, v2.compareTo(v2));
+    assertEquals(0, v2.compareTo(v2));
     assertTrue(v2.compareTo(v3) < 0);
   }
 
@@ -250,19 +253,21 @@ public class VersionTest {
   @Test
   public void testEqualsObject() {
 
-      assertEquals(new Version(), new Version(0, 0, 0, ""));
-      assertEquals(new Version(0, 0, 0, ""), new Version(0, 0, 0, ""));
-      assertEquals(new Version(1, 0, 0, ""), new Version(1, 0, 0, ""));
-      assertEquals(new Version(0, 1, 0, ""), new Version(0, 1, 0, ""));
-      assertEquals(new Version(0, 0, 1, ""), new Version(0, 0, 1, ""));
-      assertEquals(new Version(0, 0, 0, "beta"), new Version(0, 0, 0, "beta"));
-      assertEquals(new Version(1, 2, 3, "beta"), new Version(1, 2, 3, "beta"));
+    assertEquals(new Version(), new Version(0, 0, 0, ""));
+    assertEquals(new Version(0, 0, 0, ""), new Version(0, 0, 0, ""));
+    assertEquals(new Version(1, 0, 0, ""), new Version(1, 0, 0, ""));
+    assertEquals(new Version(0, 1, 0, ""), new Version(0, 1, 0, ""));
+    assertEquals(new Version(0, 0, 1, ""), new Version(0, 0, 1, ""));
+    assertEquals(new Version(0, 0, 0, "beta"), new Version(0, 0, 0, "beta"));
+    assertEquals(new Version(1, 2, 3, "beta"), new Version(1, 2, 3, "beta"));
 
-      assertNotEquals(new Version(1, 0, 0, ""), new Version(2, 0, 0, ""));
-      assertNotEquals(new Version(0, 1, 0, ""), new Version(0, 2, 0, ""));
-      assertNotEquals(new Version(0, 0, 1, ""), new Version(0, 0, 2, ""));
-      assertNotEquals(new Version(0, 0, 0, "beta"), new Version(0, 0, 0, "alpha"));
-      assertNotEquals(new Version(1, 2, 3, "beta"), new Version(3, 0, 1, "alpha"));
+    assertNotEquals(new Version(1, 0, 0, ""), new Version(2, 0, 0, ""));
+    assertNotEquals(new Version(0, 1, 0, ""), new Version(0, 2, 0, ""));
+    assertNotEquals(new Version(0, 0, 1, ""), new Version(0, 0, 2, ""));
+    assertNotEquals(new Version(0, 0, 0, "beta"),
+        new Version(0, 0, 0, "alpha"));
+    assertNotEquals(new Version(1, 2, 3, "beta"),
+        new Version(3, 0, 1, "alpha"));
   }
 
   @Test

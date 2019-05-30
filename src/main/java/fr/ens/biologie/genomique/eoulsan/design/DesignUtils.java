@@ -626,7 +626,8 @@ public final class DesignUtils {
    */
   public static String getCondition(final ExperimentSample experimentSample) {
 
-    requireNonNull(experimentSample, "experimentSample argument cannot be null");
+    requireNonNull(experimentSample,
+        "experimentSample argument cannot be null");
 
     final ExperimentSampleMetadata esm = experimentSample.getMetadata();
 
@@ -666,7 +667,8 @@ public final class DesignUtils {
   public static String getRepTechGroup(
       final ExperimentSample experimentSample) {
 
-    requireNonNull(experimentSample, "experimentSample argument cannot be null");
+    requireNonNull(experimentSample,
+        "experimentSample argument cannot be null");
 
     final ExperimentSampleMetadata esm = experimentSample.getMetadata();
 
@@ -745,7 +747,8 @@ public final class DesignUtils {
    */
   public static String getReference(final ExperimentSample experimentSample) {
 
-    requireNonNull(experimentSample, "experimentSample argument cannot be null");
+    requireNonNull(experimentSample,
+        "experimentSample argument cannot be null");
 
     final ExperimentSampleMetadata esmd = experimentSample.getMetadata();
 

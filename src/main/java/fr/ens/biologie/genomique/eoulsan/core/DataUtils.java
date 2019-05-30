@@ -88,8 +88,7 @@ public final class DataUtils {
    * @param data the data object
    * @param sample the sample
    */
-  public static void setDataMetaData(final Data data,
-                                     final Sample sample) {
+  public static void setDataMetaData(final Data data, final Sample sample) {
 
     WorkflowDataUtils.setDataMetaData(data, sample);
   }

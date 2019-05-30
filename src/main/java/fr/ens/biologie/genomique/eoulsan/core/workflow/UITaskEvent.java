@@ -15,7 +15,7 @@ public class UITaskEvent extends UIEvent {
     SUBMITTED, RUNNING, DONE,
   }
 
-    private final Step step;
+  private final Step step;
   private final TaskStatusMessage status;
   private final int contextId;
 

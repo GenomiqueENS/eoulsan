@@ -79,7 +79,7 @@ public class MergePeaksModule extends AbstractModule {
     // First sort data into experiments/replicate groups before we can
     // concatenate what is inside each group
     HashMap<String, ArrayList<Data>> expMap =
-      new HashMap<>(inData.getListElements().size() / 2);
+        new HashMap<>(inData.getListElements().size() / 2);
     for (Data anInputData : inData.getListElements()) {
 
       getLogger().finest("Input file. ref : "
@@ -135,8 +135,8 @@ public class MergePeaksModule extends AbstractModule {
             expDataList.get(0).getDataFile().getParent().getSource(),
             experimentName));
 
-        getLogger().info(
-            String.format("Running : %s with output: %s", cmd.toString(), outputFile));
+        getLogger().info(String.format("Running : %s with output: %s",
+            cmd.toString(), outputFile));
         ProcessUtils.execWriteOutput(cmd.toString(), outputFile);
 
       } catch (java.io.IOException e) {

@@ -1,13 +1,15 @@
 package fr.ens.biologie.genomique.eoulsan.translator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.List;
 
 import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.translators.AddIdentifierTranslator;
 import fr.ens.biologie.genomique.eoulsan.translators.MultiColumnTranslator;
-
-import static org.junit.Assert.*;
 
 public class AddIdentifierTranslatorTest {
 
@@ -21,7 +23,7 @@ public class AddIdentifierTranslatorTest {
     try {
 
       new AddIdentifierTranslator(null);
-        fail();
+      fail();
     } catch (RuntimeException e) {
 
       assertTrue(true);

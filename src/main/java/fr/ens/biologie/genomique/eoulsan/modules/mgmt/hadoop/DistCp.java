@@ -159,8 +159,8 @@ public class DistCp implements Tool {
     SIZE_LIMIT("-sizelimit", NAME + ".limit.size"),
     IGNORE_READ_FAILURES("-i", NAME + ".ignore.read.failures"),
     PRESERVE_STATUS("-p", NAME + ".preserve.status"),
-    OVERWRITE("-overwrite", NAME + ".overwrite.always"), UPDATE("-update", NAME
-        + ".overwrite.ifnewer");
+    OVERWRITE("-overwrite", NAME + ".overwrite.always"),
+    UPDATE("-update", NAME + ".overwrite.ifnewer");
 
     final String cmd, propertyname;
 

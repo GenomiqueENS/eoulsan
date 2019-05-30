@@ -336,7 +336,7 @@ public final class ProcessUtils {
    * @throws IOException if an error occurs at the end of the process
    */
   public static void logEndTime(final Process p, final String cmd,
-                                final long startTime) throws IOException {
+      final long startTime) throws IOException {
 
     try {
 
@@ -362,7 +362,7 @@ public final class ProcessUtils {
    * @throws IOException if the exit code if not 0
    */
   public static void throwExitCodeException(final int exitCode,
-                                            final String command) throws IOException {
+      final String command) throws IOException {
 
     switch (exitCode) {
 

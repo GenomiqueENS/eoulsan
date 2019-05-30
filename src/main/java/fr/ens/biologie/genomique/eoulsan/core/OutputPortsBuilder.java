@@ -125,7 +125,7 @@ public class OutputPortsBuilder {
    * @return a new OutputPorts object
    */
   public static OutputPorts singleOutputPort(final String name,
-                                             final DataFormat format) {
+      final DataFormat format) {
 
     return new OutputPortsBuilder().addPort(name, format).create();
   }

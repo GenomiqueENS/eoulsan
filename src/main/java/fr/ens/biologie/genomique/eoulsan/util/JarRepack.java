@@ -89,7 +89,7 @@ public class JarRepack {
 
     BufferedInputStream origin = null;
 
-      final byte[] data = new byte[DEFAULT_BUFFER_SIZE];
+    final byte[] data = new byte[DEFAULT_BUFFER_SIZE];
 
     this.zos.putNextEntry(new ZipEntry(destDir + file.getName()));
     final FileInputStream fis = new FileInputStream(file);

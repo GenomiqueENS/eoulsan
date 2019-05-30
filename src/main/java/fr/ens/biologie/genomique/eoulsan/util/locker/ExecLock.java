@@ -142,8 +142,9 @@ public class ExecLock implements Locker {
    */
   private boolean checkPid() {
 
-    File[] files = this.tmpDir.listFiles((arg0, arg1) -> arg1.startsWith(ExecLock.this.execName + "-")
-        && arg1.endsWith(PID_EXTENSION));
+    File[] files = this.tmpDir
+        .listFiles((arg0, arg1) -> arg1.startsWith(ExecLock.this.execName + "-")
+            && arg1.endsWith(PID_EXTENSION));
 
     if (files == null) {
       return true;
@@ -210,8 +211,9 @@ public class ExecLock implements Locker {
    */
   private void checkLockJVMAlive() {
 
-    File[] files = this.tmpDir.listFiles((arg0, arg1) -> arg1.startsWith(ExecLock.this.execName + "-")
-        && arg1.endsWith(PID_LOCK_EXTENSION));
+    File[] files = this.tmpDir
+        .listFiles((arg0, arg1) -> arg1.startsWith(ExecLock.this.execName + "-")
+            && arg1.endsWith(PID_LOCK_EXTENSION));
 
     if (files == null || files.length == 0) {
       if (!this.lockFile.delete()) {
@@ -260,8 +262,9 @@ public class ExecLock implements Locker {
    */
   public int getProcessesWaiting() {
 
-    File[] files = this.tmpDir.listFiles((arg0, arg1) -> arg1.startsWith(ExecLock.this.execName + "-")
-        && arg1.endsWith(PID_EXTENSION));
+    File[] files = this.tmpDir
+        .listFiles((arg0, arg1) -> arg1.startsWith(ExecLock.this.execName + "-")
+            && arg1.endsWith(PID_EXTENSION));
 
     if (files == null) {
       return 0;

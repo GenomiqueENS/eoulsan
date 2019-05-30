@@ -24,11 +24,19 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.lang.reflect.Modifier;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class ReadSequenceTest {
 
@@ -42,7 +50,7 @@ public class ReadSequenceTest {
       Sequence sequence = new ReadSequence();
       assertTrue(true);
     } catch (ClassCastException e) {
-        fail();
+      fail();
     }
 
     assertTrue(Modifier.isFinal(ReadSequence.class.getModifiers()));
@@ -72,24 +80,24 @@ public class ReadSequenceTest {
     ReadSequence s2 = new ReadSequence("read1", "ATGC", "!!!!");
     ReadSequence s3 = new ReadSequence("read1", "ATGC", "!!!#");
 
-      assertEquals(s1, s2);
-      assertNotEquals(s1, s3);
+    assertEquals(s1, s2);
+    assertNotEquals(s1, s3);
 
     s3.setQuality("!!!!");
-      assertEquals(s1, s3);
+    assertEquals(s1, s3);
 
     s3.setFastqFormat(FastqFormat.FASTQ_ILLUMINA);
-      assertNotEquals(s1, s3);
+    assertNotEquals(s1, s3);
 
     s3.setFastqFormat(FastqFormat.FASTQ_SANGER);
-      assertEquals(s1, s3);
+    assertEquals(s1, s3);
 
     s3.setSequence("TTTT");
-      assertNotEquals(s1, s3);
+    assertNotEquals(s1, s3);
 
-      assertNotEquals(null, s1);
-      assertNotEquals("", s1.getSequence());
-      assertEquals(s1, s1);
+    assertNotEquals(null, s1);
+    assertNotEquals("", s1.getSequence());
+    assertEquals(s1, s1);
   }
 
   @Test
@@ -129,7 +137,7 @@ public class ReadSequenceTest {
 
     try {
       s.setFastqFormat(null);
-        fail();
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
@@ -168,8 +176,8 @@ public class ReadSequenceTest {
     assertEquals(FastqFormat.FASTQ_ILLUMINA, s1.getFastqFormat());
     assertEquals("@@@@@@@@", s1.getQuality());
 
-      assertEquals(s1, s2);
-      assertNotSame(s1, s2);
+    assertEquals(s1, s2);
+    assertNotSame(s1, s2);
   }
 
   @Test
@@ -202,21 +210,21 @@ public class ReadSequenceTest {
 
     try {
       s1.subSequence(-1, 2);
-        fail();
+      fail();
     } catch (StringIndexOutOfBoundsException e) {
       assertTrue(true);
     }
 
     try {
       s1.subSequence(0, 5);
-        fail();
+      fail();
     } catch (StringIndexOutOfBoundsException e) {
       assertTrue(true);
     }
 
     try {
       s1.subSequence(2, 1);
-        fail();
+      fail();
     } catch (StringIndexOutOfBoundsException e) {
       assertTrue(true);
     }
@@ -287,7 +295,7 @@ public class ReadSequenceTest {
     assertEquals(s1.getSequence(), s3.getSequence());
     assertEquals(s1.getFastqFormat(), s3.getFastqFormat());
     assertEquals(s1.getQuality(), s3.getQuality());
-      assertNotSame(s1, s3);
+    assertNotSame(s1, s3);
 
   }
 

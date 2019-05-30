@@ -762,7 +762,9 @@ public abstract class AbstractWorkflow implements Workflow {
       return;
     }
 
-    list.sort(Comparator.comparingInt((AbstractStep a) -> a.getType().getPriority()).thenComparingInt(AbstractStep::getNumber));
+    list.sort(
+        Comparator.comparingInt((AbstractStep a) -> a.getType().getPriority())
+            .thenComparingInt(AbstractStep::getNumber));
 
   }
 

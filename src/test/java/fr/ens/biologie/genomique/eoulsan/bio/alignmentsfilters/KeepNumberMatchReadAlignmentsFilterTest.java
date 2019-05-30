@@ -24,6 +24,11 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,8 +40,6 @@ import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.bio.SAMUtils;
 import htsjdk.samtools.SAMLineParser;
 import htsjdk.samtools.SAMRecord;
-
-import static org.junit.Assert.*;
 
 /**
  * This class is a JUnit test class to test the class
@@ -142,19 +145,19 @@ public class KeepNumberMatchReadAlignmentsFilterTest {
       this.filter.setParameter("threshold", "40");
       assertTrue(true);
     } catch (EoulsanException e) {
-        fail();
+      fail();
     }
 
     try {
       this.filter.setParameter("threshold", "-2");
-        fail();
+      fail();
     } catch (EoulsanException e) {
       assertTrue(true);
     }
 
     try {
       this.filter.setParameter("ko", "2");
-        fail();
+      fail();
     } catch (EoulsanException e) {
       assertTrue(true);
     }
@@ -166,14 +169,14 @@ public class KeepNumberMatchReadAlignmentsFilterTest {
       this.filter.init();
       assertTrue(true);
     } catch (Exception e) {
-        fail();
+      fail();
     }
   }
 
   @Test
   public void testGetName() {
     assertEquals("keepnumbermatch", this.filter.getName());
-      assertNotEquals("ko", this.filter.getName());
+    assertNotEquals("ko", this.filter.getName());
   }
 
   @Test
@@ -181,7 +184,7 @@ public class KeepNumberMatchReadAlignmentsFilterTest {
     assertEquals(
         "This filter allows to keep a given number of alignments of a read.",
         this.filter.getDescription());
-      assertNotEquals("ko", this.filter.getName());
+    assertNotEquals("ko", this.filter.getName());
   }
 
   @Test

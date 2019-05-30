@@ -24,9 +24,13 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class UnmodifiableExperimentMetadataTest {
 
@@ -40,56 +44,56 @@ public class UnmodifiableExperimentMetadataTest {
 
     try {
       uem.setSkip(true);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       uem.setReference(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       uem.setModel(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       uem.setContrast(true);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       uem.setBuildContrast(true);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       uem.setDesignFile(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       uem.setComparisons(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       uem.setContrastFile(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
@@ -136,7 +140,7 @@ public class UnmodifiableExperimentMetadataTest {
     assertFalse(uem.containsContrast());
     // test setContrast
     em.setContrast(true);
-      assertTrue(uem.isContrast());
+    assertTrue(uem.isContrast());
     // test containsContrast
     assertTrue(uem.containsContrast());
 

@@ -247,8 +247,7 @@ public class EntryMetadataTest {
     e2.add("key3", "value3");
 
     EntryMetadata e = new EntryMetadata(e2);
-    assertEquals(new HashSet<>(Arrays.asList("key2", "key3")),
-        e.keySet());
+    assertEquals(new HashSet<>(Arrays.asList("key2", "key3")), e.keySet());
   }
 
 }

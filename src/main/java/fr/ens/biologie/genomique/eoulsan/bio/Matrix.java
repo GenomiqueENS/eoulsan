@@ -193,7 +193,8 @@ public interface Matrix<E> {
 
   /**
    * Retain row of the matrix.
-   * @param columnNames a collection with the column names of the matrix to retain
+   * @param columnNames a collection with the column names of the matrix to
+   *          retain
    */
   void retainColumns(Collection<String> columnNames);
 

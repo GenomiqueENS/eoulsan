@@ -56,7 +56,7 @@ public class CompressionTypeTest {
         CompressionType.getCompressionTypeByContentEncoding("bzip2"));
     assertEquals(CompressionType.NONE,
         CompressionType.getCompressionTypeByContentEncoding(""));
-      assertNull(CompressionType.getCompressionTypeByContentEncoding(null));
+    assertNull(CompressionType.getCompressionTypeByContentEncoding(null));
   }
 
   @Test
@@ -68,7 +68,7 @@ public class CompressionTypeTest {
         CompressionType.getCompressionTypeByExtension(".bz2"));
     assertEquals(CompressionType.NONE,
         CompressionType.getCompressionTypeByExtension(""));
-      assertNull(CompressionType.getCompressionTypeByExtension(null));
+    assertNull(CompressionType.getCompressionTypeByExtension(null));
   }
 
   @Test
@@ -86,7 +86,7 @@ public class CompressionTypeTest {
         CompressionType.getCompressionTypeByFilename("titi.txt"));
     assertEquals(CompressionType.NONE,
         CompressionType.getCompressionTypeByFilename(""));
-      assertNull(CompressionType.getCompressionTypeByFilename(null));
+    assertNull(CompressionType.getCompressionTypeByFilename(null));
   }
 
   @Test
@@ -102,7 +102,7 @@ public class CompressionTypeTest {
     assertEquals("titi.txt",
         CompressionType.removeCompressionExtension("titi.txt"));
     assertEquals("", CompressionType.removeCompressionExtension(""));
-      assertNull(CompressionType.removeCompressionExtension(null));
+    assertNull(CompressionType.removeCompressionExtension(null));
 
   }
 

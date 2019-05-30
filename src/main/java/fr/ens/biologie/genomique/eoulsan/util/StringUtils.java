@@ -114,8 +114,7 @@ public final class StringUtils {
       return "";
     }
 
-    return filename.substring(filename.length() - (shortName.length() - pos)
-    );
+    return filename.substring(filename.length() - (shortName.length() - pos));
   }
 
   /**
@@ -291,7 +290,7 @@ public final class StringUtils {
    * @return the array with the new values
    */
   public static List<String> fastSplit(final String s,
-                                       final List<String> list) {
+      final List<String> list) {
 
     if (s == null) {
       return null;
@@ -339,7 +338,7 @@ public final class StringUtils {
    * @return the array with the new values
    */
   public static String[] fastSplit(final String s, final String[] array,
-                                   final boolean allowEmptyFields) {
+      final boolean allowEmptyFields) {
 
     if (array == null || s == null) {
       return null;
@@ -551,7 +550,7 @@ public final class StringUtils {
    * @return an array without the first element of the input array
    */
   public static String[] arrayWithoutFirstsElement(final String[] array,
-                                                   final int elementsToRemove) {
+      final int elementsToRemove) {
 
     if (array == null) {
       return null;
@@ -648,8 +647,7 @@ public final class StringUtils {
    * @return true if the String starts with one of the prefix of a list in an
    *         array
    */
-  public static boolean startsWith(final String s,
-                                   final String[] prefixes) {
+  public static boolean startsWith(final String s, final String[] prefixes) {
 
     if (s == null || prefixes == null) {
       return false;

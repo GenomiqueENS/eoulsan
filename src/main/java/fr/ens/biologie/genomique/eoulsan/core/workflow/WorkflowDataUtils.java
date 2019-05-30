@@ -105,8 +105,7 @@ public class WorkflowDataUtils {
    * @param data the data object
    * @param sample the sample
    */
-  public static void setDataMetaData(final Data data,
-                                     final Sample sample) {
+  public static void setDataMetaData(final Data data, final Sample sample) {
 
     requireNonNull(data, "data argument cannot be null");
     requireNonNull(sample, "sample argument cannot be null");

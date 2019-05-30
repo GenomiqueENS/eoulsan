@@ -24,13 +24,16 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Collections;
 
 import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
-
-import static org.junit.Assert.*;
 
 public class UnmodifiableSampleMetadataTest {
 
@@ -44,77 +47,77 @@ public class UnmodifiableSampleMetadataTest {
 
     try {
       usm.setReads(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       usm.setDescription(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       usm.setOperator(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       usm.setComment(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       usm.setDate(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       usm.setSerialNumber(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       usm.setUUID(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       usm.setRepTechGroup(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       usm.setReference(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       usm.setFastqFormat(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       usm.setCondition(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }

@@ -297,7 +297,7 @@ public class FileUtils {
    * @throws FileNotFoundException if the file is not found
    */
   public static BufferedReader createBufferedReader(final String filename,
-                                                    final Charset charset) throws FileNotFoundException {
+      final Charset charset) throws FileNotFoundException {
 
     if (filename == null) {
       throw new NullPointerException("The filename is null");
@@ -326,7 +326,7 @@ public class FileUtils {
    * @throws FileNotFoundException if the file is not found
    */
   public static BufferedReader createBufferedReader(final File file,
-                                                    final Charset charset) throws FileNotFoundException {
+      final Charset charset) throws FileNotFoundException {
 
     final InputStream is = createInputStream(file);
 
@@ -343,8 +343,7 @@ public class FileUtils {
    * @param is InputStream to read
    * @return a BufferedReader
    */
-  public static BufferedReader createBufferedReader(
-      final InputStream is) {
+  public static BufferedReader createBufferedReader(final InputStream is) {
 
     return createBufferedReader(is, null);
   }
@@ -356,7 +355,7 @@ public class FileUtils {
    * @return a BufferedReader
    */
   public static BufferedReader createBufferedReader(final InputStream is,
-                                                    final Charset charset) {
+      final Charset charset) {
 
     if (is == null) {
       throw new NullPointerException("The input stream is null");
@@ -517,7 +516,7 @@ public class FileUtils {
    * @throws IOException if the file is not found
    */
   public static BufferedWriter createBufferedWriter(final String filename,
-                                                    final Charset charset) throws IOException {
+      final Charset charset) throws IOException {
 
     if (filename == null) {
       throw new NullPointerException("The filename is null");
@@ -548,7 +547,7 @@ public class FileUtils {
    * @throws IOException if the file is not found
    */
   public static BufferedWriter createBufferedWriter(final File file,
-                                                    final Charset charset) throws IOException {
+      final Charset charset) throws IOException {
 
     final OutputStream os = createOutputStream(file);
 
@@ -578,7 +577,7 @@ public class FileUtils {
    * @throws FileNotFoundException if the file is not found
    */
   public static BufferedWriter createBufferedWriter(final OutputStream os,
-                                                    final Charset charset) throws FileNotFoundException {
+      final Charset charset) throws FileNotFoundException {
 
     if (os == null) {
       throw new NullPointerException("The output stream is null");
@@ -626,8 +625,8 @@ public class FileUtils {
    * @return a ObjectOutput
    * @throws IOException if an error occurs while creating the Writer
    */
-  public static ObjectOutputStream createObjectOutputWriter(
-      final File file) throws IOException {
+  public static ObjectOutputStream createObjectOutputWriter(final File file)
+      throws IOException {
 
     if (file == null) {
       return null;
@@ -1414,7 +1413,7 @@ public class FileUtils {
    * @throws IOException if the file doesn't exists
    */
   public static void checkExistingFile(final File file,
-                                       final String msgFileType) throws IOException {
+      final String msgFileType) throws IOException {
 
     if (msgFileType == null) {
       throw new NullPointerException(
@@ -1440,7 +1439,7 @@ public class FileUtils {
    * @throws IOException if the file doesn't exists
    */
   public static void checkExistingDirectoryFile(final File directory,
-                                                final String msgFileType) throws IOException {
+      final String msgFileType) throws IOException {
 
     checkExistingFile(directory, msgFileType);
     if (!directory.isDirectory()) {
@@ -1457,7 +1456,7 @@ public class FileUtils {
    * @throws IOException if the file doesn't exists
    */
   public static void checkExistingStandardFile(final File file,
-                                               final String msgFileType) throws IOException {
+      final String msgFileType) throws IOException {
 
     checkExistingFile(file, msgFileType);
     if (!file.isFile()) {
@@ -1474,7 +1473,7 @@ public class FileUtils {
    * @throws IOException if the file doesn't exists
    */
   public static void checkExistingStandardFileOrDirectory(final File file,
-                                                          final String msgFileType) throws IOException {
+      final String msgFileType) throws IOException {
 
     checkExistingDirectoryFile(file, msgFileType);
     if (!file.isFile() && !file.isDirectory()) {
@@ -1549,7 +1548,8 @@ public class FileUtils {
   public static boolean compareFile(final File fileA, final File fileB)
       throws IOException {
 
-    try (InputStream isa = new FileInputStream(fileA); InputStream isb = new FileInputStream(fileB)) {
+    try (InputStream isa = new FileInputStream(fileA);
+        InputStream isb = new FileInputStream(fileB)) {
 
       return compareFile(isa, isb);
     }

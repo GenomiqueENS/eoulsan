@@ -1321,9 +1321,10 @@ public final class Settings implements Serializable {
 
     final OutputStream os = FileUtils.createOutputStream(file);
 
-    this.properties.store(os, " "
-        + Globals.APP_NAME + " version " + Globals.APP_VERSION_STRING
-        + " configuration file");
+    this.properties.store(os,
+        " "
+            + Globals.APP_NAME + " version " + Globals.APP_VERSION_STRING
+            + " configuration file");
     os.close();
   }
 

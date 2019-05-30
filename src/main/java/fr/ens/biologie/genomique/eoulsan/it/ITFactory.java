@@ -187,7 +187,7 @@ public class ITFactory {
 
     // Collect tests from a file with names tests
     final List<File> testsToExecuteDirectories =
-      new ArrayList<>(readTestListFile());
+        new ArrayList<>(readTestListFile());
 
     // Add the selected test if set
     if (this.selectedTest != null) {

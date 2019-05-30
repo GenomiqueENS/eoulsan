@@ -24,9 +24,13 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class UnmodifiableDesignTest {
 
@@ -38,35 +42,35 @@ public class UnmodifiableDesignTest {
 
     try {
       ud.setName(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       ud.removeSample(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       ud.removeExperiment(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       ud.addSample(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       ud.addExperiment(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }

@@ -199,7 +199,7 @@ public class InputPortsBuilder {
    * @return a new InputPorts object
    */
   public static InputPorts singleInputPort(final String name,
-                                           final DataFormat format) {
+      final DataFormat format) {
 
     return new InputPortsBuilder().addPort(name, format).create();
   }

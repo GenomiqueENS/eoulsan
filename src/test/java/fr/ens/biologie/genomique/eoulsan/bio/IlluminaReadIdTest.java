@@ -24,14 +24,18 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-
-import static org.junit.Assert.*;
 
 public class IlluminaReadIdTest {
 
@@ -357,7 +361,8 @@ public class IlluminaReadIdTest {
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#ATCACG/1");
     assertTrue(ii.isSequenceIndexField());
     assertEquals("ATCACG", ii.getSequenceIndex());
-    assertEquals(Collections.singletonList("ATCACG"), ii.getSequenceIndexList());
+    assertEquals(Collections.singletonList("ATCACG"),
+        ii.getSequenceIndexList());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
     assertFalse(ii.isSequenceIndexField());
@@ -383,7 +388,8 @@ public class IlluminaReadIdTest {
         "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
     assertTrue(ii.isSequenceIndexField());
     assertEquals("ATCACG", ii.getSequenceIndex());
-    assertEquals(Collections.singletonList("ATCACG"), ii.getSequenceIndexList());
+    assertEquals(Collections.singletonList("ATCACG"),
+        ii.getSequenceIndexList());
 
     ii = new IlluminaReadId(
         "NB500892:67:HVN5KBGXX:1:11101:22912:1064 1:N:0:CTCTCTAC+TACTCCTT");

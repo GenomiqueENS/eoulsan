@@ -247,7 +247,8 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   public ClusterCombinedTaskScheduler(final int threadNumber,
       final ClusterTaskScheduler clusterScheduler) {
 
-    requireNonNull(clusterScheduler, "clusterScheduler argument cannot be null");
+    requireNonNull(clusterScheduler,
+        "clusterScheduler argument cannot be null");
 
     // Create the schedulers
     this.noTaskScheduler = new MonoThreadTaskScheduler();

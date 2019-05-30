@@ -24,6 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.io;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -31,8 +34,6 @@ import java.io.Writer;
 import java.util.Random;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class ByteCountOutputStreamTest {
 
@@ -62,7 +63,7 @@ public class ByteCountOutputStreamTest {
       }
 
     } catch (IOException e) {
-        fail();
+      fail();
     }
 
   }

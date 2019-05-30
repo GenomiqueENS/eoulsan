@@ -277,7 +277,7 @@ public class MapperInstance {
 
     // Build the command line and compute the index
     final List<String> cmd = new ArrayList<>(this.mapper.getProvider()
-      .getIndexerCommand(indexer, tmpGenomeFile, indexerArguments, threads));
+        .getIndexerCommand(indexer, tmpGenomeFile, indexerArguments, threads));
 
     getLogger().fine(cmd.toString());
 

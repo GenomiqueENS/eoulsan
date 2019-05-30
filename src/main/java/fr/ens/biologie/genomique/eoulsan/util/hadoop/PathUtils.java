@@ -189,7 +189,7 @@ public final class PathUtils {
    * @throws IOException if an error occurs while creating InputStream
    */
   public static InputStream createInputStream(final Path path,
-                                              final Configuration conf) throws IOException {
+      final Configuration conf) throws IOException {
 
     if (path == null) {
       throw new NullPointerException("Path to create is null");
@@ -216,7 +216,7 @@ public final class PathUtils {
    * @throws IOException if an error occurs while creating InputStream
    */
   public static OutputStream createOutputStream(final Path path,
-                                                final Configuration conf) throws IOException {
+      final Configuration conf) throws IOException {
 
     if (path == null) {
       throw new NullPointerException("Path to create is null");
@@ -878,7 +878,7 @@ public final class PathUtils {
    * @throws IOException if the file doesn't exists
    */
   public static void checkExistingFile(final Path file,
-                                       final Configuration conf, final String msgFileType) throws IOException {
+      final Configuration conf, final String msgFileType) throws IOException {
 
     if (msgFileType == null) {
       throw new NullPointerException("Message file type for check is null");
@@ -907,7 +907,7 @@ public final class PathUtils {
    * @throws IOException if the file doesn't exists
    */
   public static void checkExistingDirectoryFile(final Path directory,
-                                                final Configuration conf, final String msgFileType) throws IOException {
+      final Configuration conf, final String msgFileType) throws IOException {
 
     checkExistingFile(directory, conf, msgFileType);
 
@@ -926,7 +926,7 @@ public final class PathUtils {
    * @return true is the directory exists
    */
   public static boolean isExistingDirectoryFile(final Path directory,
-                                                final Configuration conf) throws IOException {
+      final Configuration conf) throws IOException {
 
     if (directory == null) {
       throw new NullPointerException("The directory is null");
@@ -974,7 +974,7 @@ public final class PathUtils {
    * @throws IOException if the file doesn't exists
    */
   public static void checkExistingStandardFile(final Path file,
-                                               final Configuration conf, final String msgFileType) throws IOException {
+      final Configuration conf, final String msgFileType) throws IOException {
 
     checkExistingFile(file, conf, msgFileType);
 
@@ -993,7 +993,7 @@ public final class PathUtils {
    * @throws IOException if the file doesn't exists
    */
   public static void checkExistingStandardFileOrDirectory(final Path file,
-                                                          final Configuration conf, final String msgFileType) throws IOException {
+      final Configuration conf, final String msgFileType) throws IOException {
 
     checkExistingDirectoryFile(file, conf, msgFileType);
 
@@ -1014,7 +1014,7 @@ public final class PathUtils {
    * @throws IOException if an error occurs while copying
    */
   public static boolean copy(final Path srcPath, final Path destPath,
-                             final Configuration conf) throws IOException {
+      final Configuration conf) throws IOException {
 
     return copy(srcPath, destPath, true, conf);
   }
@@ -1029,7 +1029,7 @@ public final class PathUtils {
    * @throws IOException if an error occurs while copying
    */
   public static boolean copy(final Path srcPath, final Path destPath,
-                             final boolean overwrite, final Configuration conf) throws IOException {
+      final boolean overwrite, final Configuration conf) throws IOException {
 
     if (srcPath == null) {
       throw new NullPointerException("The source path is null.");
@@ -1059,7 +1059,7 @@ public final class PathUtils {
    * @throws IOException if an error occurs while copying
    */
   public static boolean move(final Path srcPath, final Path destPath,
-                             final Configuration conf) throws IOException {
+      final Configuration conf) throws IOException {
 
     return move(srcPath, destPath, true, conf);
   }
@@ -1074,7 +1074,7 @@ public final class PathUtils {
    * @throws IOException if an error occurs while copying
    */
   public static boolean move(final Path srcPath, final Path destPath,
-                             final boolean overwrite, final Configuration conf) throws IOException {
+      final boolean overwrite, final Configuration conf) throws IOException {
 
     if (srcPath == null) {
       throw new NullPointerException("The source path is null.");

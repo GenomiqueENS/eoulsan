@@ -24,9 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class UnmodifiableDesignMetadataTest {
 
@@ -39,28 +42,28 @@ public class UnmodifiableDesignMetadataTest {
 
     try {
       udm.setGenomeFile(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       udm.setGffFile(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       udm.setGtfFile(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       udm.setAdditionalAnnotationFile(null);
-        fail();
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }

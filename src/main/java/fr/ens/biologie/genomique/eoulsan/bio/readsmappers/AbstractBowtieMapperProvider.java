@@ -218,7 +218,7 @@ public abstract class AbstractBowtieMapperProvider
 
         // Build the command line and add common arguments
         final List<String> cmd =
-          new ArrayList<>(createCommonArgs(mapping, bowtiePath, index));
+            new ArrayList<>(createCommonArgs(mapping, bowtiePath, index));
 
         // Enable Index memory mapped in streaming mode
         if (mapping.isMultipleInstancesEnabled()) {
@@ -266,7 +266,7 @@ public abstract class AbstractBowtieMapperProvider
 
         // Build the command line and add common arguments
         final List<String> cmd =
-          new ArrayList<>(createCommonArgs(mapping, bowtiePath, index));
+            new ArrayList<>(createCommonArgs(mapping, bowtiePath, index));
 
         // Enable Index memory mapped in streaming mode
         if (mapping.isMultipleInstancesEnabled()) {

@@ -748,7 +748,7 @@ public class BEDEntryTest {
     assertEquals(Arrays.asList("position chr7:127471196-127495720", "hide all"),
         e.getMetadataEntryValues("browser"));
     assertEquals(Collections.singletonList(
-      "name=\"ItemRGBDemo\" description=\"Item RGB demonstration\" visibility=2 itemRgb=\"On\""),
+        "name=\"ItemRGBDemo\" description=\"Item RGB demonstration\" visibility=2 itemRgb=\"On\""),
         e.getMetadataEntryValues("track"));
   }
 
@@ -788,7 +788,8 @@ public class BEDEntryTest {
     assertEquals(Collections.emptyList(), e.getBlocks());
 
     e.addBlock(100, 250);
-    assertEquals(Collections.singletonList(new GenomicInterval("chr1", 100, 250, '.')),
+    assertEquals(
+        Collections.singletonList(new GenomicInterval("chr1", 100, 250, '.')),
         e.getBlocks());
 
     e.addBlock(300, 500);

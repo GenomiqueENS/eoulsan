@@ -204,7 +204,7 @@ public class HTSeqUtils {
    * @return the list of intervals that are alignments matches.
    */
   public static List<GenomicInterval> parseCigar(final Cigar cigar,
-                                                 final String chromosome, final int start, final char strand) {
+      final String chromosome, final int start, final char strand) {
 
     if (cigar == null) {
       return null;
@@ -242,7 +242,8 @@ public class HTSeqUtils {
    * @param mode the overlap mode.
    * @return the set of features that overlap genomic intervals according to the
    *         overlap mode.
-   * @throws EoulsanException if an error occurs while getting overlapped features
+   * @throws EoulsanException if an error occurs while getting overlapped
+   *           features
    */
   public static Set<String> featuresOverlapped(
       final List<GenomicInterval> ivList, final GenomicArray<String> features,

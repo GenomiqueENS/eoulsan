@@ -665,7 +665,8 @@ public class GFFEntryTest {
 
     assertTrue(e.addMetaDataEntry("key", "val1"));
     assertEquals(Collections.singleton("key"), e.getMetadataKeyNames());
-    assertEquals(Collections.singletonList("val1"), e.getMetadataEntryValues("key"));
+    assertEquals(Collections.singletonList("val1"),
+        e.getMetadataEntryValues("key"));
     assertTrue(e.addMetaDataEntry("key", "val2"));
     assertEquals(Collections.singleton("key"), e.getMetadataKeyNames());
     assertEquals(Arrays.asList("val1", "val2"),
@@ -674,7 +675,8 @@ public class GFFEntryTest {
     assertTrue(e.addMetaDataEntry("key2", "val3"));
     assertEquals(new HashSet<>(Arrays.asList("key", "key2")),
         e.getMetadataKeyNames());
-    assertEquals(Collections.singletonList("val3"), e.getMetadataEntryValues("key2"));
+    assertEquals(Collections.singletonList("val3"),
+        e.getMetadataEntryValues("key2"));
   }
 
   @Test
@@ -746,16 +748,13 @@ public class GFFEntryTest {
     assertEquals(Collections.singleton("key1"), e.getAttributesNames());
 
     e.setAttributeValue("key2", "value2");
-    assertEquals(new HashSet<>(asList("key1", "key2")),
-        e.getAttributesNames());
+    assertEquals(new HashSet<>(asList("key1", "key2")), e.getAttributesNames());
 
     assertFalse(e.removeAttribute("key3"));
-    assertEquals(new HashSet<>(asList("key1", "key2")),
-        e.getAttributesNames());
+    assertEquals(new HashSet<>(asList("key1", "key2")), e.getAttributesNames());
 
     assertFalse(e.removeAttribute(null));
-    assertEquals(new HashSet<>(asList("key1", "key2")),
-        e.getAttributesNames());
+    assertEquals(new HashSet<>(asList("key1", "key2")), e.getAttributesNames());
 
     assertTrue(e.removeAttribute("key1"));
     assertEquals(Collections.singleton("key2"), e.getAttributesNames());
@@ -806,8 +805,7 @@ public class GFFEntryTest {
     assertEquals(111.11, e.getScore(), 0.0);
     assertEquals('+', e.getStrand());
     assertEquals(2, e.getPhase());
-    assertEquals(new HashSet<>(asList("ID", "Name")),
-        e.getAttributesNames());
+    assertEquals(new HashSet<>(asList("ID", "Name")), e.getAttributesNames());
 
     e.clear();
 

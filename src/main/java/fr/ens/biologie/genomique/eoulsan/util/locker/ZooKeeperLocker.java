@@ -81,13 +81,12 @@ public class ZooKeeperLocker implements Locker, Watcher {
 
         while (true) {
 
-          List<String> nodes =
-              this.zk.getChildren(this.lockBasePath, event -> {
+          List<String> nodes = this.zk.getChildren(this.lockBasePath, event -> {
 
-                synchronized (lock) {
-                  lock.notifyAll();
-                }
-              });
+            synchronized (lock) {
+              lock.notifyAll();
+            }
+          });
 
           Collections.sort(nodes);
 

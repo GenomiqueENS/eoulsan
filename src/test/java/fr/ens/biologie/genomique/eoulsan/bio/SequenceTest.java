@@ -24,9 +24,16 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class SequenceTest {
 
@@ -34,7 +41,7 @@ public class SequenceTest {
   public void testGetSetName() {
 
     Sequence s = new Sequence();
-      assertNull(s.getName());
+    assertNull(s.getName());
 
     s.setName("toto");
     assertEquals("toto", s.getName());
@@ -46,7 +53,7 @@ public class SequenceTest {
     assertEquals("titi", s.getName());
 
     s.setName(null);
-      assertNull(s.getName());
+    assertNull(s.getName());
 
     assertTrue(s.setNameWithValidation("toto"));
     assertEquals("toto", s.getName());
@@ -58,14 +65,14 @@ public class SequenceTest {
     assertEquals("titi", s.getName());
 
     assertFalse(s.setNameWithValidation(null));
-      assertNull(s.getName());
+    assertNull(s.getName());
   }
 
   @Test
   public void testGetIdentifierInName() {
 
     Sequence s = new Sequence();
-      assertNull(s.getIdentifierInName());
+    assertNull(s.getIdentifierInName());
 
     s.setName("");
     assertEquals("", s.getIdentifierInName());
@@ -87,7 +94,7 @@ public class SequenceTest {
   public void testGetDescriptionInName() {
 
     Sequence s = new Sequence();
-      assertNull(s.getDescriptionInName());
+    assertNull(s.getDescriptionInName());
 
     s.setName("");
     assertEquals("", s.getDescriptionInName());
@@ -145,7 +152,7 @@ public class SequenceTest {
 
     try {
       s.setAlphabet(null);
-        fail();
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
@@ -225,14 +232,14 @@ public class SequenceTest {
 
     try {
       s1.set(null);
-        fail();
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
 
     try {
       new Sequence(null);
-        fail();
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
@@ -257,21 +264,21 @@ public class SequenceTest {
 
     try {
       s1.subSequence(-1, 2);
-        fail();
+      fail();
     } catch (StringIndexOutOfBoundsException e) {
       assertTrue(true);
     }
 
     try {
       s1.subSequence(0, 5);
-        fail();
+      fail();
     } catch (StringIndexOutOfBoundsException e) {
       assertTrue(true);
     }
 
     try {
       s1.subSequence(2, 1);
-        fail();
+      fail();
     } catch (StringIndexOutOfBoundsException e) {
       assertTrue(true);
     }
@@ -317,7 +324,7 @@ public class SequenceTest {
     assertEquals(s1.getName(), s3.getName());
     assertEquals(s1.getAlphabet(), s3.getAlphabet());
     assertEquals(s1.getSequence(), s3.getSequence());
-      assertNotSame(s1, s3);
+    assertNotSame(s1, s3);
   }
 
   @Test
@@ -544,38 +551,38 @@ public class SequenceTest {
     Sequence s2 = new Sequence("toto", "ATGC", "desc");
     Sequence s3 = new Sequence("titi", "ATGC", "desc");
 
-      assertEquals(s1, s1);
-      assertNotEquals(null, s1);
-      assertNotEquals("titit", s1.getSequence());
+    assertEquals(s1, s1);
+    assertNotEquals(null, s1);
+    assertNotEquals("titit", s1.getSequence());
 
-      assertEquals(s1, s1);
+    assertEquals(s1, s1);
     assertEquals(s1, s2);
-      assertNotSame(s1, s2);
+    assertNotSame(s1, s2);
     assertNotSame(s1, s3);
 
     s3.setName("toto");
-      assertEquals(s1, s3);
+    assertEquals(s1, s3);
     s3.setName("titi");
-      assertNotEquals(s1, s3);
+    assertNotEquals(s1, s3);
     s3.setName("toto");
-      assertEquals(s1, s3);
+    assertEquals(s1, s3);
 
     s3.setDescription("other desc");
-      assertNotEquals(s1, s3);
-      assertEquals(s1, s2);
+    assertNotEquals(s1, s3);
+    assertEquals(s1, s2);
     s3.setDescription("desc");
-      assertEquals(s1, s3);
+    assertEquals(s1, s3);
 
     s2.setAlphabet(Alphabets.UNAMBIGUOUS_DNA_ALPHABET);
-      assertNotEquals(s1, s2);
+    assertNotEquals(s1, s2);
 
     s2.setAlphabet(Alphabets.AMBIGUOUS_DNA_ALPHABET);
-      assertEquals(s1, s2);
+    assertEquals(s1, s2);
 
     s2.setSequence("AAAA");
-      assertNotEquals(s1, s2);
+    assertNotEquals(s1, s2);
     s2.setSequence("ATGC");
-      assertEquals(s1, s2);
+    assertEquals(s1, s2);
   }
 
   @Test

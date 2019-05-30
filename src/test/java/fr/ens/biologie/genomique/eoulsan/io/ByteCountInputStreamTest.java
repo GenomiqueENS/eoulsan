@@ -24,13 +24,14 @@
 
 package fr.ens.biologie.genomique.eoulsan.io;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Random;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class ByteCountInputStreamTest {
 
@@ -60,7 +61,7 @@ public class ByteCountInputStreamTest {
       }
 
     } catch (IOException e) {
-        fail();
+      fail();
     }
 
   }

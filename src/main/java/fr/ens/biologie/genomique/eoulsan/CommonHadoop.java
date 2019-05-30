@@ -61,8 +61,7 @@ public class CommonHadoop {
    * @param settings Settings of the application
    * @return a new Configuration object
    */
-  public static Configuration createConfiguration(
-      final Settings settings) {
+  public static Configuration createConfiguration(final Settings settings) {
 
     if (settings == null) {
       return null;

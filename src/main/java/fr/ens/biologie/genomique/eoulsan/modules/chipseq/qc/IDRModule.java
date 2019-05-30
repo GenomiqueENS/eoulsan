@@ -259,7 +259,7 @@ public class IDRModule extends AbstractModule {
 
     // List all samples per experiment, skip reference files
     HashMap<String, ArrayList<Data>> expMap =
-      new HashMap<>(inData.getListElements().size() / 2);
+        new HashMap<>(inData.getListElements().size() / 2);
     for (Data anInputData : inData.getListElements()) {
 
       // getLogger().info("One input file : " +
@@ -301,7 +301,7 @@ public class IDRModule extends AbstractModule {
 
       // Get all Data split into different replicate groups
       HashMap<String, ArrayList<Data>> replicatesMap =
-        new HashMap<>(expDataList.size() / 2);
+          new HashMap<>(expDataList.size() / 2);
       for (Data sample : expDataList) {
 
         String replicateGroupName = sample.getMetadata().get("RepTechGroup");
@@ -440,7 +440,8 @@ public class IDRModule extends AbstractModule {
     String outputPrefix = String.format("idrplot_output_%s_vs_%s",
         data1.getMetadata().get("Name"), data2.getMetadata().get("Name"));
     return runAnalysisPlot(1, String.format("%s/%s", outputDir, outputPrefix),
-            Collections.singletonList(String.format("%s/%s", outputDir, inputPrefix)));
+        Collections
+            .singletonList(String.format("%s/%s", outputDir, inputPrefix)));
   }
 
   /**

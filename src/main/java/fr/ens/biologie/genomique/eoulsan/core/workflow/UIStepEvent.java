@@ -13,7 +13,7 @@ public class UIStepEvent extends UIEvent {
     PROGRESS, TASK_PROGRESS, NOTE,
   }
 
-    private final Step step;
+  private final Step step;
   private final StepStatusMessage status;
   private final int contextId;
   private final String contextName;
