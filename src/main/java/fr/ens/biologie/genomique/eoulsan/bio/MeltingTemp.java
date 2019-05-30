@@ -43,8 +43,8 @@ public class MeltingTemp {
    * @param saltc salt concentration [mM]
    * @return the tm of the sequence
    */
-  public static final float tmstalucDNA(final String s, final float dnac,
-      final float saltc) {
+  public static float tmstalucDNA(final String s, final float dnac,
+                                  final float saltc) {
 
     float dh = 0; // DeltaH. Enthalpy
     float ds = 0; // deltaS Entropy
@@ -98,8 +98,8 @@ public class MeltingTemp {
    * @param saltc salt concentration [mM]
    * @return the tm of the sequence
    */
-  public static final float tmstalucRNA(final String s, final int dnac,
-      final int saltc) {
+  public static float tmstalucRNA(final String s, final int dnac,
+                                  final int saltc) {
 
     float dh = 0; // DeltaH. Enthalpy
     float ds = 0; // deltaS Entropy

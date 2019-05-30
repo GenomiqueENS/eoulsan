@@ -132,7 +132,7 @@ public abstract class AbstractMatrix<E> implements Matrix<E> {
 
     return new Iterable<Entry<E>>() {
 
-      private Iterator<Entry<E>> values = values().iterator();
+      private final Iterator<Entry<E>> values = values().iterator();
 
       @Override
       public Iterator<Entry<E>> iterator() {

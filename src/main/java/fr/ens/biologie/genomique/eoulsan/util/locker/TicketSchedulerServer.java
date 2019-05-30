@@ -179,8 +179,8 @@ public class TicketSchedulerServer implements TicketScheduler {
   // Server methods
   //
 
-  public static final synchronized void newServer(final Set<Ticket> tickets,
-      final String lockerName, final int port) {
+  public static synchronized void newServer(final Set<Ticket> tickets,
+                                            final String lockerName, final int port) {
 
     // If the server already exists do nothing
     if (serverInstance != null) {

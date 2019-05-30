@@ -28,7 +28,6 @@ import static fr.ens.biologie.genomique.eoulsan.io.CompressionType.NONE;
 import static fr.ens.biologie.genomique.eoulsan.io.CompressionType.getCompressionTypeByContentEncoding;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;

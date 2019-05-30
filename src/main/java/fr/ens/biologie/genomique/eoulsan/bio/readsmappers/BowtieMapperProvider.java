@@ -94,7 +94,7 @@ public class BowtieMapperProvider extends AbstractBowtieMapperProvider {
         FIRST_FLAVORED_VERSION);
   }
 
-  protected static final String getBowtieQualityArgument(
+  protected static String getBowtieQualityArgument(
       final FastqFormat format) {
 
     switch (format) {

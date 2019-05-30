@@ -52,7 +52,7 @@ public class IDRModule extends AbstractModule {
   /**
    * DataFormat of the input peak file.
    */
-  private static DataFormat PEAK =
+  private static final DataFormat PEAK =
       DataFormatRegistry.getInstance().getDataFormatFromName("peaks");
 
   private static final List<String> ACCEPTED_ASSEMBLIES =

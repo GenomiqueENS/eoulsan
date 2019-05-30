@@ -27,7 +27,6 @@ package fr.ens.biologie.genomique.eoulsan.util.locker;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.Set;

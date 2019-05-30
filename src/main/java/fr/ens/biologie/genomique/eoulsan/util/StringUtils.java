@@ -229,7 +229,7 @@ public final class StringUtils {
    * @param s String to handle
    * @return the string without the last non end of string
    */
-  public static final String removeNonAlphaAtEndOfString(final String s) {
+  public static String removeNonAlphaAtEndOfString(final String s) {
 
     if (s == null) {
       return null;
@@ -253,7 +253,7 @@ public final class StringUtils {
    * @param time time in ms
    * @return a the time in ms
    */
-  public static final String toTimeHumanReadable(final long time) {
+  public static String toTimeHumanReadable(final long time) {
 
     long hour = time / (60 * 60 * 1000);
     long hourRest = time % (60 * 60 * 1000);
@@ -273,7 +273,7 @@ public final class StringUtils {
    * @param millisSinceEpoch time in ms
    * @return a string with the compact time
    */
-  public static final String toCompactTime(final long millisSinceEpoch) {
+  public static String toCompactTime(final long millisSinceEpoch) {
 
     final Calendar cal = Calendar.getInstance(Locale.ENGLISH);
     cal.setTime(new Date(millisSinceEpoch));
@@ -290,8 +290,8 @@ public final class StringUtils {
    * @param list The result list.
    * @return the array with the new values
    */
-  public static final List<String> fastSplit(final String s,
-      final List<String> list) {
+  public static List<String> fastSplit(final String s,
+                                       final List<String> list) {
 
     if (s == null) {
       return null;
@@ -326,7 +326,7 @@ public final class StringUtils {
    * @param array The result array.
    * @return the array with the new values
    */
-  public static final String[] fastSplit(final String s, final String[] array) {
+  public static String[] fastSplit(final String s, final String[] array) {
 
     return fastSplit(s, array, false);
   }
@@ -338,8 +338,8 @@ public final class StringUtils {
    * @param allowEmptyFields to allow empty fields
    * @return the array with the new values
    */
-  public static final String[] fastSplit(final String s, final String[] array,
-      final boolean allowEmptyFields) {
+  public static String[] fastSplit(final String s, final String[] array,
+                                   final boolean allowEmptyFields) {
 
     if (array == null || s == null) {
       return null;
@@ -376,7 +376,7 @@ public final class StringUtils {
    * @param s String to parse
    * @return a String without the first field of the string
    */
-  public static final String subStringAfterFirstTab(final String s) {
+  public static String subStringAfterFirstTab(final String s) {
 
     if (s == null) {
       return null;
@@ -396,7 +396,7 @@ public final class StringUtils {
    * @param s String to parse
    * @return a String with the first field of the string
    */
-  public static final String subStringBeforeFirstTab(final String s) {
+  public static String subStringBeforeFirstTab(final String s) {
 
     if (s == null) {
       return null;
@@ -415,7 +415,7 @@ public final class StringUtils {
    * Get the current date in an easy sorted format (e.g. 20100225151635)
    * @return the current date formatted in a string
    */
-  public static final String currentDateTimeToEasySortedDateTime() {
+  public static String currentDateTimeToEasySortedDateTime() {
 
     return toEasySortedDateTime(new Date(System.currentTimeMillis()));
   }
@@ -425,7 +425,7 @@ public final class StringUtils {
    * @param date date to format
    * @return a formatted date in a string
    */
-  public static final String toEasySortedDateTime(final Date date) {
+  public static String toEasySortedDateTime(final Date date) {
 
     if (date == null) {
       return null;
@@ -444,7 +444,7 @@ public final class StringUtils {
    * @param filename Filename to use
    * @return the filename without the compressed extension if needed
    */
-  public static final String removeCompressedExtensionFromFilename(
+  public static String removeCompressedExtensionFromFilename(
       final String filename) {
 
     if (filename == null) {
@@ -464,7 +464,7 @@ public final class StringUtils {
     return filename;
   }
 
-  public static final String protectGFF(final String s) {
+  public static String protectGFF(final String s) {
 
     if (s == null) {
       return null;
@@ -495,7 +495,7 @@ public final class StringUtils {
     return r;
   }
 
-  public static final String deProtectGFF(final String s) {
+  public static String deProtectGFF(final String s) {
 
     if (s == null) {
       return null;
@@ -539,7 +539,7 @@ public final class StringUtils {
    * @param array input array
    * @return an array without the first element of the input array
    */
-  public static final String[] arrayWithoutFirstElement(final String[] array) {
+  public static String[] arrayWithoutFirstElement(final String[] array) {
 
     return arrayWithoutFirstsElement(array, 1);
   }
@@ -550,8 +550,8 @@ public final class StringUtils {
    * @param elementsToRemove number of the first elements to remove
    * @return an array without the first element of the input array
    */
-  public static final String[] arrayWithoutFirstsElement(final String[] array,
-      final int elementsToRemove) {
+  public static String[] arrayWithoutFirstsElement(final String[] array,
+                                                   final int elementsToRemove) {
 
     if (array == null) {
       return null;
@@ -577,7 +577,7 @@ public final class StringUtils {
    * @param s bash string to escape
    * @return a escaped string
    */
-  public static final String bashEscaping(final String s) {
+  public static String bashEscaping(final String s) {
 
     if (s == null) {
       return null;
@@ -593,7 +593,7 @@ public final class StringUtils {
    * @param s The URI in a string
    * @return the filename of the URI
    */
-  public static final String getURIFilename(final String s) {
+  public static String getURIFilename(final String s) {
 
     if (s == null) {
       return null;
@@ -615,7 +615,7 @@ public final class StringUtils {
    * @param bytes size of a file
    * @return a string with the size of the file
    */
-  public static final String sizeToHumanReadable(final long bytes) {
+  public static String sizeToHumanReadable(final long bytes) {
 
     final double ki = 1024;
     final double mi = ki * 1024;
@@ -648,8 +648,8 @@ public final class StringUtils {
    * @return true if the String starts with one of the prefix of a list in an
    *         array
    */
-  public static final boolean startsWith(final String s,
-      final String[] prefixes) {
+  public static boolean startsWith(final String s,
+                                   final String[] prefixes) {
 
     if (s == null || prefixes == null) {
       return false;
@@ -670,7 +670,7 @@ public final class StringUtils {
    * @return the content type of an empty string if the content type was not
    *         found
    */
-  public static final String getCommonContentTypeFromExtension(
+  public static String getCommonContentTypeFromExtension(
       final String extension) {
 
     if (extension == null) {

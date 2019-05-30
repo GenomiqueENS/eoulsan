@@ -252,7 +252,7 @@ public class TicketLocker implements Locker {
    * @throws RemoteException if an error occurs while inspecting tickets
    * @throws MalformedURLException if the URL of the server is malformed
    */
-  public static final void main(final String[] args)
+  public static void main(final String[] args)
       throws RemoteException, MalformedURLException {
 
     if (args.length < 2) {

@@ -4,7 +4,6 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_DESC_TXT
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_FASTA;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -58,7 +57,7 @@ public class GenericStorageGeneratorModule extends AbstractModule {
   public static final String MODULE_NAME = "genericstoragegenerator";
 
   private Module module;
-  private List<Parameter> moduleParameter = new ArrayList<>();
+  private final List<Parameter> moduleParameter = new ArrayList<>();
   private boolean storeResult = true;
   private boolean useGenomeDescriptionForGenome;
 

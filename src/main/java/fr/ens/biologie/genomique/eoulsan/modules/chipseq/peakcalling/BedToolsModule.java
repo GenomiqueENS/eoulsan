@@ -181,8 +181,7 @@ public class BedToolsModule extends AbstractModule {
         // Access the sample metadata and concatenate values
         // in order to create a key used to sort samples by category
         // (experiment and replicate group)
-        String experimentName = e.getName();
-        String sortingKey = experimentName;
+        String sortingKey = e.getName();
 
         // Store current sample in expmap
         // If it's the first in its category, create a new container before

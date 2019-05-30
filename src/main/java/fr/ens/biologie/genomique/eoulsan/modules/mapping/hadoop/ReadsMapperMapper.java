@@ -30,7 +30,6 @@ import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.unDoubleQuotes;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;

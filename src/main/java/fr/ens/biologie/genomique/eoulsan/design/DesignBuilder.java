@@ -32,8 +32,6 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_FASTA;
 import static java.util.regex.Pattern.compile;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

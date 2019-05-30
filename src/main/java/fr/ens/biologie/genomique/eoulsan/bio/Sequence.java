@@ -381,7 +381,7 @@ public class Sequence {
    * @param sequence sequence to reverse complement
    * @return the reverse complement sequence
    */
-  public static final String reverse(final String sequence) {
+  public static String reverse(final String sequence) {
 
     if (sequence == null) {
       return null;
@@ -414,8 +414,8 @@ public class Sequence {
    * @param alphabet alphabet of the sequence to reverse complement
    * @return the reverse complement sequence
    */
-  public static final String complement(final String sequence,
-      final Alphabet alphabet) {
+  public static String complement(final String sequence,
+                                  final Alphabet alphabet) {
 
     if (sequence == null || alphabet == null) {
       return null;
@@ -448,8 +448,8 @@ public class Sequence {
    * @param alphabet alphabet of the sequence to reverse complement
    * @return the reverse complement sequence
    */
-  public static final String reverseComplement(final String sequence,
-      final Alphabet alphabet) {
+  public static String reverseComplement(final String sequence,
+                                         final Alphabet alphabet) {
 
     if (sequence == null || alphabet == null) {
       return null;

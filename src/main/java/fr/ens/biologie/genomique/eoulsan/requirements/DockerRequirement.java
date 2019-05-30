@@ -36,7 +36,6 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Progress;
 import fr.ens.biologie.genomique.eoulsan.util.process.DockerImageInstance;
-import fr.ens.biologie.genomique.eoulsan.util.process.DockerImageInstance.ProgressHandler;
 import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
 
 /**

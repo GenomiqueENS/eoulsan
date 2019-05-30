@@ -179,7 +179,7 @@ public class InputPortsBuilder {
    * Create the ports with no ports.
    * @return a new InputPorts object
    */
-  public static final InputPorts noInputPort() {
+  public static InputPorts noInputPort() {
 
     return new SimpleInputPorts(null);
   }
@@ -188,7 +188,7 @@ public class InputPortsBuilder {
    * Convenient method to create the ports with only one port.
    * @return a new InputPorts object
    */
-  public static final InputPorts singleInputPort(final DataFormat format) {
+  public static InputPorts singleInputPort(final DataFormat format) {
 
     return new InputPortsBuilder()
         .addPort(DEFAULT_SINGLE_INPUT_PORT_NAME, format).create();
@@ -198,8 +198,8 @@ public class InputPortsBuilder {
    * Convenient method to create the ports with only one port.
    * @return a new InputPorts object
    */
-  public static final InputPorts singleInputPort(final String name,
-      final DataFormat format) {
+  public static InputPorts singleInputPort(final String name,
+                                           final DataFormat format) {
 
     return new InputPortsBuilder().addPort(name, format).create();
   }
@@ -211,7 +211,7 @@ public class InputPortsBuilder {
    * @return a new InputPorts object that ports data are required in working
    *         directory
    */
-  public static final InputPorts allPortsRequiredInWorkingDirectory(
+  public static InputPorts allPortsRequiredInWorkingDirectory(
       final InputPorts inputPorts) {
 
     if (inputPorts == null) {
@@ -232,7 +232,7 @@ public class InputPortsBuilder {
    * @param ports an existing OutputPorts object
    * @return a new InputPorts object or null if the ports parameter is null
    */
-  public static final InputPorts copy(final InputPorts ports) {
+  public static InputPorts copy(final InputPorts ports) {
 
     if (ports == null) {
       return null;

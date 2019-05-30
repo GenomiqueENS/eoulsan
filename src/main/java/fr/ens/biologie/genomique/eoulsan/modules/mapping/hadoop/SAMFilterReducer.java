@@ -33,7 +33,6 @@ import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAMHeader
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;

@@ -280,8 +280,8 @@ public final class Common {
    * @param maxLocalThreads maximum number of threads
    * @return the number of threads to use
    */
-  public static final int getThreadsNumber(final int localThreads,
-      final int maxLocalThreads) {
+  public static int getThreadsNumber(final int localThreads,
+                                     final int maxLocalThreads) {
 
     int threads = EoulsanRuntime.getSettings().getLocalThreadsNumber();
 

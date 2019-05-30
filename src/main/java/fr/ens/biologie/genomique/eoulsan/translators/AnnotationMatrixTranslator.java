@@ -12,7 +12,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.AnnotationMatrix;
  */
 public class AnnotationMatrixTranslator extends AbstractTranslator {
 
-  private AnnotationMatrix matrix;
+  private final AnnotationMatrix matrix;
 
   @Override
   public List<String> getFields() {

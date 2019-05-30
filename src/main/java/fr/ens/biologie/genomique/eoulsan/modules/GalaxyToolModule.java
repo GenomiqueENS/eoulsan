@@ -67,7 +67,7 @@ public class GalaxyToolModule extends AbstractModule {
   private final String source;
 
   /** The requirements of the tool. */
-  private Set<Requirement> requirements = new HashSet<>();
+  private final Set<Requirement> requirements = new HashSet<>();
 
   //
   // Module methods

@@ -36,7 +36,6 @@ import java.util.List;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.PathFilter;
 
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;

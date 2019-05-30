@@ -203,8 +203,8 @@ public class HTSeqUtils {
    * @param strand strand to consider.
    * @return the list of intervals that are alignments matches.
    */
-  public static final List<GenomicInterval> parseCigar(final Cigar cigar,
-      final String chromosome, final int start, final char strand) {
+  public static List<GenomicInterval> parseCigar(final Cigar cigar,
+                                                 final String chromosome, final int start, final char strand) {
 
     if (cigar == null) {
       return null;

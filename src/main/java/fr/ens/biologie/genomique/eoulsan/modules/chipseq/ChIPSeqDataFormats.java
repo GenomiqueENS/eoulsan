@@ -17,15 +17,15 @@ public class ChIPSeqDataFormats {
   public static final DataFormat PEAK = registry.getDataFormatFromName("peaks");
 
   /** MACS 2 R model format. */
-  public static DataFormat MACS2_RMODEL =
+  public static final DataFormat MACS2_RMODEL =
       registry.getDataFormatFromName("macs2rmodel");
 
   /** Gapped peak format. */
-  public static DataFormat GAPPED_PEAK =
+  public static final DataFormat GAPPED_PEAK =
       registry.getDataFormatFromName("gappedpeaks");
 
   /** Peaks XLS format. */
-  public static DataFormat PEAK_XLS =
+  public static final DataFormat PEAK_XLS =
       registry.getDataFormatFromName("peaksxls");
 
   //

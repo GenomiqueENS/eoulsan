@@ -44,7 +44,7 @@ public final class DataUtils {
    * @param data data object
    * @return a list of DataFile objects
    */
-  public static final List<DataFile> getDataFiles(final Data data) {
+  public static List<DataFile> getDataFiles(final Data data) {
 
     return WorkflowDataUtils.getDataFiles(data);
   }
@@ -88,8 +88,8 @@ public final class DataUtils {
    * @param data the data object
    * @param sample the sample
    */
-  public static final void setDataMetaData(final Data data,
-      final Sample sample) {
+  public static void setDataMetaData(final Data data,
+                                     final Sample sample) {
 
     WorkflowDataUtils.setDataMetaData(data, sample);
   }

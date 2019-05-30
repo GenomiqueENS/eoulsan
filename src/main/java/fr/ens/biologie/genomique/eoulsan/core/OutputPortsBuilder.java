@@ -105,7 +105,7 @@ public class OutputPortsBuilder {
    * Create the ports with no ports.
    * @return a new OutputPorts object
    */
-  public static final OutputPorts noOutputPort() {
+  public static OutputPorts noOutputPort() {
 
     return new SimpleOutputPorts(null);
   }
@@ -114,7 +114,7 @@ public class OutputPortsBuilder {
    * Convenient method to create the ports with only one port.
    * @return a new OutputPorts object
    */
-  public static final OutputPorts singleOutputPort(final DataFormat format) {
+  public static OutputPorts singleOutputPort(final DataFormat format) {
 
     return new OutputPortsBuilder()
         .addPort(DEFAULT_SINGLE_OUTPUT_PORT_NAME, format).create();
@@ -124,8 +124,8 @@ public class OutputPortsBuilder {
    * Convenient method to create the ports with only one port.
    * @return a new OutputPorts object
    */
-  public static final OutputPorts singleOutputPort(final String name,
-      final DataFormat format) {
+  public static OutputPorts singleOutputPort(final String name,
+                                             final DataFormat format) {
 
     return new OutputPortsBuilder().addPort(name, format).create();
   }
@@ -135,7 +135,7 @@ public class OutputPortsBuilder {
    * @param ports an existing OutputPorts object
    * @return a new OutputPorts object or null if the ports parameter is null
    */
-  public static final OutputPorts copy(final OutputPorts ports) {
+  public static OutputPorts copy(final OutputPorts ports) {
 
     if (ports == null) {
       return null;

@@ -484,7 +484,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
    * @return a set with the file indirections
    * @throws IOException if an error occurs while searching indirections
    */
-  static final Set<File> fileIndirections(final Collection<File> files)
+  static Set<File> fileIndirections(final Collection<File> files)
       throws IOException {
 
     if (files == null) {
@@ -509,7 +509,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
    * @return a set with the file indirections
    * @throws IOException if an error occurs while searching indirections
    */
-  static final Set<File> fileIndirections(final File file) throws IOException {
+  static Set<File> fileIndirections(final File file) throws IOException {
 
     if (file == null) {
       return null;

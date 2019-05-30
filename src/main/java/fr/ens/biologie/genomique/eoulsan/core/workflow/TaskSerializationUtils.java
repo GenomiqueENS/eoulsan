@@ -55,7 +55,7 @@ public class TaskSerializationUtils {
    *           files
    * @throws EoulsanException if an error occurs while executing the task
    */
-  public static final TaskResultImpl execute(final DataFile taskContextFile)
+  public static TaskResultImpl execute(final DataFile taskContextFile)
       throws IOException, EoulsanException {
 
     requireNonNull(taskContextFile, "contextFile argument cannot be null");
@@ -72,8 +72,8 @@ public class TaskSerializationUtils {
    *           files
    * @throws EoulsanException if an error occurs while executing the task
    */
-  public static final TaskResultImpl execute(final DataFile taskContextFile,
-      final DataFile outputDir) throws IOException, EoulsanException {
+  public static TaskResultImpl execute(final DataFile taskContextFile,
+                                       final DataFile outputDir) throws IOException, EoulsanException {
 
     requireNonNull(taskContextFile, "contextFile argument cannot be null");
     requireNonNull(outputDir, "taskResultFile argument cannot be null");

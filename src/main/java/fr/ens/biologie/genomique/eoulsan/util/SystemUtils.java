@@ -181,7 +181,7 @@ public final class SystemUtils {
    * Get user UID.
    * @return the user UID or -1 if UID cannot be found
    */
-  public static final int uid() {
+  public static int uid() {
 
     try {
       return Integer
@@ -195,7 +195,7 @@ public final class SystemUtils {
    * Get user GID.
    * @return the user GID or -1 if GID cannot be found
    */
-  public static final int gid() {
+  public static int gid() {
 
     try {
       return Integer
