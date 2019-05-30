@@ -540,7 +540,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
    * @param result the result object
    * @throws IOException if an error occurs while searching indirections
    */
-  private static final void fileIndirections(final File file, Set<File> result)
+  private static void fileIndirections(final File file, Set<File> result)
       throws IOException {
 
     if (file == null) {

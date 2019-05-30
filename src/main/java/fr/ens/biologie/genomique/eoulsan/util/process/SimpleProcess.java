@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-
 /**
  * This interface define how to easily launch a subprocess.
  * @author Laurent Jourdren

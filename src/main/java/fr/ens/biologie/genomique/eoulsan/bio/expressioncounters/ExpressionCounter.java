@@ -136,8 +136,8 @@ public interface ExpressionCounter {
    * @throws EoulsanException if an error occurs while counting
    * @throws IOException if an error occurs while reading the input file
    */
-  public Map<String, Integer> count(DataFile samFile,
-      ReporterIncrementer reporter, String counterGroup)
+  Map<String, Integer> count(DataFile samFile,
+                             ReporterIncrementer reporter, String counterGroup)
       throws EoulsanException, IOException;
 
   /**
@@ -148,8 +148,8 @@ public interface ExpressionCounter {
    * @return a map with the counts
    * @throws EoulsanException if an error occurs while counting
    */
-  public Map<String, Integer> count(InputStream inputSam,
-      ReporterIncrementer reporter, String counterGroup)
+  Map<String, Integer> count(InputStream inputSam,
+                             ReporterIncrementer reporter, String counterGroup)
       throws EoulsanException;
 
   /**
@@ -161,9 +161,9 @@ public interface ExpressionCounter {
    * @return a map with the counts
    * @throws EoulsanException if an error occurs while counting
    */
-  public Map<String, Integer> count(InputStream inputSam,
-      OutputStream outputSam, File temporaryDirectory,
-      ReporterIncrementer reporter, String counterGroup)
+  Map<String, Integer> count(InputStream inputSam,
+                             OutputStream outputSam, File temporaryDirectory,
+                             ReporterIncrementer reporter, String counterGroup)
       throws EoulsanException;
 
   /**
@@ -174,14 +174,14 @@ public interface ExpressionCounter {
    * @return a map with the counts
    * @throws EoulsanException if an error occurs while counting
    */
-  public Map<String, Integer> count(Iterable<SAMRecord> samRecords,
-      ReporterIncrementer reporter, String counterGroup)
+  Map<String, Integer> count(Iterable<SAMRecord> samRecords,
+                             ReporterIncrementer reporter, String counterGroup)
       throws EoulsanException;
 
   /**
    * Add missing zero count features.
    * @param counts the counts
    */
-  public void addZeroCountFeatures(Map<String, Integer> counts);
+  void addZeroCountFeatures(Map<String, Integer> counts);
 
 }

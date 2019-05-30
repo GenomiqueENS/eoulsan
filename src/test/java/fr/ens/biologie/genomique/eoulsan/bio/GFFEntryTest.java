@@ -160,7 +160,7 @@ public class GFFEntryTest {
       try {
         e.parseGTF(s);
       } catch (BadBioEntryException exp) {
-        assertTrue(false);
+        fail();
       }
 
       assertEquals(s, e.toGTF());
@@ -210,7 +210,7 @@ public class GFFEntryTest {
 
     } catch (BadBioEntryException exp) {
       exp.printStackTrace();
-      assertTrue(false);
+      fail();
     }
 
   }
@@ -240,7 +240,7 @@ public class GFFEntryTest {
       e.parseGFF3(
           "ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
     } catch (BadBioEntryException exp) {
-      assertTrue(false);
+      fail();
     }
 
     assertEquals("ctg123", e.getSeqId());
@@ -254,7 +254,7 @@ public class GFFEntryTest {
       e.parseGFF3(
           "ctg123\tGenbank\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
     } catch (BadBioEntryException exp) {
-      assertTrue(false);
+      fail();
     }
 
     assertEquals("Genbank", e.getSource());
@@ -268,7 +268,7 @@ public class GFFEntryTest {
       e.parseGFF3(
           "ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
     } catch (BadBioEntryException exp) {
-      assertTrue(false);
+      fail();
     }
 
     assertEquals("gene", e.getType());
@@ -282,7 +282,7 @@ public class GFFEntryTest {
       e.parseGFF3(
           "ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
     } catch (BadBioEntryException exp) {
-      assertTrue(false);
+      fail();
     }
 
     assertEquals(1000, e.getStart());
@@ -296,7 +296,7 @@ public class GFFEntryTest {
       e.parseGFF3(
           "ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
     } catch (BadBioEntryException exp) {
-      assertTrue(false);
+      fail();
     }
 
     assertEquals(9000, e.getEnd());
@@ -310,7 +310,7 @@ public class GFFEntryTest {
       e.parseGFF3(
           "ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
     } catch (BadBioEntryException exp) {
-      assertTrue(false);
+      fail();
     }
 
     assertEquals(8001, e.getLength());
@@ -324,7 +324,7 @@ public class GFFEntryTest {
       e.parseGFF3(
           "ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
     } catch (BadBioEntryException exp) {
-      assertTrue(false);
+      fail();
     }
 
     assertEquals(Double.NaN, e.getScore(), 0.0);
@@ -338,7 +338,7 @@ public class GFFEntryTest {
       e.parseGFF3(
           "ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
     } catch (BadBioEntryException exp) {
-      assertTrue(false);
+      fail();
     }
 
     assertEquals('+', e.getStrand());
@@ -352,7 +352,7 @@ public class GFFEntryTest {
       e.parseGFF3(
           "ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
     } catch (BadBioEntryException exp) {
-      assertTrue(false);
+      fail();
     }
 
     assertEquals(-1, e.getPhase());
@@ -389,7 +389,7 @@ public class GFFEntryTest {
       e.parseGFF3(
           "ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
     } catch (BadBioEntryException exp) {
-      assertTrue(false);
+      fail();
     }
 
     assertEquals(0, e.getMetadataKeyNames().size());
@@ -420,7 +420,7 @@ public class GFFEntryTest {
       e.parseGFF3(
           "ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
     } catch (BadBioEntryException exp) {
-      assertTrue(false);
+      fail();
     }
 
     assertEquals(2, e.getAttributesNames().size());
@@ -441,7 +441,7 @@ public class GFFEntryTest {
       e.parseGFF3(
           "ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
     } catch (BadBioEntryException exp) {
-      assertTrue(false);
+      fail();
     }
 
     assertFalse(e.isMetaDataEntry("key0"));
@@ -471,7 +471,7 @@ public class GFFEntryTest {
       e.parseGFF3(
           "ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
     } catch (BadBioEntryException exp) {
-      assertTrue(false);
+      fail();
     }
 
     assertEquals(2, e.getAttributesNames().size());
@@ -495,7 +495,7 @@ public class GFFEntryTest {
       e.parseGFF3(
           "ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
     } catch (BadBioEntryException exp) {
-      assertTrue(false);
+      fail();
     }
 
     e.addMetaDataEntry("key1", "val1");
@@ -520,7 +520,7 @@ public class GFFEntryTest {
       e.parseGFF3(
           "ctg123\t.\tgene\t1000\t9000\t.\t+\t.\tID=gene00001;Name=EDEN");
     } catch (BadBioEntryException exp) {
-      assertTrue(false);
+      fail();
     }
 
     assertEquals("gene00001", e.getAttributeValue("ID"));
@@ -665,7 +665,7 @@ public class GFFEntryTest {
 
     assertTrue(e.addMetaDataEntry("key", "val1"));
     assertEquals(Collections.singleton("key"), e.getMetadataKeyNames());
-    assertEquals(Arrays.asList("val1"), e.getMetadataEntryValues("key"));
+    assertEquals(Collections.singletonList("val1"), e.getMetadataEntryValues("key"));
     assertTrue(e.addMetaDataEntry("key", "val2"));
     assertEquals(Collections.singleton("key"), e.getMetadataKeyNames());
     assertEquals(Arrays.asList("val1", "val2"),
@@ -674,7 +674,7 @@ public class GFFEntryTest {
     assertTrue(e.addMetaDataEntry("key2", "val3"));
     assertEquals(new HashSet<>(Arrays.asList("key", "key2")),
         e.getMetadataKeyNames());
-    assertEquals(Arrays.asList("val3"), e.getMetadataEntryValues("key2"));
+    assertEquals(Collections.singletonList("val3"), e.getMetadataEntryValues("key2"));
   }
 
   @Test
@@ -693,7 +693,7 @@ public class GFFEntryTest {
     entries.put("key00", l);
     assertFalse(e.addMetaDataEntries(entries));
     entries.clear();
-    entries.put("key1", Arrays.asList("val1"));
+    entries.put("key1", Collections.singletonList("val1"));
     assertTrue(e.addMetaDataEntries(entries));
     entries.clear();
     entries.put("key2", Arrays.asList("val2", "val3"));
@@ -995,20 +995,20 @@ public class GFFEntryTest {
     GFFEntry e2 = new GFFEntry();
 
     assertEquals(e1, e1);
-    assertTrue(e1.equals(e1));
+    assertEquals(e1, e1);
 
-    assertFalse(e1.equals(null));
-    assertFalse(e1.equals("toto"));
+    assertNotEquals(null, e1);
+    assertNotEquals("toto", e1);
     assertEquals(e1, e2);
-    assertTrue(e1.equals(e2));
+    assertEquals(e1, e2);
 
     e1.setSource("value");
     assertNotEquals(e1, e2);
-    assertFalse(e1.equals(e2));
+    assertNotEquals(e1, e2);
 
     e2.setSource("value");
     assertEquals(e1, e2);
-    assertTrue(e1.equals(e2));
+    assertEquals(e1, e2);
   }
 
   @Test

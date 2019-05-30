@@ -1,15 +1,13 @@
 package fr.ens.biologie.genomique.eoulsan.translator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.translators.MultiColumnTranslator;
+
+import static org.junit.Assert.*;
 
 public class MultiColumnTranslatorTest {
 
@@ -72,7 +70,7 @@ public class MultiColumnTranslatorTest {
     try {
 
       new MultiColumnTranslator(new ArrayList<>());
-      assertTrue(false);
+        fail();
     } catch (RuntimeException e) {
 
       assertTrue(true);

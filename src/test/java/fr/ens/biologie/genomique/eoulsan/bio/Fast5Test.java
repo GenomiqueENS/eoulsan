@@ -1,9 +1,5 @@
 package fr.ens.biologie.genomique.eoulsan.bio;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +17,8 @@ import fr.ens.biologie.genomique.eoulsan.bio.Fast5.ChemistryVersion;
 import fr.ens.biologie.genomique.eoulsan.bio.Fast5.Status;
 import fr.ens.biologie.genomique.eoulsan.bio.Fast5.Type;
 import fr.ens.biologie.genomique.eoulsan.bio.Fast5.Version;
+
+import static org.junit.Assert.*;
 
 public class Fast5Test {
   private final String file1 = "/fast5/alexander_PC_20161027_R9-4_1D.fast5";
@@ -74,7 +72,7 @@ public class Fast5Test {
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getVersion());
+      assertNull(testf2.getVersion());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
@@ -82,7 +80,7 @@ public class Fast5Test {
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf4.getVersion());
+      assertNull(testf4.getVersion());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
@@ -90,7 +88,7 @@ public class Fast5Test {
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getVersion());
+      assertNull(testf6.getVersion());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
@@ -98,7 +96,7 @@ public class Fast5Test {
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(null, testf8.getVersion());
+      assertNull(testf8.getVersion());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
@@ -163,7 +161,7 @@ public class Fast5Test {
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getType());
+      assertNull(testf2.getType());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
@@ -171,7 +169,7 @@ public class Fast5Test {
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf4.getType());
+      assertNull(testf4.getType());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
@@ -179,7 +177,7 @@ public class Fast5Test {
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getType());
+      assertNull(testf6.getType());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
@@ -187,7 +185,7 @@ public class Fast5Test {
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(null, testf8.getType());
+      assertNull(testf8.getType());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
@@ -205,7 +203,7 @@ public class Fast5Test {
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getChemistryVersion());
+      assertNull(testf2.getChemistryVersion());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
@@ -215,7 +213,7 @@ public class Fast5Test {
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf4.getChemistryVersion());
+      assertNull(testf4.getChemistryVersion());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
@@ -225,7 +223,7 @@ public class Fast5Test {
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getChemistryVersion());
+      assertNull(testf6.getChemistryVersion());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
@@ -235,7 +233,7 @@ public class Fast5Test {
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(null, testf8.getChemistryVersion());
+      assertNull(testf8.getChemistryVersion());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
@@ -254,7 +252,7 @@ public class Fast5Test {
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getBasecaller());
+      assertNull(testf2.getBasecaller());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
@@ -262,7 +260,7 @@ public class Fast5Test {
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf4.getBasecaller());
+      assertNull(testf4.getBasecaller());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
@@ -270,7 +268,7 @@ public class Fast5Test {
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getBasecaller());
+      assertNull(testf6.getBasecaller());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
@@ -278,7 +276,7 @@ public class Fast5Test {
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(null, testf8.getBasecaller());
+      assertNull(testf8.getBasecaller());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
@@ -320,7 +318,7 @@ public class Fast5Test {
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
-    assertEquals(true, testf7.isBarcoded());
+      assertTrue(testf7.isBarcoded());
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
@@ -328,85 +326,85 @@ public class Fast5Test {
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
-    assertEquals(true, testf9.isBarcoded());
+      assertTrue(testf9.isBarcoded());
     testf9.close();
   }
 
   @Test
   public void testIsBasecalled() throws ParseException {
     Fast5 testf1 = new Fast5(getResourceAsFile(file1));
-    assertEquals(true, testf1.isBasecalled());
+      assertTrue(testf1.isBasecalled());
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(false, testf2.isBasecalled());
+      assertFalse(testf2.isBasecalled());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
-    assertEquals(true, testf3.isBasecalled());
+      assertTrue(testf3.isBasecalled());
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(false, testf4.isBasecalled());
+      assertFalse(testf4.isBasecalled());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
-    assertEquals(true, testf5.isBasecalled());
+      assertTrue(testf5.isBasecalled());
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(false, testf6.isBasecalled());
+      assertFalse(testf6.isBasecalled());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
-    assertEquals(true, testf7.isBasecalled());
+      assertTrue(testf7.isBasecalled());
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(false, testf8.isBasecalled());
+      assertFalse(testf8.isBasecalled());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
-    assertEquals(true, testf9.isBasecalled());
+      assertTrue(testf9.isBasecalled());
     testf9.close();
   }
 
   @Test
   public void testIs2D() throws ParseException {
     Fast5 testf1 = new Fast5(getResourceAsFile(file1));
-    assertEquals(false, testf1.is2D());
+      assertFalse(testf1.is2D());
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(false, testf2.is2D());
+      assertFalse(testf2.is2D());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
-    assertEquals(true, testf3.is2D());
+      assertTrue(testf3.is2D());
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(false, testf4.is2D());
+      assertFalse(testf4.is2D());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
-    assertEquals(true, testf5.is2D());
+      assertTrue(testf5.is2D());
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(false, testf6.is2D());
+      assertFalse(testf6.is2D());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
-    assertEquals(true, testf7.is2D());
+      assertTrue(testf7.is2D());
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(false, testf8.is2D());
+      assertFalse(testf8.is2D());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
-    assertEquals(false, testf9.is2D());
+      assertFalse(testf9.is2D());
     testf9.close();
   }
 
@@ -573,7 +571,7 @@ public class Fast5Test {
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getDateExpMetrichor());
+      assertNull(testf2.getDateExpMetrichor());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
@@ -584,7 +582,7 @@ public class Fast5Test {
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf4.getDateExpMetrichor());
+      assertNull(testf4.getDateExpMetrichor());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
@@ -595,7 +593,7 @@ public class Fast5Test {
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getDateExpMetrichor());
+      assertNull(testf6.getDateExpMetrichor());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
@@ -606,11 +604,11 @@ public class Fast5Test {
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(null, testf8.getDateExpMetrichor());
+      assertNull(testf8.getDateExpMetrichor());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
-    assertEquals(null, testf9.getDateExpMetrichor());
+      assertNull(testf9.getDateExpMetrichor());
     testf9.close();
   }
 
@@ -618,35 +616,35 @@ public class Fast5Test {
   public void testGetDateExpAlbacore() throws ParseException {
 
     Fast5 testf1 = new Fast5(getResourceAsFile(file1));
-    assertEquals(null, testf1.getDateExpAlbacore());
+      assertNull(testf1.getDateExpAlbacore());
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getDateExpAlbacore());
+      assertNull(testf2.getDateExpAlbacore());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
-    assertEquals(null, testf3.getDateExpAlbacore());
+      assertNull(testf3.getDateExpAlbacore());
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf4.getDateExpAlbacore());
+      assertNull(testf4.getDateExpAlbacore());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
-    assertEquals(null, testf5.getDateExpAlbacore());
+      assertNull(testf5.getDateExpAlbacore());
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getDateExpAlbacore());
+      assertNull(testf6.getDateExpAlbacore());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
-    assertEquals(null, testf7.getDateExpAlbacore());
+      assertNull(testf7.getDateExpAlbacore());
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(null, testf8.getDateExpAlbacore());
+      assertNull(testf8.getDateExpAlbacore());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
@@ -863,11 +861,11 @@ public class Fast5Test {
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getExperimentType());
+      assertNull(testf2.getExperimentType());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
-    assertEquals(null, testf3.getExperimentType());
+      assertNull(testf3.getExperimentType());
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
@@ -879,11 +877,11 @@ public class Fast5Test {
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getExperimentType());
+      assertNull(testf6.getExperimentType());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
-    assertEquals(null, testf7.getExperimentType());
+      assertNull(testf7.getExperimentType());
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
@@ -1052,7 +1050,7 @@ public class Fast5Test {
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getSubModuleMetrichorVersion());
+      assertNull(testf2.getSubModuleMetrichorVersion());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
@@ -1062,7 +1060,7 @@ public class Fast5Test {
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf4.getSubModuleMetrichorVersion());
+      assertNull(testf4.getSubModuleMetrichorVersion());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
@@ -1072,7 +1070,7 @@ public class Fast5Test {
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getSubModuleMetrichorVersion());
+      assertNull(testf6.getSubModuleMetrichorVersion());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
@@ -1082,46 +1080,46 @@ public class Fast5Test {
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(null, testf8.getSubModuleMetrichorVersion());
+      assertNull(testf8.getSubModuleMetrichorVersion());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
-    assertEquals(null, testf9.getSubModuleMetrichorVersion());
+      assertNull(testf9.getSubModuleMetrichorVersion());
     testf9.close();
   }
 
   @Test
   public void testGetAlbacoreVersion() throws ParseException {
     Fast5 testf1 = new Fast5(getResourceAsFile(file1));
-    assertEquals(null, testf1.getAlbacoreVersion());
+      assertNull(testf1.getAlbacoreVersion());
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf1.getAlbacoreVersion());
+      assertNull(testf1.getAlbacoreVersion());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
-    assertEquals(null, testf1.getAlbacoreVersion());
+      assertNull(testf1.getAlbacoreVersion());
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf1.getAlbacoreVersion());
+      assertNull(testf1.getAlbacoreVersion());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
-    assertEquals(null, testf1.getAlbacoreVersion());
+      assertNull(testf1.getAlbacoreVersion());
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf1.getAlbacoreVersion());
+      assertNull(testf1.getAlbacoreVersion());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
-    assertEquals(null, testf1.getAlbacoreVersion());
+      assertNull(testf1.getAlbacoreVersion());
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(null, testf1.getAlbacoreVersion());
+      assertNull(testf1.getAlbacoreVersion());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
@@ -1216,32 +1214,32 @@ public class Fast5Test {
   @Test
   public void testGetNumBarcode() throws ParseException {
     Fast5 testf1 = new Fast5(getResourceAsFile(file1));
-    assertEquals(null, testf1.getNumBarcode());
+      assertNull(testf1.getNumBarcode());
     assertNotEquals("BC05", testf1.getNumBarcode());
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getNumBarcode());
+      assertNull(testf2.getNumBarcode());
     assertNotEquals("BC05", testf2.getNumBarcode());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
-    assertEquals(null, testf3.getNumBarcode());
+      assertNull(testf3.getNumBarcode());
     assertNotEquals("BC05", testf3.getNumBarcode());
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf4.getNumBarcode());
+      assertNull(testf4.getNumBarcode());
     assertNotEquals("BC05", testf4.getNumBarcode());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
-    assertEquals(null, testf5.getNumBarcode());
+      assertNull(testf5.getNumBarcode());
     assertNotEquals("BC05", testf5.getNumBarcode());
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getNumBarcode());
+      assertNull(testf6.getNumBarcode());
     assertNotEquals("BC01", testf6.getNumBarcode());
     testf6.close();
 
@@ -1252,7 +1250,7 @@ public class Fast5Test {
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
     assertNotEquals("BC02_var1", testf8.getNumBarcode());
-    assertEquals(null, testf8.getNumBarcode());
+      assertNull(testf8.getNumBarcode());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
@@ -1276,7 +1274,7 @@ public class Fast5Test {
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getTemplateFastq());
+      assertNull(testf2.getTemplateFastq());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
@@ -1286,7 +1284,7 @@ public class Fast5Test {
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf4.getTemplateFastq());
+      assertNull(testf4.getTemplateFastq());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
@@ -1296,7 +1294,7 @@ public class Fast5Test {
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getTemplateFastq());
+      assertNull(testf6.getTemplateFastq());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
@@ -1306,7 +1304,7 @@ public class Fast5Test {
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(null, testf8.getTemplateFastq());
+      assertNull(testf8.getTemplateFastq());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
@@ -1320,11 +1318,11 @@ public class Fast5Test {
   @Test
   public void testGetComplementFastq() throws IOException, ParseException {
     Fast5 testf1 = new Fast5(getResourceAsFile(file1));
-    assertEquals(null, testf1.getComplementFastq());
+      assertNull(testf1.getComplementFastq());
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getComplementFastq());
+      assertNull(testf2.getComplementFastq());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
@@ -1334,7 +1332,7 @@ public class Fast5Test {
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf4.getComplementFastq());
+      assertNull(testf4.getComplementFastq());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
@@ -1344,7 +1342,7 @@ public class Fast5Test {
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getComplementFastq());
+      assertNull(testf6.getComplementFastq());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
@@ -1354,22 +1352,22 @@ public class Fast5Test {
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(null, testf8.getComplementFastq());
+      assertNull(testf8.getComplementFastq());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
-    assertEquals(null, testf9.getComplementFastq());
+      assertNull(testf9.getComplementFastq());
     testf9.close();
   }
 
   @Test
   public void testGetConsensusFastq() throws IOException, ParseException {
     Fast5 testf1 = new Fast5(getResourceAsFile(file1));
-    assertEquals(null, testf1.getConsensusFastq());
+      assertNull(testf1.getConsensusFastq());
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getConsensusFastq());
+      assertNull(testf2.getConsensusFastq());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
@@ -1379,7 +1377,7 @@ public class Fast5Test {
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf4.getConsensusFastq());
+      assertNull(testf4.getConsensusFastq());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
@@ -1389,7 +1387,7 @@ public class Fast5Test {
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getConsensusFastq());
+      assertNull(testf6.getConsensusFastq());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
@@ -1399,38 +1397,38 @@ public class Fast5Test {
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(null, testf8.getConsensusFastq());
+      assertNull(testf8.getConsensusFastq());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
-    assertEquals(null, testf9.getConsensusFastq());
+      assertNull(testf9.getConsensusFastq());
     testf9.close();
   }
 
   @Test
   public void testGetTranscriptFastq() throws IOException, ParseException {
     Fast5 testf1 = new Fast5(getResourceAsFile(file1));
-    assertEquals(null, testf1.getTranscriptFastq());
+      assertNull(testf1.getTranscriptFastq());
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getTranscriptFastq());
+      assertNull(testf2.getTranscriptFastq());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
-    assertEquals(null, testf3.getTranscriptFastq());
+      assertNull(testf3.getTranscriptFastq());
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf4.getTranscriptFastq());
+      assertNull(testf4.getTranscriptFastq());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
-    assertEquals(null, testf5.getTranscriptFastq());
+      assertNull(testf5.getTranscriptFastq());
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getTranscriptFastq());
+      assertNull(testf6.getTranscriptFastq());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
@@ -1440,38 +1438,38 @@ public class Fast5Test {
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(null, testf8.getTranscriptFastq());
+      assertNull(testf8.getTranscriptFastq());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
-    assertEquals(null, testf9.getTranscriptFastq());
+      assertNull(testf9.getTranscriptFastq());
     testf9.close();
   }
 
   @Test
   public void testGetBarcodindFinalStatus() throws IOException, ParseException {
     Fast5 testf1 = new Fast5(getResourceAsFile(file1));
-    assertEquals(null, testf1.getBarcodindFinalStatus());
+      assertNull(testf1.getBarcodindFinalStatus());
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getBarcodindFinalStatus());
+      assertNull(testf2.getBarcodindFinalStatus());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
-    assertEquals(null, testf3.getBarcodindFinalStatus());
+      assertNull(testf3.getBarcodindFinalStatus());
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf4.getBarcodindFinalStatus());
+      assertNull(testf4.getBarcodindFinalStatus());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
-    assertEquals(null, testf5.getBarcodindFinalStatus());
+      assertNull(testf5.getBarcodindFinalStatus());
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getBarcodindFinalStatus());
+      assertNull(testf6.getBarcodindFinalStatus());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
@@ -1480,11 +1478,11 @@ public class Fast5Test {
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(null, testf8.getBarcodindFinalStatus());
+      assertNull(testf8.getBarcodindFinalStatus());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
-    assertEquals(null, testf9.getBarcodindFinalStatus());
+      assertNull(testf9.getBarcodindFinalStatus());
     testf9.close();
   }
 
@@ -1497,7 +1495,7 @@ public class Fast5Test {
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getBaseCall1DFinalStatus());
+      assertNull(testf2.getBaseCall1DFinalStatus());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
@@ -1506,7 +1504,7 @@ public class Fast5Test {
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf4.getBaseCall1DFinalStatus());
+      assertNull(testf4.getBaseCall1DFinalStatus());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
@@ -1515,7 +1513,7 @@ public class Fast5Test {
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getBaseCall1DFinalStatus());
+      assertNull(testf6.getBaseCall1DFinalStatus());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
@@ -1524,11 +1522,11 @@ public class Fast5Test {
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(null, testf8.getBaseCall1DFinalStatus());
+      assertNull(testf8.getBaseCall1DFinalStatus());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
-    assertEquals(null, testf9.getBaseCall1DFinalStatus());
+      assertNull(testf9.getBaseCall1DFinalStatus());
     testf9.close();
   }
 
@@ -1536,11 +1534,11 @@ public class Fast5Test {
   public void testGetBaseCall2DFinalStatus()
       throws IOException, ParseException {
     Fast5 testf1 = new Fast5(getResourceAsFile(file1));
-    assertEquals(null, testf1.getBaseCall2DFinalStatus());
+      assertNull(testf1.getBaseCall2DFinalStatus());
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getBaseCall2DFinalStatus());
+      assertNull(testf2.getBaseCall2DFinalStatus());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
@@ -1549,7 +1547,7 @@ public class Fast5Test {
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf4.getBaseCall2DFinalStatus());
+      assertNull(testf4.getBaseCall2DFinalStatus());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
@@ -1558,7 +1556,7 @@ public class Fast5Test {
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getBaseCall2DFinalStatus());
+      assertNull(testf6.getBaseCall2DFinalStatus());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
@@ -1567,11 +1565,11 @@ public class Fast5Test {
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(null, testf8.getBaseCall2DFinalStatus());
+      assertNull(testf8.getBaseCall2DFinalStatus());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
-    assertEquals(null, testf9.getBaseCall2DFinalStatus());
+      assertNull(testf9.getBaseCall2DFinalStatus());
     testf9.close();
   }
 
@@ -1584,7 +1582,7 @@ public class Fast5Test {
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getCalibrationStrandFinalStatus());
+      assertNull(testf2.getCalibrationStrandFinalStatus());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
@@ -1593,7 +1591,7 @@ public class Fast5Test {
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf4.getCalibrationStrandFinalStatus());
+      assertNull(testf4.getCalibrationStrandFinalStatus());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
@@ -1602,7 +1600,7 @@ public class Fast5Test {
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getCalibrationStrandFinalStatus());
+      assertNull(testf6.getCalibrationStrandFinalStatus());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
@@ -1611,11 +1609,11 @@ public class Fast5Test {
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(null, testf8.getCalibrationStrandFinalStatus());
+      assertNull(testf8.getCalibrationStrandFinalStatus());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
-    assertEquals(null, testf9.getCalibrationStrandFinalStatus());
+      assertNull(testf9.getCalibrationStrandFinalStatus());
     testf9.close();
   }
 
@@ -1628,15 +1626,15 @@ public class Fast5Test {
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getEventDetectionFinalStatus());
+      assertNull(testf2.getEventDetectionFinalStatus());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
-    assertEquals(null, testf3.getEventDetectionFinalStatus());
+      assertNull(testf3.getEventDetectionFinalStatus());
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf4.getEventDetectionFinalStatus());
+      assertNull(testf4.getEventDetectionFinalStatus());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
@@ -1645,7 +1643,7 @@ public class Fast5Test {
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getEventDetectionFinalStatus());
+      assertNull(testf6.getEventDetectionFinalStatus());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
@@ -1654,11 +1652,11 @@ public class Fast5Test {
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(null, testf8.getEventDetectionFinalStatus());
+      assertNull(testf8.getEventDetectionFinalStatus());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
-    assertEquals(null, testf9.getEventDetectionFinalStatus());
+      assertNull(testf9.getEventDetectionFinalStatus());
     testf9.close();
   }
 
@@ -1666,11 +1664,11 @@ public class Fast5Test {
   public void testGetHairpinSplitFinalStatus()
       throws IOException, ParseException {
     Fast5 testf1 = new Fast5(getResourceAsFile(file1));
-    assertEquals(null, testf1.getHairpinSplitFinalStatus());
+      assertNull(testf1.getHairpinSplitFinalStatus());
     testf1.close();
 
     Fast5 testf2 = new Fast5(getResourceAsFile(file2));
-    assertEquals(null, testf2.getHairpinSplitFinalStatus());
+      assertNull(testf2.getHairpinSplitFinalStatus());
     testf2.close();
 
     Fast5 testf3 = new Fast5(getResourceAsFile(file3));
@@ -1679,7 +1677,7 @@ public class Fast5Test {
     testf3.close();
 
     Fast5 testf4 = new Fast5(getResourceAsFile(file4));
-    assertEquals(null, testf4.getHairpinSplitFinalStatus());
+      assertNull(testf4.getHairpinSplitFinalStatus());
     testf4.close();
 
     Fast5 testf5 = new Fast5(getResourceAsFile(file5));
@@ -1688,7 +1686,7 @@ public class Fast5Test {
     testf5.close();
 
     Fast5 testf6 = new Fast5(getResourceAsFile(file6));
-    assertEquals(null, testf6.getHairpinSplitFinalStatus());
+      assertNull(testf6.getHairpinSplitFinalStatus());
     testf6.close();
 
     Fast5 testf7 = new Fast5(getResourceAsFile(file7));
@@ -1697,11 +1695,11 @@ public class Fast5Test {
     testf7.close();
 
     Fast5 testf8 = new Fast5(getResourceAsFile(file8));
-    assertEquals(null, testf8.getHairpinSplitFinalStatus());
+      assertNull(testf8.getHairpinSplitFinalStatus());
     testf8.close();
 
     Fast5 testf9 = new Fast5(getResourceAsFile(file9));
-    assertEquals(null, testf9.getHairpinSplitFinalStatus());
+      assertNull(testf9.getHairpinSplitFinalStatus());
     testf9.close();
   }
 

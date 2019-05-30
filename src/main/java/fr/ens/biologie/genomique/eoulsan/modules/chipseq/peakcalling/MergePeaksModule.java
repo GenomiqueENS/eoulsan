@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
@@ -126,9 +125,9 @@ public class MergePeaksModule extends AbstractModule {
         continue;
       }
 
-      String cmd = "cat";
+      StringBuilder cmd = new StringBuilder("cat");
       for (Data sample : expDataList) {
-        cmd += String.format(" %s", sample.getDataFile().getSource());
+        cmd.append(String.format(" %s", sample.getDataFile().getSource()));
       }
 
       try {
@@ -137,8 +136,8 @@ public class MergePeaksModule extends AbstractModule {
             experimentName));
 
         getLogger().info(
-            String.format("Running : %s with output: %s", cmd, outputFile));
-        ProcessUtils.execWriteOutput(cmd, outputFile);
+            String.format("Running : %s with output: %s", cmd.toString(), outputFile));
+        ProcessUtils.execWriteOutput(cmd.toString(), outputFile);
 
       } catch (java.io.IOException e) {
         getLogger().severe(e.toString());

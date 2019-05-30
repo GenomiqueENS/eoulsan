@@ -32,10 +32,7 @@ import static fr.ens.biologie.genomique.eoulsan.bio.FastqFormat.convertPhredSCor
 import static fr.ens.biologie.genomique.eoulsan.bio.FastqFormat.convertSolexaScoreToPhredScore;
 import static fr.ens.biologie.genomique.eoulsan.bio.FastqFormat.getFormatFromName;
 import static fr.ens.biologie.genomique.eoulsan.bio.FastqFormat.identifyFormat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -218,7 +215,7 @@ public class FastqFormatTest {
 
     try {
       FastqFormat.convertPhredSCoreToSolexaScore(-1);
-      assertTrue(false);
+        fail();
     } catch (IllegalArgumentException e) {
       assertTrue(true);
     }
@@ -260,7 +257,7 @@ public class FastqFormatTest {
 
     try {
       FastqFormat.convertSolexaScoreToPhredScore(-6);
-      assertTrue(false);
+        fail();
     } catch (IllegalArgumentException e) {
       assertFalse(false);
     }
@@ -436,7 +433,7 @@ public class FastqFormatTest {
 
     try {
       FastqFormat.FASTQ_SANGER.findInvalidChar(null);
-      assertTrue(false);
+        fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
@@ -489,7 +486,7 @@ public class FastqFormatTest {
 
     try {
       FastqFormat.identifyFormat((InputStream) null);
-      assertTrue(false);
+        fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }

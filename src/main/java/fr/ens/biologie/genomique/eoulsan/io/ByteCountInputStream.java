@@ -70,7 +70,7 @@ public class ByteCountInputStream extends FilterInputStream {
   }
 
   @Override
-  public int read(final byte b[], final int off, final int len)
+  public int read(final byte[] b, final int off, final int len)
       throws IOException {
 
     final int nr = this.in.read(b, off, len);
@@ -83,7 +83,7 @@ public class ByteCountInputStream extends FilterInputStream {
   }
 
   @Override
-  public int read(final byte b[]) throws IOException {
+  public int read(final byte[] b) throws IOException {
 
     final int nr = this.in.read(b);
 

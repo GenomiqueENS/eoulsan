@@ -403,7 +403,7 @@ public class Eoulsan2DesignReader implements DesignReader {
 
       // Concatenate lines that ends with "\\"
       if (header && line.endsWith("\\")) {
-        lineBuffer.append(line.substring(0, line.length() - 1));
+        lineBuffer.append(line, 0, line.length() - 1);
         continue;
       }
 

@@ -920,7 +920,7 @@ public class FileUtils {
     // Add the files
     if (filesToAdd != null) {
 
-      final byte data[] = new byte[DEFAULT_BUFFER_SIZE];
+      final byte[] data = new byte[DEFAULT_BUFFER_SIZE];
       BufferedInputStream origin = null;
 
       for (final File f : filesToAdd) {
@@ -933,7 +933,6 @@ public class FileUtils {
           CheckedInputStream originCheck = new CheckedInputStream(
               new BufferedInputStream(fi, DEFAULT_BUFFER_SIZE), new CRC32());
           while (originCheck.read(data, 0, DEFAULT_BUFFER_SIZE) != -1) {
-            ;
           }
           fi.close();
 
@@ -1031,7 +1030,7 @@ public class FileUtils {
         }
 
         int count;
-        byte data[] = new byte[DEFAULT_BUFFER_SIZE];
+        byte[] data = new byte[DEFAULT_BUFFER_SIZE];
         // write the files to the disk
         FileOutputStream fos = new FileOutputStream(newFile);
         dest = new BufferedOutputStream(fos, DEFAULT_BUFFER_SIZE);
@@ -1564,22 +1563,9 @@ public class FileUtils {
   public static boolean compareFile(final File fileA, final File fileB)
       throws IOException {
 
-    InputStream isa = null;
-    InputStream isb = null;
-
-    try {
-
-      isa = new FileInputStream(fileA);
-      isb = new FileInputStream(fileB);
+    try (InputStream isa = new FileInputStream(fileA); InputStream isb = new FileInputStream(fileB)) {
 
       return compareFile(isa, isb);
-    } finally {
-      if (isa != null) {
-        isa.close();
-      }
-      if (isb != null) {
-        isb.close();
-      }
     }
   }
 

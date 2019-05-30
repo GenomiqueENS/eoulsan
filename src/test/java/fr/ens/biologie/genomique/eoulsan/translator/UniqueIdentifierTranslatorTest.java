@@ -1,8 +1,5 @@
 package fr.ens.biologie.genomique.eoulsan.translator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +8,8 @@ import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.translators.MultiColumnTranslator;
 import fr.ens.biologie.genomique.eoulsan.translators.UniqueIdentifierTranslator;
+
+import static org.junit.Assert.*;
 
 public class UniqueIdentifierTranslatorTest {
 
@@ -70,7 +69,7 @@ public class UniqueIdentifierTranslatorTest {
     try {
 
       new UniqueIdentifierTranslator(new ArrayList<>(), null);
-      assertTrue(false);
+        fail();
     } catch (NullPointerException e) {
 
       assertTrue(true);

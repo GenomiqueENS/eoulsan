@@ -24,17 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.util.Objects;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Claire Wallon
@@ -61,7 +56,7 @@ public class GenomicIntervalTest {
   @Test
   public void testGetChromosome() {
     assertEquals(gi.getChromosome(), "chr18");
-    assertFalse(gi.getChromosome().equals("chr1"));
+      assertNotEquals("chr1", gi.getChromosome());
   }
 
   @Test
@@ -211,7 +206,7 @@ public class GenomicIntervalTest {
 
     assertTrue(gi.compareTo(genInt) < 0);
     assertTrue(genInt.compareTo(gi) > 0);
-    assertTrue(gi.compareTo(gi) == 0);
+      assertEquals(0, gi.compareTo(gi));
 
     str = "chr19\tprotein_coding\texon\t32351555\t32351624\t.\t-\t.\t"
         + "ID=exon:ENSMUST00000025242:2; PARENT=ENSMUST00000025242; ";
@@ -229,29 +224,29 @@ public class GenomicIntervalTest {
   @Test
   public void testEqualsObject() {
 
-    assertTrue(gi.equals(gi));
+      assertEquals(gi, gi);
 
     Object o = new GenomicInterval("chr18", 32322743, 32323204, '+');
-    assertTrue(gi.equals(o));
+      assertEquals(gi, o);
 
     o = new GenomicInterval("chr19", 32322743, 32323204, '+');
-    assertFalse(gi.equals(o));
+      assertNotEquals(gi, o);
 
     o = new GenomicInterval("chr18", 32322740, 32323204, '+');
-    assertFalse(gi.equals(o));
+      assertNotEquals(gi, o);
 
     o = new GenomicInterval("chr18", 32322743, 32323200, '+');
-    assertFalse(gi.equals(o));
+      assertNotEquals(gi, o);
 
     o = new GenomicInterval("chr18", 32322743, 32323204, '-');
-    assertFalse(gi.equals(o));
+      assertNotEquals(gi, o);
 
     o = new GenomicInterval("chr18", 32322743, 32323204, '.');
-    assertFalse(gi.equals(o));
+      assertNotEquals(gi, o);
 
-    assertFalse(gi.equals(null));
+      assertNotEquals(null, gi);
 
-    assertFalse(gi.equals("toto"));
+      assertNotEquals("toto", gi);
   }
 
   @Test
@@ -266,7 +261,7 @@ public class GenomicIntervalTest {
     // test the condition on the chromosome name
     try {
       GenomicInterval t0 = new GenomicInterval(null, 12, 0, '.');
-      assertTrue(false);
+        fail();
       assertNull(t0);
     } catch (NullPointerException e) {
       assertTrue(true);
@@ -276,7 +271,7 @@ public class GenomicIntervalTest {
     // have to be greater than the start position
     try {
       GenomicInterval t1 = new GenomicInterval("chrTest", 12, 0, '.');
-      assertTrue(false);
+        fail();
       assertNull(t1);
     } catch (IllegalArgumentException e) {
       assertTrue(true);
@@ -286,7 +281,7 @@ public class GenomicIntervalTest {
     // have to be greater than 1
     try {
       GenomicInterval t2 = new GenomicInterval("chrTest", 0, 10, '.');
-      assertTrue(false);
+        fail();
       assertNull(t2);
     } catch (IllegalArgumentException e) {
       assertTrue(true);
@@ -295,7 +290,7 @@ public class GenomicIntervalTest {
     // test on the strand
     try {
       GenomicInterval t3 = new GenomicInterval("chrTest", 0, 10, '!');
-      assertTrue(false);
+        fail();
       assertNull(t3);
     } catch (IllegalArgumentException e) {
       assertTrue(true);

@@ -1,10 +1,5 @@
 package fr.ens.biologie.genomique.eoulsan.translator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
@@ -14,6 +9,8 @@ import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.translators.CommonLinksInfoTranslator;
 import fr.ens.biologie.genomique.eoulsan.translators.MultiColumnTranslator;
+
+import static org.junit.Assert.*;
 
 public class CommonLinksInfoTranslatorTest {
 
@@ -42,7 +39,7 @@ public class CommonLinksInfoTranslatorTest {
     try {
 
       new CommonLinksInfoTranslator(null);
-      assertTrue(false);
+        fail();
     } catch (RuntimeException e) {
 
       assertTrue(true);

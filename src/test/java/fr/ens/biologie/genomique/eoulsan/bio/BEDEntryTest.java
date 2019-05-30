@@ -267,14 +267,14 @@ public class BEDEntryTest {
 
     try {
       e.setScore(-1);
-      assertTrue(false);
+      fail();
     } catch (IllegalArgumentException exp) {
       assertTrue(true);
     }
 
     try {
       e.setScore(1001);
-      assertTrue(false);
+      fail();
     } catch (IllegalArgumentException exp) {
       assertTrue(true);
     }
@@ -691,7 +691,7 @@ public class BEDEntryTest {
       e.parse(
           "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11873\t0\t3\t354,109,1189,\t0,739,1347,");
     } catch (BadBioEntryException exp) {
-      assertTrue(false);
+      fail();
     }
 
     assertFalse(e.isMetaDataEntry(null));
@@ -721,7 +721,7 @@ public class BEDEntryTest {
       e.parse(
           "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11873\t0\t3\t354,109,1189,\t0,739,1347,");
     } catch (BadBioEntryException exp) {
-      assertTrue(false);
+      fail();
     }
 
     e.addMetaDataEntry("key1", "val1");
@@ -760,7 +760,7 @@ public class BEDEntryTest {
       e.parse(
           "chr1\t11873\t14409\tuc001aaa.3\t0\t+\t11873\t11873\t0\t3\t354,109,1189,\t0,739,1347,");
     } catch (BadBioEntryException exp) {
-      assertTrue(false);
+      fail();
     }
 
     assertEquals(0, e.getMetadataKeyNames().size());
@@ -788,7 +788,7 @@ public class BEDEntryTest {
     assertEquals(Collections.emptyList(), e.getBlocks());
 
     e.addBlock(100, 250);
-    assertEquals(asList(new GenomicInterval("chr1", 100, 250, '.')),
+    assertEquals(Collections.singletonList(new GenomicInterval("chr1", 100, 250, '.')),
         e.getBlocks());
 
     e.addBlock(300, 500);
@@ -831,7 +831,7 @@ public class BEDEntryTest {
     entries.put("key00", l);
     assertFalse(e.addMetaDataEntries(entries));
     entries.clear();
-    entries.put("key1", Arrays.asList("val1"));
+    entries.put("key1", Collections.singletonList("val1"));
     assertTrue(e.addMetaDataEntries(entries));
     entries.clear();
     entries.put("key2", Arrays.asList("val2", "val3"));
@@ -912,20 +912,20 @@ public class BEDEntryTest {
     BEDEntry e2 = new BEDEntry();
 
     assertEquals(e1, e1);
-    assertTrue(e1.equals(e1));
+    assertEquals(e1, e1);
 
-    assertFalse(e1.equals(null));
-    assertFalse(e1.equals("toto"));
+    assertNotEquals(null, e1);
+    assertNotEquals("toto", e1);
     assertEquals(e1, e2);
-    assertTrue(e1.equals(e2));
+    assertEquals(e1, e2);
 
     e1.setChromosomeName("value");
     assertNotEquals(e1, e2);
-    assertFalse(e1.equals(e2));
+    assertNotEquals(e1, e2);
 
     e2.setChromosomeName("value");
     assertEquals(e1, e2);
-    assertTrue(e1.equals(e2));
+    assertEquals(e1, e2);
   }
 
   @Test

@@ -748,7 +748,7 @@ public class CommandWorkflowParser {
 
           // remove last '\n' in the result
           if (r.charAt(r.length() - 1) == '\n') {
-            result.append(r.substring(0, r.length() - 1));
+            result.append(r, 0, r.length() - 1);
           } else {
             result.append(r);
           }

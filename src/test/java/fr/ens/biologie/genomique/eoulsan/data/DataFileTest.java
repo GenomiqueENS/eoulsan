@@ -24,11 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.data;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -39,6 +34,8 @@ import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeDebug;
 import fr.ens.biologie.genomique.eoulsan.data.protocols.DataProtocolService;
+
+import static org.junit.Assert.*;
 
 public class DataFileTest {
 
@@ -258,7 +255,7 @@ public class DataFileTest {
 
     try {
       new DataFile("toto://www.toto.com/home/toto/toto.txt").getProtocol();
-      assertTrue(false);
+      fail();
     } catch (IOException e) {
       assertTrue(true);
     }
@@ -393,7 +390,7 @@ public class DataFileTest {
 
     try {
       new DataFile((String) null);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }

@@ -24,11 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +35,8 @@ import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.bio.SAMUtils;
 import htsjdk.samtools.SAMLineParser;
 import htsjdk.samtools.SAMRecord;
+
+import static org.junit.Assert.*;
 
 /**
  * This class is a JUnit test class to test the class
@@ -156,19 +153,19 @@ public class QualityReadAlignmentsFilterTest {
       this.filter.setParameter("threshold", "100");
       assertTrue(true);
     } catch (EoulsanException e) {
-      assertTrue(false);
+        fail();
     }
 
     try {
       this.filter.setParameter("threshold", "-2");
-      assertTrue(false);
+        fail();
     } catch (EoulsanException e) {
       assertTrue(true);
     }
 
     try {
       this.filter.setParameter("ko", "2");
-      assertTrue(false);
+        fail();
     } catch (EoulsanException e) {
       assertTrue(true);
     }
@@ -184,7 +181,7 @@ public class QualityReadAlignmentsFilterTest {
       this.filter.init();
       assertTrue(true);
     } catch (Exception e) {
-      assertTrue(false);
+        fail();
     }
   }
 
@@ -195,7 +192,7 @@ public class QualityReadAlignmentsFilterTest {
   @Test
   public void testGetName() {
     assertEquals("quality", this.filter.getName());
-    assertFalse("ko".equals(this.filter.getName()));
+      assertNotEquals("ko", this.filter.getName());
   }
 
   /**
@@ -207,7 +204,7 @@ public class QualityReadAlignmentsFilterTest {
     assertEquals(
         "With this filter, the alignments are filtered by their quality score.",
         this.filter.getDescription());
-    assertFalse("ko".equals(this.filter.getName()));
+      assertNotEquals("ko", this.filter.getName());
   }
 
   /**

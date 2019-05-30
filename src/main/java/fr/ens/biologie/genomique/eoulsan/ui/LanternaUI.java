@@ -602,7 +602,7 @@ public class LanternaUI extends AbstractUI implements TerminalResizeListener {
    * Print exception if an error occurs with Lanterna
    * @param e exception
    */
-  private static final void lanternaError(IOException e) {
+  private static void lanternaError(IOException e) {
     System.err.println(e.getMessage());
     e.printStackTrace();
   }

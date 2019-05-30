@@ -440,7 +440,7 @@ public class IDRModule extends AbstractModule {
     String outputPrefix = String.format("idrplot_output_%s_vs_%s",
         data1.getMetadata().get("Name"), data2.getMetadata().get("Name"));
     return runAnalysisPlot(1, String.format("%s/%s", outputDir, outputPrefix),
-        Arrays.asList(String.format("%s/%s", outputDir, inputPrefix)));
+            Collections.singletonList(String.format("%s/%s", outputDir, inputPrefix)));
   }
 
   /**

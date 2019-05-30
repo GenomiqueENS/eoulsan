@@ -34,14 +34,14 @@ public class EntryMetadataTest {
 
     assertTrue(e.add("key", "val1"));
     assertEquals(Collections.singleton("key"), e.keySet());
-    assertEquals(Arrays.asList("val1"), e.get("key"));
+    assertEquals(Collections.singletonList("val1"), e.get("key"));
     assertTrue(e.add("key", "val2"));
     assertEquals(Collections.singleton("key"), e.keySet());
     assertEquals(Arrays.asList("val1", "val2"), e.get("key"));
 
     assertTrue(e.add("key2", "val3"));
     assertEquals(new HashSet<>(Arrays.asList("key", "key2")), e.keySet());
-    assertEquals(Arrays.asList("val3"), e.get("key2"));
+    assertEquals(Collections.singletonList("val3"), e.get("key2"));
   }
 
   @Test
@@ -78,7 +78,7 @@ public class EntryMetadataTest {
     entries.put("key00", l);
     assertFalse(e.add(entries));
     entries.clear();
-    entries.put("key1", Arrays.asList("val1"));
+    entries.put("key1", Collections.singletonList("val1"));
     assertTrue(e.add(entries));
     entries.clear();
     entries.put("key2", Arrays.asList("val2", "val3"));
@@ -160,9 +160,9 @@ public class EntryMetadataTest {
     e.add("key3", "value4");
 
     Map<String, List<String>> map = new HashMap<>();
-    map.put("key1", Arrays.asList("value1"));
+    map.put("key1", Collections.singletonList("value1"));
     map.put("key2", Arrays.asList("value2", "value3"));
-    map.put("key3", Arrays.asList("value4"));
+    map.put("key3", Collections.singletonList("value4"));
 
     assertEquals(map, e.entries());
   }
@@ -204,20 +204,20 @@ public class EntryMetadataTest {
     EntryMetadata e2 = new EntryMetadata();
 
     assertEquals(e1, e1);
-    assertTrue(e1.equals(e1));
+    assertEquals(e1, e1);
 
-    assertFalse(e1.equals(null));
-    assertFalse(e1.equals("toto"));
+    assertNotEquals(null, e1);
+    assertNotEquals("toto", e1);
     assertEquals(e1, e2);
-    assertTrue(e1.equals(e2));
+    assertEquals(e1, e2);
 
     e1.add("key", "value");
     assertNotEquals(e1, e2);
-    assertFalse(e1.equals(e2));
+    assertNotEquals(e1, e2);
 
     e2.add("key", "value");
     assertEquals(e1, e2);
-    assertTrue(e1.equals(e2));
+    assertEquals(e1, e2);
   }
 
   @Test

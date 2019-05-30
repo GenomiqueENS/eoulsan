@@ -396,9 +396,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
     // Output name
     String outputName =
-        StringUtils.filenameWithoutExtension(inputPath.getName());
-    outputName = outputName.substring(0, outputName.length());
-    outputName += TSAM_EXTENSION;
+        StringUtils.filenameWithoutExtension(inputPath.getName()) + TSAM_EXTENSION;
 
     // Set output path
     FileOutputFormat.setOutputPath(job,

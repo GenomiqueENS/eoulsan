@@ -1,14 +1,11 @@
 package fr.ens.biologie.genomique.eoulsan.bio;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.bio.NanoporeReadId.SequenceType;
+
+import static org.junit.Assert.*;
 
 public class NanoporeReadIdTest {
 
@@ -56,7 +53,7 @@ public class NanoporeReadIdTest {
 
     try {
       nrid.parse(null);
-      assertFalse(true);
+        fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }

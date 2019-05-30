@@ -24,12 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class UnmodifiableExperimentSampleMetadataTest {
 
@@ -51,28 +48,28 @@ public class UnmodifiableExperimentSampleMetadataTest {
 
     try {
       uesm.setRepTechGroup(null);
-      assertTrue(false);
+        fail();
     } catch (UnsupportedOperationException ex) {
       assertTrue(true);
     }
 
     try {
       uesm.setReference(true);
-      assertTrue(false);
+        fail();
     } catch (UnsupportedOperationException ex) {
       assertTrue(true);
     }
 
     try {
       uesm.setReference(null);
-      assertTrue(false);
+        fail();
     } catch (UnsupportedOperationException ex) {
       assertTrue(true);
     }
 
     try {
       uesm.setCondition(null);
-      assertTrue(false);
+        fail();
     } catch (UnsupportedOperationException ex) {
       assertTrue(true);
     }

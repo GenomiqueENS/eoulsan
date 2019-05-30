@@ -1,9 +1,5 @@
 package fr.ens.biologie.genomique.eoulsan.translator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.List;
 
 import org.junit.Before;
@@ -11,6 +7,8 @@ import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.translators.ChangeIndexTranslator;
 import fr.ens.biologie.genomique.eoulsan.translators.MultiColumnTranslator;
+
+import static org.junit.Assert.*;
 
 public class ChangeIndexTranslatorTest {
 
@@ -38,7 +36,7 @@ public class ChangeIndexTranslatorTest {
     try {
 
       new ChangeIndexTranslator(null, null);
-      assertTrue(false);
+        fail();
     } catch (RuntimeException e) {
 
       assertTrue(true);
@@ -46,7 +44,7 @@ public class ChangeIndexTranslatorTest {
     try {
 
       new ChangeIndexTranslator(transl, "unknown");
-      assertTrue(false);
+        fail();
     } catch (RuntimeException e) {
 
       assertTrue(true);

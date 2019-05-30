@@ -1,9 +1,5 @@
 package fr.ens.biologie.genomique.eoulsan.bio;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,6 +8,8 @@ import java.util.List;
 import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.bio.AbstractMatrix.BasicEntry;
+
+import static org.junit.Assert.*;
 
 public abstract class AbstractExpressionMatrixTest {
 
@@ -60,7 +58,7 @@ public abstract class AbstractExpressionMatrixTest {
     assertEquals(1, matrix.getColumnCount());
     assertTrue(matrix.containsColumn("col1"));
     assertFalse(matrix.containsColumn("col2"));
-    assertEquals(Arrays.asList("col1"), matrix.getColumnNames());
+    assertEquals(Collections.singletonList("col1"), matrix.getColumnNames());
     assertEquals(0, matrix.size());
 
     matrix.addColumn("col2");
@@ -171,14 +169,14 @@ public abstract class AbstractExpressionMatrixTest {
 
     try {
       matrix.getValue("row4", "col1");
-      assertTrue(false);
+      fail();
     } catch (IllegalArgumentException e) {
       assertTrue(true);
     }
 
     try {
       matrix.getValue("row1", "col4");
-      assertTrue(false);
+      fail();
     } catch (IllegalArgumentException e) {
       assertTrue(true);
     }
@@ -440,7 +438,7 @@ public abstract class AbstractExpressionMatrixTest {
     assertEquals(3, matrix.getRowCount());
     assertEquals(2, matrix.getColumnCount());
 
-    matrix.retainRows(Arrays.asList("row1"));
+    matrix.retainRows(Collections.singletonList("row1"));
     assertEquals(2, matrix.size());
 
     assertEquals(1, matrix.getRowCount());
@@ -497,7 +495,7 @@ public abstract class AbstractExpressionMatrixTest {
     assertEquals(3, matrix.getRowCount());
     assertEquals(2, matrix.getColumnCount());
 
-    matrix.removeColumns(Arrays.asList("col2"));
+    matrix.removeColumns(Collections.singletonList("col2"));
     assertEquals(3, matrix.size());
 
     assertEquals(3, matrix.getRowCount());
@@ -526,7 +524,7 @@ public abstract class AbstractExpressionMatrixTest {
     assertEquals(3, matrix.getRowCount());
     assertEquals(2, matrix.getColumnCount());
 
-    matrix.retainColumns(Arrays.asList("col1"));
+    matrix.retainColumns(Collections.singletonList("col1"));
     assertEquals(3, matrix.size());
 
     assertEquals(3, matrix.getRowCount());

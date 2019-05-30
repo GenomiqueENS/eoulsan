@@ -18,7 +18,7 @@ public class ExpressionMatrixFormatFinderInputStream extends InputStream {
 
   public enum MatrixFormat {
     TSV, SPARSE, MARKET_MATRIX, UNKNOWN
-  };
+  }
 
   private InputStream is;
 

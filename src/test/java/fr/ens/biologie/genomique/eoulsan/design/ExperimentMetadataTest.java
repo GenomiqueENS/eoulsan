@@ -70,7 +70,7 @@ public class ExperimentMetadataTest {
     assertFalse(em.containsContrast());
     // test setContrast
     em.setContrast(true);
-    assertEquals(true, em.isContrast());
+      assertTrue(em.isContrast());
     // test containsContrast
     assertTrue(em.containsContrast());
 

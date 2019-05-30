@@ -114,8 +114,8 @@ public final class StringUtils {
       return "";
     }
 
-    return filename.substring(filename.length() - (shortName.length() - pos),
-        filename.length());
+    return filename.substring(filename.length() - (shortName.length() - pos)
+    );
   }
 
   /**
@@ -315,7 +315,7 @@ public final class StringUtils {
       lastPos = pos + 1;
     }
 
-    result.add(s.substring(lastPos, s.length()));
+    result.add(s.substring(lastPos));
 
     return result;
   }
@@ -365,7 +365,7 @@ public final class StringUtils {
       array[i] = s.substring(lastPos, pos);
       lastPos = pos + 1;
     }
-    array[len] = s.substring(lastPos, s.length());
+    array[len] = s.substring(lastPos);
 
     return array;
   }
