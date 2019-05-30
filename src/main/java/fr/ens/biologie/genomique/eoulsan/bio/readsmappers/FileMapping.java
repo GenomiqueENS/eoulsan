@@ -56,7 +56,7 @@ public class FileMapping extends EntryMapping {
 
   /**
    * Throws the exception if occurs
-   * @throws IOException
+   * @throws IOException if an error has occurred
    */
   public void throwMappingException() throws IOException {
 

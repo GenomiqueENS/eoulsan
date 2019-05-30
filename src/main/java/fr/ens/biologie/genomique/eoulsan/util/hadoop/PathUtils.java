@@ -498,7 +498,7 @@ public final class PathUtils {
    * @param path Path of the file
    * @param conf Configuration Object
    * @return true if the Path is successfully removed
-   * @throws IOException
+   * @throws IOException if cannot delete the file
    */
   public static boolean fullyDelete(final Path path, final Configuration conf)
       throws IOException {

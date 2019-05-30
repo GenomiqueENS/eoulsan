@@ -37,7 +37,7 @@ public interface StepObserver {
   /**
    * The status of the step has been changed.
    * @param step step that the status has been changed
-   * @param step state the step state
+   * @param stepState state the step state
    */
   void notifyStepState(Step step, final StepState stepState);
 

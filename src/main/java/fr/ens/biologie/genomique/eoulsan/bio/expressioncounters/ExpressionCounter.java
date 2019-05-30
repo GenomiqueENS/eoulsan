@@ -147,7 +147,6 @@ public interface ExpressionCounter {
    * @param counterGroup the counter group of the reporter
    * @return a map with the counts
    * @throws EoulsanException if an error occurs while counting
-   * @throws IOException if an error occurs while reading the input file
    */
   public Map<String, Integer> count(InputStream inputSam,
       ReporterIncrementer reporter, String counterGroup)
@@ -161,7 +160,6 @@ public interface ExpressionCounter {
    * @param counterGroup the counter group of the reporter
    * @return a map with the counts
    * @throws EoulsanException if an error occurs while counting
-   * @throws IOException if an error occurs while reading the input file
    */
   public Map<String, Integer> count(InputStream inputSam,
       OutputStream outputSam, File temporaryDirectory,

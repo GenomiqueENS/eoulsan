@@ -116,7 +116,6 @@ public class NanoporeReadId {
   /**
    * Parse a Nanopore id string.
    * @param readId String with the Nanoore id
-   * @throws EoulsanException if the id is not an Nanopore id
    */
   public void parse(String readId) {
 

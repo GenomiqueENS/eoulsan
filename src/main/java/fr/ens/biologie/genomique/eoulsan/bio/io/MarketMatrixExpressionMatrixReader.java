@@ -30,7 +30,7 @@ public class MarketMatrixExpressionMatrixReader
 
   /**
    * Get the row name of a row number
-   * @param rowNumber
+   * @param rowNumber row number
    * @return the row name
    */
   protected String getRowName(final int rowNumber) {
@@ -39,7 +39,7 @@ public class MarketMatrixExpressionMatrixReader
 
   /**
    * Get the column name of a column number
-   * @param columnNumber
+   * @param columnNumber column number
    * @return the column name
    */
   protected String getColumnName(final int columnNumber) {

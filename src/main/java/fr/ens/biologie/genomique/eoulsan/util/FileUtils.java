@@ -832,7 +832,7 @@ public class FileUtils {
   /**
    * Create a zip archive with the content of a directory.
    * @param directory directory to compress
-   * @param rootFileToStore root files to store
+   * @param rootFilesToStore root files to store
    * @param zipFile output file
    * @throws IOException if an error occurs while compressing data
    */
@@ -877,7 +877,7 @@ public class FileUtils {
    * Add a directory to a ZipOutputStream.
    * @param directory directory to add to the ZIP file
    * @param path path of the directory in the ZIP file
-   * @param rootFileToStore root files to store
+   * @param rootFilesToStore root files to store
    * @param out ZipOutputStream stream
    * @param store compress or store the files to add to the ZIP file
    */

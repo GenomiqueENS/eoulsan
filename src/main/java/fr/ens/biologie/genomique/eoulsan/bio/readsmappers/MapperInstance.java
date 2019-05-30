@@ -238,7 +238,7 @@ public class MapperInstance {
    * @param outputDir the output directory
    * @param indexerArguments the index arguments
    * @param threads the number of threads to use
-   * @param stdErrorFile standard output file
+   * @param stdOutFile standard output file
    * @param stdErrorFile standard error file
    * @throws IOException if an error occurs while creating the index
    */

@@ -132,10 +132,6 @@ public class RmDupLocalModule extends AbstractModule {
     }
   }
 
-  /**
-   * Run Picard's MarkDuplicates.
-   * @throws EoulsanException if temporary file can't be created.
-   */
   @Override
   public TaskResult execute(final TaskContext context,
       final TaskStatus status) {

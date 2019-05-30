@@ -26,8 +26,9 @@ public interface SimpleProcess {
    * @param temporaryDirectory temporary directory
    * @param stdoutFile stdout file
    * @param stderrFile stderr file
+   * @param filesUsed files used by the process
    * @return the exit code of the process
-   * @throws EoulsanException if an error occurs while running the process
+   * @throws IOException if an error occurs while running the process
    */
   int execute(List<String> commandLine, File executionDirectory,
       File temporaryDirectory, File stdoutFile, File stderrFile,
@@ -42,14 +43,28 @@ public interface SimpleProcess {
    * @param stdoutFile stdout file
    * @param stderrFile stderr file
    * @param redirectErrorStream true if stderr must be redirected in stdout
+   * @param filesUsed files used by the process
    * @return the exit code of the process
-   * @throws EoulsanException if an error occurs while running the process
+   * @throws IOException if an error occurs while running the process
    */
   int execute(List<String> commandLine, File executionDirectory,
       Map<String, String> environmentVariables, File temporaryDirectory,
       File stdoutFile, File stderrFile, boolean redirectErrorStream,
       File... filesUsed) throws IOException;
 
+  /**
+   * Start a process.
+   * @param commandLine command line
+   * @param executionDirectory execution directory
+   * @param environmentVariables environment variables
+   * @param temporaryDirectory temporary directory
+   * @param stdoutFile stdout file
+   * @param stderrFile stderr file
+   * @param redirectErrorStream true if stderr must be redirected in stdout
+   * @param filesUsed files used by the process
+   * @return an AdvancedProcess object
+   * @throws IOException if an error occurs while starting the process
+   */
   AdvancedProcess start(List<String> commandLine, File executionDirectory,
       Map<String, String> environmentVariables, File temporaryDirectory,
       File stdoutFile, File stderrFile, boolean redirectErrorStream,

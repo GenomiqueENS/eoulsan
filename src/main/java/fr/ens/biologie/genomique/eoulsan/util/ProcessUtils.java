@@ -111,7 +111,7 @@ public final class ProcessUtils {
    * Execute a command.
    * @param cmd command to execute
    * @return the exit error of the program
-   * @throws IOException
+   * @throws IOException if an error occurs while executing the command
    */
   public static int system(final String cmd) throws IOException {
 
@@ -131,7 +131,7 @@ public final class ProcessUtils {
    * Execute a command.
    * @param cmd command to execute
    * @return the exit error of the program
-   * @throws IOException
+   * @throws IOException if an error occurs while executing the command
    */
   public static int sh(final List<String> cmd) throws IOException {
 

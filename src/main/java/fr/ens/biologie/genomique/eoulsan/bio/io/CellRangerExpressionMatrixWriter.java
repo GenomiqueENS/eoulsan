@@ -119,7 +119,7 @@ public class CellRangerExpressionMatrixWriter
    * extension.
    * @param file the file to write
    * @return a BufferedReader object
-   * @throws IOException
+   * @throws IOException if an error occurs while creating the writer
    */
   private static Writer createWriter(final File file) throws IOException {
 

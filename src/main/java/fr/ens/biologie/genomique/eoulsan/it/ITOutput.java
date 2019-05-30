@@ -510,7 +510,7 @@ public class ITOutput {
    * Create list files matching to the patterns
    * @param patterns set of pattern to filter file in result directory
    * @return unmodifiable list of files or empty list
-   * @throws IOException
+   * @throws IOException if an error occurs while listing files
    */
   private List<File> listingFilesFromPatterns(final Set<PathMatcher> patterns)
       throws IOException {

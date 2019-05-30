@@ -257,7 +257,7 @@ public abstract class UploadModule extends AbstractModule {
    * @param sample sample
    * @param context Execution context
    * @return a set of DataFile used by the workflow for the sample
-   * @throws IOException
+   * @throws IOException if an error occurs while finding files
    */
   private Map<DataFile, DataFile> findDataFilesInWorkflow(final Sample sample,
       final TaskContext context) throws IOException {

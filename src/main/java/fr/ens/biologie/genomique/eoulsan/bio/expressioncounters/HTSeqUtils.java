@@ -242,7 +242,7 @@ public class HTSeqUtils {
    * @param mode the overlap mode.
    * @return the set of features that overlap genomic intervals according to the
    *         overlap mode.
-   * @throws EoulsanException
+   * @throws EoulsanException if an error occurs while getting overlapped features
    */
   public static Set<String> featuresOverlapped(
       final List<GenomicInterval> ivList, final GenomicArray<String> features,

@@ -57,9 +57,6 @@ public class QualityReadAlignmentsFilterTest {
   private List<SAMRecord> records;
   private QualityReadAlignmentsFilter filter;
 
-  /**
-   * @throws java.lang.Exception
-   */
   @Before
   public void setUp() throws Exception {
 

@@ -58,7 +58,6 @@ public class MergePeaksModule extends AbstractModule {
    * Set the parameters of the step to configure the step. Nothing to configure
    * for such a simple step.
    * @param stepParameters parameters of the step
-   * @throws EoulsanException if a parameter is invalid
    */
   @Override
   public void configure(final StepConfigurationContext context,

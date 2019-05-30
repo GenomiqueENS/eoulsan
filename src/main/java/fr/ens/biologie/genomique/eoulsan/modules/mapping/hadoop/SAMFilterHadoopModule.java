@@ -99,7 +99,7 @@ public class SAMFilterHadoopModule extends AbstractSAMFilterModule {
    * @param inData input data
    * @param outData output data
    * @return a new JobConf object
-   * @throws IOException
+   * @throws IOException if an error occurs creating the job
    */
   private Job createJob(final Configuration parentConf, final Data inData,
       final Data outData) throws IOException {

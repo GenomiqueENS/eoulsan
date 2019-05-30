@@ -101,7 +101,7 @@ public class CellRangerExpressionMatrixReader
    * extension.
    * @param file the file to read
    * @return a BufferedReader object
-   * @throws IOException
+   * @throws IOException if an error occurs while creating the reader
    */
   private static BufferedReader createReader(final File file)
       throws IOException {

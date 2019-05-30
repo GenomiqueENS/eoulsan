@@ -254,7 +254,7 @@ public class TicketLocker implements Locker {
    * Main method.
    * @param args command line arguments
    * @throws RemoteException if an error occurs while inspecting tickets
-   * @throws MalformedURLException
+   * @throws MalformedURLException if the URL of the server is malformed
    */
   public static final void main(final String[] args)
       throws RemoteException, MalformedURLException {

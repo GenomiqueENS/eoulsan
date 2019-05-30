@@ -61,9 +61,6 @@ public class ReadAlignmentsFilterBufferTest {
   private QualityReadAlignmentsFilter filter;
   private ReadAlignmentsFilterBuffer rafb;
 
-  /**
-   * @throws java.lang.Exception
-   */
   @Before
   public void setUp() throws Exception {
 

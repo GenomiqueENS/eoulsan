@@ -889,7 +889,6 @@ public abstract class AbstractWorkflow implements Workflow {
    * Create a directory.
    * @param directory the directory to create
    * @throws IOException if an error occurs while creating the directory
-   * @throws EoulsanException
    */
   private static void createDirectory(DataFile directory) throws IOException {
 
