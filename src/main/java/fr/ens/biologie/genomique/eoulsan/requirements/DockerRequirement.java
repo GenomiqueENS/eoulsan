@@ -109,14 +109,7 @@ public class DockerRequirement extends AbstractRequirement {
           DockerManager.getInstance().createImageInstance(this.dockerImage);
 
       // Pull image
-      connnection.pullImageIfNotExists(new ProgressHandler() {
-
-        @Override
-        public void update(double progressValue) {
-          progress.setProgress(progressValue);
-
-        }
-      });
+      connnection.pullImageIfNotExists(progress::setProgress);
     } catch (IOException e) {
       throw new EoulsanException(e);
     }

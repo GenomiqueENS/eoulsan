@@ -155,44 +155,40 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
             "Error while executing container, container pid is 0");
       }
 
-      return new AdvancedProcess() {
+      return () -> {
 
-        @Override
-        public int waitFor() throws IOException {
+        int exitValue;
 
-          int exitValue;
+        try {
 
-          try {
+          // Wait the end of the container
+          getLogger()
+              .fine("Wait the end of the Docker container: " + containerId);
+          dockerClient.waitContainer(containerId);
 
-            // Wait the end of the container
-            getLogger()
-                .fine("Wait the end of the Docker container: " + containerId);
-            dockerClient.waitContainer(containerId);
+          // Get process exit code
+          final ContainerInfo info1 =
+              dockerClient.inspectContainer(containerId);
+          exitValue = info1.state().exitCode();
+          getLogger().fine("Exit value: " + exitValue);
 
-            // Get process exit code
-            final ContainerInfo info =
-                dockerClient.inspectContainer(containerId);
-            exitValue = info.state().exitCode();
-            getLogger().fine("Exit value: " + exitValue);
+          // Stop container before removing it
+          dockerClient.stopContainer(containerId,
+              SECOND_TO_WAIT_BEFORE_KILLING_CONTAINER);
 
-            // Stop container before removing it
-            dockerClient.stopContainer(containerId,
-                SECOND_TO_WAIT_BEFORE_KILLING_CONTAINER);
-
-            // Remove container
-            getLogger().fine("Remove Docker container: " + containerId);
-          } catch (DockerException | InterruptedException e) {
-            throw new IOException(e);
-          }
-          try {
-            dockerClient.removeContainer(containerId);
-          } catch (DockerException | InterruptedException e) {
-            EoulsanLogger.getLogger()
-                .severe("Unable to remove Docker container: " + containerId);
-          }
-
-          return exitValue;
+          // Remove container
+          getLogger().fine("Remove Docker container: " + containerId);
+        } catch (DockerException | InterruptedException e) {
+          throw new IOException(e);
         }
+        try {
+          dockerClient.removeContainer(containerId);
+        } catch (DockerException | InterruptedException e) {
+          EoulsanLogger.getLogger()
+              .severe("Unable to remove Docker container: " + containerId);
+        }
+
+        return exitValue;
       };
 
     } catch (DockerException | InterruptedException e) {
@@ -363,69 +359,61 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
 
     if (redirectErrorStream) {
 
-      r = new Runnable() {
+      r = () -> {
 
-        @Override
-        public void run() {
+        try (WritableByteChannel stdoutChannel =
+            Channels.newChannel(new FileOutputStream(stderr))) {
 
-          try (WritableByteChannel stdoutChannel =
-              Channels.newChannel(new FileOutputStream(stderr))) {
+          for (LogMessage message; logStream.hasNext();) {
 
-            for (LogMessage message; logStream.hasNext();) {
+            message = logStream.next();
+            switch (message.stream()) {
 
-              message = logStream.next();
-              switch (message.stream()) {
+            case STDOUT:
+            case STDERR:
+              stdoutChannel.write(message.content());
+              break;
 
-              case STDOUT:
-              case STDERR:
-                stdoutChannel.write(message.content());
-                break;
-
-              case STDIN:
-              default:
-                break;
-              }
+            case STDIN:
+            default:
+              break;
             }
-          } catch (IOException e) {
-            EoulsanLogger.getLogger().severe(e.getMessage());
           }
+        } catch (IOException e) {
+          EoulsanLogger.getLogger().severe(e.getMessage());
         }
       };
 
     } else {
 
-      r = new Runnable() {
+      r = () -> {
 
-        @Override
-        public void run() {
+        try (
+            WritableByteChannel stdoutChannel =
+                Channels.newChannel(new FileOutputStream(stdout));
+            WritableByteChannel stderrChannel =
+                Channels.newChannel(new FileOutputStream(stderr))) {
 
-          try (
-              WritableByteChannel stdoutChannel =
-                  Channels.newChannel(new FileOutputStream(stdout));
-              WritableByteChannel stderrChannel =
-                  Channels.newChannel(new FileOutputStream(stderr))) {
+          for (LogMessage message; logStream.hasNext();) {
 
-            for (LogMessage message; logStream.hasNext();) {
+            message = logStream.next();
+            switch (message.stream()) {
 
-              message = logStream.next();
-              switch (message.stream()) {
+            case STDOUT:
+              stdoutChannel.write(message.content());
+              break;
 
-              case STDOUT:
-                stdoutChannel.write(message.content());
-                break;
+            case STDERR:
+              stderrChannel.write(message.content());
+              break;
 
-              case STDERR:
-                stderrChannel.write(message.content());
-                break;
-
-              case STDIN:
-              default:
-                break;
-              }
+            case STDIN:
+            default:
+              break;
             }
-          } catch (IOException e) {
-            EoulsanLogger.getLogger().severe(e.getMessage());
           }
+        } catch (IOException e) {
+          EoulsanLogger.getLogger().severe(e.getMessage());
         }
       };
     }

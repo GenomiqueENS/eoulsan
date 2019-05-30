@@ -96,24 +96,10 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
       throws IOException {
 
     // Get the list of files to contact
-    final FileStatus[] files = fs.listStatus(path, new PathFilter() {
-
-      @Override
-      public boolean accept(final Path p) {
-
-        return p.getName().matches("^part-.*[0-9]+$");
-      }
-    });
+    final FileStatus[] files = fs.listStatus(path, p -> p.getName().matches("^part-.*[0-9]+$"));
 
     // Sort the list
-    Arrays.sort(files, new Comparator<FileStatus>() {
-
-      @Override
-      public int compare(final FileStatus f1, final FileStatus f2) {
-
-        return f1.getPath().getName().compareTo(f2.getPath().getName());
-      }
-    });
+    Arrays.sort(files, Comparator.comparing(f -> f.getPath().getName()));
 
     // Create final result
     final List<Path> result = new ArrayList<>(files.length);

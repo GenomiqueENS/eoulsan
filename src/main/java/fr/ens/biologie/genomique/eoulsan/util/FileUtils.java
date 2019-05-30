@@ -906,14 +906,11 @@ public class FileUtils {
     }
 
     // Get the list of files to add
-    final File[] filesToAdd = directory.listFiles(new FileFilter() {
-      @Override
-      public boolean accept(final File file) {
-        if (rootFilesToStore == null) {
-          return file.isFile();
-        } else {
-          return rootFilesToStore.contains(file) && file.isFile();
-        }
+    final File[] filesToAdd = directory.listFiles(file -> {
+      if (rootFilesToStore == null) {
+        return file.isFile();
+      } else {
+        return rootFilesToStore.contains(file) && file.isFile();
       }
     });
 
@@ -959,15 +956,12 @@ public class FileUtils {
     }
 
     // Get the list of directories to add
-    final File[] directoriesToAdd = directory.listFiles(new FileFilter() {
-      @Override
-      public boolean accept(final File file) {
+    final File[] directoriesToAdd = directory.listFiles(file -> {
 
-        if (rootFilesToStore == null) {
-          return file.isDirectory();
-        } else {
-          return rootFilesToStore.contains(file) && file.isDirectory();
-        }
+      if (rootFilesToStore == null) {
+        return file.isDirectory();
+      } else {
+        return rootFilesToStore.contains(file) && file.isDirectory();
       }
     });
 
@@ -1080,14 +1074,7 @@ public class FileUtils {
       return null;
     }
 
-    return directory.listFiles(new FilenameFilter() {
-
-      @Override
-      public boolean accept(final File arg0, final String arg1) {
-
-        return arg1.endsWith(extension);
-      }
-    });
+    return directory.listFiles((arg0, arg1) -> arg1.endsWith(extension));
 
   }
 
@@ -1741,14 +1728,7 @@ public class FileUtils {
       return false;
     }
 
-    final FilenameFilter filter = new FilenameFilter() {
-
-      @Override
-      public boolean accept(final File dir, final String name) {
-
-        return executableName.equals(name);
-      }
-    };
+    final FilenameFilter filter = (dir, name) -> executableName.equals(name);
 
     final String[] paths = pathEnv.split(":");
 

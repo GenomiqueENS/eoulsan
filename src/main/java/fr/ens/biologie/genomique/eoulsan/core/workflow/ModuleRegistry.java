@@ -328,79 +328,79 @@ public class ModuleRegistry {
     }
 
     // Sort the steps
-    Collections.sort(modules, new Comparator<Module>() {
+    modules.sort(new Comparator<Module>() {
 
-      @Override
-      public int compare(final Module m1, final Module m2) {
+        @Override
+        public int compare(final Module m1, final Module m2) {
 
-        if (m1 == null) {
-          return 1;
+            if (m1 == null) {
+                return 1;
+            }
+
+            if (m2 == null) {
+                return -1;
+            }
+
+            int result = compareStepModes(m1, m2);
+
+            if (result != 0) {
+                return result;
+            }
+
+            return compareStepVersions(m1, m2);
         }
 
-        if (m2 == null) {
-          return -1;
+        private int compareStepModes(final Module m1, final Module m2) {
+
+            final ExecutionMode mode1 =
+                    ExecutionMode.getExecutionMode(m1.getClass());
+            final ExecutionMode mode2 =
+                    ExecutionMode.getExecutionMode(m2.getClass());
+
+            int result = compareModes(mode1, mode2, HADOOP_ONLY);
+
+            if (result != 0) {
+                return result;
+            }
+
+            result = compareModes(mode1, mode2, HADOOP_COMPATIBLE);
+
+            if (result != 0) {
+                return result;
+            }
+
+            return compareModes(mode1, mode2, LOCAL_ONLY);
         }
 
-        int result = compareStepModes(m1, m2);
+        private int compareModes(ExecutionMode mode1, ExecutionMode mode2,
+                                 ExecutionMode modeToCompare) {
 
-        if (result != 0) {
-          return result;
+            if (mode1 == modeToCompare && mode2 != modeToCompare) {
+                return 1;
+            }
+
+            if (mode2 == modeToCompare && mode1 != modeToCompare) {
+                return -1;
+            }
+
+            return 0;
         }
 
-        return compareStepVersions(m1, m2);
-      }
+        private int compareStepVersions(final Module s1, final Module s2) {
 
-      private int compareStepModes(final Module m1, final Module m2) {
+            final Version v1 = s1.getVersion();
+            final Version v2 = s2.getVersion();
 
-        final ExecutionMode mode1 =
-            ExecutionMode.getExecutionMode(m1.getClass());
-        final ExecutionMode mode2 =
-            ExecutionMode.getExecutionMode(m2.getClass());
+            if (v1 == null) {
+                return 1;
+            }
 
-        int result = compareModes(mode1, mode2, HADOOP_ONLY);
+            if (v2 == null) {
+                return -1;
+            }
 
-        if (result != 0) {
-          return result;
+            return v1.compareTo(v2);
         }
-
-        result = compareModes(mode1, mode2, HADOOP_COMPATIBLE);
-
-        if (result != 0) {
-          return result;
-        }
-
-        return compareModes(mode1, mode2, LOCAL_ONLY);
-      }
-
-      private int compareModes(ExecutionMode mode1, ExecutionMode mode2,
-          ExecutionMode modeToCompare) {
-
-        if (mode1 == modeToCompare && mode2 != modeToCompare) {
-          return 1;
-        }
-
-        if (mode2 == modeToCompare && mode1 != modeToCompare) {
-          return -1;
-        }
-
-        return 0;
-      }
-
-      private int compareStepVersions(final Module s1, final Module s2) {
-
-        final Version v1 = s1.getVersion();
-        final Version v2 = s2.getVersion();
-
-        if (v1 == null) {
-          return 1;
-        }
-
-        if (v2 == null) {
-          return -1;
-        }
-
-        return v1.compareTo(v2);
-      }
 
     });
 

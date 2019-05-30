@@ -200,7 +200,7 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
         records.addAll(rafb.getFilteredAlignments());
 
         // sort alignments of the current read
-        Collections.sort(records, new SAMComparator());
+        records.sort(new SAMComparator());
 
         // writing records
         for (SAMRecord r : records) {
@@ -218,7 +218,7 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
     records.addAll(rafb.getFilteredAlignments());
 
     // sort alignments of the last read
-    Collections.sort(records, new SAMComparator());
+    records.sort(new SAMComparator());
 
     // writing records
     for (SAMRecord r : records) {

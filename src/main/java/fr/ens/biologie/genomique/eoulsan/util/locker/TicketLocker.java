@@ -195,25 +195,21 @@ public class TicketLocker implements Locker {
    */
   private void startRMIServer(final Set<Ticket> tickets) {
 
-    new Thread(new Runnable() {
+    new Thread(() -> {
+      try {
+        LocateRegistry.createRegistry(TicketLocker.this.port);
+        TicketSchedulerServer.newServer(tickets, TicketLocker.this.lockerName,
+            TicketLocker.this.port);
 
-      @Override
-      public void run() {
-        try {
-          LocateRegistry.createRegistry(TicketLocker.this.port);
-          TicketSchedulerServer.newServer(tickets, TicketLocker.this.lockerName,
-              TicketLocker.this.port);
-
-          // TODO the server must be halted if no more tickets to process since
-          // several minutes
-          while (true) {
-            Thread.sleep(10000);
-          }
-
-        } catch (InterruptedException | RemoteException e) {
+        // TODO the server must be halted if no more tickets to process since
+        // several minutes
+        while (true) {
+          Thread.sleep(10000);
         }
 
+      } catch (InterruptedException | RemoteException e) {
       }
+
     }).start();
 
   }

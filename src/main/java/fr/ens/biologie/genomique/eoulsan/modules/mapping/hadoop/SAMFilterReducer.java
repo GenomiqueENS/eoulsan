@@ -163,7 +163,7 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
         .increment(cptRecords - this.records.size());
 
     // sort alignments of the current read
-    Collections.sort(this.records, new SAMComparator());
+    this.records.sort(new SAMComparator());
 
     // Writing records
     for (SAMRecord r : this.records) {

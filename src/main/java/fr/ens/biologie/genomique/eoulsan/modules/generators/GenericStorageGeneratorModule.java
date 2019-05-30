@@ -247,12 +247,7 @@ public class GenericStorageGeneratorModule extends AbstractModule {
 
       // Get the list of file to zip
       final File[] filesToAdd =
-          context.getStepOutputDirectory().toFile().listFiles(new FileFilter() {
-            @Override
-            public boolean accept(final File file) {
-              return file.getName().startsWith(outputFileprefix);
-            }
-          });
+          context.getStepOutputDirectory().toFile().listFiles(file -> file.getName().startsWith(outputFileprefix));
 
       // Zip index files
       FileUtils.createZip(context.getStepOutputDirectory().toFile(),

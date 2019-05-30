@@ -493,22 +493,18 @@ public class DesignBuilder {
           sampleLane == -1 ? "_L" : String.format("_L%03d_", sampleLane);
 
       // List the input FASTQ files
-      final File[] files = dataDir.listFiles(new FileFilter() {
+      final File[] files = dataDir.listFiles(f -> {
 
-        @Override
-        public boolean accept(final File f) {
+        final String filename =
+            StringUtils.filenameWithoutCompressionExtension(f.getName());
 
-          final String filename =
-              StringUtils.filenameWithoutCompressionExtension(f.getName());
-
-          if ((filename.endsWith(".fastq") || filename.endsWith(".fq"))
-              && filename.contains(laneKey)
-              && samplePrefix.equals(parseSampleNameFromFilename(filename))) {
-            return true;
-          }
-
-          return false;
+        if ((filename.endsWith(".fastq") || filename.endsWith(".fq"))
+            && filename.contains(laneKey)
+            && samplePrefix.equals(parseSampleNameFromFilename(filename))) {
+          return true;
         }
+
+        return false;
       });
 
       // Sort the list of input FASTQ files
@@ -565,15 +561,11 @@ public class DesignBuilder {
     if (samplesheetFile.isDirectory()) {
       baseDir = samplesheetFile;
 
-      final File[] files = baseDir.listFiles(new FilenameFilter() {
-
-        @Override
-        public boolean accept(final File dir, final String filename) {
-          if (filename.endsWith(".csv")) {
-            return true;
-          }
-          return false;
+      final File[] files = baseDir.listFiles((dir, filename) -> {
+        if (filename.endsWith(".csv")) {
+          return true;
         }
+        return false;
       });
 
       if (files == null || files.length == 0) {

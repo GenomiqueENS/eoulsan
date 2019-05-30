@@ -199,28 +199,21 @@ public class Utils {
       return null;
     }
 
-    return new Iterable<T>() {
+    return () -> new Iterator<T>() {
 
       @Override
-      public Iterator<T> iterator() {
+      public boolean hasNext() {
+        return e.hasMoreElements();
+      }
 
-        return new Iterator<T>() {
+      @Override
+      public T next() {
+        return e.nextElement();
+      }
 
-          @Override
-          public boolean hasNext() {
-            return e.hasMoreElements();
-          }
-
-          @Override
-          public T next() {
-            return e.nextElement();
-          }
-
-          @Override
-          public void remove() {
-            throw new UnsupportedOperationException();
-          }
-        };
+      @Override
+      public void remove() {
+        throw new UnsupportedOperationException();
       }
     };
   }
@@ -236,14 +229,7 @@ public class Utils {
       return null;
     }
 
-    return new Iterable<T>() {
-
-      @Override
-      public Iterator<T> iterator() {
-
-        return it;
-      }
-    };
+    return () -> it;
   }
 
   /**

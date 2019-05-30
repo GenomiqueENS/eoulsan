@@ -469,14 +469,7 @@ public class StepResult {
 
     // Sort the parameters
     final List<Parameter> parametersList = Lists.newArrayList(this.parameters);
-    Collections.sort(parametersList, new Comparator<Parameter>() {
-
-      @Override
-      public int compare(final Parameter p1, final Parameter p2) {
-
-        return p1.getName().compareTo(p2.getName());
-      }
-    });
+    parametersList.sort(Comparator.comparing(Parameter::getName));
 
     for (Parameter p : parametersList) {
       sb.append('\t');

@@ -48,15 +48,7 @@ public class FormatsAction extends AbstractInfoAction {
     }
 
     // Sort formats by names
-    Collections.sort(result, new Comparator<List<String>>() {
-
-      @Override
-      public int compare(List<String> o1, List<String> o2) {
-
-        return o1.get(0).compareTo(o2.get(0));
-      }
-
-    });
+    result.sort(Comparator.comparing(o -> o.get(0)));
 
     // Define the name of the columns
     List<String> columnNames = Arrays.asList("Name", "Aliases", "Extensions",

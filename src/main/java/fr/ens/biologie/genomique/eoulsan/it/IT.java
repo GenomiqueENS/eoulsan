@@ -540,13 +540,7 @@ public class IT {
 
     // Find directory start with expected
     final File[] expectedDirectories =
-        this.testDataDirectory.listFiles(new FileFilter() {
-
-          @Override
-          public boolean accept(final File pathname) {
-            return pathname.getName().startsWith("expected");
-          }
-        });
+        this.testDataDirectory.listFiles(pathname -> pathname.getName().startsWith("expected"));
 
     // Execute test, expected must be existing
     if (expectedDirectories.length == 0

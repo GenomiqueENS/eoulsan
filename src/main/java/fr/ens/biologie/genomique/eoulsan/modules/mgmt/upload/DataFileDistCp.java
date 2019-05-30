@@ -175,15 +175,11 @@ public class DataFileDistCp {
       final MyIOExceptionWrapper exp = new MyIOExceptionWrapper();
 
       // Create the thread for copy
-      final Thread t = new Thread(new Runnable() {
-
-        @Override
-        public void run() {
-          try {
-            new DataFormatConverter(src, dest).convert();
-          } catch (IOException e) {
-            exp.ioexception = e;
-          }
+      final Thread t = new Thread(() -> {
+        try {
+          new DataFormatConverter(src, dest).convert();
+        } catch (IOException e) {
+          exp.ioexception = e;
         }
       });
 
@@ -290,29 +286,24 @@ public class DataFileDistCp {
    */
   private void sortInFilesByDescSize(final List<DataFile> inFiles) {
 
-    Collections.sort(inFiles, new Comparator<DataFile>() {
+    inFiles.sort((f1, f2) -> {
 
-      @Override
-      public int compare(final DataFile f1, final DataFile f2) {
+      long size1;
 
-        long size1;
-
-        try {
-          size1 = f1.getMetaData().getContentLength();
-        } catch (IOException e) {
-          size1 = -1;
-        }
-
-        long size2;
-        try {
-          size2 = f2.getMetaData().getContentLength();
-        } catch (IOException e) {
-          size2 = -1;
-        }
-
-        return Long.compare(size1, size2) * -1;
+      try {
+        size1 = f1.getMetaData().getContentLength();
+      } catch (IOException e) {
+        size1 = -1;
       }
 
+      long size2;
+      try {
+        size2 = f2.getMetaData().getContentLength();
+      } catch (IOException e) {
+        size2 = -1;
+      }
+
+      return Long.compare(size1, size2) * -1;
     });
 
   }

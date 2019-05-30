@@ -503,13 +503,7 @@ public enum FastqFormat {
 
     // Sort formats with increasing minimal char
     final List<FastqFormat> sortedFormats = newArrayList(formats);
-    Collections.sort(sortedFormats, new Comparator<FastqFormat>() {
-      @Override
-      public int compare(final FastqFormat o1, final FastqFormat o2) {
-
-        return Integer.compare(o1.getCharMin(), o2.getCharMin());
-      }
-    });
+    sortedFormats.sort(Comparator.comparingInt(FastqFormat::getCharMin));
 
     FastqFormat last = null;
 

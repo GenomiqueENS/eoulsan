@@ -659,19 +659,15 @@ public abstract class AbstractWorkflow implements Workflow {
     final AbstractWorkflow workflow = this;
     final Thread mainThread = Thread.currentThread();
 
-    return new Thread() {
+    return new Thread(() -> {
 
-      @Override
-      public void run() {
-
-        workflow.shutdownNow = true;
-        try {
-          mainThread.join();
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
+      workflow.shutdownNow = true;
+      try {
+        mainThread.join();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
       }
-    };
+    });
   }
 
   //
@@ -766,20 +762,7 @@ public abstract class AbstractWorkflow implements Workflow {
       return;
     }
 
-    Collections.sort(list, new Comparator<AbstractStep>() {
-
-      @Override
-      public int compare(final AbstractStep a, final AbstractStep b) {
-
-        int result = a.getType().getPriority() - b.getType().getPriority();
-
-        if (result != 0) {
-          return result;
-        }
-
-        return a.getNumber() - b.getNumber();
-      }
-    });
+    list.sort(Comparator.comparingInt((AbstractStep a) -> a.getType().getPriority()).thenComparingInt(AbstractStep::getNumber));
 
   }
 

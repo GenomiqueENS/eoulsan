@@ -124,7 +124,7 @@ public class PreTreatmentExpressionReducer
     }
 
     // sort alignments of the current read
-    Collections.sort(this.records, new SAMComparator());
+    this.records.sort(new SAMComparator());
 
     // Writing records
     int indexOfFirstTab = this.records.get(0).getSAMString().indexOf("\t");

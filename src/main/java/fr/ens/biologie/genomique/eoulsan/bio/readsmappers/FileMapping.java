@@ -275,24 +275,20 @@ public class FileMapping extends EntryMapping {
     requireNonNull(in, "in argument cannot be null");
     requireNonNull(mp, "mp argument cannot be null");
 
-    final Thread t = new Thread(new Runnable() {
+    final Thread t = new Thread(() -> {
 
-      @Override
-      public void run() {
+      try {
+        final FastqReader reader = new FastqReader(in);
 
-        try {
-          final FastqReader reader = new FastqReader(in);
-
-          for (ReadSequence read : reader) {
-            mp.writeEntry1(read);
-          }
-
-          reader.close();
-          mp.closeWriter1();
-
-        } catch (IOException e) {
-          mappingException = e;
+        for (ReadSequence read : reader) {
+          mp.writeEntry1(read);
         }
+
+        reader.close();
+        mp.closeWriter1();
+
+      } catch (IOException e) {
+        mappingException = e;
       }
     }, "Mapper writeFirstPairEntries thread");
 
@@ -311,25 +307,21 @@ public class FileMapping extends EntryMapping {
     requireNonNull(in, "in argument cannot be null");
     requireNonNull(mp, "mp argument cannot be null");
 
-    final Thread t = new Thread(new Runnable() {
+    final Thread t = new Thread(() -> {
 
-      @Override
-      public void run() {
+      try {
 
-        try {
+        final FastqReader reader = new FastqReader(in);
 
-          final FastqReader reader = new FastqReader(in);
-
-          for (ReadSequence read : reader) {
-            mp.writeEntry2(read);
-          }
-
-          reader.close();
-          mp.closeWriter2();
-
-        } catch (IOException e) {
-          mappingException = e;
+        for (ReadSequence read : reader) {
+          mp.writeEntry2(read);
         }
+
+        reader.close();
+        mp.closeWriter2();
+
+      } catch (IOException e) {
+        mappingException = e;
       }
     }, "Mapper writeSecondPairEntries thread");
 
