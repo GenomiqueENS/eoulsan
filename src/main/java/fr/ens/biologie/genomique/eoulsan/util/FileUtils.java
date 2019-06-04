@@ -868,7 +868,7 @@ public class FileUtils {
   public static void zipFolder(final File directory, final String path,
       final ZipOutputStream out, boolean store) throws IOException {
 
-    zipFolder(directory, path, out, store);
+    zipFolder(directory, path, null, out, store);
   }
 
   /**
