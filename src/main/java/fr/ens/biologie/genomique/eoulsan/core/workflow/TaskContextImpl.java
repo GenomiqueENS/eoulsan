@@ -497,6 +497,8 @@ public class TaskContextImpl implements TaskContext, Serializable {
         .toString();
   }
 
+
+
   //
   // Serialization methods
   //
@@ -720,7 +722,8 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
     // Copy input and output data
     for (Map.Entry<InputPort, Data> e : inputData.entrySet()) {
-      this.inputData.put(e.getKey().getName(), e.getValue());
+      this.inputData.put(e.getKey().getName(),
+          DataUtils.copy((AbstractData) e.getValue()));
     }
 
     for (Map.Entry<OutputPort, AbstractData> e : outputData.entrySet()) {

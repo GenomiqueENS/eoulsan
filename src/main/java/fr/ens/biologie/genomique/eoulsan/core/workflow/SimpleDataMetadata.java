@@ -283,4 +283,15 @@ class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
     this.design = design;
   }
 
+  /**
+   * Copy constructor.
+   */
+  SimpleDataMetadata(final SimpleDataMetadata metadata) {
+
+    requireNonNull(metadata, "data argument cannot be null");
+
+    this.design = metadata.design;
+    this.map.putAll(metadata.map);
+  }
+
 }
