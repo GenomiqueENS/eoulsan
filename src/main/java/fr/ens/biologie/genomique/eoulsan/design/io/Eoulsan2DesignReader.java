@@ -96,7 +96,9 @@ public class Eoulsan2DesignReader implements DesignReader {
 
     // Verify that there is only one key and one value
     if (equalPos == -1) {
-      throw new IOException("Found a field with two value in the design.");
+      throw new IOException(
+          "Found a field with two values in the design file header in line: "
+              + line);
     }
 
     final String key = line.substring(0, equalPos).trim();
@@ -104,12 +106,13 @@ public class Eoulsan2DesignReader implements DesignReader {
 
     // if the key is empty
     if ("".equals(key)) {
-      throw new IOException("Found an empty field name in design file header.");
+      throw new IOException(
+          "Found an empty field name in design file header in line: " + line);
     }
     // if the value is empty
     if ("".equals(value)) {
       throw new IOException(
-          "Found an empty field value in design file header.");
+          "Found an empty field value in design file header in line: " + line);
     }
 
     // If it is an experiment field or a design field
