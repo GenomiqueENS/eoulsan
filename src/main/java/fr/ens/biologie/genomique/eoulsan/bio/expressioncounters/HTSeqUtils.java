@@ -216,20 +216,29 @@ public class HTSeqUtils {
     for (CigarElement ce : cigar.getCigarElements()) {
 
       final int len = ce.getLength();
+      final CigarOperator co = ce.getOperator();
+
+      switch (co) {
 
       // the CIGAR element correspond to a mapped region
-      if (ce.getOperator() == CigarOperator.M) {
+      case M:
+      case EQ:
+      case X:
         result.add(new GenomicInterval(chromosome, pos, pos + len - 1, strand));
         pos += len;
-      }
+        break;
+
       // the CIGAR element did not correspond to a mapped region
-      else {
+      default:
         // regions coded by a 'I' (insertion) do not have to be counted
         // (are there other cases like this one ?)
-        if (pos != start && ce.getOperator() != CigarOperator.I) {
+        if (co.consumesReferenceBases()) {
           pos += len;
         }
+
+        break;
       }
+
     }
 
     return result;
