@@ -61,9 +61,6 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
  */
 public class DESeq2 {
 
-  private static final String CONDITION_COLUMN = "Condition";
-  private static final String REFERENCE_COLUMN_NAME = "Reference";
-
   // R scripts path in JAR file
   private static final String SCRIPTS_PATH_IN_JAR_FILE = "/DESeq2/";
   private static final String NORM_DIFFANA_SCRIPT = "normDiffana.R";
@@ -340,7 +337,7 @@ public class DESeq2 {
     if (referenceColumn) {
 
       sb.append(TAB_SEPARATOR);
-      sb.append(REFERENCE_COLUMN_NAME);
+      sb.append(SampleMetadata.REFERENCE_KEY);
     }
 
     sb.append(NEWLINE);
@@ -475,35 +472,6 @@ public class DESeq2 {
     return Boolean.valueOf(value).toString().toUpperCase();
   }
 
-  /**
-   * Check experiment design.
-   * @throws EoulsanException if the experiment design is not correct
-   */
-  private void checkExperimentDesign() throws EoulsanException {
-
-    final ExperimentMetadata emd = experiment.getMetadata();
-
-    if (emd.containsComparisons()) {
-
-      // Check if the comparison value is correct
-      for (String c : emd.getComparisons().split(";")) {
-        String[] splitC = c.split(":");
-        if (splitC.length != 2) {
-          throw new EoulsanException("Error in "
-              + experiment.getName()
-              + " experiment, comparison cannot have more than 1 value: " + c);
-        }
-      }
-    }
-
-    // Check if the column Condition is missing for the experiment
-    if (!getExperimentSampleAllMetadataKeys(experiment)
-        .contains(CONDITION_COLUMN)
-        && !getAllSamplesMetadataKeys(design).contains(CONDITION_COLUMN)) {
-      throw new EoulsanException("Condition column missing for experiment: "
-          + this.experiment.getName());
-    }
-  }
 
   /**
    * Method to run DESeq2.
@@ -526,7 +494,7 @@ public class DESeq2 {
     final String contrastFilename = prefix + CONTRAST_FILE_SUFFIX;
 
     // Check experiment design
-    checkExperimentDesign();
+    DESeq2Checker.checkExperimentDesign(this.experiment);
 
     // Open executor connection
     this.executor.openConnection();
