@@ -83,6 +83,8 @@ public final class DesignUtils {
     sb.append("Experiments:\n");
     for (Experiment e : design.getExperiments()) {
       final String expId = e.getId();
+      sb.append(expId);
+      sb.append("\n ExperimentMetadata:\n");
       for (Map.Entry<String, String> m : e.getMetadata().entrySet()) {
         sb.append('\t');
         sb.append("Exp.");
@@ -680,6 +682,52 @@ public final class DesignUtils {
 
     return result == null ? null : result.trim();
   }
+
+
+  /**
+   * Get a metadata value for an experiment and a sample. First look in
+   * @param experiment the experiment
+   * @param sample the sample
+   * @param key the metadata key to get
+   * @return the Condition value
+   */
+  public static String getMetadata(final Experiment experiment,
+                                       final Sample sample, final String key) {
+
+    requireNonNull(experiment, "experiment argument cannot be null");
+    requireNonNull(sample, "sample argument cannot be null");
+
+    final ExperimentSample es = experiment.getExperimentSample(sample);
+
+    return getMetadata(es, key);
+  }
+
+  /**
+   * Get a metadata value for an experimentSample. First look in
+   * @param experimentSample the experiment sample
+   * @param key the metadata key to get
+   * @return the Condition value
+   */
+  public static String getMetadata(
+          final ExperimentSample experimentSample, final String key) {
+
+    requireNonNull(experimentSample, "experimentSample argument cannot be null");
+    requireNonNull(key, "key argument cannot be null");
+
+
+    final ExperimentSampleMetadata esm = experimentSample.getMetadata();
+
+    if (esm.contains(key)) {
+      return esm.get(key);
+    }
+
+    final SampleMetadata sm = experimentSample.getSample().getMetadata();
+
+    final String result = sm.get(key);
+
+    return result == null ? null : result.trim();
+  }
+
 
   /**
    * Test if an experiement is skipped.
