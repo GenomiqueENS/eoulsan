@@ -157,14 +157,14 @@ public class TokenManager implements Runnable {
   }
 
   /**
-   * Check if all the list ports are closed.
+   * Check if all the list input ports are closed.
    * @return true if all the list ports are closed
    */
   private boolean checkIfAllListPortsAreClosed() {
 
     for (StepInputPort port : this.inputPorts) {
       if (!port.isList()) {
-        break;
+        continue;
       }
 
       if (!this.closedPorts.contains(port)) {
