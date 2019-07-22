@@ -315,8 +315,15 @@ public class LanternaUI extends AbstractUI implements TerminalResizeListener {
 
         // Update workflow progress
         showWorkflowProgress(this.lastLineYPos, 1.0, success, successMessage);
+        this.lastLineYPos++;
+
+        // Change lastLineYPos only the bottom of the screen has not been reach
+        if (this.lastLineYPos < this.terminalSize.getRows() - 1) {
+          this.terminal.putCharacter('\n');
+        }
 
         this.terminal.setCursorPosition(0, this.lastLineYPos);
+
         this.jobDone = true;
         this.terminal.setCursorVisible(true);
         return;
