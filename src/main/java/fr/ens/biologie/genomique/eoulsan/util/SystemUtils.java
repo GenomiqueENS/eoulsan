@@ -29,6 +29,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 
 import com.google.common.base.Splitter;
@@ -268,6 +270,28 @@ public final class SystemUtils {
     }
 
     return null;
+  }
+
+  /**
+   * Check if an internet connection is active by opening a socket on a distant
+   * server.
+   * @param hostname server host name
+   * @param port server port
+   * @param timeout timeout in milliseconds
+   * @return
+   */
+  public static boolean isActiveConnection(final String hostname,
+      final int port, final int timeout) {
+
+    try {
+      try (Socket soc = new Socket()) {
+        soc.connect(new InetSocketAddress(hostname, port), timeout);
+      }
+      return true;
+    } catch (IOException ex) {
+      return false;
+    }
+
   }
 
   //

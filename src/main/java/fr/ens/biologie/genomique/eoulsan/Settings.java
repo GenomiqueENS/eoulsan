@@ -83,10 +83,10 @@ public final class Settings implements Serializable {
   private static final String SAVE_WORKFLOW_IMAGE_KEY =
       MAIN_PREFIX_KEY + "generate.workflow.image";
 
-  private static final String DATA_FORMAT_PATH =
+  public static final String DATA_FORMAT_PATH_KEY =
       MAIN_PREFIX_KEY + "format.path";
 
-  private static final String GALAXY_TOOL_PATH =
+  public static final String GALAXY_TOOL_PATH_KEY =
       MAIN_PREFIX_KEY + "galaxy.tool.path";
 
   private static final String HADOOP_AWS_ACCESS_KEY =
@@ -176,6 +176,9 @@ public final class Settings implements Serializable {
       MAIN_PREFIX_KEY + "old.result.format";
 
   private static final String UI_NAME_KEY = MAIN_PREFIX_KEY + "ui.name";
+
+  public static final String STANDARD_EXTERNAL_MODULES_ENABLED_KEY =
+      MAIN_PREFIX_KEY + "standard.external.modules.enabled";
 
   private static final Set<String> FORBIDDEN_KEYS = Utils.unmodifiableSet(
       new String[] {HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY});
@@ -637,7 +640,7 @@ public final class Settings implements Serializable {
    */
   public List<String> getDataFormatPaths() {
 
-    String value = this.properties.getProperty(DATA_FORMAT_PATH);
+    String value = this.properties.getProperty(DATA_FORMAT_PATH_KEY);
 
     if (value == null) {
       return Collections.emptyList();
@@ -661,7 +664,7 @@ public final class Settings implements Serializable {
    */
   public List<String> getGalaxyToolPaths() {
 
-    String value = this.properties.getProperty(GALAXY_TOOL_PATH);
+    String value = this.properties.getProperty(GALAXY_TOOL_PATH_KEY);
 
     if (value == null) {
       return Collections.emptyList();
@@ -1190,7 +1193,7 @@ public final class Settings implements Serializable {
    */
   public void setDataFormatPath(final String path) {
 
-    this.properties.setProperty(DATA_FORMAT_PATH, path);
+    this.properties.setProperty(DATA_FORMAT_PATH_KEY, path);
   }
 
   /**
@@ -1199,7 +1202,7 @@ public final class Settings implements Serializable {
    */
   public void setGalaxyToolPath(final String path) {
 
-    this.properties.setProperty(DATA_FORMAT_PATH, path);
+    this.properties.setProperty(DATA_FORMAT_PATH_KEY, path);
   }
 
   /**
