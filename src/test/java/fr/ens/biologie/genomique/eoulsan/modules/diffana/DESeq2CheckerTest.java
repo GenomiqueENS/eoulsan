@@ -3,7 +3,6 @@ package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.design.*;
 import org.junit.Test;
-import java.util.Arrays;
 import java.util.List;
 
 import static fr.ens.biologie.genomique.eoulsan.design.DesignFactory.createEmptyDesign;
@@ -78,10 +77,10 @@ public class DESeq2CheckerTest {
         addExperimentSample(testCompString, asList("Etat"),"S1","exp1","vieille");
         addExperimentSample(testCompString, asList("Etat"),"S2","exp1","jeune");
         assertTrue("The comparison string is not correct", checkExperimentDesign(e3, false));
-        // Example containing a mistake
+        // Example containing a mistake: Culture D1 does not exists
         Design testCompStringBis = createEmptyDesign();
         Experiment e3bis = testCompStringBis.addExperiment("exp1");
-        e3bis.getMetadata().setComparisons("HT29:LigneeHT29%CultureD3_vs_LigneeHT29%CultureD1");
+        e3bis.getMetadata().setComparisons("HT29:LigneeHT29%CultureD3_vs_LigneeHT29%CultureD1_vs_LigneeLS513%CultureD3_vs_LigneeLS513%CultureD1");
         List<String> h3bis = asList("RepTechGroup", "Condition");
         e3bis.addSample(addSample(testCompStringBis, h3bis, "S1", "296-a","KO"));
         e3bis.addSample(addSample(testCompStringBis, h3bis, "S2", "298-c","KO"));
@@ -191,7 +190,8 @@ public class DESeq2CheckerTest {
         addExperimentSample(testCombinationUnique, asList("To"),"S2","exp1","tu");
         assertTrue("Combinations column-data are not unique",
                 checkExperimentDesign(e7, false));
-        // Example containing a mistake: column "Toto" == column "To"+ data "to"
+
+        // Example containing a mistake: column "Toto" equals to column "To"+ data "to"
         Design testCombinationUniqueBis = createEmptyDesign();
         Experiment e7bis = testCombinationUniqueBis.addExperiment("exp1");
         List<String> h7bis = asList("RepTechGroup", "Condition");
