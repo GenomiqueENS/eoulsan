@@ -32,7 +32,9 @@ import static fr.ens.biologie.genomique.eoulsan.modules.diffana.DESeq2.Statistic
 import static java.util.Collections.unmodifiableSet;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -41,6 +43,7 @@ import java.util.Set;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
+import fr.ens.biologie.genomique.eoulsan.bio.io.TSVCountsReader;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
@@ -217,6 +220,12 @@ public class DESeq2Module extends AbstractModule {
 
     try {
 
+      // Check if all the counts of the expression files are not null
+      if (!checkIfAllCountsAreNotNull(sampleFiles.values())) {
+        throw new EoulsanException(
+            "All the counts in the expression files are null");
+      }
+
       for (Experiment e : design.getExperiments()) {
 
         // Do nothing if the experiment is skipped
@@ -239,6 +248,37 @@ public class DESeq2Module extends AbstractModule {
 
     // Write log file
     return status.createTaskResult();
+  }
+
+  /**
+   * Check if all the counts of the expression are not null.
+   * @param files the files to test
+   * @return true if the count are not null
+   * @throws IOException if an expression file cannot be read
+   * @throws FileNotFoundException if an expression file cannot be found
+   */
+  private static boolean checkIfAllCountsAreNotNull(Collection<File> files)
+      throws FileNotFoundException, IOException {
+
+    for (File f : files) {
+
+      try (TSVCountsReader reader = new TSVCountsReader(f)) {
+
+        // Get the counts
+        Map<String, Integer> counts = reader.read();
+
+        for (int value : counts.values()) {
+
+          // End of the check for the first non null value
+          if (value > 0) {
+            return true;
+          }
+        }
+      }
+
+    }
+
+    return false;
   }
 
 }
