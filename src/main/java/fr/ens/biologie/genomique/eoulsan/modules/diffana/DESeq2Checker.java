@@ -14,6 +14,7 @@ import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.getExperiment
 import static fr.ens.biologie.genomique.eoulsan.design.SampleMetadata.CONDITION_KEY;
 import static fr.ens.biologie.genomique.eoulsan.design.SampleMetadata.REFERENCE_KEY;
 import static fr.ens.biologie.genomique.eoulsan.design.SampleMetadata.REP_TECH_GROUP_KEY;
+import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -51,9 +52,9 @@ public class DESeq2Checker {
         List<String> allColumnNames= new ArrayList<>(esColumnNames);
         allColumnNames.addAll(sColumnNames);
 
-        /**
+        /*
          * Check if there is an empty cell in the experiment
-         * */
+         */
         for (String key : allColumnNames) {
             for (ExperimentSample es : experiment.getExperimentSamples()) {
                 String value = DesignUtils.getMetadata(es, key);
@@ -63,38 +64,36 @@ public class DESeq2Checker {
             }
         }
 
-        /**
+        /*
          * Check if the comparison string is correct
-         * */
+         */
         if (emd.containsComparisons()) {
             Set<String> comparisionNames=new HashSet<>();
 
             // Check if the comparison structure is correct
             for (String c : emd.getComparisons().split(";")) {
-                String[] splitC = Splitter.on(':').omitEmptyStrings().trimResults().splitToList(c).
-                        toArray(new String[0]);
+                List<String> splitC = Splitter.on(':').omitEmptyStrings().trimResults().splitToList(c);
 
                 // Check if there is not more than one value per comparison
-                if (c.split(":").length != 2) {
+                if (splitC.size() != 2) {
                     return error("Error in " + experiment.getName()
                             + " experiment, comparison cannot have more than 1 value: " + c, throwsException);
                 }
 
                 // Get the name of each comparison
-                for (String item : splitC){
-                    // Error if comparison string equals to "vs" or "XXX_vs_" or "_vs_XXX"
-                    if (item.equals("vs") || item.startsWith("_vs") || item.endsWith("vs_")){
-                        return error("Error in " + experiment.getName()
-                                + " experiment, the comparison string is badly written : " + c, throwsException);
-                    }
-                    else if (!item.contains("_vs_")){
-                        comparisionNames.add(item);
-                    }
+                String comparison = splitC.get(1);
+                if (comparison.equals("vs") || comparison.startsWith("_vs") || comparison.endsWith("vs_")){
+                    return error("Error in " + experiment.getName()
+                            + " experiment, the comparison string is badly written : " + c, throwsException);
+                }
+                else if (!comparison.contains("_vs_")){
+                    comparisionNames.add(comparison);
                 }
 
+
                 // Get each condition in the comparison string
-                Set<String> conditionsInComparisonString=new HashSet<>(Arrays.asList(splitC[1].
-                        split("(%)|(_vs_)")));
+                Set<String> conditionsInComparisonString=new HashSet<>(asList(comparison.
+                    split("(%)|(_vs_)")));
 
                 // Get every sample value for each key, and get every possible condition by merging the strings
                 Set<String> possibleConditions=new HashSet<>();
@@ -104,6 +103,7 @@ public class DESeq2Checker {
                         possibleConditions.add(key+value);
                     }
                 }
+
                 // Check if each conditions in the comparison string exist in the Condition column
                 for (String condi : conditionsInComparisonString){
                     Boolean exist = false;
@@ -114,7 +114,7 @@ public class DESeq2Checker {
                     }
                     if (!exist){
                         return error("Error in " + experiment.getName()
-                                + " experiment, one comparison does not exist: " + c, throwsException);
+                                + " experiment, one comparison ("+condi+") does not exist: " + c, throwsException);
                     }
                 }
             }
@@ -133,37 +133,36 @@ public class DESeq2Checker {
             }
         }
 
-        /**
-         * Check if there is no numeric character at the begin of a row in the column Condition
+        /*
+         * Check if there is no numeric character at the begin of a row in all metakeys columns
          * for a complex design model
-         * */
-        if (esColumnNames.contains(CONDITION_KEY) ||
-                sColumnNames.contains(CONDITION_KEY)) {
+         */
+        for (String key : esColumnNames) {
             for (ExperimentSample es : experiment.getExperimentSamples()) {
-                String s = DesignUtils.getMetadata(es, CONDITION_KEY);
+                String s = DesignUtils.getMetadata(es, key);
                 // Error if a condition column contains an invalid numeric character as first character
-                if ( !s.isEmpty() && Character.isDigit(s.charAt(0)) && emd.getComparisons() != null){
-                    return error("One or more Condition rows start with a numeric character : "
-                            + experiment.getName(), throwsException);
+                if (!s.isEmpty() && Character.isDigit(s.charAt(0)) && emd.getComparisons() != null){
+                    return error("One or more sample in the "+key+" column start with a numeric character : "
+                            + s, throwsException);
                 }
             }
         }
 
-        /* Check if there is no "-" in the column Condition when the contrast mode is activate */
+        /* Check if there is no "-" in the column Condition when the contrast mode is not activate */
         if (esColumnNames.contains(CONDITION_KEY) ||
                 sColumnNames.contains(CONDITION_KEY)) {
             for (ExperimentSample es : experiment.getExperimentSamples()) {
                 String s = DesignUtils.getMetadata(es, CONDITION_KEY);
-                if (s.indexOf('-') != -1 && emd.isContrast()){
+                if (s.indexOf('-') != -1 && !emd.isContrast()){
                     return error("There is a - character in the column Condition : "
-                            + experiment.getName(), throwsException);
+                            + s, throwsException);
                 }
             }
         }
 
-        /**
+        /*
          * Verify consistency between the values in the columns Reference and Condition for non complex mode
-         * */
+         */
         if (!emd.containsComparisons()) {
             // If Exp.exp1.Condition and Exp.exp1.Reference exist
             if (esColumnNames.contains(REFERENCE_KEY)
@@ -176,18 +175,14 @@ public class DESeq2Checker {
                     String reference = DesignUtils.getMetadata(es, REFERENCE_KEY);
 
                     // Check if condition and reference are not null or empty
-                    if (condition.isEmpty() || reference.isEmpty()){
+                    if (condition == null || reference == null || condition.isEmpty() || reference.isEmpty()){
                         return error("There is an empty condition or reference " +
                                 experiment.getName(), throwsException);
                     }
 
                     // If one condition is associated with more than one reference, error
-                    List<String> possibleConditionsReferences = new ArrayList<>();
-                    possibleConditionsReferences.add(condition+reference);
                     for (Map.Entry<String, String> e : lhm.entrySet()) {
-                        String key = e.getKey();
-                        String value = e.getValue();
-                        if (key.equals(condition) && !value.equals(reference)){
+                        if (e.getKey().equals(condition) && ! e.getValue().equals(reference)){
                             return error("There is an inconsistency between the conditions " +
                                     "and the references : " + experiment.getName(), throwsException);
                         }
@@ -197,9 +192,9 @@ public class DESeq2Checker {
             }
         }
 
-        /**
+        /*
          * Check if there is no combination column-name that is equal to another column-name or to a column name
-         * */
+         */
         // Multimap containing every key and all sample values for each
         Multimap<String, String> mapPossibleCombination = ArrayListMultimap.create();
         for (String key : allColumnNames) {
@@ -225,16 +220,18 @@ public class DESeq2Checker {
         }
 
 
-        /**
+        /*
          * Check if the column Condition is missing for the experiment
-         * */
+         */
         if (!esColumnNames.contains(CONDITION_KEY)
                 && !sColumnNames.contains(CONDITION_KEY)) {
             return error("Condition column missing for experiment: "
                     + experiment.getName(), throwsException);
         }
 
-        /* Check if the column RepTechGroup is missing for the experiment */
+        /*
+         * Check if the column RepTechGroup is missing for the experiment
+         */
         if (!esColumnNames.contains(REP_TECH_GROUP_KEY)
                 && !sColumnNames.contains(REP_TECH_GROUP_KEY)) {
             return error("RepTechGroup column missing for experiment: "

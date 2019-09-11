@@ -131,7 +131,11 @@ public abstract class AbstractMetadata implements Metadata, Serializable {
 
     requireNonNull(key, "key argument cannot be null");
 
-    return Boolean.parseBoolean(get(key.trim()).toLowerCase());
+    String value = get(key.trim());
+    if (value==null){
+      return false;
+    }
+    return Boolean.parseBoolean(value.toLowerCase());
   }
 
   @Override
