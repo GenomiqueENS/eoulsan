@@ -191,6 +191,23 @@
 			<properties />
 		</developer>
 		<developer>
+			<id>berthelier</id>
+			<name>Charlotte Berthelier</name>
+			<email>berthelier 0 biologie ens fr</email>
+			<url />
+			<organization>
+				École normale supérieure, IBENS, Genomics core facility
+			</organization>
+			<organizationUrl>
+				https://www.genomique.biologie.ens.fr/
+			</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>1</timezone>
+			<properties />
+		</developer>
+		<developer>
 			<id>lecrom</id>
 			<name>Stéphane Le Crom</name>
 			<email>eoulsan 0 biologie ens fr</email>
