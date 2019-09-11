@@ -58,6 +58,11 @@ public class ReadsChecker implements Checker {
   }
 
   @Override
+  public boolean isDesignChecker() {
+    return false;
+  }
+
+  @Override
   public DataFormat getFormat() {
     return READS_FASTQ;
   }

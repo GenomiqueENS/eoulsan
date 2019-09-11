@@ -50,6 +50,7 @@ import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPort;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
@@ -155,37 +156,53 @@ public class CheckerModule extends AbstractModule {
     // Get the CheckStore
     final CheckStore checkStore = CheckStore.getCheckStore();
 
+    // Store the design in the check store
+    checkStore.add("design", context.getWorkflow().getDesign());
+
     int count = 0;
 
     try {
 
-      final List<Checker> checkerList = createDependenciesList();
+      final List<Checker> checkerList =
+          createDependenciesList(context.getWorkflow().getSteps());
 
       // For all input ports of the step
       for (Checker checker : checkerList) {
 
-        // Get the format of the checker
-        final DataFormat format = checker.getFormat();
+        if (checker.isDesignChecker()) {
 
-        // Configure checker if specific configuration exists
-        if (this.checkerConfiguration.containsKey(format)) {
-          checker.configure(this.checkerConfiguration.get(format));
-        }
+          context.getLogger().info("Start checker " + checker.getName());
 
-        for (Data data : context.getInputData(format).getListElements()) {
+          // Check the design
+          checker.check(null, checkStore);
 
-          context.getLogger()
-              .info("Start checker "
-                  + checker.getName() + " to check: "
-                  + DataUtils.getDataFiles(data));
+          context.getLogger().info("End of checker " + checker.getName());
 
-          // Check the data
-          checker.check(data, checkStore);
+        } else {
 
-          context.getLogger()
-              .info("End of checker "
-                  + checker.getName() + " to check: "
-                  + DataUtils.getDataFiles(data));
+          // Get the format of the checker
+          final DataFormat format = checker.getFormat();
+
+          // Configure checker if specific configuration exists
+          if (this.checkerConfiguration.containsKey(format)) {
+            checker.configure(this.checkerConfiguration.get(format));
+          }
+
+          for (Data data : context.getInputData(format).getListElements()) {
+
+            context.getLogger()
+                .info("Start checker "
+                    + checker.getName() + " to check: "
+                    + DataUtils.getDataFiles(data));
+
+            // Check the data
+            checker.check(data, checkStore);
+
+            context.getLogger()
+                .info("End of checker "
+                    + checker.getName() + " to check: "
+                    + DataUtils.getDataFiles(data));
+          }
         }
 
         count++;
@@ -207,11 +224,13 @@ public class CheckerModule extends AbstractModule {
 
   /**
    * Create the dependencies list of the checker.
+   * @param steps a set with the steps of the workflow
    * @return a list of Checker object correctly ordered to avoid missing
    *         dependencies
    * @throws EoulsanException if dependencies order cannot be defined
    */
-  private List<Checker> createDependenciesList() throws EoulsanException {
+  private List<Checker> createDependenciesList(final Set<Step> steps)
+      throws EoulsanException {
 
     List<Checker> list = Lists.newArrayList(this.checkers.values());
     List<Checker> result = new ArrayList<>();

@@ -73,6 +73,11 @@ public class GFFChecker implements Checker {
   }
 
   @Override
+  public boolean isDesignChecker() {
+    return false;
+  }
+
+  @Override
   public DataFormat getFormat() {
     return this.gtfFormat ? ANNOTATION_GTF : ANNOTATION_GFF;
   }

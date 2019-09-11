@@ -55,6 +55,11 @@ public class GenomeChecker implements Checker {
   }
 
   @Override
+  public boolean isDesignChecker() {
+    return false;
+  }
+
+  @Override
   public DataFormat getFormat() {
     return DataFormats.GENOME_FASTA;
   }

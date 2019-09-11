@@ -45,6 +45,11 @@ public interface Checker {
   String getName();
 
   /**
+   * Test if the Checker is a design checker
+   */
+  boolean isDesignChecker();
+
+  /**
    * Get format related to the checker.
    * @return a DataFormat object
    */
