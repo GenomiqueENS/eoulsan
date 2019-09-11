@@ -70,7 +70,7 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 public class DESeq2Module extends AbstractModule {
 
   // Module name
-  private static final String MODULE_NAME = "deseq2";
+  public static final String MODULE_NAME = "deseq2";
 
   static final String DESEQ2_DOCKER_IMAGE =
       "bioconductor/release_sequencing:3.1";

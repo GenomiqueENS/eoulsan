@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.checkers.DESeq2DesignChecker;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
@@ -494,7 +495,7 @@ public class DESeq2 {
     final String contrastFilename = prefix + CONTRAST_FILE_SUFFIX;
 
     // Check experiment design
-    DESeq2Checker.checkExperimentDesign(this.experiment);
+    DESeq2DesignChecker.checkExperimentDesign(this.experiment);
 
     // Open executor connection
     this.executor.openConnection();
