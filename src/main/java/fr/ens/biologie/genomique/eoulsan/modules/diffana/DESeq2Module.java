@@ -34,7 +34,6 @@ import static java.util.Collections.unmodifiableSet;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -56,6 +55,7 @@ import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
+import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.modules.diffana.DESeq2.FitType;
 import fr.ens.biologie.genomique.eoulsan.modules.diffana.DESeq2.SizeFactorsType;
@@ -221,10 +221,7 @@ public class DESeq2Module extends AbstractModule {
     try {
 
       // Check if all the counts of the expression files are not null
-      if (!checkIfAllCountsAreNotNull(sampleFiles.values())) {
-        throw new EoulsanException(
-            "All the counts in the expression files are null");
-      }
+      checkIfAllCountAreNullInConditions(design, sampleFiles);
 
       for (Experiment e : design.getExperiments()) {
 
@@ -251,34 +248,97 @@ public class DESeq2Module extends AbstractModule {
   }
 
   /**
-   * Check if all the counts of the expression are not null.
-   * @param files the files to test
-   * @return true if the count are not null
-   * @throws IOException if an expression file cannot be read
-   * @throws FileNotFoundException if an expression file cannot be found
+   * Check if all the count in an expression file are null
+   * @param file the file to test
+   * @return true if all the count in an expression file are null
+   * @throws FileNotFoundException if the file cannot be found
+   * @throws IOException if an error occurs while reading the expression file
    */
-  private static boolean checkIfAllCountsAreNotNull(Collection<File> files)
+  private static boolean checkAllCountAreNullInExpressionFile(final File file)
       throws FileNotFoundException, IOException {
 
-    for (File f : files) {
+    try (TSVCountsReader reader = new TSVCountsReader(file)) {
 
-      try (TSVCountsReader reader = new TSVCountsReader(f)) {
+      // Get the counts
+      Map<String, Integer> counts = reader.read();
 
-        // Get the counts
-        Map<String, Integer> counts = reader.read();
+      for (int value : counts.values()) {
 
-        for (int value : counts.values()) {
-
-          // End of the check for the first non null value
-          if (value > 0) {
-            return true;
-          }
+        // End of the check for the first non null value
+        if (value > 0) {
+          return false;
         }
       }
-
     }
 
-    return false;
+    return true;
+  }
+
+  /**
+   * Check if the counts of a condition are null.
+   * @param design the design
+   * @param sampleFiles the expression files
+   * @throws IOException if an expression file cannot be read
+   * @throws FileNotFoundException if an expression file cannot be found
+   * @throws EoulsanException if all the counts of a condition are null
+   */
+  private static void checkIfAllCountAreNullInConditions(final Design design,
+      final Map<String, File> sampleFiles)
+      throws FileNotFoundException, IOException, EoulsanException {
+
+    Map<String, Boolean> emptyFiles = new HashMap<>();
+    Map<String, String> technicalReplicates = new HashMap<>();
+    Map<String, Boolean> result = new HashMap<>();
+
+    // Get the technical replicates
+    for (Sample s : design.getSamples()) {
+
+      String sampleId = s.getId();
+
+      if (s.getMetadata().containsRepTechGroup()) {
+        String replicateId = s.getMetadata().getRepTechGroup();
+        technicalReplicates.put(sampleId, replicateId);
+      } else {
+        technicalReplicates.put(sampleId, sampleId);
+      }
+    }
+
+    // Check all the files
+    for (Map.Entry<String, File> e : sampleFiles.entrySet()) {
+      emptyFiles.put(e.getKey(),
+          checkAllCountAreNullInExpressionFile(e.getValue()));
+    }
+
+    // Check if all the expression file of a technical replicate group are null
+    for (Map.Entry<String, String> e : technicalReplicates.entrySet()) {
+
+      String sampleId = e.getKey();
+      String replicateId = e.getValue();
+
+      if (!result.containsKey(e.getValue())) {
+        result.put(replicateId, true);
+      }
+
+      if (!result.get(replicateId)) {
+        continue;
+      }
+
+      if (!emptyFiles.get(sampleId)) {
+        result.put(replicateId, false);
+      }
+    }
+
+    // Throw an exception, if the count of technical replicate group are null
+    for (Map.Entry<String, Boolean> e : result.entrySet()) {
+
+      if (e.getValue()) {
+
+        throw new EoulsanException(
+            "All the counts in the expression files are null for the the \""
+                + e.getKey() + "\" condition");
+      }
+    }
+
   }
 
 }
