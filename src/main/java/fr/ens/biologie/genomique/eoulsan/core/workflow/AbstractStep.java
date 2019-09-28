@@ -44,6 +44,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUtils;
 import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
+import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
@@ -77,6 +78,7 @@ public abstract class AbstractStep implements Step {
   private final String version;
   private final StepType type;
   private final Set<Parameter> parameters;
+  private final Checker checker;
   private ParallelizationMode parallelizationMode =
       ParallelizationMode.STANDARD;
   private InputPorts inputPortsParameter = noInputPort();
@@ -229,6 +231,11 @@ public abstract class AbstractStep implements Step {
   public int getRequiredProcessors() {
 
     return this.requiredProcessors;
+  }
+
+  @Override
+  public Checker getChecker() {
+    return this.checker;
   }
 
   /**
@@ -503,6 +510,7 @@ public abstract class AbstractStep implements Step {
     this.requiredProcessors = -1;
     this.dataProductConfiguration = "";
     this.discardOutput = DiscardOutput.SUCCESS;
+    this.checker = null;
 
     switch (type) {
     case CHECKER_STEP:
@@ -594,6 +602,7 @@ public abstract class AbstractStep implements Step {
     this.requiredProcessors = -1;
     this.dataProductConfiguration = "";
     this.discardOutput = DiscardOutput.SUCCESS;
+    this.checker = null;
 
     // Define output directory
     this.outputDir = StepOutputDirectory.getInstance()
@@ -678,6 +687,7 @@ public abstract class AbstractStep implements Step {
     this.terminalStep = EoulsanAnnotationUtils.isTerminal(module);
     this.createLogFiles = !isNoLog(module);
     this.parallelizationMode = getParallelizationMode(module);
+    this.checker = module.getChecker();
 
     // Define output directory
     this.outputDir = outputDirectory != null

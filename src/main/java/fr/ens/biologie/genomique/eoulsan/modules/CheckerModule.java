@@ -44,7 +44,6 @@ import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.annotations.ReuseModuleInstance;
 import fr.ens.biologie.genomique.eoulsan.checkers.CheckStore;
 import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
-import fr.ens.biologie.genomique.eoulsan.checkers.DESeq2DesignChecker;
 import fr.ens.biologie.genomique.eoulsan.core.DataUtils;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
@@ -58,7 +57,6 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.modules.diffana.DESeq2Module;
 
 /**
  * This class is a module that launch checkers.
@@ -237,16 +235,17 @@ public class CheckerModule extends AbstractModule {
     List<Checker> list = Lists.newArrayList(this.checkers.values());
     List<Checker> result = new ArrayList<>();
 
-    // Add Deseq2 design checker is needed
-    // TODO made this system more configurable
-    for (Step s : steps) {
-      if (s.getModuleName().equals(DESeq2Module.MODULE_NAME)) {
-        result.add(new DESeq2DesignChecker());
-      }
-    }
-
     final Map<Checker, Set<Checker>> dependencies = new HashMap<>();
     final Set<Checker> added = new HashSet<>();
+
+    // Add design checker is needed
+    for (Step s : steps) {
+
+      Checker checker = s.getChecker();
+      if (checker != null) {
+        list.add(checker);
+      }
+    }
 
     // Create the dependencies map
     for (Checker c : list) {
@@ -256,10 +255,13 @@ public class CheckerModule extends AbstractModule {
       }
 
       final Set<Checker> deps = new HashSet<>();
-      for (DataFormat format : c.getCheckersRequired()) {
 
-        if (this.checkers.containsKey(format)) {
-          deps.add(this.checkers.get(format));
+      if (!c.isDesignChecker()) {
+        for (DataFormat format : c.getCheckersRequired()) {
+
+          if (this.checkers.containsKey(format)) {
+            deps.add(this.checkers.get(format));
+          }
         }
       }
 

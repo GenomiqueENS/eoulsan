@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Settings;
+import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
@@ -139,9 +140,16 @@ public class StepConfigurationContextImpl implements StepConfigurationContext {
       return this.step.getState();
     }
 
+    @Override
+    public Checker getChecker() {
+
+      return this.step.getChecker();
+    }
+
     //
     // Constructor
     //
+
 
     /**
      * Constructor.

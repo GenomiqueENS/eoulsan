@@ -43,6 +43,8 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.bio.io.TSVCountsReader;
+import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
+import fr.ens.biologie.genomique.eoulsan.checkers.DESeq2DesignChecker;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
@@ -127,6 +129,12 @@ public class DESeq2Module extends AbstractModule {
   public Set<Requirement> getRequirements() {
 
     return unmodifiableSet(this.requirements);
+  }
+
+  @Override
+  public Checker getChecker() {
+
+    return new DESeq2DesignChecker();
   }
 
   @Override

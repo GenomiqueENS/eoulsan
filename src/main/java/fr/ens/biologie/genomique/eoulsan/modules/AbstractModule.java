@@ -31,6 +31,7 @@ import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
@@ -76,6 +77,12 @@ public abstract class AbstractModule implements Module {
   public Set<Requirement> getRequirements() {
 
     return Collections.emptySet();
+  }
+
+  @Override
+  public Checker getChecker() {
+
+    return null;
   }
 
   @Override

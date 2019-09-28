@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
 
 /**
  * This interface define a step of the workflow.
@@ -275,5 +276,11 @@ public interface Step extends Serializable {
    * @return the state of the step
    */
   StepState getState();
+
+  /**
+   * Get Checker.
+   * @return the checker for the step
+   */
+  Checker getChecker();
 
 }

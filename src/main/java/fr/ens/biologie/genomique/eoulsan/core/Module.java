@@ -27,6 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.core;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 
 /**
@@ -79,6 +80,12 @@ public interface Module {
    * @return a set with the requirements of the module
    */
   Set<Requirement> getRequirements();
+
+  /**
+   * Get the checker for the module
+   * @return the checker for the module
+   */
+  Checker getChecker();
 
   /**
    * Set the parameters of the step to configure the module.
