@@ -3,7 +3,7 @@
 # This file contains the Docker instruction used to build the STAR executable 
 # for Eoulsan
 
-VERSION=2.7.1a
+VERSION=2.7.2b
 DOCKER_IMAGE="star:$VERSION"
 
 cat > Dockerfile << EOF
