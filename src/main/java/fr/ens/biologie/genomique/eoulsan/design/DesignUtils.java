@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
+
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
@@ -628,7 +631,8 @@ public final class DesignUtils {
    */
   public static String getCondition(final ExperimentSample experimentSample) {
 
-    requireNonNull(experimentSample, "experimentSample argument cannot be null");
+    requireNonNull(experimentSample,
+        "experimentSample argument cannot be null");
 
     final ExperimentSampleMetadata esm = experimentSample.getMetadata();
 
@@ -668,7 +672,8 @@ public final class DesignUtils {
   public static String getRepTechGroup(
       final ExperimentSample experimentSample) {
 
-    requireNonNull(experimentSample, "experimentSample argument cannot be null");
+    requireNonNull(experimentSample,
+        "experimentSample argument cannot be null");
 
     final ExperimentSampleMetadata esm = experimentSample.getMetadata();
 
@@ -683,7 +688,6 @@ public final class DesignUtils {
     return result == null ? null : result.trim();
   }
 
-
   /**
    * Get a metadata value for an experiment and a sample. First look in
    * @param experiment the experiment
@@ -692,7 +696,7 @@ public final class DesignUtils {
    * @return the Condition value
    */
   public static String getMetadata(final Experiment experiment,
-                                       final Sample sample, final String key) {
+      final Sample sample, final String key) {
 
     requireNonNull(experiment, "experiment argument cannot be null");
     requireNonNull(sample, "sample argument cannot be null");
@@ -708,12 +712,12 @@ public final class DesignUtils {
    * @param key the metadata key to get
    * @return the Condition value
    */
-  public static String getMetadata(
-          final ExperimentSample experimentSample, final String key) {
+  public static String getMetadata(final ExperimentSample experimentSample,
+      final String key) {
 
-    requireNonNull(experimentSample, "experimentSample argument cannot be null");
+    requireNonNull(experimentSample,
+        "experimentSample argument cannot be null");
     requireNonNull(key, "key argument cannot be null");
-
 
     final ExperimentSampleMetadata esm = experimentSample.getMetadata();
 
@@ -727,7 +731,6 @@ public final class DesignUtils {
 
     return result == null ? null : result.trim();
   }
-
 
   /**
    * Test if an experiement is skipped.
@@ -793,7 +796,8 @@ public final class DesignUtils {
    */
   public static String getReference(final ExperimentSample experimentSample) {
 
-    requireNonNull(experimentSample, "experimentSample argument cannot be null");
+    requireNonNull(experimentSample,
+        "experimentSample argument cannot be null");
 
     final ExperimentSampleMetadata esmd = experimentSample.getMetadata();
 
@@ -843,6 +847,37 @@ public final class DesignUtils {
         return 0;
       }
     }
+  }
+
+  /**
+   * Get the column names used in DESeq2 model.
+   * @param experiment the experiment
+   * @return a set with the column names
+   */
+  public static Set<String> getModelColumns(final Experiment experiment) {
+
+    requireNonNull(experiment, "experiment argument cannot be null");
+
+    Set<String> result = new HashSet<>();
+
+    ExperimentMetadata em = experiment.getMetadata();
+
+    if (!em.isContrast()) {
+      return result;
+    }
+
+    String model = em.getModel();
+
+    if (model == null) {
+      return result;
+    }
+
+    for (String s : Splitter.on(CharMatcher.anyOf("~+: ")).omitEmptyStrings()
+        .split(em.getModel())) {
+      result.add(s);
+    }
+
+    return result;
   }
 
 }
