@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -223,41 +224,54 @@ public class DESeq2DesignChecker implements Checker {
     }
 
     /*
-     * Check if there is no numeric character at the begin of a row in all
-     * metakeys columns for a complex design model
+     * Check if there is no undesirable special characters in the metakeys columns or in the Condition column
+     * when the contrast mode is activate
      */
-//    for (String key : esColumnNames) {
-//      for (ExperimentSample es : experiment.getExperimentSamples()) {
-//        String s = DesignUtils.getMetadata(es, key);
-//        // Error if a condition column contains an invalid numeric character as
-//        // first character
-//        if (!s.isEmpty()
-//            && Character.isDigit(s.charAt(0)) && emd.getComparisons() != null) {
-//          return error(
-//              "One or more sample in the "
-//                  + key + " column start with a numeric character : " + s,
-//              throwsException);
-//        }
-//      }
-//    }
-
-    /*
-     * Check if there is no "-" in the column Condition when the contrast mode
-     * is not active
-     */
-    if (esColumnNames.contains(CONDITION_KEY)
-        || sColumnNames.contains(CONDITION_KEY)) {
+    for (String key : esColumnNames){
+        for (ExperimentSample es : experiment.getExperimentSamples()) {
+          String s = DesignUtils.getMetadata(es, key);
+          if (!Pattern.matches("[a-zA-Z0-9\\_]+", s) && emd.isContrast()) {
+            return error("There is an undesirable special character in the column "+ key +" : " + s,
+                    throwsException);
+          }
+        }
+      }
+    if (sColumnNames.contains(CONDITION_KEY)) {
       for (ExperimentSample es : experiment.getExperimentSamples()) {
         String s = DesignUtils.getMetadata(es, CONDITION_KEY);
-
-        if (s.indexOf('-') != -1 && !emd.isContrast()) {
-          return error(
-              "There is a - character in the \"Condition\" column for sample \""
-                  + es.getSample().getId() + "\": " + s,
-              throwsException);
+        if (s.indexOf('-') != -1 && emd.isContrast()) {
+          return error("There is a - character in the column "+ CONDITION_KEY +" : " + s,
+                  throwsException);
         }
       }
     }
+    /*
+     * Check if there is no undesirable special characters in the metakeys columns or in the Condition column
+     * when the contrast mode is not activate and for a non complex design model
+     */
+    for (String key : esColumnNames){
+      for (ExperimentSample es : experiment.getExperimentSamples()) {
+        String s = DesignUtils.getMetadata(es, key);
+        if (!emd.isContrast() && !emd.containsComparisons()
+                && !Pattern.matches("^[a-zA-Z0-9\\+\\-\\&\\_\\/\\.\\[\\]]+$", s)) {
+          return error("There is a special character in the column " + key + " : " + s,
+                  throwsException);
+        }
+      }
+    }
+    //
+    if (sColumnNames.contains(CONDITION_KEY)) {
+      for (ExperimentSample es : experiment.getExperimentSamples()) {
+        String s = DesignUtils.getMetadata(es, CONDITION_KEY);
+        if (!emd.isContrast() && !emd.containsComparisons()
+                && !Pattern.matches("^[a-zA-Z0-9\\+\\-\\&\\_\\/\\.\\[\\]]+$", s)) {
+          return error("There is a special character in the column "+ CONDITION_KEY +" : " + s,
+                  throwsException);
+        }
+      }
+    }
+
+
 
     /*
      * Verify consistency between the values in the columns Reference and

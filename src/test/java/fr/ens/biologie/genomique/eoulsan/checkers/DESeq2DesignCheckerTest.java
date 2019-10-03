@@ -8,13 +8,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import fr.ens.biologie.genomique.eoulsan.design.*;
 import org.junit.Test;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.design.Design;
-import fr.ens.biologie.genomique.eoulsan.design.Experiment;
-import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
-import fr.ens.biologie.genomique.eoulsan.design.Sample;
 
 /**
  * This class is made to check the design.txt file before running DESeq2.
@@ -103,8 +100,10 @@ public class DESeq2DesignCheckerTest {
         checkExperimentDesign(e3bis, false));
 
     /*
-     * Test if there is no "-" in the column Condition when the contrast mode is
-     * activate
+     * Test if there is no special characters ("+", "*" or "%" for instance)
+     * in the columns when the contrast mode is activate
+     * Or if there is no special characters (except "-", "+" and "&")
+     * in the columns for a non complex design model
      */
 
     // Working example
@@ -114,7 +113,7 @@ public class DESeq2DesignCheckerTest {
     List<String> h4 = asList("RepTechGroup", "Condition");
     e4.addSample(addSample(testDashInConditon, h4, "S1", "296-a", "KO"));
     assertTrue(
-        "There is a dash in the condition column while the contrast mode is activate",
+        "There is a special character in the condition column while the contrast mode is activate",
         checkExperimentDesign(e4, false));
     // Example containing a mistake: "KO-" as Condition for S1 when the contrast
     // mode is activate
@@ -122,13 +121,21 @@ public class DESeq2DesignCheckerTest {
     Experiment e4bis = testDashInConditonBis.addExperiment("exp1");
     e4bis.getMetadata().setContrast(true);
     List<String> h4bis = asList("RepTechGroup", "Condition");
-    e4bis.addSample(
-        addSample(testDashInConditonBis, h4bis, "S1", "296-a", "KO-"));
-    e4bis.addSample(
-        addSample(testDashInConditonBis, h4bis, "S2", "297-a", "KO"));
-    assertTrue(
-        "There is a dash in the condition column while the contrast mode is activate",
-        checkExperimentDesign(e4bis, false));
+    e4bis.addSample(addSample(testDashInConditonBis, h4bis, "S1", "296-a", "KO-"));
+    assertFalse(
+            "There is a special character in the condition column while the contrast mode is activate",
+            checkExperimentDesign(e4bis, false));
+    // Example containing a mistake: "KO*" as Condition for S2
+    // with a contrast mode is not activate and for a non complex design model
+    Design testDashInConditonTer = createEmptyDesign();
+    Experiment e4ter = testDashInConditonTer.addExperiment("exp1");
+    List<String> h4ter = asList("RepTechGroup", "Condition");
+    e4ter.addSample(
+            addSample(testDashInConditonTer, h4ter, "S1", "296-a", "KO*"));
+    assertFalse(
+            "There is a special character in the columns while the contrast mode is not activate " +
+                    "and the design model is not complex",
+            checkExperimentDesign(e4ter, false));
 
     /*
      * Test if there is no numeric character at the begin of a row in the column
