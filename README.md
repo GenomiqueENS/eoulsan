@@ -8,7 +8,7 @@ Here is a quick access to the main pages:
 - [Install Eoulsan](http://www.outils.genomique.biologie.ens.fr/eoulsan2/installing.html)
 - New user's [tutorials](https://github.com/GenomicParisCentre/eoulsan/wiki):
   - [Bulk RNA-seq data](https://github.com/GenomicParisCentre/eoulsan/wiki/Bulk-RNA-Seq-tutorial)
-  - Bulk RNA-seq long read data (Nanopore) [_in progress_]
+  - [Bulk RNA-seq long read data (Nanopore)](https://github.com/GenomicParisCentre/eoulsan/wiki/Bulk-RNA-Seq-Nanopore-tutorial)
   - [Single cell RNA-seq (Smart-Seq2)](https://github.com/GenomicParisCentre/eoulsan/wiki/Smart-Seq2-scRNA-seq-tutorial)
   - [Single cell RNA-seq (10x Genomics)](https://github.com/GenomicParisCentre/eoulsan/wiki/10x-Genomics-scRNA-seq-tutorial)
   - ChIP-seq / ATAC-seq [_in progress_]
