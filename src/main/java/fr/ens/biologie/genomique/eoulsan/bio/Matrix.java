@@ -150,7 +150,7 @@ public interface Matrix<E> {
 
   /**
    * Add a matrix value to the current matrix
-   * @param matrix
+   * @param matrix matrix to add
    */
   void add(Matrix<E> matrix);
 
@@ -193,7 +193,8 @@ public interface Matrix<E> {
 
   /**
    * Retain row of the matrix.
-   * @param columnNames a collection with the column names of the matrix to retain
+   * @param columnNames a collection with the column names of the matrix to
+   *          retain
    */
   void retainColumns(Collection<String> columnNames);
 
@@ -212,7 +213,7 @@ public interface Matrix<E> {
   /**
    * Test if the matrix is empty. A matrix is empty when the size of the matrix
    * is 0, and no row or column has been created.
-   * @return
+   * @return true if the matrix is empty
    */
   boolean isEmpty();
 

@@ -87,7 +87,7 @@ public class SingularityDockerClient implements DockerClient {
   /**
    * Get storage directory.
    * @return the storage directory
-   * @throws IOException
+   * @throws IOException if an error occurs while creating the storage directory
    */
   private File getStorageDirectory() throws IOException {
 

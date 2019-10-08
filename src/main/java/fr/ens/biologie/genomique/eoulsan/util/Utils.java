@@ -34,8 +34,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * This class contains some useful methods about collection, hashcode
@@ -199,28 +199,21 @@ public class Utils {
       return null;
     }
 
-    return new Iterable<T>() {
+    return () -> new Iterator<T>() {
 
       @Override
-      public Iterator<T> iterator() {
+      public boolean hasNext() {
+        return e.hasMoreElements();
+      }
 
-        return new Iterator<T>() {
+      @Override
+      public T next() {
+        return e.nextElement();
+      }
 
-          @Override
-          public boolean hasNext() {
-            return e.hasMoreElements();
-          }
-
-          @Override
-          public T next() {
-            return e.nextElement();
-          }
-
-          @Override
-          public void remove() {
-            throw new UnsupportedOperationException();
-          }
-        };
+      @Override
+      public void remove() {
+        throw new UnsupportedOperationException();
       }
     };
   }
@@ -236,14 +229,7 @@ public class Utils {
       return null;
     }
 
-    return new Iterable<T>() {
-
-      @Override
-      public Iterator<T> iterator() {
-
-        return it;
-      }
-    };
+    return () -> it;
   }
 
   /**

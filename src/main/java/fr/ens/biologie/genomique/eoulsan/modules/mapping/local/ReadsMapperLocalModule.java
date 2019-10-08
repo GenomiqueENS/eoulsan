@@ -249,7 +249,7 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
    * @param archiveIndexFile genome index for the mapper as a ZIP file
    * @param indexDir uncompressed directory for the genome index
    * @param reporter reporter
-   * @throws IOException
+   * @throws IOException if an error while initializing the mapper
    */
   private FileMapping initMapper(final TaskContext context,
       final FastqFormat format, final DataFile archiveIndexFile,

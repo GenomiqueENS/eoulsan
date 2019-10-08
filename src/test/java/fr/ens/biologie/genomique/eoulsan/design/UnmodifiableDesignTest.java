@@ -28,6 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -41,35 +42,35 @@ public class UnmodifiableDesignTest {
 
     try {
       ud.setName(null);
-      assertTrue(false);
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       ud.removeSample(null);
-      assertTrue(false);
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       ud.removeExperiment(null);
-      assertTrue(false);
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       ud.addSample(null);
-      assertTrue(false);
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       ud.addExperiment(null);
-      assertTrue(false);
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }

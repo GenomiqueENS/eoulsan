@@ -28,6 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -258,7 +259,7 @@ public class DataFileTest {
 
     try {
       new DataFile("toto://www.toto.com/home/toto/toto.txt").getProtocol();
-      assertTrue(false);
+      fail();
     } catch (IOException e) {
       assertTrue(true);
     }
@@ -393,7 +394,7 @@ public class DataFileTest {
 
     try {
       new DataFile((String) null);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }

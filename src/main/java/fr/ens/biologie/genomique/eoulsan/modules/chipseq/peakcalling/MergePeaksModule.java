@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
@@ -58,7 +57,6 @@ public class MergePeaksModule extends AbstractModule {
    * Set the parameters of the step to configure the step. Nothing to configure
    * for such a simple step.
    * @param stepParameters parameters of the step
-   * @throws EoulsanException if a parameter is invalid
    */
   @Override
   public void configure(final StepConfigurationContext context,
@@ -81,7 +79,7 @@ public class MergePeaksModule extends AbstractModule {
     // First sort data into experiments/replicate groups before we can
     // concatenate what is inside each group
     HashMap<String, ArrayList<Data>> expMap =
-      new HashMap<>(inData.getListElements().size() / 2);
+        new HashMap<>(inData.getListElements().size() / 2);
     for (Data anInputData : inData.getListElements()) {
 
       getLogger().finest("Input file. ref : "
@@ -127,9 +125,9 @@ public class MergePeaksModule extends AbstractModule {
         continue;
       }
 
-      String cmd = "cat";
+      StringBuilder cmd = new StringBuilder("cat");
       for (Data sample : expDataList) {
-        cmd += String.format(" %s", sample.getDataFile().getSource());
+        cmd.append(String.format(" %s", sample.getDataFile().getSource()));
       }
 
       try {
@@ -137,9 +135,9 @@ public class MergePeaksModule extends AbstractModule {
             expDataList.get(0).getDataFile().getParent().getSource(),
             experimentName));
 
-        getLogger().info(
-            String.format("Running : %s with output: %s", cmd, outputFile));
-        ProcessUtils.execWriteOutput(cmd, outputFile);
+        getLogger().info(String.format("Running : %s with output: %s",
+            cmd.toString(), outputFile));
+        ProcessUtils.execWriteOutput(cmd.toString(), outputFile);
 
       } catch (java.io.IOException e) {
         getLogger().severe(e.toString());

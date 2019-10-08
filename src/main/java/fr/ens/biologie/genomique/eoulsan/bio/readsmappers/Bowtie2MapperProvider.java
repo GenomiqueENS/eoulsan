@@ -97,8 +97,8 @@ public class Bowtie2MapperProvider extends AbstractBowtieMapperProvider {
     return DEFAULT_ARGUMENTS;
   }
 
-  protected static final String getBowtieQualityArgument(
-      final FastqFormat format) throws Exception {
+  protected static String getBowtieQualityArgument(final FastqFormat format)
+      throws Exception {
 
     switch (format) {
 

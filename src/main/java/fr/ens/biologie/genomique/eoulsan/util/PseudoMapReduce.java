@@ -274,7 +274,8 @@ public abstract class PseudoMapReduce {
   /**
    * Sort several files in sortOutputFile
    * @return true if success sort
-   * @throws IOException
+   * @throws IOException if an error occurs while executing external sort
+   *           command
    */
   private boolean sort() throws IOException {
 

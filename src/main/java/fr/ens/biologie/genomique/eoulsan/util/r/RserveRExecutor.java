@@ -194,7 +194,7 @@ public class RserveRExecutor extends AbstractRExecutor {
    * @param outputDirectory the output directory
    * @param temporaryDirectory the temporary directory
    * @param serverName Rserve server name
-   * @throws IOException
+   * @throws IOException if an error occurs
    */
   public RserveRExecutor(final File outputDirectory,
       final File temporaryDirectory, final String serverName)

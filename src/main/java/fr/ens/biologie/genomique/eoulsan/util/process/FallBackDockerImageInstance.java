@@ -117,16 +117,12 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
 
     final Process process = pb.start();
 
-    return new AdvancedProcess() {
+    return () -> {
 
-      @Override
-      public int waitFor() throws IOException {
-
-        try {
-          return process.waitFor();
-        } catch (InterruptedException e) {
-          throw new IOException(e);
-        }
+      try {
+        return process.waitFor();
+      } catch (InterruptedException e) {
+        throw new IOException(e);
       }
     };
 

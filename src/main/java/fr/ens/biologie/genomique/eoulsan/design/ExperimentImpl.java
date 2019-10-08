@@ -119,7 +119,7 @@ public class ExperimentImpl implements Serializable, Experiment {
 
     for (ExperimentSample eSample : this.samples) {
 
-      if (eSample.getSample().getId() == sample.getId()) {
+      if (eSample.getSample().getId().equals(sample.getId())) {
         return eSample;
       }
     }

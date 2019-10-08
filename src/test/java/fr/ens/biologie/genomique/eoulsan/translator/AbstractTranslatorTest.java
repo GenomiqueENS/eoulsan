@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class AbstractTranslatorTest {
     try {
 
       AddIdTransl.isField(null);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
 
       assertTrue(true);
@@ -50,7 +51,7 @@ public class AbstractTranslatorTest {
     try {
 
       transl.setDefaultField(null);
-      assertTrue(false);
+      fail();
     } catch (RuntimeException e) {
 
       assertTrue(true);
@@ -70,7 +71,7 @@ public class AbstractTranslatorTest {
     try {
 
       transl.isField(null);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
 
       assertTrue(true);
@@ -106,7 +107,7 @@ public class AbstractTranslatorTest {
     try {
 
       transl.translate("").get(3);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
 
       assertTrue(true);
@@ -116,7 +117,7 @@ public class AbstractTranslatorTest {
 
       transl.translate("B").get(3);
 
-      assertTrue(false);
+      fail();
     } catch (IndexOutOfBoundsException e) {
 
       assertTrue(true);

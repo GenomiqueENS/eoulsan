@@ -352,10 +352,10 @@ public class GalaxyToolInterpreterTest {
       int length = commandExpected.size();
 
       // Compare length
-      assertTrue("Number words requiered is invalid, expected "
+      assertEquals("Number words requiered is invalid, expected "
           + length + " obtains by PythonInterpreter "
           + commandBuildByInterpreter.size() + ": " + commandBuildByInterpreter,
-          length == commandBuildByInterpreter.size());
+          length, commandBuildByInterpreter.size());
 
       // Compare word by word
       assertTrue(

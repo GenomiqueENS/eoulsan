@@ -27,6 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.core;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -239,14 +240,14 @@ public class FileNamingTest {
 
     try {
       f.setStepId(" blabla ");
-      assertTrue(false);
+      fail();
     } catch (IllegalArgumentException e) {
       assertTrue(true);
     }
 
     try {
       f.setStepId(null);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
@@ -263,14 +264,14 @@ public class FileNamingTest {
 
     try {
       f.setPortName(" blabla ");
-      assertTrue(false);
+      fail();
     } catch (IllegalArgumentException e) {
       assertTrue(true);
     }
 
     try {
       f.setPortName(null);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
@@ -287,14 +288,14 @@ public class FileNamingTest {
 
     try {
       f.setDataName(" blabla ");
-      assertTrue(false);
+      fail();
     } catch (IllegalArgumentException e) {
       assertTrue(true);
     }
 
     try {
       f.setDataName(null);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
@@ -311,7 +312,7 @@ public class FileNamingTest {
 
     try {
       f.setFormat(null);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
@@ -356,7 +357,7 @@ public class FileNamingTest {
 
     try {
       f.setCompression(null);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
@@ -395,14 +396,14 @@ public class FileNamingTest {
 
     try {
       FileNaming.fileSuffix(".fq", null);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
 
     try {
       FileNaming.fileSuffix(null, "");
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
@@ -417,14 +418,14 @@ public class FileNamingTest {
 
     try {
       FileNaming.fileSuffix(".fq", null);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
 
     try {
       FileNaming.fileSuffix(null, "");
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
@@ -433,50 +434,49 @@ public class FileNamingTest {
   @Test
   public void testParseFile() {
 
-    assertTrue(
-        FileNaming.parse(new File("filterreads_output_reads_s1_file0.fq"))
-            .filename().equals("filterreads_output_reads_s1_file0.fq"));
+    assertEquals("filterreads_output_reads_s1_file0.fq", FileNaming
+        .parse(new File("filterreads_output_reads_s1_file0.fq")).filename());
   }
 
   @Test
   public void testParseDataFile() {
 
-    assertTrue(
+    assertEquals("filterreads_output_reads_s1_file0.fq",
         FileNaming.parse(new DataFile("filterreads_output_reads_s1_file0.fq"))
-            .filename().equals("filterreads_output_reads_s1_file0.fq"));
+            .filename());
   }
 
   @Test
   public void testParseString() {
 
-    assertTrue(FileNaming.parse("filterreads_output_reads_s1_file0.fq")
-        .filename().equals("filterreads_output_reads_s1_file0.fq"));
+    assertEquals("filterreads_output_reads_s1_file0.fq",
+        FileNaming.parse("filterreads_output_reads_s1_file0.fq").filename());
 
-    assertTrue(FileNaming.parse("filterreads_output_reads_s1_file0.fq.bz2")
-        .filename().equals("filterreads_output_reads_s1_file0.fq.bz2"));
+    assertEquals("filterreads_output_reads_s1_file0.fq.bz2", FileNaming
+        .parse("filterreads_output_reads_s1_file0.fq.bz2").filename());
 
-    assertTrue(FileNaming
-        .parse("filterreads_output_reads_s1_file0_part1.fq.bz2").filename()
-        .equals("filterreads_output_reads_s1_file0_part1.fq.bz2"));
+    assertEquals("filterreads_output_reads_s1_file0_part1.fq.bz2", FileNaming
+        .parse("filterreads_output_reads_s1_file0_part1.fq.bz2").filename());
 
-    assertTrue(FileNaming
-        .parse("genericindexgenerator_output_bowtieindex_genome.zip").filename()
-        .equals("genericindexgenerator_output_bowtieindex_genome.zip"));
+    assertEquals("genericindexgenerator_output_bowtieindex_genome.zip",
+        FileNaming.parse("genericindexgenerator_output_bowtieindex_genome.zip")
+            .filename());
 
-    assertTrue(FileNaming
-        .parse("genericindexgenerator_output_bowtieindex_genome_part5.zip")
-        .filename()
-        .equals("genericindexgenerator_output_bowtieindex_genome_part5.zip"));
+    assertEquals("genericindexgenerator_output_bowtieindex_genome_part5.zip",
+        FileNaming
+            .parse("genericindexgenerator_output_bowtieindex_genome_part5.zip")
+            .filename());
 
-    assertTrue(FileNaming
-        .parse("genericindexgenerator_output_bowtieindex_genome.zip.gz")
-        .filename()
-        .equals("genericindexgenerator_output_bowtieindex_genome.zip.gz"));
+    assertEquals("genericindexgenerator_output_bowtieindex_genome.zip.gz",
+        FileNaming
+            .parse("genericindexgenerator_output_bowtieindex_genome.zip.gz")
+            .filename());
 
-    assertTrue(FileNaming
-        .parse("genericindexgenerator_output_bowtieindex_genome_part5.zip.gz")
-        .filename().equals(
-            "genericindexgenerator_output_bowtieindex_genome_part5.zip.gz"));
+    assertEquals("genericindexgenerator_output_bowtieindex_genome_part5.zip.gz",
+        FileNaming
+            .parse(
+                "genericindexgenerator_output_bowtieindex_genome_part5.zip.gz")
+            .filename());
 
   }
 

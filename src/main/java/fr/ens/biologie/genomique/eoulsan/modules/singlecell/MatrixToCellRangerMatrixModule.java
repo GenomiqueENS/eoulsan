@@ -45,7 +45,7 @@ public class MatrixToCellRangerMatrixModule extends AbstractModule {
   private static final String MODULE_NAME = "matrix2cellrangermatrix";
 
   private boolean inputMatrices = true;
-  private boolean useAdditionnalAnnotation = true;
+  private boolean useAdditionalAnnotation = true;
   private String featureAnnotationFieldName = "Gene name";
   private String featureAnnotationType = DEFAULT_FEATURE_TYPE;
   private int cellRangerMatrixFormat = 2;
@@ -67,7 +67,7 @@ public class MatrixToCellRangerMatrixModule extends AbstractModule {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
 
-    if (this.useAdditionnalAnnotation) {
+    if (this.useAdditionalAnnotation) {
       builder.addPort("additionalannotation", ADDITIONAL_ANNOTATION_TSV);
     }
 
@@ -97,15 +97,15 @@ public class MatrixToCellRangerMatrixModule extends AbstractModule {
         this.inputMatrices = p.getBooleanValue();
         break;
 
-      case "use.additionnal.annotation":
-        this.useAdditionnalAnnotation = p.getBooleanValue();
+      case "use.additional.annotation":
+        this.useAdditionalAnnotation = p.getBooleanValue();
         break;
 
-      case "additionnal.annotation.field.name":
+      case "additional.annotation.field.name":
         this.featureAnnotationFieldName = p.getValue();
         break;
 
-      case "additionnal.annotation.type":
+      case "additional.annotation.type":
         this.featureAnnotationType = p.getValue();
         break;
 
@@ -133,7 +133,7 @@ public class MatrixToCellRangerMatrixModule extends AbstractModule {
     try {
 
       // Load additional annotation
-      if (this.useAdditionnalAnnotation) {
+      if (this.useAdditionalAnnotation) {
         context.getLogger().fine("Load additional annotation");
 
         try (AnnotationMatrixReader reader = new TSVAnnotationMatrixReader(

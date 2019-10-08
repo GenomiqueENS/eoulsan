@@ -22,7 +22,7 @@ public class Naming {
    * @return a string with only the name characters argument that are allowed by
    *         the file naming convention
    */
-  public static final String toValidName(final String name) {
+  public static String toValidName(final String name) {
 
     requireNonNull(name, "name argument cannot be null");
 

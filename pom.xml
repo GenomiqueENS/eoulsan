@@ -686,6 +686,28 @@
                         <groupId>org.apache.commons</groupId>
                         <artifactId>commons-collections4</artifactId>
                         <version>4.1</version>
+		</dependency>
+
+		<!-- Fix Java 11 warning -->
+                <dependency>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                        <version>2.2.11</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.sun.xml.bind</groupId>
+                        <artifactId>jaxb-core</artifactId>
+                        <version>2.2.11</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.sun.xml.bind</groupId>
+                        <artifactId>jaxb-impl</artifactId>
+                        <version>2.2.11</version>
+                </dependency>
+                <dependency>
+                        <groupId>javax.activation</groupId>
+                        <artifactId>activation</artifactId>
+                        <version>1.1.1</version>
                 </dependency>
 
 	</dependencies>
@@ -696,7 +718,7 @@
 		<finalName>${project.artifactId}-${project.version}</finalName>
 		<testOutputDirectory>target/test-classes</testOutputDirectory>
 		<sourceDirectory>src/main/java</sourceDirectory>
-		<scriptSourceDirectory>src/main/scripts</scriptSourceDirectory>
+		<!--scriptSourceDirectory>src/main/scripts</scriptSourceDirectory-->
 		<testSourceDirectory>src/test/java</testSourceDirectory>
 		<resources>
 			<resource>

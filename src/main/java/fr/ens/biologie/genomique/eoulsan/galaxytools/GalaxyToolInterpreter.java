@@ -212,14 +212,7 @@ public class GalaxyToolInterpreter {
         final Collection<ToolElement> elements) {
 
       final List<ToolElement> elementsSorted = new ArrayList<>(elements);
-      Collections.sort(elementsSorted, new Comparator<ToolElement>() {
-
-        @Override
-        public int compare(ToolElement o1, ToolElement o2) {
-
-          return o1.getName().compareTo(o2.getName());
-        }
-      });
+      elementsSorted.sort(Comparator.comparing(ToolElement::getName));
 
       return Collections.unmodifiableList(elementsSorted);
     }

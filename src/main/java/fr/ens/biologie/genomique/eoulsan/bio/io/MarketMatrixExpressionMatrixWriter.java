@@ -30,7 +30,6 @@ public class MarketMatrixExpressionMatrixWriter
 
   private final OutputStream os;
 
-
   @Override
   public void write(final ExpressionMatrix matrix) throws IOException {
 
@@ -72,8 +71,8 @@ public class MarketMatrixExpressionMatrixWriter
 
       for (Matrix.Entry<Double> e : matrix.nonZeroValues()) {
         if (rowNames.contains(e.getRowName())) {
-          String value = intMatrix
-              ? "" + e.getValue().intValue() : "" + e.getValue();
+          String value =
+              intMatrix ? "" + e.getValue().intValue() : "" + e.getValue();
           writer.write(""
               + rowPositions.get(e.getRowName()) + ' '
               + columnPositions.get(e.getColumnName()) + ' ' + value + '\n');

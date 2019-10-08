@@ -142,8 +142,8 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
 
   /**
    * Initialization Eoulsan runtime for external application who needed Eoulsan
-   * @throws IOException
-   * @throws EoulsanException
+   * @throws IOException if an error occurs while initializing the runtime
+   * @throws EoulsanException if an error occurs while initializing the runtime
    */
   public static void initEoulsanRuntimeForExternalApp()
       throws IOException, EoulsanException {

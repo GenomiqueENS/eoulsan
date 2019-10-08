@@ -238,7 +238,7 @@ public class MapperInstance {
    * @param outputDir the output directory
    * @param indexerArguments the index arguments
    * @param threads the number of threads to use
-   * @param stdErrorFile standard output file
+   * @param stdOutFile standard output file
    * @param stdErrorFile standard error file
    * @throws IOException if an error occurs while creating the index
    */
@@ -277,7 +277,7 @@ public class MapperInstance {
 
     // Build the command line and compute the index
     final List<String> cmd = new ArrayList<>(this.mapper.getProvider()
-      .getIndexerCommand(indexer, tmpGenomeFile, indexerArguments, threads));
+        .getIndexerCommand(indexer, tmpGenomeFile, indexerArguments, threads));
 
     getLogger().fine(cmd.toString());
 

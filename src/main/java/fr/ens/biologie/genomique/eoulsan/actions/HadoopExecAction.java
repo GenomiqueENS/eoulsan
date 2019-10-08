@@ -82,8 +82,8 @@ public class HadoopExecAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line = parser.parse(options,
-          arguments.toArray(new String[0]), true);
+      final CommandLine line =
+          parser.parse(options, arguments.toArray(new String[0]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -180,8 +180,8 @@ public class HadoopExecAction extends AbstractAction {
     }
 
     if (main.getClassPath() != null) {
-      result.add("-D"
-          + Main.EOULSAN_CLASSPATH_JVM_ARG + "=" + main.getClassPath());
+      result.add(
+          "-D" + Main.EOULSAN_CLASSPATH_JVM_ARG + "=" + main.getClassPath());
     }
 
     return Joiner.on(' ').join(result);

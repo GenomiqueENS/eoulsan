@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.core;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 
@@ -33,7 +34,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
  * @since 1.0
  * @author Laurent Jourdren
  */
-public class Parameter implements Serializable {
+public class Parameter implements Serializable, Comparable<Parameter> {
 
   /** Serialization version UID. */
   private static final long serialVersionUID = -3788321419921821433L;
@@ -171,10 +172,53 @@ public class Parameter implements Serializable {
     return Boolean.parseBoolean(this.value);
   }
 
+  //
+  // Object methods
+  //
+
   @Override
   public String toString() {
 
     return this.name + "=" + this.value;
+  }
+
+  @Override
+  public int hashCode() {
+
+    return Objects.hash(this.name, this.value);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+
+    if (o == this) {
+      return true;
+    }
+
+    if (!(o instanceof Parameter)) {
+      return false;
+    }
+
+    final Parameter that = (Parameter) o;
+
+    return Objects.equals(this.name, that.name)
+        && Objects.equals(this.value, that.value);
+  }
+
+  @Override
+  public int compareTo(final Parameter p) {
+
+    if (p == null) {
+      return -1;
+    }
+
+    int result = this.name.compareTo(p.name);
+
+    if (result != 0) {
+      return result;
+    }
+
+    return this.value.compareTo(p.value);
   }
 
   //

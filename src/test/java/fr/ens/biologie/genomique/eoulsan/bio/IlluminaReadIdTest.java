@@ -26,7 +26,9 @@ package fr.ens.biologie.genomique.eoulsan.bio;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -138,23 +140,23 @@ public class IlluminaReadIdTest {
 
     IlluminaReadId ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#0/1");
     assertFalse(ii.isFlowCellIdField());
-    assertEquals(null, ii.getFlowCellId());
+    assertNull(ii.getFlowCellId());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
     assertFalse(ii.isFlowCellIdField());
-    assertEquals(null, ii.getFlowCellId());
+    assertNull(ii.getFlowCellId());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973");
     assertFalse(ii.isFlowCellIdField());
-    assertEquals(null, ii.getFlowCellId());
+    assertNull(ii.getFlowCellId());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220/1");
     assertFalse(ii.isFlowCellIdField());
-    assertEquals(null, ii.getFlowCellId());
+    assertNull(ii.getFlowCellId());
 
     ii = new IlluminaReadId("SOLEXA3_162:7:100:10000:1220");
     assertFalse(ii.isFlowCellIdField());
-    assertEquals(null, ii.getFlowCellId());
+    assertNull(ii.getFlowCellId());
 
     ii = new IlluminaReadId(
         "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
@@ -359,7 +361,8 @@ public class IlluminaReadIdTest {
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973#ATCACG/1");
     assertTrue(ii.isSequenceIndexField());
     assertEquals("ATCACG", ii.getSequenceIndex());
-    assertEquals(Collections.singletonList("ATCACG"), ii.getSequenceIndexList());
+    assertEquals(Collections.singletonList("ATCACG"),
+        ii.getSequenceIndexList());
 
     ii = new IlluminaReadId("HWUSI-EAS100R:6:73:941:1973/1");
     assertFalse(ii.isSequenceIndexField());
@@ -385,7 +388,8 @@ public class IlluminaReadIdTest {
         "HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0:ATCACG");
     assertTrue(ii.isSequenceIndexField());
     assertEquals("ATCACG", ii.getSequenceIndex());
-    assertEquals(Arrays.asList("ATCACG"), ii.getSequenceIndexList());
+    assertEquals(Collections.singletonList("ATCACG"),
+        ii.getSequenceIndexList());
 
     ii = new IlluminaReadId(
         "NB500892:67:HVN5KBGXX:1:11101:22912:1064 1:N:0:CTCTCTAC+TACTCCTT");
@@ -554,14 +558,14 @@ public class IlluminaReadIdTest {
 
     try {
       ii.parse((String) null);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
 
     try {
       ii.parse((Sequence) null);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
@@ -570,28 +574,28 @@ public class IlluminaReadIdTest {
 
     try {
       ii.parse(s);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
 
     try {
       new IlluminaReadId((String) null);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
 
     try {
       new IlluminaReadId((Sequence) null);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
 
     try {
       new IlluminaReadId(s);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
       assertTrue(true);
     }
@@ -615,21 +619,21 @@ public class IlluminaReadIdTest {
 
     try {
       ii.parse("HWUSI-EAS100R:6:73:941:1973:0/1");
-      assertTrue(false);
+      fail();
     } catch (EoulsanException e) {
       assertTrue(true);
     }
 
     try {
       ii.parse("HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178 1:N:0#ATCACG");
-      assertTrue(false);
+      fail();
     } catch (EoulsanException e) {
       assertTrue(true);
     }
 
     try {
       ii.parse("HWI-1KL110:24:AB0868ABXX:3:1101:1492:2178:1:N:0:ATCACG");
-      assertTrue(false);
+      fail();
     } catch (EoulsanException e) {
       assertTrue(true);
     }
