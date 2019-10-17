@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 
@@ -703,6 +704,17 @@ public final class Settings implements Serializable {
   }
 
   /**
+   * Test if standard external modules must be used.
+   * @return true if standard external modules must be used
+   */
+  public boolean isUseStandardExternalModules() {
+
+    return Boolean.parseBoolean(
+        this.properties.getProperty(STANDARD_EXTERNAL_MODULES_ENABLED_KEY,
+            "" + Globals.STANDARD_EXTERNAL_MODULES_ENABLED_DEFAULT));
+  }
+
+  /**
    * Get a setting value.
    * @return settingName value as a String
    */
@@ -1197,12 +1209,58 @@ public final class Settings implements Serializable {
   }
 
   /**
+   * Set the data format paths
+   * @param paths the path to set
+   */
+  public void setDataFormatPaths(List<String> paths) {
+
+    Objects.requireNonNull(paths);
+
+    StringBuilder sb = new StringBuilder();
+
+    boolean first = true;
+    for (String s : paths) {
+      sb.append(s);
+      if (first) {
+        first = false;
+      } else {
+        sb.append(' ');
+      }
+    }
+
+    setDataFormatPath(sb.toString());
+  }
+
+  /**
    * Set the Galaxy tool path.
    * @param path the format
    */
   public void setGalaxyToolPath(final String path) {
 
     this.properties.setProperty(DATA_FORMAT_PATH_KEY, path);
+  }
+
+  /**
+   * Set the Galaxy tools paths
+   * @param paths the path to set
+   */
+  public void setGalaxyToolsPaths(List<String> paths) {
+
+    Objects.requireNonNull(paths);
+
+    StringBuilder sb = new StringBuilder();
+
+    boolean first = true;
+    for (String s : paths) {
+      sb.append(s);
+      if (first) {
+        first = false;
+      } else {
+        sb.append(' ');
+      }
+    }
+
+    setGalaxyToolPath(sb.toString());
   }
 
   /**
@@ -1221,6 +1279,16 @@ public final class Settings implements Serializable {
   public void setSaveWorkflowImage(final boolean save) {
 
     this.properties.setProperty(SAVE_WORKFLOW_IMAGE_KEY, "" + save);
+  }
+
+  /**
+   * Set if standard external modules must be used.
+   * @param enable the value
+   */
+  public void setUseStandardExternalModules(final boolean enable) {
+
+    this.properties.getProperty(STANDARD_EXTERNAL_MODULES_ENABLED_KEY,
+        "" + enable);
   }
 
   /**

@@ -26,9 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.Globals.APP_VERSION;
-import static fr.ens.biologie.genomique.eoulsan.Settings.DATA_FORMAT_PATH_KEY;
-import static fr.ens.biologie.genomique.eoulsan.Settings.GALAXY_TOOL_PATH_KEY;
-import static fr.ens.biologie.genomique.eoulsan.Settings.STANDARD_EXTERNAL_MODULES_ENABLED_KEY;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
@@ -39,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Settings;
@@ -127,8 +125,14 @@ public class Executor {
     // Check design
     checkDesign();
 
+    // Get Eoulsan settings
+    final Settings settings = EoulsanRuntime.getSettings();
+
+    // Update settings with global parameters
+    updateSettingsWithGlobalParameters(settings, this.command);
+
     // Add default Eoulsan external modules
-    configureEoulsanTools(this.command);
+    configureEoulsanTools(settings);
 
     // Create Workflow
     final CommandWorkflow workflow = new CommandWorkflow(this.arguments,
@@ -273,20 +277,31 @@ public class Executor {
   }
 
   /**
-   * Configure default standard Galaxy modules and external formats.
-   * @param command workflow content
+   * Update Eoulsan settings with global parameters.
+   * @param settings the Eoulsan settings
+   * @param command the command object
    */
-  private static void configureEoulsanTools(
-      final CommandWorkflowModel command) {
+  private static void updateSettingsWithGlobalParameters(
+      final Settings settings, final CommandWorkflowModel command) {
 
-    final Settings settings = EoulsanRuntime.getSettings();
     final Set<Parameter> globalParameters = command.getGlobalParameters();
 
+    // Add globals parameters to Settings
+    getLogger()
+        .info("Init all steps with global parameters: " + globalParameters);
+    for (Parameter p : globalParameters) {
+      settings.setSetting(p.getName(), p.getStringValue());
+    }
+  }
+
+  /**
+   * Configure default standard Galaxy modules and external formats.
+   * @param settings the Eoulsan settings
+   */
+  private static void configureEoulsanTools(final Settings settings) {
+
     // Is standard external modules enabled?
-    if (!getSetting(globalParameters, settings,
-        STANDARD_EXTERNAL_MODULES_ENABLED_KEY).isEmpty()
-        && !isSettingEnabled(globalParameters, settings,
-            STANDARD_EXTERNAL_MODULES_ENABLED_KEY)) {
+    if (!settings.isUseStandardExternalModules()) {
       return;
     }
 
@@ -301,90 +316,25 @@ public class Executor {
             "branch" + APP_VERSION.getMajor() + "." + APP_VERSION.getMinor();
       }
 
+      // Define default external Galaxy tools Path
+      String defaultGalaxyToolPath =
+          Globals.EOULSAN_TOOLS_WEBSITE_URL + "/" + branch + "/galaxytools";
+
+      // Define default external format Path
+      String defaultDataFormatPath =
+          Globals.EOULSAN_TOOLS_WEBSITE_URL + "/" + branch + "/formats";
+
       // Add standard galaxy tools from Eoulsan tools GitHub repository
-      String galaxyToolPath =
-          getSetting(globalParameters, settings, GALAXY_TOOL_PATH_KEY);
-      galaxyToolPath = (galaxyToolPath.isEmpty() ? "" : galaxyToolPath + " ")
-          + Globals.EOULSAN_TOOLS_WEBSITE_URL + "/" + branch + "/galaxytools";
-      updateParameters(globalParameters, GALAXY_TOOL_PATH_KEY, galaxyToolPath);
+      List<String> galaxyToolPathList = settings.getGalaxyToolPaths();
+      galaxyToolPathList.add(defaultGalaxyToolPath);
+      settings.setGalaxyToolsPaths(galaxyToolPathList);
 
       // Add standard format from Eoulsan tools GitHub repository
-      String formatPath =
-          getSetting(globalParameters, settings, DATA_FORMAT_PATH_KEY);
-      formatPath = (formatPath.isEmpty() ? "" : formatPath + " ")
-          + " " + Globals.EOULSAN_TOOLS_WEBSITE_URL + "/" + branch + "/formats";
-      updateParameters(globalParameters, DATA_FORMAT_PATH_KEY, formatPath);
+      List<String> dataFormatPathList = settings.getDataFormatPaths();
+      dataFormatPathList.add(defaultDataFormatPath);
+      settings.setDataFormatPaths(dataFormatPathList);
     }
 
-  }
-
-  /**
-   * Get the value of a setting of a global parameter from the workflow file.
-   * @param globalParameters global parameters
-   * @param settings Eouslan settings
-   * @param key the key to search
-   * @return the value of the setting or the parameter if exist or an empty
-   *         string
-   */
-  private static String getSetting(final Set<Parameter> globalParameters,
-      final Settings settings, final String key) {
-
-    if (key == null) {
-      return "";
-    }
-
-    for (Parameter p : globalParameters) {
-      if (key.equals(p.getName())) {
-        return p.getValue();
-      }
-    }
-
-    String result = settings.getSetting(key);
-
-    if (result == null) {
-      return "";
-    }
-
-    return result;
-  }
-
-  /**
-   * Test if a global parameter or a setting is enabled.
-   * @param globalParameters global parameter
-   * @param settings Eoulsan settings
-   * @param key the key to search
-   * @return true if the setting is enabled
-   */
-  private static boolean isSettingEnabled(final Set<Parameter> globalParameters,
-      final Settings settings, final String key) {
-
-    return Boolean.valueOf(getSetting(globalParameters, settings, key));
-  }
-
-  /**
-   * Update the value of a parameter in a set of parameter. A new parameter will
-   * be added if the parameter does not exists.
-   * @param parameters
-   * @param name the name of the parameter
-   * @param value the value of the parameter
-   */
-  private static void updateParameters(final Set<Parameter> parameters,
-      final String name, final String value) {
-
-    Parameter found = null;
-
-    for (Parameter p : parameters) {
-      if (name.equals(p.getName())) {
-        found = p;
-        break;
-      }
-    }
-
-    if (found != null) {
-      parameters.remove(found);
-    }
-
-    parameters.add(new Parameter(name, value));
   }
 
   //
