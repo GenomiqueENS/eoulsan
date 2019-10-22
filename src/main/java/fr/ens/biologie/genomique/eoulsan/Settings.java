@@ -656,7 +656,7 @@ public final class Settings implements Serializable {
       }
     }
 
-    return result;
+    return Collections.unmodifiableList(result);
   }
 
   /**
@@ -680,7 +680,7 @@ public final class Settings implements Serializable {
       }
     }
 
-    return result;
+    return Collections.unmodifiableList(result);
   }
 
   /**

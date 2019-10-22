@@ -30,13 +30,13 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Settings;
@@ -325,12 +325,14 @@ public class Executor {
           Globals.EOULSAN_TOOLS_WEBSITE_URL + "/" + branch + "/formats";
 
       // Add standard galaxy tools from Eoulsan tools GitHub repository
-      List<String> galaxyToolPathList = settings.getGalaxyToolPaths();
+      List<String> galaxyToolPathList =
+          new ArrayList<>(settings.getGalaxyToolPaths());
       galaxyToolPathList.add(defaultGalaxyToolPath);
       settings.setGalaxyToolsPaths(galaxyToolPathList);
 
       // Add standard format from Eoulsan tools GitHub repository
-      List<String> dataFormatPathList = settings.getDataFormatPaths();
+      List<String> dataFormatPathList =
+          new ArrayList<>(settings.getDataFormatPaths());
       dataFormatPathList.add(defaultDataFormatPath);
       settings.setDataFormatPaths(dataFormatPathList);
     }
