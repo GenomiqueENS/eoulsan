@@ -149,11 +149,8 @@ public class FileDataProtocol extends AbstractDataProtocol {
 
     final Path path = getSourceAsFile(src).toPath();
 
-    if (followLink) {
-      Files.exists(path);
-    }
-
-    return Files.exists(path, LinkOption.NOFOLLOW_LINKS);
+    return followLink
+        ? Files.exists(path) : Files.exists(path, LinkOption.NOFOLLOW_LINKS);
   }
 
   @Override
