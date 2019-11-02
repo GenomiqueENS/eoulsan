@@ -98,6 +98,14 @@ public class FileDataProtocol extends AbstractDataProtocol {
   public DataFileMetadata getMetadata(final DataFile src) throws IOException {
 
     if (!exists(src, true)) {
+
+      // Broken link
+      if (exists(src, false)) {
+        final SimpleDataFileMetadata result = new SimpleDataFileMetadata();
+        setLinkTargetInMetadata(result, getSourceAsFile(src).toPath());
+        return result;
+      }
+
       throw new FileNotFoundException("File not found: " + src);
     }
 
@@ -131,17 +139,22 @@ public class FileDataProtocol extends AbstractDataProtocol {
     }
 
     if (Files.isSymbolicLink(f.toPath())) {
-      try {
-        result
-            .setSymbolicLink(new DataFile(Files.readSymbolicLink(f.toPath())));
-      } catch (FileSystemException e) {
-        // Do nothing
-        // TODO In some case on a cluster Files.readSymbolicLink() throw an IO
-        // Error
-      }
+      setLinkTargetInMetadata(result, f.toPath());
     }
 
     return result;
+  }
+
+  private static void setLinkTargetInMetadata(final SimpleDataFileMetadata result,
+      Path link) throws IOException {
+
+    try {
+      result.setSymbolicLink(new DataFile(Files.readSymbolicLink(link)));
+    } catch (FileSystemException e) {
+      // Do nothing
+      // TODO In some case on a cluster Files.readSymbolicLink() throw an IO
+      // Error
+    }
   }
 
   @Override
