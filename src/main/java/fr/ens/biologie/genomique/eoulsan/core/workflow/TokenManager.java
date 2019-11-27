@@ -383,7 +383,7 @@ public class TokenManager implements Runnable {
             + ") are not linked:");
 
     // Check if the input port is closed
-    checkState(!this.closedPorts.contains(inputPort),
+    checkState(!(this.closedPorts.contains(inputPort) && !this.step.isSkip()),
         "The input port is closed for the step "
             + this.step.getId() + ": " + inputPort.getName());
 
