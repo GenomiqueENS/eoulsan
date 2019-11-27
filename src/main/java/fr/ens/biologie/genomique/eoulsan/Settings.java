@@ -1220,12 +1220,12 @@ public final class Settings implements Serializable {
 
     boolean first = true;
     for (String s : paths) {
-      sb.append(s);
       if (first) {
         first = false;
       } else {
         sb.append(' ');
       }
+      sb.append(s);
     }
 
     setDataFormatPath(sb.toString());
@@ -1237,7 +1237,7 @@ public final class Settings implements Serializable {
    */
   public void setGalaxyToolPath(final String path) {
 
-    this.properties.setProperty(DATA_FORMAT_PATH_KEY, path);
+    this.properties.setProperty(GALAXY_TOOL_PATH_KEY, path);
   }
 
   /**
@@ -1252,12 +1252,12 @@ public final class Settings implements Serializable {
 
     boolean first = true;
     for (String s : paths) {
-      sb.append(s);
       if (first) {
         first = false;
       } else {
         sb.append(' ');
       }
+      sb.append(s);
     }
 
     setGalaxyToolPath(sb.toString());
