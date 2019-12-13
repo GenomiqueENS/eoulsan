@@ -497,8 +497,6 @@ public class TaskContextImpl implements TaskContext, Serializable {
         .toString();
   }
 
-
-
   //
   // Serialization methods
   //

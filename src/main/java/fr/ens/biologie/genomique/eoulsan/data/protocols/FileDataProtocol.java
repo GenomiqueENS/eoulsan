@@ -145,8 +145,8 @@ public class FileDataProtocol extends AbstractDataProtocol {
     return result;
   }
 
-  private static void setLinkTargetInMetadata(final SimpleDataFileMetadata result,
-      Path link) throws IOException {
+  private static void setLinkTargetInMetadata(
+      final SimpleDataFileMetadata result, Path link) throws IOException {
 
     try {
       result.setSymbolicLink(new DataFile(Files.readSymbolicLink(link)));

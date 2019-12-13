@@ -473,7 +473,6 @@ public class DESeq2 {
     return Boolean.valueOf(value).toString().toUpperCase();
   }
 
-
   /**
    * Method to run DESeq2.
    * @param workflowOutputDir workflow output directory

@@ -1099,8 +1099,8 @@ public class TokenManager implements Runnable {
         }
 
         list.add(port.getName()
-            + " (" + port.getFormat().getName() + "): "
-            + size + (port.isList() ? " [list]":""));
+            + " (" + port.getFormat().getName() + "): " + size
+            + (port.isList() ? " [list]" : ""));
       }
 
       msg += Joiner.on(", ").join(list);
