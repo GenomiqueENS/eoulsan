@@ -110,8 +110,16 @@
 		</section>
 
         <section name="About this website">
-		<p>This website host official distributions of Eouslan and reference documentation.
-		       However more up to date workflows can be found the <a href ="https://github.com/GenomicParisCentre/eoulsan">GitHub page of Eoulsan</a>. </p>
+		<p>This website host <a href="download.html">official binaries</a> of Eoulsan and reference documentation.</p>
+		<p>You will find on this website:
+			<ul>
+				<li><a href="download.html">binaries and source tarballs</a></li>
+				<li><a href="installing.html">How to install Eoulsan</a></li>
+				<li><a href="quickstart.html">A quickstart guide</a></li>
+				<li>and all the reference documentation about the lastest version of the software.</li>
+			</ul>
+		</p>
+		<p>However more up to date workflows can be found the <a href ="https://github.com/GenomicParisCentre/eoulsan">GitHub page of Eoulsan</a>. </p>
 	</section>
 
         <section name="What's new in Eoulsan @@@VERSION@@@? ">
@@ -131,7 +139,7 @@
 		<p>For the full change log, please report the <a href="changes-report.html#a@@@VERSION@@@">dedicated page</a>.</p>
 	</section>
 
-        <section name="What's new in Eoulsan since Eoulsan 1? ">
+        <!--section name="What's new in Eoulsan since Eoulsan 1? ">
 
 		<p>Eoulsan @@@VERSION@@@ has successfully passed our integration tests and will generate the same outputs obtained with Eoulsan 1.2.2.</p>
 
@@ -201,15 +209,15 @@ $ curl @@@WEBSITE@@@/eoulsan-docker-installer.sh | bash</source>
         <p><b>Note:</b> Eoulsan 2.x is not binary compatible with Eoulsan 1.2.x, so step plug-ins written for previous versions will not work this release. The Eoulsan 2.x API
         is currently almost stable and small breaking compatibility may occurs in future.</p>
 
-	</section>
+	</section-->
 
-	<section name="Screencast demo">
+	<!--section name="Screencast demo">
 
 	<p>The following screencast show how to install Eoulsan, create a design file and launch an analysis in local mode. For more information see the <a href="quickstart.html">quickstart guide</a>.</p>
 
 	<iframe src="http://showterm.io/64a12d1f7fe2096e92c90" width="1011" height="480"></iframe>
 
-	</section>
+	</section-->
 
 	<section name="RNA-Seq analysis">
 
@@ -224,11 +232,11 @@ $ curl @@@WEBSITE@@@/eoulsan-docker-installer.sh | bash</source>
 
 	</section>
 
-	<section name="Chip-Seq analysis">
+	<!--section name="Chip-Seq analysis">
 
 		<p>Chip-Seq workflow support is currently under development, it will available in a future version of Eoulsan 2.x.</p>
 
-	</section>
+	</section-->
 
         <section name="Object model">
 
