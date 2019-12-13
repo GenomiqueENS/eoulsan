@@ -1736,16 +1736,52 @@ of reads that reject each filter like in local mode.
 
          <release version="2.4" description="Eoulsan 2.4 release" date="2018-09-13">
 
-            <action dev="jourdren" type="update">
-              Eoulsan now requires Java 8 to compile. 
-            </action>
-
             <action dev="jourdren" type="fix">
               Eoulsan can now runs using Java 11. 
             </action>
 
             <action dev="jourdren" type="fix">
+              In RSingleCellExperimentCreator class R code, now use "check.names=FALSE" when loading data in R with read.table() to avoid adding "X" to row/column names when the names starts with a digit.
+            </action>
+
+            <action dev="jourdren" type="fix">
+              In MultiQC module, expression statistics were not in MultiQC report.
+            </action>
+
+            <action dev="jourdren" type="fix">
+              The import module did not work with ".." parent directories.
+            </action>
+
+            <action dev="jourdren" type="fix">
+              Avoid "java.awt.AWTError: Assistive Technology not found: org.GNOME.Accessibility.AtkWrapper" error when using FastQC or ODF Toolkit in Hadoop mode.
+            </action>
+
+            <action dev="jourdren" type="fix">
+              In the workflow engine, steps with list ports where started before receving the last data of the list port.
+            </action>
+
+            <action dev="jourdren" type="fix">
               Fix Dockerfile and now use bioconductor/release_sequencing:3.1 image as base image for Eoulsan. 
+            </action>
+
+            <action dev="jourdren" type="fix">
+              In pom.xml, fix security issue detected by GitHub by changing commons-compress and httpclient dependency versions.
+            </action>
+
+            <action dev="jourdren" type="add">
+              Storages can now created using Galaxy tools.
+            </action>
+
+            <action dev="jourdren" type="add">
+              Design header entries can now be used as constants in the workflow file.
+            </action>
+
+            <action dev="jourdren" type="add">
+              Add singularity support for Docker images.
+            </action>
+
+            <action dev="jourdren" type="update">
+              Eoulsan now requires Java 8 to compile. 
             </action>
 
             <action dev="jourdren" type="update">
@@ -1769,10 +1805,6 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="update">
-              In pom.xml, fix security issue detected by GitHub by changing commons-compress and httpclient dependency versions.
-            </action>
-
-            <action dev="jourdren" type="update">
               A a new class to write ExpressionMatrix object in MarketMatrix sparse format.
             </action>
 
@@ -1780,20 +1812,8 @@ of reads that reject each filter like in local mode.
               Add a new class named CellRangerExpressionMatrixWriter that can saved an expression matrix in Cell Ranger format (v2 or v3).
             </action>
 
-            <action dev="jourdren" type="fix">
-              In RSingleCellExperimentCreator class R code, now use "check.names=FALSE" when loading data in R with read.table() to avoid adding "X" to row/column names when the names starts with a digit.
-            </action>
-
-            <action dev="jourdren" type="fix">
-              In MultiQC module, expression statistics were not in MultiQC report.
-            </action>
-
-            <action dev="jourdren" type="update">
+             <action dev="jourdren" type="update">
               Now use MultiQC 1.7 for default Docker image.
-            </action>
-
-            <action dev="jourdren" type="fix">
-              The import module did not work with ".." parent directories.
             </action>
 
             <action dev="jourdren" type="update">
@@ -1804,14 +1824,6 @@ of reads that reject each filter like in local mode.
               Add a new setting for HTCondor job scheduler named "htcondor.nice.user" to enable submitting jobs as "nice jobs" by HTCondor.
             </action>
 
-            <action dev="jourdren" type="fix">
-              Avoid "java.awt.AWTError: Assistive Technology not found: org.GNOME.Accessibility.AtkWrapper" error when using FastQC or ODF Toolkit in Hadoop mode.
-            </action>
-
-            <action dev="jourdren" type="update">
-              Add singularity support.
-            </action>
-
             <action dev="jourdren" type="update">
               In bpipe-htcondor.sh, now save the outputs (stdout and stderr) and exit code of job submissions to more easily debug HTCondors submission errors.
             </action>
@@ -1820,11 +1832,11 @@ of reads that reject each filter like in local mode.
               Now use lanterna 3.0.1 for the default UI. The UI can now be displayed in the middle of the screen.
             </action>
 
-            <action dev="jourdren" type="add">
-              Storages can now created using Galaxy tools.
+            <action dev="jourdren" type="update">
+              Add support for Hadoop 3.x.
             </action>
 
-            <action dev="jourdren" type="update">
+           <action dev="jourdren" type="update">
               STAR 2.7.1a is now bundled with Eoulsan.
             </action>
 
@@ -1838,10 +1850,6 @@ of reads that reject each filter like in local mode.
 
             <action dev="jourdren" type="update">
               In HTSeqUtils.parseCigar(), now handle "=" and "X" cigar operators. Expression step can now with "=" and "X" cigar operators codes.
-            </action>
-
-            <action dev="jourdren" type="fix">
-              In the workflow engine, steps with list ports where started before receving the last data of the list port.
             </action>
 
          </release>
