@@ -82,36 +82,35 @@
 		<section name="Welcome to Eoulsan">
 
 			<p>We developed Eoulsan, a <b>modular</b> and <b>scalable workflow engine</b> dedicated to <b>High Throughput Sequencing analyses</b>.
-				This tool is opinionated as it is focused on production and <u>designed for bioinformaticians</u>, its only user interface is the command line.</p>
+				This tool is opinionated as it is focused on production and <u>designed for bioinformaticians</u>.</p>
 			<ul>
 				<li><b>Principles</b>
 
-					<p>The experimental design of an analysis performed by Eoulsan is stored in a text file, while the parameters and the workflow steps are listed in a XML file.</p>
-					<p>These two files ensure <b>flexibility</b> and <b>traceability</b> of the analyses performed.
+					<p>The experimental design of an analysis performed by Eoulsan is stored in a text file, while its workflow steps and parameters are described in a XML file.</p>
+					<p>These two files ensure <b>flexibility</b> and <b>traceability</b> of the analyses.
 					This approach allows to swiftly resume large analyses upon trouble-shooting, and guarantees <b>reproducibility</b>.</p>
 
-					<p>We have been able to develop Eoulsan for <b><a href="https://github.com/GenomicParisCentre/eoulsan/wiki/Bulk-RNA-Seq-tutorial">RNA-Seq</a></b>, <b><a href="https://github.com/GenomicParisCentre/eoulsan/wiki/Bulk-RNA-Seq-Nanopore-tutorial">Nanopore RNA-Seq</a></b>, <b>ChIP-Seq</b> and <b><a href="https://github.com/GenomicParisCentre/eoulsan/wiki/10x-Genomics-scRNA-seq-tutorial">scRNA-seq</a></b> workflows.</p>
+					<p>We developed Eoulsan for <b><a href="https://github.com/GenomicParisCentre/eoulsan/wiki/Bulk-RNA-Seq-tutorial">RNA-Seq</a></b>, <b><a href="https://github.com/GenomicParisCentre/eoulsan/wiki/Bulk-RNA-Seq-Nanopore-tutorial">Nanopore RNA-Seq</a></b>, <b>ChIP-Seq</b> and <b><a href="https://github.com/GenomicParisCentre/eoulsan/wiki/10x-Genomics-scRNA-seq-tutorial">scRNA-seq</a></b> workflows.</p>
 				</li>
 
 				<li><b>Handled infrastructures</b>
 					<p>Eoulsan can work on a large set of infrastructures (personal workstation, server, cluster and <a href="https://hadoop.apache.org/">Hadoop</a> cluster).
 					Eoulsan supports most of the job scheduling software (<a href="https://research.cs.wisc.edu/htcondor/">HT-Condor</a>,  <a href="http://www-hpc.cea.fr/en/complexe/tgcc.htm">TGCC</a>,  <a href="http://www.adaptivecomputing.com/products/open-source/torque/">TORQUE</a>,  <a href="https://slurm.schedmd.com/">SLURM</a>) to distribute user’s computations.</p>
-					<p>Moreover the installation of Eoulsan is very easy as users just have to untar the <a href="eoulsan-@@@VERSION@@@.tar.gz">latest archive of the tool</a>.
+					<p>Moreover the installation of Eoulsan is very easy as users just have to untar its <a href="eoulsan-@@@VERSION@@@.tar.gz">latest archive</a>.
 					The only requirements of Eoulsan are a GNU/Linux distribution and Java.</p>
 				</li>
 
 				<li><b>Extensibility</b>
 					<p>To ease the development of new features and modules, Eoulsan reuses the syntax of the <a href="https://docs.galaxyproject.org/en/latest/dev/schema.html">XML Galaxy tool description</a> files.
 					Simple Galaxy tools can work under Eoulsan without any modification.</p>
-					<p>To go further in reproducility of the analyses, Eoulsan promotes <b><a href="https://www.docker.com/">Docker</a></b> and <b><a href="https://sylabs.io/docs/">Singularity</a></b> to deploy image software required by Eoulsan modules.</p>
+					<p>To go further in reproducility of the analyses, Eoulsan promotes <b><a href="https://www.docker.com/">Docker</a></b> and <b><a href="https://sylabs.io/docs/">Singularity</a></b> to deploy image software required its modules.</p>
 				</li>
 
 			</ul>
 		</section>
 
         <section name="About this website">
-		<p>This website host <a href="download.html">official binaries</a> of Eoulsan and reference documentation.</p>
-		<p>You will find on this website:
+		<p>This website hosts <a href="download.html">official binaries</a> of Eoulsan and reference documentation as listed below:
 			<ul>
 				<li><a href="download.html">binaries and source tarballs</a></li>
 				<li><a href="installing.html">How to install Eoulsan</a></li>
@@ -119,24 +118,24 @@
 				<li>and all the reference documentation about the lastest version of the software.</li>
 			</ul>
 		</p>
-		<p>However more up to date workflows can be found the <a href ="https://github.com/GenomicParisCentre/eoulsan">GitHub page of Eoulsan</a>. </p>
+		<p>However more up to date workflows can be found the <a href="https://github.com/GenomicParisCentre/eoulsan">GitHub page of Eoulsan</a>. </p>
 	</section>
 
         <section name="What's new in Eoulsan @@@VERSION@@@? ">
 		<p>The Eoulsan @@@VERSION@@@ main new enhancements since its last version are: </p>
 		<ul>
-			<li>Eoulsan now requires Java 8 and support Java 11</li>
+			<li>Eoulsan requirements of Java 8 and support of Java 11</li>
 			<li>Hadoop 3.x support</li>
 			<li>New STAR (2.7.2d) and Minimap 2.12 bundled binaries</li>
-			<li>Galaxy tools modules can now work in both Docker and non-Docker modes</li>
-			<li>Storage data can now be created using a Galaxy tool module</li>
-			<li>The MultiQC module now use MultiQC 1.7 Docker image by default</li>
+			<li>Galaxy tools modules working in both Docker and non-Docker modes</li>
+			<li>Data storage created using a Galaxy tool module</li>
+			<li>The MultiQC module using MultiQC 1.7 Docker image by default</li>
 			<li>Support for Singularity in addition to Docker to launch software containers</li>
-			<li>Now Handle the 'X' and '=' Cigar codes in expression module</li>
-			<li>Many enhencements to support scRNA-seq count matrices</li>
-			<li>Many fixes in workflow engine</li>
+			<li>Handling the 'X' and '=' Cigar codes in expression module</li>
+			<li>Support of scRNA-seq count matrices</li>
+			<li>Fixes in workflow engine</li>
 		</ul>
-		<p>For the full change log, please report the <a href="changes-report.html#a@@@VERSION@@@">dedicated page</a>.</p>
+		<p>For the full change log, please report to the <a href="changes-report.html#a@@@VERSION@@@">dedicated page</a>.</p>
 	</section>
 
         <!--section name="What's new in Eoulsan since Eoulsan 1? ">
@@ -221,7 +220,7 @@ $ curl @@@WEBSITE@@@/eoulsan-docker-installer.sh | bash</source>
 
 	<section name="RNA-Seq analysis">
 
-		<p>Eoulsan contains out the box a fully customizable RNA-Seq pipeline that generate many reports about the performed analysis. The following images are
+		<p>Eoulsan contains out the box a fully customizable RNA-Seq pipeline that generates many reports about the performed analysis. The following images are
 		samples of the graphics generated by the normalization and differential analysis steps:</p>
 
 		<div align="center">
