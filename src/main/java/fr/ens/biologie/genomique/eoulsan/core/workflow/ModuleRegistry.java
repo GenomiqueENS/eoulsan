@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -325,6 +326,10 @@ public class ModuleRegistry {
     if (modules == null) {
       return;
     }
+
+    // Reverse the order of the module to prioritize modules of the first
+    // sources
+    Collections.reverse(modules);
 
     // Sort the steps
     modules.sort(new Comparator<Module>() {
