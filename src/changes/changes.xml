@@ -1776,7 +1776,7 @@ of reads that reject each filter like in local mode.
               Now to chooze the version of a module, now prioritize modules from the first module sources when they the same version.
             </action>
 
-            <action dev="jourdren" type="update">
+            <action dev="jourdren" type="fix">
               In pom.xml, fix security issue detected by GitHub by changing commons-compress and httpclient dependency versions.
             </action>
 
@@ -1876,7 +1876,7 @@ of reads that reject each filter like in local mode.
               In MapReduceUtils.submitAndWaitForJob(), replace call of Job.waitForCompletion() call by a custom method that allow to retry to connect to the JobTracker if tail connection fails.
             </action>
 
-            <action dev="update" type="update">
+            <action dev="jourdren" type="update">
               Now check if all the gene/transcript count are null of a sample are null before launching DESeq2.
             </action>
 
