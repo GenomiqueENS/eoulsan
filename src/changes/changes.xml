@@ -1734,7 +1734,7 @@ of reads that reject each filter like in local mode.
 
          </release>
 
-         <release version="2.4" description="Eoulsan 2.4 release" date="TBD">
+         <release version="2.4" description="Eoulsan 2.4 release" date="2019-12-20">
 
             <action dev="jourdren" type="fix">
               Eoulsan can now runs using Java 11.
