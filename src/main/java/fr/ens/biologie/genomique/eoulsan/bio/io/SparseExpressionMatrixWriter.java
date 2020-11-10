@@ -20,7 +20,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.Matrix;
  */
 public class SparseExpressionMatrixWriter implements ExpressionMatrixWriter {
 
-  static String HEADER = "gene\tcell\tcount";
+  static final String HEADER = "gene\tcell\tcount";
 
   private final OutputStream os;
 

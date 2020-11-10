@@ -27,6 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.design;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -43,21 +44,21 @@ public class UnmodifiableExperimentTest {
 
     try {
       uexp.setName(null);
-      assertTrue(false);
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       uexp.addSample(null);
-      assertTrue(false);
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       uexp.removeSample(null);
-      assertTrue(false);
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
@@ -95,7 +96,7 @@ public class UnmodifiableExperimentTest {
     // set an exception off
     try {
       d.getExperiment("2").setName("toto");
-      assertTrue(false);
+      fail();
     } catch (IllegalArgumentException e) {
       assertTrue(true);
     }
@@ -104,7 +105,7 @@ public class UnmodifiableExperimentTest {
       d.getExperiment("2").setName("titi");
       assertTrue(true);
     } catch (IllegalArgumentException e) {
-      assertTrue(false);
+      fail();
     }
   }
 

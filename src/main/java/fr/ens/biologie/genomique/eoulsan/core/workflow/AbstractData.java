@@ -146,4 +146,19 @@ abstract class AbstractData implements Data, Serializable {
     this.format = format;
   }
 
+  /**
+   * Copy constructor.
+   * @param data data to copy
+   */
+  protected AbstractData(final AbstractData data) {
+
+    requireNonNull(data, "data argument cannot be null");
+
+    this.id = data.id;
+    this.name = data.name;
+    this.defaultName = data.defaultName;
+    this.format = data.format;
+    this.part = data.part;
+  }
+
 }

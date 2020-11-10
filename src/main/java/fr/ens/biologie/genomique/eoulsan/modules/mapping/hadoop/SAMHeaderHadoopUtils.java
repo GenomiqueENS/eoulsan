@@ -168,7 +168,6 @@ public class SAMHeaderHadoopUtils {
         result.add(line);
       }
 
-      reader.close();
     }
 
     return result;

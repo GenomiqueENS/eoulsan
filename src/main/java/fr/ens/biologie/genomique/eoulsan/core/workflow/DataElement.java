@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -326,6 +327,20 @@ class DataElement extends AbstractData implements Serializable {
     } else {
       this.files = Lists.newArrayList(createDataFile(0));
     }
+  }
+
+  /**
+   * Copy constructor.
+   * @param data data to copy
+   */
+  DataElement(final DataElement data) {
+
+    super(data);
+
+    this.metadata = new SimpleDataMetadata((SimpleDataMetadata) data.metadata);
+    this.files = new ArrayList<>(data.files);
+    this.port = data.port;
+    this.canRename = true;
   }
 
 }

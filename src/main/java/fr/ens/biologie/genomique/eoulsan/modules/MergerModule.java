@@ -28,7 +28,6 @@ import static fr.ens.biologie.genomique.eoulsan.io.CompressionType.NONE;
 import static fr.ens.biologie.genomique.eoulsan.io.CompressionType.getCompressionTypeByContentEncoding;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -117,13 +116,7 @@ public class MergerModule extends AbstractModule {
       final List<Data> list = Lists.newArrayList(this.map.get(dataName));
 
       // Sort Data by their part number
-      Collections.sort(list, new Comparator<Data>() {
-        @Override
-        public int compare(final Data a, final Data b) {
-
-          return Integer.compare(a.getPart(), b.getPart());
-        }
-      });
+      list.sort(Comparator.comparingInt(Data::getPart));
 
       // Check if two data has the same part number
       if (checkForPartDuplicates()) {

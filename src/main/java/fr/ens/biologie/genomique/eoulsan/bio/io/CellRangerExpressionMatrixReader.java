@@ -35,9 +35,9 @@ public class CellRangerExpressionMatrixReader
   static final String GENES_V2_FILENAME = "features.tsv.gz";
   static final String BARCODES_V2_FILENAME = "barcodes.tsv.gz";
 
-  private List<String> geneNames = new ArrayList<>();
-  private List<String> barcodesNames = new ArrayList<>();
-  private Map<String, String> geneAliases = new HashMap<>();
+  private final List<String> geneNames = new ArrayList<>();
+  private final List<String> barcodesNames = new ArrayList<>();
+  private final Map<String, String> geneAliases = new HashMap<>();
 
   /**
    * Get gene aliases.
@@ -101,7 +101,7 @@ public class CellRangerExpressionMatrixReader
    * extension.
    * @param file the file to read
    * @return a BufferedReader object
-   * @throws IOException
+   * @throws IOException if an error occurs while creating the reader
    */
   private static BufferedReader createReader(final File file)
       throws IOException {

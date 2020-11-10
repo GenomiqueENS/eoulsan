@@ -88,7 +88,8 @@ public class Normalization {
 
   /**
    * Run normalisation step
-   * @throws EoulsanException
+   * @throws EoulsanException if the number of sample to analyze if lower than
+   *           one
    */
   public void run(final TaskContext context, final Data data)
       throws EoulsanException {

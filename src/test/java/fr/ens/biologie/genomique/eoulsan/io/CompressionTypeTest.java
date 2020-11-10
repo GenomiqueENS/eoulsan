@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.io;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -55,8 +56,7 @@ public class CompressionTypeTest {
         CompressionType.getCompressionTypeByContentEncoding("bzip2"));
     assertEquals(CompressionType.NONE,
         CompressionType.getCompressionTypeByContentEncoding(""));
-    assertEquals(null,
-        CompressionType.getCompressionTypeByContentEncoding(null));
+    assertNull(CompressionType.getCompressionTypeByContentEncoding(null));
   }
 
   @Test
@@ -68,7 +68,7 @@ public class CompressionTypeTest {
         CompressionType.getCompressionTypeByExtension(".bz2"));
     assertEquals(CompressionType.NONE,
         CompressionType.getCompressionTypeByExtension(""));
-    assertEquals(null, CompressionType.getCompressionTypeByExtension(null));
+    assertNull(CompressionType.getCompressionTypeByExtension(null));
   }
 
   @Test
@@ -86,7 +86,7 @@ public class CompressionTypeTest {
         CompressionType.getCompressionTypeByFilename("titi.txt"));
     assertEquals(CompressionType.NONE,
         CompressionType.getCompressionTypeByFilename(""));
-    assertEquals(null, CompressionType.getCompressionTypeByFilename(null));
+    assertNull(CompressionType.getCompressionTypeByFilename(null));
   }
 
   @Test
@@ -102,7 +102,7 @@ public class CompressionTypeTest {
     assertEquals("titi.txt",
         CompressionType.removeCompressionExtension("titi.txt"));
     assertEquals("", CompressionType.removeCompressionExtension(""));
-    assertEquals(null, CompressionType.removeCompressionExtension(null));
+    assertNull(CompressionType.removeCompressionExtension(null));
 
   }
 

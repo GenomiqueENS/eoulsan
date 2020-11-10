@@ -157,14 +157,14 @@ public class TokenManager implements Runnable {
   }
 
   /**
-   * Check if all the list ports are closed.
+   * Check if all the list input ports are closed.
    * @return true if all the list ports are closed
    */
   private boolean checkIfAllListPortsAreClosed() {
 
     for (StepInputPort port : this.inputPorts) {
       if (!port.isList()) {
-        break;
+        continue;
       }
 
       if (!this.closedPorts.contains(port)) {
@@ -473,7 +473,7 @@ public class TokenManager implements Runnable {
 
       synchronized (inputData) {
 
-        if (inputData.size() == 0) {
+        if (inputData.isEmpty()) {
           dataList = new DataList(inputPort, design);
           inputData.add(dataList);
         } else {
@@ -1092,9 +1092,15 @@ public class TokenManager implements Runnable {
 
       List<String> list = new ArrayList<>();
       for (InputPort port : this.inputTokens.keySet()) {
+
+        int size = this.inputTokens.get(port).size();
+        if (port.isList() && size > 0) {
+          size = this.inputTokens.get(port).iterator().next().size();
+        }
+
         list.add(port.getName()
             + " (" + port.getFormat().getName() + "): "
-            + this.inputTokens.get(port).size());
+            + size + (port.isList() ? " [list]":""));
       }
 
       msg += Joiner.on(", ").join(list);

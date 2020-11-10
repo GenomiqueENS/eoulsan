@@ -236,11 +236,7 @@ public class Eoulsan1DesignReader implements DesignReader {
 
                 String mdKey;
 
-                if (sampleMetadataFields.containsKey(fieldName)) {
-                  mdKey = sampleMetadataFields.get(fieldName);
-                } else {
-                  mdKey = fieldName;
-                }
+                mdKey = sampleMetadataFields.getOrDefault(fieldName, fieldName);
 
                 sample.getMetadata().set(mdKey, value);
               }

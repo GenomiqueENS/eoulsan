@@ -28,7 +28,7 @@ public abstract class AbstractSAM2BAMModule extends AbstractModule {
 
   private static final String MODULE_NAME = "sam2bam";
   private static final int DEFAULT_COMPRESSION_LEVEL = 5;
-  private static int DEFAULT_MAX_RECORDS_IN_RAM = 500000;
+  private static final int DEFAULT_MAX_RECORDS_IN_RAM = 500000;
 
   protected static final String COUNTER_GROUP = "sam2bam";
 

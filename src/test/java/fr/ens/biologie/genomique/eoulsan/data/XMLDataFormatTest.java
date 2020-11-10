@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.data;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -40,7 +41,7 @@ public class XMLDataFormatTest {
           this.getClass().getResourceAsStream("/testdataformat.xml"), null);
       assertTrue(true);
     } catch (EoulsanException e) {
-      assertTrue(false);
+      fail();
     }
   }
 

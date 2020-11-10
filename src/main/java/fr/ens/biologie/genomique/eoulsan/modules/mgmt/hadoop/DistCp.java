@@ -159,8 +159,8 @@ public class DistCp implements Tool {
     SIZE_LIMIT("-sizelimit", NAME + ".limit.size"),
     IGNORE_READ_FAILURES("-i", NAME + ".ignore.read.failures"),
     PRESERVE_STATUS("-p", NAME + ".preserve.status"),
-    OVERWRITE("-overwrite", NAME + ".overwrite.always"), UPDATE("-update", NAME
-        + ".overwrite.ifnewer");
+    OVERWRITE("-overwrite", NAME + ".overwrite.always"),
+    UPDATE("-update", NAME + ".overwrite.ifnewer");
 
     final String cmd, propertyname;
 
@@ -389,7 +389,7 @@ public class DistCp implements Tool {
      * Right now, this merely checks that the src and dst len are not equal.
      * This should be improved on once modification times, CRCs, etc. can be
      * meaningful in this context.
-     * @throws IOException
+     * @throws IOException if an error occurs
      */
     private boolean needsUpdate(final FileStatus srcstatus,
         final FileSystem dstfs, final Path dstpath) throws IOException {

@@ -36,7 +36,6 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Progress;
 import fr.ens.biologie.genomique.eoulsan.util.process.DockerImageInstance;
-import fr.ens.biologie.genomique.eoulsan.util.process.DockerImageInstance.ProgressHandler;
 import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
 
 /**
@@ -109,14 +108,7 @@ public class DockerRequirement extends AbstractRequirement {
           DockerManager.getInstance().createImageInstance(this.dockerImage);
 
       // Pull image
-      connnection.pullImageIfNotExists(new ProgressHandler() {
-
-        @Override
-        public void update(double progressValue) {
-          progress.setProgress(progressValue);
-
-        }
-      });
+      connnection.pullImageIfNotExists(progress::setProgress);
     } catch (IOException e) {
       throw new EoulsanException(e);
     }

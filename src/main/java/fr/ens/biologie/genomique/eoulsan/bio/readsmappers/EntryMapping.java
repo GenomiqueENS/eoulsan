@@ -252,7 +252,8 @@ public class EntryMapping {
     this.fastqFormat = fastqFormat;
     this.mapperArguments = mapperArguments;
     this.multipleInstanceEnabled = mapperIndex.getMapperInstance().getMapper()
-        .getProvider().isMultipleInstancesAllowed() && multipleInstanceEnabled;
+        .getProvider().isMultipleInstancesAllowed()
+        && multipleInstanceEnabled;
     this.threadNumber =
         threadNumber > 1 && !this.multipleInstanceEnabled ? threadNumber : 1;
 

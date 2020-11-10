@@ -88,7 +88,7 @@ public class WorkflowDataUtils {
    * @param data data object
    * @return a list of DataFile objects
    */
-  public static final List<DataFile> getDataFiles(final Data data) {
+  public static List<DataFile> getDataFiles(final Data data) {
 
     requireNonNull(data, "data argument cannot be null");
 
@@ -105,8 +105,7 @@ public class WorkflowDataUtils {
    * @param data the data object
    * @param sample the sample
    */
-  public static final void setDataMetaData(final Data data,
-      final Sample sample) {
+  public static void setDataMetaData(final Data data, final Sample sample) {
 
     requireNonNull(data, "data argument cannot be null");
     requireNonNull(sample, "sample argument cannot be null");

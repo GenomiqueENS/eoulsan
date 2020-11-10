@@ -43,8 +43,8 @@ public class Infos {
    */
   public static class Info {
 
-    private String name;
-    private List<String> values;
+    private final String name;
+    private final List<String> values;
 
     /**
      * Get the name of the information
@@ -732,8 +732,7 @@ public class Infos {
       }
     }
 
-    List<Info> result = new ArrayList<>(set);
-    return result;
+    return new ArrayList<>(set);
   }
 
 }

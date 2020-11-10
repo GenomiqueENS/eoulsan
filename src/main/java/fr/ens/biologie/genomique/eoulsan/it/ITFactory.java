@@ -187,7 +187,7 @@ public class ITFactory {
 
     // Collect tests from a file with names tests
     final List<File> testsToExecuteDirectories =
-      new ArrayList<>(readTestListFile());
+        new ArrayList<>(readTestListFile());
 
     // Add the selected test if set
     if (this.selectedTest != null) {
@@ -452,7 +452,7 @@ public class ITFactory {
 
           // remove last '\n' in the result
           if (!r.isEmpty() && r.charAt(r.length() - 1) == '\n') {
-            result.append(r.substring(0, r.length() - 1));
+            result.append(r, 0, r.length() - 1);
           } else {
             result.append(r);
           }
@@ -662,7 +662,7 @@ public class ITFactory {
    * Public constructor.
    * @throws EoulsanException if an error occurs when reading configuration
    *           file.
-   * @throws IOException
+   * @throws IOException if an error occurs when reading configuration
    */
   public ITFactory() throws EoulsanException, IOException {
 

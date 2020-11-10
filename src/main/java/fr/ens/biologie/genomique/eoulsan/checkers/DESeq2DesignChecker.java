@@ -209,16 +209,15 @@ public class DESeq2DesignChecker implements Checker {
      * Check if there is no numeric character at the begin of a row in all
      * metakeys columns for a complex design model
      */
-    for (String key : esColumnNames) {
+    for (String columnName : DesignUtils.getModelColumns(experiment)) {
       for (ExperimentSample es : experiment.getExperimentSamples()) {
-        String s = DesignUtils.getMetadata(es, key);
-        // Error if a condition column contains an invalid numeric character as
-        // first character
-        if (!s.isEmpty()
-            && Character.isDigit(s.charAt(0)) && emd.getComparisons() != null) {
-          return error(
-              "One or more sample in the "
-                  + key + " column start with a numeric character : " + s,
+
+        String columnValue = DesignUtils.getMetadata(es, columnName);
+        if (!columnValue.isEmpty()
+            && Character.isDigit(columnValue.charAt(0))) {
+          return error("The value of the \""
+              + columnName + "\" column start with a numeric character for \""
+              + es.getSample().getId() + "\" sample: " + columnValue,
               throwsException);
         }
       }
@@ -303,7 +302,7 @@ public class DESeq2DesignChecker implements Checker {
                 && !e.getValue().equals(reference)) {
               return error(
                   "There is an inconsistency between the conditions "
-                      + "and the references : " + experiment.getName(),
+                      + "and the references: " + experiment.getName(),
                   throwsException);
             }
           }

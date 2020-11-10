@@ -30,7 +30,6 @@ import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.unDoubleQuotes;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -371,23 +370,19 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
    */
   private Thread startParseSAMResultsThread(final MapperProcess mp) {
 
-    final Thread t = new Thread(new Runnable() {
+    final Thread t = new Thread(() -> {
 
-      @Override
-      public void run() {
+      // Parse SAM result file
 
-        // Parse SAM result file
+      String line;
+      try (BufferedReader readerResults =
+          new BufferedReader(new InputStreamReader(mp.getStout()))) {
+        while ((line = readerResults.readLine()) != null) {
 
-        String line;
-        try (BufferedReader readerResults =
-            new BufferedReader(new InputStreamReader(mp.getStout()))) {
-          while ((line = readerResults.readLine()) != null) {
-
-            queue.add(line);
-          }
-        } catch (IOException e) {
-          exception.exception = e;
+          queue.add(line);
         }
+      } catch (IOException e) {
+        exception.exception = e;
       }
     });
 
@@ -504,15 +499,11 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
     final File mapperIndexesDir = this.mapperIndexDir.getParentFile();
 
-    for (File dir : mapperIndexesDir.listFiles(new FilenameFilter() {
+    for (File dir : mapperIndexesDir.listFiles((dir, name) -> {
 
-      @Override
-      public boolean accept(final File dir, final String name) {
+      final File f = new File(dir, name);
 
-        final File f = new File(dir, name);
-
-        return f.isDirectory() && name.startsWith(MAPPER_INDEX_DIR_PREFIX);
-      }
+      return f.isDirectory() && name.startsWith(MAPPER_INDEX_DIR_PREFIX);
     })) {
 
       // First check without lock on the mapper index directory

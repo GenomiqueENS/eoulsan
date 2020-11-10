@@ -113,7 +113,7 @@ public abstract class AbstractMatrix<E> implements Matrix<E> {
             this.columnName = this.columnIterator.next();
 
             Entry<E> result = new BasicEntry<>(this.rowName, this.columnName,
-              getValue(this.rowName, this.columnName));
+                getValue(this.rowName, this.columnName));
 
             if (!this.columnIterator.hasNext() && rowNames.hasNext()) {
               this.rowName = rowNames.next();
@@ -132,7 +132,7 @@ public abstract class AbstractMatrix<E> implements Matrix<E> {
 
     return new Iterable<Entry<E>>() {
 
-      private Iterator<Entry<E>> values = values().iterator();
+      private final Iterator<Entry<E>> values = values().iterator();
 
       @Override
       public Iterator<Entry<E>> iterator() {

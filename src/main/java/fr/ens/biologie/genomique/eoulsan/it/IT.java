@@ -41,7 +41,6 @@ import static fr.ens.biologie.genomique.eoulsan.util.FileUtils.recursiveDelete;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -539,14 +538,8 @@ public class IT {
         "output data parent directory");
 
     // Find directory start with expected
-    final File[] expectedDirectories =
-        this.testDataDirectory.listFiles(new FileFilter() {
-
-          @Override
-          public boolean accept(final File pathname) {
-            return pathname.getName().startsWith("expected");
-          }
-        });
+    final File[] expectedDirectories = this.testDataDirectory
+        .listFiles(pathname -> pathname.getName().startsWith("expected"));
 
     // Execute test, expected must be existing
     if (expectedDirectories.length == 0

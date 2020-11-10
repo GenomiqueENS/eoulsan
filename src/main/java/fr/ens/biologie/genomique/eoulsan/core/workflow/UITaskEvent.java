@@ -13,7 +13,7 @@ public class UITaskEvent extends UIEvent {
 
   enum TaskStatusMessage {
     SUBMITTED, RUNNING, DONE,
-  };
+  }
 
   private final Step step;
   private final TaskStatusMessage status;

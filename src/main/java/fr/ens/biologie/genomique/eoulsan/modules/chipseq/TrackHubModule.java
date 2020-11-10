@@ -378,7 +378,8 @@ public class TrackHubModule extends AbstractModule {
     sb.append(DesignUtils.getCondition(sample));
     sb.append('_');
     sb.append(DesignUtils.getRepTechGroup(sample));
-    sb.append('_' + experiment.getName());
+    sb.append('_');
+    sb.append(experiment.getName());
     sb.append('\n');
 
     sb.append("\ttype bigWig\n");
@@ -455,7 +456,8 @@ public class TrackHubModule extends AbstractModule {
     sb.append('\n');
 
     sb.append("bigDataUrl ");
-    sb.append(server + bigDataUrl);
+    sb.append(server);
+    sb.append(bigDataUrl);
     sb.append(
         nameMapBigWig.get(sample.getSample().getName()).getDataFilename());
     sb.append('\n');

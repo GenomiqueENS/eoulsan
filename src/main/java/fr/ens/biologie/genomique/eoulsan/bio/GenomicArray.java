@@ -46,7 +46,7 @@ public class GenomicArray<T> implements Serializable {
 
   private static final long serialVersionUID = 539825064205425262L;
 
-  private Map<String, ChromosomeZones<T>> chromosomes = new HashMap<>();
+  private final Map<String, ChromosomeZones<T>> chromosomes = new HashMap<>();
 
   /**
    * This class define a zone in a ChromosomeZone object.
@@ -443,12 +443,11 @@ public class GenomicArray<T> implements Serializable {
         return null;
       }
 
-      final int from = indexStart;
       final int to = indexEnd == -1 ? this.zones.size() - 1 : indexEnd;
 
       Map<GenomicInterval, Set<T>> result = null;
 
-      for (int i = from; i <= to; i++) {
+      for (int i = indexStart; i <= to; i++) {
 
         final Zone<T> zone = get(i);
 

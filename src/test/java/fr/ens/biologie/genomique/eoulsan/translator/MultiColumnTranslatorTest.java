@@ -3,6 +3,7 @@ package fr.ens.biologie.genomique.eoulsan.translator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +73,7 @@ public class MultiColumnTranslatorTest {
     try {
 
       new MultiColumnTranslator(new ArrayList<>());
-      assertTrue(false);
+      fail();
     } catch (RuntimeException e) {
 
       assertTrue(true);

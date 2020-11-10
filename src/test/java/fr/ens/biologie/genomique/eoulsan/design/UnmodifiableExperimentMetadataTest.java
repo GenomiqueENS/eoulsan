@@ -28,6 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -43,56 +44,56 @@ public class UnmodifiableExperimentMetadataTest {
 
     try {
       uem.setSkip(true);
-      assertTrue(false);
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       uem.setReference(null);
-      assertTrue(false);
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       uem.setModel(null);
-      assertTrue(false);
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       uem.setContrast(true);
-      assertTrue(false);
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       uem.setBuildContrast(true);
-      assertTrue(false);
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       uem.setDesignFile(null);
-      assertTrue(false);
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       uem.setComparisons(null);
-      assertTrue(false);
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
 
     try {
       uem.setContrastFile(null);
-      assertTrue(false);
+      fail();
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
@@ -139,7 +140,7 @@ public class UnmodifiableExperimentMetadataTest {
     assertFalse(uem.containsContrast());
     // test setContrast
     em.setContrast(true);
-    assertEquals(true, uem.isContrast());
+    assertTrue(uem.isContrast());
     // test containsContrast
     assertTrue(uem.containsContrast());
 

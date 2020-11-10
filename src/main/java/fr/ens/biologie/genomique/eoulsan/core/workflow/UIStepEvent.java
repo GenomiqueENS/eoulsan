@@ -11,7 +11,7 @@ public class UIStepEvent extends UIEvent {
 
   enum StepStatusMessage {
     PROGRESS, TASK_PROGRESS, NOTE,
-  };
+  }
 
   private final Step step;
   private final StepStatusMessage status;

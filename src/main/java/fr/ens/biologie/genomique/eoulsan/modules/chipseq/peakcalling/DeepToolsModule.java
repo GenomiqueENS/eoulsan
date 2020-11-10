@@ -264,13 +264,9 @@ public class DeepToolsModule extends AbstractModule {
 
       // BAM files
       cmd1multibamSummary.add("--bamfiles");
-      for (String element : bamFileNames) {
-        cmd1multibamSummary.add(element);
-      }
+      cmd1multibamSummary.addAll(bamFileNames);
       cmd1multibamSummary.add("--labels");
-      for (String element : bamFileLabels) {
-        cmd1multibamSummary.add(element);
-      }
+      cmd1multibamSummary.addAll(bamFileLabels);
 
       // Construct output
       final String multiBamSummaryOutput =
@@ -359,13 +355,9 @@ public class DeepToolsModule extends AbstractModule {
 
         // BAM files
         cmd3multibamSummary.add("--bamfiles");
-        for (String element : bamFileNames) {
-          cmd3multibamSummary.add(element);
-        }
+        cmd3multibamSummary.addAll(bamFileNames);
         cmd3multibamSummary.add("--labels");
-        for (String element : bamFileLabels) {
-          cmd3multibamSummary.add(element);
-        }
+        cmd3multibamSummary.addAll(bamFileLabels);
 
         // Construct output
         final String multiBamSummaryOutput2 =
@@ -451,13 +443,9 @@ public class DeepToolsModule extends AbstractModule {
       cmd5bamFingerprint.add("plotFingerprint");
       // BAM files
       cmd5bamFingerprint.add("--bamfiles");
-      for (String element : bamFileNames) {
-        cmd5bamFingerprint.add(element);
-      }
+      cmd5bamFingerprint.addAll(bamFileNames);
       cmd5bamFingerprint.add("--labels");
-      for (String element : bamFileLabels) {
-        cmd5bamFingerprint.add(element);
-      }
+      cmd5bamFingerprint.addAll(bamFileLabels);
 
       // Output file
       cmd5bamFingerprint.add("--plotFile");

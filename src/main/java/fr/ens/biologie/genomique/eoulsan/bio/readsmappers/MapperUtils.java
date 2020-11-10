@@ -81,7 +81,7 @@ public class MapperUtils {
    * @param extension extension of the index
    * @param extensionLength extension length
    * @return the index path
-   * @throws IOException
+   * @throws IOException if cannot get the path of the index
    */
   public static File getIndexPath(final String mapperName,
       final File indexDirectory, final String extension,

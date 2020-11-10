@@ -252,7 +252,7 @@ public final class ReadSequence extends Sequence {
    * @param quality Quality of the read
    * @return a String with the sequence in FastQ format
    */
-  public static final String toFastQ(final String name, final String sequence,
+  public static String toFastQ(final String name, final String sequence,
       final String quality) {
 
     return toFastQ(name, sequence, quality, false);
@@ -266,7 +266,7 @@ public final class ReadSequence extends Sequence {
    * @param repeatId repeat the id on the 3rd line of the fastq entry
    * @return a String with the sequence in FastQ format
    */
-  public static final String toFastQ(final String name, final String sequence,
+  public static String toFastQ(final String name, final String sequence,
       final String quality, final boolean repeatId) {
 
     if (name == null || sequence == null || quality == null) {
@@ -304,7 +304,7 @@ public final class ReadSequence extends Sequence {
    * @param quality Quality of the read
    * @return a String with the sequence in FastQ format
    */
-  public static final String toTFQ(final String name, final String sequence,
+  public static String toTFQ(final String name, final String sequence,
       final String quality) {
 
     return toTFQ(true, name, sequence, quality);
@@ -318,7 +318,7 @@ public final class ReadSequence extends Sequence {
    * @param quality Quality of the read
    * @return a String with the sequence in FastQ format
    */
-  public static final String toTFQ(final boolean withId, final String name,
+  public static String toTFQ(final boolean withId, final String name,
       final String sequence, final String quality) {
 
     if (name == null || sequence == null || quality == null) {

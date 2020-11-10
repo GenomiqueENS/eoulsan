@@ -63,6 +63,7 @@
 
 		<tr><td>main.format.path</td><td>string</td><td>Not set</td><td>Define the paths of the formats. Multiple paths can be separated using a space character</td></tr>
 		<tr><td>main.galaxy.tool.path</td><td>string</td><td>Not set</td><td>Define the paths of the galaxy tools files. Multiple paths can be separated using a space character</td></tr>
+		<tr><td>main.standard.external.modules.enabled</td><td>boolean</td><td>true</td><td>If an internet connection is active, add external modules and formats from the <a href="https://github.com/GenomicParisCentre/eoulsan-tools">eoulsan-tool GitHub repository</a></td></tr>
 
 		<tr><td>main.default.fastq.format</td><td>string</td><td>fastq-sanger</td><td>The default fastq format: fastq-sanger, fastq-solexa, fastq-illumina or fastq-illumina-1.5</td></tr>
 

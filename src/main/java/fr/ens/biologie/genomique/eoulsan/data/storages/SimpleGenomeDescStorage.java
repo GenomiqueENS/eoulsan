@@ -297,7 +297,7 @@ public class SimpleGenomeDescStorage implements GenomeDescStorage {
    * @return a GenomeDescStorage object if the path contains an index storage or
    *         null if no index storage is found
    */
-  public static final GenomeDescStorage getInstance(final DataFile dir) {
+  public static GenomeDescStorage getInstance(final DataFile dir) {
 
     try {
       return new SimpleGenomeDescStorage(dir);

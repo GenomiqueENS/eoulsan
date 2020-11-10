@@ -3,6 +3,7 @@ package fr.ens.biologie.genomique.eoulsan.translator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class ChangeIndexTranslatorTest {
     try {
 
       new ChangeIndexTranslator(null, null);
-      assertTrue(false);
+      fail();
     } catch (RuntimeException e) {
 
       assertTrue(true);
@@ -46,7 +47,7 @@ public class ChangeIndexTranslatorTest {
     try {
 
       new ChangeIndexTranslator(transl, "unknown");
-      assertTrue(false);
+      fail();
     } catch (RuntimeException e) {
 
       assertTrue(true);

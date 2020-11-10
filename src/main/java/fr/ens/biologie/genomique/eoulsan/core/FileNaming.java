@@ -654,7 +654,7 @@ public class FileNaming {
    * @param stepId the step id to check
    * @return true if the step id is valid
    */
-  public static final boolean isStepIdValid(final String stepId) {
+  public static boolean isStepIdValid(final String stepId) {
 
     return isNameValid(stepId);
   }
@@ -664,7 +664,7 @@ public class FileNaming {
    * @param formatPrefix the format prefix to check
    * @return true if the format prefix is valid
    */
-  public static final boolean isFormatPrefixValid(final String formatPrefix) {
+  public static boolean isFormatPrefixValid(final String formatPrefix) {
 
     return isNameValid(formatPrefix);
   }
@@ -674,7 +674,7 @@ public class FileNaming {
    * @param portName port name to check
    * @return true if the port name is valid
    */
-  public static final boolean isPortNameValid(final String portName) {
+  public static boolean isPortNameValid(final String portName) {
 
     return isNameValid(portName);
   }
@@ -684,7 +684,7 @@ public class FileNaming {
    * @param dataName data name to check
    * @return true if the data name is valid
    */
-  public static final boolean isDataNameValid(final String dataName) {
+  public static boolean isDataNameValid(final String dataName) {
 
     return isNameValid(dataName);
   }
@@ -705,7 +705,7 @@ public class FileNaming {
    * @param file the file to test.
    * @return true if the filename is valid
    */
-  public static final boolean isFilenameValid(final DataFile file) {
+  public static boolean isFilenameValid(final DataFile file) {
 
     requireNonNull(file, "file argument cannot be null");
 
@@ -717,7 +717,7 @@ public class FileNaming {
    * @param file the file to test.
    * @return true if the filename is valid
    */
-  public static final boolean isFilenameValid(final File file) {
+  public static boolean isFilenameValid(final File file) {
 
     requireNonNull(file, "file argument cannot be null");
 
@@ -729,7 +729,7 @@ public class FileNaming {
    * @param filename the file to test.
    * @return true if the filename is valid
    */
-  public static final boolean isFilenameValid(final String filename) {
+  public static boolean isFilenameValid(final String filename) {
 
     try {
       FileNaming.parse(filename);
