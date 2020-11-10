@@ -47,10 +47,8 @@ import com.google.common.collect.Multimap;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
@@ -257,28 +255,6 @@ public class CommandWorkflow extends AbstractWorkflow {
 
       addStep(new CommandStep(this, module));
     }
-  }
-
-  /**
-   * Initialize the settings of the Workflow.
-   */
-  private void initializeSettings() {
-
-    final Set<Parameter> globalParameters =
-        this.workflowCommand.getGlobalParameters();
-
-    final Settings settings = EoulsanRuntime.getSettings();
-
-    // Add globals parameters to Settings
-    getLogger()
-        .info("Init all steps with global parameters: " + globalParameters);
-    for (Parameter p : globalParameters) {
-      settings.setSetting(p.getName(), p.getStringValue());
-    }
-
-    // Reload the available formats because the list of the available formats
-    // has already loaded at the startup when using DataFile objects
-    DataFormatRegistry.getInstance().reload();
   }
 
   /**
@@ -1031,8 +1007,9 @@ public class CommandWorkflow extends AbstractWorkflow {
     context.setCommandDescription(workflowCommand.getDescription());
     context.setCommandAuthor(workflowCommand.getAuthor());
 
-    // Set the globals parameter in the Eoulsan settings
-    initializeSettings();
+    // Reload the available formats because the list of the available formats
+    // has already loaded at the startup when using DataFile objects
+    DataFormatRegistry.getInstance().reload();
 
     // Create a "eoulsan-data" directory if required
     createEoulsanDataDirectoryIfRequired();

@@ -975,7 +975,7 @@ of reads that reject each filter like in local mode.
             <action dev="jourdren" type="add">
                  Add "dataproduct" atribute for the step tag in the workflow file. This new attribute allow to define the method (cross product or match) to use to combine data before executing a step.
             </action>
- 
+
             <action dev="jourdren" type="update">
                  Galaxytools files can now be related to a Docker image thanks to a new "dockerimage" attribute for the "command" tag of the Galaxytool files.
             </action>
@@ -1089,7 +1089,7 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="bauquet" type="update">
-                 Replace the implementation of the Eoulsan design object to handle the 2 formats of design files. 
+                 Replace the implementation of the Eoulsan design object to handle the 2 formats of design files.
             </action>
 
             <action dev="jourdren" type="add">
@@ -1157,7 +1157,7 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="update">
-               For normalization and differential analysis (using DESeq or DESeq2), Eoulsan now check if the required R execution method is available (R executable, Docker image or Rserve server). 
+               For normalization and differential analysis (using DESeq or DESeq2), Eoulsan now check if the required R execution method is available (R executable, Docker image or Rserve server).
             </action>
 
             <action dev="jourdren" type="update">
@@ -1734,22 +1734,74 @@ of reads that reject each filter like in local mode.
 
          </release>
 
-         <release version="2.4" description="Eoulsan 2.4 release" date="2018-09-13">
+         <release version="2.4" description="Eoulsan 2.4 release" date="2019-12-20">
 
-            <action dev="jourdren" type="update">
-              Eoulsan now requires Java 8 to compile. 
+            <action dev="jourdren" type="fix">
+              Eoulsan can now runs using Java 11.
             </action>
 
             <action dev="jourdren" type="fix">
-              Eoulsan can now runs using Java 11. 
+              In RSingleCellExperimentCreator class R code, now use "check.names=FALSE" when loading data in R with read.table() to avoid adding "X" to row/column names when the names starts with a digit.
             </action>
 
             <action dev="jourdren" type="fix">
-              Fix Dockerfile and now use bioconductor/release_sequencing:3.1 image as base image for Eoulsan. 
+              In MultiQC module, expression statistics were not in MultiQC report.
+            </action>
+
+            <action dev="jourdren" type="fix">
+              The import module did not work with ".." parent directories.
+            </action>
+
+            <action dev="jourdren" type="fix">
+              Avoid "java.awt.AWTError: Assistive Technology not found: org.GNOME.Accessibility.AtkWrapper" error when using FastQC or ODF Toolkit in Hadoop mode.
+            </action>
+
+            <action dev="jourdren" type="fix">
+              In the workflow engine, steps with list ports where started before receving the last data of the list port.
+            </action>
+
+            <action dev="jourdren" type="fix">
+              Fix Dockerfile and now use bioconductor/release_sequencing:3.1 image as base image for Eoulsan.
+            </action>
+
+            <action dev="jourdren" type="fix">
+              The diffanaresultsannotation module fails if a broken link exits in the output directory.
+            </action>
+
+            <action dev="jourdren" type="fix">
+              Now use Apache commons-compress 1.19 instead of 1.18 (CVE-2019-12402).
+            </action>
+
+            <action dev="jourdren" type="fix">
+              Now to chooze the version of a module, now prioritize modules from the first module sources when they the same version.
+            </action>
+
+            <action dev="jourdren" type="fix">
+              In pom.xml, fix security issue detected by GitHub by changing commons-compress and httpclient dependency versions.
+            </action>
+
+            <action dev="jourdren" type="add">
+              Storages can now created using Galaxy tools.
+            </action>
+
+            <action dev="jourdren" type="add">
+              Design header entries can now be used as constants in the workflow file.
+            </action>
+
+            <action dev="jourdren" type="add">
+              Add singularity support for Docker images.
+            </action>
+
+            <action dev="berthelier" type="add">
+              Add many check for DESeq2 design before launching DESeq2. This checks are also launched in the check step.
             </action>
 
             <action dev="jourdren" type="update">
-              Expression matrices classes are now generalized to store any type of Objects (and not only Double). *ExpressionMatrix classes are still dedicated to Double but now inherits from generalized *Matrix classes. 
+              Eoulsan now requires Java 8 to compile.
+            </action>
+
+            <action dev="jourdren" type="update">
+              Expression matrices classes are now generalized to store any type of Objects (and not only Double). *ExpressionMatrix classes are still dedicated to Double but now inherits from generalized *Matrix classes.
             </action>
 
             <action dev="jourdren" type="update">
@@ -1757,7 +1809,7 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="update">
-              Add CountsReader and CountsWriter interfaces, CountsTSVReader and CountsTSVWriter classes. The ExpressionModule now use CountsTSVWriter to write counts.  
+              Add CountsReader and CountsWriter interfaces, CountsTSVReader and CountsTSVWriter classes. The ExpressionModule now use CountsTSVWriter to write counts.
             </action>
 
             <action dev="jourdren" type="update">
@@ -1769,10 +1821,6 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="update">
-              In pom.xml, fix security issue detected by GitHub by changing commons-compress and httpclient dependency versions.
-            </action>
-
-            <action dev="jourdren" type="update">
               A a new class to write ExpressionMatrix object in MarketMatrix sparse format.
             </action>
 
@@ -1780,20 +1828,8 @@ of reads that reject each filter like in local mode.
               Add a new class named CellRangerExpressionMatrixWriter that can saved an expression matrix in Cell Ranger format (v2 or v3).
             </action>
 
-            <action dev="jourdren" type="fix">
-              In RSingleCellExperimentCreator class R code, now use "check.names=FALSE" when loading data in R with read.table() to avoid adding "X" to row/column names when the names starts with a digit.
-            </action>
-
-            <action dev="jourdren" type="fix">
-              In MultiQC module, expression statistics were not in MultiQC report.
-            </action>
-
             <action dev="jourdren" type="update">
               Now use MultiQC 1.7 for default Docker image.
-            </action>
-
-            <action dev="jourdren" type="fix">
-              The import module did not work with ".." parent directories.
             </action>
 
             <action dev="jourdren" type="update">
@@ -1804,14 +1840,6 @@ of reads that reject each filter like in local mode.
               Add a new setting for HTCondor job scheduler named "htcondor.nice.user" to enable submitting jobs as "nice jobs" by HTCondor.
             </action>
 
-            <action dev="jourdren" type="fix">
-              Avoid "java.awt.AWTError: Assistive Technology not found: org.GNOME.Accessibility.AtkWrapper" error when using FastQC or ODF Toolkit in Hadoop mode.
-            </action>
-
-            <action dev="jourdren" type="update">
-              Add singularity support.
-            </action>
-
             <action dev="jourdren" type="update">
               In bpipe-htcondor.sh, now save the outputs (stdout and stderr) and exit code of job submissions to more easily debug HTCondors submission errors.
             </action>
@@ -1820,12 +1848,12 @@ of reads that reject each filter like in local mode.
               Now use lanterna 3.0.1 for the default UI. The UI can now be displayed in the middle of the screen.
             </action>
 
-            <action dev="jourdren" type="add">
-              Storages can now created using Galaxy tools.
+            <action dev="jourdren" type="update">
+              Add support for Hadoop 3.x.
             </action>
 
             <action dev="jourdren" type="update">
-              STAR 2.7.1a is now bundled with Eoulsan.
+              STAR 2.7.2d is now bundled with Eoulsan.
             </action>
 
             <action dev="jourdren" type="update">
@@ -1840,8 +1868,16 @@ of reads that reject each filter like in local mode.
               In HTSeqUtils.parseCigar(), now handle "=" and "X" cigar operators. Expression step can now with "=" and "X" cigar operators codes.
             </action>
 
-            <action dev="jourdren" type="fix">
-              In the workflow engine, steps with list ports where started before receving the last data of the list port.
+            <action dev="jourdren" type="update">
+              Add singularity support.
+            </action>
+
+            <action dev="jourdren" type="update">
+              In MapReduceUtils.submitAndWaitForJob(), replace call of Job.waitForCompletion() call by a custom method that allow to retry to connect to the JobTracker if tail connection fails.
+            </action>
+
+            <action dev="jourdren" type="update">
+              Now check if all the gene/transcript count are null of a sample are null before launching DESeq2.
             </action>
 
          </release>

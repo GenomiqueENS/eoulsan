@@ -383,7 +383,7 @@ public class TokenManager implements Runnable {
             + ") are not linked:");
 
     // Check if the input port is closed
-    checkState(!this.closedPorts.contains(inputPort),
+    checkState(!(this.closedPorts.contains(inputPort) && !this.step.isSkip()),
         "The input port is closed for the step "
             + this.step.getId() + ": " + inputPort.getName());
 
@@ -1099,8 +1099,8 @@ public class TokenManager implements Runnable {
         }
 
         list.add(port.getName()
-            + " (" + port.getFormat().getName() + "): "
-            + size + (port.isList() ? " [list]":""));
+            + " (" + port.getFormat().getName() + "): " + size
+            + (port.isList() ? " [list]" : ""));
       }
 
       msg += Joiner.on(", ").join(list);

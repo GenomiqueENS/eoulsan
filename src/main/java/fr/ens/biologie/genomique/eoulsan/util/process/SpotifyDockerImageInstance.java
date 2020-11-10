@@ -412,7 +412,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
               break;
             }
           }
-        } catch (IOException e) {
+        } catch (IOException | RuntimeException e) {
           EoulsanLogger.getLogger().severe(e.getMessage());
         }
       };

@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -54,7 +55,7 @@ import fr.ens.biologie.genomique.eoulsan.util.ClassPathResourceLoader;
 import fr.ens.biologie.genomique.eoulsan.util.FileResourceLoader;
 
 /**
- * This class define a registry for steps.
+ * This class define a registry for modules.
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -66,7 +67,7 @@ public class ModuleRegistry {
 
   private static ModuleRegistry instance;
   private final ModuleService service;
-  private final GalaxyToolStepClassPathLoader galaxyClassPathLoader;
+  private final GalaxyToolModuleClassPathLoader galaxyClassPathLoader;
   private final GalaxyToolModuleFileResourceLoader galaxyFileLoader;
   private final Set<String> javaModuleFound = new LinkedHashSet<>();
 
@@ -147,7 +148,7 @@ public class ModuleRegistry {
   /**
    * This class define a resource loader for resource defined in the class path.
    */
-  private static final class GalaxyToolStepClassPathLoader
+  private static final class GalaxyToolModuleClassPathLoader
       extends ClassPathResourceLoader<GalaxyToolModule> {
 
     @Override
@@ -169,7 +170,7 @@ public class ModuleRegistry {
     // Constructor
     //
 
-    public GalaxyToolStepClassPathLoader() {
+    public GalaxyToolModuleClassPathLoader() {
 
       super(GalaxyToolModule.class, RESOURCE_PREFIX);
     }
@@ -180,8 +181,8 @@ public class ModuleRegistry {
   //
 
   /**
-   * Retrieve the singleton static instance of StepRegistry.
-   * @return A StepRegistry instance
+   * Retrieve the singleton static instance of ModuleRegistry.
+   * @return A ModuleRegistry instance
    */
   public static synchronized ModuleRegistry getInstance() {
 
@@ -203,31 +204,31 @@ public class ModuleRegistry {
    * Load a module.
    * @param moduleName name of the required module
    * @param version version of the required module
-   * @return a step object or null if the requested module has been not found
+   * @return a Module object or null if the requested module has been not found
    */
   public Module loadModule(final String moduleName, final String version) {
 
-    final List<Module> stepsFound = new ArrayList<>();
+    final List<Module> modulesFound = new ArrayList<>();
 
-    stepsFound.addAll(this.service.newServices(moduleName));
-    stepsFound.addAll(this.galaxyClassPathLoader.loadResources(moduleName));
-    stepsFound.addAll(this.galaxyFileLoader.loadResources(moduleName));
+    modulesFound.addAll(this.service.newServices(moduleName));
+    modulesFound.addAll(this.galaxyClassPathLoader.loadResources(moduleName));
+    modulesFound.addAll(this.galaxyFileLoader.loadResources(moduleName));
 
-    // Filter steps
-    filterModules(stepsFound, Strings.nullToEmpty(version).trim());
+    // Filter modules
+    filterModules(modulesFound, Strings.nullToEmpty(version).trim());
 
-    // Sort steps
-    sortModules(stepsFound);
+    // Sort modules
+    sortModules(modulesFound);
 
-    if (stepsFound.isEmpty()) {
+    if (modulesFound.isEmpty()) {
       return null;
     }
 
-    return stepsFound.get(stepsFound.size() - 1);
+    return modulesFound.get(modulesFound.size() - 1);
   }
 
   /**
-   * Reload the list of available steps.
+   * Reload the list of available modules.
    */
   public void reload() {
 
@@ -237,7 +238,7 @@ public class ModuleRegistry {
 
     this.javaModuleFound.clear();
 
-    // Log steps defined in jars
+    // Log modules defined in jars
     for (Map.Entry<String, String> e : this.service.getServiceClasses()
         .entries()) {
 
@@ -247,12 +248,12 @@ public class ModuleRegistry {
           .config("Found module: " + e.getKey() + " (" + e.getValue() + ")");
     }
 
-    // Log Galaxy tool steps
-    final List<GalaxyToolModule> stepsFound = new ArrayList<>();
-    stepsFound.addAll(this.galaxyClassPathLoader.loadAllResources());
-    stepsFound.addAll(this.galaxyFileLoader.loadAllResources());
+    // Log Galaxy tool modules
+    final List<GalaxyToolModule> modulesFound = new ArrayList<>();
+    modulesFound.addAll(this.galaxyClassPathLoader.loadAllResources());
+    modulesFound.addAll(this.galaxyFileLoader.loadAllResources());
 
-    for (GalaxyToolModule s : stepsFound) {
+    for (GalaxyToolModule s : modulesFound) {
 
       getLogger().config("Found module: "
           + s.getName() + " (Galaxy tool, source: " + s.getSource() + ")");
@@ -282,7 +283,7 @@ public class ModuleRegistry {
 
   /**
    * Filter the modules on their version.
-   * @param modules steps to filter
+   * @param modules modules to filter
    * @param version required version
    */
   private void filterModules(final List<Module> modules, final String version) {
@@ -298,15 +299,15 @@ public class ModuleRegistry {
     for (Module module : modules) {
 
       // Get the version
-      Version stepVersion = module.getVersion();
+      Version moduleVersion = module.getVersion();
 
       // Discard null version
-      if (stepVersion == null) {
+      if (moduleVersion == null) {
         continue;
       }
 
-      // Keep only the step with the right version
-      if (!stepVersion.toString().equals(version)) {
+      // Keep only the module with the right version
+      if (!moduleVersion.toString().equals(version)) {
         toRemove.add(module);
       }
     }
@@ -326,7 +327,11 @@ public class ModuleRegistry {
       return;
     }
 
-    // Sort the steps
+    // Reverse the order of the module to prioritize modules of the first
+    // sources
+    Collections.reverse(modules);
+
+    // Sort the modules
     modules.sort(new Comparator<Module>() {
 
       @Override
@@ -340,16 +345,16 @@ public class ModuleRegistry {
           return -1;
         }
 
-        int result = compareStepModes(m1, m2);
+        int result = compareModuleModes(m1, m2);
 
         if (result != 0) {
           return result;
         }
 
-        return compareStepVersions(m1, m2);
+        return compareModuleVersions(m1, m2);
       }
 
-      private int compareStepModes(final Module m1, final Module m2) {
+      private int compareModuleModes(final Module m1, final Module m2) {
 
         final ExecutionMode mode1 =
             ExecutionMode.getExecutionMode(m1.getClass());
@@ -385,7 +390,7 @@ public class ModuleRegistry {
         return 0;
       }
 
-      private int compareStepVersions(final Module s1, final Module s2) {
+      private int compareModuleVersions(final Module s1, final Module s2) {
 
         final Version v1 = s1.getVersion();
         final Version v2 = s2.getVersion();
@@ -415,7 +420,7 @@ public class ModuleRegistry {
   private ModuleRegistry() {
 
     this.service = new ModuleService();
-    this.galaxyClassPathLoader = new GalaxyToolStepClassPathLoader();
+    this.galaxyClassPathLoader = new GalaxyToolModuleClassPathLoader();
     this.galaxyFileLoader = new GalaxyToolModuleFileResourceLoader(
         getSettings().getGalaxyToolPaths());
   }

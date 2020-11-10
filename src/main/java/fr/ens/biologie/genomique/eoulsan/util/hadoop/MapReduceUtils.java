@@ -29,6 +29,7 @@ import java.io.IOException;
 import org.apache.hadoop.mapreduce.Job;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 
 /**
@@ -38,6 +39,9 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
  * @author Laurent Jourdren
  */
 public final class MapReduceUtils {
+
+  private static final int COMPLETION_POLL_INTERVAL = 5000;
+  private static final int MAX_CONNECTION_TRY_TO_JOB_TRACK = 12;
 
   /**
    * Wait the completion of a job.
@@ -75,7 +79,7 @@ public final class MapReduceUtils {
       HadoopJobEmergencyStopTask.addHadoopJobEmergencyStopTask(job);
 
       // Job the completion of the job (non verbose mode)
-      job.waitForCompletion(false);
+      waitForCompletion(job, MAX_CONNECTION_TRY_TO_JOB_TRACK);
 
       // Remove the Hadoop job to the list of job to kill if workflow fails
       HadoopJobEmergencyStopTask.removeHadoopJobEmergencyStopTask(job);
@@ -94,6 +98,58 @@ public final class MapReduceUtils {
 
     } catch (ClassNotFoundException | InterruptedException | IOException e) {
       throw new EoulsanException(e);
+    }
+  }
+
+  /**
+   * Wait for job completion.
+   * @param job job to submit
+   * @param maxTry number of try to connect to JobTracker before throwing an
+   *          exception
+   * @throws IOException thrown if the communication with the JobTracker is lost
+   */
+  public static void waitForCompletion(final Job job, final int maxTry)
+      throws IOException {
+
+    if (job == null) {
+      throw new NullPointerException("The job is null");
+    }
+
+    waitForCompletion(job, maxTry, 0);
+  }
+
+  /**
+   * Wait for job completion.
+   * @param job job to submit
+   * @param maxTry number of try to connect to JobTracker before throwing an
+   *          exception
+   * @throws IOException thrown if the communication with the JobTracker is lost
+   */
+  private static void waitForCompletion(final Job job, final int maxTry,
+      int failedTry) throws IOException {
+
+    try {
+      while (!job.isComplete()) {
+        failedTry = 0;
+        try {
+          Thread.sleep(COMPLETION_POLL_INTERVAL);
+        } catch (InterruptedException ie) {
+        }
+      }
+    } catch (IOException e) {
+
+      failedTry += 1;
+
+      EoulsanLogger.getLogger()
+          .severe("Fail to check if Hadoop Job ("
+              + job.getJobName() + ") is completed, " + failedTry + "/" + maxTry
+              + " trys: " + e.getMessage());
+
+      if (failedTry >= maxTry) {
+        throw new IOException(e);
+      }
+
+      waitForCompletion(job, maxTry, failedTry);
     }
   }
 

@@ -5,7 +5,7 @@
 	<groupId>fr.ens.biologie.genomique</groupId>
 	<artifactId>eoulsan</artifactId>
 	<packaging>jar</packaging>
-	<version>2.4-SNAPSHOT</version>
+	<version>2.5-SNAPSHOT</version>
 	<name>Eoulsan</name>
 	<description>
 		A pipeline for NGS analysis.
@@ -412,7 +412,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
-			<version>1.18</version>
+			<version>1.19</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -515,7 +515,7 @@
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
-			<version>2.9.1</version>
+			<version>2.12.0</version>
 		</dependency>
 		<!-- Python interpreter -->
 		<dependency>
@@ -584,7 +584,7 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.2</version>
+			<version>2.13.2</version>
 		</dependency>
 
 		<!-- Required to patch FastQC at runtime -->

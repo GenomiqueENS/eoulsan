@@ -179,12 +179,9 @@ public class HTSeqCounter extends AbstractExpressionCounter
   public void setParameter(final String key, final String value)
       throws EoulsanException {
 
-    if (key == null) {
-      throw new NullPointerException("the key argument is null");
-    }
-
-    if (value == null) {
-      throw new NullPointerException("the value argument is null");
+    // Set parameter if common
+    if (setCommonParameter(key, value)) {
+      return;
     }
 
     switch (key) {
