@@ -225,8 +225,8 @@ public class DESeq2DesignChecker implements Checker {
     }
 
     /*
-     * Check if there is no undesirable special characters in the metakeys columns or in the Condition column
-     * when the contrast mode is activate
+     * Check if there is no undesirable special characters in the metakeys columns
+     * or in the Condition column when the contrast mode is active
      */
     for (String key : esColumnNames){
         for (ExperimentSample es : experiment.getExperimentSamples()) {
@@ -248,7 +248,7 @@ public class DESeq2DesignChecker implements Checker {
     }
     /*
      * Check if there is no undesirable special characters in the metakeys columns or in the Condition column
-     * when the contrast mode is not activate and for a non complex design model
+     * when the contrast mode is not active and for a non complex design model
      */
     for (String key : esColumnNames){
       for (ExperimentSample es : experiment.getExperimentSamples()) {
@@ -260,7 +260,6 @@ public class DESeq2DesignChecker implements Checker {
         }
       }
     }
-    //
     if (sColumnNames.contains(CONDITION_KEY)) {
       for (ExperimentSample es : experiment.getExperimentSamples()) {
         String s = DesignUtils.getMetadata(es, CONDITION_KEY);
@@ -303,7 +302,7 @@ public class DESeq2DesignChecker implements Checker {
                 && !e.getValue().equals(reference)) {
               return error(
                   "There is an inconsistency between the conditions "
-                      + "and the references : " + experiment.getName(),
+                      + "and the references: " + experiment.getName(),
                   throwsException);
             }
           }
