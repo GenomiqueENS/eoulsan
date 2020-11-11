@@ -176,13 +176,7 @@ public class DESeq2DesignChecker implements Checker {
         // Check if each conditions in the comparison string exist in the
         // Condition column
         for (String condi : conditionsInComparisonString) {
-          Boolean exist = false;
-          for (String s : possibleConditions) {
-            if (s.equals(condi)) {
-              exist = true;
-            }
-          }
-          if (!exist) {
+          if (!possibleConditions.contains(condi)) {
             return error("Error in "
                 + experiment.getName() + " experiment, one comparison (" + condi
                 + ") does not exist: " + c, throwsException);
@@ -209,17 +203,23 @@ public class DESeq2DesignChecker implements Checker {
      * Check if there is no numeric character at the begin of a row in all
      * metakeys columns for a complex design model
      */
-    for (String key : esColumnNames) {
+    for (String columnName : DesignUtils.getModelColumns(experiment)) {
       for (ExperimentSample es : experiment.getExperimentSamples()) {
-        String s = DesignUtils.getMetadata(es, key);
-        // Error if a condition column contains an invalid numeric character as
-        // first character
-        if (!s.isEmpty()
-            && Character.isDigit(s.charAt(0)) && emd.getComparisons() != null) {
-          return error(
-              "One or more sample in the "
-                  + key + " column start with a numeric character : " + s,
-              throwsException);
+        // Check if the column exists
+        if (!DesignUtils.containsMetadata(es, columnName)) {
+          return error("The \""
+                  + columnName
+                  + "\" column is required by DESeq2 model but is not found for \""
+                  + es.getSample().getId() + "\" sample", throwsException);
+        }
+
+        String columnValue = DesignUtils.getMetadata(es, columnName);
+        if (!columnValue.isEmpty()
+                && Character.isDigit(columnValue.charAt(0))) {
+          return error("The value of the \""
+                          + columnName + "\" column start with a numeric character for \""
+                          + es.getSample().getId() + "\" sample: " + columnValue,
+                  throwsException);
         }
       }
     }
