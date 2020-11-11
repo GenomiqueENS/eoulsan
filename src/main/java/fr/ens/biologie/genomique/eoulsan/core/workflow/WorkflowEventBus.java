@@ -7,7 +7,7 @@ import com.google.common.eventbus.Subscribe;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
-import fr.ens.biologie.genomique.eoulsan.data.Data;;
+import fr.ens.biologie.genomique.eoulsan.data.Data;
 
 /**
  * This class define a single for the event bus.

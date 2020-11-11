@@ -24,6 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.expressioncounters;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +37,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.bio.io.GFFReader;
 import fr.ens.biologie.genomique.eoulsan.bio.io.GTFReader;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 import htsjdk.samtools.SAMFileWriter;
@@ -50,6 +53,11 @@ import htsjdk.samtools.SamReaderFactory;
  * @author Claire Wallon
  */
 public abstract class AbstractExpressionCounter implements ExpressionCounter {
+
+  private static final int DEFAULT_MAX_RECORDS_IN_RAM = 500000;
+  private static final String MAX_RECORDS_IN_RAM_KEY = "max.entries.in.ram";
+
+  private int maxRecordsInRam = DEFAULT_MAX_RECORDS_IN_RAM;
 
   /**
    * This class allow to save the modified SAM entries after the counting.
@@ -109,6 +117,30 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
       this.writer = writer;
       this.samRecords = samReader.iterator();
     }
+  }
+
+  /**
+   * Set a common parameter of the counter.
+   * @param key name of the parameter to set
+   * @param value value of the parameter to set
+   * @return true if the parameter is common parameter
+   * @throws EoulsanException if the parameter is invalid
+   */
+  protected boolean setCommonParameter(final String key, final String value)
+      throws EoulsanException {
+
+    requireNonNull(key, "the key argument is null");
+    requireNonNull(value, "the value argument is null");
+
+    if (MAX_RECORDS_IN_RAM_KEY.equals(key)) {
+
+      this.maxRecordsInRam =
+          new Parameter(key, value).getIntValueGreaterOrEqualsTo(1);
+
+      return true;
+    }
+
+    return false;
   }
 
   @Override
@@ -200,6 +232,7 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
     // Define the writer
     SAMFileWriter writer =
         new SAMFileWriterFactory().setTempDirectory(temporaryDirectory)
+            .setMaxRecordsInRam(this.maxRecordsInRam)
             .makeSAMWriter(reader.getFileHeader(), false, outputSam);
 
     return count(new IteratorWriter(writer, reader), reporter, counterGroup);

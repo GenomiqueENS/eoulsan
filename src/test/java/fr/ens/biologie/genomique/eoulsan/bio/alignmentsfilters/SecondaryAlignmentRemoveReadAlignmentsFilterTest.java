@@ -51,9 +51,6 @@ public class SecondaryAlignmentRemoveReadAlignmentsFilterTest {
   private List<SAMRecord> records;
   private ReadAlignmentsFilter filter;
 
-  /**
-   * @throws java.lang.Exception
-   */
   @Before
   public void setUp() throws Exception {
 

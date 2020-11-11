@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 
@@ -83,10 +84,10 @@ public final class Settings implements Serializable {
   private static final String SAVE_WORKFLOW_IMAGE_KEY =
       MAIN_PREFIX_KEY + "generate.workflow.image";
 
-  private static final String DATA_FORMAT_PATH =
+  public static final String DATA_FORMAT_PATH_KEY =
       MAIN_PREFIX_KEY + "format.path";
 
-  private static final String GALAXY_TOOL_PATH =
+  public static final String GALAXY_TOOL_PATH_KEY =
       MAIN_PREFIX_KEY + "galaxy.tool.path";
 
   private static final String HADOOP_AWS_ACCESS_KEY =
@@ -176,6 +177,9 @@ public final class Settings implements Serializable {
       MAIN_PREFIX_KEY + "old.result.format";
 
   private static final String UI_NAME_KEY = MAIN_PREFIX_KEY + "ui.name";
+
+  public static final String STANDARD_EXTERNAL_MODULES_ENABLED_KEY =
+      MAIN_PREFIX_KEY + "standard.external.modules.enabled";
 
   private static final Set<String> FORBIDDEN_KEYS = Utils.unmodifiableSet(
       new String[] {HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY});
@@ -637,7 +641,7 @@ public final class Settings implements Serializable {
    */
   public List<String> getDataFormatPaths() {
 
-    String value = this.properties.getProperty(DATA_FORMAT_PATH);
+    String value = this.properties.getProperty(DATA_FORMAT_PATH_KEY);
 
     if (value == null) {
       return Collections.emptyList();
@@ -652,7 +656,7 @@ public final class Settings implements Serializable {
       }
     }
 
-    return result;
+    return Collections.unmodifiableList(result);
   }
 
   /**
@@ -661,7 +665,7 @@ public final class Settings implements Serializable {
    */
   public List<String> getGalaxyToolPaths() {
 
-    String value = this.properties.getProperty(GALAXY_TOOL_PATH);
+    String value = this.properties.getProperty(GALAXY_TOOL_PATH_KEY);
 
     if (value == null) {
       return Collections.emptyList();
@@ -676,7 +680,7 @@ public final class Settings implements Serializable {
       }
     }
 
-    return result;
+    return Collections.unmodifiableList(result);
   }
 
   /**
@@ -697,6 +701,17 @@ public final class Settings implements Serializable {
 
     return Boolean.parseBoolean(this.properties.getProperty(
         SAVE_WORKFLOW_IMAGE_KEY, "" + Globals.SAVE_WORKFLOW_IMAGE_DEFAULT));
+  }
+
+  /**
+   * Test if standard external modules must be used.
+   * @return true if standard external modules must be used
+   */
+  public boolean isUseStandardExternalModules() {
+
+    return Boolean.parseBoolean(
+        this.properties.getProperty(STANDARD_EXTERNAL_MODULES_ENABLED_KEY,
+            "" + Globals.STANDARD_EXTERNAL_MODULES_ENABLED_DEFAULT));
   }
 
   /**
@@ -1190,7 +1205,30 @@ public final class Settings implements Serializable {
    */
   public void setDataFormatPath(final String path) {
 
-    this.properties.setProperty(DATA_FORMAT_PATH, path);
+    this.properties.setProperty(DATA_FORMAT_PATH_KEY, path);
+  }
+
+  /**
+   * Set the data format paths
+   * @param paths the path to set
+   */
+  public void setDataFormatPaths(List<String> paths) {
+
+    Objects.requireNonNull(paths);
+
+    StringBuilder sb = new StringBuilder();
+
+    boolean first = true;
+    for (String s : paths) {
+      if (first) {
+        first = false;
+      } else {
+        sb.append(' ');
+      }
+      sb.append(s);
+    }
+
+    setDataFormatPath(sb.toString());
   }
 
   /**
@@ -1199,7 +1237,30 @@ public final class Settings implements Serializable {
    */
   public void setGalaxyToolPath(final String path) {
 
-    this.properties.setProperty(DATA_FORMAT_PATH, path);
+    this.properties.setProperty(GALAXY_TOOL_PATH_KEY, path);
+  }
+
+  /**
+   * Set the Galaxy tools paths
+   * @param paths the path to set
+   */
+  public void setGalaxyToolsPaths(List<String> paths) {
+
+    Objects.requireNonNull(paths);
+
+    StringBuilder sb = new StringBuilder();
+
+    boolean first = true;
+    for (String s : paths) {
+      if (first) {
+        first = false;
+      } else {
+        sb.append(' ');
+      }
+      sb.append(s);
+    }
+
+    setGalaxyToolPath(sb.toString());
   }
 
   /**
@@ -1218,6 +1279,16 @@ public final class Settings implements Serializable {
   public void setSaveWorkflowImage(final boolean save) {
 
     this.properties.setProperty(SAVE_WORKFLOW_IMAGE_KEY, "" + save);
+  }
+
+  /**
+   * Set if standard external modules must be used.
+   * @param enable the value
+   */
+  public void setUseStandardExternalModules(final boolean enable) {
+
+    this.properties.getProperty(STANDARD_EXTERNAL_MODULES_ENABLED_KEY,
+        "" + enable);
   }
 
   /**
@@ -1321,9 +1392,10 @@ public final class Settings implements Serializable {
 
     final OutputStream os = FileUtils.createOutputStream(file);
 
-    this.properties.store(os, " "
-        + Globals.APP_NAME + " version " + Globals.APP_VERSION_STRING
-        + " configuration file");
+    this.properties.store(os,
+        " "
+            + Globals.APP_NAME + " version " + Globals.APP_VERSION_STRING
+            + " configuration file");
     os.close();
   }
 

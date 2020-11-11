@@ -506,7 +506,8 @@ public final class XMLDataFormat extends AbstractDataFormat
    * Public constructor.
    * @param is input stream that contains the value of the data format
    * @param source source of the format
-   * @throws EoulsanException
+   * @throws EoulsanException if an error occurs while reading or parsing XML
+   *           file
    */
   public XMLDataFormat(final InputStream is, final String source)
       throws EoulsanException {

@@ -50,9 +50,6 @@ public class RemoveMultiMatchesReadAlignmentsFilterTest {
   private SAMRecord samRecordPE1, samRecordPE2, samRecordPE3, samRecordPE4;
   private RemoveMultiMatchesReadAlignmentsFilter filter;
 
-  /**
-   * @throws java.lang.Exception
-   */
   @Before
   public void setUp() throws Exception {
 

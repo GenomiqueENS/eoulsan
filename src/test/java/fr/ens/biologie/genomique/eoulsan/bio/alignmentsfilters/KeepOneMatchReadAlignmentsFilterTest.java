@@ -51,9 +51,6 @@ public class KeepOneMatchReadAlignmentsFilterTest {
   private List<SAMRecord> records;
   private KeepOneMatchReadAlignmentsFilter filter;
 
-  /**
-   * @throws java.lang.Exception
-   */
   @Before
   public void setUp() throws Exception {
 

@@ -278,6 +278,11 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
       // Handle step output directory
       for (DataFile f : context.getOutputDirectory().list()) {
 
+        // Only handle existing files (not broken links)
+        if (!f.exists()) {
+          continue;
+        }
+
         if (!f.getMetaData().isDir()) {
           files.add(f);
         } else if (f.getName().endsWith(Globals.STEP_OUTPUT_DIRECTORY_SUFFIX)) {

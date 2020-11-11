@@ -50,7 +50,7 @@ public class Sequence {
    * @return -1 as this method is deprecated
    */
   @Deprecated
-  public final int getId() {
+  public int getId() {
     return -1;
   }
 
@@ -58,7 +58,7 @@ public class Sequence {
    * Set the name of the sequence.
    * @return the name of the sequence
    */
-  public final String getName() {
+  public String getName() {
     return this.name;
   }
 
@@ -66,7 +66,7 @@ public class Sequence {
    * Get the identifier in the name.
    * @return the identifier in the name
    */
-  public final String getIdentifierInName() {
+  public String getIdentifierInName() {
 
     if (this.name == null) {
       return null;
@@ -85,7 +85,7 @@ public class Sequence {
    * Get the description in the name.
    * @return the description in the name
    */
-  public final String getDescriptionInName() {
+  public String getDescriptionInName() {
 
     if (this.name == null) {
       return null;
@@ -104,7 +104,7 @@ public class Sequence {
    * Get the description of the sequence.
    * @return a string with the description
    */
-  public final String getDescription() {
+  public String getDescription() {
     return this.description;
   }
 
@@ -112,7 +112,7 @@ public class Sequence {
    * Get the alphabet used for the sequence.
    * @return the alphabet of the sequence
    */
-  public final Alphabet getAlphabet() {
+  public Alphabet getAlphabet() {
     return this.alphabet;
   }
 
@@ -120,7 +120,7 @@ public class Sequence {
    * Get the sequence of the sequence.
    * @return a string with the sequence
    */
-  public final String getSequence() {
+  public String getSequence() {
     return this.sequence;
   }
 
@@ -133,14 +133,14 @@ public class Sequence {
    * @param id id to set
    */
   @Deprecated
-  public final void setId(final int id) {
+  public void setId(final int id) {
   }
 
   /**
    * Set the name of the sequence.
    * @param name the name to set
    */
-  public final void setName(final String name) {
+  public void setName(final String name) {
     this.name = trim(name);
   }
 
@@ -151,7 +151,7 @@ public class Sequence {
    * @param name the name to set
    * @return true if the name is valid.
    */
-  public final boolean setNameWithValidation(final String name) {
+  public boolean setNameWithValidation(final String name) {
     this.name = trim(name);
     return validateName();
   }
@@ -160,7 +160,7 @@ public class Sequence {
    * Set the description of the sequence.
    * @param description the description to set
    */
-  public final void setDescription(final String description) {
+  public void setDescription(final String description) {
     this.description = trim(description);
   }
 
@@ -168,7 +168,7 @@ public class Sequence {
    * Set the alphabet of the sequence.
    * @param alphabet the alphabet to set
    */
-  public final void setAlphabet(final Alphabet alphabet) {
+  public void setAlphabet(final Alphabet alphabet) {
 
     if (alphabet == null) {
       throw new NullPointerException("The alphabet is null");
@@ -181,7 +181,7 @@ public class Sequence {
    * Set the sequence.
    * @param sequence Sequence to set
    */
-  public final void setSequence(final String sequence) {
+  public void setSequence(final String sequence) {
     this.sequence = trim(sequence);
   }
 
@@ -192,7 +192,7 @@ public class Sequence {
    * @param sequence Sequence to set
    * @return true if the name is valid.
    */
-  public final boolean setSequenceWithValidation(final String sequence) {
+  public boolean setSequenceWithValidation(final String sequence) {
 
     this.sequence = trim(sequence);
     return validateSequence();
@@ -331,7 +331,7 @@ public class Sequence {
    * Get the tm of the sequence.
    * @return the tm of the sequence
    */
-  public final float getTm() {
+  public float getTm() {
 
     return getTm(50, 50);
   }
@@ -342,7 +342,7 @@ public class Sequence {
    * @param saltc salt concentration [mM
    * @return the tm temp for the sequence
    */
-  public final float getTm(final float dnac, final float saltc) {
+  public float getTm(final float dnac, final float saltc) {
 
     return MeltingTemp.tmstalucDNA(this.sequence, dnac, saltc);
   }
@@ -351,7 +351,7 @@ public class Sequence {
    * Get the GC percent for the sequence.
    * @return the GC percent for the sequence
    */
-  public final double getGCPercent() {
+  public double getGCPercent() {
 
     if (this.sequence == null) {
       return Double.NaN;
@@ -371,7 +371,7 @@ public class Sequence {
   /**
    * Set the sequence as the reverse.
    */
-  public final void reverse() {
+  public void reverse() {
 
     this.sequence = reverse(this.sequence);
   }
@@ -381,7 +381,7 @@ public class Sequence {
    * @param sequence sequence to reverse complement
    * @return the reverse complement sequence
    */
-  public static final String reverse(final String sequence) {
+  public static String reverse(final String sequence) {
 
     if (sequence == null) {
       return null;
@@ -402,7 +402,7 @@ public class Sequence {
   /**
    * Set the sequence as the complement.
    */
-  public final void complement() {
+  public void complement() {
 
     this.sequence = complement(this.sequence, this.alphabet);
   }
@@ -436,7 +436,7 @@ public class Sequence {
   /**
    * Set the sequence as the reverse complement.
    */
-  public final void reverseComplement() {
+  public void reverseComplement() {
 
     this.sequence = reverseComplement(this.sequence, this.alphabet);
   }
@@ -581,7 +581,7 @@ public class Sequence {
    * Validate the name field of the object.
    * @return true if the name field of this object is valid
    */
-  protected final boolean validateName() {
+  protected boolean validateName() {
 
     return this.name != null && this.name.length() > 0;
   }
@@ -592,7 +592,7 @@ public class Sequence {
    * the current alphabet.
    * @return true if the sequence field of this object is valid
    */
-  protected final boolean validateSequence() {
+  protected boolean validateSequence() {
 
     final String seq = this.sequence;
     final int len = seq == null ? 0 : seq.length();

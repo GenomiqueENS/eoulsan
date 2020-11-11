@@ -2,6 +2,7 @@ package fr.ens.biologie.genomique.eoulsan.translator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +71,7 @@ public class UniqueIdentifierTranslatorTest {
     try {
 
       new UniqueIdentifierTranslator(new ArrayList<>(), null);
-      assertTrue(false);
+      fail();
     } catch (NullPointerException e) {
 
       assertTrue(true);

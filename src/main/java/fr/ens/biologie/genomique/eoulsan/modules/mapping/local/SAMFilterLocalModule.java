@@ -33,7 +33,6 @@ import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.google.common.base.Joiner;
@@ -200,7 +199,7 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
         records.addAll(rafb.getFilteredAlignments());
 
         // sort alignments of the current read
-        Collections.sort(records, new SAMComparator());
+        records.sort(new SAMComparator());
 
         // writing records
         for (SAMRecord r : records) {
@@ -218,7 +217,7 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
     records.addAll(rafb.getFilteredAlignments());
 
     // sort alignments of the last read
-    Collections.sort(records, new SAMComparator());
+    records.sort(new SAMComparator());
 
     // writing records
     for (SAMRecord r : records) {

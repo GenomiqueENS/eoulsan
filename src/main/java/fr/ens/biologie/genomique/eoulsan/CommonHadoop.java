@@ -51,7 +51,7 @@ public class CommonHadoop {
    * Create a new Configuration object from Eoulsan runtime settings.
    * @return a new Configuration object
    */
-  public static final Configuration createConfiguration() {
+  public static Configuration createConfiguration() {
 
     return createConfiguration(EoulsanRuntime.getSettings());
   }
@@ -61,8 +61,7 @@ public class CommonHadoop {
    * @param settings Settings of the application
    * @return a new Configuration object
    */
-  public static final Configuration createConfiguration(
-      final Settings settings) {
+  public static Configuration createConfiguration(final Settings settings) {
 
     if (settings == null) {
       return null;

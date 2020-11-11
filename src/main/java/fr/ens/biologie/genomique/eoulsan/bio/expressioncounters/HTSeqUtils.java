@@ -203,7 +203,7 @@ public class HTSeqUtils {
    * @param strand strand to consider.
    * @return the list of intervals that are alignments matches.
    */
-  public static final List<GenomicInterval> parseCigar(final Cigar cigar,
+  public static List<GenomicInterval> parseCigar(final Cigar cigar,
       final String chromosome, final int start, final char strand) {
 
     if (cigar == null) {
@@ -216,20 +216,29 @@ public class HTSeqUtils {
     for (CigarElement ce : cigar.getCigarElements()) {
 
       final int len = ce.getLength();
+      final CigarOperator co = ce.getOperator();
+
+      switch (co) {
 
       // the CIGAR element correspond to a mapped region
-      if (ce.getOperator() == CigarOperator.M) {
+      case M:
+      case EQ:
+      case X:
         result.add(new GenomicInterval(chromosome, pos, pos + len - 1, strand));
         pos += len;
-      }
+        break;
+
       // the CIGAR element did not correspond to a mapped region
-      else {
+      default:
         // regions coded by a 'I' (insertion) do not have to be counted
         // (are there other cases like this one ?)
-        if (pos != start && ce.getOperator() != CigarOperator.I) {
+        if (co.consumesReferenceBases()) {
           pos += len;
         }
+
+        break;
       }
+
     }
 
     return result;
@@ -242,7 +251,8 @@ public class HTSeqUtils {
    * @param mode the overlap mode.
    * @return the set of features that overlap genomic intervals according to the
    *         overlap mode.
-   * @throws EoulsanException
+   * @throws EoulsanException if an error occurs while getting overlapped
+   *           features
    */
   public static Set<String> featuresOverlapped(
       final List<GenomicInterval> ivList, final GenomicArray<String> features,

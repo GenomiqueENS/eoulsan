@@ -177,4 +177,20 @@ public class DataList extends AbstractData implements Serializable {
     this.design = design;
   }
 
+  /**
+   * Copy constructor.
+   */
+  DataList(final DataList data) {
+
+    super(data);
+
+    this.port = data.port;
+    this.design = data.design;
+
+    for (Data d : data.getModifiableList()) {
+      this.list.add(DataUtils.copy((AbstractData) d));
+    }
+
+  }
+
 }

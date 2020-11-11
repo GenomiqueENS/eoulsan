@@ -195,25 +195,21 @@ public class TicketLocker implements Locker {
    */
   private void startRMIServer(final Set<Ticket> tickets) {
 
-    new Thread(new Runnable() {
+    new Thread(() -> {
+      try {
+        LocateRegistry.createRegistry(TicketLocker.this.port);
+        TicketSchedulerServer.newServer(tickets, TicketLocker.this.lockerName,
+            TicketLocker.this.port);
 
-      @Override
-      public void run() {
-        try {
-          LocateRegistry.createRegistry(TicketLocker.this.port);
-          TicketSchedulerServer.newServer(tickets, TicketLocker.this.lockerName,
-              TicketLocker.this.port);
-
-          // TODO the server must be halted if no more tickets to process since
-          // several minutes
-          while (true) {
-            Thread.sleep(10000);
-          }
-
-        } catch (InterruptedException | RemoteException e) {
+        // TODO the server must be halted if no more tickets to process since
+        // several minutes
+        while (true) {
+          Thread.sleep(10000);
         }
 
+      } catch (InterruptedException | RemoteException e) {
       }
+
     }).start();
 
   }
@@ -254,9 +250,9 @@ public class TicketLocker implements Locker {
    * Main method.
    * @param args command line arguments
    * @throws RemoteException if an error occurs while inspecting tickets
-   * @throws MalformedURLException
+   * @throws MalformedURLException if the URL of the server is malformed
    */
-  public static final void main(final String[] args)
+  public static void main(final String[] args)
       throws RemoteException, MalformedURLException {
 
     if (args.length < 2) {

@@ -28,6 +28,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -158,7 +159,7 @@ public class StringUtilsTest {
   public void testSerializeStringArray() {
 
     assertEquals("[]",
-        StringUtils.serializeStringArray(Arrays.asList(new String[] {})));
+        StringUtils.serializeStringArray(Collections.emptyList()));
     assertEquals("[]",
         StringUtils.serializeStringArray(Collections.singletonList("")));
     assertEquals("[toto]",
@@ -275,7 +276,7 @@ public class StringUtilsTest {
       } else if (i == 6) {
         assertEquals("90", split);
       } else {
-        assertTrue(false);
+        fail();
       }
 
       i++;

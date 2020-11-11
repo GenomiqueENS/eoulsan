@@ -25,22 +25,29 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.Globals.APP_VERSION;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.io.DefaultDesignReader;
 import fr.ens.biologie.genomique.eoulsan.ui.UI;
 import fr.ens.biologie.genomique.eoulsan.ui.UIService;
+import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopInfo;
 
 /**
@@ -117,6 +124,15 @@ public class Executor {
 
     // Check design
     checkDesign();
+
+    // Get Eoulsan settings
+    final Settings settings = EoulsanRuntime.getSettings();
+
+    // Update settings with global parameters
+    updateSettingsWithGlobalParameters(settings, this.command);
+
+    // Add default Eoulsan external modules
+    configureEoulsanTools(settings);
 
     // Create Workflow
     final CommandWorkflow workflow = new CommandWorkflow(this.arguments,
@@ -258,6 +274,69 @@ public class Executor {
     } catch (IOException e) {
       throw new EoulsanException(e);
     }
+  }
+
+  /**
+   * Update Eoulsan settings with global parameters.
+   * @param settings the Eoulsan settings
+   * @param command the command object
+   */
+  private static void updateSettingsWithGlobalParameters(
+      final Settings settings, final CommandWorkflowModel command) {
+
+    final Set<Parameter> globalParameters = command.getGlobalParameters();
+
+    // Add globals parameters to Settings
+    getLogger()
+        .info("Init all steps with global parameters: " + globalParameters);
+    for (Parameter p : globalParameters) {
+      settings.setSetting(p.getName(), p.getStringValue());
+    }
+  }
+
+  /**
+   * Configure default standard Galaxy modules and external formats.
+   * @param settings the Eoulsan settings
+   */
+  private static void configureEoulsanTools(final Settings settings) {
+
+    // Is standard external modules enabled?
+    if (!settings.isUseStandardExternalModules()) {
+      return;
+    }
+
+    // Is internet connection active?
+    if (SystemUtils.isActiveConnection(Globals.INTERNET_CHECK_SERVER,
+        Globals.INTERNET_CHECK_PORT, 5000)) {
+
+      // Define the branch to use
+      String branch = "master";
+      if (APP_VERSION.getMajor() > 1) {
+        branch =
+            "branch" + APP_VERSION.getMajor() + "." + APP_VERSION.getMinor();
+      }
+
+      // Define default external Galaxy tools Path
+      String defaultGalaxyToolPath =
+          Globals.EOULSAN_TOOLS_WEBSITE_URL + "/" + branch + "/galaxytools";
+
+      // Define default external format Path
+      String defaultDataFormatPath =
+          Globals.EOULSAN_TOOLS_WEBSITE_URL + "/" + branch + "/formats";
+
+      // Add standard galaxy tools from Eoulsan tools GitHub repository
+      List<String> galaxyToolPathList =
+          new ArrayList<>(settings.getGalaxyToolPaths());
+      galaxyToolPathList.add(defaultGalaxyToolPath);
+      settings.setGalaxyToolsPaths(galaxyToolPathList);
+
+      // Add standard format from Eoulsan tools GitHub repository
+      List<String> dataFormatPathList =
+          new ArrayList<>(settings.getDataFormatPaths());
+      dataFormatPathList.add(defaultDataFormatPath);
+      settings.setDataFormatPaths(dataFormatPathList);
+    }
+
   }
 
   //

@@ -114,7 +114,7 @@ public class CheckerModule extends AbstractModule {
    * @param format checker format to configure
    * @param parameters parameter of the checker
    */
-  public static final void configureChecker(final DataFormat format,
+  public static void configureChecker(final DataFormat format,
       final Set<Parameter> parameters) {
 
     requireNonNull(format, "format argument cannot be null");

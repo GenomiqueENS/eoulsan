@@ -32,7 +32,6 @@ import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAMHeader
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
@@ -124,7 +123,7 @@ public class PreTreatmentExpressionReducer
     }
 
     // sort alignments of the current read
-    Collections.sort(this.records, new SAMComparator());
+    this.records.sort(new SAMComparator());
 
     // Writing records
     int indexOfFirstTab = this.records.get(0).getSAMString().indexOf("\t");

@@ -72,7 +72,7 @@ public class RSConnection {
   /**
    * Get the R connection.
    * @return Returns the RConnection
-   * @throws REngineException
+   * @throws REngineException if an error occurs while connecting to the server
    */
   public RConnection getRConnection() throws REngineException {
 
@@ -612,8 +612,8 @@ public class RSConnection {
   /**
    * List files on Rserve server.
    * @return files a String list of files names
-   * @throws REngineException
-   * @throws REXPMismatchException
+   * @throws REngineException if an error occurs with the server
+   * @throws REXPMismatchException if an error occurs with the server
    */
   public List<String> listFiles()
       throws REngineException, REXPMismatchException {

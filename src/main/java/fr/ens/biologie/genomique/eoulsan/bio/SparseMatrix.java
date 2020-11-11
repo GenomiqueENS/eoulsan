@@ -154,7 +154,8 @@ public class SparseMatrix<E> extends AbstractMatrix<E> {
               this.lastRowName = reverseRowNames.get(rowId);
             }
 
-            return new BasicEntry<>(this.lastRowName, reverseColumnNames.get(columnId), e.getValue());
+            return new BasicEntry<>(this.lastRowName,
+                reverseColumnNames.get(columnId), e.getValue());
           }
         };
 

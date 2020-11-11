@@ -50,7 +50,7 @@ public abstract class AbstractReadFilter implements ReadFilter {
   }
 
   @Override
-  public void init() {
+  public void init() throws EoulsanException {
   }
 
 }

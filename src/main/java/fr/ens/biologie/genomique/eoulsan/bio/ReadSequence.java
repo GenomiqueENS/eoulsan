@@ -47,7 +47,7 @@ public final class ReadSequence extends Sequence {
    * Get the fastq format value.
    * @return the fastq format
    */
-  public final FastqFormat getFastqFormat() {
+  public FastqFormat getFastqFormat() {
 
     return this.fastqFormat;
   }
@@ -56,7 +56,7 @@ public final class ReadSequence extends Sequence {
    * Get the quality of the sequence.
    * @return a string with the quality
    */
-  public final String getQuality() {
+  public String getQuality() {
 
     return this.quality;
   }
@@ -69,7 +69,7 @@ public final class ReadSequence extends Sequence {
    * Set the fastq format value.
    * @param fastqFormat the fastq format to set
    */
-  public final void setFastqFormat(final FastqFormat fastqFormat) {
+  public void setFastqFormat(final FastqFormat fastqFormat) {
 
     if (fastqFormat == null) {
       throw new NullPointerException("The FastqFormat is null");
@@ -82,7 +82,7 @@ public final class ReadSequence extends Sequence {
    * Set the quality.
    * @param quality Sequence to set
    */
-  public final void setQuality(final String quality) {
+  public void setQuality(final String quality) {
     this.quality = trim(quality);
   }
 
@@ -90,7 +90,7 @@ public final class ReadSequence extends Sequence {
    * Set the ReadSequence with the values of another ReadSequence.
    * @param rs ReadSequence to use to set the values of this ReadSequence
    */
-  public final void set(final ReadSequence rs) {
+  public void set(final ReadSequence rs) {
 
     if (rs == null) {
       return;
@@ -222,6 +222,24 @@ public final class ReadSequence extends Sequence {
     return result;
   }
 
+  /**
+   * Set the sequence as the reverse.
+   */
+  public void reverse() {
+
+    this.sequence = reverse(this.sequence);
+    this.quality = reverse(this.quality);
+  }
+
+  /**
+   * Set the sequence as the reverse complement.
+   */
+  public void reverseComplement() {
+
+    this.sequence = reverseComplement(this.sequence, this.alphabet);
+    this.quality = reverse(this.quality);
+  }
+
   //
   // Output methods
   //
@@ -230,7 +248,7 @@ public final class ReadSequence extends Sequence {
    * Return the sequence in FastQ format.
    * @return a String with the sequence in FastQ format
    */
-  public final String toFastQ() {
+  public String toFastQ() {
 
     return toFastQ(this.name, this.sequence, this.quality, false);
   }
@@ -240,7 +258,7 @@ public final class ReadSequence extends Sequence {
    * @param repeatId repeat the id on the 3rd line of the fastq entry
    * @return a String with the sequence in FastQ format
    */
-  public final String toFastQ(final boolean repeatId) {
+  public String toFastQ(final boolean repeatId) {
 
     return toFastQ(this.name, this.sequence, this.quality, repeatId);
   }
@@ -282,7 +300,7 @@ public final class ReadSequence extends Sequence {
    * Return the sequence in TFQ format.
    * @return a String with the sequence in FastQ format
    */
-  public final String toTFQ() {
+  public String toTFQ() {
 
     return toTFQ(true);
   }
@@ -292,7 +310,7 @@ public final class ReadSequence extends Sequence {
    * @param withId true if id must be added to the result
    * @return a String with the sequence in FastQ format
    */
-  public final String toTFQ(final boolean withId) {
+  public String toTFQ(final boolean withId) {
 
     return toTFQ(withId, this.name, this.sequence, this.quality);
   }
@@ -336,7 +354,7 @@ public final class ReadSequence extends Sequence {
    * Return the key for the read (the name).
    * @return a string with the name of the read as the key
    */
-  public final String toOutKey() {
+  public String toOutKey() {
 
     return this.name;
   }
@@ -345,7 +363,7 @@ public final class ReadSequence extends Sequence {
    * Return the value for the read (the sequence + the quality).
    * @return a string with the sequence and the quality of the read as the value
    */
-  public final String toOutValue() {
+  public String toOutValue() {
 
     return this.sequence + "\t" + this.quality;
   }
@@ -358,7 +376,7 @@ public final class ReadSequence extends Sequence {
    * Parse a FastQ sequence.
    * @param fastQ FastQ sequence to parse
    */
-  public final void parseFastQ(final String fastQ) {
+  public void parseFastQ(final String fastQ) {
 
     if (fastQ == null) {
       return;
@@ -383,7 +401,7 @@ public final class ReadSequence extends Sequence {
    * Parse a read.
    * @param s String to parse
    */
-  public final void parse(final String s) {
+  public void parse(final String s) {
 
     if (s == null) {
       return;
@@ -402,7 +420,7 @@ public final class ReadSequence extends Sequence {
    * @param key key to parse
    * @param value value to parse
    */
-  public final void parseKeyValue(final String key, final String value) {
+  public void parseKeyValue(final String key, final String value) {
 
     if (key == null || value == null) {
       return;

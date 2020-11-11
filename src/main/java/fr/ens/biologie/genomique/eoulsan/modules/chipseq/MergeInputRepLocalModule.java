@@ -107,7 +107,6 @@ public class MergeInputRepLocalModule extends AbstractModule {
 
   /**
    * Merge input replicates.
-   * @throws EoulsanException if temp file can't be created.
    */
   @Override
   public TaskResult execute(final TaskContext context,

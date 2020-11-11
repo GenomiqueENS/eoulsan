@@ -53,9 +53,6 @@ public class RemoveUnmappedReadAlignmentsFilterTest {
   private List<SAMRecord> records;
   private RemoveUnmappedReadAlignmentsFilter filter;
 
-  /**
-   * @throws java.lang.Exception
-   */
   @Before
   public void setUp() throws Exception {
 

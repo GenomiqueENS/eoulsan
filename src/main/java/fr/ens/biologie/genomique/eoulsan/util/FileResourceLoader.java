@@ -63,7 +63,7 @@ public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
         for (String filename : findResourcePaths(directory)) {
 
           getLogger().fine("Try to load "
-              + this.clazz.getSimpleName() + " from " + filename + " resource");
+              + this.clazz.getSimpleName() + " from " + directory + "/" + filename + " resource");
 
           final DataFile file = new DataFile(directory, filename);
 

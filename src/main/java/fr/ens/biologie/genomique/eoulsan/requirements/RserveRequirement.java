@@ -103,7 +103,8 @@ public class RserveRequirement extends AbstractRequirement {
   public static Requirement newRserveRequirement(final String rserveServerName,
       final boolean optional) {
 
-    requireNonNull(rserveServerName, "rserveServerName argument cannot be null");
+    requireNonNull(rserveServerName,
+        "rserveServerName argument cannot be null");
     checkArgument(!rserveServerName.trim().isEmpty(),
         "rserveServerName argument cannot be empty");
 

@@ -342,7 +342,7 @@ public class CopyInputDataModule extends AbstractModule {
    * @param outputCompressionAllowed the EnumSet to encode
    * @return a string with the EnumSet encoded
    */
-  public static final String encodeAllowedCompressionsParameterValue(
+  public static String encodeAllowedCompressionsParameterValue(
       final EnumSet<CompressionType> outputCompressionAllowed) {
 
     if (outputCompressionAllowed == null) {

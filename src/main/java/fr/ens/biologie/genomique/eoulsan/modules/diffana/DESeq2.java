@@ -441,9 +441,9 @@ public class DESeq2 {
   private String[] createNormDiffanaCommandLine(
       final String deseq2DesignFileName, final String contrastFilename) {
 
-    final List<String> command = new ArrayList<>(
-      asList(booleanParameter(normFig), booleanParameter(diffana),
-        booleanParameter(diffanaFig)));
+    final List<String> command =
+        new ArrayList<>(asList(booleanParameter(normFig),
+            booleanParameter(diffana), booleanParameter(diffanaFig)));
 
     // Define contrast file
     if (contrast) {
@@ -472,7 +472,6 @@ public class DESeq2 {
 
     return Boolean.valueOf(value).toString().toUpperCase();
   }
-
 
   /**
    * Method to run DESeq2.

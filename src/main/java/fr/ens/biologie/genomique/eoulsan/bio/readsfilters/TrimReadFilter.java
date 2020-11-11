@@ -47,7 +47,7 @@ public class TrimReadFilter extends AbstractReadFilter {
    * Trim the read sequence and quality if ends with polyN.
    * @param read Read to trim
    */
-  public static final void trim(final ReadSequence read) {
+  public static void trim(final ReadSequence read) {
 
     if (read == null
         || read.getSequence() == null || read.getQuality() == null

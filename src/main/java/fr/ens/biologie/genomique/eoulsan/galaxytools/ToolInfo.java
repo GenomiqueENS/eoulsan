@@ -147,7 +147,6 @@ public class ToolInfo {
    * Select the interpreter.
    * @param interpreters interpreters to checks
    * @return the interpreter to use
-   * @throws EoulsanException if a bad couple of interpreter has been chosen
    */
   private static String selectInterpreter(List<String> interpreters,
       boolean dockerEnabled) {

@@ -53,7 +53,7 @@ public class MultiQCModule extends AbstractModule {
   /** Module name */
   private static final String MODULE_NAME = "multiqc";
 
-  private static final String MULTIQC_DOCKER_IMAGE = "ewels/multiqc:v1.6";
+  private static final String MULTIQC_DOCKER_IMAGE = "ewels/multiqc:v1.7";
   private static final String MULTIQC_EXECUTABLE = "multiqc";
 
   private boolean dockerMode;

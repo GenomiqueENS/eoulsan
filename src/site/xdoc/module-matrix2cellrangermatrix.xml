@@ -46,7 +46,7 @@
          <br/>
          <li><b>Input port</b>:
            <ul>
-             <li><b>additionalannotation</b>: Additionnal annotation data (format: additional_annotation_tsv) from the design file. This data allow to describe the genes/features of the Bioconductor SingleCellExperiment object</li>
+             <li><b>additionalannotation</b>: Additional annotation data (format: additional_annotation_tsv) from the design file. This data allow to describe the genes/features of the Bioconductor SingleCellExperiment object</li>
              <li><b>matrix</b>: Matrix data (format: expression_matrix_tsv) if matrix input is enabled</li>
              <li><b>expression</b>: Expression step output (format: expression_results_tsv) if matrix input is not enabled</li>
            </ul>
@@ -60,9 +60,9 @@
            <table>
                 <tr><th>Parameter</th><th>Type</th><th>Description</th><th>Default value</th></tr>
 		<tr><td>input.matrices</td><td>boolean</td><td>The input of the module is a matrix (e.g. 10X Genomics data). For SmartSeq2, this parameter is usually set to false.</td><td>true</td></tr>
-		<tr><td>use.additionnal.annotation</td><td>boolean</td><td>When this parameter is enabled, feature annotations will be used for the second column of the feature/gene file of the Cell Ranger matrix output.</td><td>true</td></tr>
-		<tr><td>additionnal.annotation.field.name</td><td>string</td><td>The name of the field in the additional annotation to use for the second column of the feature/gene file of the Cell Ranger matrix output.</td><td>Gene name</td></tr>
-		<tr><td>additionnal.annotation.type</td><td>string</td><td>Value of the third column of the feature file of the Cell Ranger matrix output (Cell Ranger matrix format version 2 only).</td><td>Gene Expression.</td></tr>
+		<tr><td>use.additional.annotation</td><td>boolean</td><td>When this parameter is enabled, feature annotations will be used for the second column of the feature/gene file of the Cell Ranger matrix output.</td><td>true</td></tr>
+		<tr><td>additional.annotation.field.name</td><td>string</td><td>The name of the field in the additional annotation to use for the second column of the feature/gene file of the Cell Ranger matrix output.</td><td>Gene name</td></tr>
+		<tr><td>additional.annotation.type</td><td>string</td><td>Value of the third column of the feature file of the Cell Ranger matrix output (Cell Ranger matrix format version 2 only).</td><td>Gene Expression.</td></tr>
 		<tr><td>cell.ranger.matrix.format</td><td>integer</td><td>Version of the Cell Ranger format output to use. Currently only version 1 (Cell Ranger version 1 and 2) and 2 (Cell Ranger version 3) are supported.</td><td>2</td></tr>
           </table>
          <br/>
@@ -80,15 +80,15 @@
                         &lt;value&gt;true&lt;/value&gt;
                 &lt;/parameter&gt;
                 &lt;parameter&gt;
-                        &lt;name&gt;use.additionnal.annotation&lt;/name&gt;
+                        &lt;name&gt;use.additional.annotation&lt;/name&gt;
                         &lt;value&gt;true&lt;/value&gt;
                 &lt;/parameter&gt;
                 &lt;parameter&gt;
-                        &lt;name&gt;additionnal.annotation.field.name&lt;/name&gt;
+                        &lt;name&gt;additional.annotation.field.name&lt;/name&gt;
                         &lt;value&gt;Gene name&lt;/value&gt;
                 &lt;/parameter&gt;
                 &lt;parameter&gt;
-                        &lt;name&gt;additionnal.annotation.type&lt;/name&gt;
+                        &lt;name&gt;additional.annotation.type&lt;/name&gt;
                         &lt;value&gt;Gene Expression&lt;/value&gt;
                 &lt;/parameter&gt;
                 &lt;parameter&gt;

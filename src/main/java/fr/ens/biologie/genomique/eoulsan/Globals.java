@@ -234,6 +234,20 @@ public final class Globals {
   /** Save workflow image. */
   public static final boolean SAVE_WORKFLOW_IMAGE_DEFAULT = true;
 
+  /** Enable standard external modules. */
+  public static final boolean STANDARD_EXTERNAL_MODULES_ENABLED_DEFAULT = true;
+
+  /** Server name to check internet connection. */
+  public static final String INTERNET_CHECK_SERVER =
+      "raw.githubusercontent.com";
+
+  /** Port of the server to check internet connection */
+  public static final int INTERNET_CHECK_PORT = 443;
+
+  /** Eoulsan tools website URL. */
+  public static final String EOULSAN_TOOLS_WEBSITE_URL =
+      "https://raw.githubusercontent.com/GenomicParisCentre/eoulsan-tools";
+
   //
   // Files encoding
   //

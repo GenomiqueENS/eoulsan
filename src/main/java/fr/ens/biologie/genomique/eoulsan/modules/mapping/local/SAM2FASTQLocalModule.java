@@ -192,7 +192,7 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
     return result;
   }
 
-  private static final void writeFastq(FastqWriter fastqWriter1,
+  private static void writeFastq(FastqWriter fastqWriter1,
       FastqWriter fastqWriter2, String currentRecordId, String seq1,
       String qual1, String seq2, String qual2) throws IOException {
 

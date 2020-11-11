@@ -268,9 +268,8 @@ public class DistributedLock {
         cancelAttempt();
       } catch (KeeperException e) {
         LOG.log(Level.WARNING,
-            String.format(
-                "Current LockWatcher with ephemeral node [%s] "
-                    + "got a KeeperException. Trying to cancel lock acquisition.",
+            String.format("Current LockWatcher with ephemeral node [%s] "
+                + "got a KeeperException. Trying to cancel lock acquisition.",
                 currentId),
             e);
         cancelAttempt();

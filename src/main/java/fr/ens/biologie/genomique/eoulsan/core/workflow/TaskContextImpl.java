@@ -128,6 +128,15 @@ public class TaskContextImpl implements TaskContext, Serializable {
     return this.workflowContext.getTaskDirectory();
   }
 
+  /**
+   * Get the data repository directory.
+   * @return Returns the data repository directory
+   */
+  public DataFile getDataRepositoryDirectory() {
+
+    return this.workflowContext.getDataRepositoryDirectory();
+  }
+
   @Override
   public DataFile getOutputDirectory() {
     return this.workflowContext.getOutputDirectory();
@@ -711,7 +720,8 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
     // Copy input and output data
     for (Map.Entry<InputPort, Data> e : inputData.entrySet()) {
-      this.inputData.put(e.getKey().getName(), e.getValue());
+      this.inputData.put(e.getKey().getName(),
+          DataUtils.copy((AbstractData) e.getValue()));
     }
 
     for (Map.Entry<OutputPort, AbstractData> e : outputData.entrySet()) {

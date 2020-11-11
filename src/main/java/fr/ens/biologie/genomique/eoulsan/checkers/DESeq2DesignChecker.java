@@ -228,21 +228,23 @@ public class DESeq2DesignChecker implements Checker {
      * Check if there is no undesirable special characters in the metakeys columns
      * or in the Condition column when the contrast mode is active
      */
-    for (String key : esColumnNames){
-        for (ExperimentSample es : experiment.getExperimentSamples()) {
-          String s = DesignUtils.getMetadata(es, key);
-          if (!Pattern.matches("[a-zA-Z0-9\\_]+", s) && emd.isContrast()) {
-            return error("There is an undesirable special character in the column "+ key +" : " + s,
-                    throwsException);
-          }
+    for (String key : esColumnNames) {
+      for (ExperimentSample es : experiment.getExperimentSamples()) {
+        String s = DesignUtils.getMetadata(es, key);
+        if (!Pattern.matches("[a-zA-Z0-9\\_]+", s) && emd.isContrast()) {
+          return error(
+              "There is an undesirable special character in the column "
+                  + key + " : " + s,
+              throwsException);
         }
       }
+    }
     if (sColumnNames.contains(CONDITION_KEY)) {
       for (ExperimentSample es : experiment.getExperimentSamples()) {
         String s = DesignUtils.getMetadata(es, CONDITION_KEY);
         if (s.indexOf('-') != -1 && emd.isContrast()) {
-          return error("There is a - character in the column "+ CONDITION_KEY +" : " + s,
-                  throwsException);
+          return error("There is a - character in the column "
+              + CONDITION_KEY + " : " + s, throwsException);
         }
       }
     }
@@ -250,28 +252,29 @@ public class DESeq2DesignChecker implements Checker {
      * Check if there is no undesirable special characters in the metakeys columns or in the Condition column
      * when the contrast mode is not active and for a non complex design model
      */
-    for (String key : esColumnNames){
+    for (String key : esColumnNames) {
       for (ExperimentSample es : experiment.getExperimentSamples()) {
         String s = DesignUtils.getMetadata(es, key);
-        if (!emd.isContrast() && !emd.containsComparisons()
-                && !Pattern.matches("^[a-zA-Z0-9\\+\\-\\&\\_\\/\\.\\[\\]]+$", s)) {
-          return error("There is a special character in the column " + key + " : " + s,
-                  throwsException);
+        if (!emd.isContrast()
+            && !emd.containsComparisons()
+            && !Pattern.matches("^[a-zA-Z0-9\\+\\-\\&\\_\\/\\.\\[\\]]+$", s)) {
+          return error(
+              "There is a special character in the column " + key + " : " + s,
+              throwsException);
         }
       }
     }
     if (sColumnNames.contains(CONDITION_KEY)) {
       for (ExperimentSample es : experiment.getExperimentSamples()) {
         String s = DesignUtils.getMetadata(es, CONDITION_KEY);
-        if (!emd.isContrast() && !emd.containsComparisons()
-                && !Pattern.matches("^[a-zA-Z0-9\\+\\-\\&\\_\\/\\.\\[\\]]+$", s)) {
-          return error("There is a special character in the column "+ CONDITION_KEY +" : " + s,
-                  throwsException);
+        if (!emd.isContrast()
+            && !emd.containsComparisons()
+            && !Pattern.matches("^[a-zA-Z0-9\\+\\-\\&\\_\\/\\.\\[\\]]+$", s)) {
+          return error("There is a special character in the column "
+              + CONDITION_KEY + " : " + s, throwsException);
         }
       }
     }
-
-
 
     /*
      * Verify consistency between the values in the columns Reference and

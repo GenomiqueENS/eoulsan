@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.data.protocols;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -121,8 +122,8 @@ public class FileDataProtocolTest {
     assertEquals("", md.getContentType());
     assertEquals("", md.getContentEncoding());
     assertEquals(fileContent.length(), md.getContentLength());
-    assertEquals(null, md.getContentMD5());
-    assertEquals(null, md.getDataFormat());
+    assertNull(md.getContentMD5());
+    assertNull(md.getDataFormat());
     assertEquals(f.lastModified(), md.getLastModified());
     f.delete();
 

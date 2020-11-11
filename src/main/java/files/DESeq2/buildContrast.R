@@ -3,7 +3,7 @@
 ## R script for generation of contrast matrix using by
 ## DESeq2 for complex comparison
 ##
-##  Version 1.6 (06/18/2015)
+##  Version 1.7 (06/18/2015)
 ##
 ## Author : Xavier Bauquet
 ###############################################################################
@@ -61,7 +61,7 @@ prefix <- args[5]
 
     # Print date, hours, packages version and parameters for log file
     cat("\n\n########################################################\n")
-    cat("Start of the DESeq2 contrast matrix generator script version 1.6\n")
+    cat("Start of the DESeq2 contrast matrix generator script version 1.7\n")
     cat("########################################################\n\n")
 	cat("Start: ")
     cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S\n\n"))

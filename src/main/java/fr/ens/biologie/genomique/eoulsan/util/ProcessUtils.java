@@ -111,7 +111,7 @@ public final class ProcessUtils {
    * Execute a command.
    * @param cmd command to execute
    * @return the exit error of the program
-   * @throws IOException
+   * @throws IOException if an error occurs while executing the command
    */
   public static int system(final String cmd) throws IOException {
 
@@ -131,7 +131,7 @@ public final class ProcessUtils {
    * Execute a command.
    * @param cmd command to execute
    * @return the exit error of the program
-   * @throws IOException
+   * @throws IOException if an error occurs while executing the command
    */
   public static int sh(final List<String> cmd) throws IOException {
 
@@ -335,7 +335,7 @@ public final class ProcessUtils {
    * @param startTime Start time in ms
    * @throws IOException if an error occurs at the end of the process
    */
-  public static final void logEndTime(final Process p, final String cmd,
+  public static void logEndTime(final Process p, final String cmd,
       final long startTime) throws IOException {
 
     try {
@@ -361,7 +361,7 @@ public final class ProcessUtils {
    * @param command the executed command
    * @throws IOException if the exit code if not 0
    */
-  public static final void throwExitCodeException(final int exitCode,
+  public static void throwExitCodeException(final int exitCode,
       final String command) throws IOException {
 
     switch (exitCode) {

@@ -323,7 +323,7 @@ public class DESeq2Module extends AbstractModule {
       String sampleId = e.getKey();
       String replicateId = e.getValue();
 
-      if (!result.containsKey(e.getValue())) {
+      if (!result.containsKey(replicateId)) {
         result.put(replicateId, true);
       }
 
@@ -331,7 +331,7 @@ public class DESeq2Module extends AbstractModule {
         continue;
       }
 
-      if (!emptyFiles.get(sampleId)) {
+      if (emptyFiles.containsKey(sampleId) && !emptyFiles.get(sampleId)) {
         result.put(replicateId, false);
       }
     }

@@ -150,7 +150,6 @@ public class StepConfigurationContextImpl implements StepConfigurationContext {
     // Constructor
     //
 
-
     /**
      * Constructor.
      * @param step step
