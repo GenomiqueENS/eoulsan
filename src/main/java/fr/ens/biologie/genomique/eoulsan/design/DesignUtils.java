@@ -36,6 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
+
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
@@ -734,6 +737,28 @@ public final class DesignUtils {
     return result == null ? null : result.trim();
   }
 
+  /**
+   * Test if a metadata exists for an experimentSample. First look in
+   * experiment sample metadata and then in the sample metadata.
+   * @param experimentSample the experiment sample
+   * @param key the metadata key to get
+   * @return the Condition value
+   */
+  public static boolean containsMetadata(final ExperimentSample experimentSample,
+      final String key) {
+
+    requireNonNull(experimentSample,
+        "experimentSample argument cannot be null");
+    requireNonNull(key, "key argument cannot be null");
+
+    final ExperimentSampleMetadata esm = experimentSample.getMetadata();
+
+    if (esm.contains(key)) {
+      return true;
+    }
+
+    return experimentSample.getSample().getMetadata().contains(key);
+  }
 
   /**
    * Test if an experiement is skipped.
@@ -849,6 +874,36 @@ public final class DesignUtils {
         return 0;
       }
     }
+  }
+
+  /**
+   * Get the column names used in DESeq2 model.
+   * @param experiment the experiment
+   * @return a set with the column names
+   */
+  public static Set<String> getModelColumns(final Experiment experiment) {
+
+    requireNonNull(experiment, "experiment argument cannot be null");
+
+    ExperimentMetadata em = experiment.getMetadata();
+
+    if (!em.isContrast()) {
+      return Collections.emptySet();
+    }
+
+    String model = em.getModel();
+
+    if (model == null) {
+      return Collections.emptySet();
+    }
+
+    Set<String> result = new HashSet<>();
+    for (String s : Splitter.on(CharMatcher.anyOf("~+: ")).omitEmptyStrings()
+        .split(em.getModel())) {
+      result.add(s);
+    }
+
+    return result;
   }
 
 }
