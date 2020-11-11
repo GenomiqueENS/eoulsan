@@ -606,6 +606,7 @@ public final class DesignUtils {
 
   /**
    * Get the Condition metadata value for an experimentSample. First look in
+   * experiment sample metadata and then in the sample metadata.
    * @param experiment the experiment
    * @param sample the sample
    * @return the Condition value
@@ -622,7 +623,8 @@ public final class DesignUtils {
   }
 
   /**
-   * Get the Condition metadata value for an experimentSample. First look in
+   * Get the Condition metadata value for an experimentSample. First look in the
+   * experiment sample metadata and then in the sample metadata.
    * @param experimentSample the experiment sample
    * @return the Condition value
    */
@@ -645,6 +647,7 @@ public final class DesignUtils {
 
   /**
    * Get the RepTechGroup metadata value for an experimentSample. First look in
+   * experiment sample metadata and then in the sample metadata.
    * @param experiment the experiment
    * @param sample the sample
    * @return the Condition value
@@ -662,6 +665,7 @@ public final class DesignUtils {
 
   /**
    * Get the Condition metadata value for an experimentSample. First look in
+   * experiment sample metadata and then in the sample metadata.
    * @param experimentSample the experiment sample
    * @return the Condition value
    */
@@ -686,6 +690,7 @@ public final class DesignUtils {
 
   /**
    * Get a metadata value for an experiment and a sample. First look in
+   * experiment sample metadata and then in the sample metadata.
    * @param experiment the experiment
    * @param sample the sample
    * @param key the metadata key to get
@@ -704,6 +709,7 @@ public final class DesignUtils {
 
   /**
    * Get a metadata value for an experimentSample. First look in
+   * experiment sample metadata and then in the sample metadata.
    * @param experimentSample the experiment sample
    * @param key the metadata key to get
    * @return the Condition value
