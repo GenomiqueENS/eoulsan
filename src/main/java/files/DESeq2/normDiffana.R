@@ -256,7 +256,7 @@ firstPlots <- function(projectName, count_mat){
 
   cat("      Fig 2 - Unpooled PCA\n")
   res.pca = PCA(t(count_mat), graph = FALSE)
-  ind.plot = fviz_pca_ind (res.pca, col.ind = design$Condition , palette = c("#A6CEE3","#1F78B4"), title = paste("Unpooled PCA - ", projectName, sep=""),invisible = "quali", repel = FALSE, legend.title = "Groups",  geom.ind = c("point", "text"))
+  ind.plot = fviz_pca_ind (res.pca, col.ind = design$Condition , palette = as.character(design$coLors), title = paste("Unpooled PCA - ", projectName, sep=""),invisible = "quali", repel = FALSE, legend.title = "Groups",  geom.ind = c("point", "text"))
 
   png(paste(prefix, projectName,"-normalisation_unpooled_PCA.png",sep=""),width=1000, height=600)
   print(ind.plot)
@@ -438,7 +438,7 @@ normPlots <- function(projectName, dds){
 
     cat("      Fig 9 - Pooled and Normalised PCA\n")
     res.pca = PCA(t(counts(dds, normalized=TRUE)), graph=FALSE)
-    ind.plot <- fviz_pca_ind (res.pca, col.ind =  colData(dds)$Condition , palette = c("#A6CEE3","#1F78B4"), title = paste("Pooled and Normalised PCA - ", projectName, sep=""),invisible = "quali", repel = FALSE, legend.title = "Groups",  geom.ind = c("point", "text"))
+    ind.plot <- fviz_pca_ind (res.pca, col.ind =  colData(dds)$Condition , palette = as.character(design$coLors), title = paste("Pooled and Normalised PCA - ", projectName, sep=""),invisible = "quali", repel = FALSE, legend.title = "Groups",  geom.ind = c("point", "text"))
 
     png(paste(prefix, projectName,"-normalisation_normalised_PCA.png",sep=""),
         width=1000, height=600)
