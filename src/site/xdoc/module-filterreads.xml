@@ -89,19 +89,19 @@ filter will not produce the same output if declared before or after the trim fil
 		<tr><td>maxlength.maximum.length.threshold</td><td>integer</td><td>The maximum threshold for the reads length. Unit in bases.</td><td>Not set</td><td>No</td></tr>
 		<tr><td>readsequenceregex.forbidden.regex</td><td>string</td><td>Remove all the reads with pattern that matches with the regular expression.</td><td>Not set</td><td>No</td></tr>
 		<tr><td>readsequenceregex.allowed.regex</td><td>string</td><td>Keep only the reads with pattern that matches with the regular expression.</td><td>Not set</td><td>No</td></tr>
-		<tr><td>slidingwindow.arguments</td><td>string</td><td>Cutting once the average quality within the window falls below a threshold</td><td>Not set</td><td>No</td></tr>
-		<tr><td>trailing.arguments</td><td>string</td><td>Remove low quality bases from the end</td><td>Not set</td><td>No</td></tr>
-		<tr><td>leading.arguments</td><td>string</td><td>Remove low quality bases from the beginning</td><td>Not set</td><td>No</td></tr>
-		<tr><td>headcrop.arguments</td><td>string</td><td>Remove the specified number of bases from beginning of the read</td><td>Not set</td><td>No</td></tr>
-		<tr><td>crop.arguments</td><td>string</td><td>Remove bases regardless of quality from the end of the read</td><td>Not set</td><td>No</td></tr>
+		<tr><td>slidingwindow.arguments</td><td>string</td><td>Cutting once the average quality within the window falls below a threshold.</td><td>Not set</td><td>No</td></tr>
+		<tr><td>trailing.arguments</td><td>string</td><td>Remove low quality bases from the end.</td><td>Not set</td><td>No</td></tr>
+		<tr><td>leading.arguments</td><td>string</td><td>Remove low quality bases from the beginning.</td><td>Not set</td><td>No</td></tr>
+		<tr><td>headcrop.arguments</td><td>string</td><td>Remove the specified number of bases from beginning of the read.</td><td>Not set</td><td>No</td></tr>
+		<tr><td>crop.arguments</td><td>string</td><td>Remove bases regardless of quality from the end of the read.</td><td>Not set</td><td>No</td></tr>
 		<tr><td>nanoporesequencetype.keep</td><td>string</td><td>Keep only a type of Nanopore reads. Available values are: template, complement and consensus. For 1D sequencing, use consensus value to keep all the reads.</td><td>consensus</td><td>No</td></tr>
 		<tr><td>polyatail.minimal.length</td><td>integer</td><td>Mininal length of polyA/polyT tail. This filter just add a "tail_type" field in the read headers.</td><td>10</td><td>Header</td></tr>
 		<tr><td>polyatail.maximal.error.rate</td><td>float</td><td>Maximal threshold allowed errors in polyA/polyT tails.</td><td>0.1</td><td>Header</td></tr>
 		<tr><td>polyatail.minimal.length.for.error.rate.computation</td><td>integer</td><td>Minimal length of tail sequence before computing the error rate.</td><td>5</td><td>Header</td></tr>
 		<tr><td>reversepolyt</td><td>none</td><td>This filter reverse complements reads with a "tail_type=polyT" field in read header.</td><td>N/A</td><td>No</td></tr>
-		<tr><td>removeinvalidpolya.allowed.tail.type</td><td>string</td><td>This filter will keep only reads with specified value(s) in the "tail_type" field in the read headers. Reads with this field will be discarted.</td><td>polyaA,polyT</td><td>No</td></tr>
+		<tr><td>removeinvalidpolya.allowed.tail.type</td><td>string</td><td>This filter will keep only reads with specified value(s) for the "tail_type" field in the read headers. Reads with this field will be discarted.</td><td>polyaA,polyT</td><td>No</td></tr>
 		<tr><td>ggghead</td><td>none</td><td>This filter will search for GGG head and CCC tail and add additional fields in read header fields.</td><td>N/A</td><td>Header</td></tr>
-		<tr><td>requireggghead.allow.mismatch</td><td>boolean</td><td>This filter will remove any sequence without GGG head. This parameter allow one mismatch in the GGG sequence</td><td>true</td><td>No</td></tr>
+		<tr><td>requireggghead.allow.mismatch</td><td>boolean</td><td>This filter will remove any sequence without GGG head. This parameter allow one mismatch in the GGG sequence.</td><td>true</td><td>No</td></tr>
 	</table>
          <li><b>Configuration example</b>:</li>
 <pre>
