@@ -1,5 +1,9 @@
 package fr.ens.biologie.genomique.eoulsan.bio.readsfilters;
 
+import static fr.ens.biologie.genomique.eoulsan.bio.readsfilters.PolyATailReadFilter.TailType.AMBIGUOUS;
+import static fr.ens.biologie.genomique.eoulsan.bio.readsfilters.PolyATailReadFilter.TailType.INVALID;
+import static fr.ens.biologie.genomique.eoulsan.bio.readsfilters.PolyATailReadFilter.TailType.POLYA;
+import static fr.ens.biologie.genomique.eoulsan.bio.readsfilters.PolyATailReadFilter.TailType.POLYT;
 import static java.util.Objects.requireNonNull;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
@@ -14,10 +18,38 @@ public class PolyATailReadFilter extends AbstractReadFilter {
 
   public static final String FILTER_NAME = "polyatail";
 
-  private static final String POLYA = "polyA";
-  private static final String POLYT = "polyT";
-  private static final String AMBIGUOUS = "ambiguous";
-  private static final String INVALID = "invalid";
+  static enum TailType {
+    POLYA("polyA"), POLYT("polyT"), AMBIGUOUS("ambiguous"), INVALID("invalid");
+
+    private String name;
+
+    public static TailType parse(String s) {
+
+      if (s == null) {
+        return null;
+      }
+
+      for (TailType t : TailType.values()) {
+
+        if (t.name.equalsIgnoreCase(s.trim())) {
+          return t;
+        }
+
+      }
+
+      return null;
+    }
+
+    public String toString() {
+
+      return this.name;
+    }
+
+    TailType(String name) {
+      this.name = name;
+    }
+
+  };
 
   private double maximalErrorRate = 0.1;
   private int minimalLength = 10;
@@ -103,7 +135,7 @@ public class PolyATailReadFilter extends AbstractReadFilter {
     int polyTlength =
         polyTTailLength(sequence, this.minStatLength, this.maximalErrorRate);
 
-    String tailType;
+    TailType tailType;
 
     if (polyAlength < this.minimalLength && polyTlength < this.minimalLength) {
       tailType = INVALID;
