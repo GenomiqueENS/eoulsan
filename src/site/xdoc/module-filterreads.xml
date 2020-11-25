@@ -101,6 +101,7 @@ filter will not produce the same output if declared before or after the trim fil
 		<tr><td>reversepolyt</td><td>none</td><td>This filter reverse complements reads with a "tail_type=polyT" field in read header.</td><td>N/A</td><td>No</td></tr>
 		<tr><td>removeinvalidpolya.allowed.tail.type</td><td>string</td><td>This filter will keep only reads with specified value(s) in the "tail_type" field in the read headers. Reads with this field will be discarted.</td><td>polyaA,polyT</td><td>No</td></tr>
 		<tr><td>ggghead</td><td>none</td><td>This filter will search for GGG head and CCC tail and add additional fields in read header fields.</td><td>N/A</td><td>Header</td></tr>
+		<tr><td>requireggghead.allow.mismatch</td><td>boolean</td><td>This filter will remove any sequence without GGG head. This parameter allow one mismatch in the GGG sequence</td><td>true</td><td>No</td></tr>
 	</table>
          <li><b>Configuration example</b>:</li>
 <pre>
