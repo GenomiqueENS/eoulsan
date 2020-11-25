@@ -16,3 +16,6 @@ fr.ens.biologie.genomique.eoulsan.bio.readsfilters.LeadingTrimmerReadFilter
 fr.ens.biologie.genomique.eoulsan.bio.readsfilters.TrailingTrimmerReadFilter
 fr.ens.biologie.genomique.eoulsan.bio.readsfilters.SlidingWindowTrimmerReadFilter
 fr.ens.biologie.genomique.eoulsan.bio.readsfilters.NanoporeSequenceTypeFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.PolyATailReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.ReversePolyTReadFilter
+
