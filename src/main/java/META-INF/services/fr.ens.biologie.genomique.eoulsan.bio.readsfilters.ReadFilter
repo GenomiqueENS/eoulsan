@@ -19,3 +19,4 @@ fr.ens.biologie.genomique.eoulsan.bio.readsfilters.NanoporeSequenceTypeFilter
 fr.ens.biologie.genomique.eoulsan.bio.readsfilters.PolyATailReadFilter
 fr.ens.biologie.genomique.eoulsan.bio.readsfilters.ReversePolyTReadFilter
 fr.ens.biologie.genomique.eoulsan.bio.readsfilters.RemoveInvalidPolyAReadFilter
+fr.ens.biologie.genomique.eoulsan.bio.readsfilters.GGGHeadReadFilter
