@@ -98,6 +98,7 @@ filter will not produce the same output if declared before or after the trim fil
 		<tr><td>polyatail.minimal.length</td><td>integer</td><td>Mininal length of polyA/polyT tail. This filter just add a "tail_type" field in the read headers.</td><td>10</td><td>Header</td></tr>
 		<tr><td>polyatail.maximal.error.rate</td><td>float</td><td>Maximal threshold allowed errors in polyA/polyT tails.</td><td>0.1</td><td>Header</td></tr>
 		<tr><td>polyatail.minimal.length.for.error.rate.computation</td><td>integer</td><td>Minimal length of tail sequence before computing the error rate.</td><td>5</td><td>Header</td></tr>
+		<tr><td>reversepolyt</td><td>none</td><td>This filter reverse complements reads with a "tail_type=polyT" field in read header.</td><td>N/A</td><td>No</td></tr>
 	</table>
          <li><b>Configuration example</b>:</li>
 <pre>
