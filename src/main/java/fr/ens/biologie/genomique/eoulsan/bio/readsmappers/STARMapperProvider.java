@@ -43,7 +43,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 public class STARMapperProvider extends AbstractMapperProvider {
 
   public static final String MAPPER_NAME = "STAR";
-  private static final String DEFAULT_VERSION = "2.5.2b";
+  private static final String DEFAULT_VERSION = "2.7.2d";
 
   private static final String MAPPER_STANDARD_EXECUTABLE = "STAR";
   private static final String MAPPER_LARGE_INDEX_EXECUTABLE = "STARlong";

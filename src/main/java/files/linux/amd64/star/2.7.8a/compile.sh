@@ -3,7 +3,7 @@
 # This file contains the Docker instruction used to build the STAR executable 
 # for Eoulsan
 
-VERSION=2.7.6a
+VERSION=2.7.8a
 DOCKER_IMAGE="star:$VERSION"
 
 cat > Dockerfile << EOF
@@ -13,7 +13,7 @@ cat > Dockerfile << EOF
 ############################################################
 
 # Set the base image to Ubuntu
-FROM ubuntu:14.04
+FROM ubuntu:18.04
 
 # File Author / Maintainer
 MAINTAINER Sophie Lemoine <slemoine@biologie.ens.fr>
