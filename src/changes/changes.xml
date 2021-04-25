@@ -1893,7 +1893,7 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="update">
-              Update many dependancy versions. 
+              Update many dependency versions. 
             </action>
 
             <action dev="jourdren" type="add">
