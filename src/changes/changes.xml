@@ -1882,6 +1882,58 @@ of reads that reject each filter like in local mode.
 
          </release>
 
+         <release version="2.5" description="Eoulsan 2.5 release" date="TBD">
+
+            <action dev="jourdren" type="fix">
+              In DESeq2, fix issue when checking null count in expression file when replicate name are not the sample name.
+            </action>
+
+            <action dev="jourdren" type="fix">
+              Now keep the XML "value" tags even if they are empty in the workflow.xml file in the eoulsan-output directory.
+            </action>
+
+            <action dev="jourdren" type="update">
+              Update many dependancy versions. 
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add STAR 2.7.8a in addition of previous versions.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add Minimap2 2.18 in addition of previous versions.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add a new read filter ("polyatail") that try to identify polyA/polyT tails.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add a new read filter ("reversepolyt")  that reverse complements reads with a ployT tail.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add a new read filter ("removeinvalidpolya") that remove reads without a polyA/polyT tail.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add a new read filter ("ggghead") that identify GGG head or CCC tails.
+            </action>
+
+            <action dev="jourdren" type="add">
+               Add a new read filter ("requireggghead") that remove all the reads without a GGG head sequence.
+            </action>
+
+            <action dev="jourdren" type="update">
+              In ReadSequence, add a reverse() and reverseComplement() methods.
+            </action>
+
+            <action dev="jourdren" type="update">
+              In expression module, add a new "max.entries.in.ram" parameter to set the maximal number of SAM output entries to store in memory. By lowering the value of this parameter out of memory errors can be avoided for long reads.
+            </action>
+
+         </release>
+
     </body>
 
 </document>
