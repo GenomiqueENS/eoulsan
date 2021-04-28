@@ -1882,7 +1882,7 @@ of reads that reject each filter like in local mode.
 
          </release>
 
-         <release version="2.5" description="Eoulsan 2.5 release" date="TBD">
+         <release version="2.5" description="Eoulsan 2.5 release" date="2021-04-28">
 
             <action dev="jourdren" type="fix">
               In DESeq2, fix issue when checking null count in expression file when replicate name are not the sample name.
