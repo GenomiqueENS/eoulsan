@@ -59,6 +59,12 @@ interface MapperExecutor {
   }
 
   /**
+   * Get the logger to use for the mapping.
+   * @return the logger to use for the mapping
+   */
+  MapperLogger getLogger();
+
+  /**
    * Test if an executable exists.
    * @param executable executable to test
    * @return true if the executable exists

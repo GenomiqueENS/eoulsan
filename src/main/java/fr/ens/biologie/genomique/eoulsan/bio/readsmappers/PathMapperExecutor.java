@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -45,9 +44,16 @@ import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
  */
 public class PathMapperExecutor implements MapperExecutor {
 
+  private MapperLogger logger;
+
   //
   // MapperExecutor methods
   //
+
+  @Override
+  public MapperLogger getLogger() {
+    return this.logger;
+  }
 
   @Override
   public boolean isExecutable(String executable) {
@@ -85,9 +91,9 @@ public class PathMapperExecutor implements MapperExecutor {
       builder.directory(executionDirectory);
     }
 
-    getLogger()
+    this.logger
         .info("Process command: " + Joiner.on(' ').join(builder.command()));
-    getLogger().info("Process directory: " + builder.directory());
+    this.logger.info("Process directory: " + builder.directory());
 
     return new ProcessResult(builder.start());
   }
@@ -100,6 +106,20 @@ public class PathMapperExecutor implements MapperExecutor {
   public String toString() {
 
     return Objects.toStringHelper(this).toString();
+  }
+
+  //
+  // Constructor
+  //
+
+  /**
+   * Constructor.
+   * @param logger the logger to use
+   */
+  PathMapperExecutor(MapperLogger logger) {
+
+    requireNonNull(logger, "logger argument cannot be null");
+    this.logger = logger;
   }
 
 }

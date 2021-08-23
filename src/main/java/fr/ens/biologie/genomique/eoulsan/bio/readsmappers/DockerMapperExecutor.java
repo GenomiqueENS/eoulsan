@@ -26,7 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.Lists.newArrayList;
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -58,6 +57,7 @@ public class DockerMapperExecutor implements MapperExecutor {
 
   private final DockerImageInstance dockerConnection;
   private final File temporaryDirectory;
+  private final MapperLogger logger;
 
   /**
    * This class define an executor result.
@@ -85,7 +85,7 @@ public class DockerMapperExecutor implements MapperExecutor {
 
         return Channels.newInputStream(fis.getChannel());
       } catch (FileNotFoundException e) {
-        getLogger().severe("Cannot find stdout named pipe of the container: "
+        logger.error("Cannot find stdout named pipe of the container: "
             + this.stdoutFile);
         return null;
       }
@@ -102,15 +102,14 @@ public class DockerMapperExecutor implements MapperExecutor {
       int result;
 
       // Wait the end of the container
-      getLogger().fine("Wait the end of the Docker container");
+      logger.debug("Wait the end of the Docker container");
 
       result = process.waitFor();
 
       // Remove named pipe
       if (this.stdoutFile != null) {
         if (!this.stdoutFile.delete()) {
-          getLogger()
-              .warning("Unable to delete stdout file: " + this.stdoutFile);
+          logger.warn("Unable to delete stdout file: " + this.stdoutFile);
         }
       }
 
@@ -143,7 +142,7 @@ public class DockerMapperExecutor implements MapperExecutor {
       dockerConnection.pullImageIfNotExists();
 
       // Create container configuration
-      getLogger().fine("Configure container, command to execute: " + command);
+      logger.debug("Configure container, command to execute: " + command);
 
       List<File> newFilesUsed = new ArrayList<>();
       if (filesUsed != null) {
@@ -165,7 +164,7 @@ public class DockerMapperExecutor implements MapperExecutor {
       }
 
       // Start container
-      getLogger().fine("Start of the Docker container");
+      logger.debug("Start of the Docker container");
       // dockerClient.startContainer(containerId);
 
       final File nullFile = new File("/dev/null");
@@ -181,6 +180,11 @@ public class DockerMapperExecutor implements MapperExecutor {
   //
   // MapperExecutor methods
   //
+
+  @Override
+  public MapperLogger getLogger() {
+    return this.logger;
+  }
 
   @Override
   public boolean isExecutable(final String executable) throws IOException {
@@ -279,18 +283,21 @@ public class DockerMapperExecutor implements MapperExecutor {
    * Constructor.
    * @param dockerImage Docker image
    * @param temporaryDirectory temporary directory
+   * @param logger logger to use
    * @throws IOException if an error occurs while creating the connection
    */
-  DockerMapperExecutor(final String dockerImage, final File temporaryDirectory)
-      throws IOException {
+  DockerMapperExecutor(final String dockerImage, final File temporaryDirectory,
+      final MapperLogger logger) throws IOException {
 
     requireNonNull(dockerImage, "dockerImage argument cannot be null");
     requireNonNull(temporaryDirectory,
         "temporaryDirectory argument cannot be null");
+    requireNonNull(logger, "logger argument cannot be null");
 
     this.temporaryDirectory = temporaryDirectory;
     this.dockerConnection =
         DockerManager.getInstance().createImageInstance(dockerImage);
+    this.logger = logger;
   }
 
 }

@@ -41,6 +41,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 public class Mapper {
 
   private final MapperProvider provider;
+  private MapperLogger logger;
   private File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
   private File executablesTempDir =
       EoulsanRuntime.getSettings().getExecutablesTempDirectoryFile();
@@ -147,6 +148,17 @@ public class Mapper {
     this.executablesTempDir = directory;
   }
 
+  /**
+   * Set the logger to use for the mapping.
+   * @param logger the logger to use for the mapping
+   */
+  public void setLogger(final MapperLogger logger) {
+
+    requireNonNull(logger, "logger cannot be null");
+
+    this.logger = logger;
+  }
+
   //
   // Mapper instance creation methods
   //
@@ -219,7 +231,7 @@ public class Mapper {
         getExecutor(versionToUse, dockerImage, useBundledBinaries);
 
     return new MapperInstance(this, executor, versionToUse, flavorToUse,
-        getTemporaryDirectory());
+        getTemporaryDirectory(), this.logger);
   }
 
   /**
@@ -236,15 +248,16 @@ public class Mapper {
 
     // Set the executor to use
     if (dockerImage != null && !dockerImage.isEmpty()) {
-      return new DockerMapperExecutor(dockerImage, getTemporaryDirectory());
+      return new DockerMapperExecutor(dockerImage, getTemporaryDirectory(),
+          this.logger);
     }
 
     if (useBundledBinaries) {
       return new BundledMapperExecutor(getSoftwarePackage(), version,
-          getExecutablesTemporaryDirectory());
+          getExecutablesTemporaryDirectory(), this.logger);
     }
 
-    return new PathMapperExecutor();
+    return new PathMapperExecutor(this.logger);
   }
 
   //
@@ -257,6 +270,17 @@ public class Mapper {
    * @return a Mapper object
    */
   public static Mapper newMapper(final String mapperName) {
+    return newMapper(mapperName, null);
+  }
+
+  /**
+   * Create a new instance of Mapper for a mapper
+   * @param mapperName the mapper name
+   * @param logger logger to use
+   * @return a Mapper object
+   */
+  public static Mapper newMapper(final String mapperName,
+      final MapperLogger logger) {
 
     requireNonNull(mapperName, "mapperName cannot be null");
 
@@ -267,7 +291,8 @@ public class Mapper {
       return null;
     }
 
-    return new Mapper(provider);
+    return new Mapper(provider,
+        logger == null ? new DummyMapperLogger() : logger);
   }
 
   /**
@@ -301,11 +326,13 @@ public class Mapper {
   /**
    * Private constructor.
    * @param provider the provider to use the the Mapper class.
+   * @param logger the logger to use
    */
-  private Mapper(final MapperProvider provider) {
+  private Mapper(final MapperProvider provider, final MapperLogger logger) {
 
     requireNonNull(provider, "provider cannot be null");
     this.provider = provider;
+    this.logger = logger;
   }
 
 }

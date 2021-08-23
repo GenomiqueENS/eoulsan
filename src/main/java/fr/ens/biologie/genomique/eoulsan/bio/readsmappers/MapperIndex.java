@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -48,6 +47,7 @@ public class MapperIndex {
   private final MapperInstance mapperInstance;
   private final InputStream in;
   private final File indexDirectory;
+  private final MapperLogger logger;
   private boolean unzipped;
 
   //
@@ -137,7 +137,7 @@ public class MapperIndex {
     }
 
     return new EntryMapping(this, fastqFormat, mapperArguments, threadNumber,
-        multipleInstanceEnabled, incrementer, counterGroup);
+        multipleInstanceEnabled, incrementer, counterGroup, this.logger);
   }
 
   /**
@@ -187,7 +187,7 @@ public class MapperIndex {
     }
 
     return new FileMapping(this, fastqFormat, mapperArguments, threadNumber,
-        multipleInstanceEnabled, incrementer, counterGroup);
+        multipleInstanceEnabled, incrementer, counterGroup, this.logger);
   }
 
   //
@@ -214,7 +214,7 @@ public class MapperIndex {
               + getMapperName() + " index: " + archiveIndexDir);
         }
 
-        getLogger().fine("Unzip archiveIndexFile "
+        this.logger.debug("Unzip archiveIndexFile "
             + archiveIndexFile + " in " + archiveIndexDir);
         FileUtils.unzip(archiveIndexFile, archiveIndexDir);
       }
@@ -238,10 +238,11 @@ public class MapperIndex {
    * @param mapperInstance mapper instance object
    * @param archiveIndexFileInputStream archive index file input stream
    * @param indexOutputDirectory index output directory
+   * @param logger the logger to use
    */
   MapperIndex(final MapperInstance mapperInstance,
       final InputStream archiveIndexFileInputStream,
-      final File indexOutputDirectory) {
+      final File indexOutputDirectory, final MapperLogger logger) {
 
     requireNonNull(mapperInstance, "mapperInstance cannot be null");
     requireNonNull(archiveIndexFileInputStream,
@@ -251,5 +252,6 @@ public class MapperIndex {
     this.mapperInstance = mapperInstance;
     this.in = archiveIndexFileInputStream;
     this.indexDirectory = indexOutputDirectory;
+    this.logger = logger;
   }
 }

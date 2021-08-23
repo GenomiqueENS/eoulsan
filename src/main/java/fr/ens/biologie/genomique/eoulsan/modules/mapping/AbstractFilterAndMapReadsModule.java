@@ -43,6 +43,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
 import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.EoulsanMapperLogger;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
@@ -299,7 +300,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
     }
 
     // Create a Mapper object
-    this.mapper = Mapper.newMapper(mapperName);
+    this.mapper = Mapper.newMapper(mapperName, new EoulsanMapperLogger());
 
     if (this.mapper == null) {
       Modules.invalidConfiguration(context, "Unknown mapper: " + mapperName);

@@ -38,6 +38,7 @@ import java.util.Set;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
+import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.EoulsanMapperLogger;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperInstance;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
@@ -115,7 +116,7 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
       case "mappername":
         final String mapperName = p.getStringValue();
 
-        this.mapper = Mapper.newMapper(mapperName);
+        this.mapper = Mapper.newMapper(mapperName, new EoulsanMapperLogger());
 
         if (this.mapper == null) {
           Modules.badParameterValue(context, p, "Unknown mapper");

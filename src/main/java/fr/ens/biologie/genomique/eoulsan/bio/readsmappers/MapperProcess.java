@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -177,7 +176,8 @@ public abstract class MapperProcess {
       final int exitValue =
           MapperProcess.this.getStdoutProcessResult().waitFor();
 
-      getLogger().fine("End of process with " + exitValue + " exit value");
+      executor.getLogger()
+          .debug("End of process with " + exitValue + " exit value");
 
       if (exitValue != 0) {
         throw new IOException("Bad error result for "
@@ -789,7 +789,8 @@ public abstract class MapperProcess {
     for (Result result : this.processResults) {
 
       final int exitValue = result.waitFor();
-      getLogger().fine("End of process with " + exitValue + " exit value");
+      this.executor.getLogger()
+          .debug("End of process with " + exitValue + " exit value");
 
       if (exitValue != 0) {
         throw new IOException("Bad error result for "
@@ -812,7 +813,7 @@ public abstract class MapperProcess {
     if (f != null && f.exists()) {
 
       if (!f.delete()) {
-        getLogger().warning("Cannot remove temporary file: " + f);
+        this.executor.getLogger().warn("Cannot remove temporary file: " + f);
       }
     }
   }

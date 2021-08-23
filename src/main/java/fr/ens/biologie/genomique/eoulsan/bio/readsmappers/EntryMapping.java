@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -48,6 +47,7 @@ public class EntryMapping {
   protected final List<String> mapperArguments;
   protected final int threadNumber;
   protected final boolean multipleInstanceEnabled;
+  protected final MapperLogger logger;
 
   //
   // Getters
@@ -173,7 +173,7 @@ public class EntryMapping {
   public MapperProcess mapSE(final File errorFile, final File logFile)
       throws IOException {
 
-    getLogger().fine("Mapping with "
+    this.logger.debug("Mapping with "
         + this.mapperIndex.getMapperName() + " in single-end mode");
 
     // Process to mapping
@@ -209,7 +209,7 @@ public class EntryMapping {
   public MapperProcess mapPE(final File errorFile, final File logFile)
       throws IOException {
 
-    getLogger().fine("Mapping with "
+    this.logger.debug("Mapping with "
         + this.mapperIndex.getMapperName() + " in paired-end mode");
 
     // Process to mapping
@@ -242,7 +242,8 @@ public class EntryMapping {
   EntryMapping(final MapperIndex mapperIndex, final FastqFormat fastqFormat,
       final List<String> mapperArguments, final int threadNumber,
       final boolean multipleInstanceEnabled,
-      final ReporterIncrementer incrementer, final String counterGroup) {
+      final ReporterIncrementer incrementer, final String counterGroup,
+      final MapperLogger logger) {
 
     requireNonNull(mapperIndex, "mapperIndex cannot be null");
     requireNonNull(fastqFormat, "fastqFormat cannot be null");
@@ -259,6 +260,7 @@ public class EntryMapping {
 
     this.incrementer = incrementer;
     this.counterGroup = counterGroup;
+    this.logger = logger;
   }
 
 }

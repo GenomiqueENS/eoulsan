@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -58,6 +57,7 @@ public class MapperInstance {
   private final String version;
   private final String flavor;
   private final File temporaryDirectory;
+  private final MapperLogger logger;
 
   private boolean mapperInstalled;
 
@@ -154,7 +154,7 @@ public class MapperInstance {
     requireNonNull(genomeIs, "Input steam is null");
     requireNonNull(archiveOutputFile, "Archive output file is null");
 
-    getLogger().fine("Copy genome to local disk before computing index");
+    this.logger.debug("Copy genome to local disk before computing index");
 
     final File genomeTmpFile =
         File.createTempFile(Globals.APP_NAME_LOWER_CASE + "-genome", ".fasta",
@@ -165,7 +165,7 @@ public class MapperInstance {
         threads);
 
     if (!genomeTmpFile.delete()) {
-      getLogger().warning("Cannot delete temporary index zip file");
+      this.logger.warn("Cannot delete temporary index zip file");
     }
 
   }
@@ -196,12 +196,12 @@ public class MapperInstance {
       final File archiveOutputFile, final List<String> indexerArguments,
       final int threads) throws IOException {
 
-    getLogger().fine("Start index computation");
+    this.logger.debug("Start index computation");
 
     final String indexTmpDirPrefix = Globals.APP_NAME_LOWER_CASE
         + "-" + this.mapper.getName().toLowerCase() + "-genomeindexdir-";
 
-    getLogger().fine("Want to create a temporary directory with prefix: "
+    this.logger.debug("Want to create a temporary directory with prefix: "
         + indexTmpDirPrefix + " in " + getTemporaryDirectory());
 
     final File indexCreationDir =
@@ -210,7 +210,7 @@ public class MapperInstance {
 
     // Uncompress genome file if required
     final File unCompressedGenomeFile =
-        uncompressGenomeIfNecessary(genomeFile, indexCreationDir);
+        uncompressGenomeIfNecessary(genomeFile, indexCreationDir, this.logger);
 
     // Define log output files
     File outputDir = archiveOutputFile.getParentFile();
@@ -229,7 +229,7 @@ public class MapperInstance {
     // Remove temporary directory
     FileUtils.removeDirectory(indexCreationDir);
 
-    getLogger().fine("End index computation");
+    this.logger.debug("End index computation");
   }
 
   /**
@@ -249,7 +249,7 @@ public class MapperInstance {
     requireNonNull(genomeFile, "genome file is null");
     requireNonNull(outputDir, "output directory is null");
 
-    getLogger().fine("Start computing "
+    this.logger.debug("Start computing "
         + this.mapper.getName() + " index for " + genomeFile);
 
     final long startTime = System.currentTimeMillis();
@@ -279,7 +279,7 @@ public class MapperInstance {
     final List<String> cmd = new ArrayList<>(this.mapper.getProvider()
         .getIndexerCommand(indexer, tmpGenomeFile, indexerArguments, threads));
 
-    getLogger().fine(cmd.toString());
+    this.logger.debug(cmd.toString());
 
     final Result result =
         this.executor.execute(cmd, tmpGenomeFile.getParentFile(), false,
@@ -299,13 +299,13 @@ public class MapperInstance {
 
     // Remove symbolic link
     if (!tmpGenomeFile.delete()) {
-      getLogger().warning("Cannot remove symbolic link while after creating "
+      this.logger.warn("Cannot remove symbolic link while after creating "
           + this.mapper.getName() + " index");
     }
 
     final long endTime = System.currentTimeMillis();
 
-    getLogger().fine("Create the "
+    this.logger.debug("Create the "
         + this.mapper.getName() + " index in "
         + StringUtils.toTimeHumanReadable(endTime - startTime));
   }
@@ -314,11 +314,12 @@ public class MapperInstance {
    * Uncompress genome file if necessary.
    * @param genomeFile the genome file
    * @param outputDir the output directory
+   * @param logger the logger
    * @return the path to the uncompressed file
    * @throws IOException if an error occurs while uncompressing the genome file
    */
   private static File uncompressGenomeIfNecessary(final File genomeFile,
-      final File outputDir) throws IOException {
+      final File outputDir, final MapperLogger logger) throws IOException {
 
     final CompressionType ct =
         CompressionType.getCompressionTypeByFilename(genomeFile.getName());
@@ -331,8 +332,7 @@ public class MapperInstance {
     final File uncompressFile = new File(outputDir,
         StringUtils.filenameWithoutCompressionExtension(genomeFile.getName()));
 
-    getLogger()
-        .fine("Uncompress genome " + genomeFile + " to " + uncompressFile);
+    logger.debug("Uncompress genome " + genomeFile + " to " + uncompressFile);
 
     // Create input stream
     final InputStream in =
@@ -484,7 +484,7 @@ public class MapperInstance {
       final File indexOutputDir) throws IOException {
 
     return new MapperIndex(this, new FileInputStream(archiveIndexFile),
-        indexOutputDir);
+        indexOutputDir, this.logger);
   }
 
   /**
@@ -500,7 +500,7 @@ public class MapperInstance {
     // Install the mapper
     installMapper();
 
-    return new MapperIndex(this, in, indexOutputDir);
+    return new MapperIndex(this, in, indexOutputDir, this.logger);
   }
 
   //
@@ -517,7 +517,8 @@ public class MapperInstance {
    * @throws IOException if an error occurs while checking the mapper
    */
   MapperInstance(Mapper mapper, MapperExecutor executor, final String version,
-      final String flavor, final File temporaryDirectory) throws IOException {
+      final String flavor, final File temporaryDirectory,
+      final MapperLogger logger) throws IOException {
 
     requireNonNull(mapper, "mapper cannot be null");
     requireNonNull(executor, "executor cannot be null");
@@ -528,8 +529,9 @@ public class MapperInstance {
     this.version = version;
     this.flavor = flavor;
     this.temporaryDirectory = temporaryDirectory;
+    this.logger = logger == null ? new DummyMapperLogger() : logger;
 
-    getLogger().fine("Use executor: " + this.executor);
+    this.logger.debug("Use executor: " + this.executor);
 
     // Check mapper binaries
     checkMapperBinaries();
