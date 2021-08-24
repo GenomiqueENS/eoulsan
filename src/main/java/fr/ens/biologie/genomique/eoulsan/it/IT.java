@@ -359,15 +359,9 @@ public class IT {
 
     // Write in file
     if (!(this.environmentVariables == null
-        || this.environmentVariables.size() == 0)) {
-      // Convert to string
-      final String envToString =
-          Joiner.on("\n").join(this.environmentVariables);
-
+        || this.environmentVariables.isEmpty())) {
       try {
-        com.google.common.io.Files.write(envToString, envFile,
-            StandardCharsets.UTF_8);
-
+        Files.write(envFile.toPath(), this.environmentVariables);
       } catch (final IOException e) {
         getLogger()
             .warning("Error while writing environment variables in file: "
